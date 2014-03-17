@@ -1,9 +1,9 @@
 # Gradle Format plugin #
 
 The Gradle Format plugin allows you to format your Java sources. It operates in place and can be used for instance
-before pushing changes to enforce a coding style. The formatting can be customized using a properties file with
+before pushing changes to enforce a coding style. The formatting can be customized using a properties or XML file with
 the keys defined in [DefaultCodeFormatterConstants](http://help.eclipse.org/indigo/index.jsp?topic=%2Forg.eclipse.jdt.doc.isv%2Freference%2Fapi%2Forg%2Feclipse%2Fjdt%2Fcore%2Fformatter%2FDefaultCodeFormatterConstants.html)
- from Eclipse. See eclipse_formatter_config.properties for an example.
+ from Eclipse. See src/test/resources/ for examples.
  Eventually you should be able to export Eclipse settings to this file.
 
 ## Usage
@@ -55,6 +55,6 @@ The Format task defines the following properties:
     }
 ## Acknowledgements
 
-Using [Hibernate Tools](http://hibernate.org/tools/) JavaFormatterTask
+Using [Hibernate Tools](http://hibernate.org/tools/) JavaFormatter
 
 Readme format from https://github.com/bmuschko/gradle-gae-plugin

@@ -2,7 +2,7 @@ apply plugin: 'groovy'
 apply plugin: 'maven'
 
 group = 'org.gradle.api.plugins'
-version = '1.0'
+version = '1.1'
 
 repositories {
     mavenCentral()
@@ -11,5 +11,5 @@ repositories {
 dependencies {
     compile gradleApi()
     compile localGroovy()
-    runtime 'org.hibernate:hibernate-tools:4.0.0-CR1'
+    compile 'org.hibernate:hibernate-tools:4.0.0-CR1'
 }
