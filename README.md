@@ -30,7 +30,7 @@ example on how to retrieve it from Bintray:
         }
 
         dependencies {
-            classpath 'org.gradle.api.plugins:gradle-format-plugin:1.0'
+            classpath 'org.gradle.api.plugins:gradle-format-plugin:1.1'
         }
     }
 
