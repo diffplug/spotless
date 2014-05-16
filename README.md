@@ -26,6 +26,7 @@ example on how to retrieve it from Bintray:
 
     buildscript {
         repositories {
+            mavenCentral()
             maven { url { 'http://dl.bintray.com/youribonnaffe/maven' } }
         }
 
