@@ -33,7 +33,7 @@ example on how to retrieve it from Bintray:
         }
 
         dependencies {
-            classpath 'org.gradle.api.plugins:gradle-format-plugin:1.1'
+            classpath 'org.gradle.api.plugins:gradle-format-plugin:1.2'
         }
     }
 
@@ -49,6 +49,7 @@ The Format task defines the following properties:
 
 * `configurationFile`: The formatter configuration (File)
 * `importsOrder`: The import orders (List of strings)
+* `importsOrderConfigurationFile`: The import orders (a file using Eclipse format)
 * `files`: The files to format (FileCollection), defaults are Java sources from main and test SourceSets
 
 ### Example

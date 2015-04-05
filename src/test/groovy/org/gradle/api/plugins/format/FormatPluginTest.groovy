@@ -107,6 +107,22 @@ class FormatPluginTest {
         assert sourceFile.text == getClass().getResourceAsStream("/JavaCodeSortedImports.java").text
     }
 
+    @Test
+    public void 'sort imports reading Eclipse file'() {
+        Project project = ProjectBuilder.builder().build()
+        project.apply plugin: 'java'
+        project.apply plugin: 'format'
+        FormatTask task = project.tasks.format as FormatTask
+
+        def sourceFile = classpathResourceToFile("JavaCodeUnsortedImports.java")
+        task.files = project.files(sourceFile)
+        task.importsOrderConfigurationFile = classpathResourceToFile('import.properties')
+
+        task.format()
+
+        assert sourceFile.text == getClass().getResourceAsStream("/JavaCodeSortedImports.java").text
+    }
+
     private File classpathResourceToFile(String filename) {
         def file = folder.newFile(filename)
         file.write(getClass().getResourceAsStream("/" + filename).text)

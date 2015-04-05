@@ -1,15 +1,16 @@
-package org.gradle.api.plugins.format;
+package org.gradle.api.plugins.format
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
-import org.gradle.api.file.FileCollection;
+import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.TaskAction
-import org.hibernate.tool.ide.formatting.JavaFormatter;
+import org.hibernate.tool.ide.formatting.JavaFormatter
 
 public class FormatTask extends DefaultTask {
     def FileCollection files = project.sourceSets.main.java + project.sourceSets.test.java
     def File configurationFile
     def List<String> importsOrder
+    def File importsOrderConfigurationFile
 
     @TaskAction
     void format() {
@@ -21,8 +22,14 @@ public class FormatTask extends DefaultTask {
             formatter.formatFile(file)
         }
 
+        def importSorter
         if (importsOrder) {
-            def importSorter = new ImportSorterAdapter(importsOrder)
+            importSorter = new ImportSorterAdapter(importsOrder)
+        }
+        if (importsOrderConfigurationFile) {
+            importSorter = new ImportSorterAdapter(importsOrderConfigurationFile.newInputStream())
+        }
+        if (importSorter) {
             files.each { file ->
                 logger.info "Ordering imports for $file"
                 def sortedImportsText = importSorter.sortImports(file.text)
