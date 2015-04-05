@@ -9,6 +9,7 @@ import org.hibernate.tool.ide.formatting.JavaFormatter;
 public class FormatTask extends DefaultTask {
     def FileCollection files = project.sourceSets.main.java + project.sourceSets.test.java
     def File configurationFile
+    def List<String> importsOrder
 
     @TaskAction
     void format() {
@@ -18,6 +19,15 @@ public class FormatTask extends DefaultTask {
         files.each { file ->
             logger.info "Formating $file"
             formatter.formatFile(file)
+        }
+
+        if (importsOrder) {
+            def importSorter = new ImportSorterAdapter(importsOrder)
+            files.each { file ->
+                logger.info "Ordering imports for $file"
+                def sortedImportsText = importSorter.sortImports(file.text)
+                file.write(sortedImportsText)
+            }
         }
     }
 
