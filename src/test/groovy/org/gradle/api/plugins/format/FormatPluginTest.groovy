@@ -98,7 +98,6 @@ class FormatPluginTest {
     @Test
     public void 'sort imports reading Eclipse file'() {
         Project project = ProjectBuilder.builder().build()
-        project.apply plugin: 'java'
         project.apply plugin: 'format'
         FormatTask task = project.tasks.format as FormatTask
 
