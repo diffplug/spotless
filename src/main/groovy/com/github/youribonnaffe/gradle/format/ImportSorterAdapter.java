@@ -1,4 +1,9 @@
-package org.gradle.api.plugins.format
+package com.github.youribonnaffe.gradle.format;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
 /**
  * From https://github.com/krasa/EclipseCodeFormatter
  *
@@ -14,17 +19,7 @@ public class ImportSorterAdapter {
         this.importsOrder = new ArrayList<String>(importsOrder);
     }
 
-    public ImportSorterAdapter(InputStream importsOrderAsConfigurationFile) {
-        this.importsOrder = importsOrderAsConfigurationFile.readLines().
-                findAll() { !it.startsWith('#') }.
-                collectEntries {
-                    def (idx, packageName) = it.split("=")
-                    [(idx): packageName]
-                }.sort().values() as List<String>
-    }
-
     public String sortImports(String document) {
-        println "sorting with $importsOrder"
         // parse file
         Scanner scanner = new Scanner(document);
         int firstImportLine = 0;
@@ -56,7 +51,7 @@ public class ImportSorterAdapter {
         return applyImportsToDocument(document, firstImportLine, lastImportLine, sortedImports);
     }
 
-    private static String applyImportsToDocument(final String document, int firstImportLine, int lastImportLine,
+    private String applyImportsToDocument(final String document, int firstImportLine, int lastImportLine,
                                           List<String> strings) {
         Scanner scanner;
         boolean importsAlreadyAppended = false;
@@ -83,12 +78,12 @@ public class ImportSorterAdapter {
         return sb.toString();
     }
 
-    private static void append(StringBuilder sb, String next) {
+    private void append(StringBuilder sb, String next) {
         sb.append(next);
         sb.append(N);
     }
 
-    private static boolean isNotValidImport(int i) {
+    private boolean isNotValidImport(int i) {
         return i <= START_INDEX_OF_IMPORTS_PACKAGE_DECLARATION;
     }
 

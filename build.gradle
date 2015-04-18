@@ -1,8 +1,20 @@
 apply plugin: 'groovy'
 apply plugin: 'maven'
+apply plugin: "com.gradle.plugin-publish"
 
-group = 'org.gradle.api.plugins'
+group = 'com.github.youribonnaffe.gradle.format'
 version = '1.2'
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "com.gradle.publish:plugin-publish-plugin:0.9.0"
+    }
+}
 
 repositories {
     mavenCentral()
@@ -21,4 +33,18 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 
 artifacts {
     archives sourcesJar
+}
+
+pluginBundle {
+    website = 'https://github.com/youribonnaffe/gradle-format-plugin'
+    vcsUrl = 'https://github.com/youribonnaffe/gradle-format-plugin'
+    description = 'Format Java source code and sort imports using Eclipse formatter'
+    tags = ['java', 'format', 'imports', 'eclipse']
+
+    plugins {
+        formatPlugin {
+            id = 'com.github.youribonnaffe.gradle.format'
+            displayName = 'Gradle Format plugin'
+        }
+    }
 }

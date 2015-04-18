@@ -12,30 +12,31 @@ The plugin also enables you to sort imports.
 
 To use the Format plugin, include in your build script:
 
-    apply plugin: 'java'
-    apply plugin: 'format'
+    apply plugin: 'com.github.youribonnaffe.gradle.format'
 
-Note that the Java plugin must be applied too.
+Note that the Java plugin will be applied too.
 
 To run it:
 
     gradle format
 
 The plugin JAR needs to be accessible in the classpath of your build script. It is directly available on
-[BinTray](https://bintray.com/youribonnaffe/maven/gradle-format-plugin/).
+[Gradle plugins](https://plugins.gradle.org/).
 Alternatively, you can download it from GitHub and deploy it to your local repository. The following code snippet shows an
-example on how to retrieve it from Bintray:
+example on how to get it and use it:
 
     buildscript {
-        repositories {
-            mavenCentral()
-            maven { url { 'http://dl.bintray.com/youribonnaffe/maven' } }
+      repositories {
+        maven {
+          url "https://plugins.gradle.org/m2/"
         }
-
-        dependencies {
-            classpath 'org.gradle.api.plugins:gradle-format-plugin:1.2'
-        }
+      }
+      dependencies {
+        classpath "gradle.plugin.com.github.youribonnaffe.gradle.format:gradle-format-plugin:1.2"
+      }
     }
+    
+    apply plugin: "com.github.youribonnaffe.gradle.format"
 
 ## Tasks
 

@@ -1,4 +1,4 @@
-package org.gradle.api.plugins.format;
+package com.github.youribonnaffe.gradle.format;
 
 import java.util.*;
 

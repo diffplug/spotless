@@ -1,8 +1,9 @@
-package org.gradle.api.plugins.format
+package com.github.youribonnaffe.gradle.format
 
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -13,20 +14,23 @@ import static org.junit.Assert.assertTrue
 class FormatPluginTest {
 
     @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    public TemporaryFolder folder = new TemporaryFolder()
+
+    private Project project
+
+    @Before
+    public void createProject() {
+        project = ProjectBuilder.builder().build()
+        this.project.apply plugin: 'com.github.youribonnaffe.gradle.format'
+    }
 
     @Test
     public void 'format task is created'() {
-        Project project = ProjectBuilder.builder().build()
-        project.apply plugin: 'format'
-
         assertTrue(project.tasks.format instanceof FormatTask)
     }
 
     @Test
     public void 'load properties settings'() {
-        Project project = ProjectBuilder.builder().build()
-        project.apply plugin: 'format'
         FormatTask task = project.tasks.format as FormatTask
 
         task.configurationFile = classpathResourceToFile("formatter.properties")
@@ -41,8 +45,6 @@ class FormatPluginTest {
 
     @Test
     public void 'load XML settings'() {
-        Project project = ProjectBuilder.builder().build()
-        project.apply plugin: 'format'
         FormatTask task = project.tasks.format as FormatTask
 
         task.configurationFile = classpathResourceToFile("formatter.xml")
@@ -57,8 +59,6 @@ class FormatPluginTest {
 
     @Test(expected = GradleException)
     public void 'load unknown settings'() {
-        Project project = ProjectBuilder.builder().build()
-        project.apply plugin: 'format'
         FormatTask task = project.tasks.format as FormatTask
 
         task.configurationFile = folder.newFile("formatter.unknown")
@@ -68,8 +68,6 @@ class FormatPluginTest {
 
     @Test
     public void 'load null settings'() {
-        Project project = ProjectBuilder.builder().build()
-        project.apply plugin: 'format'
         FormatTask task = project.tasks.format as FormatTask
 
         def sourceFile = classpathResourceToFile("JavaCodeUnformatted.java")
@@ -82,8 +80,6 @@ class FormatPluginTest {
 
     @Test
     public void 'sort imports'() {
-        Project project = ProjectBuilder.builder().build()
-        project.apply plugin: 'format'
         FormatTask task = project.tasks.format as FormatTask
 
         def sourceFile = classpathResourceToFile("JavaCodeUnsortedImports.java")
@@ -97,8 +93,6 @@ class FormatPluginTest {
 
     @Test
     public void 'sort imports reading Eclipse file'() {
-        Project project = ProjectBuilder.builder().build()
-        project.apply plugin: 'format'
         FormatTask task = project.tasks.format as FormatTask
 
         def sourceFile = classpathResourceToFile("JavaCodeUnsortedImports.java")
@@ -112,8 +106,6 @@ class FormatPluginTest {
 
     @Test
     public void 'sort imports and format code'() {
-        Project project = ProjectBuilder.builder().build()
-        project.apply plugin: 'format'
         FormatTask task = project.tasks.format as FormatTask
 
         def sourceFile = classpathResourceToFile("JavaUnsortedImportsAndCodeUnformatted.java")
