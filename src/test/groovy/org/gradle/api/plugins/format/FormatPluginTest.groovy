@@ -18,7 +18,6 @@ class FormatPluginTest {
     @Test
     public void 'format task is created'() {
         Project project = ProjectBuilder.builder().build()
-        project.apply plugin: 'java'
         project.apply plugin: 'format'
 
         assertTrue(project.tasks.format instanceof FormatTask)
@@ -27,7 +26,6 @@ class FormatPluginTest {
     @Test
     public void 'load properties settings'() {
         Project project = ProjectBuilder.builder().build()
-        project.apply plugin: 'java'
         project.apply plugin: 'format'
         FormatTask task = project.tasks.format as FormatTask
 
@@ -44,7 +42,6 @@ class FormatPluginTest {
     @Test
     public void 'load XML settings'() {
         Project project = ProjectBuilder.builder().build()
-        project.apply plugin: 'java'
         project.apply plugin: 'format'
         FormatTask task = project.tasks.format as FormatTask
 
@@ -61,7 +58,6 @@ class FormatPluginTest {
     @Test(expected = GradleException)
     public void 'load unknown settings'() {
         Project project = ProjectBuilder.builder().build()
-        project.apply plugin: 'java'
         project.apply plugin: 'format'
         FormatTask task = project.tasks.format as FormatTask
 
@@ -73,7 +69,6 @@ class FormatPluginTest {
     @Test
     public void 'load null settings'() {
         Project project = ProjectBuilder.builder().build()
-        project.apply plugin: 'java'
         project.apply plugin: 'format'
         FormatTask task = project.tasks.format as FormatTask
 
@@ -88,7 +83,6 @@ class FormatPluginTest {
     @Test
     public void 'sort imports'() {
         Project project = ProjectBuilder.builder().build()
-        project.apply plugin: 'java'
         project.apply plugin: 'format'
         FormatTask task = project.tasks.format as FormatTask
 
@@ -120,7 +114,6 @@ class FormatPluginTest {
     @Test
     public void 'sort imports and format code'() {
         Project project = ProjectBuilder.builder().build()
-        project.apply plugin: 'java'
         project.apply plugin: 'format'
         FormatTask task = project.tasks.format as FormatTask
 
