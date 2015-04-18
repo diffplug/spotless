@@ -24,12 +24,6 @@ class FormatPluginTest {
         assertTrue(project.tasks.format instanceof FormatTask)
     }
 
-    @Test(expected = GradleException)
-    public void 'java plugin is needed'() {
-        Project project = ProjectBuilder.builder().build()
-        project.apply plugin: 'format'
-    }
-
     @Test
     public void 'load properties settings'() {
         Project project = ProjectBuilder.builder().build()
