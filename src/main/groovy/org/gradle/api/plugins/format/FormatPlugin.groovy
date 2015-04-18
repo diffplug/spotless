@@ -9,6 +9,6 @@ class FormatPlugin implements Plugin<Project> {
         if (!project.plugins.hasPlugin(JavaPlugin)) {
             project.plugins.apply(JavaPlugin.class)
         }
-        project.task('format', type: FormatTask, description: 'Formats Java source code')
+        project.task('format', type: FormatTask, description: 'Formats Java source code (style and import order)')
     }
 }
