@@ -46,6 +46,7 @@ public class ImportSorterAdapter {
                         endIndex != -1 ? endIndex : next.length()));
             }
         }
+        scanner.close();
 
         List<String> sortedImports = ImportsSorter.sort(imports, importsOrder);
         return applyImportsToDocument(document, firstImportLine, lastImportLine, sortedImports);
@@ -75,6 +76,7 @@ public class ImportSorterAdapter {
                 append(sb, next);
             }
         }
+        scanner.close();
         return sb.toString();
     }
 
