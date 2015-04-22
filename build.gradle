@@ -18,12 +18,49 @@ buildscript {
 
 repositories {
     mavenCentral()
+    // maven { url = 'https://repo.eclipse.org/content/groups/eclipse/' }
+    ivy {
+        // Eclipse 4.5 M6 has lots of formatter improvements
+        // Future versions can be found here: http://download.eclipse.org/eclipse/downloads/index.html
+        url "http://download.eclipse.org/eclipse/updates/4.5milestones/S-4.5M6-201503200800/"
+        layout "pattern", {
+            artifact "plugins/[artifact]_[revision].[ext]"
+        }
+
+        // There isn't a reliable way to get eclipse artifacts except through p2 repositories,
+        // which gradle does not yet support.  For now we're forcing it with ivy.
+        // https://discuss.gradle.org/t/is-it-possible-to-configure-a-p2-repository/6812/6
+
+        // You might think this is crappy, and try to find some kind of maven upload.
+        // You'll find a couple random artifacts, but they're all a trap.  Mismatching
+        // versions and missing deps.
+        //
+        // The sweetest of the honeypots is https://repo.eclipse.org/content/groups/eclipse/
+        // Please heed my warning fellow traveler: it is a trap!
+    }
 }
 
 dependencies {
     compile gradleApi()
     compile localGroovy()
-    compile 'org.hibernate:hibernate-tools:4.0.0-CR1'
+
+    // The only dependencies we actually use
+    compile 'p2:org.eclipse.jdt.core:3.11.0.v20150317-0048'
+    compile 'p2:org.eclipse.text:3.5.400.v20140915-2351'
+
+    // Because gradle can't consume p2, we have to resolve the transitive dependencies - and their versions - by hand.
+    // The transitive dependencies are extremely unlikely to change, but we're probably going to want to upgrade to newer versions of Eclipse.
+    // Here's how:
+    // - Download http://download.eclipse.org/eclipse/updates/4.5milestones/S-4.5M6-201503200800/artifacts.jar
+    // - Unzip this file, and you'll have artifacts.xml
+    // - Grep through the file for the plugin id, and copy the version below
+    compile 'p2:org.eclipse.core.contenttype:3.4.200.v20150316-1243'
+    compile 'p2:org.eclipse.core.jobs:3.7.0.v20150316-1238'
+    compile 'p2:org.eclipse.core.runtime:3.11.0.v20150316-1241'
+    compile 'p2:org.eclipse.core.resources:3.9.100.v20150313-1707'
+    compile 'p2:org.eclipse.equinox.common:3.7.0.v20150318-1503'
+    compile 'p2:org.eclipse.equinox.preferences:3.5.300.v20150313-2125'
+    compile 'p2:org.eclipse.osgi:3.10.100.v20150318-0312'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
