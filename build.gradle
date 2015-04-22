@@ -2,8 +2,8 @@ apply plugin: 'groovy'
 apply plugin: 'maven'
 apply plugin: "com.gradle.plugin-publish"
 
-group = 'com.github.youribonnaffe.gradle.format'
-version = '1.2'
+group = 'gradle.plugin.com.github.youribonnaffe.gradle.format'
+version = '1.3-SNAPSHOT'
 
 buildscript {
     repositories {
@@ -18,7 +18,6 @@ buildscript {
 
 repositories {
     mavenCentral()
-    // maven { url = 'https://repo.eclipse.org/content/groups/eclipse/' }
     ivy {
         // Eclipse 4.5 M6 has lots of formatter improvements
         // Future versions can be found here: http://download.eclipse.org/eclipse/downloads/index.html
@@ -40,13 +39,23 @@ repositories {
     }
 }
 
+// None of these eclipse jars are in the public repositories.  This means
+// that when someone downloads this plugin, unless they add the weird
+// ivy depenency, they won't be able to resolve the eclipse jars.
+//
+// To fix this, we embed the content of these eclispe jars into ourselves, as a "fat jar".
+// As of now (v1.3), the jar is 8MB, which isn't awful.
+configurations {
+    embeddedJars
+}
+
 dependencies {
     compile gradleApi()
     compile localGroovy()
 
     // The only dependencies we actually use
-    compile 'p2:org.eclipse.jdt.core:3.11.0.v20150317-0048'
-    compile 'p2:org.eclipse.text:3.5.400.v20140915-2351'
+    embeddedJars 'p2:org.eclipse.jdt.core:3.11.0.v20150317-0048'
+    embeddedJars 'p2:org.eclipse.text:3.5.400.v20140915-2351'
 
     // Because gradle can't consume p2, we have to resolve the transitive dependencies - and their versions - by hand.
     // The transitive dependencies are extremely unlikely to change, but we're probably going to want to upgrade to newer versions of Eclipse.
@@ -54,13 +63,15 @@ dependencies {
     // - Download http://download.eclipse.org/eclipse/updates/4.5milestones/S-4.5M6-201503200800/artifacts.jar
     // - Unzip this file, and you'll have artifacts.xml
     // - Grep through the file for the plugin id, and copy the version below
-    compile 'p2:org.eclipse.core.contenttype:3.4.200.v20150316-1243'
-    compile 'p2:org.eclipse.core.jobs:3.7.0.v20150316-1238'
-    compile 'p2:org.eclipse.core.runtime:3.11.0.v20150316-1241'
-    compile 'p2:org.eclipse.core.resources:3.9.100.v20150313-1707'
-    compile 'p2:org.eclipse.equinox.common:3.7.0.v20150318-1503'
-    compile 'p2:org.eclipse.equinox.preferences:3.5.300.v20150313-2125'
-    compile 'p2:org.eclipse.osgi:3.10.100.v20150318-0312'
+    embeddedJars 'p2:org.eclipse.core.contenttype:3.4.200.v20150316-1243'
+    embeddedJars 'p2:org.eclipse.core.jobs:3.7.0.v20150316-1238'
+    embeddedJars 'p2:org.eclipse.core.runtime:3.11.0.v20150316-1241'
+    embeddedJars 'p2:org.eclipse.core.resources:3.9.100.v20150313-1707'
+    embeddedJars 'p2:org.eclipse.equinox.common:3.7.0.v20150318-1503'
+    embeddedJars 'p2:org.eclipse.equinox.preferences:3.5.300.v20150313-2125'
+    embeddedJars 'p2:org.eclipse.osgi:3.10.100.v20150318-0312'
+
+    configurations.compile.extendsFrom(configurations.embeddedJars)
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -70,6 +81,17 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 
 artifacts {
     archives sourcesJar
+}
+
+jar {
+    // this embeds the eclipse jars into our "fat jar"
+    from {
+        configurations.embeddedJars.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    // the eclipse jars are signed, and our fat jar breaks the signatures
+    // so we've gotta be sure to filter out the signatures
+    exclude 'META-INF/*.RSA'
+    exclude 'META-INF/*.SF'
 }
 
 pluginBundle {
@@ -95,3 +117,13 @@ eclipse {
 }
 // always create fresh projects
 tasks.eclipse.dependsOn(cleanEclipse)
+
+// this allows publishToMavenLocal, for testing
+apply plugin: 'maven-publish'
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact(jar)
+        }
+    }
+}
