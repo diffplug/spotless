@@ -118,6 +118,19 @@ class FormatPluginTest {
         assert sourceFile.text == getClass().getResourceAsStream("/JavaCodeSortedImportsCodeFormatted.java").text
     }
 
+    @Test
+    public void 'format Java 8 code'() {
+        FormatTask task = project.tasks.format as FormatTask
+
+        def sourceFile = classpathResourceToFile("Java8CodeUnformatted.java")
+        task.configurationFile = classpathResourceToFile("formatter_java_8.properties")
+        task.files = project.files(sourceFile)
+
+        task.format()
+
+        assert sourceFile.text == getClass().getResourceAsStream("/Java8CodeFormatted.java").text
+    }
+
     private File classpathResourceToFile(String filename) {
         def file = folder.newFile(filename)
         file.write(getClass().getResourceAsStream("/" + filename).text)
