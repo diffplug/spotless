@@ -32,20 +32,17 @@ public class FormatPluginTest {
 	@Before
 	public void createProject() {
 		project = ProjectBuilder.builder().build();
-		new FormatPlugin().apply(project);
-
-		task = (FormatTask) project.getTasks().getByName("format");
+		task = (FormatTask) project.getTasks().create("underTest", FormatTask.class);
 	}
 
 	@Test
 	public void formatTaskIsCreated() {
-		assertTrue(project.getTasks().getByName("format") instanceof FormatTask);
+		assertTrue(project.getTasks().getByName("underTest") instanceof FormatTask);
 	}
 
 	private String getTestResource(String filename) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		InputStream inputStream = getClass().getResourceAsStream("/" + filename);
-		System.out.println("filename=" + filename + " inputstream=" + inputStream);
 		byte[] buffer = new byte[1024];
 		int length = 0;
 		while ((length = inputStream.read(buffer)) != -1) {
@@ -70,7 +67,7 @@ public class FormatPluginTest {
 	@Test
 	public void loadPropertiesSettings() throws Exception {
 		// setting for the formatter
-		task.configurationFile = getTestFile("formatter.properties");
+		task.eclipseFormatFile = getTestFile("formatter.properties");
 		File sourceFile = getTestFile("JavaCodeUnformatted.test");
 		task.files = project.files(sourceFile);
 		task.format();
@@ -80,7 +77,7 @@ public class FormatPluginTest {
 	@Test
 	public void loadXmlSettings() throws Exception {
 		// setting for the formatter
-		task.configurationFile = getTestFile("formatter.xml");
+		task.eclipseFormatFile = getTestFile("formatter.xml");
 		File sourceFile = getTestFile("JavaCodeUnformatted.test");
 		task.files = project.files(sourceFile);
 		task.format();
@@ -89,7 +86,7 @@ public class FormatPluginTest {
 
 	@Test(expected = GradleException.class)
 	public void loadUnknownSettings() throws Exception {
-		task.configurationFile = new File("formatter.unknown");
+		task.eclipseFormatFile = new File("formatter.unknown");
 		task.format();
 	}
 
@@ -99,6 +96,22 @@ public class FormatPluginTest {
 		task.files = project.files(sourceFile);
 		task.format();
 		assertFileContent(sourceFile, "JavaCodeFormattedDefaultSettings.test");
+	}
+
+	@Test
+	public void checkPasses() throws Exception {
+		File sourceFile = getTestFile("JavaCodeFormattedDefaultSettings.test");
+		task.files = project.files(sourceFile);
+		task.justCheck = true;
+		task.format();
+	}
+
+	@Test(expected = GradleException.class)
+	public void checkFails() throws Exception {
+		File sourceFile = getTestFile("JavaCodeUnformatted.test");
+		task.files = project.files(sourceFile);
+		task.justCheck = true;
+		task.format();
 	}
 
 	@Test
@@ -114,7 +127,7 @@ public class FormatPluginTest {
 	public void sortImportsReadingEclipseFile() throws Exception {
 		File sourceFile = getTestFile("JavaCodeUnsortedImports.test");
 		task.files = project.files(sourceFile);
-		task.importsOrderConfigurationFile = getTestFile("import.properties");
+		task.importsOrderFile = getTestFile("import.properties");
 		task.format();
 		assertFileContent(sourceFile, "JavaCodeSortedImports.test");
 	}

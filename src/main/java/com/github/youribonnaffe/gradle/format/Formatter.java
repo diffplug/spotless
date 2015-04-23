@@ -6,24 +6,30 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
+import org.gradle.api.logging.Logger;
+import org.gradle.api.logging.Logging;
+
 /** Formatter which performs the full formatting. */
 public class Formatter {
 	private EclipseFormatter formatter;
 	private ImportSorter importSorter;
+	private LineEnding lineEnding;
+	private Logger logger = Logging.getLogger(Formatter.class);
 
-	public Formatter(EclipseFormatter formatter, ImportSorter importSorter) {
+	public Formatter(EclipseFormatter formatter, ImportSorter importSorter, LineEnding lineEnding) {
 		this.formatter = formatter;
 		this.importSorter = importSorter;
+		this.lineEnding = lineEnding;
 	}
 
-	/** Reads the file into a string. */
-	private String readRaw(File file) throws IOException {
-		return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+	/** Reads the file into a string, canonicalized to \n. */
+	private String readAsUnix(File file) throws IOException {
+		return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8).replace("\r", "");
 	}
 
 	/** Returns true iff the given file's formatting is up-to-date. */
 	public boolean checkFormat(File file) throws IOException {
-		String raw = readRaw(file);
+		String raw = readAsUnix(file);
 
 		// check the imports
 		String importOrder = importSorter.sortImports(raw);
@@ -37,7 +43,7 @@ public class Formatter {
 				return false;
 			}
 		} catch (Exception e) {
-			System.err.println("Unable to check foramt " + file + ": " + e.getMessage());
+			logger.warn("Unable to check format " + file + ": " + e.getMessage());
 		}
 
 		// it passed all the tests, so we're good!
@@ -46,7 +52,7 @@ public class Formatter {
 
 	/** Applies formatting to the given file. */
 	public void applyFormat(File file) throws IOException {
-		String raw = readRaw(file);
+		String raw = readAsUnix(file);
 
 		// check the imports
 		String importsFixed = importSorter.sortImports(raw);
@@ -56,7 +62,12 @@ public class Formatter {
 		try {
 			formatted = formatter.format(importsFixed);
 		} catch (Exception e) {
-			System.err.println("Unable to format " + file + ": " + e.getMessage());
+			logger.warn("Unable to format " + file + ": " + e.getMessage());
+		}
+
+		// convert the line endings
+		if (!lineEnding.string.equals("\n")) {
+			formatted = formatted.replace("\n", lineEnding.string);
 		}
 
 		// write out the file

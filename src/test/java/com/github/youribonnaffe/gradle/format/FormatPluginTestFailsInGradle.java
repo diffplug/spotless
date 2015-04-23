@@ -31,20 +31,17 @@ public class FormatPluginTestFailsInGradle {
 	@Before
 	public void createProject() {
 		project = ProjectBuilder.builder().build();
-		new FormatPlugin().apply(project);
-
-		task = (FormatTask) project.getTasks().getByName("format");
+		task = (FormatTask) project.getTasks().create("underTest", FormatTask.class);
 	}
 
 	@Test
 	public void formatTaskIsCreated() {
-		assertTrue(project.getTasks().getByName("format") instanceof FormatTask);
+		assertTrue(project.getTasks().getByName("underTest") instanceof FormatTask);
 	}
 
 	private String getTestResource(String filename) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		InputStream inputStream = getClass().getResourceAsStream("/" + filename);
-		System.out.println("filename=" + filename + " inputstream=" + inputStream);
 		byte[] buffer = new byte[1024];
 		int length = 0;
 		while ((length = inputStream.read(buffer)) != -1) {
@@ -70,7 +67,7 @@ public class FormatPluginTestFailsInGradle {
 	public void sortImportsAndFormatCode() throws Exception {
 		File sourceFile = getTestFile("JavaUnsortedImportsAndCodeUnformatted.test");
 		task.importsOrder = Arrays.asList("java", "javax", "org", "\\#com");
-		task.configurationFile = getTestFile("formatter.properties");
+		task.eclipseFormatFile = getTestFile("formatter.properties");
 		task.files = project.files(sourceFile);
 
 		task.format();
@@ -81,7 +78,7 @@ public class FormatPluginTestFailsInGradle {
 	@Test
 	public void formatJava8code() throws Exception {
 		File sourceFile = getTestFile("Java8CodeUnformatted.test");
-		task.configurationFile = getTestFile("formatter.properties");
+		task.eclipseFormatFile = getTestFile("formatter.properties");
 		task.files = project.files(sourceFile);
 
 		task.format();

@@ -1,5 +1,7 @@
 package com.github.youribonnaffe.gradle.format;
 
+import com.google.common.collect.Maps;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,8 +13,6 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.testng.collections.Lists;
-
-import com.google.common.collect.Maps;
 
 /**
  * From https://github.com/krasa/EclipseCodeFormatter
@@ -104,6 +104,9 @@ public class ImportSorter {
 			}
 		}
 		scanner.close();
+		if (!document.endsWith("\n")) {
+			sb.setLength(sb.length() - 1);
+		}
 		return sb.toString();
 	}
 
