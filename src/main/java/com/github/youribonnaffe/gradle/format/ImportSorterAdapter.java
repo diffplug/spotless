@@ -1,4 +1,19 @@
-package com.github.youribonnaffe.gradle.format
+package com.github.youribonnaffe.gradle.format;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
+
+import org.testng.collections.Lists;
+
+import com.google.common.collect.Maps;
+
 /**
  * From https://github.com/krasa/EclipseCodeFormatter
  *
@@ -14,17 +29,24 @@ public class ImportSorterAdapter {
         this.importsOrder = new ArrayList<String>(importsOrder);
     }
 
-    public ImportSorterAdapter(InputStream importsOrderAsConfigurationFile) {
-        this.importsOrder = importsOrderAsConfigurationFile.readLines().
-                findAll() { !it.startsWith('#') }.
-                collectEntries {
-                    def (idx, packageName) = it.split("=")
-                    [(idx): packageName]
-                }.sort().values() as List<String>
+    public ImportSorterAdapter(File importsFile) throws IOException {
+        Map<Integer, String> orderToImport = Files.readAllLines(importsFile.toPath()).stream()
+            // filter out comments
+            .filter(line -> !line.startsWith("#"))
+            // parse 0=input
+            .map(line -> {
+                String[] pieces = line.split("=");
+                int idx = Integer.parseInt(pieces[0]);
+                String name = pieces[1];
+                return Maps.immutableEntry(idx, name);
+            })
+            // collect into map
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        // sort the entries by the key, save the values
+        importsOrder = Lists.newArrayList(new TreeMap<>(orderToImport).values());
     }
 
     public String sortImports(String document) {
-        println "sorting with $importsOrder"
         // parse file
         Scanner scanner = new Scanner(document);
         int firstImportLine = 0;
@@ -51,12 +73,13 @@ public class ImportSorterAdapter {
                         endIndex != -1 ? endIndex : next.length()));
             }
         }
+        scanner.close();
 
         List<String> sortedImports = ImportsSorter.sort(imports, importsOrder);
         return applyImportsToDocument(document, firstImportLine, lastImportLine, sortedImports);
     }
 
-    private static String applyImportsToDocument(final String document, int firstImportLine, int lastImportLine,
+    private String applyImportsToDocument(final String document, int firstImportLine, int lastImportLine,
                                           List<String> strings) {
         Scanner scanner;
         boolean importsAlreadyAppended = false;
@@ -80,15 +103,16 @@ public class ImportSorterAdapter {
                 append(sb, next);
             }
         }
+        scanner.close();
         return sb.toString();
     }
 
-    private static void append(StringBuilder sb, String next) {
+    private void append(StringBuilder sb, String next) {
         sb.append(next);
         sb.append(N);
     }
 
-    private static boolean isNotValidImport(int i) {
+    private boolean isNotValidImport(int i) {
         return i <= START_INDEX_OF_IMPORTS_PACKAGE_DECLARATION;
     }
 

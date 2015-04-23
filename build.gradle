@@ -51,7 +51,6 @@ configurations {
 
 dependencies {
     compile gradleApi()
-    compile localGroovy()
 
     // The only dependencies we actually use
     embeddedJars 'p2:org.eclipse.jdt.core:3.11.0.v20150317-0048'
@@ -92,6 +91,13 @@ jar {
     // so we've gotta be sure to filter out the signatures
     exclude 'META-INF/*.RSA'
     exclude 'META-INF/*.SF'
+}
+
+// There are a couple tests which run in Eclipse,
+// and also in "real-life", but fail inexplicably
+// with the gradle test runner.
+test {
+    exclude('**/*FailsInGradle.class')
 }
 
 pluginBundle {
