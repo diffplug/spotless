@@ -1,18 +1,11 @@
 package com.github.youribonnaffe.gradle.format;
 
-import groovy.util.Node;
-import groovy.util.NodeList;
-import groovy.util.XmlParser;
-import groovy.xml.QName;
-
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 import org.gradle.api.DefaultTask;
@@ -65,8 +58,7 @@ public class FormatTask extends DefaultTask {
 	@TaskAction
 	void format() throws Exception {
 		// load the Eclipse Formatter
-		Properties settings = loadEclipseSettings();
-		EclipseFormatter eclipseFormatter = new EclipseFormatter(settings);
+		EclipseFormatter eclipseFormatter = EclipseFormatter.readFrom(eclipseFormatFile);
 		// load the import sorter
 		ImportSorter importSorter = loadImportSorter();
 		// combine them into the master formatter
@@ -116,48 +108,12 @@ public class FormatTask extends DefaultTask {
 
 		// return the sorter
 		if (importsOrder != null) {
-			getLogger().info("Imports order: " + importsOrder);
 			return new ImportSorter(importsOrder);
 		} else if (importsOrderFile != null) {
-			getLogger().info("Imports order file: " + importsOrderFile);
 			return new ImportSorter(importsOrderFile);
 		} else {
 			importsOrder = Arrays.asList("java", "javax", "org");
-			getLogger().info("Imports default order: " + importsOrder);
 			return new ImportSorter(importsOrder);
 		}
-	}
-
-	/** Loads the settings for the Eclipse formatter. */
-	private Properties loadEclipseSettings() throws Exception {
-		if (eclipseFormatFile == null) {
-			getLogger().info("Formatting default configuration");
-			return null;
-		} else if (eclipseFormatFile.getName().endsWith(".properties")) {
-			getLogger().info("Formatting using configuration file $configurationFile");
-			return loadEclipseProperties();
-		} else if (eclipseFormatFile.getName().endsWith(".xml")) {
-			getLogger().info("Formatting using configuration file $configurationFile");
-			return loadEclipseXml();
-		} else {
-			throw new GradleException("Configuration should be .xml or .properties file");
-		}
-	}
-
-	private Properties loadEclipseProperties() throws IOException {
-		Properties settings = new Properties();
-		settings.load(new FileInputStream(eclipseFormatFile));
-		return settings;
-	}
-
-	private Properties loadEclipseXml() throws Exception {
-		Properties settings = new Properties();
-		Node xmlSettings = new XmlParser().parse(eclipseFormatFile);
-		NodeList xmlSettingsElements = xmlSettings.getAt(new QName("profile")).getAt("setting");
-		for (int i = 0; i < xmlSettingsElements.size(); ++i) {
-			Node setting = (Node) xmlSettingsElements.get(i);
-			settings.put(setting.attributes().get("id"), setting.attributes().get("value"));
-		}
-		return settings;
 	}
 }

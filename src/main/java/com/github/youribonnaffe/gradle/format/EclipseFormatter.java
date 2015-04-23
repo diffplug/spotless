@@ -1,5 +1,13 @@
 package com.github.youribonnaffe.gradle.format;
 
+import groovy.util.Node;
+import groovy.util.NodeList;
+import groovy.util.XmlParser;
+import groovy.xml.QName;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Properties;
 
 import org.eclipse.jdt.core.JavaCore;
@@ -13,16 +21,38 @@ import org.eclipse.text.edits.TextEdit;
  * From Hibernate Tools
  */
 public class EclipseFormatter {
+	/** Returns an EclipseFormatter from the given config file. */
+	public static EclipseFormatter readFrom(File file) throws Exception {
+		Properties settings = new Properties();
+		if (file == null) {
+			settings.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_8);
+			settings.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_8);
+			settings.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_8);
+			return new EclipseFormatter(settings);
+		} else if (file.getName().endsWith(".properties")) {
+			try (InputStream input = new FileInputStream(file)) {
+				settings.load(input);
+			}
+			return new EclipseFormatter(settings);
+		} else if (file.getName().endsWith(".xml")) {
+			Node xmlSettings = new XmlParser().parse(file);
+			NodeList xmlSettingsElements = xmlSettings.getAt(new QName("profile")).getAt("setting");
+			for (int i = 0; i < xmlSettingsElements.size(); ++i) {
+				Node setting = (Node) xmlSettingsElements.get(i);
+				settings.put(setting.attributes().get("id"), setting.attributes().get("value"));
+			}
+			return new EclipseFormatter(settings);
+		} else {
+			throw new IllegalArgumentException("Eclipse formatter file must be .properties or .xml");
+		}
+	}
 
 	private CodeFormatter codeFormatter;
 
-	public EclipseFormatter(Properties settings) {
+	private EclipseFormatter(Properties settings) {
 		if (settings == null) {
 			// if no settings run with jdk 5 as default
 			settings = new Properties();
-			settings.put(JavaCore.COMPILER_SOURCE, "1.5");
-			settings.put(JavaCore.COMPILER_COMPLIANCE, "1.5");
-			settings.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, "1.5");
 		}
 		this.codeFormatter = ToolFactory.createCodeFormatter(settings);
 	}
