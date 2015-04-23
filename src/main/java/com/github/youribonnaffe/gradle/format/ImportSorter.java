@@ -3,16 +3,13 @@ package com.github.youribonnaffe.gradle.format;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-
-import org.testng.collections.Lists;
-
-import com.google.common.collect.Maps;
 
 /**
  * From https://github.com/krasa/EclipseCodeFormatter
@@ -38,12 +35,12 @@ public class ImportSorter extends FormatterStep {
 					String[] pieces = line.split("=");
 					int idx = Integer.parseInt(pieces[0]);
 					String name = pieces[1];
-					return Maps.immutableEntry(idx, name);
+					return new AbstractMap.SimpleEntry<Integer, String>(idx, name);
 				} )
 				// collect into map
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 		// sort the entries by the key, save the values
-		importsOrder = Lists.newArrayList(new TreeMap<>(orderToImport).values());
+		importsOrder = new ArrayList<>(new TreeMap<>(orderToImport).values());
 	}
 
 	@Override
@@ -80,7 +77,8 @@ public class ImportSorter extends FormatterStep {
 		return applyImportsToDocument(document, firstImportLine, lastImportLine, sortedImports);
 	}
 
-	private String applyImportsToDocument(final String document, int firstImportLine, int lastImportLine, List<String> strings) {
+	private String applyImportsToDocument(final String document, int firstImportLine, int lastImportLine,
+			List<String> strings) {
 		boolean importsAlreadyAppended = false;
 		Scanner scanner = new Scanner(document);
 		int curentLine = 0;
