@@ -16,6 +16,7 @@ import org.eclipse.jdt.core.formatter.CodeFormatter;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.text.edits.TextEdit;
+import org.gradle.api.GradleException;
 
 /**
  * From Hibernate Tools
@@ -43,7 +44,7 @@ public class EclipseFormatter extends FormatterStep {
 			}
 			return new EclipseFormatter(settings);
 		} else {
-			throw new IllegalArgumentException("Eclipse formatter file must be .properties or .xml");
+			throw new GradleException("Eclipse formatter file must be .properties or .xml");
 		}
 	}
 

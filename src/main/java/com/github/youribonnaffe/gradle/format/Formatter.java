@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.List;
@@ -14,11 +15,13 @@ import org.gradle.api.logging.Logging;
 /** Formatter which performs the full formatting. */
 public class Formatter {
 	private final LineEnding lineEnding;
+	private final Path rootDir;
 	private final List<FormatterStep> steps;
 	private final Logger logger = Logging.getLogger(Formatter.class);
 
-	public Formatter(LineEnding lineEnding, FormatterStep ... steps) {
+	public Formatter(LineEnding lineEnding, Path rootDir, FormatterStep ... steps) {
 		this.lineEnding = lineEnding;
+		this.rootDir = rootDir;
 		this.steps = Arrays.asList(steps);
 	}
 
@@ -28,18 +31,18 @@ public class Formatter {
 	}
 
 	/** Returns true iff the given file's formatting is up-to-date. */
-	public boolean checkFormat(File file) throws IOException {
+	public boolean isClean(File file) throws IOException {
 		String raw = readAsUnix(file);
 
 		// check the format
-		try {
-			for (FormatterStep step : steps) {
-				if (step.isClean(raw)) {
+		for (FormatterStep step : steps) {
+			try {
+				if (!step.isClean(raw)) {
 					return false;
 				}
+			} catch (Exception e) {
+				logger.warn("Unable to check format " + rootDir.relativize(file.toPath()).toString() + ": " + e.getMessage());
 			}
-		} catch (Exception e) {
-			logger.warn("Unable to check format " + file + ": " + e.getMessage());
 		}
 
 		// it passed all the tests, so we're good!
@@ -55,7 +58,7 @@ public class Formatter {
 			try {
 				content = step.format(content);
 			} catch (Exception e) {
-				logger.warn("Unable to apply format " + file + ": " + e.getMessage());
+				logger.warn("Unable to apply format " + rootDir.relativize(file.toPath()).toString() + ": " + e.getMessage());
 			}
 		}
 

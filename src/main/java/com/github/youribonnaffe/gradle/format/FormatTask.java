@@ -28,7 +28,7 @@ public class FormatTask extends DefaultTask {
 	////////////////////
 	/** Header string for the file. */
 	@Input
-	String licenseHeader = "";
+	String licenseHeader;
 	/** Header file to be appended to the file. */
 	@Optional
 	@InputFile
@@ -57,14 +57,15 @@ public class FormatTask extends DefaultTask {
 
 	@TaskAction
 	void format() throws Exception {
-		// load the eclipse formatter
-		EclipseFormatter eclipseFormatter = EclipseFormatter.readFrom(eclipseFormatFile);
-		// load the import sorter
-		ImportSorter importSorter = loadImportSorter();
+		// load the various steps
+		FormatterStep licenseEnforcer = LicenseEnforcer.load(licenseHeader, licenseHeaderFile);
+		FormatterStep eclipseFormatter = EclipseFormatter.readFrom(eclipseFormatFile);
+		FormatterStep importSorter = loadImportSorter();
 		// combine them into the master formatter
-		Formatter formatter = new Formatter(lineEndings, eclipseFormatter, importSorter);
+		Formatter formatter = new Formatter(lineEndings, getProject().getRootDir().toPath(),
+				licenseEnforcer, eclipseFormatter, importSorter);
 
-		// create the formatter
+		// perform the check
 		if (justCheck) {
 			formatCheck(formatter);
 		} else {
@@ -78,7 +79,7 @@ public class FormatTask extends DefaultTask {
 		for (File file : files) {
 			getLogger().info("Checking format on " + file);
 			// keep track of the problem files
-			if (!formatter.checkFormat(file)) {
+			if (!formatter.isClean(file)) {
 				problemFiles.add(file);
 			}
 		}
