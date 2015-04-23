@@ -1,6 +1,5 @@
 package com.github.youribonnaffe.gradle.format;
 
-import com.google.common.collect.Lists;
 import groovy.util.Node;
 import groovy.util.NodeList;
 import groovy.util.XmlParser;
@@ -10,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -82,7 +82,7 @@ public class FormatTask extends DefaultTask {
 
 	/** Checks the format. */
 	private void formatCheck(Formatter formatter) throws IOException {
-		List<File> problemFiles = Lists.newArrayList();
+		List<File> problemFiles = new ArrayList<>();
 		for (File file : files) {
 			getLogger().info("Checking format on " + file);
 			// keep track of the problem files
