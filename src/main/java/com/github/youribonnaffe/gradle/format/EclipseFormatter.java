@@ -22,13 +22,15 @@ import org.gradle.api.GradleException;
  * From Hibernate Tools
  */
 public class EclipseFormatter extends FormatterStep {
+	private static final String JAVA_8 = "1.8";
+
 	/** Returns an EclipseFormatter from the given config file. */
 	public static EclipseFormatter readFrom(File file) throws Exception {
 		Properties settings = new Properties();
 		if (file == null) {
-			settings.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_8);
-			settings.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_8);
-			settings.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_8);
+			settings.put(JavaCore.COMPILER_SOURCE, JAVA_8);
+			settings.put(JavaCore.COMPILER_COMPLIANCE, JAVA_8);
+			settings.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JAVA_8);
 			return new EclipseFormatter(settings);
 		} else if (file.getName().endsWith(".properties")) {
 			try (InputStream input = new FileInputStream(file)) {
