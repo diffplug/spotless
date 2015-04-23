@@ -6,14 +6,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
-
-import com.google.common.base.Joiner;
 
 public class ResourceTest {
 	@Rule
@@ -38,9 +34,10 @@ public class ResourceTest {
 
 	protected void assertFileContent(String expectedFile, File actual) throws IOException {
 		// This line thing is necessary for the tests to pass when Windows git screws up the line-endings
-		List<String> actualLines = Files.readAllLines(actual.toPath(), StandardCharsets.UTF_8);
-		List<String> expectedLines = Arrays.asList(getTestResource(expectedFile).replace("\r", "").split("\n"));
-		Assert.assertEquals(Joiner.on("\n").join(expectedLines), Joiner.on("\n").join(actualLines));
+		String expectedContent = getTestResource(expectedFile).replace("\r", "");
+		String actualContent = new String(Files.readAllBytes(actual.toPath()), StandardCharsets.UTF_8).replace("\r",
+				"");
+		Assert.assertEquals(expectedContent, actualContent);
 	}
 
 	protected void assertContent(String key, String actualContent) throws IOException {
