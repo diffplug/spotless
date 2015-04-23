@@ -57,12 +57,12 @@ public class FormatTask extends DefaultTask {
 
 	@TaskAction
 	void format() throws Exception {
-		// load the Eclipse Formatter
+		// load the eclipse formatter
 		EclipseFormatter eclipseFormatter = EclipseFormatter.readFrom(eclipseFormatFile);
 		// load the import sorter
 		ImportSorter importSorter = loadImportSorter();
 		// combine them into the master formatter
-		Formatter formatter = new Formatter(eclipseFormatter, importSorter, lineEndings);
+		Formatter formatter = new Formatter(lineEndings, eclipseFormatter, importSorter);
 
 		// create the formatter
 		if (justCheck) {

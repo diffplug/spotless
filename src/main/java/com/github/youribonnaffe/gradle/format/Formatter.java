@@ -5,21 +5,21 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
+import java.util.List;
 
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
 
 /** Formatter which performs the full formatting. */
 public class Formatter {
-	private EclipseFormatter formatter;
-	private ImportSorter importSorter;
-	private LineEnding lineEnding;
-	private Logger logger = Logging.getLogger(Formatter.class);
+	private final LineEnding lineEnding;
+	private final List<FormatterStep> steps;
+	private final Logger logger = Logging.getLogger(Formatter.class);
 
-	public Formatter(EclipseFormatter formatter, ImportSorter importSorter, LineEnding lineEnding) {
-		this.formatter = formatter;
-		this.importSorter = importSorter;
+	public Formatter(LineEnding lineEnding, FormatterStep ... steps) {
 		this.lineEnding = lineEnding;
+		this.steps = Arrays.asList(steps);
 	}
 
 	/** Reads the file into a string, canonicalized to \n. */
@@ -31,16 +31,12 @@ public class Formatter {
 	public boolean checkFormat(File file) throws IOException {
 		String raw = readAsUnix(file);
 
-		// check the imports
-		String importOrder = importSorter.sortImports(raw);
-		if (!raw.equals(importOrder)) {
-			return false;
-		}
-
-		// check the java format
+		// check the format
 		try {
-			if (formatter.editRequired(raw)) {
-				return false;
+			for (FormatterStep step : steps) {
+				if (step.isClean(raw)) {
+					return false;
+				}
 			}
 		} catch (Exception e) {
 			logger.warn("Unable to check format " + file + ": " + e.getMessage());
@@ -52,25 +48,23 @@ public class Formatter {
 
 	/** Applies formatting to the given file. */
 	public void applyFormat(File file) throws IOException {
-		String raw = readAsUnix(file);
+		String content = readAsUnix(file);
 
-		// check the imports
-		String importsFixed = importSorter.sortImports(raw);
-
-		// check the java format
-		String formatted = importsFixed;
-		try {
-			formatted = formatter.format(importsFixed);
-		} catch (Exception e) {
-			logger.warn("Unable to format " + file + ": " + e.getMessage());
+		// enforce the format
+		for (FormatterStep step : steps) {
+			try {
+				content = step.format(content);
+			} catch (Exception e) {
+				logger.warn("Unable to apply format " + file + ": " + e.getMessage());
+			}
 		}
 
 		// convert the line endings
 		if (!lineEnding.string.equals("\n")) {
-			formatted = formatted.replace("\n", lineEnding.string);
+			content = content.replace("\n", lineEnding.string);
 		}
 
 		// write out the file
-		Files.write(file.toPath(), formatted.getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING);
+		Files.write(file.toPath(), content.getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING);
 	}
 }

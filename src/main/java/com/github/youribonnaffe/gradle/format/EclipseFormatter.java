@@ -20,7 +20,7 @@ import org.eclipse.text.edits.TextEdit;
 /**
  * From Hibernate Tools
  */
-public class EclipseFormatter {
+public class EclipseFormatter extends FormatterStep {
 	/** Returns an EclipseFormatter from the given config file. */
 	public static EclipseFormatter readFrom(File file) throws Exception {
 		Properties settings = new Properties();
@@ -57,18 +57,13 @@ public class EclipseFormatter {
 		this.codeFormatter = ToolFactory.createCodeFormatter(settings);
 	}
 
-	public boolean editRequired(String content) throws Exception {
-		String formatted = format(content);
-		return !formatted.equals(content);
-	}
-
+	@Override
 	public String format(String content) throws Exception {
 		TextEdit edit = getEditForContent(content);
 		if (edit == null) {
 			throw new IllegalArgumentException("Invalid java syntax for formatting.");
 		} else {
-			IDocument doc = new Document();
-			doc.set(content);
+			IDocument doc = new Document(content);
 			edit.apply(doc);
 			return doc.get();
 		}

@@ -1,7 +1,5 @@
 package com.github.youribonnaffe.gradle.format;
 
-import com.google.common.collect.Maps;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,12 +12,14 @@ import java.util.stream.Collectors;
 
 import org.testng.collections.Lists;
 
+import com.google.common.collect.Maps;
+
 /**
  * From https://github.com/krasa/EclipseCodeFormatter
  *
  * @author Vojtech Krasa
  */
-public class ImportSorter {
+public class ImportSorter extends FormatterStep {
 	public static final int START_INDEX_OF_IMPORTS_PACKAGE_DECLARATION = 7;
 	public static final String N = "\n";
 
@@ -46,7 +46,8 @@ public class ImportSorter {
 		importsOrder = Lists.newArrayList(new TreeMap<>(orderToImport).values());
 	}
 
-	public String sortImports(String document) {
+	@Override
+	public String format(String document) {
 		// parse file
 		Scanner scanner = new Scanner(document);
 		int firstImportLine = 0;
@@ -79,11 +80,9 @@ public class ImportSorter {
 		return applyImportsToDocument(document, firstImportLine, lastImportLine, sortedImports);
 	}
 
-	private String applyImportsToDocument(final String document, int firstImportLine, int lastImportLine,
-			List<String> strings) {
-		Scanner scanner;
+	private String applyImportsToDocument(final String document, int firstImportLine, int lastImportLine, List<String> strings) {
 		boolean importsAlreadyAppended = false;
-		scanner = new Scanner(document);
+		Scanner scanner = new Scanner(document);
 		int curentLine = 0;
 		final StringBuilder sb = new StringBuilder();
 		while (scanner.hasNext()) {
@@ -118,5 +117,4 @@ public class ImportSorter {
 	private boolean isNotValidImport(int i) {
 		return i <= START_INDEX_OF_IMPORTS_PACKAGE_DECLARATION;
 	}
-
 }
