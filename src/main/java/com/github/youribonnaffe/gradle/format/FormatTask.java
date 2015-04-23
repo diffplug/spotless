@@ -8,9 +8,7 @@ import groovy.xml.QName;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -36,35 +34,46 @@ public class FormatTask extends DefaultTask {
 	public File configurationFile;
 	public List<String> importsOrder;
 	public File importsOrderConfigurationFile;
+	public EclipseFormatter.LineEnding lineEndings = EclipseFormatter.LineEnding.PLATFORM_NATIVE;
 
 	@TaskAction
 	void format() throws Exception {
+		// load the Eclipse Formatter
 		Properties settings = loadSettings();
-		JavaFormatter formatter = new JavaFormatter(settings);
+		EclipseFormatter eclipseFormatter = new EclipseFormatter(settings, lineEndings);
+		// load the import sorter
+		ImportSorter importSorter = loadImportSorter();
 
+		// create the formatter
+		Formatter formatter = new Formatter(eclipseFormatter, importSorter);
 		for (File file : files) {
 			getLogger().info("Formatting " + file);
-			formatter.formatFile(file);
-		}
-
-		ImportSorterAdapter importSorter = null;
-		if (importsOrder != null) {
-			importSorter = new ImportSorterAdapter(importsOrder);
-		}
-		if (importsOrderConfigurationFile != null) {
-			importSorter = new ImportSorterAdapter(importsOrderConfigurationFile);
-		}
-		if (importSorter != null) {
-			for (File file : files) {
-				getLogger().info("Ordering imports for " + file);
-				String content = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
-				String sortedImportsText = importSorter.sortImports(content);
-				Files.write(file.toPath(), sortedImportsText.getBytes(StandardCharsets.UTF_8),
-						StandardOpenOption.TRUNCATE_EXISTING);
-			}
+			formatter.applyFormat(file);
 		}
 	}
 
+	/** Loads the ImportSorter. */
+	private ImportSorter loadImportSorter() throws Exception {
+		// if the user provided both, make her pick
+		if (importsOrder != null && importsOrderConfigurationFile != null) {
+			throw new IllegalArgumentException("Can't specify both importsOrder and importsOrderConfigurationFile");
+		}
+
+		// return the sorter
+		if (importsOrder != null) {
+			getLogger().info("Imports order: " + importsOrder);
+			return new ImportSorter(importsOrder);
+		} else if (importsOrderConfigurationFile != null) {
+			getLogger().info("Imports order file: " + importsOrderConfigurationFile);
+			return new ImportSorter(importsOrderConfigurationFile);
+		} else {
+			importsOrder = Arrays.asList("java", "javax", "org");
+			getLogger().info("Imports default order: " + importsOrder);
+			return new ImportSorter(importsOrder);
+		}
+	}
+
+	/** Loads the settings for the Eclipse formatter. */
 	private Properties loadSettings() throws Exception {
 		if (configurationFile == null) {
 			getLogger().info("Formatting default configuration");

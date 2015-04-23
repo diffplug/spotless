@@ -4,7 +4,7 @@ import java.util.*;
 
 // From https://github.com/krasa/EclipseCodeFormatter
 /*not thread safe*/
-class ImportsSorter {
+class ImportSorterImpl {
 
 	private List<String> template = new ArrayList<String>();
 	private Map<String, List<String>> matchingImports = new HashMap<String, List<String>>();
@@ -12,7 +12,7 @@ class ImportsSorter {
 	private Set<String> allImportOrderItems = new HashSet<String>();
 
 	static List<String> sort(List<String> imports, List<String> importsOrder) {
-		ImportsSorter importsSorter = new ImportsSorter(importsOrder);
+		ImportSorterImpl importsSorter = new ImportSorterImpl(importsOrder);
 		return importsSorter.sort(imports);
 	}
 
@@ -25,7 +25,7 @@ class ImportsSorter {
 		return getResult();
 	}
 
-	private ImportsSorter(List<String> importOrder) {
+	private ImportSorterImpl(List<String> importOrder) {
 		List<String> importOrderCopy = new ArrayList<String>(importOrder);
 		normalizeStaticOrderItems(importOrderCopy);
 		putStaticItemIfNotExists(importOrderCopy);
@@ -116,7 +116,7 @@ class ImportsSorter {
 					// no order is specified
 					if (template.size() > 0 && (template.get(template.size() - 1).startsWith("static"))) {
 						// insert N after last static import
-						template.add(ImportSorterAdapter.N);
+						template.add(ImportSorter.N);
 					}
 					template.add(notMatchingItem);
 				} else {
@@ -175,23 +175,23 @@ class ImportsSorter {
 				// replace order item by matching import statements
 				// this is a mess and it is only a luck that it works :-]
 				template.remove(i);
-				if (i != 0 && !template.get(i - 1).equals(ImportSorterAdapter.N)) {
-					template.add(i, ImportSorterAdapter.N);
+				if (i != 0 && !template.get(i - 1).equals(ImportSorter.N)) {
+					template.add(i, ImportSorter.N);
 					i++;
 				}
-				if (i + 1 < template.size() && !template.get(i + 1).equals(ImportSorterAdapter.N)
-						&& !template.get(i).equals(ImportSorterAdapter.N)) {
-					template.add(i, ImportSorterAdapter.N);
+				if (i + 1 < template.size() && !template.get(i + 1).equals(ImportSorter.N)
+						&& !template.get(i).equals(ImportSorter.N)) {
+					template.add(i, ImportSorter.N);
 				}
 				template.addAll(i, matchingItems);
-				if (i != 0 && !template.get(i - 1).equals(ImportSorterAdapter.N)) {
-					template.add(i, ImportSorterAdapter.N);
+				if (i != 0 && !template.get(i - 1).equals(ImportSorter.N)) {
+					template.add(i, ImportSorter.N);
 				}
 
 			}
 		}
 		// if there is \n on the end, remove it
-		if (template.size() > 0 && template.get(template.size() - 1).equals(ImportSorterAdapter.N)) {
+		if (template.size() > 0 && template.get(template.size() - 1).equals(ImportSorter.N)) {
 			template.remove(template.size() - 1);
 		}
 	}
@@ -200,10 +200,10 @@ class ImportsSorter {
 		ArrayList<String> strings = new ArrayList<String>();
 
 		for (String s : template) {
-			if (s.equals(ImportSorterAdapter.N)) {
+			if (s.equals(ImportSorter.N)) {
 				strings.add(s);
 			} else {
-				strings.add("import " + s + ";" + ImportSorterAdapter.N);
+				strings.add("import " + s + ";" + ImportSorter.N);
 			}
 		}
 		return strings;

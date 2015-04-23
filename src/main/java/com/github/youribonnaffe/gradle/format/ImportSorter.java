@@ -19,17 +19,17 @@ import com.google.common.collect.Maps;
  *
  * @author Vojtech Krasa
  */
-public class ImportSorterAdapter {
+public class ImportSorter {
 	public static final int START_INDEX_OF_IMPORTS_PACKAGE_DECLARATION = 7;
 	public static final String N = "\n";
 
 	private List<String> importsOrder;
 
-	public ImportSorterAdapter(List<String> importsOrder) {
+	public ImportSorter(List<String> importsOrder) {
 		this.importsOrder = new ArrayList<String>(importsOrder);
 	}
 
-	public ImportSorterAdapter(File importsFile) throws IOException {
+	public ImportSorter(File importsFile) throws IOException {
 		Map<Integer, String> orderToImport = Files.readAllLines(importsFile.toPath()).stream()
 				// filter out comments
 				.filter(line -> !line.startsWith("#"))
@@ -75,7 +75,7 @@ public class ImportSorterAdapter {
 		}
 		scanner.close();
 
-		List<String> sortedImports = ImportsSorter.sort(imports, importsOrder);
+		List<String> sortedImports = ImportSorterImpl.sort(imports, importsOrder);
 		return applyImportsToDocument(document, firstImportLine, lastImportLine, sortedImports);
 	}
 
