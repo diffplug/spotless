@@ -17,10 +17,22 @@ import java.util.Properties;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.internal.file.UnionFileCollection;
+import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskAction;
 
 public class FormatTask extends DefaultTask {
-    FileCollection files; // = project.sourceSets.main.java + project.sourceSets.test.java
+    public FormatTask() {
+        JavaPluginConvention java = getProject().getConvention().getPlugin(JavaPluginConvention.class);
+        SourceSet main = java.getSourceSets().getByName("main");
+        SourceSet test = java.getSourceSets().getByName("test");
+        if (main != null && test != null) {
+            files = new UnionFileCollection(main.getJava(), test.getJava());
+        }
+    }
+
+    FileCollection files;
     File configurationFile;
     List<String> importsOrder;
     File importsOrderConfigurationFile;
