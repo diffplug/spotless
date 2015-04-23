@@ -10,11 +10,11 @@ buildscript {
         maven {
             url "https://plugins.gradle.org/m2/"
         }
+        mavenLocal()
     }
     dependencies {
         classpath "com.gradle.publish:plugin-publish-plugin:0.9.0"
         classpath "gradle.plugin.com.github.youribonnaffe.gradle.format:gradle-format-plugin:1.3-SNAPSHOT"
-        mavenLocal()
         // update snapshot dependencies on every build
         configurations.all {
             resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
@@ -129,6 +129,9 @@ eclipse {
 }
 // always create fresh projects
 tasks.eclipse.dependsOn(cleanEclipse)
+
+// up by our bootstraps
+apply plugin: 'com.github.youribonnaffe.gradle.format'
 
 // this allows publishToMavenLocal, for testing
 apply plugin: 'maven-publish'

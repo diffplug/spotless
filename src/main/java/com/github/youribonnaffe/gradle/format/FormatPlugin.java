@@ -6,10 +6,10 @@ import org.gradle.api.plugins.JavaPlugin;
 
 public class FormatPlugin implements Plugin<Project> {
 	@Override
-    public void apply(Project project) {
-        if (!project.getPlugins().hasPlugin(JavaPlugin.class)) {
-            project.getPlugins().apply(JavaPlugin.class);
-        }
-        project.getTasks().create("format", FormatTask.class);
-    }
+	public void apply(Project project) {
+		if (!project.getPlugins().hasPlugin(JavaPlugin.class)) {
+			project.getPlugins().apply(JavaPlugin.class);
+		}
+		project.getTasks().create("format", FormatTask.class);
+	}
 }
