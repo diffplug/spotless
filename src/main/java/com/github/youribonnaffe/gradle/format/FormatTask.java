@@ -28,11 +28,11 @@ public class FormatTask extends DefaultTask {
 	////////////////////
 	/** Header string for the file. */
 	@Input
-	String licenseHeader;
+	public String licenseHeader;
 	/** Header file to be appended to the file. */
 	@Optional
 	@InputFile
-	File licenseHeaderFile;
+	public File licenseHeaderFile;
 
 	///////////////////
 	// IMPORTS ORDER //

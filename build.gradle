@@ -1,48 +1,43 @@
 apply plugin: 'groovy'
 apply plugin: 'maven'
-apply plugin: "com.gradle.plugin-publish"
-
-group = 'gradle.plugin.com.github.youribonnaffe.gradle.format'
-version = '1.3-SNAPSHOT'
 
 buildscript {
-    repositories {
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-        mavenLocal()
-    }
-    dependencies {
-        classpath "com.gradle.publish:plugin-publish-plugin:0.9.0"
-        classpath "gradle.plugin.com.github.youribonnaffe.gradle.format:gradle-format-plugin:1.3-SNAPSHOT"
-        // update snapshot dependencies on every build
-        configurations.all {
-            resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-        }
-    }
+	repositories {
+		jcenter()
+		mavenLocal()
+	}
+	dependencies {
+		// uploads artifacts to jcenter
+		classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:${VER_BINTRAY}"
+
+		// update snapshot dependencies on every build
+		configurations.all {
+			resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+		}
+	}
 }
 
 repositories {
-    mavenCentral()
-    ivy {
-        // Eclipse 4.5 M6 has lots of formatter improvements
-        // Future versions can be found here: http://download.eclipse.org/eclipse/downloads/index.html
-        url "http://download.eclipse.org/eclipse/updates/4.5milestones/S-4.5M6-201503200800/"
-        layout "pattern", {
-            artifact "plugins/[artifact]_[revision].[ext]"
-        }
+	mavenCentral()
+	ivy {
+		// Eclipse 4.5 M6 has lots of formatter improvements
+		// Future versions can be found here: http://download.eclipse.org/eclipse/downloads/index.html
+		url "http://download.eclipse.org/eclipse/updates/4.5milestones/S-4.5M6-201503200800/"
+		layout "pattern", {
+			artifact "plugins/[artifact]_[revision].[ext]"
+		}
 
-        // There isn't a reliable way to get eclipse artifacts except through p2 repositories,
-        // which gradle does not yet support.  For now we're forcing it with ivy.
-        // https://discuss.gradle.org/t/is-it-possible-to-configure-a-p2-repository/6812/6
+		// There isn't a reliable way to get eclipse artifacts except through p2 repositories,
+		// which gradle does not yet support.  For now we're forcing it with ivy.
+		// https://discuss.gradle.org/t/is-it-possible-to-configure-a-p2-repository/6812/6
 
-        // You might think this is crappy, and try to find some kind of maven upload.
-        // You'll find a couple random artifacts, but they're all a trap.  Mismatching
-        // versions and missing deps.
-        //
-        // The sweetest of the honeypots is https://repo.eclipse.org/content/groups/eclipse/
-        // Please heed my warning fellow traveler: it is a trap!
-    }
+		// You might think this is crappy, and try to find some kind of maven upload.
+		// You'll find a couple random artifacts, but they're all a trap.  Mismatching
+		// versions and missing deps.
+		//
+		// The sweetest of the honeypots is https://repo.eclipse.org/content/groups/eclipse/
+		// Please heed my warning fellow traveler: it is a trap!
+	}
 }
 
 // None of these eclipse jars are in the public repositories.  This means
@@ -52,93 +47,145 @@ repositories {
 // To fix this, we embed the content of these eclispe jars into ourselves, as a "fat jar".
 // As of now (v1.3), the jar is 8MB, which isn't awful.
 configurations {
-    embeddedJars
+	embeddedJars
 }
 
 dependencies {
-    compile gradleApi()
+	compile gradleApi()
 
-    // The only dependencies we actually use
-    embeddedJars 'p2:org.eclipse.jdt.core:3.11.0.v20150317-0048'
-    embeddedJars 'p2:org.eclipse.text:3.5.400.v20140915-2351'
+	// The only dependencies we actually use
+	embeddedJars 'p2:org.eclipse.jdt.core:3.11.0.v20150317-0048'
+	embeddedJars 'p2:org.eclipse.text:3.5.400.v20140915-2351'
 
-    // Because gradle can't consume p2, we have to resolve the transitive dependencies - and their versions - by hand.
-    // The transitive dependencies are extremely unlikely to change, but we're probably going to want to upgrade to newer versions of Eclipse.
-    // Here's how:
-    // - Download http://download.eclipse.org/eclipse/updates/4.5milestones/S-4.5M6-201503200800/artifacts.jar
-    // - Unzip this file, and you'll have artifacts.xml
-    // - Grep through the file for the plugin id, and copy the version below
-    embeddedJars 'p2:org.eclipse.core.contenttype:3.4.200.v20150316-1243'
-    embeddedJars 'p2:org.eclipse.core.jobs:3.7.0.v20150316-1238'
-    embeddedJars 'p2:org.eclipse.core.runtime:3.11.0.v20150316-1241'
-    embeddedJars 'p2:org.eclipse.core.resources:3.9.100.v20150313-1707'
-    embeddedJars 'p2:org.eclipse.equinox.common:3.7.0.v20150318-1503'
-    embeddedJars 'p2:org.eclipse.equinox.preferences:3.5.300.v20150313-2125'
-    embeddedJars 'p2:org.eclipse.osgi:3.10.100.v20150318-0312'
+	// Because gradle can't consume p2, we have to resolve the transitive dependencies - and their versions - by hand.
+	// The transitive dependencies are extremely unlikely to change, but we're probably going to want to upgrade to newer versions of Eclipse.
+	// Here's how:
+	// - Download http://download.eclipse.org/eclipse/updates/4.5milestones/S-4.5M6-201503200800/artifacts.jar
+	// - Unzip this file, and you'll have artifacts.xml
+	// - Grep through the file for the plugin id, and copy the version below
+	embeddedJars 'p2:org.eclipse.core.contenttype:3.4.200.v20150316-1243'
+	embeddedJars 'p2:org.eclipse.core.jobs:3.7.0.v20150316-1238'
+	embeddedJars 'p2:org.eclipse.core.runtime:3.11.0.v20150316-1241'
+	embeddedJars 'p2:org.eclipse.core.resources:3.9.100.v20150313-1707'
+	embeddedJars 'p2:org.eclipse.equinox.common:3.7.0.v20150318-1503'
+	embeddedJars 'p2:org.eclipse.equinox.preferences:3.5.300.v20150313-2125'
+	embeddedJars 'p2:org.eclipse.osgi:3.10.100.v20150318-0312'
 
-    configurations.compile.extendsFrom(configurations.embeddedJars)
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-artifacts {
-    archives sourcesJar
+	configurations.compile.extendsFrom(configurations.embeddedJars)
 }
 
 jar {
-    // this embeds the eclipse jars into our "fat jar"
-    from {
-        configurations.embeddedJars.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-    // the eclipse jars are signed, and our fat jar breaks the signatures
-    // so we've gotta be sure to filter out the signatures
-    exclude 'META-INF/*.RSA'
-    exclude 'META-INF/*.SF'
+	// this embeds the eclipse jars into our "fat jar"
+	from {
+		configurations.embeddedJars.collect { it.isDirectory() ? it : zipTree(it) }
+	}
+	// the eclipse jars are signed, and our fat jar breaks the signatures
+	// so we've gotta be sure to filter out the signatures
+	exclude 'META-INF/*.RSA'
+	exclude 'META-INF/*.SF'
 }
 
 // There are a couple tests which run in Eclipse,
 // and also in "real-life", but fail inexplicably
 // with the gradle test runner.
 test {
-    exclude('**/*FailsInGradle.class')
-}
-
-pluginBundle {
-    website = 'https://github.com/youribonnaffe/gradle-format-plugin'
-    vcsUrl = 'https://github.com/youribonnaffe/gradle-format-plugin'
-    description = 'Format Java source code and sort imports using Eclipse formatter'
-    tags = ['java', 'format', 'imports', 'eclipse']
-
-    plugins {
-        formatPlugin {
-            id = 'com.github.youribonnaffe.gradle.format'
-            displayName = 'Gradle Format plugin'
-        }
-    }
+	exclude('**/*FailsInGradle.class')
 }
 
 apply plugin: 'eclipse'
 eclipse {
-    classpath {
-        downloadSources true
-        downloadJavadoc true
-    }
+	classpath {
+		downloadSources true
+		downloadJavadoc true
+	}
 }
 // always create fresh projects
 tasks.eclipse.dependsOn(cleanEclipse)
 
 // up by our bootstraps
-apply plugin: 'com.github.youribonnaffe.gradle.format'
+//apply plugin: 'com.diffplug.gradle.spotless'
 
-// this allows publishToMavenLocal, for testing
+///////////
+// MAVEN //
+///////////
 apply plugin: 'maven-publish'
+
+task sourcesJar(type: Jar) {
+	classifier = 'sources'
+	from sourceSets.main.allJava
+}
+
+// Where it's possible to name parameters and methods clearly enough
+// that javadoc is not necessary, why make the code bigger?
+//
+// Thus, no javadoc warnings.
+javadoc {
+	options.addStringOption('Xdoclint:none', '-quiet')
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+	classifier = 'javadoc'
+	from javadoc.destinationDir
+}
+
 publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact(jar)
-        }
-    }
+	publications {
+		mavenJava(MavenPublication) {
+			artifact jar
+			artifact sourcesJar
+			artifact javadocJar
+		}
+	}
+	if (project.hasProperty('dp_maven')) {
+		repositories {
+			maven {
+				if (project.version.endsWith('-SNAPSHOT')) {
+					url "${dp_maven}/libs-snapshot-local"
+				} else {
+					url "${dp_maven}/libs-release-local"
+				}
+
+				credentials {
+					username "${dp_maven_user}"
+					password "${dp_maven_pass}"
+				}
+			}
+		}
+	}
+}
+
+/////////////
+// BINTRAY //
+/////////////
+if (project.hasProperty('dp_bintray_user')) {
+	apply plugin: 'com.jfrog.bintray'
+	bintray {
+		user = dp_bintray_user
+		key = dp_bintray_key
+
+		publish=false
+		publications = ['mavenJava']
+		pkg {
+			repo = 'opensource'
+			name = project.name
+			userOrg = project.org
+			desc = project.description
+			websiteUrl = "https://github.com/${org}/${name}"
+			issueTrackerUrl = "https://github.com/${org}/${name}/issues"
+			vcsUrl = "https://github.com/${org}/${name}"
+			licenses = ['Apache-2.0']
+			publicDownloadNumbers = true
+			// Optional version descriptor
+			version {
+				name = project.version
+				if (project.version.endsWith('SNAPSHOT')) {
+					vcsTag = 'develop'
+				} else {
+					vcsTag = 'release/' + project.version
+				}
+			}
+		}
+	}
+	// surprisingly, this actually needs to be here
+	bintrayUpload.dependsOn(publish)
 }

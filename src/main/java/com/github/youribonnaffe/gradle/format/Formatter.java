@@ -19,7 +19,7 @@ public class Formatter {
 	private final List<FormatterStep> steps;
 	private final Logger logger = Logging.getLogger(Formatter.class);
 
-	public Formatter(LineEnding lineEnding, Path rootDir, FormatterStep ... steps) {
+	public Formatter(LineEnding lineEnding, Path rootDir, FormatterStep... steps) {
 		this.lineEnding = lineEnding;
 		this.rootDir = rootDir;
 		this.steps = Arrays.asList(steps);

@@ -10,7 +10,7 @@ public class LicenseEnforcerTest extends ResourceTest {
 		Assert.assertTrue(enforcer.isClean("asklgbslkbd"));
 	}
 
-	private static final String KEY_LICENSE= "TestLicense";
+	private static final String KEY_LICENSE = "TestLicense";
 	private static final String KEY_FILE_NOTAPPLIED = "Java8CodeFormatted.test";
 	private static final String KEY_FILE_APPLIED = "JavaCodeFormattedWithLicense.test";
 
