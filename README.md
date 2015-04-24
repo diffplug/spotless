@@ -1,69 +1,87 @@
-# Gradle Format plugin #
+# Spotless: Make your Java spotless with Gradle
 
-The Gradle Format plugin enables you to format your Java sources. It operates in place and can be used for instance
-before pushing changes to enforce a coding style. The formatting can be customized using a properties or XML file with
-the keys defined in [DefaultCodeFormatterConstants](http://help.eclipse.org/indigo/index.jsp?topic=%2Forg.eclipse.jdt.doc.isv%2Freference%2Fapi%2Forg%2Feclipse%2Fjdt%2Fcore%2Fformatter%2FDefaultCodeFormatterConstants.html)
- from Eclipse. See src/test/resources/ for examples.
- Eventually you should be able to export Eclipse settings to this file.
+[![Release](http://img.shields.io/badge/master-1.0-lightgrey.svg)](https://github.com/diffplug/spotless/releases/latest)
+[![Build Status](https://travis-ci.org/diffplug/durian.svg?branch=master)](https://travis-ci.org/diffplug/spotless)
+[![Snapshot](http://img.shields.io/badge/develop-1.1--SNAPSHOT-lightgrey.svg)](https://github.com/diffplug/spotless/tree/develop)
+[![Build Status](https://travis-ci.org/diffplug/durian.svg?branch=develop)](https://travis-ci.org/diffplug/spotless)
+[![License](https://img.shields.io/badge/license-Apache-blue.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
 
-The plugin also enables you to sort imports.
+Spotless can check and apply formatting, including:
+* license headers
+* import ordering (using Eclipse's import ordering)
+* formatting style (using Eclipse's code formatter)
 
-## Usage
+To add Spotless to your project, you can create your formatting style and export it from the Eclipse gui.
 
-To use the Format plugin, include in your build script:
+To work with a project that already uses Spotless, you can import the formatting style into your Eclipse.
 
-    apply plugin: 'com.github.youribonnaffe.gradle.format'
+Even if you don't use Eclipse, Spotless makes it painless to find and correct formatting errors:
 
-Note that the Java plugin will be applied too.
+```
+cmd> gradlew build
+   ...
+:formatCheckTest FAILED
+> Format violations were found. Run formatApply to fix them.
+    src\test\java\com\github\youribonnaffe\gradle\format\ResourceTest.java
 
-To run it:
+cmd> gradlew formatApply
+:formatApply
+BUILD SUCCESSFUL
 
-    gradle format
+cmd> gradlew build
+BUILD SUCCESSFUL
+```
 
-The plugin JAR needs to be accessible in the classpath of your build script. It is directly available on
-[Gradle plugins](https://plugins.gradle.org/).
-Alternatively, you can download it from GitHub and deploy it to your local repository. The following code snippet shows an
-example on how to get it and use it:
+## Adding spotless to your build
 
-    buildscript {
-      repositories {
-        maven {
-          url "https://plugins.gradle.org/m2/"
-        }
-      }
-      dependencies {
-        classpath "gradle.plugin.com.github.youribonnaffe.gradle.format:gradle-format-plugin:1.2"
-      }
-    }
-    
-    apply plugin: "com.github.youribonnaffe.gradle.format"
+To add spotless to your build:
 
-## Tasks
+```groovy
+buildscript {
+	repositories {
+		jcenter()
+	}
+	dependencies {
+		classpath 'com.diffplug.gradle.spotless:spotless:1.0'
+	}
+}
 
-The Format plugin defines the following tasks:
+apply plugin: 'com.diffplug.gradle.spotless'
+```
 
-* `format`: Format Java source code
+Spotless doesn't require any configuration - it uses all of Eclipse's default settings out of the box.  They can be easily overwritten as shown:
 
-## Properties
+```groovy
+spotless {
+	// If you don't specify a license, then spotless will leave everything above the package statement alone
+	licenseHeader = '/** Licensed under Apache-2.0 */'	// License header
+	licenseHeaderFile = file('spotless_header.java')	// License header file
+	// Obviously, you can't specify both licenseHeader and licenseHeaderFile at the same time
 
-The Format task defines the following properties:
+	importsOrder = ['java', 'javax', 'org']			// This is the default order, but you can change it if you'd like
+	importsOrderFile = file('spotless.importorder')	// An import ordering file, exported from Eclipse
+	// As before, you can't specify both importsOrder and importsOrderFile at the same time
 
-* `configurationFile`: The formatter configuration (File)
-* `importsOrder`: The import orders (List of strings)
-* `importsOrderConfigurationFile`: The import orders (a file using Eclipse format)
-* `files`: The files to format (FileCollection), defaults are Java sources from main and test SourceSets
+	eclipseFormatFile = file('spotless.xml')	// XML file dumped out by the Eclipse formatter
+	// If you have an older Eclipse properties file, you can use that too.
 
-### Example
+	// If you'd like to specify that files should always have a certain line ending, you can,
+	// but the default value of PLATFORM_NATIVE is highly recommended
+	LineEnding lineEndings = PLATFORM_NATIVE 	// can be WINDOWS, UNIX, or PLATFORM_NATIVE
+}
+```
 
-    format {
-        configurationFile = file('myformatsettings.properties')
-        importsOrder = ["java", "javax", "org", "\\#com.something.StaticImport"]
-        files = sourceSets.main.java
-    }
+## Exporting / importing from Eclipse
+
+There are two files to import / export with Eclipse - the import ordering file and the code formatting file.
+
 ## Acknowledgements
 
-Using [Hibernate Tools](http://hibernate.org/tools/) JavaFormatter
-
-Import ordering from [EclipseCodeFormatter](https://github.com/krasa/EclipseCodeFormatter)
-
-Readme format from https://github.com/bmuschko/gradle-gae-plugin
+* Formatting by Eclipse 4.5 M6
+    + Special thanks to [Mateusz Matela](https://waynebeaton.wordpress.com/2015/03/15/great-fixes-for-mars-winners-part-i/) for huge improvements to the eclipse code formatter!
+* Forked from [gradle-license-plugin](https://github.com/youribonnaffe/gradle-format-plugin) by Youri Bonnaffé.
+* Import ordering from [EclipseCodeFormatter](https://github.com/krasa/EclipseCodeFormatter).
+* Formatted by [spotless](https://github.com/diffplug/spotless).
+* Built by [gradle](http://gradle.org/).
+* Tested by [junit](http://junit.org/).
+* Artifacts hosted by [jcenter](https://bintray.com/bintray/jcenter) and uploaded by [gradle-bintray-plugin](https://github.com/bintray/gradle-bintray-plugin).
