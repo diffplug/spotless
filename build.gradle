@@ -1,15 +1,13 @@
-apply plugin: 'groovy'
-apply plugin: 'maven'
-
 buildscript {
 	repositories {
 		jcenter()
 		mavenLocal()
 	}
 	dependencies {
+		// applies the Eclipse java formatter
+		classpath "com.diffplug.gradle.spotless:spotless:${VER_SPOTLESS}"
 		// uploads artifacts to jcenter
 		classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:${VER_BINTRAY}"
-
 		// update snapshot dependencies on every build
 		configurations.all {
 			resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
@@ -39,6 +37,10 @@ repositories {
 		// Please heed my warning fellow traveler: it is a trap!
 	}
 }
+
+apply plugin: 'java'
+sourceCompatibility = VER_JAVA
+targetCompatibility = VER_JAVA
 
 // None of these eclipse jars are in the public repositories.  This means
 // that when someone downloads this plugin, unless they add the weird
@@ -103,7 +105,19 @@ eclipse {
 tasks.eclipse.dependsOn(cleanEclipse)
 
 // up by our bootstraps
-//apply plugin: 'com.diffplug.gradle.spotless'
+/* Disabled for now because of this error message:
+> Could not resolve all dependencies for configuration ':classpath'.
+   > Module version com.diffplug.gradle.spotless:spotless:1.0-SNAPSHOT,
+   configuration 'classpath' declares a dependency on configuration
+   'default' which is not declared in the module descriptor for
+   com.diffplug.gradle.spotless:spotless:1.0-SNAPSHOT
+apply plugin: 'com.diffplug.gradle.spotless'
+spotless {
+	licenseHeaderFile = file('spotless.license.java')			// License header file
+	importsOrderFile = file('spotless.importorder.properties')	// An import ordering file, exported from Eclipse
+	eclipseFormatFile = file('spotless.eclipseformat.xml')		// XML file dumped out by the Eclipse formatter
+}
+*/
 
 ///////////
 // MAVEN //
