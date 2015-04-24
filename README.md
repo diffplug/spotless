@@ -20,12 +20,12 @@ Even if you don't use Eclipse, Spotless makes it painless to find and correct fo
 ```
 cmd> gradlew build
    ...
-:formatCheckTest FAILED
-> Format violations were found. Run formatApply to fix them.
+:spotlessCheckTest FAILED
+> Format violations were found. Run 'gradlew spotlessApply' to fix them.
     src\test\java\com\github\youribonnaffe\gradle\format\ResourceTest.java
 
-cmd> gradlew formatApply
-:formatApply
+cmd> gradlew spotlessApply
+:spotlessApply
 BUILD SUCCESSFUL
 
 cmd> gradlew build

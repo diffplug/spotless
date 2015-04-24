@@ -85,7 +85,7 @@ public class FormatTask extends DefaultTask {
 		}
 		if (!problemFiles.isEmpty()) {
 			Path rootDir = getProject().getRootDir().toPath();
-			throw new GradleException("Format violations were found. Run formatApply to fix them.\n"
+			throw new GradleException("Format violations were found. Run 'gradlew " + FormatPlugin.TASK_APPLY + "' to fix them.\n"
 					+ problemFiles.stream().map(file -> "    " + rootDir.relativize(file.toPath()).toString())
 							.collect(Collectors.joining("\n")));
 		}
