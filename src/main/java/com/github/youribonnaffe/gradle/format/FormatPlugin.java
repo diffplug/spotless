@@ -17,9 +17,9 @@ public class FormatPlugin implements Plugin<Project> {
 	Project project;
 	FormatExtension extension;
 
-	static final String EXTENSION = "format";
-	static final String TASK_CHECK = "formatCheck";
-	static final String TASK_APPLY = "formatApply";
+	static final String EXTENSION = "spotless";
+	static final String TASK_CHECK = "spotlessCheck";
+	static final String TASK_APPLY = "spotlessApply";
 
 	Task rootCheckTask;
 	Task rootFormatTask;
@@ -55,18 +55,18 @@ public class FormatPlugin implements Plugin<Project> {
 	private void configureSourceSetRule() {
 		JavaPluginConvention java = project.getConvention().getPlugin(JavaPluginConvention.class);
 		java.getSourceSets().forEach(sourceSet -> {
-			logger.info("Adding license tasks for sourceSet " + sourceSet.getName());
+			logger.info("Adding spotless tasks for sourceSet " + sourceSet.getName());
 
 			FormatTask checkTask = project.getTasks().create(sourceSet.getTaskName(TASK_CHECK, null), FormatTask.class);
 			checkTask.justCheck = true;
 			checkTask.files = sourceSet.getJava();
-			checkTask.setDescription("Checking format on " + sourceSet.getName() + " files.");
+			checkTask.setDescription("Checks format on " + sourceSet.getName() + " files.");
 			rootCheckTask.dependsOn(checkTask);
 
 			FormatTask applyTask = project.getTasks().create(sourceSet.getTaskName(TASK_APPLY, null), FormatTask.class);
 			applyTask.justCheck = false;
 			applyTask.files = sourceSet.getJava();
-			applyTask.setDescription("Applying format on " + sourceSet.getName() + " files.");
+			applyTask.setDescription("Applies format on " + sourceSet.getName() + " files.");
 			rootFormatTask.dependsOn(applyTask);
 		} );
 
