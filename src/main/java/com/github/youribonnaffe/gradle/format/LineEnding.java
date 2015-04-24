@@ -9,4 +9,8 @@ public enum LineEnding {
 	private LineEnding(String ending) {
 		this.string = ending;
 	}
+
+	public boolean isWin() {
+		return string.equals("\r\n");
+	}
 }

@@ -25,19 +25,28 @@ public class Formatter {
 		this.steps = Arrays.asList(steps);
 	}
 
-	/** Reads the file into a string, canonicalized to \n. */
-	private String readAsUnix(File file) throws IOException {
-		return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8).replace("\r", "");
-	}
-
 	/** Returns true iff the given file's formatting is up-to-date. */
 	public boolean isClean(File file) throws IOException {
-		String raw = readAsUnix(file);
+		String raw = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+		String unix = raw.replaceAll("\r", "");
+
+		// check the newlines
+		int totalNewLines = (int) unix.codePoints().filter(val -> val == '\n').count();
+		int windowsNewLines = raw.length() - unix.length();
+		if (lineEnding.isWin()) {
+			if (windowsNewLines != totalNewLines) {
+				return false;
+			}
+		} else {
+			if (windowsNewLines != 0) {
+				return false;
+			}
+		}
 
 		// check the format
 		for (FormatterStep step : steps) {
 			try {
-				if (!step.isClean(raw)) {
+				if (!step.isClean(unix)) {
 					return false;
 				}
 			} catch (Exception e) {
@@ -51,12 +60,13 @@ public class Formatter {
 
 	/** Applies formatting to the given file. */
 	public void applyFormat(File file) throws IOException {
-		String content = readAsUnix(file);
+		String raw = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+		String unix = raw.replaceAll("\r", "");
 
 		// enforce the format
 		for (FormatterStep step : steps) {
 			try {
-				content = step.format(content);
+				unix = step.format(unix);
 			} catch (Exception e) {
 				logger.warn("Unable to apply format " + rootDir.relativize(file.toPath()).toString() + ": " + e.getMessage());
 			}
@@ -64,10 +74,10 @@ public class Formatter {
 
 		// convert the line endings
 		if (!lineEnding.string.equals("\n")) {
-			content = content.replace("\n", lineEnding.string);
+			unix = unix.replace("\n", lineEnding.string);
 		}
 
 		// write out the file
-		Files.write(file.toPath(), content.getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING);
+		Files.write(file.toPath(), unix.getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING);
 	}
 }
