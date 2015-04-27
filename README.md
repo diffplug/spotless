@@ -6,6 +6,8 @@
 [![Build Status](https://travis-ci.org/diffplug/durian.svg?branch=develop)](https://travis-ci.org/diffplug/spotless)
 [![License](https://img.shields.io/badge/license-Apache-blue.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
 
+# PREPPING FOR RELEASE - NOT YET READY FOR USE!
+
 Spotless can check and apply formatting, including:
 * license headers
 * import ordering (using Eclipse's import ordering)
