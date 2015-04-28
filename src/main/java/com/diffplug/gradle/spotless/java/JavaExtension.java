@@ -14,16 +14,16 @@ public class JavaExtension extends SpotlessExtension {
 	String licenseHeader;
 
 	/** Header file to be appended to the file. */
-	File licenseHeaderFile;
+	Object licenseHeaderFile;
 
 	/** The imports ordering. */
 	List<String> importsOrder;
 
 	/** The imports ordering file. */
-	File importsOrderFile;
+	Object importsOrderFile;
 
 	/** Eclipse format file. */
-	File eclipseFormatFile;
+	Object eclipseFormatFile;
 
 	public JavaExtension() {
 		super("java");
@@ -37,19 +37,19 @@ public class JavaExtension extends SpotlessExtension {
 		this.importsOrder = importsOrder;
 	}
 
-	public File getImportsOrderFile() {
+	public Object getImportsOrderFile() {
 		return importsOrderFile;
 	}
 
-	public void setImportsOrderFile(File importsOrderFile) {
+	public void setImportsOrderFile(Object importsOrderFile) {
 		this.importsOrderFile = importsOrderFile;
 	}
 
-	public File getEclipseFormatFile() {
+	public Object getEclipseFormatFile() {
 		return eclipseFormatFile;
 	}
 
-	public void setEclipseFormatFile(File eclipseFormatFile) {
+	public void setEclipseFormatFile(Object eclipseFormatFile) {
 		this.eclipseFormatFile = eclipseFormatFile;
 	}
 
@@ -61,11 +61,11 @@ public class JavaExtension extends SpotlessExtension {
 		this.licenseHeader = licenseHeader;
 	}
 
-	public File getLicenseHeaderFile() {
+	public Object getLicenseHeaderFile() {
 		return licenseHeaderFile;
 	}
 
-	public void setLicenseHeaderFile(File licenseHeaderFile) {
+	public void setLicenseHeaderFile(Object licenseHeaderFile) {
 		this.licenseHeaderFile = licenseHeaderFile;
 	}
 
@@ -75,13 +75,18 @@ public class JavaExtension extends SpotlessExtension {
 
 		// create the Java steps
 		List<FormatterStep> javaSteps = Lists.newArrayList();
-		LicenseHeaderStep.load(licenseHeader, licenseHeaderFile).ifPresent(javaSteps::add);
-		ImportSorterStep.load(importsOrder, importsOrderFile).ifPresent(javaSteps::add);
+		LicenseHeaderStep.load(licenseHeader, resolve(task, licenseHeaderFile)).ifPresent(javaSteps::add);
+		ImportSorterStep.load(importsOrder, resolve(task, importsOrderFile)).ifPresent(javaSteps::add);
 		if (eclipseFormatFile != null) {
-			javaSteps.add(EclipseFormatterStep.load(eclipseFormatFile));
+			javaSteps.add(EclipseFormatterStep.load(resolve(task, eclipseFormatFile)));
 		}
 
 		// prefix them to the previous steps
 		task.steps.addAll(0, javaSteps);
+	}
+
+	/** Resolves the given file object using the current project. */
+	private static File resolve(FormatTask task, Object file) {
+		return file == null ? null : task.getProject().file(file);
 	}
 }
