@@ -1,4 +1,4 @@
-package com.github.youribonnaffe.gradle.format;
+package com.diffplug.gradle.spotless;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,7 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.gradle.api.logging.Logger;
@@ -19,10 +19,10 @@ public class Formatter {
 	private final List<FormatterStep> steps;
 	private final Logger logger = Logging.getLogger(Formatter.class);
 
-	public Formatter(LineEnding lineEnding, Path rootDir, FormatterStep... steps) {
+	public Formatter(LineEnding lineEnding, Path rootDir, List<FormatterStep> steps) {
 		this.lineEnding = lineEnding;
 		this.rootDir = rootDir;
-		this.steps = Arrays.asList(steps);
+		this.steps = new ArrayList<>(steps);
 	}
 
 	/** Returns true iff the given file's formatting is up-to-date. */
@@ -43,19 +43,11 @@ public class Formatter {
 			}
 		}
 
-		// check the format
-		for (FormatterStep step : steps) {
-			try {
-				if (!step.isClean(unix)) {
-					return false;
-				}
-			} catch (Exception e) {
-				logger.warn("Unable to check format " + rootDir.relativize(file.toPath()).toString() + ": " + e.getMessage());
-			}
-		}
+		// check the other formats
+		String formatted = applyAll(unix, file);
 
-		// it passed all the tests, so we're good!
-		return true;
+		// return true iff the formatted string equals the unix one
+		return formatted.equals(unix);
 	}
 
 	/** Applies formatting to the given file. */
@@ -64,20 +56,26 @@ public class Formatter {
 		String unix = raw.replaceAll("\r", "");
 
 		// enforce the format
-		for (FormatterStep step : steps) {
-			try {
-				unix = step.format(unix);
-			} catch (Exception e) {
-				logger.warn("Unable to apply format " + rootDir.relativize(file.toPath()).toString() + ": " + e.getMessage());
-			}
-		}
+		unix = applyAll(unix, file);
 
-		// convert the line endings
+		// convert the line endings if necessary
 		if (!lineEnding.string.equals("\n")) {
 			unix = unix.replace("\n", lineEnding.string);
 		}
 
 		// write out the file
 		Files.write(file.toPath(), unix.getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING);
+	}
+
+	/** Returns the result of calling all of the FormatterSteps. */
+	private String applyAll(String unix, File file) {
+		for (FormatterStep step : steps) {
+			try {
+				unix = step.format(unix);
+			} catch (Exception e) {
+				logger.warn("Unable to apply step " + step.getName() + " to " + rootDir.relativize(file.toPath()) + ": " + e.getMessage());
+			}
+		}
+		return unix;
 	}
 }

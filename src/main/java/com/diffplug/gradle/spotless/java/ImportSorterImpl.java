@@ -1,4 +1,4 @@
-package com.github.youribonnaffe.gradle.format;
+package com.diffplug.gradle.spotless.java;
 
 import java.util.*;
 
@@ -116,7 +116,7 @@ class ImportSorterImpl {
 					// no order is specified
 					if (template.size() > 0 && (template.get(template.size() - 1).startsWith("static"))) {
 						// insert N after last static import
-						template.add(ImportSorter.N);
+						template.add(ImportSorterStep.N);
 					}
 					template.add(notMatchingItem);
 				} else {
@@ -175,23 +175,23 @@ class ImportSorterImpl {
 				// replace order item by matching import statements
 				// this is a mess and it is only a luck that it works :-]
 				template.remove(i);
-				if (i != 0 && !template.get(i - 1).equals(ImportSorter.N)) {
-					template.add(i, ImportSorter.N);
+				if (i != 0 && !template.get(i - 1).equals(ImportSorterStep.N)) {
+					template.add(i, ImportSorterStep.N);
 					i++;
 				}
-				if (i + 1 < template.size() && !template.get(i + 1).equals(ImportSorter.N)
-						&& !template.get(i).equals(ImportSorter.N)) {
-					template.add(i, ImportSorter.N);
+				if (i + 1 < template.size() && !template.get(i + 1).equals(ImportSorterStep.N)
+						&& !template.get(i).equals(ImportSorterStep.N)) {
+					template.add(i, ImportSorterStep.N);
 				}
 				template.addAll(i, matchingItems);
-				if (i != 0 && !template.get(i - 1).equals(ImportSorter.N)) {
-					template.add(i, ImportSorter.N);
+				if (i != 0 && !template.get(i - 1).equals(ImportSorterStep.N)) {
+					template.add(i, ImportSorterStep.N);
 				}
 
 			}
 		}
 		// if there is \n on the end, remove it
-		if (template.size() > 0 && template.get(template.size() - 1).equals(ImportSorter.N)) {
+		if (template.size() > 0 && template.get(template.size() - 1).equals(ImportSorterStep.N)) {
 			template.remove(template.size() - 1);
 		}
 	}
@@ -200,10 +200,10 @@ class ImportSorterImpl {
 		ArrayList<String> strings = new ArrayList<String>();
 
 		for (String s : template) {
-			if (s.equals(ImportSorter.N)) {
+			if (s.equals(ImportSorterStep.N)) {
 				strings.add(s);
 			} else {
-				strings.add("import " + s + ";" + ImportSorter.N);
+				strings.add("import " + s + ";" + ImportSorterStep.N);
 			}
 		}
 		return strings;

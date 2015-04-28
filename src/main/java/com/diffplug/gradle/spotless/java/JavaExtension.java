@@ -1,15 +1,15 @@
-package com.github.youribonnaffe.gradle.format;
+package com.diffplug.gradle.spotless.java;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.List;
 
-import org.gradle.api.tasks.SourceSet;
+import org.testng.collections.Lists;
 
-public class FormatExtension {
-	/** Source sets to perform search on, will default to all sourceSets in the project. */
-	Collection<SourceSet> sourceSets;
+import com.diffplug.gradle.spotless.FormatTask;
+import com.diffplug.gradle.spotless.FormatterStep;
+import com.diffplug.gradle.spotless.SpotlessExtension;
 
+public class JavaExtension extends SpotlessExtension {
 	/** Header string for the file. */
 	String licenseHeader;
 
@@ -25,15 +25,8 @@ public class FormatExtension {
 	/** Eclipse format file. */
 	File eclipseFormatFile;
 
-	/** Line endings (if any). */
-	LineEnding lineEndings = LineEnding.PLATFORM_NATIVE;
-
-	public Collection<SourceSet> getSourceSets() {
-		return sourceSets;
-	}
-
-	public void setSourceSets(Collection<SourceSet> sourceSets) {
-		this.sourceSets = sourceSets;
+	public JavaExtension() {
+		super("java");
 	}
 
 	public List<String> getImportsOrder() {
@@ -60,14 +53,6 @@ public class FormatExtension {
 		this.eclipseFormatFile = eclipseFormatFile;
 	}
 
-	public LineEnding getLineEndings() {
-		return lineEndings;
-	}
-
-	public void setLineEndings(LineEnding lineEndings) {
-		this.lineEndings = lineEndings;
-	}
-
 	public String getLicenseHeader() {
 		return licenseHeader;
 	}
@@ -82,5 +67,21 @@ public class FormatExtension {
 
 	public void setLicenseHeaderFile(File licenseHeaderFile) {
 		this.licenseHeaderFile = licenseHeaderFile;
+	}
+
+	@Override
+	protected void setupTask(FormatTask task) throws Exception {
+		super.setupTask(task);
+
+		// create the Java steps
+		List<FormatterStep> javaSteps = Lists.newArrayList();
+		LicenseHeaderStep.load(licenseHeader, licenseHeaderFile).ifPresent(javaSteps::add);
+		ImportSorterStep.load(importsOrder, importsOrderFile).ifPresent(javaSteps::add);
+		if (eclipseFormatFile != null) {
+			javaSteps.add(EclipseFormatterStep.load(eclipseFormatFile));
+		}
+
+		// prefix them to the previous steps
+		task.steps.addAll(0, javaSteps);
 	}
 }
