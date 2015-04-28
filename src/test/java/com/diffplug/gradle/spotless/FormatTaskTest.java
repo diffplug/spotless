@@ -15,13 +15,13 @@ public class FormatTaskTest extends ResourceTest {
 	private FormatTask task;
 
 	@Before
-	public void createProject() {
+	public void createTask() {
 		project = ProjectBuilder.builder().build();
 		task = (FormatTask) project.getTasks().create("underTest", FormatTask.class);
 	}
 
 	@Test(expected = GradleException.class)
-	public void testCheckLineEndingsFail() throws IOException {
+	public void testLineEndingsCheckFail() throws IOException {
 		task.check = true;
 		task.lineEndings = LineEnding.UNIX;
 		task.toFormat = Collections.singleton(createTestFile("testFile", "\r\n"));
@@ -29,7 +29,7 @@ public class FormatTaskTest extends ResourceTest {
 	}
 
 	@Test
-	public void testCheckLineEndingsPass() throws IOException {
+	public void testLineEndingsCheckPass() throws IOException {
 		task.check = true;
 		task.lineEndings = LineEnding.UNIX;
 		task.toFormat = Collections.singleton(createTestFile("testFile", "\n"));
@@ -37,7 +37,7 @@ public class FormatTaskTest extends ResourceTest {
 	}
 
 	@Test
-	public void testFixLineEndings() throws IOException {
+	public void testLineEndingsApply() throws IOException {
 		File testFile = createTestFile("testFile", "\r\n");
 
 		task.check = false;
@@ -71,7 +71,7 @@ public class FormatTaskTest extends ResourceTest {
 	}
 
 	@Test
-	public void testStepCheckApply() throws IOException {
+	public void testStepApply() throws IOException {
 		File testFile = createTestFile("testFile", "apple");
 		task.toFormat = Collections.singleton(testFile);
 
