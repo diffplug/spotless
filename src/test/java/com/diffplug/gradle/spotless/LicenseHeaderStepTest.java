@@ -1,8 +1,9 @@
-package com.diffplug.gradle.spotless.java;
+package com.diffplug.gradle.spotless;
 
 import org.junit.Test;
 
-import com.diffplug.gradle.spotless.ResourceTest;
+import com.diffplug.gradle.spotless.LicenseHeaderStep;
+import com.diffplug.gradle.spotless.java.JavaExtension;
 
 public class LicenseHeaderStepTest extends ResourceTest {
 	private static final String KEY_LICENSE = "TestLicense";
@@ -11,13 +12,13 @@ public class LicenseHeaderStepTest extends ResourceTest {
 
 	@Test
 	public void fromString() throws Throwable {
-		LicenseHeaderStep step = new LicenseHeaderStep(getTestResource(KEY_LICENSE));
+		LicenseHeaderStep step = new LicenseHeaderStep(getTestResource(KEY_LICENSE), JavaExtension.LICENSE_HEADER_DELIMITER);
 		assertStep(step::format, KEY_FILE_NOTAPPLIED, KEY_FILE_APPLIED);
 	}
 
 	@Test
 	public void fromFile() throws Throwable {
-		LicenseHeaderStep step = new LicenseHeaderStep(createTestFile(KEY_LICENSE));
+		LicenseHeaderStep step = new LicenseHeaderStep(createTestFile(KEY_LICENSE), JavaExtension.LICENSE_HEADER_DELIMITER);
 		assertStep(step::format, KEY_FILE_NOTAPPLIED, KEY_FILE_APPLIED);
 	}
 }

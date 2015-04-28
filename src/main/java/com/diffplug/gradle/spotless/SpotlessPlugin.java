@@ -9,7 +9,7 @@ import org.gradle.api.plugins.JavaBasePlugin;
 
 public class SpotlessPlugin implements Plugin<Project> {
 	Project project;
-	SpotlessRootExtension extension;
+	SpotlessExtension extension;
 
 	static final String EXTENSION = "spotless";
 	static final String CHECK = "Check";
@@ -19,7 +19,7 @@ public class SpotlessPlugin implements Plugin<Project> {
 		this.project = project;
 
 		// setup the extension
-		extension = project.getExtensions().create(EXTENSION, SpotlessRootExtension.class, project);
+		extension = project.getExtensions().create(EXTENSION, SpotlessExtension.class, project);
 		// ExtensionContainer container = ((ExtensionAware) project.getExtensions().getByName(EXTENSION)).getExtensions();
 
 		// after the project has been evaluated, configure the check and format tasks per source set
@@ -36,7 +36,7 @@ public class SpotlessPlugin implements Plugin<Project> {
 		Task rootCheckTask = project.task(EXTENSION + CHECK);
 		Task rootApplyTask = project.task(EXTENSION + APPLY);
 
-		for (Map.Entry<String, CustomExtension> entry : extension.extensions.entrySet()) {
+		for (Map.Entry<String, FormatExtension> entry : extension.formats.entrySet()) {
 			rootCheckTask.dependsOn(createTask(entry.getKey(), entry.getValue(), true));
 			rootApplyTask.dependsOn(createTask(entry.getKey(), entry.getValue(), false));
 		}
@@ -48,7 +48,7 @@ public class SpotlessPlugin implements Plugin<Project> {
 		}
 	}
 
-	private FormatTask createTask(String name, CustomExtension subExtension, boolean check) throws Exception {
+	private FormatTask createTask(String name, FormatExtension subExtension, boolean check) throws Exception {
 		FormatTask task = project.getTasks().create(EXTENSION + capitalize(name) + (check ? CHECK : APPLY), FormatTask.class);
 		task.lineEndings = extension.lineEndings;
 		task.check = check;

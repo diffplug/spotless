@@ -7,35 +7,37 @@ import org.gradle.api.internal.file.UnionFileCollection;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 
-import com.diffplug.gradle.spotless.CustomExtension;
+import com.diffplug.gradle.spotless.FormatExtension;
 import com.diffplug.gradle.spotless.FormatTask;
-import com.diffplug.gradle.spotless.SpotlessRootExtension;
+import com.diffplug.gradle.spotless.SpotlessExtension;
 
-public class JavaExtension extends CustomExtension {
+public class JavaExtension extends FormatExtension {
 	public static final String NAME = "java";
 
-	public JavaExtension(SpotlessRootExtension rootExtension) {
+	public JavaExtension(SpotlessExtension rootExtension) {
 		super(NAME, rootExtension);
 	}
 
+	public static final String LICENSE_HEADER_DELIMITER = "package ";
+
 	public void licenseHeader(String licenseHeader) {
-		stepLazy(LicenseHeaderStep.NAME, () -> new LicenseHeaderStep(licenseHeader)::format);
+		licenseHeader(licenseHeader, LICENSE_HEADER_DELIMITER);
 	}
 
 	public void licenseHeaderFile(Object licenseHeaderFile) {
-		stepLazy(LicenseHeaderStep.NAME, () -> new LicenseHeaderStep(getProject().file(licenseHeaderFile))::format);
+		licenseHeaderFile(licenseHeaderFile, LICENSE_HEADER_DELIMITER);
 	}
 
 	public void importOrder(List<String> importOrder) {
-		stepLazy(ImportSorterStep.NAME, () -> new ImportSorterStep(importOrder)::format);
+		customLazy(ImportSorterStep.NAME, () -> new ImportSorterStep(importOrder)::format);
 	}
 
 	public void importOrderFile(Object importOrderFile) {
-		stepLazy(ImportSorterStep.NAME, () -> new ImportSorterStep(getProject().file(importOrderFile))::format);
+		customLazy(ImportSorterStep.NAME, () -> new ImportSorterStep(getProject().file(importOrderFile))::format);
 	}
 
 	public void eclipseFormatFile(Object eclipseFormatFile) {
-		stepLazy(EclipseFormatterStep.NAME, () -> EclipseFormatterStep.load(getProject().file(eclipseFormatFile))::format);
+		customLazy(EclipseFormatterStep.NAME, () -> EclipseFormatterStep.load(getProject().file(eclipseFormatFile))::format);
 	}
 
 	/** If the user hasn't specified the files yet, we'll assume he/she means all of the java files. */
