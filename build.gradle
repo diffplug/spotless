@@ -16,7 +16,7 @@ buildscript {
 }
 
 repositories {
-	mavenCentral()
+	jcenter()
 	ivy {
 		// Eclipse 4.5 M6 has lots of formatter improvements
 		// Future versions can be found here: http://download.eclipse.org/eclipse/downloads/index.html
@@ -145,9 +145,17 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
-			artifact jar
+			from components.java
 			artifact sourcesJar
 			artifact javadocJar
+			// remove the p2 dependencies because they are embedded
+			pom.withXml {
+				asNode().dependencies.'*'.each() {
+					if (it.groupId.text() == 'p2') {
+						it.parent().remove(it)
+					}
+				}
+			}
 		}
 	}
 	if (project.hasProperty('dp_maven')) {
