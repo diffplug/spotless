@@ -17,9 +17,9 @@ public class IndentStep {
 	public String format(String raw) {
 		// reset the buffer
 		builder.setLength(0);
-		int lineStart = 0;
-		int contentStart = 0;
+		int lineStart = 0; // beginning of line
 		do {
+			int contentStart = lineStart; // beginning of non-whitespace
 			int numSpaces = 0;
 			char c;
 			while (contentStart < raw.length() && isSpaceOrTab(c = raw.charAt(contentStart))) {
@@ -28,6 +28,7 @@ public class IndentStep {
 				case '\t':	numSpaces += tabsToSpaces;	break;
 				default:	throw new IllegalArgumentException("Unexpected char " + c);
 				}
+				++contentStart;
 			}
 
 			// add the leading space in a canonical way
