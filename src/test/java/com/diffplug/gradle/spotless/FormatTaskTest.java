@@ -24,7 +24,7 @@ public class FormatTaskTest extends ResourceTest {
 	public void testLineEndingsCheckFail() throws IOException {
 		task.check = true;
 		task.lineEndings = LineEnding.UNIX;
-		task.toFormat = Collections.singleton(createTestFile("testFile", "\r\n"));
+		task.target = Collections.singleton(createTestFile("testFile", "\r\n"));
 		task.execute();
 	}
 
@@ -32,7 +32,7 @@ public class FormatTaskTest extends ResourceTest {
 	public void testLineEndingsCheckPass() throws IOException {
 		task.check = true;
 		task.lineEndings = LineEnding.UNIX;
-		task.toFormat = Collections.singleton(createTestFile("testFile", "\n"));
+		task.target = Collections.singleton(createTestFile("testFile", "\n"));
 		task.execute();
 	}
 
@@ -42,7 +42,7 @@ public class FormatTaskTest extends ResourceTest {
 
 		task.check = false;
 		task.lineEndings = LineEnding.UNIX;
-		task.toFormat = Collections.singleton(testFile);
+		task.target = Collections.singleton(testFile);
 		task.execute();
 
 		assertFileContent("\n", testFile);
@@ -51,7 +51,7 @@ public class FormatTaskTest extends ResourceTest {
 	@Test(expected = GradleException.class)
 	public void testStepCheckFail() throws IOException {
 		File testFile = createTestFile("testFile", "apple");
-		task.toFormat = Collections.singleton(testFile);
+		task.target = Collections.singleton(testFile);
 
 		task.check = true;
 		task.steps.add(FormatterStep.create("double-p", content -> content.replace("pp", "p")));
@@ -63,7 +63,7 @@ public class FormatTaskTest extends ResourceTest {
 	@Test
 	public void testStepCheckPass() throws IOException {
 		File testFile = createTestFile("testFile", "aple");
-		task.toFormat = Collections.singleton(testFile);
+		task.target = Collections.singleton(testFile);
 
 		task.check = true;
 		task.steps.add(FormatterStep.create("double-p", content -> content.replace("pp", "p")));
@@ -73,7 +73,7 @@ public class FormatTaskTest extends ResourceTest {
 	@Test
 	public void testStepApply() throws IOException {
 		File testFile = createTestFile("testFile", "apple");
-		task.toFormat = Collections.singleton(testFile);
+		task.target = Collections.singleton(testFile);
 
 		task.check = false;
 		task.steps.add(FormatterStep.create("double-p", content -> content.replace("pp", "p")));

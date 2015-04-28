@@ -24,7 +24,7 @@ public class FormatExtension {
 	}
 
 	/** The files that need to be formatted. */
-	protected FileCollection toFormat;
+	protected FileCollection target;
 
 	/**
 	 * FileCollections pass through raw.
@@ -33,21 +33,21 @@ public class FormatExtension {
 	 * Anything else gets passed to getProject().files(). 
 	 */
 	@SuppressWarnings("unchecked")
-	public void toFormat(Object toFormat) {
-		if (toFormat instanceof FileCollection) {
-			this.toFormat = (FileCollection) toFormat;
-		} else if (toFormat instanceof String) {
+	public void target(Object target) {
+		if (target instanceof FileCollection) {
+			this.target = (FileCollection) target;
+		} else if (target instanceof String) {
 			Map<String, Object> args = new HashMap<>();
 			args.put("dir", getProject().getRootDir());
-			args.put("include", (String) toFormat);
-			this.toFormat = getProject().fileTree(args);
-		} else if (toFormat instanceof List && ((List<?>) toFormat).stream().allMatch(e -> e instanceof String)) {
+			args.put("include", (String) target);
+			this.target = getProject().fileTree(args);
+		} else if (target instanceof List && ((List<?>) target).stream().allMatch(e -> e instanceof String)) {
 			Map<String, Object> args = new HashMap<>();
 			args.put("dir", getProject().getRootDir());
-			args.put("includes", (List<String>) toFormat);
-			this.toFormat = getProject().fileTree(args);			
+			args.put("includes", (List<String>) target);
+			this.target = getProject().fileTree(args);			
 		} else {
-			this.toFormat = getProject().files(toFormat);
+			this.target = getProject().files(target);
 		}
 	}
 
@@ -134,7 +134,7 @@ public class FormatExtension {
 
 	/** Sets up a FormatTask according to the values in this extension. */
 	protected void setupTask(FormatTask task) throws Exception {
-		task.toFormat = toFormat;
+		task.target = target;
 		task.steps = steps;
 	}
 

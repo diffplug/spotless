@@ -15,7 +15,7 @@ import org.gradle.api.tasks.TaskAction;
 
 public class FormatTask extends DefaultTask {
 	@InputFiles
-	public Iterable<File> toFormat;
+	public Iterable<File> target;
 	@Input
 	public boolean check = false;
 	@Input
@@ -25,7 +25,7 @@ public class FormatTask extends DefaultTask {
 
 	@TaskAction
 	public void format() throws Exception {
-		if (toFormat == null) {
+		if (target == null) {
 			throw new GradleException("You must specify 'Iterable<File> toFormat'");
 		}
 		// combine them into the master formatter
@@ -42,7 +42,7 @@ public class FormatTask extends DefaultTask {
 	/** Checks the format. */
 	private void formatCheck(Formatter formatter) throws IOException {
 		List<File> problemFiles = new ArrayList<>();
-		for (File file : toFormat) {
+		for (File file : target) {
 			getLogger().info("Checking format on " + file);
 			// keep track of the problem toFormat
 			if (!formatter.isClean(file)) {
@@ -59,7 +59,7 @@ public class FormatTask extends DefaultTask {
 
 	/** Applies the format. */
 	private void formatApply(Formatter formatter) throws IOException {
-		for (File file : toFormat) {
+		for (File file : target) {
 			getLogger().info("Applying format to " + file);
 			// keep track of the problem toFormat
 			formatter.applyFormat(file);

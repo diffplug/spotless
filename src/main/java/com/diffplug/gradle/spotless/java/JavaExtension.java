@@ -43,7 +43,7 @@ public class JavaExtension extends FormatExtension {
 	/** If the user hasn't specified the files yet, we'll assume he/she means all of the java files. */
 	@Override
 	protected void setupTask(FormatTask task) throws Exception {
-		if (toFormat == null) {
+		if (target == null) {
 			JavaPluginConvention javaPlugin = getProject().getConvention().getPlugin(JavaPluginConvention.class);
 			if (javaPlugin == null) {
 				throw new GradleException("Must apply the java plugin before you apply the spotless plugin.");
@@ -52,7 +52,7 @@ public class JavaExtension extends FormatExtension {
 			for (SourceSet sourceSet : javaPlugin.getSourceSets()) {
 				union.add(sourceSet.getJava());
 			}
-			toFormat = union;
+			target = union;
 		}
 		super.setupTask(task);
 	}
