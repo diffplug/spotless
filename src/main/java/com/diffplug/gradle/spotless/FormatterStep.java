@@ -1,5 +1,7 @@
 package com.diffplug.gradle.spotless;
 
+import com.google.common.base.Function;
+
 /**
  * An implementation of this class specifies a single step in a formatting process.
  * 
@@ -17,5 +19,20 @@ public interface FormatterStep {
 	 * @return The formatted content, required to only have unix-style newlines 
 	 * @throws Exception
 	 */
-	String format(String content) throws Exception;
+	String format(String raw) throws Exception;
+
+	/** Creates a FormatterStep from the given function. */
+	public static FormatterStep of(String name, Function<String, String> formatter) {
+		return new FormatterStep() {
+			@Override
+			public String getName() {
+				return name;
+			}
+
+			@Override
+			public String format(String content) throws Exception {
+				return formatter.apply(content);
+			}
+		};
+	}
 }

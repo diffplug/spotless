@@ -39,17 +39,17 @@ public class LicenseHeaderStep implements FormatterStep {
 	}
 
 	@Override
-	public String format(String content) {
-		if (content.startsWith("package ")) {
-			return license + "\n" + content;
+	public String format(String raw) {
+		if (raw.startsWith("package ")) {
+			return license + "\n" + raw;
 		} else {
 			// find the package statement
-			int packageIdx = content.indexOf("\npackage ");
+			int packageIdx = raw.indexOf("\npackage ");
 			if (packageIdx < 0) {
 				throw new IllegalArgumentException("Unable to find 'package'");
 			} else {
 				// return header + body
-				String body = content.substring(packageIdx);
+				String body = raw.substring(packageIdx);
 				return license + body;
 			}
 		}

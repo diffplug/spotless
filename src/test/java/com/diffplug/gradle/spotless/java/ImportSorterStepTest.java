@@ -15,7 +15,7 @@ public class ImportSorterStepTest extends ResourceTest {
 
 	@Test
 	public void sortImportsFromFile() throws Exception {
-		ImportSorterStep step = ImportSorterStep.load(null, getTestFile("import.properties")).get();
+		ImportSorterStep step = ImportSorterStep.load(null, createTestFile("import.properties")).get();
 		assertStep(step, "JavaCodeUnsortedImports.test", "JavaCodeSortedImports.test");
 	}
 }

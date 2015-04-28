@@ -18,12 +18,12 @@ public class LicenseHeaderStepTest extends ResourceTest {
 
 	@Test
 	public void fromFile() throws Exception {
-		LicenseHeaderStep step = LicenseHeaderStep.load(null, getTestFile(KEY_LICENSE)).get();
+		LicenseHeaderStep step = LicenseHeaderStep.load(null, createTestFile(KEY_LICENSE)).get();
 		super.assertStep(step, KEY_FILE_NOTAPPLIED, KEY_FILE_APPLIED);
 	}
 
 	@Test(expected = GradleException.class)
 	public void doubleSpecified() throws Exception {
-		LicenseHeaderStep.load(getTestResource(KEY_LICENSE), getTestFile(KEY_LICENSE));
+		LicenseHeaderStep.load(getTestResource(KEY_LICENSE), createTestFile(KEY_LICENSE));
 	}
 }

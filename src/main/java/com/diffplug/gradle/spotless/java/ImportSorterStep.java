@@ -69,9 +69,9 @@ public class ImportSorterStep implements FormatterStep {
 	}
 
 	@Override
-	public String format(String document) {
+	public String format(String raw) {
 		// parse file
-		Scanner scanner = new Scanner(document);
+		Scanner scanner = new Scanner(raw);
 		int firstImportLine = 0;
 		int lastImportLine = 0;
 		int line = 0;
@@ -99,7 +99,7 @@ public class ImportSorterStep implements FormatterStep {
 		scanner.close();
 
 		List<String> sortedImports = ImportSorterImpl.sort(imports, importsOrder);
-		return applyImportsToDocument(document, firstImportLine, lastImportLine, sortedImports);
+		return applyImportsToDocument(raw, firstImportLine, lastImportLine, sortedImports);
 	}
 
 	private String applyImportsToDocument(final String document, int firstImportLine, int lastImportLine,

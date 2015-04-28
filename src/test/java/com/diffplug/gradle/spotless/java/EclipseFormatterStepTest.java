@@ -11,14 +11,14 @@ public class EclipseFormatterStepTest extends ResourceTest {
 	@Test
 	public void loadPropertiesSettings() throws Exception {
 		// setting for the formatter
-		EclipseFormatterStep step = EclipseFormatterStep.load(getTestFile("formatter.properties"));
+		EclipseFormatterStep step = EclipseFormatterStep.load(createTestFile("formatter.properties"));
 		assertStep(step, "JavaCodeUnformatted.test", "JavaCodeFormatted.test");
 	}
 
 	@Test
 	public void loadXmlSettings() throws Exception {
 		// setting for the formatter
-		EclipseFormatterStep step = EclipseFormatterStep.load(getTestFile("formatter.xml"));
+		EclipseFormatterStep step = EclipseFormatterStep.load(createTestFile("formatter.xml"));
 		assertStep(step, "JavaCodeUnformatted.test", "JavaCodeFormatted.test");
 	}
 

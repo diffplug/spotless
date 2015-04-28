@@ -38,12 +38,12 @@ public class EclipseFormatterStep implements FormatterStep {
 	}
 
 	@Override
-	public String format(String content) throws Exception {
-		TextEdit edit = codeFormatter.format(CodeFormatter.K_COMPILATION_UNIT, content, 0, content.length(), 0, LineEnding.UNIX.string);
+	public String format(String raw) throws Exception {
+		TextEdit edit = codeFormatter.format(CodeFormatter.K_COMPILATION_UNIT, raw, 0, raw.length(), 0, LineEnding.UNIX.string);
 		if (edit == null) {
 			throw new IllegalArgumentException("Invalid java syntax for formatting.");
 		} else {
-			IDocument doc = new Document(content);
+			IDocument doc = new Document(raw);
 			edit.apply(doc);
 			return doc.get();
 		}

@@ -28,13 +28,13 @@ public class ResourceTest {
 	}
 
 	/** Returns a File (in a temporary folder) which has the contents of the given file from the src/test/resources directory. */
-	protected File getTestFile(String filename) throws IOException {
+	protected File createTestFile(String filename) throws IOException {
 		File file = folder.newFile(filename);
 		Files.write(file.toPath(), getTestResource(filename).getBytes(StandardCharsets.UTF_8));
 		return file;
 	}
 
-	/** Returns a File (in a temporary folder) which has the contents of the given file from the src/test/resources directory. */
+	/** Returns a File (in a temporary folder) which has the given contents. */
 	protected File createTestFile(String filename, String content) throws IOException {
 		File file = folder.newFile(filename);
 		Files.write(file.toPath(), content.getBytes(StandardCharsets.UTF_8));
@@ -42,26 +42,21 @@ public class ResourceTest {
 	}
 
 	/** Asserts that the given resource from the src/test/resources directory has the same content as the given file. */
-	protected void assertFileContent(String expectedFile, File actual) throws IOException {
+	protected void assertFileContent(String expectedContent, File actual) throws IOException {
 		// This line thing is necessary for the tests to pass when Windows git screws up the line-endings
-		String expectedContent = getTestResource(expectedFile).replace("\r", "");
-		String actualContent = new String(Files.readAllBytes(actual.toPath()), StandardCharsets.UTF_8).replace("\r",
-				"");
+		String actualContent = new String(Files.readAllBytes(actual.toPath()), StandardCharsets.UTF_8);
 		Assert.assertEquals(expectedContent, actualContent);
-	}
-
-	/** Asserts that the given resource from the src/test/resources directory has the same content as the given content. */
-	protected void assertContent(String key, String actualContent) throws IOException {
-		// This line thing is necessary for the tests to pass when Windows git screws up the line-endings
-		Assert.assertEquals(getTestResource(key).replace("\r", ""), actualContent.replace("\r", ""));
 	}
 
 	/** Reads the given resource from "before", applies the step, and makes sure the result is "after". */
 	protected void assertStep(FormatterStep step, String unformattedPath, String expectedPath) throws Exception {
 		String unformatted = getTestResource(unformattedPath).replace("\r", "");	// unix-ified input
 		String formatted = step.format(unformatted);
+		// no windows newlines
+		Assert.assertEquals(-1, formatted.indexOf('\r'));
 
-		String expected = getTestResource(expectedPath).replace("\r", "");
+		// unix-ify the test resource output in case git screwed it up
+		String expected = getTestResource(expectedPath).replace("\r", "");	// unix-ified output
 		Assert.assertEquals(expected, formatted);
 	}
 }
