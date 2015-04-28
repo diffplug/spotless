@@ -12,7 +12,6 @@ import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.TaskAction;
-import org.testng.collections.Lists;
 
 public class FormatTask extends DefaultTask {
 	@InputFiles
@@ -22,10 +21,13 @@ public class FormatTask extends DefaultTask {
 	@Input
 	public LineEnding lineEndings = LineEnding.PLATFORM_NATIVE;
 	@Input
-	public List<FormatterStep> steps = Lists.newArrayList();
+	public List<FormatterStep> steps = new ArrayList<>();
 
 	@TaskAction
 	public void format() throws Exception {
+		if (toFormat == null) {
+			throw new GradleException("You must specify 'Iterable<File> toFormat'");
+		}
 		// combine them into the master formatter
 		Formatter formatter = new Formatter(lineEndings, getProject().getRootDir().toPath(), steps);
 

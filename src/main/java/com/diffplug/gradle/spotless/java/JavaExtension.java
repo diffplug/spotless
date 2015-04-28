@@ -1,92 +1,57 @@
 package com.diffplug.gradle.spotless.java;
 
-import java.io.File;
 import java.util.List;
 
-import org.testng.collections.Lists;
+import org.gradle.api.GradleException;
+import org.gradle.api.internal.file.UnionFileCollection;
+import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.tasks.SourceSet;
 
+import com.diffplug.gradle.spotless.CustomExtension;
 import com.diffplug.gradle.spotless.FormatTask;
-import com.diffplug.gradle.spotless.FormatterStep;
-import com.diffplug.gradle.spotless.SpotlessExtension;
+import com.diffplug.gradle.spotless.SpotlessRootExtension;
 
-public class JavaExtension extends SpotlessExtension {
-	/** Header string for the file. */
-	String licenseHeader;
+public class JavaExtension extends CustomExtension {
+	public static final String NAME = "java";
 
-	/** Header file to be appended to the file. */
-	Object licenseHeaderFile;
-
-	/** The imports ordering. */
-	List<String> importsOrder;
-
-	/** The imports ordering file. */
-	Object importsOrderFile;
-
-	/** Eclipse format file. */
-	Object eclipseFormatFile;
-
-	public JavaExtension() {
-		super("java");
+	public JavaExtension(SpotlessRootExtension rootExtension) {
+		super(NAME, rootExtension);
 	}
 
-	public List<String> getImportsOrder() {
-		return importsOrder;
+	public void licenseHeader(String licenseHeader) {
+		stepLazy(LicenseHeaderStep.NAME, () -> new LicenseHeaderStep(licenseHeader)::format);
 	}
 
-	public void setImportsOrder(List<String> importsOrder) {
-		this.importsOrder = importsOrder;
+	public void licenseHeaderFile(Object licenseHeaderFile) {
+		stepLazy(LicenseHeaderStep.NAME, () -> new LicenseHeaderStep(getProject().file(licenseHeaderFile))::format);
 	}
 
-	public Object getImportsOrderFile() {
-		return importsOrderFile;
+	public void importOrder(List<String> importOrder) {
+		stepLazy(ImportSorterStep.NAME, () -> new ImportSorterStep(importOrder)::format);
 	}
 
-	public void setImportsOrderFile(Object importsOrderFile) {
-		this.importsOrderFile = importsOrderFile;
+	public void importOrderFile(Object importOrderFile) {
+		stepLazy(ImportSorterStep.NAME, () -> new ImportSorterStep(getProject().file(importOrderFile))::format);
 	}
 
-	public Object getEclipseFormatFile() {
-		return eclipseFormatFile;
+	public void eclipseFormatFile(Object eclipseFormatFile) {
+		stepLazy(EclipseFormatterStep.NAME, () -> EclipseFormatterStep.load(getProject().file(eclipseFormatFile))::format);
 	}
 
-	public void setEclipseFormatFile(Object eclipseFormatFile) {
-		this.eclipseFormatFile = eclipseFormatFile;
-	}
-
-	public String getLicenseHeader() {
-		return licenseHeader;
-	}
-
-	public void setLicenseHeader(String licenseHeader) {
-		this.licenseHeader = licenseHeader;
-	}
-
-	public Object getLicenseHeaderFile() {
-		return licenseHeaderFile;
-	}
-
-	public void setLicenseHeaderFile(Object licenseHeaderFile) {
-		this.licenseHeaderFile = licenseHeaderFile;
-	}
-
+	/** If the user hasn't specified the files yet, we'll assume he/she means all of the java files. */
 	@Override
 	protected void setupTask(FormatTask task) throws Exception {
-		super.setupTask(task);
-
-		// create the Java steps
-		List<FormatterStep> javaSteps = Lists.newArrayList();
-		LicenseHeaderStep.load(licenseHeader, resolve(task, licenseHeaderFile)).ifPresent(javaSteps::add);
-		ImportSorterStep.load(importsOrder, resolve(task, importsOrderFile)).ifPresent(javaSteps::add);
-		if (eclipseFormatFile != null) {
-			javaSteps.add(EclipseFormatterStep.load(resolve(task, eclipseFormatFile)));
+		if (toFormat == null) {
+			JavaPluginConvention javaPlugin = getProject().getConvention().getPlugin(JavaPluginConvention.class);
+			if (javaPlugin == null) {
+				throw new GradleException("Must apply the java plugin before you apply the spotless plugin.");
+			}
+			UnionFileCollection union = new UnionFileCollection();
+			for (SourceSet sourceSet : javaPlugin.getSourceSets()) {
+				union.add(sourceSet.getJava());
+			}
+			toFormat = union;
 		}
-
-		// prefix them to the previous steps
-		task.steps.addAll(0, javaSteps);
-	}
-
-	/** Resolves the given file object using the current project. */
-	private static File resolve(FormatTask task, Object file) {
-		return file == null ? null : task.getProject().file(file);
+		super.setupTask(task);
 	}
 }

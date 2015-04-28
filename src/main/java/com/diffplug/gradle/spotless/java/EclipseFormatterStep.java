@@ -17,27 +17,18 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.text.edits.TextEdit;
 import org.gradle.api.GradleException;
 
-import com.diffplug.gradle.spotless.FormatterStep;
 import com.diffplug.gradle.spotless.LineEnding;
 
 /** Formatter step which calls out to the Eclipse formatter. */
-public class EclipseFormatterStep implements FormatterStep {
+public class EclipseFormatterStep {
+	public static final String NAME = "Eclipse Formatter";
+
 	private CodeFormatter codeFormatter;
 
 	private EclipseFormatterStep(Properties settings) {
-		if (settings == null) {
-			// if no settings run with jdk 5 as default
-			settings = new Properties();
-		}
 		this.codeFormatter = ToolFactory.createCodeFormatter(settings);
 	}
 
-	@Override
-	public String getName() {
-		return "EclipseFormatter";
-	}
-
-	@Override
 	public String format(String raw) throws Exception {
 		TextEdit edit = codeFormatter.format(CodeFormatter.K_COMPILATION_UNIT, raw, 0, raw.length(), 0, LineEnding.UNIX.string);
 		if (edit == null) {

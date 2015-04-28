@@ -7,35 +7,17 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Scanner;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-
-import com.diffplug.gradle.spotless.FormatterStep;
 
 /**
  * From https://github.com/krasa/EclipseCodeFormatter
  *
  * @author Vojtech Krasa
  */
-public class ImportSorterStep implements FormatterStep {
-	/** Creates an ImportSorterStep using either a list of imports or an importsOrderFile. */
-	public static Optional<ImportSorterStep> load(List<String> importsOrder, File importsOrderFile) throws IOException {
-		// if the user provided both, make her pick
-		if (importsOrder != null && importsOrderFile != null) {
-			throw new IllegalArgumentException("Can't specify both importsOrder and importsOrderConfigurationFile");
-		}
-
-		// return the sorter
-		if (importsOrder != null) {
-			return Optional.of(new ImportSorterStep(importsOrder));
-		} else if (importsOrderFile != null) {
-			return Optional.of(new ImportSorterStep(importsOrderFile));
-		} else {
-			return Optional.empty();
-		}
-	}
+public class ImportSorterStep {
+	public static final String NAME = "ImportSorter";
 
 	public static final int START_INDEX_OF_IMPORTS_PACKAGE_DECLARATION = 7;
 	public static final String N = "\n";
@@ -63,12 +45,6 @@ public class ImportSorterStep implements FormatterStep {
 		importsOrder = new ArrayList<>(new TreeMap<>(orderToImport).values());
 	}
 
-	@Override
-	public String getName() {
-		return "ImportSorter";
-	}
-
-	@Override
 	public String format(String raw) {
 		// parse file
 		Scanner scanner = new Scanner(raw);

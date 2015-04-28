@@ -5,6 +5,7 @@ import java.util.Map;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.plugins.JavaBasePlugin;
 
 public class SpotlessPlugin implements Plugin<Project> {
 	Project project;
@@ -14,18 +15,12 @@ public class SpotlessPlugin implements Plugin<Project> {
 	static final String CHECK = "Check";
 	static final String APPLY = "Apply";
 
-	Task rootCheckTask;
-	Task rootApplyTask;
-
 	public void apply(Project project) {
 		this.project = project;
 
-		// create a root task to run all the checks and applications
-		rootCheckTask = project.task(EXTENSION + CHECK);
-		rootApplyTask = project.task(EXTENSION + APPLY);
-
 		// setup the extension
-		extension = project.getExtensions().create(EXTENSION, SpotlessRootExtension.class);
+		extension = project.getExtensions().create(EXTENSION, SpotlessRootExtension.class, project);
+		// ExtensionContainer container = ((ExtensionAware) project.getExtensions().getByName(EXTENSION)).getExtensions();
 
 		// after the project has been evaluated, configure the check and format tasks per source set
 		project.afterEvaluate(unused -> {
@@ -38,20 +33,28 @@ public class SpotlessPlugin implements Plugin<Project> {
 	}
 
 	private void createTasks() throws Exception {
-		for (Map.Entry<String, SpotlessExtension> entry : extension.extensions.entrySet()) {
-			FormatTask checkTask = project.getTasks().create(EXTENSION + capitalize(entry.getKey()) + CHECK, FormatTask.class);
-			FormatTask applyTask = project.getTasks().create(EXTENSION + capitalize(entry.getKey()) + APPLY, FormatTask.class);
-			checkTask.lineEndings = extension.lineEndings;
-			applyTask.lineEndings = extension.lineEndings;
-			checkTask.check = true;
-			applyTask.check = false;
-			// sets toFormat and steps
-			entry.getValue().setupTask(checkTask);
-			entry.getValue().setupTask(applyTask);
+		Task rootCheckTask = project.task(EXTENSION + CHECK);
+		Task rootApplyTask = project.task(EXTENSION + APPLY);
 
-			rootCheckTask.dependsOn(checkTask);
-			rootApplyTask.dependsOn(applyTask);
+		for (Map.Entry<String, CustomExtension> entry : extension.extensions.entrySet()) {
+			rootCheckTask.dependsOn(createTask(entry.getKey(), entry.getValue(), true));
+			rootApplyTask.dependsOn(createTask(entry.getKey(), entry.getValue(), false));
 		}
+		
+		// add the check task as a dependency to the global check task (if there is one)
+		Task checkTask = project.getTasks().getByName(JavaBasePlugin.CHECK_TASK_NAME);
+		if (checkTask != null) {
+			checkTask.dependsOn(rootCheckTask);
+		}
+	}
+
+	private FormatTask createTask(String name, CustomExtension subExtension, boolean check) throws Exception {
+		FormatTask task = project.getTasks().create(EXTENSION + capitalize(name) + (check ? CHECK : APPLY), FormatTask.class);
+		task.lineEndings = extension.lineEndings;
+		task.check = check;
+		// sets toFormat and steps
+		subExtension.setupTask(task);
+		return task;
 	}
 
 	private static String capitalize(String input) {

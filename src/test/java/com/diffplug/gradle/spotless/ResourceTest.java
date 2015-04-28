@@ -49,9 +49,9 @@ public class ResourceTest {
 	}
 
 	/** Reads the given resource from "before", applies the step, and makes sure the result is "after". */
-	protected void assertStep(FormatterStep step, String unformattedPath, String expectedPath) throws Exception {
+	protected void assertStep(Throwing.Function<String, String> step, String unformattedPath, String expectedPath) throws Throwable {
 		String unformatted = getTestResource(unformattedPath).replace("\r", "");	// unix-ified input
-		String formatted = step.format(unformatted);
+		String formatted = step.apply(unformatted);
 		// no windows newlines
 		Assert.assertEquals(-1, formatted.indexOf('\r'));
 

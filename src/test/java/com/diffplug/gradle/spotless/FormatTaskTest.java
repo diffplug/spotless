@@ -54,7 +54,7 @@ public class FormatTaskTest extends ResourceTest {
 		task.toFormat = Collections.singleton(testFile);
 
 		task.check = true;
-		task.steps.add(FormatterStep.of("double-p", content -> content.replace("pp", "p")));
+		task.steps.add(FormatterStep.create("double-p", content -> content.replace("pp", "p")));
 		task.execute();
 
 		assertFileContent("\n", testFile);
@@ -66,7 +66,7 @@ public class FormatTaskTest extends ResourceTest {
 		task.toFormat = Collections.singleton(testFile);
 
 		task.check = true;
-		task.steps.add(FormatterStep.of("double-p", content -> content.replace("pp", "p")));
+		task.steps.add(FormatterStep.create("double-p", content -> content.replace("pp", "p")));
 		task.execute();
 	}
 
@@ -76,7 +76,7 @@ public class FormatTaskTest extends ResourceTest {
 		task.toFormat = Collections.singleton(testFile);
 
 		task.check = false;
-		task.steps.add(FormatterStep.of("double-p", content -> content.replace("pp", "p")));
+		task.steps.add(FormatterStep.create("double-p", content -> content.replace("pp", "p")));
 		task.execute();
 
 		super.assertFileContent("aple", testFile);

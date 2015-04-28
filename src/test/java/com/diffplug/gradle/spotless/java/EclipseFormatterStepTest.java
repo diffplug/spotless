@@ -9,17 +9,17 @@ import com.diffplug.gradle.spotless.ResourceTest;
 
 public class EclipseFormatterStepTest extends ResourceTest {
 	@Test
-	public void loadPropertiesSettings() throws Exception {
+	public void loadPropertiesSettings() throws Throwable {
 		// setting for the formatter
 		EclipseFormatterStep step = EclipseFormatterStep.load(createTestFile("formatter.properties"));
-		assertStep(step, "JavaCodeUnformatted.test", "JavaCodeFormatted.test");
+		assertStep(step::format, "JavaCodeUnformatted.test", "JavaCodeFormatted.test");
 	}
 
 	@Test
-	public void loadXmlSettings() throws Exception {
+	public void loadXmlSettings() throws Throwable {
 		// setting for the formatter
 		EclipseFormatterStep step = EclipseFormatterStep.load(createTestFile("formatter.xml"));
-		assertStep(step, "JavaCodeUnformatted.test", "JavaCodeFormatted.test");
+		assertStep(step::format, "JavaCodeUnformatted.test", "JavaCodeFormatted.test");
 	}
 
 	@Test(expected = GradleException.class)

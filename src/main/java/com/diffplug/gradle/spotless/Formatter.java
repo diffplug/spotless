@@ -72,7 +72,7 @@ public class Formatter {
 		for (FormatterStep step : steps) {
 			try {
 				unix = step.format(unix);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				logger.warn("Unable to apply step " + step.getName() + " to " + rootDir.relativize(file.toPath()) + ": " + e.getMessage());
 			}
 		}
