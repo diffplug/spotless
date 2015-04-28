@@ -5,7 +5,7 @@ buildscript {
 	}
 	dependencies {
 		// applies the Eclipse java formatter
-		//classpath "com.diffplug.gradle.spotless:spotless:${VER_SPOTLESS}"
+//		classpath "com.diffplug.gradle.spotless:spotless:${VER_SPOTLESS_BOOTSTRAP}"
 		// uploads artifacts to jcenter
 		classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:${VER_BINTRAY}"
 		// update snapshot dependencies on every build
@@ -113,9 +113,15 @@ tasks.eclipse.dependsOn(cleanEclipse)
    com.diffplug.gradle.spotless:spotless:1.0-SNAPSHOT
 apply plugin: 'com.diffplug.gradle.spotless'
 spotless {
-	licenseHeaderFile = file('spotless.license.java')			// License header file
-	importsOrderFile = file('spotless.importorder.properties')	// An import ordering file, exported from Eclipse
-	eclipseFormatFile = file('spotless.eclipseformat.xml')		// XML file dumped out by the Eclipse formatter
+	java {
+		licenseHeaderFile	'spotless.license.java'				// License header file
+		importOrderFile		'spotless.importorder.properties'	// An import ordering file, exported from Eclipse
+		eclipseFormatFile	'spotless.eclipseformat.xml'		// XML file dumped out by the Eclipse formatter
+		// Eclipse formatter puts excess whitespace after lambda blocks
+		//    funcThatTakesLambdas(x -> {} , y -> {} )	// what Eclipse does
+		//    funcThatTakesLambdas(x -> {}, y -> {})	// what I wish Eclipse did
+		step 'Lambda fix', { it.replace('} )', '})').replace('} ,', '},') }
+	}
 }
 */
 
