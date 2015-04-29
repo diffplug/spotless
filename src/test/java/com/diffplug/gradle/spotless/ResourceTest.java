@@ -6,7 +6,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Collections;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
+import org.gradle.api.Project;
+import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
@@ -58,5 +63,38 @@ public class ResourceTest {
 		// unix-ify the test resource output in case git screwed it up
 		String expected = getTestResource(expectedPath).replace("\r", "");	// unix-ified output
 		Assert.assertEquals(expected, formatted);
+	}
+
+	/** Creates a FormatTask based on the given consumer. */
+	public static FormatTask createTask(Consumer<FormatExtension> test) throws Exception {
+		Project project = ProjectBuilder.builder().build();
+		SpotlessPlugin plugin = project.getPlugins().apply(SpotlessPlugin.class);
+
+		AtomicReference<FormatExtension> ref = new AtomicReference<>();
+		plugin.getExtension().format("underTest", ext -> {
+			ref.set(ext);
+			test.accept(ext);
+		});
+
+		boolean check = false;
+		return plugin.createTask("underTest", ref.get(), check);
+	}
+
+	/** Tests that the formatExtension causes the given change. */
+	protected void assertTask(Consumer<FormatExtension> test, String before, String afterExpected) throws Exception {
+		// create the task
+		FormatTask task = createTask(test);
+		// force unix line endings, since we're passing in raw strings
+		task.lineEndings = LineEnding.UNIX;
+		// create the test file
+		File testFile = folder.newFile();
+		Files.write(testFile.toPath(), before.getBytes(StandardCharsets.UTF_8));
+		// set the task to use this test file
+		task.target = Collections.singleton(testFile);
+		// run the task
+		task.format();
+		// check what the task did
+		String afterActual = new String(Files.readAllBytes(testFile.toPath()), StandardCharsets.UTF_8);
+		Assert.assertEquals(afterExpected, afterActual);
 	}
 }

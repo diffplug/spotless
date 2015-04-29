@@ -32,6 +32,11 @@ public class SpotlessPlugin implements Plugin<Project> {
 		} );
 	}
 
+	/** The extension for this plugin. */
+	public SpotlessExtension getExtension() {
+		return extension;
+	}
+
 	private void createTasks() throws Exception {
 		Task rootCheckTask = project.task(EXTENSION + CHECK);
 		Task rootApplyTask = project.task(EXTENSION + APPLY);
@@ -48,7 +53,7 @@ public class SpotlessPlugin implements Plugin<Project> {
 		}
 	}
 
-	private FormatTask createTask(String name, FormatExtension subExtension, boolean check) throws Exception {
+	FormatTask createTask(String name, FormatExtension subExtension, boolean check) throws Exception {
 		FormatTask task = project.getTasks().create(EXTENSION + capitalize(name) + (check ? CHECK : APPLY), FormatTask.class);
 		task.lineEndings = extension.lineEndings;
 		task.check = check;

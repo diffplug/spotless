@@ -4,6 +4,7 @@ import groovy.lang.Closure;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
@@ -38,10 +39,22 @@ public class SpotlessExtension {
 	}
 
 	/** Configures a custom extension. */
+	public void java(Consumer<JavaExtension> closure) {
+		JavaExtension java = new JavaExtension(this);
+		closure.accept(java);
+	}
+
+	/** Configures a custom extension. */
 	public void format(String name, Closure<FormatExtension> closure) {
 		FormatExtension extension = new FormatExtension(name, this);
 		closure.setDelegate(extension);
 		closure.call();
+	}
+
+	/** Configures a custom extension. */
+	public void format(String name, Consumer<FormatExtension> closure) {
+		FormatExtension extension = new FormatExtension(name, this);
+		closure.accept(extension);
 	}
 
 	/** Called by the FormatExtension constructor. */
