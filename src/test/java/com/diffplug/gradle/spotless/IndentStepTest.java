@@ -1,5 +1,6 @@
 package com.diffplug.gradle.spotless;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 public class IndentStepTest extends ResourceTest {
@@ -25,5 +26,12 @@ public class IndentStepTest extends ResourceTest {
 	public void tabToSpace() throws Throwable {
 		IndentStep indent = new IndentStep(IndentStep.Type.SPACE, 4);
 		assertStep(indent::format, "IndentedWithTab.test", "IndentedWithSpace.test");
+	}
+
+	@Test
+	public void doesntClipNewlines() throws Throwable {
+		IndentStep indent = new IndentStep(IndentStep.Type.SPACE, 4);
+		String blankNewlines = "\n\n\n\n";
+		Assert.assertEquals(blankNewlines, indent.format(blankNewlines));
 	}
 }
