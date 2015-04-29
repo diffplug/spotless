@@ -1,5 +1,6 @@
 # Spotless: Keep your code spotless with Gradle
 
+![spotless-logo](spotless.png)
 [![Release](http://img.shields.io/badge/master-1.0-lightgrey.svg)](https://github.com/diffplug/spotless/releases/latest)
 [![Snapshot](http://img.shields.io/badge/develop-1.1--SNAPSHOT-lightgrey.svg)](https://github.com/diffplug/spotless/tree/develop)
 [![Build Status](https://travis-ci.org/diffplug/durian.svg?branch=develop)](https://travis-ci.org/diffplug/spotless)
