@@ -86,14 +86,14 @@ public class FormatExtension {
 	/** Highly efficient find-replace regex. */
 	public void customReplaceRegex(String name, String regex, String replacement) {
 		customLazy(name, () -> {
-			Pattern pattern = Pattern.compile(regex);
+			Pattern pattern = Pattern.compile(regex, Pattern.UNIX_LINES | Pattern.MULTILINE);
 			return raw -> pattern.matcher(raw).replaceAll(replacement);
 		});
 	}
 
 	/** Removes trailing whitespace. */
 	public void trimTrailingWhitespace() {
-		customReplaceRegex("trimTrailingWhitespace", "\\s+$", "");
+		customReplaceRegex("trimTrailingWhitespace", "[ \t]+$", "");
 	}
 
 	/** Ensures that the files are indented using spaces. */
