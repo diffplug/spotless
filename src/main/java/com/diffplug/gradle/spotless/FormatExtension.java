@@ -113,7 +113,7 @@ public class FormatExtension {
 
 	/** Ensures that the files are indented using tabs. */
 	public void indentWithTabs() {
-		indentWithSpaces(4);
+		indentWithTabs(4);
 	}
 
 	/**
