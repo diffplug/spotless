@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.gradle.api.GradleException;
 
@@ -12,8 +14,7 @@ public class LicenseHeaderStep {
 	public static final String NAME = "LicenseHeader";
 
 	private final String license;
-	private final String delimiter;
-	private final String newlineThenDelimiter;
+	private final Pattern delimiterPattern;
 
 	/** The license that we'd like enforced. */
 	public LicenseHeaderStep(String license, String delimiter) {
@@ -21,8 +22,7 @@ public class LicenseHeaderStep {
 			throw new GradleException("The delimiter must not contain any newlines.");
 		}
 		this.license = license.replace("\r", "");
-		this.delimiter = delimiter;
-		this.newlineThenDelimiter = "\n" + delimiter;
+		this.delimiterPattern = Pattern.compile('^' + delimiter, Pattern.UNIX_LINES | Pattern.MULTILINE);
 	}
 
 	/** Reads the license file from the given file. */
@@ -30,18 +30,19 @@ public class LicenseHeaderStep {
 		this(new String(Files.readAllBytes(licenseFile.toPath()), StandardCharsets.UTF_8), delimiter);
 	}
 
+	/** Formats the given string. */
 	public String format(String raw) {
-		if (raw.startsWith(delimiter)) {
-			return license + "\n" + raw;
+		Matcher matcher = delimiterPattern.matcher(raw);
+		if (!matcher.find()) {
+			throw new IllegalArgumentException("Unable to find delimiter regex " + delimiterPattern);
 		} else {
-			// find the package statement
-			int packageIdx = raw.indexOf(newlineThenDelimiter);
-			if (packageIdx < 0) {
-				throw new IllegalArgumentException("Unable to find " + delimiter);
+			if (matcher.start() == license.length() && raw.startsWith(license)) {
+				// if no change is required, return the raw string without
+				// creating any other new strings for maximum performance
+				return raw;
 			} else {
-				// return header + body
-				String body = raw.substring(packageIdx);
-				return license + body;
+				// otherwise we'll have to add the header
+				return license + "\n" + raw.substring(matcher.start());
 			}
 		}
 	}
