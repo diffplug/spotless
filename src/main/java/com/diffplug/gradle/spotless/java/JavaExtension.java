@@ -46,7 +46,7 @@ public class JavaExtension extends FormatExtension {
 		if (target == null) {
 			JavaPluginConvention javaPlugin = getProject().getConvention().getPlugin(JavaPluginConvention.class);
 			if (javaPlugin == null) {
-				throw new GradleException("Must apply the java plugin before you apply the spotless plugin.");
+				throw new GradleException("You must apply the java plugin before the spotless plugin if you are using the java extension.");
 			}
 			UnionFileCollection union = new UnionFileCollection();
 			for (SourceSet sourceSet : javaPlugin.getSourceSets()) {
