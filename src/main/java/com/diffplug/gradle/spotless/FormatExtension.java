@@ -3,6 +3,7 @@ package com.diffplug.gradle.spotless;
 import groovy.lang.Closure;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import java.util.regex.Pattern;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.internal.file.UnionFileCollection;
 
 /** Adds a `spotless{Name}Check` and `spotless{Name}Apply` task. */
 public class FormatExtension {
@@ -32,22 +34,40 @@ public class FormatExtension {
 	 * List<String> are treates as the 'includes' arg to fileTree, with project.rootDir as the dir.
 	 * Anything else gets passed to getProject().files(). 
 	 */
+	public void target(Object ... targets) {
+		if (targets.length == 0) {
+			this.target = getProject().files();
+		} else if (targets.length == 1) {
+			this.target = parseTarget(targets[0]);
+		} else {
+			if (Arrays.asList(targets).stream().allMatch(o -> o instanceof String)) {
+				this.target = parseTarget(Arrays.asList(targets));
+			} else {
+				UnionFileCollection union = new UnionFileCollection();
+				for (Object target : targets) {
+					union.add(parseTarget(target));
+				}
+				this.target = union;
+			}
+		}
+	}
+
 	@SuppressWarnings("unchecked")
-	public void target(Object target) {
+	private FileCollection parseTarget(Object target) {
 		if (target instanceof FileCollection) {
-			this.target = (FileCollection) target;
+			return (FileCollection) target;
 		} else if (target instanceof String) {
 			Map<String, Object> args = new HashMap<>();
 			args.put("dir", getProject().getRootDir());
 			args.put("include", (String) target);
-			this.target = getProject().fileTree(args);
-		} else if (target instanceof List && ((List<?>) target).stream().allMatch(e -> e instanceof String)) {
+			return getProject().fileTree(args);
+		} else if (target instanceof List && ((List<?>) target).stream().allMatch(o -> o instanceof String)) {
 			Map<String, Object> args = new HashMap<>();
 			args.put("dir", getProject().getRootDir());
 			args.put("includes", (List<String>) target);
-			this.target = getProject().fileTree(args);			
+			return getProject().fileTree(args);
 		} else {
-			this.target = getProject().files(target);
+			return getProject().files(target);
 		}
 	}
 

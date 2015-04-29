@@ -103,7 +103,7 @@ spotless {
 	}
 
 	format 'cpp' {
-		target ['**/*.hpp', '**/*.cpp']
+		target '**/*.hpp', '**/*.cpp'
 
 		// you can add simple replace rules
 		customReplace      'Not enough space after if', 'if(', 'if ('
@@ -137,9 +137,9 @@ spotless {
 }
 ```
 
-Check out [`FormatExtension.java`](https://github.com/diffplug/spotless/blob/master/src/main/java/com/diffplug/gradle/spotless/FormatExtension.java) for further details on the default rules.
+See [`FormatExtension.java`](https://github.com/diffplug/spotless/blob/master/src/main/java/com/diffplug/gradle/spotless/FormatExtension.java) for further details on the default rules.
 
-Check out [`JavaExtension.java`](https://github.com/diffplug/spotless/blob/master/src/main/java/com/diffplug/gradle/spotless/java/JavaExtension.java) for further details on how the Java formatter is implemented.
+See [`JavaExtension.java`](https://github.com/diffplug/spotless/blob/master/src/main/java/com/diffplug/gradle/spotless/java/JavaExtension.java) for further details on how the Java formatter is implemented.
 
 ## Acknowledgements
 
