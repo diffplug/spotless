@@ -96,6 +96,40 @@ public class FormatExtension {
 		customReplaceRegex("trimTrailingWhitespace", "[ \t]+$", "");
 	}
 
+	/** Ensures that files end with a single newline. */
+	public void endWithNewline() {
+		custom("endWithNewline", raw -> {
+			// simplifies the logic below if we can assume length > 0
+			if (raw.isEmpty()) {
+				return "\n";
+			}
+
+			// find the last character which has real content
+			int lastContentCharacter = raw.length() - 1;
+			char c;
+			while (lastContentCharacter >= 0) {
+				c = raw.charAt(lastContentCharacter);
+				if (c == '\n' || c == '\t' || c == ' ') {
+					--lastContentCharacter;
+				} else {
+					break;
+				}
+			}
+
+			// if it's already clean, no need to create another string
+			if (lastContentCharacter == -1) {
+				return "\n";
+			} else if (lastContentCharacter == raw.length() - 2 && raw.charAt(raw.length() - 1) == '\n') {
+				return raw;
+			} else {
+				StringBuilder builder = new StringBuilder(lastContentCharacter + 1);
+				builder.append(raw, 0, lastContentCharacter + 1);
+				builder.append('\n');
+				return builder.toString();
+			}
+		});
+	}
+
 	/** Ensures that the files are indented using spaces. */
 	public void indentWithSpaces(int tabToSpaces) {
 		customLazy("indentWithSpaces", () -> new IndentStep(IndentStep.Type.SPACE, tabToSpaces)::format);
