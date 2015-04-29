@@ -13,4 +13,4 @@ build/
 bin/
 
 # GFM preview
-.README.md.html
+.*.md.html
