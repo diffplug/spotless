@@ -122,7 +122,7 @@ public class FormatExtension {
 			} else if (lastContentCharacter == raw.length() - 2 && raw.charAt(raw.length() - 1) == '\n') {
 				return raw;
 			} else {
-				StringBuilder builder = new StringBuilder(lastContentCharacter + 1);
+				StringBuilder builder = new StringBuilder(lastContentCharacter + 2);
 				builder.append(raw, 0, lastContentCharacter + 1);
 				builder.append('\n');
 				return builder.toString();
