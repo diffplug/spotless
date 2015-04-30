@@ -165,11 +165,11 @@ if (project.hasProperty('dp_bintray_user')) {
 				if (project.version.endsWith('SNAPSHOT')) {
 					vcsTag = 'develop'
 				} else {
-					vcsTag = 'release/' + project.version
+					vcsTag = 'v' + project.version
 				}
 			}
 		}
 	}
 	// surprisingly, this actually needs to be here
-	bintrayUpload.dependsOn(publish)
+	bintrayUpload.dependsOn(publish, sourcesJar, javadocJar)
 }
