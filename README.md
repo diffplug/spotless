@@ -6,6 +6,8 @@
 [![Branch develop Travis CI](https://travis-ci.org/diffplug/spotless.svg?branch=develop)](https://travis-ci.org/diffplug/spotless)
 [![License](https://img.shields.io/badge/license-Apache-blue.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
 
+# Not yet in JCenter! Sorry, having some troubles with upload.  We'll update the readme when this is fixed.
+
 Spotless can check and apply formatting for any plain-text file, with special support for Java.  It supports several formatters out of the box, including:
 
 * Java style and import ordering (using Eclipse's code formatter)
