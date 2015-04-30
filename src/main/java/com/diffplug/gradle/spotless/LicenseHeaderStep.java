@@ -21,7 +21,12 @@ public class LicenseHeaderStep {
 		if (delimiter.contains("\n")) {
 			throw new GradleException("The delimiter must not contain any newlines.");
 		}
-		this.license = license.replace("\r", "");
+		// sanitize the input license
+		license = license.replace("\r", "");
+		if (!license.endsWith("\n")) {
+			license = license + "\n";
+		}
+		this.license = license;
 		this.delimiterPattern = Pattern.compile('^' + delimiter, Pattern.UNIX_LINES | Pattern.MULTILINE);
 	}
 
@@ -42,7 +47,7 @@ public class LicenseHeaderStep {
 				return raw;
 			} else {
 				// otherwise we'll have to add the header
-				return license + "\n" + raw.substring(matcher.start());
+				return license + raw.substring(matcher.start());
 			}
 		}
 	}
