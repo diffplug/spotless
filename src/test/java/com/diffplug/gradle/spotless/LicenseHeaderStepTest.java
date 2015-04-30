@@ -43,6 +43,25 @@ public class LicenseHeaderStepTest extends ResourceTest {
 		LicenseHeaderStep step = new LicenseHeaderStep("LicenseHeader\n", "contentstart");
 		String alreadyCorrect = "LicenseHeader\ncontentstart";
 		Assert.assertEquals(alreadyCorrect, step.format(alreadyCorrect));
+		// If no change is required, it should return the exact same string for efficiency reasons
+		Assert.assertTrue(alreadyCorrect == step.format(alreadyCorrect));
+	}
+
+	@Test
+	public void sanitized() throws Throwable {
+		// The sanitizer should add a \n
+		LicenseHeaderStep step = new LicenseHeaderStep("LicenseHeader", "contentstart");
+		String alreadyCorrect = "LicenseHeader\ncontentstart";
+		Assert.assertEquals(alreadyCorrect, step.format(alreadyCorrect));
+		Assert.assertTrue(alreadyCorrect == step.format(alreadyCorrect));
+	}
+
+	@Test
+	public void sanitizerDoesntGoTooFar() throws Throwable {
+		// if the user wants extra lines after the header, we shouldn't clobber them
+		LicenseHeaderStep step = new LicenseHeaderStep("LicenseHeader\n\n", "contentstart");
+		String alreadyCorrect = "LicenseHeader\n\ncontentstart";
+		Assert.assertEquals(alreadyCorrect, step.format(alreadyCorrect));
 		Assert.assertTrue(alreadyCorrect == step.format(alreadyCorrect));
 	}
 }
