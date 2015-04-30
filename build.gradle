@@ -1,10 +1,13 @@
 buildscript {
 	repositories {
 		jcenter()
+			maven { url "https://plugins.gradle.org/m2/" }
 	}
 	dependencies {
 		// uploads artifacts to jcenter
 		classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:${VER_BINTRAY}"
+		// uploads to plugin portal
+		classpath "com.gradle.publish:plugin-publish-plugin:0.9.0"
 	}
 }
 
@@ -31,6 +34,7 @@ repositories {
 	}
 }
 
+apply plugin: 'com.gradle.plugin-publish'
 apply plugin: 'java'
 sourceCompatibility = VER_JAVA
 targetCompatibility = VER_JAVA
@@ -166,3 +170,29 @@ if (project.hasProperty('dp_bintray_user')) {
 	// surprisingly, this actually needs to be here
 	bintrayUpload.dependsOn(publish, sourcesJar, javadocJar)
 }
+
+//////////////////////////
+// GRADLE PLUGIN PORTAL //
+//////////////////////////
+pluginBundle {
+	// These settings are set for the whole plugin bundle
+	website = "https://github.com/${org}/${name}"
+	vcsUrl = "https://github.com/${org}/${name}"
+	description = project.description
+
+	plugins {
+		spotlessPlugin {
+			id = 'com.diffplug.gradle.spotless'
+			displayName = 'Spotless formatting plugin'
+			tags = ['format', 'style', 'license', 'header']
+		}
+	}
+
+	mavenCoordinates {
+		groupId = project.group
+		artifactId = project.name
+		version = project.version
+	}
+}
+
+task publishAll(dependsOn: [bintrayUpload, publishPlugins])
