@@ -1,0 +1,6 @@
+if (	 
+ !spotless
+		) {
+   dirty();
+  }    
+

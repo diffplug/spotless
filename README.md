@@ -1,12 +1,12 @@
+
 # Spotless: Keep your code spotless with Gradle
 
-![spotless-logo](spotless.png)
+![Spotless logo](spotless_logo.png)
+[![JCenter](https://img.shields.io/badge/jcenter-com.diffplug.gradle.spotless%3Aspotless-blue.svg)](https://bintray.com/diffplug/opensource/spotless/view)
 [![Release](http://img.shields.io/badge/master-1.0-lightgrey.svg)](https://github.com/diffplug/spotless/releases/latest)
 [![Snapshot](http://img.shields.io/badge/develop-1.1--SNAPSHOT-lightgrey.svg)](https://github.com/diffplug/spotless/tree/develop)
 [![Build Status](https://travis-ci.org/diffplug/durian.svg?branch=develop)](https://travis-ci.org/diffplug/spotless)
 [![License](https://img.shields.io/badge/license-Apache-blue.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
-
-# PREPPING FOR RELEASE - NOT YET READY FOR USE!
 
 Spotless can check and apply formatting for any plain-text file, with special support for Java.  It supports several formatters out of the box, including:
 
@@ -86,19 +86,19 @@ Spotless has a generic system for specifying which transformations to apply to w
 
 ```groovy
 spotless {
-	// this will create two tasks: spotlessGradleCheck and spotlessGradleApply
-	format 'gradle' {
+	// this will create two tasks: spotlessMiscCheck and spotlessMiscApply
+	format 'misc' {
 		// target determines which files this format will apply to
 		// - if you pass a string or a list of strings, they will be treated
 		//       as 'include' parameters to a fileTree in the root directory
 		// - if you pass a FileCollection, it will pass through untouched
 		//       e.g. project.files('build.gradle', 'settings.gradle')
 		// - if you pass anything else, it will be sent to project.files(yourArg)
-		target '**/*.gradle'
+		target '**/*.gradle', '**/*.md', '**/.gitignore'
 
 		// spotless has built-in rules for the most basic formatting tasks
-		indentWithTabs() // or spaces. Takes an integer argument if you don't like 4
 		trimTrailingWhitespace()
+		indentWithTabs() // or spaces. Takes an integer argument if you don't like 4
 		endWithNewline()
 	}
 
@@ -163,7 +163,7 @@ There are two files to import / export with Eclipse - the import ordering file a
 ![Eclipse formatter](EclipseFormatter.png)
 ![Eclipse formatter edit](EclipseFormatterEdit.png)
 
-Eclipse formatter's off / on tags are often overlooked:
+Eclipse formatter's off / on tags are a great feature which is often overlooked.
 ![Eclipse formatter off/on tags](EclipseFormatterEditOffOnTags.png)
 
 ### Creating `spotless.importorder.properties`
