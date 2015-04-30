@@ -1,4 +1,4 @@
-# <img align="left" src="spotless_logo.png"> Spotless: Keep your code spotless with Gradle
+# <img align="left" src="images/spotless_logo.png"> Spotless: Keep your code spotless with Gradle
 
 [![JCenter artifact](https://img.shields.io/badge/jcenter-com.diffplug.gradle.spotless%3Aspotless-blue.svg)](https://bintray.com/diffplug/opensource/spotless/view)
 [![Branch master](http://img.shields.io/badge/master-1.0-lightgrey.svg)](https://github.com/diffplug/spotless/releases/latest)
@@ -155,14 +155,14 @@ See [`JavaExtension.java`](https://github.com/diffplug/spotless/blob/master/src/
 There are two files to import / export with Eclipse - the import ordering file and the code formatting file.
 
 ### Opening the preferences
-![Eclipse preferences](EclipsePreferences.png)
+![Eclipse preferences](images/EclipsePreferences.png)
 
 ### Creating `spotless.eclipseformat.xml`
-![Eclipse formatter](EclipseFormatter.png)
-![Eclipse formatter edit](EclipseFormatterEdit.png)
+![Eclipse formatter](images/EclipseFormatter.png)
+![Eclipse formatter edit](images/EclipseFormatterEdit.png)
 
 Eclipse formatter's off / on tags are a great feature which is often overlooked.
-![Eclipse formatter off/on tags](EclipseFormatterEditOffOnTags.png)
+![Eclipse formatter off/on tags](images/EclipseFormatterEditOffOnTags.png)
 
 ### Creating `spotless.importorder.properties`
-![Eclipse imports](EclipseImports.png)
+![Eclipse imports](images/EclipseImports.png)
