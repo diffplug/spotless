@@ -80,13 +80,6 @@ jar {
 	exclude 'META-INF/*.SF'
 }
 
-// There are a couple tests which run in Eclipse,
-// and also in "real-life", but fail inexplicably
-// with the gradle test runner.
-test {
-	exclude('**/*FailsInGradle.class')
-}
-
 apply plugin: 'eclipse'
 eclipse {
 	classpath {
