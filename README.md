@@ -141,11 +141,11 @@ See [`JavaExtension.java`](https://github.com/diffplug/spotless/blob/master/src/
 
 ## Acknowledgements
 
+* Maintained by [DiffPlug](http://www.diffplug.com/).
 * Formatting by Eclipse 4.5 M6
 	+ Special thanks to [Mateusz Matela](https://waynebeaton.wordpress.com/2015/03/15/great-fixes-for-mars-winners-part-i/) for huge improvements to the eclipse code formatter!
-* Forked from [gradle-license-plugin](https://github.com/youribonnaffe/gradle-format-plugin) by Youri Bonnaffé.
+* Forked from [gradle-format-plugin](https://github.com/youribonnaffe/gradle-format-plugin) by Youri Bonnaffé.
 * Import ordering from [EclipseCodeFormatter](https://github.com/krasa/EclipseCodeFormatter).
-* Formatted by [spotless](https://github.com/diffplug/spotless).
 * Built by [gradle](http://gradle.org/).
 * Tested by [junit](http://junit.org/).
 * Artifacts hosted by [jcenter](https://bintray.com/bintray/jcenter) and uploaded by [gradle-bintray-plugin](https://github.com/bintray/gradle-bintray-plugin).
