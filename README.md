@@ -152,7 +152,7 @@ See [`JavaExtension.java`](https://github.com/diffplug/spotless/blob/master/src/
 
 ## Exporting / importing from Eclipse
 
-There are two files to import / export with Eclipse - the import ordering file and the code formatting file.
+There are two files to import / export with Eclipse - one for code formatting and one for import ordering.
 
 ### Opening the preferences
 ![Eclipse preferences](images/EclipsePreferences.png)
