@@ -85,7 +85,7 @@ Spotless has a generic system for specifying which transformations to apply to w
 ```groovy
 spotless {
 	// this will create two tasks: spotlessMiscCheck and spotlessMiscApply
-	format 'misc' {
+	format 'misc', {
 		// target determines which files this format will apply to
 		// - if you pass a string or a list of strings, they will be treated
 		//       as 'include' parameters to a fileTree in the root directory
@@ -100,7 +100,7 @@ spotless {
 		endWithNewline()
 	}
 
-	format 'cpp' {
+	format 'cpp', {
 		target '**/*.hpp', '**/*.cpp'
 
 		// you can add simple replace rules
