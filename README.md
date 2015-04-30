@@ -17,10 +17,10 @@ Even if you don't use Eclipse, or even Java, Spotless makes it painless to find 
 
 ```
 cmd> gradlew build
-   ...
+...
 :spotlessJavaCheck FAILED
 > Format violations were found. Run 'gradlew spotlessApply' to fix them.
-    src\test\java\com\diffplug\gradle\spotless\ResourceTest.java
+	src\test\java\com\diffplug\gradle\spotless\ResourceTest.java
 
 cmd> gradlew spotlessApply
 :spotlessApply
@@ -142,7 +142,7 @@ See [`JavaExtension.java`](https://github.com/diffplug/spotless/blob/master/src/
 ## Acknowledgements
 
 * Formatting by Eclipse 4.5 M6
-    + Special thanks to [Mateusz Matela](https://waynebeaton.wordpress.com/2015/03/15/great-fixes-for-mars-winners-part-i/) for huge improvements to the eclipse code formatter!
+	+ Special thanks to [Mateusz Matela](https://waynebeaton.wordpress.com/2015/03/15/great-fixes-for-mars-winners-part-i/) for huge improvements to the eclipse code formatter!
 * Forked from [gradle-license-plugin](https://github.com/youribonnaffe/gradle-format-plugin) by Youri Bonnaffé.
 * Import ordering from [EclipseCodeFormatter](https://github.com/krasa/EclipseCodeFormatter).
 * Formatted by [spotless](https://github.com/diffplug/spotless).

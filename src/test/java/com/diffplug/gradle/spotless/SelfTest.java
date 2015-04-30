@@ -20,6 +20,7 @@ import java.util.function.Consumer;
 
 import org.gradle.api.Project;
 import org.gradle.testfixtures.ProjectBuilder;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -36,9 +37,13 @@ import org.junit.Test;
  */
 public class SelfTest {
 	/** Runs the check (which we want to happen in the test suite). */
-	@Test
+	@Test // @Ignore("The test passes in real life and Eclipse, but fails in Gradle test runner...")
 	public void check() throws Exception {
-		runTasksWithCheck(true);
+		try {
+			runTasksWithCheck(true);
+		} catch (Exception e) {
+			throw new Exception("There are formatting errors in spotless' source code.\n" + "Ideally, you could just run 'spotlessApply', but because of an unresolved bootstrapping issue, you'll have to manually run the " + "main() method in com.diffplug.gradle.spotless.SelfTest", e);
+		}
 	}
 
 	/** Applies the format (which should be manual). */
@@ -54,7 +59,14 @@ public class SelfTest {
 				java.licenseHeaderFile("spotless.license.java");
 				java.importOrderFile("spotless.importorder.properties");
 				java.eclipseFormatFile("spotless.eclipseformat.xml");
-				java.customLazy("Lambda fix", () -> raw -> raw.replace("})", "})").replace("},", "},"));
+				java.customLazy("Lambda fix", () -> raw -> {
+					if (!raw.contains("public class SelfTest ")) {
+						// don't format this line away, lol
+						return raw.replace("} )", "})").replace("} ,", "},");
+					} else {
+						return raw;
+					}
+				} );
 			} );
 			extension.format("misc", misc -> {
 				misc.target("**/*.gradle", "**/*.md", "**/*.gitignore");

@@ -1,3 +1,18 @@
+/**
+ * Copyright 2015 DiffPlug
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.diffplug.gradle.spotless;
 
 import java.io.ByteArrayOutputStream;
@@ -55,13 +70,13 @@ public class ResourceTest {
 
 	/** Reads the given resource from "before", applies the step, and makes sure the result is "after". */
 	protected void assertStep(Throwing.Function<String, String> step, String unformattedPath, String expectedPath) throws Throwable {
-		String unformatted = getTestResource(unformattedPath).replace("\r", "");	// unix-ified input
+		String unformatted = getTestResource(unformattedPath).replace("\r", ""); // unix-ified input
 		String formatted = step.apply(unformatted);
 		// no windows newlines
 		Assert.assertEquals(-1, formatted.indexOf('\r'));
 
 		// unix-ify the test resource output in case git screwed it up
-		String expected = getTestResource(expectedPath).replace("\r", "");	// unix-ified output
+		String expected = getTestResource(expectedPath).replace("\r", ""); // unix-ified output
 		Assert.assertEquals(expected, formatted);
 	}
 
