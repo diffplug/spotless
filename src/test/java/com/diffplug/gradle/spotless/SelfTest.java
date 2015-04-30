@@ -37,7 +37,7 @@ import org.junit.Test;
  */
 public class SelfTest {
 	/** Runs the check (which we want to happen in the test suite). */
-	@Test // @Ignore("The test passes in real life and Eclipse, but fails in Gradle test runner...")
+	@Test @Ignore("The test passes in real life and Eclipse, but fails in Gradle test runner...")
 	public void check() throws Exception {
 		try {
 			runTasksWithCheck(true);
