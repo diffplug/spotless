@@ -61,11 +61,12 @@ public class SpotlessPlugin implements Plugin<Project> {
 			rootApplyTask.dependsOn(createTask(entry.getKey(), entry.getValue(), false));
 		}
 
-		// add the check task as a dependency to the global check task (if there is one)
-		Task checkTask = project.getTasks().getAsMap().get(JavaBasePlugin.CHECK_TASK_NAME);
-		if (checkTask != null) {
-			checkTask.dependsOn(rootCheckTask);
-		}
+		// Add our check task as a dependency on the global check task
+		// getTasks() returns a "live" collection, so this works even if the
+		// task doesn't exist at the time this call is made
+		project.getTasks()
+			.matching(task -> task.getName().equals(JavaBasePlugin.CHECK_TASK_NAME))
+			.all(task -> task.dependsOn(rootCheckTask));
 	}
 
 	FormatTask createTask(String name, FormatExtension subExtension, boolean check) throws Exception {
