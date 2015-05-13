@@ -51,6 +51,7 @@ configurations {
 
 dependencies {
 	compile gradleApi()
+	compile "com.diffplug.durian:durian:${VER_DURIAN}"
 
 	// The only dependencies we actually use
 	embeddedJars 'p2:org.eclipse.jdt.core:3.11.0.v20150317-0048'

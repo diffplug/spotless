@@ -15,6 +15,8 @@
  */
 package com.diffplug.gradle.spotless;
 
+import com.diffplug.common.base.Throwing;
+
 /**
  * An implementation of this class specifies a single step in a formatting process.
  * 

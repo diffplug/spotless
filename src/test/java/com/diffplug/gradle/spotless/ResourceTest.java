@@ -31,6 +31,8 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
+import com.diffplug.common.base.Throwing;
+
 public class ResourceTest {
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
