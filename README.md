@@ -1,5 +1,6 @@
 # <img align="left" src="images/spotless_logo.png"> Spotless: Keep your code spotless with Gradle
 
+[![Gradle plugin](https://img.shields.io/badge/plugins.gradle.org-com.diffplug.gradle.spotless-blue.svg)](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless)
 [![JCenter artifact](https://img.shields.io/badge/jcenter-com.diffplug.gradle.spotless%3Aspotless-blue.svg)](https://bintray.com/diffplug/opensource/spotless/view)
 [![Branch master](http://img.shields.io/badge/master-1.0-lightgrey.svg)](https://github.com/diffplug/spotless/releases/latest)
 [![Branch develop](http://img.shields.io/badge/develop-1.1--SNAPSHOT-lightgrey.svg)](https://github.com/diffplug/spotless/tree/develop)
@@ -37,18 +38,18 @@ If you want to audit what `spotlessApply` will do to your code:
 * If you don't like what spotless did, `git reset --hard`.
 * If you'd like to remove the "checkpoint" commit, `git reset --soft head~1` will make the checkpoint commit "disappear" from history, but keeps the changes in your working directory.
 
+Contributions are welcome, see [the contributing guide](CONTRIBUTING.md) for development info.
+
+## Example configurations (from real-world projects)
+
+* [Durian](https://github.com/diffplug/durian) ([direct link to spotless section in its build.gradle](https://github.com/diffplug/durian/blob/develop/build.gradle?ts=4#L70-90))
+* (Your project here) 
+
 ## Adding spotless to Java source
 
-```groovy
-buildscript {
-	repositories {
-		jcenter()
-	}
-	dependencies {
-		classpath 'com.diffplug.gradle.spotless:spotless:1.0'
-	}
-}
+Spotless is hosted on jcenter and at plugins.gradle.org. [Go here](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless) if you're not sure how to apply the plugin.
 
+```groovy
 apply plugin: 'java'
 ...
 
@@ -135,9 +136,9 @@ spotless {
 }
 ```
 
-See [`FormatExtension.java`](https://github.com/diffplug/spotless/blob/master/src/main/java/com/diffplug/gradle/spotless/FormatExtension.java) for further details on the default rules.
+See [`FormatExtension.java`](src/main/java/com/diffplug/gradle/spotless/FormatExtension.java?ts=4) for further details on the default rules.
 
-See [`JavaExtension.java`](https://github.com/diffplug/spotless/blob/master/src/main/java/com/diffplug/gradle/spotless/java/JavaExtension.java) for further details on how the Java formatter is implemented.
+See [`JavaExtension.java`](src/main/java/com/diffplug/gradle/spotless/java/JavaExtension.java?ts=4) for further details on how the Java formatter is implemented.
 
 ## Acknowledgements
 
