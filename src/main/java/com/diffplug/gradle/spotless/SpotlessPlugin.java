@@ -22,6 +22,8 @@ import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaBasePlugin;
 
+import com.diffplug.common.base.Errors;
+
 public class SpotlessPlugin implements Plugin<Project> {
 	Project project;
 	SpotlessExtension extension;
@@ -38,13 +40,7 @@ public class SpotlessPlugin implements Plugin<Project> {
 		// ExtensionContainer container = ((ExtensionAware) project.getExtensions().getByName(EXTENSION)).getExtensions();
 
 		// after the project has been evaluated, configure the check and format tasks per source set
-		project.afterEvaluate(unused -> {
-			try {
-				createTasks();
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
-		});
+		project.afterEvaluate(unused -> Errors.rethrow().run(this::createTasks));
 	}
 
 	/** The extension for this plugin. */
