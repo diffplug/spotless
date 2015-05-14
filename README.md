@@ -2,8 +2,8 @@
 
 [![Gradle plugin](https://img.shields.io/badge/plugins.gradle.org-com.diffplug.gradle.spotless-blue.svg)](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless)
 [![JCenter artifact](https://img.shields.io/badge/jcenter-com.diffplug.gradle.spotless%3Aspotless-blue.svg)](https://bintray.com/diffplug/opensource/spotless/view)
-[![Branch master](http://img.shields.io/badge/master-1.0-lightgrey.svg)](https://github.com/diffplug/spotless/releases/latest)
-[![Branch develop](http://img.shields.io/badge/develop-1.1--SNAPSHOT-lightgrey.svg)](https://github.com/diffplug/spotless/tree/develop)
+[![Branch master](http://img.shields.io/badge/master-1.1-lightgrey.svg)](https://github.com/diffplug/spotless/releases/latest)
+[![Branch develop](http://img.shields.io/badge/develop-1.2--SNAPSHOT-lightgrey.svg)](https://github.com/diffplug/spotless/tree/develop)
 [![Branch develop Travis CI](https://travis-ci.org/diffplug/spotless.svg?branch=develop)](https://travis-ci.org/diffplug/spotless)
 [![License](https://img.shields.io/badge/license-Apache-blue.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
 
@@ -47,7 +47,7 @@ Contributions are welcome, see [the contributing guide](CONTRIBUTING.md) for dev
 
 ## Adding spotless to Java source
 
-Spotless is hosted on jcenter and at plugins.gradle.org. [Go here](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless) if you're not sure how to apply the plugin.
+Spotless is hosted on jcenter and at plugins.gradle.org. [Go here](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless) if you're not sure how to import the plugin.
 
 ```groovy
 apply plugin: 'java'
@@ -142,14 +142,13 @@ See [`JavaExtension.java`](src/main/java/com/diffplug/gradle/spotless/java/JavaE
 
 ## Acknowledgements
 
-* Maintained by [DiffPlug](http://www.diffplug.com/).
 * Formatting by Eclipse 4.5 M6
 	+ Special thanks to [Mateusz Matela](https://waynebeaton.wordpress.com/2015/03/15/great-fixes-for-mars-winners-part-i/) for huge improvements to the eclipse code formatter!
 * Forked from [gradle-format-plugin](https://github.com/youribonnaffe/gradle-format-plugin) by Youri Bonnaffé.
 * Import ordering from [EclipseCodeFormatter](https://github.com/krasa/EclipseCodeFormatter).
 * Built by [gradle](http://gradle.org/).
 * Tested by [junit](http://junit.org/).
-* Artifacts hosted by [jcenter](https://bintray.com/bintray/jcenter) and uploaded by [gradle-bintray-plugin](https://github.com/bintray/gradle-bintray-plugin).
+* Maintained by [DiffPlug](http://www.diffplug.com/).
 
 ## Exporting / importing from Eclipse
 
