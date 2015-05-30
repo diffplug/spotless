@@ -43,7 +43,7 @@ Contributions are welcome, see [the contributing guide](CONTRIBUTING.md) for dev
 ## Example configurations (from real-world projects)
 
 * [Durian](https://github.com/diffplug/durian) ([direct link to spotless section in its build.gradle](https://github.com/diffplug/durian/blob/develop/build.gradle?ts=4#L70-90))
-* (Your project here) 
+* (Your project here)
 
 ## Adding spotless to Java source
 
@@ -56,8 +56,8 @@ apply plugin: 'java'
 apply plugin: 'com.diffplug.gradle.spotless'
 spotless {
 	java {
-		licenseHeader '/** Licensed under Apache-2.0 */'	// License header
-		licenseHeaderFile 'spotless.license.java'			// License header file
+		licenseHeader '/* Licensed under Apache-2.0 */'	// License header
+		licenseHeaderFile 'spotless.license.java'		// License header file
 		// Obviously, you can't specify both licenseHeader and licenseHeaderFile at the same time
 
 		importOrder ['java', 'javax', 'org', 'com', 'com.diffplug']	// An array of package names

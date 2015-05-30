@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -61,8 +61,8 @@ public class SpotlessPlugin implements Plugin<Project> {
 		// getTasks() returns a "live" collection, so this works even if the
 		// task doesn't exist at the time this call is made
 		project.getTasks()
-			.matching(task -> task.getName().equals(JavaBasePlugin.CHECK_TASK_NAME))
-			.all(task -> task.dependsOn(rootCheckTask));
+				.matching(task -> task.getName().equals(JavaBasePlugin.CHECK_TASK_NAME))
+				.all(task -> task.dependsOn(rootCheckTask));
 	}
 
 	FormatTask createTask(String name, FormatExtension subExtension, boolean check) throws Exception {

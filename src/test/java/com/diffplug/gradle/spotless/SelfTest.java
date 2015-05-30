@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,7 +37,8 @@ import org.junit.Test;
  */
 public class SelfTest {
 	/** Runs the check (which we want to happen in the test suite). */
-	@Test @Ignore("The test passes in real life and Eclipse, but fails in Gradle test runner...")
+	@Test
+	@Ignore("The test passes in real life and Eclipse, but fails in Gradle test runner...")
 	public void check() throws Exception {
 		try {
 			runTasksWithCheck(true);
@@ -57,7 +58,7 @@ public class SelfTest {
 			extension.java(java -> {
 				java.target("**/*.java");
 				java.licenseHeaderFile("spotless.license.java");
-				java.importOrderFile("spotless.importorder.properties");
+				java.importOrderFile("spotless.importorder");
 				java.eclipseFormatFile("spotless.eclipseformat.xml");
 				java.customLazy("Lambda fix", () -> raw -> {
 					if (!raw.contains("public class SelfTest ")) {
