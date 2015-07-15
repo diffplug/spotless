@@ -1,6 +1,6 @@
 # Contributing to Spotless
 
-Pull requests are welcome, preferably against the branch `develop`, and definitely not against `master`.
+Pull requests are welcome, preferably against `master`.
 
 ## Build instructions
 

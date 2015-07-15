@@ -2,10 +2,10 @@
 
 [![Gradle plugin](https://img.shields.io/badge/plugins.gradle.org-com.diffplug.gradle.spotless-blue.svg)](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless)
 [![JCenter artifact](https://img.shields.io/badge/jcenter-com.diffplug.gradle.spotless%3Aspotless-blue.svg)](https://bintray.com/diffplug/opensource/spotless/view)
-[![Branch master](http://img.shields.io/badge/master-1.1-lightgrey.svg)](https://github.com/diffplug/spotless/releases/latest)
-[![Branch develop](http://img.shields.io/badge/develop-1.2--SNAPSHOT-lightgrey.svg)](https://github.com/diffplug/spotless/tree/develop)
-[![Branch develop Travis CI](https://travis-ci.org/diffplug/spotless.svg?branch=develop)](https://travis-ci.org/diffplug/spotless)
-[![License](https://img.shields.io/badge/license-Apache-blue.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
+[![Latest version](http://img.shields.io/badge/latest-1.1-blue.svg)](https://github.com/diffplug/spotless/releases/latest)
+[![Changelog](http://img.shields.io/badge/changelog-1.2--SNAPSHOT-lightgrey.svg)](CHANGES.md)
+[![Travis CI](https://travis-ci.org/diffplug/spotless.svg?branch=master)](https://travis-ci.org/diffplug/spotless)
+[![License](https://img.shields.io/badge/license-Apache-brightgreen.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
 
 Spotless can check and apply formatting for any plain-text file, with special support for Java.  It supports several formatters out of the box, including:
 
@@ -142,7 +142,7 @@ See [`JavaExtension.java`](src/main/java/com/diffplug/gradle/spotless/java/JavaE
 
 ## Acknowledgements
 
-* Formatting by Eclipse 4.5 M6
+* Formatting by Eclipse 4.5
 	+ Special thanks to [Mateusz Matela](https://waynebeaton.wordpress.com/2015/03/15/great-fixes-for-mars-winners-part-i/) for huge improvements to the eclipse code formatter!
 * Forked from [gradle-format-plugin](https://github.com/youribonnaffe/gradle-format-plugin) by Youri Bonnaffé.
 * Import ordering from [EclipseCodeFormatter](https://github.com/krasa/EclipseCodeFormatter).
