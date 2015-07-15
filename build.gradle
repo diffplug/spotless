@@ -16,7 +16,7 @@ repositories {
 	ivy {
 		// Eclipse 4.5 M6 has lots of formatter improvements
 		// Future versions can be found here: http://download.eclipse.org/eclipse/downloads/index.html
-		url "http://download.eclipse.org/eclipse/updates/4.5milestones/S-4.5M6-201503200800/"
+		url "http://download.eclipse.org/eclipse/updates/4.5/R-4.5-201506032000/"
 		layout "pattern", {
 			artifact "plugins/[artifact]_[revision].[ext]"
 		}
@@ -54,8 +54,8 @@ dependencies {
 	compile "com.diffplug.durian:durian:${VER_DURIAN}"
 
 	// The only dependencies we actually use
-	embeddedJars 'p2:org.eclipse.jdt.core:3.11.0.v20150317-0048'
-	embeddedJars 'p2:org.eclipse.text:3.5.400.v20140915-2351'
+	embeddedJars 'p2:org.eclipse.jdt.core:3.11.0.v20150602-1242'
+	embeddedJars 'p2:org.eclipse.text:3.5.400.v20150505-1044'
 
 	// Because gradle can't consume p2, we have to resolve the transitive dependencies - and their versions - by hand.
 	// The transitive dependencies are extremely unlikely to change, but we're probably going to want to upgrade to newer versions of Eclipse.
@@ -63,13 +63,13 @@ dependencies {
 	// - Download http://download.eclipse.org/eclipse/updates/4.5milestones/S-4.5M6-201503200800/artifacts.jar
 	// - Unzip this file, and you'll have artifacts.xml
 	// - Grep through the file for the plugin id, and copy the version below
-	embeddedJars 'p2:org.eclipse.core.contenttype:3.4.200.v20150316-1243'
-	embeddedJars 'p2:org.eclipse.core.jobs:3.7.0.v20150316-1238'
-	embeddedJars 'p2:org.eclipse.core.runtime:3.11.0.v20150316-1241'
-	embeddedJars 'p2:org.eclipse.core.resources:3.9.100.v20150313-1707'
-	embeddedJars 'p2:org.eclipse.equinox.common:3.7.0.v20150318-1503'
-	embeddedJars 'p2:org.eclipse.equinox.preferences:3.5.300.v20150313-2125'
-	embeddedJars 'p2:org.eclipse.osgi:3.10.100.v20150318-0312'
+	embeddedJars 'p2:org.eclipse.core.contenttype:3.5.0.v20150421-2214'
+	embeddedJars 'p2:org.eclipse.core.jobs:3.7.0.v20150330-2103'
+	embeddedJars 'p2:org.eclipse.core.runtime:3.11.0.v20150405-1723'
+	embeddedJars 'p2:org.eclipse.core.resources:3.10.0.v20150423-0755'
+	embeddedJars 'p2:org.eclipse.equinox.common:3.7.0.v20150402-1709'
+	embeddedJars 'p2:org.eclipse.equinox.preferences:3.5.300.v20150408-1437'
+	embeddedJars 'p2:org.eclipse.osgi:3.10.100.v20150529-1857'
 
 	configurations.compile.extendsFrom(configurations.embeddedJars)
 }
