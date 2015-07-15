@@ -1,5 +1,9 @@
 # Spotless releases
 
+### Version 1.2 - TBD
+
+* Updated from Eclipse 4.5 M6 to the official Eclipse 4.5 release.
+
 ### Version 1.1 - May 14th 2015 ([jcenter](https://bintray.com/diffplug/opensource/spotless/1.1/view))
 
 * No functional changes, probably not worth the time for an upgrade.

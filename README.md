@@ -3,7 +3,7 @@
 [![Gradle plugin](https://img.shields.io/badge/plugins.gradle.org-com.diffplug.gradle.spotless-blue.svg)](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless)
 [![JCenter artifact](https://img.shields.io/badge/jcenter-com.diffplug.gradle.spotless%3Aspotless-blue.svg)](https://bintray.com/diffplug/opensource/spotless/view)
 [![Latest version](http://img.shields.io/badge/latest-1.1-blue.svg)](https://github.com/diffplug/spotless/releases/latest)
-[![Changelog](http://img.shields.io/badge/changelog-1.2--SNAPSHOT-lightgrey.svg)](CHANGES.md)
+[![Changelog](http://img.shields.io/badge/changelog-1.2--SNAPSHOT-brightgreen.svg)](CHANGES.md)
 [![Travis CI](https://travis-ci.org/diffplug/spotless.svg?branch=master)](https://travis-ci.org/diffplug/spotless)
 [![License](https://img.shields.io/badge/license-Apache-brightgreen.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
 
