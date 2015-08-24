@@ -6,6 +6,7 @@
 [![Changelog](http://img.shields.io/badge/changelog-1.2--SNAPSHOT-brightgreen.svg)](CHANGES.md)
 [![Travis CI](https://travis-ci.org/diffplug/spotless.svg?branch=master)](https://travis-ci.org/diffplug/spotless)
 [![License](https://img.shields.io/badge/license-Apache-brightgreen.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
+[![Join the chat at https://gitter.im/diffplug/gitfromscratch](https://img.shields.io/badge/gitter-live_chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
 
 Spotless can check and apply formatting for any plain-text file, with special support for Java.  It supports several formatters out of the box, including:
 
