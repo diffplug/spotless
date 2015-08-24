@@ -1,5 +1,7 @@
 # <img align="left" src="images/spotless_logo.png"> Spotless: Keep your code spotless with Gradle
 
+[![Join the chat at https://gitter.im/diffplug/spotless](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/diffplug/spotless?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Gradle plugin](https://img.shields.io/badge/plugins.gradle.org-com.diffplug.gradle.spotless-blue.svg)](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless)
 [![JCenter artifact](https://img.shields.io/badge/jcenter-com.diffplug.gradle.spotless%3Aspotless-blue.svg)](https://bintray.com/diffplug/opensource/spotless/view)
 [![Latest version](http://img.shields.io/badge/latest-1.1-blue.svg)](https://github.com/diffplug/spotless/releases/latest)
