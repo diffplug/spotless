@@ -88,7 +88,8 @@ public class Formatter {
 			try {
 				unix = step.format(unix);
 			} catch (Throwable e) {
-				logger.warn("Unable to apply step " + step.getName() + " to " + rootDir.relativize(file.toPath()) + ": " + e.getMessage());
+				logger.warn("Unable to apply step " + step.getName() + " to " + projectDirectory.relativize(file.toPath()) + ": " + e.getMessage());
+				logger.info("Exception is ", e);
 			}
 		}
 		return unix;
