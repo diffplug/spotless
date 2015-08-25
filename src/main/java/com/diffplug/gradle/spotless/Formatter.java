@@ -30,13 +30,13 @@ import org.gradle.api.logging.Logging;
 /** Formatter which performs the full formatting. */
 public class Formatter {
 	private final LineEnding lineEnding;
-	private final Path rootDir;
+	private final Path projectDirectory;
 	private final List<FormatterStep> steps;
 	private final Logger logger = Logging.getLogger(Formatter.class);
 
-	public Formatter(LineEnding lineEnding, Path rootDir, List<FormatterStep> steps) {
+	public Formatter(LineEnding lineEnding, Path projectDirectory, List<FormatterStep> steps) {
 		this.lineEnding = lineEnding;
-		this.rootDir = rootDir;
+		this.projectDirectory = projectDirectory;
 		this.steps = new ArrayList<>(steps);
 	}
 

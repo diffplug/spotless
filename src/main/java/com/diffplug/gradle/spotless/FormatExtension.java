@@ -75,12 +75,12 @@ public class FormatExtension {
 			return (FileCollection) target;
 		} else if (target instanceof String) {
 			Map<String, Object> args = new HashMap<>();
-			args.put("dir", getProject().getRootDir());
+			args.put("dir", getProject().getProjectDir());
 			args.put("include", (String) target);
 			return getProject().fileTree(args);
 		} else if (target instanceof List && ((List<?>) target).stream().allMatch(o -> o instanceof String)) {
 			Map<String, Object> args = new HashMap<>();
-			args.put("dir", getProject().getRootDir());
+			args.put("dir", getProject().getProjectDir());
 			args.put("includes", (List<String>) target);
 			return getProject().fileTree(args);
 		} else {

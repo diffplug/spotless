@@ -40,11 +40,9 @@ public class FormatTask extends DefaultTask {
 
 	@TaskAction
 	public void format() throws Exception {
-		if (target == null) {
-			throw new GradleException("You must specify 'Iterable<File> toFormat'");
-		}
+		if (target == null) { throw new GradleException("You must specify 'Iterable<File> toFormat'"); }
 		// combine them into the master formatter
-		Formatter formatter = new Formatter(lineEndings, getProject().getRootDir().toPath(), steps);
+		Formatter formatter = new Formatter(lineEndings, getProject().getProjectDir().toPath(), steps);
 
 		// perform the check
 		if (check) {
