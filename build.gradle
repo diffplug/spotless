@@ -4,10 +4,8 @@ buildscript {
 		maven { url "https://plugins.gradle.org/m2/" }
 	}
 	dependencies {
-		// uploads artifacts to jcenter
-		classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:${VER_BINTRAY}"
 		// uploads to plugin portal
-		classpath "com.gradle.publish:plugin-publish-plugin:0.9.0"
+		classpath "com.gradle.publish:plugin-publish-plugin:0.9.1"
 	}
 }
 
@@ -118,58 +116,65 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 	from javadoc.destinationDir
 }
 
+////////////////
+// PUBLISHING //
+////////////////
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
 			from components.java
 			artifact sourcesJar
 			artifact javadocJar
-			// remove the p2 dependencies because they are embedded
 			pom.withXml {
+				// remove the p2 dependencies because they are embedded
 				asNode().dependencies.'*'.each() {
 					if (it.groupId.text() == 'p2') {
 						it.parent().remove(it)
 					}
 				}
-			}
-		}
-	}
-}
-
-/////////////
-// BINTRAY //
-/////////////
-if (project.hasProperty('dp_bintray_user')) {
-	apply plugin: 'com.jfrog.bintray'
-	bintray {
-		user = dp_bintray_user
-		key = dp_bintray_key
-
-		publish=false
-		publications = ['mavenJava']
-		pkg {
-			repo = 'opensource'
-			name = project.name
-			userOrg = project.org
-			desc = project.description
-			websiteUrl = "https://github.com/${org}/${name}"
-			issueTrackerUrl = "https://github.com/${org}/${name}/issues"
-			vcsUrl = "https://github.com/${org}/${name}"
-			licenses = ['Apache-2.0']
-			publicDownloadNumbers = true
-			// Optional version descriptor
-			version {
-				name = project.version
-				if (project.version.endsWith('SNAPSHOT')) {
-					vcsTag = 'develop'
-				} else {
-					vcsTag = 'v' + project.version
+				// add MavenCentral requirements to the POM
+				asNode().children().last() + {
+					resolveStrategy = Closure.DELEGATE_FIRST
+					name project.name
+					description project.description
+					url "https://github.com/${project.org}/${project.name}"
+					scm {
+						url "https://github.com/${project.org}/${project.name}"
+						connection "scm:git:git://github.com/${project.org}/${project.name}"
+						developerConnection "scm:git:ssh:git@github.com/${project.org}/${project.name}"
+					}
+					licenses {
+						license {
+							name 'The Apache Software License, Version 2.0'
+							url 'http://www.apache.org/license/LICENSE-2.0.txt'
+							distribution 'repo'
+						}
+					}
+					developers {
+						developer {
+							id 'nedtwigg'
+							name 'Ned Twigg'
+							email 'ned.twigg@diffplug.com'
+						}
+					}
 				}
 			}
 		}
 	}
-	// surprisingly, this actually needs to be here
-	bintrayUpload.dependsOn(publish, sourcesJar, javadocJar)
+	repositories {
+		maven {
+			def isSnapshot = project.version.endsWith('-SNAPSHOT')
+			if (isSnapshot) {
+				url = 'https://oss.sonatype.org/content/repositories/snapshots'
+			} else {
+				url = "https://api.bintray.com/maven/diffplug/opensource/${project.name}"
+			}
+			credentials {
+				username = System.env[isSnapshot ? 'nexus_user' : 'bintray_user']
+				password = System.env[isSnapshot ? 'nexus_pass' : 'bintray_pass']
+			}
+		}
+	}
 }
 
 //////////////////////////
@@ -177,8 +182,8 @@ if (project.hasProperty('dp_bintray_user')) {
 //////////////////////////
 pluginBundle {
 	// These settings are set for the whole plugin bundle
-	website = "https://github.com/${org}/${name}"
-	vcsUrl = "https://github.com/${org}/${name}"
+	website = "https://github.com/${project.org}/${project.name}"
+	vcsUrl = "https://github.com/${project.org}/${project.name}"
 	description = project.description
 
 	plugins {
@@ -195,5 +200,3 @@ pluginBundle {
 		version = project.version
 	}
 }
-
-task publishAll(dependsOn: ['bintrayUpload', 'publishPlugins'])
