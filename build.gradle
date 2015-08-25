@@ -172,6 +172,10 @@ publishing {
 			credentials {
 				username = System.env[isSnapshot ? 'nexus_user' : 'bintray_user']
 				password = System.env[isSnapshot ? 'nexus_pass' : 'bintray_pass']
+				if (username == null || password == null) {
+					username = project.property(isSnapshot ? 'nexus_user' : 'bintray_user')
+					password = project.property(isSnapshot ? 'nexus_pass' : 'bintray_pass')
+				}
 			}
 		}
 	}

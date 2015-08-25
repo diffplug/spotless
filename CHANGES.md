@@ -1,8 +1,13 @@
 # Spotless releases
 
-### Version 1.2 - TBD
+### Version 1.3.0 - TBD
 
-* Updated from Eclipse 4.5 M6 to the official Eclipse 4.5 release.
+### Version 1.2.0 - August 25th 2015 ([jcenter](https://bintray.com/diffplug/opensource/spotless/1.2.0/view))
+
+* Updated from Eclipse 4.5 M6 to the official Eclipse 4.5 release, which fixes several bugs in the formatter.
+* Fixed a bug in the import sorter which made it impossible to deal with "all unmatched type imports".
+* Formatting is now relative to the project directory rather than the root directory.
+* Improved the logging levels.
 
 ### Version 1.1 - May 14th 2015 ([jcenter](https://bintray.com/diffplug/opensource/spotless/1.1/view))
 
