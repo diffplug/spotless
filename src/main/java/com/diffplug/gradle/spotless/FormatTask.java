@@ -58,7 +58,7 @@ public class FormatTask extends DefaultTask {
 	private void formatCheck(Formatter formatter) throws IOException {
 		List<File> problemFiles = new ArrayList<>();
 		for (File file : target) {
-			getLogger().info("Checking format on " + file);
+			getLogger().debug("Checking format on " + file);
 			// keep track of the problem toFormat
 			if (!formatter.isClean(file)) {
 				problemFiles.add(file);
@@ -75,7 +75,7 @@ public class FormatTask extends DefaultTask {
 	/** Applies the format. */
 	private void formatApply(Formatter formatter) throws IOException {
 		for (File file : target) {
-			getLogger().info("Applying format to " + file);
+			getLogger().debug("Applying format to " + file);
 			// keep track of the problem toFormat
 			formatter.applyFormat(file);
 		}
