@@ -146,6 +146,7 @@ See [`JavaExtension.java`](src/main/java/com/diffplug/gradle/spotless/java/JavaE
 * Formatting by Eclipse 4.5
 	+ Special thanks to [Mateusz Matela](https://waynebeaton.wordpress.com/2015/03/15/great-fixes-for-mars-winners-part-i/) for huge improvements to the eclipse code formatter!
 * Forked from [gradle-format-plugin](https://github.com/youribonnaffe/gradle-format-plugin) by Youri Bonnaffé.
+* Thanks to Gábor Bernát for improvements to logging and multi-project support.
 * Import ordering from [EclipseCodeFormatter](https://github.com/krasa/EclipseCodeFormatter).
 * Built by [gradle](http://gradle.org/).
 * Tested by [junit](http://junit.org/).
