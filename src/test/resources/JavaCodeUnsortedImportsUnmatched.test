@@ -1,0 +1,8 @@
+import static java.lang.Exception.*;
+import com.google.common.SomeClass;
+
+import java.lang.Thread;
+import java.lang.Runnable;
+import javax.swing.SomeClass;
+
+import unknown.package.Class;

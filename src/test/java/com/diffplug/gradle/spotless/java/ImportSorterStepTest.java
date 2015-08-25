@@ -33,4 +33,10 @@ public class ImportSorterStepTest extends ResourceTest {
 		ImportSorterStep step = new ImportSorterStep(createTestFile("import.properties"));
 		assertStep(step::format, "JavaCodeUnsortedImports.test", "JavaCodeSortedImports.test");
 	}
+
+	@Test
+	public void sortImportsUnmatched() throws Throwable {
+		ImportSorterStep step = new ImportSorterStep(createTestFile("import_unmatched.properties"));
+		assertStep(step::format, "JavaCodeUnsortedImportsUnmatched.test", "JavaCodeSortedImportsUnmatched.test");
+	}
 }

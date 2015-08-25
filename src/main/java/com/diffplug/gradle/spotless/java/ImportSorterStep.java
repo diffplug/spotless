@@ -51,7 +51,7 @@ public class ImportSorterStep {
 				.map(line -> {
 					String[] pieces = line.split("=");
 					int idx = Integer.parseInt(pieces[0]);
-					String name = pieces[1];
+					String name = pieces.length == 2 ? pieces[1] : "";
 					return new AbstractMap.SimpleEntry<Integer, String>(idx, name);
 				})
 				// collect into map
