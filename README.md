@@ -43,7 +43,7 @@ Contributions are welcome, see [the contributing guide](CONTRIBUTING.md) for dev
 
 ## Example configurations (from real-world projects)
 
-* [Durian](https://github.com/diffplug/durian) ([direct link to spotless section in its build.gradle](https://github.com/diffplug/durian/blob/develop/build.gradle?ts=4#L70-90))
+* [Durian](https://github.com/diffplug/durian) ([direct link to spotless section in its build.gradle](https://github.com/diffplug/durian/blob/v3.1.2/build.gradle?ts=4#L65-L85))
 * (Your project here)
 
 ## Adding spotless to Java source
