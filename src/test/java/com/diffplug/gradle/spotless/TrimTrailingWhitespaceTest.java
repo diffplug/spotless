@@ -40,6 +40,7 @@ public class TrimTrailingWhitespaceTest extends ResourceTest {
 		trimTrailingWhitespaceTestCase("Line\nLine  ", "Line\nLine");
 		trimTrailingWhitespaceTestCase("Line  \nLine  ", "Line\nLine");
 		trimTrailingWhitespaceTestCase("  Line  \nLine  ", "  Line\nLine");
+		trimTrailingWhitespaceTestCase("  Line  \n  Line  ", "  Line\n  Line");
 	}
 
 	private void trimTrailingWhitespaceTestCase(String before) throws Exception {
