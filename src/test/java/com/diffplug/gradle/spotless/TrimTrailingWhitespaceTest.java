@@ -48,8 +48,10 @@ public class TrimTrailingWhitespaceTest extends ResourceTest {
 	}
 
 	private void trimTrailingWhitespaceTestCase(String before, String after) throws Exception {
-		super.assertTask(test -> {
-			test.trimTrailingWhitespace();
+		super.assertTask(new SimpleConsumer<FormatExtension>() {
+			public void accept(FormatExtension extension) {
+				extension.trimTrailingWhitespace();
+			}
 		}, before, after);
 	}
 }

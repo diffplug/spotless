@@ -21,7 +21,7 @@ public enum LineEnding {
 
 	public final String string;
 
-	private LineEnding(String ending) {
+	LineEnding(String ending) {
 		this.string = ending;
 	}
 

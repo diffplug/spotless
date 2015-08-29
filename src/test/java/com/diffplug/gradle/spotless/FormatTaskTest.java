@@ -15,15 +15,16 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
+import org.junit.Before;
+import org.junit.Test;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.testfixtures.ProjectBuilder;
-import org.junit.Before;
-import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
 
 public class FormatTaskTest extends ResourceTest {
 	private Project project;
@@ -32,7 +33,7 @@ public class FormatTaskTest extends ResourceTest {
 	@Before
 	public void createTask() {
 		project = ProjectBuilder.builder().build();
-		task = (FormatTask) project.getTasks().create("underTest", FormatTask.class);
+		task = project.getTasks().create("underTest", FormatTask.class);
 	}
 
 	@Test(expected = GradleException.class)
@@ -69,7 +70,12 @@ public class FormatTaskTest extends ResourceTest {
 		task.target = Collections.singleton(testFile);
 
 		task.check = true;
-		task.steps.add(FormatterStep.create("double-p", content -> content.replace("pp", "p")));
+		task.steps.add(FormatterStep.create("double-p", new FormattingOperation() {
+			@Override
+			public String apply(String raw) throws Throwable {
+				return raw.replace("pp", "p");
+			}
+		}));
 		task.execute();
 
 		assertFileContent("\n", testFile);
@@ -81,7 +87,12 @@ public class FormatTaskTest extends ResourceTest {
 		task.target = Collections.singleton(testFile);
 
 		task.check = true;
-		task.steps.add(FormatterStep.create("double-p", content -> content.replace("pp", "p")));
+		task.steps.add(FormatterStep.create("double-p", new FormattingOperation() {
+			@Override
+			public String apply(String raw) throws Throwable {
+				return raw.replace("pp", "p");
+			}
+		}));
 		task.execute();
 	}
 
@@ -91,7 +102,12 @@ public class FormatTaskTest extends ResourceTest {
 		task.target = Collections.singleton(testFile);
 
 		task.check = false;
-		task.steps.add(FormatterStep.create("double-p", content -> content.replace("pp", "p")));
+		task.steps.add(FormatterStep.create("double-p", new FormattingOperation() {
+			@Override
+			public String apply(String raw) throws Throwable {
+				return raw.replace("pp", "p");
+			}
+		}));
 		task.execute();
 
 		super.assertFileContent("aple", testFile);

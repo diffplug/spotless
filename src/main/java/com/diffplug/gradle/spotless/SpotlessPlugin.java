@@ -15,22 +15,25 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.util.Map;
-
+import org.gradle.api.Action;
+import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaBasePlugin;
 
-import com.diffplug.common.base.Errors;
+import java.util.Map;
 
 public class SpotlessPlugin implements Plugin<Project> {
-	Project project;
-	SpotlessExtension extension;
-
 	static final String EXTENSION = "spotless";
-	static final String CHECK = "Check";
 	static final String APPLY = "Apply";
+	private static final String CHECK = "Check";
+	private Project project;
+	private SpotlessExtension extension;
+
+	private static String capitalize(String input) {
+		return Character.toUpperCase(input.charAt(0)) + input.substring(1);
+	}
 
 	public void apply(Project project) {
 		this.project = project;
@@ -40,7 +43,17 @@ public class SpotlessPlugin implements Plugin<Project> {
 		// ExtensionContainer container = ((ExtensionAware) project.getExtensions().getByName(EXTENSION)).getExtensions();
 
 		// after the project has been evaluated, configure the check and format tasks per source set
-		project.afterEvaluate(unused -> Errors.rethrow().run(this::createTasks));
+		project.afterEvaluate(new Action<Project>() {
+			@Override
+			public void execute(Project project) {
+				try {
+					createTasks();
+				}
+				catch (Exception e) {
+					throw new GradleException("failed to configure", e);
+				}
+			}
+		});
 	}
 
 	/** The extension for this plugin. */
@@ -60,9 +73,11 @@ public class SpotlessPlugin implements Plugin<Project> {
 		// Add our check task as a dependency on the global check task
 		// getTasks() returns a "live" collection, so this works even if the
 		// task doesn't exist at the time this call is made
-		project.getTasks()
-				.matching(task -> task.getName().equals(JavaBasePlugin.CHECK_TASK_NAME))
-				.all(task -> task.dependsOn(rootCheckTask));
+		for (Task task : project.getTasks()) {
+			if (task.getName().equals(JavaBasePlugin.CHECK_TASK_NAME)) {
+				task.dependsOn(rootCheckTask);
+			}
+		}
 	}
 
 	FormatTask createTask(String name, FormatExtension subExtension, boolean check) throws Exception {
@@ -72,9 +87,5 @@ public class SpotlessPlugin implements Plugin<Project> {
 		// sets toFormat and steps
 		subExtension.setupTask(task);
 		return task;
-	}
-
-	private static String capitalize(String input) {
-		return Character.toUpperCase(input.charAt(0)) + input.substring(1);
 	}
 }

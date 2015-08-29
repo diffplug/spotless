@@ -33,8 +33,11 @@ public class EndWithNewlineTest extends ResourceTest {
 	}
 
 	private void endWithNewlineTest(String before, String after) throws Exception {
-		super.assertTask(test -> {
-			test.endWithNewline();
+		super.assertTask(new SimpleConsumer<FormatExtension>() {
+			@Override
+			public void accept(FormatExtension ext) {
+				ext.endWithNewline();
+			}
 		}, before, after);
 	}
 }

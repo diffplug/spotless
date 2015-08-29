@@ -15,26 +15,38 @@
  */
 package com.diffplug.gradle.spotless.java;
 
-import java.io.File;
-
-import org.gradle.api.GradleException;
 import org.junit.Test;
 
+import org.gradle.api.GradleException;
+
+import com.diffplug.gradle.spotless.FormattingOperation;
 import com.diffplug.gradle.spotless.ResourceTest;
+
+import java.io.File;
 
 public class EclipseFormatterStepTest extends ResourceTest {
 	@Test
 	public void loadPropertiesSettings() throws Throwable {
 		// setting for the formatter
-		EclipseFormatterStep step = EclipseFormatterStep.load(createTestFile("formatter.properties"));
-		assertStep(step::format, "JavaCodeUnformatted.test", "JavaCodeFormatted.test");
+		final EclipseFormatterStep step = EclipseFormatterStep.load(createTestFile("formatter.properties"));
+		assertStep(new FormattingOperation() {
+			@Override
+			public String apply(String raw) throws Throwable {
+				return step.format(raw);
+			}
+		}, "JavaCodeUnformatted.test", "JavaCodeFormatted.test");
 	}
 
 	@Test
 	public void loadXmlSettings() throws Throwable {
 		// setting for the formatter
-		EclipseFormatterStep step = EclipseFormatterStep.load(createTestFile("formatter.xml"));
-		assertStep(step::format, "JavaCodeUnformatted.test", "JavaCodeFormatted.test");
+		final EclipseFormatterStep step = EclipseFormatterStep.load(createTestFile("formatter.xml"));
+		assertStep(new FormattingOperation() {
+			@Override
+			public String apply(String raw) throws Throwable {
+				return step.format(raw);
+			}
+		}, "JavaCodeUnformatted.test", "JavaCodeFormatted.test");
 	}
 
 	@Test(expected = GradleException.class)

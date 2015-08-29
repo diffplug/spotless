@@ -15,20 +15,59 @@
  */
 package com.diffplug.gradle.spotless.java;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 // From https://github.com/krasa/EclipseCodeFormatter
 /*not thread safe*/
 class ImportSorterImpl {
 
-	private List<String> template = new ArrayList<String>();
-	private Map<String, List<String>> matchingImports = new HashMap<String, List<String>>();
-	private ArrayList<String> notMatching = new ArrayList<String>();
-	private Set<String> allImportOrderItems = new HashSet<String>();
+	private final List<String> template = new ArrayList<String>();
+	private final Map<String, List<String>> matchingImports = new HashMap<String, List<String>>();
+	private final ArrayList<String> notMatching = new ArrayList<String>();
+	private final Set<String> allImportOrderItems = new HashSet<String>();
+
+	private ImportSorterImpl(List<String> importOrder) {
+		List<String> importOrderCopy = new ArrayList<String>(importOrder);
+		normalizeStaticOrderItems(importOrderCopy);
+		putStaticItemIfNotExists(importOrderCopy);
+		template.addAll(importOrderCopy);
+		this.allImportOrderItems.addAll(importOrderCopy);
+	}
 
 	static List<String> sort(List<String> imports, List<String> importsOrder) {
 		ImportSorterImpl importsSorter = new ImportSorterImpl(importsOrder);
 		return importsSorter.sort(imports);
+	}
+
+	private static String betterMatching(String order1, String order2, String anImport) {
+		if (order1.equals(order2)) {
+			throw new IllegalArgumentException("orders are same");
+		}
+		for (int i = 0; i < anImport.length() - 1; i++) {
+			if (order1.length() - 1 == i && order2.length() - 1 != i) {
+				return order2;
+			}
+			if (order2.length() - 1 == i && order1.length() - 1 != i) {
+				return order1;
+			}
+			char orderChar1 = order1.length() != 0 ? order1.charAt(i) : ' ';
+			char orderChar2 = order2.length() != 0 ? order2.charAt(i) : ' ';
+			char importChar = anImport.charAt(i);
+
+			if (importChar == orderChar1 && importChar != orderChar2) {
+				return order1;
+			} else if (importChar != orderChar1 && importChar == orderChar2) {
+				return order2;
+			}
+
+		}
+		return null;
 	}
 
 	private List<String> sort(List<String> imports) {
@@ -38,14 +77,6 @@ class ImportSorterImpl {
 		mergeMatchingItems();
 
 		return getResult();
-	}
-
-	private ImportSorterImpl(List<String> importOrder) {
-		List<String> importOrderCopy = new ArrayList<String>(importOrder);
-		normalizeStaticOrderItems(importOrderCopy);
-		putStaticItemIfNotExists(importOrderCopy);
-		template.addAll(importOrderCopy);
-		this.allImportOrderItems.addAll(importOrderCopy);
 	}
 
 	private void putStaticItemIfNotExists(List<String> allImportOrderItems) {
@@ -222,31 +253,6 @@ class ImportSorterImpl {
 			}
 		}
 		return strings;
-	}
-
-	private static String betterMatching(String order1, String order2, String anImport) {
-		if (order1.equals(order2)) {
-			throw new IllegalArgumentException("orders are same");
-		}
-		for (int i = 0; i < anImport.length() - 1; i++) {
-			if (order1.length() - 1 == i && order2.length() - 1 != i) {
-				return order2;
-			}
-			if (order2.length() - 1 == i && order1.length() - 1 != i) {
-				return order1;
-			}
-			char orderChar1 = order1.length() != 0 ? order1.charAt(i) : ' ';
-			char orderChar2 = order2.length() != 0 ? order2.charAt(i) : ' ';
-			char importChar = anImport.charAt(i);
-
-			if (importChar == orderChar1 && importChar != orderChar2) {
-				return order1;
-			} else if (importChar != orderChar1 && importChar == orderChar2) {
-				return order2;
-			}
-
-		}
-		return null;
 	}
 
 }

@@ -17,14 +17,12 @@ package com.diffplug.gradle.spotless.java;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 /**
  * From https://github.com/krasa/EclipseCodeFormatter
@@ -33,10 +31,8 @@ import java.util.stream.Collectors;
  */
 public class ImportSorterStep {
 	public static final String NAME = "ImportSorter";
-
-	public static final int START_INDEX_OF_IMPORTS_PACKAGE_DECLARATION = 7;
 	public static final String N = "\n";
-
+	private static final int START_INDEX_OF_IMPORTS_PACKAGE_DECLARATION = 7;
 	private List<String> importsOrder;
 
 	public ImportSorterStep(List<String> importsOrder) {
@@ -44,20 +40,16 @@ public class ImportSorterStep {
 	}
 
 	public ImportSorterStep(File importsFile) throws IOException {
-		Map<Integer, String> orderToImport = Files.readAllLines(importsFile.toPath()).stream()
-				// filter out comments
-				.filter(line -> !line.startsWith("#"))
-				// parse 0=input
-				.map(line -> {
-					String[] pieces = line.split("=");
-					int idx = Integer.parseInt(pieces[0]);
-					String name = pieces.length == 2 ? pieces[1] : "";
-					return new AbstractMap.SimpleEntry<Integer, String>(idx, name);
-				})
-				// collect into map
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-		// sort the entries by the key, save the values
-		importsOrder = new ArrayList<>(new TreeMap<>(orderToImport).values());
+		TreeMap<Integer, String> orderToImport = new TreeMap<>();
+		for (String line : Files.readAllLines(importsFile.toPath(), StandardCharsets.UTF_8)) {
+			if (!line.startsWith("#")) {
+				String[] pieces = line.split("=");
+				int idx = Integer.parseInt(pieces[0]);
+				String name = pieces.length == 2 ? pieces[1] : "";
+				orderToImport.put(idx, name);
+			}
+		}
+		importsOrder = new ArrayList<>(orderToImport.values());
 	}
 
 	public String format(String raw) {

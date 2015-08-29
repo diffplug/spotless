@@ -15,14 +15,14 @@
  */
 package com.diffplug.gradle.spotless;
 
+import org.gradle.api.GradleException;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.gradle.api.GradleException;
 
 /** Prefixes a license header before the package statement. */
 public class LicenseHeaderStep {
