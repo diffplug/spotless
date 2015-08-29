@@ -15,18 +15,17 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.TaskAction;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FormatTask extends DefaultTask {
 	@InputFiles
@@ -40,7 +39,9 @@ public class FormatTask extends DefaultTask {
 
 	@TaskAction
 	public void format() throws Exception {
-		if (target == null) { throw new GradleException("You must specify 'Iterable<File> toFormat'"); }
+		if (target == null) {
+			throw new GradleException("You must specify 'Iterable<File> toFormat'");
+		}
 		// combine them into the master formatter
 		Formatter formatter = new Formatter(lineEndings, getProject().getProjectDir().toPath(), steps);
 
@@ -65,9 +66,18 @@ public class FormatTask extends DefaultTask {
 		if (!problemFiles.isEmpty()) {
 			Path rootDir = getProject().getRootDir().toPath();
 			throw new GradleException("Format violations were found. Run 'gradlew " + SpotlessPlugin.EXTENSION + SpotlessPlugin.APPLY + "' to fix them.\n"
-					+ problemFiles.stream().map(file -> "    " + rootDir.relativize(file.toPath()).toString())
-							.collect(Collectors.joining("\n")));
+					+ listOfFilePathsRelativeAsString(problemFiles, rootDir));
 		}
+	}
+
+	private String listOfFilePathsRelativeAsString(List<File> problemFiles, Path rootDir) {
+		StringBuilder output = new StringBuilder();
+		for (File file : problemFiles) {
+			output.append("    ");
+			output.append(rootDir.relativize(file.toPath()).toString());
+			output.append('\n');
+		}
+		return output.toString();
 	}
 
 	/** Applies the format. */

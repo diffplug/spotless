@@ -18,24 +18,34 @@ package com.diffplug.gradle.spotless;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.diffplug.gradle.spotless.LicenseHeaderStep;
 import com.diffplug.gradle.spotless.java.JavaExtension;
+
+import java.util.Objects;
 
 public class LicenseHeaderStepTest extends ResourceTest {
 	private static final String KEY_LICENSE = "TestLicense";
 	private static final String KEY_FILE_NOTAPPLIED = "Java8CodeFormatted.test";
 	private static final String KEY_FILE_APPLIED = "JavaCodeFormattedWithLicense.test";
 
+	FormattingOperation applyLicenseStep(final LicenseHeaderStep step) {
+		return new FormattingOperation() {
+			@Override
+			public String apply(String raw) throws Throwable {
+				return step.format(raw);
+			}
+		};
+	}
+
 	@Test
 	public void fromString() throws Throwable {
 		LicenseHeaderStep step = new LicenseHeaderStep(getTestResource(KEY_LICENSE), JavaExtension.LICENSE_HEADER_DELIMITER);
-		assertStep(step::format, KEY_FILE_NOTAPPLIED, KEY_FILE_APPLIED);
+		assertStep(applyLicenseStep(step), KEY_FILE_NOTAPPLIED, KEY_FILE_APPLIED);
 	}
 
 	@Test
 	public void fromFile() throws Throwable {
 		LicenseHeaderStep step = new LicenseHeaderStep(createTestFile(KEY_LICENSE), JavaExtension.LICENSE_HEADER_DELIMITER);
-		assertStep(step::format, KEY_FILE_NOTAPPLIED, KEY_FILE_APPLIED);
+		assertStep(applyLicenseStep(step), KEY_FILE_NOTAPPLIED, KEY_FILE_APPLIED);
 	}
 
 	@Test
@@ -44,7 +54,7 @@ public class LicenseHeaderStepTest extends ResourceTest {
 		String alreadyCorrect = "LicenseHeader\ncontentstart";
 		Assert.assertEquals(alreadyCorrect, step.format(alreadyCorrect));
 		// If no change is required, it should return the exact same string for efficiency reasons
-		Assert.assertTrue(alreadyCorrect == step.format(alreadyCorrect));
+		Assert.assertTrue(Objects.equals(alreadyCorrect, step.format(alreadyCorrect)));
 	}
 
 	@Test
@@ -53,7 +63,7 @@ public class LicenseHeaderStepTest extends ResourceTest {
 		LicenseHeaderStep step = new LicenseHeaderStep("LicenseHeader", "contentstart");
 		String alreadyCorrect = "LicenseHeader\ncontentstart";
 		Assert.assertEquals(alreadyCorrect, step.format(alreadyCorrect));
-		Assert.assertTrue(alreadyCorrect == step.format(alreadyCorrect));
+		Assert.assertTrue(Objects.equals(alreadyCorrect, step.format(alreadyCorrect)));
 	}
 
 	@Test
@@ -62,6 +72,6 @@ public class LicenseHeaderStepTest extends ResourceTest {
 		LicenseHeaderStep step = new LicenseHeaderStep("LicenseHeader\n\n", "contentstart");
 		String alreadyCorrect = "LicenseHeader\n\ncontentstart";
 		Assert.assertEquals(alreadyCorrect, step.format(alreadyCorrect));
-		Assert.assertTrue(alreadyCorrect == step.format(alreadyCorrect));
+		Assert.assertTrue(Objects.equals(alreadyCorrect, step.format(alreadyCorrect)));
 	}
 }

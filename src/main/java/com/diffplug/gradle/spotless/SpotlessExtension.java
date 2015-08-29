@@ -15,25 +15,25 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.function.Consumer;
-
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 
 import com.diffplug.gradle.spotless.java.JavaExtension;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import groovy.lang.Closure;
 
 public class SpotlessExtension {
 	final Project project;
+	final Map<String, FormatExtension> formats = new LinkedHashMap<>();
+	/** Line endings (if any). */
+	LineEnding lineEndings = LineEnding.PLATFORM_NATIVE;
 
 	public SpotlessExtension(Project project) {
 		this.project = project;
 	}
-
-	/** Line endings (if any). */
-	LineEnding lineEndings = LineEnding.PLATFORM_NATIVE;
 
 	public LineEnding getLineEndings() {
 		return lineEndings;
@@ -43,8 +43,6 @@ public class SpotlessExtension {
 		this.lineEndings = lineEndings;
 	}
 
-	Map<String, FormatExtension> formats = new LinkedHashMap<>();
-
 	/** Configures the special java-specific extension. */
 	public void java(Closure<JavaExtension> closure) {
 		JavaExtension java = new JavaExtension(this);
@@ -53,22 +51,10 @@ public class SpotlessExtension {
 	}
 
 	/** Configures a custom extension. */
-	public void java(Consumer<JavaExtension> closure) {
-		JavaExtension java = new JavaExtension(this);
-		closure.accept(java);
-	}
-
-	/** Configures a custom extension. */
 	public void format(String name, Closure<FormatExtension> closure) {
 		FormatExtension extension = new FormatExtension(name, this);
 		closure.setDelegate(extension);
 		closure.call();
-	}
-
-	/** Configures a custom extension. */
-	public void format(String name, Consumer<FormatExtension> closure) {
-		FormatExtension extension = new FormatExtension(name, this);
-		closure.accept(extension);
 	}
 
 	/** Called by the FormatExtension constructor. */

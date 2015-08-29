@@ -15,23 +15,34 @@
  */
 package com.diffplug.gradle.spotless.java;
 
-import java.util.Arrays;
-
 import org.junit.Test;
 
+import com.diffplug.gradle.spotless.FormattingOperation;
 import com.diffplug.gradle.spotless.ResourceTest;
+
+import java.util.Arrays;
 
 public class ImportSorterStepTest extends ResourceTest {
 	@Test
 	public void sortImportsFromArray() throws Throwable {
-		ImportSorterStep step = new ImportSorterStep(Arrays.asList("java", "javax", "org", "\\#com"));
-		assertStep(step::format, "JavaCodeUnsortedImports.test", "JavaCodeSortedImports.test");
+		final ImportSorterStep step = new ImportSorterStep(Arrays.asList("java", "javax", "org", "\\#com"));
+		assertStep(new FormattingOperation() {
+			@Override
+			public String apply(String raw) throws Throwable {
+				return step.format(raw);
+			}
+		}, "JavaCodeUnsortedImports.test", "JavaCodeSortedImports.test");
 	}
 
 	@Test
 	public void sortImportsFromFile() throws Throwable {
-		ImportSorterStep step = new ImportSorterStep(createTestFile("import.properties"));
-		assertStep(step::format, "JavaCodeUnsortedImports.test", "JavaCodeSortedImports.test");
+		final ImportSorterStep step = new ImportSorterStep(createTestFile("import.properties"));
+		assertStep(new FormattingOperation() {
+			@Override
+			public String apply(String raw) throws Throwable {
+				return step.format(raw);
+			}
+		}, "JavaCodeUnsortedImports.test", "JavaCodeSortedImports.test");
 	}
 
 	@Test

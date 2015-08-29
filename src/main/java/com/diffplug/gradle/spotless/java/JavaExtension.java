@@ -15,8 +15,6 @@
  */
 package com.diffplug.gradle.spotless.java;
 
-import java.util.List;
-
 import org.gradle.api.GradleException;
 import org.gradle.api.internal.file.UnionFileCollection;
 import org.gradle.api.plugins.JavaPluginConvention;
@@ -24,16 +22,20 @@ import org.gradle.api.tasks.SourceSet;
 
 import com.diffplug.gradle.spotless.FormatExtension;
 import com.diffplug.gradle.spotless.FormatTask;
+import com.diffplug.gradle.spotless.FormattingOperation;
+import com.diffplug.gradle.spotless.FormattingOperationSupplier;
 import com.diffplug.gradle.spotless.SpotlessExtension;
 
+import java.io.IOException;
+import java.util.List;
+
 public class JavaExtension extends FormatExtension {
-	public static final String NAME = "java";
+	public static final String LICENSE_HEADER_DELIMITER = "package ";
+	private static final String NAME = "java";
 
 	public JavaExtension(SpotlessExtension rootExtension) {
 		super(NAME, rootExtension);
 	}
-
-	public static final String LICENSE_HEADER_DELIMITER = "package ";
 
 	public void licenseHeader(String licenseHeader) {
 		licenseHeader(licenseHeader, LICENSE_HEADER_DELIMITER);
@@ -43,16 +45,52 @@ public class JavaExtension extends FormatExtension {
 		licenseHeaderFile(licenseHeaderFile, LICENSE_HEADER_DELIMITER);
 	}
 
-	public void importOrder(List<String> importOrder) {
-		customLazy(ImportSorterStep.NAME, () -> new ImportSorterStep(importOrder)::format);
+	public void importOrder(final List<String> importOrder) {
+		customLazy(ImportSorterStep.NAME, new FormattingOperationSupplier(new FormattingOperation() {
+			ImportSorterStep step;
+
+			@Override
+			public String apply(String raw) {
+				return step.format(raw);
+			}
+
+			@Override
+			public void init() {
+				step = new ImportSorterStep(importOrder);
+			}
+		}));
 	}
 
-	public void importOrderFile(Object importOrderFile) {
-		customLazy(ImportSorterStep.NAME, () -> new ImportSorterStep(getProject().file(importOrderFile))::format);
+	public void importOrderFile(final Object importOrderFile) {
+		customLazy(ImportSorterStep.NAME, new FormattingOperationSupplier(new FormattingOperation() {
+			ImportSorterStep step;
+
+			@Override
+			public String apply(String raw) {
+				return step.format(raw);
+			}
+
+			@Override
+			public void init() throws IOException {
+				step = new ImportSorterStep(getProject().file(importOrderFile));
+			}
+		}));
 	}
 
-	public void eclipseFormatFile(Object eclipseFormatFile) {
-		customLazy(EclipseFormatterStep.NAME, () -> EclipseFormatterStep.load(getProject().file(eclipseFormatFile))::format);
+	public void eclipseFormatFile(final Object eclipseFormatFile) {
+		customLazy(EclipseFormatterStep.NAME, new FormattingOperationSupplier(new FormattingOperation() {
+			EclipseFormatterStep step;
+
+			@Override
+			public String apply(String raw) throws Exception {
+				return step.format(raw);
+			}
+
+			@Override
+			public void init() throws Exception {
+				step = EclipseFormatterStep.load(getProject().file(eclipseFormatFile));
+			}
+		}));
 	}
 
 	/** If the user hasn't specified the files yet, we'll assume he/she means all of the java files. */

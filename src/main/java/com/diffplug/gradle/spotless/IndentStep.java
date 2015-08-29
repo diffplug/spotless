@@ -17,19 +17,18 @@ package com.diffplug.gradle.spotless;
 
 /** Simple step which checks for consistent indentation characters. */
 public class IndentStep {
-	public enum Type {
-		TAB, SPACE
-	}
-
 	private final Type type;
 	private final int tabsToSpaces;
+	private final StringBuilder builder = new StringBuilder();
 
 	public IndentStep(Type type, int tabsToSpaces) {
 		this.type = type;
 		this.tabsToSpaces = tabsToSpaces;
 	}
 
-	private final StringBuilder builder = new StringBuilder();
+	private static boolean isSpaceOrTab(char c) {
+		return c == ' ' || c == '\t';
+	}
 
 	public String format(String raw) {
 		// reset the buffer
@@ -41,14 +40,14 @@ public class IndentStep {
 			char c;
 			while (contentStart < raw.length() && isSpaceOrTab(c = raw.charAt(contentStart))) {
 				switch (c) {
-				case ' ':
-					++numSpaces;
-					break;
-				case '\t':
-					numSpaces += tabsToSpaces;
-					break;
-				default:
-					throw new IllegalArgumentException("Unexpected char " + c);
+					case ' ':
+						++numSpaces;
+						break;
+					case '\t':
+						numSpaces += tabsToSpaces;
+						break;
+					default:
+						throw new IllegalArgumentException("Unexpected char " + c);
 				}
 				++contentStart;
 			}
@@ -56,18 +55,18 @@ public class IndentStep {
 			// add the leading space in a canonical way
 			if (numSpaces > 0) {
 				switch (type) {
-				case SPACE:
-					for (int i = 0; i < numSpaces; ++i) {
-						builder.append(' ');
-					}
-					break;
-				case TAB:
-					for (int i = 0; i < numSpaces / tabsToSpaces; ++i) {
-						builder.append('\t');
-					}
-					break;
-				default:
-					throw new IllegalArgumentException("Unexpected enum " + type);
+					case SPACE:
+						for (int i = 0; i < numSpaces; ++i) {
+							builder.append(' ');
+						}
+						break;
+					case TAB:
+						for (int i = 0; i < numSpaces / tabsToSpaces; ++i) {
+							builder.append('\t');
+						}
+						break;
+					default:
+						throw new IllegalArgumentException("Unexpected enum " + type);
 				}
 			}
 
@@ -82,10 +81,11 @@ public class IndentStep {
 				++lineStart;
 				builder.append(raw.subSequence(contentStart, lineStart));
 			}
-		} while (true);
+		}
+		while (true);
 	}
 
-	private static boolean isSpaceOrTab(char c) {
-		return c == ' ' || c == '\t';
+	public enum Type {
+		TAB, SPACE
 	}
 }

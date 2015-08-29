@@ -15,6 +15,12 @@
  */
 package com.diffplug.gradle.spotless;
 
+import org.gradle.api.GradleException;
+import org.gradle.api.Project;
+import org.gradle.api.file.FileCollection;
+import org.gradle.api.internal.file.UnionFileCollection;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,42 +28,36 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.gradle.api.GradleException;
-import org.gradle.api.Project;
-import org.gradle.api.file.FileCollection;
-import org.gradle.api.internal.file.UnionFileCollection;
-
-import com.diffplug.common.base.Throwing;
-
 import groovy.lang.Closure;
 
 /** Adds a `spotless{Name}Check` and `spotless{Name}Apply` task. */
 public class FormatExtension {
-	protected final String name;
-	protected final SpotlessExtension root;
+	final String name;
+	private final SpotlessExtension root;
+	/** The steps that need to be added. */
+	private final List<FormatterStep> steps = new ArrayList<>();
+	/** The files that need to be formatted. */
+	protected FileCollection target;
 
-	public FormatExtension(String name, SpotlessExtension root) {
+	public FormatExtension(final String name, final SpotlessExtension root) {
 		this.name = name;
 		this.root = root;
 		root.addFormatExtension(this);
 	}
 
-	/** The files that need to be formatted. */
-	protected FileCollection target;
-
 	/**
 	 * FileCollections pass through raw.
 	 * Strings are treated as the 'include' arg to fileTree, with project.rootDir as the dir.
 	 * List<String> are treates as the 'includes' arg to fileTree, with project.rootDir as the dir.
-	 * Anything else gets passed to getProject().files(). 
+	 * Anything else gets passed to getProject().files().
 	 */
-	public void target(Object... targets) {
+	public void target(final Object... targets) {
 		if (targets.length == 0) {
 			this.target = getProject().files();
 		} else if (targets.length == 1) {
 			this.target = parseTarget(targets[0]);
 		} else {
-			if (Arrays.asList(targets).stream().allMatch(o -> o instanceof String)) {
+			if (areAllObjectsString(targets)) {
 				this.target = parseTarget(Arrays.asList(targets));
 			} else {
 				UnionFileCollection union = new UnionFileCollection();
@@ -69,34 +69,50 @@ public class FormatExtension {
 		}
 	}
 
+	private boolean areAllObjectsString(final Object[] targets) {
+		for (Object target : targets) {
+			if (!(target instanceof String)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	@SuppressWarnings("unchecked")
-	private FileCollection parseTarget(Object target) {
+	private FileCollection parseTarget(final Object target) {
 		if (target instanceof FileCollection) {
 			return (FileCollection) target;
 		} else if (target instanceof String) {
 			Map<String, Object> args = new HashMap<>();
 			args.put("dir", getProject().getProjectDir());
-			args.put("include", (String) target);
+			args.put("include", target);
 			return getProject().fileTree(args);
-		} else if (target instanceof List && ((List<?>) target).stream().allMatch(o -> o instanceof String)) {
+		} else if (isListOfString(target)) {
 			Map<String, Object> args = new HashMap<>();
 			args.put("dir", getProject().getProjectDir());
-			args.put("includes", (List<String>) target);
+			args.put("includes", target);
 			return getProject().fileTree(args);
 		} else {
 			return getProject().files(target);
 		}
 	}
 
-	/** The steps that need to be added. */
-	protected List<FormatterStep> steps = new ArrayList<>();
+	private boolean isListOfString(final Object target) {
+		if (target instanceof List)
+			for (Object o : ((List<?>) target)) {
+				if (!(o instanceof String)) {
+					return false;
+				}
+			}
+		return true;
+	}
 
 	/**
 	 * Adds the given custom step, which is constructed lazily for performance reasons.
 	 * 
 	 * The resulting function will receive a string with unix-newlines, and it must return a string unix newlines.
 	 */
-	public void customLazy(String name, Throwing.Supplier<Throwing.Function<String, String>> formatterSupplier) {
+	protected void customLazy(String name, FormattingOperationSupplier formatterSupplier) {
 		for (FormatterStep step : steps) {
 			if (step.getName().equals(name)) {
 				throw new GradleException("Multiple steps with name '" + name + "' for spotless '" + name + "'");
@@ -106,26 +122,40 @@ public class FormatExtension {
 	}
 
 	/** Adds a custom step. Receives a string with unix-newlines, must return a string with unix newlines. */
-	public void custom(String name, Closure<String> formatter) {
-		custom(name, formatter::call);
+	private void custom(final String name, Closure<String> formatter) {
+		custom(name, formatter);
 	}
 
 	/** Adds a custom step. Receives a string with unix-newlines, must return a string with unix newlines. */
-	public void custom(String name, Throwing.Function<String, String> formatter) {
-		customLazy(name, () -> formatter);
+	private void custom(final String name, final FormattingOperation formatter) {
+		customLazy(name, new FormattingOperationSupplier(formatter));
 	}
 
 	/** Highly efficient find-replace char sequence. */
-	public void customReplace(String name, CharSequence original, CharSequence after) {
-		custom(name, raw -> raw.replace(original, after));
+	public void customReplace(final String name, final CharSequence original, final CharSequence after) {
+		custom(name, new FormattingOperation() {
+			@Override
+			public String apply(String raw) {
+				return raw.replace(original, after);
+			}
+		});
 	}
 
 	/** Highly efficient find-replace regex. */
-	public void customReplaceRegex(String name, String regex, String replacement) {
-		customLazy(name, () -> {
-			Pattern pattern = Pattern.compile(regex, Pattern.UNIX_LINES | Pattern.MULTILINE);
-			return raw -> pattern.matcher(raw).replaceAll(replacement);
-		});
+	private void customReplaceRegex(final String name, final String regex, final String replacement) {
+		customLazy(name, new FormattingOperationSupplier(new FormattingOperation() {
+			Pattern pattern;
+
+			@Override
+			public String apply(String raw) {
+				return pattern.matcher(raw).replaceAll(replacement);
+			}
+
+			@Override
+			public void init() {
+				pattern = Pattern.compile(regex, Pattern.UNIX_LINES | Pattern.MULTILINE);
+			}
+		}));
 	}
 
 	/** Removes trailing whitespace. */
@@ -135,41 +165,56 @@ public class FormatExtension {
 
 	/** Ensures that files end with a single newline. */
 	public void endWithNewline() {
-		custom("endWithNewline", raw -> {
-			// simplifies the logic below if we can assume length > 0
-			if (raw.isEmpty()) {
-				return "\n";
-			}
-
-			// find the last character which has real content
-			int lastContentCharacter = raw.length() - 1;
-			char c;
-			while (lastContentCharacter >= 0) {
-				c = raw.charAt(lastContentCharacter);
-				if (c == '\n' || c == '\t' || c == ' ') {
-					--lastContentCharacter;
-				} else {
-					break;
+		custom("endWithNewline", new FormattingOperation() {
+			@Override
+			public String apply(String raw) {
+				// simplifies the logic below if we can assume length > 0
+				if (raw.isEmpty()) {
+					return "\n";
 				}
-			}
 
-			// if it's already clean, no need to create another string
-			if (lastContentCharacter == -1) {
-				return "\n";
-			} else if (lastContentCharacter == raw.length() - 2 && raw.charAt(raw.length() - 1) == '\n') {
-				return raw;
-			} else {
-				StringBuilder builder = new StringBuilder(lastContentCharacter + 2);
-				builder.append(raw, 0, lastContentCharacter + 1);
-				builder.append('\n');
-				return builder.toString();
+				// find the last character which has real content
+				int lastContentCharacter = raw.length() - 1;
+				char c;
+				while (lastContentCharacter >= 0) {
+					c = raw.charAt(lastContentCharacter);
+					if (c == '\n' || c == '\t' || c == ' ') {
+						--lastContentCharacter;
+					} else {
+						break;
+					}
+				}
+
+				// if it's already clean, no need to create another string
+				if (lastContentCharacter == -1) {
+					return "\n";
+				} else if (lastContentCharacter == raw.length() - 2 && raw.charAt(raw.length() - 1) == '\n') {
+					return raw;
+				} else {
+					StringBuilder builder = new StringBuilder(lastContentCharacter + 2);
+					builder.append(raw, 0, lastContentCharacter + 1);
+					builder.append('\n');
+					return builder.toString();
+				}
 			}
 		});
 	}
 
 	/** Ensures that the files are indented using spaces. */
-	public void indentWithSpaces(int tabToSpaces) {
-		customLazy("indentWithSpaces", () -> new IndentStep(IndentStep.Type.SPACE, tabToSpaces)::format);
+	private void indentWithSpaces(final int tabToSpaces) {
+		customLazy("indentWithSpaces", new FormattingOperationSupplier(new FormattingOperation() {
+			IndentStep step;
+
+			@Override
+			public String apply(String raw) {
+				return step.format(raw);
+			}
+
+			@Override
+			public void init() {
+				step = new IndentStep(IndentStep.Type.SPACE, tabToSpaces);
+			}
+		}));
 	}
 
 	/** Ensures that the files are indented using spaces. */
@@ -178,8 +223,20 @@ public class FormatExtension {
 	}
 
 	/** Ensures that the files are indented using tabs. */
-	public void indentWithTabs(int tabToSpaces) {
-		customLazy("indentWithTabs", () -> new IndentStep(IndentStep.Type.TAB, tabToSpaces)::format);
+	private void indentWithTabs(final int tabToSpaces) {
+		customLazy("indentWithTabs", new FormattingOperationSupplier(new FormattingOperation() {
+			IndentStep step;
+
+			@Override
+			public String apply(String raw) {
+				return step.format(raw);
+			}
+
+			@Override
+			public void init() {
+				step = new IndentStep(IndentStep.Type.TAB, tabToSpaces);
+			}
+		}));
 	}
 
 	/** Ensures that the files are indented using tabs. */
@@ -191,16 +248,40 @@ public class FormatExtension {
 	 * @param licenseHeader Content that should be at the top of every file
 	 * @param delimiter Spotless will look for a line that starts with this to know what the "top" is.
 	 */
-	public void licenseHeader(String licenseHeader, String delimiter) {
-		customLazy(LicenseHeaderStep.NAME, () -> new LicenseHeaderStep(licenseHeader, delimiter)::format);
+	protected void licenseHeader(final String licenseHeader, final String delimiter) {
+		customLazy(LicenseHeaderStep.NAME, new FormattingOperationSupplier(new FormattingOperation() {
+			LicenseHeaderStep step;
+
+			@Override
+			public String apply(String raw) {
+				return step.format(raw);
+			}
+
+			@Override
+			public void init() {
+				step = new LicenseHeaderStep(licenseHeader, delimiter);
+			}
+		}));
 	}
 
 	/**
 	 * @param licenseHeaderFile Content that should be at the top of every file
 	 * @param delimiter Spotless will look for a line that starts with this to know what the "top" is.
 	 */
-	public void licenseHeaderFile(Object licenseHeaderFile, String delimiter) {
-		customLazy(LicenseHeaderStep.NAME, () -> new LicenseHeaderStep(getProject().file(licenseHeaderFile), delimiter)::format);
+	protected void licenseHeaderFile(final Object licenseHeaderFile, final String delimiter) {
+		customLazy(LicenseHeaderStep.NAME, new FormattingOperationSupplier(new FormattingOperation() {
+			LicenseHeaderStep step;
+
+			@Override
+			public String apply(String raw) {
+				return step.format(raw);
+			}
+
+			@Override
+			public void init() throws IOException {
+				step = new LicenseHeaderStep(getProject().file(licenseHeaderFile), delimiter);
+			}
+		}));
 	}
 
 	/** Sets up a FormatTask according to the values in this extension. */

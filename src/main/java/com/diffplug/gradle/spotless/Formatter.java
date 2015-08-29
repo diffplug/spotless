@@ -15,6 +15,9 @@
  */
 package com.diffplug.gradle.spotless;
 
+import org.gradle.api.logging.Logger;
+import org.gradle.api.logging.Logging;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -24,11 +27,8 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.gradle.api.logging.Logger;
-import org.gradle.api.logging.Logging;
-
 /** Formatter which performs the full formatting. */
-public class Formatter {
+class Formatter {
 	private final LineEnding lineEnding;
 	private final Path projectDirectory;
 	private final List<FormatterStep> steps;
@@ -40,13 +40,24 @@ public class Formatter {
 		this.steps = new ArrayList<>(steps);
 	}
 
+	private static int countOccurrences(String haystack, char needle) {
+		int count = 0;
+		for (char c : haystack.toCharArray()) {
+			if (c == needle) {
+				++count;
+			}
+		}
+		return count;
+	}
+
 	/** Returns true iff the given file's formatting is up-to-date. */
 	public boolean isClean(File file) throws IOException {
 		String raw = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
 		String unix = raw.replaceAll("\r", "");
 
 		// check the newlines
-		int totalNewLines = (int) unix.codePoints().filter(val -> val == '\n').count();
+
+		int totalNewLines = countOccurrences(unix, '\n');
 		int windowsNewLines = raw.length() - unix.length();
 		if (lineEnding.isWin()) {
 			if (windowsNewLines != totalNewLines) {
@@ -83,11 +94,12 @@ public class Formatter {
 	}
 
 	/** Returns the result of calling all of the FormatterSteps. */
-	String applyAll(String unix, File file) {
+	private String applyAll(String unix, File file) {
 		for (FormatterStep step : steps) {
 			try {
 				unix = step.format(unix);
-			} catch (Throwable e) {
+			}
+			catch (Throwable e) {
 				logger.warn("Unable to apply step " + step.getName() + " to " + projectDirectory.relativize(file.toPath()) + ": " + e.getMessage());
 				logger.info("Exception is ", e);
 			}

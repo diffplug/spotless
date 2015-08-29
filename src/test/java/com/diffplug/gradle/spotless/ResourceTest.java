@@ -15,6 +15,13 @@
  */
 package com.diffplug.gradle.spotless;
 
+import groovy.lang.Closure;
+import org.gradle.api.Project;
+import org.gradle.testfixtures.ProjectBuilder;
+import org.junit.Assert;
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -23,26 +30,37 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
-
-import org.gradle.api.Project;
-import org.gradle.testfixtures.ProjectBuilder;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.rules.TemporaryFolder;
-
-import com.diffplug.common.base.Throwing;
 
 public class ResourceTest {
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
+
+	/** Creates a FormatTask based on the given consumer. */
+	public static FormatTask createTask(final SimpleConsumer<FormatExtension> test) throws Exception {
+		Project project = ProjectBuilder.builder().build();
+		SpotlessPlugin plugin = project.getPlugins().apply(SpotlessPlugin.class);
+
+		final AtomicReference<FormatExtension> ref = new AtomicReference<>();
+		plugin.getExtension().format("underTest", new Closure<FormatExtension>(plugin) {
+			@Override
+			public FormatExtension call() {
+				FormatExtension extension = (FormatExtension) getDelegate();
+				ref.set(extension);
+				test.accept(extension);
+				return extension;
+			}
+		});
+
+		boolean check = false;
+		return plugin.createTask("underTest", ref.get(), check);
+	}
 
 	/** Returns the contents of the given file from the src/test/resources directory. */
 	protected String getTestResource(String filename) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		InputStream inputStream = getClass().getResourceAsStream("/" + filename);
 		byte[] buffer = new byte[1024];
-		int length = 0;
+		int length;
 		while ((length = inputStream.read(buffer)) != -1) {
 			baos.write(buffer, 0, length);
 		}
@@ -71,7 +89,7 @@ public class ResourceTest {
 	}
 
 	/** Reads the given resource from "before", applies the step, and makes sure the result is "after". */
-	protected void assertStep(Throwing.Function<String, String> step, String unformattedPath, String expectedPath) throws Throwable {
+	protected void assertStep(FormattingOperation step, String unformattedPath, String expectedPath) throws Throwable {
 		String unformatted = getTestResource(unformattedPath).replace("\r", ""); // unix-ified input
 		String formatted = step.apply(unformatted);
 		// no windows newlines
@@ -82,23 +100,8 @@ public class ResourceTest {
 		Assert.assertEquals(expected, formatted);
 	}
 
-	/** Creates a FormatTask based on the given consumer. */
-	public static FormatTask createTask(Consumer<FormatExtension> test) throws Exception {
-		Project project = ProjectBuilder.builder().build();
-		SpotlessPlugin plugin = project.getPlugins().apply(SpotlessPlugin.class);
-
-		AtomicReference<FormatExtension> ref = new AtomicReference<>();
-		plugin.getExtension().format("underTest", ext -> {
-			ref.set(ext);
-			test.accept(ext);
-		});
-
-		boolean check = false;
-		return plugin.createTask("underTest", ref.get(), check);
-	}
-
 	/** Tests that the formatExtension causes the given change. */
-	protected void assertTask(Consumer<FormatExtension> test, String before, String afterExpected) throws Exception {
+	protected void assertTask(final SimpleConsumer<FormatExtension> test, final String before, final String afterExpected) throws Exception {
 		// create the task
 		FormatTask task = createTask(test);
 		// force unix line endings, since we're passing in raw strings

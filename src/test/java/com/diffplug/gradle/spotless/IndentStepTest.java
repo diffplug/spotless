@@ -19,28 +19,34 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class IndentStepTest extends ResourceTest {
+
+	FormattingOperation applyIndent(final IndentStep indent) {
+		return new FormattingOperation() {
+			@Override
+			public String apply(String raw) throws Throwable {
+				return indent.format(raw);
+			}
+		};
+	}
+
 	@Test
 	public void tabToTab() throws Throwable {
-		IndentStep indent = new IndentStep(IndentStep.Type.TAB, 4);
-		assertStep(indent::format, "IndentedWithTab.test", "IndentedWithTab.test");
+		assertStep(applyIndent(new IndentStep(IndentStep.Type.TAB, 4)), "IndentedWithTab.test", "IndentedWithTab.test");
 	}
 
 	@Test
 	public void spaceToSpace() throws Throwable {
-		IndentStep indent = new IndentStep(IndentStep.Type.SPACE, 4);
-		assertStep(indent::format, "IndentedWithSpace.test", "IndentedWithSpace.test");
+		assertStep(applyIndent(new IndentStep(IndentStep.Type.SPACE, 4)), "IndentedWithSpace.test", "IndentedWithSpace.test");
 	}
 
 	@Test
 	public void spaceToTab() throws Throwable {
-		IndentStep indent = new IndentStep(IndentStep.Type.TAB, 4);
-		assertStep(indent::format, "IndentedWithSpace.test", "IndentedWithTab.test");
+		assertStep(applyIndent(new IndentStep(IndentStep.Type.TAB, 4)), "IndentedWithSpace.test", "IndentedWithTab.test");
 	}
 
 	@Test
 	public void tabToSpace() throws Throwable {
-		IndentStep indent = new IndentStep(IndentStep.Type.SPACE, 4);
-		assertStep(indent::format, "IndentedWithTab.test", "IndentedWithSpace.test");
+		assertStep(applyIndent(new IndentStep(IndentStep.Type.SPACE, 4)), "IndentedWithTab.test", "IndentedWithSpace.test");
 	}
 
 	@Test
