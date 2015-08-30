@@ -119,6 +119,8 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 ////////////////
 // PUBLISHING //
 ////////////////
+def isSnapshot = project.version.endsWith('-SNAPSHOT')
+
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
@@ -163,7 +165,6 @@ publishing {
 	}
 	repositories {
 		maven {
-			def isSnapshot = project.version.endsWith('-SNAPSHOT')
 			if (isSnapshot) {
 				url = 'https://oss.sonatype.org/content/repositories/snapshots'
 			} else {
@@ -203,4 +204,10 @@ pluginBundle {
 		artifactId = project.name
 		version = project.version
 	}
+}
+
+// the gradle plugin portal isn't really compatible with SNAPSHOT versions
+// https://discuss.gradle.org/t/uploading-snapshot-versions-to-the-plugin-portal/11347
+if (isSnapshot) {
+	publishPlugins.enabled = false
 }
