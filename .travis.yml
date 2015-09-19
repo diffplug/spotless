@@ -1,4 +1,13 @@
 language: java
 jdk:
 - oraclejdk8
-script: ./.ci/ci.sh
+script: "./.ci/ci.sh"
+env:
+  global:
+  - secure: M8B9LCPAmVUEjl67fEoaen1KBuY5omMN/FEq6haavA0mL5lPlNIMLVBn8P11ppXRsievHGUArQyMjLylsNXvpcpGXhv9oJ/iuvxFsZ7MPK2nh8C4MY0O/H/m1DZqnuRGV1PRLqDkhp1T9ASQOgZLhRPbMPvyzGq6MMs18dRDO+k=
+  - secure: N3r3mb4AbDsKdxUlyo217w/z7wlCsA0kpi0iwfCyh0dAky4AVJ5SLRXFCBaM9ACTtTWwAuSbQTNtFcFYaOgIVq7YZm0wC5snTfp8P7gcgKh3DbwxRVK5AA/TnCHxF8ESh4wzzWFDfo68lwDJTK9E7D5gdsG1idUALI+fE1TroEk=
+  - secure: P2KX84PvTUkVysNQzZmhYIUuVqocG/rh1PvqlCT9n5Ztsi1QnFEbm5eo9sAAcqFC6zCSA/yzRKyHWf5BOQJXLNf34i/Yk9mKyKwEAIAemFBmFyu1Tw/ysxneenymNQpTNnmnOPhPj2it3r3s99MXQ97Ws50Jy4wCbDBiFodh+IE=
+  - secure: QLWjLsDKR3u3VdrpZvQM5Qvz5zLBvOoPIB//fUdA7MkYM/DNC84UHqH1u1CE6jg7kjV4AFGESfrFW2kM/UfXHzLBcAZNrOO0xPtAgS3XSaw9XqI6QH4xPlUCtGloQA5OoAM3eI0uN1xfCj6V3NpSl8T3JpTbmVXIiKoJJ7eH89o=
+  - secure: XLB5Kofw+olIy/aoXe/nc9VbIIf+LwbxxA4NCrgB2v9EKGPcFAz3dOfQB++9mP0s92crQcDfCUhSWzlk8TJZj1tofl3vg43YvMnDJlzkJaI3w/q4JkDRMv18hLtQFjyrhh03TUcIhKD+fq7tABg+rCBFzfJTvTxhiTIO+2iSvY4=
+  - secure: nxiUnpM5LaCz9u1Z8oA49D4scszvkKyOmdKKvgWnESYdqd7a9X1METV7wtqYZ6rJJeEJxSQRVXeY8xTXQxV4khDk6wvSrx4DKZy3Z2I0bVKKJvzZDoca1LTiOY+IxlXoNi9QPgk2cv8vOJkLjB8B0pQjVMJcEJkXB6OsUepbYMM=
+  - secure: d3lpTgtvDUjtjWbJVnhHHGVB/lEuYLyHMh3Eb+VUZBQTrsr1c9wBw4Qg2/sK5RHXtZTamthpTdTAm49a5pETNkG4YStVkwYw/ItqKdgjSm5aQdqeAZX+nvYwm//c8FxAe1TllHzvjkA2C8OPS3q+zwPSwnSSt7IwT605nzStlaM=
