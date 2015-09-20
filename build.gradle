@@ -50,6 +50,7 @@ configurations {
 dependencies {
 	compile gradleApi()
 	compile "com.diffplug.durian:durian:${VER_DURIAN}"
+	compile "com.diffplug.freshmark:freshmark:${VER_FRESHMARK}"
 
 	// The only dependencies we actually use
 	embeddedJars 'p2:org.eclipse.jdt.core:3.11.0.v20150602-1242'

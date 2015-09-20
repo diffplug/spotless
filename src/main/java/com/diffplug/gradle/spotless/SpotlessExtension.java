@@ -22,6 +22,7 @@ import java.util.function.Consumer;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 
+import com.diffplug.gradle.spotless.freshmark.FreshMarkExtension;
 import com.diffplug.gradle.spotless.java.JavaExtension;
 import groovy.lang.Closure;
 
@@ -52,10 +53,23 @@ public class SpotlessExtension {
 		closure.call();
 	}
 
-	/** Configures a custom extension. */
+	/** Configures the special java-specific extension. */
 	public void java(Consumer<JavaExtension> closure) {
 		JavaExtension java = new JavaExtension(this);
 		closure.accept(java);
+	}
+
+	/** Configures the special freshmark-specific extension. */
+	public void freshmark(Closure<FreshMarkExtension> closure) {
+		FreshMarkExtension freshmark = new FreshMarkExtension(this);
+		closure.setDelegate(freshmark);
+		closure.call();
+	}
+
+	/** Configures the special freshmark-specific extension. */
+	public void freshmark(Consumer<FreshMarkExtension> closure) {
+		FreshMarkExtension freshmark = new FreshMarkExtension(this);
+		closure.accept(freshmark);
 	}
 
 	/** Configures a custom extension. */
