@@ -11,6 +11,9 @@ buildscript {
 
 repositories {
 	jcenter()
+	if (version.endsWith('SNAPSHOT')) {
+		maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+	}
 	ivy {
 		// Eclipse 4.5 M6 has lots of formatter improvements
 		// Future versions can be found here: http://download.eclipse.org/eclipse/downloads/index.html
