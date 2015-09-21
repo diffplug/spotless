@@ -80,6 +80,9 @@ jar {
 	// this embeds the eclipse jars into our "fat jar"
 	from {
 		configurations.embeddedJars.collect { it.isDirectory() ? it : zipTree(it) }
+		configurations.compile.findAll { it.path.contains('com.diffplug.') }.collect {
+			it.isDirectory() ? it : zipTree(it)
+		}
 	}
 	// the eclipse jars are signed, and our fat jar breaks the signatures
 	// so we've gotta be sure to filter out the signatures
@@ -133,8 +136,9 @@ publishing {
 			artifact javadocJar
 			pom.withXml {
 				// remove the p2 dependencies because they are embedded
+				// also remove 'com.diffplug' dependencies so that we can use spotless on its dependencies
 				asNode().dependencies.'*'.each() {
-					if (it.groupId.text() == 'p2') {
+					if (it.groupId.text() == 'p2' || it.groupId.text().startsWith('com.diffplug.')) {
 						it.parent().remove(it)
 					}
 				}
