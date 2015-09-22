@@ -2,20 +2,21 @@
 
 [![Gradle plugin](https://img.shields.io/badge/plugins.gradle.org-com.diffplug.gradle.spotless-blue.svg)](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless)
 [![JCenter artifact](https://img.shields.io/badge/jcenter-com.diffplug.gradle.spotless%3Aspotless-blue.svg)](https://bintray.com/diffplug/opensource/spotless/view)
-[![Latest version](http://img.shields.io/badge/latest-1.2.0-blue.svg)](https://github.com/diffplug/spotless/releases/latest)
-[![Changelog](http://img.shields.io/badge/changelog-1.3.0--SNAPSHOT-brightgreen.svg)](CHANGES.md)
+[![Latest version](http://img.shields.io/badge/latest-1.3.0-blue.svg)](https://github.com/diffplug/spotless/releases/latest)
+[![Changelog](http://img.shields.io/badge/changelog-1.4.0--SNAPSHOT-brightgreen.svg)](CHANGES.md)
 [![Travis CI](https://travis-ci.org/diffplug/spotless.svg?branch=master)](https://travis-ci.org/diffplug/spotless)
 [![License](https://img.shields.io/badge/license-Apache-brightgreen.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
 [![Join the chat at https://gitter.im/diffplug/gitfromscratch](https://img.shields.io/badge/gitter-live_chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
 
-Spotless can check and apply formatting for any plain-text file, with special support for Java.  It supports several formatters out of the box, including:
+Spotless can check and apply formatting for any plain-text file, with special support for Markdown and Java.  It supports several formatters out of the box, including:
 
+* [FreshMark](https://github.com/diffplug/freshmark) (markdown with variables)
 * Java style and import ordering (using Eclipse's code formatter)
 * License headers
 * Tabs vs spaces, trailing whitespace, end with newline, generic regex
 * Any user-defined string that takes an unformatted string and outputs a formatted version.
 
-Even if you don't use Eclipse, or even Java, Spotless makes it painless to find and correct formatting errors:
+Spotless makes it painless to find and correct formatting errors:
 
 ```
 cmd> gradlew build
@@ -43,18 +44,40 @@ Contributions are welcome, see [the contributing guide](CONTRIBUTING.md) for dev
 
 ## Example configurations (from real-world projects)
 
+Spotless is hosted on jcenter and at plugins.gradle.org. [Go here](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless) if you're not sure how to import the plugin.
+
 * [Durian](https://github.com/diffplug/durian) ([direct link to spotless section in its build.gradle](https://github.com/diffplug/durian/blob/v3.1.2/build.gradle?ts=4#L65-L85))
 * (Your project here)
 
-## Adding spotless to Java source
+## Applying [FreshMark](https://github.com/diffplug/freshmark) to markdown files
 
-Spotless is hosted on jcenter and at plugins.gradle.org. [Go here](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless) if you're not sure how to import the plugin.
+To apply freshmark to all of the `.md` files in your project, with all of your project's properties available for templating, just use this snippet:
+
+```groovy
+spotless {
+	freshmark {}
+}
+```
+
+More advanced features are also available:
+```groovy
+spotless {
+	freshmark {
+		target 'README.md', 'CONTRIBUTING.md'
+		properties [name: 'Name', version: '1.0.0']
+		trimTrailingWhitespace()
+		indentWithTabs() // or spaces. Takes an integer argument if you don't like 4
+		endWithNewline()
+	}
+}
+```
+
+## Applying to Java source
 
 ```groovy
 apply plugin: 'java'
 ...
 
-apply plugin: 'com.diffplug.gradle.spotless'
 spotless {
 	java {
 		licenseHeader '/* Licensed under Apache-2.0 */'	// License header
