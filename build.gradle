@@ -1,18 +1,16 @@
-buildscript {
-	repositories {
-		jcenter()
-		maven { url "https://plugins.gradle.org/m2/" }
-	}
-	dependencies {
-		// uploads to plugin portal
-		classpath "com.gradle.publish:plugin-publish-plugin:0.9.1"
-	}
+plugins {
+	// bintray uploading
+	id "com.jfrog.bintray" version "1.3.1"
+	// plugin publishing
+	id "com.gradle.plugin-publish" version "0.9.1"
 }
 
 repositories {
 	jcenter()
-	if (version.endsWith('SNAPSHOT')) {
+	// SNAPSHOT versions are free to rely on other SNAPSHOT libraries
+	if (project.version.endsWith('-SNAPSHOT')) {
 		maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+		configurations.all { resolutionStrategy.cacheChangingModulesFor 0, 'seconds' }
 	}
 	ivy {
 		// Eclipse 4.5 M6 has lots of formatter improvements
@@ -79,10 +77,10 @@ dependencies {
 jar {
 	// this embeds the eclipse jars into our "fat jar"
 	from {
-		configurations.embeddedJars.collect { it.isDirectory() ? it : zipTree(it) }
-		configurations.compile.findAll { it.path.contains('com.diffplug.') }.collect {
-			it.isDirectory() ? it : zipTree(it)
-		}
+		configurations.embeddedJars.collect{ it.isDirectory() ? it : zipTree(it) }
+	}
+	from {
+		configurations.compile.findAll{ it.path.contains('com.diffplug.') }.collect{ it.isDirectory() ? it : zipTree(it) }
 	}
 	// the eclipse jars are signed, and our fat jar breaks the signatures
 	// so we've gotta be sure to filter out the signatures
@@ -127,6 +125,16 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 // PUBLISHING //
 ////////////////
 def isSnapshot = project.version.endsWith('-SNAPSHOT')
+// pulls the credentials from either the environment variable or gradle.properties
+def cred = {
+	if (System.env[it] != null) {
+		return System.env[it]
+	} else if (project[it] != null) {
+		return project[it]
+	} else {
+		return 'unknown_' + it
+	}
+}
 
 publishing {
 	publications {
@@ -171,19 +179,41 @@ publishing {
 			}
 		}
 	}
-	repositories {
-		maven {
-			if (isSnapshot) {
-				url = 'https://oss.sonatype.org/content/repositories/snapshots'
-			} else {
-				url = "https://api.bintray.com/maven/diffplug/opensource/${project.name}"
-			}
+	if (isSnapshot) {
+		// upload snapshots to oss.sonatype.org
+		repositories { maven {
+			url = 'https://oss.sonatype.org/content/repositories/snapshots'
 			credentials {
-				username = System.env[isSnapshot ? 'nexus_user' : 'bintray_user']
-				password = System.env[isSnapshot ? 'nexus_pass' : 'bintray_pass']
+				username = cred('nexus_user')
+				password = cred('nexus_pass')
+			}
+		} }
+	}
+}
+
+if (!isSnapshot) {
+	// upload releases to bintray and then mavenCentral
+	bintray {
+		user = cred('bintray_user')
+		key = cred('bintray_pass')
+		publications = ['mavenJava']
+		publish = true
+		pkg {
+			repo = 'opensource'
+			name = project.name
+			userOrg = project.org
+			version {
+				name = project.version
+				mavenCentralSync {
+					user = cred('nexus_user')
+					password = cred('nexus_pass')
+				}
 			}
 		}
 	}
+
+	publish.dependsOn(bintrayUpload)
+	bintrayUpload.dependsOn(['generatePomFileForMavenJavaPublication', jar, sourcesJar, javadocJar])
 }
 
 //////////////////////////
