@@ -29,6 +29,14 @@ public class FreshMarkExtension extends FormatExtension {
 
 	public FreshMarkExtension(SpotlessExtension root) {
 		super(NAME, root);
+		customLazy(NAME, () -> {
+			// defaults to all project properties 
+			if (properties == null) {
+				properties = getProject().getProperties();
+			}
+			FreshMark freshMark = new FreshMark(properties, getProject().getLogger()::warn);
+			return freshMark::compile;
+		});
 	}
 
 	public void properties(Map<String, ?> properties) {
@@ -39,16 +47,8 @@ public class FreshMarkExtension extends FormatExtension {
 	protected void setupTask(FormatTask task) throws Exception {
 		// defaults to all markdown files
 		if (target == null) {
-			target = getProject().files("**/*.md");
+			target = parseTarget("**/*.md");
 		}
-		// defaults to all project properties 
-		if (properties == null) {
-			properties = getProject().getProperties();
-		}
-		customLazy(NAME, () -> {
-			FreshMark freshMark = new FreshMark(properties, task.getLogger()::warn);
-			return freshMark::compile;
-		});
 		super.setupTask(task);
 	}
 }

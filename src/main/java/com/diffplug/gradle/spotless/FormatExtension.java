@@ -70,7 +70,7 @@ public class FormatExtension {
 	}
 
 	@SuppressWarnings("unchecked")
-	private FileCollection parseTarget(Object target) {
+	protected FileCollection parseTarget(Object target) {
 		if (target instanceof FileCollection) {
 			return (FileCollection) target;
 		} else if (target instanceof String) {
