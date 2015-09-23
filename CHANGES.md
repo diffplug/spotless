@@ -1,5 +1,9 @@
 # Spotless releases
 
+### Version 1.3.1 - September 22nd 2015 ([jcenter](https://bintray.com/diffplug/opensource/spotless/1.3.1/view))
+
+* Bumped the FreshMark dependency to 1.3.0, because it offers improved error reporting.
+
 ### Version 1.3.0 - September 22nd 2015 ([jcenter](https://bintray.com/diffplug/opensource/spotless/1.3.0/view))
 
 * Added native support for FreshMark.

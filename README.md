@@ -1,8 +1,8 @@
 # <img align="left" src="images/spotless_logo.png"> Spotless: Keep your code spotless with Gradle
 
 [![Gradle plugin](https://img.shields.io/badge/plugins.gradle.org-com.diffplug.gradle.spotless-blue.svg)](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless)
-[![JCenter artifact](https://img.shields.io/badge/jcenter-com.diffplug.gradle.spotless%3Aspotless-blue.svg)](https://bintray.com/diffplug/opensource/spotless/view)
-[![Latest version](http://img.shields.io/badge/latest-1.3.0-blue.svg)](https://github.com/diffplug/spotless/releases/latest)
+[![JCenter artifact](https://img.shields.io/badge/mavenCentral-com.diffplug.gradle.spotless%3Aspotless-blue.svg)](https://bintray.com/diffplug/opensource/spotless/view)
+[![Latest version](http://img.shields.io/badge/latest-1.3.1-blue.svg)](https://github.com/diffplug/spotless/releases/latest)
 [![Changelog](http://img.shields.io/badge/changelog-1.4.0--SNAPSHOT-brightgreen.svg)](CHANGES.md)
 [![Travis CI](https://travis-ci.org/diffplug/spotless.svg?branch=master)](https://travis-ci.org/diffplug/spotless)
 [![License](https://img.shields.io/badge/license-Apache-brightgreen.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
@@ -168,8 +168,8 @@ See [`JavaExtension.java`](src/main/java/com/diffplug/gradle/spotless/java/JavaE
 
 * Formatting by Eclipse 4.5
 	+ Special thanks to [Mateusz Matela](https://waynebeaton.wordpress.com/2015/03/15/great-fixes-for-mars-winners-part-i/) for huge improvements to the eclipse code formatter!
-* Forked from [gradle-format-plugin](https://github.com/youribonnaffe/gradle-format-plugin) by Youri Bonnaffé.
-* Thanks to Gábor Bernát for improvements to logging and multi-project support.
+* Forked from [gradle-format-plugin](https://github.com/youribonnaffe/gradle-format-plugin) by Youri Bonnaff??.
+* Thanks to G??bor Bern??t for improvements to logging and multi-project support.
 * Import ordering from [EclipseCodeFormatter](https://github.com/krasa/EclipseCodeFormatter).
 * Built by [gradle](http://gradle.org/).
 * Tested by [junit](http://junit.org/).

@@ -9,8 +9,12 @@ repositories {
 	jcenter()
 	// SNAPSHOT versions are free to rely on other SNAPSHOT libraries
 	if (project.version.endsWith('-SNAPSHOT')) {
-		maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-		configurations.all { resolutionStrategy.cacheChangingModulesFor 0, 'seconds' }
+		maven {
+			url 'https://oss.sonatype.org/content/repositories/snapshots/'
+		}
+		configurations.all {
+			resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+		}
 	}
 	ivy {
 		// Eclipse 4.5 M6 has lots of formatter improvements
