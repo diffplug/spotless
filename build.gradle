@@ -129,7 +129,7 @@ def isSnapshot = project.version.endsWith('-SNAPSHOT')
 def cred = {
 	if (System.env[it] != null) {
 		return System.env[it]
-	} else if (project[it] != null) {
+	} else if (project.hasProperty(it)) {
 		return project[it]
 	} else {
 		return 'unknown_' + it
