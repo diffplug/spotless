@@ -46,7 +46,14 @@ Contributions are welcome, see [the contributing guide](CONTRIBUTING.md) for dev
 
 Spotless is hosted on jcenter and at plugins.gradle.org. [Go here](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless) if you're not sure how to import the plugin.
 
-* [Durian](https://github.com/diffplug/durian) ([direct link to spotless section in its build.gradle](https://github.com/diffplug/durian/blob/v3.1.2/build.gradle?ts=4#L65-L85))
+* [Durian](https://github.com/diffplug/durian) ([direct link to spotless section in its build.gradle](https://github.com/diffplug/durian/blob/v3.2.0/build.gradle#L65-L85))
+* [DurianRx](https://github.com/diffplug/durian-rx) ([direct link to spotless section in it build.gradle](https://github.com/diffplug/durian-rx/blob/v1.1.0/build.gradle#L92-L113))
+* [DurianSwt](https://github.com/diffplug/durian-swt) ([direct link to spotless section in it build.gradle](https://github.com/diffplug/durian-swt/blob/v1.3.0/build.gradle#L137-L158))
+* [MatConsoleCtl](https://github.com/diffplug/matconsolectl) ([direct link to spotless section in it build.gradle](https://github.com/diffplug/matconsolectl/blob/v4.4.1/build.gradle#L169-L189))
+* [MatFileRW](https://github.com/diffplug/matfilerw) ([direct link to spotless section in it build.gradle](https://github.com/diffplug/matfilerw/blob/v1.3.1/build.gradle#L129-L149))
+* [Goomph](https://github.com/diffplug/goomph) ([direct link to spotless section in it build.gradle](https://github.com/diffplug/goomph/blob/v1.0.0/build.gradle#L78-L99))
+* [FreshMark](https://github.com/diffplug/freshmark) ([direct link to spotless section in it build.gradle](https://github.com/diffplug/freshmark/blob/v1.3.0/build.gradle#L52-L73))
+* [JScriptBox](https://github.com/diffplug/jscriptbox) ([direct link to spotless section in it build.gradle](https://github.com/diffplug/jscriptbox/blob/v3.0.0/build.gradle#L45-L65))
 * (Your project here)
 
 ## Applying [FreshMark](https://github.com/diffplug/freshmark) to markdown files
