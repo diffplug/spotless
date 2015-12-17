@@ -28,19 +28,9 @@ import com.diffplug.common.base.Throwing;
  * The input is guaranteed to have unix-style newlines, and the output is required
  * to not introduce any windows-style newlines as well.
  */
-public class FormatterStep {
-	private final String name;
-	private final Throwing.Function<String, String> formatter;
-
-	private FormatterStep(String name, Throwing.Function<String, String> formatter) {
-		this.name = name;
-		this.formatter = formatter;
-	}
-
+public interface FormatterStep {
 	/** The name of the step, for debugging purposes. */
-	public String getName() {
-		return name;
-	}
+	String getName();
 
 	/**
 	 * Returns a formatted version of the given content.
@@ -50,13 +40,32 @@ public class FormatterStep {
 	 * @return The formatted content, guaranteed to only have unix-style newlines 
 	 * @throws Throwable 
 	 */
-	public String format(String raw, File file) throws Throwable {
-		return formatter.apply(raw);
+	String format(String raw, File file) throws Throwable;
+
+	/** A FormatterStep which doesn't depend on the input file. */
+	static class FileIndependent implements FormatterStep {
+		private final String name;
+		private final Throwing.Function<String, String> formatter;
+
+		private FileIndependent(String name, Throwing.Function<String, String> formatter) {
+			this.name = name;
+			this.formatter = formatter;
+		}
+
+		@Override
+		public String getName() {
+			return name;
+		}
+
+		@Override
+		public String format(String raw, File file) throws Throwable {
+			return formatter.apply(raw);
+		}
 	}
 
 	/** Creates a FormatterStep from the given function. */
 	public static FormatterStep create(String name, Throwing.Function<String, String> formatter) {
-		return new FormatterStep(name, formatter);
+		return new FileIndependent(name, formatter);
 	}
 
 	/** Creates a FormatterStep lazily from the given formatterSupplier function. */
@@ -66,6 +75,6 @@ public class FormatterStep {
 		// memoize its result
 		Supplier<Throwing.Function<String, String>> memoized = Suppliers.memoize(rethrowFormatterSupplier);
 		// create the step
-		return new FormatterStep(name, content -> memoized.get().apply(content));
+		return new FileIndependent(name, content -> memoized.get().apply(content));
 	}
 }
