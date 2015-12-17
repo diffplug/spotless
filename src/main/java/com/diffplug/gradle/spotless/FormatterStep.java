@@ -15,6 +15,7 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.io.File;
 import java.util.function.Supplier;
 
 import com.diffplug.common.base.Errors;
@@ -45,10 +46,11 @@ public class FormatterStep {
 	 * Returns a formatted version of the given content.
 	 * 
 	 * @param raw File's content, guaranteed to have unix-style newlines ('\n')
+	 * @param file the File which is being formatted
 	 * @return The formatted content, guaranteed to only have unix-style newlines 
 	 * @throws Throwable 
 	 */
-	public String format(String raw) throws Throwable {
+	public String format(String raw, File file) throws Throwable {
 		return formatter.apply(raw);
 	}
 
