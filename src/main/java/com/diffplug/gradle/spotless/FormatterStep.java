@@ -15,6 +15,10 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.util.function.Supplier;
+
+import com.diffplug.common.base.Errors;
+import com.diffplug.common.base.Suppliers;
 import com.diffplug.common.base.Throwing;
 
 /**
@@ -55,16 +59,11 @@ public class FormatterStep {
 
 	/** Creates a FormatterStep lazily from the given formatterSupplier function. */
 	public static FormatterStep createLazy(String name, Throwing.Supplier<Throwing.Function<String, String>> formatterSupplier) {
-		return new FormatterStep(name, new Throwing.Function<String, String>() {
-			private Throwing.Function<String, String> formatter;
-
-			@Override
-			public String apply(String content) throws Throwable {
-				if (formatter == null) {
-					formatter = formatterSupplier.get();
-				}
-				return formatter.apply(content);
-			}
-		});
+		// wrap the supplier as a regular Supplier (not a Throwing.Supplier)
+		Supplier<Throwing.Function<String, String>> rethrowFormatterSupplier = Errors.rethrow().wrap(formatterSupplier);
+		// memoize its result
+		Supplier<Throwing.Function<String, String>> memoized = Suppliers.memoize(rethrowFormatterSupplier);
+		// create the step
+		return new FormatterStep(name, content -> memoized.get().apply(content));
 	}
 }
