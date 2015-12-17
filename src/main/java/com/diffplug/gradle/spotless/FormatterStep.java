@@ -16,6 +16,7 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.File;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import com.diffplug.common.base.Errors;
@@ -41,6 +42,30 @@ public interface FormatterStep {
 	 * @throws Throwable 
 	 */
 	String format(String raw, File file) throws Throwable;
+
+	/**
+	 * Returns a new FormatterStep which will only apply its changes
+	 * to files which pass the given filter.
+	 * @param filter
+	 * @return
+	 */
+	default FormatterStep filterByFile(Predicate<File> filter) {
+		return new FormatterStep() {
+			@Override
+			public String getName() {
+				return FormatterStep.this.getName();
+			}
+
+			@Override
+			public String format(String raw, File file) throws Throwable {
+				if (filter.test(file)) {
+					return FormatterStep.this.format(raw, file);
+				} else {
+					return raw;
+				}
+			}
+		};
+	}
 
 	/** A FormatterStep which doesn't depend on the input file. */
 	static class FileIndependent implements FormatterStep {
