@@ -24,6 +24,7 @@ import org.gradle.api.tasks.SourceSet;
 
 import com.diffplug.gradle.spotless.FormatExtension;
 import com.diffplug.gradle.spotless.FormatTask;
+import com.diffplug.gradle.spotless.LicenseHeaderStep;
 import com.diffplug.gradle.spotless.SpotlessExtension;
 
 public class JavaExtension extends FormatExtension {
@@ -69,6 +70,15 @@ public class JavaExtension extends FormatExtension {
 			}
 			target = union;
 		}
+		// LicenseHeaderStep completely blows apart package-info.java - this common-sense check ensures that
+		// it skips package-info.java.  See https://github.com/diffplug/spotless/issues/1
+		steps.replaceAll(step -> {
+			if (LicenseHeaderStep.NAME.equals(step.getName())) {
+				return step.filterByFile(file -> !file.getName().equals("package-info.java"));
+			} else {
+				return step;
+			}
+		});
 		super.setupTask(task);
 	}
 }
