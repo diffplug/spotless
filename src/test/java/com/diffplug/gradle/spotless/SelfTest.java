@@ -25,14 +25,14 @@ import org.junit.Test;
 
 /**
  * Running spotless on ourselves yields the following error:
- * 
+ *
  * Module version com.diffplug.gradle.spotless:spotless:1.0-SNAPSHOT,
  * configuration 'classpath' declares a dependency on configuration
  * 'default' which is not declared in the module descriptor for
  * com.diffplug.gradle.spotless:spotless:1.0-SNAPSHOT
- * 
+ *
  * Tried all kinds of things to fix it, no luck so far.
- * 
+ *
  * So, we'll just run it from inside of ourselves.
  */
 public class SelfTest {
@@ -60,6 +60,7 @@ public class SelfTest {
 				java.licenseHeaderFile("spotless.license.java");
 				java.importOrderFile("spotless.importorder");
 				java.eclipseFormatFile("spotless.eclipseformat.xml");
+				java.trimTrailingWhitespace();
 				java.customLazy("Lambda fix", () -> raw -> {
 					if (!raw.contains("public class SelfTest ")) {
 						// don't format this line away, lol
@@ -67,15 +68,15 @@ public class SelfTest {
 					} else {
 						return raw;
 					}
-				} );
-			} );
+				});
+			});
 			extension.format("misc", misc -> {
 				misc.target("**/*.gradle", "**/*.md", "**/*.gitignore");
 				misc.indentWithTabs();
 				misc.trimTrailingWhitespace();
 				misc.endWithNewline();
-			} );
-		} );
+			});
+		});
 		project.getTasks().stream()
 				.filter(task -> task instanceof FormatTask)
 				.map(task -> (FormatTask) task)
@@ -86,7 +87,7 @@ public class SelfTest {
 					} catch (Exception e) {
 						throw new RuntimeException(e);
 					}
-				} );
+				});
 	}
 
 	/** Creates a Project which has had the SpotlessExtension setup. */

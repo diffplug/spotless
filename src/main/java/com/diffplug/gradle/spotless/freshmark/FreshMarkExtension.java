@@ -30,7 +30,7 @@ public class FreshMarkExtension extends FormatExtension {
 	public FreshMarkExtension(SpotlessExtension root) {
 		super(NAME, root);
 		customLazy(NAME, () -> {
-			// defaults to all project properties 
+			// defaults to all project properties
 			if (properties == null) {
 				properties = getProject().getProperties();
 			}

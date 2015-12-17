@@ -78,7 +78,7 @@ public class IndentStep {
 				builder.append(raw.subSequence(contentStart, raw.length()));
 				return builder.toString();
 			} else {
-				// increment lineStart by 1 so that we start after the newline next time 
+				// increment lineStart by 1 so that we start after the newline next time
 				++lineStart;
 				builder.append(raw.subSequence(contentStart, lineStart));
 			}

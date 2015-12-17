@@ -28,7 +28,6 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.file.UnionFileCollection;
 
 import com.diffplug.common.base.Throwing;
-
 import groovy.lang.Closure;
 
 /** Adds a `spotless{Name}Check` and `spotless{Name}Apply` task. */
@@ -49,7 +48,7 @@ public class FormatExtension {
 	 * FileCollections pass through raw.
 	 * Strings are treated as the 'include' arg to fileTree, with project.rootDir as the dir.
 	 * List<String> are treates as the 'includes' arg to fileTree, with project.rootDir as the dir.
-	 * Anything else gets passed to getProject().files(). 
+	 * Anything else gets passed to getProject().files().
 	 */
 	public void target(Object... targets) {
 		if (targets.length == 0) {
@@ -93,7 +92,7 @@ public class FormatExtension {
 
 	/**
 	 * Adds the given custom step, which is constructed lazily for performance reasons.
-	 * 
+	 *
 	 * The resulting function will receive a string with unix-newlines, and it must return a string unix newlines.
 	 */
 	public void customLazy(String name, Throwing.Supplier<Throwing.Function<String, String>> formatterSupplier) {
