@@ -1,5 +1,10 @@
 # Spotless releases
 
+### Version 1.3.2 - December 17th 2015 ([jcenter](https://bintray.com/diffplug/opensource/spotless/1.3.2/view))
+
+* Spotless no longer clobbers package-info.java, fixes [#1](https://github.com/diffplug/spotless/issues/1).
+* Added some infrastructure which allows `FormatterStep`s to peek at the filename if they really need to.
+
 ### Version 1.3.1 - September 22nd 2015 ([jcenter](https://bintray.com/diffplug/opensource/spotless/1.3.1/view))
 
 * Bumped the FreshMark dependency to 1.3.0, because it offers improved error reporting.

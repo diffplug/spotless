@@ -2,7 +2,7 @@
 
 [![Gradle plugin](https://img.shields.io/badge/plugins.gradle.org-com.diffplug.gradle.spotless-blue.svg)](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless)
 [![JCenter artifact](https://img.shields.io/badge/mavenCentral-com.diffplug.gradle.spotless%3Aspotless-blue.svg)](https://bintray.com/diffplug/opensource/spotless/view)
-[![Latest version](http://img.shields.io/badge/latest-1.3.1-blue.svg)](https://github.com/diffplug/spotless/releases/latest)
+[![Latest version](http://img.shields.io/badge/latest-1.3.2-blue.svg)](CHANGES.md)
 [![Changelog](http://img.shields.io/badge/changelog-1.4.0--SNAPSHOT-brightgreen.svg)](CHANGES.md)
 [![Travis CI](https://travis-ci.org/diffplug/spotless.svg?branch=master)](https://travis-ci.org/diffplug/spotless)
 [![License](https://img.shields.io/badge/license-Apache-brightgreen.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
@@ -46,6 +46,7 @@ Contributions are welcome, see [the contributing guide](CONTRIBUTING.md) for dev
 
 Spotless is hosted on jcenter and at plugins.gradle.org. [Go here](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless) if you're not sure how to import the plugin.
 
+* [opentest4j](https://github.com/ota4j-team/opentest4j/blob/aab8c204be05609e9f76c2c964c3d6845cd0de14/build.gradle#L63-L80)
 * [Durian](https://github.com/diffplug/durian) ([direct link to spotless section in its build.gradle](https://github.com/diffplug/durian/blob/v3.2.0/build.gradle#L65-L85))
 * [DurianRx](https://github.com/diffplug/durian-rx) ([direct link to spotless section in it build.gradle](https://github.com/diffplug/durian-rx/blob/v1.1.0/build.gradle#L92-L113))
 * [DurianSwt](https://github.com/diffplug/durian-swt) ([direct link to spotless section in it build.gradle](https://github.com/diffplug/durian-swt/blob/v1.3.0/build.gradle#L137-L158))
