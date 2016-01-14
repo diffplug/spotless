@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 DiffPlug
+ * Copyright 2016 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public class SelfTest {
 	@Ignore("The test passes in real life and Eclipse, but fails in Gradle test runner...")
 	public void check() throws Exception {
 		try {
-			runTasksWithCheck(true);
+			runTasksWithCheck(false);
 		} catch (Exception e) {
 			throw new Exception("There are formatting errors in spotless' source code.\n" + "Ideally, you could just run 'spotlessApply', but because of an unresolved bootstrapping issue, you'll have to manually run the " + "main() method in com.diffplug.gradle.spotless.SelfTest", e);
 		}
