@@ -19,7 +19,7 @@ repositories {
 	ivy {
 		// Eclipse 4.5 M6 has lots of formatter improvements
 		// Future versions can be found here: http://download.eclipse.org/eclipse/downloads/index.html
-		url "http://download.eclipse.org/eclipse/updates/4.5/R-4.5-201506032000/"
+		url "http://download.eclipse.org/eclipse/updates/4.5/R-4.5.2-201602121500/"
 		layout "pattern", {
 			artifact "plugins/[artifact]_[revision].[ext]"
 		}
@@ -58,7 +58,7 @@ dependencies {
 	compile "com.diffplug.freshmark:freshmark:${VER_FRESHMARK}"
 
 	// The only dependencies we actually use
-	embeddedJars 'p2:org.eclipse.jdt.core:3.11.0.v20150602-1242'
+	embeddedJars 'p2:org.eclipse.jdt.core:3.11.2.v20160128-0629'
 	embeddedJars 'p2:org.eclipse.text:3.5.400.v20150505-1044'
 
 	// Because gradle can't consume p2, we have to resolve the transitive dependencies - and their versions - by hand.
@@ -69,11 +69,11 @@ dependencies {
 	// - Grep through the file for the plugin id, and copy the version below
 	embeddedJars 'p2:org.eclipse.core.contenttype:3.5.0.v20150421-2214'
 	embeddedJars 'p2:org.eclipse.core.jobs:3.7.0.v20150330-2103'
-	embeddedJars 'p2:org.eclipse.core.runtime:3.11.0.v20150405-1723'
-	embeddedJars 'p2:org.eclipse.core.resources:3.10.0.v20150423-0755'
+	embeddedJars 'p2:org.eclipse.core.runtime:3.11.1.v20150903-1804'
+	embeddedJars 'p2:org.eclipse.core.resources:3.10.1.v20150725-1910'
 	embeddedJars 'p2:org.eclipse.equinox.common:3.7.0.v20150402-1709'
 	embeddedJars 'p2:org.eclipse.equinox.preferences:3.5.300.v20150408-1437'
-	embeddedJars 'p2:org.eclipse.osgi:3.10.100.v20150529-1857'
+	embeddedJars 'p2:org.eclipse.osgi:3.10.102.v20160118-1700'
 
 	configurations.compile.extendsFrom(configurations.embeddedJars)
 }
