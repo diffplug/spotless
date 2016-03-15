@@ -93,7 +93,7 @@ public class ImportSorterStep {
 		return applyImportsToDocument(raw, firstImportLine, lastImportLine, sortedImports);
 	}
 
-	private String applyImportsToDocument(final String document, int firstImportLine, int lastImportLine,
+	private static String applyImportsToDocument(final String document, int firstImportLine, int lastImportLine,
 			List<String> strings) {
 		boolean importsAlreadyAppended = false;
 		Scanner scanner = new Scanner(document);
@@ -123,12 +123,12 @@ public class ImportSorterStep {
 		return sb.toString();
 	}
 
-	private void append(StringBuilder sb, String next) {
+	private static void append(StringBuilder sb, String next) {
 		sb.append(next);
 		sb.append(N);
 	}
 
-	private boolean isNotValidImport(int i) {
+	private static boolean isNotValidImport(int i) {
 		return i <= START_INDEX_OF_IMPORTS_PACKAGE_DECLARATION;
 	}
 }

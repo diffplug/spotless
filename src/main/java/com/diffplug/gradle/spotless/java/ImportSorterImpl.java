@@ -48,7 +48,7 @@ class ImportSorterImpl {
 		this.allImportOrderItems.addAll(importOrderCopy);
 	}
 
-	private void putStaticItemIfNotExists(List<String> allImportOrderItems) {
+	private static void putStaticItemIfNotExists(List<String> allImportOrderItems) {
 		boolean contains = false;
 		int indexOfFirstStatic = 0;
 		for (int i = 0; i < allImportOrderItems.size(); i++) {
@@ -65,7 +65,7 @@ class ImportSorterImpl {
 		}
 	}
 
-	private void normalizeStaticOrderItems(List<String> allImportOrderItems) {
+	private static void normalizeStaticOrderItems(List<String> allImportOrderItems) {
 		for (int i = 0; i < allImportOrderItems.size(); i++) {
 			String s = allImportOrderItems.get(i);
 			if (s.startsWith("\\#")) {
@@ -167,7 +167,7 @@ class ImportSorterImpl {
 		return firstIndexOfOrderItem;
 	}
 
-	private boolean matchesStatic(boolean staticItems, String notMatchingItem) {
+	private static boolean matchesStatic(boolean staticItems, String notMatchingItem) {
 		boolean isStatic = notMatchingItem.startsWith("static ");
 		return (isStatic && staticItems) || (!isStatic && !staticItems);
 	}
