@@ -1,5 +1,9 @@
 # Spotless releases
 
+### Version 1.4.0-SNAPSHOT - TBD ([oss snapshots](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/gradle/spotless/spotless/))
+
+* Added a warning when the Eclipse formatter xml has more than one profile.
+
 ### Version 1.3.3 - March 10th 2016 ([jcenter](https://bintray.com/diffplug/opensource/spotless/1.3.3/view))
 
 * Upgraded Eclipse formatter to 4.5.2, which fixes [37 bugs](https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&resolution=FIXED&short_desc=%5Bformatter%5D&short_desc_type=allwordssubstr&target_milestone=4.5.1&target_milestone=4.5.2) compared to the previous 4.5.0.

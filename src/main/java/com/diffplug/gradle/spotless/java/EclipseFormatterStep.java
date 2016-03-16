@@ -26,6 +26,8 @@ import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.text.edits.TextEdit;
 import org.gradle.api.GradleException;
+import org.gradle.api.logging.Logger;
+import org.gradle.api.logging.Logging;
 
 import com.diffplug.gradle.spotless.LineEnding;
 
@@ -37,6 +39,7 @@ import groovy.xml.QName;
 /** Formatter step which calls out to the Eclipse formatter. */
 public class EclipseFormatterStep {
 	public static final String NAME = "Eclipse Formatter";
+	private static final Logger logger = Logging.getLogger(EclipseFormatterStep.class);
 
 	private CodeFormatter codeFormatter;
 
@@ -67,6 +70,15 @@ public class EclipseFormatterStep {
 			return new EclipseFormatterStep(settings);
 		} else if (file.getName().endsWith(".xml")) {
 			Node xmlSettings = new XmlParser().parse(file);
+			NodeList profiles = xmlSettings.getAt(new QName("profile"));
+			if (profiles.size() > 1) {
+				logger.warn("Eclipse formatter file contains multiple profiles: " + file.getAbsolutePath());
+				for (int i = 0; i < profiles.size(); ++i) {
+					Node node = (Node) profiles.get(i);
+					logger.warn("    " + node.attribute("name"));
+				}
+				logger.warn("Using first profile, recommend deleting others.");
+			}
 			NodeList xmlSettingsElements = xmlSettings.getAt(new QName("profile")).getAt("setting");
 			for (int i = 0; i < xmlSettingsElements.size(); ++i) {
 				Node setting = (Node) xmlSettingsElements.get(i);
