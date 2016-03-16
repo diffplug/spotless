@@ -17,7 +17,6 @@ repositories {
 		}
 	}
 	ivy {
-		// Eclipse 4.5 M6 has lots of formatter improvements
 		// Future versions can be found here: http://download.eclipse.org/eclipse/downloads/index.html
 		url "http://download.eclipse.org/eclipse/updates/4.5/R-4.5.2-201602121500/"
 		layout "pattern", {
@@ -52,28 +51,38 @@ configurations {
 	embeddedJars
 }
 
+def eclipseDeps = [
+	// The only dependencies we actually use
+	'org.eclipse.jdt.core:3.11.2.v20160128-0629',
+	'org.eclipse.text:3.5.400.v20150505-1044',
+
+	// Because gradle can't consume p2, we have to resolve the transitive dependencies - and their versions - by hand.
+	// The transitive dependencies are extremely unlikely to change, but we're probably going to want to upgrade to newer versions of Eclipse.
+	// Here's how:
+	// - Browse to http://download.eclipse.org/eclipse/updates/4.5/R-4.5.2-201602121500/plugins/?d
+	// - Search through the page for the plugin id, and copy the version below
+	'org.eclipse.core.contenttype:3.5.0.v20150421-2214',
+	'org.eclipse.core.jobs:3.7.0.v20150330-2103',
+	'org.eclipse.core.runtime:3.11.1.v20150903-1804',
+	'org.eclipse.core.resources:3.10.1.v20150725-1910',
+	'org.eclipse.equinox.common:3.7.0.v20150402-1709',
+	'org.eclipse.equinox.preferences:3.5.300.v20150408-1437',
+	'org.eclipse.osgi:3.10.102.v20160118-1700'
+]
 dependencies {
 	compile gradleApi()
 	compile "com.diffplug.durian:durian:${VER_DURIAN}"
 	compile "com.diffplug.freshmark:freshmark:${VER_FRESHMARK}"
 
 	// The only dependencies we actually use
-	embeddedJars 'p2:org.eclipse.jdt.core:3.11.2.v20160128-0629'
-	embeddedJars 'p2:org.eclipse.text:3.5.400.v20150505-1044'
-
-	// Because gradle can't consume p2, we have to resolve the transitive dependencies - and their versions - by hand.
-	// The transitive dependencies are extremely unlikely to change, but we're probably going to want to upgrade to newer versions of Eclipse.
-	// Here's how:
-	// - Download http://download.eclipse.org/eclipse/updates/4.5milestones/S-4.5M6-201503200800/artifacts.jar
-	// - Unzip this file, and you'll have artifacts.xml
-	// - Grep through the file for the plugin id, and copy the version below
-	embeddedJars 'p2:org.eclipse.core.contenttype:3.5.0.v20150421-2214'
-	embeddedJars 'p2:org.eclipse.core.jobs:3.7.0.v20150330-2103'
-	embeddedJars 'p2:org.eclipse.core.runtime:3.11.1.v20150903-1804'
-	embeddedJars 'p2:org.eclipse.core.resources:3.10.1.v20150725-1910'
-	embeddedJars 'p2:org.eclipse.equinox.common:3.7.0.v20150402-1709'
-	embeddedJars 'p2:org.eclipse.equinox.preferences:3.5.300.v20150408-1437'
-	embeddedJars 'p2:org.eclipse.osgi:3.10.102.v20160118-1700'
+	eclipseDeps.each { dep -> 
+		def idx = dep.indexOf(':')
+		def name = dep.substring(0, idx);
+		def ver = dep.substring(idx + 1);
+		embeddedJars "p2:${name}:${ver}"
+		// UNCOMMENT TO DOWNLOAD SOURCE JARS
+		//embeddedJars "p2:${name}.source:${ver}"
+	}
 
 	configurations.compile.extendsFrom(configurations.embeddedJars)
 }
