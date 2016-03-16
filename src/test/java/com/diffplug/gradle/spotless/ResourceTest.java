@@ -51,7 +51,9 @@ public class ResourceTest {
 
 	/** Returns a File (in a temporary folder) which has the contents of the given file from the src/test/resources directory. */
 	protected File createTestFile(String filename) throws IOException {
-		File file = folder.newFile(filename);
+		int lastSlash = filename.lastIndexOf('/');
+		String name = lastSlash >= 0 ? filename.substring(lastSlash) : filename;
+		File file = folder.newFile(name);
 		Files.write(file.toPath(), getTestResource(filename).getBytes(StandardCharsets.UTF_8));
 		return file;
 	}
