@@ -7,6 +7,7 @@
 ### Version 1.3.3 - March 10th 2016 ([jcenter](https://bintray.com/diffplug/opensource/spotless/1.3.3/view))
 
 * Upgraded Eclipse formatter to 4.5.2, which fixes [37 bugs](https://bugs.eclipse.org/bugs/buglist.cgi?query_format=advanced&resolution=FIXED&short_desc=%5Bformatter%5D&short_desc_type=allwordssubstr&target_milestone=4.5.1&target_milestone=4.5.2) compared to the previous 4.5.0.
+* If you have been using `custom 'Lambda fix', { it.replace('} )', '})').replace('} ,', '},') }`, you don't need it anymore.
 
 ### Version 1.3.2 - December 17th 2015 ([jcenter](https://bintray.com/diffplug/opensource/spotless/1.3.2/view))
 

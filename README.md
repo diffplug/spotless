@@ -103,10 +103,10 @@ spotless {
 		// If you have an older Eclipse properties file, you can use that too.
 
 		// You can also tweak the formatting with custom regexes or functions, such as:
-		// Eclipse formatter puts excess whitespace after lambda blocks
-		//    funcThatTakesLambdas(x -> {} , y -> {} )	// what Eclipse does
-		//    funcThatTakesLambdas(x -> {}, y -> {})	// what I wish Eclipse did
-		custom 'Lambda fix', { it.replace('} )', '})').replace('} ,', '},') }
+		// Eclipse formatter screws up long literals with underscores inside of annotations (see issue #14)
+		//    @Max(value = 9_999_999 L)	// what Eclipse does
+		//    @Max(value = 9_999_999L)	// what I wish Eclipse did
+		custom 'Long literal fix', { it.replaceAll('([0-9_]+) [Ll]', '$1L') }
 
 		// By default, all Java source sets will be formatted.  To change
 		// this, set the 'target' parameter as described in the next section.
