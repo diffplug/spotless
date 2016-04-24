@@ -93,9 +93,11 @@ spotless {
 		licenseHeaderFile 'spotless.license.java'		// License header file
 		// Obviously, you can't specify both licenseHeader and licenseHeaderFile at the same time
 
-		importOrder ['java', 'javax', 'org', 'com', 'com.diffplug']	// An array of package names
-		importOrderFile 'spotless.importorder'						// An import ordering file, exported from Eclipse
+		importOrder ['java', 'javax', 'org', 'com', 'com.diffplug', '']	// An array of package names
+		importOrderFile 'spotless.importorder'							// An import ordering file, exported from Eclipse
 		// As before, you can't specify both importOrder and importOrderFile at the same time
+		// You probably want an empty string at the end - all of the imports you didn't specify
+		// explicitly will go there.
 
 		eclipseFormatFile 'spotless.eclipseformat.xml'	// XML file dumped out by the Eclipse formatter
 		// If you have an older Eclipse properties file, you can use that too.
