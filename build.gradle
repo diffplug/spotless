@@ -83,8 +83,12 @@ dependencies {
 		// UNCOMMENT TO DOWNLOAD SOURCE JARS
 		//embeddedJars "p2:${name}.source:${ver}"
 	}
-
+	
 	configurations.compile.extendsFrom(configurations.embeddedJars)
+	
+	testCompile 'org.mockito:mockito-core:1.10.19', {
+		exclude group:'org.hamcrest', module: 'hamcrest-core'
+	}
 }
 
 jar {

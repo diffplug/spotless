@@ -29,13 +29,14 @@ import org.gradle.api.logging.Logging;
 
 /** Formatter which performs the full formatting. */
 public class Formatter {
-	private final LineEnding lineEnding;
 	private final Path projectDirectory;
 	private final List<FormatterStep> steps;
 	private final Logger logger = Logging.getLogger(Formatter.class);
+	private final LineEndingStep normalizerInput = new LineEndingStep(LineEnding.UNIX);
+	private final LineEndingStep normalizerOutput;
 
 	public Formatter(LineEnding lineEnding, Path projectDirectory, List<FormatterStep> steps) {
-		this.lineEnding = lineEnding;
+		this.normalizerOutput = new LineEndingStep(lineEnding);
 		this.projectDirectory = projectDirectory;
 		this.steps = new ArrayList<>(steps);
 	}
@@ -43,12 +44,12 @@ public class Formatter {
 	/** Returns true iff the given file's formatting is up-to-date. */
 	public boolean isClean(File file) throws IOException {
 		String raw = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
-		String unix = raw.replaceAll("\r", "");
+		String unix = normalizerInput.format(raw);
 
 		// check the newlines
 		int totalNewLines = (int) unix.codePoints().filter(val -> val == '\n').count();
 		int windowsNewLines = raw.length() - unix.length();
-		if (lineEnding.isWin()) {
+		if (normalizerOutput.getConcreteLineEnding() == LineEnding.WINDOWS) {
 			if (windowsNewLines != totalNewLines) {
 				return false;
 			}
@@ -68,14 +69,14 @@ public class Formatter {
 	/** Applies formatting to the given file. */
 	public void applyFormat(File file) throws IOException {
 		String raw = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
-		String unix = raw.replaceAll("\r", "");
+		String unix = normalizerInput.format(raw);
 
 		// enforce the format
 		unix = applyAll(unix, file);
 
 		// convert the line endings if necessary
-		if (!lineEnding.string.equals("\n")) {
-			unix = unix.replace("\n", lineEnding.string);
+		if (normalizerOutput.getConcreteLineEnding() != LineEnding.UNIX) {
+			unix = normalizerOutput.format(unix);
 		}
 
 		// write out the file
