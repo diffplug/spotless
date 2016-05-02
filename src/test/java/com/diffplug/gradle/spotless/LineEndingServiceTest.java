@@ -47,6 +47,29 @@ public class LineEndingServiceTest {
 	}
 
 	@Test
+	public void testGetLineSeparatorOrDefault() {
+		assertGetLineSeparatorOrDefault(LineEnding.UNIX, "", "\n");
+		assertGetLineSeparatorOrDefault(LineEnding.WINDOWS, "", "\r\n");
+
+		assertGetLineSeparatorOrDefault(LineEnding.DERIVED, "foobar\n", "\n");
+		assertGetLineSeparatorOrDefault(LineEnding.DERIVED, "foobar\r\n", "\r\n");
+
+		classUnderTest.setLineSeparator(() -> "\r\n");
+		assertGetLineSeparatorOrDefault(LineEnding.PLATFORM_NATIVE, "", "\r\n");
+		assertGetLineSeparatorOrDefault(LineEnding.DERIVED, "foobar", "\r\n");
+
+		classUnderTest.setLineSeparator(() -> "\n");
+		assertGetLineSeparatorOrDefault(LineEnding.PLATFORM_NATIVE, "", "\n");
+		assertGetLineSeparatorOrDefault(LineEnding.DERIVED, "foobar", "\n");
+	}
+
+	private void assertGetLineSeparatorOrDefault(LineEnding lineEnding, String rawForDerivedEnding, String expectedLineSeparator) {
+		String lineSeparator = classUnderTest.getLineSeparatorOrDefault(lineEnding, rawForDerivedEnding);
+
+		assertThat(lineSeparator, is(expectedLineSeparator));
+	}
+
+	@Test
 	public void testGetPlatformLineSeparator_Unix() {
 		classUnderTest.setLineSeparator(() -> "\n");
 
@@ -69,5 +92,27 @@ public class LineEndingServiceTest {
 		classUnderTest.setLineSeparator(() -> "foo");
 
 		classUnderTest.getPlatformLineSeparator();
+	}
+
+	@Test
+	public void testIndexOfLastNonWhitespaceCharacter() {
+		assertIndexOfLastNonWhitespaceCharacter("", -1);
+		assertIndexOfLastNonWhitespaceCharacter("  ", -1);
+		assertIndexOfLastNonWhitespaceCharacter(" \n \t\t\n ", -1);
+		assertIndexOfLastNonWhitespaceCharacter("", -1);
+
+		assertIndexOfLastNonWhitespaceCharacter("foobar", 5);
+		assertIndexOfLastNonWhitespaceCharacter("foobar  ", 5);
+		assertIndexOfLastNonWhitespaceCharacter("foobar\t\n\n", 5);
+
+		assertIndexOfLastNonWhitespaceCharacter("foo\nbar", 6);
+		assertIndexOfLastNonWhitespaceCharacter("foo\nbar  ", 6);
+		assertIndexOfLastNonWhitespaceCharacter("foo\nbar\t\n\n", 6);
+	}
+
+	private void assertIndexOfLastNonWhitespaceCharacter(String text, int expectedIndex) {
+		int indexOfLastNonWhitespaceCharacter = classUnderTest.indexOfLastNonWhitespaceCharacter(text);
+
+		assertThat(indexOfLastNonWhitespaceCharacter, is(expectedIndex));
 	}
 }

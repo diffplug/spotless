@@ -16,8 +16,11 @@
 package com.diffplug.gradle.spotless;
 
 import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LineEndingService {
+	private static final Pattern LAST_NON_WHITESPACE_PATTERN = Pattern.compile("[^\\s]\\s*$");
 
 	private Supplier<String> lineSeparator = () -> System.lineSeparator();
 
@@ -42,6 +45,23 @@ public class LineEndingService {
 		}
 
 		return fallback;
+	}
+
+	public String getLineSeparatorOrDefault(LineEnding lineEnding, String rawForDerivedEnding) {
+		if (lineEnding == LineEnding.DERIVED) {
+			lineEnding = determineLineEnding(rawForDerivedEnding, LineEnding.DERIVED_FALLBACK);
+		}
+
+		switch (lineEnding) {
+		case UNIX:
+			return "\n";
+		case WINDOWS:
+			return "\r\n";
+		case PLATFORM_NATIVE:
+			return getPlatformLineSeparator();
+		default:
+			throw new IllegalStateException("No line separator available!");
+		}
 	}
 
 	private static boolean isWindows(int firstCR, int firstLF) {
@@ -82,6 +102,14 @@ public class LineEndingService {
 		}
 
 		throw new UnsupportedOperationException("Determined native line separator is not supported!");
+	}
+
+	public int indexOfLastNonWhitespaceCharacter(String text) {
+		Matcher matcher = LAST_NON_WHITESPACE_PATTERN.matcher(text);
+		if (!matcher.find()) {
+			return -1;
+		}
+		return matcher.start();
 	}
 
 }
