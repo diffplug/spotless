@@ -18,7 +18,6 @@ package com.diffplug.gradle.spotless;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -26,7 +25,6 @@ import com.diffplug.gradle.spotless.LineEndingStep.EOLNormalizer;
 
 public class LineEndingStepTest extends ResourceTest {
 	@Test
-	@Ignore("This kind of test doesn't work until assertStep is refactored")
 	public void normalizeToUnixFromFile() throws Throwable {
 		LineEndingStep eol = new LineEndingStep(LineEnding.UNIX);
 		assertStep(eol::format, "EOLWindows.test", "EOLUnix.test");
@@ -35,7 +33,6 @@ public class LineEndingStepTest extends ResourceTest {
 	}
 
 	@Test
-	@Ignore("This kind of test doesn't work until assertStep is refactored")
 	public void normalizeToWindowsFromFile() throws Throwable {
 		LineEndingStep eol = new LineEndingStep(LineEnding.WINDOWS);
 		assertStep(eol::format, "EOLWindows.test", "EOLWindows.test");
@@ -44,7 +41,6 @@ public class LineEndingStepTest extends ResourceTest {
 	}
 
 	@Test
-	@Ignore("This kind of test doesn't work until assertStep is refactored")
 	public void normalizeToDerivedEOLFromFile() throws Throwable {
 		LineEndingStep eol = new LineEndingStep(LineEnding.DERIVED);
 		assertStep(eol::format, "EOLWindows.test", "EOLWindows.test");
@@ -53,7 +49,6 @@ public class LineEndingStepTest extends ResourceTest {
 	}
 
 	@Test
-	@Ignore("This kind of test doesn't work until assertStep is refactored")
 	public void normalizeToPlatformNativeFromFile_Windows() throws Throwable {
 		LineEndingService lineEndingServiceMock = Mockito.mock(LineEndingService.class);
 		Mockito.when(lineEndingServiceMock.getPlatformLineEnding()).thenReturn(LineEnding.WINDOWS);
@@ -65,7 +60,6 @@ public class LineEndingStepTest extends ResourceTest {
 	}
 
 	@Test
-	@Ignore("This kind of test doesn't work until assertStep is refactored")
 	public void normalizeToPlatformNativeFromFile_Unix() throws Throwable {
 		LineEndingService lineEndingServiceMock = Mockito.mock(LineEndingService.class);
 		Mockito.when(lineEndingServiceMock.getPlatformLineEnding()).thenReturn(LineEnding.UNIX);
@@ -77,7 +71,6 @@ public class LineEndingStepTest extends ResourceTest {
 	}
 
 	@Test(expected = IllegalStateException.class)
-	@Ignore("This kind of test doesn't work until assertStep is refactored")
 	public void normalizeToPlatformNativeFromFile_UnexpectedServiceResult() throws Throwable {
 		LineEndingService lineEndingServiceMock = Mockito.mock(LineEndingService.class);
 		Mockito.when(lineEndingServiceMock.getPlatformLineEnding()).thenReturn(LineEnding.UNCERTAIN);

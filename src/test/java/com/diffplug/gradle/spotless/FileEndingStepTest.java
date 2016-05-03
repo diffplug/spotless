@@ -60,6 +60,25 @@ public class FileEndingStepTest {
 		endWithNewlineTest(classUnderTest, "line\nline\r\n\n\t\n\n", "line\nline\n");
 	}
 
+	@Test
+	public void testFormat_ClobberDisabled() {
+		FileEndingStep classUnderTest = new FileEndingStep(LineEnding.UNIX);
+		classUnderTest.disableClobber();
+
+		endWithNewlineTest(classUnderTest, "", "\n");
+		endWithNewlineTest(classUnderTest, "\n", "\n");
+		endWithNewlineTest(classUnderTest, "\n\n\t\r\n\n", "\n\n\t\r\n\n");
+		endWithNewlineTest(classUnderTest, "line", "line\n");
+		endWithNewlineTest(classUnderTest, "line\n", "line\n");
+		endWithNewlineTest(classUnderTest, "line\nline\n\n\n\n", "line\nline\n\n\n\n");
+		endWithNewlineTest(classUnderTest, "line\nline\r\n\n\t\n\n", "line\nline\r\n\n\t\n\n");
+
+		classUnderTest = new FileEndingStep(LineEnding.WINDOWS);
+		classUnderTest.disableClobber();
+
+		endWithNewlineTest(classUnderTest, "line\nline\n\n\n\n", "line\nline\n\n\n\n\r\n");
+	}
+
 	private void endWithNewlineTest(FileEndingStep step, String before, String expectedAfter) {
 		String after = step.format(before);
 		assertThat(after, is(expectedAfter));

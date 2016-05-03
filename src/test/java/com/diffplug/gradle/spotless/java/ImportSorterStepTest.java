@@ -19,24 +19,25 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
+import com.diffplug.gradle.spotless.LineEnding;
 import com.diffplug.gradle.spotless.ResourceTest;
 
 public class ImportSorterStepTest extends ResourceTest {
 	@Test
 	public void sortImportsFromArray() throws Throwable {
-		ImportSorterStep step = new ImportSorterStep(Arrays.asList("java", "javax", "org", "\\#com"));
+		ImportSorterStep step = new ImportSorterStep(Arrays.asList("java", "javax", "org", "\\#com"), LineEnding.DERIVED);
 		assertStep(step::format, "JavaCodeUnsortedImports.test", "JavaCodeSortedImports.test");
 	}
 
 	@Test
 	public void sortImportsFromFile() throws Throwable {
-		ImportSorterStep step = new ImportSorterStep(createTestFile("import.properties"));
+		ImportSorterStep step = new ImportSorterStep(createTestFile("import.properties"), LineEnding.DERIVED);
 		assertStep(step::format, "JavaCodeUnsortedImports.test", "JavaCodeSortedImports.test");
 	}
 
 	@Test
 	public void sortImportsUnmatched() throws Throwable {
-		ImportSorterStep step = new ImportSorterStep(createTestFile("import_unmatched.properties"));
+		ImportSorterStep step = new ImportSorterStep(createTestFile("import_unmatched.properties"), LineEnding.DERIVED);
 		assertStep(step::format, "JavaCodeUnsortedImportsUnmatched.test", "JavaCodeSortedImportsUnmatched.test");
 	}
 }

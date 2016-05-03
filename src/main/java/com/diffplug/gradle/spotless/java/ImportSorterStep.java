@@ -26,6 +26,9 @@ import java.util.Scanner;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import com.diffplug.gradle.spotless.LineEnding;
+import com.diffplug.gradle.spotless.LineEndingService;
+
 /**
  * From https://github.com/krasa/EclipseCodeFormatter
  *
@@ -35,15 +38,17 @@ public class ImportSorterStep {
 	public static final String NAME = "ImportSorter";
 
 	public static final int START_INDEX_OF_IMPORTS_PACKAGE_DECLARATION = 7;
-	public static final String N = "\n";
 
 	private List<String> importsOrder;
+	private LineEnding lineEnding;
+	private LineEndingService lineEndingService = new LineEndingService();
 
-	public ImportSorterStep(List<String> importsOrder) {
+	public ImportSorterStep(List<String> importsOrder, LineEnding lineEnding) {
 		this.importsOrder = new ArrayList<String>(importsOrder);
+		this.lineEnding = lineEnding;
 	}
 
-	public ImportSorterStep(File importsFile) throws IOException {
+	public ImportSorterStep(File importsFile, LineEnding lineEnding) throws IOException {
 		Map<Integer, String> orderToImport = Files.readAllLines(importsFile.toPath()).stream()
 				// filter out comments
 				.filter(line -> !line.startsWith("#"))
@@ -57,10 +62,13 @@ public class ImportSorterStep {
 				// collect into map
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 		// sort the entries by the key, save the values
-		importsOrder = new ArrayList<>(new TreeMap<>(orderToImport).values());
+		this.importsOrder = new ArrayList<>(new TreeMap<>(orderToImport).values());
+		this.lineEnding = lineEnding;
 	}
 
 	public String format(String raw) {
+		String lineSeparator = lineEndingService.getLineSeparatorOrDefault(lineEnding, raw);
+
 		// parse file
 		Scanner scanner = new Scanner(raw);
 		int firstImportLine = 0;
@@ -90,10 +98,10 @@ public class ImportSorterStep {
 		scanner.close();
 
 		List<String> sortedImports = ImportSorterImpl.sort(imports, importsOrder);
-		return applyImportsToDocument(raw, firstImportLine, lastImportLine, sortedImports);
+		return applyImportsToDocument(raw, lineSeparator, firstImportLine, lastImportLine, sortedImports);
 	}
 
-	private static String applyImportsToDocument(final String document, int firstImportLine, int lastImportLine,
+	private static String applyImportsToDocument(final String document, String lineSeparator, int firstImportLine, int lastImportLine,
 			List<String> strings) {
 		boolean importsAlreadyAppended = false;
 		Scanner scanner = new Scanner(document);
@@ -108,12 +116,12 @@ public class ImportSorterStep {
 			if (curentLine >= firstImportLine && curentLine <= lastImportLine) {
 				if (!importsAlreadyAppended) {
 					for (String string : strings) {
-						sb.append(string);
+						append(sb, string, lineSeparator);
 					}
 				}
 				importsAlreadyAppended = true;
 			} else {
-				append(sb, next);
+				append(sb, next, lineSeparator);
 			}
 		}
 		scanner.close();
@@ -123,9 +131,9 @@ public class ImportSorterStep {
 		return sb.toString();
 	}
 
-	private static void append(StringBuilder sb, String next) {
+	private static void append(StringBuilder sb, String next, String lineSeparator) {
 		sb.append(next);
-		sb.append(N);
+		sb.append(lineSeparator);
 	}
 
 	private static boolean isNotValidImport(int i) {

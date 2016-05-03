@@ -72,6 +72,7 @@ public class IndentStep {
 			}
 
 			// find the start of the next line
+			// this works even for lines ending with \r\n
 			lineStart = raw.indexOf('\n', contentStart);
 			if (lineStart == -1) {
 				// if we're at the end, append all of it

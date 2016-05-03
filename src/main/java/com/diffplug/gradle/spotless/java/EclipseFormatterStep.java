@@ -30,6 +30,7 @@ import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
 
 import com.diffplug.gradle.spotless.LineEnding;
+import com.diffplug.gradle.spotless.LineEndingService;
 
 import groovy.util.Node;
 import groovy.util.NodeList;
@@ -42,13 +43,17 @@ public class EclipseFormatterStep {
 	private static final Logger logger = Logging.getLogger(EclipseFormatterStep.class);
 
 	private CodeFormatter codeFormatter;
+	private LineEnding lineEnding;
+	private LineEndingService lineEndingService = new LineEndingService();
 
-	private EclipseFormatterStep(Properties settings) {
+	private EclipseFormatterStep(Properties settings, LineEnding lineEnding) {
 		this.codeFormatter = ToolFactory.createCodeFormatter(settings);
+		this.lineEnding = lineEnding;
 	}
 
 	public String format(String raw) throws Exception {
-		TextEdit edit = codeFormatter.format(CodeFormatter.K_COMPILATION_UNIT, raw, 0, raw.length(), 0, "\n");
+		String lineSeparator = lineEndingService.getLineSeparatorOrDefault(lineEnding, raw);
+		TextEdit edit = codeFormatter.format(CodeFormatter.K_COMPILATION_UNIT, raw, 0, raw.length(), 0, lineSeparator);
 		if (edit == null) {
 			throw new IllegalArgumentException("Invalid java syntax for formatting.");
 		} else {
@@ -59,7 +64,7 @@ public class EclipseFormatterStep {
 	}
 
 	/** Returns an EclipseFormatterStep from the given config file. */
-	public static EclipseFormatterStep load(File file) throws Exception {
+	public static EclipseFormatterStep load(File file, LineEnding lineEnding) throws Exception {
 		Properties settings = new Properties();
 		if (!file.exists()) {
 			throw new GradleException("Eclipse formatter file '" + file + "' does not exist.");
@@ -67,7 +72,7 @@ public class EclipseFormatterStep {
 			try (InputStream input = new FileInputStream(file)) {
 				settings.load(input);
 			}
-			return new EclipseFormatterStep(settings);
+			return new EclipseFormatterStep(settings, lineEnding);
 		} else if (file.getName().endsWith(".xml")) {
 			Node xmlSettings = new XmlParser().parse(file);
 			NodeList profiles = xmlSettings.getAt(new QName("profile"));
@@ -84,7 +89,7 @@ public class EclipseFormatterStep {
 				Node setting = (Node) xmlSettingsElements.get(i);
 				settings.put(setting.attributes().get("id"), setting.attributes().get("value"));
 			}
-			return new EclipseFormatterStep(settings);
+			return new EclipseFormatterStep(settings, lineEnding);
 		} else {
 			throw new GradleException("Eclipse formatter file must be .properties or .xml");
 		}

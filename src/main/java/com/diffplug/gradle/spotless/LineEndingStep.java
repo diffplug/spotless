@@ -48,17 +48,8 @@ public class LineEndingStep {
 		return normalizer.format(raw);
 	}
 
-	public LineEnding getConcreteLineEnding() {
-		return normalizer.getConcreteLineEnding();
-	}
-
 	static interface EOLNormalizer {
 		String format(String input);
-
-		/**
-		 * @deprecated Only used for interim purpose.
-		 */
-		LineEnding getConcreteLineEnding();
 	}
 
 	static class UnixEOLNormalizer implements EOLNormalizer {
@@ -66,12 +57,6 @@ public class LineEndingStep {
 		public String format(String input) {
 			return input.replace("\r\n", "\n");
 		}
-
-		@Override
-		public LineEnding getConcreteLineEnding() {
-			return LineEnding.UNIX;
-		}
-
 	}
 
 	static class WindowsEOLNormalizer implements EOLNormalizer {
@@ -80,22 +65,12 @@ public class LineEndingStep {
 			String unix = input.replace("\r\n", "\n");
 			return unix.replace("\n", "\r\n");
 		}
-
-		@Override
-		public LineEnding getConcreteLineEnding() {
-			return LineEnding.WINDOWS;
-		}
 	}
 
 	static class NoEOLNormalizer implements EOLNormalizer {
 		@Override
 		public String format(String input) {
 			return input;
-		}
-
-		@Override
-		public LineEnding getConcreteLineEnding() {
-			throw new UnsupportedOperationException();
 		}
 	}
 
@@ -125,11 +100,6 @@ public class LineEndingStep {
 			}
 			return delegate.format(input);
 		}
-
-		@Override
-		public LineEnding getConcreteLineEnding() {
-			throw new UnsupportedOperationException();
-		}
 	}
 
 	static class PlatformNativeEOLNormalizer implements EOLNormalizer {
@@ -152,11 +122,6 @@ public class LineEndingStep {
 		@Override
 		public String format(String input) {
 			return delegate.format(input);
-		}
-
-		@Override
-		public LineEnding getConcreteLineEnding() {
-			return delegate.getConcreteLineEnding();
 		}
 	}
 

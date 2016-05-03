@@ -74,13 +74,11 @@ public class ResourceTest {
 
 	/** Reads the given resource from "before", applies the step, and makes sure the result is "after". */
 	protected void assertStep(Throwing.Function<String, String> step, String unformattedPath, String expectedPath) throws Throwable {
-		String unformatted = getTestResource(unformattedPath).replace("\r", ""); // unix-ified input
-		String formatted = step.apply(unformatted);
-		// no windows newlines
-		Assert.assertEquals(-1, formatted.indexOf('\r'));
+		String unformatted = getTestResource(unformattedPath);
+		String expected = getTestResource(expectedPath);
 
-		// unix-ify the test resource output in case git screwed it up
-		String expected = getTestResource(expectedPath).replace("\r", ""); // unix-ified output
+		String formatted = step.apply(unformatted);
+
 		Assert.assertEquals(expected, formatted);
 	}
 
@@ -103,8 +101,6 @@ public class ResourceTest {
 	protected void assertTask(Consumer<FormatExtension> test, String before, String afterExpected) throws Exception {
 		// create the task
 		FormatTask task = createTask(test);
-		// force unix line endings, since we're passing in raw strings
-		task.lineEndings = LineEnding.UNIX;
 		// create the test file
 		File testFile = folder.newFile();
 		Files.write(testFile.toPath(), before.getBytes(StandardCharsets.UTF_8));

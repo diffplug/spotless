@@ -156,20 +156,20 @@ spotless {
 			// when writing a custom step, it will be helpful to know
 			// how the formatting process works, which is as follows:
 
-			// 1) Load each target file, and convert it to unix-style line endings ('\n')
+			// 1) Load each target file
 			// 2) Pass its content through a series of steps, feeding the output of each step to the next
-			// 3) Put the correct line endings back on, then either check or apply
+			// 3) Then either check or apply
 
 			// each step receives a string as input, and should output
-			// a formatted string as output.  Each step can trust that its
-			// input will have unix newlines, and it must promise to output
-			// only unix newlines.  Other than that, anything is fair game!
+			// a formatted string as output.
 		}
 	}
 
 	// If you'd like to specify that files should always have a certain line ending, you can,
-	// but the default value of PLATFORM_NATIVE is *highly* recommended
-	lineEndings = PLATFORM_NATIVE 	// can be WINDOWS, UNIX, or PLATFORM_NATIVE
+	// but the default value of PLATFORM_NATIVE is *highly* recommended.
+	// DERIVED means the line ending is derived for each file based on the first line ending
+	// in its content. If none is found PLATFORM_NATIVE is used.
+	lineEndings = 'PLATFORM_NATIVE' 	// can be WINDOWS, UNIX, PLATFORM_NATIVE or DERIVED
 }
 ```
 

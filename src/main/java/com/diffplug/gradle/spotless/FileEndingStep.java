@@ -18,6 +18,7 @@ package com.diffplug.gradle.spotless;
 public class FileEndingStep {
 	private LineEnding lineEnding;
 	private LineEndingService lineEndingService;
+	private boolean clobber = true;
 
 	public FileEndingStep(LineEnding lineEnding) {
 		this(lineEnding, new LineEndingService());
@@ -26,10 +27,17 @@ public class FileEndingStep {
 	FileEndingStep(LineEnding lineEnding, LineEndingService lineEndingService) {
 		this.lineEnding = lineEnding;
 		this.lineEndingService = lineEndingService;
+	}
 
+	public void disableClobber() {
+		this.clobber = false;
 	}
 
 	public String format(String input) {
+		return clobber ? formatWithClobber(input) : formatWithoutClobber(input);
+	}
+
+	public String formatWithClobber(String input) {
 		String lineSeparator = lineEndingService.getLineSeparatorOrDefault(lineEnding, input);
 		int indexOfLastNonWhitespaceCharacter = lineEndingService.indexOfLastNonWhitespaceCharacter(input);
 
@@ -42,4 +50,10 @@ public class FileEndingStep {
 		builder.append(lineSeparator);
 		return builder.toString();
 	}
+
+	public String formatWithoutClobber(String input) {
+		String lineSeparator = lineEndingService.getLineSeparatorOrDefault(lineEnding, input);
+		return input.endsWith(lineSeparator) ? input : input + lineSeparator;
+	}
+
 }

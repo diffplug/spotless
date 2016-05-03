@@ -28,19 +28,19 @@ public class LicenseHeaderStepTest extends ResourceTest {
 
 	@Test
 	public void fromString() throws Throwable {
-		LicenseHeaderStep step = new LicenseHeaderStep(getTestResource(KEY_LICENSE), JavaExtension.LICENSE_HEADER_DELIMITER);
+		LicenseHeaderStep step = new LicenseHeaderStep(getTestResource(KEY_LICENSE), JavaExtension.LICENSE_HEADER_DELIMITER, LineEnding.DERIVED);
 		assertStep(step::format, KEY_FILE_NOTAPPLIED, KEY_FILE_APPLIED);
 	}
 
 	@Test
 	public void fromFile() throws Throwable {
-		LicenseHeaderStep step = new LicenseHeaderStep(createTestFile(KEY_LICENSE), JavaExtension.LICENSE_HEADER_DELIMITER);
+		LicenseHeaderStep step = new LicenseHeaderStep(createTestFile(KEY_LICENSE), JavaExtension.LICENSE_HEADER_DELIMITER, LineEnding.DERIVED);
 		assertStep(step::format, KEY_FILE_NOTAPPLIED, KEY_FILE_APPLIED);
 	}
 
 	@Test
 	public void efficient() throws Throwable {
-		LicenseHeaderStep step = new LicenseHeaderStep("LicenseHeader\n", "contentstart");
+		LicenseHeaderStep step = new LicenseHeaderStep("LicenseHeader\n", "contentstart", LineEnding.UNIX);
 		String alreadyCorrect = "LicenseHeader\ncontentstart";
 		Assert.assertEquals(alreadyCorrect, step.format(alreadyCorrect));
 		// If no change is required, it should return the exact same string for efficiency reasons
@@ -49,9 +49,9 @@ public class LicenseHeaderStepTest extends ResourceTest {
 
 	@Test
 	public void sanitized() throws Throwable {
-		// The sanitizer should add a \n
-		LicenseHeaderStep step = new LicenseHeaderStep("LicenseHeader", "contentstart");
-		String alreadyCorrect = "LicenseHeader\ncontentstart";
+		// The sanitizer should add the line separator for the LineEnding
+		LicenseHeaderStep step = new LicenseHeaderStep("LicenseHeader", "contentstart", LineEnding.WINDOWS);
+		String alreadyCorrect = "LicenseHeader\r\ncontentstart";
 		Assert.assertEquals(alreadyCorrect, step.format(alreadyCorrect));
 		Assert.assertTrue(alreadyCorrect == step.format(alreadyCorrect));
 	}
@@ -59,7 +59,7 @@ public class LicenseHeaderStepTest extends ResourceTest {
 	@Test
 	public void sanitizerDoesntGoTooFar() throws Throwable {
 		// if the user wants extra lines after the header, we shouldn't clobber them
-		LicenseHeaderStep step = new LicenseHeaderStep("LicenseHeader\n\n", "contentstart");
+		LicenseHeaderStep step = new LicenseHeaderStep("LicenseHeader\n\n", "contentstart", LineEnding.UNIX);
 		String alreadyCorrect = "LicenseHeader\n\ncontentstart";
 		Assert.assertEquals(alreadyCorrect, step.format(alreadyCorrect));
 		Assert.assertTrue(alreadyCorrect == step.format(alreadyCorrect));
