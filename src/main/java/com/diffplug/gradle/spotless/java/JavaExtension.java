@@ -45,15 +45,15 @@ public class JavaExtension extends FormatExtension {
 	}
 
 	public void importOrder(List<String> importOrder) {
-		customLazy(ImportSorterStep.NAME, () -> new ImportSorterStep(importOrder, root.getLineEndings())::format);
+		customLazy(ImportSorterStep.NAME, () -> new ImportSorterStep(importOrder, getLineEndings())::format);
 	}
 
 	public void importOrderFile(Object importOrderFile) {
-		customLazy(ImportSorterStep.NAME, () -> new ImportSorterStep(getProject().file(importOrderFile), root.getLineEndings())::format);
+		customLazy(ImportSorterStep.NAME, () -> new ImportSorterStep(getProject().file(importOrderFile), getLineEndings())::format);
 	}
 
 	public void eclipseFormatFile(Object eclipseFormatFile) {
-		customLazy(EclipseFormatterStep.NAME, () -> EclipseFormatterStep.load(getProject().file(eclipseFormatFile), root.getLineEndings())::format);
+		customLazy(EclipseFormatterStep.NAME, () -> EclipseFormatterStep.load(getProject().file(eclipseFormatFile), getLineEndings())::format);
 	}
 
 	/** If the user hasn't specified the files yet, we'll assume he/she means all of the java files. */

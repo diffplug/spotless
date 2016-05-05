@@ -163,6 +163,9 @@ spotless {
 			// each step receives a string as input, and should output
 			// a formatted string as output.
 		}
+		
+		// If you don't specify a format specific line ending, the spotless-global setting will be used.
+		lineEndings = 'UNIX'
 	}
 
 	// If you'd like to specify that files should always have a certain line ending, you can,

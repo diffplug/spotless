@@ -35,7 +35,7 @@ public class EndWithNewlineTest extends FormatExtensionTest {
 	private void endWithNewlineTest(String before, String after) throws Exception {
 		super.assertTask(test -> {
 			test.root.setLineEndings(LineEnding.UNIX);
-			test.dontDoLineEndingNormalization();
+			test.dontDoDefaultLineEndingNormalization();
 
 			test.endWithNewline();
 		}, before, after);

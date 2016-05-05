@@ -56,7 +56,7 @@ public class TrimTrailingWhitespaceTest extends FormatExtensionTest {
 
 	private void trimTrailingWhitespaceTestCase(String before, String after) throws Exception {
 		super.assertTask(test -> {
-			test.dontDoLineEndingNormalization();
+			test.dontDoDefaultLineEndingNormalization();
 			test.trimTrailingWhitespace();
 		}, before, after);
 	}

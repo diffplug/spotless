@@ -42,13 +42,15 @@ public class FormatExtension {
 	/** The files that need to be formatted. */
 	protected FileCollection target;
 
+	private Optional<LineEnding> lineEndings = Optional.empty();
+
 	public FormatExtension(String name, SpotlessExtension root) {
 		this.name = name;
 		this.root = root;
 		root.addFormatExtension(this);
 
 		// Adding LineEndingStep by default in order to be compatible to v1.3.3
-		customLazy("lineEnding", () -> new LineEndingStep(root.getLineEndings())::format);
+		customLazy("defaultLineEnding", () -> new LineEndingStep(root.getLineEndings())::format);
 	}
 
 	/**
@@ -89,6 +91,16 @@ public class FormatExtension {
 		} else {
 			return getProject().files(target);
 		}
+	}
+
+	public LineEnding getLineEndings() {
+		return lineEndings.orElse(root.getLineEndings());
+	}
+
+	public void setLineEndings(LineEnding lineEndings) {
+		this.lineEndings = Optional.of(lineEndings);
+		dontDoDefaultLineEndingNormalization();
+		customLazy("lineEnding", () -> new LineEndingStep(lineEndings)::format);
 	}
 
 	/**
@@ -133,7 +145,7 @@ public class FormatExtension {
 
 	/** Ensures that files end with a single newline. */
 	public void endWithNewline() {
-		customLazy("endWithNewline", () -> new FileEndingStep(root.getLineEndings())::format);
+		customLazy("endWithNewline", () -> new FileEndingStep(getLineEndings())::format);
 	}
 
 	/** Ensures that the files are indented using spaces. */
@@ -163,7 +175,7 @@ public class FormatExtension {
 	 *            Spotless will look for a line that starts with this to know what the "top" is.
 	 */
 	public void licenseHeader(String licenseHeader, String delimiter) {
-		customLazy(LicenseHeaderStep.NAME, () -> new LicenseHeaderStep(licenseHeader, delimiter, root.getLineEndings())::format);
+		customLazy(LicenseHeaderStep.NAME, () -> new LicenseHeaderStep(licenseHeader, delimiter, getLineEndings())::format);
 	}
 
 	/**
@@ -173,7 +185,7 @@ public class FormatExtension {
 	 *            Spotless will look for a line that starts with this to know what the "top" is.
 	 */
 	public void licenseHeaderFile(Object licenseHeaderFile, String delimiter) {
-		customLazy(LicenseHeaderStep.NAME, () -> new LicenseHeaderStep(getProject().file(licenseHeaderFile), delimiter, root.getLineEndings())::format);
+		customLazy(LicenseHeaderStep.NAME, () -> new LicenseHeaderStep(getProject().file(licenseHeaderFile), delimiter, getLineEndings())::format);
 	}
 
 	/** Sets up a FormatTask according to the values in this extension. */
@@ -187,11 +199,11 @@ public class FormatExtension {
 		return root.project;
 	}
 
-	// As long LineEndingStep is active by default, we need to be able to disable the
+	// As long defaultLineEnding is active by default, we need to be able to disable the
 	// eol normalization for the tests.
-	protected void dontDoLineEndingNormalization() {
+	protected void dontDoDefaultLineEndingNormalization() {
 		Optional<FormatterStep> lineEndingStep = steps.stream()
-				.filter(step -> "lineEnding".equals(step.getName()))
+				.filter(step -> "defaultLineEnding".equals(step.getName()))
 				.findFirst();
 
 		lineEndingStep.ifPresent(steps::remove);
