@@ -42,6 +42,8 @@ If you want to audit what `spotlessApply` will do to your code:
 
 Contributions are welcome, see [the contributing guide](CONTRIBUTING.md) for development info.
 
+Can format any version of Java, but requires Gradle to be running on JRE 8+.  If you really want to run Gradle on 6 or 7 that could be done, see [issue #7](https://github.com/diffplug/spotless/issues/7) for details.
+
 ## Example configurations (from real-world projects)
 
 Spotless is hosted on jcenter and at plugins.gradle.org. [Go here](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless) if you're not sure how to import the plugin.
