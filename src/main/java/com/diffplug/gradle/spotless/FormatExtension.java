@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import org.gradle.api.GradleException;
@@ -35,14 +36,20 @@ public class FormatExtension {
 	protected final String name;
 	protected final SpotlessExtension root;
 
+	/** The steps that need to be added. */
+	protected List<FormatterStep> steps = new ArrayList<>();
+
+	/** The files that need to be formatted. */
+	protected FileCollection target;
+
 	public FormatExtension(String name, SpotlessExtension root) {
 		this.name = name;
 		this.root = root;
 		root.addFormatExtension(this);
-	}
 
-	/** The files that need to be formatted. */
-	protected FileCollection target;
+		// Adding LineEndingStep by default in order to be compatible to v1.3.3
+		customLazy("lineEnding", () -> new LineEndingStep(root.getLineEndings())::format);
+	}
 
 	/**
 	 * FileCollections pass through raw. Strings are treated as the 'include' arg to fileTree, with project.rootDir as the dir. List<String> are treates as the 'includes' arg to fileTree, with project.rootDir as the dir. Anything else gets passed to getProject().files().
@@ -83,9 +90,6 @@ public class FormatExtension {
 			return getProject().files(target);
 		}
 	}
-
-	/** The steps that need to be added. */
-	protected List<FormatterStep> steps = new ArrayList<>();
 
 	/**
 	 * Adds the given custom step, which is constructed lazily for performance reasons.
@@ -181,5 +185,15 @@ public class FormatExtension {
 	/** Returns the project that this extension is attached to. */
 	protected Project getProject() {
 		return root.project;
+	}
+
+	// As long LineEndingStep is active by default, we need to be able to disable the
+	// eol normalization for the tests.
+	protected void dontDoLineEndingNormalization() {
+		Optional<FormatterStep> lineEndingStep = steps.stream()
+				.filter(step -> "lineEnding".equals(step.getName()))
+				.findFirst();
+
+		lineEndingStep.ifPresent(steps::remove);
 	}
 }

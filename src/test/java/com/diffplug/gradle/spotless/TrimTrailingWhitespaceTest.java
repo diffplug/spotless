@@ -15,12 +15,10 @@
  */
 package com.diffplug.gradle.spotless;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
-public class TrimTrailingWhitespaceTest extends ResourceTest {
+public class TrimTrailingWhitespaceTest extends FormatExtensionTest {
 	@Test
-	@Ignore("temporary")
 	public void trimTrailingWhitespace() throws Exception {
 		trimTrailingWhitespaceTestCase("");
 		trimTrailingWhitespaceTestCase("\n");
@@ -58,6 +56,7 @@ public class TrimTrailingWhitespaceTest extends ResourceTest {
 
 	private void trimTrailingWhitespaceTestCase(String before, String after) throws Exception {
 		super.assertTask(test -> {
+			test.dontDoLineEndingNormalization();
 			test.trimTrailingWhitespace();
 		}, before, after);
 	}

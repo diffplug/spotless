@@ -29,6 +29,8 @@ import groovy.lang.Closure;
 public class SpotlessExtension {
 	final Project project;
 
+	Map<String, FormatExtension> formats = new LinkedHashMap<>();
+
 	public SpotlessExtension(Project project) {
 		this.project = project;
 	}
@@ -43,8 +45,6 @@ public class SpotlessExtension {
 	public void setLineEndings(LineEnding lineEndings) {
 		this.lineEndings = lineEndings;
 	}
-
-	Map<String, FormatExtension> formats = new LinkedHashMap<>();
 
 	/** Configures the special java-specific extension. */
 	public void java(Closure<JavaExtension> closure) {

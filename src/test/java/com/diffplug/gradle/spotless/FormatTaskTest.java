@@ -37,37 +37,6 @@ public class FormatTaskTest extends ResourceTest {
 	}
 
 	@Test(expected = GradleException.class)
-	@Ignore("temporary")
-	public void testLineEndingsCheckFail() throws IOException {
-		task.check = true;
-		// task.lineEndings = LineEnding.UNIX;
-		task.target = Collections.singleton(createTestFile("testFile", "\r\n"));
-		task.execute();
-	}
-
-	@Test
-	@Ignore("temporary")
-	public void testLineEndingsCheckPass() throws IOException {
-		task.check = true;
-		// task.lineEndings = LineEnding.UNIX;
-		task.target = Collections.singleton(createTestFile("testFile", "\n"));
-		task.execute();
-	}
-
-	@Test
-	@Ignore("temporary")
-	public void testLineEndingsApply() throws IOException {
-		File testFile = createTestFile("testFile", "\r\n");
-
-		task.check = false;
-		// task.lineEndings = LineEnding.UNIX;
-		task.target = Collections.singleton(testFile);
-		task.execute();
-
-		assertFileContent("\n", testFile);
-	}
-
-	@Test(expected = GradleException.class)
 	public void testStepCheckFail() throws IOException {
 		File testFile = createTestFile("testFile", "apple");
 		task.target = Collections.singleton(testFile);
