@@ -32,22 +32,20 @@ public class LicenseHeaderStep {
 	private final Pattern delimiterPattern;
 
 	/** The license that we'd like enforced. */
-	public LicenseHeaderStep(String license, String delimiter) {
+	public LicenseHeaderStep(String license, String delimiter, LineEnding lineEnding) {
 		if (delimiter.contains("\n")) {
 			throw new GradleException("The delimiter must not contain any newlines.");
 		}
-		// sanitize the input license
-		license = license.replace("\r", "");
-		if (!license.endsWith("\n")) {
-			license = license + "\n";
-		}
-		this.license = license;
-		this.delimiterPattern = Pattern.compile('^' + delimiter, Pattern.UNIX_LINES | Pattern.MULTILINE);
+		FileEndingStep normalizer = new FileEndingStep(lineEnding);
+		normalizer.disableClobber();
+
+		this.license = normalizer.format(license);
+		this.delimiterPattern = Pattern.compile('^' + delimiter, Pattern.MULTILINE);
 	}
 
 	/** Reads the license file from the given file. */
-	public LicenseHeaderStep(File licenseFile, String delimiter) throws IOException {
-		this(new String(Files.readAllBytes(licenseFile.toPath()), StandardCharsets.UTF_8), delimiter);
+	public LicenseHeaderStep(File licenseFile, String delimiter, LineEnding lineEnding) throws IOException {
+		this(new String(Files.readAllBytes(licenseFile.toPath()), StandardCharsets.UTF_8), delimiter, lineEnding);
 	}
 
 	/** Formats the given string. */

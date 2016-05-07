@@ -29,12 +29,14 @@ import groovy.lang.Closure;
 public class SpotlessExtension {
 	final Project project;
 
+	Map<String, FormatExtension> formats = new LinkedHashMap<>();
+
 	public SpotlessExtension(Project project) {
 		this.project = project;
 	}
 
 	/** Line endings (if any). */
-	LineEnding lineEndings = LineEnding.PLATFORM_NATIVE;
+	LineEnding lineEndings = LineEnding.DEFAULT;
 
 	public LineEnding getLineEndings() {
 		return lineEndings;
@@ -43,8 +45,6 @@ public class SpotlessExtension {
 	public void setLineEndings(LineEnding lineEndings) {
 		this.lineEndings = lineEndings;
 	}
-
-	Map<String, FormatExtension> formats = new LinkedHashMap<>();
 
 	/** Configures the special java-specific extension. */
 	public void java(Closure<JavaExtension> closure) {

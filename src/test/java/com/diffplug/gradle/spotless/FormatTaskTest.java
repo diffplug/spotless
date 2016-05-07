@@ -23,6 +23,7 @@ import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class FormatTaskTest extends ResourceTest {
@@ -33,34 +34,6 @@ public class FormatTaskTest extends ResourceTest {
 	public void createTask() {
 		project = ProjectBuilder.builder().build();
 		task = (FormatTask) project.getTasks().create("underTest", FormatTask.class);
-	}
-
-	@Test(expected = GradleException.class)
-	public void testLineEndingsCheckFail() throws IOException {
-		task.check = true;
-		task.lineEndings = LineEnding.UNIX;
-		task.target = Collections.singleton(createTestFile("testFile", "\r\n"));
-		task.execute();
-	}
-
-	@Test
-	public void testLineEndingsCheckPass() throws IOException {
-		task.check = true;
-		task.lineEndings = LineEnding.UNIX;
-		task.target = Collections.singleton(createTestFile("testFile", "\n"));
-		task.execute();
-	}
-
-	@Test
-	public void testLineEndingsApply() throws IOException {
-		File testFile = createTestFile("testFile", "\r\n");
-
-		task.check = false;
-		task.lineEndings = LineEnding.UNIX;
-		task.target = Collections.singleton(testFile);
-		task.execute();
-
-		assertFileContent("\n", testFile);
 	}
 
 	@Test(expected = GradleException.class)

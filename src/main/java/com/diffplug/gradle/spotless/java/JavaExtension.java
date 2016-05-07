@@ -45,15 +45,15 @@ public class JavaExtension extends FormatExtension {
 	}
 
 	public void importOrder(List<String> importOrder) {
-		customLazy(ImportSorterStep.NAME, () -> new ImportSorterStep(importOrder)::format);
+		customLazy(ImportSorterStep.NAME, () -> new ImportSorterStep(importOrder, getLineEndings())::format);
 	}
 
 	public void importOrderFile(Object importOrderFile) {
-		customLazy(ImportSorterStep.NAME, () -> new ImportSorterStep(getProject().file(importOrderFile))::format);
+		customLazy(ImportSorterStep.NAME, () -> new ImportSorterStep(getProject().file(importOrderFile), getLineEndings())::format);
 	}
 
 	public void eclipseFormatFile(Object eclipseFormatFile) {
-		customLazy(EclipseFormatterStep.NAME, () -> EclipseFormatterStep.load(getProject().file(eclipseFormatFile))::format);
+		customLazy(EclipseFormatterStep.NAME, () -> EclipseFormatterStep.load(getProject().file(eclipseFormatFile), getLineEndings())::format);
 	}
 
 	/** If the user hasn't specified the files yet, we'll assume he/she means all of the java files. */
@@ -71,7 +71,7 @@ public class JavaExtension extends FormatExtension {
 			target = union;
 		}
 		// LicenseHeaderStep completely blows apart package-info.java - this common-sense check ensures that
-		// it skips package-info.java.  See https://github.com/diffplug/spotless/issues/1
+		// it skips package-info.java. See https://github.com/diffplug/spotless/issues/1
 		steps.replaceAll(step -> {
 			if (LicenseHeaderStep.NAME.equals(step.getName())) {
 				return step.filterByFile(file -> !file.getName().equals("package-info.java"));

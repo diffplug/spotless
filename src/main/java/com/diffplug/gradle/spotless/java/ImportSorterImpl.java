@@ -21,6 +21,8 @@ import java.util.*;
 /*not thread safe*/
 class ImportSorterImpl {
 
+	private static final String RS = "\u001E";
+
 	private List<String> template = new ArrayList<String>();
 	private Map<String, List<String>> matchingImports = new HashMap<String, List<String>>();
 	private ArrayList<String> notMatching = new ArrayList<String>();
@@ -131,7 +133,7 @@ class ImportSorterImpl {
 					// no order is specified
 					if (template.size() > 0 && (template.get(template.size() - 1).startsWith("static"))) {
 						// insert N after last static import
-						template.add(ImportSorterStep.N);
+						template.add(RS);
 					}
 					template.add(notMatchingItem);
 				} else {
@@ -190,23 +192,23 @@ class ImportSorterImpl {
 				// replace order item by matching import statements
 				// this is a mess and it is only a luck that it works :-]
 				template.remove(i);
-				if (i != 0 && !template.get(i - 1).equals(ImportSorterStep.N)) {
-					template.add(i, ImportSorterStep.N);
+				if (i != 0 && !template.get(i - 1).equals(RS)) {
+					template.add(i, RS);
 					i++;
 				}
-				if (i + 1 < template.size() && !template.get(i + 1).equals(ImportSorterStep.N)
-						&& !template.get(i).equals(ImportSorterStep.N)) {
-					template.add(i, ImportSorterStep.N);
+				if (i + 1 < template.size() && !template.get(i + 1).equals(RS)
+						&& !template.get(i).equals(RS)) {
+					template.add(i, RS);
 				}
 				template.addAll(i, matchingItems);
-				if (i != 0 && !template.get(i - 1).equals(ImportSorterStep.N)) {
-					template.add(i, ImportSorterStep.N);
+				if (i != 0 && !template.get(i - 1).equals(RS)) {
+					template.add(i, RS);
 				}
 
 			}
 		}
 		// if there is \n on the end, remove it
-		if (template.size() > 0 && template.get(template.size() - 1).equals(ImportSorterStep.N)) {
+		if (template.size() > 0 && template.get(template.size() - 1).equals(RS)) {
 			template.remove(template.size() - 1);
 		}
 	}
@@ -215,10 +217,10 @@ class ImportSorterImpl {
 		ArrayList<String> strings = new ArrayList<String>();
 
 		for (String s : template) {
-			if (s.equals(ImportSorterStep.N)) {
-				strings.add(s);
+			if (s.equals(RS)) {
+				strings.add("");
 			} else {
-				strings.add("import " + s + ";" + ImportSorterStep.N);
+				strings.add("import " + s + ";");
 			}
 		}
 		return strings;

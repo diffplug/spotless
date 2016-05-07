@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import org.gradle.api.GradleException;
@@ -35,20 +36,25 @@ public class FormatExtension {
 	protected final String name;
 	protected final SpotlessExtension root;
 
-	public FormatExtension(String name, SpotlessExtension root) {
-		this.name = name;
-		this.root = root;
-		root.addFormatExtension(this);
-	}
+	/** The steps that need to be added. */
+	protected List<FormatterStep> steps = new ArrayList<>();
 
 	/** The files that need to be formatted. */
 	protected FileCollection target;
 
+	private Optional<LineEnding> lineEndings = Optional.empty();
+
+	public FormatExtension(String name, SpotlessExtension root) {
+		this.name = name;
+		this.root = root;
+		root.addFormatExtension(this);
+
+		// Adding LineEndingStep by default in order to be compatible to v1.3.3
+		customLazy("defaultLineEnding", () -> new LineEndingStep(root.getLineEndings())::format);
+	}
+
 	/**
-	 * FileCollections pass through raw.
-	 * Strings are treated as the 'include' arg to fileTree, with project.rootDir as the dir.
-	 * List<String> are treates as the 'includes' arg to fileTree, with project.rootDir as the dir.
-	 * Anything else gets passed to getProject().files().
+	 * FileCollections pass through raw. Strings are treated as the 'include' arg to fileTree, with project.rootDir as the dir. List<String> are treates as the 'includes' arg to fileTree, with project.rootDir as the dir. Anything else gets passed to getProject().files().
 	 */
 	public void target(Object... targets) {
 		if (targets.length == 0) {
@@ -87,13 +93,18 @@ public class FormatExtension {
 		}
 	}
 
-	/** The steps that need to be added. */
-	protected List<FormatterStep> steps = new ArrayList<>();
+	public LineEnding getLineEndings() {
+		return lineEndings.orElse(root.getLineEndings());
+	}
+
+	public void setLineEndings(LineEnding lineEndings) {
+		this.lineEndings = Optional.of(lineEndings);
+		dontDoDefaultLineEndingNormalization();
+		customLazy("lineEnding", () -> new LineEndingStep(lineEndings)::format);
+	}
 
 	/**
 	 * Adds the given custom step, which is constructed lazily for performance reasons.
-	 *
-	 * The resulting function will receive a string with unix-newlines, and it must return a string unix newlines.
 	 */
 	public void customLazy(String name, Throwing.Supplier<Throwing.Function<String, String>> formatterSupplier) {
 		for (FormatterStep step : steps) {
@@ -104,12 +115,12 @@ public class FormatExtension {
 		steps.add(FormatterStep.createLazy(name, formatterSupplier));
 	}
 
-	/** Adds a custom step. Receives a string with unix-newlines, must return a string with unix newlines. */
+	/** Adds a custom step. */
 	public void custom(String name, Closure<String> formatter) {
 		custom(name, formatter::call);
 	}
 
-	/** Adds a custom step. Receives a string with unix-newlines, must return a string with unix newlines. */
+	/** Adds a custom step. */
 	public void custom(String name, Throwing.Function<String, String> formatter) {
 		customLazy(name, () -> formatter);
 	}
@@ -122,7 +133,7 @@ public class FormatExtension {
 	/** Highly efficient find-replace regex. */
 	public void customReplaceRegex(String name, String regex, String replacement) {
 		customLazy(name, () -> {
-			Pattern pattern = Pattern.compile(regex, Pattern.UNIX_LINES | Pattern.MULTILINE);
+			Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
 			return raw -> pattern.matcher(raw).replaceAll(replacement);
 		});
 	}
@@ -134,36 +145,7 @@ public class FormatExtension {
 
 	/** Ensures that files end with a single newline. */
 	public void endWithNewline() {
-		custom("endWithNewline", raw -> {
-			// simplifies the logic below if we can assume length > 0
-			if (raw.isEmpty()) {
-				return "\n";
-			}
-
-			// find the last character which has real content
-			int lastContentCharacter = raw.length() - 1;
-			char c;
-			while (lastContentCharacter >= 0) {
-				c = raw.charAt(lastContentCharacter);
-				if (c == '\n' || c == '\t' || c == ' ') {
-					--lastContentCharacter;
-				} else {
-					break;
-				}
-			}
-
-			// if it's already clean, no need to create another string
-			if (lastContentCharacter == -1) {
-				return "\n";
-			} else if (lastContentCharacter == raw.length() - 2 && raw.charAt(raw.length() - 1) == '\n') {
-				return raw;
-			} else {
-				StringBuilder builder = new StringBuilder(lastContentCharacter + 2);
-				builder.append(raw, 0, lastContentCharacter + 1);
-				builder.append('\n');
-				return builder.toString();
-			}
-		});
+		customLazy("endWithNewline", () -> new FileEndingStep(getLineEndings())::format);
 	}
 
 	/** Ensures that the files are indented using spaces. */
@@ -187,19 +169,23 @@ public class FormatExtension {
 	}
 
 	/**
-	 * @param licenseHeader Content that should be at the top of every file
-	 * @param delimiter Spotless will look for a line that starts with this to know what the "top" is.
+	 * @param licenseHeader
+	 *            Content that should be at the top of every file
+	 * @param delimiter
+	 *            Spotless will look for a line that starts with this to know what the "top" is.
 	 */
 	public void licenseHeader(String licenseHeader, String delimiter) {
-		customLazy(LicenseHeaderStep.NAME, () -> new LicenseHeaderStep(licenseHeader, delimiter)::format);
+		customLazy(LicenseHeaderStep.NAME, () -> new LicenseHeaderStep(licenseHeader, delimiter, getLineEndings())::format);
 	}
 
 	/**
-	 * @param licenseHeaderFile Content that should be at the top of every file
-	 * @param delimiter Spotless will look for a line that starts with this to know what the "top" is.
+	 * @param licenseHeaderFile
+	 *            Content that should be at the top of every file
+	 * @param delimiter
+	 *            Spotless will look for a line that starts with this to know what the "top" is.
 	 */
 	public void licenseHeaderFile(Object licenseHeaderFile, String delimiter) {
-		customLazy(LicenseHeaderStep.NAME, () -> new LicenseHeaderStep(getProject().file(licenseHeaderFile), delimiter)::format);
+		customLazy(LicenseHeaderStep.NAME, () -> new LicenseHeaderStep(getProject().file(licenseHeaderFile), delimiter, getLineEndings())::format);
 	}
 
 	/** Sets up a FormatTask according to the values in this extension. */
@@ -211,5 +197,15 @@ public class FormatExtension {
 	/** Returns the project that this extension is attached to. */
 	protected Project getProject() {
 		return root.project;
+	}
+
+	// As long defaultLineEnding is active by default, we need to be able to disable the
+	// eol normalization for the tests.
+	protected void dontDoDefaultLineEndingNormalization() {
+		Optional<FormatterStep> lineEndingStep = steps.stream()
+				.filter(step -> "defaultLineEnding".equals(step.getName()))
+				.findFirst();
+
+		lineEndingStep.ifPresent(steps::remove);
 	}
 }

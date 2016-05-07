@@ -17,15 +17,11 @@ package com.diffplug.gradle.spotless;
 
 /** The line endings written by the tool. */
 public enum LineEnding {
-	PLATFORM_NATIVE(System.getProperty("line.separator")), WINDOWS("\r\n"), UNIX("\n");
+	PLATFORM_NATIVE, WINDOWS, UNIX, DERIVED, UNCERTAIN;
 
-	public final String string;
+	// Must not be set to UNCERTAIN
+	public static final LineEnding DEFAULT = PLATFORM_NATIVE;
 
-	private LineEnding(String ending) {
-		this.string = ending;
-	}
-
-	public boolean isWin() {
-		return string.equals("\r\n");
-	}
+	// Must not be set to DERIVED or UNCERTAIN
+	public static final LineEnding DERIVED_FALLBACK = PLATFORM_NATIVE;
 }

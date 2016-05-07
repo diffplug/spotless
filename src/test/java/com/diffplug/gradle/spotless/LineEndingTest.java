@@ -17,27 +17,19 @@ package com.diffplug.gradle.spotless;
 
 import org.junit.Test;
 
-public class EndWithNewlineTest extends FormatExtensionTest {
+public class LineEndingTest extends FormatExtensionTest {
 	@Test
-	public void trimTrailingNewlines() throws Exception {
-		endWithNewlineTest("", "\n");
-		endWithNewlineTest("\n");
-		endWithNewlineTest("\n\n\n\n", "\n");
-		endWithNewlineTest("line", "line\n");
-		endWithNewlineTest("line\n");
-		endWithNewlineTest("line\nline\n\n\n\n", "line\nline\n");
+	public void lineEndingNormalizationIsActiveByDefault() throws Exception {
+		testNormalization(LineEnding.UNIX, "line\r\n", "line\n");
+		testNormalization(LineEnding.UNIX, "line\n", "line\n");
+		testNormalization(LineEnding.WINDOWS, "line\n", "line\r\n");
+		testNormalization(LineEnding.WINDOWS, "line\r\n", "line\r\n");
+		testNormalization(LineEnding.DERIVED, "line\r\nfoobar\n", "line\r\nfoobar\r\n");
 	}
 
-	private void endWithNewlineTest(String before) throws Exception {
-		endWithNewlineTest(before, before);
-	}
-
-	private void endWithNewlineTest(String before, String after) throws Exception {
+	private void testNormalization(LineEnding lineEnding, String before, String after) throws Exception {
 		super.assertTask(test -> {
-			test.root.setLineEndings(LineEnding.UNIX);
-			test.dontDoDefaultLineEndingNormalization();
-
-			test.endWithNewline();
+			test.root.setLineEndings(lineEnding);
 		}, before, after);
 	}
 }

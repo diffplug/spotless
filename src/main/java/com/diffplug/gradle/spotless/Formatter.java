@@ -29,13 +29,11 @@ import org.gradle.api.logging.Logging;
 
 /** Formatter which performs the full formatting. */
 public class Formatter {
-	private final LineEnding lineEnding;
 	private final Path projectDirectory;
 	private final List<FormatterStep> steps;
 	private final Logger logger = Logging.getLogger(Formatter.class);
 
-	public Formatter(LineEnding lineEnding, Path projectDirectory, List<FormatterStep> steps) {
-		this.lineEnding = lineEnding;
+	public Formatter(Path projectDirectory, List<FormatterStep> steps) {
 		this.projectDirectory = projectDirectory;
 		this.steps = new ArrayList<>(steps);
 	}
@@ -43,55 +41,35 @@ public class Formatter {
 	/** Returns true iff the given file's formatting is up-to-date. */
 	public boolean isClean(File file) throws IOException {
 		String raw = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
-		String unix = raw.replaceAll("\r", "");
-
-		// check the newlines
-		int totalNewLines = (int) unix.codePoints().filter(val -> val == '\n').count();
-		int windowsNewLines = raw.length() - unix.length();
-		if (lineEnding.isWin()) {
-			if (windowsNewLines != totalNewLines) {
-				return false;
-			}
-		} else {
-			if (windowsNewLines != 0) {
-				return false;
-			}
-		}
 
 		// check the other formats
-		String formatted = applyAll(unix, file);
+		String formatted = applyAll(raw, file);
 
-		// return true iff the formatted string equals the unix one
-		return formatted.equals(unix);
+		// return true iff the formatted string equals raw
+		return formatted.equals(raw);
 	}
 
 	/** Applies formatting to the given file. */
 	public void applyFormat(File file) throws IOException {
 		String raw = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
-		String unix = raw.replaceAll("\r", "");
 
 		// enforce the format
-		unix = applyAll(unix, file);
-
-		// convert the line endings if necessary
-		if (!lineEnding.string.equals("\n")) {
-			unix = unix.replace("\n", lineEnding.string);
-		}
+		raw = applyAll(raw, file);
 
 		// write out the file
-		Files.write(file.toPath(), unix.getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING);
+		Files.write(file.toPath(), raw.getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING);
 	}
 
 	/** Returns the result of calling all of the FormatterSteps. */
-	String applyAll(String unix, File file) {
+	String applyAll(String raw, File file) {
 		for (FormatterStep step : steps) {
 			try {
-				unix = step.format(unix, file);
+				raw = step.format(raw, file);
 			} catch (Throwable e) {
 				logger.warn("Unable to apply step " + step.getName() + " to " + projectDirectory.relativize(file.toPath()) + ": " + e.getMessage());
 				logger.info("Exception is ", e);
 			}
 		}
-		return unix;
+		return raw;
 	}
 }

@@ -20,25 +20,26 @@ import java.io.File;
 import org.gradle.api.GradleException;
 import org.junit.Test;
 
+import com.diffplug.gradle.spotless.LineEnding;
 import com.diffplug.gradle.spotless.ResourceTest;
 
 public class EclipseFormatterStepTest extends ResourceTest {
 	@Test
 	public void loadPropertiesSettings() throws Throwable {
 		// setting for the formatter
-		EclipseFormatterStep step = EclipseFormatterStep.load(createTestFile("formatter.properties"));
+		EclipseFormatterStep step = EclipseFormatterStep.load(createTestFile("formatter.properties"), LineEnding.DERIVED);
 		assertStep(step::format, "JavaCodeUnformatted.test", "JavaCodeFormatted.test");
 	}
 
 	@Test
 	public void loadXmlSettings() throws Throwable {
 		// setting for the formatter
-		EclipseFormatterStep step = EclipseFormatterStep.load(createTestFile("formatter.xml"));
+		EclipseFormatterStep step = EclipseFormatterStep.load(createTestFile("formatter.xml"), LineEnding.DERIVED);
 		assertStep(step::format, "JavaCodeUnformatted.test", "JavaCodeFormatted.test");
 	}
 
 	@Test(expected = GradleException.class)
 	public void loadUnknownSettings() throws Exception {
-		EclipseFormatterStep.load(new File("formatter.unknown"));
+		EclipseFormatterStep.load(new File("formatter.unknown"), LineEnding.DERIVED);
 	}
 }

@@ -17,7 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import org.junit.Test;
 
-public class TrimTrailingWhitespaceTest extends ResourceTest {
+public class TrimTrailingWhitespaceTest extends FormatExtensionTest {
 	@Test
 	public void trimTrailingWhitespace() throws Exception {
 		trimTrailingWhitespaceTestCase("");
@@ -41,6 +41,13 @@ public class TrimTrailingWhitespaceTest extends ResourceTest {
 		trimTrailingWhitespaceTestCase("Line  \nLine  ", "Line\nLine");
 		trimTrailingWhitespaceTestCase("  Line  \nLine  ", "  Line\nLine");
 		trimTrailingWhitespaceTestCase("  Line  \n  Line  ", "  Line\n  Line");
+
+		trimTrailingWhitespaceTestCase("Line\r\nLine");
+		trimTrailingWhitespaceTestCase("Line \r\nLine", "Line\r\nLine");
+		trimTrailingWhitespaceTestCase("Line\r\nLine ", "Line\r\nLine");
+		trimTrailingWhitespaceTestCase("Line \r\nLine ", "Line\r\nLine");
+		trimTrailingWhitespaceTestCase(" Line \r\nLine ", " Line\r\nLine");
+		trimTrailingWhitespaceTestCase(" Line \r\n Line ", " Line\r\n Line");
 	}
 
 	private void trimTrailingWhitespaceTestCase(String before) throws Exception {
@@ -49,6 +56,7 @@ public class TrimTrailingWhitespaceTest extends ResourceTest {
 
 	private void trimTrailingWhitespaceTestCase(String before, String after) throws Exception {
 		super.assertTask(test -> {
+			test.dontDoDefaultLineEndingNormalization();
 			test.trimTrailingWhitespace();
 		}, before, after);
 	}
