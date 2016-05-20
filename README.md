@@ -168,8 +168,8 @@ spotless {
 	}
 
 	// If you'd like to specify that files should always have a certain line ending, you can,
-	// but the default value of PLATFORM_NATIVE is *highly* recommended
-	lineEndings = PLATFORM_NATIVE 	// can be WINDOWS, UNIX, or PLATFORM_NATIVE
+	// but the default value of PLATFORM_NATIVE is recommended
+	lineEndings 'PLATFORM_NATIVE' 	// can be WINDOWS, UNIX, or PLATFORM_NATIVE
 }
 ```
 
