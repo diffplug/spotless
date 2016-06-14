@@ -37,7 +37,6 @@ public class SpotlessPlugin implements Plugin<Project> {
 
 		// setup the extension
 		extension = project.getExtensions().create(EXTENSION, SpotlessExtension.class, project);
-		// ExtensionContainer container = ((ExtensionAware) project.getExtensions().getByName(EXTENSION)).getExtensions();
 
 		// after the project has been evaluated, configure the check and format tasks per source set
 		project.afterEvaluate(unused -> Errors.rethrow().run(this::createTasks));

@@ -17,14 +17,13 @@ package com.diffplug.gradle.spotless;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 
+import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 
 import com.diffplug.gradle.spotless.freshmark.FreshMarkExtension;
 import com.diffplug.gradle.spotless.java.JavaExtension;
-import groovy.lang.Closure;
 
 public class SpotlessExtension {
 	final Project project;
@@ -47,42 +46,21 @@ public class SpotlessExtension {
 	Map<String, FormatExtension> formats = new LinkedHashMap<>();
 
 	/** Configures the special java-specific extension. */
-	public void java(Closure<JavaExtension> closure) {
+	public void java(Action<JavaExtension> closure) {
 		JavaExtension java = new JavaExtension(this);
-		closure.setDelegate(java);
-		closure.call();
-	}
-
-	/** Configures the special java-specific extension. */
-	public void java(Consumer<JavaExtension> closure) {
-		JavaExtension java = new JavaExtension(this);
-		closure.accept(java);
+		closure.execute(java);
 	}
 
 	/** Configures the special freshmark-specific extension. */
-	public void freshmark(Closure<FreshMarkExtension> closure) {
+	public void freshmark(Action<FreshMarkExtension> closure) {
 		FreshMarkExtension freshmark = new FreshMarkExtension(this);
-		closure.setDelegate(freshmark);
-		closure.call();
-	}
-
-	/** Configures the special freshmark-specific extension. */
-	public void freshmark(Consumer<FreshMarkExtension> closure) {
-		FreshMarkExtension freshmark = new FreshMarkExtension(this);
-		closure.accept(freshmark);
+		closure.execute(freshmark);
 	}
 
 	/** Configures a custom extension. */
-	public void format(String name, Closure<FormatExtension> closure) {
+	public void format(String name, Action<FormatExtension> closure) {
 		FormatExtension extension = new FormatExtension(name, this);
-		closure.setDelegate(extension);
-		closure.call();
-	}
-
-	/** Configures a custom extension. */
-	public void format(String name, Consumer<FormatExtension> closure) {
-		FormatExtension extension = new FormatExtension(name, this);
-		closure.accept(extension);
+		closure.execute(extension);
 	}
 
 	/** Called by the FormatExtension constructor. */
