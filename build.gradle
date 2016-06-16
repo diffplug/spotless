@@ -1,8 +1,12 @@
 plugins {
 	// bintray uploading
-	id "com.jfrog.bintray" version "1.3.1"
+	id 'com.jfrog.bintray' version '1.3.1'
 	// plugin publishing
-	id "com.gradle.plugin-publish" version "0.9.1"
+	id 'com.gradle.plugin-publish' version '0.9.1'
+	// p2 dependencies
+	id 'com.diffplug.gradle.p2.asmaven' version '3.0.1'
+	// ide setup
+	id 'com.diffplug.gradle.oomph.ide' version '3.0.1'
 }
 
 repositories {
@@ -16,24 +20,6 @@ repositories {
 			resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 		}
 	}
-	ivy {
-		// Future versions can be found here: http://download.eclipse.org/eclipse/downloads/index.html
-		url "http://download.eclipse.org/eclipse/updates/4.5/R-4.5.2-201602121500/"
-		layout "pattern", {
-			artifact "plugins/[artifact]_[revision].[ext]"
-		}
-
-		// There isn't a reliable way to get eclipse artifacts except through p2 repositories,
-		// which gradle does not yet support.  For now we're forcing it with ivy.
-		// https://discuss.gradle.org/t/is-it-possible-to-configure-a-p2-repository/6812/6
-
-		// You might think this is crappy, and try to find some kind of maven upload.
-		// You'll find a couple random artifacts, but they're all a trap.  Mismatching
-		// versions and missing deps.
-		//
-		// The sweetest of the honeypots is https://repo.eclipse.org/content/groups/eclipse/
-		// Please heed my warning fellow traveler: it is a trap!
-	}
 }
 
 apply plugin: 'com.gradle.plugin-publish'
@@ -41,50 +27,58 @@ apply plugin: 'java'
 sourceCompatibility = VER_JAVA
 targetCompatibility = VER_JAVA
 
-// None of these eclipse jars are in the public repositories.  This means
-// that when someone downloads this plugin, unless they add the weird
-// ivy depenency, they won't be able to resolve the eclipse jars.
-//
-// To fix this, we embed the content of these eclispe jars into ourselves, as a "fat jar".
-// As of now (v1.3), the jar is 8MB, which isn't awful.
-configurations {
-	embeddedJars
+// The dependencies we'd like to pull from Eclipse's p2 repositories
+def eclipseDeps = [
+	// The dependencies we actually use
+	'org.eclipse.jdt.core',
+	'org.eclipse.text',
+
+	// Their transitives
+	'org.eclipse.core.contenttype',
+	'org.eclipse.core.jobs',
+	'org.eclipse.core.runtime',
+	'org.eclipse.core.resources',
+	'org.eclipse.equinox.common',
+	'org.eclipse.equinox.preferences',
+	'org.eclipse.osgi'
+]
+// build a maven repo in our build folder containing these artifacts
+p2AsMaven {
+	group 'p2', {
+		repoEclipse VER_ECLIPSE
+		eclipseDeps.each { p2.addIU(it) }
+		eclipseDeps.each { p2.addIU(it + '.source') }
+	}
 }
 
-def eclipseDeps = [
-	// The only dependencies we actually use
-	'org.eclipse.jdt.core:3.11.2.v20160128-0629',
-	'org.eclipse.text:3.5.400.v20150505-1044',
+///////////////
+// SETUP IDE //
+///////////////
+apply plugin: 'com.diffplug.gradle.oomph.ide'
+oomphIde {
+	repoEclipseLatest()
+	jdt {}
+	splash 'images/spotless_logo.png'
+	style {
+		classicTheme()	// oldschool cool
+		niceText()		// nice fonts and visible whitespace
+	}
+}
 
-	// Because gradle can't consume p2, we have to resolve the transitive dependencies - and their versions - by hand.
-	// The transitive dependencies are extremely unlikely to change, but we're probably going to want to upgrade to newer versions of Eclipse.
-	// Here's how:
-	// - Browse to http://download.eclipse.org/eclipse/updates/4.5/R-4.5.2-201602121500/plugins/?d
-	// - Search through the page for the plugin id, and copy the version below
-	'org.eclipse.core.contenttype:3.5.0.v20150421-2214',
-	'org.eclipse.core.jobs:3.7.0.v20150330-2103',
-	'org.eclipse.core.runtime:3.11.1.v20150903-1804',
-	'org.eclipse.core.resources:3.10.1.v20150725-1910',
-	'org.eclipse.equinox.common:3.7.0.v20150402-1709',
-	'org.eclipse.equinox.preferences:3.5.300.v20150408-1437',
-	'org.eclipse.osgi:3.10.102.v20160118-1700'
-]
+configurations {
+	embeddedJars  // we will embed these into the binary artifact
+	compile.extendsFrom(embeddedJars)
+}
+
 dependencies {
 	compile gradleApi()
-	compile "com.diffplug.durian:durian:${VER_DURIAN}"
+	compile "com.diffplug.durian:durian-core:${VER_DURIAN}"
 	compile "com.diffplug.freshmark:freshmark:${VER_FRESHMARK}"
+	compile "org.eclipse.jgit:org.eclipse.jgit:${VER_JGIT}"
+	compile "junit:junit:${VER_JUNIT}"
 
-	// The only dependencies we actually use
-	eclipseDeps.each { dep -> 
-		def idx = dep.indexOf(':')
-		def name = dep.substring(0, idx);
-		def ver = dep.substring(idx + 1);
-		embeddedJars "p2:${name}:${ver}"
-		// UNCOMMENT TO DOWNLOAD SOURCE JARS
-		//embeddedJars "p2:${name}.source:${ver}"
-	}
-
-	configurations.compile.extendsFrom(configurations.embeddedJars)
+	// add the eclipse jars to the embedded configuration
+	eclipseDeps.each { embeddedJars "p2:${it}:+" }
 }
 
 jar {
