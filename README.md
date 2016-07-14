@@ -6,17 +6,12 @@
 [![Changelog](http://img.shields.io/badge/changelog-1.4.0--SNAPSHOT-brightgreen.svg)](CHANGES.md)
 [![Travis CI](https://travis-ci.org/diffplug/spotless.svg?branch=master)](https://travis-ci.org/diffplug/spotless)
 [![License](https://img.shields.io/github/license/diffplug/spotless.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
+[![Javadoc](https://img.shields.io/badge/javadoc-OK-blue.svg)](https://diffplug.github.io/spotless/javadoc/snapshot/)
 [![Join the chat at https://gitter.im/diffplug/gitfromscratch](https://img.shields.io/badge/gitter-live_chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
 
-Spotless can check and apply formatting for any plain-text file, with special support for Markdown and Java.  It supports several formatters out of the box, including:
+Spotless is a general-purpose formatting plugin.  It is completely a-la-carte, but also includes powerful "batteries-included" if you opt-in.
 
-* [FreshMark](https://github.com/diffplug/freshmark) (markdown with variables)
-* Java style and import ordering (using Eclipse's code formatter)
-* License headers
-* Tabs vs spaces, trailing whitespace, end with newline, generic regex
-* Any user-defined string that takes an unformatted string and outputs a formatted version.
-
-Spotless makes it painless to find and correct formatting errors:
+To people who use your build, it looks like this:
 
 ```
 cmd> gradlew build
@@ -33,55 +28,39 @@ cmd> gradlew build
 BUILD SUCCESSFUL
 ```
 
-If you want to audit what `spotlessApply` will do to your code:
-* Save your working tree with `git add -A`, then `git commit -m "Checkpoint before spotless."`.
-* Run `gradlew spotlessApply`.
-* View the changes with `git diff`.
-* If you don't like what spotless did, `git reset --hard`.
-* If you'd like to remove the "checkpoint" commit, `git reset --soft head~1` will make the checkpoint commit "disappear" from history, but keeps the changes in your working directory.
-
-Contributions are welcome, see [the contributing guide](CONTRIBUTING.md) for development info.
-
-Can format any version of Java, but requires Gradle to be running on JRE 8+.  If you really want to run Gradle on 6 or 7 that could be done, see [issue #7](https://github.com/diffplug/spotless/issues/7) for details.
-
-## Example configurations (from real-world projects)
-
-Spotless is hosted on jcenter and at plugins.gradle.org. [Go here](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless) if you're not sure how to import the plugin.
-
-* [JUnit 5](https://github.com/junit-team/junit-lambda/blob/151d52ffab07881de71a8396a9620f18072c65ec/build.gradle#L86-L101) (aka JUnit Lambda)
-* [opentest4j](https://github.com/ota4j-team/opentest4j/blob/aab8c204be05609e9f76c2c964c3d6845cd0de14/build.gradle#L63-L80)
-* [Durian](https://github.com/diffplug/durian) ([direct link to spotless section in its build.gradle](https://github.com/diffplug/durian/blob/v3.2.0/build.gradle#L65-L85))
-* [DurianRx](https://github.com/diffplug/durian-rx) ([direct link to spotless section in it build.gradle](https://github.com/diffplug/durian-rx/blob/v1.1.0/build.gradle#L92-L113))
-* [DurianSwt](https://github.com/diffplug/durian-swt) ([direct link to spotless section in it build.gradle](https://github.com/diffplug/durian-swt/blob/v1.3.0/build.gradle#L137-L158))
-* [MatConsoleCtl](https://github.com/diffplug/matconsolectl) ([direct link to spotless section in it build.gradle](https://github.com/diffplug/matconsolectl/blob/v4.4.1/build.gradle#L169-L189))
-* [MatFileRW](https://github.com/diffplug/matfilerw) ([direct link to spotless section in it build.gradle](https://github.com/diffplug/matfilerw/blob/v1.3.1/build.gradle#L129-L149))
-* [Goomph](https://github.com/diffplug/goomph) ([direct link to spotless section in it build.gradle](https://github.com/diffplug/goomph/blob/v1.0.0/build.gradle#L78-L99))
-* [FreshMark](https://github.com/diffplug/freshmark) ([direct link to spotless section in it build.gradle](https://github.com/diffplug/freshmark/blob/v1.3.0/build.gradle#L52-L73))
-* [JScriptBox](https://github.com/diffplug/jscriptbox) ([direct link to spotless section in it build.gradle](https://github.com/diffplug/jscriptbox/blob/v3.0.0/build.gradle#L45-L65))
-* (Your project here)
-
-## Applying [FreshMark](https://github.com/diffplug/freshmark) to markdown files
-
-To apply freshmark to all of the `.md` files in your project, with all of your project's properties available for templating, just use this snippet:
+Inside your buildscript, it looks like this:
 
 ```groovy
 spotless {
-	freshmark {}
-}
-```
-
-More advanced features are also available:
-```groovy
-spotless {
-	freshmark {
-		target 'README.md', 'CONTRIBUTING.md'
-		properties [name: 'Name', version: '1.0.0']
+	format 'misc', {
+		target '**/*.gradle', '**/*.md', '**/.gitignore'
+        
 		trimTrailingWhitespace()
 		indentWithTabs() // or spaces. Takes an integer argument if you don't like 4
 		endWithNewline()
 	}
+    format 'cpp', {
+		target '**/*.hpp', '**/*.cpp'
+
+		customReplace      'Not enough space after if', 'if(', 'if ('
+		customReplaceRegex 'Too much space after if', 'if +\\(', 'if ('
+
+		// Everything before the first #include or #pragma will
+        // be replaced with whatever is in `spotless.license.cpp`
+		licenseHeaderFile 'spotless.license.cpp', '#'
+    }
 }
 ```
+
+Spotless can check and apply formatting to any plain-text file, using simple rules ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/com/diffplug/gradle/spotless/FormatExtension.html)) like those above.  It also supports more powerful formatters:
+
+* Eclipse's java code formatter (including style and import ordering)
+* [FreshMark](https://github.com/diffplug/freshmark) (markdown with variables)
+* Any user-defined function which takes an unformatted string and outputs a formatted version.
+
+Contributions are welcome, see [the contributing guide](CONTRIBUTING.md) for development info.
+
+Spotless requires Gradle to be running on JRE 8+.  If you really want to run Gradle on 6 or 7 that could be done, see [issue #7](https://github.com/diffplug/spotless/issues/7) for details.
 
 ## Applying to Java source
 
@@ -91,6 +70,9 @@ apply plugin: 'java'
 
 spotless {
 	java {
+		// By default, all Java source sets will be formatted.  To change
+		// this, set the 'target' parameter as described in the next section.
+
 		licenseHeader '/* Licensed under Apache-2.0 */'	// License header
 		licenseHeaderFile 'spotless.license.java'		// License header file
 		// Obviously, you can't specify both licenseHeader and licenseHeaderFile at the same time
@@ -109,16 +91,37 @@ spotless {
 		//    @Max(value = 9_999_999 L)	// what Eclipse does
 		//    @Max(value = 9_999_999L)	// what I wish Eclipse did
 		custom 'Long literal fix', { it.replaceAll('([0-9_]+) [Ll]', '$1L') }
-
-		// By default, all Java source sets will be formatted.  To change
-		// this, set the 'target' parameter as described in the next section.
 	}
 }
 ```
 
-## Adding spotless to other source
+## Applying [FreshMark](https://github.com/diffplug/freshmark) to markdown files
 
-Spotless has a generic system for specifying which transformations to apply to which files. This makes it easy to apply simple formatting rules (indentation, trailing whitespace, etc) to all of your source plaintext.
+To apply freshmark to all of the `.md` files in your project, with all of your project's properties available for templating, just use this snippet:
+
+```groovy
+spotless {
+	freshmark {}
+}
+```
+
+You can also specify properties manually.
+
+```groovy
+spotless {
+	freshmark {
+		target 'README.md', 'CONTRIBUTING.md'
+		properties [name: 'Name', version: '1.0.0']
+		trimTrailingWhitespace()
+		indentWithTabs()
+		endWithNewline()
+	}
+}
+```
+
+## Custom rules
+
+Spotless is a generic system for specifying a sequence of steps which are applied to a set of files.
 
 ```groovy
 spotless {
@@ -136,20 +139,6 @@ spotless {
 		trimTrailingWhitespace()
 		indentWithTabs() // or spaces. Takes an integer argument if you don't like 4
 		endWithNewline()
-	}
-
-	format 'cpp', {
-		target '**/*.hpp', '**/*.cpp'
-
-		// you can add simple replace rules
-		customReplace      'Not enough space after if', 'if(', 'if ('
-		// or complex regex rules
-		customReplaceRegex 'Too much space after if', 'if +\\(', 'if ('
-
-		// Everything before the first #include or #pragma will be replaced with the header
-		licenseHeaderFile 'spotless.license.cpp', '#'
-		// The '#' is treated as regex which is applied to each line, so you can
-		// make a more complex header delimiter if you require it
 
 		// you can also call out to your own function
 		custom 'superFormatter', {
@@ -170,12 +159,28 @@ spotless {
 	// If you'd like to specify that files should always have a certain line ending, you can,
 	// but the default value of PLATFORM_NATIVE is recommended
 	lineEndings 'PLATFORM_NATIVE' 	// can be WINDOWS, UNIX, or PLATFORM_NATIVE
+    // TODO: support .gitattributes: https://github.com/diffplug/spotless/issues/23
 }
 ```
 
-See [`FormatExtension.java`](src/main/java/com/diffplug/gradle/spotless/FormatExtension.java?ts=4) for further details on the default rules.
+See [`JavaExtension.java`](src/main/java/com/diffplug/gradle/spotless/java/JavaExtension.java?ts=4) if you'd like to see how a language-specific set of custom rules is implemented.  We'd love PR's which add support for other languages.
 
-See [`JavaExtension.java`](src/main/java/com/diffplug/gradle/spotless/java/JavaExtension.java?ts=4) for further details on how the Java formatter is implemented.
+## Example configurations (from real-world projects)
+
+Spotless is hosted on jcenter and at plugins.gradle.org. [Go here](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless) if you're not sure how to import the plugin.
+
+* [JUnit 5](https://github.com/junit-team/junit-lambda/blob/151d52ffab07881de71a8396a9620f18072c65ec/build.gradle#L86-L101) (aka JUnit Lambda)
+* [opentest4j](https://github.com/ota4j-team/opentest4j/blob/aab8c204be05609e9f76c2c964c3d6845cd0de14/build.gradle#L63-L80)
+* [Durian](https://github.com/diffplug/durian) ([direct link to spotless section in its build.gradle](https://github.com/diffplug/durian/blob/v3.2.0/build.gradle#L65-L85))
+* [DurianRx](https://github.com/diffplug/durian-rx) ([direct link to spotless section in its build.gradle](https://github.com/diffplug/durian-rx/blob/v1.1.0/build.gradle#L92-L113))
+* [DurianSwt](https://github.com/diffplug/durian-swt) ([direct link to spotless section in its build.gradle](https://github.com/diffplug/durian-swt/blob/v1.3.0/build.gradle#L137-L158))
+* [MatConsoleCtl](https://github.com/diffplug/matconsolectl) ([direct link to spotless section in its build.gradle](https://github.com/diffplug/matconsolectl/blob/v4.4.1/build.gradle#L169-L189))
+* [MatFileRW](https://github.com/diffplug/matfilerw) ([direct link to spotless section in its build.gradle](https://github.com/diffplug/matfilerw/blob/v1.3.1/build.gradle#L129-L149))
+* [Goomph](https://github.com/diffplug/goomph) ([direct link to spotless section in its build.gradle](https://github.com/diffplug/goomph/blob/v1.0.0/build.gradle#L78-L99))
+* [FreshMark](https://github.com/diffplug/freshmark) ([direct link to spotless section in its build.gradle](https://github.com/diffplug/freshmark/blob/v1.3.0/build.gradle#L52-L73))
+* [JScriptBox](https://github.com/diffplug/jscriptbox) ([direct link to spotless section in its build.gradle](https://github.com/diffplug/jscriptbox/blob/v3.0.0/build.gradle#L45-L65))
+* (Your project here)
+
 
 ## Acknowledgements
 

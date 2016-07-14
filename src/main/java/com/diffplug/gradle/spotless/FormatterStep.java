@@ -46,8 +46,6 @@ public interface FormatterStep {
 	/**
 	 * Returns a new FormatterStep which will only apply its changes
 	 * to files which pass the given filter.
-	 * @param filter
-	 * @return
 	 */
 	default FormatterStep filterByFile(Predicate<File> filter) {
 		return new FormatterStep() {

@@ -3,6 +3,8 @@ plugins {
 	id 'com.jfrog.bintray' version '1.3.1'
 	// plugin publishing
 	id 'com.gradle.plugin-publish' version '0.9.1'
+	// github pages
+	id "org.ajoberstar.github-pages" version "1.4.2"
 	// p2 dependencies
 	id 'com.diffplug.gradle.p2.asmaven' version '3.0.1'
 	// ide setup
@@ -120,6 +122,28 @@ task sourcesJar(type: Jar) {
 // Thus, no javadoc warnings.
 javadoc {
 	options.addStringOption('Xdoclint:none', '-quiet')
+}
+
+// use markdown in javadoc
+def makeLink = { url, text -> "<a href=\"${url}\" style=\"text-transform: none;\">${text}</a>" }
+def javadocInfo = '<h2>' + makeLink("https://github.com/${org}/${name}", "${group}:${name}:${version}") +
+' by ' + makeLink('http://www.diffplug.com', 'DiffPlug') + '</h2>'
+
+def verSnapshot = { it.endsWith('-SNAPSHOT') ? 'snapshot' : it }
+
+javadoc {
+	// Where it's possible to name parameters and methods clearly enough
+	// that javadoc is not necessary, why make the code bigger?
+	//
+	// Thus, no javadoc warnings.
+	options.addStringOption('Xdoclint:none', '-quiet')
+	// setup the header
+	options.header javadocInfo
+	options.footer javadocInfo
+	// setup links
+	options.linksOffline('https://docs.oracle.com/javase/8/docs/api/', 'gradle/javadoc/java8')
+	options.linksOffline("https://docs.gradle.org/2.14/javadoc/", 'gradle/javadoc/gradle')
+	options.linksOffline("https://diffplug.github.io/durian/javadoc/${verSnapshot(VER_DURIAN)}/", 'gradle/javadoc/durian')
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
@@ -251,3 +275,20 @@ pluginBundle {
 if (isSnapshot) {
 	publishPlugins.enabled = false
 }
+
+//////////////////
+// GITHUB PAGES //
+//////////////////
+githubPages {
+	repoUri = "https://github.com/${project.org}/${project.name}"
+	deleteExistingFiles = false
+	pages {
+		from javadoc.destinationDir
+		into "javadoc/${verSnapshot(version)}"
+	}
+	credentials {
+		username = cred('gh_token')
+		password = ''
+	}
+}
+tasks.prepareGhPages.dependsOn(":javadoc")
