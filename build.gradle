@@ -23,7 +23,7 @@ repositories {
 }
 
 apply plugin: 'com.gradle.plugin-publish'
-apply plugin: 'java'
+apply plugin: 'java-gradle-plugin'
 sourceCompatibility = VER_JAVA
 targetCompatibility = VER_JAVA
 
@@ -71,7 +71,6 @@ configurations {
 }
 
 dependencies {
-	compile gradleApi()
 	compile "com.diffplug.durian:durian-core:${VER_DURIAN}"
 	compile "com.diffplug.freshmark:freshmark:${VER_FRESHMARK}"
 	compile "org.eclipse.jgit:org.eclipse.jgit:${VER_JGIT}"
