@@ -19,24 +19,24 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import com.diffplug.gradle.spotless.ResourceTest;
+import com.diffplug.gradle.spotless.ResourceHarness;
 
-public class ImportSorterStepTest extends ResourceTest {
+public class ImportSorterStepTest extends ResourceHarness {
 	@Test
 	public void sortImportsFromArray() throws Throwable {
 		ImportSorterStep step = new ImportSorterStep(Arrays.asList("java", "javax", "org", "\\#com"));
-		assertStep(step::format, "JavaCodeUnsortedImports.test", "JavaCodeSortedImports.test");
+		assertStep(step::format, "java/eclipse/importsorter/JavaCodeUnsortedImports.test", "java/eclipse/importsorter/JavaCodeSortedImports.test");
 	}
 
 	@Test
 	public void sortImportsFromFile() throws Throwable {
-		ImportSorterStep step = new ImportSorterStep(createTestFile("import.properties"));
-		assertStep(step::format, "JavaCodeUnsortedImports.test", "JavaCodeSortedImports.test");
+		ImportSorterStep step = new ImportSorterStep(createTestFile("java/eclipse/importsorter/import.properties"));
+		assertStep(step::format, "java/eclipse/importsorter/JavaCodeUnsortedImports.test", "java/eclipse/importsorter/JavaCodeSortedImports.test");
 	}
 
 	@Test
 	public void sortImportsUnmatched() throws Throwable {
-		ImportSorterStep step = new ImportSorterStep(createTestFile("import_unmatched.properties"));
-		assertStep(step::format, "JavaCodeUnsortedImportsUnmatched.test", "JavaCodeSortedImportsUnmatched.test");
+		ImportSorterStep step = new ImportSorterStep(createTestFile("java/eclipse/importsorter/import_unmatched.properties"));
+		assertStep(step::format, "java/eclipse/importsorter/JavaCodeUnsortedImportsUnmatched.test", "java/eclipse/importsorter/JavaCodeSortedImportsUnmatched.test");
 	}
 }

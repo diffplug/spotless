@@ -15,10 +15,8 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Collections;
@@ -32,21 +30,15 @@ import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
 import com.diffplug.common.base.Throwing;
+import com.diffplug.common.io.Resources;
 
-public class ResourceTest {
+public class ResourceHarness {
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
 
 	/** Returns the contents of the given file from the src/test/resources directory. */
 	protected String getTestResource(String filename) throws IOException {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		InputStream inputStream = getClass().getResourceAsStream("/" + filename);
-		byte[] buffer = new byte[1024];
-		int length = 0;
-		while ((length = inputStream.read(buffer)) != -1) {
-			baos.write(buffer, 0, length);
-		}
-		return new String(baos.toByteArray(), StandardCharsets.UTF_8);
+		return Resources.toString(ResourceHarness.class.getResource("/" + filename), StandardCharsets.UTF_8);
 	}
 
 	/** Returns a File (in a temporary folder) which has the contents of the given file from the src/test/resources directory. */

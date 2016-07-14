@@ -21,10 +21,10 @@ import org.junit.Test;
 import com.diffplug.gradle.spotless.LicenseHeaderStep;
 import com.diffplug.gradle.spotless.java.JavaExtension;
 
-public class LicenseHeaderStepTest extends ResourceTest {
-	private static final String KEY_LICENSE = "TestLicense";
-	private static final String KEY_FILE_NOTAPPLIED = "Java8CodeFormatted.test";
-	private static final String KEY_FILE_APPLIED = "JavaCodeFormattedWithLicense.test";
+public class LicenseHeaderStepTest extends ResourceHarness {
+	private static final String KEY_LICENSE = "license/TestLicense";
+	private static final String KEY_FILE_NOTAPPLIED = "license/MissingLicense.test";
+	private static final String KEY_FILE_APPLIED = "license/HasLicense.test";
 
 	@Test
 	public void fromString() throws Throwable {

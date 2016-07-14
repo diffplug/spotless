@@ -25,7 +25,7 @@ import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
-public class FormatTaskTest extends ResourceTest {
+public class FormatTaskTest extends ResourceHarness {
 	private Project project;
 	private FormatTask task;
 
