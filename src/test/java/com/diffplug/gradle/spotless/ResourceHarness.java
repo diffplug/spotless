@@ -38,7 +38,12 @@ public class ResourceHarness {
 
 	/** Returns the contents of the given file from the src/test/resources directory. */
 	protected String getTestResource(String filename) throws IOException {
-		return Resources.toString(ResourceHarness.class.getResource("/" + filename), StandardCharsets.UTF_8);
+		return getTestResource(filename, LineEnding.UNIX);
+	}
+
+	protected String getTestResource(String filename, LineEnding ending) throws IOException {
+		return Resources.toString(ResourceHarness.class.getResource("/" + filename), StandardCharsets.UTF_8)
+				.replace("\r\n", "\n").replace("\n", ending.string);
 	}
 
 	/** Returns a File (in a temporary folder) which has the contents of the given file from the src/test/resources directory. */
