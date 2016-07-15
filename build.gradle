@@ -77,7 +77,7 @@ dependencies {
 	compile "com.diffplug.durian:durian-io:${VER_DURIAN}"
 	compile "com.diffplug.freshmark:freshmark:${VER_FRESHMARK}"
 	compile "org.eclipse.jgit:org.eclipse.jgit:${VER_JGIT}"
-	compile "junit:junit:${VER_JUNIT}"
+	testCompile "junit:junit:${VER_JUNIT}"
 
 	// add the eclipse jars to the embedded configuration
 	eclipseDeps.each { embeddedJars "p2:${it}:+" }
