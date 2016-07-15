@@ -111,7 +111,7 @@ You can also specify properties manually.
 spotless {
 	freshmark {
 		target 'README.md', 'CONTRIBUTING.md'
-		properties [name: 'Name', version: '1.0.0']
+		properties([lib: 'MyLib', author: 'Me'])
 		trimTrailingWhitespace()
 		indentWithTabs()
 		endWithNewline()
