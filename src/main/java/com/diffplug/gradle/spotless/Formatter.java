@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.gradle.api.logging.Logger;
@@ -67,19 +68,26 @@ public class Formatter {
 
 	/** Applies formatting to the given file. */
 	public void applyFormat(File file) throws IOException {
-		String raw = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
-		String unix = raw.replaceAll("\r", "");
+		byte[] rawBytes = Files.readAllBytes(file.toPath());
+		String raw = new String(rawBytes, StandardCharsets.UTF_8);
+		String rawUnix = raw.replace("\r", "");
 
 		// enforce the format
-		unix = applyAll(unix, file);
+		String formattedUnix = applyAll(rawUnix, file);
 
 		// convert the line endings if necessary
+		String formatted;
 		if (!lineEnding.string.equals("\n")) {
-			unix = unix.replace("\n", lineEnding.string);
+			formatted = formattedUnix.replace("\n", lineEnding.string);
+		} else {
+			formatted = formattedUnix;
 		}
 
-		// write out the file
-		Files.write(file.toPath(), unix.getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING);
+		// write out the file iff it has changed
+		byte[] formattedBytes = formatted.getBytes(StandardCharsets.UTF_8);
+		if (!Arrays.equals(rawBytes, formattedBytes)) {
+			Files.write(file.toPath(), formattedBytes, StandardOpenOption.TRUNCATE_EXISTING);
+		}
 	}
 
 	/** Returns the result of calling all of the FormatterSteps. */
