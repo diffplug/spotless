@@ -20,40 +20,43 @@ import java.util.function.Consumer;
 
 import org.gradle.api.Project;
 import org.gradle.testfixtures.ProjectBuilder;
+import org.gradle.testkit.runner.GradleRunner;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.diffplug.common.base.StandardSystemProperty;
+import com.diffplug.common.base.Unhandled;
+
 /**
- * Running spotless on ourselves yields the following error:
- *
- * Module version com.diffplug.gradle.spotless:spotless:1.0-SNAPSHOT,
- * configuration 'classpath' declares a dependency on configuration
- * 'default' which is not declared in the module descriptor for
- * com.diffplug.gradle.spotless:spotless:1.0-SNAPSHOT
- *
- * Tried all kinds of things to fix it, no luck so far.
- *
- * So, we'll just run it from inside of ourselves.
+ * If you'd like to step through the full spotless plugin,
+ * these tests make that easier.  Uncomment ignore to do it.
  */
-public class SelfTest {
-	/** Runs the check (which we want to happen in the test suite). */
-	@Test
-	@Ignore("The test passes in real life and Eclipse, but fails in Gradle test runner...")
-	public void check() throws Exception {
-		try {
-			runTasksWithCheck(false);
-		} catch (Exception e) {
-			throw new Exception("There are formatting errors in spotless' source code.\n" + "Ideally, you could just run 'spotlessApply', but because of an unresolved bootstrapping issue, you'll have to manually run the " + "main() method in com.diffplug.gradle.spotless.SelfTest", e);
+@Ignore
+class SelfTest {
+	public enum Type {
+		CHECK, APPLY;
+
+		public <T> T checkApply(T check, T apply) {
+			switch (this) {
+			case CHECK: return check;
+			case APPLY: return apply;
+			default: throw Unhandled.enumException(this);
+			}
 		}
 	}
 
-	/** Applies the format (which should be manual). */
-	public static void main(String[] args) throws Exception {
-		runTasksWithCheck(false);
+	@Test
+	public void spotlessApply() throws Exception {
+		runTasksManually(Type.APPLY);
 	}
 
-	/** Returns all of the FormatTasks which have check equal to the given value. */
-	private static void runTasksWithCheck(boolean check) throws Exception {
+	@Test
+	public void spotlessCheck() throws Exception {
+		runTasksManually(Type.CHECK);
+	}
+
+	/** Runs a full task manually, so you can step through all the logic. */
+	static void runTasksManually(Type type) throws Exception {
 		Project project = createProject(extension -> {
 			extension.java(java -> {
 				java.target("**/*.java");
@@ -80,7 +83,7 @@ public class SelfTest {
 		project.getTasks().stream()
 				.filter(task -> task instanceof FormatTask)
 				.map(task -> (FormatTask) task)
-				.filter(task -> task.check == check)
+				.filter(task -> task.check == type.checkApply(true, false))
 				.forEach(task -> {
 					try {
 						task.format();
@@ -100,5 +103,15 @@ public class SelfTest {
 		plugin.createTasks();
 		// return the configured plugin
 		return project;
+	}
+
+	/** Runs against the `spotlessSelfApply.gradle` file. */
+	static void runWithTestKit(Type type) throws Exception {
+		GradleRunner.create()
+				.withPluginClasspath()
+				.withProjectDir(new File(StandardSystemProperty.USER_DIR.value()))
+				.withArguments("-b", "spotlessSelf.gradle", "spotless" + type.checkApply("Check", "Apply"))
+				.forwardOutput()
+				.build();
 	}
 }

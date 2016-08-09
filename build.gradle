@@ -107,6 +107,24 @@ eclipse {
 // always create fresh projects
 tasks.eclipse.dependsOn(cleanEclipse)
 
+
+/////////////////////
+// SPOTLESS (fake) //
+/////////////////////
+task spotlessCheck(type: JavaExec) {
+	classpath sourceSets.test.runtimeClasspath
+	main = 'com.diffplug.gradle.spotless.SelfTestCheck'
+}
+check.dependsOn(spotlessCheck)
+
+task spotlessApply(type: JavaExec) {
+	classpath sourceSets.test.runtimeClasspath
+	main = 'com.diffplug.gradle.spotless.SelfTestApply'
+}
+test {
+	testLogging.showStandardStreams = true
+}
+
 ///////////
 // MAVEN //
 ///////////
