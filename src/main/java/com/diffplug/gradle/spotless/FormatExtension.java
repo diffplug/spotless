@@ -28,6 +28,7 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.file.UnionFileCollection;
 
 import com.diffplug.common.base.Throwing;
+
 import groovy.lang.Closure;
 
 /** Adds a `spotless{Name}Check` and `spotless{Name}Apply` task. */
@@ -187,16 +188,20 @@ public class FormatExtension {
 	}
 
 	/**
-	 * @param licenseHeader Content that should be at the top of every file
-	 * @param delimiter Spotless will look for a line that starts with this to know what the "top" is.
+	 * @param licenseHeader
+	 *            Content that should be at the top of every file
+	 * @param delimiter
+	 *            Spotless will look for a line that starts with this to know what the "top" is.
 	 */
 	public void licenseHeader(String licenseHeader, String delimiter) {
 		customLazy(LicenseHeaderStep.NAME, () -> new LicenseHeaderStep(licenseHeader, delimiter)::format);
 	}
 
 	/**
-	 * @param licenseHeaderFile Content that should be at the top of every file
-	 * @param delimiter Spotless will look for a line that starts with this to know what the "top" is.
+	 * @param licenseHeaderFile
+	 *            Content that should be at the top of every file
+	 * @param delimiter
+	 *            Spotless will look for a line that starts with this to know what the "top" is.
 	 */
 	public void licenseHeaderFile(Object licenseHeaderFile, String delimiter) {
 		customLazy(LicenseHeaderStep.NAME, () -> new LicenseHeaderStep(getProject().file(licenseHeaderFile), delimiter)::format);

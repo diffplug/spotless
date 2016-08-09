@@ -34,21 +34,21 @@ Inside your buildscript, it looks like this:
 spotless {
 	format 'misc', {
 		target '**/*.gradle', '**/*.md', '**/.gitignore'
-        
+
 		trimTrailingWhitespace()
 		indentWithTabs() // or spaces. Takes an integer argument if you don't like 4
 		endWithNewline()
 	}
-    format 'cpp', {
+	format 'cpp', {
 		target '**/*.hpp', '**/*.cpp'
 
 		customReplace      'Not enough space after if', 'if(', 'if ('
 		customReplaceRegex 'Too much space after if', 'if +\\(', 'if ('
 
 		// Everything before the first #include or #pragma will
-        // be replaced with whatever is in `spotless.license.cpp`
+		// be replaced with whatever is in `spotless.license.cpp`
 		licenseHeaderFile 'spotless.license.cpp', '#'
-    }
+	}
 }
 ```
 
@@ -159,7 +159,7 @@ spotless {
 	// If you'd like to specify that files should always have a certain line ending, you can,
 	// but the default value of PLATFORM_NATIVE is recommended
 	lineEndings 'PLATFORM_NATIVE' 	// can be WINDOWS, UNIX, or PLATFORM_NATIVE
-    // TODO: support .gitattributes: https://github.com/diffplug/spotless/issues/23
+	// TODO: support .gitattributes: https://github.com/diffplug/spotless/issues/23
 }
 ```
 

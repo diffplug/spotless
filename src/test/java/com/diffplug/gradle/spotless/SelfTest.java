@@ -29,7 +29,7 @@ import com.diffplug.common.base.Unhandled;
 
 /**
  * If you'd like to step through the full spotless plugin,
- * these tests make that easier.  Uncomment ignore to do it.
+ * these tests make that easier. Uncomment ignore to do it.
  */
 @Ignore
 class SelfTest {
@@ -38,9 +38,12 @@ class SelfTest {
 
 		public <T> T checkApply(T check, T apply) {
 			switch (this) {
-			case CHECK: return check;
-			case APPLY: return apply;
-			default: throw Unhandled.enumException(this);
+			case CHECK:
+				return check;
+			case APPLY:
+				return apply;
+			default:
+				throw Unhandled.enumException(this);
 			}
 		}
 	}
