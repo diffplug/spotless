@@ -32,7 +32,7 @@ import com.diffplug.common.base.Unhandled;
  * these tests make that easier. Uncomment ignore to do it.
  */
 @Ignore
-class SelfTest {
+public class SelfTest {
 	public enum Type {
 		CHECK, APPLY;
 
@@ -113,7 +113,7 @@ class SelfTest {
 		GradleRunner.create()
 				.withPluginClasspath()
 				.withProjectDir(new File(StandardSystemProperty.USER_DIR.value()))
-				.withArguments("-b", "spotlessSelf.gradle", "spotless" + type.checkApply("Check", "Apply"))
+				.withArguments("-b", "spotlessSelf.gradle", "spotless" + type.checkApply("Check", "Apply"), "--stacktrace")
 				.forwardOutput()
 				.build();
 	}

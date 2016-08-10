@@ -30,13 +30,13 @@ import org.gradle.api.logging.Logging;
 
 /** Formatter which performs the full formatting. */
 public class Formatter {
-	private final LineEnding lineEnding;
+	private final LineEnding.Policy lineEndingPolicy;
 	private final Path projectDirectory;
 	private final List<FormatterStep> steps;
 	private final Logger logger = Logging.getLogger(Formatter.class);
 
-	public Formatter(LineEnding lineEnding, Path projectDirectory, List<FormatterStep> steps) {
-		this.lineEnding = lineEnding;
+	public Formatter(LineEnding.Policy lineEndingPolicy, Path projectDirectory, List<FormatterStep> steps) {
+		this.lineEndingPolicy = lineEndingPolicy;
 		this.projectDirectory = projectDirectory;
 		this.steps = new ArrayList<>(steps);
 	}
@@ -44,17 +44,17 @@ public class Formatter {
 	/** Returns true iff the given file's formatting is up-to-date. */
 	public boolean isClean(File file) throws IOException {
 		String raw = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
-		String unix = raw.replaceAll("\r", "");
+		String unix = LineEnding.toUnix(raw);
 
 		// check the newlines
 		int totalNewLines = (int) unix.codePoints().filter(val -> val == '\n').count();
 		int windowsNewLines = raw.length() - unix.length();
-		if (lineEnding.isWin()) {
-			if (windowsNewLines != totalNewLines) {
+		if (lineEndingPolicy.isUnix(file)) {
+			if (windowsNewLines != 0) {
 				return false;
 			}
 		} else {
-			if (windowsNewLines != 0) {
+			if (windowsNewLines != totalNewLines) {
 				return false;
 			}
 		}
@@ -70,15 +70,16 @@ public class Formatter {
 	public void applyFormat(File file) throws IOException {
 		byte[] rawBytes = Files.readAllBytes(file.toPath());
 		String raw = new String(rawBytes, StandardCharsets.UTF_8);
-		String rawUnix = raw.replace("\r", "");
+		String rawUnix = LineEnding.toUnix(raw);
 
 		// enforce the format
 		String formattedUnix = applyAll(rawUnix, file);
 
 		// convert the line endings if necessary
 		String formatted;
-		if (!lineEnding.string.equals("\n")) {
-			formatted = formattedUnix.replace("\n", lineEnding.string);
+		String ending = lineEndingPolicy.getEndingFor(file);
+		if (!ending.equals(LineEnding.UNIX)) {
+			formatted = formattedUnix.replace("\n", ending);
 		} else {
 			formatted = formattedUnix;
 		}

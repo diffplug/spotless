@@ -37,7 +37,7 @@ public class LicenseHeaderStep {
 			throw new GradleException("The delimiter must not contain any newlines.");
 		}
 		// sanitize the input license
-		license = license.replace("\r", "");
+		license = LineEnding.toUnix(license);
 		if (!license.endsWith("\n")) {
 			license = license + "\n";
 		}

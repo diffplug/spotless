@@ -42,8 +42,8 @@ public class ResourceHarness {
 	}
 
 	protected String getTestResource(String filename, LineEnding ending) throws IOException {
-		return Resources.toString(ResourceHarness.class.getResource("/" + filename), StandardCharsets.UTF_8)
-				.replace("\r\n", "\n").replace("\n", ending.string);
+		String raw = Resources.toString(ResourceHarness.class.getResource("/" + filename), StandardCharsets.UTF_8);
+		return LineEnding.toUnix(raw).replace("\n", ending.str());
 	}
 
 	/** Returns a File (in a temporary folder) which has the contents of the given file from the src/test/resources directory. */
@@ -71,13 +71,13 @@ public class ResourceHarness {
 
 	/** Reads the given resource from "before", applies the step, and makes sure the result is "after". */
 	protected void assertStep(Throwing.Function<String, String> step, String unformattedPath, String expectedPath) throws Throwable {
-		String unformatted = getTestResource(unformattedPath).replace("\r", ""); // unix-ified input
+		String unformatted = LineEnding.toUnix(getTestResource(unformattedPath)); // unix-ified input
 		String formatted = step.apply(unformatted);
 		// no windows newlines
 		Assert.assertEquals(-1, formatted.indexOf('\r'));
 
 		// unix-ify the test resource output in case git screwed it up
-		String expected = getTestResource(expectedPath).replace("\r", ""); // unix-ified output
+		String expected = LineEnding.toUnix(getTestResource(expectedPath)); // unix-ified output
 		Assert.assertEquals(expected, formatted);
 	}
 
@@ -101,7 +101,7 @@ public class ResourceHarness {
 		// create the task
 		FormatTask task = createTask(test);
 		// force unix line endings, since we're passing in raw strings
-		task.lineEndings = LineEnding.UNIX;
+		task.lineEndingsPolicy = LineEnding.UNIX.createPolicy();
 		// create the test file
 		File testFile = folder.newFile();
 		Files.write(testFile.toPath(), before.getBytes(StandardCharsets.UTF_8));

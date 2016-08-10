@@ -48,7 +48,7 @@ public class EclipseFormatterStep {
 	}
 
 	public String format(String raw) throws Exception {
-		TextEdit edit = codeFormatter.format(CodeFormatter.K_COMPILATION_UNIT | CodeFormatter.F_INCLUDE_COMMENTS, raw, 0, raw.length(), 0, LineEnding.UNIX.string);
+		TextEdit edit = codeFormatter.format(CodeFormatter.K_COMPILATION_UNIT | CodeFormatter.F_INCLUDE_COMMENTS, raw, 0, raw.length(), 0, LineEnding.UNIX.str());
 		if (edit == null) {
 			throw new IllegalArgumentException("Invalid java syntax for formatting.");
 		} else {

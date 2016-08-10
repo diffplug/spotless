@@ -34,7 +34,7 @@ public class FormatTask extends DefaultTask {
 	@Input
 	public boolean check = false;
 	@Input
-	public LineEnding lineEndings = LineEnding.PLATFORM_NATIVE;
+	public LineEnding.Policy lineEndingsPolicy = LineEnding.UNIX_POLICY;
 	@Input
 	public List<FormatterStep> steps = new ArrayList<>();
 
@@ -44,7 +44,7 @@ public class FormatTask extends DefaultTask {
 			throw new GradleException("You must specify 'Iterable<File> toFormat'");
 		}
 		// combine them into the master formatter
-		Formatter formatter = new Formatter(lineEndings, getProject().getProjectDir().toPath(), steps);
+		Formatter formatter = new Formatter(lineEndingsPolicy, getProject().getProjectDir().toPath(), steps);
 
 		// perform the check
 		if (check) {

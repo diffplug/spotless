@@ -44,7 +44,7 @@ public class GradleIntegrationTest extends ResourceHarness {
 	}
 
 	protected void write(String path, LineEnding ending, String... lines) throws IOException {
-		String content = Arrays.asList(lines).stream().collect(Collectors.joining(ending.string)) + ending.string;
+		String content = Arrays.asList(lines).stream().collect(Collectors.joining(ending.str())) + ending.str();
 		Path target = folder.getRoot().toPath().resolve(path);
 		Files.createDirectories(target.getParent());
 		Files.write(target, content.getBytes(StandardCharsets.UTF_8));
@@ -57,8 +57,8 @@ public class GradleIntegrationTest extends ResourceHarness {
 	protected String read(String path, LineEnding ending) throws IOException {
 		Path target = folder.getRoot().toPath().resolve(path);
 		String content = new String(Files.readAllBytes(target), StandardCharsets.UTF_8);
-		String allUnixNewline = content.replace("\r\n", "\n");
-		return allUnixNewline.replace("\n", ending.string);
+		String allUnixNewline = LineEnding.toUnix(content);
+		return allUnixNewline.replace("\n", ending.str());
 	}
 
 	protected File file(String path) {

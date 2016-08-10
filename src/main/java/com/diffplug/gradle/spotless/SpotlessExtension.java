@@ -15,6 +15,7 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -69,5 +70,10 @@ public class SpotlessExtension {
 		if (former != null) {
 			throw new GradleException("Multiple spotless extensions with name '" + extension.name + "'");
 		}
+	}
+
+	LineEnding.Policy getLineEndingPolicy() {
+		File rootDir = project.getRootProject().getRootDir();
+		return lineEndings.createPolicy(rootDir);
 	}
 }

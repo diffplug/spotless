@@ -38,7 +38,7 @@ public class FormatTaskTest extends ResourceHarness {
 	@Test(expected = GradleException.class)
 	public void testLineEndingsCheckFail() throws IOException {
 		task.check = true;
-		task.lineEndings = LineEnding.UNIX;
+		task.lineEndingsPolicy = LineEnding.UNIX.createPolicy();
 		task.target = Collections.singleton(createTestFile("testFile", "\r\n"));
 		task.execute();
 	}
@@ -46,7 +46,7 @@ public class FormatTaskTest extends ResourceHarness {
 	@Test
 	public void testLineEndingsCheckPass() throws IOException {
 		task.check = true;
-		task.lineEndings = LineEnding.UNIX;
+		task.lineEndingsPolicy = LineEnding.UNIX.createPolicy();
 		task.target = Collections.singleton(createTestFile("testFile", "\n"));
 		task.execute();
 	}
@@ -56,7 +56,7 @@ public class FormatTaskTest extends ResourceHarness {
 		File testFile = createTestFile("testFile", "\r\n");
 
 		task.check = false;
-		task.lineEndings = LineEnding.UNIX;
+		task.lineEndingsPolicy = LineEnding.UNIX.createPolicy();
 		task.target = Collections.singleton(testFile);
 		task.execute();
 
