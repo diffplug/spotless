@@ -24,18 +24,12 @@ import java.util.stream.Collectors;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.TaskAction;
 
 public class FormatTask extends DefaultTask {
-	@InputFiles
 	public Iterable<File> target;
-	@Input
 	public boolean check = false;
-	@Input
 	public LineEnding.Policy lineEndingsPolicy = LineEnding.UNIX_POLICY;
-	@Input
 	public List<FormatterStep> steps = new ArrayList<>();
 
 	@TaskAction
