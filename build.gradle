@@ -185,58 +185,59 @@ def cred = {
 	}
 }
 
-publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			from components.java
-			artifact sourcesJar
-			artifact javadocJar
-			pom.withXml {
-				// remove the p2 dependencies because they are embedded
-				// also remove 'com.diffplug' dependencies so that we can use spotless on its dependencies
-				asNode().dependencies.'*'.each() {
-					if (it.groupId.text() == 'p2' || it.groupId.text().startsWith('com.diffplug.')) {
-						it.parent().remove(it)
-					}
-				}
-				// add MavenCentral requirements to the POM
-				asNode().children().last() + {
-					resolveStrategy = Closure.DELEGATE_FIRST
-					name project.name
-					description project.description
-					url "https://github.com/${project.org}/${project.name}"
-					scm {
-						url "https://github.com/${project.org}/${project.name}"
-						connection "scm:git:git://github.com/${project.org}/${project.name}"
-						developerConnection "scm:git:ssh:git@github.com/${project.org}/${project.name}"
-					}
-					licenses {
-						license {
-							name 'The Apache Software License, Version 2.0'
-							url 'http://www.apache.org/license/LICENSE-2.0.txt'
-							distribution 'repo'
+model {
+	publishing {
+		publications {
+			pluginMaven {
+				artifact sourcesJar
+				artifact javadocJar
+				pom.withXml {
+					// remove the p2 dependencies because they are embedded
+					// also remove 'com.diffplug' dependencies so that we can use spotless on its dependencies
+					asNode().dependencies.'*'.each() {
+						if (it.groupId.text() == 'p2' || it.groupId.text().startsWith('com.diffplug.')) {
+							it.parent().remove(it)
 						}
 					}
-					developers {
-						developer {
-							id 'nedtwigg'
-							name 'Ned Twigg'
-							email 'ned.twigg@diffplug.com'
+					// add MavenCentral requirements to the POM
+					asNode().children().last() + {
+						resolveStrategy = Closure.DELEGATE_FIRST
+						name project.name
+						description project.description
+						url "https://github.com/${project.org}/${project.name}"
+						scm {
+							url "https://github.com/${project.org}/${project.name}"
+							connection "scm:git:git://github.com/${project.org}/${project.name}"
+							developerConnection "scm:git:ssh:git@github.com/${project.org}/${project.name}"
+						}
+						licenses {
+							license {
+								name 'The Apache Software License, Version 2.0'
+								url 'http://www.apache.org/license/LICENSE-2.0.txt'
+								distribution 'repo'
+							}
+						}
+						developers {
+							developer {
+								id 'nedtwigg'
+								name 'Ned Twigg'
+								email 'ned.twigg@diffplug.com'
+							}
 						}
 					}
 				}
 			}
 		}
-	}
-	if (isSnapshot) {
-		// upload snapshots to oss.sonatype.org
-		repositories { maven {
-			url = 'https://oss.sonatype.org/content/repositories/snapshots'
-			credentials {
-				username = cred('nexus_user')
-				password = cred('nexus_pass')
-			}
-		} }
+		if (isSnapshot) {
+			// upload snapshots to oss.sonatype.org
+			repositories { maven {
+				url = 'https://oss.sonatype.org/content/repositories/snapshots'
+				credentials {
+					username = cred('nexus_user')
+					password = cred('nexus_pass')
+				}
+			} }
+		}
 	}
 }
 
