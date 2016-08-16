@@ -78,7 +78,7 @@ public class Formatter {
 		// convert the line endings if necessary
 		String formatted;
 		String ending = lineEndingPolicy.getEndingFor(file);
-		if (!ending.equals(LineEnding.UNIX)) {
+		if (!ending.equals(LineEnding.UNIX.str())) {
 			formatted = formattedUnix.replace("\n", ending);
 		} else {
 			formatted = formattedUnix;
