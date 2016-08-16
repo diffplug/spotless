@@ -22,6 +22,10 @@ output = [
 [![License Apache](https://img.shields.io/badge/license-apache-brightgreen.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
 <!---freshmark /shields -->
 
+<!---freshmark javadoc
+output = prefixDelimiterReplace(input, 'https://{{org}}.github.io/{{name}}/javadoc/', '/', stable)
+-->
+
 Spotless is a general-purpose formatting plugin.  It is completely a-la-carte, but also includes powerful "batteries-included" if you opt-in.
 
 To people who use your build, it looks like this:
@@ -65,7 +69,7 @@ spotless {
 }
 ```
 
-Spotless can check and apply formatting to any plain-text file, using simple rules ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/com/diffplug/gradle/spotless/FormatExtension.html)) like those above.  It also supports more powerful formatters:
+Spotless can check and apply formatting to any plain-text file, using simple rules ([javadoc](https://diffplug.github.io/spotless/javadoc/2.0.0/com/diffplug/gradle/spotless/FormatExtension.html)) like those above.  It also supports more powerful formatters:
 
 * Eclipse's java code formatter (including style and import ordering)
 * [FreshMark](https://github.com/diffplug/freshmark) (markdown with variables)
@@ -194,13 +198,14 @@ Spotless is hosted on jcenter and at plugins.gradle.org. [Go here](https://plugi
 * [JScriptBox](https://github.com/diffplug/jscriptbox) ([direct link to spotless section in its build.gradle](https://github.com/diffplug/jscriptbox/blob/v3.0.0/build.gradle#L45-L65))
 * (Your project here)
 
+<!---freshmark /javadoc -->
 
 ## Acknowledgements
 
 * Formatting by Eclipse 4.6
 	+ Special thanks to [Mateusz Matela](https://waynebeaton.wordpress.com/2015/03/15/great-fixes-for-mars-winners-part-i/) for huge improvements to the eclipse code formatter!
 * Forked from [gradle-format-plugin](https://github.com/youribonnaffe/gradle-format-plugin) by Youri Bonnaff??.
-* Thanks to G??bor Bern??t for improvements to logging and multi-project support.
+* Thanks to Gabor Bernat for improvements to logging and multi-project support.
 * Import ordering from [EclipseCodeFormatter](https://github.com/krasa/EclipseCodeFormatter).
 * Built by [gradle](http://gradle.org/).
 * Tested by [junit](http://junit.org/).
