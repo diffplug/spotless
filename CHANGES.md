@@ -9,7 +9,14 @@
 * Eclipse formatter now warns if the formatter xml contains multiple profiles.
 * Updated eclipse formatter to Eclipse Neon (4.6).
 * BREAKING CHANGE: Eclipse formatter now formats javadoc comments.
-	+ If you don't want Spotless to change the line-wrap in your javadoc, set this: `org.eclipse.jdt.core.formatter.join_lines_in_comments=false`
+	+ You might want to look at the following settings in your `spotless.eclipseformat.xml`:
+
+```
+org.eclipse.jdt.core.formatter.join_lines_in_comments=true/false
+org.eclipse.jdt.core.formatter.comment.format_javadoc_comments=true/false
+org.eclipse.jdt.core.formatter.comment.format_line_comments=true/false
+org.eclipse.jdt.core.formatter.comment.format_block_comments=true/false
+```
 
 The most important breaking change of 2.0 is the new default line ending mode, `GIT_ATTRIBUTES`.  This line ending mode copies git's behavior exactly.  This change should require no intervention from users, and should be significantly easier to adopt for users who are already using `.gitattributes` or the `core.eol` property.
 
