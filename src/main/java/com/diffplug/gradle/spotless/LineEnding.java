@@ -24,7 +24,7 @@ import com.diffplug.common.base.StandardSystemProperty;
  */
 public enum LineEnding {
 	// @formatter:off
-	/** Uses the same line endings as Git, including `.gitattributes`. */
+	/** Uses the same line endings as Git, using `.gitattributes` and the `core.eol` property. */
 	GIT_ATTRIBUTES,
 	/** `\n` on unix systems, `\r\n` on windows systems. */
 	PLATFORM_NATIVE,

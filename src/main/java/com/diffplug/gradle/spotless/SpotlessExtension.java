@@ -33,7 +33,7 @@ public class SpotlessExtension {
 	}
 
 	/** Line endings (if any). */
-	LineEnding lineEndings = LineEnding.PLATFORM_NATIVE;
+	LineEnding lineEndings = LineEnding.GIT_ATTRIBUTES;
 
 	public LineEnding getLineEndings() {
 		return lineEndings;
