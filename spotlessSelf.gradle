@@ -10,6 +10,9 @@ spotless {
 		eclipseFormatFile 'spotless.eclipseformat.xml'
 		trimTrailingWhitespace()
 	}
+	freshmark {
+		target '**/*.md'
+	}
 	format 'misc', {
 		target '**/*.gradle', '**/*.md', '**/*.gitignore'
 		indentWithTabs()
