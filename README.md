@@ -14,9 +14,9 @@ output = [
 -->
 [![Gradle plugin](https://img.shields.io/badge/plugins.gradle.org-com.diffplug.gradle.spotless-blue.svg)](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless)
 [![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.gradle.spotless%3Aspotless-blue.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.gradle.spotless%22%20AND%20a%3A%22spotless%22)
-[![Javadoc](https://img.shields.io/badge/javadoc-1.3.3-blue.svg)](https://diffplug.github.io/spotless/javadoc/1.3.3/)
+[![Javadoc](https://img.shields.io/badge/javadoc-2.0.0-blue.svg)](https://diffplug.github.io/spotless/javadoc/2.0.0/)
 
-[![Changelog](https://img.shields.io/badge/changelog-2.0.0--SNAPSHOT-brightgreen.svg)](CHANGES.md)
+[![Changelog](https://img.shields.io/badge/changelog-2.0.0-brightgreen.svg)](CHANGES.md)
 [![Travis CI](https://travis-ci.org/diffplug/spotless.svg?branch=master)](https://travis-ci.org/diffplug/spotless)
 [![Live chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
 [![License Apache](https://img.shields.io/badge/license-apache-brightgreen.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
