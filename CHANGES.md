@@ -1,8 +1,23 @@
 # Spotless releases
 
-### Version 1.4.0-SNAPSHOT - TBD ([oss snapshots](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/gradle/spotless/spotless/))
+### Version 2.0.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/gradle/spotless/spotless/))
 
-* Added a warning when the Eclipse formatter xml has more than one profile.
+* `spotlessApply` now writes out a file only if it needs to be changed (big performance improvement).
+* Eclipse formatter now warns if the formatter xml contains multiple profiles.
+* Updated eclipse formatter to Eclipse Neon (4.6).
+* BREAKING CHANGE: Eclipse formatter now formats javadoc comments.
+
+The most important breaking change of 2.0 is the new default line ending mode, `GIT_ATTRIBUTES`.  This line ending mode copies git's behavior exactly.  This change should require no intervention from users, and should be significantly easier to adopt for users who are already using `.gitattributes` or the `core.eol` property.
+
+If you aren't using git, you can still use `.gitattributes` files for fine-grained control of line endings.  If no git information is found, it behaves the same as PLATFORM_NATIVE (the old default).
+
+Below is the algorithm used by git and spotless to determine the proper line ending for a file.  As soon as a step succeeds in finding a line ending, the other steps will not take place.
+
+1. If the code is a git repository, look in the `$GIT_DIR/info/attributes` file for the `eol` attribute.
+2. Look at the `.gitattributes` in the file's directory, going up the directory tree.
+3. Look at the global `.gitattributes` file, if any.
+4. Look at the `core.eol` property in the git config (looking first at repo-specific, then user-specific, then system-specific).
+5. Use the PLATFORM_NATIVE line ending.
 
 ### Version 1.3.3 - March 10th 2016 ([jcenter](https://bintray.com/diffplug/opensource/spotless/1.3.3/view))
 

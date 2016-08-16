@@ -15,10 +15,8 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Collections;
@@ -32,21 +30,20 @@ import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
 import com.diffplug.common.base.Throwing;
+import com.diffplug.common.io.Resources;
 
-public class ResourceTest {
+public class ResourceHarness {
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
 
 	/** Returns the contents of the given file from the src/test/resources directory. */
 	protected String getTestResource(String filename) throws IOException {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		InputStream inputStream = getClass().getResourceAsStream("/" + filename);
-		byte[] buffer = new byte[1024];
-		int length = 0;
-		while ((length = inputStream.read(buffer)) != -1) {
-			baos.write(buffer, 0, length);
-		}
-		return new String(baos.toByteArray(), StandardCharsets.UTF_8);
+		return getTestResource(filename, LineEnding.UNIX);
+	}
+
+	protected String getTestResource(String filename, LineEnding ending) throws IOException {
+		String raw = Resources.toString(ResourceHarness.class.getResource("/" + filename), StandardCharsets.UTF_8);
+		return LineEnding.toUnix(raw).replace("\n", ending.str());
 	}
 
 	/** Returns a File (in a temporary folder) which has the contents of the given file from the src/test/resources directory. */
@@ -74,13 +71,13 @@ public class ResourceTest {
 
 	/** Reads the given resource from "before", applies the step, and makes sure the result is "after". */
 	protected void assertStep(Throwing.Function<String, String> step, String unformattedPath, String expectedPath) throws Throwable {
-		String unformatted = getTestResource(unformattedPath).replace("\r", ""); // unix-ified input
+		String unformatted = LineEnding.toUnix(getTestResource(unformattedPath)); // unix-ified input
 		String formatted = step.apply(unformatted);
 		// no windows newlines
 		Assert.assertEquals(-1, formatted.indexOf('\r'));
 
 		// unix-ify the test resource output in case git screwed it up
-		String expected = getTestResource(expectedPath).replace("\r", ""); // unix-ified output
+		String expected = LineEnding.toUnix(getTestResource(expectedPath)); // unix-ified output
 		Assert.assertEquals(expected, formatted);
 	}
 
@@ -104,7 +101,7 @@ public class ResourceTest {
 		// create the task
 		FormatTask task = createTask(test);
 		// force unix line endings, since we're passing in raw strings
-		task.lineEndings = LineEnding.UNIX;
+		task.lineEndingsPolicy = LineEnding.UNIX.createPolicy();
 		// create the test file
 		File testFile = folder.newFile();
 		Files.write(testFile.toPath(), before.getBytes(StandardCharsets.UTF_8));

@@ -18,29 +18,29 @@ package com.diffplug.gradle.spotless;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class IndentStepTest extends ResourceTest {
+public class IndentStepTest extends ResourceHarness {
 	@Test
 	public void tabToTab() throws Throwable {
 		IndentStep indent = new IndentStep(IndentStep.Type.TAB, 4);
-		assertStep(indent::format, "IndentedWithTab.test", "IndentedWithTab.test");
+		assertStep(indent::format, "indent/IndentedWithTab.test", "indent/IndentedWithTab.test");
 	}
 
 	@Test
 	public void spaceToSpace() throws Throwable {
 		IndentStep indent = new IndentStep(IndentStep.Type.SPACE, 4);
-		assertStep(indent::format, "IndentedWithSpace.test", "IndentedWithSpace.test");
+		assertStep(indent::format, "indent/IndentedWithSpace.test", "indent/IndentedWithSpace.test");
 	}
 
 	@Test
 	public void spaceToTab() throws Throwable {
 		IndentStep indent = new IndentStep(IndentStep.Type.TAB, 4);
-		assertStep(indent::format, "IndentedWithSpace.test", "IndentedWithTab.test");
+		assertStep(indent::format, "indent/IndentedWithSpace.test", "indent/IndentedWithTab.test");
 	}
 
 	@Test
 	public void tabToSpace() throws Throwable {
 		IndentStep indent = new IndentStep(IndentStep.Type.SPACE, 4);
-		assertStep(indent::format, "IndentedWithTab.test", "IndentedWithSpace.test");
+		assertStep(indent::format, "indent/IndentedWithTab.test", "indent/IndentedWithSpace.test");
 	}
 
 	@Test

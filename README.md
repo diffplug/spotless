@@ -1,13 +1,26 @@
 # <img align="left" src="images/spotless_logo.png"> Spotless: Keep your code spotless with Gradle
 
+<!---freshmark shields
+output = [
+	link(shield('Gradle plugin', 'plugins.gradle.org', 'com.diffplug.gradle.spotless', 'blue'), 'https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless'),
+	link(shield('Maven central', 'mavencentral', 'com.diffplug.gradle.spotless:spotless', 'blue'), 'http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.gradle.spotless%22%20AND%20a%3A%22spotless%22'),
+	link(shield('Javadoc', 'javadoc', '{{stable}}', 'blue'), 'https://{{org}}.github.io/{{name}}/javadoc/{{stable}}/'),
+	'',
+	link(shield('Changelog', 'changelog', '{{version}}', 'brightgreen'), 'CHANGES.md'),
+	link(image('Travis CI', 'https://travis-ci.org/{{org}}/{{name}}.svg?branch=master'), 'https://travis-ci.org/{{org}}/{{name}}'),
+	link(shield('Live chat', 'gitter', 'chat', 'brightgreen'), 'https://gitter.im/{{org}}/{{name}}'),
+	link(shield('License Apache', 'license', 'apache', 'brightgreen'), 'https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)')
+	].join('\n');
+-->
 [![Gradle plugin](https://img.shields.io/badge/plugins.gradle.org-com.diffplug.gradle.spotless-blue.svg)](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless)
-[![JCenter artifact](https://img.shields.io/badge/mavenCentral-com.diffplug.gradle.spotless%3Aspotless-blue.svg?label=JCenter)](https://bintray.com/diffplug/opensource/spotless/view)
-[![Latest version](http://img.shields.io/badge/latest-1.3.3-blue.svg)](CHANGES.md)
-[![Changelog](http://img.shields.io/badge/changelog-1.4.0--SNAPSHOT-brightgreen.svg)](CHANGES.md)
+[![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.gradle.spotless%3Aspotless-blue.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.gradle.spotless%22%20AND%20a%3A%22spotless%22)
+[![Javadoc](https://img.shields.io/badge/javadoc-1.3.3-blue.svg)](https://diffplug.github.io/spotless/javadoc/1.3.3/)
+
+[![Changelog](https://img.shields.io/badge/changelog-2.0.0--SNAPSHOT-brightgreen.svg)](CHANGES.md)
 [![Travis CI](https://travis-ci.org/diffplug/spotless.svg?branch=master)](https://travis-ci.org/diffplug/spotless)
-[![License](https://img.shields.io/github/license/diffplug/spotless.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
-[![Javadoc](https://img.shields.io/badge/javadoc-OK-blue.svg)](https://diffplug.github.io/spotless/javadoc/snapshot/)
-[![Join the chat at https://gitter.im/diffplug/gitfromscratch](https://img.shields.io/badge/gitter-live_chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
+[![Live chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
+[![License Apache](https://img.shields.io/badge/license-apache-brightgreen.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
+<!---freshmark /shields -->
 
 Spotless is a general-purpose formatting plugin.  It is completely a-la-carte, but also includes powerful "batteries-included" if you opt-in.
 
@@ -34,21 +47,21 @@ Inside your buildscript, it looks like this:
 spotless {
 	format 'misc', {
 		target '**/*.gradle', '**/*.md', '**/.gitignore'
-        
+
 		trimTrailingWhitespace()
 		indentWithTabs() // or spaces. Takes an integer argument if you don't like 4
 		endWithNewline()
 	}
-    format 'cpp', {
+	format 'cpp', {
 		target '**/*.hpp', '**/*.cpp'
 
 		customReplace      'Not enough space after if', 'if(', 'if ('
 		customReplaceRegex 'Too much space after if', 'if +\\(', 'if ('
 
 		// Everything before the first #include or #pragma will
-        // be replaced with whatever is in `spotless.license.cpp`
+		// be replaced with whatever is in `spotless.license.cpp`
 		licenseHeaderFile 'spotless.license.cpp', '#'
-    }
+	}
 }
 ```
 
@@ -111,7 +124,7 @@ You can also specify properties manually.
 spotless {
 	freshmark {
 		target 'README.md', 'CONTRIBUTING.md'
-		properties [name: 'Name', version: '1.0.0']
+		properties([lib: 'MyLib', author: 'Me'])
 		trimTrailingWhitespace()
 		indentWithTabs()
 		endWithNewline()
@@ -156,10 +169,10 @@ spotless {
 		}
 	}
 
-	// If you'd like to specify that files should always have a certain line ending, you can,
-	// but the default value of PLATFORM_NATIVE is recommended
-	lineEndings 'PLATFORM_NATIVE' 	// can be WINDOWS, UNIX, or PLATFORM_NATIVE
-    // TODO: support .gitattributes: https://github.com/diffplug/spotless/issues/23
+	// The default line ending mode, GIT_ATTRIBUTES, has the exact same line ending
+	// behavior as git, including support for the eol property of .gitattributes,
+	// and the core.eol configuration property.
+	lineEndings 'GIT_ATTRIBUTES' 	// can also be WINDOWS, UNIX, or PLATFORM_NATIVE
 }
 ```
 
@@ -184,7 +197,7 @@ Spotless is hosted on jcenter and at plugins.gradle.org. [Go here](https://plugi
 
 ## Acknowledgements
 
-* Formatting by Eclipse 4.5
+* Formatting by Eclipse 4.6
 	+ Special thanks to [Mateusz Matela](https://waynebeaton.wordpress.com/2015/03/15/great-fixes-for-mars-winners-part-i/) for huge improvements to the eclipse code formatter!
 * Forked from [gradle-format-plugin](https://github.com/youribonnaffe/gradle-format-plugin) by Youri Bonnaff??.
 * Thanks to G??bor Bern??t for improvements to logging and multi-project support.

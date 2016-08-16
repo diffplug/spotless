@@ -36,8 +36,10 @@ public interface FormatterStep {
 	/**
 	 * Returns a formatted version of the given content.
 	 *
-	 * @param raw File's content, guaranteed to have unix-style newlines ('\n')
-	 * @param file the File which is being formatted
+	 * @param raw
+	 *            File's content, guaranteed to have unix-style newlines ('\n')
+	 * @param file
+	 *            the File which is being formatted
 	 * @return The formatted content, guaranteed to only have unix-style newlines
 	 * @throws Throwable
 	 */

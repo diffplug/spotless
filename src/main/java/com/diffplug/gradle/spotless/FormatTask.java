@@ -24,18 +24,12 @@ import java.util.stream.Collectors;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.TaskAction;
 
 public class FormatTask extends DefaultTask {
-	@InputFiles
 	public Iterable<File> target;
-	@Input
 	public boolean check = false;
-	@Input
-	public LineEnding lineEndings = LineEnding.PLATFORM_NATIVE;
-	@Input
+	public LineEnding.Policy lineEndingsPolicy = LineEnding.UNIX_POLICY;
 	public List<FormatterStep> steps = new ArrayList<>();
 
 	@TaskAction
@@ -44,7 +38,7 @@ public class FormatTask extends DefaultTask {
 			throw new GradleException("You must specify 'Iterable<File> toFormat'");
 		}
 		// combine them into the master formatter
-		Formatter formatter = new Formatter(lineEndings, getProject().getProjectDir().toPath(), steps);
+		Formatter formatter = new Formatter(lineEndingsPolicy, getProject().getProjectDir().toPath(), steps);
 
 		// perform the check
 		if (check) {

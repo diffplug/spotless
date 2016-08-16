@@ -25,7 +25,7 @@ import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
-public class FormatTaskTest extends ResourceTest {
+public class FormatTaskTest extends ResourceHarness {
 	private Project project;
 	private FormatTask task;
 
@@ -38,7 +38,7 @@ public class FormatTaskTest extends ResourceTest {
 	@Test(expected = GradleException.class)
 	public void testLineEndingsCheckFail() throws IOException {
 		task.check = true;
-		task.lineEndings = LineEnding.UNIX;
+		task.lineEndingsPolicy = LineEnding.UNIX.createPolicy();
 		task.target = Collections.singleton(createTestFile("testFile", "\r\n"));
 		task.execute();
 	}
@@ -46,7 +46,7 @@ public class FormatTaskTest extends ResourceTest {
 	@Test
 	public void testLineEndingsCheckPass() throws IOException {
 		task.check = true;
-		task.lineEndings = LineEnding.UNIX;
+		task.lineEndingsPolicy = LineEnding.UNIX.createPolicy();
 		task.target = Collections.singleton(createTestFile("testFile", "\n"));
 		task.execute();
 	}
@@ -56,7 +56,7 @@ public class FormatTaskTest extends ResourceTest {
 		File testFile = createTestFile("testFile", "\r\n");
 
 		task.check = false;
-		task.lineEndings = LineEnding.UNIX;
+		task.lineEndingsPolicy = LineEnding.UNIX.createPolicy();
 		task.target = Collections.singleton(testFile);
 		task.execute();
 

@@ -6,9 +6,9 @@ plugins {
 	// github pages
 	id "org.ajoberstar.github-pages" version "1.4.2"
 	// p2 dependencies
-	id 'com.diffplug.gradle.p2.asmaven' version '3.0.1'
+	id 'com.diffplug.gradle.p2.asmaven' version '3.0.6'
 	// ide setup
-	id 'com.diffplug.gradle.oomph.ide' version '3.0.1'
+	id 'com.diffplug.gradle.oomph.ide' version '3.0.6'
 }
 
 repositories {
@@ -74,9 +74,10 @@ configurations {
 
 dependencies {
 	compile "com.diffplug.durian:durian-core:${VER_DURIAN}"
+	compile "com.diffplug.durian:durian-io:${VER_DURIAN}"
 	compile "com.diffplug.freshmark:freshmark:${VER_FRESHMARK}"
 	compile "org.eclipse.jgit:org.eclipse.jgit:${VER_JGIT}"
-	compile "junit:junit:${VER_JUNIT}"
+	testCompile "junit:junit:${VER_JUNIT}"
 
 	// add the eclipse jars to the embedded configuration
 	eclipseDeps.each { embeddedJars "p2:${it}:+" }
@@ -105,6 +106,24 @@ eclipse {
 }
 // always create fresh projects
 tasks.eclipse.dependsOn(cleanEclipse)
+
+
+/////////////////////
+// SPOTLESS (fake) //
+/////////////////////
+task spotlessCheck(type: JavaExec) {
+	classpath sourceSets.test.runtimeClasspath
+	main = 'com.diffplug.gradle.spotless.SelfTestCheck'
+}
+check.dependsOn(spotlessCheck)
+
+task spotlessApply(type: JavaExec) {
+	classpath sourceSets.test.runtimeClasspath
+	main = 'com.diffplug.gradle.spotless.SelfTestApply'
+}
+test {
+	testLogging.showStandardStreams = true
+}
 
 ///////////
 // MAVEN //
@@ -166,58 +185,59 @@ def cred = {
 	}
 }
 
-publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			from components.java
-			artifact sourcesJar
-			artifact javadocJar
-			pom.withXml {
-				// remove the p2 dependencies because they are embedded
-				// also remove 'com.diffplug' dependencies so that we can use spotless on its dependencies
-				asNode().dependencies.'*'.each() {
-					if (it.groupId.text() == 'p2' || it.groupId.text().startsWith('com.diffplug.')) {
-						it.parent().remove(it)
-					}
-				}
-				// add MavenCentral requirements to the POM
-				asNode().children().last() + {
-					resolveStrategy = Closure.DELEGATE_FIRST
-					name project.name
-					description project.description
-					url "https://github.com/${project.org}/${project.name}"
-					scm {
-						url "https://github.com/${project.org}/${project.name}"
-						connection "scm:git:git://github.com/${project.org}/${project.name}"
-						developerConnection "scm:git:ssh:git@github.com/${project.org}/${project.name}"
-					}
-					licenses {
-						license {
-							name 'The Apache Software License, Version 2.0'
-							url 'http://www.apache.org/license/LICENSE-2.0.txt'
-							distribution 'repo'
+model {
+	publishing {
+		publications {
+			pluginMaven {
+				artifact sourcesJar
+				artifact javadocJar
+				pom.withXml {
+					// remove the p2 dependencies because they are embedded
+					// also remove 'com.diffplug' dependencies so that we can use spotless on its dependencies
+					asNode().dependencies.'*'.each() {
+						if (it.groupId.text() == 'p2' || it.groupId.text().startsWith('com.diffplug.')) {
+							it.parent().remove(it)
 						}
 					}
-					developers {
-						developer {
-							id 'nedtwigg'
-							name 'Ned Twigg'
-							email 'ned.twigg@diffplug.com'
+					// add MavenCentral requirements to the POM
+					asNode().children().last() + {
+						resolveStrategy = Closure.DELEGATE_FIRST
+						name project.name
+						description project.description
+						url "https://github.com/${project.org}/${project.name}"
+						scm {
+							url "https://github.com/${project.org}/${project.name}"
+							connection "scm:git:git://github.com/${project.org}/${project.name}"
+							developerConnection "scm:git:ssh:git@github.com/${project.org}/${project.name}"
+						}
+						licenses {
+							license {
+								name 'The Apache Software License, Version 2.0'
+								url 'http://www.apache.org/license/LICENSE-2.0.txt'
+								distribution 'repo'
+							}
+						}
+						developers {
+							developer {
+								id 'nedtwigg'
+								name 'Ned Twigg'
+								email 'ned.twigg@diffplug.com'
+							}
 						}
 					}
 				}
 			}
 		}
-	}
-	if (isSnapshot) {
-		// upload snapshots to oss.sonatype.org
-		repositories { maven {
-			url = 'https://oss.sonatype.org/content/repositories/snapshots'
-			credentials {
-				username = cred('nexus_user')
-				password = cred('nexus_pass')
-			}
-		} }
+		if (isSnapshot) {
+			// upload snapshots to oss.sonatype.org
+			repositories { maven {
+				url = 'https://oss.sonatype.org/content/repositories/snapshots'
+				credentials {
+					username = cred('nexus_user')
+					password = cred('nexus_pass')
+				}
+			} }
+		}
 	}
 }
 

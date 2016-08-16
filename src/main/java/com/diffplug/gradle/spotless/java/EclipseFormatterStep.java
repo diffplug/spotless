@@ -41,14 +41,14 @@ public class EclipseFormatterStep {
 	public static final String NAME = "Eclipse Formatter";
 	private static final Logger logger = Logging.getLogger(EclipseFormatterStep.class);
 
-	private CodeFormatter codeFormatter;
+	private final CodeFormatter codeFormatter;
 
 	private EclipseFormatterStep(Properties settings) {
-		this.codeFormatter = ToolFactory.createCodeFormatter(settings);
+		this.codeFormatter = ToolFactory.createCodeFormatter(settings, ToolFactory.M_FORMAT_EXISTING);
 	}
 
 	public String format(String raw) throws Exception {
-		TextEdit edit = codeFormatter.format(CodeFormatter.K_COMPILATION_UNIT, raw, 0, raw.length(), 0, LineEnding.UNIX.string);
+		TextEdit edit = codeFormatter.format(CodeFormatter.K_COMPILATION_UNIT | CodeFormatter.F_INCLUDE_COMMENTS, raw, 0, raw.length(), 0, LineEnding.UNIX.str());
 		if (edit == null) {
 			throw new IllegalArgumentException("Invalid java syntax for formatting.");
 		} else {

@@ -1,0 +1,22 @@
+// applied by SelfTest
+plugins {
+	id 'com.diffplug.gradle.spotless'
+	id 'java'
+}
+spotless {
+	java {
+		licenseHeaderFile 'spotless.license.java'
+		importOrderFile   'spotless.importorder'
+		eclipseFormatFile 'spotless.eclipseformat.xml'
+		trimTrailingWhitespace()
+	}
+	freshmark {
+		target '**/*.md'
+	}
+	format 'misc', {
+		target '**/*.gradle', '**/*.md', '**/*.gitignore'
+		indentWithTabs()
+		trimTrailingWhitespace()
+		endWithNewline()
+	}
+}

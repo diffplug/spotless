@@ -17,7 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import org.junit.Test;
 
-public class EndWithNewlineTest extends ResourceTest {
+public class EndWithNewlineStepTest extends ResourceHarness {
 	@Test
 	public void trimTrailingNewlines() throws Exception {
 		endWithNewlineTest("", "\n");

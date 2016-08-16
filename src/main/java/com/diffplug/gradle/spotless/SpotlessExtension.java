@@ -33,7 +33,7 @@ public class SpotlessExtension {
 	}
 
 	/** Line endings (if any). */
-	LineEnding lineEndings = LineEnding.PLATFORM_NATIVE;
+	LineEnding lineEndings = LineEnding.GIT_ATTRIBUTES;
 
 	public LineEnding getLineEndings() {
 		return lineEndings;
@@ -69,5 +69,9 @@ public class SpotlessExtension {
 		if (former != null) {
 			throw new GradleException("Multiple spotless extensions with name '" + extension.name + "'");
 		}
+	}
+
+	LineEnding.Policy getLineEndingPolicy() {
+		return lineEndings.createPolicy(project.getProjectDir());
 	}
 }
