@@ -147,8 +147,8 @@ tasks.withType(FindBugs) {
 }
 // we'll want the findbugs annotations (they don't have a 3.0.1 version)
 dependencies {
-	compile 'com.google.code.findbugs:annotations:3.0.0'
-	compile 'com.google.code.findbugs:jsr305:3.0.0'
+	compileOnly 'com.google.code.findbugs:annotations:3.0.0'
+	compileOnly 'com.google.code.findbugs:jsr305:3.0.0'
 }
 
 ///////////
