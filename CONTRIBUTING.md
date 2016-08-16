@@ -4,7 +4,9 @@ Pull requests are welcome, preferably against `master`.
 
 ## Build instructions
 
-It's a bog-standard gradle build.
+The easiest way to work on Spotless is to run `gradlew ide`.  It will download and setup an Eclipse IDE for you, using [goomph](https://github.com/diffplug/goomph).
+
+You can also use Spotless like any other standard Gradle build.
 
 `gradlew eclipse`
 * creates an Eclipse project file for you.
@@ -13,10 +15,6 @@ It's a bog-standard gradle build.
 * builds the jar
 * runs the tests
 
-Weirdly, we can't run Spotless on Spotless at the moment. Not sure why, but I think it has something to do with the weird ivy setup - it seems like maybe the POM from the deployed Spotless artifact gets overwritten by the local gradle project definition, and then the ivy stuff screws it up.
-
-It's easy to work around though!  Just run `SelfTest.java`, which is the equivalent to `gradlew spotlessApply`.
-
 ## License
 
 By contributing your code, you agree to license your contribution under the terms of the APLv2: https://github.com/diffplug/spotless/blob/master/LICENSE
@@ -24,7 +22,7 @@ By contributing your code, you agree to license your contribution under the term
 All files are released with the Apache 2.0 license as such:
 
 ```
-Copyright 2015 DiffPlug
+Copyright 2016 DiffPlug
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
