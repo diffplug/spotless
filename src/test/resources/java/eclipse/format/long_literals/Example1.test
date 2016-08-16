@@ -1,0 +1,8 @@
+import javax.validation.constraints.Max;
+
+public class Example1 {
+
+    // watch out here
+    @Max(value = 9_999_999L)
+    private Long id;
+}

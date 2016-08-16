@@ -1,0 +1,11 @@
+import javax.validation.constraints.Max;
+
+// this one cannot be formatted at all
+public class Example2 {
+
+    private static final long MAX_VALUE = 9_999_999L;
+
+    @Max(value = MAX_VALUE)
+    private Long id;
+
+}

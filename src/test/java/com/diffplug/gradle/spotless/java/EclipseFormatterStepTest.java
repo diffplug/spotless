@@ -48,4 +48,13 @@ public class EclipseFormatterStepTest extends ResourceHarness {
 	public void loadUnknownSettings() throws Exception {
 		EclipseFormatterStep.load(new File("formatter.unknown"));
 	}
+
+	/** Sample code for reproducing #14. Looks to be fixed in Neon / Spotless 2.0 */
+	@Test
+	public void longLiteralProblem() throws Throwable {
+		String folder = "java/eclipse/format/long_literals/";
+		EclipseFormatterStep step = EclipseFormatterStep.load(createTestFile(folder + "spotless.eclipseformat.xml"));
+		assertStep(step::format, folder + "Example1.test", folder + "Example1.test");
+		assertStep(step::format, folder + "Example2.test", folder + "Example2.test");
+	}
 }
