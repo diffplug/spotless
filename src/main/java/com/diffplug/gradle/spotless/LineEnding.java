@@ -37,7 +37,7 @@ public enum LineEnding {
 	/** Returns a {@link Policy} appropriate for files which are contained within the given rootFolder. */
 	public Policy createPolicy(File rootFolder) {
 		if (this == GIT_ATTRIBUTES) {
-			return new GitAttributesLineEndingPolicy(rootFolder);
+			return GitAttributesLineEndingPolicy.create(rootFolder);
 		} else {
 			return createPolicy();
 		}
@@ -90,17 +90,5 @@ public enum LineEnding {
 	/** Returns a string with exclusively unix line endings. */
 	public static String toUnix(String input) {
 		return input.replace("\r", "");
-	}
-
-	/** Stub for an implementation of a line-ending policy which respects git's conventions. */
-	private static class GitAttributesLineEndingPolicy implements LineEnding.Policy {
-		GitAttributesLineEndingPolicy(File rootFolder) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public String getEndingFor(File file) {
-			throw new UnsupportedOperationException();
-		}
 	}
 }

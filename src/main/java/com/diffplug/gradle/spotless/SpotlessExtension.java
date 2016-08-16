@@ -15,7 +15,6 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -73,7 +72,6 @@ public class SpotlessExtension {
 	}
 
 	LineEnding.Policy getLineEndingPolicy() {
-		File rootDir = project.getRootProject().getRootDir();
-		return lineEndings.createPolicy(rootDir);
+		return lineEndings.createPolicy(project.getProjectDir());
 	}
 }
