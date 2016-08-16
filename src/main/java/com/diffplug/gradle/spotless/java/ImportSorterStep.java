@@ -83,8 +83,11 @@ public class ImportSorterStep {
 				}
 				lastImportLine = line;
 				int endIndex = next.indexOf(";");
-				imports.add(next.substring(START_INDEX_OF_IMPORTS_PACKAGE_DECLARATION,
-						endIndex != -1 ? endIndex : next.length()));
+
+				String imprt = next.substring(START_INDEX_OF_IMPORTS_PACKAGE_DECLARATION, endIndex != -1 ? endIndex : next.length());
+				if (!imports.contains(imprt)) {
+					imports.add(imprt);
+				}
 			}
 		}
 		scanner.close();
@@ -93,8 +96,7 @@ public class ImportSorterStep {
 		return applyImportsToDocument(raw, firstImportLine, lastImportLine, sortedImports);
 	}
 
-	private static String applyImportsToDocument(final String document, int firstImportLine, int lastImportLine,
-			List<String> strings) {
+	private static String applyImportsToDocument(final String document, int firstImportLine, int lastImportLine, List<String> strings) {
 		boolean importsAlreadyAppended = false;
 		Scanner scanner = new Scanner(document);
 		int curentLine = 0;

@@ -3,6 +3,7 @@
 ### Version 2.0.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/gradle/spotless/spotless/))
 
 * `spotlessApply` now writes out a file only if it needs to be changed (big performance improvement).
+* Java import sorting now removes duplicate imports.
 * Eclipse formatter now warns if the formatter xml contains multiple profiles.
 * Updated eclipse formatter to Eclipse Neon (4.6).
 * BREAKING CHANGE: Eclipse formatter now formats javadoc comments.

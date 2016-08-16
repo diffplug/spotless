@@ -39,4 +39,10 @@ public class ImportSorterStepTest extends ResourceHarness {
 		ImportSorterStep step = new ImportSorterStep(createTestFile("java/eclipse/importsorter/import_unmatched.properties"));
 		assertStep(step::format, "java/eclipse/importsorter/JavaCodeUnsortedImportsUnmatched.test", "java/eclipse/importsorter/JavaCodeSortedImportsUnmatched.test");
 	}
+
+	@Test
+	public void removeDuplicates() throws Throwable {
+		ImportSorterStep step = new ImportSorterStep(createTestFile("java/eclipse/importsorter/import_unmatched.properties"));
+		assertStep(step::format, "java/eclipse/importsorter/JavaCodeSortedDuplicateImportsUnmatched.test", "java/eclipse/importsorter/JavaCodeSortedImportsUnmatched.test");
+	}
 }
