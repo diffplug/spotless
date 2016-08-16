@@ -1,6 +1,8 @@
 # Spotless releases
 
-### Version 2.0.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/gradle/spotless/spotless/))
+### Version 2.1.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/gradle/spotless/spotless/))
+
+### Version 2.0.0 - August 16th 2016 ([javadoc](https://diffplug.github.io/spotless/javadoc/2.0.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless/2.0.0/view))
 
 * `spotlessApply` now writes out a file only if it needs to be changed (big performance improvement).
 * Java import sorting now removes duplicate imports.
