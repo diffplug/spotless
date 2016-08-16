@@ -272,7 +272,7 @@ if (!isSnapshot) {
 	bintray {
 		user = cred('bintray_user')
 		key = cred('bintray_pass')
-		publications = ['mavenJava']
+		publications = ['pluginMaven']
 		publish = true
 		pkg {
 			repo = 'opensource'
@@ -289,7 +289,7 @@ if (!isSnapshot) {
 	}
 
 	publish.dependsOn(bintrayUpload)
-	bintrayUpload.dependsOn(['generatePomFileForMavenJavaPublication', jar, sourcesJar, javadocJar])
+	bintrayUpload.dependsOn(['generatePomFileForPluginMavenPublication', jar, sourcesJar, javadocJar])
 }
 
 //////////////////////////
