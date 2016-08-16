@@ -6,9 +6,9 @@ plugins {
 	// github pages
 	id "org.ajoberstar.github-pages" version "1.4.2"
 	// p2 dependencies
-	id 'com.diffplug.gradle.p2.asmaven' version '3.0.1'
+	id 'com.diffplug.gradle.p2.asmaven' version '3.0.6'
 	// ide setup
-	id 'com.diffplug.gradle.oomph.ide' version '3.0.1'
+	id 'com.diffplug.gradle.oomph.ide' version '3.0.6'
 }
 
 repositories {
