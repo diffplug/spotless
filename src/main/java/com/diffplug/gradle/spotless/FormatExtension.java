@@ -95,6 +95,9 @@ public class FormatExtension {
 	 * Adds the given custom step, which is constructed lazily for performance reasons.
 	 *
 	 * The resulting function will receive a string with unix-newlines, and it must return a string unix newlines.
+	 *
+	 * If you're getting errors about `closure cannot be cast to com.diffplug.common.base.Throwing$Function`, then use
+	 * {@link #customLazyGroovy(String, com.diffplug.common.base.Throwing.Supplier)}.
 	 */
 	public void customLazy(String name, Throwing.Supplier<Throwing.Function<String, String>> formatterSupplier) {
 		for (FormatterStep step : steps) {
@@ -103,6 +106,14 @@ public class FormatExtension {
 			}
 		}
 		steps.add(FormatterStep.createLazy(name, formatterSupplier));
+	}
+
+	/** Same as {@link #customLazy(String, com.diffplug.common.base.Throwing.Supplier)}, but for Groovy closures. */
+	public void customLazyGroovy(String name, Throwing.Supplier<Closure<String>> formatterSupplier) {
+		customLazy(name, () -> {
+			Closure<String> closure = formatterSupplier.get();
+			return closure::call;
+		});
 	}
 
 	/** Adds a custom step. Receives a string with unix-newlines, must return a string with unix newlines. */
