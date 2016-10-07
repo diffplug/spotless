@@ -121,7 +121,6 @@ spotless {
 		googleJavaFormat() // googleJavaFormat('1.1') to specify a specific version
 		// you can then layer other format steps, such as
 		licenseHeaderFile 'spotless.license.java'
-		importOrder ['java', 'javax', 'org', 'com', 'com.diffplug', '']
 	}
 }
 ```
