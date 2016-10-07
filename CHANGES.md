@@ -1,6 +1,19 @@
 # Spotless releases
 
-### Version 2.2.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/gradle/spotless/spotless/))
+### Version 2.3.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot]
+(https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/gradle/spotless/spotless/))
+
+### Version 2.2.0 - October 7th 2016 ([javadoc](https://diffplug.github.io/spotless/javadoc/2.2.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless/2.2.0/view))
+
+* Added support for [google-java-format](https://github.com/google/google-java-format).
+
+```
+spotless {
+	java {
+		googleJavaFormat()  // googleJavaFormat('1.1') to specify a specific version
+	}
+}
+```
 
 ### Version 2.1.0 - October 7th 2016 ([javadoc](https://diffplug.github.io/spotless/javadoc/2.1.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless/2.1.0/view))
 

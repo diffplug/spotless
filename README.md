@@ -14,9 +14,9 @@ output = [
 -->
 [![Gradle plugin](https://img.shields.io/badge/plugins.gradle.org-com.diffplug.gradle.spotless-blue.svg)](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless)
 [![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.gradle.spotless%3Aspotless-blue.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.gradle.spotless%22%20AND%20a%3A%22spotless%22)
-[![Javadoc](https://img.shields.io/badge/javadoc-2.1.0-blue.svg)](https://diffplug.github.io/spotless/javadoc/2.1.0/)
+[![Javadoc](https://img.shields.io/badge/javadoc-2.2.0-blue.svg)](https://diffplug.github.io/spotless/javadoc/2.2.0/)
 
-[![Changelog](https://img.shields.io/badge/changelog-2.2.0--SNAPSHOT-brightgreen.svg)](CHANGES.md)
+[![Changelog](https://img.shields.io/badge/changelog-2.2.0-brightgreen.svg)](CHANGES.md)
 [![Travis CI](https://travis-ci.org/diffplug/spotless.svg?branch=master)](https://travis-ci.org/diffplug/spotless)
 [![Live chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
 [![License Apache](https://img.shields.io/badge/license-apache-brightgreen.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
@@ -69,15 +69,16 @@ spotless {
 }
 ```
 
-Spotless can check and apply formatting to any plain-text file, using simple rules ([javadoc](https://diffplug.github.io/spotless/javadoc/2.1.0/com/diffplug/gradle/spotless/FormatExtension.html)) like those above.  It also supports more powerful formatters:
+Spotless can check and apply formatting to any plain-text file, using simple rules ([javadoc](https://diffplug.github.io/spotless/javadoc/2.2.0/com/diffplug/gradle/spotless/FormatExtension.html)) like those above.  It also supports more powerful formatters:
 
 * Eclipse's java code formatter (including style and import ordering)
+* Google's [google-java-format](https://github.com/google/google-java-format)
 * [FreshMark](https://github.com/diffplug/freshmark) (markdown with variables)
 * Any user-defined function which takes an unformatted string and outputs a formatted version.
 
 Contributions are welcome, see [the contributing guide](CONTRIBUTING.md) for development info.
 
-Spotless requires Gradle to be running on JRE 8+.  If you really want to run Gradle on 6 or 7 that could be done, see [issue #7](https://github.com/diffplug/spotless/issues/7) for details.
+Spotless requires Gradle to be running on JRE 8+.<sup>See [issue #7](https://github.com/diffplug/spotless/issues/7) for details.</sup>
 
 ## Applying to Java source
 
@@ -108,6 +109,19 @@ spotless {
 		//    @Max(value = 9_999_999 L)	// what Eclipse does
 		//    @Max(value = 9_999_999L)	// what I wish Eclipse did
 		custom 'Long literal fix', { it.replaceAll('([0-9_]+) [Ll]', '$1L') }
+	}
+}
+```
+
+## Applying to Java source ([google-java-format](https://github.com/google/google-java-format))
+
+```groovy
+spotless {
+	java {
+		googleJavaFormat() // googleJavaFormat('1.1') to specify a specific version
+		// you can then layer other format steps, such as
+		licenseHeaderFile 'spotless.license.java'
+		importOrder ['java', 'javax', 'org', 'com', 'com.diffplug', '']
 	}
 }
 ```
