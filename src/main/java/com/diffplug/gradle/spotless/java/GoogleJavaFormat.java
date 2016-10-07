@@ -28,6 +28,8 @@ import org.gradle.api.artifacts.Dependency;
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.Throwing;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /** Wraps up [google-java-format](https://github.com/google/google-java-format) as a FormatterStep. */
 class GoogleJavaFormat {
 	static final String NAME = "google-java-format";
@@ -37,6 +39,7 @@ class GoogleJavaFormat {
 	static final String FORMATTER_METHOD = "formatSource";
 
 	/** Returns a function which will call the google-java-format tool. */
+	@SuppressFBWarnings("DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED")
 	static Throwing.Function<String, String> createRule(String version, Project project) throws Exception {
 		// get the googleJavaFormat configuration
 		Dependency googleJavaFormatJar = project.getDependencies().create(MAVEN_COORDINATE + version);
