@@ -56,6 +56,21 @@ public class JavaExtension extends FormatExtension {
 		customLazy(EclipseFormatterStep.NAME, () -> EclipseFormatterStep.load(getProject().file(eclipseFormatFile))::format);
 	}
 
+	/** Uses the [google-java-format](https://github.com/google/google-java-format) jar to format source code. */
+	public void googleJavaFormat() {
+		googleJavaFormat(GoogleJavaFormat.DEFAULT_VERSION);
+	}
+
+	/**
+	 * Uses the given version of [google-java-format](https://github.com/google/google-java-format) to format source code.
+	 *
+	 * Limited to published versions.  See [issue #33](https://github.com/diffplug/spotless/issues/33#issuecomment-252315095)
+	 * for an workaround for using snapshot versions.
+	 */
+	public void googleJavaFormat(String version) {
+		customLazy(GoogleJavaFormat.NAME, () -> GoogleJavaFormat.createRule(version, getProject()));
+	}
+
 	/** If the user hasn't specified the files yet, we'll assume he/she means all of the java files. */
 	@Override
 	protected void setupTask(FormatTask task) throws Exception {
