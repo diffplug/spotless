@@ -95,7 +95,10 @@ public class Formatter {
 	String applyAll(String unix, File file) {
 		for (FormatterStep step : steps) {
 			try {
-				unix = step.format(unix, file);
+				String formatted = step.format(unix, file);
+				// should already be unix-only, but
+				// some steps might misbehave
+				unix = LineEnding.toUnix(formatted);
 			} catch (Throwable e) {
 				logger.warn("Unable to apply step " + step.getName() + " to " + projectDirectory.relativize(file.toPath()) + ": " + e.getMessage());
 				logger.info("Exception is ", e);
