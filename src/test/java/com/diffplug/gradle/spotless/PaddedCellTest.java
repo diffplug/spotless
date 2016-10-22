@@ -104,7 +104,10 @@ public class PaddedCellTest {
 		Diverge diverge = testCase(input -> {
 			return input + " ";
 		}, "", Diverge.class);
-		Assert.assertEquals(10, diverge.afterIterations());
+		Assert.assertEquals(Arrays.asList(" ",
+				"  ", "   ", "    ", "     ",
+				"      ", "       ", "        ",
+				"         ", "          "), diverge.steps());
 	}
 
 	@Test
@@ -112,7 +115,7 @@ public class PaddedCellTest {
 		BiConsumer<String, String> testCase = (unorderedStr, expectedStr) -> {
 			List<String> unordered = Arrays.asList(unorderedStr.split(","));
 			List<String> expected = Arrays.asList(expectedStr.split(","));
-			Result result = Result.cycle(unordered);
+			Result result = Result.cycle(folder.getRoot(), unordered);
 			Assert.assertEquals(expected, result.as(Cycle.class).getCycle());
 		};
 		// alphabetic

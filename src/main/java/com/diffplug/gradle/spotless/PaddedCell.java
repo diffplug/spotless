@@ -16,28 +16,31 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.base.Unhandled;
+import com.diffplug.common.collect.ImmutableSet;
 
 class PaddedCell {
 	private final Formatter formatter;
 	private final File file;
 	private final String original;
 
-	PaddedCell(Formatter formatter, File file) throws IOException {
+	PaddedCell(Formatter formatter, File file) {
 		this.formatter = formatter;
 		this.file = file;
-		byte[] rawBytes = Files.readAllBytes(file.toPath());
+		byte[] rawBytes = Errors.rethrow().get(() -> Files.readAllBytes(file.toPath()));
 		String raw = new String(rawBytes, StandardCharsets.UTF_8);
 		this.original = LineEnding.toUnix(raw);
 	}
@@ -52,12 +55,12 @@ class PaddedCell {
 		Preconditions.checkArgument(maxLength >= 2, "maxLength must be at least 2");
 		String appliedOnce = formatter.applyAll(original, file);
 		if (appliedOnce.equals(original)) {
-			return Result.converges(appliedOnce, 0);
+			return Result.converges(file, appliedOnce, 0);
 		}
 
 		String appliedTwice = formatter.applyAll(appliedOnce, file);
 		if (appliedOnce.equals(appliedTwice)) {
-			return Result.converges(appliedOnce, 1);
+			return Result.converges(file, appliedOnce, 1);
 		}
 
 		List<String> appliedN = new ArrayList<>();
@@ -67,14 +70,14 @@ class PaddedCell {
 		while (appliedN.size() < maxLength) {
 			String output = formatter.applyAll(input, file);
 			if (output.equals(input)) {
-				return Result.converges(output, appliedN.size());
+				return Result.converges(file, output, appliedN.size());
 			} else {
 				int idx = appliedN.indexOf(output);
 				if (idx >= 0) {
 					if (idx == appliedN.size() - 1) {
-						return Result.converges(output, idx);
+						return Result.converges(file, output, idx);
 					} else {
-						return Result.cycle(appliedN.subList(idx, appliedN.size()));
+						return Result.cycle(file, appliedN.subList(idx, appliedN.size()));
 					}
 				} else {
 					appliedN.add(output);
@@ -82,25 +85,37 @@ class PaddedCell {
 				}
 			}
 		}
-		return Result.diverges(maxLength);
+		return Result.diverges(file, appliedN);
+	}
+
+	/** Returns what is wrong with each file, grouped by category. */
+	public static Map<Class<?>, List<PaddedCell.Result>> check(List<File> problemFiles, Formatter formatter) {
+		Map<Class<?>, List<PaddedCell.Result>> byType = problemFiles.stream()
+				.map(file -> new PaddedCell(formatter, file).cycle())
+				.collect(Collectors.groupingBy(Result::type));
+		Preconditions.checkArgument(ImmutableSet.of(Cycle.class, Converge.class, Diverge.class).containsAll(byType.keySet()),
+				"Unknown results in " + byType.keySet());
+		return byType;
 	}
 
 	public static final class Result {
+		private final File file;
 		private final Object result;
 
-		public static Result cycle(List<String> result) {
-			return new Result(new Cycle(result));
+		public static Result cycle(File file, List<String> result) {
+			return new Result(file, new Cycle(result));
 		}
 
-		public static Result converges(String to, int after) {
-			return new Result(new Converge(to, after));
+		public static Result converges(File file, String to, int after) {
+			return new Result(file, new Converge(to, after));
 		}
 
-		public static Result diverges(int after) {
-			return new Result(new Diverge(after));
+		public static Result diverges(File file, List<String> steps) {
+			return new Result(file, new Diverge(steps));
 		}
 
-		private Result(Object result) {
+		private Result(File file, Object result) {
+			this.file = Objects.requireNonNull(file);
 			this.result = Objects.requireNonNull(result);
 		}
 
@@ -114,6 +129,14 @@ class PaddedCell {
 			} else {
 				throw Unhandled.classException(result);
 			}
+		}
+
+		public File file() {
+			return file;
+		}
+
+		public Class<?> type() {
+			return result.getClass();
 		}
 
 		@SuppressWarnings("unchecked")
@@ -167,14 +190,14 @@ class PaddedCell {
 	}
 
 	public static final class Diverge {
-		private final int after;
+		private final List<String> steps;
 
-		Diverge(int after) {
-			this.after = after;
+		Diverge(List<String> steps) {
+			this.steps = steps;
 		}
 
-		public int afterIterations() {
-			return after;
+		public List<String> steps() {
+			return steps;
 		}
 	}
 }
