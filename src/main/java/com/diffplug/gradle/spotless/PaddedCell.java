@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
@@ -129,9 +131,15 @@ class PaddedCell {
 	}
 
 	public static final class Cycle {
-		List<String> result;
+		private final List<String> result;
 
 		Cycle(List<String> result) {
+			// find the min based on length, then alphabetically
+			String min = Collections.min(result,
+					Comparator.comparing(String::length)
+							.thenComparing(Function.identity()));
+			int minIdx = result.indexOf(min);
+			Collections.rotate(result, -minIdx);
 			this.result = result;
 		}
 
@@ -141,8 +149,8 @@ class PaddedCell {
 	}
 
 	public static final class Converge {
-		String convergesTo;
-		int after;
+		private final String convergesTo;
+		private final int after;
 
 		Converge(String convergesTo, int after) {
 			this.convergesTo = convergesTo;
@@ -159,7 +167,7 @@ class PaddedCell {
 	}
 
 	public static final class Diverge {
-		final int after;
+		private final int after;
 
 		Diverge(int after) {
 			this.after = after;

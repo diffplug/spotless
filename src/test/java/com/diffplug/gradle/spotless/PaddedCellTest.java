@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -29,7 +30,10 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.diffplug.common.base.Throwing;
-import com.diffplug.gradle.spotless.PaddedCell.*;
+import com.diffplug.gradle.spotless.PaddedCell.Converge;
+import com.diffplug.gradle.spotless.PaddedCell.Cycle;
+import com.diffplug.gradle.spotless.PaddedCell.Diverge;
+import com.diffplug.gradle.spotless.PaddedCell.Result;
 
 public class PaddedCellTest {
 	@Rule
@@ -101,5 +105,27 @@ public class PaddedCellTest {
 			return input + " ";
 		}, "", Diverge.class);
 		Assert.assertEquals(10, diverge.afterIterations());
+	}
+
+	@Test
+	public void cycleOrder() {
+		BiConsumer<String, String> testCase = (unorderedStr, expectedStr) -> {
+			List<String> unordered = Arrays.asList(unorderedStr.split(","));
+			List<String> expected = Arrays.asList(expectedStr.split(","));
+			Result result = Result.cycle(unordered);
+			Assert.assertEquals(expected, result.as(Cycle.class).getCycle());
+		};
+		// alphabetic
+		testCase.accept("a,b,c", "a,b,c");
+		testCase.accept("b,c,a", "a,b,c");
+		testCase.accept("c,a,b", "a,b,c");
+		// length
+		testCase.accept("a,aa,aaa", "a,aa,aaa");
+		testCase.accept("aa,aaa,a", "a,aa,aaa");
+		testCase.accept("aaa,a,aa", "a,aa,aaa");
+		// length > alphabetic
+		testCase.accept("b,aa,aaa", "b,aa,aaa");
+		testCase.accept("aa,aaa,b", "b,aa,aaa");
+		testCase.accept("aa,b,aaa", "b,aaa,aa");
 	}
 }
