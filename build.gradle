@@ -78,6 +78,7 @@ dependencies {
 	compile "com.diffplug.freshmark:freshmark:${VER_FRESHMARK}"
 	compile "org.eclipse.jgit:org.eclipse.jgit:${VER_JGIT}"
 	testCompile "junit:junit:${VER_JUNIT}"
+	testCompile "org.assertj:assertj-core:${VER_ASSERTJ}"
 
 	// add the eclipse jars to the embedded configuration
 	eclipseDeps.each { embeddedJars "p2:${it}:+" }

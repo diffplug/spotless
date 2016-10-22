@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 
+import org.assertj.core.api.Assertions;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.testfixtures.ProjectBuilder;
@@ -32,7 +33,7 @@ public class FormatTaskTest extends ResourceHarness {
 	@Before
 	public void createTask() {
 		project = ProjectBuilder.builder().build();
-		task = (FormatTask) project.getTasks().create("underTest", FormatTask.class);
+		task = project.getTasks().create("underTest", FormatTask.class);
 	}
 
 	@Test(expected = GradleException.class)
@@ -63,16 +64,23 @@ public class FormatTaskTest extends ResourceHarness {
 		assertFileContent("\n", testFile);
 	}
 
-	@Test(expected = GradleException.class)
+	@Test
 	public void testStepCheckFail() throws IOException {
 		File testFile = createTestFile("testFile", "apple");
 		task.target = Collections.singleton(testFile);
 
 		task.check = true;
 		task.steps.add(FormatterStep.create("double-p", content -> content.replace("pp", "p")));
-		task.execute();
 
-		assertFileContent("\n", testFile);
+		String diff = String.join("\n",
+				"    @@ -1 +1 @@",
+				"    -apple",
+				"    \\ No newline at end of file",
+				"    +aple",
+				"    \\ No newline at end of file");
+		Assertions.assertThatThrownBy(() -> task.execute()).hasStackTraceContaining(diff);
+
+		assertFileContent("apple", testFile);
 	}
 
 	@Test
@@ -83,6 +91,8 @@ public class FormatTaskTest extends ResourceHarness {
 		task.check = true;
 		task.steps.add(FormatterStep.create("double-p", content -> content.replace("pp", "p")));
 		task.execute();
+
+		assertFileContent("aple", testFile);
 	}
 
 	@Test
@@ -94,6 +104,6 @@ public class FormatTaskTest extends ResourceHarness {
 		task.steps.add(FormatterStep.create("double-p", content -> content.replace("pp", "p")));
 		task.execute();
 
-		super.assertFileContent("aple", testFile);
+		assertFileContent("aple", testFile);
 	}
 }
