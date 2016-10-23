@@ -15,6 +15,8 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static com.diffplug.gradle.spotless.PaddedCell.ResultType.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -30,50 +33,51 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.diffplug.common.base.Throwing;
-import com.diffplug.gradle.spotless.PaddedCell.Converge;
-import com.diffplug.gradle.spotless.PaddedCell.Cycle;
-import com.diffplug.gradle.spotless.PaddedCell.Diverge;
-import com.diffplug.gradle.spotless.PaddedCell.Result;
 
 public class PaddedCellTest {
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
 
-	private <T> T testCase(Throwing.Function<String, String> step, String input, Class<T> expectedOutputType) throws IOException {
-		List<FormatterStep> steps = new ArrayList<>();
-		steps.add(FormatterStep.create("step", step));
-		Formatter formatter = new Formatter(LineEnding.UNIX_POLICY, folder.getRoot().toPath(), steps);
+	private void misbehaved(Throwing.Function<String, String> step, String input, PaddedCell.ResultType expectedOutputType, String steps) throws IOException {
+		testCase(step, input, expectedOutputType, steps, true);
+	}
+
+	private void wellbehaved(Throwing.Function<String, String> step, String input, PaddedCell.ResultType expectedOutputType, String steps) throws IOException {
+		testCase(step, input, expectedOutputType, steps, false);
+	}
+
+	private void testCase(Throwing.Function<String, String> step, String input, PaddedCell.ResultType expectedOutputType, String expectedSteps, boolean misbehaved) throws IOException {
+		List<FormatterStep> formatterSteps = new ArrayList<>();
+		formatterSteps.add(FormatterStep.create("step", step));
+		Formatter formatter = new Formatter(LineEnding.UNIX_POLICY, folder.getRoot().toPath(), formatterSteps);
 
 		File file = folder.newFile();
 		Files.write(file.toPath(), input.getBytes(StandardCharsets.UTF_8));
 
-		PaddedCell padded = new PaddedCell(formatter, file);
-		PaddedCell.Result result = padded.cycle();
-		return result.as(expectedOutputType);
+		PaddedCell result = PaddedCell.check(formatter, file);
+		Assert.assertEquals(misbehaved, result.misbehaved());
+		Assert.assertEquals(expectedOutputType, result.type());
+
+		String actual = result.steps().stream().collect(Collectors.joining(","));
+		Assert.assertEquals(expectedSteps, actual);
 	}
 
 	@Test
 	public void wellBehaved() throws IOException {
-		Converge alreadyClean = testCase(input -> input, "CCC", Converge.class);
-		Assert.assertEquals("CCC", alreadyClean.convergesTo());
-		Assert.assertEquals(0, alreadyClean.afterIterations());
-
-		Converge oneIteration = testCase(input -> "A", "CCC", Converge.class);
-		Assert.assertEquals("A", oneIteration.convergesTo());
-		Assert.assertEquals(1, oneIteration.afterIterations());
+		wellbehaved(input -> input, "CCC", CONVERGE, "CCC");
+		wellbehaved(input -> "A", "CCC", CONVERGE, "A");
 	}
 
 	@Test
 	public void pingPong() throws IOException {
-		Cycle cycle = testCase(input -> {
+		misbehaved(input -> {
 			return input.equals("A") ? "B" : "A";
-		}, "CCC", Cycle.class);
-		Assert.assertEquals(Arrays.asList("A", "B"), cycle.getCycle());
+		}, "CCC", CYCLE, "A,B");
 	}
 
 	@Test
 	public void fourState() throws IOException {
-		Cycle cycle = testCase(input -> {
+		misbehaved(input -> {
 			// @formatter:off
 			switch (input) {
 			case "A": return "B";
@@ -82,41 +86,34 @@ public class PaddedCellTest {
 			default:  return "A";
 			}
 			// @formatter:on
-		}, "CCC", Cycle.class);
-		Assert.assertEquals(Arrays.asList("A", "B", "C", "D"), cycle.getCycle());
+		}, "CCC", CYCLE, "A,B,C,D");
 	}
 
 	@Test
 	public void converging() throws IOException {
-		Converge converge = testCase(input -> {
+		misbehaved(input -> {
 			if (input.isEmpty()) {
 				return input;
 			} else {
 				return input.substring(0, input.length() - 1);
 			}
-		}, "CCC", Converge.class);
-		Assert.assertEquals("", converge.convergesTo());
-		Assert.assertEquals(3, converge.afterIterations());
+		}, "CCC", CONVERGE, "CC,C,");
 	}
 
 	@Test
 	public void diverging() throws IOException {
-		Diverge diverge = testCase(input -> {
+		misbehaved(input -> {
 			return input + " ";
-		}, "", Diverge.class);
-		Assert.assertEquals(Arrays.asList(" ",
-				"  ", "   ", "    ", "     ",
-				"      ", "       ", "        ",
-				"         ", "          "), diverge.steps());
+		}, "", DIVERGE, " ,  ,   ,    ,     ,      ,       ,        ,         ,          ");
 	}
 
 	@Test
 	public void cycleOrder() {
 		BiConsumer<String, String> testCase = (unorderedStr, expectedStr) -> {
 			List<String> unordered = Arrays.asList(unorderedStr.split(","));
-			List<String> expected = Arrays.asList(expectedStr.split(","));
-			Result result = Result.cycle(folder.getRoot(), unordered);
-			Assert.assertEquals(expected, result.as(Cycle.class).getCycle());
+			PaddedCell result = PaddedCell.cycle(folder.getRoot(), unordered);
+			String resultJoined = result.steps().stream().collect(Collectors.joining(","));
+			Assert.assertEquals(expectedStr, resultJoined);
 		};
 		// alphabetic
 		testCase.accept("a,b,c", "a,b,c");
