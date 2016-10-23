@@ -195,6 +195,14 @@ spotless {
 
 See [`JavaExtension.java`](src/main/java/com/diffplug/gradle/spotless/java/JavaExtension.java?ts=4) if you'd like to see how a language-specific set of custom rules is implemented.  We'd love PR's which add support for other languages.
 
+## How do I preview what `spotlessApply` will do?
+
+- Save your working tree with `git add -A`, then `git commit -m "Checkpoint before spotless."`
+- Run `gradlew spotlessApply`
+- View the changes with `git diff`
+- If you don't like what spotless did, `git reset --hard`
+- If you'd like to remove the "checkpoint" commit, `git reset --soft head~1` will make the checkpoint commit "disappear" from history, but keeps the changes in your working directory.
+
 ## Example configurations (from real-world projects)
 
 Spotless is hosted on jcenter and at plugins.gradle.org. [Go here](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless) if you're not sure how to import the plugin.
