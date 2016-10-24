@@ -25,9 +25,12 @@ import org.gradle.api.GradleException;
 import org.gradle.api.tasks.TaskAction;
 
 public class FormatTask extends DefaultTask {
+	// set by SpotlessExtension
+	public LineEnding.Policy lineEndingsPolicy = LineEnding.UNIX_POLICY;
+	public boolean paddedCell = false;
+	// set by FormatExtension
 	public Iterable<File> target;
 	public boolean check = false;
-	public LineEnding.Policy lineEndingsPolicy = LineEnding.UNIX_POLICY;
 	public List<FormatterStep> steps = new ArrayList<>();
 
 	@TaskAction
@@ -58,8 +61,17 @@ public class FormatTask extends DefaultTask {
 			}
 		}
 
-		if (!problemFiles.isEmpty()) {
-			throw formatViolationsFor(formatter, problemFiles);
+		if (paddedCell) {
+			PaddedCellTaskMisc.check(this, formatter, problemFiles);
+		} else {
+			if (!problemFiles.isEmpty()) {
+				// if we're not in paddedCell mode, we'll check if maybe we should be
+				if (PaddedCellTaskMisc.anyMisbehave(formatter, problemFiles)) {
+					throw PaddedCellTaskMisc.youShouldTurnOnPaddedCell();
+				} else {
+					throw formatViolationsFor(formatter, problemFiles);
+				}
+			}
 		}
 	}
 
@@ -73,7 +85,11 @@ public class FormatTask extends DefaultTask {
 		for (File file : target) {
 			getLogger().debug("Applying format to " + file);
 			// keep track of the problem toFormat
-			formatter.applyFormat(file);
+			if (paddedCell) {
+				PaddedCellTaskMisc.apply(this, formatter, file);
+			} else {
+				formatter.applyFormat(file);
+			}
 		}
 	}
 }

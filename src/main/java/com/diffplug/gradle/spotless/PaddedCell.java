@@ -35,7 +35,7 @@ import com.diffplug.common.base.Unhandled;
  *
  * See {@link #check(Formatter, File)} as the entry point to this class.
  */
-public class PaddedCell {
+class PaddedCell {
 	/** The kind of result. */
 	public enum Type {
 		CONVERGE, CYCLE, DIVERGE;
@@ -82,23 +82,26 @@ public class PaddedCell {
 	 *
 	 */
 	public static PaddedCell check(Formatter formatter, File file) {
-		return check(formatter, file, MAX_CYCLE);
+		byte[] rawBytes = Errors.rethrow().get(() -> Files.readAllBytes(file.toPath()));
+		String raw = new String(rawBytes, StandardCharsets.UTF_8);
+		String original = LineEnding.toUnix(raw);
+		return check(formatter, file, original, MAX_CYCLE);
+	}
+
+	public static PaddedCell check(Formatter formatter, File file, String original) {
+		return check(formatter, file, original, MAX_CYCLE);
 	}
 
 	private static final int MAX_CYCLE = 10;
 
-	private static PaddedCell check(Formatter formatter, File file, int maxLength) {
-		byte[] rawBytes = Errors.rethrow().get(() -> Files.readAllBytes(file.toPath()));
-		String raw = new String(rawBytes, StandardCharsets.UTF_8);
-		String original = LineEnding.toUnix(raw);
-
+	private static PaddedCell check(Formatter formatter, File file, String original, int maxLength) {
 		Preconditions.checkArgument(maxLength >= 2, "maxLength must be at least 2");
-		String appliedOnce = formatter.applyAll(original, file);
+		String appliedOnce = formatter.applySteps(original, file);
 		if (appliedOnce.equals(original)) {
 			return Type.CONVERGE.create(file, Collections.singletonList(appliedOnce));
 		}
 
-		String appliedTwice = formatter.applyAll(appliedOnce, file);
+		String appliedTwice = formatter.applySteps(appliedOnce, file);
 		if (appliedOnce.equals(appliedTwice)) {
 			return Type.CONVERGE.create(file, Collections.singletonList(appliedOnce));
 		}
@@ -108,7 +111,7 @@ public class PaddedCell {
 		appliedN.add(appliedTwice);
 		String input = appliedTwice;
 		while (appliedN.size() < maxLength) {
-			String output = formatter.applyAll(input, file);
+			String output = formatter.applySteps(input, file);
 			if (output.equals(input)) {
 				return Type.CONVERGE.create(file, appliedN);
 			} else {
