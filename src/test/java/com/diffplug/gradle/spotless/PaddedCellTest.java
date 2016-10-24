@@ -15,7 +15,7 @@
  */
 package com.diffplug.gradle.spotless;
 
-import static com.diffplug.gradle.spotless.PaddedCell.ResultType.*;
+import static com.diffplug.gradle.spotless.PaddedCell.Type.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,6 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
@@ -38,15 +39,15 @@ public class PaddedCellTest {
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
 
-	private void misbehaved(Throwing.Function<String, String> step, String input, PaddedCell.ResultType expectedOutputType, String steps) throws IOException {
-		testCase(step, input, expectedOutputType, steps, true);
+	private void misbehaved(Throwing.Function<String, String> step, String input, PaddedCell.Type expectedOutputType, String steps, String canonical) throws IOException {
+		testCase(step, input, expectedOutputType, steps, canonical, true);
 	}
 
-	private void wellbehaved(Throwing.Function<String, String> step, String input, PaddedCell.ResultType expectedOutputType, String steps) throws IOException {
-		testCase(step, input, expectedOutputType, steps, false);
+	private void wellbehaved(Throwing.Function<String, String> step, String input, PaddedCell.Type expectedOutputType, String canonical) throws IOException {
+		testCase(step, input, expectedOutputType, canonical, canonical, false);
 	}
 
-	private void testCase(Throwing.Function<String, String> step, String input, PaddedCell.ResultType expectedOutputType, String expectedSteps, boolean misbehaved) throws IOException {
+	private void testCase(Throwing.Function<String, String> step, String input, PaddedCell.Type expectedOutputType, String expectedSteps, String canonical, boolean misbehaved) throws IOException {
 		List<FormatterStep> formatterSteps = new ArrayList<>();
 		formatterSteps.add(FormatterStep.create("step", step));
 		Formatter formatter = new Formatter(LineEnding.UNIX_POLICY, folder.getRoot().toPath(), formatterSteps);
@@ -60,6 +61,15 @@ public class PaddedCellTest {
 
 		String actual = result.steps().stream().collect(Collectors.joining(","));
 		Assert.assertEquals(expectedSteps, actual);
+
+		if (canonical == null) {
+			try {
+				result.canonical();
+				Assert.fail("Expected exception");
+			} catch (IllegalArgumentException e) {}
+		} else {
+			Assert.assertEquals(canonical, result.canonical());
+		}
 	}
 
 	@Test
@@ -72,7 +82,7 @@ public class PaddedCellTest {
 	public void pingPong() throws IOException {
 		misbehaved(input -> {
 			return input.equals("A") ? "B" : "A";
-		}, "CCC", CYCLE, "A,B");
+		}, "CCC", CYCLE, "A,B", "A");
 	}
 
 	@Test
@@ -86,7 +96,7 @@ public class PaddedCellTest {
 			default:  return "A";
 			}
 			// @formatter:on
-		}, "CCC", CYCLE, "A,B,C,D");
+		}, "CCC", CYCLE, "A,B,C,D", "A");
 	}
 
 	@Test
@@ -97,35 +107,33 @@ public class PaddedCellTest {
 			} else {
 				return input.substring(0, input.length() - 1);
 			}
-		}, "CCC", CONVERGE, "CC,C,");
+		}, "CCC", CONVERGE, "CC,C,", "");
 	}
 
 	@Test
 	public void diverging() throws IOException {
 		misbehaved(input -> {
 			return input + " ";
-		}, "", DIVERGE, " ,  ,   ,    ,     ,      ,       ,        ,         ,          ");
+		}, "", DIVERGE, " ,  ,   ,    ,     ,      ,       ,        ,         ,          ", null);
 	}
 
 	@Test
 	public void cycleOrder() {
-		BiConsumer<String, String> testCase = (unorderedStr, expectedStr) -> {
+		BiConsumer<String, String> testCase = (unorderedStr, canonical) -> {
 			List<String> unordered = Arrays.asList(unorderedStr.split(","));
-			PaddedCell result = PaddedCell.cycle(folder.getRoot(), unordered);
-			String resultJoined = result.steps().stream().collect(Collectors.joining(","));
-			Assert.assertEquals(expectedStr, resultJoined);
+			for (int i = 0; i < unordered.size(); ++i) {
+				// try every rotation of the list
+				Collections.rotate(unordered, 1);
+				PaddedCell result = CYCLE.create(folder.getRoot(), unordered);
+				// make sure the canonical result is always the appropriate one
+				Assert.assertEquals(canonical, result.canonical());
+			}
 		};
 		// alphabetic
-		testCase.accept("a,b,c", "a,b,c");
-		testCase.accept("b,c,a", "a,b,c");
-		testCase.accept("c,a,b", "a,b,c");
+		testCase.accept("a,b,c", "a");
 		// length
-		testCase.accept("a,aa,aaa", "a,aa,aaa");
-		testCase.accept("aa,aaa,a", "a,aa,aaa");
-		testCase.accept("aaa,a,aa", "a,aa,aaa");
+		testCase.accept("a,aa,aaa", "a");
 		// length > alphabetic
-		testCase.accept("b,aa,aaa", "b,aa,aaa");
-		testCase.accept("aa,aaa,b", "b,aa,aaa");
-		testCase.accept("aa,b,aaa", "b,aaa,aa");
+		testCase.accept("b,aa,aaa", "b");
 	}
 }

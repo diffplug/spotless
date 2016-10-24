@@ -22,13 +22,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.Preconditions;
+import com.diffplug.common.base.Unhandled;
 
 /**
  * Models the result of applying a {@link Formatter} on a given {@link File}
@@ -37,6 +36,41 @@ import com.diffplug.common.base.Preconditions;
  * See {@link #check(Formatter, File)} as the entry point to this class.
  */
 public class PaddedCell {
+	/** The kind of result. */
+	public enum Type {
+		CONVERGE, CYCLE, DIVERGE;
+
+		/** Creates a PaddedCell with the given file and steps. */
+		PaddedCell create(File file, List<String> steps) {
+			return new PaddedCell(file, this, steps);
+		}
+	}
+
+	private final File file;
+	private final Type type;
+	private final List<String> steps;
+
+	private PaddedCell(File file, Type type, List<String> steps) {
+		this.file = Objects.requireNonNull(file);
+		this.type = Objects.requireNonNull(type);
+		this.steps = Objects.requireNonNull(steps);
+	}
+
+	/** Returns the file which was tested. */
+	public File file() {
+		return file;
+	}
+
+	/** Returns the type of the result (either {@link Cycle}, {@link Converge}, or {@link Diverge}). */
+	public Type type() {
+		return type;
+	}
+
+	/** Returns the steps it takes to get to the result. */
+	public List<String> steps() {
+		return steps;
+	}
+
 	/**
 	 * Applies the given formatter to the given file, checking that
 	 * F(F(input)) == F(input).
@@ -44,15 +78,8 @@ public class PaddedCell {
 	 * If it meets this test, {@link #misbehaved()} will return false.
 	 *
 	 * If it fails the test, {@link #misbehaved()} will return true, and you can find
-	 * out more about the misbehavior through either the {@link Converge}, {@link Cycle},
-	 * or {@link Diverge} classes.
+	 * out more about the misbehavior based on its {@link Type}.
 	 *
-	 * If the result converged eventually, then `is(Converge.class)` will be true, and you
-	 * can find out what it converged to and how long it took using `as(Converge.class)`.
-	 *
-	 * @param formatter
-	 * @param file
-	 * @return
 	 */
 	public static PaddedCell check(Formatter formatter, File file) {
 		return check(formatter, file, MAX_CYCLE);
@@ -68,12 +95,12 @@ public class PaddedCell {
 		Preconditions.checkArgument(maxLength >= 2, "maxLength must be at least 2");
 		String appliedOnce = formatter.applyAll(original, file);
 		if (appliedOnce.equals(original)) {
-			return converges(file, Collections.singletonList(appliedOnce));
+			return Type.CONVERGE.create(file, Collections.singletonList(appliedOnce));
 		}
 
 		String appliedTwice = formatter.applyAll(appliedOnce, file);
 		if (appliedOnce.equals(appliedTwice)) {
-			return converges(file, Collections.singletonList(appliedOnce));
+			return Type.CONVERGE.create(file, Collections.singletonList(appliedOnce));
 		}
 
 		List<String> appliedN = new ArrayList<>();
@@ -83,69 +110,18 @@ public class PaddedCell {
 		while (appliedN.size() < maxLength) {
 			String output = formatter.applyAll(input, file);
 			if (output.equals(input)) {
-				return converges(file, appliedN);
+				return Type.CONVERGE.create(file, appliedN);
 			} else {
 				int idx = appliedN.indexOf(output);
 				if (idx >= 0) {
-					return cycle(file, appliedN.subList(idx, appliedN.size()));
+					return Type.CYCLE.create(file, appliedN.subList(idx, appliedN.size()));
 				} else {
 					appliedN.add(output);
 					input = output;
 				}
 			}
 		}
-		return diverges(file, appliedN);
-	}
-
-	/** Returns what is wrong with each file, grouped by category. */
-	public static Map<ResultType, List<PaddedCell>> checkMisbehaves(Formatter formatter, List<File> problemFiles) {
-		return problemFiles.stream()
-				.map(file -> PaddedCell.check(formatter, file))
-				.filter(PaddedCell::misbehaved)
-				.collect(Collectors.groupingBy(PaddedCell::type));
-	}
-
-	private final File file;
-	private final ResultType type;
-	private final List<String> steps;
-
-	static PaddedCell cycle(File file, List<String> steps) {
-		// find the min based on length, then alphabetically
-		String min = Collections.min(steps,
-				Comparator.comparing(String::length)
-						.thenComparing(Function.identity()));
-		int minIdx = steps.indexOf(min);
-		Collections.rotate(steps, -minIdx);
-		return new PaddedCell(file, ResultType.CYCLE, steps);
-	}
-
-	static PaddedCell converges(File file, List<String> steps) {
-		return new PaddedCell(file, ResultType.CONVERGE, steps);
-	}
-
-	static PaddedCell diverges(File file, List<String> steps) {
-		return new PaddedCell(file, ResultType.DIVERGE, steps);
-	}
-
-	private PaddedCell(File file, ResultType type, List<String> steps) {
-		this.file = Objects.requireNonNull(file);
-		this.type = Objects.requireNonNull(type);
-		this.steps = Objects.requireNonNull(steps);
-	}
-
-	/** Returns the file which was tested. */
-	public File file() {
-		return file;
-	}
-
-	/** Returns the type of the result (either {@link Cycle}, {@link Converge}, or {@link Diverge}). */
-	public ResultType type() {
-		return type;
-	}
-
-	/** Returns the steps it takes to get to the result. */
-	public List<String> steps() {
-		return steps;
+		return Type.DIVERGE.create(file, appliedN);
 	}
 
 	/**
@@ -153,12 +129,36 @@ public class PaddedCell {
 	 * (did not converge after a single iteration).
 	 */
 	public boolean misbehaved() {
-		boolean isWellBehaved = type == ResultType.CONVERGE && steps.size() <= 1;
+		boolean isWellBehaved = type == Type.CONVERGE && steps.size() <= 1;
 		return !isWellBehaved;
 	}
 
-	/** The kind of result. */
-	public enum ResultType {
-		CONVERGE, CYCLE, DIVERGE
+	/** Any result which doesn't diverge can be resolved. */
+	public boolean isResolvable() {
+		return type != Type.DIVERGE;
+	}
+
+	/** Returns the "canonical" form for this particular result (only possible if isResolvable). */
+	public String canonical() {
+		// @formatter:off
+		switch (type) {
+		case CONVERGE:	return steps.get(steps.size() - 1);
+		case CYCLE:		return Collections.min(steps, Comparator.comparing(String::length).thenComparing(Function.identity()));
+		case DIVERGE:	throw new IllegalArgumentException("No canonical form for a diverging result");
+		default:	throw Unhandled.enumException(type);
+		}
+		// @formatter:on
+	}
+
+	/** Returns a string which describes this result. */
+	public String userMessage() {
+		// @formatter:off
+		switch (type) {
+		case CONVERGE:	return "converges after " + steps.size() + " steps";
+		case CYCLE:		return "cycles between " + steps.size() + " steps";
+		case DIVERGE:	return "diverges after " + steps.size() + " steps";
+		default:	throw Unhandled.enumException(type);
+		}
+		// @formatter:on
 	}
 }
