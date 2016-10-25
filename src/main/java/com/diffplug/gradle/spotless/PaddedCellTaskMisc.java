@@ -65,9 +65,6 @@ class PaddedCellTaskMisc {
 	/** URL to a page which describes the padded cell thing. */
 	private static final String URL = "https://github.com/diffplug/spotless/blob/master/PADDEDCELL.md";
 
-	/** Folder within build folder where diagnosed problems go. */
-	private static final String SPOTLESS_DIAGNOSE = "spotless-diagnose";
-
 	/**
 	 * For well-behaved formatters, {@link PaddedCell#check(Formatter, File)} takes about
 	 * twice as long to run as a standard call to {@link Formatter#isClean(File)}.
@@ -97,7 +94,9 @@ class PaddedCellTaskMisc {
 		return false;
 	}
 
-	static GradleException youShouldTurnOnPaddedCell() {
+	static GradleException youShouldTurnOnPaddedCell(FormatTask task) {
+		Path diagnosePath = diagnoseDir(task);
+		Path rootPath = task.getProject().getRootDir().toPath();
 		return new GradleException(StringPrinter.buildStringFromLines(
 				"You have a misbehaving rule which can't make up its mind.",
 				"This means that spotlessCheck will fail even after spotlessApply has run.",
@@ -114,10 +113,14 @@ class PaddedCellTaskMisc {
 				"    }",
 				"",
 				"The next time you run spotlessCheck, it will put helpful bug reports into",
-				"'build/" + SPOTLESS_DIAGNOSE + "', and spotlessApply and spotlessCheck",
-				"will be self-consistent from here on out.",
+				"'" + rootPath.relativize(diagnosePath) + "', and spotlessApply",
+				"and spotlessCheck will be self-consistent from here on out.",
 				"",
 				"For details see " + URL));
+	}
+
+	private static Path diagnoseDir(FormatTask task) {
+		return task.getProject().getBuildDir().toPath().resolve("spotless-diagnose-" + task.getFormatName());
 	}
 
 	static void check(FormatTask task, Formatter formatter, List<File> problemFiles) throws IOException {
@@ -136,7 +139,7 @@ class PaddedCellTaskMisc {
 				Collections.singletonList(paddedCellStep));
 
 		// empty out the diagnose folder
-		Path diagnoseDir = task.getProject().getBuildDir().toPath().resolve(SPOTLESS_DIAGNOSE);
+		Path diagnoseDir = diagnoseDir(task);
 		Path rootDir = task.getProject().getRootDir().toPath();
 		cleanDir(diagnoseDir);
 

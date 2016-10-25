@@ -33,6 +33,20 @@ public class FormatTask extends DefaultTask {
 	public boolean check = false;
 	public List<FormatterStep> steps = new ArrayList<>();
 
+	/** Returns the name of this format. */
+	public String getFormatName() {
+		String name = getName();
+		if (name.startsWith(SpotlessPlugin.EXTENSION)) {
+			String after = name.substring(SpotlessPlugin.EXTENSION.length());
+			if (after.endsWith(SpotlessPlugin.CHECK)) {
+				return after.substring(0, after.length() - SpotlessPlugin.CHECK.length());
+			} else if (after.endsWith(SpotlessPlugin.APPLY)) {
+				return after.substring(0, after.length() - SpotlessPlugin.APPLY.length());
+			}
+		}
+		return name;
+	}
+
 	@TaskAction
 	public void format() throws Exception {
 		if (target == null) {
@@ -67,7 +81,7 @@ public class FormatTask extends DefaultTask {
 			if (!problemFiles.isEmpty()) {
 				// if we're not in paddedCell mode, we'll check if maybe we should be
 				if (PaddedCellTaskMisc.anyMisbehave(formatter, problemFiles)) {
-					throw PaddedCellTaskMisc.youShouldTurnOnPaddedCell();
+					throw PaddedCellTaskMisc.youShouldTurnOnPaddedCell(this);
 				} else {
 					throw formatViolationsFor(formatter, problemFiles);
 				}

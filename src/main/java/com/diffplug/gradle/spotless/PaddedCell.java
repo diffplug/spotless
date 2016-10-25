@@ -88,8 +88,8 @@ class PaddedCell {
 		return check(formatter, file, original, MAX_CYCLE);
 	}
 
-	public static PaddedCell check(Formatter formatter, File file, String original) {
-		return check(formatter, file, original, MAX_CYCLE);
+	public static PaddedCell check(Formatter formatter, File file, String originalUnix) {
+		return check(formatter, file, originalUnix, MAX_CYCLE);
 	}
 
 	private static final int MAX_CYCLE = 10;
