@@ -85,12 +85,10 @@ public class FormatTask extends DefaultTask {
 		for (int i = 0; i < numProblemFiles; i++) {
 			File file = problemFiles.get(i);
 
-			String filePath = "  " + rootDir.relativize(file.toPath());
+			String filePath = "    " + rootDir.relativize(file.toPath());
 			String diff = prependLinesOf(DiffUtils.diff(file, formatter), "    ");
 			String newMessagePart = '\n' + filePath + '\n' + diff;
-			if (i < numProblemFiles - 1) {
-				newMessagePart += '\n'; // separate violations from one another visually
-			}
+
 			int newLinesProcessed = linesProcessed + Iterators.size(NEWLINE_SPLITTER.split(newMessagePart).iterator());
 			if (newLinesProcessed > MAX_CHECK_MESSAGE_LINES) {
 				// then the message buffer is getting too big
