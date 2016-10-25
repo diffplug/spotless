@@ -107,8 +107,10 @@ class PaddedCellTaskMisc {
 				"if you add 'paddedCell()' to your build.gradle as such: ",
 				"",
 				"    spotless {",
-				"        ...",
-				"        paddedCell()",
+				"        format 'someFormat', {",
+				"            ...",
+				"            paddedCell()",
+				"        }",
 				"    }",
 				"",
 				"The next time you run spotlessCheck, it will put helpful bug reports into",
@@ -121,8 +123,8 @@ class PaddedCellTaskMisc {
 	static void check(FormatTask task, Formatter formatter, List<File> problemFiles) throws IOException {
 		if (problemFiles.isEmpty()) {
 			// if the first pass was successful, then paddedCell() mode is unnecessary
-			task.getLogger().warn(StringPrinter.buildStringFromLines(
-					"Spotless is in paddedCell() mode, but it doesn't need to be.",
+			task.getLogger().info(StringPrinter.buildStringFromLines(
+					task.getName() + " is in paddedCell() mode, but it doesn't need to be.",
 					"If you remove that option, spotless will run ~2x faster.",
 					"For details see " + URL));
 		}

@@ -26,7 +26,7 @@ import com.diffplug.common.base.Errors;
 
 public class SpotlessPlugin implements Plugin<Project> {
 	Project project;
-	SpotlessExtension extension;
+	SpotlessExtension spotlessExtension;
 
 	static final String EXTENSION = "spotless";
 	static final String CHECK = "Check";
@@ -36,7 +36,7 @@ public class SpotlessPlugin implements Plugin<Project> {
 		this.project = project;
 
 		// setup the extension
-		extension = project.getExtensions().create(EXTENSION, SpotlessExtension.class, project);
+		spotlessExtension = project.getExtensions().create(EXTENSION, SpotlessExtension.class, project);
 
 		// after the project has been evaluated, configure the check and format tasks per source set
 		project.afterEvaluate(unused -> Errors.rethrow().run(this::createTasks));
@@ -44,14 +44,14 @@ public class SpotlessPlugin implements Plugin<Project> {
 
 	/** The extension for this plugin. */
 	public SpotlessExtension getExtension() {
-		return extension;
+		return spotlessExtension;
 	}
 
 	void createTasks() throws Exception {
 		Task rootCheckTask = project.task(EXTENSION + CHECK);
 		Task rootApplyTask = project.task(EXTENSION + APPLY);
 
-		for (Map.Entry<String, FormatExtension> entry : extension.formats.entrySet()) {
+		for (Map.Entry<String, FormatExtension> entry : spotlessExtension.formats.entrySet()) {
 			rootCheckTask.dependsOn(createTask(entry.getKey(), entry.getValue(), true));
 			rootApplyTask.dependsOn(createTask(entry.getKey(), entry.getValue(), false));
 		}
@@ -64,13 +64,13 @@ public class SpotlessPlugin implements Plugin<Project> {
 				.all(task -> task.dependsOn(rootCheckTask));
 	}
 
-	FormatTask createTask(String name, FormatExtension subExtension, boolean check) throws Exception {
+	FormatTask createTask(String name, FormatExtension format, boolean check) throws Exception {
 		FormatTask task = project.getTasks().create(EXTENSION + capitalize(name) + (check ? CHECK : APPLY), FormatTask.class);
-		task.lineEndingsPolicy = extension.getLineEndingPolicy();
-		task.paddedCell = extension.paddedCell;
+		task.lineEndingsPolicy = spotlessExtension.getLineEndingPolicy();
+		task.paddedCell = format.paddedCell;
 		task.check = check;
 		// sets toFormat and steps
-		subExtension.setupTask(task);
+		format.setupTask(task);
 		return task;
 	}
 
