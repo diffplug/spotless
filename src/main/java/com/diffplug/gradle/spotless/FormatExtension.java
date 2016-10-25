@@ -69,7 +69,6 @@ public class FormatExtension {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	protected FileCollection parseTarget(Object target) {
 		if (target instanceof FileCollection) {
 			return (FileCollection) target;

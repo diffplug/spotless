@@ -25,6 +25,7 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.TaskAction;
 
+import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.base.Splitter;
 import com.diffplug.common.collect.Iterators;
 
@@ -66,47 +67,54 @@ public class FormatTask extends DefaultTask {
 		}
 
 		if (!problemFiles.isEmpty()) {
-			Path rootDir = getProject().getRootDir().toPath();
+			throw formatViolationsFor(formatter, problemFiles);
+		}
+	}
 
-			String messageStart = "Format violations were found. Run 'gradlew " +
-					SpotlessPlugin.EXTENSION +
-					SpotlessPlugin.APPLY +
-					"' to fix them.";
+	/** Returns an exception which indicates problem files nicely. */
+	GradleException formatViolationsFor(Formatter formatter, List<File> problemFiles) throws IOException {
+		Preconditions.checkArgument(!problemFiles.isEmpty(), "Problem files must not be empty");
 
-			StringBuilder messageBuffer = new StringBuilder((int) (1.5 * MAX_CHECK_MESSAGE_LINES));
-			int linesProcessed = 1;
-			int numProblemFiles = problemFiles.size();
-			int problemFilesRemaining = numProblemFiles;
+		Path rootDir = getProject().getRootDir().toPath();
 
-			for (int i = 0; i < numProblemFiles; i++) {
-				File file = problemFiles.get(i);
+		StringBuilder messageBuffer = new StringBuilder(64 * MAX_CHECK_MESSAGE_LINES);
+		int linesProcessed = 1;
+		int numProblemFiles = problemFiles.size();
+		int problemFilesRemaining = numProblemFiles;
 
-				String filePath = "    " + rootDir.relativize(file.toPath()).toString();
-				String diff = prependLinesOf(DiffUtils.diff(file, formatter), "    ");
-				String newMessagePart = '\n' + filePath + '\n' + diff;
-				if (i < numProblemFiles - 1) {
-					newMessagePart += '\n'; // separate violations from one another visually
+		for (int i = 0; i < numProblemFiles; i++) {
+			File file = problemFiles.get(i);
+
+			String filePath = "  " + rootDir.relativize(file.toPath());
+			String diff = prependLinesOf(DiffUtils.diff(file, formatter), "    ");
+			String newMessagePart = '\n' + filePath + '\n' + diff;
+			if (i < numProblemFiles - 1) {
+				newMessagePart += '\n'; // separate violations from one another visually
+			}
+			int newLinesProcessed = linesProcessed + Iterators.size(NEWLINE_SPLITTER.split(newMessagePart).iterator());
+			if (newLinesProcessed > MAX_CHECK_MESSAGE_LINES) {
+				// then the message buffer is getting too big
+				messageBuffer.append("\n    Problems in ").append(problemFilesRemaining);
+				if (i != 0) {
+					messageBuffer.append(" additional");
 				}
-				int newLinesProcessed = linesProcessed + Iterators.size(NEWLINE_SPLITTER.split(newMessagePart).iterator());
-				if (newLinesProcessed > MAX_CHECK_MESSAGE_LINES) {
-					// then the message buffer is getting too big
-					messageBuffer.append("\n    Problems in ").append(problemFilesRemaining);
-					if (i != 0) {
-						messageBuffer.append(" additional");
-					}
-					messageBuffer.append(" file(s)\n");
-					break;
-				}
-
-				// there's room in the message buffer, so add the format problem to it
-				messageBuffer.append(newMessagePart);
-
-				linesProcessed = newLinesProcessed;
-				problemFilesRemaining--;
+				messageBuffer.append(" file(s)\n");
+				break;
 			}
 
-			throw new GradleException(messageStart + messageBuffer.toString());
+			// there's room in the message buffer, so add the format problem to it
+			messageBuffer.append(newMessagePart);
+
+			linesProcessed = newLinesProcessed;
+			problemFilesRemaining--;
 		}
+
+		return new GradleException("The following files had format violations:"
+				+ messageBuffer
+				+ "\nFormat violations were found. Run 'gradlew " +
+				SpotlessPlugin.EXTENSION +
+				SpotlessPlugin.APPLY +
+				"' to fix them.");
 	}
 
 	private String prependLinesOf(String value, String prefix) {
