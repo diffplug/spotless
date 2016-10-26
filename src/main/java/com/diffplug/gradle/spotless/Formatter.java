@@ -30,10 +30,10 @@ import org.gradle.api.logging.Logging;
 
 /** Formatter which performs the full formatting. */
 public class Formatter {
-	private final LineEnding.Policy lineEndingPolicy;
-	private final Path projectDirectory;
-	private final List<FormatterStep> steps;
-	private final Logger logger = Logging.getLogger(Formatter.class);
+	final LineEnding.Policy lineEndingPolicy;
+	final Path projectDirectory;
+	final List<FormatterStep> steps;
+	final Logger logger = Logging.getLogger(Formatter.class);
 
 	public Formatter(LineEnding.Policy lineEndingPolicy, Path projectDirectory, List<FormatterStep> steps) {
 		this.lineEndingPolicy = lineEndingPolicy;
@@ -46,7 +46,7 @@ public class Formatter {
 		String raw = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
 		String unix = LineEnding.toUnix(raw);
 
-		// check the newlines
+		// check the newlines (we can find these problems without even running the steps)
 		int totalNewLines = (int) unix.codePoints().filter(val -> val == '\n').count();
 		int windowsNewLines = raw.length() - unix.length();
 		if (lineEndingPolicy.isUnix(file)) {
@@ -60,7 +60,7 @@ public class Formatter {
 		}
 
 		// check the other formats
-		String formatted = applyAll(unix, file);
+		String formatted = applySteps(unix, file);
 
 		// return true iff the formatted string equals the unix one
 		return formatted.equals(unix);
@@ -73,16 +73,9 @@ public class Formatter {
 		String rawUnix = LineEnding.toUnix(raw);
 
 		// enforce the format
-		String formattedUnix = applyAll(rawUnix, file);
-
-		// convert the line endings if necessary
-		String formatted;
-		String ending = lineEndingPolicy.getEndingFor(file);
-		if (!ending.equals(LineEnding.UNIX.str())) {
-			formatted = formattedUnix.replace("\n", ending);
-		} else {
-			formatted = formattedUnix;
-		}
+		String formattedUnix = applySteps(rawUnix, file);
+		// enforce the line endings
+		String formatted = applyLineEndings(formattedUnix, file);
 
 		// write out the file iff it has changed
 		byte[] formattedBytes = formatted.getBytes(StandardCharsets.UTF_8);
@@ -91,8 +84,22 @@ public class Formatter {
 		}
 	}
 
-	/** Returns the result of calling all of the FormatterSteps. */
-	String applyAll(String unix, File file) {
+	/** Applies the appropriate line endings to the given unix content. */
+	String applyLineEndings(String unix, File file) {
+		String ending = lineEndingPolicy.getEndingFor(file);
+		if (!ending.equals(LineEnding.UNIX.str())) {
+			return unix.replace(LineEnding.UNIX.str(), ending);
+		} else {
+			return unix;
+		}
+	}
+
+	/**
+	 * Returns the result of calling all of the FormatterSteps.
+	 * The input must have unix line endings, and the output
+	 * is guaranteed to also have unix line endings.
+	 */
+	String applySteps(String unix, File file) {
 		for (FormatterStep step : steps) {
 			try {
 				String formatted = step.format(unix, file);

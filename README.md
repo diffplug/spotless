@@ -227,14 +227,15 @@ Spotless is hosted on jcenter and at plugins.gradle.org. [Go here](https://plugi
 	+ Special thanks to [Mateusz Matela](https://waynebeaton.wordpress.com/2015/03/15/great-fixes-for-mars-winners-part-i/) for huge improvements to the eclipse code formatter!
 * Forked from [gradle-format-plugin](https://github.com/youribonnaffe/gradle-format-plugin) by Youri Bonnaff??.
 * Thanks to Gabor Bernat for improvements to logging and multi-project support.
+* Thanks to Jonathan Bluett-Duncan (https://github.com/jbduncan) for providing the diff support in `spotlessCheck`.
 * Import ordering from [EclipseCodeFormatter](https://github.com/krasa/EclipseCodeFormatter).
 * Built by [gradle](http://gradle.org/).
 * Tested by [junit](http://junit.org/).
 * Maintained by [DiffPlug](http://www.diffplug.com/).
 
-## Exporting / importing from Eclipse
+## Exporting from & importing into Eclipse
 
-There are two files to import / export with Eclipse - one for code formatting and one for import ordering.
+There are two files to import/export with Eclipse - one for code formatting and one for import ordering.
 
 ### Opening the preferences
 ![Eclipse preferences](images/EclipsePreferences.png)
@@ -243,7 +244,7 @@ There are two files to import / export with Eclipse - one for code formatting an
 ![Eclipse formatter](images/EclipseFormatter.png)
 ![Eclipse formatter edit](images/EclipseFormatterEdit.png)
 
-Eclipse formatter's off / on tags are a great feature which is often overlooked.
+The Eclipse formatter's off/on tags are a great feature which is often overlooked.
 ![Eclipse formatter off/on tags](images/EclipseFormatterEditOffOnTags.png)
 
 ### Creating `spotless.importorder`

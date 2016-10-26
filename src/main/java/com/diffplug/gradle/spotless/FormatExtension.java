@@ -57,7 +57,7 @@ public class FormatExtension {
 		} else if (targets.length == 1) {
 			this.target = parseTarget(targets[0]);
 		} else {
-			if (Arrays.asList(targets).stream().allMatch(o -> o instanceof String)) {
+			if (Arrays.stream(targets).allMatch(o -> o instanceof String)) {
 				this.target = parseTarget(Arrays.asList(targets));
 			} else {
 				UnionFileCollection union = new UnionFileCollection();
@@ -69,19 +69,18 @@ public class FormatExtension {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	protected FileCollection parseTarget(Object target) {
 		if (target instanceof FileCollection) {
 			return (FileCollection) target;
 		} else if (target instanceof String) {
 			Map<String, Object> args = new HashMap<>();
 			args.put("dir", getProject().getProjectDir());
-			args.put("include", (String) target);
+			args.put("include", target);
 			return getProject().fileTree(args);
 		} else if (target instanceof List && ((List<?>) target).stream().allMatch(o -> o instanceof String)) {
 			Map<String, Object> args = new HashMap<>();
 			args.put("dir", getProject().getProjectDir());
-			args.put("includes", (List<String>) target);
+			args.put("includes", target);
 			return getProject().fileTree(args);
 		} else {
 			return getProject().files(target);

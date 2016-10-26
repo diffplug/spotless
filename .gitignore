@@ -4,6 +4,10 @@
 # GFM preview
 .*.md.html
 
+# Project-specific stuff
+userHome/
+workspace/
+
 ### Gradle ###
 .gradle
 build/

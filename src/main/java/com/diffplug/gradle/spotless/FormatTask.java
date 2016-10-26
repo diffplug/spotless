@@ -17,10 +17,8 @@ package com.diffplug.gradle.spotless;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
@@ -51,6 +49,7 @@ public class FormatTask extends DefaultTask {
 	/** Checks the format. */
 	private void formatCheck(Formatter formatter) throws IOException {
 		List<File> problemFiles = new ArrayList<>();
+
 		for (File file : target) {
 			getLogger().debug("Checking format on " + file);
 			// keep track of the problem toFormat
@@ -58,12 +57,15 @@ public class FormatTask extends DefaultTask {
 				problemFiles.add(file);
 			}
 		}
+
 		if (!problemFiles.isEmpty()) {
-			Path rootDir = getProject().getRootDir().toPath();
-			throw new GradleException("Format violations were found. Run 'gradlew " + SpotlessPlugin.EXTENSION + SpotlessPlugin.APPLY + "' to fix them.\n"
-					+ problemFiles.stream().map(file -> "    " + rootDir.relativize(file.toPath()).toString())
-							.collect(Collectors.joining("\n")));
+			throw formatViolationsFor(formatter, problemFiles);
 		}
+	}
+
+	/** Returns an exception which indicates problem files nicely. */
+	GradleException formatViolationsFor(Formatter formatter, List<File> problemFiles) throws IOException {
+		return new GradleException(DiffMessageFormatter.messageFor(this, formatter, problemFiles));
 	}
 
 	/** Applies the format. */
