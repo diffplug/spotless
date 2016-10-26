@@ -60,7 +60,7 @@ final class DiffMessageFormatter {
 		while (problemIter.hasNext() && numLines < MAX_CHECK_MESSAGE_LINES) {
 			File file = problemIter.next();
 			addFile(rootDir.relativize(file.toPath()) + "\n" +
-					DiffMessageFormatter.diff(file, formatter));
+					DiffMessageFormatter.diff(task, formatter, file));
 		}
 		if (problemIter.hasNext()) {
 			int remainingFiles = problemFiles.size() - problemIter.nextIndex();
@@ -119,10 +119,16 @@ final class DiffMessageFormatter {
 	 * look like if formatted using the given formatter. Does not end with any newline
 	 * sequence (\n, \r, \r\n).
 	 */
-	private static String diff(File file, Formatter formatter) throws IOException {
+	private static String diff(FormatTask task, Formatter formatter, File file) throws IOException {
 		String raw = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
 		String rawUnix = LineEnding.toUnix(raw);
-		String formattedUnix = formatter.applySteps(rawUnix, file);
+		String formattedUnix;
+		if (task.paddedCell) {
+			formattedUnix = PaddedCell.check(formatter, file, rawUnix).canonical();
+		} else {
+			formattedUnix = formatter.applySteps(rawUnix, file);
+		}
+
 		if (rawUnix.equals(formattedUnix)) {
 			// the formatting is fine, so it's a line-ending issue
 			String formatted = formatter.applyLineEndings(formattedUnix, file);
@@ -153,6 +159,9 @@ final class DiffMessageFormatter {
 			formatter.format(edits, a, b);
 		}
 		String formatted = out.toString(StandardCharsets.UTF_8.name());
+
+		// we don't need the diff to show this, since we display newlines ourselves
+		formatted = formatted.replace("\\ No newline at end of file\n", "");
 		return NEWLINE_MATCHER.trimTrailingFrom(formatted);
 	}
 
