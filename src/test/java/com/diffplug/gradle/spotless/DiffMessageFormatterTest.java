@@ -31,7 +31,7 @@ import org.junit.Test;
 
 import com.diffplug.common.base.StringPrinter;
 
-public class CheckFailedDiffTest extends ResourceHarness {
+public class DiffMessageFormatterTest extends ResourceHarness {
 	private FormatTask create(File... files) {
 		return create(Arrays.asList(files));
 	}
@@ -52,7 +52,7 @@ public class CheckFailedDiffTest extends ResourceHarness {
 			GradleException cause = (GradleException) e.getCause();
 			String msg = cause.getMessage();
 			String firstLine = "The following files had format violations:\n";
-			String lastLine = "\nFormat violations were found. Run 'gradlew spotlessApply' to fix them.";
+			String lastLine = "\nRun 'gradlew spotlessApply' to fix these violations.";
 			Assertions.assertThat(msg).startsWith(firstLine).endsWith(lastLine);
 
 			String middle = msg.substring(firstLine.length(), msg.length() - lastLine.length());
@@ -115,7 +115,7 @@ public class CheckFailedDiffTest extends ResourceHarness {
 	@Test
 	public void manyFiles() throws IOException {
 		List<File> testFiles = new ArrayList<>();
-		for (int i = 0; i < 100; ++i) {
+		for (int i = 0; i < 9 + DiffMessageFormatter.MAX_FILES_TO_LIST - 1; ++i) {
 			testFiles.add(createTestFile(Integer.toString(i) + ".txt", "1\r\n2\r\n"));
 		}
 		FormatTask task = create(testFiles);
@@ -162,7 +162,152 @@ public class CheckFailedDiffTest extends ResourceHarness {
 				"    -2\\r\\n",
 				"    +1\\n",
 				"    +2\\n",
-				"    Problems in 93 additional file(s)",
-				"");
+				"    7.txt",
+				"    @@ -1,2 +1,2 @@",
+				"    -1\\r\\n",
+				"    -2\\r\\n",
+				"    +1\\n",
+				"    +2\\n",
+				"    8.txt",
+				"    @@ -1,2 +1,2 @@",
+				"    -1\\r\\n",
+				"    -2\\r\\n",
+				"    ... (2 more lines that didn't fit)",
+				"Violations also present in:",
+				"    9.txt",
+				"    10.txt",
+				"    11.txt",
+				"    12.txt",
+				"    13.txt",
+				"    14.txt",
+				"    15.txt",
+				"    16.txt",
+				"    17.txt");
+	}
+
+	@Test
+	public void manyManyFiles() throws IOException {
+		List<File> testFiles = new ArrayList<>();
+		for (int i = 0; i < 9 + DiffMessageFormatter.MAX_FILES_TO_LIST; ++i) {
+			testFiles.add(createTestFile(Integer.toString(i) + ".txt", "1\r\n2\r\n"));
+		}
+		FormatTask task = create(testFiles);
+		assertTaskFailure(task,
+				"    0.txt",
+				"    @@ -1,2 +1,2 @@",
+				"    -1\\r\\n",
+				"    -2\\r\\n",
+				"    +1\\n",
+				"    +2\\n",
+				"    1.txt",
+				"    @@ -1,2 +1,2 @@",
+				"    -1\\r\\n",
+				"    -2\\r\\n",
+				"    +1\\n",
+				"    +2\\n",
+				"    2.txt",
+				"    @@ -1,2 +1,2 @@",
+				"    -1\\r\\n",
+				"    -2\\r\\n",
+				"    +1\\n",
+				"    +2\\n",
+				"    3.txt",
+				"    @@ -1,2 +1,2 @@",
+				"    -1\\r\\n",
+				"    -2\\r\\n",
+				"    +1\\n",
+				"    +2\\n",
+				"    4.txt",
+				"    @@ -1,2 +1,2 @@",
+				"    -1\\r\\n",
+				"    -2\\r\\n",
+				"    +1\\n",
+				"    +2\\n",
+				"    5.txt",
+				"    @@ -1,2 +1,2 @@",
+				"    -1\\r\\n",
+				"    -2\\r\\n",
+				"    +1\\n",
+				"    +2\\n",
+				"    6.txt",
+				"    @@ -1,2 +1,2 @@",
+				"    -1\\r\\n",
+				"    -2\\r\\n",
+				"    +1\\n",
+				"    +2\\n",
+				"    7.txt",
+				"    @@ -1,2 +1,2 @@",
+				"    -1\\r\\n",
+				"    -2\\r\\n",
+				"    +1\\n",
+				"    +2\\n",
+				"    8.txt",
+				"    @@ -1,2 +1,2 @@",
+				"    -1\\r\\n",
+				"    -2\\r\\n",
+				"    ... (2 more lines that didn't fit)",
+				"Violations also present in " + DiffMessageFormatter.MAX_FILES_TO_LIST + " other files.");
+	}
+
+	@Test
+	public void longFile() throws IOException {
+		StringBuilder builder = new StringBuilder();
+		for (int i = 0; i < 1000; ++i) {
+			builder.append(Integer.toString(i));
+			builder.append("\r\n");
+		}
+		FormatTask task = create(createTestFile("testFile", builder.toString()));
+		assertTaskFailure(task,
+				"    testFile",
+				"    @@ -1,1000 +1,1000 @@",
+				"    -0\\r\\n",
+				"    -1\\r\\n",
+				"    -2\\r\\n",
+				"    -3\\r\\n",
+				"    -4\\r\\n",
+				"    -5\\r\\n",
+				"    -6\\r\\n",
+				"    -7\\r\\n",
+				"    -8\\r\\n",
+				"    -9\\r\\n",
+				"    -10\\r\\n",
+				"    -11\\r\\n",
+				"    -12\\r\\n",
+				"    -13\\r\\n",
+				"    -14\\r\\n",
+				"    -15\\r\\n",
+				"    -16\\r\\n",
+				"    -17\\r\\n",
+				"    -18\\r\\n",
+				"    -19\\r\\n",
+				"    -20\\r\\n",
+				"    -21\\r\\n",
+				"    -22\\r\\n",
+				"    -23\\r\\n",
+				"    -24\\r\\n",
+				"    -25\\r\\n",
+				"    -26\\r\\n",
+				"    -27\\r\\n",
+				"    -28\\r\\n",
+				"    -29\\r\\n",
+				"    -30\\r\\n",
+				"    -31\\r\\n",
+				"    -32\\r\\n",
+				"    -33\\r\\n",
+				"    -34\\r\\n",
+				"    -35\\r\\n",
+				"    -36\\r\\n",
+				"    -37\\r\\n",
+				"    -38\\r\\n",
+				"    -39\\r\\n",
+				"    -40\\r\\n",
+				"    -41\\r\\n",
+				"    -42\\r\\n",
+				"    -43\\r\\n",
+				"    -44\\r\\n",
+				"    -45\\r\\n",
+				"    -46\\r\\n",
+				"    -47\\r\\n",
+				"    ... (1952 more lines that didn't fit)");
 	}
 }

@@ -20,6 +20,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.ListIterator;
 
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.EditList;
@@ -28,19 +31,95 @@ import org.eclipse.jgit.diff.RawText;
 import org.eclipse.jgit.diff.RawTextComparator;
 
 import com.diffplug.common.base.CharMatcher;
+import com.diffplug.common.base.Preconditions;
+import com.diffplug.common.base.Splitter;
 
-final class DiffUtils {
-	private DiffUtils() {}
+/** Formats the messages of failed spotlessCheck invocations with a nice diff message. */
+final class DiffMessageFormatter {
+	private static final int MAX_CHECK_MESSAGE_LINES = 50;
+	static final int MAX_FILES_TO_LIST = 10;
 
-	private static final CharMatcher NEWLINE_MATCHER = CharMatcher.is('\n');
-	private static final char MIDDLE_DOT = '\u00b7';
+	static String messageFor(FormatTask task, Formatter formatter, List<File> problemFiles) throws IOException {
+		DiffMessageFormatter diffFormater = new DiffMessageFormatter(task, formatter, problemFiles);
+		return "The following files had format violations:\n"
+				+ diffFormater.buffer
+				+ "Run 'gradlew "
+				+ SpotlessPlugin.EXTENSION
+				+ SpotlessPlugin.APPLY
+				+ "' to fix these violations.";
+	}
+
+	StringBuilder buffer = new StringBuilder(MAX_CHECK_MESSAGE_LINES * 64);
+	int numLines = 0;
+
+	private DiffMessageFormatter(FormatTask task, Formatter formatter, List<File> problemFiles) throws IOException {
+		Preconditions.checkArgument(!problemFiles.isEmpty(), "Problem files must not be empty");
+
+		Path rootDir = task.getProject().getRootDir().toPath();
+		ListIterator<File> problemIter = problemFiles.listIterator();
+		while (problemIter.hasNext() && numLines < MAX_CHECK_MESSAGE_LINES) {
+			File file = problemIter.next();
+			addFile(rootDir.relativize(file.toPath()) + "\n" +
+					DiffMessageFormatter.diff(file, formatter));
+		}
+		if (problemIter.hasNext()) {
+			int remainingFiles = problemFiles.size() - problemIter.nextIndex();
+			if (remainingFiles >= MAX_FILES_TO_LIST) {
+				buffer.append("Violations also present in " + remainingFiles + " other files.\n");
+			} else {
+				buffer.append("Violations also present in:\n");
+				while (problemIter.hasNext()) {
+					addLine(rootDir.relativize(problemIter.next().toPath()).toString());
+				}
+			}
+		}
+	}
+
+	private static final int MIN_LINES_PER_FILE = 4;
+	private static final Splitter NEWLINE_SPLITTER = Splitter.on('\n');
+
+	private void addFile(String arg) {
+		// at the very least, we'll print this about a file:
+		//     0.txt
+		//     @@ -1,2 +1,2 @@",
+		//     -1\\r\\n",
+		//     -2\\r\\n",
+		//     ... (more diff than we can fit here)
+		List<String> lines = NEWLINE_SPLITTER.splitToList(arg);
+		for (int i = 0; i < Math.min(MIN_LINES_PER_FILE, lines.size()); ++i) {
+			addLine(lines.get(i));
+		}
+
+		// then we'll print the rest that can fit
+		ListIterator<String> iter = lines.listIterator(Math.min(MIN_LINES_PER_FILE, lines.size()));
+		while (iter.hasNext() && numLines < MAX_CHECK_MESSAGE_LINES) {
+			addLine(iter.next());
+		}
+
+		if (numLines >= MAX_CHECK_MESSAGE_LINES) {
+			// we're out of space
+			if (iter.hasNext()) {
+				int linesLeft = lines.size() - iter.nextIndex();
+				addLine("... (" + linesLeft + " more lines that didn't fit)");
+			}
+		}
+	}
+
+	private static final String INDENT = "    ";
+
+	private void addLine(String line) {
+		buffer.append(INDENT);
+		buffer.append(line);
+		buffer.append('\n');
+		++numLines;
+	}
 
 	/**
 	 * Returns a git-style diff between the contents of the given file and what those contents would
 	 * look like if formatted using the given formatter. Does not end with any newline
 	 * sequence (\n, \r, \r\n).
 	 */
-	static String diff(File file, Formatter formatter) throws IOException {
+	private static String diff(File file, Formatter formatter) throws IOException {
 		String raw = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
 		String rawUnix = LineEnding.toUnix(raw);
 		String formattedUnix = formatter.applySteps(rawUnix, file);
@@ -77,6 +156,8 @@ final class DiffUtils {
 		return NEWLINE_MATCHER.trimTrailingFrom(formatted);
 	}
 
+	private static final CharMatcher NEWLINE_MATCHER = CharMatcher.is('\n');
+
 	/**
 	 * Makes the whitespace and/or the lineEndings visible.
 	 *
@@ -94,4 +175,6 @@ final class DiffUtils {
 		}
 		return input;
 	}
+
+	private static final char MIDDLE_DOT = '\u00b7';
 }
