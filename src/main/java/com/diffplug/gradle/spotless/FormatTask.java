@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
@@ -39,9 +40,9 @@ public class FormatTask extends DefaultTask {
 		if (name.startsWith(SpotlessPlugin.EXTENSION)) {
 			String after = name.substring(SpotlessPlugin.EXTENSION.length());
 			if (after.endsWith(SpotlessPlugin.CHECK)) {
-				return after.substring(0, after.length() - SpotlessPlugin.CHECK.length());
+				return after.substring(0, after.length() - SpotlessPlugin.CHECK.length()).toLowerCase(Locale.US);
 			} else if (after.endsWith(SpotlessPlugin.APPLY)) {
-				return after.substring(0, after.length() - SpotlessPlugin.APPLY.length());
+				return after.substring(0, after.length() - SpotlessPlugin.APPLY.length()).toLowerCase(Locale.US);
 			}
 		}
 		return name;

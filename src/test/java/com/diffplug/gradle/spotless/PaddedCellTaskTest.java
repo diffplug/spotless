@@ -15,11 +15,8 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Collectors;
@@ -48,7 +45,6 @@ public class PaddedCellTaskTest extends ResourceHarness {
 			apply = create(name, step, false);
 		}
 
-		@SuppressWarnings("deprecation")
 		private FormatTask create(String name, FormatterStep step, boolean check) {
 			FormatTask task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + (check ? "Check" : "Apply"), FormatTask.class);
 			task.steps.add(step);
@@ -115,6 +111,10 @@ public class PaddedCellTaskTest extends ResourceHarness {
 		converge().paddedCell().checkFailureMsg();
 		diverge().paddedCell().check.execute();
 
+		assertFolderContents("build",
+				"spotless-diagnose-converge",
+				"spotless-diagnose-cycle",
+				"spotless-diagnose-diverge");
 		assertFolderContents("build/spotless-diagnose-cycle",
 				"test.cycle.cycle0",
 				"test.cycle.cycle1");
@@ -137,7 +137,8 @@ public class PaddedCellTaskTest extends ResourceHarness {
 
 	private void assertFolderContents(String subfolderName, String... files) {
 		File subfolder = new File(folder.getRoot(), subfolderName);
-		String asList = Arrays.asList(subfolder.list()).stream().collect(Collectors.joining("\n"));
+		Assert.assertTrue(subfolder.isDirectory());
+		String asList = Arrays.asList(subfolder.list()).stream().sorted().collect(Collectors.joining("\n"));
 		Assert.assertEquals(StringPrinter.buildStringFromLines(files).trim(), asList);
 	}
 
