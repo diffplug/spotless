@@ -185,15 +185,28 @@ spotless {
 			// only unix newlines.  Other than that, anything is fair game!
 		}
 	}
-
-	// The default line ending mode, GIT_ATTRIBUTES, has the exact same line ending
-	// behavior as git, including support for the eol property of .gitattributes,
-	// and the core.eol configuration property.
-	lineEndings 'GIT_ATTRIBUTES' 	// can also be WINDOWS, UNIX, or PLATFORM_NATIVE
 }
 ```
 
 See [`JavaExtension.java`](src/main/java/com/diffplug/gradle/spotless/java/JavaExtension.java?ts=4) if you'd like to see how a language-specific set of custom rules is implemented.  We'd love PR's which add support for other languages.
+
+## Line endings and encodings (invisible stuff)
+
+Spotless uses UTF-8 by default, but you can use [any encoding which Java supports](https://docs.oracle.com/javase/8/docs/technotes/guides/intl/encoding.doc.html).  You can set it globally, and you can also set it per-format.
+
+```gradle
+spotless {
+	java {
+		...
+		encoding 'Cp1252' // java will have Cp1252
+	}
+	encoding 'US-ASCII'   // but all other formats will be interpreted as US-ASCII
+}
+```
+
+Line endings can also be set globally or per-format using the `lineEndings` property.  Spotless supports four line ending modes: `UNIX`, `WINDOWS`, `PLATFORM_NATIVE`, and `GIT_ATTRIBUTES`.  The default value is `GIT_ATTRIBUTES`, and *we highly recommend that you **do not change** this value*.  Git has opinions about line endings, and if Spotless and git disagree, then you're going to have a bad time.
+
+You can easily set the line endings of different files using [a `.gitattributes` file](https://help.github.com/articles/dealing-with-line-endings/).  Here's an example `.gitattributes` which sets all files to unix newlines: `* text eol=lf`.
 
 ## How do I preview what `spotlessApply` will do?
 
