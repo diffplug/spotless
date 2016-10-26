@@ -27,6 +27,7 @@ import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskExecutionException;
 import org.gradle.testfixtures.ProjectBuilder;
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.diffplug.common.base.StringPrinter;
@@ -48,6 +49,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 	private void assertTaskFailure(FormatTask task, String... expectedLines) {
 		try {
 			task.execute();
+			Assert.fail();
 		} catch (TaskExecutionException e) {
 			GradleException cause = (GradleException) e.getCause();
 			String msg = cause.getMessage();
