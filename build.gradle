@@ -28,6 +28,9 @@ apply plugin: 'com.gradle.plugin-publish'
 apply plugin: 'java-gradle-plugin'
 sourceCompatibility = VER_JAVA
 targetCompatibility = VER_JAVA
+tasks.withType(JavaCompile) {
+	options.encoding = 'UTF-8'
+}
 
 // The dependencies we'd like to pull from Eclipse's p2 repositories
 def eclipseDeps = [
