@@ -48,6 +48,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 			apply = create(name, step, false);
 		}
 
+		@SuppressWarnings("deprecation")
 		private FormatTask create(String name, FormatterStep step, boolean check) {
 			FormatTask task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + (check ? "Check" : "Apply"), FormatTask.class);
 			task.steps.add(step);
@@ -110,14 +111,9 @@ public class PaddedCellTaskTest extends ResourceHarness {
 
 	@Test
 	public void paddedCellCheckFailureFiles() throws Throwable {
-		assertLoggerOutput(() -> {
-			cycle().paddedCell().checkFailureMsg();
-			converge().paddedCell().checkFailureMsg();
-			diverge().paddedCell().check.execute();
-		},
-				"    test.cycle cycles between 2 steps",
-				"    test.converge converges after 3 steps",
-				"    test.diverge diverges after 10 steps");
+		cycle().paddedCell().checkFailureMsg();
+		converge().paddedCell().checkFailureMsg();
+		diverge().paddedCell().check.execute();
 
 		assertFolderContents("build/spotless-diagnose-cycle",
 				"test.cycle.cycle0",
@@ -137,32 +133,6 @@ public class PaddedCellTaskTest extends ResourceHarness {
 				"test.diverge.diverge7",
 				"test.diverge.diverge8",
 				"test.diverge.diverge9");
-	}
-
-	private static void assertLoggerOutput(Throwing.Runnable run, String... expectedOutput) throws Throwable {
-		PrintStream originalOut = System.out;
-		ByteArrayOutputStream captureOutput = new ByteArrayOutputStream();
-		int numWritten = 0;
-		try (PrintStream print = new PrintStream(captureOutput, true, StandardCharsets.UTF_8.name())) {
-			System.setOut(print);
-			while (captureOutput.size() == 0) {
-				System.out.print('\n');
-				System.out.flush();
-				++numWritten;
-			}
-
-			Thread.sleep(10);
-			run.run();
-			Thread.sleep(10);
-			System.out.flush();
-		} finally {
-			System.setOut(originalOut);
-			if (expectedOutput.length > 0) {
-				byte[] captured = captureOutput.toByteArray();
-				String capturedOutput = new String(captured, numWritten, captured.length - numWritten, StandardCharsets.UTF_8).replace("\r", "");
-				Assert.assertEquals(StringPrinter.buildStringFromLines(expectedOutput), capturedOutput);
-			}
-		}
 	}
 
 	private void assertFolderContents(String subfolderName, String... files) {
@@ -196,10 +166,8 @@ public class PaddedCellTaskTest extends ResourceHarness {
 	}
 
 	private void assertFailureMessage(Bundle bundle, String... expectedOutput) throws Throwable {
-		assertLoggerOutput(() -> {
-			String msg = bundle.checkFailureMsg();
-			String expected = StringPrinter.buildStringFromLines(expectedOutput).trim();
-			Assert.assertEquals(expected, msg);
-		});
+		String msg = bundle.checkFailureMsg();
+		String expected = StringPrinter.buildStringFromLines(expectedOutput).trim();
+		Assert.assertEquals(expected, msg);
 	}
 }
