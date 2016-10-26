@@ -75,9 +75,7 @@ public class FormatTaskTest extends ResourceHarness {
 		String diff = String.join("\n",
 				"    @@ -1 +1 @@",
 				"    -apple",
-				"    \\ No newline at end of file",
-				"    +aple",
-				"    \\ No newline at end of file");
+				"    +aple");
 		Assertions.assertThatThrownBy(() -> task.execute()).hasStackTraceContaining(diff);
 
 		assertFileContent("apple", testFile);

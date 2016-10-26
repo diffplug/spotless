@@ -159,6 +159,9 @@ final class DiffMessageFormatter {
 			formatter.format(edits, a, b);
 		}
 		String formatted = out.toString(StandardCharsets.UTF_8.name());
+
+		// we don't need the diff to show this, since we display newlines ourselves
+		formatted = formatted.replace("\\ No newline at end of file\n", "");
 		return NEWLINE_MATCHER.trimTrailingFrom(formatted);
 	}
 

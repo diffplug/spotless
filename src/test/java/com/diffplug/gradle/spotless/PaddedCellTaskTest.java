@@ -148,9 +148,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 				"    test.cycle",
 				"    @@ -1 +1 @@",
 				"    -CCC",
-				"    \\ No newline at end of file",
 				"    +A",
-				"    \\ No newline at end of file",
 				"Run 'gradlew spotlessApply' to fix these violations.");
 	}
 
@@ -161,7 +159,6 @@ public class PaddedCellTaskTest extends ResourceHarness {
 				"    test.converge",
 				"    @@ -1 +0,0 @@",
 				"    -CCC",
-				"    \\ No newline at end of file",
 				"Run 'gradlew spotlessApply' to fix these violations.");
 	}
 
