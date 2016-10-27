@@ -34,9 +34,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 class GoogleJavaFormat {
 	static final String NAME = "google-java-format";
 	static final String DEFAULT_VERSION = "1.1";
-	static final String MAVEN_COORDINATE = "com.google.googlejavaformat:google-java-format:";
-	static final String FORMATTER_CLASS = "com.google.googlejavaformat.java.Formatter";
-	static final String FORMATTER_METHOD = "formatSource";
+	private static final String MAVEN_COORDINATE = "com.google.googlejavaformat:google-java-format:";
+	private static final String FORMATTER_CLASS = "com.google.googlejavaformat.java.Formatter";
+	private static final String FORMATTER_METHOD = "formatSource";
 
 	/** Returns a function which will call the google-java-format tool. */
 	@SuppressFBWarnings("DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED")

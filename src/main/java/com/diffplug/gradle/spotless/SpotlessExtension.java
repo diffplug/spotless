@@ -36,7 +36,7 @@ public class SpotlessExtension {
 	}
 
 	/** Line endings (if any). */
-	LineEnding lineEndings = LineEnding.GIT_ATTRIBUTES;
+	private LineEnding lineEndings = LineEnding.GIT_ATTRIBUTES;
 
 	public LineEnding getLineEndings() {
 		return lineEndings;
@@ -46,7 +46,7 @@ public class SpotlessExtension {
 		this.lineEndings = lineEndings;
 	}
 
-	Charset encoding = StandardCharsets.UTF_8;
+	private Charset encoding = StandardCharsets.UTF_8;
 
 	/** Returns the encoding to use. */
 	public Charset getEncoding() {
@@ -54,12 +54,12 @@ public class SpotlessExtension {
 	}
 
 	/** Sets encoding to use (defaults to UTF_8). */
-	public void setEncoding(String name) {
+	private void setEncoding(String name) {
 		setEncoding(Charset.forName(name));
 	}
 
 	/** Sets encoding to use (defaults to UTF_8). */
-	public void setEncoding(Charset charset) {
+	private void setEncoding(Charset charset) {
 		encoding = Objects.requireNonNull(charset);
 	}
 
@@ -68,7 +68,7 @@ public class SpotlessExtension {
 		setEncoding(charset);
 	}
 
-	Map<String, FormatExtension> formats = new LinkedHashMap<>();
+	final Map<String, FormatExtension> formats = new LinkedHashMap<>();
 
 	/** Configures the special java-specific extension. */
 	public void java(Action<JavaExtension> closure) {

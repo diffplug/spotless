@@ -23,9 +23,9 @@ import com.diffplug.gradle.spotless.FormatTask;
 import com.diffplug.gradle.spotless.SpotlessExtension;
 
 public class FreshMarkExtension extends FormatExtension {
-	public static final String NAME = "freshmark";
+	private static final String NAME = "freshmark";
 
-	public Map<String, ?> properties;
+	private Map<String, ?> properties;
 
 	public FreshMarkExtension(SpotlessExtension root) {
 		super(NAME, root);

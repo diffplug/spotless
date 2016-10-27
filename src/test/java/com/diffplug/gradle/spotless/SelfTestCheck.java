@@ -15,7 +15,7 @@
  */
 package com.diffplug.gradle.spotless;
 
-public class SelfTestCheck {
+class SelfTestCheck {
 	public static void main(String[] args) throws Exception {
 		SelfTest.runWithTestKit(SelfTest.Type.CHECK);
 	}

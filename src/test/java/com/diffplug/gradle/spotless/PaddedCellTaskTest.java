@@ -42,7 +42,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 	}
 
 	class Bundle {
-		Project project = ProjectBuilder.builder().withProjectDir(folder.getRoot()).build();
+		final Project project = ProjectBuilder.builder().withProjectDir(folder.getRoot()).build();
 		File file;
 		FormatTask check, apply;
 
@@ -146,7 +146,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 	private void assertFolderContents(String subfolderName, String... files) {
 		File subfolder = new File(folder.getRoot(), subfolderName);
 		Assert.assertTrue(subfolder.isDirectory());
-		String asList = Arrays.asList(subfolder.list()).stream().sorted().collect(Collectors.joining("\n"));
+		String asList = Arrays.stream(subfolder.list()).sorted().collect(Collectors.joining("\n"));
 		Assert.assertEquals(StringPrinter.buildStringFromLines(files).trim(), asList);
 	}
 

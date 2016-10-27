@@ -31,16 +31,16 @@ import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
 
 /** Formatter which performs the full formatting. */
-public class Formatter {
+class Formatter {
 	final LineEnding.Policy lineEndingPolicy;
 	final Charset encoding;
 	final Path projectDirectory;
-	final List<FormatterStep> steps;
-	final Logger logger = Logging.getLogger(Formatter.class);
+	private final List<FormatterStep> steps;
+	private final Logger logger = Logging.getLogger(Formatter.class);
 
 	/** It's important to specify the charset. */
 	@Deprecated
-	public Formatter(LineEnding.Policy lineEndingPolicy, Path projectDirectory, List<FormatterStep> steps) {
+	private Formatter(LineEnding.Policy lineEndingPolicy, Path projectDirectory, List<FormatterStep> steps) {
 		this(lineEndingPolicy, StandardCharsets.UTF_8, projectDirectory, steps);
 	}
 

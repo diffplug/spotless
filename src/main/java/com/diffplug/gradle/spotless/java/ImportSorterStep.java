@@ -31,10 +31,10 @@ import java.util.stream.Collectors;
  *
  * @author Vojtech Krasa
  */
-public class ImportSorterStep {
+class ImportSorterStep {
 	public static final String NAME = "ImportSorter";
 
-	public static final int START_INDEX_OF_IMPORTS_PACKAGE_DECLARATION = 7;
+	private static final int START_INDEX_OF_IMPORTS_PACKAGE_DECLARATION = 7;
 	public static final String N = "\n";
 
 	private List<String> importsOrder;

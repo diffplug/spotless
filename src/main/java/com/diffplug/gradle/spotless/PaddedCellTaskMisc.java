@@ -208,7 +208,7 @@ class PaddedCellTaskMisc {
 		}
 	}
 
-	static void apply(FormatTask task, Formatter formatter, File file) throws IOException {
+	static void apply(Formatter formatter, File file) throws IOException {
 		byte[] rawBytes = Files.readAllBytes(file.toPath());
 		String raw = new String(rawBytes, formatter.encoding);
 		String rawUnix = LineEnding.toUnix(raw);
@@ -242,7 +242,7 @@ class PaddedCellTaskMisc {
 	}
 
 	/** Does whatever it takes to turn this path into an empty folder. */
-	static void cleanDir(Path folder) throws IOException {
+	private static void cleanDir(Path folder) throws IOException {
 		if (Files.exists(folder)) {
 			if (Files.isDirectory(folder)) {
 				Files.walkFileTree(folder, new SimpleFileVisitor<Path>() {

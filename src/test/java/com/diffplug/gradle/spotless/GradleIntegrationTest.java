@@ -38,18 +38,18 @@ import com.diffplug.common.tree.TreeStream;
 
 public class GradleIntegrationTest extends ResourceHarness {
 	@Rule
-	public TemporaryFolder folder = new TemporaryFolder();
+	public final TemporaryFolder folder = new TemporaryFolder();
 
 	protected void write(String path, String... lines) throws IOException {
 		write(path, LineEnding.UNIX, lines);
 	}
 
-	protected void write(String path, LineEnding ending, String... lines) throws IOException {
+	private void write(String path, LineEnding ending, String... lines) throws IOException {
 		write(path, ending, StandardCharsets.UTF_8, lines);
 	}
 
-	protected void write(String path, LineEnding ending, Charset encoding, String... lines) throws IOException {
-		String content = Arrays.asList(lines).stream().collect(Collectors.joining(ending.str())) + ending.str();
+	void write(String path, LineEnding ending, Charset encoding, String... lines) throws IOException {
+		String content = Arrays.stream(lines).collect(Collectors.joining(ending.str())) + ending.str();
 		Path target = folder.getRoot().toPath().resolve(path);
 		Files.createDirectories(target.getParent());
 		Files.write(target, content.getBytes(encoding));
@@ -59,11 +59,11 @@ public class GradleIntegrationTest extends ResourceHarness {
 		return read(path, LineEnding.UNIX);
 	}
 
-	protected String read(String path, LineEnding ending) throws IOException {
+	private String read(String path, LineEnding ending) throws IOException {
 		return read(path, ending, StandardCharsets.UTF_8);
 	}
 
-	protected String read(String path, LineEnding ending, Charset encoding) throws IOException {
+	String read(String path, LineEnding ending, Charset encoding) throws IOException {
 		Path target = folder.getRoot().toPath().resolve(path);
 		String content = new String(Files.readAllBytes(target), encoding);
 		String allUnixNewline = LineEnding.toUnix(content);
@@ -83,7 +83,7 @@ public class GradleIntegrationTest extends ResourceHarness {
 		return getContents(subPath -> !subPath.startsWith(".gradle"));
 	}
 
-	protected String getContents(Predicate<String> subpathsToInclude) throws IOException {
+	private String getContents(Predicate<String> subpathsToInclude) throws IOException {
 		TreeDef<File> treeDef = TreeDef.forFile(Errors.rethrow());
 		List<File> files = TreeStream.depthFirst(treeDef, folder.getRoot())
 				.filter(File::isFile)

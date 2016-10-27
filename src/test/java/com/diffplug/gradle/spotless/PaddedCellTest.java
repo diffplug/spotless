@@ -37,7 +37,7 @@ import com.diffplug.common.base.Throwing;
 
 public class PaddedCellTest {
 	@Rule
-	public TemporaryFolder folder = new TemporaryFolder();
+	public final TemporaryFolder folder = new TemporaryFolder();
 
 	private void misbehaved(Throwing.Function<String, String> step, String input, PaddedCell.Type expectedOutputType, String steps, String canonical) throws IOException {
 		testCase(step, input, expectedOutputType, steps, canonical, true);

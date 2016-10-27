@@ -28,7 +28,7 @@ import com.diffplug.gradle.spotless.LicenseHeaderStep;
 import com.diffplug.gradle.spotless.SpotlessExtension;
 
 public class JavaExtension extends FormatExtension {
-	public static final String NAME = "java";
+	private static final String NAME = "java";
 
 	public JavaExtension(SpotlessExtension rootExtension) {
 		super(NAME, rootExtension);
@@ -67,7 +67,7 @@ public class JavaExtension extends FormatExtension {
 	 * Limited to published versions.  See [issue #33](https://github.com/diffplug/spotless/issues/33#issuecomment-252315095)
 	 * for an workaround for using snapshot versions.
 	 */
-	public void googleJavaFormat(String version) {
+	private void googleJavaFormat(String version) {
 		customLazy(GoogleJavaFormat.NAME, () -> GoogleJavaFormat.createRule(version, getProject()));
 	}
 
