@@ -66,8 +66,6 @@ public class SpotlessPlugin implements Plugin<Project> {
 
 	FormatTask createTask(String name, FormatExtension format, boolean check) throws Exception {
 		FormatTask task = project.getTasks().create(EXTENSION + capitalize(name) + (check ? CHECK : APPLY), FormatTask.class);
-		task.lineEndingsPolicy = format.getLineEndingPolicy();
-		task.paddedCell = format.paddedCell;
 		task.check = check;
 		// sets toFormat and steps
 		format.setupTask(task);

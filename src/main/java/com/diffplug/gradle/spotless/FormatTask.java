@@ -28,7 +28,7 @@ import org.gradle.api.GradleException;
 import org.gradle.api.tasks.TaskAction;
 
 public class FormatTask extends DefaultTask {
-	// set by SpotlessExtension
+	// set by SpotlessExtension, but possibly overridden by FormatExtension
 	public Charset encoding = StandardCharsets.UTF_8;
 	public LineEnding.Policy lineEndingsPolicy = LineEnding.UNIX_POLICY;
 	// set by FormatExtension

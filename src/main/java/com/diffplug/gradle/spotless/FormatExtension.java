@@ -271,9 +271,11 @@ public class FormatExtension {
 
 	/** Sets up a FormatTask according to the values in this extension. */
 	protected void setupTask(FormatTask task) throws Exception {
+		task.paddedCell = paddedCell;
+		task.lineEndingsPolicy = getLineEndingPolicy();
+		task.encoding = getEncoding();
 		task.target = target;
 		task.steps = steps;
-		task.encoding = getEncoding();
 	}
 
 	/** Returns the project that this extension is attached to. */
