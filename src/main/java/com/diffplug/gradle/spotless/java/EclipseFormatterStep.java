@@ -73,15 +73,15 @@ public class EclipseFormatterStep {
 			NodeList profiles = xmlSettings.getAt(new QName("profile"));
 			if (profiles.size() > 1) {
 				logger.warn("Eclipse formatter file contains multiple profiles: " + file.getAbsolutePath());
-				for (int i = 0; i < profiles.size(); ++i) {
-					Node node = (Node) profiles.get(i);
+				for (Object profile : profiles) {
+					Node node = (Node) profile;
 					logger.warn("    " + node.attribute("name"));
 				}
 				logger.warn("Using first profile, recommend deleting others.");
 			}
 			NodeList xmlSettingsElements = xmlSettings.getAt(new QName("profile")).getAt("setting");
-			for (int i = 0; i < xmlSettingsElements.size(); ++i) {
-				Node setting = (Node) xmlSettingsElements.get(i);
+			for (Object xmlSettingsElement : xmlSettingsElements) {
+				Node setting = (Node) xmlSettingsElement;
 				settings.put(setting.attributes().get("id"), setting.attributes().get("value"));
 			}
 			return new EclipseFormatterStep(settings);

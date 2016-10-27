@@ -41,7 +41,7 @@ public interface FormatterStep {
 	 * @param file
 	 *            the File which is being formatted
 	 * @return The formatted content, guaranteed to only have unix-style newlines
-	 * @throws Throwable
+	 * @throws Throwable when the formatter steps experiences a problem
 	 */
 	String format(String raw, File file) throws Throwable;
 
@@ -68,7 +68,7 @@ public interface FormatterStep {
 	}
 
 	/** A FormatterStep which doesn't depend on the input file. */
-	static class FileIndependent implements FormatterStep {
+	class FileIndependent implements FormatterStep {
 		private final String name;
 		private final Throwing.Function<String, String> formatter;
 
@@ -89,12 +89,12 @@ public interface FormatterStep {
 	}
 
 	/** Creates a FormatterStep from the given function. */
-	public static FormatterStep create(String name, Throwing.Function<String, String> formatter) {
+	static FormatterStep create(String name, Throwing.Function<String, String> formatter) {
 		return new FileIndependent(name, formatter);
 	}
 
 	/** Creates a FormatterStep lazily from the given formatterSupplier function. */
-	public static FormatterStep createLazy(String name, Throwing.Supplier<Throwing.Function<String, String>> formatterSupplier) {
+	static FormatterStep createLazy(String name, Throwing.Supplier<Throwing.Function<String, String>> formatterSupplier) {
 		// wrap the supplier as a regular Supplier (not a Throwing.Supplier)
 		Supplier<Throwing.Function<String, String>> rethrowFormatterSupplier = Errors.rethrow().wrap(formatterSupplier);
 		// memoize its result
