@@ -46,12 +46,12 @@ public class FormatExtension {
 
 	boolean paddedCell = false;
 
-	/** Enables paddedCell mode {@see https://github.com/diffplug/spotless/blob/master/PADDEDCELL.md}. */
+	/** Enables paddedCell mode. @see <a href="https://github.com/diffplug/spotless/blob/master/PADDEDCELL.md">Padded cell</a> */
 	public void paddedCell() {
 		paddedCell(true);
 	}
 
-	/** Enables or disables paddedCell mode {@see https://github.com/diffplug/spotless/blob/master/PADDEDCELL.md}. */
+	/** Enables paddedCell mode. @see <a href="https://github.com/diffplug/spotless/blob/master/PADDEDCELL.md">Padded cell</a> */
 	public void paddedCell(boolean paddedCell) {
 		this.paddedCell = paddedCell;
 	}
