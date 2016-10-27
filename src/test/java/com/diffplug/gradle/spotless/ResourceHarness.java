@@ -51,13 +51,15 @@ public class ResourceHarness {
 		int lastSlash = filename.lastIndexOf('/');
 		String name = lastSlash >= 0 ? filename.substring(lastSlash) : filename;
 		File file = folder.newFile(name);
+		file.getParentFile().mkdirs();
 		Files.write(file.toPath(), getTestResource(filename).getBytes(StandardCharsets.UTF_8));
 		return file;
 	}
 
 	/** Returns a File (in a temporary folder) which has the given contents. */
 	protected File createTestFile(String filename, String content) throws IOException {
-		File file = folder.newFile(filename);
+		File file = new File(folder.getRoot(), filename);
+		file.getParentFile().mkdirs();
 		Files.write(file.toPath(), content.getBytes(StandardCharsets.UTF_8));
 		return file;
 	}

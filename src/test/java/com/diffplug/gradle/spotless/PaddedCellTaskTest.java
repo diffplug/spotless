@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
@@ -29,17 +30,24 @@ import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.diffplug.common.base.StandardSystemProperty;
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.common.base.Throwing;
 
 public class PaddedCellTaskTest extends ResourceHarness {
+	private static final boolean IS_WIN = StandardSystemProperty.OS_NAME.value().toLowerCase(Locale.US).contains("win");
+
+	private static String slashify(String input) {
+		return IS_WIN ? input.replace('/', '\\') : input;
+	}
+
 	class Bundle {
 		Project project = ProjectBuilder.builder().withProjectDir(folder.getRoot()).build();
 		File file;
 		FormatTask check, apply;
 
 		Bundle(String name, Throwing.Function<String, String> function) throws IOException {
-			file = createTestFile("test." + name, "CCC");
+			file = createTestFile("src/test." + name, "CCC");
 			FormatterStep step = FormatterStep.create(name, function);
 			check = create(name, step, true);
 			apply = create(name, step, false);
@@ -115,14 +123,14 @@ public class PaddedCellTaskTest extends ResourceHarness {
 				"spotless-diagnose-converge",
 				"spotless-diagnose-cycle",
 				"spotless-diagnose-diverge");
-		assertFolderContents("build/spotless-diagnose-cycle",
+		assertFolderContents("build/spotless-diagnose-cycle/src",
 				"test.cycle.cycle0",
 				"test.cycle.cycle1");
-		assertFolderContents("build/spotless-diagnose-converge",
+		assertFolderContents("build/spotless-diagnose-converge/src",
 				"test.converge.converge0",
 				"test.converge.converge1",
 				"test.converge.converge2");
-		assertFolderContents("build/spotless-diagnose-diverge",
+		assertFolderContents("build/spotless-diagnose-diverge/src",
 				"test.diverge.diverge0",
 				"test.diverge.diverge1",
 				"test.diverge.diverge2",
@@ -146,7 +154,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 	public void paddedCellCheckCycleFailureMsg() throws Throwable {
 		assertFailureMessage(cycle().paddedCell(),
 				"The following files had format violations:",
-				"    test.cycle",
+				slashify("    src/test.cycle"),
 				"    @@ -1 +1 @@",
 				"    -CCC",
 				"    +A",
@@ -157,7 +165,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 	public void paddedCellCheckConvergeFailureMsg() throws Throwable {
 		assertFailureMessage(converge().paddedCell(),
 				"The following files had format violations:",
-				"    test.converge",
+				slashify("    src/test.converge"),
 				"    @@ -1 +0,0 @@",
 				"    -CCC",
 				"Run 'gradlew spotlessApply' to fix these violations.");
