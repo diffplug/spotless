@@ -17,6 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,6 +25,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
@@ -31,19 +33,27 @@ import org.gradle.api.logging.Logging;
 /** Formatter which performs the full formatting. */
 public class Formatter {
 	final LineEnding.Policy lineEndingPolicy;
+	final Charset encoding;
 	final Path projectDirectory;
 	final List<FormatterStep> steps;
 	final Logger logger = Logging.getLogger(Formatter.class);
 
+	/** It's important to specify the charset. */
+	@Deprecated
 	public Formatter(LineEnding.Policy lineEndingPolicy, Path projectDirectory, List<FormatterStep> steps) {
-		this.lineEndingPolicy = lineEndingPolicy;
-		this.projectDirectory = projectDirectory;
+		this(lineEndingPolicy, StandardCharsets.UTF_8, projectDirectory, steps);
+	}
+
+	public Formatter(LineEnding.Policy lineEndingPolicy, Charset encoding, Path projectDirectory, List<FormatterStep> steps) {
+		this.lineEndingPolicy = Objects.requireNonNull(lineEndingPolicy);
+		this.encoding = Objects.requireNonNull(encoding);
+		this.projectDirectory = Objects.requireNonNull(projectDirectory);
 		this.steps = new ArrayList<>(steps);
 	}
 
 	/** Returns true iff the given file's formatting is up-to-date. */
 	public boolean isClean(File file) throws IOException {
-		String raw = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+		String raw = new String(Files.readAllBytes(file.toPath()), encoding);
 		String unix = LineEnding.toUnix(raw);
 
 		// check the newlines (we can find these problems without even running the steps)
@@ -69,7 +79,7 @@ public class Formatter {
 	/** Applies formatting to the given file. */
 	public void applyFormat(File file) throws IOException {
 		byte[] rawBytes = Files.readAllBytes(file.toPath());
-		String raw = new String(rawBytes, StandardCharsets.UTF_8);
+		String raw = new String(rawBytes, encoding);
 		String rawUnix = LineEnding.toUnix(raw);
 
 		// enforce the format
@@ -78,7 +88,7 @@ public class Formatter {
 		String formatted = applyLineEndings(formattedUnix, file);
 
 		// write out the file iff it has changed
-		byte[] formattedBytes = formatted.getBytes(StandardCharsets.UTF_8);
+		byte[] formattedBytes = formatted.getBytes(encoding);
 		if (!Arrays.equals(rawBytes, formattedBytes)) {
 			Files.write(file.toPath(), formattedBytes, StandardOpenOption.TRUNCATE_EXISTING);
 		}

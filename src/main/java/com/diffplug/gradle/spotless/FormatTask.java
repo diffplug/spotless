@@ -17,6 +17,8 @@ package com.diffplug.gradle.spotless;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -26,13 +28,15 @@ import org.gradle.api.GradleException;
 import org.gradle.api.tasks.TaskAction;
 
 public class FormatTask extends DefaultTask {
-	// set by SpotlessExtension
+	// set by SpotlessExtension, but possibly overridden by FormatExtension
+	public Charset encoding = StandardCharsets.UTF_8;
 	public LineEnding.Policy lineEndingsPolicy = LineEnding.UNIX_POLICY;
-	public boolean paddedCell = false;
 	// set by FormatExtension
+	public boolean paddedCell = false;
 	public Iterable<File> target;
-	public boolean check = false;
 	public List<FormatterStep> steps = new ArrayList<>();
+	// set by plugin
+	public boolean check = false;
 
 	/** Returns the name of this format. */
 	public String getFormatName() {
@@ -54,7 +58,7 @@ public class FormatTask extends DefaultTask {
 			throw new GradleException("You must specify 'Iterable<File> toFormat'");
 		}
 		// combine them into the master formatter
-		Formatter formatter = new Formatter(lineEndingsPolicy, getProject().getProjectDir().toPath(), steps);
+		Formatter formatter = new Formatter(lineEndingsPolicy, encoding, getProject().getProjectDir().toPath(), steps);
 
 		// perform the check
 		if (check) {

@@ -16,7 +16,6 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -83,7 +82,7 @@ class PaddedCell {
 	 */
 	public static PaddedCell check(Formatter formatter, File file) {
 		byte[] rawBytes = Errors.rethrow().get(() -> Files.readAllBytes(file.toPath()));
-		String raw = new String(rawBytes, StandardCharsets.UTF_8);
+		String raw = new String(rawBytes, formatter.encoding);
 		String original = LineEnding.toUnix(raw);
 		return check(formatter, file, original, MAX_CYCLE);
 	}

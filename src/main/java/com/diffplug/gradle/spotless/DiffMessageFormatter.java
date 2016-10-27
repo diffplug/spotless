@@ -120,7 +120,7 @@ final class DiffMessageFormatter {
 	 * sequence (\n, \r, \r\n).
 	 */
 	private static String diff(FormatTask task, Formatter formatter, File file) throws IOException {
-		String raw = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+		String raw = new String(Files.readAllBytes(file.toPath()), formatter.encoding);
 		String rawUnix = LineEnding.toUnix(raw);
 		String formattedUnix;
 		if (task.paddedCell) {

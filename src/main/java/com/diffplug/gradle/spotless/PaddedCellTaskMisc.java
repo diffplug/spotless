@@ -17,7 +17,6 @@ package com.diffplug.gradle.spotless;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -138,7 +137,7 @@ class PaddedCellTaskMisc {
 		// "fake" Formatter which can use the already-computed result of a PaddedCell as
 		Step paddedCellStep = new Step();
 		Formatter paddedFormatter = new Formatter(
-				formatter.lineEndingPolicy, formatter.projectDirectory,
+				formatter.lineEndingPolicy, formatter.encoding, formatter.projectDirectory,
 				Collections.singletonList(paddedCellStep));
 
 		// empty out the diagnose folder
@@ -162,7 +161,7 @@ class PaddedCellTaskMisc {
 					Path path = Paths.get(diagnoseFile + "." + padded.type().name().toLowerCase(Locale.US) + i);
 					Files.createDirectories(path.getParent());
 					String version = padded.steps().get(i);
-					Files.write(path, version.getBytes(StandardCharsets.UTF_8));
+					Files.write(path, version.getBytes(formatter.encoding));
 				}
 				// dump the type of the misbehavior to console
 				task.getLogger().quiet("    " + relative + " " + padded.userMessage());
@@ -214,7 +213,7 @@ class PaddedCellTaskMisc {
 
 	static void apply(FormatTask task, Formatter formatter, File file) throws IOException {
 		byte[] rawBytes = Files.readAllBytes(file.toPath());
-		String raw = new String(rawBytes, StandardCharsets.UTF_8);
+		String raw = new String(rawBytes, formatter.encoding);
 		String rawUnix = LineEnding.toUnix(raw);
 
 		// enforce the format
@@ -223,7 +222,7 @@ class PaddedCellTaskMisc {
 		String formatted = formatter.applyLineEndings(formattedUnix, file);
 
 		// if F(input) == input, then the formatter is well-behaving and the input is clean
-		byte[] formattedBytes = formatted.getBytes(StandardCharsets.UTF_8);
+		byte[] formattedBytes = formatted.getBytes(formatter.encoding);
 		if (Arrays.equals(rawBytes, formattedBytes)) {
 			return;
 		}
@@ -238,7 +237,7 @@ class PaddedCellTaskMisc {
 		// get the canonical bytes
 		String canonicalUnix = cell.canonical();
 		String canonical = formatter.applyLineEndings(canonicalUnix, file);
-		byte[] canonicalBytes = canonical.getBytes(StandardCharsets.UTF_8);
+		byte[] canonicalBytes = canonical.getBytes(formatter.encoding);
 		if (!Arrays.equals(rawBytes, canonicalBytes)) {
 			// and write them to disk if needed
 			Files.write(file.toPath(), canonicalBytes, StandardOpenOption.TRUNCATE_EXISTING);

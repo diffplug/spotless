@@ -17,6 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.regex.Matcher;
@@ -45,9 +46,15 @@ public class LicenseHeaderStep {
 		this.delimiterPattern = Pattern.compile('^' + delimiter, Pattern.UNIX_LINES | Pattern.MULTILINE);
 	}
 
-	/** Reads the license file from the given file. */
+	/** Use the other constructor which takes an encoding. */
+	@Deprecated
 	public LicenseHeaderStep(File licenseFile, String delimiter) throws IOException {
-		this(new String(Files.readAllBytes(licenseFile.toPath()), StandardCharsets.UTF_8), delimiter);
+		this(licenseFile, StandardCharsets.UTF_8, delimiter);
+	}
+
+	/** Reads the license file from the given file. */
+	public LicenseHeaderStep(File licenseFile, Charset encoding, String delimiter) throws IOException {
+		this(new String(Files.readAllBytes(licenseFile.toPath()), encoding), delimiter);
 	}
 
 	/** Formats the given string. */

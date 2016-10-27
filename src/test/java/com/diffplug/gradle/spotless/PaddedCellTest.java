@@ -50,7 +50,7 @@ public class PaddedCellTest {
 	private void testCase(Throwing.Function<String, String> step, String input, PaddedCell.Type expectedOutputType, String expectedSteps, String canonical, boolean misbehaved) throws IOException {
 		List<FormatterStep> formatterSteps = new ArrayList<>();
 		formatterSteps.add(FormatterStep.create("step", step));
-		Formatter formatter = new Formatter(LineEnding.UNIX_POLICY, folder.getRoot().toPath(), formatterSteps);
+		Formatter formatter = new Formatter(LineEnding.UNIX_POLICY, StandardCharsets.UTF_8, folder.getRoot().toPath(), formatterSteps);
 
 		File file = folder.newFile();
 		Files.write(file.toPath(), input.getBytes(StandardCharsets.UTF_8));

@@ -39,7 +39,7 @@ public class GoogleJavaFormatTest extends GradleIntegrationTest {
 				"}");
 		String input = getTestResource("java/googlejavaformat/JavaCodeUnformatted.test");
 		write("test.java", input);
-		gradleRunner().withArguments("spotlessApply").forwardOutput().build();
+		gradleRunner().withArguments("spotlessApply").build();
 
 		String result = read("test.java");
 		String output = getTestResource("java/googlejavaformat/JavaCodeFormatted.test");
