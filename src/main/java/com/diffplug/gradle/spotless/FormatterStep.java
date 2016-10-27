@@ -41,7 +41,7 @@ public interface FormatterStep {
 	 * @param file
 	 *            the File which is being formatted
 	 * @return The formatted content, guaranteed to only have unix-style newlines
-	 * @throws Throwable
+	 * @throws Throwable when the formatter steps experiences a problem
 	 */
 	String format(String raw, File file) throws Throwable;
 

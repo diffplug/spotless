@@ -60,7 +60,7 @@ class PaddedCell {
 		return file;
 	}
 
-	/** Returns the type of the result (either {@link Cycle}, {@link Converge}, or {@link Diverge}). */
+	/** Returns the type of the result (either {@link Type#CONVERGE}, {@link Type#CYCLE}, or {@link Type#DIVERGE}). */
 	public Type type() {
 		return type;
 	}
