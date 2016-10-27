@@ -37,6 +37,8 @@ import org.gradle.api.GradleException;
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StringPrinter;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Incorporates the PaddedCell machinery into FormatTask.apply() and FormatTask.check().
  *
@@ -123,6 +125,7 @@ class PaddedCellTaskMisc {
 		return task.getProject().getBuildDir().toPath().resolve("spotless-diagnose-" + task.getFormatName());
 	}
 
+	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 	static void check(FormatTask task, Formatter formatter, List<File> problemFiles) throws IOException {
 		if (problemFiles.isEmpty()) {
 			// if the first pass was successful, then paddedCell() mode is unnecessary
