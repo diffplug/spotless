@@ -56,7 +56,7 @@ class GoogleJavaFormat {
 			throw e;
 		}
 		URL[] jarUrls = jars.stream().map(Errors.rethrow().wrapFunction(
-				file -> file.toURI().toURL())).toArray(size -> new URL[size]);
+				file -> file.toURI().toURL())).toArray(URL[]::new);
 		URLClassLoader classLoader = new URLClassLoader(jarUrls);
 		// TODO: dispose the classloader when the function
 		// that we return gets garbage-collected

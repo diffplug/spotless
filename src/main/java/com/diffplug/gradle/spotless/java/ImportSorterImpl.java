@@ -114,8 +114,7 @@ class ImportSorterImpl {
 
 		int firstIndexOfOrderItem = getFirstIndexOfOrderItem(notMatching, staticItems);
 		int indexOfOrderItem = 0;
-		for (int i = 0; i < notMatching.size(); i++) {
-			String notMatchingItem = notMatching.get(i);
+		for (String notMatchingItem : notMatching) {
 			if (!matchesStatic(staticItems, notMatchingItem)) {
 				continue;
 			}
@@ -153,8 +152,7 @@ class ImportSorterImpl {
 	 */
 	private int getFirstIndexOfOrderItem(List<String> notMatching, boolean staticItems) {
 		int firstIndexOfOrderItem = 0;
-		for (int i = 0; i < notMatching.size(); i++) {
-			String notMatchingItem = notMatching.get(i);
+		for (String notMatchingItem : notMatching) {
 			if (!matchesStatic(staticItems, notMatchingItem)) {
 				continue;
 			}

@@ -80,9 +80,7 @@ public class PaddedCellTest {
 
 	@Test
 	public void pingPong() throws IOException {
-		misbehaved(input -> {
-			return input.equals("A") ? "B" : "A";
-		}, "CCC", CYCLE, "A,B", "A");
+		misbehaved(input -> input.equals("A") ? "B" : "A", "CCC", CYCLE, "A,B", "A");
 	}
 
 	@Test
@@ -112,9 +110,7 @@ public class PaddedCellTest {
 
 	@Test
 	public void diverging() throws IOException {
-		misbehaved(input -> {
-			return input + " ";
-		}, "", DIVERGE, " ,  ,   ,    ,     ,      ,       ,        ,         ,          ", null);
+		misbehaved(input -> input + " ", "", DIVERGE, " ,  ,   ,    ,     ,      ,       ,        ,         ,          ", null);
 	}
 
 	@Test
