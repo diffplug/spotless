@@ -15,8 +15,11 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
@@ -41,6 +44,28 @@ public class SpotlessExtension {
 
 	public void setLineEndings(LineEnding lineEndings) {
 		this.lineEndings = lineEndings;
+	}
+
+	Charset encoding = StandardCharsets.UTF_8;
+
+	/** Returns the encoding to use. */
+	public Charset getEncoding() {
+		return encoding;
+	}
+
+	/** Sets encoding to use (defaults to UTF_8). */
+	public void setEncoding(String name) {
+		setEncoding(Charset.forName(name));
+	}
+
+	/** Sets encoding to use (defaults to UTF_8). */
+	public void setEncoding(Charset charset) {
+		encoding = Objects.requireNonNull(charset);
+	}
+
+	/** Sets encoding to use (defaults to UTF_8). */
+	public void encoding(String charset) {
+		setEncoding(charset);
 	}
 
 	Map<String, FormatExtension> formats = new LinkedHashMap<>();
@@ -69,9 +94,5 @@ public class SpotlessExtension {
 		if (former != null) {
 			throw new GradleException("Multiple spotless extensions with name '" + extension.name + "'");
 		}
-	}
-
-	LineEnding.Policy getLineEndingPolicy() {
-		return lineEndings.createPolicy(project.getProjectDir());
 	}
 }

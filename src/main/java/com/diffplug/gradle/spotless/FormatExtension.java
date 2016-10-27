@@ -15,11 +15,13 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import org.gradle.api.GradleException;
@@ -52,6 +54,44 @@ public class FormatExtension {
 	/** Enables or disables paddedCell mode {@see https://github.com/diffplug/spotless/blob/master/PADDEDCELL.md}. */
 	public void paddedCell(boolean paddedCell) {
 		this.paddedCell = paddedCell;
+	}
+
+	LineEnding lineEndings;
+
+	/** Returns the line endings to use (defaults to {@link SpotlessExtension#getLineEndings()}. */
+	public LineEnding getLineEndings() {
+		return lineEndings == null ? root.getLineEndings() : lineEndings;
+	}
+
+	/** Sets the line endings to use (defaults to {@link SpotlessExtension#getLineEndings()}. */
+	public void setLineEndings(LineEnding lineEndings) {
+		this.lineEndings = lineEndings;
+	}
+
+	LineEnding.Policy getLineEndingPolicy() {
+		return getLineEndings().createPolicy(getProject().getProjectDir());
+	}
+
+	Charset encoding;
+
+	/** Returns the encoding to use (defaults to {@link SpotlessExtension#getEncoding()}. */
+	public Charset getEncoding() {
+		return encoding == null ? root.getEncoding() : encoding;
+	}
+
+	/** Sets the encoding to use (defaults to {@link SpotlessExtension#getEncoding()}. */
+	public void setEncoding(String name) {
+		setEncoding(Charset.forName(name));
+	}
+
+	/** Sets the encoding to use (defaults to {@link SpotlessExtension#getEncoding()}. */
+	public void setEncoding(Charset charset) {
+		encoding = Objects.requireNonNull(charset);
+	}
+
+	/** Sets encoding to use (defaults to UTF_8). */
+	public void encoding(String charset) {
+		setEncoding(charset);
 	}
 
 	/** The files that need to be formatted. */
@@ -226,13 +266,14 @@ public class FormatExtension {
 	 *            Spotless will look for a line that starts with this to know what the "top" is.
 	 */
 	public void licenseHeaderFile(Object licenseHeaderFile, String delimiter) {
-		customLazy(LicenseHeaderStep.NAME, () -> new LicenseHeaderStep(getProject().file(licenseHeaderFile), delimiter)::format);
+		customLazy(LicenseHeaderStep.NAME, () -> new LicenseHeaderStep(getProject().file(licenseHeaderFile), getEncoding(), delimiter)::format);
 	}
 
 	/** Sets up a FormatTask according to the values in this extension. */
 	protected void setupTask(FormatTask task) throws Exception {
 		task.target = target;
 		task.steps = steps;
+		task.encoding = getEncoding();
 	}
 
 	/** Returns the project that this extension is attached to. */

@@ -17,6 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -44,10 +45,14 @@ public class GradleIntegrationTest extends ResourceHarness {
 	}
 
 	protected void write(String path, LineEnding ending, String... lines) throws IOException {
+		write(path, ending, StandardCharsets.UTF_8, lines);
+	}
+
+	protected void write(String path, LineEnding ending, Charset encoding, String... lines) throws IOException {
 		String content = Arrays.asList(lines).stream().collect(Collectors.joining(ending.str())) + ending.str();
 		Path target = folder.getRoot().toPath().resolve(path);
 		Files.createDirectories(target.getParent());
-		Files.write(target, content.getBytes(StandardCharsets.UTF_8));
+		Files.write(target, content.getBytes(encoding));
 	}
 
 	protected String read(String path) throws IOException {
@@ -55,8 +60,12 @@ public class GradleIntegrationTest extends ResourceHarness {
 	}
 
 	protected String read(String path, LineEnding ending) throws IOException {
+		return read(path, ending, StandardCharsets.UTF_8);
+	}
+
+	protected String read(String path, LineEnding ending, Charset encoding) throws IOException {
 		Path target = folder.getRoot().toPath().resolve(path);
-		String content = new String(Files.readAllBytes(target), StandardCharsets.UTF_8);
+		String content = new String(Files.readAllBytes(target), encoding);
 		String allUnixNewline = LineEnding.toUnix(content);
 		return allUnixNewline.replace("\n", ending.str());
 	}

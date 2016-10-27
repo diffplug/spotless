@@ -15,6 +15,8 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.nio.charset.StandardCharsets;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -34,7 +36,7 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 
 	@Test
 	public void fromFile() throws Throwable {
-		LicenseHeaderStep step = new LicenseHeaderStep(createTestFile(KEY_LICENSE), JavaExtension.LICENSE_HEADER_DELIMITER);
+		LicenseHeaderStep step = new LicenseHeaderStep(createTestFile(KEY_LICENSE), StandardCharsets.UTF_8, JavaExtension.LICENSE_HEADER_DELIMITER);
 		assertStep(step::format, KEY_FILE_NOTAPPLIED, KEY_FILE_APPLIED);
 	}
 
