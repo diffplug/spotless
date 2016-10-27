@@ -86,22 +86,20 @@ public class GradleIntegrationTest extends ResourceHarness {
 	protected String getContents(Predicate<String> subpathsToInclude) throws IOException {
 		TreeDef<File> treeDef = TreeDef.forFile(Errors.rethrow());
 		List<File> files = TreeStream.depthFirst(treeDef, folder.getRoot())
-				.filter(file -> file.isFile())
+				.filter(File::isFile)
 				.collect(Collectors.toList());
 
 		ListIterator<File> iterator = files.listIterator(files.size());
 		int rootLength = folder.getRoot().getAbsolutePath().length() + 1;
-		return StringPrinter.buildString(printer -> {
-			Errors.rethrow().run(() -> {
-				while (iterator.hasPrevious()) {
-					File file = iterator.previous();
-					String subPath = file.getAbsolutePath().substring(rootLength);
-					if (subpathsToInclude.test(subPath)) {
-						printer.println("### " + subPath + " ###");
-						printer.println(read(subPath));
-					}
+		return StringPrinter.buildString(printer -> Errors.rethrow().run(() -> {
+			while (iterator.hasPrevious()) {
+				File file = iterator.previous();
+				String subPath = file.getAbsolutePath().substring(rootLength);
+				if (subpathsToInclude.test(subPath)) {
+					printer.println("### " + subPath + " ###");
+					printer.println(read(subPath));
 				}
-			});
-		});
+			}
+		}));
 	}
 }
