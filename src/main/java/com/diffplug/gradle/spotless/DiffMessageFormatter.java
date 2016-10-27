@@ -65,7 +65,7 @@ final class DiffMessageFormatter {
 		if (problemIter.hasNext()) {
 			int remainingFiles = problemFiles.size() - problemIter.nextIndex();
 			if (remainingFiles >= MAX_FILES_TO_LIST) {
-				buffer.append("Violations also present in " + remainingFiles + " other files.\n");
+				buffer.append("Violations also present in ").append(remainingFiles).append(" other files.\n");
 			} else {
 				buffer.append("Violations also present in:\n");
 				while (problemIter.hasNext()) {
