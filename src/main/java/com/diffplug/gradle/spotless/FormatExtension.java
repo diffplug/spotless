@@ -35,8 +35,8 @@ import groovy.lang.Closure;
 
 /** Adds a `spotless{Name}Check` and `spotless{Name}Apply` task. */
 public class FormatExtension {
-	protected final String name;
-	protected final SpotlessExtension root;
+	final String name;
+	private final SpotlessExtension root;
 
 	public FormatExtension(String name, SpotlessExtension root) {
 		this.name = name;
@@ -44,7 +44,7 @@ public class FormatExtension {
 		root.addFormatExtension(this);
 	}
 
-	boolean paddedCell = false;
+	private boolean paddedCell = false;
 
 	/** Enables paddedCell mode. @see <a href="https://github.com/diffplug/spotless/blob/master/PADDEDCELL.md">Padded cell</a> */
 	public void paddedCell() {
@@ -52,14 +52,14 @@ public class FormatExtension {
 	}
 
 	/** Enables paddedCell mode. @see <a href="https://github.com/diffplug/spotless/blob/master/PADDEDCELL.md">Padded cell</a> */
-	public void paddedCell(boolean paddedCell) {
+	private void paddedCell(boolean paddedCell) {
 		this.paddedCell = paddedCell;
 	}
 
-	LineEnding lineEndings;
+	private LineEnding lineEndings;
 
 	/** Returns the line endings to use (defaults to {@link SpotlessExtension#getLineEndings()}. */
-	public LineEnding getLineEndings() {
+	private LineEnding getLineEndings() {
 		return lineEndings == null ? root.getLineEndings() : lineEndings;
 	}
 
@@ -68,24 +68,24 @@ public class FormatExtension {
 		this.lineEndings = lineEndings;
 	}
 
-	LineEnding.Policy getLineEndingPolicy() {
+	private LineEnding.Policy getLineEndingPolicy() {
 		return getLineEndings().createPolicy(getProject().getProjectDir());
 	}
 
-	Charset encoding;
+	private Charset encoding;
 
 	/** Returns the encoding to use (defaults to {@link SpotlessExtension#getEncoding()}. */
-	public Charset getEncoding() {
+	private Charset getEncoding() {
 		return encoding == null ? root.getEncoding() : encoding;
 	}
 
 	/** Sets the encoding to use (defaults to {@link SpotlessExtension#getEncoding()}. */
-	public void setEncoding(String name) {
+	private void setEncoding(String name) {
 		setEncoding(Charset.forName(name));
 	}
 
 	/** Sets the encoding to use (defaults to {@link SpotlessExtension#getEncoding()}. */
-	public void setEncoding(Charset charset) {
+	private void setEncoding(Charset charset) {
 		encoding = Objects.requireNonNull(charset);
 	}
 
@@ -140,7 +140,7 @@ public class FormatExtension {
 	}
 
 	/** The steps that need to be added. */
-	protected List<FormatterStep> steps = new ArrayList<>();
+	protected final List<FormatterStep> steps = new ArrayList<>();
 
 	/**
 	 * Adds the given custom step, which is constructed lazily for performance reasons.
@@ -173,7 +173,7 @@ public class FormatExtension {
 	}
 
 	/** Adds a custom step. Receives a string with unix-newlines, must return a string with unix newlines. */
-	public void custom(String name, Throwing.Function<String, String> formatter) {
+	private void custom(String name, Throwing.Function<String, String> formatter) {
 		customLazy(name, () -> formatter);
 	}
 
@@ -183,7 +183,7 @@ public class FormatExtension {
 	}
 
 	/** Highly efficient find-replace regex. */
-	public void customReplaceRegex(String name, String regex, String replacement) {
+	private void customReplaceRegex(String name, String regex, String replacement) {
 		customLazy(name, () -> {
 			Pattern pattern = Pattern.compile(regex, Pattern.UNIX_LINES | Pattern.MULTILINE);
 			return raw -> pattern.matcher(raw).replaceAll(replacement);
@@ -230,7 +230,7 @@ public class FormatExtension {
 	}
 
 	/** Ensures that the files are indented using spaces. */
-	public void indentWithSpaces(int tabToSpaces) {
+	private void indentWithSpaces(int tabToSpaces) {
 		customLazy("indentWithSpaces", () -> new IndentStep(IndentStep.Type.SPACE, tabToSpaces)::format);
 	}
 
@@ -240,7 +240,7 @@ public class FormatExtension {
 	}
 
 	/** Ensures that the files are indented using tabs. */
-	public void indentWithTabs(int tabToSpaces) {
+	private void indentWithTabs(int tabToSpaces) {
 		customLazy("indentWithTabs", () -> new IndentStep(IndentStep.Type.TAB, tabToSpaces)::format);
 	}
 
@@ -255,7 +255,7 @@ public class FormatExtension {
 	 * @param delimiter
 	 *            Spotless will look for a line that starts with this to know what the "top" is.
 	 */
-	public void licenseHeader(String licenseHeader, String delimiter) {
+	protected void licenseHeader(String licenseHeader, String delimiter) {
 		customLazy(LicenseHeaderStep.NAME, () -> new LicenseHeaderStep(licenseHeader, delimiter)::format);
 	}
 
@@ -265,7 +265,7 @@ public class FormatExtension {
 	 * @param delimiter
 	 *            Spotless will look for a line that starts with this to know what the "top" is.
 	 */
-	public void licenseHeaderFile(Object licenseHeaderFile, String delimiter) {
+	protected void licenseHeaderFile(Object licenseHeaderFile, String delimiter) {
 		customLazy(LicenseHeaderStep.NAME, () -> new LicenseHeaderStep(getProject().file(licenseHeaderFile), getEncoding(), delimiter)::format);
 	}
 

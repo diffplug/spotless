@@ -21,10 +21,10 @@ import java.util.*;
 /*not thread safe*/
 class ImportSorterImpl {
 
-	private List<String> template = new ArrayList<String>();
-	private Map<String, List<String>> matchingImports = new HashMap<String, List<String>>();
-	private ArrayList<String> notMatching = new ArrayList<String>();
-	private Set<String> allImportOrderItems = new HashSet<String>();
+	private final List<String> template = new ArrayList<String>();
+	private final Map<String, List<String>> matchingImports = new HashMap<String, List<String>>();
+	private final ArrayList<String> notMatching = new ArrayList<String>();
+	private final Set<String> allImportOrderItems = new HashSet<String>();
 
 	static List<String> sort(List<String> imports, List<String> importsOrder) {
 		ImportSorterImpl importsSorter = new ImportSorterImpl(importsOrder);

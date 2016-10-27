@@ -34,14 +34,14 @@ import com.diffplug.common.io.Resources;
 
 public class ResourceHarness {
 	@Rule
-	public TemporaryFolder folder = new TemporaryFolder();
+	public final TemporaryFolder folder = new TemporaryFolder();
 
 	/** Returns the contents of the given file from the src/test/resources directory. */
 	protected String getTestResource(String filename) throws IOException {
 		return getTestResource(filename, LineEnding.UNIX);
 	}
 
-	protected String getTestResource(String filename, LineEnding ending) throws IOException {
+	private String getTestResource(String filename, LineEnding ending) throws IOException {
 		String raw = Resources.toString(ResourceHarness.class.getResource("/" + filename), StandardCharsets.UTF_8);
 		return LineEnding.toUnix(raw).replace("\n", ending.str());
 	}
@@ -57,7 +57,7 @@ public class ResourceHarness {
 	}
 
 	/** Returns a File (in a temporary folder) which has the given contents. */
-	protected File createTestFile(String filename, String content) throws IOException {
+	File createTestFile(String filename, String content) throws IOException {
 		File file = new File(folder.getRoot(), filename);
 		file.getParentFile().mkdirs();
 		Files.write(file.toPath(), content.getBytes(StandardCharsets.UTF_8));
@@ -65,7 +65,7 @@ public class ResourceHarness {
 	}
 
 	/** Asserts that the given resource from the src/test/resources directory has the same content as the given file. */
-	protected void assertFileContent(String expectedContent, File actual) throws IOException {
+	void assertFileContent(String expectedContent, File actual) throws IOException {
 		// This line thing is necessary for the tests to pass when Windows git screws up the line-endings
 		String actualContent = new String(Files.readAllBytes(actual.toPath()), StandardCharsets.UTF_8);
 		Assert.assertEquals(expectedContent, actualContent);
@@ -84,7 +84,7 @@ public class ResourceHarness {
 	}
 
 	/** Creates a FormatTask based on the given consumer. */
-	public static FormatTask createTask(Consumer<FormatExtension> test) throws Exception {
+	private static FormatTask createTask(Consumer<FormatExtension> test) throws Exception {
 		Project project = ProjectBuilder.builder().build();
 		SpotlessPlugin plugin = project.getPlugins().apply(SpotlessPlugin.class);
 
@@ -99,7 +99,7 @@ public class ResourceHarness {
 	}
 
 	/** Tests that the formatExtension causes the given change. */
-	protected void assertTask(Consumer<FormatExtension> test, String before, String afterExpected) throws Exception {
+	void assertTask(Consumer<FormatExtension> test, String before, String afterExpected) throws Exception {
 		// create the task
 		FormatTask task = createTask(test);
 		// force unix line endings, since we're passing in raw strings

@@ -49,8 +49,8 @@ final class DiffMessageFormatter {
 				+ "' to fix these violations.";
 	}
 
-	StringBuilder buffer = new StringBuilder(MAX_CHECK_MESSAGE_LINES * 64);
-	int numLines = 0;
+	private final StringBuilder buffer = new StringBuilder(MAX_CHECK_MESSAGE_LINES * 64);
+	private int numLines = 0;
 
 	private DiffMessageFormatter(FormatTask task, Formatter formatter, List<File> problemFiles) throws IOException {
 		Preconditions.checkArgument(!problemFiles.isEmpty(), "Problem files must not be empty");

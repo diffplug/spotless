@@ -24,9 +24,9 @@ import org.gradle.api.plugins.JavaBasePlugin;
 
 import com.diffplug.common.base.Errors;
 
-public class SpotlessPlugin implements Plugin<Project> {
-	Project project;
-	SpotlessExtension spotlessExtension;
+class SpotlessPlugin implements Plugin<Project> {
+	private Project project;
+	private SpotlessExtension spotlessExtension;
 
 	static final String EXTENSION = "spotless";
 	static final String CHECK = "Check";

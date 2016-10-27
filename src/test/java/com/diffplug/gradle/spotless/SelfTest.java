@@ -59,7 +59,7 @@ public class SelfTest {
 	}
 
 	/** Runs a full task manually, so you can step through all the logic. */
-	static void runTasksManually(Type type) throws Exception {
+	private static void runTasksManually(Type type) throws Exception {
 		Project project = createProject(extension -> {
 			extension.java(java -> {
 				java.target("**/*.java");

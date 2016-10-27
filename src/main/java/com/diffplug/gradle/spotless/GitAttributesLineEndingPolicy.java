@@ -92,14 +92,14 @@ class GitAttributesLineEndingPolicy implements LineEnding.Policy {
 	}
 
 	/** .git/info/attributes (and the worktree with that file) */
-	final List<AttributesRule> infoRules;
-	final File workTree; // nullable
+	private final List<AttributesRule> infoRules;
+	private final File workTree; // nullable
 
 	/** Cache of local .gitattributes files. */
-	final AttributesCache cache = new AttributesCache();
+	private final AttributesCache cache = new AttributesCache();
 
 	/** Global .gitattributes file. */
-	final List<AttributesRule> globalRules;
+	private final List<AttributesRule> globalRules;
 
 	/**
 	 * Default line ending, determined in this order (paths are a teensy different platform to platform).
@@ -109,7 +109,7 @@ class GitAttributesLineEndingPolicy implements LineEnding.Policy {
 	 * - /etc/gitconfig (system-wide)
 	 * - <platform native>
 	 */
-	final String defaultEnding;
+	private final String defaultEnding;
 
 	private GitAttributesLineEndingPolicy(Config config, List<AttributesRule> infoRules, File workTree, List<AttributesRule> globalRules) {
 		this.infoRules = Objects.requireNonNull(infoRules);
@@ -165,7 +165,7 @@ class GitAttributesLineEndingPolicy implements LineEnding.Policy {
 	}
 
 	/** Creates a LineEnding from an EOL. */
-	static LineEnding fromEol(EOL eol) {
+	private static LineEnding fromEol(EOL eol) {
 		// @formatter:off
 		switch (eol) {
 		case CRLF:    return LineEnding.WINDOWS;
@@ -224,7 +224,7 @@ class GitAttributesLineEndingPolicy implements LineEnding.Policy {
 	}
 
 	/** Parses an attribute value from a list of rules, returning null if there is no match for the given key. */
-	static String findAttributeInRules(String subpath, boolean isFolder, String key, List<AttributesRule> rules) {
+	private static String findAttributeInRules(String subpath, boolean isFolder, String key, List<AttributesRule> rules) {
 		String value = null;
 		// later rules override earlier ones
 		for (AttributesRule rule : rules) {

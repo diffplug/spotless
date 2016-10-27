@@ -27,7 +27,7 @@ import org.junit.rules.TemporaryFolder;
 
 public class GitAttributesTest {
 	@Rule
-	public TemporaryFolder folder = new TemporaryFolder();
+	public final TemporaryFolder folder = new TemporaryFolder();
 
 	private void write(String path, String... content) throws IOException {
 		File file = file(path);
