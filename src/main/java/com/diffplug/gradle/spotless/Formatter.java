@@ -31,12 +31,13 @@ import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
 
 /** Formatter which performs the full formatting. */
-public class Formatter {
+public final class Formatter {
 	final LineEnding.Policy lineEndingPolicy;
 	final Charset encoding;
 	final Path projectDirectory;
 	final List<FormatterStep> steps;
-	final Logger logger = Logging.getLogger(Formatter.class);
+
+	private static final Logger logger = Logging.getLogger(Formatter.class);
 
 	/** It's important to specify the charset. */
 	@Deprecated
@@ -44,11 +45,54 @@ public class Formatter {
 		this(lineEndingPolicy, StandardCharsets.UTF_8, projectDirectory, steps);
 	}
 
+	/**
+	 * The number of required parameters is starting to get difficult to use. Use
+	 * {@link Formatter#builder()} instead.
+	 */
+	@Deprecated
 	public Formatter(LineEnding.Policy lineEndingPolicy, Charset encoding, Path projectDirectory, List<FormatterStep> steps) {
-		this.lineEndingPolicy = Objects.requireNonNull(lineEndingPolicy);
-		this.encoding = Objects.requireNonNull(encoding);
-		this.projectDirectory = Objects.requireNonNull(projectDirectory);
-		this.steps = new ArrayList<>(steps);
+		this.lineEndingPolicy = Objects.requireNonNull(lineEndingPolicy, "lineEndingPolicy");
+		this.encoding = Objects.requireNonNull(encoding, "encoding");
+		this.projectDirectory = Objects.requireNonNull(projectDirectory, "projectDirectory");
+		this.steps = new ArrayList<>(Objects.requireNonNull(steps, "steps"));
+	}
+
+	public static Formatter.Builder builder() {
+		return new Formatter.Builder();
+	}
+
+	public static class Builder {
+		// required parameters
+		private LineEnding.Policy lineEndingPolicy;
+		private Charset encoding;
+		private Path projectDirectory;
+		private List<FormatterStep> steps;
+
+		private Builder() {}
+
+		public Builder lineEndingPolicy(LineEnding.Policy lineEndingPolicy) {
+			this.lineEndingPolicy = lineEndingPolicy;
+			return this;
+		}
+
+		public Builder encoding(Charset encoding) {
+			this.encoding = encoding;
+			return this;
+		}
+
+		public Builder projectDirectory(Path projectDirectory) {
+			this.projectDirectory = projectDirectory;
+			return this;
+		}
+
+		public Builder steps(List<FormatterStep> steps) {
+			this.steps = steps;
+			return this;
+		}
+
+		public Formatter build() {
+			return new Formatter(lineEndingPolicy, encoding, projectDirectory, steps);
+		}
 	}
 
 	/** Returns true iff the given file's formatting is up-to-date. */

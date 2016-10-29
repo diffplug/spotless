@@ -23,19 +23,36 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import com.diffplug.common.base.Errors;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.OutputFiles;
+import org.gradle.api.tasks.SkipWhenEmpty;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 
 public class FormatTask extends DefaultTask {
 	// set by SpotlessExtension, but possibly overridden by FormatExtension
+	@Input
 	public Charset encoding = StandardCharsets.UTF_8;
-	public LineEnding.Policy lineEndingsPolicy = LineEnding.UNIX_POLICY;
+	@Input
+	public LineEnding.Policy lineEndingPolicy = LineEnding.UNIX_POLICY;
+
 	// set by FormatExtension
+	@Input
 	public boolean paddedCell = false;
+	@InputFiles
+	@OutputFiles
+	@SkipWhenEmpty
 	public Iterable<File> target;
+	@Input
+	@SkipWhenEmpty
 	public List<FormatterStep> steps = new ArrayList<>();
+
 	// set by plugin
+	@Input
 	public boolean check = false;
 
 	/** Returns the name of this format. */
@@ -53,32 +70,41 @@ public class FormatTask extends DefaultTask {
 	}
 
 	@TaskAction
-	public void format() throws Exception {
+	public void format(IncrementalTaskInputs inputs) throws Exception {
 		if (target == null) {
 			throw new GradleException("You must specify 'Iterable<File> toFormat'");
 		}
 		// combine them into the master formatter
-		Formatter formatter = new Formatter(lineEndingsPolicy, encoding, getProject().getProjectDir().toPath(), steps);
+		Formatter formatter = Formatter.builder()
+				.lineEndingPolicy(lineEndingPolicy)
+				.encoding(encoding)
+				.projectDirectory(getProject().getProjectDir().toPath())
+				.steps(steps)
+				.build();
 
 		// perform the check
 		if (check) {
-			formatCheck(formatter);
+			formatCheck(formatter, inputs);
 		} else {
-			formatApply(formatter);
+			formatApply(formatter, inputs);
 		}
 	}
 
 	/** Checks the format. */
-	private void formatCheck(Formatter formatter) throws IOException {
+	private void formatCheck(Formatter formatter, IncrementalTaskInputs inputs) throws IOException {
 		List<File> problemFiles = new ArrayList<>();
 
-		for (File file : target) {
+		inputs.outOfDate(input -> {
+			File file = input.getFile();
 			getLogger().debug("Checking format on " + file);
 			// keep track of the problem toFormat
-			if (!formatter.isClean(file)) {
-				problemFiles.add(file);
-			}
-		}
+			Errors.rethrow()
+					.wrap(() -> {
+						if (!formatter.isClean(file)) {
+							problemFiles.add(file);
+						}
+					}).run();
+		});
 
 		if (paddedCell) {
 			PaddedCellTaskMisc.check(this, formatter, problemFiles);
@@ -100,15 +126,19 @@ public class FormatTask extends DefaultTask {
 	}
 
 	/** Applies the format. */
-	private void formatApply(Formatter formatter) throws IOException {
-		for (File file : target) {
+	private void formatApply(Formatter formatter, IncrementalTaskInputs inputs) throws IOException {
+		inputs.outOfDate(input -> {
+			File file = input.getFile();
 			getLogger().debug("Applying format to " + file);
 			// keep track of the problem toFormat
-			if (paddedCell) {
-				PaddedCellTaskMisc.apply(this, formatter, file);
-			} else {
-				formatter.applyFormat(file);
-			}
-		}
+			Errors.rethrow()
+					.wrap(() -> {
+						if (paddedCell) {
+							PaddedCellTaskMisc.apply(this, formatter, file);
+						} else {
+							formatter.applyFormat(file);
+						}
+					}).run();
+		});
 	}
 }

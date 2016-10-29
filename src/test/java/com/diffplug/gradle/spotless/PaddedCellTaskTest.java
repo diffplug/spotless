@@ -56,7 +56,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 		private FormatTask create(String name, FormatterStep step, boolean check) {
 			FormatTask task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + (check ? "Check" : "Apply"), FormatTask.class);
 			task.steps.add(step);
-			task.lineEndingsPolicy = LineEnding.UNIX.createPolicy();
+			task.lineEndingPolicy = LineEnding.UNIX.createPolicy();
 			task.check = check;
 			task.target = Collections.singletonList(file);
 			return task;

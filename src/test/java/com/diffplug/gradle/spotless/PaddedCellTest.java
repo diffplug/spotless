@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -43,14 +42,18 @@ public class PaddedCellTest {
 		testCase(step, input, expectedOutputType, steps, canonical, true);
 	}
 
-	private void wellbehaved(Throwing.Function<String, String> step, String input, PaddedCell.Type expectedOutputType, String canonical) throws IOException {
+	private void wellBehaved(Throwing.Function<String, String> step, String input, PaddedCell.Type expectedOutputType, String canonical) throws IOException {
 		testCase(step, input, expectedOutputType, canonical, canonical, false);
 	}
 
 	private void testCase(Throwing.Function<String, String> step, String input, PaddedCell.Type expectedOutputType, String expectedSteps, String canonical, boolean misbehaved) throws IOException {
 		List<FormatterStep> formatterSteps = new ArrayList<>();
 		formatterSteps.add(FormatterStep.create("step", step));
-		Formatter formatter = new Formatter(LineEnding.UNIX_POLICY, StandardCharsets.UTF_8, folder.getRoot().toPath(), formatterSteps);
+		Formatter formatter = Formatter.builder()
+				.lineEndingPolicy(LineEnding.UNIX_POLICY)
+				.encoding(StandardCharsets.UTF_8)
+				.projectDirectory(folder.getRoot().toPath())
+				.steps(formatterSteps).build();
 
 		File file = folder.newFile();
 		Files.write(file.toPath(), input.getBytes(StandardCharsets.UTF_8));
@@ -59,7 +62,7 @@ public class PaddedCellTest {
 		Assert.assertEquals(misbehaved, result.misbehaved());
 		Assert.assertEquals(expectedOutputType, result.type());
 
-		String actual = result.steps().stream().collect(Collectors.joining(","));
+		String actual = String.join(",", result.steps());
 		Assert.assertEquals(expectedSteps, actual);
 
 		if (canonical == null) {
@@ -74,8 +77,8 @@ public class PaddedCellTest {
 
 	@Test
 	public void wellBehaved() throws IOException {
-		wellbehaved(input -> input, "CCC", CONVERGE, "CCC");
-		wellbehaved(input -> "A", "CCC", CONVERGE, "A");
+		wellBehaved(input -> input, "CCC", CONVERGE, "CCC");
+		wellBehaved(input -> "A", "CCC", CONVERGE, "A");
 	}
 
 	@Test
