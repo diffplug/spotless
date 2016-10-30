@@ -23,7 +23,10 @@ import java.util.Collections;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
+import org.gradle.api.Action;
 import org.gradle.api.Project;
+import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
+import org.gradle.api.tasks.incremental.InputFileDetails;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -83,8 +86,8 @@ public class ResourceHarness {
 		Assert.assertEquals(expected, formatted);
 	}
 
-	/** Creates a FormatTask based on the given consumer. */
-	public static FormatTask createTask(Consumer<FormatExtension> test) throws Exception {
+	/** Creates an ApplyFormatTask based on the given consumer. */
+	public static ApplyFormatTask createTask(Consumer<FormatExtension> test) throws Exception {
 		Project project = ProjectBuilder.builder().build();
 		SpotlessPlugin plugin = project.getPlugins().apply(SpotlessPlugin.class);
 
@@ -94,14 +97,13 @@ public class ResourceHarness {
 			test.accept(ext);
 		});
 
-		boolean check = false;
-		return plugin.createTask("underTest", ref.get(), check);
+		return plugin.createApplyTask("underTest", ref.get());
 	}
 
 	/** Tests that the formatExtension causes the given change. */
 	protected void assertTask(Consumer<FormatExtension> test, String before, String afterExpected) throws Exception {
 		// create the task
-		FormatTask task = createTask(test);
+		ApplyFormatTask task = createTask(test);
 		// force unix line endings, since we're passing in raw strings
 		task.lineEndingPolicy = LineEnding.UNIX.createPolicy();
 		// create the test file
@@ -110,7 +112,7 @@ public class ResourceHarness {
 		// set the task to use this test file
 		task.target = Collections.singleton(testFile);
 		// run the task
-		task.format();
+		task.apply();
 		// check what the task did
 		String afterActual = new String(Files.readAllBytes(testFile.toPath()), StandardCharsets.UTF_8);
 		Assert.assertEquals(afterExpected, afterActual);

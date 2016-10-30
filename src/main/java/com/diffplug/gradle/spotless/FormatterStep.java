@@ -16,6 +16,8 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.File;
+import java.io.Serializable;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -29,7 +31,7 @@ import com.diffplug.common.base.Throwing;
  * The input is guaranteed to have unix-style newlines, and the output is required
  * to not introduce any windows-style newlines as well.
  */
-public interface FormatterStep {
+public interface FormatterStep extends Serializable {
 	/** The name of the step, for debugging purposes. */
 	String getName();
 
@@ -50,21 +52,7 @@ public interface FormatterStep {
 	 * to files which pass the given filter.
 	 */
 	default FormatterStep filterByFile(Predicate<File> filter) {
-		return new FormatterStep() {
-			@Override
-			public String getName() {
-				return FormatterStep.this.getName();
-			}
-
-			@Override
-			public String format(String raw, File file) throws Throwable {
-				if (filter.test(file)) {
-					return FormatterStep.this.format(raw, file);
-				} else {
-					return raw;
-				}
-			}
-		};
+		return new FilterByFileFormatterStep(this, filter);
 	}
 
 	/** A FormatterStep which doesn't depend on the input file. */
@@ -86,6 +74,26 @@ public interface FormatterStep {
 		public String format(String raw, File file) throws Throwable {
 			return formatter.apply(raw);
 		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) {
+				return true;
+			}
+			if (o == null || getClass() != o.getClass()) {
+				return false;
+			}
+			FileIndependent that = (FileIndependent) o;
+			return Objects.equals(name, that.name) &&
+					Objects.equals(formatter, that.formatter);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(name, formatter);
+		}
+
+		private static final long serialVersionUID = 1L;
 	}
 
 	/** Creates a FormatterStep from the given function. */

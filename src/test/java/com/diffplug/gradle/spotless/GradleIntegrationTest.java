@@ -49,7 +49,7 @@ public class GradleIntegrationTest extends ResourceHarness {
 	}
 
 	protected void write(String path, LineEnding ending, Charset encoding, String... lines) throws IOException {
-		String content = Arrays.asList(lines).stream().collect(Collectors.joining(ending.str())) + ending.str();
+		String content = Arrays.stream(lines).collect(Collectors.joining(ending.str())) + ending.str();
 		Path target = folder.getRoot().toPath().resolve(path);
 		Files.createDirectories(target.getParent());
 		Files.write(target, content.getBytes(encoding));

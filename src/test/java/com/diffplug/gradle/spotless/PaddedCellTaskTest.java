@@ -41,23 +41,31 @@ public class PaddedCellTaskTest extends ResourceHarness {
 		return IS_WIN ? input.replace('/', '\\') : input;
 	}
 
-	class Bundle {
+	private class Bundle {
 		Project project = ProjectBuilder.builder().withProjectDir(folder.getRoot()).build();
 		File file;
-		FormatTask check, apply;
+		CheckFormatTask check;
+		ApplyFormatTask apply;
 
 		Bundle(String name, Throwing.Function<String, String> function) throws IOException {
 			file = createTestFile("src/test." + name, "CCC");
 			FormatterStep step = FormatterStep.create(name, function);
-			check = create(name, step, true);
-			apply = create(name, step, false);
+			check = createCheckTask(name, step);
+			apply = createApplyTask(name, step);
 		}
 
-		private FormatTask create(String name, FormatterStep step, boolean check) {
-			FormatTask task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + (check ? "Check" : "Apply"), FormatTask.class);
+		private CheckFormatTask createCheckTask(String name, FormatterStep step) {
+			CheckFormatTask task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + SpotlessPlugin.CHECK, CheckFormatTask.class);
 			task.steps.add(step);
 			task.lineEndingPolicy = LineEnding.UNIX.createPolicy();
-			task.check = check;
+			task.target = Collections.singletonList(file);
+			return task;
+		}
+
+		private ApplyFormatTask createApplyTask(String name, FormatterStep step) {
+			ApplyFormatTask task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + SpotlessPlugin.APPLY, ApplyFormatTask.class);
+			task.steps.add(step);
+			task.lineEndingPolicy = LineEnding.UNIX.createPolicy();
 			task.target = Collections.singletonList(file);
 			return task;
 		}
@@ -146,7 +154,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 	private void assertFolderContents(String subfolderName, String... files) {
 		File subfolder = new File(folder.getRoot(), subfolderName);
 		Assert.assertTrue(subfolder.isDirectory());
-		String asList = Arrays.asList(subfolder.list()).stream().sorted().collect(Collectors.joining("\n"));
+		String asList = Arrays.stream(subfolder.list()).sorted().collect(Collectors.joining("\n"));
 		Assert.assertEquals(StringPrinter.buildStringFromLines(files).trim(), asList);
 	}
 

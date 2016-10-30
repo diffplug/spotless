@@ -18,8 +18,9 @@ package com.diffplug.gradle.spotless.freshmark;
 import java.util.Map;
 
 import com.diffplug.freshmark.FreshMark;
+import com.diffplug.gradle.spotless.ApplyFormatTask;
+import com.diffplug.gradle.spotless.CheckFormatTask;
 import com.diffplug.gradle.spotless.FormatExtension;
-import com.diffplug.gradle.spotless.FormatTask;
 import com.diffplug.gradle.spotless.SpotlessExtension;
 
 public class FreshMarkExtension extends FormatExtension {
@@ -44,11 +45,11 @@ public class FreshMarkExtension extends FormatExtension {
 	}
 
 	@Override
-	protected void setupTask(FormatTask task) throws Exception {
+	protected void setupTasks(CheckFormatTask checkTask, ApplyFormatTask applyTask) {
 		// defaults to all markdown files
 		if (target == null) {
 			target = parseTarget("**/*.md");
 		}
-		super.setupTask(task);
+		super.setupTasks(checkTask, applyTask);
 	}
 }

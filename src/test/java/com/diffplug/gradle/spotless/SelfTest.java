@@ -18,6 +18,7 @@ package com.diffplug.gradle.spotless;
 import java.io.File;
 import java.util.function.Consumer;
 
+import com.diffplug.gradle.spotless.util.Mocks;
 import org.gradle.api.Project;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.gradle.testkit.runner.GradleRunner;
@@ -33,19 +34,52 @@ import com.diffplug.common.base.Unhandled;
  */
 @Ignore
 public class SelfTest {
-	public enum Type {
-		CHECK, APPLY;
+	enum Type {
+		CHECK {
+          @Override
+          public void runAllTasks(Project project) {
+            project.getTasks().stream()
+                .filter(task -> task instanceof CheckFormatTask)
+                .map(task -> (CheckFormatTask) task)
+                .forEach(task -> {
+                  try {
+                    task.check(Mocks.mockIncrementalTaskInputs(task.target));
+                  } catch (Exception e) {
+                    throw new RuntimeException(e);
+                  }
+                });
+          }
 
-		public <T> T checkApply(T check, T apply) {
-			switch (this) {
-			case CHECK:
+			@Override
+			public <T> T checkApply(T check, T apply) {
 				return check;
-			case APPLY:
-				return apply;
-			default:
-				throw Unhandled.enumException(this);
 			}
-		}
+		},
+
+        APPLY {
+          @Override
+          public void runAllTasks(Project project) {
+            project.getTasks().stream()
+                .filter(task -> task instanceof ApplyFormatTask)
+                .map(task -> (ApplyFormatTask) task)
+                .forEach(task -> {
+                  try {
+                    task.apply();
+                  } catch (Exception e) {
+                    throw new RuntimeException(e);
+                  }
+                });
+          }
+
+			@Override
+			public <T> T checkApply(T check, T apply) {
+				return apply;
+			}
+		};
+
+		public abstract void runAllTasks(Project project);
+
+		public abstract <T> T checkApply(T check, T apply);
 	}
 
 	@Test
@@ -59,7 +93,7 @@ public class SelfTest {
 	}
 
 	/** Runs a full task manually, so you can step through all the logic. */
-	static void runTasksManually(Type type) throws Exception {
+	private static void runTasksManually(Type type) throws Exception {
 		Project project = createProject(extension -> {
 			extension.java(java -> {
 				java.target("**/*.java");
@@ -83,17 +117,7 @@ public class SelfTest {
 				misc.endWithNewline();
 			});
 		});
-		project.getTasks().stream()
-				.filter(task -> task instanceof FormatTask)
-				.map(task -> (FormatTask) task)
-				.filter(task -> task.check == type.checkApply(true, false))
-				.forEach(task -> {
-					try {
-						task.format();
-					} catch (Exception e) {
-						throw new RuntimeException(e);
-					}
-				});
+        type.runAllTasks(project);
 	}
 
 	/** Creates a Project which has had the SpotlessExtension setup. */

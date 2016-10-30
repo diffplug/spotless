@@ -33,20 +33,19 @@ import org.junit.Test;
 import com.diffplug.common.base.StringPrinter;
 
 public class DiffMessageFormatterTest extends ResourceHarness {
-	private FormatTask create(File... files) {
+	private CheckFormatTask create(File... files) {
 		return create(Arrays.asList(files));
 	}
 
-	private FormatTask create(List<File> files) {
+	private CheckFormatTask create(List<File> files) {
 		Project project = ProjectBuilder.builder().withProjectDir(folder.getRoot()).build();
-		FormatTask task = project.getTasks().create("underTest", FormatTask.class);
+		CheckFormatTask task = project.getTasks().create("underTest", CheckFormatTask.class);
 		task.lineEndingPolicy = LineEnding.UNIX.createPolicy();
-		task.check = true;
 		task.target = files;
 		return task;
 	}
 
-	private void assertTaskFailure(FormatTask task, String... expectedLines) {
+	private void assertTaskFailure(CheckFormatTask task, String... expectedLines) {
 		try {
 			task.execute();
 			Assert.fail();
@@ -65,7 +64,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 
 	@Test
 	public void lineEndingProblem() throws IOException {
-		FormatTask task = create(createTestFile("testFile", "A\r\nB\r\nC\r\n"));
+		CheckFormatTask task = create(createTestFile("testFile", "A\r\nB\r\nC\r\n"));
 		assertTaskFailure(task,
 				"    testFile",
 				"    @@ -1,3 +1,3 @@",
@@ -79,7 +78,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 
 	@Test
 	public void whitespaceProblem() throws IOException {
-		FormatTask task = create(createTestFile("testFile", "A \nB\t\nC  \n"));
+		CheckFormatTask task = create(createTestFile("testFile", "A \nB\t\nC  \n"));
 		task.steps.add(FormatterStep.create("trimTrailing", input -> {
 			Pattern pattern = Pattern.compile("[ \t]+$", Pattern.UNIX_LINES | Pattern.MULTILINE);
 			return pattern.matcher(input).replaceAll("");
@@ -97,7 +96,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 
 	@Test
 	public void multipleFiles() throws IOException {
-		FormatTask task = create(
+		CheckFormatTask task = create(
 				createTestFile("A", "1\r\n2\r\n"),
 				createTestFile("B", "3\n4\r\n"));
 		assertTaskFailure(task,
@@ -120,7 +119,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 		for (int i = 0; i < 9 + DiffMessageFormatter.MAX_FILES_TO_LIST - 1; ++i) {
 			testFiles.add(createTestFile(Integer.toString(i) + ".txt", "1\r\n2\r\n"));
 		}
-		FormatTask task = create(testFiles);
+		CheckFormatTask task = create(testFiles);
 		assertTaskFailure(task,
 				"    0.txt",
 				"    @@ -1,2 +1,2 @@",
@@ -193,7 +192,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 		for (int i = 0; i < 9 + DiffMessageFormatter.MAX_FILES_TO_LIST; ++i) {
 			testFiles.add(createTestFile(Integer.toString(i) + ".txt", "1\r\n2\r\n"));
 		}
-		FormatTask task = create(testFiles);
+		CheckFormatTask task = create(testFiles);
 		assertTaskFailure(task,
 				"    0.txt",
 				"    @@ -1,2 +1,2 @@",
@@ -258,7 +257,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 			builder.append(Integer.toString(i));
 			builder.append("\r\n");
 		}
-		FormatTask task = create(createTestFile("testFile", builder.toString()));
+		CheckFormatTask task = create(createTestFile("testFile", builder.toString()));
 		assertTaskFailure(task,
 				"    testFile",
 				"    @@ -1,1000 +1,1000 @@",

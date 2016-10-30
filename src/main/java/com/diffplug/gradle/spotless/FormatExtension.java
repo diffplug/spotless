@@ -18,14 +18,16 @@ package com.diffplug.gradle.spotless;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
+import com.diffplug.common.collect.ImmutableMap;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
+import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.file.UnionFileCollection;
 
@@ -100,7 +102,7 @@ public class FormatExtension {
 	/**
 	 * FileCollections pass through raw.
 	 * Strings are treated as the 'include' arg to fileTree, with project.rootDir as the dir.
-	 * List<String> are treates as the 'includes' arg to fileTree, with project.rootDir as the dir.
+	 * List<String> are treated as the 'includes' arg to fileTree, with project.rootDir as the dir.
 	 * Anything else gets passed to getProject().files().
 	 */
 	public void target(Object... targets) {
@@ -109,7 +111,7 @@ public class FormatExtension {
 		} else if (targets.length == 1) {
 			this.target = parseTarget(targets[0]);
 		} else {
-			if (Arrays.stream(targets).allMatch(o -> o instanceof String)) {
+			if (Stream.of(targets).allMatch(o -> o instanceof String)) {
 				this.target = parseTarget(Arrays.asList(targets));
 			} else {
 				UnionFileCollection union = new UnionFileCollection();
@@ -125,14 +127,20 @@ public class FormatExtension {
 		if (target instanceof FileCollection) {
 			return (FileCollection) target;
 		} else if (target instanceof String) {
-			Map<String, Object> args = new HashMap<>();
-			args.put("dir", getProject().getProjectDir());
-			args.put("include", target);
+//			ConfigurableFileCollection excludes = getProject().files(
+//					getProject().getBuildDir(),
+//					getProject().absoluteProjectPath(".gradle/"));
+			Map<String, Object> args = ImmutableMap.of(
+					"dir", getProject().getProjectDir(),
+					"include", target);
 			return getProject().fileTree(args);
 		} else if (target instanceof List && ((List<?>) target).stream().allMatch(o -> o instanceof String)) {
-			Map<String, Object> args = new HashMap<>();
-			args.put("dir", getProject().getProjectDir());
-			args.put("includes", target);
+//			ConfigurableFileCollection excludes = getProject().files(
+//					getProject().getBuildDir(),
+//					getProject().absoluteProjectPath(".gradle/"));
+			Map<String, Object> args = ImmutableMap.of(
+					"dir", getProject().getProjectDir(),
+					"includes", target);
 			return getProject().fileTree(args);
 		} else {
 			return getProject().files(target);
@@ -269,13 +277,26 @@ public class FormatExtension {
 		customLazy(LicenseHeaderStep.NAME, () -> new LicenseHeaderStep(getProject().file(licenseHeaderFile), getEncoding(), delimiter)::format);
 	}
 
-	/** Sets up a FormatTask according to the values in this extension. */
-	protected void setupTask(FormatTask task) throws Exception {
-		task.paddedCell = paddedCell;
-		task.lineEndingPolicy = getLineEndingPolicy();
-		task.encoding = getEncoding();
-		task.target = target;
-		task.steps = steps;
+	/** Sets up a CheckFormatTask and an ApplyFormatTask according to the values in this extension. */
+	protected void setupTasks(CheckFormatTask checkTask, ApplyFormatTask applyTask) {
+		setupCheckTask(checkTask);
+		setupApplyTask(applyTask);
+	}
+
+	protected void setupCheckTask(CheckFormatTask checkTask) {
+		checkTask.paddedCell = paddedCell;
+		checkTask.lineEndingPolicy = getLineEndingPolicy();
+		checkTask.encoding = getEncoding();
+		checkTask.target = target;
+		checkTask.steps = steps;
+	}
+
+	protected void setupApplyTask(ApplyFormatTask applyTask) {
+		applyTask.paddedCell = paddedCell;
+		applyTask.lineEndingPolicy = getLineEndingPolicy();
+		applyTask.encoding = getEncoding();
+		applyTask.target = target;
+		applyTask.steps = steps;
 	}
 
 	/** Returns the project that this extension is attached to. */
