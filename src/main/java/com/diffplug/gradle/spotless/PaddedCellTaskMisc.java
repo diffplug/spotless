@@ -133,13 +133,12 @@ class PaddedCellTaskMisc {
 
 		// "fake" Formatter which can use the already-computed result of a PaddedCell as
 		Step paddedCellStep = new Step();
-		Formatter paddedFormatter =
-				Formatter.builder()
-						.lineEndingsPolicy(formatter.lineEndingsPolicy)
-						.encoding(formatter.encoding)
-						.projectDirectory(formatter.projectDirectory)
-						.steps(Collections.singletonList(paddedCellStep))
-						.build();
+		Formatter paddedFormatter = Formatter.builder()
+				.lineEndingsPolicy(formatter.lineEndingsPolicy)
+				.encoding(formatter.encoding)
+				.projectDirectory(formatter.projectDirectory)
+				.steps(Collections.singletonList(paddedCellStep))
+				.build();
 
 		// empty out the diagnose folder
 		Path diagnoseDir = diagnoseDir(task);

@@ -24,13 +24,13 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import com.diffplug.common.collect.ImmutableMap;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.file.UnionFileCollection;
 
 import com.diffplug.common.base.Throwing;
+import com.diffplug.common.collect.ImmutableMap;
 
 import groovy.lang.Closure;
 
@@ -126,17 +126,17 @@ public class FormatExtension {
 		if (target instanceof FileCollection) {
 			return (FileCollection) target;
 		} else if (target instanceof String) {
-//			ConfigurableFileCollection excludes = getProject().files(
-//					getProject().getBuildDir(),
-//					getProject().absoluteProjectPath(".gradle/"));
+			//			ConfigurableFileCollection excludes = getProject().files(
+			//					getProject().getBuildDir(),
+			//					getProject().absoluteProjectPath(".gradle/"));
 			Map<String, Object> args = ImmutableMap.of(
 					"dir", getProject().getProjectDir(),
 					"include", target);
 			return getProject().fileTree(args);
 		} else if (target instanceof List && ((List<?>) target).stream().allMatch(o -> o instanceof String)) {
-//			ConfigurableFileCollection excludes = getProject().files(
-//					getProject().getBuildDir(),
-//					getProject().absoluteProjectPath(".gradle/"));
+			//			ConfigurableFileCollection excludes = getProject().files(
+			//					getProject().getBuildDir(),
+			//					getProject().absoluteProjectPath(".gradle/"));
 			Map<String, Object> args = ImmutableMap.of(
 					"dir", getProject().getProjectDir(),
 					"includes", target);

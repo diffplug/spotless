@@ -18,13 +18,13 @@ package com.diffplug.gradle.spotless;
 import java.io.File;
 import java.util.function.Consumer;
 
-import com.diffplug.common.base.Errors;
 import org.gradle.api.Project;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StandardSystemProperty;
 
 /**
@@ -35,27 +35,27 @@ import com.diffplug.common.base.StandardSystemProperty;
 public class SelfTest {
 	enum Type {
 		CHECK {
-          @Override
-          public void runAllTasks(Project project) {
-            project.getTasks().stream()
-                .filter(task -> task instanceof CheckFormatTask)
-                .map(task -> (CheckFormatTask) task)
-                .forEach(task -> Errors.rethrow().wrap(task::run).run());
-          }
+			@Override
+			public void runAllTasks(Project project) {
+				project.getTasks().stream()
+						.filter(task -> task instanceof CheckFormatTask)
+						.map(task -> (CheckFormatTask) task)
+						.forEach(task -> Errors.rethrow().wrap(task::run).run());
+			}
 
 			@Override
 			public <T> T checkApply(T check, T apply) {
 				return check;
 			}
 		},
-        APPLY {
-          @Override
-          public void runAllTasks(Project project) {
-            project.getTasks().stream()
-                .filter(task -> task instanceof ApplyFormatTask)
-                .map(task -> (ApplyFormatTask) task)
-                .forEach(task -> Errors.rethrow().wrap(task::run).run());
-          }
+		APPLY {
+			@Override
+			public void runAllTasks(Project project) {
+				project.getTasks().stream()
+						.filter(task -> task instanceof ApplyFormatTask)
+						.map(task -> (ApplyFormatTask) task)
+						.forEach(task -> Errors.rethrow().wrap(task::run).run());
+			}
 
 			@Override
 			public <T> T checkApply(T check, T apply) {
@@ -103,7 +103,7 @@ public class SelfTest {
 				misc.endWithNewline();
 			});
 		});
-        type.runAllTasks(project);
+		type.runAllTasks(project);
 	}
 
 	/** Creates a Project which has had the SpotlessExtension setup. */
