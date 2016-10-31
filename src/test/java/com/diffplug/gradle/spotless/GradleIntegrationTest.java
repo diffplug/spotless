@@ -40,19 +40,20 @@ public class GradleIntegrationTest extends ResourceHarness {
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
 
-	protected void write(String path, String... lines) throws IOException {
-		write(path, LineEnding.UNIX, lines);
+	protected File write(String path, String... lines) throws IOException {
+		return write(path, LineEnding.UNIX, lines);
 	}
 
-	protected void write(String path, LineEnding ending, String... lines) throws IOException {
-		write(path, ending, StandardCharsets.UTF_8, lines);
+	protected File write(String path, LineEnding ending, String... lines) throws IOException {
+		return write(path, ending, StandardCharsets.UTF_8, lines);
 	}
 
-	protected void write(String path, LineEnding ending, Charset encoding, String... lines) throws IOException {
+	protected File write(String path, LineEnding ending, Charset encoding, String... lines) throws IOException {
 		String content = Arrays.asList(lines).stream().collect(Collectors.joining(ending.str())) + ending.str();
 		Path target = folder.getRoot().toPath().resolve(path);
 		Files.createDirectories(target.getParent());
 		Files.write(target, content.getBytes(encoding));
+		return target.toFile();
 	}
 
 	protected String read(String path) throws IOException {

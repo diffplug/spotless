@@ -16,55 +16,42 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import org.assertj.core.api.Assertions;
-import org.gradle.api.GradleException;
-import org.gradle.api.Project;
-import org.gradle.api.tasks.TaskExecutionException;
-import org.gradle.testfixtures.ProjectBuilder;
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.diffplug.common.base.StringPrinter;
 
 public class DiffMessageFormatterTest extends ResourceHarness {
-	private FormatTask create(File... files) {
+	private FormatTask create(File... files) throws Exception {
 		return create(Arrays.asList(files));
 	}
 
-	private FormatTask create(List<File> files) {
-		Project project = ProjectBuilder.builder().withProjectDir(folder.getRoot()).build();
-		FormatTask task = project.getTasks().create("underTest", FormatTask.class);
-		task.lineEndingsPolicy = LineEnding.UNIX.createPolicy();
+	private FormatTask create(List<File> files) throws Exception {
+		FormatTask task = createTask(ext -> {});
 		task.check = true;
 		task.target = files;
 		return task;
 	}
 
 	private void assertTaskFailure(FormatTask task, String... expectedLines) {
-		try {
-			task.execute();
-			Assert.fail();
-		} catch (TaskExecutionException e) {
-			GradleException cause = (GradleException) e.getCause();
-			String msg = cause.getMessage();
-			String firstLine = "The following files had format violations:\n";
-			String lastLine = "\nRun 'gradlew spotlessApply' to fix these violations.";
-			Assertions.assertThat(msg).startsWith(firstLine).endsWith(lastLine);
+		String msg = getTaskErrorMessage(task);
 
-			String middle = msg.substring(firstLine.length(), msg.length() - lastLine.length());
-			String expectedMessage = StringPrinter.buildStringFromLines(expectedLines);
-			Assertions.assertThat(middle).isEqualTo(expectedMessage.substring(0, expectedMessage.length() - 1));
-		}
+		String firstLine = "The following files had format violations:\n";
+		String lastLine = "\nRun 'gradlew spotlessApply' to fix these violations.";
+		Assertions.assertThat(msg).startsWith(firstLine).endsWith(lastLine);
+
+		String middle = msg.substring(firstLine.length(), msg.length() - lastLine.length());
+		String expectedMessage = StringPrinter.buildStringFromLines(expectedLines);
+		Assertions.assertThat(middle).isEqualTo(expectedMessage.substring(0, expectedMessage.length() - 1));
 	}
 
 	@Test
-	public void lineEndingProblem() throws IOException {
+	public void lineEndingProblem() throws Exception {
 		FormatTask task = create(createTestFile("testFile", "A\r\nB\r\nC\r\n"));
 		assertTaskFailure(task,
 				"    testFile",
@@ -78,7 +65,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 	}
 
 	@Test
-	public void whitespaceProblem() throws IOException {
+	public void whitespaceProblem() throws Exception {
 		FormatTask task = create(createTestFile("testFile", "A \nB\t\nC  \n"));
 		task.steps.add(FormatterStep.create("trimTrailing", input -> {
 			Pattern pattern = Pattern.compile("[ \t]+$", Pattern.UNIX_LINES | Pattern.MULTILINE);
@@ -96,7 +83,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 	}
 
 	@Test
-	public void multipleFiles() throws IOException {
+	public void multipleFiles() throws Exception {
 		FormatTask task = create(
 				createTestFile("A", "1\r\n2\r\n"),
 				createTestFile("B", "3\n4\r\n"));
@@ -115,7 +102,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 	}
 
 	@Test
-	public void manyFiles() throws IOException {
+	public void manyFiles() throws Exception {
 		List<File> testFiles = new ArrayList<>();
 		for (int i = 0; i < 9 + DiffMessageFormatter.MAX_FILES_TO_LIST - 1; ++i) {
 			testFiles.add(createTestFile(Integer.toString(i) + ".txt", "1\r\n2\r\n"));
@@ -188,7 +175,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 	}
 
 	@Test
-	public void manyManyFiles() throws IOException {
+	public void manyManyFiles() throws Exception {
 		List<File> testFiles = new ArrayList<>();
 		for (int i = 0; i < 9 + DiffMessageFormatter.MAX_FILES_TO_LIST; ++i) {
 			testFiles.add(createTestFile(Integer.toString(i) + ".txt", "1\r\n2\r\n"));
@@ -252,7 +239,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 	}
 
 	@Test
-	public void longFile() throws IOException {
+	public void longFile() throws Exception {
 		StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < 1000; ++i) {
 			builder.append(Integer.toString(i));

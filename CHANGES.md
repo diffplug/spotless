@@ -2,6 +2,9 @@
 
 ### Version 2.4.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/gradle/spotless/spotless/))
 
+* If a formatter step throws an `Error` or any of its subclasses, such as the `AssertionError`s thrown by JUnit, AssertJ, etc. that error will kill the build.
+	+ See [#46](https://github.com/diffplug/spotless/issues/46) for the full details.
+
 ### Version 2.3.0 - October 27th 2016 ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [jcenter](https://bintray.com/diffplug/opensource/spotless/2.3.0/view))
 
 * When `spotlessCheck` fails, the error message now contains a short diff of what is neccessary to fix the issue ([#10](https://github.com/diffplug/spotless/issues/10), thanks to Jonathan Bluett-Duncan).
