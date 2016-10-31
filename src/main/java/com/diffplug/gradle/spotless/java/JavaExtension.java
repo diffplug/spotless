@@ -17,14 +17,12 @@ package com.diffplug.gradle.spotless.java;
 
 import java.util.List;
 
-import com.diffplug.gradle.spotless.ApplyFormatTask;
-import com.diffplug.gradle.spotless.BaseFormatTask;
-import com.diffplug.gradle.spotless.CheckFormatTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.internal.file.UnionFileCollection;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 
+import com.diffplug.gradle.spotless.BaseFormatTask;
 import com.diffplug.gradle.spotless.FormatExtension;
 import com.diffplug.gradle.spotless.LicenseHeaderStep;
 import com.diffplug.gradle.spotless.SpotlessExtension;

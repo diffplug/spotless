@@ -153,15 +153,18 @@ public final class Formatter {
 	 * The input must have unix line endings, and the output
 	 * is guaranteed to also have unix line endings.
 	 */
-	String applySteps(String unix, File file) {
+	String applySteps(String unix, File file) throws Error {
 		for (FormatterStep step : steps) {
 			try {
 				String formatted = step.format(unix, file);
 				// should already be unix-only, but
 				// some steps might misbehave
 				unix = LineEnding.toUnix(formatted);
+			} catch (Error e) {
+				logger.error("Step '" + step.getName() + "' found problem in '" + projectDirectory.relativize(file.toPath()) + "':\n" + e.getMessage());
+				throw e;
 			} catch (Throwable e) {
-				logger.warn("Unable to apply step " + step.getName() + " to " + projectDirectory.relativize(file.toPath()) + ": " + e.getMessage());
+				logger.warn("Unable to apply step '" + step.getName() + "' to '" + projectDirectory.relativize(file.toPath()) + "': " + e.getMessage());
 				logger.info("Exception is ", e);
 			}
 		}
