@@ -18,6 +18,7 @@ package com.diffplug.gradle.spotless.java;
 import java.util.List;
 
 import com.diffplug.gradle.spotless.ApplyFormatTask;
+import com.diffplug.gradle.spotless.BaseFormatTask;
 import com.diffplug.gradle.spotless.CheckFormatTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.internal.file.UnionFileCollection;
@@ -74,7 +75,7 @@ public class JavaExtension extends FormatExtension {
 
 	/** If the user hasn't specified the files yet, we'll assume he/she means all of the java files. */
 	@Override
-	protected void setupTasks(CheckFormatTask checkTask, ApplyFormatTask applyTask) {
+	protected void setupTask(BaseFormatTask task) {
 		if (target == null) {
 			JavaPluginConvention javaPlugin = getProject().getConvention().getPlugin(JavaPluginConvention.class);
 			if (javaPlugin == null) {
@@ -95,6 +96,6 @@ public class JavaExtension extends FormatExtension {
 				return step;
 			}
 		});
-		super.setupTasks(checkTask, applyTask);
+		super.setupTask(task);
 	}
 }

@@ -23,10 +23,7 @@ import java.util.Collections;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
-import org.gradle.api.Action;
 import org.gradle.api.Project;
-import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
-import org.gradle.api.tasks.incremental.InputFileDetails;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -105,14 +102,14 @@ public class ResourceHarness {
 		// create the task
 		ApplyFormatTask task = createTask(test);
 		// force unix line endings, since we're passing in raw strings
-		task.lineEndingPolicy = LineEnding.UNIX.createPolicy();
+		task.lineEndingsPolicy = LineEnding.UNIX.createPolicy();
 		// create the test file
 		File testFile = folder.newFile();
 		Files.write(testFile.toPath(), before.getBytes(StandardCharsets.UTF_8));
 		// set the task to use this test file
 		task.target = Collections.singleton(testFile);
 		// run the task
-		task.apply();
+		task.run();
 		// check what the task did
 		String afterActual = new String(Files.readAllBytes(testFile.toPath()), StandardCharsets.UTF_8);
 		Assert.assertEquals(afterExpected, afterActual);

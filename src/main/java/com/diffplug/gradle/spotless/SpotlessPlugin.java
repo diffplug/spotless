@@ -67,14 +67,14 @@ public class SpotlessPlugin implements Plugin<Project> {
 	CheckFormatTask createCheckTask(String name, FormatExtension format) throws Exception {
 		CheckFormatTask task = project.getTasks().create(EXTENSION + capitalize(name) + CHECK, CheckFormatTask.class);
 		// sets toFormat and steps
-		format.setupCheckTask(task);
+		format.setupTask(task);
 		return task;
 	}
 
 	ApplyFormatTask createApplyTask(String name, FormatExtension format) throws Exception {
 		ApplyFormatTask task = project.getTasks().create(EXTENSION + capitalize(name) + APPLY, ApplyFormatTask.class);
 		// sets toFormat and steps
-		format.setupApplyTask(task);
+		format.setupTask(task);
 		return task;
 	}
 

@@ -27,7 +27,6 @@ import java.util.stream.Stream;
 import com.diffplug.common.collect.ImmutableMap;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
-import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.file.UnionFileCollection;
 
@@ -277,26 +276,13 @@ public class FormatExtension {
 		customLazy(LicenseHeaderStep.NAME, () -> new LicenseHeaderStep(getProject().file(licenseHeaderFile), getEncoding(), delimiter)::format);
 	}
 
-	/** Sets up a CheckFormatTask and an ApplyFormatTask according to the values in this extension. */
-	protected void setupTasks(CheckFormatTask checkTask, ApplyFormatTask applyTask) {
-		setupCheckTask(checkTask);
-		setupApplyTask(applyTask);
-	}
-
-	protected void setupCheckTask(CheckFormatTask checkTask) {
-		checkTask.paddedCell = paddedCell;
-		checkTask.lineEndingPolicy = getLineEndingPolicy();
-		checkTask.encoding = getEncoding();
-		checkTask.target = target;
-		checkTask.steps = steps;
-	}
-
-	protected void setupApplyTask(ApplyFormatTask applyTask) {
-		applyTask.paddedCell = paddedCell;
-		applyTask.lineEndingPolicy = getLineEndingPolicy();
-		applyTask.encoding = getEncoding();
-		applyTask.target = target;
-		applyTask.steps = steps;
+	/** Sets up a format task according to the values in this extension. */
+	protected void setupTask(BaseFormatTask task) {
+		task.paddedCell = paddedCell;
+		task.lineEndingsPolicy = getLineEndingPolicy();
+		task.encoding = getEncoding();
+		task.target = target;
+		task.steps = steps;
 	}
 
 	/** Returns the project that this extension is attached to. */

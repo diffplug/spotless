@@ -32,7 +32,7 @@ import org.gradle.api.logging.Logging;
 
 /** Formatter which performs the full formatting. */
 public final class Formatter {
-	final LineEnding.Policy lineEndingPolicy;
+	final LineEnding.Policy lineEndingsPolicy;
 	final Charset encoding;
 	final Path projectDirectory;
 	final List<FormatterStep> steps;
@@ -41,8 +41,8 @@ public final class Formatter {
 
 	/** It's important to specify the charset. */
 	@Deprecated
-	public Formatter(LineEnding.Policy lineEndingPolicy, Path projectDirectory, List<FormatterStep> steps) {
-		this(lineEndingPolicy, StandardCharsets.UTF_8, projectDirectory, steps);
+	public Formatter(LineEnding.Policy lineEndingsPolicy, Path projectDirectory, List<FormatterStep> steps) {
+		this(lineEndingsPolicy, StandardCharsets.UTF_8, projectDirectory, steps);
 	}
 
 	/**
@@ -50,8 +50,8 @@ public final class Formatter {
 	 * {@link Formatter#builder()} instead.
 	 */
 	@Deprecated
-	public Formatter(LineEnding.Policy lineEndingPolicy, Charset encoding, Path projectDirectory, List<FormatterStep> steps) {
-		this.lineEndingPolicy = Objects.requireNonNull(lineEndingPolicy, "lineEndingPolicy");
+	public Formatter(LineEnding.Policy lineEndingsPolicy, Charset encoding, Path projectDirectory, List<FormatterStep> steps) {
+		this.lineEndingsPolicy = Objects.requireNonNull(lineEndingsPolicy, "lineEndingsPolicy");
 		this.encoding = Objects.requireNonNull(encoding, "encoding");
 		this.projectDirectory = Objects.requireNonNull(projectDirectory, "projectDirectory");
 		this.steps = new ArrayList<>(Objects.requireNonNull(steps, "steps"));
@@ -63,15 +63,15 @@ public final class Formatter {
 
 	public static class Builder {
 		// required parameters
-		private LineEnding.Policy lineEndingPolicy;
+		private LineEnding.Policy lineEndingsPolicy;
 		private Charset encoding;
 		private Path projectDirectory;
 		private List<FormatterStep> steps;
 
 		private Builder() {}
 
-		public Builder lineEndingPolicy(LineEnding.Policy lineEndingPolicy) {
-			this.lineEndingPolicy = lineEndingPolicy;
+		public Builder lineEndingsPolicy(LineEnding.Policy lineEndingsPolicy) {
+			this.lineEndingsPolicy = lineEndingsPolicy;
 			return this;
 		}
 
@@ -91,7 +91,7 @@ public final class Formatter {
 		}
 
 		public Formatter build() {
-			return new Formatter(lineEndingPolicy, encoding, projectDirectory, steps);
+			return new Formatter(lineEndingsPolicy, encoding, projectDirectory, steps);
 		}
 	}
 
@@ -103,7 +103,7 @@ public final class Formatter {
 		// check the newlines (we can find these problems without even running the steps)
 		int totalNewLines = (int) unix.codePoints().filter(val -> val == '\n').count();
 		int windowsNewLines = raw.length() - unix.length();
-		if (lineEndingPolicy.isUnix(file)) {
+		if (lineEndingsPolicy.isUnix(file)) {
 			if (windowsNewLines != 0) {
 				return false;
 			}
@@ -140,7 +140,7 @@ public final class Formatter {
 
 	/** Applies the appropriate line endings to the given unix content. */
 	String applyLineEndings(String unix, File file) {
-		String ending = lineEndingPolicy.getEndingFor(file);
+		String ending = lineEndingsPolicy.getEndingFor(file);
 		if (!ending.equals(LineEnding.UNIX.str())) {
 			return unix.replace(LineEnding.UNIX.str(), ending);
 		} else {

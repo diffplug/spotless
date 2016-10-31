@@ -50,7 +50,7 @@ public class PaddedCellTest {
 		List<FormatterStep> formatterSteps = new ArrayList<>();
 		formatterSteps.add(FormatterStep.create("step", step));
 		Formatter formatter = Formatter.builder()
-				.lineEndingPolicy(LineEnding.UNIX_POLICY)
+				.lineEndingsPolicy(LineEnding.UNIX_POLICY)
 				.encoding(StandardCharsets.UTF_8)
 				.projectDirectory(folder.getRoot().toPath())
 				.steps(formatterSteps).build();

@@ -1,61 +1,25 @@
 package com.diffplug.gradle.spotless;
 
-import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputFiles;
-import org.gradle.api.tasks.SkipWhenEmpty;
-import org.gradle.api.tasks.TaskAction;
-import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class CheckFormatTask extends DefaultTask {
-  // set by SpotlessExtension, but possibly overridden by FormatExtension
-  @Input
-  public Charset encoding = StandardCharsets.UTF_8;
-  @Input
-  public LineEnding.Policy lineEndingPolicy = LineEnding.UNIX_POLICY;
-
-  // set by FormatExtension
-  @Input
-  public boolean paddedCell = false;
-  @InputFiles
-  @SkipWhenEmpty
-  public Iterable<File> target;
-  @Input
-  @SkipWhenEmpty
-  public List<FormatterStep> steps = new ArrayList<>();
-
-  @TaskAction
-  public void check(IncrementalTaskInputs inputs) throws IOException {
-    if (target == null) {
-      throw new GradleException("You must specify 'Iterable<File> toFormat'");
-    }
-    // combine them into the master formatter
-    Formatter formatter = Formatter.builder()
-        .lineEndingPolicy(lineEndingPolicy)
-        .encoding(encoding)
-        .projectDirectory(getProject().getProjectDir().toPath())
-        .steps(steps)
-        .build();
-
-    formatCheck(formatter, inputs);
+public class CheckFormatTask extends BaseFormatTask {
+  @Override
+  public void doTask(Formatter formatter) throws Exception {
+    formatCheck(formatter);
   }
 
   /** Checks the format. */
-  private void formatCheck(Formatter formatter, IncrementalTaskInputs inputs) throws IOException {
+  private void formatCheck(Formatter formatter) throws IOException {
     List<File> problemFiles = new ArrayList<>();
 
-    inputs.outOfDate(input -> {
-      File file = input.getFile();
+    for (File file : target) {
       getLogger().debug("Checking format on " + file);
       // keep track of the problem toFormat
       try {
@@ -65,7 +29,7 @@ public class CheckFormatTask extends DefaultTask {
       } catch (IOException e) {
         throw new UncheckedIOException(e);
       }
-    });
+    }
 
     if (paddedCell) {
       PaddedCellTaskMisc.check(this, formatter, problemFiles);

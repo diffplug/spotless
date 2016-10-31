@@ -18,7 +18,7 @@ package com.diffplug.gradle.spotless;
 import java.io.File;
 import java.util.function.Consumer;
 
-import com.diffplug.gradle.spotless.util.Mocks;
+import com.diffplug.common.base.Errors;
 import org.gradle.api.Project;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.gradle.testkit.runner.GradleRunner;
@@ -26,7 +26,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.diffplug.common.base.StandardSystemProperty;
-import com.diffplug.common.base.Unhandled;
 
 /**
  * If you'd like to step through the full spotless plugin,
@@ -41,13 +40,7 @@ public class SelfTest {
             project.getTasks().stream()
                 .filter(task -> task instanceof CheckFormatTask)
                 .map(task -> (CheckFormatTask) task)
-                .forEach(task -> {
-                  try {
-                    task.check(Mocks.mockIncrementalTaskInputs(task.target));
-                  } catch (Exception e) {
-                    throw new RuntimeException(e);
-                  }
-                });
+                .forEach(task -> Errors.rethrow().wrap(task::run).run());
           }
 
 			@Override
@@ -55,20 +48,13 @@ public class SelfTest {
 				return check;
 			}
 		},
-
         APPLY {
           @Override
           public void runAllTasks(Project project) {
             project.getTasks().stream()
                 .filter(task -> task instanceof ApplyFormatTask)
                 .map(task -> (ApplyFormatTask) task)
-                .forEach(task -> {
-                  try {
-                    task.apply();
-                  } catch (Exception e) {
-                    throw new RuntimeException(e);
-                  }
-                });
+                .forEach(task -> Errors.rethrow().wrap(task::run).run());
           }
 
 			@Override

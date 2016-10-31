@@ -40,7 +40,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 	private CheckFormatTask create(List<File> files) {
 		Project project = ProjectBuilder.builder().withProjectDir(folder.getRoot()).build();
 		CheckFormatTask task = project.getTasks().create("underTest", CheckFormatTask.class);
-		task.lineEndingPolicy = LineEnding.UNIX.createPolicy();
+		task.lineEndingsPolicy = LineEnding.UNIX.createPolicy();
 		task.target = files;
 		return task;
 	}

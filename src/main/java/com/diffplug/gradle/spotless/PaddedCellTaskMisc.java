@@ -135,7 +135,7 @@ class PaddedCellTaskMisc {
 		Step paddedCellStep = new Step();
 		Formatter paddedFormatter =
 				Formatter.builder()
-						.lineEndingPolicy(formatter.lineEndingPolicy)
+						.lineEndingsPolicy(formatter.lineEndingsPolicy)
 						.encoding(formatter.encoding)
 						.projectDirectory(formatter.projectDirectory)
 						.steps(Collections.singletonList(paddedCellStep))
