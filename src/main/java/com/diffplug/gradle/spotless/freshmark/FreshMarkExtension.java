@@ -18,9 +18,7 @@ package com.diffplug.gradle.spotless.freshmark;
 import java.util.Map;
 
 import com.diffplug.freshmark.FreshMark;
-import com.diffplug.gradle.spotless.ApplyFormatTask;
 import com.diffplug.gradle.spotless.BaseFormatTask;
-import com.diffplug.gradle.spotless.CheckFormatTask;
 import com.diffplug.gradle.spotless.FormatExtension;
 import com.diffplug.gradle.spotless.SpotlessExtension;
 

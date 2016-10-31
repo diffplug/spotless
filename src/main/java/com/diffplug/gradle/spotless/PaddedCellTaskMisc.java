@@ -186,6 +186,7 @@ class PaddedCellTaskMisc {
 	}
 
 	/** Helper for check(). */
+	@SuppressWarnings("serial")
 	static class Step implements FormatterStep {
 		private File file;
 		private String formatted;
