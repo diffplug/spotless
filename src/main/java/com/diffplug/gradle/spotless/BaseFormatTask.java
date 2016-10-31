@@ -41,7 +41,6 @@ public abstract class BaseFormatTask extends DefaultTask {
 	@SkipWhenEmpty
 	public Iterable<File> target;
 	@Input
-	@SkipWhenEmpty
 	public List<FormatterStep> steps = new ArrayList<>();
 
 	@TaskAction
