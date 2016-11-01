@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -178,17 +179,12 @@ public class FormatExtension {
 
 	private Serializable globalKey = new NeverUpToDateBetweenRuns();
 
-	static class NeverUpToDateBetweenRuns implements Serializable {
+	static class NeverUpToDateBetweenRuns extends LazyForwardingEquality<Integer> {
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		public boolean equals(Object other) {
-			return other == this;
-		}
-
-		@Override
-		public int hashCode() {
-			return System.identityHashCode(this);
+		protected Integer calculateKey() throws Exception {
+			return new Random().nextInt();
 		}
 	}
 

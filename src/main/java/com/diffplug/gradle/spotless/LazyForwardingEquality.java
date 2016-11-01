@@ -15,11 +15,13 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
@@ -29,10 +31,12 @@ import com.diffplug.common.base.Errors;
 
 /**
  * Implements equality, hashcode, and serialization entirely in terms
- * of a lazily-computed key.
+ * of a lazily-computed key.  The key's serialized form is used to implement
+ * equals() and hashCode(), so you don't have to.
  */
-@SuppressWarnings("serial")
 public abstract class LazyForwardingEquality<T extends Serializable> implements Serializable {
+	private static final long serialVersionUID = 1L;
+  
 	/** Null indicates that the key has not yet been set. */
 	@Nullable
 	private transient volatile T key;
@@ -64,15 +68,18 @@ public abstract class LazyForwardingEquality<T extends Serializable> implements 
 		return key;
 	}
 
+	// override serialize output
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		out.writeObject(key());
 	}
 
+	// override serialize input
 	@SuppressWarnings("unchecked")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		key = (T) Objects.requireNonNull(in.readObject());
 	}
 
+	// override serialize input
 	@SuppressWarnings("unused")
 	private void readObjectNoData() throws ObjectStreamException {
 		throw new UnsupportedOperationException();
@@ -83,7 +90,8 @@ public abstract class LazyForwardingEquality<T extends Serializable> implements 
 		if (other == null) {
 			return false;
 		} else if (getClass().equals(other.getClass())) {
-			return key().equals(((LazyForwardingEquality<?>) other).key());
+			Serializable otherKey = ((LazyForwardingEquality<?>) other).key();
+			return Arrays.equals(toBytes(otherKey), toBytes(key()));
 		} else {
 			return false;
 		}
@@ -91,6 +99,16 @@ public abstract class LazyForwardingEquality<T extends Serializable> implements 
 
 	@Override
 	public final int hashCode() {
-		return key().hashCode();
+		return Arrays.hashCode(toBytes(key()));
+	}
+
+	private static byte[] toBytes(Serializable obj) {
+		ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+		try (ObjectOutputStream objectOutput = new ObjectOutputStream(byteOutput)) {
+			objectOutput.writeObject(obj);
+		} catch (IOException e) {
+			throw Errors.asRuntime(e);
+		}
+		return byteOutput.toByteArray();
 	}
 }
