@@ -48,7 +48,7 @@ public class PaddedCellTest {
 
 	private void testCase(Throwing.Function<String, String> step, String input, PaddedCell.Type expectedOutputType, String expectedSteps, String canonical, boolean misbehaved) throws IOException {
 		List<FormatterStep> formatterSteps = new ArrayList<>();
-		formatterSteps.add(FormatterStep.create("step", step));
+		formatterSteps.add(NonUpToDateCheckingTasks.create("step", step));
 		Formatter formatter = Formatter.builder()
 				.lineEndingsPolicy(LineEnding.UNIX_POLICY)
 				.encoding(StandardCharsets.UTF_8)

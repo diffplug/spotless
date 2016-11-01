@@ -17,13 +17,9 @@ package com.diffplug.gradle.spotless;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
-import com.diffplug.common.base.Errors;
-import com.diffplug.common.base.Suppliers;
 import com.diffplug.common.base.Throwing;
 
 /**
@@ -110,72 +106,5 @@ public interface FormatterStep extends Serializable {
 			Key key,
 			BiFunction<Key, String, String> formatter) {
 		return new FormatExtensionStandardImpl.Eager<>(name, key, formatter);
-	}
-
-	/** A FormatterStep which doesn't depend on the input file. */
-	@Deprecated
-	class FileIndependent implements FormatterStep {
-		private final String name;
-		private final Throwing.Function<String, String> formatter;
-
-		private FileIndependent(String name, Throwing.Function<String, String> formatter) {
-			this.name = name;
-			this.formatter = formatter;
-		}
-
-		@Override
-		public String getName() {
-			return name;
-		}
-
-		@Override
-		public String format(String raw, File file) throws Throwable {
-			return formatter.apply(raw);
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) {
-				return true;
-			}
-			if (o == null || getClass() != o.getClass()) {
-				return false;
-			}
-			FileIndependent that = (FileIndependent) o;
-			return Objects.equals(name, that.name) &&
-					Objects.equals(formatter, that.formatter);
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hash(name, formatter);
-		}
-
-		private static final long serialVersionUID = 1L;
-	}
-
-	/**
-	 * Creates a FormatterStep from the given function.
-	 *
-	 * @deprecated This method makes it hard to check up-to-dateness, use {@link FormatterStep#create(String, Serializable, BiFunction)} instead.
-	 */
-	@Deprecated
-	static FormatterStep create(String name, Throwing.Function<String, String> formatter) {
-		return new FileIndependent(name, formatter);
-	}
-
-	/**
-	 * Creates a FormatterStep lazily from the given formatterSupplier function.
-	 *
-	 * @deprecated This method makes it hard to check up-to-dateness, use {@link FormatterStep#createLazy(String, com.diffplug.common.base.Throwing.Specific.Supplier, BiFunction)} instead.
-	 */
-	@Deprecated
-	static FormatterStep createLazy(String name, Throwing.Supplier<Throwing.Function<String, String>> formatterSupplier) {
-		// wrap the supplier as a regular Supplier (not a Throwing.Supplier)
-		Supplier<Throwing.Function<String, String>> rethrowFormatterSupplier = Errors.rethrow().wrap(formatterSupplier);
-		// memoize its result
-		Supplier<Throwing.Function<String, String>> memoized = Suppliers.memoize(rethrowFormatterSupplier);
-		// create the step
-		return new FileIndependent(name, content -> memoized.get().apply(content));
 	}
 }

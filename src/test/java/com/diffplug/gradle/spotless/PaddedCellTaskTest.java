@@ -49,7 +49,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 
 		Bundle(String name, Throwing.Function<String, String> function) throws IOException {
 			file = createTestFile("src/test." + name, "CCC");
-			FormatterStep step = FormatterStep.create(name, function);
+			FormatterStep step = NonUpToDateCheckingTasks.create(name, function);
 			check = createCheckTask(name, step);
 			apply = createApplyTask(name, step);
 		}
