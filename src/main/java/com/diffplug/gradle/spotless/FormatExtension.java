@@ -263,7 +263,9 @@ public class FormatExtension {
 	 *            Spotless will look for a line that starts with this to know what the "top" is.
 	 */
 	public void licenseHeader(String licenseHeader, String delimiter) {
-		customLazy(LicenseHeaderStep.NAME, () -> new LicenseHeaderStep(licenseHeader, delimiter)::format);
+		steps.add(FormatterStep.create(LicenseHeaderStep.NAME,
+				new LicenseHeaderStep(licenseHeader, delimiter),
+				LicenseHeaderStep::format));
 	}
 
 	/**
@@ -273,7 +275,9 @@ public class FormatExtension {
 	 *            Spotless will look for a line that starts with this to know what the "top" is.
 	 */
 	public void licenseHeaderFile(Object licenseHeaderFile, String delimiter) {
-		customLazy(LicenseHeaderStep.NAME, () -> new LicenseHeaderStep(getProject().file(licenseHeaderFile), getEncoding(), delimiter)::format);
+		steps.add(FormatterStep.createLazy(LicenseHeaderStep.NAME,
+				() -> new LicenseHeaderStep(getProject().file(licenseHeaderFile), getEncoding(), delimiter),
+				LicenseHeaderStep::format));
 	}
 
 	/** Sets up a format task according to the values in this extension. */
