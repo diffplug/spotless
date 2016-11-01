@@ -15,30 +15,37 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static com.diffplug.common.testing.SerializableTester.*;
+
 import org.junit.Test;
 
 import com.diffplug.common.testing.EqualsTester;
-import com.diffplug.common.testing.SerializableTester;
 
-public class ForwardingEqualityTest {
+@SuppressWarnings("serial")
+public class LazyForwardingEqualityTest {
 	static Str s(String key) {
 		return new Str(key);
 	}
 
-	@SuppressWarnings("serial")
-	static class Str extends ForwardingEquality<String> {
+	static Other o(String key) {
+		return new Other(key);
+	}
+
+	static class Str extends LazyForwardingEquality<String> {
+		private String key;
+
 		Str(String key) {
-			super(key);
+			this.key = key;
+		}
+
+		@Override
+		protected String calculateKey() {
+			return key;
 		}
 	}
 
-	static Int i(int key) {
-		return new Int(key);
-	}
-
-	@SuppressWarnings("serial")
-	static class Int extends ForwardingEquality<Integer> {
-		Int(int key) {
+	static class Other extends Str {
+		Other(String key) {
 			super(key);
 		}
 	}
@@ -46,18 +53,10 @@ public class ForwardingEqualityTest {
 	@Test
 	public void testEquality() {
 		new EqualsTester()
-				.addEqualityGroup(s("hello"), s("hello"), s("h" + "ello"))
-				.addEqualityGroup(s("world"), s("world"), s("wor" + "ld"))
-				.addEqualityGroup(i(3), i(3), i(1 + 2))
-				.addEqualityGroup(i(-6), i(-6), i(1 - 7))
+				.addEqualityGroup(s("hello"), reserializeAndAssert(s("hello")))
+				.addEqualityGroup(s("world"), reserializeAndAssert(s("world")))
+				.addEqualityGroup(o("hello"), reserializeAndAssert(o("hello")))
+				.addEqualityGroup(o("world"), reserializeAndAssert(o("world")))
 				.testEquals();
-	}
-
-	@Test
-	public void testSerialization() {
-		SerializableTester.reserializeAndAssert(s("hello"));
-		SerializableTester.reserializeAndAssert(s("world"));
-		SerializableTester.reserializeAndAssert(i(4));
-		SerializableTester.reserializeAndAssert(i(-6));
 	}
 }

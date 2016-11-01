@@ -22,25 +22,42 @@ import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.Objects;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Implements equality, hashcode, and serialization entirely in terms
- * of the given key.  It is appropriate for subclasses of this class
- * to use `@SuppressWarnings("serial")`.
+ * of a lazily-computed key.
  */
 @SuppressWarnings("serial")
-public abstract class ForwardingEquality<T extends Serializable> implements Serializable {
-	private T key;
+public abstract class LazyForwardingEquality<T extends Serializable> implements Serializable {
+	/** Null indicates that the key has not yet been set. */
+	@Nullable
+	private transient volatile T key;
 
-	ForwardingEquality(T key) {
-		this.key = Objects.requireNonNull(key);
-	}
+	/**
+	 * This function is guaranteed to be called at most once.
+	 * If the key is never required, then it will never be called at all.
+	 */
+	@Nonnull
+	protected abstract T calculateKey();
 
-	protected T key() {
+	/** Returns the underlying key, possibly triggering a call to {{@link #calculateKey()}. */
+	@Nonnull
+	protected final T key() {
+		// double-checked locking for lazy evaluation of calculateKey
+		if (key == null) {
+			synchronized (this) {
+				if (key == null) {
+					key = calculateKey();
+				}
+			}
+		}
 		return key;
 	}
 
 	private void writeObject(ObjectOutputStream out) throws IOException {
-		out.writeObject(key);
+		out.writeObject(key());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -54,18 +71,18 @@ public abstract class ForwardingEquality<T extends Serializable> implements Seri
 	}
 
 	@Override
-	public boolean equals(Object other) {
+	public final boolean equals(Object other) {
 		if (other == null) {
 			return false;
 		} else if (getClass().equals(other.getClass())) {
-			return key.equals(((ForwardingEquality<?>) other).key);
+			return key().equals(((LazyForwardingEquality<?>) other).key());
 		} else {
 			return false;
 		}
 	}
 
 	@Override
-	public int hashCode() {
-		return key.hashCode();
+	public final int hashCode() {
+		return key().hashCode();
 	}
 }
