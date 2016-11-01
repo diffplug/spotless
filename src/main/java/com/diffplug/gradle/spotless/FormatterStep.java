@@ -18,6 +18,7 @@ package com.diffplug.gradle.spotless;
 import java.io.File;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -45,7 +46,7 @@ public interface FormatterStep extends Serializable {
 	 * @return The formatted content, guaranteed to only have unix-style newlines
 	 * @throws Throwable when the formatter steps experiences a problem
 	 */
-	String format(String raw, File file) throws Throwable;
+	String format(String rawUnix, File file) throws Throwable;
 
 	/**
 	 * Returns a new FormatterStep which will only apply its changes
@@ -55,7 +56,98 @@ public interface FormatterStep extends Serializable {
 		return new FilterByFileFormatterStep(this, filter);
 	}
 
+	/**
+	 * Implements a FormatterStep in a strict way which guarantees correct and lazy implementation
+	 * of up-to-date checks.  This maximizes performance for cases where the FormatterStep is not
+	 * actually needed (e.g. don't load eclipse setting file unless this step is actually running)
+	 * while also ensuring that gradle can detect changes in a step's settings to determine that
+	 * it needs to rerun a format.
+	 */
+	abstract class Strict<Key extends Serializable> extends LazyForwardingEquality<Key> implements FormatterStep {
+		private static final long serialVersionUID = 1L;
+
+		/**
+		 * Implements the formatting function strictly in terms
+		 * of the input data and the result of {@link #calculateKey()}.
+		 */
+		protected abstract String format(Key key, String rawUnix, File file);
+
+		@Override
+		public final String format(String rawUnix, File file) {
+			return format(key(), rawUnix, file);
+		}
+	}
+
+	/**
+	 * @param name
+	 *             The name of the formatter step
+	 * @param keySupplier
+	 *             If the rule has any state, this supplier will calculate it lazily
+	 * @param formatter
+	 *             A pure function which calculates a formatted string from an unformatted
+	 *             string, using only the state supplied by keySupplier and nowhere else.
+	 * @return A FormatterStep
+	 */
+	public static <Key extends Serializable> FormatterStep createLazy(
+			String name,
+			Throwing.Specific.Supplier<Key, Exception> keySupplier,
+			BiFunction<Key, String, String> formatter) {
+		return new Strict<Key>() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public String getName() {
+				return name;
+			}
+
+			@Override
+			protected Key calculateKey() throws Exception {
+				return keySupplier.get();
+			}
+
+			@Override
+			protected String format(Key key, String rawUnix, File file) {
+				return formatter.apply(key, rawUnix);
+			}
+		};
+	}
+
+	/**
+	 * @param name
+	 *             The name of the formatter step
+	 * @param key
+	 *             If the rule has any state, this key must contain all of it
+	 * @param formatter
+	 *             A pure function which calculates a formatted string from an unformatted
+	 *             string, using only the state supplied by key and nowhere else.
+	 * @return A FormatterStep
+	 */
+	public static <Key extends Serializable> FormatterStep create(
+			String name,
+			Key key,
+			BiFunction<Key, String, String> formatter) {
+		return new Strict<Key>() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public String getName() {
+				return name;
+			}
+
+			@Override
+			protected Key calculateKey() throws Exception {
+				return key;
+			}
+
+			@Override
+			protected String format(Key key, String rawUnix, File file) {
+				return formatter.apply(key, rawUnix);
+			}
+		};
+	}
+
 	/** A FormatterStep which doesn't depend on the input file. */
+	@Deprecated
 	class FileIndependent implements FormatterStep {
 		private final String name;
 		private final Throwing.Function<String, String> formatter;
@@ -96,12 +188,22 @@ public interface FormatterStep extends Serializable {
 		private static final long serialVersionUID = 1L;
 	}
 
-	/** Creates a FormatterStep from the given function. */
+	/**
+	 * Creates a FormatterStep from the given function.
+	 *
+	 * @deprecated This method makes it hard to check up-to-dateness, use {@link FormatterStep#create(String, Serializable, BiFunction)} instead.
+	 */
+	@Deprecated
 	static FormatterStep create(String name, Throwing.Function<String, String> formatter) {
 		return new FileIndependent(name, formatter);
 	}
 
-	/** Creates a FormatterStep lazily from the given formatterSupplier function. */
+	/**
+	 * Creates a FormatterStep lazily from the given formatterSupplier function.
+	 *
+	 * @deprecated This method makes it hard to check up-to-dateness, use {@link FormatterStep#createLazy(String, com.diffplug.common.base.Throwing.Specific.Supplier, BiFunction)} instead.
+	 */
+	@Deprecated
 	static FormatterStep createLazy(String name, Throwing.Supplier<Throwing.Function<String, String>> formatterSupplier) {
 		// wrap the supplier as a regular Supplier (not a Throwing.Supplier)
 		Supplier<Throwing.Function<String, String>> rethrowFormatterSupplier = Errors.rethrow().wrap(formatterSupplier);

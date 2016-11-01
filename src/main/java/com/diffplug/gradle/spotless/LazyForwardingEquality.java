@@ -25,6 +25,8 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.diffplug.common.base.Errors;
+
 /**
  * Implements equality, hashcode, and serialization entirely in terms
  * of a lazily-computed key.
@@ -38,9 +40,11 @@ public abstract class LazyForwardingEquality<T extends Serializable> implements 
 	/**
 	 * This function is guaranteed to be called at most once.
 	 * If the key is never required, then it will never be called at all.
+	 *
+	 * Throws exception because it's likely that there will be some IO going on.
 	 */
 	@Nonnull
-	protected abstract T calculateKey();
+	protected abstract T calculateKey() throws Exception;
 
 	/** Returns the underlying key, possibly triggering a call to {{@link #calculateKey()}. */
 	@Nonnull
@@ -49,7 +53,11 @@ public abstract class LazyForwardingEquality<T extends Serializable> implements 
 		if (key == null) {
 			synchronized (this) {
 				if (key == null) {
-					key = calculateKey();
+					try {
+						key = calculateKey();
+					} catch (Exception e) {
+						throw Errors.asRuntime(e);
+					}
 				}
 			}
 		}
