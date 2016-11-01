@@ -1,11 +1,23 @@
 # Spotless releases
 
-### Version 2.4.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/gradle/spotless/spotless/))
+### Version 3.0.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/gradle/spotless/spotless/))
 
-* If a formatter step throws an `Error` or any of its subclasses, such as the `AssertionError`s thrown by JUnit, AssertJ, etc. that error will kill the build.
-	+ See [#46](https://github.com/diffplug/spotless/issues/46) for the full details.
+* Big push towards supporting incremental build.  Requires a lot of work for every FormatterStep to properly serialize its state, so this might take a little while.
 
-### Version 2.3.0 - October 27th 2016 ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [jcenter](https://bintray.com/diffplug/opensource/spotless/2.3.0/view))
+### Version 2.4.0 - November 1st 2016 ([javadoc](https://diffplug.github.io/spotless/javadoc/2.4.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless/2.4.0/view))
+
+* If a formatter step throws an `Error` or any of its subclasses, such as the `AssertionError`s thrown by JUnit, AssertJ, etc. that error will kill the build ([#46](https://github.com/diffplug/spotless/issues/46))
+	+ This allows custom rules like this:
+
+```gradle
+custom 'no swearing', {
+	if (it.toLowerCase().contains('fubar')) {
+		throw new AssertionError('No swearing!');
+	}
+}
+```
+
+### Version 2.3.0 - October 27th 2016 ([javadoc](https://diffplug.github.io/spotless/javadoc/2.3.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless/2.3.0/view))
 
 * When `spotlessCheck` fails, the error message now contains a short diff of what is neccessary to fix the issue ([#10](https://github.com/diffplug/spotless/issues/10), thanks to Jonathan Bluett-Duncan).
 * Added a [padded-cell mode](https://github.com/diffplug/spotless/blob/master/PADDEDCELL.md) which allows spotless to band-aid over misbehaving rules, and generate error reports for these rules (See [#37](https://github.com/diffplug/spotless/issues/37) for an example).

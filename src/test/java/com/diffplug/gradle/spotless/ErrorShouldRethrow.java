@@ -66,4 +66,25 @@ public class ErrorShouldRethrow extends GradleIntegrationTest {
 		String actualStart = actualLines.subList(0, numNewlines + 1).stream().collect(Collectors.joining("\n"));
 		Assert.assertEquals(expectedToStartWith, actualStart);
 	}
+
+	@Test
+	public void noSwearingPassesIfNoSwears() throws Exception {
+		write("build.gradle",
+				"plugins {",
+				"    id 'com.diffplug.gradle.spotless'",
+				"}",
+				"spotless {",
+				"    format 'misc', {",
+				"        lineEndings 'UNIX'",
+				"        target file('README.md')",
+				"        custom 'no swearing', {",
+				"             if (it.toLowerCase().contains('fubar')) {",
+				"                 throw new AssertionError('No swearing!');",
+				"             }",
+				"        }",
+				"    }",
+				"}");
+		write("README.md", "This code is fun.");
+		gradleRunner().withArguments("spotlessCheck").build();
+	}
 }
