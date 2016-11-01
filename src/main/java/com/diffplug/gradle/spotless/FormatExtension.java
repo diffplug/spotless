@@ -15,12 +15,14 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -29,6 +31,8 @@ import org.gradle.api.Project;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.file.UnionFileCollection;
 
+import com.diffplug.common.base.Errors;
+import com.diffplug.common.base.Suppliers;
 import com.diffplug.common.base.Throwing;
 import com.diffplug.common.collect.ImmutableMap;
 
@@ -149,6 +153,47 @@ public class FormatExtension {
 	/** The steps that need to be added. */
 	protected List<FormatterStep> steps = new ArrayList<>();
 
+	/** Adds a new step. */
+	protected void addStep(FormatterStep newStep) {
+		for (FormatterStep step : steps) {
+			if (step.getName().equals(name)) {
+				throw new GradleException("Multiple steps with name '" + name + "' for spotless '" + name + "'");
+			}
+		}
+		steps.add(newStep);
+	}
+
+	/**
+	 * Spotless tracks what files have changed from run to run, so that it can run faster
+	 * by only checking files which have changed.
+	 *
+	 * If you have changed a custom function, then you must increment this number so
+	 * that spotless knows it needs to rerun the format check.  This is not necessary
+	 * if you don't use any custom functions.
+	 *
+	 * If you use a custom function and don't call bumpThisNumberIfACustomRuleChanges, then spotless
+	 * cannot tell if you have changed the rules, and will be forced to always recheck all files.
+	 */
+	public void bumpThisNumberIfACustomRuleChanges(int number) {
+		globalKey = number;
+	}
+
+	private Serializable globalKey = new NeverUpToDateBetweenRuns();
+
+	static class NeverUpToDateBetweenRuns implements Serializable {
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public boolean equals(Object other) {
+			return other == this;
+		}
+
+		@Override
+		public int hashCode() {
+			return System.identityHashCode(this);
+		}
+	}
+
 	/**
 	 * Adds the given custom step, which is constructed lazily for performance reasons.
 	 *
@@ -158,12 +203,9 @@ public class FormatExtension {
 	 * {@link #customLazyGroovy(String, com.diffplug.common.base.Throwing.Supplier)}.
 	 */
 	public void customLazy(String name, Throwing.Supplier<Throwing.Function<String, String>> formatterSupplier) {
-		for (FormatterStep step : steps) {
-			if (step.getName().equals(name)) {
-				throw new GradleException("Multiple steps with name '" + name + "' for spotless '" + name + "'");
-			}
-		}
-		steps.add(FormatterStep.createLazy(name, formatterSupplier));
+		Supplier<Throwing.Function<String, String>> nonThrowing = Errors.rethrow().wrap(formatterSupplier);
+		Supplier<Throwing.Function<String, String>> memoized = Suppliers.memoize(nonThrowing);
+		addStep(FormatterStep.createLazy(name, () -> globalKey, (unusedKey, unix) -> Errors.rethrow().get(() -> memoized.get().apply(unix))));
 	}
 
 	/** Same as {@link #customLazy(String, com.diffplug.common.base.Throwing.Supplier)}, but for Groovy closures. */
@@ -263,7 +305,7 @@ public class FormatExtension {
 	 *            Spotless will look for a line that starts with this to know what the "top" is.
 	 */
 	public void licenseHeader(String licenseHeader, String delimiter) {
-		steps.add(FormatterStep.create(LicenseHeaderStep.NAME,
+		addStep(FormatterStep.create(LicenseHeaderStep.NAME,
 				new LicenseHeaderStep(licenseHeader, delimiter),
 				LicenseHeaderStep::format));
 	}
@@ -275,7 +317,7 @@ public class FormatExtension {
 	 *            Spotless will look for a line that starts with this to know what the "top" is.
 	 */
 	public void licenseHeaderFile(Object licenseHeaderFile, String delimiter) {
-		steps.add(FormatterStep.createLazy(LicenseHeaderStep.NAME,
+		addStep(FormatterStep.createLazy(LicenseHeaderStep.NAME,
 				() -> new LicenseHeaderStep(getProject().file(licenseHeaderFile), getEncoding(), delimiter),
 				LicenseHeaderStep::format));
 	}
