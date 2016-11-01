@@ -15,12 +15,12 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.io.File;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
@@ -129,22 +129,20 @@ public class FormatExtension {
 	protected FileCollection parseTarget(Object target) {
 		if (target instanceof FileCollection) {
 			return (FileCollection) target;
-		} else if (target instanceof String) {
-			//			ConfigurableFileCollection excludes = getProject().files(
-			//					getProject().getBuildDir(),
-			//					getProject().absoluteProjectPath(".gradle/"));
-			Map<String, Object> args = ImmutableMap.of(
-					"dir", getProject().getProjectDir(),
-					"include", target);
-			return getProject().fileTree(args);
-		} else if (target instanceof List && ((List<?>) target).stream().allMatch(o -> o instanceof String)) {
-			//			ConfigurableFileCollection excludes = getProject().files(
-			//					getProject().getBuildDir(),
-			//					getProject().absoluteProjectPath(".gradle/"));
-			Map<String, Object> args = ImmutableMap.of(
-					"dir", getProject().getProjectDir(),
-					"includes", target);
-			return getProject().fileTree(args);
+		} else if (target instanceof String ||
+				(target instanceof List && ((List<?>) target).stream().allMatch(o -> o instanceof String))) {
+			Iterable<String> excludes = Arrays.asList(
+					getProject().getBuildDir().toString() + File.separatorChar + "**",
+					getProject().getProjectDir().toString() + File.separatorChar + ".gradle" + File.separatorChar + "**");
+			ImmutableMap.Builder<Object, Object> args = ImmutableMap.builder()
+					.put("dir", getProject().getProjectDir())
+					.put("excludes", excludes);
+			if (target instanceof String) {
+				args.put("include", target);
+			} else {
+				args.put("includes", target);
+			}
+			return getProject().fileTree(args.build());
 		} else {
 			return getProject().files(target);
 		}
