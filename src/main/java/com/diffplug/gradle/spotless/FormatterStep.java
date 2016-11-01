@@ -39,7 +39,7 @@ public interface FormatterStep extends Serializable {
 	/**
 	 * Returns a formatted version of the given content.
 	 *
-	 * @param raw
+	 * @param rawUnix
 	 *            File's content, guaranteed to have unix-style newlines ('\n')
 	 * @param file
 	 *            the File which is being formatted
@@ -92,24 +92,7 @@ public interface FormatterStep extends Serializable {
 			String name,
 			Throwing.Specific.Supplier<Key, Exception> keySupplier,
 			BiFunction<Key, String, String> formatter) {
-		return new Strict<Key>() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public String getName() {
-				return name;
-			}
-
-			@Override
-			protected Key calculateKey() throws Exception {
-				return keySupplier.get();
-			}
-
-			@Override
-			protected String format(Key key, String rawUnix, File file) {
-				return formatter.apply(key, rawUnix);
-			}
-		};
+		return new FormatExtensionStandardImpl.Lazy<>(name, keySupplier, formatter);
 	}
 
 	/**
@@ -126,24 +109,7 @@ public interface FormatterStep extends Serializable {
 			String name,
 			Key key,
 			BiFunction<Key, String, String> formatter) {
-		return new Strict<Key>() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public String getName() {
-				return name;
-			}
-
-			@Override
-			protected Key calculateKey() throws Exception {
-				return key;
-			}
-
-			@Override
-			protected String format(Key key, String rawUnix, File file) {
-				return formatter.apply(key, rawUnix);
-			}
-		};
+		return new FormatExtensionStandardImpl.Eager<>(name, key, formatter);
 	}
 
 	/** A FormatterStep which doesn't depend on the input file. */
