@@ -35,6 +35,5 @@ public class ApplyFormatTask extends BaseFormatTask {
 				formatter.applyFormat(file);
 			}
 		}
-		;
 	}
 }

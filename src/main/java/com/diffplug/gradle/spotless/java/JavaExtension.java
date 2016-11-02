@@ -32,10 +32,6 @@ import com.diffplug.gradle.spotless.SpotlessExtension;
 public class JavaExtension extends FormatExtension {
 	public static final String NAME = "java";
 
-	private enum NoKey {
-		VALUE;
-	}
-
 	public JavaExtension(SpotlessExtension rootExtension) {
 		super(NAME, rootExtension);
 	}
