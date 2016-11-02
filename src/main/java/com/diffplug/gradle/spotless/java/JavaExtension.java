@@ -22,13 +22,19 @@ import org.gradle.api.internal.file.UnionFileCollection;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 
+import com.diffplug.common.base.Errors;
 import com.diffplug.gradle.spotless.BaseFormatTask;
 import com.diffplug.gradle.spotless.FormatExtension;
+import com.diffplug.gradle.spotless.FormatterStep;
 import com.diffplug.gradle.spotless.LicenseHeaderStep;
 import com.diffplug.gradle.spotless.SpotlessExtension;
 
 public class JavaExtension extends FormatExtension {
 	public static final String NAME = "java";
+
+	private enum NoKey {
+		VALUE;
+	}
 
 	public JavaExtension(SpotlessExtension rootExtension) {
 		super(NAME, rootExtension);
@@ -68,7 +74,15 @@ public class JavaExtension extends FormatExtension {
 	 * for an workaround for using snapshot versions.
 	 */
 	public void googleJavaFormat(String version) {
-		customLazy(GoogleJavaFormat.NAME, () -> GoogleJavaFormat.createRule(version, getProject()));
+		addStep(FormatterStep.create(GoogleJavaFormat.NAME,
+				NoKey.VALUE,
+				(key, input) -> {
+					try {
+						return GoogleJavaFormat.createRule(version, getProject()).apply(input);
+					} catch (Exception e) {
+						throw Errors.asRuntime(e);
+					}
+				}));
 	}
 
 	/** If the user hasn't specified the files yet, we'll assume he/she means all of the java files. */

@@ -40,7 +40,7 @@ class GoogleJavaFormat {
 
 	/** Returns a function which will call the google-java-format tool. */
 	@SuppressFBWarnings("DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED")
-	static Throwing.Function<String, String> createRule(String version, Project project) throws Exception {
+	static Throwing.Specific.Function<String, String, Exception> createRule(String version, Project project) throws Exception {
 		// get the googleJavaFormat configuration
 		Dependency googleJavaFormatJar = project.getDependencies().create(MAVEN_COORDINATE + version);
 		Configuration configuration = project.getConfigurations().detachedConfiguration(googleJavaFormatJar);
