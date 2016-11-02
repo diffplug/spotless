@@ -35,7 +35,6 @@ import org.gradle.api.internal.file.UnionFileCollection;
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.Suppliers;
 import com.diffplug.common.base.Throwing;
-import com.diffplug.common.collect.ImmutableMap;
 
 import groovy.lang.Closure;
 
@@ -132,21 +131,24 @@ public class FormatExtension {
 			return (FileCollection) target;
 		} else if (target instanceof String ||
 				(target instanceof List && ((List<?>) target).stream().allMatch(o -> o instanceof String))) {
+			File dir = getProject().getProjectDir();
 			Iterable<String> excludes = Arrays.asList(
 					getProject().getBuildDir().toString() + File.separatorChar + "**",
 					getProject().getProjectDir().toString() + File.separatorChar + ".gradle" + File.separatorChar + "**");
-			ImmutableMap.Builder<Object, Object> args = ImmutableMap.builder()
-					.put("dir", getProject().getProjectDir())
-					.put("excludes", excludes);
 			if (target instanceof String) {
-				args.put("include", target);
+				return (FileCollection) getProject().fileTree(dir).include((String) target).exclude(excludes);
 			} else {
-				args.put("includes", target);
+				// target can only be a List<String> at this point
+				return (FileCollection) getProject().fileTree(dir).include(castToStringList(target)).exclude(excludes);
 			}
-			return getProject().fileTree(args.build());
 		} else {
 			return getProject().files(target);
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<String> castToStringList(Object target) {
+		return (List<String>) target;
 	}
 
 	/** The steps that need to be added. */

@@ -40,7 +40,7 @@ public class SelfTest {
 				project.getTasks().stream()
 						.filter(task -> task instanceof CheckFormatTask)
 						.map(task -> (CheckFormatTask) task)
-						.forEach(task -> Errors.rethrow().wrap(task::run).run());
+						.forEach(task -> Errors.rethrow().run(task::run));
 			}
 
 			@Override
@@ -54,7 +54,7 @@ public class SelfTest {
 				project.getTasks().stream()
 						.filter(task -> task instanceof ApplyFormatTask)
 						.map(task -> (ApplyFormatTask) task)
-						.forEach(task -> Errors.rethrow().wrap(task::run).run());
+						.forEach(task -> Errors.rethrow().run(task::run));
 			}
 
 			@Override

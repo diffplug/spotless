@@ -36,7 +36,7 @@ import com.diffplug.common.base.Errors;
  */
 public abstract class LazyForwardingEquality<T extends Serializable> implements Serializable {
 	private static final long serialVersionUID = 1L;
-  
+
 	/** Null indicates that the key has not yet been set. */
 	@Nullable
 	private transient volatile T key;
