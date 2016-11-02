@@ -75,10 +75,10 @@ public class JavaExtension extends FormatExtension {
 	 */
 	public void googleJavaFormat(String version) {
 		addStep(FormatterStep.create(GoogleJavaFormat.NAME,
-				NoKey.VALUE,
+				version,
 				(key, input) -> {
 					try {
-						return GoogleJavaFormat.createRule(version, getProject()).apply(input);
+						return GoogleJavaFormat.createRule(key, getProject()).apply(input);
 					} catch (Exception e) {
 						throw Errors.asRuntime(e);
 					}
