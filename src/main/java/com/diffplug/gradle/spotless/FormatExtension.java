@@ -181,10 +181,11 @@ public class FormatExtension {
 
 	static class NeverUpToDateBetweenRuns extends LazyForwardingEquality<Integer> {
 		private static final long serialVersionUID = 1L;
+		private static final Random RANDOM = new Random();
 
 		@Override
 		protected Integer calculateKey() throws Exception {
-			return new Random().nextInt();
+			return RANDOM.nextInt();
 		}
 	}
 
