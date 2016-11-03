@@ -15,18 +15,11 @@
  */
 package com.diffplug.gradle.spotless.java;
 
-import java.io.File;
 import java.lang.reflect.Method;
-import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Set;
 
-import org.gradle.api.Project;
-import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.artifacts.Dependency;
-
-import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.Throwing;
+import com.diffplug.gradle.spotless.JarState;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -40,24 +33,8 @@ class GoogleJavaFormat {
 
 	/** Returns a function which will call the google-java-format tool. */
 	@SuppressFBWarnings("DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED")
-	static Throwing.Specific.Function<String, String, Exception> createRule(String version, Project project) throws Exception {
-		// get the googleJavaFormat configuration
-		Dependency googleJavaFormatJar = project.getDependencies().create(MAVEN_COORDINATE + version);
-		Configuration configuration = project.getConfigurations().detachedConfiguration(googleJavaFormatJar);
-		configuration.setDescription("google-java-format");
-
-		// get a classloader which contains only the jars in this configuration
-		Set<File> jars;
-		try {
-			jars = configuration.resolve();
-		} catch (Exception e) {
-			System.err.println("You probably need to add a repository containing the `google-java-format` artifact to your buildscript,");
-			System.err.println("e.g.: repositories { mavenCentral() }");
-			throw e;
-		}
-		URL[] jarUrls = jars.stream().map(Errors.rethrow().wrapFunction(
-				file -> file.toURI().toURL())).toArray(URL[]::new);
-		URLClassLoader classLoader = new URLClassLoader(jarUrls);
+	static Throwing.Specific.Function<String, String, Exception> createRule(JarState state) throws Exception {
+		URLClassLoader classLoader = state.openClassLoader();
 		// TODO: dispose the classloader when the function
 		// that we return gets garbage-collected
 

@@ -26,6 +26,7 @@ import com.diffplug.common.base.Errors;
 import com.diffplug.gradle.spotless.BaseFormatTask;
 import com.diffplug.gradle.spotless.FormatExtension;
 import com.diffplug.gradle.spotless.FormatterStep;
+import com.diffplug.gradle.spotless.JarState;
 import com.diffplug.gradle.spotless.LicenseHeaderStep;
 import com.diffplug.gradle.spotless.SpotlessExtension;
 
@@ -70,15 +71,9 @@ public class JavaExtension extends FormatExtension {
 	 * for an workaround for using snapshot versions.
 	 */
 	public void googleJavaFormat(String version) {
-		addStep(FormatterStep.create(GoogleJavaFormat.NAME,
-				version,
-				(key, input) -> {
-					try {
-						return GoogleJavaFormat.createRule(key, getProject()).apply(input);
-					} catch (Exception e) {
-						throw Errors.asRuntime(e);
-					}
-				}));
+		addStep(FormatterStep.createLazy(GoogleJavaFormat.NAME,
+				() -> new JarState(GoogleJavaFormat.MAVEN_COORDINATE + version, getProject()),
+				(key, input) -> GoogleJavaFormat.createRule(key).apply(input)));
 	}
 
 	/** If the user hasn't specified the files yet, we'll assume he/she means all of the java files. */
