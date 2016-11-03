@@ -18,7 +18,6 @@ package com.diffplug.gradle.spotless;
 import java.io.File;
 import java.io.Serializable;
 import java.util.Objects;
-import java.util.function.BiFunction;
 
 import com.diffplug.common.base.Throwing;
 import com.diffplug.gradle.spotless.FormatterStep.Strict;
@@ -33,9 +32,9 @@ abstract class FormatExtensionStandardImpl<Key extends Serializable> extends Str
 	/** Transient because only the state matters. */
 	final transient String name;
 	/** Transient because only the state matters. */
-	final transient BiFunction<Key, String, String> formatter;
+	final transient Throwing.BiFunction<Key, String, String> formatter;
 
-	public FormatExtensionStandardImpl(String name, BiFunction<Key, String, String> formatter) {
+	public FormatExtensionStandardImpl(String name, Throwing.BiFunction<Key, String, String> formatter) {
 		this.name = Objects.requireNonNull(name);
 		this.formatter = Objects.requireNonNull(formatter);
 	}
@@ -46,7 +45,7 @@ abstract class FormatExtensionStandardImpl<Key extends Serializable> extends Str
 	}
 
 	@Override
-	protected String format(Key key, String rawUnix, File file) {
+	protected String format(Key key, String rawUnix, File file) throws Throwable {
 		return formatter.apply(key, rawUnix);
 	}
 
@@ -56,7 +55,7 @@ abstract class FormatExtensionStandardImpl<Key extends Serializable> extends Str
 		/** Transient because the key is persisted by the superclass. */
 		final transient Key key;
 
-		public Eager(String name, Key key, BiFunction<Key, String, String> formatter) {
+		public Eager(String name, Key key, Throwing.BiFunction<Key, String, String> formatter) {
 			super(name, formatter);
 			this.key = Objects.requireNonNull(key);
 		}
@@ -71,15 +70,15 @@ abstract class FormatExtensionStandardImpl<Key extends Serializable> extends Str
 		private static final long serialVersionUID = 1L;
 
 		/** Transient because the key is persisted by the superclass. */
-		final transient Throwing.Specific.Supplier<Key, Exception> keySupplier;
+		final transient Throwing.Supplier<Key> keySupplier;
 
-		public Lazy(String name, Throwing.Specific.Supplier<Key, Exception> keySupplier, BiFunction<Key, String, String> formatter) {
+		public Lazy(String name, Throwing.Supplier<Key> keySupplier, Throwing.BiFunction<Key, String, String> formatter) {
 			super(name, formatter);
 			this.keySupplier = Objects.requireNonNull(keySupplier);
 		}
 
 		@Override
-		protected Key calculateKey() throws Exception {
+		protected Key calculateKey() throws Throwable {
 			return keySupplier.get();
 		}
 	}

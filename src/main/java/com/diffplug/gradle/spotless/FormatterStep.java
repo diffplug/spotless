@@ -17,7 +17,6 @@ package com.diffplug.gradle.spotless;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 import com.diffplug.common.base.Throwing;
@@ -66,10 +65,10 @@ public interface FormatterStep extends Serializable {
 		 * Implements the formatting function strictly in terms
 		 * of the input data and the result of {@link #calculateKey()}.
 		 */
-		protected abstract String format(Key key, String rawUnix, File file);
+		protected abstract String format(Key key, String rawUnix, File file) throws Throwable;
 
 		@Override
-		public final String format(String rawUnix, File file) {
+		public final String format(String rawUnix, File file) throws Throwable {
 			return format(key(), rawUnix, file);
 		}
 	}
@@ -86,8 +85,8 @@ public interface FormatterStep extends Serializable {
 	 */
 	public static <Key extends Serializable> FormatterStep createLazy(
 			String name,
-			Throwing.Specific.Supplier<Key, Exception> keySupplier,
-			BiFunction<Key, String, String> formatter) {
+			Throwing.Supplier<Key> keySupplier,
+			Throwing.BiFunction<Key, String, String> formatter) {
 		return new FormatExtensionStandardImpl.Lazy<>(name, keySupplier, formatter);
 	}
 
@@ -104,7 +103,7 @@ public interface FormatterStep extends Serializable {
 	public static <Key extends Serializable> FormatterStep create(
 			String name,
 			Key key,
-			BiFunction<Key, String, String> formatter) {
+			Throwing.BiFunction<Key, String, String> formatter) {
 		return new FormatExtensionStandardImpl.Eager<>(name, key, formatter);
 	}
 }
