@@ -37,7 +37,7 @@ public enum LineEnding {
 	/** Returns a {@link Policy} appropriate for files which are contained within the given rootFolder. */
 	public Policy createPolicy(File rootFolder) {
 		if (this == GIT_ATTRIBUTES) {
-			return GitAttributesLineEndingPolicy.create(rootFolder);
+			return GitAttributesLineEndings.create(rootFolder);
 		} else {
 			return createPolicy();
 		}

@@ -43,7 +43,7 @@ public class GitAttributesTest {
 	public void cacheTest() throws IOException {
 		write(".gitattributes", "* eol=lf", "*.MF eol=crlf");
 		{
-			GitAttributesLineEndingPolicy.AttributesCache cache = new GitAttributesLineEndingPolicy.AttributesCache();
+			GitAttributesLineEndings.AttributesCache cache = new GitAttributesLineEndings.AttributesCache();
 			Assert.assertEquals("lf", cache.valueFor(file("someFile"), "eol"));
 			Assert.assertEquals("lf", cache.valueFor(file("subfolder/someFile"), "eol"));
 			Assert.assertEquals("crlf", cache.valueFor(file("MANIFEST.MF"), "eol"));
@@ -61,7 +61,7 @@ public class GitAttributesTest {
 
 		{
 			// but if we make a new cache, it should change
-			GitAttributesLineEndingPolicy.AttributesCache cache = new GitAttributesLineEndingPolicy.AttributesCache();
+			GitAttributesLineEndings.AttributesCache cache = new GitAttributesLineEndings.AttributesCache();
 			Assert.assertEquals("lf", cache.valueFor(file("someFile"), "eol"));
 			Assert.assertEquals("lf", cache.valueFor(file("subfolder/someFile"), "eol"));
 			Assert.assertEquals("crlf", cache.valueFor(file("MANIFEST.MF"), "eol"));
