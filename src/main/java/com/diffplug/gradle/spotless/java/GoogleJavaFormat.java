@@ -32,7 +32,6 @@ class GoogleJavaFormat {
 	static final String FORMATTER_METHOD = "formatSource";
 
 	/** Returns a function which will call the google-java-format tool. */
-	@SuppressFBWarnings("DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED")
 	static Throwing.Specific.Function<String, String, Exception> createRule(JarState state) throws Exception {
 		URLClassLoader classLoader = state.openClassLoader();
 		// TODO: dispose the classloader when the function

@@ -26,40 +26,42 @@ import java.util.Set;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
+import org.gradle.api.logging.Logger;
+import org.gradle.api.logging.Logging;
 
 import com.diffplug.common.base.Errors;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Grabs a jar and its dependencies from maven,
  * and makes it easy to access the collection in
  * a classloader.
- * 
+ *
  * Serializes the full state of the jar, so it can
  * catch changes in a SNAPSHOT version.
  */
 public class JarState implements Serializable {
 	private static final long serialVersionUID = 1L;
+	private static final Logger logger = Logging.getLogger(JarState.class);
 
-	final String mavenCoordinate;
-	final FileSignature fileSignature;
-
-	final transient Set<File> jars;
+	private final Set<File> jars;
 
 	public JarState(String mavenCoordinate, Project project) throws IOException {
-		this.mavenCoordinate = Objects.requireNonNull(mavenCoordinate);
+		Objects.requireNonNull(mavenCoordinate);
 		Dependency dep = project.getDependencies().create(mavenCoordinate);
 		Configuration config = project.getConfigurations().detachedConfiguration(dep);
 		config.setDescription(mavenCoordinate);
 		try {
 			jars = config.resolve();
 		} catch (Exception e) {
-			System.err.println("You probably need to add a repository containing the `google-java-format` artifact to your buildscript,");
-			System.err.println("e.g.: repositories { mavenCentral() }");
+			logger.error("You probably need to add a repository containing the `google-java-format` artifact to your buildscript,");
+			logger.error("e.g.: repositories { mavenCentral() }");
 			throw e;
 		}
-		fileSignature = new FileSignature(jars);
 	}
 
+	@SuppressFBWarnings("DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED")
 	public URLClassLoader openClassLoader() {
 		URL[] jarUrls = jars.stream().map(Errors.rethrow().wrapFunction(file -> file.toURI().toURL())).toArray(URL[]::new);
 		return new URLClassLoader(jarUrls);
