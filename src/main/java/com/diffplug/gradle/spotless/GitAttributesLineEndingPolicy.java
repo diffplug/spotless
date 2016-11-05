@@ -45,7 +45,7 @@ import com.diffplug.common.base.Unhandled;
 /**
  * Uses [.gitattributes](https://git-scm.com/docs/gitattributes) to determine
  * the appropriate line ending. Falls back to the `core.eol` property in the
- * git config if there are no applicable git attribtues, then finally falls
+ * git config if there are no applicable git attributes, then finally falls
  * back to the platform native.
  */
 class GitAttributesLineEndingPolicy implements LineEnding.Policy {
@@ -119,7 +119,7 @@ class GitAttributesLineEndingPolicy implements LineEnding.Policy {
 	}
 
 	private static final String KEY_EOL = "eol";
-	private static final boolean isFolder = false;
+	private static final boolean IS_FOLDER = false;
 
 	@Override
 	public String getEndingFor(File file) {
@@ -129,7 +129,7 @@ class GitAttributesLineEndingPolicy implements LineEnding.Policy {
 			String path = file.getAbsolutePath();
 			if (path.startsWith(rootPath)) {
 				String subpath = path.substring(rootPath.length() + 1);
-				String infoResult = findAttributeInRules(subpath, isFolder, KEY_EOL, infoRules);
+				String infoResult = findAttributeInRules(subpath, IS_FOLDER, KEY_EOL, infoRules);
 				if (infoResult != null) {
 					return convertEolToLineEnding(infoResult, file);
 				}
@@ -143,7 +143,7 @@ class GitAttributesLineEndingPolicy implements LineEnding.Policy {
 		}
 
 		// handle the global .gitattributes
-		String globalResult = findAttributeInRules(file.getAbsolutePath(), isFolder, KEY_EOL, globalRules);
+		String globalResult = findAttributeInRules(file.getAbsolutePath(), IS_FOLDER, KEY_EOL, globalRules);
 		if (globalResult != null) {
 			return convertEolToLineEnding(globalResult, file);
 		}
