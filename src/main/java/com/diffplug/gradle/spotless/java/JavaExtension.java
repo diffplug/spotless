@@ -22,7 +22,6 @@ import org.gradle.api.internal.file.UnionFileCollection;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 
-import com.diffplug.common.base.Errors;
 import com.diffplug.gradle.spotless.BaseFormatTask;
 import com.diffplug.gradle.spotless.FormatExtension;
 import com.diffplug.gradle.spotless.FormatterStep;
@@ -56,7 +55,9 @@ public class JavaExtension extends FormatExtension {
 	}
 
 	public void eclipseFormatFile(Object eclipseFormatFile) {
-		customLazy(EclipseFormatterStep.NAME, () -> EclipseFormatterStep.load(getProject().file(eclipseFormatFile))::format);
+		addStep(FormatterStep.createLazy(EclipseFormatterStep.NAME,
+				() -> getProject().file(eclipseFormatFile),
+				(key, input) -> EclipseFormatterStep.load(key).format(input)));
 	}
 
 	/** Uses the [google-java-format](https://github.com/google/google-java-format) jar to format source code. */
