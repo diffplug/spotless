@@ -27,7 +27,6 @@ import org.junit.Test;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StandardSystemProperty;
-import com.diffplug.gradle.spotless.util.Mocks;
 
 /**
  * If you'd like to step through the full spotless plugin,
