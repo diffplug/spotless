@@ -22,7 +22,7 @@ import org.junit.Test;
 
 import com.diffplug.gradle.spotless.GradleIntegrationTest;
 
-public class GoogleJavaFormatTest extends GradleIntegrationTest {
+public class GoogleJavaFormatStepTest extends GradleIntegrationTest {
 	@Test
 	public void integration() throws IOException {
 		write("build.gradle",

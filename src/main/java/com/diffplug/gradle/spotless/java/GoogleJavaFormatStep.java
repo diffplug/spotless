@@ -24,23 +24,36 @@ import com.diffplug.gradle.spotless.JarState;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /** Wraps up [google-java-format](https://github.com/google/google-java-format) as a FormatterStep. */
-class GoogleJavaFormat {
+class GoogleJavaFormatStep {
 	static final String NAME = "google-java-format";
 	static final String DEFAULT_VERSION = "1.1";
 	static final String MAVEN_COORDINATE = "com.google.googlejavaformat:google-java-format:";
 	static final String FORMATTER_CLASS = "com.google.googlejavaformat.java.Formatter";
 	static final String FORMATTER_METHOD = "formatSource";
 
-	/** Returns a function which will call the google-java-format tool. */
-	static Throwing.Specific.Function<String, String, Exception> createRule(JarState state) throws Exception {
+	private final Throwing.Specific.Function<String, String, Exception> formatFunction;
+
+	private GoogleJavaFormatStep(Throwing.Specific.Function<String, String, Exception> formatFunction) {
+		this.formatFunction = formatFunction;
+	}
+
+	public String format(String raw) throws Exception {
+		return formatFunction.apply(raw);
+	}
+
+	/**
+	 * Returns a GoogleJavaFormatStep which loads google-java-format from the given jar state.
+	 */
+	public static GoogleJavaFormatStep load(JarState state) throws Exception {
 		URLClassLoader classLoader = state.openClassLoader();
 		// TODO: dispose the classloader when the function
 		// that we return gets garbage-collected
 
-		// instantiate the formatter and get its format method
+		// instantiate the gjf formatter and get its format method
 		Class<?> formatterClazz = classLoader.loadClass(FORMATTER_CLASS);
 		Object formatter = formatterClazz.getConstructor().newInstance();
 		Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
-		return input -> (String) method.invoke(formatter, input);
+
+		return new GoogleJavaFormatStep(input -> (String) method.invoke(formatter, input));
 	}
 }

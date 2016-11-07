@@ -74,7 +74,7 @@ public class JavaExtension extends FormatExtension {
 
 	/** Uses the [google-java-format](https://github.com/google/google-java-format) jar to format source code. */
 	public void googleJavaFormat() {
-		googleJavaFormat(GoogleJavaFormat.DEFAULT_VERSION);
+		googleJavaFormat(GoogleJavaFormatStep.DEFAULT_VERSION);
 	}
 
 	/**
@@ -84,9 +84,9 @@ public class JavaExtension extends FormatExtension {
 	 * for an workaround for using snapshot versions.
 	 */
 	public void googleJavaFormat(String version) {
-		addStep(FormatterStep.createLazy(GoogleJavaFormat.NAME,
-				() -> new JarState(GoogleJavaFormat.MAVEN_COORDINATE + version, getProject()),
-				(key, input) -> GoogleJavaFormat.createRule(key).apply(input)));
+		addStep(FormatterStep.createLazy(GoogleJavaFormatStep.NAME,
+				() -> new JarState(GoogleJavaFormatStep.MAVEN_COORDINATE + version, getProject()),
+				(key, input) -> GoogleJavaFormatStep.load(key).format(input)));
 	}
 
 	/** If the user hasn't specified the files yet, we'll assume he/she means all of the java files. */
