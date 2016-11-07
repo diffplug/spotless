@@ -75,13 +75,8 @@ public class CheckFormatTask extends BaseFormatTask {
 		return new GradleException(DiffMessageFormatter.messageFor(this, formatter, problemFiles));
 	}
 
-	/**
-	 * Returns the name of this format.
-	 *
-	 * We purposefully do not prefix this method with 'get', as it would otherwise cause Gradle to
-	 * think it's a property of this task class.
-	 */
-	String formatName() {
+	/** Returns the name of this format. */
+	String getFormatName() {
 		String name = getName();
 		if (name.startsWith(SpotlessPlugin.EXTENSION)) {
 			String after = name.substring(SpotlessPlugin.EXTENSION.length());
