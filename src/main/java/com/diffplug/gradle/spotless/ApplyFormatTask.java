@@ -16,16 +16,13 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.File;
-import java.io.IOException;
+
+import org.gradle.api.tasks.TaskAction;
 
 public class ApplyFormatTask extends BaseFormatTask {
-	@Override
-	public void doTask(Formatter formatter) throws Exception {
-		formatApply(formatter);
-	}
-
-	/** Applies the format. */
-	private void formatApply(Formatter formatter) throws IOException {
+	@TaskAction
+	public void apply() throws Exception {
+		Formatter formatter = buildFormatter();
 		for (File file : target) {
 			getLogger().debug("Applying format to " + file);
 			// keep track of the problem toFormat

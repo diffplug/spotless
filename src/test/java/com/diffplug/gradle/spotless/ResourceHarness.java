@@ -112,7 +112,7 @@ public class ResourceHarness {
 		// set the task to use this test file
 		task.target = Collections.singleton(testFile);
 		// run the task
-		task.run();
+		task.apply();
 		// check what the task did
 		String afterActual = new String(Files.readAllBytes(testFile.toPath()), StandardCharsets.UTF_8);
 		Assert.assertEquals(afterExpected, afterActual);

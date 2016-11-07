@@ -23,16 +23,26 @@ import java.util.List;
 import java.util.Locale;
 
 import org.gradle.api.GradleException;
+import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
+
+import com.diffplug.common.base.Errors;
 
 public class CheckFormatTask extends BaseFormatTask {
-	@Override
-	public void doTask(Formatter formatter) throws Exception {
-		formatCheck(formatter);
-	}
-
-	/** Checks the format. */
-	private void formatCheck(Formatter formatter) throws IOException {
+	@TaskAction
+	public void check(IncrementalTaskInputs inputs) throws Exception {
+		Formatter formatter = buildFormatter();
 		List<File> problemFiles = new ArrayList<>();
+
+		inputs.outOfDate(inputDetails -> {
+			try {
+				if (formatter.isClean(inputDetails.getFile())) {
+					problemFiles.add(inputDetails.getFile());
+				}
+			} catch (IOException e) {
+				throw Errors.asRuntime(e);
+			}
+		});
 
 		for (File file : target) {
 			getLogger().debug("Checking format on " + file);

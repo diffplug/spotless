@@ -26,7 +26,6 @@ import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.SkipWhenEmpty;
-import org.gradle.api.tasks.TaskAction;
 
 public abstract class BaseFormatTask extends DefaultTask {
 	// set by SpotlessExtension, but possibly overridden by FormatExtension
@@ -43,21 +42,16 @@ public abstract class BaseFormatTask extends DefaultTask {
 	@Input
 	public List<FormatterStep> steps = new ArrayList<>();
 
-	@TaskAction
-	public void run() throws Exception {
+	protected Formatter buildFormatter() {
 		if (target == null) {
 			throw new GradleException("You must specify 'Iterable<File> toFormat'");
 		}
 		// combine them into the master formatter
-		Formatter formatter = Formatter.builder()
+		return Formatter.builder()
 				.lineEndingsPolicy(lineEndingsPolicy)
 				.encoding(encoding)
 				.projectDirectory(getProject().getProjectDir().toPath())
 				.steps(steps)
 				.build();
-
-		doTask(formatter);
 	}
-
-	public abstract void doTask(Formatter formatter) throws Exception;
 }
