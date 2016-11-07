@@ -45,7 +45,9 @@ public class JarState implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = Logging.getLogger(JarState.class);
 
+	@SuppressWarnings("unused")
 	private final String mavenCoordinate;
+	@SuppressWarnings("unused")
 	private final FileSignature fileSignature;
 
 	/*

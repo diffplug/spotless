@@ -80,6 +80,7 @@ dependencies {
 	compile "com.diffplug.durian:durian-io:${VER_DURIAN}"
 	compile "com.diffplug.freshmark:freshmark:${VER_FRESHMARK}"
 	compile "org.eclipse.jgit:org.eclipse.jgit:${VER_JGIT}"
+	compile "com.googlecode.concurrent-trees:concurrent-trees:${VER_TRIES}"
 	testCompile "junit:junit:${VER_JUNIT}"
 	testCompile "org.assertj:assertj-core:${VER_ASSERTJ}"
 	testCompile "com.diffplug.durian:durian-testlib:${VER_DURIAN}"

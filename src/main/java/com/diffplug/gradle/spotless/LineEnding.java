@@ -35,15 +35,15 @@ public enum LineEnding {
 	// @formatter:on
 
 	/** Returns a {@link Policy} appropriate for files which are contained within the given rootFolder. */
-	public Policy createPolicy(File rootFolder) {
+	public Policy createPolicy(File projectDir, Iterable<File> toFormat) {
 		if (this == GIT_ATTRIBUTES) {
-			return GitAttributesLineEndings.create(rootFolder);
+			return GitAttributesLineEndings.create(projectDir, toFormat);
 		} else {
 			return createPolicy();
 		}
 	}
 
-	/** Should use {@link #createPolicy(File)} instead, but this will work iff its a path-independent LineEnding policy. */
+	/** Should use {@link #createPolicy(File, Iterable)} instead, but this will work iff its a path-independent LineEnding policy. */
 	public Policy createPolicy() {
 		switch (this) {
 		case PLATFORM_NATIVE:

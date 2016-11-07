@@ -74,7 +74,7 @@ public class FormatExtension {
 	}
 
 	LineEnding.Policy getLineEndingPolicy() {
-		return getLineEndings().createPolicy(getProject().getProjectDir());
+		return getLineEndings().createPolicy(getProject().getProjectDir(), target);
 	}
 
 	Charset encoding;

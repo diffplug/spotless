@@ -21,31 +21,39 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
 import org.eclipse.jgit.attributes.Attribute;
 import org.eclipse.jgit.attributes.AttributesNode;
-import org.eclipse.jgit.attributes.AttributesNodeProvider;
 import org.eclipse.jgit.attributes.AttributesRule;
 import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.CoreConfig.EOL;
-import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.storage.file.FileBasedConfig;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.util.FS;
 import org.eclipse.jgit.util.SystemReader;
 
+import com.googlecode.concurrenttrees.radix.ConcurrentRadixTree;
+import com.googlecode.concurrenttrees.radix.node.Node;
+import com.googlecode.concurrenttrees.radix.node.concrete.DefaultCharSequenceNodeFactory;
+
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.Unhandled;
+import com.diffplug.common.tree.TreeStream;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -57,22 +65,24 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 class GitAttributesLineEndings {
 
-	public static Policy create(File rootFolder) {
-		return new Policy(rootFolder);
+	public static Policy create(File projectDir, Iterable<File> toFormat) {
+		return new Policy(projectDir, toFormat);
 	}
 
 	static class Policy extends LazyForwardingEquality<FileState> implements LineEnding.Policy {
 		private static final long serialVersionUID = 1L;
 
-		final transient File rootFolder;
+		final transient File projectDir;
+		final transient Iterable<File> toFormat;
 
-		Policy(File rootFolder) {
-			this.rootFolder = Objects.requireNonNull(rootFolder);
+		Policy(File projectDir, Iterable<File> toFormat) {
+			this.projectDir = Objects.requireNonNull(projectDir);
+			this.toFormat = Objects.requireNonNull(toFormat);
 		}
 
 		@Override
 		protected FileState calculateKey() throws Throwable {
-			return new FileState(rootFolder);
+			return new FileState(projectDir, toFormat);
 		}
 
 		/**
@@ -84,146 +94,147 @@ class GitAttributesLineEndings {
 		@Override
 		public String getEndingFor(File file) {
 			if (runtime == null) {
-				runtime = Errors.rethrow().get(key()::atRuntime);
+				runtime = key().atRuntime();
 			}
 			return runtime.getEndingFor(file);
 		}
 	}
 
+	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	static class FileState implements Serializable {
 		private static final long serialVersionUID = 1L;
 
-		/**
-		 * The root folder of the repository, if it exists.
-		 *
-		 * Transient because not needed to uniquely identify a FileState instance, and also because
-		 * Gradle only needs this class to be Serializable so it can compare FileState instances for
-		 * incremental builds.
-		 */
+		/** /etc/gitconfig (system-global), ~/.gitconfig, project/.git/config (each might-not exist). */
+		transient final FileBasedConfig systemConfig, userConfig, repoConfig;
+
+		/** Global .gitattributes file pointed at by systemConfig or userConfig, and the file in the repo. */
+		@Nullable
+		transient final File globalAttributesFile, repoAttributesFile;
+
+		/** git worktree root, might not exist if we're not in a git repo. */
 		@Nullable
 		transient final File workTree;
+
+		/** All the .gitattributes files in the work tree that we're formatting. */
+		transient final List<File> gitattributes;
 
 		/** The signature of *all* of the files below. */
 		final FileSignature signature;
 
-		/**
-		 * .git/config (per-repo), might not exist if we're not in a git repo.
-		 *
-		 * Transient because not needed to uniquely identify a FileState instance...
-		 */
-		@Nullable
-		transient final File repoConfig;
+		FileState(File projectDir, Iterable<File> toFormat) throws IOException {
+			/////////////////////////////////
+			// USER AND SYSTEM-WIDE VALUES //
+			/////////////////////////////////
+			systemConfig = SystemReader.getInstance().openSystemConfig(null, FS.DETECTED);
+			Errors.log().run(systemConfig::load);
+			userConfig = SystemReader.getInstance().openUserConfig(systemConfig, FS.DETECTED);
+			Errors.log().run(userConfig::load);
 
-		/**
-		 * /etc/gitconfig (system-global), might not exist.
-		 *
-		 * Transient because not needed to uniquely identify a FileState instance...
-		 */
-		@Nullable
-		@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-		transient final File systemConfig;
+			// copy-pasted from org.eclipse.jgit.lib.CoreConfig
+			String globalAttributesPath = userConfig.getString(ConfigConstants.CONFIG_CORE_SECTION, null, ConfigConstants.CONFIG_KEY_ATTRIBUTESFILE);
+			// copy-pasted from org.eclipse.jgit.internal.storage.file.GlobalAttributesNode
+			if (globalAttributesPath != null) {
+				FS fs = FS.detect();
+				if (globalAttributesPath.startsWith("~/")) { //$NON-NLS-1$
+					globalAttributesFile = fs.resolve(fs.userHome(), globalAttributesPath.substring(2));
+				} else {
+					globalAttributesFile = fs.resolve(null, globalAttributesPath);
+				}
+			} else {
+				globalAttributesFile = null;
+			}
 
-		/**
-		 * ~/.gitconfig (per-user), might not exist.
-		 *
-		 * Transient because not needed to uniquely identify a FileState instance...
-		 */
-		@Nullable
-		@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-		transient final File userConfig;
-
-		/**
-		 * All the .gitattributes files in the work tree that we're formatting.
-		 *
-		 * Transient because not needed to uniquely identify a FileState instance...
-		 */
-		@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-		transient final List<File> gitattributes;
-
-		FileState(File rootFolder) throws IOException {
-			FS fs = FS.detect();
-			this.systemConfig = fs.getGitSystemConfig();
-			File userConfig = new File(fs.userHome(), ".gitconfig");
-			this.userConfig = userConfig.exists() ? userConfig : null;
-
+			//////////////////////////
+			// REPO-SPECIFIC VALUES //
+			//////////////////////////
 			FileRepositoryBuilder builder = new FileRepositoryBuilder();
-			builder.findGitDir(rootFolder);
+			builder.findGitDir(projectDir);
 			if (builder.getGitDir() != null) {
 				workTree = builder.getWorkTree();
-				File repoConfig = new File(builder.getGitDir(), Constants.INFO_ATTRIBUTES);
-				if (repoConfig.exists()) {
-					this.repoConfig = repoConfig;
-				} else {
-					this.repoConfig = null;
-				}
+				repoConfig = new FileBasedConfig(userConfig, new File(builder.getGitDir(), Constants.CONFIG), FS.DETECTED);
+				repoAttributesFile = new File(builder.getGitDir(), Constants.INFO_ATTRIBUTES);
 			} else {
-				this.repoConfig = null;
-				this.workTree = null;
-			}
-			// TODO: efficiently walk the rootFolder to find all .gitattributes files in the folder
-			// Maybe we should take advantage of gradle's FileCollection here?  Find all tips, then
-			// work towards the root in the fileTree
-			this.gitattributes = Collections.emptyList();
+				workTree = null;
+				// null would make repoConfig.getFile() bomb below
+				repoConfig = new FileBasedConfig(userConfig, null, FS.DETECTED) {
+					@Override
+					public void load() {
+						// empty, do not load
+					}
 
-			List<File> toIndex = new ArrayList<>(gitattributes.size() + 3);
-			toIndex.addAll(gitattributes);
-			if (systemConfig != null) {
-				toIndex.add(systemConfig);
+					@Override
+					public boolean isOutdated() {
+						// regular class would bomb here
+						return false;
+					}
+				};
+				repoAttributesFile = null;
 			}
-			if (userConfig != null) {
-				toIndex.add(userConfig);
-			}
-			if (repoConfig != null) {
-				toIndex.add(repoConfig);
-			}
-			signature = new FileSignature(toIndex);
+			Errors.log().run(repoConfig::load);
+
+			// The .gitattributes files which apply to the files we are formatting
+			gitattributes = gitAttributes(toFormat);
+
+			// find every actual File which exists above
+			Stream<File> misc = Stream.of(systemConfig.getFile(), userConfig.getFile(), repoConfig.getFile(), globalAttributesFile, repoAttributesFile);
+			List<File> toSign = Stream.concat(gitattributes.stream(), misc)
+					.filter(file -> file != null && file.exists() && file.isFile())
+					.collect(Collectors.toList());
+			// sign it for up-to-date checking
+			signature = new FileSignature(toSign);
 		}
 
-		private Runtime atRuntime() throws IOException {
-			if (workTree != null) {
-				FileRepositoryBuilder builder = new FileRepositoryBuilder();
-				builder.findGitDir(workTree);
-				Objects.requireNonNull(builder.getGitDir(), "If we found a workTree, there should def be a git dir");
-				Repository repo = builder.build();
-				AttributesNodeProvider nodeProvider = repo.createAttributesNodeProvider();
-				Function<AttributesNode, List<AttributesRule>> getRules = node -> node == null ? Collections.emptyList() : node.getRules();
-				return new Runtime(repo.getConfig(),
-						getRules.apply(nodeProvider.getInfoAttributesNode()), repo.getWorkTree(),
-						getRules.apply(nodeProvider.getGlobalAttributesNode()));
-			} else {
-				// there's no repo, so it takes some work to grab the system-wide values
-				Config systemConfig = SystemReader.getInstance().openSystemConfig(null, FS.DETECTED);
-				Config userConfig = SystemReader.getInstance().openUserConfig(systemConfig, FS.DETECTED);
-				if (userConfig == null) {
-					userConfig = new Config();
-				}
-
-				List<AttributesRule> globalRules = Collections.emptyList();
-				// copy-pasted from org.eclipse.jgit.lib.CoreConfig
-				String globalAttributesPath = userConfig.getString(ConfigConstants.CONFIG_CORE_SECTION, null, ConfigConstants.CONFIG_KEY_ATTRIBUTESFILE);
-				// copy-pasted from org.eclipse.jgit.internal.storage.file.GlobalAttributesNode
-				if (globalAttributesPath != null) {
-					FS fs = FS.detect();
-					File attributesFile;
-					if (globalAttributesPath.startsWith("~/")) { //$NON-NLS-1$
-						attributesFile = fs.resolve(fs.userHome(), globalAttributesPath.substring(2));
-					} else {
-						attributesFile = fs.resolve(null, globalAttributesPath);
-					}
-					globalRules = parseRules(attributesFile);
-				}
-				return new Runtime(userConfig,
-						// no git info file
-						Collections.emptyList(), null,
-						globalRules);
+		/** Returns all of the .gitattributes files which affect the given files. */
+		static List<File> gitAttributes(Iterable<File> files) {
+			// build a radix tree out of all the parent folders in these files
+			ConcurrentRadixTree<String> tree = new ConcurrentRadixTree<>(new DefaultCharSequenceNodeFactory());
+			for (File file : files) {
+				String parentPath = file.getParent() + File.separator;
+				tree.putIfAbsent(parentPath, parentPath);
 			}
+			// traverse the edge nodes to find the outermost folders
+			List<File> edgeFolders = TreeStream.depthFirst(Node::getOutgoingEdges, tree.getNode())
+					.filter(node -> node.getOutgoingEdges().isEmpty())
+					.map(node -> new File((String) node.getValue()))
+					.collect(Collectors.toList());
+
+			List<File> gitAttrFiles = new ArrayList<>();
+			Set<File> visitedFolders = new HashSet<>();
+			for (File edgeFolder : edgeFolders) {
+				gitAttrAddWithParents(edgeFolder, visitedFolders, gitAttrFiles);
+			}
+			return gitAttrFiles;
+		}
+
+		/** Searches folder and all its parents for gitattributes files. */
+		private static void gitAttrAddWithParents(File folder, Set<File> visitedFolders, Collection<File> gitAttrFiles) {
+			if (!visitedFolders.add(folder)) {
+				// bail if we already visited this folder
+				return;
+			}
+
+			File gitAttr = new File(folder, Constants.DOT_GIT_ATTRIBUTES);
+			if (gitAttr.exists() && gitAttr.isFile()) {
+				gitAttrFiles.add(gitAttr);
+			}
+			File parentFile = folder.getParentFile();
+			if (parentFile != null) {
+				gitAttrAddWithParents(folder.getParentFile(), visitedFolders, gitAttrFiles);
+			}
+		}
+
+		private Runtime atRuntime() {
+			return new Runtime(parseRules(repoAttributesFile), workTree, repoConfig, parseRules(globalAttributesFile));
 		}
 	}
 
+	/** https://github.com/git/git/blob/1fe8f2cf461179c41f64efbd1dc0a9fb3b7a0fb1/Documentation/gitattributes.txt */
 	static class Runtime {
 		/** .git/info/attributes (and the worktree with that file) */
 		final List<AttributesRule> infoRules;
-		final File workTree; // nullable
+
+		@Nullable
+		final File workTree;
 
 		/** Cache of local .gitattributes files. */
 		final AttributesCache cache = new AttributesCache();
@@ -241,18 +252,18 @@ class GitAttributesLineEndings {
 		 */
 		final String defaultEnding;
 
-		private Runtime(Config config, List<AttributesRule> infoRules, File workTree, List<AttributesRule> globalRules) {
+		private Runtime(List<AttributesRule> infoRules, @Nullable File workTree, Config config, List<AttributesRule> globalRules) {
 			this.infoRules = Objects.requireNonNull(infoRules);
 			this.workTree = workTree;
-			this.globalRules = Objects.requireNonNull(globalRules);
 			this.defaultEnding = fromEol(config.getEnum(ConfigConstants.CONFIG_CORE_SECTION, null, ConfigConstants.CONFIG_KEY_EOL, EOL.NATIVE)).str();
+			this.globalRules = Objects.requireNonNull(globalRules);
 		}
 
 		private static final String KEY_EOL = "eol";
 		private static final boolean IS_FOLDER = false;
 
 		public String getEndingFor(File file) {
-			// handle the .gitinfo worktree file
+			// handle the info rules first, since they trump everything
 			if (workTree != null && !infoRules.isEmpty()) {
 				String rootPath = workTree.getAbsolutePath();
 				String path = file.getAbsolutePath();
@@ -311,7 +322,7 @@ class GitAttributesLineEndings {
 		final Map<File, List<AttributesRule>> rulesAtPath = new HashMap<>();
 
 		/** Returns a value if there is one, or unspecified if there isn't. */
-		public String valueFor(File file, String key) {
+		public @Nullable String valueFor(File file, String key) {
 			StringBuilder pathBuilder = new StringBuilder(file.getAbsolutePath().length());
 			boolean isDirectory = file.isDirectory();
 			File parent = file.getParentFile();
@@ -333,13 +344,13 @@ class GitAttributesLineEndings {
 
 		/** Returns the gitattributes rules for the given folder. */
 		private List<AttributesRule> getRulesForFolder(File folder) {
-			return rulesAtPath.computeIfAbsent(folder, f -> parseRules(new File(f, ".gitattributes")));
+			return rulesAtPath.computeIfAbsent(folder, f -> parseRules(new File(f, Constants.DOT_GIT_ATTRIBUTES)));
 		}
 	}
 
 	/** Parses a list of rules from the given file, returning an empty list if the file doesn't exist. */
-	private static List<AttributesRule> parseRules(File file) {
-		if (file.exists() && file.isFile()) {
+	private static List<AttributesRule> parseRules(@Nullable File file) {
+		if (file != null && file.exists() && file.isFile()) {
 			try (InputStream stream = new FileInputStream(file)) {
 				AttributesNode parsed = new AttributesNode();
 				parsed.parse(stream);
