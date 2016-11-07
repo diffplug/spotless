@@ -118,7 +118,7 @@ class PaddedCellTaskMisc {
 	}
 
 	private static Path diagnoseDir(CheckFormatTask task) {
-		return task.getProject().getBuildDir().toPath().resolve("spotless-diagnose-" + task.getFormatName());
+		return task.getProject().getBuildDir().toPath().resolve("spotless-diagnose-" + task.formatName());
 	}
 
 	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
