@@ -47,6 +47,8 @@ import org.eclipse.jgit.util.SystemReader;
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.Unhandled;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Uses [.gitattributes](https://git-scm.com/docs/gitattributes) to determine
  * the appropriate line ending. Falls back to the `core.eol` property in the
@@ -91,22 +93,51 @@ class GitAttributesLineEndings {
 	static class FileState implements Serializable {
 		private static final long serialVersionUID = 1L;
 
-		/** The root folder of the repository, if it exists. */
+		/**
+		 * The root folder of the repository, if it exists.
+		 *
+		 * Transient because not needed to uniquely identify a FileState instance, and also because
+		 * Gradle only needs this class to be Serializable so it can compare FileState instances for
+		 * incremental builds.
+		 */
 		@Nullable
-		final transient File workTree;
+		transient final File workTree;
 
 		/** The signature of *all* of the files below. */
 		final FileSignature signature;
-		/** .git/config (per-repo), might not exist if we're not in a git repo. */
+
+		/**
+		 * .git/config (per-repo), might not exist if we're not in a git repo.
+		 *
+		 * Transient because not needed to uniquely identify a FileState instance...
+		 */
 		@Nullable
 		transient final File repoConfig;
-		/** /etc/gitconfig (system-global), might not exist. */
+
+		/**
+		 * /etc/gitconfig (system-global), might not exist.
+		 *
+		 * Transient because not needed to uniquely identify a FileState instance...
+		 */
 		@Nullable
+		@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 		transient final File systemConfig;
-		/** ~/.gitconfig (per-user), might not exist. */
+
+		/**
+		 * ~/.gitconfig (per-user), might not exist.
+		 *
+		 * Transient because not needed to uniquely identify a FileState instance...
+		 */
 		@Nullable
+		@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 		transient final File userConfig;
-		/** All the .gitattributes files in the work tree that we're formatting. */
+
+		/**
+		 * All the .gitattributes files in the work tree that we're formatting.
+		 *
+		 * Transient because not needed to uniquely identify a FileState instance...
+		 */
+		@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 		transient final List<File> gitattributes;
 
 		FileState(File rootFolder) throws IOException {

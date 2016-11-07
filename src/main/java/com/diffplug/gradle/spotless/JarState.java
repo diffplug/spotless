@@ -45,10 +45,19 @@ public class JarState implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = Logging.getLogger(JarState.class);
 
-	private final Set<File> jars;
+	private final String mavenCoordinate;
+	private final FileSignature fileSignature;
+
+	/*
+	 * Transient because not needed to uniquely identify a JarState instance, and also because
+	 * Gradle only needs this class to be Serializable so it can compare JarState instances for
+	 * incremental builds.
+	 */
+	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
+	private final transient Set<File> jars;
 
 	public JarState(String mavenCoordinate, Project project) throws IOException {
-		Objects.requireNonNull(mavenCoordinate);
+		this.mavenCoordinate = Objects.requireNonNull(mavenCoordinate);
 		Dependency dep = project.getDependencies().create(mavenCoordinate);
 		Configuration config = project.getConfigurations().detachedConfiguration(dep);
 		config.setDescription(mavenCoordinate);
@@ -59,6 +68,7 @@ public class JarState implements Serializable {
 			logger.error("e.g.: repositories { mavenCentral() }");
 			throw e;
 		}
+		fileSignature = new FileSignature(jars);
 	}
 
 	@SuppressFBWarnings("DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED")
