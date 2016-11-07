@@ -26,6 +26,8 @@ import com.diffplug.gradle.spotless.FormatterStep.Strict;
  * Standard implementation of FormatExtension which cleanly enforces
  * separation of serializable configuration and a pure format function.
  */
+// TODO: Refactor as inner class of FormatterStep and rename to `FormatterStep.StandardImpl`?
+// TODO: Change use of word "FormatExtension" in javadoc above with "FormatterStep"?
 abstract class FormatExtensionStandardImpl<Key extends Serializable> extends Strict<Key> {
 	private static final long serialVersionUID = 1L;
 
