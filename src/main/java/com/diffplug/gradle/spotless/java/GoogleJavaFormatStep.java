@@ -21,8 +21,6 @@ import java.net.URLClassLoader;
 import com.diffplug.common.base.Throwing;
 import com.diffplug.gradle.spotless.JarState;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /** Wraps up [google-java-format](https://github.com/google/google-java-format) as a FormatterStep. */
 class GoogleJavaFormatStep {
 	static final String NAME = "google-java-format";
