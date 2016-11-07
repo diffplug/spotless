@@ -21,27 +21,41 @@ import java.io.Serializable;
 
 import com.diffplug.common.collect.ImmutableSortedSet;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /** Computes a signature for any needed files. */
-public class FileSignature implements Serializable {
+public final class FileSignature implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	final String[] filenames;
-	final long[] filesizes;
-	final long[] lastModified;
+	/*
+	 * Transient because not needed to uniquely identify a FileSignature instance, and also because
+	 * Gradle only needs this class to be Serializable so it can compare FileSignature instances for
+	 * incremental builds.
+	 */
+	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
+	private final transient ImmutableSortedSet<File> sortedFiles;
+
+	private final String[] filenames;
+	private final long[] filesizes;
+	private final long[] lastModified;
 
 	public FileSignature(Iterable<File> files) throws IOException {
-		ImmutableSortedSet<File> sorted = ImmutableSortedSet.copyOf(files);
+		sortedFiles = ImmutableSortedSet.copyOf(files);
 
-		filenames = new String[sorted.size()];
-		filesizes = new long[sorted.size()];
-		lastModified = new long[sorted.size()];
+		filenames = new String[sortedFiles.size()];
+		filesizes = new long[sortedFiles.size()];
+		lastModified = new long[sortedFiles.size()];
 
 		int i = 0;
-		for (File file : sorted) {
+		for (File file : sortedFiles) {
 			filenames[i] = file.getCanonicalPath();
 			filesizes[i] = file.length();
 			lastModified[i] = file.lastModified();
 			++i;
 		}
+	}
+
+	public ImmutableSortedSet<File> files() {
+		return sortedFiles;
 	}
 }
