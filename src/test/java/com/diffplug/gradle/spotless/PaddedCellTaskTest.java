@@ -163,9 +163,9 @@ public class PaddedCellTaskTest extends ResourceHarness {
 		assertFailureMessage(cycle().paddedCell(),
 				"The following files had format violations:",
 				slashify("    src/test.cycle"),
-				"    @@ -1 +1 @@",
-				"    -CCC",
-				"    +A",
+				"      @@ -1 +1 @@",
+				"      -CCC",
+				"      +A",
 				"Run 'gradlew spotlessApply' to fix these violations.");
 	}
 
@@ -174,8 +174,8 @@ public class PaddedCellTaskTest extends ResourceHarness {
 		assertFailureMessage(converge().paddedCell(),
 				"The following files had format violations:",
 				slashify("    src/test.converge"),
-				"    @@ -1 +0,0 @@",
-				"    -CCC",
+				"      @@ -1 +0,0 @@",
+				"      -CCC",
 				"Run 'gradlew spotlessApply' to fix these violations.");
 	}
 
