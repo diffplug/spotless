@@ -70,9 +70,9 @@ public class FormatTaskTest extends ResourceHarness {
 		checkTask.steps.add(NonUpToDateCheckingTasks.create("double-p", content -> content.replace("pp", "p")));
 
 		String diff = String.join("\n",
-				"    @@ -1 +1 @@",
-				"    -apple",
-				"    +aple");
+				"        @@ -1 +1 @@",
+				"        -apple",
+				"        +aple");
 		Assertions.assertThatThrownBy(() -> checkTask.execute()).hasStackTraceContaining(diff);
 
 		assertFileContent("apple", testFile);

@@ -69,7 +69,7 @@ final class DiffMessageFormatter {
 			} else {
 				buffer.append("Violations also present in:\n");
 				while (problemIter.hasNext()) {
-					addLine(rootDir.relativize(problemIter.next().toPath()).toString());
+					addIntendedLine(NORMAL_INDENT, rootDir.relativize(problemIter.next().toPath()).toString());
 				}
 			}
 		}
@@ -81,34 +81,38 @@ final class DiffMessageFormatter {
 	private void addFile(String arg) {
 		// at the very least, we'll print this about a file:
 		//     0.txt
-		//     @@ -1,2 +1,2 @@",
-		//     -1\\r\\n",
-		//     -2\\r\\n",
-		//     ... (more diff than we can fit here)
+		//         @@ -1,2 +1,2 @@,
+		//         -1\\r\\n,
+		//         -2\\r\\n,
+		//     ... (more lines that didn't fit)
 		List<String> lines = NEWLINE_SPLITTER.splitToList(arg);
-		for (int i = 0; i < Math.min(MIN_LINES_PER_FILE, lines.size()); ++i) {
-			addLine(lines.get(i));
+		if (!lines.isEmpty()) {
+			addIntendedLine(NORMAL_INDENT, lines.get(0));
+		}
+		for (int i = 1; i < Math.min(MIN_LINES_PER_FILE, lines.size()); ++i) {
+			addIntendedLine(DIFF_INDENT, lines.get(i));
 		}
 
 		// then we'll print the rest that can fit
 		ListIterator<String> iter = lines.listIterator(Math.min(MIN_LINES_PER_FILE, lines.size()));
 		while (iter.hasNext() && numLines < MAX_CHECK_MESSAGE_LINES) {
-			addLine(iter.next());
+			addIntendedLine(DIFF_INDENT, iter.next());
 		}
 
 		if (numLines >= MAX_CHECK_MESSAGE_LINES) {
 			// we're out of space
 			if (iter.hasNext()) {
 				int linesLeft = lines.size() - iter.nextIndex();
-				addLine("... (" + linesLeft + " more lines that didn't fit)");
+				addIntendedLine(NORMAL_INDENT, "... (" + linesLeft + " more lines that didn't fit)");
 			}
 		}
 	}
 
-	private static final String INDENT = "    ";
+	private static final String NORMAL_INDENT = "    ";
+	private static final String DIFF_INDENT = NORMAL_INDENT + NORMAL_INDENT;
 
-	private void addLine(String line) {
-		buffer.append(INDENT);
+	private void addIntendedLine(String indent, String line) {
+		buffer.append(indent);
 		buffer.append(line);
 		buffer.append('\n');
 		++numLines;
