@@ -26,7 +26,7 @@ output = [
 output = prefixDelimiterReplace(input, 'https://{{org}}.github.io/{{name}}/javadoc/', '/', stable)
 -->
 
-Spotless is a general-purpose formatting plugin.  It is completely a-la-carte, but also includes powerful "batteries-included" if you opt-in.
+Spotless is a general-purpose formatting plugin.  It is completely à la carte, but also includes powerful "batteries-included" if you opt-in.
 
 To people who use your build, it looks like this:
 
@@ -34,8 +34,14 @@ To people who use your build, it looks like this:
 cmd> gradlew build
 ...
 :spotlessJavaCheck FAILED
-> Format violations were found. Run 'gradlew spotlessApply' to fix them.
-	src\test\java\com\diffplug\gradle\spotless\ResourceTest.java
+> The following files had format violations:
+	src\main\java\com\diffplug\gradle\spotless\FormatExtension.java
+		@@ -109,7 +109,7 @@
+		...
+		-\t\t····if·(targets.length·==·0)·{
+		+\t\tif·(targets.length·==·0)·{
+		...
+	Run 'gradlew spotlessApply' to fix these violations.
 
 cmd> gradlew spotlessApply
 :spotlessApply

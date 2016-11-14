@@ -81,9 +81,9 @@ final class DiffMessageFormatter {
 	private void addFile(String arg) {
 		// at the very least, we'll print this about a file:
 		//     0.txt
-		//       @@ -1,2 +1,2 @@,
-		//       -1\\r\\n,
-		//       -2\\r\\n,
+		//         @@ -1,2 +1,2 @@,
+		//         -1\\r\\n,
+		//         -2\\r\\n,
 		//     ... (more lines that didn't fit)
 		List<String> lines = NEWLINE_SPLITTER.splitToList(arg);
 		if (!lines.isEmpty()) {
@@ -109,7 +109,7 @@ final class DiffMessageFormatter {
 	}
 
 	private static final String NORMAL_INDENT = "    ";
-	private static final String DIFF_INDENT = NORMAL_INDENT + "  ";
+	private static final String DIFF_INDENT = NORMAL_INDENT + NORMAL_INDENT;
 
 	private void addIntendedLine(String indent, String line) {
 		buffer.append(indent);
