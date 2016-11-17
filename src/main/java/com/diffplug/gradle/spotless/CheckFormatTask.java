@@ -44,6 +44,7 @@ public class CheckFormatTask extends BaseFormatTask {
 			}
 		});
 
+		// TODO: Remove this loop in favour of the 'inputs.outOfDate(...)' above
 		for (File file : target) {
 			getLogger().debug("Checking format on " + file);
 			// keep track of the problem toFormat
