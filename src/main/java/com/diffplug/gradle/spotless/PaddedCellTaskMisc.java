@@ -212,7 +212,7 @@ class PaddedCellTaskMisc {
 		}
 	}
 
-	static void apply(ApplyFormatTask task, Formatter formatter, File file) throws IOException {
+	static void apply(Formatter formatter, File file) throws IOException {
 		byte[] rawBytes = Files.readAllBytes(file.toPath());
 		String raw = new String(rawBytes, formatter.encoding);
 		String rawUnix = LineEnding.toUnix(raw);
