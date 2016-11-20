@@ -34,7 +34,7 @@ public class GoogleJavaFormatStepTest extends GradleIntegrationTest {
 				"spotless {",
 				"    java {",
 				"        target file('test.java')",
-				"        googleJavaFormat()",
+				"        googleJavaFormat('1.1')",
 				"    }",
 				"}");
 		String input = getTestResource("java/googlejavaformat/JavaCodeUnformatted.test");
@@ -44,5 +44,13 @@ public class GoogleJavaFormatStepTest extends GradleIntegrationTest {
 		String result = read("test.java");
 		String output = getTestResource("java/googlejavaformat/JavaCodeFormatted.test");
 		Assert.assertEquals(output, result);
+
+		checkRunsThenUpToDate();
+
+		// if we change the version of google-java format, then check should need to run again
+		replace("build.gradle",
+				"googleJavaFormat('1.1')",
+				"googleJavaFormat('1.0')");
+		checkRunsThenUpToDate();
 	}
 }

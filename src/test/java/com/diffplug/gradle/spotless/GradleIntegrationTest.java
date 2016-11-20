@@ -74,8 +74,13 @@ public class GradleIntegrationTest extends ResourceHarness {
 		return allUnixNewline.replace("\n", ending.str());
 	}
 
-	protected File file(String path) {
-		return folder.getRoot().toPath().resolve(path).toFile();
+	protected void replace(String path, String toReplace, String replaceWith) throws IOException {
+		String before = read(path);
+		String after = before.replace(toReplace, replaceWith);
+		if (before.equals(after)) {
+			throw new IllegalArgumentException("Replace was ineffective! '" + toReplace + "' was not found in " + path);
+		}
+		write(path, after);
 	}
 
 	protected GradleRunner gradleRunner() {
