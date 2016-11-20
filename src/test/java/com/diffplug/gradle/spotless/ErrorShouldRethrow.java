@@ -16,7 +16,6 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -90,6 +89,6 @@ public class ErrorShouldRethrow extends GradleIntegrationTest {
 				"    }",
 				"}");
 		write("README.md", "This code is fun.");
-		assertSpotlessCheckSucceeds("README.md", "This code is fun.\n", StandardCharsets.UTF_8);
+		checkRunsThenUpToDate();
 	}
 }

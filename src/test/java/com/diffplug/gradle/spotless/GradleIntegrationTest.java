@@ -24,7 +24,6 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -32,13 +31,11 @@ import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StringPrinter;
-import com.diffplug.common.collect.ImmutableMap;
 import com.diffplug.common.tree.TreeDef;
 import com.diffplug.common.tree.TreeStream;
 
@@ -50,24 +47,12 @@ public class GradleIntegrationTest extends ResourceHarness {
 		return write(path, LineEnding.UNIX, lines);
 	}
 
-	protected File write(String path, Iterable<String> lines) throws IOException {
-		return write(path, LineEnding.UNIX, lines);
-	}
-
 	protected File write(String path, LineEnding ending, String... lines) throws IOException {
 		return write(path, ending, StandardCharsets.UTF_8, lines);
 	}
 
-	protected File write(String path, LineEnding ending, Iterable<String> lines) throws IOException {
-		return write(path, ending, StandardCharsets.UTF_8, lines);
-	}
-
 	protected File write(String path, LineEnding ending, Charset encoding, String... lines) throws IOException {
-		return write(path, ending, encoding, Arrays.asList(lines));
-	}
-
-	protected File write(String path, LineEnding ending, Charset encoding, Iterable<String> lines) throws IOException {
-		String content = String.join(ending.str(), lines) + ending.str();
+		String content = Arrays.stream(lines).collect(Collectors.joining(ending.str())) + ending.str();
 		Path target = folder.getRoot().toPath().resolve(path);
 		Files.createDirectories(target.getParent());
 		Files.write(target, content.getBytes(encoding));
@@ -122,41 +107,20 @@ public class GradleIntegrationTest extends ResourceHarness {
 		}));
 	}
 
-	protected void assertSpotlessCheckSucceeds(
-			String fileToCheck, String expectedFileContents, Charset fileCharset) throws IOException {
-		assertSpotlessCheckSucceeds(ImmutableMap.of(fileToCheck, new ContentsAndCharsetPair(expectedFileContents, fileCharset)));
+	protected void checkRunsThenUpToDate() throws IOException {
+		checkIsUpToDate(false);
+		checkIsUpToDate(true);
 	}
 
-	protected void assertSpotlessCheckSucceeds(Map<String, ContentsAndCharsetPair> fileToAttributes) throws IOException {
-
+	protected void checkIsUpToDate(boolean upToDate) throws IOException {
 		// first run of spotlessCheck
-		BuildResult buildResult1 = gradleRunner().withArguments("spotlessCheck").build();
+		BuildResult buildResult = gradleRunner().withArguments("spotlessCheck").build();
 
-		for (Map.Entry<String, ContentsAndCharsetPair> entry : fileToAttributes.entrySet()) {
-			String file = entry.getKey();
-			String contents = entry.getValue().contents;
-			Charset charset = entry.getValue().charset;
+		TaskOutcome expected = upToDate ? TaskOutcome.UP_TO_DATE : TaskOutcome.SUCCESS;
+		TaskOutcome notExpected = upToDate ? TaskOutcome.SUCCESS : TaskOutcome.UP_TO_DATE;
 
-			String actual = read(file, LineEnding.UNIX, charset);
-			Assert.assertEquals(contents, actual);
-			Assertions.assertThat(buildResult1.tasks((TaskOutcome.SUCCESS))).isNotEmpty();
-			Assertions.assertThat(buildResult1.tasks(TaskOutcome.UP_TO_DATE)).isEmpty();
-			Assertions.assertThat(buildResult1.getTasks()).hasSameSizeAs(buildResult1.tasks(TaskOutcome.SUCCESS));
-		}
-
-		// second run - confirm that incremental checking has kicked in
-		BuildResult buildResult2 = gradleRunner().withArguments("spotlessCheck").build();
-
-		for (Map.Entry<String, ContentsAndCharsetPair> entry : fileToAttributes.entrySet()) {
-			String file = entry.getKey();
-			String contents = entry.getValue().contents;
-			Charset charset = entry.getValue().charset;
-
-			String actual = read(file, LineEnding.UNIX, charset);
-			Assert.assertEquals(contents, actual);
-			Assertions.assertThat(buildResult2.tasks(TaskOutcome.SUCCESS)).isEmpty();
-			Assertions.assertThat(buildResult2.tasks(TaskOutcome.UP_TO_DATE)).isNotEmpty();
-			Assertions.assertThat(buildResult2.getTasks()).hasSameSizeAs(buildResult2.tasks(TaskOutcome.UP_TO_DATE));
-		}
+		Assertions.assertThat(buildResult.tasks(expected)).isNotEmpty();
+		Assertions.assertThat(buildResult.tasks(notExpected)).isEmpty();
+		Assertions.assertThat(buildResult.getTasks()).hasSameSizeAs(buildResult.tasks(expected));
 	}
 }

@@ -16,7 +16,6 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -41,6 +40,6 @@ public class CustomLazyGroovyTest extends GradleIntegrationTest {
 		String result = read("README.md");
 		Assert.assertEquals("abc\n", result);
 
-		assertSpotlessCheckSucceeds("README.md", "abc\n", StandardCharsets.UTF_8);
+		checkRunsThenUpToDate();
 	}
 }

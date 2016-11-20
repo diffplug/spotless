@@ -16,12 +16,9 @@
 package com.diffplug.gradle.spotless;
 
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 
 import org.junit.Assert;
 import org.junit.Test;
-
-import com.diffplug.common.collect.ImmutableMap;
 
 public class EncodingTest extends GradleIntegrationTest {
 	@Test
@@ -39,7 +36,7 @@ public class EncodingTest extends GradleIntegrationTest {
 		write("test.java", "µ");
 		gradleRunner().withArguments("spotlessApply").forwardOutput().build();
 		Assert.assertEquals("A\n", read("test.java"));
-		assertSpotlessCheckSucceeds("test.java", "A\n", StandardCharsets.UTF_8);
+		checkRunsThenUpToDate();
 	}
 
 	@Test
@@ -58,7 +55,7 @@ public class EncodingTest extends GradleIntegrationTest {
 		write("test.java", "µ");
 		gradleRunner().withArguments("spotlessApply").build();
 		Assert.assertEquals("??\n", read("test.java"));
-		assertSpotlessCheckSucceeds("test.java", "??\n", Charset.forName("US-ASCII"));
+		checkRunsThenUpToDate();
 	}
 
 	@Test
@@ -87,9 +84,6 @@ public class EncodingTest extends GradleIntegrationTest {
 		Assert.assertEquals("??\n", read("test.java"));
 		Assert.assertEquals("A\n", read("utf32.encoded", LineEnding.UNIX, Charset.forName("UTF-32")));
 
-		assertSpotlessCheckSucceeds(
-				ImmutableMap.of(
-						"test.java", new ContentsAndCharsetPair("??\n", Charset.forName("US-ASCII")),
-						"utf32.encoded", new ContentsAndCharsetPair("A\n", Charset.forName("UTF-32"))));
+		checkRunsThenUpToDate();
 	}
 }
