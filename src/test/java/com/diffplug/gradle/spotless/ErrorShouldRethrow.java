@@ -16,11 +16,13 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.BuildResult;
-import org.junit.Assert;
+import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.Test;
 
 import com.diffplug.common.base.CharMatcher;
@@ -39,7 +41,7 @@ public class ErrorShouldRethrow extends GradleIntegrationTest {
 				"    format 'misc', {",
 				"        target file('README.md')",
 				"        custom 'no swearing', {",
-				"             if (it.toLowerCase().contains('fubar')) {",
+				"             if (it.toLowerCase(Locale.US).contains('fubar')) {",
 				"                 throw new AssertionError('No swearing!');",
 				"             }",
 				"        }",
@@ -64,7 +66,10 @@ public class ErrorShouldRethrow extends GradleIntegrationTest {
 		int numNewlines = CharMatcher.is('\n').countIn(expectedToStartWith);
 		List<String> actualLines = Splitter.on('\n').splitToList(LineEnding.toUnix(result.getOutput()));
 		String actualStart = actualLines.subList(0, numNewlines + 1).stream().collect(Collectors.joining("\n"));
-		Assert.assertEquals(expectedToStartWith, actualStart);
+		Assertions.assertThat(actualStart).isEqualTo(expectedToStartWith);
+		Assertions.assertThat(result.tasks(TaskOutcome.FAILED))
+				.isNotEmpty()
+				.hasSameSizeAs(result.getTasks());
 	}
 
 	@Test
@@ -78,13 +83,13 @@ public class ErrorShouldRethrow extends GradleIntegrationTest {
 				"        lineEndings 'UNIX'",
 				"        target file('README.md')",
 				"        custom 'no swearing', {",
-				"             if (it.toLowerCase().contains('fubar')) {",
+				"             if (it.toLowerCase(Locale.US).contains('fubar')) {",
 				"                 throw new AssertionError('No swearing!');",
 				"             }",
 				"        }",
 				"    }",
 				"}");
 		write("README.md", "This code is fun.");
-		gradleRunner().withArguments("spotlessCheck").build();
+		assertSpotlessCheckSucceeds("README.md", "This code is fun.\n", StandardCharsets.UTF_8);
 	}
 }

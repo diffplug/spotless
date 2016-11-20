@@ -245,7 +245,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 	public void longFile() throws Exception {
 		StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < 1000; ++i) {
-			builder.append(Integer.toString(i));
+			builder.append(i);
 			builder.append("\r\n");
 		}
 		CheckFormatTask task = create(createTestFile("testFile", builder.toString()));

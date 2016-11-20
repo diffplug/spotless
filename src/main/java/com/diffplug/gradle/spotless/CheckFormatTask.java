@@ -26,34 +26,21 @@ import org.gradle.api.GradleException;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 
-import com.diffplug.common.base.Errors;
-
 public class CheckFormatTask extends BaseFormatTask {
 	@TaskAction
 	public void check(IncrementalTaskInputs inputs) throws Exception {
 		Formatter formatter = buildFormatter();
 		List<File> problemFiles = new ArrayList<>();
 
-		inputs.outOfDate(inputDetails -> {
-			try {
-				if (formatter.isClean(inputDetails.getFile())) {
-					problemFiles.add(inputDetails.getFile());
-				}
-			} catch (IOException e) {
-				throw Errors.asRuntime(e);
-			}
-		});
-
-		// TODO: Remove this loop in favour of the 'inputs.outOfDate(...)' above
-		for (File file : target) {
-			getLogger().debug("Checking format on " + file);
-			// keep track of the problem toFormat
-			try {
-				if (!formatter.isClean(file)) {
-					problemFiles.add(file);
-				}
-			} catch (IOException e) {
-				throw new UncheckedIOException(e);
+		if (inputs.isIncremental()) {
+			inputs.outOfDate(
+					inputDetails -> addFileIfNotClean(inputDetails.getFile(), problemFiles, formatter));
+		} else {
+			// then Gradle was unable to determine which input files were out-of-date because e.g.
+			// there was no previous execution, input properties were changed, etc - so we check
+			// all input files instead.
+			for (File file : target) {
+				addFileIfNotClean(file, problemFiles, formatter);
 			}
 		}
 
@@ -68,6 +55,17 @@ public class CheckFormatTask extends BaseFormatTask {
 					throw formatViolationsFor(formatter, problemFiles);
 				}
 			}
+		}
+	}
+
+	private void addFileIfNotClean(File file, List<File> problemFiles, Formatter formatter) {
+		getLogger().debug("Checking format on " + file);
+		try {
+			if (!formatter.isClean(file)) {
+				problemFiles.add(file);
+			}
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
 		}
 	}
 
