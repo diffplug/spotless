@@ -93,7 +93,7 @@ public class JavaExtension extends FormatExtension {
 	@Override
 	protected void setupTask(BaseFormatTask task) {
 		if (target == null) {
-			JavaPluginConvention javaPlugin = getProject().getConvention().getPlugin(JavaPluginConvention.class);
+			JavaPluginConvention javaPlugin = getProject().getConvention().findPlugin(JavaPluginConvention.class);
 			if (javaPlugin == null) {
 				throw new GradleException("You must apply the java plugin before the spotless plugin if you are using the java extension.");
 			}
