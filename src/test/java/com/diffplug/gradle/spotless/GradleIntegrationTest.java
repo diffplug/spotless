@@ -31,8 +31,6 @@ import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
-import org.junit.Rule;
-import org.junit.rules.TemporaryFolder;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StringPrinter;
@@ -40,9 +38,6 @@ import com.diffplug.common.tree.TreeDef;
 import com.diffplug.common.tree.TreeStream;
 
 public class GradleIntegrationTest extends ResourceHarness {
-	@Rule
-	public TemporaryFolder folder = new TemporaryFolder();
-
 	protected File write(String path, String... lines) throws IOException {
 		return write(path, LineEnding.UNIX, lines);
 	}
