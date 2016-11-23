@@ -27,13 +27,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-import com.diffplug.gradle.spotless.fi.SerializableThrowingFunction;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.diffplug.common.base.Throwing;
+import com.diffplug.gradle.spotless.fi.SerializableThrowingFunction;
 
 public class PaddedCellTest {
 	@Rule

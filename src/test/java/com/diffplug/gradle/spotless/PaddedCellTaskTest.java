@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import com.diffplug.gradle.spotless.fi.SerializableThrowingFunction;
 import org.assertj.core.api.Assertions;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
@@ -34,6 +33,7 @@ import org.junit.Test;
 import com.diffplug.common.base.StandardSystemProperty;
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.common.base.Throwing;
+import com.diffplug.gradle.spotless.fi.SerializableThrowingFunction;
 
 public class PaddedCellTaskTest extends ResourceHarness {
 	private static final boolean IS_WIN = StandardSystemProperty.OS_NAME.value().toLowerCase(Locale.US).contains("win");

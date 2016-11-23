@@ -15,10 +15,10 @@
  */
 package com.diffplug.gradle.spotless;
 
-import com.diffplug.gradle.spotless.fi.SerializablePredicate;
-
 import java.io.File;
 import java.util.Objects;
+
+import com.diffplug.gradle.spotless.fi.SerializablePredicate;
 
 final class FilterByFileFormatterStep implements FormatterStep {
 	private final FormatterStep delegateStep;
