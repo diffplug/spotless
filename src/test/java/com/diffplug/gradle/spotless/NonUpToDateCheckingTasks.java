@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.Suppliers;
 import com.diffplug.common.base.Throwing;
+import com.diffplug.gradle.spotless.fi.SerializableThrowingFunction;
 
 /**
  * Creates trivial tasks which are incapable of
@@ -31,9 +32,9 @@ public class NonUpToDateCheckingTasks {
 	/** A FormatterStep which doesn't depend on the input file. */
 	static class FileIndependent implements FormatterStep {
 		private final String name;
-		private final Throwing.Function<String, String> formatter;
+		private final SerializableThrowingFunction<String, String> formatter;
 
-		private FileIndependent(String name, Throwing.Function<String, String> formatter) {
+		private FileIndependent(String name, SerializableThrowingFunction<String, String> formatter) {
 			this.name = name;
 			this.formatter = formatter;
 		}
@@ -51,7 +52,7 @@ public class NonUpToDateCheckingTasks {
 		private static final long serialVersionUID = 1L;
 	}
 
-	public static FormatterStep create(String name, Throwing.Function<String, String> formatter) {
+	public static FormatterStep create(String name, SerializableThrowingFunction<String, String> formatter) {
 		return new FileIndependent(name, formatter);
 	}
 

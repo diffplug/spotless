@@ -94,7 +94,7 @@ public class FormatExtension {
 		encoding = Objects.requireNonNull(charset);
 	}
 
-	/** Sets encoding to use (defaults to UTF_8). */
+	/** Sets encoding to use (defaults to {@link SpotlessExtension#getEncoding()}). */
 	public void encoding(String charset) {
 		setEncoding(charset);
 	}
@@ -321,11 +321,11 @@ public class FormatExtension {
 
 	/** Sets up a format task according to the values in this extension. */
 	protected void setupTask(BaseFormatTask task) {
-		task.paddedCell = paddedCell;
-		task.lineEndingsPolicy = getLineEndingPolicy();
-		task.encoding = getEncoding();
-		task.target = target;
-		task.steps = steps;
+		task.setPaddedCell(paddedCell);
+		task.setLineEndingsPolicy(getLineEndingPolicy());
+		task.setEncoding(getEncoding().name());
+		task.setTarget(target);
+		task.setSteps(steps);
 	}
 
 	/** Returns the project that this extension is attached to. */

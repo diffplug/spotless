@@ -127,7 +127,7 @@ final class DiffMessageFormatter {
 		String raw = new String(Files.readAllBytes(file.toPath()), formatter.encoding);
 		String rawUnix = LineEnding.toUnix(raw);
 		String formattedUnix;
-		if (task.paddedCell) {
+		if (task.isPaddedCell()) {
 			formattedUnix = PaddedCell.check(formatter, file, rawUnix).canonical();
 		} else {
 			formattedUnix = formatter.applySteps(rawUnix, file);

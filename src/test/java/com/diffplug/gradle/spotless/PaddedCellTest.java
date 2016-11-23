@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+import com.diffplug.gradle.spotless.fi.SerializableThrowingFunction;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,15 +39,15 @@ public class PaddedCellTest {
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
 
-	private void misbehaved(Throwing.Function<String, String> step, String input, PaddedCell.Type expectedOutputType, String steps, String canonical) throws IOException {
+	private void misbehaved(SerializableThrowingFunction<String, String> step, String input, PaddedCell.Type expectedOutputType, String steps, String canonical) throws IOException {
 		testCase(step, input, expectedOutputType, steps, canonical, true);
 	}
 
-	private void wellBehaved(Throwing.Function<String, String> step, String input, PaddedCell.Type expectedOutputType, String canonical) throws IOException {
+	private void wellBehaved(SerializableThrowingFunction<String, String> step, String input, PaddedCell.Type expectedOutputType, String canonical) throws IOException {
 		testCase(step, input, expectedOutputType, canonical, canonical, false);
 	}
 
-	private void testCase(Throwing.Function<String, String> step, String input, PaddedCell.Type expectedOutputType, String expectedSteps, String canonical, boolean misbehaved) throws IOException {
+	private void testCase(SerializableThrowingFunction<String, String> step, String input, PaddedCell.Type expectedOutputType, String expectedSteps, String canonical, boolean misbehaved) throws IOException {
 		List<FormatterStep> formatterSteps = new ArrayList<>();
 		formatterSteps.add(NonUpToDateCheckingTasks.create("step", step));
 		Formatter formatter = Formatter.builder()

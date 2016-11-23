@@ -16,6 +16,7 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.File;
+import java.io.Serializable;
 
 import com.diffplug.common.base.StandardSystemProperty;
 
@@ -76,7 +77,7 @@ public enum LineEnding {
 	private static final String _platformNative = StandardSystemProperty.LINE_SEPARATOR.value();
 
 	/** A policy for line endings which can vary based on the specific file being requested. */
-	public interface Policy {
+	public interface Policy extends Serializable {
 		/** Returns the line ending appropriate for the given file. */
 		String getEndingFor(File file);
 

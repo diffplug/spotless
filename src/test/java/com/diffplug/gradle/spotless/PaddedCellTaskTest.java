@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+import com.diffplug.gradle.spotless.fi.SerializableThrowingFunction;
 import org.assertj.core.api.Assertions;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
@@ -47,7 +48,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 		CheckFormatTask check;
 		ApplyFormatTask apply;
 
-		Bundle(String name, Throwing.Function<String, String> function) throws IOException {
+		Bundle(String name, SerializableThrowingFunction<String, String> function) throws IOException {
 			file = createTestFile("src/test." + name, "CCC");
 			FormatterStep step = NonUpToDateCheckingTasks.create(name, function);
 			check = createCheckTask(name, step);
@@ -56,23 +57,23 @@ public class PaddedCellTaskTest extends ResourceHarness {
 
 		private CheckFormatTask createCheckTask(String name, FormatterStep step) {
 			CheckFormatTask task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + SpotlessPlugin.CHECK, CheckFormatTask.class);
-			task.steps.add(step);
-			task.lineEndingsPolicy = LineEnding.UNIX.createPolicy();
-			task.target = Collections.singletonList(file);
+			task.addStep(step);
+			task.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
+			task.setTarget(Collections.singletonList(file));
 			return task;
 		}
 
 		private ApplyFormatTask createApplyTask(String name, FormatterStep step) {
 			ApplyFormatTask task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + SpotlessPlugin.APPLY, ApplyFormatTask.class);
-			task.steps.add(step);
-			task.lineEndingsPolicy = LineEnding.UNIX.createPolicy();
-			task.target = Collections.singletonList(file);
+			task.addStep(step);
+			task.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
+			task.setTarget(Collections.singletonList(file));
 			return task;
 		}
 
 		private Bundle paddedCell() {
-			check.paddedCell = true;
-			apply.paddedCell = true;
+			check.setPaddedCell(true);
+			apply.setPaddedCell(true);
 			return this;
 		}
 

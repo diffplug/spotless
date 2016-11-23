@@ -17,8 +17,8 @@ package com.diffplug.gradle.spotless;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.gradle.api.DefaultTask;
@@ -30,17 +30,65 @@ import org.gradle.api.tasks.SkipWhenEmpty;
 public abstract class BaseFormatTask extends DefaultTask {
 	// set by SpotlessExtension, but possibly overridden by FormatExtension
 	@Input
-	public Charset encoding = StandardCharsets.UTF_8;
+	protected String encoding = "UTF-8";
+
+	public String getEncoding() {
+		return encoding;
+	}
+
+	public void setEncoding(String encoding) {
+		this.encoding = encoding;
+	}
+
 	@Input
-	public LineEnding.Policy lineEndingsPolicy = LineEnding.UNIX_POLICY;
+	protected LineEnding.Policy lineEndingsPolicy = LineEnding.UNIX_POLICY;
+
+	public LineEnding.Policy getLineEndingsPolicy() {
+		return lineEndingsPolicy;
+	}
+
+	public void setLineEndingsPolicy(LineEnding.Policy lineEndingsPolicy) {
+		this.lineEndingsPolicy = lineEndingsPolicy;
+	}
+
 	// set by FormatExtension
 	@Input
-	public boolean paddedCell = false;
+	protected boolean paddedCell = false;
+
+	public boolean isPaddedCell() {
+		return paddedCell;
+	}
+
+	public void setPaddedCell(boolean paddedCell) {
+		this.paddedCell = paddedCell;
+	}
+
 	@InputFiles
 	@SkipWhenEmpty
-	public Iterable<File> target;
+	protected Iterable<File> target;
+
+	public Iterable<File> getTarget() {
+		return target;
+	}
+
+	public void setTarget(Iterable<File> target) {
+		this.target = target;
+	}
+
 	@Input
-	public List<FormatterStep> steps = new ArrayList<>();
+	protected List<FormatterStep> steps = new ArrayList<>();
+
+	public List<FormatterStep> getSteps() {
+		return Collections.unmodifiableList(steps);
+	}
+
+	public void setSteps(List<FormatterStep> steps) {
+		this.steps = steps;
+	}
+
+	public boolean addStep(FormatterStep step) {
+		return this.steps.add(step);
+	}
 
 	protected Formatter buildFormatter() {
 		if (target == null) {
@@ -49,7 +97,7 @@ public abstract class BaseFormatTask extends DefaultTask {
 		// combine them into the master formatter
 		return Formatter.builder()
 				.lineEndingsPolicy(lineEndingsPolicy)
-				.encoding(encoding)
+				.encoding(Charset.forName(encoding))
 				.projectDirectory(getProject().getProjectDir().toPath())
 				.steps(steps)
 				.build();

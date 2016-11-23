@@ -16,8 +16,10 @@
 package com.diffplug.gradle.spotless.java;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.internal.file.UnionFileCollection;

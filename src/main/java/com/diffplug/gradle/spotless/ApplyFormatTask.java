@@ -23,10 +23,10 @@ public class ApplyFormatTask extends BaseFormatTask {
 	@TaskAction
 	public void apply() throws Exception {
 		Formatter formatter = buildFormatter();
-		for (File file : target) {
+		for (File file : getTarget()) {
 			getLogger().debug("Applying format to " + file);
 			// keep track of the problem toFormat
-			if (paddedCell) {
+			if (isPaddedCell()) {
 				PaddedCellTaskMisc.apply(formatter, file);
 			} else {
 				formatter.applyFormat(file);

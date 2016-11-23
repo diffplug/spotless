@@ -15,15 +15,16 @@
  */
 package com.diffplug.gradle.spotless;
 
+import com.diffplug.gradle.spotless.fi.SerializablePredicate;
+
 import java.io.File;
 import java.util.Objects;
-import java.util.function.Predicate;
 
 final class FilterByFileFormatterStep implements FormatterStep {
 	private final FormatterStep delegateStep;
-	private final Predicate<File> filter;
+	private final SerializablePredicate<File> filter;
 
-	FilterByFileFormatterStep(FormatterStep delegateStep, Predicate<File> filter) {
+	FilterByFileFormatterStep(FormatterStep delegateStep, SerializablePredicate<File> filter) {
 		this.delegateStep = delegateStep;
 		this.filter = filter;
 	}

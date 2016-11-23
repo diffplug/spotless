@@ -100,7 +100,7 @@ public class GoogleJavaFormatStepTest extends GradleIntegrationTest {
 				java.googleJavaFormat("1.1");
 			});
 		});
-		Assertions.assertThat(checks1_0a.steps).isEqualTo(checks1_0b.steps);
-		Assertions.assertThat(checks1_0a.steps).isNotEqualTo(checks1_1.steps);
+		Assertions.assertThat(checks1_0a.getSteps()).isEqualTo(checks1_0b.getSteps());
+		Assertions.assertThat(checks1_0a.getSteps()).isNotEqualTo(checks1_1.getSteps());
 	}
 }

@@ -36,8 +36,8 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 	private CheckFormatTask create(List<File> files) {
 		Project project = ProjectBuilder.builder().withProjectDir(folder.getRoot()).build();
 		CheckFormatTask task = project.getTasks().create("underTest", CheckFormatTask.class);
-		task.lineEndingsPolicy = LineEnding.UNIX.createPolicy();
-		task.target = files;
+		task.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
+		task.setTarget(files);
 		return task;
 	}
 
@@ -70,7 +70,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 	@Test
 	public void whitespaceProblem() throws Exception {
 		CheckFormatTask task = create(createTestFile("testFile", "A \nB\t\nC  \n"));
-		task.steps.add(NonUpToDateCheckingTasks.create("trimTrailing", input -> {
+		task.addStep(NonUpToDateCheckingTasks.create("trimTrailing", input -> {
 			Pattern pattern = Pattern.compile("[ \t]+$", Pattern.UNIX_LINES | Pattern.MULTILINE);
 			return pattern.matcher(input).replaceAll("");
 		}));

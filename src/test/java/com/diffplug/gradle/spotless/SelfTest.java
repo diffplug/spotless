@@ -42,7 +42,7 @@ public class SelfTest {
 						.filter(task -> task instanceof CheckFormatTask)
 						.map(task -> (CheckFormatTask) task)
 						.forEach(task -> Errors.rethrow().run(() -> {
-							IncrementalTaskInputs inputs = Mocks.mockIncrementalTaskInputs(task.target);
+							IncrementalTaskInputs inputs = Mocks.mockIncrementalTaskInputs(task.getTarget());
 							task.check(inputs);
 						}));
 			}

@@ -109,12 +109,12 @@ public class ResourceHarness {
 		// create the task
 		ApplyFormatTask task = createApplyTask(test);
 		// force unix line endings, since we're passing in raw strings
-		task.lineEndingsPolicy = LineEnding.UNIX.createPolicy();
+		task.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
 		// create the test file
 		File testFile = folder.newFile();
 		Files.write(testFile.toPath(), before.getBytes(StandardCharsets.UTF_8));
 		// set the task to use this test file
-		task.target = Collections.singleton(testFile);
+		task.setTarget(Collections.singleton(testFile));
 		// run the task
 		task.apply();
 		// check what the task did
