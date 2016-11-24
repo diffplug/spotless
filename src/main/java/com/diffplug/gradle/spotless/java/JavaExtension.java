@@ -16,10 +16,8 @@
 package com.diffplug.gradle.spotless.java;
 
 import java.io.File;
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Predicate;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.internal.file.UnionFileCollection;
@@ -33,6 +31,7 @@ import com.diffplug.gradle.spotless.FormatExtension;
 import com.diffplug.gradle.spotless.FormatterStep;
 import com.diffplug.gradle.spotless.JarState;
 import com.diffplug.gradle.spotless.LicenseHeaderStep;
+import com.diffplug.gradle.spotless.SerializableFileFilter;
 import com.diffplug.gradle.spotless.SpotlessExtension;
 
 public class JavaExtension extends FormatExtension {
@@ -109,7 +108,7 @@ public class JavaExtension extends FormatExtension {
 		// it skips package-info.java. See https://github.com/diffplug/spotless/issues/1
 		steps.replaceAll(step -> {
 			if (LicenseHeaderStep.NAME.equals(step.getName())) {
-				return step.filterByFile(file -> !file.getName().equals("package-info.java"));
+				return step.filterByFile(SerializableFileFilter.skipFilesNamed("package-info.java"));
 			} else {
 				return step;
 			}

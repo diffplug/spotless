@@ -18,13 +18,11 @@ package com.diffplug.gradle.spotless;
 import java.io.File;
 import java.util.Objects;
 
-import com.diffplug.gradle.spotless.fi.SerializablePredicate;
-
 final class FilterByFileFormatterStep implements FormatterStep {
 	private final FormatterStep delegateStep;
-	private final SerializablePredicate<File> filter;
+	private final SerializableFileFilter filter;
 
-	FilterByFileFormatterStep(FormatterStep delegateStep, SerializablePredicate<File> filter) {
+	FilterByFileFormatterStep(FormatterStep delegateStep, SerializableFileFilter filter) {
 		this.delegateStep = delegateStep;
 		this.filter = filter;
 	}
@@ -36,7 +34,7 @@ final class FilterByFileFormatterStep implements FormatterStep {
 
 	@Override
 	public String format(String raw, File file) throws Throwable {
-		if (filter.test(file)) {
+		if (filter.accept(file)) {
 			return delegateStep.format(raw, file);
 		} else {
 			return raw;

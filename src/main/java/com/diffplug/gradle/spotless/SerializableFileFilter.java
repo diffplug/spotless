@@ -13,9 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless.fi;
+package com.diffplug.gradle.spotless;
 
+import java.io.FileFilter;
 import java.io.Serializable;
-import java.util.function.Predicate;
 
-public interface SerializablePredicate<T> extends Predicate<T>, Serializable {}
+/** A file filter with full support for serialization. */
+public interface SerializableFileFilter extends FileFilter, Serializable {
+	/** Dummy method to disallow lambdas with unserialized state. */
+	byte[] toBytes();
+
+	/** Creates a FileFilter which will accept all files except files with the given name. */
+	public static SerializableFileFilter skipFilesNamed(String name) {
+		return new SerializableFileFilterImpl.SkipFilesNamed(name);
+	}
+}

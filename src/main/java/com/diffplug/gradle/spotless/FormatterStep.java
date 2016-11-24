@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.Serializable;
 
 import com.diffplug.common.base.Throwing;
-import com.diffplug.gradle.spotless.fi.SerializablePredicate;
 
 /**
  * An implementation of this class specifies a single step in a formatting process.
@@ -49,7 +48,7 @@ public interface FormatterStep extends Serializable {
 	 *
 	 * The provided filter must be serializable.
 	 */
-	default FormatterStep filterByFile(SerializablePredicate<File> filter) {
+	default FormatterStep filterByFile(SerializableFileFilter filter) {
 		return new FilterByFileFormatterStep(this, filter);
 	}
 
