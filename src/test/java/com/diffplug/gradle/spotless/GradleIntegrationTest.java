@@ -113,7 +113,6 @@ public class GradleIntegrationTest extends ResourceHarness {
 	}
 
 	protected void checkIsUpToDate(boolean upToDate) throws IOException {
-		// first run of spotlessCheck
 		BuildResult buildResult = gradleRunner().withArguments("spotlessCheck").build();
 
 		TaskOutcome expected = upToDate ? TaskOutcome.UP_TO_DATE : TaskOutcome.SUCCESS;
