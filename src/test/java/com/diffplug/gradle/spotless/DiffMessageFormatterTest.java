@@ -73,15 +73,15 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 		task.addStep(NonUpToDateCheckingTasks.create(
 				"trimTrailing",
 				new SerializableThrowingFunctionImpl.RegexMatching(Pattern.compile("[ \t]+$", Pattern.UNIX_LINES | Pattern.MULTILINE), "")));
-				assertTaskFailure(task,
-						"    testFile",
-						"        @@ -1,3 +1,3 @@",
-						"        -A·",
-						"        -B\\t",
-						"        -C··",
-						"        +A",
-						"        +B",
-						"        +C");
+		assertTaskFailure(task,
+				"    testFile",
+				"        @@ -1,3 +1,3 @@",
+				"        -A·",
+				"        -B\\t",
+				"        -C··",
+				"        +A",
+				"        +B",
+				"        +C");
 	}
 
 	@Test

@@ -20,9 +20,9 @@ import java.io.Serializable;
 import com.diffplug.common.base.Throwing;
 
 interface SerializableThrowingFunction<T, R>
-    extends Throwing.Function<T, R>, ToByteArray, Serializable {
-  @SuppressWarnings("unchecked") // Safe as identity function always returns its argument
-  static <T, R> SerializableThrowingFunction<T, R> identity() {
-    return (SerializableThrowingFunction<T, R>) SerializableThrowingFunctionImpl.Identity.INSTANCE;
-  }
+		extends Throwing.Function<T, R>, ToByteArray, Serializable {
+	@SuppressWarnings("unchecked") // Safe as identity function always returns its argument
+	static <T, R> SerializableThrowingFunction<T, R> identity() {
+		return (SerializableThrowingFunction<T, R>) SerializableThrowingFunctionImpl.Identity.INSTANCE;
+	}
 }
