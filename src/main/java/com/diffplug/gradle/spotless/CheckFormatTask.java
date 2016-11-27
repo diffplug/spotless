@@ -32,17 +32,7 @@ public class CheckFormatTask extends BaseFormatTask {
 		Formatter formatter = buildFormatter();
 		List<File> problemFiles = new ArrayList<>();
 
-		if (inputs.isIncremental()) {
-			inputs.outOfDate(
-					inputDetails -> addFileIfNotClean(inputDetails.getFile(), problemFiles, formatter));
-		} else {
-			// then Gradle was unable to determine which input files were out-of-date because e.g.
-			// there was no previous execution, input properties were changed, etc - so we check
-			// all input files instead.
-			for (File file : target) {
-				addFileIfNotClean(file, problemFiles, formatter);
-			}
-		}
+		inputs.outOfDate(inputDetails -> addFileIfNotClean(inputDetails.getFile(), problemFiles, formatter));
 
 		if (paddedCell) {
 			PaddedCellTaskMisc.check(this, formatter, problemFiles);
