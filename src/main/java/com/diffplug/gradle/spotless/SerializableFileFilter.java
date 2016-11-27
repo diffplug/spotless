@@ -19,10 +19,7 @@ import java.io.FileFilter;
 import java.io.Serializable;
 
 /** A file filter with full support for serialization. */
-public interface SerializableFileFilter extends FileFilter, Serializable {
-	/** Dummy method to disallow lambdas with unserialized state. */
-	byte[] toBytes();
-
+public interface SerializableFileFilter extends FileFilter, ToByteArray, Serializable {
 	/** Creates a FileFilter which will accept all files except files with the given name. */
 	public static SerializableFileFilter skipFilesNamed(String name) {
 		return new SerializableFileFilterImpl.SkipFilesNamed(name);

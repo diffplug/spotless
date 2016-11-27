@@ -16,12 +16,8 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.File;
-import java.util.function.Supplier;
 
-import com.diffplug.common.base.Errors;
-import com.diffplug.common.base.Suppliers;
 import com.diffplug.common.base.Throwing;
-import com.diffplug.gradle.spotless.fi.SerializableThrowingFunction;
 
 /**
  * Creates trivial tasks which are incapable of
@@ -57,11 +53,6 @@ public class NonUpToDateCheckingTasks {
 	}
 
 	public static FormatterStep createLazy(String name, Throwing.Supplier<Throwing.Function<String, String>> formatterSupplier) {
-		// wrap the supplier as a regular Supplier (not a Throwing.Supplier)
-		Supplier<Throwing.Function<String, String>> rethrowFormatterSupplier = Errors.rethrow().wrap(formatterSupplier);
-		// memoize its result
-		Supplier<Throwing.Function<String, String>> memoized = Suppliers.memoize(rethrowFormatterSupplier);
-		// create the step
-		return new FileIndependent(name, content -> memoized.get().apply(content));
+		return new FileIndependent(name, new SerializableThrowingFunctionImpl.Lazy<>(formatterSupplier));
 	}
 }

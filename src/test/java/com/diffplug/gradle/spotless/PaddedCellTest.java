@@ -32,9 +32,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.diffplug.common.base.Throwing;
-import com.diffplug.gradle.spotless.fi.SerializableThrowingFunction;
-
 public class PaddedCellTest {
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
@@ -70,7 +67,7 @@ public class PaddedCellTest {
 			try {
 				result.canonical();
 				Assert.fail("Expected exception");
-			} catch (IllegalArgumentException e) {}
+			} catch (IllegalArgumentException expected) {}
 		} else {
 			Assert.assertEquals(canonical, result.canonical());
 		}
@@ -78,43 +75,28 @@ public class PaddedCellTest {
 
 	@Test
 	public void wellBehaved() throws IOException {
-		wellBehaved(input -> input, "CCC", CONVERGE, "CCC");
-		wellBehaved(input -> "A", "CCC", CONVERGE, "A");
+		wellBehaved(SerializableThrowingFunction.identity(), "CCC", CONVERGE, "CCC");
+		wellBehaved(new SerializableThrowingFunctionImpl.Constant<>("A"), "CCC", CONVERGE, "A");
 	}
 
 	@Test
 	public void pingPong() throws IOException {
-		misbehaved(input -> input.equals("A") ? "B" : "A", "CCC", CYCLE, "A,B", "A");
+		misbehaved(new SerializableThrowingFunctionImpl.Cycle2("A", "B"), "CCC", CYCLE, "A,B", "A");
 	}
 
 	@Test
 	public void fourState() throws IOException {
-		misbehaved(input -> {
-			// @formatter:off
-			switch (input) {
-			case "A": return "B";
-			case "B": return "C";
-			case "C": return "D";
-			default:  return "A";
-			}
-			// @formatter:on
-		}, "CCC", CYCLE, "A,B,C,D", "A");
+		misbehaved(new SerializableThrowingFunctionImpl.Cycle4("A", "B", "C", "D"), "CCC", CYCLE, "A,B,C,D", "A");
 	}
 
 	@Test
 	public void converging() throws IOException {
-		misbehaved(input -> {
-			if (input.isEmpty()) {
-				return input;
-			} else {
-				return input.substring(0, input.length() - 1);
-			}
-		}, "CCC", CONVERGE, "CC,C,", "");
+		misbehaved(SerializableThrowingFunctionImpl.ConvergeToEmptyString.INSTANCE, "CCC", CONVERGE, "CC,C,", "");
 	}
 
 	@Test
 	public void diverging() throws IOException {
-		misbehaved(input -> input + " ", "", DIVERGE, " ,  ,   ,    ,     ,      ,       ,        ,         ,          ", null);
+		misbehaved(SerializableThrowingFunctionImpl.DivergeToEndlessString.INSTANCE, "", DIVERGE, " ,  ,   ,    ,     ,      ,       ,        ,         ,          ", null);
 	}
 
 	@Test

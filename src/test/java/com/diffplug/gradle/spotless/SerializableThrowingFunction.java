@@ -13,10 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless.fi;
+package com.diffplug.gradle.spotless;
 
 import java.io.Serializable;
 
 import com.diffplug.common.base.Throwing;
 
-public interface SerializableThrowingFunction<T, R> extends Throwing.Function<T, R>, Serializable {}
+interface SerializableThrowingFunction<T, R>
+    extends Throwing.Function<T, R>, ToByteArray, Serializable {
+  @SuppressWarnings("unchecked") // Safe as identity function always returns its argument
+  static <T, R> SerializableThrowingFunction<T, R> identity() {
+    return (SerializableThrowingFunction<T, R>) SerializableThrowingFunctionImpl.Identity.INSTANCE;
+  }
+}

@@ -70,7 +70,9 @@ public class FormatTaskTest extends ResourceHarness {
 		File testFile = createTestFile("testFile", "apple");
 		checkTask.setTarget(Collections.singleton(testFile));
 
-		checkTask.addStep(NonUpToDateCheckingTasks.create("double-p", content -> content.replace("pp", "p")));
+		checkTask.addStep(NonUpToDateCheckingTasks.create(
+				"double-p",
+				new SerializableThrowingFunctionImpl.Replacing("pp", "p")));
 
 		String diff = String.join("\n",
 				"        @@ -1 +1 @@",
@@ -86,7 +88,9 @@ public class FormatTaskTest extends ResourceHarness {
 		File testFile = createTestFile("testFile", "aple");
 		checkTask.setTarget(Collections.singleton(testFile));
 
-		checkTask.addStep(NonUpToDateCheckingTasks.create("double-p", content -> content.replace("pp", "p")));
+		checkTask.addStep(NonUpToDateCheckingTasks.create(
+				"double-p",
+				new SerializableThrowingFunctionImpl.Replacing("pp", "p")));
 		checkTask.execute();
 
 		assertFileContent("aple", testFile);
@@ -97,7 +101,9 @@ public class FormatTaskTest extends ResourceHarness {
 		File testFile = createTestFile("testFile", "apple");
 		applyTask.setTarget(Collections.singleton(testFile));
 
-		applyTask.addStep(NonUpToDateCheckingTasks.create("double-p", content -> content.replace("pp", "p")));
+		applyTask.addStep(NonUpToDateCheckingTasks.create(
+				"double-p",
+				new SerializableThrowingFunctionImpl.Replacing("pp", "p")));
 		applyTask.execute();
 
 		assertFileContent("aple", testFile);

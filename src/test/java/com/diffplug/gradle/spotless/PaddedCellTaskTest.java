@@ -32,8 +32,6 @@ import org.junit.Test;
 
 import com.diffplug.common.base.StandardSystemProperty;
 import com.diffplug.common.base.StringPrinter;
-import com.diffplug.common.base.Throwing;
-import com.diffplug.gradle.spotless.fi.SerializableThrowingFunction;
 
 public class PaddedCellTaskTest extends ResourceHarness {
 	private static final boolean IS_WIN = StandardSystemProperty.OS_NAME.value().toLowerCase(Locale.US).contains("win");
@@ -89,15 +87,15 @@ public class PaddedCellTaskTest extends ResourceHarness {
 	}
 
 	private Bundle cycle() throws IOException {
-		return new Bundle("cycle", x -> x.equals("A") ? "B" : "A");
+		return new Bundle("cycle", new SerializableThrowingFunctionImpl.Cycle2("A", "B"));
 	}
 
 	private Bundle converge() throws IOException {
-		return new Bundle("converge", x -> x.isEmpty() ? x : x.substring(0, x.length() - 1));
+		return new Bundle("converge", SerializableThrowingFunctionImpl.ConvergeToEmptyString.INSTANCE);
 	}
 
 	private Bundle diverge() throws IOException {
-		return new Bundle("diverge", x -> x + " ");
+		return new Bundle("diverge", SerializableThrowingFunctionImpl.DivergeToEndlessString.INSTANCE);
 	}
 
 	@Test
