@@ -33,6 +33,7 @@ public class CustomLazyGroovyTest extends GradleIntegrationTest {
 				"        customLazyGroovy('lowercase') {",
 				"             return { str -> str.toLowerCase(Locale.US) }",
 				"        }",
+				"        bumpThisNumberIfACustomRuleChanges(1)",
 				"    }",
 				"}");
 		write("README.md", "ABC");

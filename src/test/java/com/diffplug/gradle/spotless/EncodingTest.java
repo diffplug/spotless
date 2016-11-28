@@ -31,6 +31,7 @@ public class EncodingTest extends GradleIntegrationTest {
 				"    java {",
 				"        target file('test.java')",
 				"        custom 'replaceMicro', { it.replace('µ', 'A') }",
+				"        bumpThisNumberIfACustomRuleChanges(1)",
 				"    }",
 				"}");
 		write("test.java", "µ");
@@ -49,6 +50,7 @@ public class EncodingTest extends GradleIntegrationTest {
 				"    java {",
 				"        target file('test.java')",
 				"        custom 'replaceMicro', { it.replace('µ', 'A') }",
+				"        bumpThisNumberIfACustomRuleChanges(1)",
 				"    }",
 				"    encoding 'US-ASCII'",
 				"}");
@@ -68,11 +70,13 @@ public class EncodingTest extends GradleIntegrationTest {
 				"    java {",
 				"        target file('test.java')",
 				"        custom 'replaceMicro', { it.replace('µ', 'A') }",
+				"        bumpThisNumberIfACustomRuleChanges(1)",
 				"    }",
 				"    format 'utf32', {",
 				"        target file('utf32.encoded')",
 				"        custom 'replaceMicro', { it.replace('µ', 'A') }",
 				"        encoding 'UTF-32'",
+				"        bumpThisNumberIfACustomRuleChanges(1)",
 				"    }",
 				"    encoding 'US-ASCII'",
 				"}");

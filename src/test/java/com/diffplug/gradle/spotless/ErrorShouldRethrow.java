@@ -86,6 +86,7 @@ public class ErrorShouldRethrow extends GradleIntegrationTest {
 				"                 throw new AssertionError('No swearing!');",
 				"             }",
 				"        }",
+				"        bumpThisNumberIfACustomRuleChanges(1)",
 				"    }",
 				"}");
 		write("README.md", "This code is fun.");
