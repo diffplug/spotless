@@ -33,6 +33,8 @@ public class EndWithNewlineStepTest extends ResourceHarness {
 	}
 
 	private void endWithNewlineTest(String before, String after) throws Exception {
-		super.assertTask(FormatExtension::endWithNewline, before, after);
+		assertTask(extension -> extension.format("underTest", format -> {
+			format.endWithNewline();
+		}), before, after);
 	}
 }

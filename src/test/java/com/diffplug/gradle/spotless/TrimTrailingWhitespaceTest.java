@@ -48,6 +48,8 @@ public class TrimTrailingWhitespaceTest extends ResourceHarness {
 	}
 
 	private void trimTrailingWhitespaceTestCase(String before, String after) throws Exception {
-		super.assertTask(FormatExtension::trimTrailingWhitespace, before, after);
+		assertTask(extension -> extension.format("underTest", format -> {
+			format.trimTrailingWhitespace();
+		}), before, after);
 	}
 }

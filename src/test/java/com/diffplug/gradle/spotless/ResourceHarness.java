@@ -22,11 +22,11 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.tasks.TaskExecutionException;
 import org.gradle.testfixtures.ProjectBuilder;
@@ -89,27 +89,10 @@ public class ResourceHarness {
 		Assert.assertEquals(expected, formatted);
 	}
 
-	/** Creates an ApplyFormatTask based on the given consumer. */
-	private ApplyFormatTask createApplyTask(Consumer<FormatExtension> test) throws Exception {
-		Project project = ProjectBuilder.builder().withProjectDir(folder.getRoot()).build();
-		SpotlessPlugin plugin = project.getPlugins().apply(SpotlessPlugin.class);
-
-		AtomicReference<FormatExtension> ref = new AtomicReference<>();
-		plugin.getExtension().format("underTest", ext -> {
-			ext.setLineEndings(LineEnding.UNIX);
-			ref.set(ext);
-			test.accept(ext);
-		});
-
-		return plugin.createApplyTask("underTest", ref.get());
-	}
-
 	/** Tests that the formatExtension causes the given change. */
-	protected void assertTask(Consumer<FormatExtension> test, String before, String afterExpected) throws Exception {
+	protected void assertTask(Consumer<SpotlessExtension> test, String before, String afterExpected) throws Exception {
 		// create the task
 		ApplyFormatTask task = createApplyTask(test);
-		// force unix line endings, since we're passing in raw strings
-		task.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
 		// create the test file
 		File testFile = folder.newFile();
 		Files.write(testFile.toPath(), before.getBytes(StandardCharsets.UTF_8));
@@ -133,18 +116,23 @@ public class ResourceHarness {
 	}
 
 	/** Creates a collection of CheckFormatTask based on the given extension configuration. */
-	protected List<CheckFormatTask> createCheckTasks(Consumer<SpotlessExtension> test) throws Exception {
+	protected <T extends Task> List<T> createTasks(Consumer<SpotlessExtension> test, Class<T> clazz) throws Exception {
 		Project project = ProjectBuilder.builder().withProjectDir(folder.getRoot()).build();
 		project.getRepositories().mavenCentral(); // ensures that plugins which resolve from mavenCentral will work
 		project.getPlugins().apply(JavaBasePlugin.class); // ensures that the java extension will work
 		SpotlessPlugin plugin = project.getPlugins().apply(SpotlessPlugin.class);
 		test.accept(plugin.getExtension());
 		plugin.createTasks();
-		return new ArrayList<>(project.getTasks().withType(CheckFormatTask.class).getAsMap().values());
+		return new ArrayList<>(project.getTasks().withType(clazz).getAsMap().values());
 	}
 
 	/** Creates a single of CheckFormatTask based on the given extension configuration. */
 	protected CheckFormatTask createCheckTask(Consumer<SpotlessExtension> test) throws Exception {
-		return Iterables.getOnlyElement(createCheckTasks(test));
+		return Iterables.getOnlyElement(createTasks(test, CheckFormatTask.class));
+	}
+
+	/** Creates a collection of CheckFormatTask based on the given extension configuration. */
+	protected ApplyFormatTask createApplyTask(Consumer<SpotlessExtension> test) throws Exception {
+		return Iterables.getOnlyElement(createTasks(test, ApplyFormatTask.class));
 	}
 }
