@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
-import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -32,8 +31,6 @@ import org.gradle.api.Project;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.file.UnionFileCollection;
 
-import com.diffplug.common.base.Errors;
-import com.diffplug.common.base.Suppliers;
 import com.diffplug.common.base.Throwing;
 
 import groovy.lang.Closure;
@@ -200,9 +197,7 @@ public class FormatExtension {
 	 * {@link #customLazyGroovy(String, com.diffplug.common.base.Throwing.Supplier)}.
 	 */
 	public void customLazy(String name, Throwing.Supplier<Throwing.Function<String, String>> formatterSupplier) {
-		Supplier<Throwing.Function<String, String>> nonThrowing = Errors.rethrow().wrap(formatterSupplier);
-		Supplier<Throwing.Function<String, String>> memoized = Suppliers.memoize(nonThrowing);
-		addStep(FormatterStep.createLazy(name, () -> globalKey, (unusedKey, unix) -> Errors.rethrow().get(() -> memoized.get().apply(unix))));
+		addStep(FormatterStep.createLazy(name, () -> globalKey, (unusedKey) -> formatterSupplier.get()));
 	}
 
 	/** Same as {@link #customLazy(String, com.diffplug.common.base.Throwing.Supplier)}, but for Groovy closures. */
@@ -304,7 +299,7 @@ public class FormatExtension {
 	public void licenseHeader(String licenseHeader, String delimiter) {
 		addStep(FormatterStep.create(LicenseHeaderStep.NAME,
 				new LicenseHeaderStep(licenseHeader, delimiter),
-				LicenseHeaderStep::format));
+				step -> step::format));
 	}
 
 	/**
@@ -316,7 +311,7 @@ public class FormatExtension {
 	public void licenseHeaderFile(Object licenseHeaderFile, String delimiter) {
 		addStep(FormatterStep.createLazy(LicenseHeaderStep.NAME,
 				() -> new LicenseHeaderStep(getProject().file(licenseHeaderFile), getEncoding(), delimiter),
-				LicenseHeaderStep::format));
+				step -> step::format));
 	}
 
 	/** Sets up a format task according to the values in this extension. */

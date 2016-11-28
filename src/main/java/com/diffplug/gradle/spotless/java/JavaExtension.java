@@ -67,9 +67,9 @@ public class JavaExtension extends FormatExtension {
 					File formatFile = getProject().file((eclipseFormatFile));
 					return new FileSignature(Collections.singleton(formatFile));
 				},
-				(key, input) -> {
+				(key) -> {
 					File formatFile = Iterables.getOnlyElement(key.files());
-					return EclipseFormatterStep.load(formatFile).format(input);
+					return EclipseFormatterStep.load(formatFile)::format;
 				}));
 	}
 
@@ -87,7 +87,7 @@ public class JavaExtension extends FormatExtension {
 	public void googleJavaFormat(String version) {
 		addStep(FormatterStep.createLazy(GoogleJavaFormatStep.NAME,
 				() -> new JarState(GoogleJavaFormatStep.MAVEN_COORDINATE + version, getProject()),
-				(key, input) -> GoogleJavaFormatStep.load(key).format(input)));
+				(key) -> GoogleJavaFormatStep.load(key)::format));
 	}
 
 	/** If the user hasn't specified the files yet, we'll assume he/she means all of the java files. */

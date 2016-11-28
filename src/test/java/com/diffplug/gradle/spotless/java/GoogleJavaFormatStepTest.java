@@ -71,7 +71,7 @@ public class GoogleJavaFormatStepTest extends GradleIntegrationTest {
 		Function<String, FormatterStep> create = version -> {
 			return FormatterStep.createLazy(GoogleJavaFormatStep.NAME,
 					() -> new JarState(GoogleJavaFormatStep.MAVEN_COORDINATE + version, project),
-					(key, input) -> GoogleJavaFormatStep.load(key).format(input));
+					(key) -> GoogleJavaFormatStep.load(key)::format);
 		};
 
 		Assertions.assertThat(create.apply("1.0"))
