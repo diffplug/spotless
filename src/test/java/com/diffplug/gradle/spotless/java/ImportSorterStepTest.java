@@ -25,24 +25,24 @@ public class ImportSorterStepTest extends ResourceHarness {
 	@Test
 	public void sortImportsFromArray() throws Throwable {
 		ImportSorterStep step = new ImportSorterStep(Arrays.asList("java", "javax", "org", "\\#com"));
-		assertStep(step::format, "java/eclipse/importsorter/JavaCodeUnsortedImports.test", "java/eclipse/importsorter/JavaCodeSortedImports.test");
+		assertOnResources(step::format, "java/eclipse/importsorter/JavaCodeUnsortedImports.test", "java/eclipse/importsorter/JavaCodeSortedImports.test");
 	}
 
 	@Test
 	public void sortImportsFromFile() throws Throwable {
 		ImportSorterStep step = new ImportSorterStep(createTestFile("java/eclipse/importsorter/import.properties"));
-		assertStep(step::format, "java/eclipse/importsorter/JavaCodeUnsortedImports.test", "java/eclipse/importsorter/JavaCodeSortedImports.test");
+		assertOnResources(step::format, "java/eclipse/importsorter/JavaCodeUnsortedImports.test", "java/eclipse/importsorter/JavaCodeSortedImports.test");
 	}
 
 	@Test
 	public void sortImportsUnmatched() throws Throwable {
 		ImportSorterStep step = new ImportSorterStep(createTestFile("java/eclipse/importsorter/import_unmatched.properties"));
-		assertStep(step::format, "java/eclipse/importsorter/JavaCodeUnsortedImportsUnmatched.test", "java/eclipse/importsorter/JavaCodeSortedImportsUnmatched.test");
+		assertOnResources(step::format, "java/eclipse/importsorter/JavaCodeUnsortedImportsUnmatched.test", "java/eclipse/importsorter/JavaCodeSortedImportsUnmatched.test");
 	}
 
 	@Test
 	public void removeDuplicates() throws Throwable {
 		ImportSorterStep step = new ImportSorterStep(createTestFile("java/eclipse/importsorter/import_unmatched.properties"));
-		assertStep(step::format, "java/eclipse/importsorter/JavaCodeSortedDuplicateImportsUnmatched.test", "java/eclipse/importsorter/JavaCodeSortedImportsUnmatched.test");
+		assertOnResources(step::format, "java/eclipse/importsorter/JavaCodeSortedDuplicateImportsUnmatched.test", "java/eclipse/importsorter/JavaCodeSortedImportsUnmatched.test");
 	}
 }

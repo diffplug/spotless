@@ -30,6 +30,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -65,7 +66,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 class GitAttributesLineEndings {
 
-	public static Policy create(File projectDir, Iterable<File> toFormat) {
+	public static Policy create(File projectDir, Supplier<Iterable<File>> toFormat) {
 		return new Policy(projectDir, toFormat);
 	}
 
@@ -73,16 +74,16 @@ class GitAttributesLineEndings {
 		private static final long serialVersionUID = 1L;
 
 		final transient File projectDir;
-		final transient Iterable<File> toFormat;
+		final transient Supplier<Iterable<File>> toFormat;
 
-		Policy(File projectDir, Iterable<File> toFormat) {
+		Policy(File projectDir, Supplier<Iterable<File>> toFormat) {
 			this.projectDir = Objects.requireNonNull(projectDir);
 			this.toFormat = Objects.requireNonNull(toFormat);
 		}
 
 		@Override
 		protected FileState calculateKey() throws Throwable {
-			return new FileState(projectDir, toFormat);
+			return new FileState(projectDir, toFormat.get());
 		}
 
 		/**
@@ -122,6 +123,8 @@ class GitAttributesLineEndings {
 		final FileSignature signature;
 
 		FileState(File projectDir, Iterable<File> toFormat) throws IOException {
+			Objects.requireNonNull(projectDir);
+			Objects.requireNonNull(toFormat);
 			/////////////////////////////////
 			// USER AND SYSTEM-WIDE VALUES //
 			/////////////////////////////////
@@ -194,7 +197,7 @@ class GitAttributesLineEndings {
 			}
 			// traverse the edge nodes to find the outermost folders
 			List<File> edgeFolders = TreeStream.depthFirst(Node::getOutgoingEdges, tree.getNode())
-					.filter(node -> node.getOutgoingEdges().isEmpty())
+					.filter(node -> node.getOutgoingEdges().isEmpty() && node.getValue() != null)
 					.map(node -> new File((String) node.getValue()))
 					.collect(Collectors.toList());
 

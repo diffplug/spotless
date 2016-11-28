@@ -70,10 +70,6 @@ public class FormatExtension {
 		this.lineEndings = lineEndings;
 	}
 
-	LineEnding.Policy getLineEndingPolicy() {
-		return getLineEndings().createPolicy(getProject().getProjectDir(), target);
-	}
-
 	Charset encoding;
 
 	/** Returns the encoding to use (defaults to {@link SpotlessExtension#getEncoding()}. */
@@ -317,10 +313,10 @@ public class FormatExtension {
 	/** Sets up a format task according to the values in this extension. */
 	protected void setupTask(BaseFormatTask task) {
 		task.setPaddedCell(paddedCell);
-		task.setLineEndingsPolicy(getLineEndingPolicy());
 		task.setEncoding(getEncoding().name());
 		task.setTarget(target);
 		task.setSteps(steps);
+		task.setLineEndingsPolicy(getLineEndings().createPolicy(getProject().getProjectDir(), () -> task.target));
 	}
 
 	/** Returns the project that this extension is attached to. */

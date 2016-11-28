@@ -17,6 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.function.Supplier;
 
 import com.diffplug.common.base.StandardSystemProperty;
 
@@ -36,7 +37,7 @@ public enum LineEnding {
 	// @formatter:on
 
 	/** Returns a {@link Policy} appropriate for files which are contained within the given rootFolder. */
-	public Policy createPolicy(File projectDir, Iterable<File> toFormat) {
+	public Policy createPolicy(File projectDir, Supplier<Iterable<File>> toFormat) {
 		if (this == GIT_ATTRIBUTES) {
 			return GitAttributesLineEndings.create(projectDir, toFormat);
 		} else {

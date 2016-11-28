@@ -30,13 +30,13 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 	@Test
 	public void fromString() throws Throwable {
 		LicenseHeaderStep step = new LicenseHeaderStep(getTestResource(KEY_LICENSE), JavaExtension.LICENSE_HEADER_DELIMITER);
-		assertStep(step::format, KEY_FILE_NOTAPPLIED, KEY_FILE_APPLIED);
+		assertOnResources(step::format, KEY_FILE_NOTAPPLIED, KEY_FILE_APPLIED);
 	}
 
 	@Test
 	public void fromFile() throws Throwable {
 		LicenseHeaderStep step = new LicenseHeaderStep(createTestFile(KEY_LICENSE), StandardCharsets.UTF_8, JavaExtension.LICENSE_HEADER_DELIMITER);
-		assertStep(step::format, KEY_FILE_NOTAPPLIED, KEY_FILE_APPLIED);
+		assertOnResources(step::format, KEY_FILE_NOTAPPLIED, KEY_FILE_APPLIED);
 	}
 
 	@Test

@@ -22,25 +22,25 @@ public class IndentStepTest extends ResourceHarness {
 	@Test
 	public void tabToTab() throws Throwable {
 		IndentStep indent = new IndentStep(IndentStep.Type.TAB, 4);
-		assertStep(indent::format, "indent/IndentedWithTab.test", "indent/IndentedWithTab.test");
+		assertOnResources(indent::format, "indent/IndentedWithTab.test", "indent/IndentedWithTab.test");
 	}
 
 	@Test
 	public void spaceToSpace() throws Throwable {
 		IndentStep indent = new IndentStep(IndentStep.Type.SPACE, 4);
-		assertStep(indent::format, "indent/IndentedWithSpace.test", "indent/IndentedWithSpace.test");
+		assertOnResources(indent::format, "indent/IndentedWithSpace.test", "indent/IndentedWithSpace.test");
 	}
 
 	@Test
 	public void spaceToTab() throws Throwable {
 		IndentStep indent = new IndentStep(IndentStep.Type.TAB, 4);
-		assertStep(indent::format, "indent/IndentedWithSpace.test", "indent/IndentedWithTab.test");
+		assertOnResources(indent::format, "indent/IndentedWithSpace.test", "indent/IndentedWithTab.test");
 	}
 
 	@Test
 	public void tabToSpace() throws Throwable {
 		IndentStep indent = new IndentStep(IndentStep.Type.SPACE, 4);
-		assertStep(indent::format, "indent/IndentedWithTab.test", "indent/IndentedWithSpace.test");
+		assertOnResources(indent::format, "indent/IndentedWithTab.test", "indent/IndentedWithSpace.test");
 	}
 
 	@Test

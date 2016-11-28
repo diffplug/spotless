@@ -19,8 +19,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -78,7 +78,7 @@ public class ResourceHarness {
 	}
 
 	/** Reads the given resource from "before", applies the step, and makes sure the result is "after". */
-	protected void assertStep(Throwing.Function<String, String> step, String unformattedPath, String expectedPath) throws Throwable {
+	protected void assertOnResources(Throwing.Function<String, String> step, String unformattedPath, String expectedPath) throws Throwable {
 		String unformatted = LineEnding.toUnix(getTestResource(unformattedPath)); // unix-ified input
 		String formatted = step.apply(unformatted);
 		// no windows newlines
@@ -89,20 +89,48 @@ public class ResourceHarness {
 		Assert.assertEquals(expected, formatted);
 	}
 
-	/** Tests that the formatExtension causes the given change. */
-	protected void assertTask(Consumer<SpotlessExtension> test, String before, String afterExpected) throws Exception {
+	/** Runs a test case on the task created by this extension. */
+	protected void assertTask(Consumer<SpotlessExtension> test, String before, String after) throws Exception {
+		assertTask(test, api -> api.add(before, after));
+	}
+
+	/** An api for adding test cases. */
+	public interface TestCaseAPI {
+		void add(String before, String after);
+
+		default void add(String noChange) {
+			add(noChange, noChange);
+		}
+	}
+
+	/** Runs many test cases on the task created by this extension. */
+	protected void assertTask(Consumer<SpotlessExtension> test, Consumer<TestCaseAPI> testCases) throws Exception {
+		List<String> befores = new ArrayList<>();
+		List<String> afters = new ArrayList<>();
+		testCases.accept((before, after) -> {
+			befores.add(before);
+			afters.add(after);
+		});
+
 		// create the task
 		ApplyFormatTask task = createApplyTask(test);
-		// create the test file
-		File testFile = folder.newFile();
-		Files.write(testFile.toPath(), before.getBytes(StandardCharsets.UTF_8));
+		// create the test file(s)
+		List<File> files = new ArrayList<>(befores.size());
+		for (String before : befores) {
+			File testFile = folder.newFile();
+			Files.write(testFile.toPath(), before.getBytes(StandardCharsets.UTF_8));
+			files.add(testFile);
+		}
 		// set the task to use this test file
-		task.setTarget(Collections.singleton(testFile));
+		task.setTarget(files);
 		// run the task
 		task.apply();
 		// check what the task did
-		String afterActual = new String(Files.readAllBytes(testFile.toPath()), StandardCharsets.UTF_8);
-		Assert.assertEquals(afterExpected, afterActual);
+		for (int i = 0; i < befores.size(); ++i) {
+			String afterExpected = afters.get(i);
+			String afterActual = new String(Files.readAllBytes(files.get(i).toPath()), StandardCharsets.UTF_8);
+			Assert.assertEquals(afterExpected, afterActual);
+		}
 	}
 
 	protected String getTaskErrorMessage(BaseFormatTask task) {
@@ -117,6 +145,12 @@ public class ResourceHarness {
 
 	/** Creates a collection of CheckFormatTask based on the given extension configuration. */
 	protected <T extends Task> List<T> createTasks(Consumer<SpotlessExtension> test, Class<T> clazz) throws Exception {
+		// write out the .gitattributes file
+		Files.write(
+				folder.getRoot().toPath().resolve(".gitattributes"),
+				"* text eol=lf".getBytes(StandardCharsets.UTF_8),
+				StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+		// create the file and tasks
 		Project project = ProjectBuilder.builder().withProjectDir(folder.getRoot()).build();
 		project.getRepositories().mavenCentral(); // ensures that plugins which resolve from mavenCentral will work
 		project.getPlugins().apply(JavaBasePlugin.class); // ensures that the java extension will work

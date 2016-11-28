@@ -20,36 +20,30 @@ import org.junit.Test;
 public class TrimTrailingWhitespaceTest extends ResourceHarness {
 	@Test
 	public void trimTrailingWhitespace() throws Exception {
-		trimTrailingWhitespaceTestCase("");
-		trimTrailingWhitespaceTestCase("\n");
-		trimTrailingWhitespaceTestCase("\n\n\n");
-		trimTrailingWhitespaceTestCase("   preceding");
-
-		trimTrailingWhitespaceTestCase("trailing  ", "trailing");
-		trimTrailingWhitespaceTestCase("trailing  \n", "trailing\n");
-		trimTrailingWhitespaceTestCase("trailing\t", "trailing");
-		trimTrailingWhitespaceTestCase("trailing\t\n", "trailing\n");
-
-		trimTrailingWhitespaceTestCase("\t  trailing  ", "\t  trailing");
-		trimTrailingWhitespaceTestCase("\t  trailing  \n", "\t  trailing\n");
-		trimTrailingWhitespaceTestCase("\t  trailing\t", "\t  trailing");
-		trimTrailingWhitespaceTestCase("\t  trailing\t\n", "\t  trailing\n");
-
-		trimTrailingWhitespaceTestCase("Line\nLine");
-		trimTrailingWhitespaceTestCase("Line  \nLine", "Line\nLine");
-		trimTrailingWhitespaceTestCase("Line\nLine  ", "Line\nLine");
-		trimTrailingWhitespaceTestCase("Line  \nLine  ", "Line\nLine");
-		trimTrailingWhitespaceTestCase("  Line  \nLine  ", "  Line\nLine");
-		trimTrailingWhitespaceTestCase("  Line  \n  Line  ", "  Line\n  Line");
-	}
-
-	private void trimTrailingWhitespaceTestCase(String before) throws Exception {
-		trimTrailingWhitespaceTestCase(before, before);
-	}
-
-	private void trimTrailingWhitespaceTestCase(String before, String after) throws Exception {
 		assertTask(extension -> extension.format("underTest", format -> {
 			format.trimTrailingWhitespace();
-		}), before, after);
+		}), cases -> {
+			cases.add("");
+			cases.add("\n");
+			cases.add("\n\n\n");
+			cases.add("   preceding");
+
+			cases.add("trailing  ", "trailing");
+			cases.add("trailing  \n", "trailing\n");
+			cases.add("trailing\t", "trailing");
+			cases.add("trailing\t\n", "trailing\n");
+
+			cases.add("\t  trailing  ", "\t  trailing");
+			cases.add("\t  trailing  \n", "\t  trailing\n");
+			cases.add("\t  trailing\t", "\t  trailing");
+			cases.add("\t  trailing\t\n", "\t  trailing\n");
+
+			cases.add("Line\nLine");
+			cases.add("Line  \nLine", "Line\nLine");
+			cases.add("Line\nLine  ", "Line\nLine");
+			cases.add("Line  \nLine  ", "Line\nLine");
+			cases.add("  Line  \nLine  ", "  Line\nLine");
+			cases.add("  Line  \n  Line  ", "  Line\n  Line");
+		});
 	}
 }
