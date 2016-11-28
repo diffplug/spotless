@@ -32,6 +32,7 @@ import org.junit.Test;
 
 import com.diffplug.common.base.StandardSystemProperty;
 import com.diffplug.common.base.StringPrinter;
+import com.diffplug.common.base.Throwing;
 
 public class PaddedCellTaskTest extends ResourceHarness {
 	private static final boolean IS_WIN = StandardSystemProperty.OS_NAME.value().toLowerCase(Locale.US).contains("win");
@@ -46,9 +47,9 @@ public class PaddedCellTaskTest extends ResourceHarness {
 		CheckFormatTask check;
 		ApplyFormatTask apply;
 
-		Bundle(String name, SerializableThrowingFunction<String, String> function) throws IOException {
+		Bundle(String name, Throwing.Function<String, String> function) throws IOException {
 			file = createTestFile("src/test." + name, "CCC");
-			FormatterStep step = NonUpToDateCheckingTasks.create(name, function);
+			FormatterStep step = NeverUpToDate.create(name, function);
 			check = createCheckTask(name, step);
 			apply = createApplyTask(name, step);
 		}
@@ -87,15 +88,15 @@ public class PaddedCellTaskTest extends ResourceHarness {
 	}
 
 	private Bundle cycle() throws IOException {
-		return new Bundle("cycle", new SerializableThrowingFunctionImpl.Cycle2("A", "B"));
+		return new Bundle("cycle", x -> x.equals("A") ? "B" : "A");
 	}
 
 	private Bundle converge() throws IOException {
-		return new Bundle("converge", SerializableThrowingFunctionImpl.ConvergeToEmptyString.INSTANCE);
+		return new Bundle("converge", x -> x.isEmpty() ? x : x.substring(0, x.length() - 1));
 	}
 
 	private Bundle diverge() throws IOException {
-		return new Bundle("diverge", SerializableThrowingFunctionImpl.DivergeToEndlessString.INSTANCE);
+		return new Bundle("diverge", x -> x + " ");
 	}
 
 	@Test

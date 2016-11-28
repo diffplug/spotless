@@ -70,9 +70,10 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 	@Test
 	public void whitespaceProblem() throws Exception {
 		CheckFormatTask task = create(createTestFile("testFile", "A \nB\t\nC  \n"));
-		task.addStep(NonUpToDateCheckingTasks.create(
-				"trimTrailing",
-				new SerializableThrowingFunctionImpl.RegexMatching(Pattern.compile("[ \t]+$", Pattern.UNIX_LINES | Pattern.MULTILINE), "")));
+		task.addStep(NeverUpToDate.create("trimTrailing", input -> {
+			Pattern pattern = Pattern.compile("[ \t]+$", Pattern.UNIX_LINES | Pattern.MULTILINE);
+			return pattern.matcher(input).replaceAll("");
+		}));
 		assertTaskFailure(task,
 				"    testFile",
 				"        @@ -1,3 +1,3 @@",

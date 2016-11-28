@@ -32,21 +32,23 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import com.diffplug.common.base.Throwing;
+
 public class PaddedCellTest {
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
 
-	private void misbehaved(SerializableThrowingFunction<String, String> step, String input, PaddedCell.Type expectedOutputType, String steps, String canonical) throws IOException {
+	private void misbehaved(Throwing.Function<String, String> step, String input, PaddedCell.Type expectedOutputType, String steps, String canonical) throws IOException {
 		testCase(step, input, expectedOutputType, steps, canonical, true);
 	}
 
-	private void wellBehaved(SerializableThrowingFunction<String, String> step, String input, PaddedCell.Type expectedOutputType, String canonical) throws IOException {
+	private void wellBehaved(Throwing.Function<String, String> step, String input, PaddedCell.Type expectedOutputType, String canonical) throws IOException {
 		testCase(step, input, expectedOutputType, canonical, canonical, false);
 	}
 
-	private void testCase(SerializableThrowingFunction<String, String> step, String input, PaddedCell.Type expectedOutputType, String expectedSteps, String canonical, boolean misbehaved) throws IOException {
+	private void testCase(Throwing.Function<String, String> step, String input, PaddedCell.Type expectedOutputType, String expectedSteps, String canonical, boolean misbehaved) throws IOException {
 		List<FormatterStep> formatterSteps = new ArrayList<>();
-		formatterSteps.add(NonUpToDateCheckingTasks.create("step", step));
+		formatterSteps.add(NeverUpToDate.create("step", step));
 		Formatter formatter = Formatter.builder()
 				.lineEndingsPolicy(LineEnding.UNIX_POLICY)
 				.encoding(StandardCharsets.UTF_8)
@@ -75,28 +77,43 @@ public class PaddedCellTest {
 
 	@Test
 	public void wellBehaved() throws IOException {
-		wellBehaved(SerializableThrowingFunction.identity(), "CCC", CONVERGE, "CCC");
-		wellBehaved(new SerializableThrowingFunctionImpl.Constant<>("A"), "CCC", CONVERGE, "A");
+		wellBehaved(input -> input, "CCC", CONVERGE, "CCC");
+		wellBehaved(input -> "A", "CCC", CONVERGE, "A");
 	}
 
 	@Test
 	public void pingPong() throws IOException {
-		misbehaved(new SerializableThrowingFunctionImpl.Cycle2("A", "B"), "CCC", CYCLE, "A,B", "A");
+		misbehaved(input -> input.equals("A") ? "B" : "A", "CCC", CYCLE, "A,B", "A");
 	}
 
 	@Test
 	public void fourState() throws IOException {
-		misbehaved(new SerializableThrowingFunctionImpl.Cycle4("A", "B", "C", "D"), "CCC", CYCLE, "A,B,C,D", "A");
+		misbehaved(input -> {
+			// @formatter:off
+			switch (input) {
+			case "A": return "B";
+			case "B": return "C";
+			case "C": return "D";
+			default:  return "A";
+			}
+			// @formatter:on
+		}, "CCC", CYCLE, "A,B,C,D", "A");
 	}
 
 	@Test
 	public void converging() throws IOException {
-		misbehaved(SerializableThrowingFunctionImpl.ConvergeToEmptyString.INSTANCE, "CCC", CONVERGE, "CC,C,", "");
+		misbehaved(input -> {
+			if (input.isEmpty()) {
+				return input;
+			} else {
+				return input.substring(0, input.length() - 1);
+			}
+		}, "CCC", CONVERGE, "CC,C,", "");
 	}
 
 	@Test
 	public void diverging() throws IOException {
-		misbehaved(SerializableThrowingFunctionImpl.DivergeToEndlessString.INSTANCE, "", DIVERGE, " ,  ,   ,    ,     ,      ,       ,        ,         ,          ", null);
+		misbehaved(input -> input + " ", "", DIVERGE, " ,  ,   ,    ,     ,      ,       ,        ,         ,          ", null);
 	}
 
 	@Test
