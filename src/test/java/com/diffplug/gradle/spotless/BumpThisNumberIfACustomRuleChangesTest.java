@@ -20,9 +20,8 @@ import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class CustomLazyGroovyTest extends GradleIntegrationTest {
-	@Test
-	public void integration() throws IOException {
+public class BumpThisNumberIfACustomRuleChangesTest extends GradleIntegrationTest {
+	private void writeBuildFile(String toInsert) throws IOException {
 		write("build.gradle",
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",
@@ -33,11 +32,52 @@ public class CustomLazyGroovyTest extends GradleIntegrationTest {
 				"        customLazyGroovy('lowercase') {",
 				"             return { str -> str.toLowerCase(Locale.US) }",
 				"        }",
+				toInsert,
 				"    }",
 				"}");
+	}
+
+	private void writeContentWithBadFormatting() throws IOException {
 		write("README.md", "ABC");
+	}
+
+	private void assertApplyWorks() throws IOException {
 		gradleRunner().withArguments("spotlessApply").build();
 		String result = read("README.md");
 		Assert.assertEquals("abc\n", result);
+	}
+
+	@Test
+	public void customRuleNeverUpToDate() throws IOException {
+		writeBuildFile("");
+		writeContentWithBadFormatting();
+		assertApplyWorks();
+
+		checkIsUpToDate(false);
+		checkIsUpToDate(false);
+	}
+
+	@Test
+	public void unlessBumpThisNumberIfACustomRuleChanges() throws IOException {
+		writeBuildFile("bumpThisNumberIfACustomRuleChanges(1)");
+		writeContentWithBadFormatting();
+		assertApplyWorks();
+
+		checkIsUpToDate(false);
+		checkIsUpToDate(true);
+	}
+
+	@Test
+	public void andRunsAgainIfNumberChanges() throws IOException {
+		writeBuildFile("bumpThisNumberIfACustomRuleChanges(1)");
+		writeContentWithBadFormatting();
+		assertApplyWorks();
+
+		checkIsUpToDate(false);
+		checkIsUpToDate(true);
+
+		writeBuildFile("bumpThisNumberIfACustomRuleChanges(2)");
+		checkIsUpToDate(false);
+		checkIsUpToDate(true);
 	}
 }

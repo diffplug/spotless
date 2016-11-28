@@ -31,13 +31,11 @@ public class EncodingTest extends GradleIntegrationTest {
 				"    java {",
 				"        target file('test.java')",
 				"        custom 'replaceMicro', { it.replace('µ', 'A') }",
-				"        bumpThisNumberIfACustomRuleChanges(1)",
 				"    }",
 				"}");
 		write("test.java", "µ");
 		gradleRunner().withArguments("spotlessApply").forwardOutput().build();
 		Assert.assertEquals("A\n", read("test.java"));
-		checkRunsThenUpToDate();
 	}
 
 	@Test
@@ -50,14 +48,12 @@ public class EncodingTest extends GradleIntegrationTest {
 				"    java {",
 				"        target file('test.java')",
 				"        custom 'replaceMicro', { it.replace('µ', 'A') }",
-				"        bumpThisNumberIfACustomRuleChanges(1)",
 				"    }",
 				"    encoding 'US-ASCII'",
 				"}");
 		write("test.java", "µ");
 		gradleRunner().withArguments("spotlessApply").build();
 		Assert.assertEquals("??\n", read("test.java"));
-		checkRunsThenUpToDate();
 	}
 
 	@Test
@@ -70,13 +66,11 @@ public class EncodingTest extends GradleIntegrationTest {
 				"    java {",
 				"        target file('test.java')",
 				"        custom 'replaceMicro', { it.replace('µ', 'A') }",
-				"        bumpThisNumberIfACustomRuleChanges(1)",
 				"    }",
 				"    format 'utf32', {",
 				"        target file('utf32.encoded')",
 				"        custom 'replaceMicro', { it.replace('µ', 'A') }",
 				"        encoding 'UTF-32'",
-				"        bumpThisNumberIfACustomRuleChanges(1)",
 				"    }",
 				"    encoding 'US-ASCII'",
 				"}");
@@ -87,7 +81,5 @@ public class EncodingTest extends GradleIntegrationTest {
 		gradleRunner().withArguments("spotlessApply").build();
 		Assert.assertEquals("??\n", read("test.java"));
 		Assert.assertEquals("A\n", read("utf32.encoded", LineEnding.UNIX, Charset.forName("UTF-32")));
-
-		checkRunsThenUpToDate();
 	}
 }
