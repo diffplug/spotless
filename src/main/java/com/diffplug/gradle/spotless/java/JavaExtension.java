@@ -15,8 +15,6 @@
  */
 package com.diffplug.gradle.spotless.java;
 
-import java.io.File;
-import java.util.Collections;
 import java.util.List;
 
 import org.gradle.api.GradleException;
@@ -24,7 +22,6 @@ import org.gradle.api.internal.file.UnionFileCollection;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 
-import com.diffplug.common.collect.Iterables;
 import com.diffplug.gradle.spotless.BaseFormatTask;
 import com.diffplug.gradle.spotless.FileSignature;
 import com.diffplug.gradle.spotless.FormatExtension;
@@ -61,16 +58,8 @@ public class JavaExtension extends FormatExtension {
 
 	public void eclipseFormatFile(Object eclipseFormatFile) {
 		addStep(FormatterStep.createLazy(EclipseFormatterStep.NAME,
-				() -> {
-					// We return a FileSignature as the key, so that if the file changes in _any_
-					// way, then this rule will re-run when Spotless is next run.
-					File formatFile = getProject().file((eclipseFormatFile));
-					return new FileSignature(Collections.singleton(formatFile));
-				},
-				(key) -> {
-					File formatFile = Iterables.getOnlyElement(key.files());
-					return EclipseFormatterStep.load(formatFile)::format;
-				}));
+				() -> new FileSignature(getProject().file(eclipseFormatFile)),
+				key -> EclipseFormatterStep.load(key.getOnlyFile())::format));
 	}
 
 	/** Uses the [google-java-format](https://github.com/google/google-java-format) jar to format source code. */

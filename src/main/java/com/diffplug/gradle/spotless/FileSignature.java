@@ -18,8 +18,10 @@ package com.diffplug.gradle.spotless;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Arrays;
 
 import com.diffplug.common.collect.ImmutableSortedSet;
+import com.diffplug.common.collect.Iterables;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -39,6 +41,10 @@ public final class FileSignature implements Serializable {
 	private final long[] filesizes;
 	private final long[] lastModified;
 
+	public FileSignature(File... files) throws IOException {
+		this(Arrays.asList(files));
+	}
+
 	public FileSignature(Iterable<File> files) throws IOException {
 		sortedFiles = ImmutableSortedSet.copyOf(files);
 
@@ -55,7 +61,13 @@ public final class FileSignature implements Serializable {
 		}
 	}
 
+	/** Returns all of the files in this signature, throwing an exception if there are more or less than 1 file. */
 	public ImmutableSortedSet<File> files() {
 		return sortedFiles;
+	}
+
+	/** Returns the only file in this signature, throwing an exception if there are more or less than 1 file. */
+	public File getOnlyFile() {
+		return Iterables.getOnlyElement(sortedFiles);
 	}
 }
