@@ -17,44 +17,50 @@ package com.diffplug.gradle.spotless.java;
 
 import java.io.File;
 
-import org.gradle.api.GradleException;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.diffplug.gradle.spotless.ResourceHarness;
 
-/**
- * These tests pass in IDE, but fail when Gradle is running tests.
- *
- * It works when actually running, so we're just punting on it for now.
- */
-@Ignore
 public class EclipseFormatterStepTest extends ResourceHarness {
-	//	@Test
-	//	public void loadPropertiesSettings() throws Throwable {
-	//		// setting for the formatter
-	//		EclipseFormatterStep step = EclipseFormatterStep.load(createTestFile("java/eclipse/format/formatter.properties"));
-	//		assertStep(step::format, "java/eclipse/format/JavaCodeUnformatted.test", "java/eclipse/format/JavaCodeFormatted.test");
-	//	}
-	//
-	//	@Test
-	//	public void loadXmlSettings() throws Throwable {
-	//		// setting for the formatter
-	//		EclipseFormatterStep step = EclipseFormatterStep.load(createTestFile("java/eclipse/format/formatter.xml"));
-	//		assertStep(step::format, "java/eclipse/format/JavaCodeUnformatted.test", "java/eclipse/format/JavaCodeFormatted.test");
-	//	}
-	//
-	//	@Test(expected = GradleException.class)
-	//	public void loadUnknownSettings() throws Exception {
-	//		EclipseFormatterStep.load(new File("formatter.unknown"));
-	//	}
-	//
-	//	/** Sample code for reproducing #14. Looks to be fixed in Neon / Spotless 2.0 */
-	//	@Test
-	//	public void longLiteralProblem() throws Throwable {
-	//		String folder = "java/eclipse/format/long_literals/";
-	//		EclipseFormatterStep step = EclipseFormatterStep.load(createTestFile(folder + "spotless.eclipseformat.xml"));
-	//		assertStep(step::format, folder + "Example1.test", folder + "Example1.test");
-	//		assertStep(step::format, folder + "Example2.test", folder + "Example2.test");
-	//	}
+	@Test
+	public void loadPropertiesSettings() throws Throwable {
+		File eclipseFormatFile = createTestFile("java/eclipse/format/formatter.properties");
+		// setting for the formatter
+		assertTask(extension -> {
+			extension.java(java -> {
+				java.eclipseFormatFile(eclipseFormatFile);
+			});
+		},
+				getTestResource("java/eclipse/format/JavaCodeUnformatted.test"),
+				getTestResource("java/eclipse/format/JavaCodeFormatted.test"));
+	}
+
+	@Test
+	public void loadXmlSettings() throws Throwable {
+		// setting for the formatter
+		File eclipseFormatFile = createTestFile("java/eclipse/format/formatter.xml");
+		// setting for the formatter
+		assertTask(extension -> {
+			extension.java(java -> {
+				java.eclipseFormatFile(eclipseFormatFile);
+			});
+		},
+				getTestResource("java/eclipse/format/JavaCodeUnformatted.test"),
+				getTestResource("java/eclipse/format/JavaCodeFormatted.test"));
+	}
+
+	@Test
+	public void longLiteralProblem() throws Throwable {
+		String folder = "java/eclipse/format/long_literals/";
+		File eclipseFormatFile = createTestFile(folder + "spotless.eclipseformat.xml");
+
+		assertTask(extension -> {
+			extension.java(java -> {
+				java.eclipseFormatFile(eclipseFormatFile);
+			});
+		}, cases -> {
+			cases.add(getTestResource(folder + "Example1.test"));
+			cases.add(getTestResource(folder + "Example2.test"));
+		});
+	}
 }

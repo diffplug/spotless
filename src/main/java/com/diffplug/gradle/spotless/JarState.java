@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 
@@ -65,17 +66,28 @@ public class JarState implements Serializable {
 		config.setDescription(mavenCoordinate);
 		try {
 			jars = config.resolve();
+			if (jars.isEmpty()) {
+				throw new NoSuchElementException("Resolved to an empty result.");
+			}
 		} catch (Exception e) {
-			logger.error("You probably need to add a repository containing the `google-java-format` artifact to your buildscript,");
+			logger.error("You probably need to add a repository containing the `" + mavenCoordinate + "` artifact to your buildscript,");
 			logger.error("e.g.: repositories { mavenCentral() }");
 			throw e;
 		}
 		fileSignature = new FileSignature(jars);
 	}
 
+	private URL[] jarUrls() {
+		return jars.stream().map(Errors.rethrow().wrapFunction(file -> file.toURI().toURL())).toArray(URL[]::new);
+	}
+
 	@SuppressFBWarnings("DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED")
 	public URLClassLoader openClassLoader() {
-		URL[] jarUrls = jars.stream().map(Errors.rethrow().wrapFunction(file -> file.toURI().toURL())).toArray(URL[]::new);
-		return new URLClassLoader(jarUrls);
+		return new URLClassLoader(jarUrls());
+	}
+
+	@SuppressFBWarnings("DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED")
+	public URLClassLoader openIsolatedClassLoader() {
+		return new URLClassLoader(jarUrls(), null);
 	}
 }

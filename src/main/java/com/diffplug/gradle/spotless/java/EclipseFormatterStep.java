@@ -18,18 +18,19 @@ package com.diffplug.gradle.spotless.java;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.net.URLClassLoader;
 import java.util.Properties;
 
-import org.eclipse.jdt.core.ToolFactory;
-import org.eclipse.jdt.core.formatter.CodeFormatter;
-import org.eclipse.jface.text.Document;
-import org.eclipse.jface.text.IDocument;
-import org.eclipse.text.edits.TextEdit;
 import org.gradle.api.GradleException;
+import org.gradle.api.Project;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
 
-import com.diffplug.gradle.spotless.LineEnding;
+import com.diffplug.common.base.Throwing;
+import com.diffplug.gradle.spotless.FileSignature;
+import com.diffplug.gradle.spotless.JarState;
 
 import groovy.util.Node;
 import groovy.util.NodeList;
@@ -37,29 +38,44 @@ import groovy.util.XmlParser;
 import groovy.xml.QName;
 
 /** Formatter step which calls out to the Eclipse formatter. */
-public class EclipseFormatterStep {
-	public static final String NAME = "Eclipse Formatter";
+class EclipseFormatterStep implements Serializable {
+	private static final long serialVersionUID = 1L;
+
+	// static final String DEFAULT_VERSION = "4.6.1";
+	static final String DEFAULT_VERSION = "4.6.1-SNAPSHOT";
+	static final String MAVEN_COORDINATE = "com.diffplug.gradle.spotless:spotless-eclipse:";
+	static final String FORMATTER_CLASS = "com.diffplug.gradle.spotless.java.eclipse.EclipseFormatterStepImpl";
+	static final String FORMATTER_METHOD = "format";
+
+	/** The jar that contains the eclipse formatter. */
+	final JarState jarState;
+	/** The signature of the jar. */
+	final FileSignature settings;
+
+	EclipseFormatterStep(Project project, String version, Object settingsFile) throws Exception {
+		this.jarState = new JarState(MAVEN_COORDINATE + version, project);
+		this.settings = new FileSignature(project.file(settingsFile));
+	}
+
+	static final String NAME = "eclipse formatter";
+
 	private static final Logger logger = Logging.getLogger(EclipseFormatterStep.class);
 
-	private final CodeFormatter codeFormatter;
+	public Throwing.Function<String, String> createFormat() throws Exception {
+		Properties parsedSettings = parseProperties(settings.getOnlyFile());
 
-	private EclipseFormatterStep(Properties settings) {
-		this.codeFormatter = ToolFactory.createCodeFormatter(settings, ToolFactory.M_FORMAT_EXISTING);
+		URLClassLoader classLoader = jarState.openIsolatedClassLoader();
+		// TODO: dispose the classloader when the function
+		// that we return gets garbage-collected
+
+		// instantiate the gjf formatter and get its format method
+		Class<?> formatterClazz = classLoader.loadClass(FORMATTER_CLASS);
+		Object formatter = formatterClazz.getConstructor(Properties.class).newInstance(parsedSettings);
+		Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
+		return input -> (String) method.invoke(formatter, input);
 	}
 
-	public String format(String raw) throws Exception {
-		TextEdit edit = codeFormatter.format(CodeFormatter.K_COMPILATION_UNIT | CodeFormatter.F_INCLUDE_COMMENTS, raw, 0, raw.length(), 0, LineEnding.UNIX.str());
-		if (edit == null) {
-			throw new IllegalArgumentException("Invalid java syntax for formatting.");
-		} else {
-			IDocument doc = new Document(raw);
-			edit.apply(doc);
-			return doc.get();
-		}
-	}
-
-	/** Returns an EclipseFormatterStep from the given config file. */
-	public static EclipseFormatterStep load(File file) throws Exception {
+	static Properties parseProperties(File file) throws Exception {
 		Properties settings = new Properties();
 		if (!file.exists()) {
 			throw new GradleException("Eclipse formatter file '" + file + "' does not exist.");
@@ -67,7 +83,7 @@ public class EclipseFormatterStep {
 			try (InputStream input = new FileInputStream(file)) {
 				settings.load(input);
 			}
-			return new EclipseFormatterStep(settings);
+			return settings;
 		} else if (file.getName().endsWith(".xml")) {
 			Node xmlSettings = new XmlParser().parse(file);
 			NodeList profiles = xmlSettings.getAt(new QName("profile"));
@@ -84,7 +100,7 @@ public class EclipseFormatterStep {
 				Node setting = (Node) xmlSettingsElement;
 				settings.put(setting.attributes().get("id"), setting.attributes().get("value"));
 			}
-			return new EclipseFormatterStep(settings);
+			return settings;
 		} else {
 			throw new GradleException("Eclipse formatter file must be .properties or .xml");
 		}

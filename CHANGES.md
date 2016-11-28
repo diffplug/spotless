@@ -3,6 +3,7 @@
 ### Version 3.0.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/gradle/spotless/spotless/))
 
 * Big push towards supporting incremental build.  Requires a lot of work for every FormatterStep to properly serialize its state, so this might take a little while.
+* Moved eclipse jars out of spotless' core and into spotless-eclipse.  Reduces download size significantly for folks that don't need or want the eclipse formatter, and improves repeatability for those that do.
 
 ### Version 2.4.0 - November 1st 2016 ([javadoc](https://diffplug.github.io/spotless/javadoc/2.4.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless/2.4.0/view))
 

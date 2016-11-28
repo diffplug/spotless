@@ -23,7 +23,6 @@ import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 
 import com.diffplug.gradle.spotless.BaseFormatTask;
-import com.diffplug.gradle.spotless.FileSignature;
 import com.diffplug.gradle.spotless.FormatExtension;
 import com.diffplug.gradle.spotless.FormatterStep;
 import com.diffplug.gradle.spotless.JarState;
@@ -57,9 +56,17 @@ public class JavaExtension extends FormatExtension {
 	}
 
 	public void eclipseFormatFile(Object eclipseFormatFile) {
+		eclipseFormatFile(EclipseFormatterStep.DEFAULT_VERSION, eclipseFormatFile);
+	}
+
+	public void eclipseFormatFile(String eclipseVersion, Object eclipseFormatFile) {
+		// add the snapshot repo for dev until the spotless-eclipse jar makes it into mavenCentral
+		getProject().getRepositories().maven(mvn -> {
+			mvn.setUrl("https://oss.sonatype.org/content/repositories/snapshots/");
+		});
 		addStep(FormatterStep.createLazy(EclipseFormatterStep.NAME,
-				() -> new FileSignature(getProject().file(eclipseFormatFile)),
-				key -> EclipseFormatterStep.load(key.getOnlyFile())::format));
+				() -> new EclipseFormatterStep(getProject(), eclipseVersion, eclipseFormatFile),
+				EclipseFormatterStep::createFormat));
 	}
 
 	/** Uses the [google-java-format](https://github.com/google/google-java-format) jar to format source code. */

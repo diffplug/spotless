@@ -34,6 +34,7 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
+import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.Throwing;
 import com.diffplug.common.collect.Iterables;
 import com.diffplug.common.io.Resources;
@@ -43,12 +44,12 @@ public class ResourceHarness {
 	public TemporaryFolder folder = new TemporaryFolder();
 
 	/** Returns the contents of the given file from the src/test/resources directory. */
-	protected String getTestResource(String filename) throws IOException {
+	protected String getTestResource(String filename) {
 		return getTestResource(filename, LineEnding.UNIX);
 	}
 
-	protected String getTestResource(String filename, LineEnding ending) throws IOException {
-		String raw = Resources.toString(ResourceHarness.class.getResource("/" + filename), StandardCharsets.UTF_8);
+	protected String getTestResource(String filename, LineEnding ending) {
+		String raw = Errors.rethrow().get(() -> Resources.toString(ResourceHarness.class.getResource("/" + filename), StandardCharsets.UTF_8));
 		return LineEnding.toUnix(raw).replace("\n", ending.str());
 	}
 

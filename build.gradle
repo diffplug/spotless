@@ -5,8 +5,6 @@ plugins {
 	id 'com.gradle.plugin-publish' version '0.9.1'
 	// github pages
 	id "org.ajoberstar.github-pages" version "1.4.2"
-	// p2 dependencies
-	id 'com.diffplug.gradle.p2.asmaven' version '3.3.0'
 	// ide setup
 	id 'com.diffplug.gradle.oomph.ide' version '3.3.0'
 }
@@ -32,30 +30,6 @@ tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
 }
 
-// The dependencies we'd like to pull from Eclipse's p2 repositories
-def eclipseDeps = [
-	// The dependencies we actually use
-	'org.eclipse.jdt.core',
-	'org.eclipse.text',
-
-	// Their transitives
-	'org.eclipse.core.contenttype',
-	'org.eclipse.core.jobs',
-	'org.eclipse.core.runtime',
-	'org.eclipse.core.resources',
-	'org.eclipse.equinox.common',
-	'org.eclipse.equinox.preferences',
-	'org.eclipse.osgi'
-]
-// build a maven repo in our build folder containing these artifacts
-p2AsMaven {
-	group 'p2', {
-		repoEclipse VER_ECLIPSE
-		eclipseDeps.each { p2.addIU(it) }
-		eclipseDeps.each { p2.addIU(it + '.source') }
-	}
-}
-
 ///////////////
 // SETUP IDE //
 ///////////////
@@ -68,11 +42,7 @@ oomphIde {
 		classicTheme()	// oldschool cool
 		niceText()		// nice fonts and visible whitespace
 	}
-}
-
-configurations {
-	embeddedJars  // we will embed these into the binary artifact
-	compile.extendsFrom(embeddedJars)
+	addAllProjects()
 }
 
 dependencies {
@@ -84,23 +54,6 @@ dependencies {
 	testCompile "junit:junit:${VER_JUNIT}"
 	testCompile "org.assertj:assertj-core:${VER_ASSERTJ}"
 	testCompile "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
-
-	// add the eclipse jars to the embedded configuration
-	eclipseDeps.each { embeddedJars "p2:${it}:+" }
-}
-
-jar {
-	// this embeds the eclipse jars into our "fat jar"
-	from {
-		configurations.embeddedJars.collect{ it.isDirectory() ? it : zipTree(it) }
-	}
-	from {
-		configurations.compile.findAll{ it.path.contains('com.diffplug.') }.collect{ it.isDirectory() ? it : zipTree(it) }
-	}
-	// the eclipse jars are signed, and our fat jar breaks the signatures
-	// so we've gotta be sure to filter out the signatures
-	exclude 'META-INF/*.RSA'
-	exclude 'META-INF/*.SF'
 }
 
 apply plugin: 'eclipse'
@@ -112,7 +65,6 @@ eclipse {
 }
 // always create fresh projects
 tasks.eclipse.dependsOn(cleanEclipse)
-
 
 /////////////////////
 // SPOTLESS (fake) //
@@ -224,13 +176,6 @@ model {
 				artifact sourcesJar
 				artifact javadocJar
 				pom.withXml {
-					// remove the p2 dependencies because they are embedded
-					// also remove 'com.diffplug' dependencies so that we can use spotless on its dependencies
-					asNode().dependencies.'*'.each() {
-						if (it.groupId.text() == 'p2' || it.groupId.text().startsWith('com.diffplug.')) {
-							it.parent().remove(it)
-						}
-					}
 					// add MavenCentral requirements to the POM
 					asNode().children().last() + {
 						resolveStrategy = Closure.DELEGATE_FIRST
