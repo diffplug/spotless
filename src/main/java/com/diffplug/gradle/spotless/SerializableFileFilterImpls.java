@@ -18,7 +18,9 @@ package com.diffplug.gradle.spotless;
 import java.io.File;
 import java.util.Objects;
 
-class SerializableFileFilterImpl {
+final class SerializableFileFilterImpls {
+	private SerializableFileFilterImpls() {}
+
 	static class SkipFilesNamed implements SerializableFileFilter {
 		private static final long serialVersionUID = 1L;
 
