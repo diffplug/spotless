@@ -16,10 +16,9 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.FileFilter;
-import java.io.Serializable;
 
 /** A file filter with full support for serialization. */
-public interface SerializableFileFilter extends FileFilter, ToByteArray, Serializable {
+public interface SerializableFileFilter extends FileFilter, ToByteArray {
 	/** Creates a FileFilter which will accept all files except files with the given name. */
 	public static SerializableFileFilter skipFilesNamed(String name) {
 		return new SerializableFileFilterImpl.SkipFilesNamed(name);

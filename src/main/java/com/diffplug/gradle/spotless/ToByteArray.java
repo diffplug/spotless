@@ -15,7 +15,9 @@
  */
 package com.diffplug.gradle.spotless;
 
-interface ToByteArray {
+import java.io.Serializable;
+
+interface ToByteArray extends Serializable {
 	/**
 	 * Returns a byte array representation of everything inside this `SerializableFileFilter`.
 	 *
