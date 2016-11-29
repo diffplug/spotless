@@ -120,8 +120,9 @@ public interface FormatterStep extends Serializable {
 	/**
 	 * @param name
 	 *             The name of the formatter step
-	 * @param key
-	 *             If the rule has any state, this key must contain all of it
+	 * @param keySupplier
+	 *             If the rule has any state, this supplier will calculate it lazily, and the result
+	 *             will be passed to keyToFormatter
 	 * @param keyToFormatter
 	 *             A pure function which generates a closeable formatting function using
 	 *             only the state supplied by key and nowhere else.
