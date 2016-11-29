@@ -27,9 +27,8 @@ import org.junit.Test;
 import com.diffplug.gradle.spotless.CheckFormatTask;
 import com.diffplug.gradle.spotless.FormatterStep;
 import com.diffplug.gradle.spotless.GradleIntegrationTest;
-import com.diffplug.gradle.spotless.JarState;
 
-public class GoogleJavaFormatStepTest extends GradleIntegrationTest {
+public class GoogleJavaFormatTest extends GradleIntegrationTest {
 	@Test
 	public void integration() throws IOException {
 		write("build.gradle",
@@ -68,11 +67,7 @@ public class GoogleJavaFormatStepTest extends GradleIntegrationTest {
 		Project project = ProjectBuilder.builder().withProjectDir(folder.getRoot()).build();
 		project.getRepositories().mavenCentral();
 		// copied from JavaExtension.googleJavaFormat
-		Function<String, FormatterStep> create = version -> {
-			return FormatterStep.createLazy(GoogleJavaFormatStep.NAME,
-					() -> new JarState(GoogleJavaFormatStep.MAVEN_COORDINATE + version, project),
-					(key) -> GoogleJavaFormatStep.load(key)::format);
-		};
+		Function<String, FormatterStep> create = version -> GoogleJavaFormat.createStep(version, project);
 
 		Assertions.assertThat(create.apply("1.0"))
 				.isEqualTo(create.apply("1.0"))

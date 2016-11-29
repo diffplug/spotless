@@ -24,8 +24,6 @@ import org.gradle.api.tasks.SourceSet;
 
 import com.diffplug.gradle.spotless.BaseFormatTask;
 import com.diffplug.gradle.spotless.FormatExtension;
-import com.diffplug.gradle.spotless.FormatterStep;
-import com.diffplug.gradle.spotless.JarState;
 import com.diffplug.gradle.spotless.LicenseHeaderStep;
 import com.diffplug.gradle.spotless.SerializableFileFilter;
 import com.diffplug.gradle.spotless.SpotlessExtension;
@@ -56,7 +54,7 @@ public class JavaExtension extends FormatExtension {
 	}
 
 	public void eclipseFormatFile(Object eclipseFormatFile) {
-		eclipseFormatFile(EclipseFormatterStep.DEFAULT_VERSION, eclipseFormatFile);
+		eclipseFormatFile(EclipseFormatter.DEFAULT_VERSION, eclipseFormatFile);
 	}
 
 	public void eclipseFormatFile(String eclipseVersion, Object eclipseFormatFile) {
@@ -64,14 +62,12 @@ public class JavaExtension extends FormatExtension {
 		getProject().getRepositories().maven(mvn -> {
 			mvn.setUrl("https://dl.bintray.com/diffplug/opensource");
 		});
-		addStep(FormatterStep.createLazy(EclipseFormatterStep.NAME,
-				() -> new EclipseFormatterStep(getProject(), eclipseVersion, eclipseFormatFile),
-				EclipseFormatterStep::createFormat));
+		addStep(EclipseFormatter.createStep(eclipseVersion, eclipseFormatFile, getProject()));
 	}
 
 	/** Uses the [google-java-format](https://github.com/google/google-java-format) jar to format source code. */
 	public void googleJavaFormat() {
-		googleJavaFormat(GoogleJavaFormatStep.DEFAULT_VERSION);
+		googleJavaFormat(GoogleJavaFormat.DEFAULT_VERSION);
 	}
 
 	/**
@@ -81,9 +77,7 @@ public class JavaExtension extends FormatExtension {
 	 * for an workaround for using snapshot versions.
 	 */
 	public void googleJavaFormat(String version) {
-		addStep(FormatterStep.createLazy(GoogleJavaFormatStep.NAME,
-				() -> new JarState(GoogleJavaFormatStep.MAVEN_COORDINATE + version, getProject()),
-				(key) -> GoogleJavaFormatStep.load(key)::format));
+		addStep(GoogleJavaFormat.createStep(version, getProject()));
 	}
 
 	/** If the user hasn't specified the files yet, we'll assume he/she means all of the java files. */

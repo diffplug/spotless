@@ -21,7 +21,7 @@ import org.junit.Test;
 
 import com.diffplug.gradle.spotless.ResourceHarness;
 
-public class EclipseFormatterStepTest extends ResourceHarness {
+public class EclipseFormatterTest extends ResourceHarness {
 	@Test
 	public void loadPropertiesSettings() throws Throwable {
 		File eclipseFormatFile = createTestFile("java/eclipse/format/formatter.properties");
