@@ -20,11 +20,10 @@ import java.lang.reflect.Method;
 import java.net.URLClassLoader;
 import java.util.Objects;
 
-import org.gradle.api.Project;
-
 import com.diffplug.gradle.spotless.CloseableFormatterFunc;
 import com.diffplug.gradle.spotless.FormatterStep;
 import com.diffplug.gradle.spotless.JarState;
+import com.diffplug.gradle.spotless.Provisioner;
 
 /** Wraps up [google-java-format](https://github.com/google/google-java-format) as a FormatterStep. */
 class GoogleJavaFormat {
@@ -35,9 +34,9 @@ class GoogleJavaFormat {
 	private static final String FORMATTER_METHOD = "formatSource";
 
 	/** Creates a formatter step for the given version and settings file. */
-	public static FormatterStep createStep(String version, Project project) {
+	public static FormatterStep createStep(String version, Provisioner provisioner) {
 		return FormatterStep.createCloseableLazy(NAME,
-				() -> new State(new JarState(MAVEN_COORDINATE + version, project)),
+				() -> new State(new JarState(MAVEN_COORDINATE + version, provisioner)),
 				State::createFormat);
 	}
 

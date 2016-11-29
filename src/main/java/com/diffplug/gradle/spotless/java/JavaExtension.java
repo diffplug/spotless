@@ -25,6 +25,7 @@ import org.gradle.api.tasks.SourceSet;
 import com.diffplug.gradle.spotless.BaseFormatTask;
 import com.diffplug.gradle.spotless.FormatExtension;
 import com.diffplug.gradle.spotless.LicenseHeaderStep;
+import com.diffplug.gradle.spotless.Provisioner;
 import com.diffplug.gradle.spotless.SerializableFileFilter;
 import com.diffplug.gradle.spotless.SpotlessExtension;
 
@@ -62,7 +63,7 @@ public class JavaExtension extends FormatExtension {
 		getProject().getRepositories().maven(mvn -> {
 			mvn.setUrl("https://dl.bintray.com/diffplug/opensource");
 		});
-		addStep(EclipseFormatter.createStep(eclipseVersion, eclipseFormatFile, getProject()));
+		addStep(EclipseFormatter.createStep(eclipseVersion, getProject().file(eclipseFormatFile), Provisioner.fromProject(getProject())));
 	}
 
 	/** Uses the [google-java-format](https://github.com/google/google-java-format) jar to format source code. */
@@ -77,7 +78,7 @@ public class JavaExtension extends FormatExtension {
 	 * for an workaround for using snapshot versions.
 	 */
 	public void googleJavaFormat(String version) {
-		addStep(GoogleJavaFormat.createStep(version, getProject()));
+		addStep(GoogleJavaFormat.createStep(version, Provisioner.fromProject(getProject())));
 	}
 
 	/** If the user hasn't specified the files yet, we'll assume he/she means all of the java files. */

@@ -25,7 +25,6 @@ import java.util.Objects;
 import java.util.Properties;
 
 import org.gradle.api.GradleException;
-import org.gradle.api.Project;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
 
@@ -33,6 +32,7 @@ import com.diffplug.gradle.spotless.CloseableFormatterFunc;
 import com.diffplug.gradle.spotless.FileSignature;
 import com.diffplug.gradle.spotless.FormatterStep;
 import com.diffplug.gradle.spotless.JarState;
+import com.diffplug.gradle.spotless.Provisioner;
 
 import groovy.util.Node;
 import groovy.util.NodeList;
@@ -48,9 +48,9 @@ class EclipseFormatter {
 	private static final String FORMATTER_METHOD = "format";
 
 	/** Creates a formatter step for the given version and settings file. */
-	public static FormatterStep createStep(String version, Object settingsFile, Project project) {
+	public static FormatterStep createStep(String version, File settingsFile, Provisioner provisioner) {
 		return FormatterStep.createCloseableLazy(NAME,
-				() -> new State(new JarState(MAVEN_COORDINATE + version, project), project.file(settingsFile)),
+				() -> new State(new JarState(MAVEN_COORDINATE + version, provisioner), settingsFile),
 				State::createFormat);
 	}
 
@@ -59,7 +59,7 @@ class EclipseFormatter {
 
 		/** The jar that contains the eclipse formatter. */
 		final JarState jarState;
-		/** The signature of the jar. */
+		/** The signature of the settings file. */
 		final FileSignature settings;
 
 		State(JarState jar, File settingsFile) throws Exception {

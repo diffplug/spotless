@@ -24,9 +24,6 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 
-import org.gradle.api.Project;
-import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
 
@@ -59,13 +56,10 @@ public class JarState implements Serializable {
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	private final transient Set<File> jars;
 
-	public JarState(String mavenCoordinate, Project project) throws IOException {
+	public JarState(String mavenCoordinate, Provisioner provisioner) throws IOException {
 		this.mavenCoordinate = Objects.requireNonNull(mavenCoordinate);
-		Dependency dep = project.getDependencies().create(mavenCoordinate);
-		Configuration config = project.getConfigurations().detachedConfiguration(dep);
-		config.setDescription(mavenCoordinate);
 		try {
-			jars = config.resolve();
+			jars = provisioner.provisionWithDependencies(mavenCoordinate);
 			if (jars.isEmpty()) {
 				throw new NoSuchElementException("Resolved to an empty result.");
 			}
