@@ -1,0 +1,15 @@
+plugins {
+	// IDE setup
+	id 'com.diffplug.gradle.oomph.ide' version '3.5.0'
+}
+
+oomphIde {
+	repoEclipseLatest()
+	jdt {}
+	splash 'images/spotless_logo.png'
+	style {
+		classicTheme()	// oldschool cool
+		niceText()		// nice fonts and visible whitespace
+	}
+	addAllProjects()
+}

@@ -5,8 +5,6 @@ plugins {
 	id 'com.gradle.plugin-publish' version '0.9.1'
 	// github pages
 	id "org.ajoberstar.github-pages" version "1.4.2"
-	// ide setup
-	id 'com.diffplug.gradle.oomph.ide' version '3.3.0'
 }
 
 repositories {
@@ -28,21 +26,6 @@ sourceCompatibility = VER_JAVA
 targetCompatibility = VER_JAVA
 tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
-}
-
-///////////////
-// SETUP IDE //
-///////////////
-apply plugin: 'com.diffplug.gradle.oomph.ide'
-oomphIde {
-	repoEclipseLatest()
-	jdt {}
-	splash 'images/spotless_logo.png'
-	style {
-		classicTheme()	// oldschool cool
-		niceText()		// nice fonts and visible whitespace
-	}
-	addAllProjects()
 }
 
 dependencies {
