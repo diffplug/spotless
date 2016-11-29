@@ -99,6 +99,10 @@ model {
 				artifact jar
 				artifact sourcesJar
 				artifact javadocJar
+
+				groupId project.group
+				artifactId project.artifactId
+
 				pom.withXml {
 					// remove the p2 dependencies because they are embedded
 					// also remove 'com.diffplug' dependencies so that we can use spotless on its dependencies
@@ -110,7 +114,6 @@ model {
 					// add MavenCentral requirements to the POM
 					asNode().children().last() + {
 						resolveStrategy = Closure.DELEGATE_FIRST
-						name project.artifactId
 						description project.description
 						url "https://github.com/${project.org}/${project.name}"
 						scm {

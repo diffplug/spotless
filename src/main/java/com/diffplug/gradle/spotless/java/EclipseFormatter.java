@@ -43,7 +43,7 @@ import groovy.xml.QName;
 class EclipseFormatter {
 	static final String DEFAULT_VERSION = "4.6.1";
 	private static final String NAME = "eclipse formatter";
-	private static final String MAVEN_COORDINATE = "com.diffplug.gradle.spotless:spotless-eclipse:";
+	private static final String MAVEN_COORDINATE = "com.diffplug.spotless:spotless-ext-eclipse:";
 	private static final String FORMATTER_CLASS = "com.diffplug.gradle.spotless.java.eclipse.EclipseFormatterStepImpl";
 	private static final String FORMATTER_METHOD = "format";
 
