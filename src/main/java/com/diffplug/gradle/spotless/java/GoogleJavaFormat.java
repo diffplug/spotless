@@ -22,7 +22,7 @@ import java.util.Objects;
 
 import org.gradle.api.Project;
 
-import com.diffplug.common.base.Throwing;
+import com.diffplug.gradle.spotless.CloseableFormatterFunc;
 import com.diffplug.gradle.spotless.FormatterStep;
 import com.diffplug.gradle.spotless.JarState;
 
@@ -36,7 +36,7 @@ class GoogleJavaFormat {
 
 	/** Creates a formatter step for the given version and settings file. */
 	public static FormatterStep createStep(String version, Project project) {
-		return FormatterStep.createLazy(NAME,
+		return FormatterStep.createCloseableLazy(NAME,
 				() -> new State(new JarState(MAVEN_COORDINATE + version, project)),
 				State::createFormat);
 	}
@@ -51,16 +51,14 @@ class GoogleJavaFormat {
 			this.jarState = Objects.requireNonNull(jarState);
 		}
 
-		Throwing.Function<String, String> createFormat() throws Exception {
+		CloseableFormatterFunc createFormat() throws Exception {
 			URLClassLoader classLoader = jarState.openIsolatedClassLoader();
-			// TODO: dispose the classloader when the function
-			// that we return gets garbage-collected
 
 			// instantiate the formatter and get its format method
 			Class<?> formatterClazz = classLoader.loadClass(FORMATTER_CLASS);
 			Object formatter = formatterClazz.getConstructor().newInstance();
 			Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
-			return input -> (String) method.invoke(formatter, input);
+			return CloseableFormatterFunc.of(classLoader, input -> (String) method.invoke(formatter, input));
 		}
 	}
 }

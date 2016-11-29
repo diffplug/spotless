@@ -42,6 +42,11 @@ final class FilterByFileFormatterStep implements FormatterStep {
 	}
 
 	@Override
+	public void finish() {
+		delegateStep.finish();
+	}
+
+	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;

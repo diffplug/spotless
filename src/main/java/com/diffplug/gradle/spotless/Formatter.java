@@ -166,6 +166,7 @@ public final class Formatter {
 					unix = LineEnding.toUnix(formatted);
 				}
 			} catch (Error e) {
+				steps.forEach(FormatterStep::finish);
 				logger.error("Step '" + step.getName() + "' found problem in '" + projectDirectory.relativize(file.toPath()) + "':\n" + e.getMessage());
 				throw e;
 			} catch (Throwable e) {
@@ -173,6 +174,7 @@ public final class Formatter {
 				logger.info("Exception is ", e);
 			}
 		}
+		steps.forEach(FormatterStep::finish);
 		return unix;
 	}
 }

@@ -29,7 +29,7 @@ import org.gradle.api.Project;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
 
-import com.diffplug.common.base.Throwing;
+import com.diffplug.gradle.spotless.CloseableFormatterFunc;
 import com.diffplug.gradle.spotless.FileSignature;
 import com.diffplug.gradle.spotless.FormatterStep;
 import com.diffplug.gradle.spotless.JarState;
@@ -49,7 +49,7 @@ class EclipseFormatter {
 
 	/** Creates a formatter step for the given version and settings file. */
 	public static FormatterStep createStep(String version, Object settingsFile, Project project) {
-		return FormatterStep.createLazy(NAME,
+		return FormatterStep.createCloseableLazy(NAME,
 				() -> new State(new JarState(MAVEN_COORDINATE + version, project), project.file(settingsFile)),
 				State::createFormat);
 	}
@@ -67,18 +67,16 @@ class EclipseFormatter {
 			this.settings = new FileSignature(settingsFile);
 		}
 
-		Throwing.Function<String, String> createFormat() throws Exception {
+		CloseableFormatterFunc createFormat() throws Exception {
 			Properties parsedSettings = parseProperties(settings.getOnlyFile());
 
 			URLClassLoader classLoader = jarState.openIsolatedClassLoader();
-			// TODO: dispose the classloader when the function
-			// that we return gets garbage-collected
 
 			// instantiate the formatter and get its format method
 			Class<?> formatterClazz = classLoader.loadClass(FORMATTER_CLASS);
 			Object formatter = formatterClazz.getConstructor(Properties.class).newInstance(parsedSettings);
 			Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
-			return input -> (String) method.invoke(formatter, input);
+			return CloseableFormatterFunc.of(classLoader, input -> (String) method.invoke(formatter, input));
 		}
 	}
 

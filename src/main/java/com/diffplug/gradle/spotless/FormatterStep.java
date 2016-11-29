@@ -43,6 +43,14 @@ public interface FormatterStep extends Serializable {
 	String format(String rawUnix, File file) throws Throwable;
 
 	/**
+	 * Hint to the FormatterStep that {@link #format(String, File)} will not
+	 * be called anytime soon, so clean up any resources that are being used.
+	 * Does NOT guarantee that format() won't be called ever again, but does
+	 * guarantee to be the best possible time to clean that you're going to get.
+	 */
+	default void finish() {}
+
+	/**
 	 * Returns a new FormatterStep which will only apply its changes
 	 * to files which pass the given filter.
 	 *
@@ -89,7 +97,7 @@ public interface FormatterStep extends Serializable {
 			String name,
 			Throwing.Supplier<Key> keySupplier,
 			Throwing.Function<Key, Throwing.Function<String, String>> keyToFormatter) {
-		return new FormatterStepStandardImpl<>(name, keySupplier, keyToFormatter);
+		return new FormatterStepImpl.Standard<>(name, keySupplier, keyToFormatter);
 	}
 
 	/**
@@ -107,5 +115,39 @@ public interface FormatterStep extends Serializable {
 			Key key,
 			Throwing.Function<Key, Throwing.Function<String, String>> keyToFormatter) {
 		return createLazy(name, () -> key, keyToFormatter);
+	}
+
+	/**
+	 * @param name
+	 *             The name of the formatter step
+	 * @param key
+	 *             If the rule has any state, this key must contain all of it
+	 * @param keyToFormatter
+	 *             A pure function which generates a closeable formatting function using
+	 *             only the state supplied by key and nowhere else.
+	 * @return A FormatterStep
+	 */
+	public static <Key extends Serializable> FormatterStep createCloseableLazy(
+			String name,
+			Throwing.Supplier<Key> keySupplier,
+			Throwing.Function<Key, CloseableFormatterFunc> keyToFormatter) {
+		return new FormatterStepImpl.Closeable<>(name, keySupplier, keyToFormatter);
+	}
+
+	/**
+	 * @param name
+	 *             The name of the formatter step
+	 * @param key
+	 *             If the rule has any state, this key must contain all of it
+	 * @param keyToFormatter
+	 *             A pure function which generates a formatting function using
+	 *             only the state supplied by key and nowhere else.
+	 * @return A FormatterStep
+	 */
+	public static <Key extends Serializable> FormatterStep createCloseable(
+			String name,
+			Key key,
+			Throwing.Function<Key, CloseableFormatterFunc> keyToFormatter) {
+		return createCloseableLazy(name, () -> key, keyToFormatter);
 	}
 }
