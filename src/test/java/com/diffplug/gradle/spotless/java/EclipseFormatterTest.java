@@ -26,11 +26,7 @@ public class EclipseFormatterTest extends ResourceHarness {
 	public void loadPropertiesSettings() throws Throwable {
 		File eclipseFormatFile = createTestFile("java/eclipse/format/formatter.properties");
 		// setting for the formatter
-		assertTask(extension -> {
-			extension.java(java -> {
-				java.eclipseFormatFile(eclipseFormatFile);
-			});
-		},
+		assertTask(extension -> extension.java(java -> java.eclipseFormatFile(eclipseFormatFile)),
 				getTestResource("java/eclipse/format/JavaCodeUnformatted.test"),
 				getTestResource("java/eclipse/format/JavaCodeFormatted.test"));
 	}
@@ -40,11 +36,7 @@ public class EclipseFormatterTest extends ResourceHarness {
 		// setting for the formatter
 		File eclipseFormatFile = createTestFile("java/eclipse/format/formatter.xml");
 		// setting for the formatter
-		assertTask(extension -> {
-			extension.java(java -> {
-				java.eclipseFormatFile(eclipseFormatFile);
-			});
-		},
+		assertTask(extension -> extension.java(java -> java.eclipseFormatFile(eclipseFormatFile)),
 				getTestResource("java/eclipse/format/JavaCodeUnformatted.test"),
 				getTestResource("java/eclipse/format/JavaCodeFormatted.test"));
 	}
@@ -54,13 +46,10 @@ public class EclipseFormatterTest extends ResourceHarness {
 		String folder = "java/eclipse/format/long_literals/";
 		File eclipseFormatFile = createTestFile(folder + "spotless.eclipseformat.xml");
 
-		assertTask(extension -> {
-			extension.java(java -> {
-				java.eclipseFormatFile(eclipseFormatFile);
-			});
-		}, cases -> {
-			cases.add(getTestResource(folder + "Example1.test"));
-			cases.add(getTestResource(folder + "Example2.test"));
-		});
+		assertTask(extension -> extension.java(java -> java.eclipseFormatFile(eclipseFormatFile)),
+				cases -> {
+					cases.add(getTestResource(folder + "Example1.test"));
+					cases.add(getTestResource(folder + "Example2.test"));
+				});
 	}
 }
