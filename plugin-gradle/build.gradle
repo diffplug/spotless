@@ -9,15 +9,6 @@ plugins {
 
 repositories {
 	jcenter()
-	// SNAPSHOT versions are free to rely on other SNAPSHOT libraries
-	if (project.version.endsWith('-SNAPSHOT')) {
-		maven {
-			url 'https://oss.sonatype.org/content/repositories/snapshots/'
-		}
-		configurations.all {
-			resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-		}
-	}
 }
 
 apply plugin: 'com.gradle.plugin-publish'
@@ -48,6 +39,7 @@ eclipse {
 }
 // always create fresh projects
 tasks.eclipse.dependsOn(cleanEclipse)
+tasks.eclipse.dependsOn(pluginUnderTestMetadata)
 
 /////////////////////
 // SPOTLESS (fake) //
