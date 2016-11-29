@@ -62,7 +62,7 @@ public class JavaExtension extends FormatExtension {
 	public void eclipseFormatFile(String eclipseVersion, Object eclipseFormatFile) {
 		// add the snapshot repo for dev until the spotless-eclipse jar makes it into mavenCentral
 		getProject().getRepositories().maven(mvn -> {
-			mvn.setUrl("https://oss.sonatype.org/content/repositories/snapshots/");
+			mvn.setUrl("https://dl.bintray.com/diffplug/opensource");
 		});
 		addStep(FormatterStep.createLazy(EclipseFormatterStep.NAME,
 				() -> new EclipseFormatterStep(getProject(), eclipseVersion, eclipseFormatFile),

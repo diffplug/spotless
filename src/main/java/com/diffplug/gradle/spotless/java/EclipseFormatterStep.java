@@ -41,8 +41,7 @@ import groovy.xml.QName;
 class EclipseFormatterStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	// static final String DEFAULT_VERSION = "4.6.1";
-	static final String DEFAULT_VERSION = "4.6.1-SNAPSHOT";
+	static final String DEFAULT_VERSION = "4.6.1";
 	static final String MAVEN_COORDINATE = "com.diffplug.gradle.spotless:spotless-eclipse:";
 	static final String FORMATTER_CLASS = "com.diffplug.gradle.spotless.java.eclipse.EclipseFormatterStepImpl";
 	static final String FORMATTER_METHOD = "format";
