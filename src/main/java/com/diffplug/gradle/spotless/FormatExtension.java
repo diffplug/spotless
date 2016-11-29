@@ -226,11 +226,10 @@ public class FormatExtension {
 	/** Highly efficient find-replace regex. */
 	public void customReplaceRegex(String name, String regex, String replacement) {
 		addStep(FormatterStep.createLazy(name,
-				() -> new SimpleImmutableEntry<>(regex, replacement),
+				() -> new SimpleImmutableEntry<>(Pattern.compile(regex, Pattern.UNIX_LINES | Pattern.MULTILINE), replacement),
 				key -> (raw -> {
-					String reg = key.getKey();
+					Pattern pattern = key.getKey();
 					String repl = key.getValue();
-					Pattern pattern = Pattern.compile(reg, Pattern.UNIX_LINES | Pattern.MULTILINE);
 					return pattern.matcher(raw).replaceAll(repl);
 				})));
 	}
