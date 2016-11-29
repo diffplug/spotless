@@ -1,0 +1,10 @@
+plugins {
+	id 'com.diffplug.gradle.eclipse.resourcefilters' version '3.5.0'
+}
+
+// root eclipse project
+eclipseResourceFilters {
+	exclude().folders().name('lib')
+	exclude().folders().name('plugin-gradle')
+	exclude().folders().name('plugin-maven')
+}

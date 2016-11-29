@@ -1,8 +1,4 @@
-plugins {
-	// IDE setup
-	id 'com.diffplug.gradle.oomph.ide' version '3.5.0'
-}
-
+apply plugin: 'com.diffplug.gradle.oomph.ide'
 oomphIde {
 	repoEclipseLatest()
 	jdt {}
@@ -11,5 +7,10 @@ oomphIde {
 		classicTheme()	// oldschool cool
 		niceText()		// nice fonts and visible whitespace
 	}
+
+	// add syntax highlighting for gradle scripts
+	repo 'http://www.nodeclipse.org/updates/gradle-ide-pack/'
+	feature 'org.nodeclipse.enide.editors.gradle.feature'
+
 	addAllProjects()
 }
