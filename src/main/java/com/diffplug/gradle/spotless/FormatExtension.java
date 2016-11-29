@@ -18,6 +18,7 @@ package com.diffplug.gradle.spotless;
 import java.io.File;
 import java.io.Serializable;
 import java.nio.charset.Charset;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -193,7 +194,7 @@ public class FormatExtension {
 	 * {@link #customLazyGroovy(String, com.diffplug.common.base.Throwing.Supplier)}.
 	 */
 	public void customLazy(String name, Throwing.Supplier<Throwing.Function<String, String>> formatterSupplier) {
-		addStep(FormatterStep.createLazy(name, () -> globalKey, (unusedKey) -> formatterSupplier.get()));
+		addStep(FormatterStep.createLazy(name, () -> globalKey, unusedKey -> formatterSupplier.get()));
 	}
 
 	/** Same as {@link #customLazy(String, com.diffplug.common.base.Throwing.Supplier)}, but for Groovy closures. */
@@ -213,15 +214,25 @@ public class FormatExtension {
 
 	/** Highly efficient find-replace char sequence. */
 	public void customReplace(String name, CharSequence original, CharSequence after) {
-		custom(name, raw -> raw.replace(original, after));
+		addStep(FormatterStep.createLazy(name,
+				() -> new SimpleImmutableEntry<>(original, after),
+				key -> (raw -> {
+					CharSequence orig = key.getKey();
+					CharSequence aft = key.getValue();
+					return raw.replace(orig, aft);
+				})));
 	}
 
 	/** Highly efficient find-replace regex. */
 	public void customReplaceRegex(String name, String regex, String replacement) {
-		customLazy(name, () -> {
-			Pattern pattern = Pattern.compile(regex, Pattern.UNIX_LINES | Pattern.MULTILINE);
-			return raw -> pattern.matcher(raw).replaceAll(replacement);
-		});
+		addStep(FormatterStep.createLazy(name,
+				() -> new SimpleImmutableEntry<>(regex, replacement),
+				key -> (raw -> {
+					String reg = key.getKey();
+					String repl = key.getValue();
+					Pattern pattern = Pattern.compile(reg, Pattern.UNIX_LINES | Pattern.MULTILINE);
+					return pattern.matcher(raw).replaceAll(repl);
+				})));
 	}
 
 	/** Removes trailing whitespace. */
