@@ -148,7 +148,7 @@ public class FormatExtension {
 	protected List<FormatterStep> steps = new ArrayList<>();
 
 	/** Adds a new step. */
-	protected void addStep(FormatterStep newStep) {
+	public void addStep(FormatterStep newStep) {
 		for (FormatterStep step : steps) {
 			if (step.getName().equals(name)) {
 				throw new GradleException("Multiple steps with name '" + name + "' for spotless '" + name + "'");
