@@ -78,10 +78,11 @@ public interface FormatterStep extends Serializable {
 	 * @param name
 	 *             The name of the formatter step
 	 * @param keySupplier
-	 *             If the rule has any state, this supplier will calculate it lazily
+	 *             If the rule has any state, this supplier will calculate it lazily, and the result
+	 *             will be passed to keyToFormatter
 	 * @param keyToFormatter
-	 *             A pure function which creates the formatter function using only the
-	 *             state supplied by the keySupplier and nowhere else
+	 *             A pure function which generates a formatting function using
+	 *             only the state supplied by key and nowhere else.
 	 * @return A FormatterStep
 	 */
 	public static <Key extends Serializable> FormatterStep createLazy(
@@ -96,9 +97,9 @@ public interface FormatterStep extends Serializable {
 	 *             The name of the formatter step
 	 * @param key
 	 *             If the rule has any state, this key must contain all of it
-	 * @param formatter
-	 *             A pure function which calculates a formatted string from an unformatted
-	 *             string, using only the state supplied by key and nowhere else.
+	 * @param keyToFormatter
+	 *             A pure function which generates a formatting function using
+	 *             only the state supplied by key and nowhere else.
 	 * @return A FormatterStep
 	 */
 	public static <Key extends Serializable> FormatterStep create(

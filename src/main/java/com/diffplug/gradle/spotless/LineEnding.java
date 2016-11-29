@@ -45,7 +45,7 @@ public enum LineEnding {
 		}
 	}
 
-	/** Should use {@link #createPolicy(File, Iterable)} instead, but this will work iff its a path-independent LineEnding policy. */
+	/** Should use {@link #createPolicy(File, Supplier)} instead, but this will work iff its a path-independent LineEnding policy. */
 	public Policy createPolicy() {
 		switch (this) {
 		case PLATFORM_NATIVE:

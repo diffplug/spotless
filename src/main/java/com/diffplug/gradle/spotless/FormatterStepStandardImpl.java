@@ -22,6 +22,8 @@ import java.util.Objects;
 import com.diffplug.common.base.Throwing;
 import com.diffplug.gradle.spotless.FormatterStep.Strict;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Standard implementation of FormatExtension which cleanly enforces
  * separation of serializable configuration and a pure format function.
@@ -29,8 +31,8 @@ import com.diffplug.gradle.spotless.FormatterStep.Strict;
  * Not an inner-class of FormatterStep so that it can stay entirely private
  * from the API.
  */
+@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 final class FormatterStepStandardImpl<Key extends Serializable> extends Strict<Key> {
-
 	private static final long serialVersionUID = 1L;
 
 	/** Transient because only the key matters. */
