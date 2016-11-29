@@ -198,10 +198,7 @@ public class FormatExtension {
 
 	/** Same as {@link #customLazy(String, com.diffplug.common.base.Throwing.Supplier)}, but for Groovy closures. */
 	public void customLazyGroovy(String name, Throwing.Supplier<Closure<String>> formatterSupplier) {
-		customLazy(name, () -> {
-			Closure<String> closure = formatterSupplier.get();
-			return closure::call;
-		});
+		customLazy(name, () -> formatterSupplier.get()::call);
 	}
 
 	/** Adds a custom step. Receives a string with unix-newlines, must return a string with unix newlines. */
