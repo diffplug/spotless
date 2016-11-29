@@ -69,7 +69,7 @@ public class CheckFormatTask extends BaseFormatTask {
 		String name = getName();
 		if (name.startsWith(SpotlessPlugin.EXTENSION)) {
 			String after = name.substring(SpotlessPlugin.EXTENSION.length());
-			return after.substring(0, after.length() - SpotlessPlugin.CHECK.length()).toLowerCase(Locale.US);
+			return after.substring(0, after.length() - SpotlessPlugin.CHECK.length()).toLowerCase(Locale.ROOT);
 		}
 		return name;
 	}

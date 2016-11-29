@@ -158,7 +158,7 @@ class PaddedCellTaskMisc {
 				Path relative = rootDir.relativize(problemFile.toPath());
 				Path diagnoseFile = diagnoseDir.resolve(relative);
 				for (int i = 0; i < padded.steps().size(); ++i) {
-					Path path = Paths.get(diagnoseFile + "." + padded.type().name().toLowerCase(Locale.US) + i);
+					Path path = Paths.get(diagnoseFile + "." + padded.type().name().toLowerCase(Locale.ROOT) + i);
 					Files.createDirectories(path.getParent());
 					String version = padded.steps().get(i);
 					Files.write(path, version.getBytes(formatter.encoding));

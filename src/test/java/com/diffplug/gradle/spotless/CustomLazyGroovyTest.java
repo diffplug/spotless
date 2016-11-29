@@ -31,7 +31,7 @@ public class CustomLazyGroovyTest extends GradleIntegrationTest {
 				"    format 'misc', {",
 				"        target file('README.md')",
 				"        customLazyGroovy('lowercase') {",
-				"             return { str -> str.toLowerCase(Locale.US) }",
+				"             return { str -> str.toLowerCase(Locale.ROOT) }",
 				"        }",
 				"    }",
 				"}");

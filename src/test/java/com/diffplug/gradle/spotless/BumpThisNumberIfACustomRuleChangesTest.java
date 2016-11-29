@@ -30,7 +30,7 @@ public class BumpThisNumberIfACustomRuleChangesTest extends GradleIntegrationTes
 				"    format 'misc', {",
 				"        target file('README.md')",
 				"        customLazyGroovy('lowercase') {",
-				"             return { str -> str.toLowerCase(Locale.US) }",
+				"             return { str -> str.toLowerCase(Locale.ROOT) }",
 				"        }",
 				toInsert,
 				"    }",
