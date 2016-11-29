@@ -19,9 +19,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.assertj.core.api.Assertions;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
@@ -30,15 +30,12 @@ import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.diffplug.common.base.StandardSystemProperty;
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.common.base.Throwing;
 
 public class PaddedCellTaskTest extends ResourceHarness {
-	private static final boolean IS_WIN = StandardSystemProperty.OS_NAME.value().toLowerCase(Locale.US).contains("win");
-
 	private static String slashify(String input) {
-		return IS_WIN ? input.replace('/', '\\') : input;
+		return SystemUtils.IS_OS_WINDOWS ? input.replace('/', '\\') : input;
 	}
 
 	private class Bundle {
@@ -154,8 +151,12 @@ public class PaddedCellTaskTest extends ResourceHarness {
 	private void assertFolderContents(String subfolderName, String... files) {
 		File subfolder = new File(folder.getRoot(), subfolderName);
 		Assert.assertTrue(subfolder.isDirectory());
-		String asList = Arrays.stream(subfolder.list()).sorted().collect(Collectors.joining("\n"));
+		String asList = Arrays.stream(nullToEmpty(subfolder.list())).sorted().collect(Collectors.joining("\n"));
 		Assert.assertEquals(StringPrinter.buildStringFromLines(files).trim(), asList);
+	}
+
+	private String[] nullToEmpty(String[] nullableArray) {
+		return (nullableArray == null) ? new String[0] : nullableArray;
 	}
 
 	@Test
