@@ -1,4 +1,4 @@
-# <img align="left" src="images/spotless_logo.png"> Spotless: Keep your code spotless with Gradle
+# <img align="left" src="_images/spotless_logo.png"> Spotless: Keep your code spotless with Gradle
 
 <!---freshmark shields
 output = [
@@ -257,14 +257,14 @@ Spotless is hosted on jcenter and at plugins.gradle.org. [Go here](https://plugi
 There are two files to import/export with Eclipse - one for code formatting and one for import ordering.
 
 ### Opening the preferences
-![Eclipse preferences](images/EclipsePreferences.png)
+![Eclipse preferences](_images/EclipsePreferences.png)
 
 ### Creating `spotless.eclipseformat.xml`
-![Eclipse formatter](images/EclipseFormatter.png)
-![Eclipse formatter edit](images/EclipseFormatterEdit.png)
+![Eclipse formatter](_images/EclipseFormatter.png)
+![Eclipse formatter edit](_images/EclipseFormatterEdit.png)
 
 The Eclipse formatter's off/on tags are a great feature which is often overlooked.
-![Eclipse formatter off/on tags](images/EclipseFormatterEditOffOnTags.png)
+![Eclipse formatter off/on tags](_images/EclipseFormatterEditOffOnTags.png)
 
 ### Creating `spotless.importorder`
-![Eclipse imports](images/EclipseImports.png)
+![Eclipse imports](_images/EclipseImports.png)

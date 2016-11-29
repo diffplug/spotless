@@ -6,7 +6,7 @@ plugins {
 oomphIde {
 	repoEclipseLatest()
 	jdt {}
-	splash 'images/spotless_logo.png'
+	splash rootProject.file('_images/spotless_logo.png')
 	style {
 		classicTheme()	// oldschool cool
 		niceText()		// nice fonts and visible whitespace
