@@ -54,7 +54,6 @@ dependencies {
 	testCompile "junit:junit:${VER_JUNIT}"
 	testCompile "org.assertj:assertj-core:${VER_ASSERTJ}"
 	testCompile "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
-	testCompile "org.apache.commons:commons-lang3:${VER_COMMONS_LANG}"
 }
 
 apply plugin: 'eclipse'
