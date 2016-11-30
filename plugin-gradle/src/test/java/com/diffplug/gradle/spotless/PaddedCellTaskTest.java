@@ -32,10 +32,7 @@ import org.junit.Test;
 
 import com.diffplug.common.base.StandardSystemProperty;
 import com.diffplug.common.base.StringPrinter;
-import com.diffplug.common.base.Throwing;
-import com.diffplug.gradle.spotless.ApplyFormatTask;
-import com.diffplug.gradle.spotless.CheckFormatTask;
-import com.diffplug.gradle.spotless.SpotlessPlugin;
+import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 
@@ -52,9 +49,9 @@ public class PaddedCellTaskTest extends ResourceHarness {
 		CheckFormatTask check;
 		ApplyFormatTask apply;
 
-		Bundle(String name, Throwing.Function<String, String> function) throws IOException {
+		Bundle(String name, FormatterFunc function) throws IOException {
 			file = createTestFile("src/test." + name, "CCC");
-			FormatterStep step = NeverUpToDate.create(name, function);
+			FormatterStep step = FormatterStep.createNeverUpToDate(name, function);
 			check = createCheckTask(name, step);
 			apply = createApplyTask(name, step);
 		}

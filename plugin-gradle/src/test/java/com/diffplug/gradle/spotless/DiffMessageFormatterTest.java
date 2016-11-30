@@ -27,6 +27,7 @@ import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Test;
 
 import com.diffplug.common.base.StringPrinter;
+import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 
 public class DiffMessageFormatterTest extends ResourceHarness {
@@ -71,7 +72,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 	@Test
 	public void whitespaceProblem() throws Exception {
 		CheckFormatTask task = create(createTestFile("testFile", "A \nB\t\nC  \n"));
-		task.addStep(NeverUpToDate.create("trimTrailing", input -> {
+		task.addStep(FormatterStep.createNeverUpToDate("trimTrailing", input -> {
 			Pattern pattern = Pattern.compile("[ \t]+$", Pattern.UNIX_LINES | Pattern.MULTILINE);
 			return pattern.matcher(input).replaceAll("");
 		}));

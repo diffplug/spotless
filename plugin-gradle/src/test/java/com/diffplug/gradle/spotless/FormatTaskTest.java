@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
+import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 
 @RunWith(Enclosed.class)
@@ -72,7 +73,7 @@ public class FormatTaskTest extends ResourceHarness {
 		File testFile = createTestFile("testFile", "apple");
 		checkTask.setTarget(Collections.singleton(testFile));
 
-		checkTask.addStep(NeverUpToDate.create("double-p", content -> content.replace("pp", "p")));
+		checkTask.addStep(FormatterStep.createNeverUpToDate("double-p", content -> content.replace("pp", "p")));
 
 		String diff = String.join("\n",
 				"        @@ -1 +1 @@",
@@ -88,7 +89,7 @@ public class FormatTaskTest extends ResourceHarness {
 		File testFile = createTestFile("testFile", "aple");
 		checkTask.setTarget(Collections.singleton(testFile));
 
-		checkTask.addStep(NeverUpToDate.create("double-p", content -> content.replace("pp", "p")));
+		checkTask.addStep(FormatterStep.createNeverUpToDate("double-p", content -> content.replace("pp", "p")));
 		checkTask.execute();
 
 		assertFileContent("aple", testFile);
@@ -99,7 +100,7 @@ public class FormatTaskTest extends ResourceHarness {
 		File testFile = createTestFile("testFile", "apple");
 		applyTask.setTarget(Collections.singleton(testFile));
 
-		checkTask.addStep(NeverUpToDate.create("double-p", content -> content.replace("pp", "p")));
+		checkTask.addStep(FormatterStep.createNeverUpToDate("double-p", content -> content.replace("pp", "p")));
 		applyTask.execute();
 
 		assertFileContent("aple", testFile);
