@@ -5,7 +5,8 @@ plugins {
 }
 spotless {
 	java {
-		licenseHeaderFile 'spotless.license.java'
+		target '**/*.java'
+		licenseHeaderFile 'spotless.license'
 		importOrderFile   'spotless.importorder'
 		eclipseFormatFile 'spotless.eclipseformat.xml'
 		trimTrailingWhitespace()

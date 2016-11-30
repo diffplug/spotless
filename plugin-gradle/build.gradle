@@ -1,10 +1,11 @@
-ext.artifactId = project.artifactIdSpotless
+ext.artifactId = project.artifactIdGradle
 apply from: rootProject.file('gradle/java-setup.gradle')
 
 apply plugin: 'com.gradle.plugin-publish'
 apply plugin: 'java-gradle-plugin'
 
 dependencies {
+	compile project(':lib')
 	compile "com.diffplug.durian:durian-core:${VER_DURIAN}"
 	compile "com.diffplug.durian:durian-io:${VER_DURIAN}"
 	compile "com.diffplug.freshmark:freshmark:${VER_FRESHMARK}"

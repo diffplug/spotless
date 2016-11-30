@@ -20,25 +20,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 
-import org.gradle.api.Project;
-import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.artifacts.Dependency;
-
 public interface Provisioner {
 	Set<File> provisionWithDependencies(Collection<String> mavenCoordinates);
 
 	default Set<File> provisionWithDependencies(String... mavenCoordinates) {
 		return provisionWithDependencies(Arrays.asList(mavenCoordinates));
-	}
-
-	public static Provisioner fromProject(Project project) {
-		return mavenCoords -> {
-			Dependency[] deps = mavenCoords.stream()
-					.map(project.getDependencies()::create)
-					.toArray(Dependency[]::new);
-			Configuration config = project.getConfigurations().detachedConfiguration(deps);
-			config.setDescription(mavenCoords.toString());
-			return config.resolve();
-		};
 	}
 }

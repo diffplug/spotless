@@ -89,9 +89,9 @@ javadoc {
 	options.header javadocInfo
 	options.footer javadocInfo
 	// setup links
-	options.linksOffline('https://docs.oracle.com/javase/8/docs/api/', 'gradle/javadoc/java8')
-	options.linksOffline("https://docs.gradle.org/2.14/javadoc/", 'gradle/javadoc/gradle')
-	options.linksOffline("https://diffplug.github.io/durian/javadoc/${verSnapshot(VER_DURIAN)}/", 'gradle/javadoc/durian')
+	options.linksOffline('https://docs.oracle.com/javase/8/docs/api/', rootProject.file('gradle/javadoc/java8'))
+	options.linksOffline("https://docs.gradle.org/2.14/javadoc/", rootProject.file('gradle/javadoc/gradle'))
+	options.linksOffline("https://diffplug.github.io/durian/javadoc/${verSnapshot(VER_DURIAN)}/", rootProject.file('gradle/javadoc/durian'))
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
