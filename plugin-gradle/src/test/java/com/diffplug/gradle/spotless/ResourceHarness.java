@@ -35,9 +35,9 @@ import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
 import com.diffplug.common.base.Errors;
-import com.diffplug.common.base.Throwing;
 import com.diffplug.common.collect.Iterables;
 import com.diffplug.common.io.Resources;
+import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 
@@ -108,7 +108,7 @@ public class ResourceHarness {
 	}
 
 	/** Reads the given resource from "before", applies the step, and makes sure the result is "after". */
-	protected void assertOnResources(Throwing.Function<String, String> step, String unformattedPath, String expectedPath) throws Throwable {
+	protected void assertOnResources(FormatterFunc step, String unformattedPath, String expectedPath) throws Throwable {
 		String unformatted = LineEnding.toUnix(getTestResource(unformattedPath)); // unix-ified input
 		String formatted = step.apply(unformatted);
 		// no windows newlines

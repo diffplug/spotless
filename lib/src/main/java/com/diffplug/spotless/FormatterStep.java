@@ -18,8 +18,6 @@ package com.diffplug.spotless;
 import java.io.File;
 import java.io.Serializable;
 
-import com.diffplug.common.base.Throwing;
-
 /**
  * An implementation of this class specifies a single step in a formatting process.
  *

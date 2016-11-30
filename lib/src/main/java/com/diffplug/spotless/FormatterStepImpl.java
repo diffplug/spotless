@@ -20,7 +20,6 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.Random;
 
-import com.diffplug.common.base.Throwing;
 import com.diffplug.spotless.FormatterStep.Strict;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
