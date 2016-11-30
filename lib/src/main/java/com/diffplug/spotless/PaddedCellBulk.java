@@ -35,6 +35,8 @@ import java.util.logging.Logger;
 
 import com.diffplug.common.base.Errors;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Incorporates the PaddedCell machinery into broader apply / check usage.
  *
@@ -102,6 +104,7 @@ public class PaddedCellBulk {
 	 * @param problemFiles	The files with which we have a problem.
 	 * @return	A list of files which are failing because of paddedCell problems, but could be fixed. (specifically, the files for which spotlessApply would be effective)
 	 */
+	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 	public static List<File> check(File rootDir, File diagnoseDir, Formatter formatter, List<File> problemFiles) throws IOException {
 		// "fake" Formatter which can use the already-computed result of a PaddedCell as
 		Step paddedCellStep = new Step();
