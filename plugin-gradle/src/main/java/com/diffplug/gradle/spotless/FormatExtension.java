@@ -193,7 +193,7 @@ public class FormatExtension {
 	 * If you're getting errors about `closure cannot be cast to com.diffplug.common.base.Throwing$Function`, then use
 	 * {@link #customLazyGroovy(String, com.diffplug.common.base.Throwing.Supplier)}.
 	 */
-	public void customLazy(String name, Throwing.Supplier<Throwing.Function<String, String>> formatterSupplier) {
+	public void customLazy(String name, Throwing.Supplier<FormatterFunc> formatterSupplier) {
 		addStep(FormatterStep.createLazy(name, () -> globalKey, unusedKey -> formatterSupplier.get()));
 	}
 
@@ -208,7 +208,7 @@ public class FormatExtension {
 	}
 
 	/** Adds a custom step. Receives a string with unix-newlines, must return a string with unix newlines. */
-	public void custom(String name, Throwing.Function<String, String> formatter) {
+	public void custom(String name, FormatterFunc formatter) {
 		customLazy(name, () -> formatter);
 	}
 

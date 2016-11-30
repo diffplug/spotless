@@ -96,7 +96,7 @@ public interface FormatterStep extends Serializable {
 	public static <Key extends Serializable> FormatterStep createLazy(
 			String name,
 			Throwing.Supplier<Key> keySupplier,
-			Throwing.Function<Key, Throwing.Function<String, String>> keyToFormatter) {
+			Throwing.Function<Key, FormatterFunc> keyToFormatter) {
 		return new FormatterStepImpl.Standard<>(name, keySupplier, keyToFormatter);
 	}
 
@@ -113,7 +113,7 @@ public interface FormatterStep extends Serializable {
 	public static <Key extends Serializable> FormatterStep create(
 			String name,
 			Key key,
-			Throwing.Function<Key, Throwing.Function<String, String>> keyToFormatter) {
+			Throwing.Function<Key, FormatterFunc> keyToFormatter) {
 		return createLazy(name, () -> key, keyToFormatter);
 	}
 
@@ -131,7 +131,7 @@ public interface FormatterStep extends Serializable {
 	public static <Key extends Serializable> FormatterStep createCloseableLazy(
 			String name,
 			Throwing.Supplier<Key> keySupplier,
-			Throwing.Function<Key, CloseableFormatterFunc> keyToFormatter) {
+			Throwing.Function<Key, FormatterFunc.Closeable> keyToFormatter) {
 		return new FormatterStepImpl.Closeable<>(name, keySupplier, keyToFormatter);
 	}
 
@@ -148,7 +148,7 @@ public interface FormatterStep extends Serializable {
 	public static <Key extends Serializable> FormatterStep createCloseable(
 			String name,
 			Key key,
-			Throwing.Function<Key, CloseableFormatterFunc> keyToFormatter) {
+			Throwing.Function<Key, FormatterFunc.Closeable> keyToFormatter) {
 		return createCloseableLazy(name, () -> key, keyToFormatter);
 	}
 }

@@ -20,7 +20,7 @@ import java.lang.reflect.Method;
 import java.net.URLClassLoader;
 import java.util.Objects;
 
-import com.diffplug.gradle.spotless.CloseableFormatterFunc;
+import com.diffplug.gradle.spotless.FormatterFunc;
 import com.diffplug.gradle.spotless.FormatterStep;
 import com.diffplug.gradle.spotless.JarState;
 import com.diffplug.gradle.spotless.Provisioner;
@@ -50,14 +50,14 @@ class GoogleJavaFormat {
 			this.jarState = Objects.requireNonNull(jarState);
 		}
 
-		CloseableFormatterFunc createFormat() throws Exception {
+		FormatterFunc.Closeable createFormat() throws Exception {
 			URLClassLoader classLoader = jarState.openIsolatedClassLoader();
 
 			// instantiate the formatter and get its format method
 			Class<?> formatterClazz = classLoader.loadClass(FORMATTER_CLASS);
 			Object formatter = formatterClazz.getConstructor().newInstance();
 			Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
-			return CloseableFormatterFunc.of(classLoader, input -> (String) method.invoke(formatter, input));
+			return FormatterFunc.Closeable.of(classLoader, input -> (String) method.invoke(formatter, input));
 		}
 	}
 }

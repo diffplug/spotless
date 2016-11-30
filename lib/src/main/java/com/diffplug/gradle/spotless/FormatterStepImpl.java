@@ -59,10 +59,10 @@ abstract class FormatterStepImpl<Key extends Serializable> extends Strict<Key> {
 	static final class Standard<Key extends Serializable> extends FormatterStepImpl<Key> {
 		private static final long serialVersionUID = 1L;
 
-		final transient Throwing.Function<Key, Throwing.Function<String, String>> keyToFormatter;
-		transient Throwing.Function<String, String> formatter; // initialized lazily
+		final transient Throwing.Function<Key, FormatterFunc> keyToFormatter;
+		transient FormatterFunc formatter; // initialized lazily
 
-		Standard(String name, Throwing.Supplier<Key> keySupplier, Throwing.Function<Key, Throwing.Function<String, String>> keyToFormatter) {
+		Standard(String name, Throwing.Supplier<Key> keySupplier, Throwing.Function<Key, FormatterFunc> keyToFormatter) {
 			super(name, keySupplier);
 			this.keyToFormatter = Objects.requireNonNull(keyToFormatter);
 		}
@@ -79,10 +79,10 @@ abstract class FormatterStepImpl<Key extends Serializable> extends Strict<Key> {
 	static class Closeable<Key extends Serializable> extends FormatterStepImpl<Key> {
 		private static final long serialVersionUID = 1L;
 
-		final transient Throwing.Function<Key, CloseableFormatterFunc> keyToFormatter;
-		transient CloseableFormatterFunc formatter; // initialized lazily
+		final transient Throwing.Function<Key, FormatterFunc.Closeable> keyToFormatter;
+		transient FormatterFunc.Closeable formatter; // initialized lazily
 
-		Closeable(String name, Throwing.Supplier<Key> keySupplier, Throwing.Function<Key, CloseableFormatterFunc> keyToFormatter) {
+		Closeable(String name, Throwing.Supplier<Key> keySupplier, Throwing.Function<Key, FormatterFunc.Closeable> keyToFormatter) {
 			super(name, keySupplier);
 			this.keyToFormatter = Objects.requireNonNull(keyToFormatter);
 		}

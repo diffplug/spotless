@@ -28,8 +28,8 @@ import org.gradle.api.GradleException;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
 
-import com.diffplug.gradle.spotless.CloseableFormatterFunc;
 import com.diffplug.gradle.spotless.FileSignature;
+import com.diffplug.gradle.spotless.FormatterFunc;
 import com.diffplug.gradle.spotless.FormatterStep;
 import com.diffplug.gradle.spotless.JarState;
 import com.diffplug.gradle.spotless.Provisioner;
@@ -67,7 +67,7 @@ class EclipseFormatter {
 			this.settings = new FileSignature(settingsFile);
 		}
 
-		CloseableFormatterFunc createFormat() throws Exception {
+		FormatterFunc.Closeable createFormat() throws Exception {
 			Properties parsedSettings = parseProperties(settings.getOnlyFile());
 
 			URLClassLoader classLoader = jarState.openIsolatedClassLoader();
@@ -76,7 +76,7 @@ class EclipseFormatter {
 			Class<?> formatterClazz = classLoader.loadClass(FORMATTER_CLASS);
 			Object formatter = formatterClazz.getConstructor(Properties.class).newInstance(parsedSettings);
 			Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
-			return CloseableFormatterFunc.of(classLoader, input -> (String) method.invoke(formatter, input));
+			return FormatterFunc.Closeable.of(classLoader, input -> (String) method.invoke(formatter, input));
 		}
 	}
 
