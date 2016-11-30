@@ -37,6 +37,8 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LazyForwardingEquality;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.generic.EndWithNewlineStep;
+import com.diffplug.spotless.generic.IndentStep;
 
 import groovy.lang.Closure;
 
@@ -245,41 +247,12 @@ public class FormatExtension {
 
 	/** Ensures that files end with a single newline. */
 	public void endWithNewline() {
-		custom("endWithNewline", raw -> {
-			// simplifies the logic below if we can assume length > 0
-			if (raw.isEmpty()) {
-				return "\n";
-			}
-
-			// find the last character which has real content
-			int lastContentCharacter = raw.length() - 1;
-			char c;
-			while (lastContentCharacter >= 0) {
-				c = raw.charAt(lastContentCharacter);
-				if (c == '\n' || c == '\t' || c == ' ') {
-					--lastContentCharacter;
-				} else {
-					break;
-				}
-			}
-
-			// if it's already clean, no need to create another string
-			if (lastContentCharacter == -1) {
-				return "\n";
-			} else if (lastContentCharacter == raw.length() - 2 && raw.charAt(raw.length() - 1) == '\n') {
-				return raw;
-			} else {
-				StringBuilder builder = new StringBuilder(lastContentCharacter + 2);
-				builder.append(raw, 0, lastContentCharacter + 1);
-				builder.append('\n');
-				return builder.toString();
-			}
-		});
+		addStep(EndWithNewlineStep.create());
 	}
 
 	/** Ensures that the files are indented using spaces. */
-	public void indentWithSpaces(int tabToSpaces) {
-		customLazy("indentWithSpaces", () -> new IndentStep(IndentStep.Type.SPACE, tabToSpaces)::format);
+	public void indentWithSpaces(int numSpacesPerTab) {
+		addStep(IndentStep.Type.SPACE.create(numSpacesPerTab));
 	}
 
 	/** Ensures that the files are indented using spaces. */
@@ -289,7 +262,7 @@ public class FormatExtension {
 
 	/** Ensures that the files are indented using tabs. */
 	public void indentWithTabs(int tabToSpaces) {
-		customLazy("indentWithTabs", () -> new IndentStep(IndentStep.Type.TAB, tabToSpaces)::format);
+		addStep(IndentStep.Type.TAB.create(tabToSpaces));
 	}
 
 	/** Ensures that the files are indented using tabs. */

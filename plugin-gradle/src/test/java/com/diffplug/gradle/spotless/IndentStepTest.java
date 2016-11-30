@@ -18,35 +18,38 @@ package com.diffplug.gradle.spotless;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.generic.IndentStep;
+
 public class IndentStepTest extends ResourceHarness {
 	@Test
 	public void tabToTab() throws Throwable {
-		IndentStep indent = new IndentStep(IndentStep.Type.TAB, 4);
-		assertOnResources(indent::format, "indent/IndentedWithTab.test", "indent/IndentedWithTab.test");
+		FormatterStep indent = IndentStep.Type.TAB.create(4);
+		assertOnResources(indent, "indent/IndentedWithTab.test", "indent/IndentedWithTab.test");
 	}
 
 	@Test
 	public void spaceToSpace() throws Throwable {
-		IndentStep indent = new IndentStep(IndentStep.Type.SPACE, 4);
-		assertOnResources(indent::format, "indent/IndentedWithSpace.test", "indent/IndentedWithSpace.test");
+		FormatterStep indent = IndentStep.Type.SPACE.create(4);
+		assertOnResources(indent, "indent/IndentedWithSpace.test", "indent/IndentedWithSpace.test");
 	}
 
 	@Test
 	public void spaceToTab() throws Throwable {
-		IndentStep indent = new IndentStep(IndentStep.Type.TAB, 4);
-		assertOnResources(indent::format, "indent/IndentedWithSpace.test", "indent/IndentedWithTab.test");
+		FormatterStep indent = IndentStep.Type.TAB.create(4);
+		assertOnResources(indent, "indent/IndentedWithSpace.test", "indent/IndentedWithTab.test");
 	}
 
 	@Test
 	public void tabToSpace() throws Throwable {
-		IndentStep indent = new IndentStep(IndentStep.Type.SPACE, 4);
-		assertOnResources(indent::format, "indent/IndentedWithTab.test", "indent/IndentedWithSpace.test");
+		FormatterStep indent = IndentStep.Type.SPACE.create(4);
+		assertOnResources(indent, "indent/IndentedWithTab.test", "indent/IndentedWithSpace.test");
 	}
 
 	@Test
 	public void doesntClipNewlines() throws Throwable {
-		IndentStep indent = new IndentStep(IndentStep.Type.SPACE, 4);
+		FormatterStep indent = IndentStep.Type.SPACE.create(4);
 		String blankNewlines = "\n\n\n\n";
-		Assert.assertEquals(blankNewlines, indent.format(blankNewlines));
+		Assert.assertEquals(blankNewlines, indent.format(blankNewlines, null));
 	}
 }

@@ -38,6 +38,7 @@ import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.Throwing;
 import com.diffplug.common.collect.Iterables;
 import com.diffplug.common.io.Resources;
+import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 
 public class ResourceHarness {
@@ -77,6 +78,11 @@ public class ResourceHarness {
 		// This line thing is necessary for the tests to pass when Windows git screws up the line-endings
 		String actualContent = new String(Files.readAllBytes(actual.toPath()), StandardCharsets.UTF_8);
 		Assert.assertEquals(expectedContent, actualContent);
+	}
+
+	/** Reads the given resource from "before", applies the step, and makes sure the result is "after". */
+	protected void assertOnResources(FormatterStep step, String unformattedPath, String expectedPath) throws Throwable {
+		assertOnResources(rawUnix -> step.format(rawUnix, null), unformattedPath, expectedPath);
 	}
 
 	/** Reads the given resource from "before", applies the step, and makes sure the result is "after". */
