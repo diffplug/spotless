@@ -1,0 +1,5 @@
+include 'ide'
+
+include 'lib'
+include 'plugin-gradle'
+include 'plugin-maven'

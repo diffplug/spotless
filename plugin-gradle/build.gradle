@@ -1,0 +1,86 @@
+ext.artifactId = project.artifactIdGradle
+apply from: rootProject.file('gradle/java-setup.gradle')
+
+apply plugin: 'com.gradle.plugin-publish'
+apply plugin: 'java-gradle-plugin'
+
+dependencies {
+	compile project(':lib')
+	compile "com.diffplug.durian:durian-core:${VER_DURIAN}"
+	compile "com.diffplug.durian:durian-io:${VER_DURIAN}"
+	compile "com.diffplug.freshmark:freshmark:${VER_FRESHMARK}"
+	compile "org.eclipse.jgit:org.eclipse.jgit:${VER_JGIT}"
+	compile "com.googlecode.concurrent-trees:concurrent-trees:${VER_TRIES}"
+	testCompile "junit:junit:${VER_JUNIT}"
+	testCompile "org.assertj:assertj-core:${VER_ASSERTJ}"
+	testCompile "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
+}
+
+tasks.eclipse.dependsOn(pluginUnderTestMetadata)
+
+/////////////////////
+// SPOTLESS (fake) //
+/////////////////////
+task spotlessCheck(type: JavaExec) {
+	classpath sourceSets.test.runtimeClasspath
+	main = 'com.diffplug.gradle.spotless.SelfTestCheck'
+}
+check.dependsOn(spotlessCheck)
+
+task spotlessApply(type: JavaExec) {
+	classpath sourceSets.test.runtimeClasspath
+	main = 'com.diffplug.gradle.spotless.SelfTestApply'
+}
+test {
+	testLogging.showStandardStreams = true
+}
+
+//////////////////////////
+// GRADLE PLUGIN PORTAL //
+//////////////////////////
+pluginBundle {
+	// These settings are set for the whole plugin bundle
+	website = "https://github.com/${project.org}/${project.name}"
+	vcsUrl = "https://github.com/${project.org}/${project.name}"
+	description = project.description
+
+	plugins {
+		spotlessPlugin {
+			id = 'com.diffplug.gradle.spotless'
+			displayName = 'Spotless formatting plugin'
+			tags = ['format', 'style', 'license', 'header']
+		}
+	}
+
+	mavenCoordinates {
+		groupId = project.group
+		artifactId = project.name
+		version = project.version
+	}
+}
+
+// the gradle plugin portal isn't really compatible with SNAPSHOT versions
+// https://discuss.gradle.org/t/uploading-snapshot-versions-to-the-plugin-portal/11347
+if (ext.isSnapshot) {
+	publishPlugins.enabled = false
+}
+
+//////////////////
+// GITHUB PAGES //
+//////////////////
+// id "org.ajoberstar.github-pages" version "1.4.2"
+/*
+githubPages {
+	repoUri = "https://github.com/${project.org}/${project.name}"
+	deleteExistingFiles = false
+	pages {
+		from javadoc.destinationDir
+		into "javadoc/${verSnapshot(version)}"
+	}
+	credentials {
+		username = cred('gh_token')
+		password = ''
+	}
+}
+tasks.prepareGhPages.dependsOn(":javadoc")
+*/
