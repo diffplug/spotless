@@ -27,7 +27,7 @@ public class ApplyFormatTask extends BaseFormatTask {
 			getLogger().debug("Applying format to " + file);
 			// keep track of the problem toFormat
 			if (isPaddedCell()) {
-				PaddedCellTaskMisc.apply(formatter, file);
+				PaddedCellBulk.apply(formatter, file);
 			} else {
 				formatter.applyFormat(file);
 			}

@@ -24,22 +24,19 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-
-import org.gradle.api.GradleException;
+import java.util.logging.Logger;
 
 import com.diffplug.common.base.Errors;
-import com.diffplug.common.base.StringPrinter;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- * Incorporates the PaddedCell machinery into ApplyFormatTask.apply() and CheckFormatTask.check().
+ * Incorporates the PaddedCell machinery into broader apply / check usage.
  *
  * Here's the general workflow:
  *
@@ -59,78 +56,53 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * to {@link #check(CheckFormatTask, Formatter, List)}.  If there were no problem files, then `paddedCell`
  * is no longer necessary, so users might as well turn it off, so we give that info as a warning.
  */
-class PaddedCellTaskMisc {
-	/** URL to a page which describes the padded cell thing. */
-	private static final String URL = "https://github.com/diffplug/spotless/blob/master/PADDEDCELL.md";
+public class PaddedCellBulk {
+	private static final Logger logger = Logger.getLogger(PaddedCellBulk.class.getName());
 
 	/**
-	 * For well-behaved formatters, {@link PaddedCell#check(Formatter, File)} takes about
-	 * twice as long to run as a standard call to {@link Formatter#isClean(File)}.
+	 * Returns true if the formatter is misbehaving for any of the given files.
 	 *
-	 * By limiting the time that we spend checking for misbehaving rules, we make sure that
-	 * {@link #anyMisbehave(Formatter, List)} doesn't cause much slowdown for a failed
-	 * spotlessCheck (it causes no slowdown at all to a passed spotlessCheck).
+	 * If, after 500ms of searching, none are found that misbehave, it gives the
+	 * formatter the benefit of the doubt and returns false. The real point of this
+	 * check is to handle the case that a user just called spotlessApply, but spotlessCheck
+	 * is still failing.  In that case, all of the problemFiles are guaranteed to
+	 * be misbehaving, so this time limit doesn't hurt correctness.
 	 *
-	 * The real point of this check is to handle the case that a user called spotlessApply,
-	 * but spotlessCheck is still failing.  In that case, all of the problemFiles are
-	 * guaranteed to be misbehaving, so this time limit doesn't hurt correctness.
+	 * If you call this method after every failed spotlessCheck, it can help you
+	 * tell the user about a misbehaving rule and alert her to how to enable
+	 * paddedCell mode, with minimal effort.
 	 */
-	private static final long MAX_MS_DETERMINING_MISBEHAVIOR = 500;
-
-	/** Returns true if the formatter is misbehaving for any of the given files. */
 	public static boolean anyMisbehave(Formatter formatter, List<File> problemFiles) {
+		return anyMisbehave(formatter, problemFiles, 500);
+	}
+
+	/** Same as {@link #anyMisbehave(Formatter, List)} but with a customizable timeout. */
+	public static boolean anyMisbehave(Formatter formatter, List<File> problemFiles, long timeoutMs) {
 		long start = System.currentTimeMillis();
 		for (File problem : problemFiles) {
 			PaddedCell padded = PaddedCell.check(formatter, problem);
 			if (padded.misbehaved()) {
 				return true;
 			}
-			if (System.currentTimeMillis() - start > MAX_MS_DETERMINING_MISBEHAVIOR) {
+			if (timeoutMs > 0 && System.currentTimeMillis() - start > timeoutMs) {
 				return false;
 			}
 		}
 		return false;
 	}
 
-	static GradleException youShouldTurnOnPaddedCell(CheckFormatTask task) {
-		Path diagnosePath = diagnoseDir(task);
-		Path rootPath = task.getProject().getRootDir().toPath();
-		return new GradleException(StringPrinter.buildStringFromLines(
-				"You have a misbehaving rule which can't make up its mind.",
-				"This means that spotlessCheck will fail even after spotlessApply has run.",
-				"",
-				"This is a bug in a formatting rule, not Spotless itself, but Spotless can",
-				"work around this bug and generate helpful bug reports for the broken rule",
-				"if you add 'paddedCell()' to your build.gradle as such: ",
-				"",
-				"    spotless {",
-				"        format 'someFormat', {",
-				"            ...",
-				"            paddedCell()",
-				"        }",
-				"    }",
-				"",
-				"The next time you run spotlessCheck, it will put helpful bug reports into",
-				"'" + rootPath.relativize(diagnosePath) + "', and spotlessApply",
-				"and spotlessCheck will be self-consistent from here on out.",
-				"",
-				"For details see " + URL));
-	}
-
-	private static Path diagnoseDir(CheckFormatTask task) {
-		return task.getProject().getBuildDir().toPath().resolve("spotless-diagnose-" + task.getFormatName());
-	}
-
-	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
-	static void check(CheckFormatTask task, Formatter formatter, List<File> problemFiles) throws IOException {
-		if (problemFiles.isEmpty()) {
-			// if the first pass was successful, then paddedCell() mode is unnecessary
-			task.getLogger().info(StringPrinter.buildStringFromLines(
-					task.getName() + " is in paddedCell() mode, but it doesn't need to be.",
-					"If you remove that option, spotless will run ~2x faster.",
-					"For details see " + URL));
-		}
-
+	/**
+	 * Performs a full check using PaddedCell logic on the given files with the given formatter.
+	 * If any are found which do not conform to the PaddedCell, a description of the error will
+	 * be written to the diagnose dir.
+	 *
+	 * @param rootDir		The root directory, used to determine the relative paths of the problemFiles.
+	 * @param diagnoseDir	Directory where problems are described (based on the relative paths determined based on rootDir).
+	 * @param formatter		The formatter to apply.
+	 * @param problemFiles	The files with which we have a problem.
+	 * @return	A list of files which are failing because of paddedCell problems, but could be fixed. (specifically, the files for which spotlessApply would be effective)
+	 */
+	public static List<File> check(File rootDir, File diagnoseDir, Formatter formatter, List<File> problemFiles) throws IOException {
 		// "fake" Formatter which can use the already-computed result of a PaddedCell as
 		Step paddedCellStep = new Step();
 		Formatter paddedFormatter = Formatter.builder()
@@ -141,22 +113,23 @@ class PaddedCellTaskMisc {
 				.build();
 
 		// empty out the diagnose folder
-		Path diagnoseDir = diagnoseDir(task);
-		Path rootDir = task.getProject().getRootDir().toPath();
-		cleanDir(diagnoseDir);
+		Path rootPath = rootDir.toPath();
+		Path diagnosePath = diagnoseDir.toPath();
+		cleanDir(diagnosePath);
 
+		List<File> stillFailing = new ArrayList<>();
 		Iterator<File> problemIter = problemFiles.iterator();
 		while (problemIter.hasNext()) {
 			File problemFile = problemIter.next();
 
-			task.getLogger().debug("Running padded cell check on " + problemFile);
+			logger.fine("Running padded cell check on " + problemFile);
 			PaddedCell padded = PaddedCell.check(formatter, problemFile);
 			if (!padded.misbehaved()) {
-				task.getLogger().debug("    well-behaved.");
+				logger.fine("    well-behaved.");
 			} else {
 				// the file is misbehaved, so we'll write all its steps to DIAGNOSE_DIR
-				Path relative = rootDir.relativize(problemFile.toPath());
-				Path diagnoseFile = diagnoseDir.resolve(relative);
+				Path relative = rootPath.relativize(problemFile.toPath());
+				Path diagnoseFile = diagnosePath.resolve(relative);
 				for (int i = 0; i < padded.steps().size(); ++i) {
 					Path path = Paths.get(diagnoseFile + "." + padded.type().name().toLowerCase(Locale.ROOT) + i);
 					Files.createDirectories(path.getParent());
@@ -164,25 +137,22 @@ class PaddedCellTaskMisc {
 					Files.write(path, version.getBytes(formatter.encoding));
 				}
 				// dump the type of the misbehavior to console
-				task.getLogger().quiet("    " + relative + " " + padded.userMessage());
+				logger.finer("    " + relative + " " + padded.userMessage());
 
 				if (!padded.isResolvable()) {
 					// if it's not resolvable, then there's
 					// no point killing the build over it
-					problemIter.remove();
 				} else {
 					// if the input is resolvable, we'll use that to try again at
 					// determining if it's clean
 					paddedCellStep.set(problemFile, padded.steps().get(0));
-					if (paddedFormatter.isClean(problemFile)) {
-						problemIter.remove();
+					if (!paddedFormatter.isClean(problemFile)) {
+						stillFailing.add(problemFile);
 					}
 				}
 			}
 		}
-		if (!problemFiles.isEmpty()) {
-			throw task.formatViolationsFor(formatter, problemFiles);
-		}
+		return stillFailing;
 	}
 
 	/** Helper for check(). */
@@ -212,7 +182,8 @@ class PaddedCellTaskMisc {
 		}
 	}
 
-	static void apply(Formatter formatter, File file) throws IOException {
+	/** Performs the typical spotlessApply, but with PaddedCell handling of misbehaving FormatterSteps. */
+	public static void apply(Formatter formatter, File file) throws IOException {
 		byte[] rawBytes = Files.readAllBytes(file.toPath());
 		String raw = new String(rawBytes, formatter.encoding);
 		String rawUnix = LineEnding.toUnix(raw);
