@@ -26,7 +26,6 @@ import java.util.function.Function;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.Preconditions;
-import com.diffplug.common.base.Unhandled;
 
 /**
  * Models the result of applying a {@link Formatter} on a given {@link File}
