@@ -27,7 +27,13 @@ import com.diffplug.common.base.StandardSystemProperty;
 public enum LineEnding {
 	// @formatter:off
 	/** Uses the same line endings as Git, using `.gitattributes` and the `core.eol` property. */
-	GIT_ATTRIBUTES,
+	GIT_ATTRIBUTES {
+		/** .gitattributes is path-specific, so you must use {@link LineEnding#createPolicy(File, Supplier)}. */
+		@Override @Deprecated
+		public Policy createPolicy() {
+			return super.createPolicy();
+		}
+	},
 	/** `\n` on unix systems, `\r\n` on windows systems. */
 	PLATFORM_NATIVE,
 	/** `\r\n` */
@@ -49,9 +55,9 @@ public enum LineEnding {
 	public Policy createPolicy() {
 		switch (this) {
 		case PLATFORM_NATIVE:
-			return file -> _platformNative;
+			return _platformNativePolicy;
 		case WINDOWS:
-			return file -> WINDOWS.str();
+			return WINDOWS_POLICY;
 		case UNIX:
 			return UNIX_POLICY;
 		default:
@@ -59,7 +65,10 @@ public enum LineEnding {
 		}
 	}
 
-	static final Policy UNIX_POLICY = file -> UNIX.str();
+	private static final Policy WINDOWS_POLICY = file -> WINDOWS.str();
+	private static final Policy UNIX_POLICY = file -> UNIX.str();
+	private static final String _platformNative = StandardSystemProperty.LINE_SEPARATOR.value();
+	private static final Policy _platformNativePolicy = file -> _platformNative;
 
 	/** Returns the standard line ending for this policy. */
 	public String str() {
@@ -74,8 +83,6 @@ public enum LineEnding {
 			throw new UnsupportedOperationException(this + " is a path-specific line ending.");
 		}
 	}
-
-	private static final String _platformNative = StandardSystemProperty.LINE_SEPARATOR.value();
 
 	/** A policy for line endings which can vary based on the specific file being requested. */
 	public interface Policy extends Serializable {
