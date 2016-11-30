@@ -126,7 +126,7 @@ public class SelfTest {
 	static void runWithTestKit(Type type) throws Exception {
 		GradleRunner.create()
 				.withPluginClasspath()
-				.withProjectDir(new File(StandardSystemProperty.USER_DIR.value()))
+				.withProjectDir(new File(StandardSystemProperty.USER_DIR.value()).getParentFile())
 				.withArguments("-b", "spotlessSelf.gradle", "spotless" + type.checkApply("Check", "Apply"), "--stacktrace")
 				.forwardOutput()
 				.build();
