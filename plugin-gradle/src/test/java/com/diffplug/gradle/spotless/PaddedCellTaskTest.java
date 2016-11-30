@@ -33,6 +33,11 @@ import org.junit.Test;
 import com.diffplug.common.base.StandardSystemProperty;
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.common.base.Throwing;
+import com.diffplug.gradle.spotless.ApplyFormatTask;
+import com.diffplug.gradle.spotless.CheckFormatTask;
+import com.diffplug.gradle.spotless.SpotlessPlugin;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.LineEnding;
 
 public class PaddedCellTaskTest extends ResourceHarness {
 	private static final boolean IS_WIN = StandardSystemProperty.OS_NAME.value().toLowerCase(Locale.US).contains("win");

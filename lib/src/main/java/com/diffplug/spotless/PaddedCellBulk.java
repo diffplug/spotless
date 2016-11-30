@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless;
+package com.diffplug.spotless;
 
 import java.io.File;
 import java.io.IOException;
@@ -108,7 +108,7 @@ public class PaddedCellBulk {
 		Formatter paddedFormatter = Formatter.builder()
 				.lineEndingsPolicy(formatter.lineEndingsPolicy)
 				.encoding(formatter.encoding)
-				.projectDirectory(formatter.projectDirectory)
+				.rootDir(formatter.rootDir)
 				.steps(Collections.singletonList(paddedCellStep))
 				.build();
 

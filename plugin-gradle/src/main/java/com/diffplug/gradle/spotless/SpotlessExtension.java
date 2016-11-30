@@ -27,6 +27,7 @@ import org.gradle.api.Project;
 
 import com.diffplug.gradle.spotless.freshmark.FreshMarkExtension;
 import com.diffplug.gradle.spotless.java.JavaExtension;
+import com.diffplug.spotless.LineEnding;
 
 public class SpotlessExtension {
 	final Project project;

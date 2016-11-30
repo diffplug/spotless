@@ -36,6 +36,7 @@ import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.common.tree.TreeDef;
 import com.diffplug.common.tree.TreeStream;
+import com.diffplug.spotless.LineEnding;
 
 public class GradleIntegrationTest extends ResourceHarness {
 	protected File write(String path, String... lines) throws IOException {

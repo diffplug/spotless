@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless;
+package com.diffplug.spotless;
 
-import static com.diffplug.gradle.spotless.PaddedCell.Type.*;
+import static com.diffplug.spotless.PaddedCell.Type.CONVERGE;
+import static com.diffplug.spotless.PaddedCell.Type.CYCLE;
+import static com.diffplug.spotless.PaddedCell.Type.DIVERGE;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,27 +34,25 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.diffplug.common.base.Throwing;
-
 public class PaddedCellTest {
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
 
-	private void misbehaved(Throwing.Function<String, String> step, String input, PaddedCell.Type expectedOutputType, String steps, String canonical) throws IOException {
+	private void misbehaved(FormatterFunc step, String input, PaddedCell.Type expectedOutputType, String steps, String canonical) throws IOException {
 		testCase(step, input, expectedOutputType, steps, canonical, true);
 	}
 
-	private void wellBehaved(Throwing.Function<String, String> step, String input, PaddedCell.Type expectedOutputType, String canonical) throws IOException {
+	private void wellBehaved(FormatterFunc step, String input, PaddedCell.Type expectedOutputType, String canonical) throws IOException {
 		testCase(step, input, expectedOutputType, canonical, canonical, false);
 	}
 
-	private void testCase(Throwing.Function<String, String> step, String input, PaddedCell.Type expectedOutputType, String expectedSteps, String canonical, boolean misbehaved) throws IOException {
+	private void testCase(FormatterFunc step, String input, PaddedCell.Type expectedOutputType, String expectedSteps, String canonical, boolean misbehaved) throws IOException {
 		List<FormatterStep> formatterSteps = new ArrayList<>();
-		formatterSteps.add(NeverUpToDate.create("step", step));
+		formatterSteps.add(FormatterStep.createNeverUpToDate("step", step));
 		Formatter formatter = Formatter.builder()
-				.lineEndingsPolicy(LineEnding.UNIX_POLICY)
+				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
 				.encoding(StandardCharsets.UTF_8)
-				.projectDirectory(folder.getRoot().toPath())
+				.rootDir(folder.getRoot().toPath())
 				.steps(formatterSteps).build();
 
 		File file = folder.newFile();

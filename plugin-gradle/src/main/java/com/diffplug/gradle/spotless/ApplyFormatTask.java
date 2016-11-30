@@ -19,6 +19,9 @@ import java.io.File;
 
 import org.gradle.api.tasks.TaskAction;
 
+import com.diffplug.spotless.Formatter;
+import com.diffplug.spotless.PaddedCellBulk;
+
 public class ApplyFormatTask extends BaseFormatTask {
 	@TaskAction
 	public void apply() throws Exception {

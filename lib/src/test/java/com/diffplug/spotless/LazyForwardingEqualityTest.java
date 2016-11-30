@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless;
+package com.diffplug.spotless;
 
 import static com.diffplug.common.testing.SerializableTester.*;
 
 import org.junit.Test;
 
 import com.diffplug.common.testing.EqualsTester;
+import com.diffplug.spotless.LazyForwardingEquality;
 
 @SuppressWarnings("serial")
 public class LazyForwardingEqualityTest {

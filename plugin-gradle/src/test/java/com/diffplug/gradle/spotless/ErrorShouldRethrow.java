@@ -27,6 +27,7 @@ import org.junit.Test;
 import com.diffplug.common.base.CharMatcher;
 import com.diffplug.common.base.Splitter;
 import com.diffplug.common.base.StringPrinter;
+import com.diffplug.spotless.LineEnding;
 
 /** Tests the desired behavior from https://github.com/diffplug/spotless/issues/46. */
 public class ErrorShouldRethrow extends GradleIntegrationTest {

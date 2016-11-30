@@ -25,9 +25,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.diffplug.gradle.spotless.CheckFormatTask;
-import com.diffplug.gradle.spotless.FormatterStep;
 import com.diffplug.gradle.spotless.GradleIntegrationTest;
 import com.diffplug.gradle.spotless.GradleProvisioner;
+import com.diffplug.spotless.FormatterStep;
 
 public class GoogleJavaFormatTest extends GradleIntegrationTest {
 	@Test

@@ -26,6 +26,9 @@ import org.gradle.api.GradleException;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 
+import com.diffplug.spotless.Formatter;
+import com.diffplug.spotless.PaddedCellBulk;
+
 public class CheckFormatTask extends BaseFormatTask {
 	@TaskAction
 	public void check(IncrementalTaskInputs inputs) throws Exception {

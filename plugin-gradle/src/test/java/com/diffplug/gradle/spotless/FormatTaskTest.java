@@ -28,6 +28,8 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
+import com.diffplug.spotless.LineEnding;
+
 @RunWith(Enclosed.class)
 public class FormatTaskTest extends ResourceHarness {
 	private CheckFormatTask checkTask;

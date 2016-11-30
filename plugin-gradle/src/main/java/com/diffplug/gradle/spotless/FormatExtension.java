@@ -33,6 +33,10 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.file.UnionFileCollection;
 
 import com.diffplug.common.base.Throwing;
+import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.LazyForwardingEquality;
+import com.diffplug.spotless.LineEnding;
 
 import groovy.lang.Closure;
 

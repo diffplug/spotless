@@ -23,6 +23,8 @@ import java.util.List;
 import org.gradle.api.GradleException;
 
 import com.diffplug.common.base.StringPrinter;
+import com.diffplug.spotless.Formatter;
+import com.diffplug.spotless.PaddedCellBulk;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 

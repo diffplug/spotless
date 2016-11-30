@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless;
+package com.diffplug.spotless;
 
 import java.io.File;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.Random;
 
 import com.diffplug.common.base.Throwing;
-import com.diffplug.gradle.spotless.FormatterStep.Strict;
+import com.diffplug.spotless.FormatterStep.Strict;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -101,6 +102,29 @@ abstract class FormatterStepImpl<Key extends Serializable> extends Strict<Key> {
 				formatter.close();
 				formatter = null;
 			}
+		}
+	}
+
+	/** Formatter which is equal to itself, but not to any other Formatter. */
+	static class NeverUpToDate extends FormatterStepImpl<Integer> {
+		private static final long serialVersionUID = 1L;
+
+		private static final Random RANDOM = new Random();
+
+		final transient Throwing.Supplier<FormatterFunc> formatterSupplier;
+		transient FormatterFunc formatter; // initialized lazily
+
+		NeverUpToDate(String name, Throwing.Supplier<FormatterFunc> formatterSupplier) {
+			super(name, RANDOM::nextInt);
+			this.formatterSupplier = formatterSupplier;
+		}
+
+		@Override
+		protected String format(Integer key, String rawUnix, File file) throws Throwable {
+			if (formatter == null) {
+				formatter = formatterSupplier.get();
+			}
+			return formatter.apply(rawUnix);
 		}
 	}
 }

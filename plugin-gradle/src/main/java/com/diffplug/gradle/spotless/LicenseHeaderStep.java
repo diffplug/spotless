@@ -26,6 +26,8 @@ import java.util.regex.Pattern;
 
 import org.gradle.api.GradleException;
 
+import com.diffplug.spotless.LineEnding;
+
 /** Prefixes a license header before the package statement. */
 public class LicenseHeaderStep implements Serializable {
 	private static final long serialVersionUID = 1L;

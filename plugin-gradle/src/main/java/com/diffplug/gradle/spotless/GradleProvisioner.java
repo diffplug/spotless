@@ -19,6 +19,8 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
 
+import com.diffplug.spotless.Provisioner;
+
 /** Gradle integration for Provisioner. */
 public class GradleProvisioner {
 	private GradleProvisioner() {}

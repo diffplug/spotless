@@ -27,6 +27,7 @@ import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Test;
 
 import com.diffplug.common.base.StringPrinter;
+import com.diffplug.spotless.LineEnding;
 
 public class DiffMessageFormatterTest extends ResourceHarness {
 	private CheckFormatTask create(File... files) {

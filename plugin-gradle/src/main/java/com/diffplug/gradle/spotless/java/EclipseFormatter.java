@@ -28,11 +28,11 @@ import org.gradle.api.GradleException;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
 
-import com.diffplug.gradle.spotless.FileSignature;
-import com.diffplug.gradle.spotless.FormatterFunc;
-import com.diffplug.gradle.spotless.FormatterStep;
-import com.diffplug.gradle.spotless.JarState;
-import com.diffplug.gradle.spotless.Provisioner;
+import com.diffplug.spotless.FileSignature;
+import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.JarState;
+import com.diffplug.spotless.Provisioner;
 
 import groovy.util.Node;
 import groovy.util.NodeList;

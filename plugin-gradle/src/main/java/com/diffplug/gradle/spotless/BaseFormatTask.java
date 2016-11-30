@@ -27,6 +27,10 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.SkipWhenEmpty;
 
+import com.diffplug.spotless.Formatter;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.LineEnding;
+
 public abstract class BaseFormatTask extends DefaultTask {
 	// set by SpotlessExtension, but possibly overridden by FormatExtension
 	@Input
@@ -41,7 +45,7 @@ public abstract class BaseFormatTask extends DefaultTask {
 	}
 
 	@Input
-	protected LineEnding.Policy lineEndingsPolicy = LineEnding.UNIX_POLICY;
+	protected LineEnding.Policy lineEndingsPolicy = LineEnding.UNIX.createPolicy();
 
 	public LineEnding.Policy getLineEndingsPolicy() {
 		return lineEndingsPolicy;
@@ -98,7 +102,7 @@ public abstract class BaseFormatTask extends DefaultTask {
 		return Formatter.builder()
 				.lineEndingsPolicy(lineEndingsPolicy)
 				.encoding(Charset.forName(encoding))
-				.projectDirectory(getProject().getProjectDir().toPath())
+				.rootDir(getProject().getProjectDir().toPath())
 				.steps(steps)
 				.build();
 	}

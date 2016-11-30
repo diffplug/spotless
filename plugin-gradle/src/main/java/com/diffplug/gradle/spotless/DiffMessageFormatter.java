@@ -33,6 +33,9 @@ import org.eclipse.jgit.diff.RawTextComparator;
 import com.diffplug.common.base.CharMatcher;
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.base.Splitter;
+import com.diffplug.spotless.Formatter;
+import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.PaddedCell;
 
 /** Formats the messages of failed spotlessCheck invocations with a nice diff message. */
 final class DiffMessageFormatter {
@@ -124,7 +127,7 @@ final class DiffMessageFormatter {
 	 * sequence (\n, \r, \r\n).
 	 */
 	private static String diff(CheckFormatTask task, Formatter formatter, File file) throws IOException {
-		String raw = new String(Files.readAllBytes(file.toPath()), formatter.encoding);
+		String raw = new String(Files.readAllBytes(file.toPath()), formatter.getEncoding());
 		String rawUnix = LineEnding.toUnix(raw);
 		String formattedUnix;
 		if (task.isPaddedCell()) {

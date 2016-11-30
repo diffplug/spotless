@@ -19,6 +19,8 @@ import java.io.File;
 import java.util.Random;
 
 import com.diffplug.common.base.Throwing;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.LazyForwardingEquality;
 
 /**
  * Creates trivial tasks which are always out-of-date,

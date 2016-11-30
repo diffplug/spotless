@@ -20,6 +20,8 @@ import java.nio.charset.Charset;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.diffplug.spotless.LineEnding;
+
 public class EncodingTest extends GradleIntegrationTest {
 	@Test
 	public void defaultIsUtf8() throws Exception {

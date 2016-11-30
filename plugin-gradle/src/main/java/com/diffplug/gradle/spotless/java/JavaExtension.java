@@ -26,8 +26,8 @@ import com.diffplug.gradle.spotless.BaseFormatTask;
 import com.diffplug.gradle.spotless.FormatExtension;
 import com.diffplug.gradle.spotless.GradleProvisioner;
 import com.diffplug.gradle.spotless.LicenseHeaderStep;
-import com.diffplug.gradle.spotless.SerializableFileFilter;
 import com.diffplug.gradle.spotless.SpotlessExtension;
+import com.diffplug.spotless.SerializableFileFilter;
 
 public class JavaExtension extends FormatExtension {
 	public static final String NAME = "java";

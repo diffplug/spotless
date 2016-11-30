@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless;
+package com.diffplug.spotless;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -33,27 +32,32 @@ import java.util.logging.Logger;
 public final class Formatter {
 	final LineEnding.Policy lineEndingsPolicy;
 	final Charset encoding;
-	final Path projectDirectory;
+	final Path rootDir;
 	final List<FormatterStep> steps;
 
 	private static final Logger logger = Logger.getLogger(Formatter.class.getName());
 
-	/** It's important to specify the charset. */
-	@Deprecated
-	public Formatter(LineEnding.Policy lineEndingsPolicy, Path projectDirectory, List<FormatterStep> steps) {
-		this(lineEndingsPolicy, StandardCharsets.UTF_8, projectDirectory, steps);
-	}
-
-	/**
-	 * The number of required parameters is starting to get difficult to use. Use
-	 * {@link Formatter#builder()} instead.
-	 */
-	@Deprecated
-	public Formatter(LineEnding.Policy lineEndingsPolicy, Charset encoding, Path projectDirectory, List<FormatterStep> steps) {
+	Formatter(LineEnding.Policy lineEndingsPolicy, Charset encoding, Path rootDirectory, List<FormatterStep> steps) {
 		this.lineEndingsPolicy = Objects.requireNonNull(lineEndingsPolicy, "lineEndingsPolicy");
 		this.encoding = Objects.requireNonNull(encoding, "encoding");
-		this.projectDirectory = Objects.requireNonNull(projectDirectory, "projectDirectory");
+		this.rootDir = Objects.requireNonNull(rootDirectory, "rootDir");
 		this.steps = new ArrayList<>(Objects.requireNonNull(steps, "steps"));
+	}
+
+	public LineEnding.Policy getLineEndingsPolicy() {
+		return lineEndingsPolicy;
+	}
+
+	public Charset getEncoding() {
+		return encoding;
+	}
+
+	public Path getRootDir() {
+		return rootDir;
+	}
+
+	public List<FormatterStep> getSteps() {
+		return steps;
 	}
 
 	public static Formatter.Builder builder() {
@@ -64,7 +68,7 @@ public final class Formatter {
 		// required parameters
 		private LineEnding.Policy lineEndingsPolicy;
 		private Charset encoding;
-		private Path projectDirectory;
+		private Path rootDir;
 		private List<FormatterStep> steps;
 
 		private Builder() {}
@@ -79,8 +83,8 @@ public final class Formatter {
 			return this;
 		}
 
-		public Builder projectDirectory(Path projectDirectory) {
-			this.projectDirectory = projectDirectory;
+		public Builder rootDir(Path rootDir) {
+			this.rootDir = rootDir;
 			return this;
 		}
 
@@ -90,7 +94,7 @@ public final class Formatter {
 		}
 
 		public Formatter build() {
-			return new Formatter(lineEndingsPolicy, encoding, projectDirectory, steps);
+			return new Formatter(lineEndingsPolicy, encoding, rootDir, steps);
 		}
 	}
 
@@ -138,7 +142,7 @@ public final class Formatter {
 	}
 
 	/** Applies the appropriate line endings to the given unix content. */
-	String applyLineEndings(String unix, File file) {
+	public String applyLineEndings(String unix, File file) {
 		String ending = lineEndingsPolicy.getEndingFor(file);
 		if (!ending.equals(LineEnding.UNIX.str())) {
 			return unix.replace(LineEnding.UNIX.str(), ending);
@@ -152,7 +156,7 @@ public final class Formatter {
 	 * The input must have unix line endings, and the output
 	 * is guaranteed to also have unix line endings.
 	 */
-	String applySteps(String unix, File file) throws Error {
+	public String applySteps(String unix, File file) throws Error {
 		for (FormatterStep step : steps) {
 			try {
 				String formatted = step.format(unix, file);
@@ -166,10 +170,10 @@ public final class Formatter {
 				}
 			} catch (Error e) {
 				steps.forEach(FormatterStep::finish);
-				logger.log(Level.SEVERE, "Step '" + step.getName() + "' found problem in '" + projectDirectory.relativize(file.toPath()) + "':\n" + e.getMessage());
+				logger.severe("Step '" + step.getName() + "' found problem in '" + rootDir.relativize(file.toPath()) + "':\n" + e.getMessage());
 				throw e;
 			} catch (Throwable e) {
-				logger.log(Level.WARNING, "Unable to apply step '" + step.getName() + "' to '" + projectDirectory.relativize(file.toPath()) + "': " + e.getMessage());
+				logger.warning("Unable to apply step '" + step.getName() + "' to '" + rootDir.relativize(file.toPath()) + "': " + e.getMessage());
 				logger.log(Level.FINE, "Exception is ", e);
 			}
 		}

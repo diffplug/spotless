@@ -15,6 +15,8 @@
  */
 package com.diffplug.gradle.spotless;
 
+import com.diffplug.spotless.Provisioner;
+
 /** Maven integration for Provisioner. */
 public class MavenProvisioner {
 	private MavenProvisioner() {}

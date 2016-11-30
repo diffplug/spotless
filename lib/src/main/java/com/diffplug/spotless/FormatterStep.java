@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless;
+package com.diffplug.spotless;
 
 import java.io.File;
 import java.io.Serializable;
@@ -150,5 +150,34 @@ public interface FormatterStep extends Serializable {
 			Key key,
 			Throwing.Function<Key, FormatterFunc.Closeable> keyToFormatter) {
 		return createCloseableLazy(name, () -> key, keyToFormatter);
+	}
+
+	/**
+	 * @param name
+	 *             The name of the formatter step
+	 * @param functionSupplier
+	 *             A supplier which will lazily generate the function
+	 *             used by the formatter step
+	 * @return A FormatterStep which will never report that it is up-to-date, because
+	 *         it is not equal to the serialized representation of itself.
+	 */
+	public static FormatterStep createNeverUpToDateLazy(
+			String name,
+			Throwing.Supplier<FormatterFunc> functionSupplier) {
+		return new FormatterStepImpl.NeverUpToDate(name, functionSupplier);
+	}
+
+	/**
+	 * @param name
+	 *             The name of the formatter step
+	 * @param function
+	 *             The function used by the formatter step
+	 * @return A FormatterStep which will never report that it is up-to-date, because
+	 *         it is not equal to the serialized representation of itself.
+	 */
+	public static FormatterStep createNeverUpToDate(
+			String name,
+			FormatterFunc function) {
+		return createNeverUpToDateLazy(name, () -> function);
 	}
 }

@@ -38,6 +38,7 @@ import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.Throwing;
 import com.diffplug.common.collect.Iterables;
 import com.diffplug.common.io.Resources;
+import com.diffplug.spotless.LineEnding;
 
 public class ResourceHarness {
 	@Rule

@@ -20,10 +20,10 @@ import java.lang.reflect.Method;
 import java.net.URLClassLoader;
 import java.util.Objects;
 
-import com.diffplug.gradle.spotless.FormatterFunc;
-import com.diffplug.gradle.spotless.FormatterStep;
-import com.diffplug.gradle.spotless.JarState;
-import com.diffplug.gradle.spotless.Provisioner;
+import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.JarState;
+import com.diffplug.spotless.Provisioner;
 
 /** Wraps up [google-java-format](https://github.com/google/google-java-format) as a FormatterStep. */
 class GoogleJavaFormat {

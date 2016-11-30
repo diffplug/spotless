@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless;
+package com.diffplug.spotless;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -34,7 +34,7 @@ import com.diffplug.common.base.Unhandled;
  *
  * See {@link #check(Formatter, File)} as the entry point to this class.
  */
-class PaddedCell {
+public class PaddedCell {
 	/** The kind of result. */
 	public enum Type {
 		CONVERGE, CYCLE, DIVERGE;
