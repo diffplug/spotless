@@ -54,7 +54,7 @@ pluginBundle {
 
 	mavenCoordinates {
 		groupId = project.group
-		artifactId = project.name
+		artifactId = project.artifactIdGradle
 		version = project.version
 	}
 }
