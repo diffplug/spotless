@@ -27,6 +27,11 @@ eclipse {
 // always create fresh projects
 tasks.eclipse.dependsOn(cleanEclipse)
 
+apply plugin: 'com.diffplug.gradle.eclipse.resourcefilters'
+eclipseResourceFilters {
+	exclude().folders().name('build')
+}
+
 //////////////
 // FINDBUGS //
 //////////////

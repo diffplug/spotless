@@ -11,6 +11,7 @@ buildscript {
 // root eclipse project
 apply plugin: 'com.diffplug.gradle.eclipse.resourcefilters'
 eclipseResourceFilters {
+	exclude().folders().name('.git')
 	exclude().folders().name('lib')
 	exclude().folders().name('plugin-gradle')
 	exclude().folders().name('plugin-maven')
