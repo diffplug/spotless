@@ -23,9 +23,8 @@ import java.net.URLClassLoader;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
-
-import org.gradle.api.logging.Logger;
-import org.gradle.api.logging.Logging;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.diffplug.common.base.Errors;
 
@@ -41,7 +40,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 public class JarState implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private static final Logger logger = Logging.getLogger(JarState.class);
+	private static final Logger logger = Logger.getLogger(JarState.class.getName());
 
 	@SuppressWarnings("unused")
 	private final String mavenCoordinate;
@@ -64,8 +63,8 @@ public class JarState implements Serializable {
 				throw new NoSuchElementException("Resolved to an empty result.");
 			}
 		} catch (Exception e) {
-			logger.error("You probably need to add a repository containing the `" + mavenCoordinate + "` artifact to your buildscript,");
-			logger.error("e.g.: repositories { mavenCentral() }");
+			logger.log(Level.SEVERE, "You probably need to add a repository containing the `" + mavenCoordinate + "` artifact to your buildscript,");
+			logger.log(Level.SEVERE, "e.g.: repositories { mavenCentral() }");
 			throw e;
 		}
 		fileSignature = new FileSignature(jars);

@@ -26,9 +26,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-
-import org.gradle.api.logging.Logger;
-import org.gradle.api.logging.Logging;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** Formatter which performs the full formatting. */
 public final class Formatter {
@@ -37,7 +36,7 @@ public final class Formatter {
 	final Path projectDirectory;
 	final List<FormatterStep> steps;
 
-	private static final Logger logger = Logging.getLogger(Formatter.class);
+	private static final Logger logger = Logger.getLogger(Formatter.class.getName());
 
 	/** It's important to specify the charset. */
 	@Deprecated
@@ -167,11 +166,11 @@ public final class Formatter {
 				}
 			} catch (Error e) {
 				steps.forEach(FormatterStep::finish);
-				logger.error("Step '" + step.getName() + "' found problem in '" + projectDirectory.relativize(file.toPath()) + "':\n" + e.getMessage());
+				logger.log(Level.SEVERE, "Step '" + step.getName() + "' found problem in '" + projectDirectory.relativize(file.toPath()) + "':\n" + e.getMessage());
 				throw e;
 			} catch (Throwable e) {
-				logger.warn("Unable to apply step '" + step.getName() + "' to '" + projectDirectory.relativize(file.toPath()) + "': " + e.getMessage());
-				logger.info("Exception is ", e);
+				logger.log(Level.WARNING, "Unable to apply step '" + step.getName() + "' to '" + projectDirectory.relativize(file.toPath()) + "': " + e.getMessage());
+				logger.log(Level.FINE, "Exception is ", e);
 			}
 		}
 		steps.forEach(FormatterStep::finish);
