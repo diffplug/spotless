@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless.java;
+package com.diffplug.spotless.java;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -26,8 +26,12 @@ import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
 /** Wraps up [google-java-format](https://github.com/google/google-java-format) as a FormatterStep. */
-class GoogleJavaFormat {
-	static final String DEFAULT_VERSION = "1.1";
+public class GoogleJavaFormat {
+	public static final String defaultVersion() {
+		return DEFAULT_VERSION;
+	}
+
+	private static final String DEFAULT_VERSION = "1.1";
 	private static final String NAME = "google-java-format";
 	private static final String MAVEN_COORDINATE = "com.google.googlejavaformat:google-java-format:";
 	private static final String FORMATTER_CLASS = "com.google.googlejavaformat.java.Formatter";

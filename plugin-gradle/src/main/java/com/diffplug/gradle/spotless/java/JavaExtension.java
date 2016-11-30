@@ -28,6 +28,7 @@ import com.diffplug.gradle.spotless.GradleProvisioner;
 import com.diffplug.gradle.spotless.LicenseHeaderStep;
 import com.diffplug.gradle.spotless.SpotlessExtension;
 import com.diffplug.spotless.SerializableFileFilter;
+import com.diffplug.spotless.java.GoogleJavaFormat;
 
 public class JavaExtension extends FormatExtension {
 	public static final String NAME = "java";
@@ -68,7 +69,7 @@ public class JavaExtension extends FormatExtension {
 
 	/** Uses the [google-java-format](https://github.com/google/google-java-format) jar to format source code. */
 	public void googleJavaFormat() {
-		googleJavaFormat(GoogleJavaFormat.DEFAULT_VERSION);
+		googleJavaFormat(GoogleJavaFormat.defaultVersion());
 	}
 
 	/**
