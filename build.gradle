@@ -1,8 +1,15 @@
-plugins {
-	id 'com.diffplug.gradle.eclipse.resourcefilters' version '3.5.0'
+buildscript {
+	repositories { maven { url 'https://plugins.gradle.org/m2/' } }
+	dependencies {
+		classpath "com.diffplug.gradle:goomph:${VER_GOOMPH}"
+		classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:${VER_BINTRAY}"
+		classpath "com.gradle.publish:plugin-publish-plugin:${VER_PLUGIN_PUBLISH}"
+		classpath "org.ajoberstar:gradle-git:${VER_GRADLE_GIT}"
+	}
 }
 
 // root eclipse project
+apply plugin: 'com.diffplug.gradle.eclipse.resourcefilters'
 eclipseResourceFilters {
 	exclude().folders().name('lib')
 	exclude().folders().name('plugin-gradle')
