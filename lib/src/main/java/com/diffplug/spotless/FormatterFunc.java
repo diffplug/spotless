@@ -15,8 +15,6 @@
  */
 package com.diffplug.spotless;
 
-import com.diffplug.common.base.Errors;
-
 /** A `Function<String, String>` which can throw an exception. */
 public interface FormatterFunc extends Throwing.Function<String, String> {
 	/** A `Function<String, String>` whose implementation requires a resource which should be released when the function is no longer needed. */

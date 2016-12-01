@@ -33,8 +33,6 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.logging.Logger;
 
-import com.diffplug.common.base.Errors;
-
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**

@@ -25,4 +25,16 @@ public class Throwing {
 	public interface Supplier<T> {
 		T get() throws Throwable;
 	}
+
+	public interface Consumer<T> {
+		void accept(T value) throws Throwable;
+	}
+
+	public interface Predicate<T> {
+		boolean test(T value) throws Throwable;
+	}
+
+	public interface Runnable {
+		void run() throws Throwable;
+	}
 }

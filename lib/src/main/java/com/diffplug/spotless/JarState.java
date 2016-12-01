@@ -26,8 +26,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.diffplug.common.base.Errors;
-
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**

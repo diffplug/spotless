@@ -2,9 +2,6 @@ ext.artifactId = project.artifactIdLib
 apply from: rootProject.file('gradle/java-setup.gradle')
 
 dependencies {
-	compile "com.diffplug.durian:durian-core:${VER_DURIAN}"
-	compile "com.diffplug.durian:durian-io:${VER_DURIAN}"
-	compile "com.diffplug.freshmark:freshmark:${VER_FRESHMARK}"
 	testCompile "junit:junit:${VER_JUNIT}"
 	testCompile "org.assertj:assertj-core:${VER_ASSERTJ}"
 	testCompile "com.diffplug.durian:durian-testlib:${VER_DURIAN}"

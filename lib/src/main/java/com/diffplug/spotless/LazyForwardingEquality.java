@@ -27,8 +27,6 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.diffplug.common.base.Errors;
-
 /**
  * Implements equality, hashcode, and serialization entirely in terms
  * of a lazily-computed key.  The key's serialized form is used to implement
