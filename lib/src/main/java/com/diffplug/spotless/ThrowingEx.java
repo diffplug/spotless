@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 /**
  * Basic functional interfaces which throw exception, along with
  * static helper methods for calling them.
- * 
+ *
  * Contains most of the functionality of Durian's Throwing and Errors
  * classes, but stripped down and renamed to avoid any confusion.
  */

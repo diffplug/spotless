@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless.java;
+package com.diffplug.spotless.extra.java;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,10 +23,7 @@ import java.lang.reflect.Method;
 import java.net.URLClassLoader;
 import java.util.Objects;
 import java.util.Properties;
-
-import org.gradle.api.GradleException;
-import org.gradle.api.logging.Logger;
-import org.gradle.api.logging.Logging;
+import java.util.logging.Logger;
 
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterFunc;
@@ -40,8 +37,8 @@ import groovy.util.XmlParser;
 import groovy.xml.QName;
 
 /** Formatter step which calls out to the Eclipse formatter. */
-class EclipseFormatter {
-	static final String DEFAULT_VERSION = "4.6.1";
+public class EclipseFormatter {
+	public static final String DEFAULT_VERSION = "4.6.1";
 	private static final String NAME = "eclipse formatter";
 	private static final String MAVEN_COORDINATE = "com.diffplug.spotless:spotless-ext-eclipse:";
 	private static final String FORMATTER_CLASS = "com.diffplug.gradle.spotless.java.eclipse.EclipseFormatterStepImpl";
@@ -80,13 +77,13 @@ class EclipseFormatter {
 		}
 	}
 
-	private static final Logger logger = Logging.getLogger(EclipseFormatter.class);
+	private static final Logger logger = Logger.getLogger(EclipseFormatter.class.getName());
 
 	/** Parses an eclipse properties or XML file, determined dynamically based on the file ending. */
 	private static Properties parseProperties(File file) throws Exception {
 		Properties settings = new Properties();
 		if (!file.exists()) {
-			throw new GradleException("Eclipse formatter file '" + file + "' does not exist.");
+			throw new IllegalArgumentException("Eclipse formatter file '" + file + "' does not exist.");
 		} else if (file.getName().endsWith(".properties")) {
 			try (InputStream input = new FileInputStream(file)) {
 				settings.load(input);
@@ -96,12 +93,12 @@ class EclipseFormatter {
 			Node xmlSettings = new XmlParser().parse(file);
 			NodeList profiles = xmlSettings.getAt(new QName("profile"));
 			if (profiles.size() > 1) {
-				logger.warn("Eclipse formatter file contains multiple profiles: " + file.getAbsolutePath());
+				logger.warning("Eclipse formatter file contains multiple profiles: " + file.getAbsolutePath());
 				for (Object profile : profiles) {
 					Node node = (Node) profile;
-					logger.warn("    " + node.attribute("name"));
+					logger.warning("    " + node.attribute("name"));
 				}
-				logger.warn("Using first profile, recommend deleting others.");
+				logger.warning("Using first profile, recommend deleting others.");
 			}
 			NodeList xmlSettingsElements = xmlSettings.getAt(new QName("profile")).getAt("setting");
 			for (Object xmlSettingsElement : xmlSettingsElements) {
@@ -110,7 +107,7 @@ class EclipseFormatter {
 			}
 			return settings;
 		} else {
-			throw new GradleException("Eclipse formatter file must be .properties or .xml");
+			throw new IllegalArgumentException("Eclipse formatter file must be .properties or .xml");
 		}
 	}
 }
