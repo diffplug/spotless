@@ -27,7 +27,7 @@ public interface FormatterFunc extends Throwing.Function<String, String> {
 			return new Closeable() {
 				@Override
 				public void close() {
-					Errors.rethrow().run(closeable::close);
+					Throwing.run(closeable::close);
 				}
 
 				@Override

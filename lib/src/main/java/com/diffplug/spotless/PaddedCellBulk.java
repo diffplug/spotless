@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -234,7 +235,7 @@ public class PaddedCellBulk {
 					}
 
 					private FileVisitResult handleException(final IOException e) {
-						Errors.log().accept(e);
+						logger.log(Level.SEVERE, e.getMessage(), e);
 						return FileVisitResult.TERMINATE;
 					}
 

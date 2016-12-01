@@ -69,7 +69,7 @@ public class JarState implements Serializable {
 	}
 
 	private URL[] jarUrls() {
-		return jars.stream().map(Errors.rethrow().wrapFunction(file -> file.toURI().toURL())).toArray(URL[]::new);
+		return jars.stream().map(Throwing.wrap(file -> file.toURI().toURL())).toArray(URL[]::new);
 	}
 
 	@SuppressFBWarnings("DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED")

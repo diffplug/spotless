@@ -58,7 +58,7 @@ public abstract class LazyForwardingEquality<T extends Serializable> implements 
 					try {
 						key = calculateKey();
 					} catch (Throwable e) {
-						throw Errors.asRuntime(e);
+						throw Throwing.asRuntime(e);
 					}
 				}
 			}
@@ -105,7 +105,7 @@ public abstract class LazyForwardingEquality<T extends Serializable> implements 
 		try (ObjectOutputStream objectOutput = new ObjectOutputStream(byteOutput)) {
 			objectOutput.writeObject(obj);
 		} catch (IOException e) {
-			throw Errors.asRuntime(e);
+			throw Throwing.asRuntime(e);
 		}
 		return byteOutput.toByteArray();
 	}
