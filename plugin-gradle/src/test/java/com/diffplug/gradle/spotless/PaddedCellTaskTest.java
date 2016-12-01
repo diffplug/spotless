@@ -44,7 +44,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 	}
 
 	private class Bundle {
-		Project project = ProjectBuilder.builder().withProjectDir(folder.getRoot()).build();
+		Project project = ProjectBuilder.builder().withProjectDir(rootFolder()).build();
 		File file;
 		CheckFormatTask check;
 		ApplyFormatTask apply;
@@ -153,8 +153,8 @@ public class PaddedCellTaskTest extends ResourceHarness {
 				"test.diverge.diverge9");
 	}
 
-	private void assertFolderContents(String subfolderName, String... files) {
-		File subfolder = new File(folder.getRoot(), subfolderName);
+	private void assertFolderContents(String subfolderName, String... files) throws IOException {
+		File subfolder = new File(rootFolder(), subfolderName);
 		Assert.assertTrue(subfolder.isDirectory());
 		String asList = Arrays.stream(subfolder.list()).sorted().collect(Collectors.joining("\n"));
 		Assert.assertEquals(StringPrinter.buildStringFromLines(files).trim(), asList);

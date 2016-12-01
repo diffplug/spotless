@@ -42,8 +42,30 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 
 public class ResourceHarness {
+	/**
+	 * On OS X, the temp folder is a symlink,
+	 * and some of gradle's stuff breaks symlinks.
+	 * By only accessing it through the {@link #rootFolder()}
+	 * and {@link #newFile()} apis, we can guarantee there
+	 * will be no symlink problems.
+	 */
 	@Rule
-	public TemporaryFolder folder = new TemporaryFolder();
+	public TemporaryFolder folderDontUseDirectly = new TemporaryFolder();
+
+	/** Returns the root folder (canonicalized to fix OS X issue) */
+	protected File rootFolder() throws IOException {
+		return folderDontUseDirectly.getRoot().getCanonicalFile();
+	}
+
+	/** Returns a new child of the root folder. */
+	protected File newFile(String subpath) throws IOException {
+		return new File(rootFolder(), subpath);
+	}
+
+	/** Returns a random child of the root folder. */
+	protected File newFile() throws IOException {
+		return folderDontUseDirectly.newFile().getCanonicalFile();
+	}
 
 	/** Returns the contents of the given file from the src/test/resources directory. */
 	protected String getTestResource(String filename) {
@@ -59,7 +81,7 @@ public class ResourceHarness {
 	protected File createTestFile(String filename) throws IOException {
 		int lastSlash = filename.lastIndexOf('/');
 		String name = lastSlash >= 0 ? filename.substring(lastSlash) : filename;
-		File file = folder.newFile(name);
+		File file = newFile(name);
 		file.getParentFile().mkdirs();
 		Files.write(file.toPath(), getTestResource(filename).getBytes(StandardCharsets.UTF_8));
 		return file;
@@ -67,7 +89,7 @@ public class ResourceHarness {
 
 	/** Returns a File (in a temporary folder) which has the given contents. */
 	protected File createTestFile(String filename, String content) throws IOException {
-		File file = new File(folder.getRoot(), filename);
+		File file = newFile(filename);
 		file.getParentFile().mkdirs();
 		Files.write(file.toPath(), content.getBytes(StandardCharsets.UTF_8));
 		return file;
@@ -125,7 +147,7 @@ public class ResourceHarness {
 		// create the test file(s)
 		List<File> files = new ArrayList<>(befores.size());
 		for (String before : befores) {
-			File testFile = folder.newFile();
+			File testFile = newFile();
 			Files.write(testFile.toPath(), before.getBytes(StandardCharsets.UTF_8));
 			files.add(testFile);
 		}
@@ -155,11 +177,11 @@ public class ResourceHarness {
 	protected <T extends Task> List<T> createTasks(Consumer<SpotlessExtension> test, Class<T> clazz) throws Exception {
 		// write out the .gitattributes file
 		Files.write(
-				folder.getRoot().toPath().resolve(".gitattributes"),
+				newFile(".gitattributes").toPath(),
 				"* text eol=lf".getBytes(StandardCharsets.UTF_8),
 				StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 		// create the file and tasks
-		Project project = ProjectBuilder.builder().withProjectDir(folder.getRoot()).build();
+		Project project = ProjectBuilder.builder().withProjectDir(rootFolder()).build();
 		project.getRepositories().mavenCentral(); // ensures that plugins which resolve from mavenCentral will work
 		project.getPlugins().apply(JavaBasePlugin.class); // ensures that the java extension will work
 		SpotlessPlugin plugin = project.getPlugins().apply(SpotlessPlugin.class);

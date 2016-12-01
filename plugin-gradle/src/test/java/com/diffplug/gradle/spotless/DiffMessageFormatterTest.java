@@ -16,6 +16,7 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,12 +32,12 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 
 public class DiffMessageFormatterTest extends ResourceHarness {
-	private CheckFormatTask create(File... files) {
+	private CheckFormatTask create(File... files) throws IOException {
 		return create(Arrays.asList(files));
 	}
 
-	private CheckFormatTask create(List<File> files) {
-		Project project = ProjectBuilder.builder().withProjectDir(folder.getRoot()).build();
+	private CheckFormatTask create(List<File> files) throws IOException {
+		Project project = ProjectBuilder.builder().withProjectDir(rootFolder()).build();
 		CheckFormatTask task = project.getTasks().create("underTest", CheckFormatTask.class);
 		task.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
 		task.setTarget(files);

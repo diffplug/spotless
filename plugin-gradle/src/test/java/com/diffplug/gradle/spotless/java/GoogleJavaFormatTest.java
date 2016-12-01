@@ -65,8 +65,8 @@ public class GoogleJavaFormatTest extends GradleIntegrationTest {
 
 	/** This passes, and confirms that the steps we're creating have proper equality. */
 	@Test
-	public void testStepEquality() {
-		Project project = ProjectBuilder.builder().withProjectDir(folder.getRoot()).build();
+	public void testStepEquality() throws IOException {
+		Project project = ProjectBuilder.builder().withProjectDir(rootFolder()).build();
 		project.getRepositories().mavenCentral();
 		// copied from JavaExtension.googleJavaFormat
 		Function<String, FormatterStep> create = version -> GoogleJavaFormat.createStep(version, GradleProvisioner.fromProject(project));

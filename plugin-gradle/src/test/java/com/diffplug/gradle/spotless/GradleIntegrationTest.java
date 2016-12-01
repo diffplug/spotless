@@ -49,7 +49,7 @@ public class GradleIntegrationTest extends ResourceHarness {
 
 	protected File write(String path, LineEnding ending, Charset encoding, String... lines) throws IOException {
 		String content = Arrays.stream(lines).collect(Collectors.joining(ending.str())) + ending.str();
-		Path target = folder.getRoot().toPath().resolve(path);
+		Path target = newFile(path).toPath();
 		Files.createDirectories(target.getParent());
 		Files.write(target, content.getBytes(encoding));
 		return target.toFile();
@@ -64,7 +64,7 @@ public class GradleIntegrationTest extends ResourceHarness {
 	}
 
 	protected String read(String path, LineEnding ending, Charset encoding) throws IOException {
-		Path target = folder.getRoot().toPath().resolve(path);
+		Path target = newFile(path).toPath();
 		String content = new String(Files.readAllBytes(target), encoding);
 		String allUnixNewline = LineEnding.toUnix(content);
 		return allUnixNewline.replace("\n", ending.str());
@@ -79,8 +79,8 @@ public class GradleIntegrationTest extends ResourceHarness {
 		write(path, after);
 	}
 
-	protected GradleRunner gradleRunner() {
-		return GradleRunner.create().withProjectDir(folder.getRoot()).withPluginClasspath();
+	protected GradleRunner gradleRunner() throws IOException {
+		return GradleRunner.create().withProjectDir(rootFolder()).withPluginClasspath();
 	}
 
 	/** Dumps the complete file contents of the folder to the console. */
@@ -90,12 +90,12 @@ public class GradleIntegrationTest extends ResourceHarness {
 
 	protected String getContents(Predicate<String> subpathsToInclude) throws IOException {
 		TreeDef<File> treeDef = TreeDef.forFile(Errors.rethrow());
-		List<File> files = TreeStream.depthFirst(treeDef, folder.getRoot())
+		List<File> files = TreeStream.depthFirst(treeDef, rootFolder())
 				.filter(File::isFile)
 				.collect(Collectors.toList());
 
 		ListIterator<File> iterator = files.listIterator(files.size());
-		int rootLength = folder.getRoot().getAbsolutePath().length() + 1;
+		int rootLength = rootFolder().getAbsolutePath().length() + 1;
 		return StringPrinter.buildString(printer -> Errors.rethrow().run(() -> {
 			while (iterator.hasPrevious()) {
 				File file = iterator.previous();
