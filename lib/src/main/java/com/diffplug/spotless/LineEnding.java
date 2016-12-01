@@ -21,9 +21,6 @@ import java.lang.reflect.Method;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
-import com.diffplug.common.base.Errors;
-import com.diffplug.common.base.StandardSystemProperty;
-
 /**
  * Represents the line endings which should be written by the tool.
  */
@@ -78,7 +75,7 @@ public enum LineEnding {
 
 	private static final Policy WINDOWS_POLICY = file -> WINDOWS.str();
 	private static final Policy UNIX_POLICY = file -> UNIX.str();
-	private static final String _platformNative = StandardSystemProperty.LINE_SEPARATOR.value();
+	private static final String _platformNative = System.getProperty("line.separator");
 	private static final Policy _platformNativePolicy = file -> _platformNative;
 
 	/** Returns the standard line ending for this policy. */

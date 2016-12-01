@@ -24,9 +24,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-import com.diffplug.common.base.Errors;
-import com.diffplug.common.base.Preconditions;
-
 /**
  * Models the result of applying a {@link Formatter} on a given {@link File}
  * while characterizing various failure modes (slow convergence, cycles, and divergence).
@@ -93,7 +90,9 @@ public class PaddedCell {
 	private static final int MAX_CYCLE = 10;
 
 	private static PaddedCell check(Formatter formatter, File file, String original, int maxLength) {
-		Preconditions.checkArgument(maxLength >= 2, "maxLength must be at least 2");
+		if (maxLength < 2) {
+			throw new IllegalArgumentException("maxLength must be at least 2");
+		}
 		String appliedOnce = formatter.applySteps(original, file);
 		if (appliedOnce.equals(original)) {
 			return Type.CONVERGE.create(file, Collections.singletonList(appliedOnce));
@@ -146,7 +145,7 @@ public class PaddedCell {
 		case CONVERGE:	return steps.get(steps.size() - 1);
 		case CYCLE:		return Collections.min(steps, Comparator.comparing(String::length).thenComparing(Function.identity()));
 		case DIVERGE:	throw new IllegalArgumentException("No canonical form for a diverging result");
-		default:	throw Unhandled.enumException(type);
+		default:	throw new IllegalArgumentException("Unknown type: " + type);
 		}
 		// @formatter:on
 	}
@@ -158,7 +157,7 @@ public class PaddedCell {
 		case CONVERGE:	return "converges after " + steps.size() + " steps";
 		case CYCLE:		return "cycles between " + steps.size() + " steps";
 		case DIVERGE:	return "diverges after " + steps.size() + " steps";
-		default:	throw Unhandled.enumException(type);
+		default:	throw new IllegalArgumentException("Unknown type: " + type);
 		}
 		// @formatter:on
 	}
