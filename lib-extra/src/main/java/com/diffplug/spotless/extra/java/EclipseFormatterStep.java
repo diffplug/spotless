@@ -37,7 +37,7 @@ import groovy.util.XmlParser;
 import groovy.xml.QName;
 
 /** Formatter step which calls out to the Eclipse formatter. */
-public class EclipseFormatter {
+public class EclipseFormatterStep {
 	public static final String DEFAULT_VERSION = "4.6.1";
 	private static final String NAME = "eclipse formatter";
 	private static final String MAVEN_COORDINATE = "com.diffplug.spotless:spotless-ext-eclipse:";
@@ -45,7 +45,7 @@ public class EclipseFormatter {
 	private static final String FORMATTER_METHOD = "format";
 
 	/** Creates a formatter step for the given version and settings file. */
-	public static FormatterStep createStep(String version, File settingsFile, Provisioner provisioner) {
+	public static FormatterStep create(String version, File settingsFile, Provisioner provisioner) {
 		return FormatterStep.createCloseableLazy(NAME,
 				() -> new State(new JarState(MAVEN_COORDINATE + version, provisioner), settingsFile),
 				State::createFormat);
@@ -77,7 +77,7 @@ public class EclipseFormatter {
 		}
 	}
 
-	private static final Logger logger = Logger.getLogger(EclipseFormatter.class.getName());
+	private static final Logger logger = Logger.getLogger(EclipseFormatterStep.class.getName());
 
 	/** Parses an eclipse properties or XML file, determined dynamically based on the file ending. */
 	private static Properties parseProperties(File file) throws Exception {

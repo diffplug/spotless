@@ -28,7 +28,7 @@ import com.diffplug.gradle.spotless.GradleProvisioner;
 import com.diffplug.gradle.spotless.LicenseHeaderStep;
 import com.diffplug.gradle.spotless.SpotlessExtension;
 import com.diffplug.spotless.SerializableFileFilter;
-import com.diffplug.spotless.extra.java.EclipseFormatter;
+import com.diffplug.spotless.extra.java.EclipseFormatterStep;
 import com.diffplug.spotless.java.GoogleJavaFormat;
 
 public class JavaExtension extends FormatExtension {
@@ -57,7 +57,7 @@ public class JavaExtension extends FormatExtension {
 	}
 
 	public void eclipseFormatFile(Object eclipseFormatFile) {
-		eclipseFormatFile(EclipseFormatter.DEFAULT_VERSION, eclipseFormatFile);
+		eclipseFormatFile(EclipseFormatterStep.DEFAULT_VERSION, eclipseFormatFile);
 	}
 
 	public void eclipseFormatFile(String eclipseVersion, Object eclipseFormatFile) {
@@ -65,7 +65,7 @@ public class JavaExtension extends FormatExtension {
 		getProject().getRepositories().maven(mvn -> {
 			mvn.setUrl("https://dl.bintray.com/diffplug/opensource");
 		});
-		addStep(EclipseFormatter.createStep(eclipseVersion, getProject().file(eclipseFormatFile), GradleProvisioner.fromProject(getProject())));
+		addStep(EclipseFormatterStep.create(eclipseVersion, getProject().file(eclipseFormatFile), GradleProvisioner.fromProject(getProject())));
 	}
 
 	/** Uses the [google-java-format](https://github.com/google/google-java-format) jar to format source code. */
