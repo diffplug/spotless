@@ -1,0 +1,30 @@
+def cred = {
+	if (System.env[it] != null) {
+		return System.env[it]
+	} else if (project.hasProperty(it)) {
+		return project[it]
+	} else {
+		return 'unknown_' + it
+	}
+}
+
+
+String version_str = version.endsWith('-SNAPSHOT') ? 'snapshot' : version
+
+apply plugin: 'org.ajoberstar.github-pages'
+githubPages {
+	repoUri = 'https://github.com/diffplug/spotless'
+	deleteExistingFiles = false
+	pages {
+		from 'build/javadoc'
+		into "javadoc/${version_str}"
+	}
+	credentials {
+		username = cred('gh_token')
+		password = ''
+	}
+}
+tasks.prepareGhPages.dependsOn(":lib:javadoc")
+tasks.prepareGhPages.dependsOn(":lib-extra:javadoc")
+tasks.prepareGhPages.dependsOn(":plugin-gradle:javadoc")
+tasks.prepareGhPages.dependsOn(":plugin-maven:javadoc")

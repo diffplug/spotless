@@ -5,6 +5,7 @@ dependencies {
 	compile project(':lib')
 	// misc useful utilities
 	compile "com.diffplug.durian:durian-core:${VER_DURIAN}"
+	compile "com.diffplug.durian:durian-collect:${VER_DURIAN}"
 	// needed by GitAttributesLineEndings
 	compile "org.eclipse.jgit:org.eclipse.jgit:4.5.0.201609210915-r"
 	compile "com.googlecode.concurrent-trees:concurrent-trees:2.6.0"

@@ -79,11 +79,11 @@ javadoc {
 
 // use markdown in javadoc
 def makeLink = { url, text -> "<a href=\"${url}\" style=\"text-transform: none;\">${text}</a>" }
-def javadocInfo = '<h2>' + makeLink("https://github.com/${org}/${name}", "${group}:${name}:${version}") +
+def javadocInfo = '<h2>' + makeLink("https://github.com/${org}/${name}", "${group}:${project.ext.artifactId}:${version}") +
 ' by ' + makeLink('http://www.diffplug.com', 'DiffPlug') + '</h2>'
 
-def verSnapshot = { it.endsWith('-SNAPSHOT') ? 'snapshot' : it }
-
+String version_str = version.endsWith('-SNAPSHOT') ? 'snapshot' : version
+apply plugin: 'ch.raffael.pegdown-doclet'
 javadoc {
 	// Where it's possible to name parameters and methods clearly enough
 	// that javadoc is not necessary, why make the code bigger?
@@ -96,6 +96,12 @@ javadoc {
 	// setup links
 	options.linksOffline('https://docs.oracle.com/javase/8/docs/api/', '../gradle/javadoc/java8')
 	options.linksOffline('https://docs.gradle.org/2.14/javadoc/', '../gradle/javadoc/gradle')
+
+	// put the javadoc into a central location
+	destinationDir rootProject.file("javadoc-publish/build/javadoc/${project.ext.artifactId}/${version_str}")
+	// links to javadoc from the other versions
+	options.linksOffline("https://diffplug.github.io/spotles/javadoc/${project.artifactIdLib}/${version_str}/", "../gradle/javadoc/${project.artifactIdLib}")
+	options.linksOffline("https://diffplug.github.io/spotles/javadoc/${project.artifactIdLibExtra}/${version_str}/", "../gradle/javadoc/${project.artifactIdLibExtra}")
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
