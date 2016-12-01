@@ -49,13 +49,13 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * If they encounter a scenario where `spotlessCheck` fails after calling `spotlessApply`, then they would
  * justifiably be frustrated.  Luckily, every time `spotlessCheck` fails, it passes the failed files to
  * {@link #anyMisbehave(Formatter, List)}, which checks to see if any of the rules are causing a cycle
- * or some other kind of mischief.  If they are, it throws a special error message,
- * {@link #youShouldTurnOnPaddedCell(CheckFormatTask)} which tells them to turn on paddedCell.
+ * or some other kind of mischief.  If they are, it can give the user a special error message instructing
+ * them to turn on paddedCell.
  *
  * ### spotlessCheck with paddedCell on
  *
  * Spotless check behaves as normal, finding a list of problem files, but then passes that list
- * to {@link #check(CheckFormatTask, Formatter, List)}.  If there were no problem files, then `paddedCell`
+ * to {@link #check(File, File, Formatter, List)}.  If there were no problem files, then `paddedCell`
  * is no longer necessary, so users might as well turn it off, so we give that info as a warning.
  */
 public class PaddedCellBulk {
