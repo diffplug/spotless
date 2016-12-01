@@ -3,6 +3,7 @@ apply from: rootProject.file('gradle/java-setup.gradle')
 
 dependencies {
 	compile project(':lib')
+	compile project(':lib-extra')
 	compile "org.apache.maven:maven-plugin-api:${VER_MAVEN_PLUGIN_API}"
 	compileOnly "org.apache.maven.plugin-tools:maven-plugin-annotations:${VER_MAVEN_PLUGIN_ANNOTATIONS}"
 

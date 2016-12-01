@@ -17,8 +17,11 @@ package com.diffplug.spotless;
 
 import java.io.File;
 import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
+import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StandardSystemProperty;
 
 /**
@@ -44,12 +47,20 @@ public enum LineEnding {
 
 	/** Returns a {@link Policy} appropriate for files which are contained within the given rootFolder. */
 	public Policy createPolicy(File projectDir, Supplier<Iterable<File>> toFormat) {
-		if (this == GIT_ATTRIBUTES) {
-			return GitAttributesLineEndings.create(projectDir, toFormat);
-		} else {
+		if (this != GIT_ATTRIBUTES) {
 			return createPolicy();
+		} else {
+			return gitAttributesPolicyCreator.get().apply(projectDir, toFormat);
 		}
 	}
+
+	private static Supplier<BiFunction<File, Supplier<Iterable<File>>, Policy>> gitAttributesPolicyCreator = () -> {
+		return Errors.rethrow().get(() -> {
+			Class<?> clazz = Class.forName("com.diffplug.spotless.extra.GitAttributesLineEndings");
+			Method method = clazz.getMethod("create", File.class, Supplier.class);
+			return (projectDir, toFormat) -> (Policy) Errors.rethrow().get(() -> method.invoke(null, projectDir, toFormat));
+		});
+	};
 
 	/** Should use {@link #createPolicy(File, Supplier)} instead, but this will work iff its a path-independent LineEnding policy. */
 	public Policy createPolicy() {

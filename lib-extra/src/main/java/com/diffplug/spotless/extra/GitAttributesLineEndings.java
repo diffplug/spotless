@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless;
+package com.diffplug.spotless.extra;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -54,6 +54,9 @@ import com.googlecode.concurrenttrees.radix.node.concrete.DefaultCharSequenceNod
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.tree.TreeStream;
+import com.diffplug.spotless.FileSignature;
+import com.diffplug.spotless.LazyForwardingEquality;
+import com.diffplug.spotless.LineEnding;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -63,7 +66,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * git config if there are no applicable git attributes, then finally falls
  * back to the platform native.
  */
-class GitAttributesLineEndings {
+public class GitAttributesLineEndings {
 
 	public static Policy create(File projectDir, Supplier<Iterable<File>> toFormat) {
 		return new Policy(projectDir, toFormat);
@@ -313,7 +316,7 @@ class GitAttributesLineEndings {
 			case CRLF:    return LineEnding.WINDOWS;
 			case LF:      return LineEnding.UNIX;
 			case NATIVE:  return LineEnding.PLATFORM_NATIVE;
-			default: throw Unhandled.enumException(eol);
+			default: throw new IllegalArgumentException("Unknown eol " + eol);
 			}
 			// @formatter:on
 		}

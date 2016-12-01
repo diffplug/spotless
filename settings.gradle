@@ -1,5 +1,6 @@
-include 'ide'
+include 'ide'	// easy dev setup
 
-include 'lib'
-include 'plugin-gradle'
-include 'plugin-maven'
+include 'lib'		// reusable library with no dependencies
+include 'lib-extra'	// reusable library with lots of dependencies
+include 'plugin-gradle'	// gradle-specific glue code
+include 'plugin-maven'	// maven-specific glue code
