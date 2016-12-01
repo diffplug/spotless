@@ -169,7 +169,7 @@ public class PaddedCellBulk {
 		}
 
 		@Override
-		public String format(String raw, File file) throws Throwable {
+		public String format(String raw, File file) throws Exception {
 			if (file.equals(this.file)) {
 				this.file = null;
 				return Objects.requireNonNull(formatted);

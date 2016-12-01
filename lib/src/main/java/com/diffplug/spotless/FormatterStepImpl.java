@@ -39,9 +39,9 @@ abstract class FormatterStepImpl<Key extends Serializable> extends Strict<Key> {
 	final transient String name;
 
 	/** Transient because only the key matters. */
-	final transient Throwing.Supplier<Key> keySupplier;
+	final transient ThrowingEx.Supplier<Key> keySupplier;
 
-	FormatterStepImpl(String name, Throwing.Supplier<Key> keySupplier) {
+	FormatterStepImpl(String name, ThrowingEx.Supplier<Key> keySupplier) {
 		this.name = Objects.requireNonNull(name);
 		this.keySupplier = Objects.requireNonNull(keySupplier);
 	}
@@ -52,23 +52,23 @@ abstract class FormatterStepImpl<Key extends Serializable> extends Strict<Key> {
 	}
 
 	@Override
-	protected Key calculateKey() throws Throwable {
+	protected Key calculateKey() throws Exception {
 		return keySupplier.get();
 	}
 
 	static final class Standard<Key extends Serializable> extends FormatterStepImpl<Key> {
 		private static final long serialVersionUID = 1L;
 
-		final transient Throwing.Function<Key, FormatterFunc> keyToFormatter;
+		final transient ThrowingEx.Function<Key, FormatterFunc> keyToFormatter;
 		transient FormatterFunc formatter; // initialized lazily
 
-		Standard(String name, Throwing.Supplier<Key> keySupplier, Throwing.Function<Key, FormatterFunc> keyToFormatter) {
+		Standard(String name, ThrowingEx.Supplier<Key> keySupplier, ThrowingEx.Function<Key, FormatterFunc> keyToFormatter) {
 			super(name, keySupplier);
 			this.keyToFormatter = Objects.requireNonNull(keyToFormatter);
 		}
 
 		@Override
-		protected String format(Key key, String rawUnix, File file) throws Throwable {
+		protected String format(Key key, String rawUnix, File file) throws Exception {
 			if (formatter == null) {
 				formatter = keyToFormatter.apply(key());
 			}
@@ -79,16 +79,16 @@ abstract class FormatterStepImpl<Key extends Serializable> extends Strict<Key> {
 	static class Closeable<Key extends Serializable> extends FormatterStepImpl<Key> {
 		private static final long serialVersionUID = 1L;
 
-		final transient Throwing.Function<Key, FormatterFunc.Closeable> keyToFormatter;
+		final transient ThrowingEx.Function<Key, FormatterFunc.Closeable> keyToFormatter;
 		transient FormatterFunc.Closeable formatter; // initialized lazily
 
-		Closeable(String name, Throwing.Supplier<Key> keySupplier, Throwing.Function<Key, FormatterFunc.Closeable> keyToFormatter) {
+		Closeable(String name, ThrowingEx.Supplier<Key> keySupplier, ThrowingEx.Function<Key, FormatterFunc.Closeable> keyToFormatter) {
 			super(name, keySupplier);
 			this.keyToFormatter = Objects.requireNonNull(keyToFormatter);
 		}
 
 		@Override
-		protected String format(Key key, String rawUnix, File file) throws Throwable {
+		protected String format(Key key, String rawUnix, File file) throws Exception {
 			if (formatter == null) {
 				formatter = keyToFormatter.apply(key());
 			}
@@ -110,16 +110,16 @@ abstract class FormatterStepImpl<Key extends Serializable> extends Strict<Key> {
 
 		private static final Random RANDOM = new Random();
 
-		final transient Throwing.Supplier<FormatterFunc> formatterSupplier;
+		final transient ThrowingEx.Supplier<FormatterFunc> formatterSupplier;
 		transient FormatterFunc formatter; // initialized lazily
 
-		NeverUpToDate(String name, Throwing.Supplier<FormatterFunc> formatterSupplier) {
+		NeverUpToDate(String name, ThrowingEx.Supplier<FormatterFunc> formatterSupplier) {
 			super(name, RANDOM::nextInt);
 			this.formatterSupplier = formatterSupplier;
 		}
 
 		@Override
-		protected String format(Integer key, String rawUnix, File file) throws Throwable {
+		protected String format(Integer key, String rawUnix, File file) throws Exception {
 			if (formatter == null) {
 				formatter = formatterSupplier.get();
 			}

@@ -17,48 +17,55 @@ package com.diffplug.spotless;
 
 import static java.util.Objects.requireNonNull;
 
-public class Throwing {
-	private Throwing() {}
+/**
+ * Basic functional interfaces which throw exception, along with
+ * static helper methods for calling them.
+ * 
+ * Contains most of the functionality of Durian's Throwing and Errors
+ * classes, but stripped down and renamed to avoid any confusion.
+ */
+public class ThrowingEx {
+	private ThrowingEx() {}
 
 	/** A function that can throw any exception. */
 	public interface Function<T, R> {
-		R apply(T input) throws Throwable;
+		R apply(T input) throws Exception;
 	}
 
 	/** A supplier that can throw any exception. */
 	public interface Supplier<T> {
-		T get() throws Throwable;
+		T get() throws Exception;
 	}
 
 	/** A runnable that can throw any exception. */
 	public interface Runnable {
-		void run() throws Throwable;
+		void run() throws Exception;
 	}
 
 	/** Runs the given runnable, rethrowing any exceptions as runtime exceptions. */
-	public static void run(Throwing.Runnable runnable) {
+	public static void run(ThrowingEx.Runnable runnable) {
 		try {
 			runnable.run();
-		} catch (Throwable t) {
+		} catch (Exception t) {
 			throw asRuntime(t);
 		}
 	}
 
 	/** Gets the given value, rethrowing any exceptions as runtime exceptions. */
-	public static <T> T get(Throwing.Supplier<T> supplier) {
+	public static <T> T get(ThrowingEx.Supplier<T> supplier) {
 		try {
 			return supplier.get();
-		} catch (Throwable t) {
+		} catch (Exception t) {
 			throw asRuntime(t);
 		}
 	}
 
-	/** Wraps the given {@link Throwing.Function} as a standard {@link java.util.function.Function}, rethrowing any exceptions as runtime exceptions. */
-	public static <T, R> java.util.function.Function<T, R> wrap(Throwing.Function<T, R> function) {
+	/** Wraps the given {@link ThrowingEx.Function} as a standard {@link java.util.function.Function}, rethrowing any exceptions as runtime exceptions. */
+	public static <T, R> java.util.function.Function<T, R> wrap(ThrowingEx.Function<T, R> function) {
 		return input -> {
 			try {
 				return function.apply(input);
-			} catch (Throwable t) {
+			} catch (Exception t) {
 				throw asRuntime(t);
 			}
 		};
@@ -71,22 +78,20 @@ public class Throwing {
 	 * cast and returned.  Otherwise, it wrapped in a
 	 * {@link WrappedAsRuntimeException} and returned.
 	 */
-	public static RuntimeException asRuntime(Throwable e) {
+	public static RuntimeException asRuntime(Exception e) {
 		requireNonNull(e);
 		if (e instanceof RuntimeException) {
 			return (RuntimeException) e;
-		} else if (e instanceof Error) {
-			throw (Error) e;
 		} else {
 			return new WrappedAsRuntimeException(e);
 		}
 	}
 
-	/** A RuntimeException specifically for the purpose of wrapping non-runtime Throwables as RuntimeExceptions. */
+	/** A RuntimeException specifically for the purpose of wrapping non-runtime Exceptions as RuntimeExceptions. */
 	public static class WrappedAsRuntimeException extends RuntimeException {
 		private static final long serialVersionUID = -912202209702586994L;
 
-		public WrappedAsRuntimeException(Throwable e) {
+		public WrappedAsRuntimeException(Exception e) {
 			super(e);
 		}
 	}

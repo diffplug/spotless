@@ -36,7 +36,7 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LazyForwardingEquality;
 import com.diffplug.spotless.LineEnding;
-import com.diffplug.spotless.Throwing;
+import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.generic.EndWithNewlineStep;
 import com.diffplug.spotless.generic.IndentStep;
 
@@ -197,14 +197,14 @@ public class FormatExtension {
 	 * The resulting function will receive a string with unix-newlines, and it must return a string unix newlines.
 	 *
 	 * If you're getting errors about `closure cannot be cast to com.diffplug.common.base.Throwing$Function`, then use
-	 * {@link #customLazyGroovy(String, Throwing.Supplier)}.
+	 * {@link #customLazyGroovy(String, ThrowingEx.Supplier)}.
 	 */
-	public void customLazy(String name, Throwing.Supplier<FormatterFunc> formatterSupplier) {
+	public void customLazy(String name, ThrowingEx.Supplier<FormatterFunc> formatterSupplier) {
 		addStep(FormatterStep.createLazy(name, () -> globalKey, unusedKey -> formatterSupplier.get()));
 	}
 
-	/** Same as {@link #customLazy(String, Throwing.Supplier)}, but for Groovy closures. */
-	public void customLazyGroovy(String name, Throwing.Supplier<Closure<String>> formatterSupplier) {
+	/** Same as {@link #customLazy(String, ThrowingEx.Supplier)}, but for Groovy closures. */
+	public void customLazyGroovy(String name, ThrowingEx.Supplier<Closure<String>> formatterSupplier) {
 		customLazy(name, () -> formatterSupplier.get()::call);
 	}
 

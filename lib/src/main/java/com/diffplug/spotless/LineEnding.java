@@ -52,10 +52,10 @@ public enum LineEnding {
 	}
 
 	private static Supplier<BiFunction<File, Supplier<Iterable<File>>, Policy>> gitAttributesPolicyCreator = () -> {
-		return Throwing.get(() -> {
+		return ThrowingEx.get(() -> {
 			Class<?> clazz = Class.forName("com.diffplug.spotless.extra.GitAttributesLineEndings");
 			Method method = clazz.getMethod("create", File.class, Supplier.class);
-			return (projectDir, toFormat) -> Throwing.get(() -> (Policy) method.invoke(null, projectDir, toFormat));
+			return (projectDir, toFormat) -> ThrowingEx.get(() -> (Policy) method.invoke(null, projectDir, toFormat));
 		});
 	};
 

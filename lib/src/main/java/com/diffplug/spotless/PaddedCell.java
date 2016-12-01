@@ -77,7 +77,7 @@ public class PaddedCell {
 	 *
 	 */
 	public static PaddedCell check(Formatter formatter, File file) {
-		byte[] rawBytes = Throwing.get(() -> Files.readAllBytes(file.toPath()));
+		byte[] rawBytes = ThrowingEx.get(() -> Files.readAllBytes(file.toPath()));
 		String raw = new String(rawBytes, formatter.encoding);
 		String original = LineEnding.toUnix(raw);
 		return check(formatter, file, original, MAX_CYCLE);

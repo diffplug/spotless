@@ -46,7 +46,7 @@ public abstract class LazyForwardingEquality<T extends Serializable> implements 
 	 * Throws exception because it's likely that there will be some IO going on.
 	 */
 	@Nonnull
-	protected abstract T calculateKey() throws Throwable;
+	protected abstract T calculateKey() throws Exception;
 
 	/** Returns the underlying key, possibly triggering a call to {{@link #calculateKey()}. */
 	@Nonnull
@@ -57,8 +57,8 @@ public abstract class LazyForwardingEquality<T extends Serializable> implements 
 				if (key == null) {
 					try {
 						key = calculateKey();
-					} catch (Throwable e) {
-						throw Throwing.asRuntime(e);
+					} catch (Exception e) {
+						throw ThrowingEx.asRuntime(e);
 					}
 				}
 			}
@@ -105,7 +105,7 @@ public abstract class LazyForwardingEquality<T extends Serializable> implements 
 		try (ObjectOutputStream objectOutput = new ObjectOutputStream(byteOutput)) {
 			objectOutput.writeObject(obj);
 		} catch (IOException e) {
-			throw Throwing.asRuntime(e);
+			throw ThrowingEx.asRuntime(e);
 		}
 		return byteOutput.toByteArray();
 	}

@@ -33,7 +33,7 @@ final class FilterByFileFormatterStep implements FormatterStep {
 	}
 
 	@Override
-	public String format(String raw, File file) throws Throwable {
+	public String format(String raw, File file) throws Exception {
 		if (filter.accept(file)) {
 			return delegateStep.format(raw, file);
 		} else {

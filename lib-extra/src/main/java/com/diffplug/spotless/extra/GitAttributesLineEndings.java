@@ -84,7 +84,7 @@ public class GitAttributesLineEndings {
 		}
 
 		@Override
-		protected FileState calculateKey() throws Throwable {
+		protected FileState calculateKey() throws Exception {
 			return new FileState(projectDir, toFormat.get());
 		}
 

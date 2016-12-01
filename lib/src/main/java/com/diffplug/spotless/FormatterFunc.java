@@ -16,7 +16,7 @@
 package com.diffplug.spotless;
 
 /** A `Function<String, String>` which can throw an exception. */
-public interface FormatterFunc extends Throwing.Function<String, String> {
+public interface FormatterFunc extends ThrowingEx.Function<String, String> {
 	/** A `Function<String, String>` whose implementation requires a resource which should be released when the function is no longer needed. */
 	interface Closeable extends FormatterFunc, AutoCloseable {
 		@Override
@@ -27,11 +27,11 @@ public interface FormatterFunc extends Throwing.Function<String, String> {
 			return new Closeable() {
 				@Override
 				public void close() {
-					Throwing.run(closeable::close);
+					ThrowingEx.run(closeable::close);
 				}
 
 				@Override
-				public String apply(String input) throws Throwable {
+				public String apply(String input) throws Exception {
 					return function.apply(input);
 				}
 			};

@@ -38,7 +38,7 @@ public interface FormatterStep extends Serializable {
 	 * @return The formatted content, guaranteed to only have unix-style newlines
 	 * @throws Throwable when the formatter steps experiences a problem
 	 */
-	String format(String rawUnix, File file) throws Throwable;
+	String format(String rawUnix, File file) throws Exception;
 
 	/**
 	 * Hint to the FormatterStep that {@link #format(String, File)} will not
@@ -72,10 +72,10 @@ public interface FormatterStep extends Serializable {
 		 * Implements the formatting function strictly in terms
 		 * of the input data and the result of {@link #calculateKey()}.
 		 */
-		protected abstract String format(Key key, String rawUnix, File file) throws Throwable;
+		protected abstract String format(Key key, String rawUnix, File file) throws Exception;
 
 		@Override
-		public final String format(String rawUnix, File file) throws Throwable {
+		public final String format(String rawUnix, File file) throws Exception {
 			return format(key(), rawUnix, file);
 		}
 	}
@@ -93,8 +93,8 @@ public interface FormatterStep extends Serializable {
 	 */
 	public static <Key extends Serializable> FormatterStep createLazy(
 			String name,
-			Throwing.Supplier<Key> keySupplier,
-			Throwing.Function<Key, FormatterFunc> keyToFormatter) {
+			ThrowingEx.Supplier<Key> keySupplier,
+			ThrowingEx.Function<Key, FormatterFunc> keyToFormatter) {
 		return new FormatterStepImpl.Standard<>(name, keySupplier, keyToFormatter);
 	}
 
@@ -111,7 +111,7 @@ public interface FormatterStep extends Serializable {
 	public static <Key extends Serializable> FormatterStep create(
 			String name,
 			Key key,
-			Throwing.Function<Key, FormatterFunc> keyToFormatter) {
+			ThrowingEx.Function<Key, FormatterFunc> keyToFormatter) {
 		return createLazy(name, () -> key, keyToFormatter);
 	}
 
@@ -128,8 +128,8 @@ public interface FormatterStep extends Serializable {
 	 */
 	public static <Key extends Serializable> FormatterStep createCloseableLazy(
 			String name,
-			Throwing.Supplier<Key> keySupplier,
-			Throwing.Function<Key, FormatterFunc.Closeable> keyToFormatter) {
+			ThrowingEx.Supplier<Key> keySupplier,
+			ThrowingEx.Function<Key, FormatterFunc.Closeable> keyToFormatter) {
 		return new FormatterStepImpl.Closeable<>(name, keySupplier, keyToFormatter);
 	}
 
@@ -146,7 +146,7 @@ public interface FormatterStep extends Serializable {
 	public static <Key extends Serializable> FormatterStep createCloseable(
 			String name,
 			Key key,
-			Throwing.Function<Key, FormatterFunc.Closeable> keyToFormatter) {
+			ThrowingEx.Function<Key, FormatterFunc.Closeable> keyToFormatter) {
 		return createCloseableLazy(name, () -> key, keyToFormatter);
 	}
 
@@ -161,7 +161,7 @@ public interface FormatterStep extends Serializable {
 	 */
 	public static FormatterStep createNeverUpToDateLazy(
 			String name,
-			Throwing.Supplier<FormatterFunc> functionSupplier) {
+			ThrowingEx.Supplier<FormatterFunc> functionSupplier) {
 		return new FormatterStepImpl.NeverUpToDate(name, functionSupplier);
 	}
 
