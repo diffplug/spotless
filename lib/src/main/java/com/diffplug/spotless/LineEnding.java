@@ -21,6 +21,8 @@ import java.lang.reflect.Method;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
+import javax.annotation.Nullable;
+
 /**
  * Represents the line endings which should be written by the tool.
  */
@@ -47,17 +49,21 @@ public enum LineEnding {
 		if (this != GIT_ATTRIBUTES) {
 			return createPolicy();
 		} else {
-			return gitAttributesPolicyCreator.get().apply(projectDir, toFormat);
+			if (gitAttributesPolicyCreator == null) {
+				try {
+					Class<?> clazz = Class.forName("com.diffplug.spotless.extra.GitAttributesLineEndings");
+					Method method = clazz.getMethod("create", File.class, Supplier.class);
+					gitAttributesPolicyCreator = (proj, target) -> ThrowingEx.get(() -> (Policy) method.invoke(null, proj, target));
+				} catch (Exception e) {
+					throw new IllegalStateException("LineEnding.GIT_ATTRIBUTES requires the spotless-lib-extra library, but it is not on the classpath");
+				}
+			}
+			return gitAttributesPolicyCreator.apply(projectDir, toFormat);
 		}
 	}
 
-	private static Supplier<BiFunction<File, Supplier<Iterable<File>>, Policy>> gitAttributesPolicyCreator = () -> {
-		return ThrowingEx.get(() -> {
-			Class<?> clazz = Class.forName("com.diffplug.spotless.extra.GitAttributesLineEndings");
-			Method method = clazz.getMethod("create", File.class, Supplier.class);
-			return (projectDir, toFormat) -> ThrowingEx.get(() -> (Policy) method.invoke(null, projectDir, toFormat));
-		});
-	};
+	@Nullable
+	private static BiFunction<File, Supplier<Iterable<File>>, Policy> gitAttributesPolicyCreator;
 
 	// @formatter:off
 	/** Should use {@link #createPolicy(File, Supplier)} instead, but this will work iff its a path-independent LineEnding policy. */
