@@ -106,7 +106,7 @@ public class PaddedCellBulk {
 	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 	public static List<File> check(File rootDir, File diagnoseDir, Formatter formatter, List<File> problemFiles) throws IOException {
 		// "fake" Formatter which can use the already-computed result of a PaddedCell as
-		Step paddedCellStep = new Step();
+		FakeStep paddedCellStep = new FakeStep();
 		Formatter paddedFormatter = Formatter.builder()
 				.lineEndingsPolicy(formatter.lineEndingsPolicy)
 				.encoding(formatter.encoding)
@@ -159,7 +159,8 @@ public class PaddedCellBulk {
 
 	/** Helper for check(). */
 	@SuppressWarnings("serial")
-	static class Step implements FormatterStep {
+	@SuppressFBWarnings("SE_NO_SERIALVERSIONID")
+	static class FakeStep implements FormatterStep {
 		private File file;
 		private String formatted;
 

@@ -124,6 +124,7 @@ public class GitAttributesLineEndings {
 		/** The signature of *all* of the files below. */
 		final FileSignature signature;
 
+		@SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
 		FileState(File projectDir, Iterable<File> toFormat) throws IOException {
 			Objects.requireNonNull(projectDir);
 			Objects.requireNonNull(toFormat);

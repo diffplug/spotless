@@ -6,3 +6,8 @@ dependencies {
 	testCompile "org.assertj:assertj-core:${VER_ASSERTJ}"
 	testCompile "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
 }
+
+// we'll hold the core lib to a high standard
+findbugs {
+	reportLevel = 'low' // low|medium|high (low = sensitive to even minor mistakes)
+}
