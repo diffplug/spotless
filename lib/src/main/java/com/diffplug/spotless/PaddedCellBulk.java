@@ -120,10 +120,7 @@ public class PaddedCellBulk {
 		cleanDir(diagnosePath);
 
 		List<File> stillFailing = new ArrayList<>();
-		Iterator<File> problemIter = problemFiles.iterator();
-		while (problemIter.hasNext()) {
-			File problemFile = problemIter.next();
-
+		for (File problemFile : problemFiles) {
 			logger.fine("Running padded cell check on " + problemFile);
 			PaddedCell padded = PaddedCell.check(formatter, problemFile);
 			if (!padded.misbehaved()) {
