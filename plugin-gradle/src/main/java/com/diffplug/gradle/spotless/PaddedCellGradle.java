@@ -49,6 +49,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * to {@link #check(CheckFormatTask, Formatter, List)}.  If there were no problem files, then `paddedCell`
  * is no longer necessary, so users might as well turn it off, so we give that info as a warning.
  */
+// TODO: Cleanup this javadoc
 class PaddedCellGradle {
 	/** URL to a page which describes the padded cell thing. */
 	private static final String URL = "https://github.com/diffplug/spotless/blob/master/PADDEDCELL.md";

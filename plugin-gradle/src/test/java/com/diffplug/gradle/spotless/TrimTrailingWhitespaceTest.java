@@ -20,9 +20,7 @@ import org.junit.Test;
 public class TrimTrailingWhitespaceTest extends ResourceHarness {
 	@Test
 	public void trimTrailingWhitespace() throws Exception {
-		assertTask(extension -> extension.format("underTest", format -> {
-			format.trimTrailingWhitespace();
-		}), cases -> {
+		assertTask(extension -> extension.format("underTest", FormatExtension::trimTrailingWhitespace), cases -> {
 			cases.add("");
 			cases.add("\n");
 			cases.add("\n\n\n");

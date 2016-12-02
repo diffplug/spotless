@@ -20,9 +20,7 @@ import org.junit.Test;
 public class EndWithNewlineStepTest extends ResourceHarness {
 	@Test
 	public void trimTrailingNewlines() throws Exception {
-		assertTask(extension -> extension.format("underTest", format -> {
-			format.endWithNewline();
-		}), cases -> {
+		assertTask(extension -> extension.format("underTest", FormatExtension::endWithNewline), cases -> {
 			cases.add("", "\n");
 			cases.add("\n");
 			cases.add("\n\n\n\n", "\n");

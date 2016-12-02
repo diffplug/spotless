@@ -82,21 +82,9 @@ public class GoogleJavaFormatTest extends GradleIntegrationTest {
 	/** This passes, and confirms that the list of steps we're creating has proper equality. */
 	@Test
 	public void testTaskEquality() throws Exception {
-		CheckFormatTask checks1_0a = createCheckTask(extension -> {
-			extension.java(java -> {
-				java.googleJavaFormat("1.0");
-			});
-		});
-		CheckFormatTask checks1_0b = createCheckTask(extension -> {
-			extension.java(java -> {
-				java.googleJavaFormat("1.0");
-			});
-		});
-		CheckFormatTask checks1_1 = createCheckTask(extension -> {
-			extension.java(java -> {
-				java.googleJavaFormat("1.1");
-			});
-		});
+		CheckFormatTask checks1_0a = createCheckTask(extension -> extension.java(java -> java.googleJavaFormat("1.0")));
+		CheckFormatTask checks1_0b = createCheckTask(extension -> extension.java(java -> java.googleJavaFormat("1.0")));
+		CheckFormatTask checks1_1 = createCheckTask(extension -> extension.java(java -> java.googleJavaFormat("1.1")));
 		Assertions.assertThat(checks1_0a.getSteps()).isEqualTo(checks1_0b.getSteps());
 		Assertions.assertThat(checks1_0a.getSteps()).isNotEqualTo(checks1_1.getSteps());
 	}
