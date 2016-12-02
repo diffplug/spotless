@@ -36,7 +36,7 @@ public interface FormatterStep extends Serializable {
 	 * @param file
 	 *            the File which is being formatted
 	 * @return The formatted content, guaranteed to only have unix-style newlines
-	 * @throws Throwable when the formatter steps experiences a problem
+	 * @throws Exception when the formatter steps experiences a problem
 	 */
 	String format(String rawUnix, File file) throws Exception;
 
