@@ -25,13 +25,10 @@ import org.gradle.api.Project;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 
-@RunWith(Enclosed.class)
 public class FormatTaskTest extends ResourceHarness {
 	private CheckFormatTask checkTask;
 	private ApplyFormatTask applyTask;
