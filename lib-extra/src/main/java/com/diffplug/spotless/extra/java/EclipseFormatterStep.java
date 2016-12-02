@@ -38,11 +38,20 @@ import groovy.xml.QName;
 
 /** Formatter step which calls out to the Eclipse formatter. */
 public class EclipseFormatterStep {
-	public static final String DEFAULT_VERSION = "4.6.1";
+	public static final String defaultVersion() {
+		return DEFAULT_VERSION;
+	}
+
+	private static final String DEFAULT_VERSION = "4.6.1";
 	private static final String NAME = "eclipse formatter";
 	private static final String MAVEN_COORDINATE = "com.diffplug.spotless:spotless-ext-eclipse:";
 	private static final String FORMATTER_CLASS = "com.diffplug.gradle.spotless.java.eclipse.EclipseFormatterStepImpl";
 	private static final String FORMATTER_METHOD = "format";
+
+	/** Creates a formatter step for the given version and settings file. */
+	public static FormatterStep create(File settingsFile, Provisioner provisioner) {
+		return create(defaultVersion(), settingsFile, provisioner);
+	}
 
 	/** Creates a formatter step for the given version and settings file. */
 	public static FormatterStep create(String version, File settingsFile, Provisioner provisioner) {

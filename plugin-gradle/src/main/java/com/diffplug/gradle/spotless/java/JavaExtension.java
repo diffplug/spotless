@@ -29,7 +29,7 @@ import com.diffplug.gradle.spotless.LicenseHeaderStep;
 import com.diffplug.gradle.spotless.SpotlessExtension;
 import com.diffplug.spotless.SerializableFileFilter;
 import com.diffplug.spotless.extra.java.EclipseFormatterStep;
-import com.diffplug.spotless.java.GoogleJavaFormat;
+import com.diffplug.spotless.java.GoogleJavaFormatStep;
 
 public class JavaExtension extends FormatExtension {
 	public static final String NAME = "java";
@@ -57,7 +57,7 @@ public class JavaExtension extends FormatExtension {
 	}
 
 	public void eclipseFormatFile(Object eclipseFormatFile) {
-		eclipseFormatFile(EclipseFormatterStep.DEFAULT_VERSION, eclipseFormatFile);
+		eclipseFormatFile(EclipseFormatterStep.defaultVersion(), eclipseFormatFile);
 	}
 
 	public void eclipseFormatFile(String eclipseVersion, Object eclipseFormatFile) {
@@ -68,7 +68,7 @@ public class JavaExtension extends FormatExtension {
 
 	/** Uses the [google-java-format](https://github.com/google/google-java-format) jar to format source code. */
 	public void googleJavaFormat() {
-		googleJavaFormat(GoogleJavaFormat.defaultVersion());
+		googleJavaFormat(GoogleJavaFormatStep.defaultVersion());
 	}
 
 	/**
@@ -78,7 +78,7 @@ public class JavaExtension extends FormatExtension {
 	 * for an workaround for using snapshot versions.
 	 */
 	public void googleJavaFormat(String version) {
-		addStep(GoogleJavaFormat.createStep(version, GradleProvisioner.fromProject(getProject())));
+		addStep(GoogleJavaFormatStep.create(version, GradleProvisioner.fromProject(getProject())));
 	}
 
 	/** If the user hasn't specified the files yet, we'll assume he/she means all of the java files. */
