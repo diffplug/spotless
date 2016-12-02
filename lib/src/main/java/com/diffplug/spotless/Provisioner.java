@@ -16,15 +16,15 @@
 package com.diffplug.spotless;
 
 import java.io.File;
+import java.util.AbstractCollection;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
  * Many spotless steps require third-party libraries, but we want to keep
  * Spotless' dependencies minimal.
- * @author ntwigg
- *
  */
 public interface Provisioner {
 	/**
