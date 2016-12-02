@@ -10,7 +10,7 @@ dependencies {
 	compile "org.eclipse.jgit:org.eclipse.jgit:4.5.0.201609210915-r"
 	compile "com.googlecode.concurrent-trees:concurrent-trees:2.6.0"
 	// used for xml parsing in EclipseFormatter
-	compile "org.codehaus.groovy:groovy-all-minimal:1.5.8"
+	compile "org.codehaus.groovy:groovy-xml:2.4.7"
 	// testing
 	testCompile "junit:junit:${VER_JUNIT}"
 	testCompile "org.assertj:assertj-core:${VER_ASSERTJ}"
