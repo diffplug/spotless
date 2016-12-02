@@ -16,10 +16,8 @@
 package com.diffplug.spotless;
 
 import java.io.File;
-import java.util.AbstractCollection;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Set;
 
 /**
