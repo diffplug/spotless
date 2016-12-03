@@ -45,7 +45,7 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 		String alreadyCorrect = "LicenseHeader\ncontentstart";
 		Assert.assertEquals(alreadyCorrect, step.format(alreadyCorrect));
 		// If no change is required, it should return the exact same string for efficiency reasons
-		Assert.assertTrue(alreadyCorrect == step.format(alreadyCorrect));
+		Assert.assertSame(alreadyCorrect, step.format(alreadyCorrect));
 	}
 
 	@Test
@@ -54,7 +54,7 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 		LicenseHeaderStep step = new LicenseHeaderStep("LicenseHeader", "contentstart");
 		String alreadyCorrect = "LicenseHeader\ncontentstart";
 		Assert.assertEquals(alreadyCorrect, step.format(alreadyCorrect));
-		Assert.assertTrue(alreadyCorrect == step.format(alreadyCorrect));
+		Assert.assertSame(alreadyCorrect, step.format(alreadyCorrect));
 	}
 
 	@Test
@@ -63,6 +63,6 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 		LicenseHeaderStep step = new LicenseHeaderStep("LicenseHeader\n\n", "contentstart");
 		String alreadyCorrect = "LicenseHeader\n\ncontentstart";
 		Assert.assertEquals(alreadyCorrect, step.format(alreadyCorrect));
-		Assert.assertTrue(alreadyCorrect == step.format(alreadyCorrect));
+		Assert.assertSame(alreadyCorrect, step.format(alreadyCorrect));
 	}
 }
