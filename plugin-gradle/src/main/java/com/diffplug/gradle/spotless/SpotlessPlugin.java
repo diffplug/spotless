@@ -32,6 +32,7 @@ public class SpotlessPlugin implements Plugin<Project> {
 	static final String CHECK = "Check";
 	static final String APPLY = "Apply";
 
+	@Override
 	public void apply(Project project) {
 		this.project = project;
 
