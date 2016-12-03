@@ -97,7 +97,7 @@ public class FormatTaskTest extends ResourceHarness {
 		File testFile = createTestFile("testFile", "apple");
 		applyTask.setTarget(Collections.singleton(testFile));
 
-		checkTask.addStep(FormatterStep.createNeverUpToDate("double-p", content -> content.replace("pp", "p")));
+		applyTask.addStep(FormatterStep.createNeverUpToDate("double-p", content -> content.replace("pp", "p")));
 		applyTask.execute();
 
 		assertFileContent("aple", testFile);
