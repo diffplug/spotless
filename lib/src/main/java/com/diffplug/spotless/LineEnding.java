@@ -54,8 +54,8 @@ public enum LineEnding {
 					Class<?> clazz = Class.forName("com.diffplug.spotless.extra.GitAttributesLineEndings");
 					Method method = clazz.getMethod("create", File.class, Supplier.class);
 					gitAttributesPolicyCreator = (proj, target) -> ThrowingEx.get(() -> (Policy) method.invoke(null, proj, target));
-				} catch (Exception e) {
-					throw new IllegalStateException("LineEnding.GIT_ATTRIBUTES requires the spotless-lib-extra library, but it is not on the classpath");
+				} catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) {
+					throw new IllegalStateException("LineEnding.GIT_ATTRIBUTES requires the spotless-lib-extra library, but it is not on the classpath", e);
 				}
 			}
 			return gitAttributesPolicyCreator.apply(projectDir, toFormat);
@@ -63,7 +63,7 @@ public enum LineEnding {
 	}
 
 	@Nullable
-	private static BiFunction<File, Supplier<Iterable<File>>, Policy> gitAttributesPolicyCreator;
+	private static volatile BiFunction<File, Supplier<Iterable<File>>, Policy> gitAttributesPolicyCreator;
 
 	// @formatter:off
 	/** Should use {@link #createPolicy(File, Supplier)} instead, but this will work iff its a path-independent LineEnding policy. */
