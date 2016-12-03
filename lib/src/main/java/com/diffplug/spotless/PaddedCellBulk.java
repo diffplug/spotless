@@ -107,9 +107,9 @@ public class PaddedCellBulk {
 		// "fake" Formatter which can use the already-computed result of a PaddedCell as
 		FakeStep paddedCellStep = new FakeStep();
 		Formatter paddedFormatter = Formatter.builder()
-				.lineEndingsPolicy(formatter.lineEndingsPolicy)
-				.encoding(formatter.encoding)
-				.rootDir(formatter.rootDir)
+				.lineEndingsPolicy(formatter.getLineEndingsPolicy())
+				.encoding(formatter.getEncoding())
+				.rootDir(formatter.getRootDir())
 				.steps(Collections.singletonList(paddedCellStep))
 				.build();
 
@@ -132,7 +132,7 @@ public class PaddedCellBulk {
 					Path path = Paths.get(diagnoseFile + "." + padded.type().name().toLowerCase(Locale.ROOT) + i);
 					Files.createDirectories(path.getParent());
 					String version = padded.steps().get(i);
-					Files.write(path, version.getBytes(formatter.encoding));
+					Files.write(path, version.getBytes(formatter.getEncoding()));
 				}
 				// dump the type of the misbehavior to console
 				logger.finer("    " + relative + " " + padded.userMessage());
@@ -184,7 +184,7 @@ public class PaddedCellBulk {
 	/** Performs the typical spotlessApply, but with PaddedCell handling of misbehaving FormatterSteps. */
 	public static void apply(Formatter formatter, File file) throws IOException {
 		byte[] rawBytes = Files.readAllBytes(file.toPath());
-		String raw = new String(rawBytes, formatter.encoding);
+		String raw = new String(rawBytes, formatter.getEncoding());
 		String rawUnix = LineEnding.toUnix(raw);
 
 		// enforce the format
@@ -193,7 +193,7 @@ public class PaddedCellBulk {
 		String formatted = formatter.applyLineEndings(formattedUnix, file);
 
 		// if F(input) == input, then the formatter is well-behaving and the input is clean
-		byte[] formattedBytes = formatted.getBytes(formatter.encoding);
+		byte[] formattedBytes = formatted.getBytes(formatter.getEncoding());
 		if (Arrays.equals(rawBytes, formattedBytes)) {
 			return;
 		}
@@ -208,7 +208,7 @@ public class PaddedCellBulk {
 		// get the canonical bytes
 		String canonicalUnix = cell.canonical();
 		String canonical = formatter.applyLineEndings(canonicalUnix, file);
-		byte[] canonicalBytes = canonical.getBytes(formatter.encoding);
+		byte[] canonicalBytes = canonical.getBytes(formatter.getEncoding());
 		if (!Arrays.equals(rawBytes, canonicalBytes)) {
 			// and write them to disk if needed
 			Files.write(file.toPath(), canonicalBytes, StandardOpenOption.TRUNCATE_EXISTING);
@@ -216,7 +216,7 @@ public class PaddedCellBulk {
 	}
 
 	/** Does whatever it takes to turn this path into an empty folder. */
-	static void cleanDir(Path folder) throws IOException {
+	private static void cleanDir(Path folder) throws IOException {
 		if (Files.exists(folder)) {
 			if (Files.isDirectory(folder)) {
 				Files.walkFileTree(folder, new SimpleFileVisitor<Path>() {

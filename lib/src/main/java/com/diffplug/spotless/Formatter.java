@@ -30,14 +30,14 @@ import java.util.logging.Logger;
 
 /** Formatter which performs the full formatting. */
 public final class Formatter {
-	final LineEnding.Policy lineEndingsPolicy;
-	final Charset encoding;
-	final Path rootDir;
-	final List<FormatterStep> steps;
+	private final LineEnding.Policy lineEndingsPolicy;
+	private final Charset encoding;
+	private final Path rootDir;
+	private final List<FormatterStep> steps;
 
 	private static final Logger logger = Logger.getLogger(Formatter.class.getName());
 
-	Formatter(LineEnding.Policy lineEndingsPolicy, Charset encoding, Path rootDirectory, List<FormatterStep> steps) {
+	private Formatter(LineEnding.Policy lineEndingsPolicy, Charset encoding, Path rootDirectory, List<FormatterStep> steps) {
 		this.lineEndingsPolicy = Objects.requireNonNull(lineEndingsPolicy, "lineEndingsPolicy");
 		this.encoding = Objects.requireNonNull(encoding, "encoding");
 		this.rootDir = Objects.requireNonNull(rootDirectory, "rootDir");

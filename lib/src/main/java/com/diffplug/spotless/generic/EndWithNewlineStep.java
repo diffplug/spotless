@@ -17,6 +17,7 @@ package com.diffplug.spotless.generic;
 
 import com.diffplug.spotless.FormatterStep;
 
+// TODO: Consider making this class (and every other class in lib & lib-extra) final
 public class EndWithNewlineStep {
 	/** Creates a FormatterStep which forces lines to end with a newline. */
 	public static FormatterStep create() {
@@ -25,7 +26,7 @@ public class EndWithNewlineStep {
 				unused -> EndWithNewlineStep::format);
 	}
 
-	static String format(String rawUnix) {
+	private static String format(String rawUnix) {
 		// simplifies the logic below if we can assume length > 0
 		if (rawUnix.isEmpty()) {
 			return "\n";
