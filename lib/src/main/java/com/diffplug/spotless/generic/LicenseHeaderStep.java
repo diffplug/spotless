@@ -13,51 +13,63 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless;
+package com.diffplug.spotless.generic;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.gradle.api.GradleException;
-
+import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 
 /** Prefixes a license header before the package statement. */
 public class LicenseHeaderStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	// TODO: Make private and only allow access through a public static method?
 	public static final String NAME = "LicenseHeader";
 
-	private final String license;
+	private final String licenseHeader;
 	private final Pattern delimiterPattern;
 
-	/** The license that we'd like enforced. */
-	public LicenseHeaderStep(String license, String delimiter) {
+	/** Creates a FormatterStep which forces the start of each file to match a license header. */
+	public static FormatterStep createFromHeader(String licenseHeader, String delimiter) {
 		if (delimiter.contains("\n")) {
-			throw new GradleException("The delimiter must not contain any newlines.");
+			throw new IllegalArgumentException("The delimiter must not contain any newlines.");
 		}
 		// sanitize the input license
-		license = LineEnding.toUnix(license);
-		if (!license.endsWith("\n")) {
-			license = license + "\n";
+		licenseHeader = LineEnding.toUnix(licenseHeader);
+		if (!licenseHeader.endsWith("\n")) {
+			licenseHeader = licenseHeader + "\n";
 		}
-		this.license = license;
+		return FormatterStep.create(LicenseHeaderStep.NAME,
+				new LicenseHeaderStep(licenseHeader, delimiter),
+				step -> step::format);
+	}
+
+	/**
+	 * Creates a FormatterStep which forces the start of each file to match the license header
+	 * contained in the given file.
+	 */
+	public static FormatterStep createFromFile(File licenseHeaderFile, Charset encoding, String delimiter) {
+		return FormatterStep.createLazy(LicenseHeaderStep.NAME,
+				() -> new LicenseHeaderStep(licenseHeaderFile, encoding, delimiter),
+				step -> step::format);
+	}
+
+	/** The license that we'd like enforced. */
+	// TODO: Make package-private when LicenseHeaderStepTest is migrated to lib
+	public LicenseHeaderStep(String licenseHeader, String delimiter) {
+		this.licenseHeader = licenseHeader;
 		this.delimiterPattern = Pattern.compile('^' + delimiter, Pattern.UNIX_LINES | Pattern.MULTILINE);
 	}
 
-	/** Use the other constructor which takes an encoding. */
-	@Deprecated
-	public LicenseHeaderStep(File licenseFile, String delimiter) throws IOException {
-		this(licenseFile, StandardCharsets.UTF_8, delimiter);
-	}
-
 	/** Reads the license file from the given file. */
+	// TODO: Make package-private when LicenseHeaderStepTest is migrated to lib
 	public LicenseHeaderStep(File licenseFile, Charset encoding, String delimiter) throws IOException {
 		this(new String(Files.readAllBytes(licenseFile.toPath()), encoding), delimiter);
 	}
@@ -68,13 +80,13 @@ public class LicenseHeaderStep implements Serializable {
 		if (!matcher.find()) {
 			throw new IllegalArgumentException("Unable to find delimiter regex " + delimiterPattern);
 		} else {
-			if (matcher.start() == license.length() && raw.startsWith(license)) {
+			if (matcher.start() == licenseHeader.length() && raw.startsWith(licenseHeader)) {
 				// if no change is required, return the raw string without
 				// creating any other new strings for maximum performance
 				return raw;
 			} else {
 				// otherwise we'll have to add the header
-				return license + raw.substring(matcher.start());
+				return licenseHeader + raw.substring(matcher.start());
 			}
 		}
 	}

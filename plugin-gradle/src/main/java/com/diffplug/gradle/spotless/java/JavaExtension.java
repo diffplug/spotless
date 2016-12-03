@@ -25,10 +25,10 @@ import org.gradle.api.tasks.SourceSet;
 import com.diffplug.gradle.spotless.BaseFormatTask;
 import com.diffplug.gradle.spotless.FormatExtension;
 import com.diffplug.gradle.spotless.GradleProvisioner;
-import com.diffplug.gradle.spotless.LicenseHeaderStep;
 import com.diffplug.gradle.spotless.SpotlessExtension;
 import com.diffplug.spotless.SerializableFileFilter;
 import com.diffplug.spotless.extra.java.EclipseFormatterStep;
+import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.java.GoogleJavaFormatStep;
 
 public class JavaExtension extends FormatExtension {

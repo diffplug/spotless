@@ -39,6 +39,7 @@ import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.generic.EndWithNewlineStep;
 import com.diffplug.spotless.generic.IndentStep;
+import com.diffplug.spotless.generic.LicenseHeaderStep;
 
 import groovy.lang.Closure;
 
@@ -277,9 +278,7 @@ public class FormatExtension {
 	 *            Spotless will look for a line that starts with this to know what the "top" is.
 	 */
 	public void licenseHeader(String licenseHeader, String delimiter) {
-		addStep(FormatterStep.create(LicenseHeaderStep.NAME,
-				new LicenseHeaderStep(licenseHeader, delimiter),
-				step -> step::format));
+		addStep(LicenseHeaderStep.createFromHeader(licenseHeader, delimiter));
 	}
 
 	/**
@@ -289,9 +288,7 @@ public class FormatExtension {
 	 *            Spotless will look for a line that starts with this to know what the "top" is.
 	 */
 	public void licenseHeaderFile(Object licenseHeaderFile, String delimiter) {
-		addStep(FormatterStep.createLazy(LicenseHeaderStep.NAME,
-				() -> new LicenseHeaderStep(getProject().file(licenseHeaderFile), getEncoding(), delimiter),
-				step -> step::format));
+		addStep(LicenseHeaderStep.createFromFile(getProject().file(licenseHeaderFile), getEncoding(), delimiter));
 	}
 
 	/** Sets up a format task according to the values in this extension. */
