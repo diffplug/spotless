@@ -27,10 +27,11 @@ import java.util.ListIterator;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.BuildTask;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
+import org.junit.Assert;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StringPrinter;
@@ -119,8 +120,19 @@ public class GradleIntegrationTest extends ResourceHarness {
 		TaskOutcome expected = upToDate ? TaskOutcome.UP_TO_DATE : TaskOutcome.SUCCESS;
 		TaskOutcome notExpected = upToDate ? TaskOutcome.SUCCESS : TaskOutcome.UP_TO_DATE;
 
-		Assertions.assertThat(buildResult.tasks(expected)).isNotEmpty();
-		Assertions.assertThat(buildResult.tasks(notExpected)).isEmpty();
-		Assertions.assertThat(buildResult.getTasks()).hasSameSizeAs(buildResult.tasks(expected));
+		boolean everythingAsExpected = !buildResult.tasks(expected).isEmpty() &&
+				buildResult.tasks(notExpected).isEmpty() &&
+				buildResult.getTasks().size() == buildResult.tasks(expected).size();
+		if (!everythingAsExpected) {
+			Assert.fail("Expected all tasks to be " + expected + ", but instead was\n" + buildResultToString(buildResult));
+		}
+	}
+
+	static String buildResultToString(BuildResult result) {
+		return StringPrinter.buildString(printer -> {
+			for (BuildTask task : result.getTasks()) {
+				printer.println(task.getPath() + " " + task.getOutcome());
+			}
+		});
 	}
 }
