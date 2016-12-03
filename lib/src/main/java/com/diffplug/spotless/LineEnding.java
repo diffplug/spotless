@@ -106,6 +106,12 @@ public enum LineEnding {
 
 	/** Returns a string with exclusively unix line endings. */
 	public static String toUnix(String input) {
-		return input.replace("\r", "");
+		int firstNewline = input.lastIndexOf('\n');
+		if (firstNewline == -1) {
+			// fastest way to detect if a string is already unix-only
+			return input;
+		} else {
+			return input.replace("\r", "");
+		}
 	}
 }
