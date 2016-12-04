@@ -27,7 +27,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 
 /** Prefixes a license header before the package statement. */
-public class LicenseHeaderStep implements Serializable {
+public final class LicenseHeaderStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// TODO: Make private and only allow access through a public static method?
@@ -38,14 +38,6 @@ public class LicenseHeaderStep implements Serializable {
 
 	/** Creates a FormatterStep which forces the start of each file to match a license header. */
 	public static FormatterStep createFromHeader(String licenseHeader, String delimiter) {
-		if (delimiter.contains("\n")) {
-			throw new IllegalArgumentException("The delimiter must not contain any newlines.");
-		}
-		// sanitize the input license
-		licenseHeader = LineEnding.toUnix(licenseHeader);
-		if (!licenseHeader.endsWith("\n")) {
-			licenseHeader = licenseHeader + "\n";
-		}
 		return FormatterStep.create(LicenseHeaderStep.NAME,
 				new LicenseHeaderStep(licenseHeader, delimiter),
 				step -> step::format);
@@ -64,6 +56,14 @@ public class LicenseHeaderStep implements Serializable {
 	/** The license that we'd like enforced. */
 	// TODO: Make package-private when LicenseHeaderStepTest is migrated to lib
 	public LicenseHeaderStep(String licenseHeader, String delimiter) {
+		if (delimiter.contains("\n")) {
+			throw new IllegalArgumentException("The delimiter must not contain any newlines.");
+		}
+		// sanitize the input license
+		licenseHeader = LineEnding.toUnix(licenseHeader);
+		if (!licenseHeader.endsWith("\n")) {
+			licenseHeader = licenseHeader + "\n";
+		}
 		this.licenseHeader = licenseHeader;
 		this.delimiterPattern = Pattern.compile('^' + delimiter, Pattern.UNIX_LINES | Pattern.MULTILINE);
 	}
