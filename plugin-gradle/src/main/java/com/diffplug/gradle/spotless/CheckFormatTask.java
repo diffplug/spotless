@@ -68,7 +68,7 @@ public class CheckFormatTask extends BaseFormatTask {
 	}
 
 	/** Returns the name of this format. */
-	String getFormatName() {
+	String formatName() {
 		String name = getName();
 		if (name.startsWith(SpotlessPlugin.EXTENSION)) {
 			String after = name.substring(SpotlessPlugin.EXTENSION.length());

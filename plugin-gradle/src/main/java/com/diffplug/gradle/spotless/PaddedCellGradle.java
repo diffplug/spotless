@@ -79,7 +79,7 @@ class PaddedCellGradle {
 	}
 
 	private static File diagnoseDir(CheckFormatTask task) {
-		return new File(task.getProject().getBuildDir(), "spotless-diagnose-" + task.getFormatName());
+		return new File(task.getProject().getBuildDir(), "spotless-diagnose-" + task.formatName());
 	}
 
 	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
