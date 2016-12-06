@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless.java;
+package com.diffplug.spotless.java;
 
 import static java.util.stream.Collectors.toCollection;
 
@@ -22,35 +22,30 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.stream.Stream;
 
-import com.diffplug.common.base.Splitter;
-
 /**
  * From https://github.com/krasa/EclipseCodeFormatter
  *
  * @author Vojtech Krasa
  */
-final class ImportSorterStep {
+public final class ImportSorterStep {
 	public static final String NAME = "ImportSorter";
-
-	private static final Splitter EQUALS_SIGN_SPLITTER = Splitter.on('=');
 
 	private static final int START_INDEX_OF_IMPORTS_PACKAGE_DECLARATION = 7;
 	static final String N = "\n";
 
 	private final List<String> importsOrder;
 
-	static ImportSorterStep of(List<String> importsOrder) {
+	public static ImportSorterStep of(List<String> importsOrder) {
 		return new ImportSorterStep(Objects.requireNonNull(importsOrder));
 	}
 
-	static ImportSorterStep fromFile(File importsFile) throws IOException {
+	public static ImportSorterStep fromFile(File importsFile) throws IOException {
 		Objects.requireNonNull(importsFile);
 		try (Stream<String> lines = Files.lines(importsFile.toPath())) {
 			List<String> importsOrder = lines.filter(line -> !line.startsWith("#"))
@@ -68,9 +63,9 @@ final class ImportSorterStep {
 	}
 
 	private static Map.Entry<Integer, String> splitIntoIndexAndName(String line) {
-		Iterator<String> partsIterator = EQUALS_SIGN_SPLITTER.split(line).iterator();
-		Integer index = Integer.valueOf(partsIterator.next());
-		String name = partsIterator.hasNext() ? partsIterator.next() : "";
+		String[] pieces = line.split("=");
+		Integer index = Integer.valueOf(pieces[0]);
+		String name = pieces.length == 2 ? pieces[1] : "";
 		return new SimpleImmutableEntry<>(index, name);
 	}
 

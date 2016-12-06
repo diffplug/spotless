@@ -20,6 +20,7 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import com.diffplug.gradle.spotless.ResourceHarness;
+import com.diffplug.spotless.java.ImportSorterStep;
 
 public class ImportSorterStepTest extends ResourceHarness {
 	@Test

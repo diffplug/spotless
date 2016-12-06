@@ -30,6 +30,7 @@ import com.diffplug.spotless.SerializableFileFilter;
 import com.diffplug.spotless.extra.java.EclipseFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.java.GoogleJavaFormatStep;
+import com.diffplug.spotless.java.ImportSorterStep;
 
 public class JavaExtension extends FormatExtension {
 	public static final String NAME = "java";
