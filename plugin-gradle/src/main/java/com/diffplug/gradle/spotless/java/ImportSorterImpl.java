@@ -15,16 +15,22 @@
  */
 package com.diffplug.gradle.spotless.java;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 // From https://github.com/krasa/EclipseCodeFormatter
 /*not thread safe*/
-class ImportSorterImpl {
+final class ImportSorterImpl {
 
-	private List<String> template = new ArrayList<String>();
-	private Map<String, List<String>> matchingImports = new HashMap<String, List<String>>();
-	private ArrayList<String> notMatching = new ArrayList<String>();
-	private Set<String> allImportOrderItems = new HashSet<String>();
+	private final List<String> template = new ArrayList<>();
+	private final Map<String, List<String>> matchingImports = new HashMap<>();
+	private final ArrayList<String> notMatching = new ArrayList<>();
+	private final Set<String> allImportOrderItems = new HashSet<>();
 
 	static List<String> sort(List<String> imports, List<String> importsOrder) {
 		ImportSorterImpl importsSorter = new ImportSorterImpl(importsOrder);
@@ -41,7 +47,7 @@ class ImportSorterImpl {
 	}
 
 	private ImportSorterImpl(List<String> importOrder) {
-		List<String> importOrderCopy = new ArrayList<String>(importOrder);
+		List<String> importOrderCopy = new ArrayList<>(importOrder);
 		normalizeStaticOrderItems(importOrderCopy);
 		putStaticItemIfNotExists(importOrderCopy);
 		template.addAll(importOrderCopy);
@@ -82,7 +88,7 @@ class ImportSorterImpl {
 			String orderItem = getBestMatchingImportOrderItem(anImport);
 			if (orderItem != null) {
 				if (!matchingImports.containsKey(orderItem)) {
-					matchingImports.put(orderItem, new ArrayList<String>());
+					matchingImports.put(orderItem, new ArrayList<>());
 				}
 				matchingImports.get(orderItem).add(anImport);
 			} else {
@@ -182,7 +188,7 @@ class ImportSorterImpl {
 					i--;
 					continue;
 				}
-				ArrayList<String> matchingItems = new ArrayList<String>(strings);
+				List<String> matchingItems = new ArrayList<>(strings);
 				Collections.sort(matchingItems);
 
 				// replace order item by matching import statements
@@ -210,7 +216,7 @@ class ImportSorterImpl {
 	}
 
 	private List<String> getResult() {
-		ArrayList<String> strings = new ArrayList<String>();
+		List<String> strings = new ArrayList<>();
 
 		for (String s : template) {
 			if (s.equals(ImportSorterStep.N)) {

@@ -15,49 +15,63 @@
  */
 package com.diffplug.gradle.spotless.java;
 
+import static java.util.stream.Collectors.toCollection;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Scanner;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import com.diffplug.common.base.Splitter;
 
 /**
  * From https://github.com/krasa/EclipseCodeFormatter
  *
  * @author Vojtech Krasa
  */
-public class ImportSorterStep {
+final class ImportSorterStep {
 	public static final String NAME = "ImportSorter";
 
-	public static final int START_INDEX_OF_IMPORTS_PACKAGE_DECLARATION = 7;
-	public static final String N = "\n";
+	private static final Splitter EQUALS_SIGN_SPLITTER = Splitter.on('=');
 
-	private List<String> importsOrder;
+	private static final int START_INDEX_OF_IMPORTS_PACKAGE_DECLARATION = 7;
+	static final String N = "\n";
 
-	public ImportSorterStep(List<String> importsOrder) {
-		this.importsOrder = new ArrayList<String>(importsOrder);
+	private final List<String> importsOrder;
+
+	static ImportSorterStep of(List<String> importsOrder) {
+		return new ImportSorterStep(Objects.requireNonNull(importsOrder));
 	}
 
-	public ImportSorterStep(File importsFile) throws IOException {
-		Map<Integer, String> orderToImport = Files.readAllLines(importsFile.toPath()).stream()
-				// filter out comments
-				.filter(line -> !line.startsWith("#"))
-				// parse 0=input
-				.map(line -> {
-					String[] pieces = line.split("=");
-					int idx = Integer.parseInt(pieces[0]);
-					String name = pieces.length == 2 ? pieces[1] : "";
-					return new AbstractMap.SimpleEntry<Integer, String>(idx, name);
-				})
-				// collect into map
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-		// sort the entries by the key, save the values
-		importsOrder = new ArrayList<>(new TreeMap<>(orderToImport).values());
+	static ImportSorterStep fromFile(File importsFile) throws IOException {
+		Objects.requireNonNull(importsFile);
+		try (Stream<String> lines = Files.lines(importsFile.toPath())) {
+			List<String> importsOrder = lines.filter(line -> !line.startsWith("#"))
+					// parse 0=input
+					.map(ImportSorterStep::splitIntoIndexAndName)
+					.sorted(Map.Entry.comparingByKey())
+					.map(Map.Entry::getValue)
+					.collect(toCollection(ArrayList::new));
+			return new ImportSorterStep(importsOrder);
+		}
+	}
+
+	private ImportSorterStep(List<String> importsOrder) {
+		this.importsOrder = new ArrayList<>(importsOrder);
+	}
+
+	private static Map.Entry<Integer, String> splitIntoIndexAndName(String line) {
+		Iterator<String> partsIterator = EQUALS_SIGN_SPLITTER.split(line).iterator();
+		Integer index = Integer.valueOf(partsIterator.next());
+		String name = partsIterator.hasNext() ? partsIterator.next() : "";
+		return new SimpleImmutableEntry<>(index, name);
 	}
 
 	public String format(String raw) {
@@ -66,7 +80,7 @@ public class ImportSorterStep {
 		int firstImportLine = 0;
 		int lastImportLine = 0;
 		int line = 0;
-		List<String> imports = new ArrayList<String>();
+		List<String> imports = new ArrayList<>();
 		while (scanner.hasNext()) {
 			line++;
 			String next = scanner.nextLine();
