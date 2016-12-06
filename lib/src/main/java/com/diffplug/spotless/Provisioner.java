@@ -24,6 +24,8 @@ import java.util.Set;
  * Many spotless steps require third-party libraries, but we want to keep
  * Spotless' dependencies minimal.
  */
+@FunctionalInterface
+// TODO: Explain what a Provisioner is in further detail
 public interface Provisioner {
 	/**
 	 * Given a set of maven coordinates, returns a set of jars which
