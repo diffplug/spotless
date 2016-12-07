@@ -3,6 +3,7 @@ plugins {
 	id 'com.diffplug.gradle.spotless'
 	id 'java'
 }
+repositories { mavenCentral() }
 spotless {
 	java {
 		target '**/*.java'
@@ -13,6 +14,7 @@ spotless {
 	}
 	freshmark {
 		target '**/*.md'
+		propertiesFile('gradle.properties')
 	}
 	format 'misc', {
 		target '**/*.gradle', '**/*.md', '**/*.gitignore'
