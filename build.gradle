@@ -17,4 +17,5 @@ eclipseResourceFilters {
 	exclude().folders().name('lib-extra')
 	exclude().folders().name('plugin-gradle')
 	exclude().folders().name('plugin-maven')
+	exclude().folders().name('testlib')
 }
