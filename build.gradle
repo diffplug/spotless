@@ -13,6 +13,8 @@ buildscript {
 apply plugin: 'com.diffplug.gradle.eclipse.resourcefilters'
 eclipseResourceFilters {
 	exclude().folders().name('.git')
+	exclude().folders().name('build').recursive()
+
 	exclude().folders().name('lib')
 	exclude().folders().name('lib-extra')
 	exclude().folders().name('plugin-gradle')
