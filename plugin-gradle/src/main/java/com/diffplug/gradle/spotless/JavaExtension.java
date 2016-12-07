@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless.java;
+package com.diffplug.gradle.spotless;
 
 import java.util.List;
 
@@ -22,10 +22,6 @@ import org.gradle.api.internal.file.UnionFileCollection;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 
-import com.diffplug.gradle.spotless.BaseFormatTask;
-import com.diffplug.gradle.spotless.FormatExtension;
-import com.diffplug.gradle.spotless.GradleProvisioner;
-import com.diffplug.gradle.spotless.SpotlessExtension;
 import com.diffplug.spotless.SerializableFileFilter;
 import com.diffplug.spotless.extra.java.EclipseFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;

@@ -20,7 +20,6 @@ import java.nio.charset.StandardCharsets;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.diffplug.gradle.spotless.java.JavaExtension;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 

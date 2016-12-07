@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless.java;
+package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 import java.util.function.Function;
@@ -25,7 +25,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.diffplug.gradle.spotless.CheckFormatTask;
-import com.diffplug.gradle.spotless.GradleIntegrationTest;
 import com.diffplug.gradle.spotless.GradleProvisioner;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.java.GoogleJavaFormatStep;

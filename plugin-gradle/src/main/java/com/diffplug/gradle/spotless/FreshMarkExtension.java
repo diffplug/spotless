@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless.freshmark;
+package com.diffplug.gradle.spotless;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,10 +28,6 @@ import org.gradle.api.Action;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.io.Files;
-import com.diffplug.gradle.spotless.BaseFormatTask;
-import com.diffplug.gradle.spotless.FormatExtension;
-import com.diffplug.gradle.spotless.GradleProvisioner;
-import com.diffplug.gradle.spotless.SpotlessExtension;
 import com.diffplug.spotless.markdown.FreshMarkStep;
 
 public class FreshMarkExtension extends FormatExtension {

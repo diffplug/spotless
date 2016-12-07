@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless.freshmark;
+package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
 import org.junit.Assert;
 import org.junit.Test;
-
-import com.diffplug.gradle.spotless.GradleIntegrationTest;
 
 public class FreshMarkExtensionTest extends GradleIntegrationTest {
 	@Test

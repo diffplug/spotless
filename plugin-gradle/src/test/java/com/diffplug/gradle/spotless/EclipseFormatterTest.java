@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless.java;
+package com.diffplug.gradle.spotless;
 
 import java.io.File;
 
 import org.junit.Test;
-
-import com.diffplug.gradle.spotless.GradleResourceHarness;
 
 public class EclipseFormatterTest extends GradleResourceHarness {
 	@Test
