@@ -24,9 +24,8 @@ public class EclipseFormatterTest extends GradleResourceHarness {
 	public void loadPropertiesSettings() throws Throwable {
 		File eclipseFormatFile = createTestFile("java/eclipse/format/formatter.properties");
 		// setting for the formatter
-		assertTask(extension -> extension.java(java -> java.eclipseFormatFile(eclipseFormatFile)),
-				getTestResource("java/eclipse/format/JavaCodeUnformatted.test"),
-				getTestResource("java/eclipse/format/JavaCodeFormatted.test"));
+		fromExtension(extension -> extension.java(java -> java.eclipseFormatFile(eclipseFormatFile)))
+			.testResource("java/eclipse/format/JavaCodeUnformatted.test", "java/eclipse/format/JavaCodeFormatted.test");
 	}
 
 	@Test
@@ -34,20 +33,17 @@ public class EclipseFormatterTest extends GradleResourceHarness {
 		// setting for the formatter
 		File eclipseFormatFile = createTestFile("java/eclipse/format/formatter.xml");
 		// setting for the formatter
-		assertTask(extension -> extension.java(java -> java.eclipseFormatFile(eclipseFormatFile)),
-				getTestResource("java/eclipse/format/JavaCodeUnformatted.test"),
-				getTestResource("java/eclipse/format/JavaCodeFormatted.test"));
+		fromExtension(extension -> extension.java(java -> java.eclipseFormatFile(eclipseFormatFile)))
+		.testResource("java/eclipse/format/JavaCodeUnformatted.test",
+					"java/eclipse/format/JavaCodeFormatted.test");
 	}
 
 	@Test
 	public void longLiteralProblem() throws Throwable {
 		String folder = "java/eclipse/format/long_literals/";
 		File eclipseFormatFile = createTestFile(folder + "spotless.eclipseformat.xml");
-
-		assertTask(extension -> extension.java(java -> java.eclipseFormatFile(eclipseFormatFile)),
-				cases -> {
-					cases.testUnaffected(getTestResource(folder + "Example1.test"));
-					cases.testUnaffected(getTestResource(folder + "Example2.test"));
-				});
+		fromExtension(extension -> extension.java(java -> java.eclipseFormatFile(eclipseFormatFile)))
+			.testResourceUnaffected(folder + "Example1.test")
+			.testResourceUnaffected(folder + "Example2.test");
 	}
 }

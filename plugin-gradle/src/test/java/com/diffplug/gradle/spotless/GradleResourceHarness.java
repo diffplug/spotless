@@ -34,24 +34,17 @@ import com.diffplug.common.collect.Iterables;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.StepHarness;
-import com.diffplug.spotless.ThrowingEx;
 
 public class GradleResourceHarness extends ResourceHarness {
-	/** Runs a test case on the task created by this extension. */
-	protected void assertTask(Consumer<SpotlessExtension> test, String before, String after) throws Exception {
-		assertTask(test, api -> api.test(before, after));
-	}
-
 	/** Runs many test cases on the task created by this extension. */
-	protected void assertTask(Consumer<SpotlessExtension> test, ThrowingEx.Consumer<StepHarness> testCases) throws Exception {
+	protected StepHarness fromExtension(Consumer<SpotlessExtension> test) throws Exception {
 		// create the task
 		ApplyFormatTask task = createApplyTask(test);
 		// get its formatter
 		task.target = Arrays.asList(this.rootFolder());
 		Formatter formatter = task.buildFormatter();
 		// assert the results
-		StepHarness harness = StepHarness.forFormatter(formatter);
-		testCases.accept(harness);
+		return StepHarness.forFormatter(formatter);
 	}
 
 	protected String getTaskErrorMessage(BaseFormatTask task) {

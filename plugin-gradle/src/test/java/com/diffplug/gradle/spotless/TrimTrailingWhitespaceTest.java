@@ -17,31 +17,32 @@ package com.diffplug.gradle.spotless;
 
 import org.junit.Test;
 
+import com.diffplug.spotless.StepHarness;
+
 public class TrimTrailingWhitespaceTest extends GradleResourceHarness {
 	@Test
 	public void trimTrailingWhitespace() throws Exception {
-		assertTask(extension -> extension.format("underTest", FormatExtension::trimTrailingWhitespace), step -> {
-			step.testUnaffected("");
-			step.testUnaffected("\n");
-			step.testUnaffected("\n\n\n");
-			step.testUnaffected("   preceding");
+		StepHarness step = fromExtension(extension -> extension.format("underTest", FormatExtension::trimTrailingWhitespace));
+		step.testUnaffected("");
+		step.testUnaffected("\n");
+		step.testUnaffected("\n\n\n");
+		step.testUnaffected("   preceding");
 
-			step.test("trailing  ", "trailing");
-			step.test("trailing  \n", "trailing\n");
-			step.test("trailing\t", "trailing");
-			step.test("trailing\t\n", "trailing\n");
+		step.test("trailing  ", "trailing");
+		step.test("trailing  \n", "trailing\n");
+		step.test("trailing\t", "trailing");
+		step.test("trailing\t\n", "trailing\n");
 
-			step.test("\t  trailing  ", "\t  trailing");
-			step.test("\t  trailing  \n", "\t  trailing\n");
-			step.test("\t  trailing\t", "\t  trailing");
-			step.test("\t  trailing\t\n", "\t  trailing\n");
+		step.test("\t  trailing  ", "\t  trailing");
+		step.test("\t  trailing  \n", "\t  trailing\n");
+		step.test("\t  trailing\t", "\t  trailing");
+		step.test("\t  trailing\t\n", "\t  trailing\n");
 
-			step.testUnaffected("Line\nLine");
-			step.test("Line  \nLine", "Line\nLine");
-			step.test("Line\nLine  ", "Line\nLine");
-			step.test("Line  \nLine  ", "Line\nLine");
-			step.test("  Line  \nLine  ", "  Line\nLine");
-			step.test("  Line  \n  Line  ", "  Line\n  Line");
-		});
+		step.testUnaffected("Line\nLine");
+		step.test("Line  \nLine", "Line\nLine");
+		step.test("Line\nLine  ", "Line\nLine");
+		step.test("Line  \nLine  ", "Line\nLine");
+		step.test("  Line  \nLine  ", "  Line\nLine");
+		step.test("  Line  \n  Line  ", "  Line\n  Line");
 	}
 }

@@ -37,11 +37,6 @@ public class ThrowingEx {
 		T get() throws Exception;
 	}
 
-	/** A consumer that can throw any exception. */
-	public interface Consumer<T> {
-		void accept(T value) throws Exception;
-	}
-
 	/** A runnable that can throw any exception. */
 	public interface Runnable {
 		void run() throws Exception;
