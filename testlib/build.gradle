@@ -11,7 +11,7 @@ dependencies {
 	compile gradleTestKit()
 }
 
-// we'll hold the core lib to a high standard
+// we'll hold the testlib to a low standard (prize brevity)
 findbugs {
-	reportLevel = 'low' // low|medium|high (low = sensitive to even minor mistakes)
+	reportLevel = 'high' // low|medium|high (low = sensitive to even minor mistakes)
 }
