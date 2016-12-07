@@ -25,7 +25,7 @@ public class EclipseFormatterTest extends GradleResourceHarness {
 		File eclipseFormatFile = createTestFile("java/eclipse/format/formatter.properties");
 		// setting for the formatter
 		fromExtension(extension -> extension.java(java -> java.eclipseFormatFile(eclipseFormatFile)))
-			.testResource("java/eclipse/format/JavaCodeUnformatted.test", "java/eclipse/format/JavaCodeFormatted.test");
+				.testResource("java/eclipse/format/JavaCodeUnformatted.test", "java/eclipse/format/JavaCodeFormatted.test");
 	}
 
 	@Test
@@ -34,8 +34,8 @@ public class EclipseFormatterTest extends GradleResourceHarness {
 		File eclipseFormatFile = createTestFile("java/eclipse/format/formatter.xml");
 		// setting for the formatter
 		fromExtension(extension -> extension.java(java -> java.eclipseFormatFile(eclipseFormatFile)))
-		.testResource("java/eclipse/format/JavaCodeUnformatted.test",
-					"java/eclipse/format/JavaCodeFormatted.test");
+				.testResource("java/eclipse/format/JavaCodeUnformatted.test",
+						"java/eclipse/format/JavaCodeFormatted.test");
 	}
 
 	@Test
@@ -43,7 +43,7 @@ public class EclipseFormatterTest extends GradleResourceHarness {
 		String folder = "java/eclipse/format/long_literals/";
 		File eclipseFormatFile = createTestFile(folder + "spotless.eclipseformat.xml");
 		fromExtension(extension -> extension.java(java -> java.eclipseFormatFile(eclipseFormatFile)))
-			.testResourceUnaffected(folder + "Example1.test")
-			.testResourceUnaffected(folder + "Example2.test");
+				.testResourceUnaffected(folder + "Example1.test")
+				.testResourceUnaffected(folder + "Example2.test");
 	}
 }
