@@ -42,6 +42,8 @@ public class TestProvisioner {
 				.withGradleUserHomeDir(gradleHome)
 				.build();
 		repoConfig.accept(project.getRepositories());
+		// temporary, just while spotless-ext-eclipse isn't in mavenCentral
+		project.getRepositories().maven(mvn -> mvn.setUrl("https://dl.bintray.com/diffplug/opensource"));
 		return mavenCoords -> {
 			Dependency[] deps = mavenCoords.stream()
 					.map(project.getDependencies()::create)
