@@ -28,7 +28,7 @@ public class EclipseFormatterTest extends ResourceHarness {
 	public void loadPropertiesSettings() throws Throwable {
 		File eclipseFormatFile = createTestFile("java/eclipse/format/formatter.properties");
 		StepHarness.forStep(EclipseFormatterStep.create(eclipseFormatFile, TestProvisioner.mavenCentral()))
-			.testResource("java/eclipse/format/JavaCodeUnformatted.test", "java/eclipse/format/JavaCodeFormatted.test");
+				.testResource("java/eclipse/format/JavaCodeUnformatted.test", "java/eclipse/format/JavaCodeFormatted.test");
 	}
 
 	@Test
