@@ -15,32 +15,58 @@
  */
 package com.diffplug.gradle.spotless.freshmark;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
-import com.diffplug.freshmark.FreshMark;
+import org.gradle.api.Action;
+
+import com.diffplug.common.base.Errors;
+import com.diffplug.common.io.Files;
 import com.diffplug.gradle.spotless.BaseFormatTask;
 import com.diffplug.gradle.spotless.FormatExtension;
+import com.diffplug.gradle.spotless.GradleProvisioner;
 import com.diffplug.gradle.spotless.SpotlessExtension;
+import com.diffplug.spotless.markdown.FreshMarkStep;
 
 public class FreshMarkExtension extends FormatExtension {
 	public static final String NAME = "freshmark";
 
-	public Map<String, ?> properties;
+	public List<Action<Map<String, Object>>> propertyActions = new ArrayList<>();
 
 	public FreshMarkExtension(SpotlessExtension root) {
 		super(NAME, root);
-		customLazy(NAME, () -> {
-			// defaults to all project properties
-			if (properties == null) {
-				properties = getProject().getProperties();
+		addStep(FreshMarkStep.create(() -> {
+			Map<String, Object> map = new HashMap<>();
+			for (Action<Map<String, Object>> action : propertyActions) {
+				action.execute(map);
 			}
-			FreshMark freshMark = new FreshMark(properties, getProject().getLogger()::warn);
-			return freshMark::compile;
-		});
+			return map;
+		}, GradleProvisioner.fromProject(getProject())));
 	}
 
-	public void properties(Map<String, ?> properties) {
-		this.properties = properties;
+	public void properties(Action<Map<String, Object>> action) {
+		propertyActions.add(action);
+	}
+
+	public void propertiesFile(Object file) {
+		propertyActions.add(map -> {
+			File propFile = getProject().file(file);
+			try (InputStream input = Files.asByteSource(propFile).openBufferedStream()) {
+				Properties props = new Properties();
+				props.load(input);
+				for (String key : props.stringPropertyNames()) {
+					map.put(key, props.getProperty(key));
+				}
+			} catch (IOException e) {
+				throw Errors.asRuntime(e);
+			}
+		});
 	}
 
 	@Override
