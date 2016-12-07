@@ -41,7 +41,7 @@ public class FreshMarkExtensionTest extends GradleIntegrationTest {
 				"}");
 		String unformatted = getTestResource("freshmark/FreshMarkUnformatted.test");
 		write("README.md", unformatted);
-		gradleRunner().withArguments("spotlessApply", "--quiet").forwardOutput().build();
+		gradleRunner().withArguments("spotlessApply").build();
 		String result = read("README.md");
 		String formatted = getTestResource("freshmark/FreshMarkFormatted.test");
 		Assert.assertEquals(formatted, result);
