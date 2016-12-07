@@ -15,11 +15,11 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -29,50 +29,29 @@ import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.tasks.TaskExecutionException;
 import org.gradle.testfixtures.ProjectBuilder;
-import org.junit.Assert;
 
 import com.diffplug.common.collect.Iterables;
-import com.diffplug.gradle.spotless.ApplyFormatTask;
-import com.diffplug.gradle.spotless.BaseFormatTask;
-import com.diffplug.gradle.spotless.CheckFormatTask;
-import com.diffplug.gradle.spotless.SpotlessExtension;
-import com.diffplug.gradle.spotless.SpotlessPlugin;
+import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.ResourceHarness;
+import com.diffplug.spotless.StepHarness;
+import com.diffplug.spotless.ThrowingEx;
 
 public class GradleResourceHarness extends ResourceHarness {
 	/** Runs a test case on the task created by this extension. */
 	protected void assertTask(Consumer<SpotlessExtension> test, String before, String after) throws Exception {
-		assertTask(test, api -> api.add(before, after));
+		assertTask(test, api -> api.test(before, after));
 	}
 
 	/** Runs many test cases on the task created by this extension. */
-	protected void assertTask(Consumer<SpotlessExtension> test, Consumer<TestCaseAPI> testCases) throws Exception {
-		List<String> befores = new ArrayList<>();
-		List<String> afters = new ArrayList<>();
-		testCases.accept((before, after) -> {
-			befores.add(before);
-			afters.add(after);
-		});
-
+	protected void assertTask(Consumer<SpotlessExtension> test, ThrowingEx.Consumer<StepHarness> testCases) throws Exception {
 		// create the task
 		ApplyFormatTask task = createApplyTask(test);
-		// create the test file(s)
-		List<File> files = new ArrayList<>(befores.size());
-		for (String before : befores) {
-			File testFile = newFile();
-			Files.write(testFile.toPath(), before.getBytes(StandardCharsets.UTF_8));
-			files.add(testFile);
-		}
-		// set the task to use this test file
-		task.setTarget(files);
-		// run the task
-		task.apply();
-		// check what the task did
-		for (int i = 0; i < befores.size(); ++i) {
-			String afterExpected = afters.get(i);
-			String afterActual = new String(Files.readAllBytes(files.get(i).toPath()), StandardCharsets.UTF_8);
-			Assert.assertEquals(afterExpected, afterActual);
-		}
+		// get its formatter
+		task.target = Arrays.asList(this.rootFolder());
+		Formatter formatter = task.buildFormatter();
+		// assert the results
+		StepHarness harness = StepHarness.forFormatter(formatter);
+		testCases.accept(harness);
 	}
 
 	protected String getTaskErrorMessage(BaseFormatTask task) {

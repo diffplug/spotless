@@ -20,28 +20,28 @@ import org.junit.Test;
 public class TrimTrailingWhitespaceTest extends GradleResourceHarness {
 	@Test
 	public void trimTrailingWhitespace() throws Exception {
-		assertTask(extension -> extension.format("underTest", FormatExtension::trimTrailingWhitespace), cases -> {
-			cases.add("");
-			cases.add("\n");
-			cases.add("\n\n\n");
-			cases.add("   preceding");
+		assertTask(extension -> extension.format("underTest", FormatExtension::trimTrailingWhitespace), step -> {
+			step.testUnaffected("");
+			step.testUnaffected("\n");
+			step.testUnaffected("\n\n\n");
+			step.testUnaffected("   preceding");
 
-			cases.add("trailing  ", "trailing");
-			cases.add("trailing  \n", "trailing\n");
-			cases.add("trailing\t", "trailing");
-			cases.add("trailing\t\n", "trailing\n");
+			step.test("trailing  ", "trailing");
+			step.test("trailing  \n", "trailing\n");
+			step.test("trailing\t", "trailing");
+			step.test("trailing\t\n", "trailing\n");
 
-			cases.add("\t  trailing  ", "\t  trailing");
-			cases.add("\t  trailing  \n", "\t  trailing\n");
-			cases.add("\t  trailing\t", "\t  trailing");
-			cases.add("\t  trailing\t\n", "\t  trailing\n");
+			step.test("\t  trailing  ", "\t  trailing");
+			step.test("\t  trailing  \n", "\t  trailing\n");
+			step.test("\t  trailing\t", "\t  trailing");
+			step.test("\t  trailing\t\n", "\t  trailing\n");
 
-			cases.add("Line\nLine");
-			cases.add("Line  \nLine", "Line\nLine");
-			cases.add("Line\nLine  ", "Line\nLine");
-			cases.add("Line  \nLine  ", "Line\nLine");
-			cases.add("  Line  \nLine  ", "  Line\nLine");
-			cases.add("  Line  \n  Line  ", "  Line\n  Line");
+			step.testUnaffected("Line\nLine");
+			step.test("Line  \nLine", "Line\nLine");
+			step.test("Line\nLine  ", "Line\nLine");
+			step.test("Line  \nLine  ", "Line\nLine");
+			step.test("  Line  \nLine  ", "  Line\nLine");
+			step.test("  Line  \n  Line  ", "  Line\n  Line");
 		});
 	}
 }

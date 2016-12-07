@@ -20,13 +20,13 @@ import org.junit.Test;
 public class EndWithNewlineStepTest extends GradleResourceHarness {
 	@Test
 	public void trimTrailingNewlines() throws Exception {
-		assertTask(extension -> extension.format("underTest", FormatExtension::endWithNewline), cases -> {
-			cases.add("", "\n");
-			cases.add("\n");
-			cases.add("\n\n\n\n", "\n");
-			cases.add("line", "line\n");
-			cases.add("line\n");
-			cases.add("line\nline\n\n\n\n", "line\nline\n");
+		assertTask(extension -> extension.format("underTest", FormatExtension::endWithNewline), step -> {
+			step.test("", "\n");
+			step.testUnaffected("\n");
+			step.test("\n\n\n\n", "\n");
+			step.test("line", "line\n");
+			step.testUnaffected("line\n");
+			step.test("line\nline\n\n\n\n", "line\nline\n");
 		});
 	}
 }

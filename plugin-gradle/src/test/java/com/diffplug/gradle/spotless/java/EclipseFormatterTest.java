@@ -48,8 +48,8 @@ public class EclipseFormatterTest extends GradleResourceHarness {
 
 		assertTask(extension -> extension.java(java -> java.eclipseFormatFile(eclipseFormatFile)),
 				cases -> {
-					cases.add(getTestResource(folder + "Example1.test"));
-					cases.add(getTestResource(folder + "Example2.test"));
+					cases.testUnaffected(getTestResource(folder + "Example1.test"));
+					cases.testUnaffected(getTestResource(folder + "Example2.test"));
 				});
 	}
 }

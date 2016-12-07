@@ -17,6 +17,7 @@ package com.diffplug.spotless;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -28,7 +29,6 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
-import com.diffplug.common.base.Errors;
 import com.diffplug.common.io.Resources;
 
 public class ResourceHarness {
@@ -99,13 +99,12 @@ public class ResourceHarness {
 	}
 
 	/** Returns the contents of the given file from the src/test/resources directory. */
-	protected String getTestResource(String filename) {
-		return getTestResource(filename, LineEnding.UNIX);
-	}
-
-	protected String getTestResource(String filename, LineEnding ending) {
-		String raw = Errors.rethrow().get(() -> Resources.toString(ResourceHarness.class.getResource("/" + filename), StandardCharsets.UTF_8));
-		return LineEnding.toUnix(raw).replace("\n", ending.str());
+	protected static String getTestResource(String filename) throws IOException {
+		URL url = ResourceHarness.class.getResource("/" + filename);
+		if (url == null) {
+			throw new IllegalArgumentException("No such resource " + filename);
+		}
+		return Resources.toString(url, StandardCharsets.UTF_8);
 	}
 
 	/** Returns a File (in a temporary folder) which has the contents of the given file from the src/test/resources directory. */
@@ -148,14 +147,5 @@ public class ResourceHarness {
 		// unix-ify the test resource output in case git screwed it up
 		String expected = LineEnding.toUnix(getTestResource(expectedPath)); // unix-ified output
 		Assert.assertEquals(expected, formatted);
-	}
-
-	/** An api for adding test cases. */
-	public interface TestCaseAPI {
-		void add(String before, String after);
-
-		default void add(String noChange) {
-			add(noChange, noChange);
-		}
 	}
 }
