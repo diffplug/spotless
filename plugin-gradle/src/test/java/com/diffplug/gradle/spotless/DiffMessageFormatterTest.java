@@ -31,7 +31,7 @@ import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 
-public class DiffMessageFormatterTest extends ResourceHarness {
+public class DiffMessageFormatterTest extends GradleResourceHarness {
 	private CheckFormatTask create(File... files) throws IOException {
 		return create(Arrays.asList(files));
 	}

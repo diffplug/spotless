@@ -1,5 +1,6 @@
 ext.artifactId = project.artifactIdLibExtra
 apply from: rootProject.file('gradle/java-setup.gradle')
+apply from: rootProject.file('gradle/java-publish.gradle')
 
 dependencies {
 	compile project(':lib')
@@ -11,7 +12,9 @@ dependencies {
 	compile "com.googlecode.concurrent-trees:concurrent-trees:2.6.0"
 	// used for xml parsing in EclipseFormatter
 	compile "org.codehaus.groovy:groovy-xml:2.4.7"
+
 	// testing
+	testCompile project(':testlib')
 	testCompile "junit:junit:${VER_JUNIT}"
 	testCompile "org.assertj:assertj-core:${VER_ASSERTJ}"
 	testCompile "com.diffplug.durian:durian-testlib:${VER_DURIAN}"

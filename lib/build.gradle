@@ -1,5 +1,6 @@
 ext.artifactId = project.artifactIdLib
 apply from: rootProject.file('gradle/java-setup.gradle')
+apply from: rootProject.file('gradle/java-publish.gradle')
 
 dependencies {
 	// zero runtime reqs is a hard requirements for spotless-lib

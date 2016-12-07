@@ -1,0 +1,143 @@
+///////////
+// MAVEN //
+///////////
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+
+task sourcesJar(type: Jar) {
+	classifier = 'sources'
+	from sourceSets.main.allJava
+}
+
+// Where it's possible to name parameters and methods clearly enough
+// that javadoc is not necessary, why make the code bigger?
+//
+// Thus, no javadoc warnings.
+javadoc {
+	options.addStringOption('Xdoclint:none', '-quiet')
+}
+
+// use markdown in javadoc
+def makeLink = { url, text -> "<a href=\"${url}\" style=\"text-transform: none;\">${text}</a>" }
+def javadocInfo = '<h2>' + makeLink("https://github.com/${org}/${name}", "${group}:${project.ext.artifactId}:${version}") +
+' by ' + makeLink('http://www.diffplug.com', 'DiffPlug') + '</h2>'
+
+String version_str = version.endsWith('-SNAPSHOT') ? 'snapshot' : version
+apply plugin: 'ch.raffael.pegdown-doclet'
+javadoc {
+	// Where it's possible to name parameters and methods clearly enough
+	// that javadoc is not necessary, why make the code bigger?
+	//
+	// Thus, no javadoc warnings.
+	options.addStringOption('Xdoclint:none', '-quiet')
+	// setup the header
+	options.header javadocInfo
+	options.footer javadocInfo
+	// setup links
+	options.linksOffline('https://docs.oracle.com/javase/8/docs/api/', '../gradle/javadoc/java8')
+	options.linksOffline('https://docs.gradle.org/2.14/javadoc/', '../gradle/javadoc/gradle')
+
+	// put the javadoc into a central location
+	destinationDir rootProject.file("javadoc-publish/build/javadoc/${project.ext.artifactId}/${version_str}")
+	// links to javadoc from the other versions
+	options.linksOffline("https://diffplug.github.io/spotles/javadoc/${project.artifactIdLib}/${version_str}/", "../gradle/javadoc/${project.artifactIdLib}")
+	options.linksOffline("https://diffplug.github.io/spotles/javadoc/${project.artifactIdLibExtra}/${version_str}/", "../gradle/javadoc/${project.artifactIdLibExtra}")
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+	classifier = 'javadoc'
+	from javadoc.destinationDir
+}
+
+////////////////
+// PUBLISHING //
+////////////////
+ext.isSnapshot = project.version.endsWith('-SNAPSHOT')
+// pulls the credentials from either the environment variable or gradle.properties
+def cred = {
+	if (System.env[it] != null) {
+		return System.env[it]
+	} else if (project.hasProperty(it)) {
+		return project[it]
+	} else {
+		return 'unknown_' + it
+	}
+}
+
+model {
+	publishing {
+		publications {
+			mavenJava(MavenPublication) {
+				artifact jar
+				artifact sourcesJar
+				artifact javadocJar
+
+				groupId project.group
+				artifactId project.ext.artifactId
+
+				pom.withXml {
+					// add MavenCentral requirements to the POM
+					asNode().children().last() + {
+						resolveStrategy = Closure.DELEGATE_FIRST
+						description project.description
+						url "https://github.com/${project.org}/${project.name}"
+						scm {
+							url "https://github.com/${project.org}/${project.name}"
+							connection "scm:git:git://github.com/${project.org}/${project.name}"
+							developerConnection "scm:git:ssh:git@github.com/${project.org}/${project.name}"
+						}
+						licenses {
+							license {
+								name 'The Apache Software License, Version 2.0'
+								url 'http://www.apache.org/license/LICENSE-2.0.txt'
+								distribution 'repo'
+							}
+						}
+						developers {
+							developer {
+								id 'nedtwigg'
+								name 'Ned Twigg'
+								email 'ned.twigg@diffplug.com'
+							}
+						}
+					}
+				}
+			}
+		}
+		if (project.ext.isSnapshot) {
+			// upload snapshots to oss.sonatype.org
+			repositories { maven {
+				url = 'https://oss.sonatype.org/content/repositories/snapshots'
+				credentials {
+					username = cred('nexus_user')
+					password = cred('nexus_pass')
+				}
+			} }
+		}
+	}
+}
+
+if (!ext.isSnapshot) {
+	// upload releases to bintray and then mavenCentral
+	bintray {
+		user = cred('bintray_user')
+		key = cred('bintray_pass')
+		publications = ['pluginMaven']
+		publish = true
+		pkg {
+			repo = 'opensource'
+			name = project.name
+			userOrg = project.org
+			version {
+				name = project.version
+				mavenCentralSync {
+					user = cred('nexus_user')
+					password = cred('nexus_pass')
+				}
+			}
+		}
+	}
+
+	publish.dependsOn(bintrayUpload)
+	bintrayUpload.dependsOn(['generatePomFileForMavenJavaPublication', jar, sourcesJar, javadocJar])
+}

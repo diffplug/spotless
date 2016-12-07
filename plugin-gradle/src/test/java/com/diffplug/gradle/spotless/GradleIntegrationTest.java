@@ -17,11 +17,6 @@ package com.diffplug.gradle.spotless;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.function.Predicate;
@@ -37,49 +32,8 @@ import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.common.tree.TreeDef;
 import com.diffplug.common.tree.TreeStream;
-import com.diffplug.spotless.LineEnding;
 
-public class GradleIntegrationTest extends ResourceHarness {
-	protected File write(String path, String... lines) throws IOException {
-		return write(path, LineEnding.UNIX, lines);
-	}
-
-	protected File write(String path, LineEnding ending, String... lines) throws IOException {
-		return write(path, ending, StandardCharsets.UTF_8, lines);
-	}
-
-	protected File write(String path, LineEnding ending, Charset encoding, String... lines) throws IOException {
-		String content = Arrays.stream(lines).collect(Collectors.joining(ending.str())) + ending.str();
-		Path target = newFile(path).toPath();
-		Files.createDirectories(target.getParent());
-		Files.write(target, content.getBytes(encoding));
-		return target.toFile();
-	}
-
-	protected String read(String path) throws IOException {
-		return read(path, LineEnding.UNIX);
-	}
-
-	protected String read(String path, LineEnding ending) throws IOException {
-		return read(path, ending, StandardCharsets.UTF_8);
-	}
-
-	protected String read(String path, LineEnding ending, Charset encoding) throws IOException {
-		Path target = newFile(path).toPath();
-		String content = new String(Files.readAllBytes(target), encoding);
-		String allUnixNewline = LineEnding.toUnix(content);
-		return allUnixNewline.replace("\n", ending.str());
-	}
-
-	protected void replace(String path, String toReplace, String replaceWith) throws IOException {
-		String before = read(path);
-		String after = before.replace(toReplace, replaceWith);
-		if (before.equals(after)) {
-			throw new IllegalArgumentException("Replace was ineffective! '" + toReplace + "' was not found in " + path);
-		}
-		write(path, after);
-	}
-
+public class GradleIntegrationTest extends GradleResourceHarness {
 	protected GradleRunner gradleRunner() throws IOException {
 		return GradleRunner.create().withProjectDir(rootFolder()).withPluginClasspath();
 	}

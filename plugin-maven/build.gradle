@@ -1,5 +1,6 @@
 ext.artifactId = project.artifactIdMaven
 apply from: rootProject.file('gradle/java-setup.gradle')
+apply from: rootProject.file('gradle/java-publish.gradle')
 
 dependencies {
 	compile project(':lib')
@@ -7,6 +8,7 @@ dependencies {
 	compile "org.apache.maven:maven-plugin-api:3.0"
 	compileOnly "org.apache.maven.plugin-tools:maven-plugin-annotations:3.4"
 
+	testCompile project(':testlib')
 	testCompile "junit:junit:${VER_JUNIT}"
 	testCompile "org.assertj:assertj-core:${VER_ASSERTJ}"
 	testCompile "com.diffplug.durian:durian-testlib:${VER_DURIAN}"

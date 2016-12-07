@@ -35,6 +35,7 @@ import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.ResourceHarness;
 
 public class PaddedCellTaskTest extends ResourceHarness {
 	private static final boolean IS_WIN = StandardSystemProperty.OS_NAME.value().toLowerCase(Locale.US).contains("win");

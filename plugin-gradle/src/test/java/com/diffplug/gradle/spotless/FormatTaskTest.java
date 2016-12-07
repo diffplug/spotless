@@ -28,6 +28,7 @@ import org.junit.Test;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.ResourceHarness;
 
 public class FormatTaskTest extends ResourceHarness {
 	private CheckFormatTask checkTask;

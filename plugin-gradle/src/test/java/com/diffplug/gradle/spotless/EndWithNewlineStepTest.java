@@ -17,7 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import org.junit.Test;
 
-public class EndWithNewlineStepTest extends ResourceHarness {
+public class EndWithNewlineStepTest extends GradleResourceHarness {
 	@Test
 	public void trimTrailingNewlines() throws Exception {
 		assertTask(extension -> extension.format("underTest", FormatExtension::endWithNewline), cases -> {

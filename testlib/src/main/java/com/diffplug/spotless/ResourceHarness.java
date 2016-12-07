@@ -13,33 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless;
+package com.diffplug.spotless;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
-import org.gradle.api.GradleException;
-import org.gradle.api.Project;
-import org.gradle.api.Task;
-import org.gradle.api.plugins.JavaBasePlugin;
-import org.gradle.api.tasks.TaskExecutionException;
-import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
 import com.diffplug.common.base.Errors;
-import com.diffplug.common.collect.Iterables;
 import com.diffplug.common.io.Resources;
-import com.diffplug.spotless.FormatterFunc;
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.LineEnding;
 
 public class ResourceHarness {
 	/**
@@ -65,6 +55,47 @@ public class ResourceHarness {
 	/** Returns a random child of the root folder. */
 	protected File newFile() throws IOException {
 		return folderDontUseDirectly.newFile().getCanonicalFile();
+	}
+
+	/** Writes the given content to the given path. */
+	protected File write(String path, String... lines) throws IOException {
+		return write(path, LineEnding.UNIX, lines);
+	}
+
+	protected File write(String path, LineEnding ending, String... lines) throws IOException {
+		return write(path, ending, StandardCharsets.UTF_8, lines);
+	}
+
+	protected File write(String path, LineEnding ending, Charset encoding, String... lines) throws IOException {
+		String content = Arrays.stream(lines).collect(Collectors.joining(ending.str())) + ending.str();
+		Path target = newFile(path).toPath();
+		Files.createDirectories(target.getParent());
+		Files.write(target, content.getBytes(encoding));
+		return target.toFile();
+	}
+
+	protected String read(String path) throws IOException {
+		return read(path, LineEnding.UNIX);
+	}
+
+	protected String read(String path, LineEnding ending) throws IOException {
+		return read(path, ending, StandardCharsets.UTF_8);
+	}
+
+	protected String read(String path, LineEnding ending, Charset encoding) throws IOException {
+		Path target = newFile(path).toPath();
+		String content = new String(Files.readAllBytes(target), encoding);
+		String allUnixNewline = LineEnding.toUnix(content);
+		return allUnixNewline.replace("\n", ending.str());
+	}
+
+	protected void replace(String path, String toReplace, String replaceWith) throws IOException {
+		String before = read(path);
+		String after = before.replace(toReplace, replaceWith);
+		if (before.equals(after)) {
+			throw new IllegalArgumentException("Replace was ineffective! '" + toReplace + "' was not found in " + path);
+		}
+		write(path, after);
 	}
 
 	/** Returns the contents of the given file from the src/test/resources directory. */
@@ -119,11 +150,6 @@ public class ResourceHarness {
 		Assert.assertEquals(expected, formatted);
 	}
 
-	/** Runs a test case on the task created by this extension. */
-	protected void assertTask(Consumer<SpotlessExtension> test, String before, String after) throws Exception {
-		assertTask(test, api -> api.add(before, after));
-	}
-
 	/** An api for adding test cases. */
 	public interface TestCaseAPI {
 		void add(String before, String after);
@@ -131,72 +157,5 @@ public class ResourceHarness {
 		default void add(String noChange) {
 			add(noChange, noChange);
 		}
-	}
-
-	/** Runs many test cases on the task created by this extension. */
-	protected void assertTask(Consumer<SpotlessExtension> test, Consumer<TestCaseAPI> testCases) throws Exception {
-		List<String> befores = new ArrayList<>();
-		List<String> afters = new ArrayList<>();
-		testCases.accept((before, after) -> {
-			befores.add(before);
-			afters.add(after);
-		});
-
-		// create the task
-		ApplyFormatTask task = createApplyTask(test);
-		// create the test file(s)
-		List<File> files = new ArrayList<>(befores.size());
-		for (String before : befores) {
-			File testFile = newFile();
-			Files.write(testFile.toPath(), before.getBytes(StandardCharsets.UTF_8));
-			files.add(testFile);
-		}
-		// set the task to use this test file
-		task.setTarget(files);
-		// run the task
-		task.apply();
-		// check what the task did
-		for (int i = 0; i < befores.size(); ++i) {
-			String afterExpected = afters.get(i);
-			String afterActual = new String(Files.readAllBytes(files.get(i).toPath()), StandardCharsets.UTF_8);
-			Assert.assertEquals(afterExpected, afterActual);
-		}
-	}
-
-	protected String getTaskErrorMessage(BaseFormatTask task) {
-		try {
-			task.execute();
-			throw new AssertionError("Expected a TaskExecutionException");
-		} catch (TaskExecutionException e) {
-			GradleException cause = (GradleException) e.getCause();
-			return cause.getMessage();
-		}
-	}
-
-	/** Creates a collection of CheckFormatTask based on the given extension configuration. */
-	protected <T extends Task> List<T> createTasks(Consumer<SpotlessExtension> test, Class<T> clazz) throws Exception {
-		// write out the .gitattributes file
-		Files.write(
-				newFile(".gitattributes").toPath(),
-				"* text eol=lf".getBytes(StandardCharsets.UTF_8),
-				StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-		// create the file and tasks
-		Project project = ProjectBuilder.builder().withProjectDir(rootFolder()).build();
-		project.getRepositories().mavenCentral(); // ensures that plugins which resolve from mavenCentral will work
-		project.getPlugins().apply(JavaBasePlugin.class); // ensures that the java extension will work
-		SpotlessPlugin plugin = project.getPlugins().apply(SpotlessPlugin.class);
-		test.accept(plugin.getExtension());
-		plugin.createTasks();
-		return new ArrayList<>(project.getTasks().withType(clazz).getAsMap().values());
-	}
-
-	/** Creates a single of CheckFormatTask based on the given extension configuration. */
-	protected CheckFormatTask createCheckTask(Consumer<SpotlessExtension> test) throws Exception {
-		return Iterables.getOnlyElement(createTasks(test, CheckFormatTask.class));
-	}
-
-	/** Creates a collection of CheckFormatTask based on the given extension configuration. */
-	protected ApplyFormatTask createApplyTask(Consumer<SpotlessExtension> test) throws Exception {
-		return Iterables.getOnlyElement(createTasks(test, ApplyFormatTask.class));
 	}
 }

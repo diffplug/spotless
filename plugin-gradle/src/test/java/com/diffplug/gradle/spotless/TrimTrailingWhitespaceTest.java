@@ -17,7 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import org.junit.Test;
 
-public class TrimTrailingWhitespaceTest extends ResourceHarness {
+public class TrimTrailingWhitespaceTest extends GradleResourceHarness {
 	@Test
 	public void trimTrailingWhitespace() throws Exception {
 		assertTask(extension -> extension.format("underTest", FormatExtension::trimTrailingWhitespace), cases -> {

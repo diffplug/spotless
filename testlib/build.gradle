@@ -1,0 +1,16 @@
+ext.artifactId = project.artifactIdTestLib
+apply from: rootProject.file('gradle/java-setup.gradle')
+
+dependencies {
+	compile project(':lib')
+	compile "com.diffplug.durian:durian-core:${VER_DURIAN}"
+	compile "com.diffplug.durian:durian-io:${VER_DURIAN}"
+	compile "junit:junit:${VER_JUNIT}"
+	compile "org.assertj:assertj-core:${VER_ASSERTJ}"
+	compile gradleTestKit()
+}
+
+// we'll hold the core lib to a high standard
+findbugs {
+	reportLevel = 'low' // low|medium|high (low = sensitive to even minor mistakes)
+}
