@@ -29,13 +29,13 @@ public interface Provisioner {
 	 * Given a set of maven coordinates, returns a set of jars which
 	 * include all of the specified coordinates and their dependencies.
 	 */
-	Set<File> provisionWithDependencies(Collection<String> mavenCoordinates);
+	public Set<File> provisionWithDependencies(Collection<String> mavenCoordinates);
 
 	/**
 	 * Given a set of maven coordinates, returns a set of jars which
 	 * include all of the specified coordinates and their dependencies.
 	 */
-	default Set<File> provisionWithDependencies(String... mavenCoordinates) {
+	public default Set<File> provisionWithDependencies(String... mavenCoordinates) {
 		return provisionWithDependencies(Arrays.asList(mavenCoordinates));
 	}
 }

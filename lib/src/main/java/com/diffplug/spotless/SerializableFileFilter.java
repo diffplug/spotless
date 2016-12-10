@@ -33,5 +33,5 @@ public interface SerializableFileFilter extends FileFilter, Serializable {
 	 * `SerializableFileFilterImpl.SkipFilesNamed` for an example of how to make a serializable
 	 * subclass.)
 	 */
-	byte[] toBytes();
+	public byte[] toBytes();
 }

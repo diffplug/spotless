@@ -34,6 +34,7 @@ import java.util.stream.Stream;
  * @author Vojtech Krasa
  */
 public final class ImportSorterStep {
+	// TODO: Make private and only allow access through a public static method?
 	public static final String NAME = "ImportSorter";
 
 	private static final int START_INDEX_OF_IMPORTS_PACKAGE_DECLARATION = 7;

@@ -26,7 +26,7 @@ import java.io.Serializable;
  */
 public interface FormatterStep extends Serializable {
 	/** The name of the step, for debugging purposes. */
-	String getName();
+	public String getName();
 
 	/**
 	 * Returns a formatted version of the given content.
@@ -38,7 +38,7 @@ public interface FormatterStep extends Serializable {
 	 * @return The formatted content, guaranteed to only have unix-style newlines
 	 * @throws Exception when the formatter steps experiences a problem
 	 */
-	String format(String rawUnix, File file) throws Exception;
+	public String format(String rawUnix, File file) throws Exception;
 
 	/**
 	 * Hint to the FormatterStep that {@link #format(String, File)} will not
@@ -46,7 +46,7 @@ public interface FormatterStep extends Serializable {
 	 * Does NOT guarantee that format() won't be called ever again, but does
 	 * guarantee to be the best possible time to clean that you're going to get.
 	 */
-	default void finish() {}
+	public default void finish() {}
 
 	/**
 	 * Returns a new FormatterStep which will only apply its changes
@@ -54,7 +54,7 @@ public interface FormatterStep extends Serializable {
 	 *
 	 * The provided filter must be serializable.
 	 */
-	default FormatterStep filterByFile(SerializableFileFilter filter) {
+	public default FormatterStep filterByFile(SerializableFileFilter filter) {
 		return new FilterByFileFormatterStep(this, filter);
 	}
 
