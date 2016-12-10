@@ -29,7 +29,7 @@ final class ImportSorterImpl {
 
 	private final List<String> template = new ArrayList<>();
 	private final Map<String, List<String>> matchingImports = new HashMap<>();
-	private final ArrayList<String> notMatching = new ArrayList<>();
+	private final List<String> notMatching = new ArrayList<>();
 	private final Set<String> allImportOrderItems = new HashSet<>();
 
 	static List<String> sort(List<String> imports, List<String> importsOrder) {
