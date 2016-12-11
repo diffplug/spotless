@@ -17,7 +17,9 @@ package com.diffplug.spotless.generic;
 
 import com.diffplug.spotless.FormatterStep;
 
-// TODO: Consider making this class (and every other class in lib & lib-extra) final
+// TODO: Consider:
+// * making this class (and every other class in lib & lib-extra) final.
+// * making this class (and every other applicable class) non-instantiable.
 public class EndWithNewlineStep {
 	/** Creates a FormatterStep which forces lines to end with a newline. */
 	public static FormatterStep create() {

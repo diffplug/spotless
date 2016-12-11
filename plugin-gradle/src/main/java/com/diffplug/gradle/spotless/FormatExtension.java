@@ -37,9 +37,12 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LazyForwardingEquality;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ThrowingEx;
+import com.diffplug.spotless.generic.CustomReplaceRegexStep;
+import com.diffplug.spotless.generic.CustomReplaceStep;
 import com.diffplug.spotless.generic.EndWithNewlineStep;
 import com.diffplug.spotless.generic.IndentStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
+import com.diffplug.spotless.generic.TrimTrailingWhitespaceStep;
 
 import groovy.lang.Closure;
 
@@ -221,29 +224,17 @@ public class FormatExtension {
 
 	/** Highly efficient find-replace char sequence. */
 	public void customReplace(String name, CharSequence original, CharSequence after) {
-		addStep(FormatterStep.createLazy(name,
-				() -> new SimpleImmutableEntry<>(original, after),
-				key -> (raw -> {
-					CharSequence orig = key.getKey();
-					CharSequence aft = key.getValue();
-					return raw.replace(orig, aft);
-				})));
+		addStep(CustomReplaceStep.create(name, original, after));
 	}
 
 	/** Highly efficient find-replace regex. */
 	public void customReplaceRegex(String name, String regex, String replacement) {
-		addStep(FormatterStep.createLazy(name,
-				() -> new SimpleImmutableEntry<>(Pattern.compile(regex, Pattern.UNIX_LINES | Pattern.MULTILINE), replacement),
-				key -> (raw -> {
-					Pattern pattern = key.getKey();
-					String repl = key.getValue();
-					return pattern.matcher(raw).replaceAll(repl);
-				})));
+		addStep(CustomReplaceRegexStep.create(name, regex, replacement));
 	}
 
 	/** Removes trailing whitespace. */
 	public void trimTrailingWhitespace() {
-		customReplaceRegex("trimTrailingWhitespace", "[ \t]+$", "");
+		addStep(TrimTrailingWhitespaceStep.create());
 	}
 
 	/** Ensures that files end with a single newline. */

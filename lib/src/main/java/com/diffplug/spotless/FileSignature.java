@@ -28,6 +28,8 @@ import java.util.List;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /** Computes a signature for any needed files. */
+// TODO: Consider making the constructors of this class (and any other applicable class) private and
+// to replace them with static factory methods.
 public final class FileSignature implements Serializable {
 	private static final long serialVersionUID = 1L;
 

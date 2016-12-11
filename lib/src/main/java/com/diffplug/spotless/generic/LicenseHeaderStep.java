@@ -54,7 +54,7 @@ public final class LicenseHeaderStep implements Serializable {
 	}
 
 	/** The license that we'd like enforced. */
-	// TODO: Make package-private when LicenseHeaderStepTest is migrated to lib
+	// TODO: Make package-private when LicenseHeaderStepTest is migrated to testlib
 	public LicenseHeaderStep(String licenseHeader, String delimiter) {
 		if (delimiter.contains("\n")) {
 			throw new IllegalArgumentException("The delimiter must not contain any newlines.");
@@ -69,7 +69,7 @@ public final class LicenseHeaderStep implements Serializable {
 	}
 
 	/** Reads the license file from the given file. */
-	// TODO: Make package-private when LicenseHeaderStepTest is migrated to lib
+	// TODO: Make package-private when LicenseHeaderStepTest is migrated to testlib
 	public LicenseHeaderStep(File licenseFile, Charset encoding, String delimiter) throws IOException {
 		this(new String(Files.readAllBytes(licenseFile.toPath()), encoding), delimiter);
 	}
