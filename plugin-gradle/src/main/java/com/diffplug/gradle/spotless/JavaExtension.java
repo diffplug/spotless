@@ -47,12 +47,10 @@ public class JavaExtension extends FormatExtension {
 
 	public void importOrder(List<String> importOrder) {
 		customLazy(ImportSorterStep.NAME, () -> ImportSorterStep.of(importOrder)::format);
-		//addStep(ImportOrderStep.createFromOrder(importOrder));
 	}
 
 	public void importOrderFile(Object importOrderFile) {
 		customLazy(ImportSorterStep.NAME, () -> ImportSorterStep.fromFile(getProject().file(importOrderFile))::format);
-		//addStep(ImportOrderStep.createFromFile(importOrderFile));
 	}
 
 	public void eclipseFormatFile(Object eclipseFormatFile) {
