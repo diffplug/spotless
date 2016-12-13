@@ -16,7 +16,10 @@
 package com.diffplug.spotless;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
@@ -25,6 +28,8 @@ import org.gradle.api.artifacts.dsl.RepositoryHandler;
 import org.gradle.testfixtures.ProjectBuilder;
 
 import com.diffplug.common.base.StandardSystemProperty;
+import com.diffplug.common.base.Suppliers;
+import com.diffplug.common.collect.ImmutableSet;
 
 public class TestProvisioner {
 	/**
@@ -54,13 +59,31 @@ public class TestProvisioner {
 		};
 	}
 
+	/** Creates a Provisioner which will cache the result of previous calls. */
+	private static Provisioner caching(Provisioner input) {
+		Map<ImmutableSet<String>, ImmutableSet<File>> cached = new HashMap<>();
+		return mavenCoords -> {
+			return cached.computeIfAbsent(ImmutableSet.copyOf(mavenCoords), coords -> {
+				return ImmutableSet.copyOf(input.provisionWithDependencies(coords));
+			});
+		};
+	}
+
 	/** Creates a Provisioner for the jcenter repo. */
 	public static Provisioner jcenter() {
-		return createWithRepositories(repo -> repo.jcenter());
+		return jcenter.get();
 	}
+
+	private static final Supplier<Provisioner> jcenter = Suppliers.memoize(() -> {
+		return caching(createWithRepositories(repo -> repo.jcenter()));
+	});
 
 	/** Creates a Provisioner for the mavenCentral repo. */
 	public static Provisioner mavenCentral() {
-		return createWithRepositories(repo -> repo.mavenCentral());
+		return mavenCentral.get();
 	}
+
+	private static final Supplier<Provisioner> mavenCentral = Suppliers.memoize(() -> {
+		return caching(createWithRepositories(repo -> repo.mavenCentral()));
+	});
 }
