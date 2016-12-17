@@ -26,7 +26,7 @@ import com.diffplug.spotless.SerializableFileFilter;
 import com.diffplug.spotless.extra.java.EclipseFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.java.GoogleJavaFormatStep;
-import com.diffplug.spotless.java.ImportSorterStep;
+import com.diffplug.spotless.java.ImportOrderStep;
 
 public class JavaExtension extends FormatExtension {
 	public static final String NAME = "java";
@@ -46,11 +46,11 @@ public class JavaExtension extends FormatExtension {
 	}
 
 	public void importOrder(List<String> importOrder) {
-		customLazy(ImportSorterStep.NAME, () -> ImportSorterStep.of(importOrder)::format);
+		addStep(ImportOrderStep.createFromOrder(importOrder));
 	}
 
 	public void importOrderFile(Object importOrderFile) {
-		customLazy(ImportSorterStep.NAME, () -> ImportSorterStep.fromFile(getProject().file(importOrderFile))::format);
+		addStep(ImportOrderStep.createFromFile(getProject().file(importOrderFile)));
 	}
 
 	public void eclipseFormatFile(Object eclipseFormatFile) {

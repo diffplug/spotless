@@ -31,7 +31,7 @@ public final class LicenseHeaderStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// TODO: Make private and only allow access through a public static method?
-	public static final String NAME = "LicenseHeader";
+	public static final String NAME = "licenseHeader";
 
 	private final String licenseHeader;
 	private final Pattern delimiterPattern;

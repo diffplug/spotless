@@ -15,59 +15,23 @@
  */
 package com.diffplug.spotless.java;
 
-import static java.util.stream.Collectors.toCollection;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Scanner;
-import java.util.stream.Stream;
 
 /**
- * From https://github.com/krasa/EclipseCodeFormatter
- *
  * @author Vojtech Krasa
  */
-public final class ImportSorterStep {
-	// TODO: Make private and only allow access through a public static method?
-	public static final String NAME = "ImportSorter";
-
+// Based on ImportSorterStep from https://github.com/krasa/EclipseCodeFormatter,
+// which itself is licensed under the Apache 2.0 license.
+final class ImportSorter {
 	private static final int START_INDEX_OF_IMPORTS_PACKAGE_DECLARATION = 7;
 	static final String N = "\n";
 
 	private final List<String> importsOrder;
 
-	public static ImportSorterStep of(List<String> importsOrder) {
-		return new ImportSorterStep(Objects.requireNonNull(importsOrder));
-	}
-
-	public static ImportSorterStep fromFile(File importsFile) throws IOException {
-		Objects.requireNonNull(importsFile);
-		try (Stream<String> lines = Files.lines(importsFile.toPath())) {
-			List<String> importsOrder = lines.filter(line -> !line.startsWith("#"))
-					// parse 0=input
-					.map(ImportSorterStep::splitIntoIndexAndName)
-					.sorted(Map.Entry.comparingByKey())
-					.map(Map.Entry::getValue)
-					.collect(toCollection(ArrayList::new));
-			return new ImportSorterStep(importsOrder);
-		}
-	}
-
-	private ImportSorterStep(List<String> importsOrder) {
+	ImportSorter(List<String> importsOrder) {
 		this.importsOrder = new ArrayList<>(importsOrder);
-	}
-
-	private static Map.Entry<Integer, String> splitIntoIndexAndName(String line) {
-		String[] pieces = line.split("=");
-		Integer index = Integer.valueOf(pieces[0]);
-		String name = pieces.length == 2 ? pieces[1] : "";
-		return new SimpleImmutableEntry<>(index, name);
 	}
 
 	public String format(String raw) {

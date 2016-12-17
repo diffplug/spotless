@@ -41,18 +41,18 @@ public class IndentStep {
 				new State(type, numSpacesPerTab), State::toFormatter);
 	}
 
-	static class State implements Serializable {
+	private static class State implements Serializable {
 		private static final long serialVersionUID = 1L;
 
 		final Type type;
 		final int numSpacesPerTab;
 
-		public State(Type type, int numSpacesPerTab) {
+		State(Type type, int numSpacesPerTab) {
 			this.type = type;
 			this.numSpacesPerTab = numSpacesPerTab;
 		}
 
-		public FormatterFunc toFormatter() {
+		FormatterFunc toFormatter() {
 			return new Runtime(this)::format;
 		}
 	}

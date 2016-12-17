@@ -23,8 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-// From https://github.com/krasa/EclipseCodeFormatter
 /*not thread safe*/
+// Based on ImportSorterImpl from https://github.com/krasa/EclipseCodeFormatter,
+// which itself is licensed under the Apache 2.0 license.
 final class ImportSorterImpl {
 
 	private final List<String> template = new ArrayList<>();
@@ -136,7 +137,7 @@ final class ImportSorterImpl {
 					// no order is specified
 					if (template.size() > 0 && (template.get(template.size() - 1).startsWith("static"))) {
 						// insert N after last static import
-						template.add(ImportSorterStep.N);
+						template.add(ImportSorter.N);
 					}
 					template.add(notMatchingItem);
 				} else {
@@ -194,23 +195,23 @@ final class ImportSorterImpl {
 				// replace order item by matching import statements
 				// this is a mess and it is only a luck that it works :-]
 				template.remove(i);
-				if (i != 0 && !template.get(i - 1).equals(ImportSorterStep.N)) {
-					template.add(i, ImportSorterStep.N);
+				if (i != 0 && !template.get(i - 1).equals(ImportSorter.N)) {
+					template.add(i, ImportSorter.N);
 					i++;
 				}
-				if (i + 1 < template.size() && !template.get(i + 1).equals(ImportSorterStep.N)
-						&& !template.get(i).equals(ImportSorterStep.N)) {
-					template.add(i, ImportSorterStep.N);
+				if (i + 1 < template.size() && !template.get(i + 1).equals(ImportSorter.N)
+						&& !template.get(i).equals(ImportSorter.N)) {
+					template.add(i, ImportSorter.N);
 				}
 				template.addAll(i, matchingItems);
-				if (i != 0 && !template.get(i - 1).equals(ImportSorterStep.N)) {
-					template.add(i, ImportSorterStep.N);
+				if (i != 0 && !template.get(i - 1).equals(ImportSorter.N)) {
+					template.add(i, ImportSorter.N);
 				}
 
 			}
 		}
 		// if there is \n on the end, remove it
-		if (template.size() > 0 && template.get(template.size() - 1).equals(ImportSorterStep.N)) {
+		if (template.size() > 0 && template.get(template.size() - 1).equals(ImportSorter.N)) {
 			template.remove(template.size() - 1);
 		}
 	}
@@ -219,10 +220,10 @@ final class ImportSorterImpl {
 		List<String> strings = new ArrayList<>();
 
 		for (String s : template) {
-			if (s.equals(ImportSorterStep.N)) {
+			if (s.equals(ImportSorter.N)) {
 				strings.add(s);
 			} else {
-				strings.add("import " + s + ";" + ImportSorterStep.N);
+				strings.add("import " + s + ";" + ImportSorter.N);
 			}
 		}
 		return strings;

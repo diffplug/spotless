@@ -34,7 +34,7 @@ public class CustomReplaceRegexStep {
 		private final Pattern regex;
 		private final String replacement;
 
-		private State(Pattern regex, String replacement) {
+		State(Pattern regex, String replacement) {
 			this.regex = regex;
 			this.replacement = replacement;
 		}
