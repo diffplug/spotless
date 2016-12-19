@@ -23,8 +23,8 @@ import com.diffplug.spotless.FormatterStep;
 
 public class CustomReplaceRegexStep {
 	public static FormatterStep create(String name, String regex, String replacement) {
-		return FormatterStep.createLazy(name,
-				() -> new State(Pattern.compile(regex, Pattern.UNIX_LINES | Pattern.MULTILINE), replacement),
+		return FormatterStep.create(name,
+				new State(Pattern.compile(regex, Pattern.UNIX_LINES | Pattern.MULTILINE), replacement),
 				State::toFormatter);
 	}
 

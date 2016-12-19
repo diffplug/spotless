@@ -18,13 +18,11 @@ package com.diffplug.gradle.spotless;
 import java.io.File;
 import java.io.Serializable;
 import java.nio.charset.Charset;
-import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import org.gradle.api.GradleException;
@@ -204,7 +202,9 @@ public class FormatExtension {
 	 * {@link #customLazyGroovy(String, ThrowingEx.Supplier)}.
 	 */
 	public void customLazy(String name, ThrowingEx.Supplier<FormatterFunc> formatterSupplier) {
-		addStep(FormatterStep.createLazy(name, () -> globalKey, unusedKey -> formatterSupplier.get()));
+		addStep(FormatterStep.createLazy(name, () -> {
+			return FormatterStep.create(name, globalKey, unusedKey -> formatterSupplier.get());
+		}));
 	}
 
 	/** Same as {@link #customLazy(String, ThrowingEx.Supplier)}, but for Groovy closures. */

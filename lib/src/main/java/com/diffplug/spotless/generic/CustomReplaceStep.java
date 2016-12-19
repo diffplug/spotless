@@ -22,8 +22,8 @@ import com.diffplug.spotless.FormatterStep;
 
 public class CustomReplaceStep {
 	public static FormatterStep create(String name, CharSequence target, CharSequence replacement) {
-		return FormatterStep.createLazy(name,
-				() -> new State(target, replacement),
+		return FormatterStep.create(name,
+				new State(target, replacement),
 				State::toFormatter);
 	}
 

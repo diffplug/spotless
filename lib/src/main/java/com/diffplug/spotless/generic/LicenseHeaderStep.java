@@ -16,7 +16,6 @@
 package com.diffplug.spotless.generic;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -45,12 +44,13 @@ public final class LicenseHeaderStep implements Serializable {
 
 	/**
 	 * Creates a FormatterStep which forces the start of each file to match the license header
-	 * contained in the given file.
+	 * contained in the given file (loaded lazily).
 	 */
 	public static FormatterStep createFromFile(File licenseHeaderFile, Charset encoding, String delimiter) {
-		return FormatterStep.createLazy(LicenseHeaderStep.NAME,
-				() -> new LicenseHeaderStep(licenseHeaderFile, encoding, delimiter),
-				step -> step::format);
+		return FormatterStep.createLazy(LicenseHeaderStep.NAME, () -> {
+			String licenseHeader = new String(Files.readAllBytes(licenseHeaderFile.toPath()), encoding);
+			return createFromHeader(licenseHeader, delimiter);
+		});
 	}
 
 	/** The license that we'd like enforced. */
@@ -66,12 +66,6 @@ public final class LicenseHeaderStep implements Serializable {
 		}
 		this.licenseHeader = licenseHeader;
 		this.delimiterPattern = Pattern.compile('^' + delimiter, Pattern.UNIX_LINES | Pattern.MULTILINE);
-	}
-
-	/** Reads the license file from the given file. */
-	// TODO: Make package-private when LicenseHeaderStepTest is migrated to testlib
-	public LicenseHeaderStep(File licenseFile, Charset encoding, String delimiter) throws IOException {
-		this(new String(Files.readAllBytes(licenseFile.toPath()), encoding), delimiter);
 	}
 
 	/** Formats the given string. */

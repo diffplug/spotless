@@ -44,9 +44,11 @@ public class GoogleJavaFormatStep {
 
 	/** Creates a formatter step for the given version and settings file. */
 	public static FormatterStep create(String version, Provisioner provisioner) {
-		return FormatterStep.createCloseableLazy(NAME,
-				() -> new State(new JarState(MAVEN_COORDINATE + version, provisioner)),
-				State::createFormat);
+		return FormatterStep.createLazy(NAME, () -> {
+			return FormatterStep.createCloseable(NAME,
+					new State(new JarState(MAVEN_COORDINATE + version, provisioner)),
+					State::createFormat);
+		});
 	}
 
 	private static class State implements Serializable {

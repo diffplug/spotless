@@ -48,9 +48,11 @@ public class FreshMarkStep {
 
 	/** Creates a formatter step for the given version and settings file. */
 	public static FormatterStep create(String version, Supplier<Map<String, ?>> properties, Provisioner provisioner) {
-		return FormatterStep.createCloseableLazy(NAME,
-				() -> new State(new JarState(MAVEN_COORDINATE + version, provisioner), properties.get()),
-				State::createFormat);
+		return FormatterStep.createLazy(NAME, () -> {
+			return FormatterStep.create(NAME,
+					new State(new JarState(MAVEN_COORDINATE + version, provisioner), properties.get()),
+					State::createFormat);
+		});
 	}
 
 	private static class State implements Serializable {

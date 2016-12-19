@@ -36,7 +36,7 @@ public abstract class ForwardingEquality<T extends Serializable> implements Seri
 	private static final long serialVersionUID = 1L;
 
 	protected ForwardingEquality(T key) {
-		this.key = key;
+		this.key = Objects.requireNonNull(key);
 	}
 
 	ForwardingEquality() {}

@@ -55,9 +55,11 @@ public class EclipseFormatterStep {
 
 	/** Creates a formatter step for the given version and settings file. */
 	public static FormatterStep create(String version, File settingsFile, Provisioner provisioner) {
-		return FormatterStep.createCloseableLazy(NAME,
-				() -> new State(new JarState(MAVEN_COORDINATE + version, provisioner), settingsFile),
-				State::createFormat);
+		return FormatterStep.createLazy(NAME, () -> {
+			return FormatterStep.create(NAME,
+					new State(new JarState(MAVEN_COORDINATE + version, provisioner), settingsFile),
+					State::createFormat);
+		});
 	}
 
 	private static class State implements Serializable {

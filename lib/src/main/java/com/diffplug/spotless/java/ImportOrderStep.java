@@ -46,10 +46,14 @@ public final class ImportOrderStep {
 		return createFromOrderImpl(getImportOrder(importsFile));
 	}
 
+	private static final String NAME = "importOrder";
+
 	private static FormatterStep createFromOrderImpl(List<String> importOrder) {
-		return FormatterStep.createLazy("importOrder",
-				() -> new State(importOrder),
-				State::toFormatter);
+		return FormatterStep.createLazy(NAME, () -> {
+			return FormatterStep.create(NAME,
+					new State(importOrder),
+					State::toFormatter);
+		});
 	}
 
 	private static List<String> getImportOrder(File importsFile) {

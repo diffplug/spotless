@@ -38,22 +38,14 @@ abstract class FormatterStepImpl<Key extends Serializable> extends Strict<Key> {
 	/** Transient because only the key matters. */
 	final transient String name;
 
-	/** Transient because only the key matters. */
-	final transient ThrowingEx.Supplier<Key> keySupplier;
-
-	FormatterStepImpl(String name, ThrowingEx.Supplier<Key> keySupplier) {
+	FormatterStepImpl(String name, Key key) {
+		super(key);
 		this.name = Objects.requireNonNull(name);
-		this.keySupplier = Objects.requireNonNull(keySupplier);
 	}
 
 	@Override
 	public String getName() {
 		return name;
-	}
-
-	@Override
-	protected Key calculateKey() throws Exception {
-		return keySupplier.get();
 	}
 
 	static final class Standard<Key extends Serializable> extends FormatterStepImpl<Key> {
@@ -62,8 +54,8 @@ abstract class FormatterStepImpl<Key extends Serializable> extends Strict<Key> {
 		final transient ThrowingEx.Function<Key, FormatterFunc> keyToFormatter;
 		transient FormatterFunc formatter; // initialized lazily
 
-		Standard(String name, ThrowingEx.Supplier<Key> keySupplier, ThrowingEx.Function<Key, FormatterFunc> keyToFormatter) {
-			super(name, keySupplier);
+		Standard(String name, Key key, ThrowingEx.Function<Key, FormatterFunc> keyToFormatter) {
+			super(name, key);
 			this.keyToFormatter = Objects.requireNonNull(keyToFormatter);
 		}
 
@@ -82,8 +74,8 @@ abstract class FormatterStepImpl<Key extends Serializable> extends Strict<Key> {
 		final transient ThrowingEx.Function<Key, FormatterFunc.Closeable> keyToFormatter;
 		transient FormatterFunc.Closeable formatter; // initialized lazily
 
-		Closeable(String name, ThrowingEx.Supplier<Key> keySupplier, ThrowingEx.Function<Key, FormatterFunc.Closeable> keyToFormatter) {
-			super(name, keySupplier);
+		Closeable(String name, Key key, ThrowingEx.Function<Key, FormatterFunc.Closeable> keyToFormatter) {
+			super(name, key);
 			this.keyToFormatter = Objects.requireNonNull(keyToFormatter);
 		}
 
@@ -105,25 +97,64 @@ abstract class FormatterStepImpl<Key extends Serializable> extends Strict<Key> {
 	}
 
 	/** Formatter which is equal to itself, but not to any other Formatter. */
-	static class NeverUpToDate extends FormatterStepImpl<Integer> {
+	static class LazyForwardingStep extends LazyForwardingEquality<FormatterStep> implements FormatterStep {
+		private static final long serialVersionUID = 1L;
+
+		final transient String name;
+		final transient ThrowingEx.Supplier<FormatterStep> supplier;
+
+		public LazyForwardingStep(String name, ThrowingEx.Supplier<FormatterStep> supplier) {
+			this.name = Objects.requireNonNull(name);
+			this.supplier = Objects.requireNonNull(supplier);
+		}
+
+		@Override
+		public String getName() {
+			return name;
+		}
+
+		@Override
+		public String format(String rawUnix, File file) throws Exception {
+			return key().format(rawUnix, file);
+		}
+
+		@Override
+		protected FormatterStep calculateKey() throws Exception {
+			return supplier.get();
+		}
+	}
+
+	/** Formatter which is equal to itself, but not to any other Formatter. */
+	static class NeverUpToDate extends LazyForwardingEquality<Integer> implements FormatterStep {
 		private static final long serialVersionUID = 1L;
 
 		private static final Random RANDOM = new Random();
 
+		final transient String name;
 		final transient ThrowingEx.Supplier<FormatterFunc> formatterSupplier;
 		transient FormatterFunc formatter; // initialized lazily
 
 		NeverUpToDate(String name, ThrowingEx.Supplier<FormatterFunc> formatterSupplier) {
-			super(name, RANDOM::nextInt);
+			this.name = name;
 			this.formatterSupplier = formatterSupplier;
 		}
 
 		@Override
-		protected String format(Integer key, String rawUnix, File file) throws Exception {
+		public String getName() {
+			return name;
+		}
+
+		@Override
+		public String format(String rawUnix, File file) throws Exception {
 			if (formatter == null) {
 				formatter = formatterSupplier.get();
 			}
 			return formatter.apply(rawUnix);
+		}
+
+		@Override
+		protected Integer calculateKey() throws Exception {
+			return RANDOM.nextInt();
 		}
 	}
 }

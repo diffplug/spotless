@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 
@@ -30,14 +31,14 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 
 	@Test
 	public void fromString() throws Throwable {
-		LicenseHeaderStep step = new LicenseHeaderStep(getTestResource(KEY_LICENSE), JavaExtension.LICENSE_HEADER_DELIMITER);
-		assertOnResources(step::format, KEY_FILE_NOTAPPLIED, KEY_FILE_APPLIED);
+		FormatterStep step = LicenseHeaderStep.createFromHeader(getTestResource(KEY_LICENSE), JavaExtension.LICENSE_HEADER_DELIMITER);
+		assertOnResources(step, KEY_FILE_NOTAPPLIED, KEY_FILE_APPLIED);
 	}
 
 	@Test
 	public void fromFile() throws Throwable {
-		LicenseHeaderStep step = new LicenseHeaderStep(createTestFile(KEY_LICENSE), StandardCharsets.UTF_8, JavaExtension.LICENSE_HEADER_DELIMITER);
-		assertOnResources(step::format, KEY_FILE_NOTAPPLIED, KEY_FILE_APPLIED);
+		FormatterStep step = LicenseHeaderStep.createFromFile(createTestFile(KEY_LICENSE), StandardCharsets.UTF_8, JavaExtension.LICENSE_HEADER_DELIMITER);
+		assertOnResources(step, KEY_FILE_NOTAPPLIED, KEY_FILE_APPLIED);
 	}
 
 	@Test

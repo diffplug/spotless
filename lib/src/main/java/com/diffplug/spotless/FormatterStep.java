@@ -59,14 +59,14 @@ public interface FormatterStep extends Serializable {
 	}
 
 	/**
-	 * Implements a FormatterStep in a strict way which guarantees correct and lazy implementation
-	 * of up-to-date checks.  This maximizes performance for cases where the FormatterStep is not
-	 * actually needed (e.g. don't load eclipse setting file unless this step is actually running)
-	 * while also ensuring that gradle can detect changes in a step's settings to determine that
-	 * it needs to rerun a format.
+	 * Implements a FormatterStep in a strict way which guarantees correct up-to-date checks.
 	 */
-	abstract class Strict<Key extends Serializable> extends LazyForwardingEquality<Key> implements FormatterStep {
+	abstract class Strict<Key extends Serializable> extends ForwardingEquality<Key> implements FormatterStep {
 		private static final long serialVersionUID = 1L;
+
+		protected Strict(Key key) {
+			super(key);
+		}
 
 		/**
 		 * Implements the formatting function strictly in terms
@@ -83,24 +83,6 @@ public interface FormatterStep extends Serializable {
 	/**
 	 * @param name
 	 *             The name of the formatter step
-	 * @param keySupplier
-	 *             If the rule has any state, this supplier will calculate it lazily, and the result
-	 *             will be passed to keyToFormatter
-	 * @param keyToFormatter
-	 *             A pure function which generates a formatting function using
-	 *             only the state supplied by key and nowhere else.
-	 * @return A FormatterStep
-	 */
-	public static <Key extends Serializable> FormatterStep createLazy(
-			String name,
-			ThrowingEx.Supplier<Key> keySupplier,
-			ThrowingEx.Function<Key, FormatterFunc> keyToFormatter) {
-		return new FormatterStepImpl.Standard<>(name, keySupplier, keyToFormatter);
-	}
-
-	/**
-	 * @param name
-	 *             The name of the formatter step
 	 * @param key
 	 *             If the rule has any state, this key must contain all of it
 	 * @param keyToFormatter
@@ -112,25 +94,7 @@ public interface FormatterStep extends Serializable {
 			String name,
 			Key key,
 			ThrowingEx.Function<Key, FormatterFunc> keyToFormatter) {
-		return createLazy(name, () -> key, keyToFormatter);
-	}
-
-	/**
-	 * @param name
-	 *             The name of the formatter step
-	 * @param keySupplier
-	 *             If the rule has any state, this supplier will calculate it lazily, and the result
-	 *             will be passed to keyToFormatter
-	 * @param keyToFormatter
-	 *             A pure function which generates a closeable formatting function using
-	 *             only the state supplied by key and nowhere else.
-	 * @return A FormatterStep
-	 */
-	public static <Key extends Serializable> FormatterStep createCloseableLazy(
-			String name,
-			ThrowingEx.Supplier<Key> keySupplier,
-			ThrowingEx.Function<Key, FormatterFunc.Closeable> keyToFormatter) {
-		return new FormatterStepImpl.Closeable<>(name, keySupplier, keyToFormatter);
+		return new FormatterStepImpl.Standard<>(name, key, keyToFormatter);
 	}
 
 	/**
@@ -139,7 +103,7 @@ public interface FormatterStep extends Serializable {
 	 * @param key
 	 *             If the rule has any state, this key must contain all of it
 	 * @param keyToFormatter
-	 *             A pure function which generates a formatting function using
+	 *             A pure function which generates a closeable formatting function using
 	 *             only the state supplied by key and nowhere else.
 	 * @return A FormatterStep
 	 */
@@ -147,7 +111,21 @@ public interface FormatterStep extends Serializable {
 			String name,
 			Key key,
 			ThrowingEx.Function<Key, FormatterFunc.Closeable> keyToFormatter) {
-		return createCloseableLazy(name, () -> key, keyToFormatter);
+		return new FormatterStepImpl.Closeable<>(name, key, keyToFormatter);
+	}
+
+	/**
+	 * @param name
+	 *             The name of the formatter step
+	 * @param supplier
+	 *             Lazily creates a formatter step
+	 * @return A FormatterStep which is exactly equal to the underlying formatter step,
+	 *         but loaded lazily for improved performance
+	 */
+	public static <Key extends Serializable> FormatterStep createLazy(
+			String name,
+			ThrowingEx.Supplier<FormatterStep> supplier) {
+		return new FormatterStepImpl.LazyForwardingStep(name, supplier);
 	}
 
 	/**
