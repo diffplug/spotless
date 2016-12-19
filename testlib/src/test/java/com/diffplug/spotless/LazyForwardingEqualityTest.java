@@ -32,6 +32,10 @@ public class LazyForwardingEqualityTest {
 		return new Other(key);
 	}
 
+	static Immediate i(String key) {
+		return new Immediate(key);
+	}
+
 	static class Str extends LazyForwardingEquality<String> {
 		private String key;
 
@@ -51,13 +55,27 @@ public class LazyForwardingEqualityTest {
 		}
 	}
 
+	static class Immediate extends ForwardingEquality<String> {
+		Immediate(String key) {
+			super(key);
+		}
+	}
+
+	/**
+	 * Equality should be based entirely on the key,
+	 * no matter the encapsulating clazz, lazy or not.
+	 */
 	@Test
 	public void testEquality() {
 		new EqualsTester()
-				.addEqualityGroup(s("hello"), reserializeAndAssert(s("hello")))
-				.addEqualityGroup(s("world"), reserializeAndAssert(s("world")))
-				.addEqualityGroup(o("hello"), reserializeAndAssert(o("hello")))
-				.addEqualityGroup(o("world"), reserializeAndAssert(o("world")))
+				.addEqualityGroup(
+						s("hello"), reserializeAndAssert(s("hello")),
+						o("hello"), reserializeAndAssert(o("hello")),
+						i("hello"), reserializeAndAssert(i("hello")))
+				.addEqualityGroup(
+						s("world"), reserializeAndAssert(s("world")),
+						o("world"), reserializeAndAssert(o("world")),
+						i("world"), reserializeAndAssert(i("world")))
 				.testEquals();
 	}
 }
