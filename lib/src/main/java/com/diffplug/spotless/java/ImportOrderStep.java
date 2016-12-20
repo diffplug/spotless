@@ -32,6 +32,7 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 
 public final class ImportOrderStep {
+	// prevent direct instantiation
 	private ImportOrderStep() {}
 
 	public static FormatterStep createFromOrder(List<String> importOrder) {

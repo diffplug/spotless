@@ -21,7 +21,10 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 
 /** Simple step which checks for consistent indentation characters. */
-public class IndentStep {
+public final class IndentStep {
+	// prevent direct instantiation
+	private IndentStep() {}
+
 	public enum Type {
 		TAB, SPACE;
 

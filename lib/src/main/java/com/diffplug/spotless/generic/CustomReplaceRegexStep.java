@@ -21,7 +21,10 @@ import java.util.regex.Pattern;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 
-public class CustomReplaceRegexStep {
+public final class CustomReplaceRegexStep {
+	// prevent direct instantiation
+	private CustomReplaceRegexStep() {}
+
 	public static FormatterStep create(String name, String regex, String replacement) {
 		return FormatterStep.createLazy(name,
 				() -> new State(Pattern.compile(regex, Pattern.UNIX_LINES | Pattern.MULTILINE), replacement),

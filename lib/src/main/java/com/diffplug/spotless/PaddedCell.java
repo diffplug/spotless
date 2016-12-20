@@ -30,7 +30,7 @@ import java.util.function.Function;
  *
  * See {@link #check(Formatter, File)} as the entry point to this class.
  */
-public class PaddedCell {
+public final class PaddedCell {
 	/** The kind of result. */
 	public enum Type {
 		CONVERGE, CYCLE, DIVERGE;
@@ -46,9 +46,9 @@ public class PaddedCell {
 	private final List<String> steps;
 
 	private PaddedCell(File file, Type type, List<String> steps) {
-		this.file = Objects.requireNonNull(file);
-		this.type = Objects.requireNonNull(type);
-		this.steps = Objects.requireNonNull(steps);
+		this.file = Objects.requireNonNull(file, "file");
+		this.type = Objects.requireNonNull(type, "type");
+		this.steps = Objects.requireNonNull(steps, "steps");
 	}
 
 	/** Returns the file which was tested. */
@@ -77,6 +77,8 @@ public class PaddedCell {
 	 *
 	 */
 	public static PaddedCell check(Formatter formatter, File file) {
+		Objects.requireNonNull(formatter, "formatter");
+		Objects.requireNonNull(file, "file");
 		byte[] rawBytes = ThrowingEx.get(() -> Files.readAllBytes(file.toPath()));
 		String raw = new String(rawBytes, formatter.getEncoding());
 		String original = LineEnding.toUnix(raw);
@@ -84,7 +86,11 @@ public class PaddedCell {
 	}
 
 	public static PaddedCell check(Formatter formatter, File file, String originalUnix) {
-		return check(formatter, file, originalUnix, MAX_CYCLE);
+		return check(
+				Objects.requireNonNull(formatter, "formatter"),
+				Objects.requireNonNull(file, "file"),
+				Objects.requireNonNull(originalUnix, "originalUnix"),
+				MAX_CYCLE);
 	}
 
 	private static final int MAX_CYCLE = 10;

@@ -56,7 +56,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * to {@link #check(File, File, Formatter, List)}.  If there were no problem files, then `paddedCell`
  * is no longer necessary, so users might as well turn it off, so we give that info as a warning.
  */
-public class PaddedCellBulk {
+public final class PaddedCellBulk {
 	private static final Logger logger = Logger.getLogger(PaddedCellBulk.class.getName());
 
 	/**
@@ -78,6 +78,8 @@ public class PaddedCellBulk {
 
 	/** Same as {@link #anyMisbehave(Formatter, List)} but with a customizable timeout. */
 	public static boolean anyMisbehave(Formatter formatter, List<File> problemFiles, long timeoutMs) {
+		Objects.requireNonNull(formatter, "formatter");
+		Objects.requireNonNull(problemFiles, "problemFiles");
 		long start = System.currentTimeMillis();
 		for (File problem : problemFiles) {
 			PaddedCell padded = PaddedCell.check(formatter, problem);
@@ -104,6 +106,11 @@ public class PaddedCellBulk {
 	 */
 	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 	public static List<File> check(File rootDir, File diagnoseDir, Formatter formatter, List<File> problemFiles) throws IOException {
+		Objects.requireNonNull(rootDir, "rootDir");
+		Objects.requireNonNull(diagnoseDir, "diagnoseDir");
+		Objects.requireNonNull(formatter, "formatter");
+		Objects.requireNonNull(problemFiles, "problemFiles");
+
 		// "fake" Formatter which can use the already-computed result of a PaddedCell as
 		FakeStep paddedCellStep = new FakeStep();
 		Formatter paddedFormatter = Formatter.builder()

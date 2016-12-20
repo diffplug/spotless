@@ -17,7 +17,10 @@ package com.diffplug.spotless.generic;
 
 import com.diffplug.spotless.FormatterStep;
 
-public class TrimTrailingWhitespaceStep {
+public final class TrimTrailingWhitespaceStep {
+	// prevent direct instantiation
+	private TrimTrailingWhitespaceStep() {}
+
 	public static FormatterStep create() {
 		return CustomReplaceRegexStep.create("trimTrailingWhitespace", "[ \t]+$", "");
 	}

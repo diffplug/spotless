@@ -24,7 +24,7 @@ import static java.util.Objects.requireNonNull;
  * Contains most of the functionality of Durian's Throwing and Errors
  * classes, but stripped down and renamed to avoid any confusion.
  */
-public class ThrowingEx {
+public final class ThrowingEx {
 	private ThrowingEx() {}
 
 	/** A function that can throw any exception. */

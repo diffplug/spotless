@@ -31,9 +31,8 @@ import com.diffplug.spotless.ThrowingEx.Supplier;
 
 /** A step for [FreshMark](https://github.com/diffplug/freshmark). */
 public class FreshMarkStep {
-	public static final String defaultVersion() {
-		return DEFAULT_VERSION;
-	}
+	// prevent direct instantiation
+	private FreshMarkStep() {}
 
 	private static final String DEFAULT_VERSION = "1.3.1";
 	private static final String NAME = "freshmark";
@@ -49,8 +48,12 @@ public class FreshMarkStep {
 	/** Creates a formatter step for the given version and settings file. */
 	public static FormatterStep create(String version, Supplier<Map<String, ?>> properties, Provisioner provisioner) {
 		return FormatterStep.createCloseableLazy(NAME,
-				() -> new State(new JarState(MAVEN_COORDINATE + version, provisioner), properties.get()),
+				() -> new State(JarState.from(MAVEN_COORDINATE + version, provisioner), properties.get()),
 				State::createFormat);
+	}
+
+	public static String defaultVersion() {
+		return DEFAULT_VERSION;
 	}
 
 	private static class State implements Serializable {

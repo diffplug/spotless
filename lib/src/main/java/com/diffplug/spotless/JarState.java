@@ -36,7 +36,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * Serializes the full state of the jar, so it can
  * catch changes in a SNAPSHOT version.
  */
-public class JarState implements Serializable {
+public final class JarState implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = Logger.getLogger(JarState.class.getName());
 
@@ -53,8 +53,15 @@ public class JarState implements Serializable {
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	private final transient Set<File> jars;
 
-	public JarState(String mavenCoordinate, Provisioner provisioner) throws IOException {
-		this.mavenCoordinate = Objects.requireNonNull(mavenCoordinate);
+	public JarState(String mavenCoordinate, FileSignature fileSignature, Set<File> jars) {
+		this.mavenCoordinate = mavenCoordinate;
+		this.fileSignature = fileSignature;
+		this.jars = jars;
+	}
+
+	public static JarState from(String mavenCoordinate, Provisioner provisioner) throws IOException {
+		Objects.requireNonNull(mavenCoordinate);
+		Set<File> jars;
 		try {
 			jars = provisioner.provisionWithDependencies(mavenCoordinate);
 			if (jars.isEmpty()) {
@@ -65,7 +72,8 @@ public class JarState implements Serializable {
 			logger.log(Level.SEVERE, "e.g.: repositories { mavenCentral() }");
 			throw e;
 		}
-		fileSignature = new FileSignature(jars);
+		FileSignature fileSignature = FileSignature.from(jars);
+		return new JarState(mavenCoordinate, fileSignature, jars);
 	}
 
 	private URL[] jarUrls() {

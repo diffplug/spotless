@@ -66,7 +66,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * git config if there are no applicable git attributes, then finally falls
  * back to the platform native.
  */
-public class GitAttributesLineEndings {
+public final class GitAttributesLineEndings {
+	// prevent direct instantiation
+	private GitAttributesLineEndings() {}
 
 	public static Policy create(File projectDir, Supplier<Iterable<File>> toFormat) {
 		return new Policy(projectDir, toFormat);
@@ -187,7 +189,7 @@ public class GitAttributesLineEndings {
 					.filter(file -> file != null && file.exists() && file.isFile())
 					.collect(Collectors.toList());
 			// sign it for up-to-date checking
-			signature = new FileSignature(toSign);
+			signature = FileSignature.from(toSign);
 		}
 
 		/** Returns all of the .gitattributes files which affect the given files. */

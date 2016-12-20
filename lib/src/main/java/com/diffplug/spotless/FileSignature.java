@@ -24,12 +24,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /** Computes a signature for any needed files. */
-// TODO: Consider making the constructors of this class (and any other applicable class) private and
-// to replace them with static factory methods.
 public final class FileSignature implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -41,20 +40,23 @@ public final class FileSignature implements Serializable {
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	private final transient List<File> sortedFiles;
 
+	@SuppressWarnings("unused")
 	private final String[] filenames;
+	@SuppressWarnings("unused")
 	private final long[] filesizes;
+	@SuppressWarnings("unused")
 	private final long[] lastModified;
 
-	public FileSignature(File... files) throws IOException {
-		this(Arrays.asList(files));
+	public static FileSignature from(File... files) throws IOException {
+		return from(Arrays.asList(files));
 	}
 
-	public FileSignature(Iterable<File> files) throws IOException {
-		sortedFiles = toSortedSet(files);
+	public static FileSignature from(Iterable<File> files) throws IOException {
+		List<File> sortedFiles = toSortedSet(Objects.requireNonNull(files));
 
-		filenames = new String[sortedFiles.size()];
-		filesizes = new long[sortedFiles.size()];
-		lastModified = new long[sortedFiles.size()];
+		String[] filenames = new String[sortedFiles.size()];
+		long[] filesizes = new long[sortedFiles.size()];
+		long[] lastModified = new long[sortedFiles.size()];
 
 		int i = 0;
 		for (File file : sortedFiles) {
@@ -63,6 +65,15 @@ public final class FileSignature implements Serializable {
 			lastModified[i] = file.lastModified();
 			++i;
 		}
+
+		return new FileSignature(sortedFiles, filenames, filesizes, lastModified);
+	}
+
+	private FileSignature(List<File> sortedFiles, String[] filenames, long[] filesizes, long[] lastModified) {
+		this.sortedFiles = sortedFiles;
+		this.filenames = filenames;
+		this.filesizes = filesizes;
+		this.lastModified = lastModified;
 	}
 
 	/** Returns all of the files in this signature, throwing an exception if there are more or less than 1 file. */
@@ -80,7 +91,7 @@ public final class FileSignature implements Serializable {
 	}
 
 	/** Returns a "sortedSet" by copying the input to an ArrayList, sorting, and removing duplicates. */
-	static <T extends Comparable<T>> List<T> toSortedSet(Iterable<T> unsorted) {
+	private static <T extends Comparable<T>> List<T> toSortedSet(Iterable<T> unsorted) {
 		// copy the whole unsorted into a list
 		List<T> result;
 		if (unsorted instanceof Collection) {

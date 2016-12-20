@@ -37,10 +37,9 @@ import groovy.util.XmlParser;
 import groovy.xml.QName;
 
 /** Formatter step which calls out to the Eclipse formatter. */
-public class EclipseFormatterStep {
-	public static final String defaultVersion() {
-		return DEFAULT_VERSION;
-	}
+public final class EclipseFormatterStep {
+	// prevent direct instantiation
+	private EclipseFormatterStep() {}
 
 	private static final String DEFAULT_VERSION = "4.6.1";
 	private static final String NAME = "eclipse formatter";
@@ -56,8 +55,12 @@ public class EclipseFormatterStep {
 	/** Creates a formatter step for the given version and settings file. */
 	public static FormatterStep create(String version, File settingsFile, Provisioner provisioner) {
 		return FormatterStep.createCloseableLazy(NAME,
-				() -> new State(new JarState(MAVEN_COORDINATE + version, provisioner), settingsFile),
+				() -> new State(JarState.from(MAVEN_COORDINATE + version, provisioner), settingsFile),
 				State::createFormat);
+	}
+
+	public static String defaultVersion() {
+		return DEFAULT_VERSION;
 	}
 
 	private static class State implements Serializable {
@@ -70,7 +73,7 @@ public class EclipseFormatterStep {
 
 		State(JarState jar, File settingsFile) throws Exception {
 			this.jarState = Objects.requireNonNull(jar);
-			this.settings = new FileSignature(settingsFile);
+			this.settings = FileSignature.from(settingsFile);
 		}
 
 		FormatterFunc.Closeable createFormat() throws Exception {

@@ -27,9 +27,8 @@ import com.diffplug.spotless.Provisioner;
 
 /** Wraps up [google-java-format](https://github.com/google/google-java-format) as a FormatterStep. */
 public class GoogleJavaFormatStep {
-	public static final String defaultVersion() {
-		return DEFAULT_VERSION;
-	}
+	// prevent direct instantiation
+	private GoogleJavaFormatStep() {}
 
 	private static final String DEFAULT_VERSION = "1.1";
 	private static final String NAME = "google-java-format";
@@ -45,8 +44,12 @@ public class GoogleJavaFormatStep {
 	/** Creates a formatter step for the given version and settings file. */
 	public static FormatterStep create(String version, Provisioner provisioner) {
 		return FormatterStep.createCloseableLazy(NAME,
-				() -> new State(new JarState(MAVEN_COORDINATE + version, provisioner)),
+				() -> new State(JarState.from(MAVEN_COORDINATE + version, provisioner)),
 				State::createFormat);
+	}
+
+	public static String defaultVersion() {
+		return DEFAULT_VERSION;
 	}
 
 	private static class State implements Serializable {
