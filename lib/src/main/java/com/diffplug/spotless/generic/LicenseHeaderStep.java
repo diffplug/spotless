@@ -30,8 +30,7 @@ import com.diffplug.spotless.LineEnding;
 public final class LicenseHeaderStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	// TODO: Make private and only allow access through a public static method?
-	public static final String NAME = "licenseHeader";
+	private static final String NAME = "licenseHeader";
 
 	private final String licenseHeader;
 	private final Pattern delimiterPattern;
@@ -51,6 +50,10 @@ public final class LicenseHeaderStep implements Serializable {
 		return FormatterStep.createLazy(LicenseHeaderStep.NAME,
 				() -> new LicenseHeaderStep(licenseHeaderFile, encoding, delimiter),
 				step -> step::format);
+	}
+
+	public static String name() {
+		return NAME;
 	}
 
 	/** The license that we'd like enforced. */
