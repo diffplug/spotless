@@ -30,6 +30,8 @@ import com.diffplug.spotless.LineEnding;
 public final class LicenseHeaderStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	// If this value changes, don't forget to change it in
+	// plugin-gradle/src/main/java/com/diffplug/gradle/spotless/JavaExtension#setupTask as well.
 	private static final String NAME = "licenseHeader";
 
 	private final String licenseHeader;
@@ -50,10 +52,6 @@ public final class LicenseHeaderStep implements Serializable {
 		return FormatterStep.createLazy(LicenseHeaderStep.NAME,
 				() -> new LicenseHeaderStep(licenseHeaderFile, encoding, delimiter),
 				step -> step::format);
-	}
-
-	public static String name() {
-		return NAME;
 	}
 
 	/** The license that we'd like enforced. */
