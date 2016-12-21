@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless;
+package com.diffplug.spotless.generic;
 
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 
@@ -28,42 +30,46 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 	private static final String KEY_FILE_NOTAPPLIED = "license/MissingLicense.test";
 	private static final String KEY_FILE_APPLIED = "license/HasLicense.test";
 
+	// If this constant changes, don't forget to change the similarly-named one in
+	// plugin-gradle/src/main/java/com/diffplug/gradle/spotless/JavaExtension.java as well
+	private static final String LICENSE_HEADER_DELIMITER = "package ";
+
 	@Test
-	public void fromString() throws Throwable {
-		LicenseHeaderStep step = new LicenseHeaderStep(getTestResource(KEY_LICENSE), JavaExtension.LICENSE_HEADER_DELIMITER);
-		assertOnResources(step::format, KEY_FILE_NOTAPPLIED, KEY_FILE_APPLIED);
+	public void fromHeader() throws Throwable {
+		FormatterStep step = LicenseHeaderStep.createFromHeader(getTestResource(KEY_LICENSE), LICENSE_HEADER_DELIMITER);
+		assertOnResources(step, KEY_FILE_NOTAPPLIED, KEY_FILE_APPLIED);
 	}
 
 	@Test
 	public void fromFile() throws Throwable {
-		LicenseHeaderStep step = new LicenseHeaderStep(createTestFile(KEY_LICENSE), StandardCharsets.UTF_8, JavaExtension.LICENSE_HEADER_DELIMITER);
-		assertOnResources(step::format, KEY_FILE_NOTAPPLIED, KEY_FILE_APPLIED);
+		FormatterStep step = LicenseHeaderStep.createFromFile(createTestFile(KEY_LICENSE), StandardCharsets.UTF_8, LICENSE_HEADER_DELIMITER);
+		assertOnResources(step, KEY_FILE_NOTAPPLIED, KEY_FILE_APPLIED);
 	}
 
 	@Test
 	public void efficient() throws Throwable {
-		LicenseHeaderStep step = new LicenseHeaderStep("LicenseHeader\n", "contentstart");
+		FormatterStep step = LicenseHeaderStep.createFromHeader("LicenseHeader\n", "contentstart");
 		String alreadyCorrect = "LicenseHeader\ncontentstart";
-		Assert.assertEquals(alreadyCorrect, step.format(alreadyCorrect));
+		Assert.assertEquals(alreadyCorrect, step.format(alreadyCorrect, new File("")));
 		// If no change is required, it should return the exact same string for efficiency reasons
-		Assert.assertSame(alreadyCorrect, step.format(alreadyCorrect));
+		Assert.assertSame(alreadyCorrect, step.format(alreadyCorrect, new File("")));
 	}
 
 	@Test
 	public void sanitized() throws Throwable {
 		// The sanitizer should add a \n
-		LicenseHeaderStep step = new LicenseHeaderStep("LicenseHeader", "contentstart");
+		FormatterStep step = LicenseHeaderStep.createFromHeader("LicenseHeader", "contentstart");
 		String alreadyCorrect = "LicenseHeader\ncontentstart";
-		Assert.assertEquals(alreadyCorrect, step.format(alreadyCorrect));
-		Assert.assertSame(alreadyCorrect, step.format(alreadyCorrect));
+		Assert.assertEquals(alreadyCorrect, step.format(alreadyCorrect, new File("")));
+		Assert.assertSame(alreadyCorrect, step.format(alreadyCorrect, new File("")));
 	}
 
 	@Test
 	public void sanitizerDoesntGoTooFar() throws Throwable {
 		// if the user wants extra lines after the header, we shouldn't clobber them
-		LicenseHeaderStep step = new LicenseHeaderStep("LicenseHeader\n\n", "contentstart");
+		FormatterStep step = LicenseHeaderStep.createFromHeader("LicenseHeader\n\n", "contentstart");
 		String alreadyCorrect = "LicenseHeader\n\ncontentstart";
-		Assert.assertEquals(alreadyCorrect, step.format(alreadyCorrect));
-		Assert.assertSame(alreadyCorrect, step.format(alreadyCorrect));
+		Assert.assertEquals(alreadyCorrect, step.format(alreadyCorrect, new File("")));
+		Assert.assertSame(alreadyCorrect, step.format(alreadyCorrect, new File("")));
 	}
 }

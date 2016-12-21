@@ -134,7 +134,7 @@ public class ResourceHarness {
 
 	/** Reads the given resource from "before", applies the step, and makes sure the result is "after". */
 	protected void assertOnResources(FormatterStep step, String unformattedPath, String expectedPath) throws Throwable {
-		assertOnResources(rawUnix -> step.format(rawUnix, null), unformattedPath, expectedPath);
+		assertOnResources(rawUnix -> step.format(rawUnix, new File("")), unformattedPath, expectedPath);
 	}
 
 	/** Reads the given resource from "before", applies the step, and makes sure the result is "after". */

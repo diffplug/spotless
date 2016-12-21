@@ -22,6 +22,7 @@ import org.gradle.api.internal.file.UnionFileCollection;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 
+import com.diffplug.common.annotations.VisibleForTesting;
 import com.diffplug.spotless.SerializableFileFilter;
 import com.diffplug.spotless.extra.java.EclipseFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
@@ -35,7 +36,9 @@ public class JavaExtension extends FormatExtension {
 		super(NAME, rootExtension);
 	}
 
-	public static final String LICENSE_HEADER_DELIMITER = "package ";
+	// If this constant changes, don't forget to change the similarly-named one in
+	// testlib/src/test/java/com/diffplug/spotless/generic/LicenseHeaderStepTest.java as well
+	private static final String LICENSE_HEADER_DELIMITER = "package ";
 
 	public void licenseHeader(String licenseHeader) {
 		licenseHeader(licenseHeader, LICENSE_HEADER_DELIMITER);
