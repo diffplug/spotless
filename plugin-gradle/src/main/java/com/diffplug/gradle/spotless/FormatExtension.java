@@ -24,7 +24,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.gradle.api.GradleException;
@@ -136,9 +138,10 @@ public class FormatExtension {
 		} else if (target instanceof String ||
 				(target instanceof List && ((List<?>) target).stream().allMatch(o -> o instanceof String))) {
 			File dir = getProject().getProjectDir();
-			Iterable<String> excludes = Arrays.asList(
-					getProject().getBuildDir().toString() + File.separatorChar + "**",
-					getProject().getProjectDir().toString() + File.separatorChar + ".gradle" + File.separatorChar + "**");
+			Set<Project> subprojects = getProject().getSubprojects();
+			Stream<String> buildDirs = subprojects.stream().map(subproject -> subproject.getBuildDir().toString() + File.separatorChar + "**");
+			Stream<String> localDotGradleDirs = subprojects.stream().map(subproject -> subproject.getProjectDir().toString() + File.separatorChar + ".gradle" + File.separatorChar + "**");
+			Iterable<String> excludes = Stream.concat(buildDirs, localDotGradleDirs).collect(Collectors.toList());
 			if (target instanceof String) {
 				return (FileCollection) getProject().fileTree(dir).include((String) target).exclude(excludes);
 			} else {
