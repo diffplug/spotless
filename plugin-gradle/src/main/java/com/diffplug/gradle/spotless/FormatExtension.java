@@ -138,10 +138,9 @@ public class FormatExtension {
 		} else if (target instanceof String ||
 				(target instanceof List && ((List<?>) target).stream().allMatch(o -> o instanceof String))) {
 			File dir = getProject().getProjectDir();
-			Set<Project> subprojects = getProject().getSubprojects();
-			Stream<String> buildDirs = subprojects.stream().map(subproject -> subproject.getBuildDir().toString() + File.separatorChar + "**");
-			Stream<String> localDotGradleDirs = subprojects.stream().map(subproject -> subproject.getProjectDir().toString() + File.separatorChar + ".gradle" + File.separatorChar + "**");
-			Iterable<String> excludes = Stream.concat(buildDirs, localDotGradleDirs).collect(Collectors.toList());
+			Iterable<String> excludes = Arrays.asList(
+					getProject().getBuildDir().toString() + "/**",
+					getProject().getProjectDir().toString() + "/.gradle/**");
 			if (target instanceof String) {
 				return (FileCollection) getProject().fileTree(dir).include((String) target).exclude(excludes);
 			} else {
