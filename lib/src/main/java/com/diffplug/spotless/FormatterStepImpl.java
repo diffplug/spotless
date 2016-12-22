@@ -20,6 +20,8 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.Random;
 
+import com.diffplug.common.debug.LapTimer;
+import com.diffplug.common.debug.StepProfiler;
 import com.diffplug.spotless.FormatterStep.Strict;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -32,7 +34,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * from the API.
  */
 @SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-abstract class FormatterStepImpl<Key extends Serializable> extends Strict<Key> {
+public abstract class FormatterStepImpl<Key extends Serializable> extends Strict<Key> {
+	public static final StepProfiler PROFILER = new StepProfiler(LapTimer.createNanoWrap2Sec());
+
 	private static final long serialVersionUID = 1L;
 
 	/** Transient because only the key matters. */
@@ -53,7 +57,12 @@ abstract class FormatterStepImpl<Key extends Serializable> extends Strict<Key> {
 
 	@Override
 	protected Key calculateKey() throws Exception {
-		return keySupplier.get();
+		try {
+			PROFILER.startStep(name + " calculateKey");
+			return keySupplier.get();
+		} finally {
+			PROFILER.finish();
+		}
 	}
 
 	static final class Standard<Key extends Serializable> extends FormatterStepImpl<Key> {
@@ -70,9 +79,16 @@ abstract class FormatterStepImpl<Key extends Serializable> extends Strict<Key> {
 		@Override
 		protected String format(Key key, String rawUnix, File file) throws Exception {
 			if (formatter == null) {
+				PROFILER.startStep(name + " createFormatter");
 				formatter = keyToFormatter.apply(key());
+				PROFILER.finish();
 			}
-			return formatter.apply(rawUnix);
+			try {
+				PROFILER.startStep(name + " apply");
+				return formatter.apply(rawUnix);
+			} finally {
+				PROFILER.finish();
+			}
 		}
 	}
 
@@ -90,15 +106,24 @@ abstract class FormatterStepImpl<Key extends Serializable> extends Strict<Key> {
 		@Override
 		protected String format(Key key, String rawUnix, File file) throws Exception {
 			if (formatter == null) {
+				PROFILER.startStep(name + " openFormatter");
 				formatter = keyToFormatter.apply(key());
+				PROFILER.finish();
 			}
-			return formatter.apply(rawUnix);
+			try {
+				PROFILER.startStep(name + " apply");
+				return formatter.apply(rawUnix);
+			} finally {
+				PROFILER.finish();
+			}
 		}
 
 		@Override
 		public void finish() {
 			if (formatter != null) {
+				PROFILER.startStep(name + " closeFormatter");
 				formatter.close();
+				PROFILER.finish();
 				formatter = null;
 			}
 		}
