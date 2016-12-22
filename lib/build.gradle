@@ -3,8 +3,6 @@ apply from: rootProject.file('gradle/java-setup.gradle')
 apply from: rootProject.file('gradle/java-publish.gradle')
 
 dependencies {
-	// temporary, for profiling
-	compile 'com.diffplug.durian:durian-debug:1.0.0'
 	// zero runtime reqs is a hard requirements for spotless-lib
 	// if you need a dep, put it in lib-extra
 	testCompile "junit:junit:${VER_JUNIT}"

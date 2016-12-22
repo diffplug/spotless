@@ -20,7 +20,6 @@ import java.io.File;
 import org.gradle.api.tasks.TaskAction;
 
 import com.diffplug.spotless.Formatter;
-import com.diffplug.spotless.FormatterStepImpl;
 import com.diffplug.spotless.PaddedCellBulk;
 
 public class ApplyFormatTask extends BaseFormatTask {
@@ -40,6 +39,5 @@ public class ApplyFormatTask extends BaseFormatTask {
 		} finally {
 			formatter.finish();
 		}
-		FormatterStepImpl.PROFILER.printResults();
 	}
 }
