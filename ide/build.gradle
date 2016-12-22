@@ -8,9 +8,10 @@ oomphIde {
 		niceText()		// nice fonts and visible whitespace
 	}
 
-	// add syntax highlighting for gradle scripts
-	repo 'http://www.nodeclipse.org/updates/gradle-ide-pack/'
-	feature 'org.nodeclipse.enide.editors.gradle.feature'
-
 	addAllProjects()
+
+	thirdParty {
+		minimalistGradleEditor {}
+		tmTerminal {}
+	}
 }
