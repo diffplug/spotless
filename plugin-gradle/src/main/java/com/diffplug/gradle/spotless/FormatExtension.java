@@ -18,14 +18,12 @@ package com.diffplug.gradle.spotless;
 import java.io.File;
 import java.io.Serializable;
 import java.nio.charset.Charset;
-import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 

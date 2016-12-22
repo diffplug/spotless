@@ -22,7 +22,6 @@ import org.gradle.api.internal.file.UnionFileCollection;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 
-import com.diffplug.common.annotations.VisibleForTesting;
 import com.diffplug.spotless.SerializableFileFilter;
 import com.diffplug.spotless.extra.java.EclipseFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
