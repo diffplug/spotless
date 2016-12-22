@@ -98,9 +98,7 @@ public class JavaExtension extends FormatExtension {
 		// LicenseHeaderStep completely blows apart package-info.java - this common-sense check ensures that
 		// it skips package-info.java. See https://github.com/diffplug/spotless/issues/1
 		steps.replaceAll(step -> {
-			// If the string "licenseHeader" below changes, don't forget to change it in
-			// lib/src/main/java/com/diffplug/spotless/generic/LicenseHeaderStep.NAME as well.
-			if ("licenseHeader".equals(step.getName())) {
+			if (LicenseHeaderStep.name().equals(step.getName())) {
 				return step.filterByFile(SerializableFileFilter.skipFilesNamed("package-info.java"));
 			} else {
 				return step;
