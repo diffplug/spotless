@@ -373,7 +373,7 @@ public final class GitAttributesLineEndings {
 	}
 
 	/** Parses an attribute value from a list of rules, returning null if there is no match for the given key. */
-	private static String findAttributeInRules(String subpath, boolean isFolder, String key, List<AttributesRule> rules) {
+	private static @Nullable String findAttributeInRules(String subpath, boolean isFolder, String key, List<AttributesRule> rules) {
 		String value = null;
 		// later rules override earlier ones
 		for (AttributesRule rule : rules) {

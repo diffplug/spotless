@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.java;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -99,7 +100,7 @@ final class ImportSorterImpl {
 		notMatching.addAll(allImportOrderItems);
 	}
 
-	private String getBestMatchingImportOrderItem(String anImport) {
+	private @Nullable String getBestMatchingImportOrderItem(String anImport) {
 		String matchingImport = null;
 		for (String orderItem : allImportOrderItems) {
 			if (anImport.startsWith(orderItem)) {
@@ -229,7 +230,7 @@ final class ImportSorterImpl {
 		return strings;
 	}
 
-	private static String betterMatching(String order1, String order2, String anImport) {
+	private static @Nullable String betterMatching(String order1, String order2, String anImport) {
 		if (order1.equals(order2)) {
 			throw new IllegalArgumentException("orders are same");
 		}

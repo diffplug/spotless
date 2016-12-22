@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @ReturnValuesAreNonnullByDefault
-package com.diffplug.spotless.extra;
+package com.diffplug.spotless.markdown;
 
 import com.diffplug.spotless.annotations.ReturnValuesAreNonnullByDefault;
 

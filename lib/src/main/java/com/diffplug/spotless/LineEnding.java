@@ -58,6 +58,7 @@ public enum LineEnding {
 					throw new IllegalStateException("LineEnding.GIT_ATTRIBUTES requires the spotless-lib-extra library, but it is not on the classpath", e);
 				}
 			}
+			// gitAttributesPolicyCreator will always be nonnull at this point
 			return gitAttributesPolicyCreator.apply(projectDir, toFormat);
 		}
 	}

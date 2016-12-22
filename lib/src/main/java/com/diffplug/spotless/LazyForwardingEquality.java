@@ -24,7 +24,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -45,11 +44,9 @@ public abstract class LazyForwardingEquality<T extends Serializable> implements 
 	 *
 	 * Throws exception because it's likely that there will be some IO going on.
 	 */
-	@Nonnull
 	protected abstract T calculateKey() throws Exception;
 
 	/** Returns the underlying key, possibly triggering a call to {{@link #calculateKey()}. */
-	@Nonnull
 	protected final T key() {
 		// double-checked locking for lazy evaluation of calculateKey
 		if (key == null) {
@@ -63,7 +60,7 @@ public abstract class LazyForwardingEquality<T extends Serializable> implements 
 				}
 			}
 		}
-		return key;
+		return key; // will always be nonnull at this point
 	}
 
 	// override serialize output
