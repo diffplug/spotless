@@ -27,7 +27,6 @@ import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.dsl.RepositoryHandler;
 import org.gradle.testfixtures.ProjectBuilder;
 
-import com.diffplug.common.base.StandardSystemProperty;
 import com.diffplug.common.base.Suppliers;
 import com.diffplug.common.collect.ImmutableSet;
 
@@ -42,10 +41,7 @@ public class TestProvisioner {
 	 */
 	private static Provisioner createWithRepositories(Consumer<RepositoryHandler> repoConfig) {
 		// use the default gradle home directory to ensure that files are always resolved to the same location
-		File gradleHome = new File(StandardSystemProperty.USER_DIR.value() + "/.gradle");
-		Project project = ProjectBuilder.builder()
-				.withGradleUserHomeDir(gradleHome)
-				.build();
+		Project project = ProjectBuilder.builder().build();
 		repoConfig.accept(project.getRepositories());
 		// temporary, just while spotless-ext-eclipse isn't in mavenCentral
 		project.getRepositories().maven(mvn -> mvn.setUrl("https://dl.bintray.com/diffplug/opensource"));

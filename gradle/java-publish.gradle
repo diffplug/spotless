@@ -67,8 +67,10 @@ def cred = {
 model {
 	publishing {
 		publications {
-			mavenJava(MavenPublication) {
-				artifact jar
+			pluginMaven(MavenPublication) {
+				if (project.ext.artifactId != 'spotless-gradle-plugin') {
+					from components.java
+				}
 				artifact sourcesJar
 				artifact javadocJar
 
@@ -139,5 +141,5 @@ if (!ext.isSnapshot) {
 	}
 
 	publish.dependsOn(bintrayUpload)
-	bintrayUpload.dependsOn(['generatePomFileForMavenJavaPublication', jar, sourcesJar, javadocJar])
+	bintrayUpload.dependsOn(['generatePomFileForPluginMavenPublication', jar, sourcesJar, javadocJar])
 }
