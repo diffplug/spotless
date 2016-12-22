@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.generic;
 
+import java.io.File;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -51,6 +53,6 @@ public class IndentStepTest extends ResourceHarness {
 	public void doesntClipNewlines() throws Throwable {
 		FormatterStep indent = IndentStep.Type.SPACE.create(4);
 		String blankNewlines = "\n\n\n\n";
-		Assert.assertEquals(blankNewlines, indent.format(blankNewlines, null));
+		Assert.assertEquals(blankNewlines, indent.format(blankNewlines, new File("")));
 	}
 }

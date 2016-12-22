@@ -32,10 +32,11 @@ public interface FormatterStep extends Serializable {
 	 * Returns a formatted version of the given content.
 	 *
 	 * @param rawUnix
-	 *            File's content, guaranteed to have unix-style newlines ('\n')
+	 *            the content to format, guaranteed to have unix-style newlines ('\n')
 	 * @param file
-	 *            the File which is being formatted
-	 * @return The formatted content, guaranteed to only have unix-style newlines
+	 *            the file which `rawUnix` was obtained from; pass an empty file using
+	 *            `new File("")` if and only if no file is actually associated with `rawUnix`
+	 * @return the formatted content, guaranteed to only have unix-style newlines
 	 * @throws Exception when the formatter steps experiences a problem
 	 */
 	public String format(String rawUnix, File file) throws Exception;
