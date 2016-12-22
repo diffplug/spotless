@@ -169,7 +169,6 @@ public final class Formatter {
 					unix = LineEnding.toUnix(formatted);
 				}
 			} catch (Error e) {
-				steps.forEach(FormatterStep::finish);
 				logger.severe("Step '" + step.getName() + "' found problem in '" + rootDir.relativize(file.toPath()) + "':\n" + e.getMessage());
 				throw e;
 			} catch (Throwable e) {
@@ -177,7 +176,15 @@ public final class Formatter {
 				logger.log(Level.FINE, "Exception is ", e);
 			}
 		}
-		steps.forEach(FormatterStep::finish);
 		return unix;
+	}
+
+	/**
+	 * Hint that any resources which were opened by the steps can probably be closed now.
+	 */
+	public void finish() {
+		for (FormatterStep step : steps) {
+			step.finish();
+		}
 	}
 }

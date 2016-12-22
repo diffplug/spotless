@@ -26,14 +26,18 @@ public class ApplyFormatTask extends BaseFormatTask {
 	@TaskAction
 	public void apply() throws Exception {
 		Formatter formatter = buildFormatter();
-		for (File file : getTarget()) {
-			getLogger().debug("Applying format to " + file);
-			// keep track of the problem toFormat
-			if (isPaddedCell()) {
-				PaddedCellBulk.apply(formatter, file);
-			} else {
-				formatter.applyFormat(file);
+		try {
+			for (File file : getTarget()) {
+				getLogger().debug("Applying format to " + file);
+				// keep track of the problem toFormat
+				if (isPaddedCell()) {
+					PaddedCellBulk.apply(formatter, file);
+				} else {
+					formatter.applyFormat(file);
+				}
 			}
+		} finally {
+			formatter.finish();
 		}
 	}
 }

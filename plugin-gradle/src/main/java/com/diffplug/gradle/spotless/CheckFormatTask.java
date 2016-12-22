@@ -37,17 +37,21 @@ public class CheckFormatTask extends BaseFormatTask {
 
 		inputs.outOfDate(inputDetails -> addFileIfNotClean(inputDetails.getFile(), problemFiles, formatter));
 
-		if (paddedCell) {
-			PaddedCellGradle.check(this, formatter, problemFiles);
-		} else {
-			if (!problemFiles.isEmpty()) {
-				// if we're not in paddedCell mode, we'll check if maybe we should be
-				if (PaddedCellBulk.anyMisbehave(formatter, problemFiles)) {
-					throw PaddedCellGradle.youShouldTurnOnPaddedCell(this);
-				} else {
-					throw formatViolationsFor(formatter, problemFiles);
+		try {
+			if (paddedCell) {
+				PaddedCellGradle.check(this, formatter, problemFiles);
+			} else {
+				if (!problemFiles.isEmpty()) {
+					// if we're not in paddedCell mode, we'll check if maybe we should be
+					if (PaddedCellBulk.anyMisbehave(formatter, problemFiles)) {
+						throw PaddedCellGradle.youShouldTurnOnPaddedCell(this);
+					} else {
+						throw formatViolationsFor(formatter, problemFiles);
+					}
 				}
 			}
+		} finally {
+			formatter.finish();
 		}
 	}
 
