@@ -18,6 +18,8 @@ package com.diffplug.spotless;
 import java.io.File;
 import java.util.Objects;
 
+import javax.annotation.Nullable;
+
 final class FilterByFileFormatterStep implements FormatterStep {
 	private final FormatterStep delegateStep;
 	private final SerializableFileFilter filter;
@@ -33,7 +35,7 @@ final class FilterByFileFormatterStep implements FormatterStep {
 	}
 
 	@Override
-	public String format(String raw, File file) throws Exception {
+	public @Nullable String format(String raw, File file) throws Exception {
 		if (filter.accept(file)) {
 			return delegateStep.format(raw, file);
 		} else {

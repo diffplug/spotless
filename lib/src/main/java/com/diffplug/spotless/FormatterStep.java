@@ -18,6 +18,8 @@ package com.diffplug.spotless;
 import java.io.File;
 import java.io.Serializable;
 
+import javax.annotation.Nullable;
+
 /**
  * An implementation of this class specifies a single step in a formatting process.
  *
@@ -32,14 +34,15 @@ public interface FormatterStep extends Serializable {
 	 * Returns a formatted version of the given content.
 	 *
 	 * @param rawUnix
-	 *            the content to format, guaranteed to have unix-style newlines ('\n')
+	 *            the content to format, guaranteed to have unix-style newlines ('\n'); never null
 	 * @param file
-	 *            the file which `rawUnix` was obtained from; pass an empty file using
+	 *            the file which `rawUnix` was obtained from; never null. Pass an empty file using
 	 *            `new File("")` if and only if no file is actually associated with `rawUnix`
-	 * @return the formatted content, guaranteed to only have unix-style newlines
-	 * @throws Exception when the formatter steps experiences a problem
+	 * @return the formatted content, guaranteed to only have unix-style newlines; may return null
+	 *         if the formatter step doesn't have any changes to make
+	 * @throws Exception if the formatter step experiences a problem
 	 */
-	public String format(String rawUnix, File file) throws Exception;
+	public @Nullable String format(String rawUnix, File file) throws Exception;
 
 	/**
 	 * Hint to the FormatterStep that {@link #format(String, File)} will not
