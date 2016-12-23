@@ -160,8 +160,14 @@ public final class Formatter {
 		for (FormatterStep step : steps) {
 			try {
 				String formatted = step.format(unix, file);
-				// Should already be unix-only, but some steps might misbehave.
-				unix = LineEnding.toUnix(formatted);
+				if (formatted == null) {
+					// This probably means it was a step that only checks
+					// for errors and doesn't actually have any fixes.
+					// No exception was thrown so we can just continue.
+				} else {
+					// Should already be unix-only, but some steps might misbehave.
+					unix = LineEnding.toUnix(formatted);
+				}
 			} catch (Error e) {
 				logger.severe("Step '" + step.getName() + "' found problem in '" + rootDir.relativize(file.toPath()) + "':\n" + e.getMessage());
 				throw e;
