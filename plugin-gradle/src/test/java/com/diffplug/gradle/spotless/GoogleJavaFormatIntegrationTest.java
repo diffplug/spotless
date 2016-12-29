@@ -29,7 +29,7 @@ import com.diffplug.gradle.spotless.GradleProvisioner;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.java.GoogleJavaFormatStep;
 
-public class GoogleJavaFormatTest extends GradleIntegrationTest {
+public class GoogleJavaFormatIntegrationTest extends GradleIntegrationTest {
 	@Test
 	public void integration() throws IOException {
 		write("build.gradle",
