@@ -54,11 +54,9 @@ public class GoogleJavaFormatTest extends GradleIntegrationTest {
 
 		checkRunsThenUpToDate();
 
-		// if we change the version of google-java format, then check should need to run again
 		replace("build.gradle",
 				"googleJavaFormat('1.1')",
 				"googleJavaFormat('1.0')");
-		// but this fails, because we don't.  Now we gotta figure out why...
 		checkRunsThenUpToDate();
 	}
 
