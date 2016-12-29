@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless;
+package com.diffplug.spotless.generic;
 
 import org.junit.Test;
 
+import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.StepHarness;
 
-public class TrimTrailingWhitespaceTest extends GradleResourceHarness {
+public class TrimTrailingWhitespaceTest extends ResourceHarness {
 	@Test
 	public void trimTrailingWhitespace() throws Exception {
-		StepHarness step = fromExtension(extension -> extension.format("underTest", FormatExtension::trimTrailingWhitespace));
+		StepHarness step = StepHarness.forStep(TrimTrailingWhitespaceStep.create());
 		step.testUnaffected("");
 		step.testUnaffected("\n");
 		step.testUnaffected("\n\n\n");
