@@ -238,9 +238,10 @@ Spotless is hosted on jcenter and at plugins.gradle.org. [Go here](https://plugi
 
 * Formatting by Eclipse 4.6
 	+ Special thanks to [Mateusz Matela](https://waynebeaton.wordpress.com/2015/03/15/great-fixes-for-mars-winners-part-i/) for huge improvements to the eclipse code formatter!
-* Forked from [gradle-format-plugin](https://github.com/youribonnaffe/gradle-format-plugin) by Youri Bonnaff??.
-* Thanks to Gabor Bernat for improvements to logging and multi-project support.
+* Forked from [gradle-format-plugin](https://github.com/youribonnaffe/gradle-format-plugin) by Youri Bonnaffé.
+* Thanks to Gábor Bernát for improvements to logging and multi-project support.
 * Thanks to Jonathan Bluett-Duncan (https://github.com/jbduncan) for providing the diff support in `spotlessCheck`.
+* Thanks to Andrew Oberstar for improvements to formatting java source in non-java source sets. [PR #60](https://github.com/diffplug/spotless/pull/60).
 * Import ordering from [EclipseCodeFormatter](https://github.com/krasa/EclipseCodeFormatter).
 * Built by [gradle](http://gradle.org/).
 * Tested by [junit](http://junit.org/).
