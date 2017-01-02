@@ -25,7 +25,7 @@ def eclipseDeps = [
 // build a maven repo in our build folder containing these artifacts
 p2AsMaven {
 	group 'p2', {
-		repoEclipse VER_ECLIPSE
+		repoEclipse jdt_VER_ECLIPSE
 		eclipseDeps.each { p2.addIU(it) }
 		eclipseDeps.each { p2.addIU(it + '.source') }
 	}
@@ -80,7 +80,7 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 ////////////////
 // PUBLISHING //
 ////////////////
-def isSnapshot = project.version.endsWith('-SNAPSHOT')
+def isSnapshot = project.jdt_version.endsWith('-SNAPSHOT')
 // pulls the credentials from either the environment variable or gradle.properties
 def cred = {
 	if (System.env[it] != null) {
@@ -100,8 +100,9 @@ model {
 				artifact sourcesJar
 				artifact javadocJar
 
-				groupId project.group
-				artifactId project.artifactId
+				groupId project.jdt_group
+				artifactId project.jdt_artifactId
+				version project.jdt_version
 
 				pom.withXml {
 					// remove the p2 dependencies because they are embedded
@@ -114,12 +115,13 @@ model {
 					// add MavenCentral requirements to the POM
 					asNode().children().last() + {
 						resolveStrategy = Closure.DELEGATE_FIRST
-						description project.description
-						url "https://github.com/${project.org}/${project.name}"
+						name project.jdt_artifactId
+						description project.jdt_description
+						url "https://github.com/${project.jdt_org}/${project.name}"
 						scm {
-							url "https://github.com/${project.org}/${project.name}"
-							connection "scm:git:git://github.com/${project.org}/${project.name}"
-							developerConnection "scm:git:ssh:git@github.com/${project.org}/${project.name}"
+							url "https://github.com/${project.jdt_org}/${project.name}"
+							connection "scm:git:git://github.com/${project.jdt_org}/${project.name}"
+							developerConnection "scm:git:ssh:git@github.com/${project.jdt_org}/${project.name}"
 						}
 						licenses {
 							license {
@@ -161,14 +163,14 @@ if (!isSnapshot) {
 		publish = true
 		pkg {
 			repo = 'opensource'
-			name = project.artifactId
-			userOrg = project.org
+			name = project.jdt_artifactId
+			userOrg = project.jdt_org
 			version {
-				name = project.version
-				//mavenCentralSync {
-				//	user = cred('nexus_user')
-				//	password = cred('nexus_pass')
-				//}
+				name = project.jdt_version
+				mavenCentralSync {
+					user = cred('nexus_user')
+					password = cred('nexus_pass')
+				}
 			}
 		}
 	}
