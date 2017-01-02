@@ -14,7 +14,7 @@ output = [
 -->
 [![Gradle plugin](https://img.shields.io/badge/plugins.gradle.org-com.diffplug.gradle.spotless-blue.svg)](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless)
 [![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.gradle.spotless%3Aspotless-blue.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.gradle.spotless%22%20AND%20a%3A%22spotless%22)
-[![Javadoc](https://img.shields.io/badge/javadoc-2.4.0-blue.svg)](https://diffplug.github.io/spotless/javadoc/2.4.0/)
+[![Javadoc](https://img.shields.io/badge/javadoc-2.4.1-blue.svg)](https://diffplug.github.io/spotless/javadoc/2.4.1/)
 
 [![Changelog](https://img.shields.io/badge/changelog-3.0.0--SNAPSHOT-brightgreen.svg)](CHANGES.md)
 [![Travis CI](https://travis-ci.org/diffplug/spotless.svg?branch=master)](https://travis-ci.org/diffplug/spotless)
@@ -75,7 +75,7 @@ spotless {
 }
 ```
 
-Spotless can check and apply formatting to any plain-text file, using simple rules ([javadoc](https://diffplug.github.io/spotless/javadoc/2.4.0/com/diffplug/gradle/spotless/FormatExtension.html)) like those above.  It also supports more powerful formatters:
+Spotless can check and apply formatting to any plain-text file, using simple rules ([javadoc](https://diffplug.github.io/spotless/javadoc/2.4.1/com/diffplug/gradle/spotless/FormatExtension.html)) like those above.  It also supports more powerful formatters:
 
 * Eclipse's java code formatter (including style and import ordering)
 * Google's [google-java-format](https://github.com/google/google-java-format)
@@ -244,9 +244,10 @@ Spotless is hosted on jcenter and at plugins.gradle.org. [Go here](https://plugi
 
 * Formatting by Eclipse 4.6
 	+ Special thanks to [Mateusz Matela](https://waynebeaton.wordpress.com/2015/03/15/great-fixes-for-mars-winners-part-i/) for huge improvements to the eclipse code formatter!
-* Forked from [gradle-format-plugin](https://github.com/youribonnaffe/gradle-format-plugin) by Youri Bonnaff??.
-* Thanks to Gabor Bernat for improvements to logging and multi-project support.
+* Forked from [gradle-format-plugin](https://github.com/youribonnaffe/gradle-format-plugin) by Youri Bonnaffé.
+* Thanks to Gábor Bernát for improvements to logging and multi-project support.
 * Thanks to Jonathan Bluett-Duncan (https://github.com/jbduncan) for providing the diff support in `spotlessCheck`.
+* Thanks to Andrew Oberstar for improvements to formatting java source in non-java source sets. [PR #60](https://github.com/diffplug/spotless/pull/60).
 * Import ordering from [EclipseCodeFormatter](https://github.com/krasa/EclipseCodeFormatter).
 * Built by [gradle](http://gradle.org/).
 * Tested by [junit](http://junit.org/).

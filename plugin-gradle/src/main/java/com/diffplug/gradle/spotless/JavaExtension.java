@@ -90,7 +90,7 @@ public class JavaExtension extends FormatExtension {
 			}
 			UnionFileCollection union = new UnionFileCollection();
 			for (SourceSet sourceSet : javaPlugin.getSourceSets()) {
-				union.add(sourceSet.getJava());
+				union.add(sourceSet.getAllJava());
 			}
 			target = union;
 		}
