@@ -4,6 +4,10 @@
 
 * Big push towards supporting incremental build.  Requires a lot of work for every FormatterStep to properly serialize its state, so this might take a little while.
 
+### Version 2.4.1 - January 2nd 2017 ([javadoc](https://diffplug.github.io/spotless/javadoc/2.4.1/), [jcenter](https://bintray.com/diffplug/opensource/spotless/2.4.1/view))
+
+* Java files under the `src/main/groovy` folder are now formatted by default. ([Issue #59](https://github.com/diffplug/spotless/issues/59), [PR #60](https://github.com/diffplug/spotless/pull/60), thanks @ajoberstar).
+
 ### Version 2.4.0 - November 1st 2016 ([javadoc](https://diffplug.github.io/spotless/javadoc/2.4.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless/2.4.0/view))
 
 * If a formatter step throws an `Error` or any of its subclasses, such as the `AssertionError`s thrown by JUnit, AssertJ, etc. that error will kill the build ([#46](https://github.com/diffplug/spotless/issues/46))
