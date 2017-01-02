@@ -81,11 +81,6 @@ public final class JarState implements Serializable {
 	}
 
 	@SuppressFBWarnings("DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED")
-	public URLClassLoader openClassLoader() {
-		return new URLClassLoader(jarUrls());
-	}
-
-	@SuppressFBWarnings("DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED")
 	public URLClassLoader openIsolatedClassLoader() {
 		return new URLClassLoader(jarUrls(), null);
 	}
