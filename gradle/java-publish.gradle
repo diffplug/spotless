@@ -129,10 +129,10 @@ if (!ext.isSnapshot) {
 		publish = true
 		pkg {
 			repo = 'opensource'
-			name = project.name
+			name = project.ext.artifactId
 			userOrg = project.org
 			version {
-				name = ext.version
+				name = project.ext.version
 				mavenCentralSync {
 					user = cred('nexus_user')
 					password = cred('nexus_pass')
