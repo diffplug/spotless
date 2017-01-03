@@ -12,8 +12,21 @@ You can also use Spotless like any other standard Gradle build.
 * creates an Eclipse project file for you.
 
 `gradlew build`
-* builds the jar
+* builds the jars
 * runs the tests
+
+## Project layout
+
+| Maven coordinate | Folder | Description |
+| ---------------- | ------ | ----------- |
+| `com.diffplug.spotless:spotless-lib` | lib | Contains all of Spotless' core infrastructure and most of its `FormatterStep`, no external dependencies. |
+| `com.diffplug.spotless:spotless-testlib` | testlib | Contains testing infrastructure, as well as all tests for `spotless-lib`, since those tests need the testing infrastructure. |
+| `com.diffplug.spotless:spotless-lib-extra` | lib-extra | Contains the optional parts of Spotless which require external dependencies.  `LineEnding.GIT_ATTRIBUTES` won't work unless `lib-extra` is available. |
+| `com.diffplug.spotless:spotless-plugin-gradle` | plugin-gradle | Integrates spotless and all of its formatters into Gradle. |
+| `com.diffplug.spotless:spotless-plugin-maven` | plugin-maven | Integrates spotless and all of its formatters into Maven. |
+| N/A | javadoc-publish | Logic for publishing javadoc to github-pages. |
+| N/A | ide | Generates and launches an IDE for developing spotless. |
+| N/A | _ext | Folder for generating glue jars (specifically packaging Eclipse jars from p2 for consumption using maven) |
 
 ## License
 
