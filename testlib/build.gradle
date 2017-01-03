@@ -1,4 +1,5 @@
 ext.artifactId = project.artifactIdTestLib
+ext.version = project.versionLib
 apply from: rootProject.file('gradle/java-setup.gradle')
 
 dependencies {

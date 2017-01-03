@@ -19,10 +19,10 @@ javadoc {
 
 // use markdown in javadoc
 def makeLink = { url, text -> "<a href=\"${url}\" style=\"text-transform: none;\">${text}</a>" }
-def javadocInfo = '<h2>' + makeLink("https://github.com/${org}/${name}", "${group}:${project.ext.artifactId}:${version}") +
+def javadocInfo = '<h2>' + makeLink("https://github.com/${org}/${name}", "${group}:${project.ext.artifactId}:${ext.version}") +
 ' by ' + makeLink('http://www.diffplug.com', 'DiffPlug') + '</h2>'
 
-String version_str = version.endsWith('-SNAPSHOT') ? 'snapshot' : version
+String version_str = ext.version.endsWith('-SNAPSHOT') ? 'snapshot' : ext.version
 apply plugin: 'ch.raffael.pegdown-doclet'
 javadoc {
 	// Where it's possible to name parameters and methods clearly enough
@@ -52,7 +52,7 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 ////////////////
 // PUBLISHING //
 ////////////////
-ext.isSnapshot = project.version.endsWith('-SNAPSHOT')
+ext.isSnapshot = ext.version.endsWith('-SNAPSHOT')
 // pulls the credentials from either the environment variable or gradle.properties
 def cred = {
 	if (System.env[it] != null) {
@@ -68,7 +68,7 @@ model {
 	publishing {
 		publications {
 			pluginMaven(MavenPublication) {
-				if (project.ext.artifactId != 'spotless-gradle-plugin') {
+				if (project.ext.artifactId != 'spotless-plugin-gradle') {
 					from components.java
 				}
 				artifact sourcesJar
@@ -76,6 +76,7 @@ model {
 
 				groupId project.group
 				artifactId project.ext.artifactId
+				version project.ext.version
 
 				pom.withXml {
 					// add MavenCentral requirements to the POM
@@ -131,7 +132,7 @@ if (!ext.isSnapshot) {
 			name = project.name
 			userOrg = project.org
 			version {
-				name = project.version
+				name = ext.version
 				mavenCentralSync {
 					user = cred('nexus_user')
 					password = cred('nexus_pass')

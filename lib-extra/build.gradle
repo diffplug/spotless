@@ -1,4 +1,5 @@
 ext.artifactId = project.artifactIdLibExtra
+ext.version = project.versionLib
 apply from: rootProject.file('gradle/java-setup.gradle')
 apply from: rootProject.file('gradle/java-publish.gradle')
 

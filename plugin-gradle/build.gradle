@@ -1,4 +1,5 @@
 ext.artifactId = project.artifactIdGradle
+ext.version = project.versionGradle
 apply from: rootProject.file('gradle/java-setup.gradle')
 apply from: rootProject.file('gradle/java-publish.gradle')
 
@@ -56,7 +57,7 @@ pluginBundle {
 	mavenCoordinates {
 		groupId = project.group
 		artifactId = project.artifactIdGradle
-		version = project.version
+		version = ext.version
 	}
 }
 
