@@ -36,7 +36,7 @@ public class StepHarness {
 
 	/** Creates a harness for testing a formatter whose steps don't depend on the file. */
 	public static StepHarness forFormatter(Formatter formatter) {
-		return new StepHarness(input -> formatter.applySteps(input, new File("")));
+		return new StepHarness(input -> formatter.compute(input, new File("")));
 	}
 
 	/** Asserts that the given element is transformed as expected, and that the result is idempotent. */

@@ -195,9 +195,9 @@ public final class PaddedCellBulk {
 		String rawUnix = LineEnding.toUnix(raw);
 
 		// enforce the format
-		String formattedUnix = formatter.applySteps(rawUnix, file);
+		String formattedUnix = formatter.compute(rawUnix, file);
 		// convert the line endings if necessary
-		String formatted = formatter.applyLineEndings(formattedUnix, file);
+		String formatted = formatter.computeLineEndings(formattedUnix, file);
 
 		// if F(input) == input, then the formatter is well-behaving and the input is clean
 		byte[] formattedBytes = formatted.getBytes(formatter.getEncoding());
@@ -214,7 +214,7 @@ public final class PaddedCellBulk {
 
 		// get the canonical bytes
 		String canonicalUnix = cell.canonical();
-		String canonical = formatter.applyLineEndings(canonicalUnix, file);
+		String canonical = formatter.computeLineEndings(canonicalUnix, file);
 		byte[] canonicalBytes = canonical.getBytes(formatter.getEncoding());
 		if (!Arrays.equals(rawBytes, canonicalBytes)) {
 			// and write them to disk if needed

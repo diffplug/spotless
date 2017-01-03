@@ -133,12 +133,12 @@ final class DiffMessageFormatter {
 		if (task.isPaddedCell()) {
 			formattedUnix = PaddedCell.check(formatter, file, rawUnix).canonical();
 		} else {
-			formattedUnix = formatter.applySteps(rawUnix, file);
+			formattedUnix = formatter.compute(rawUnix, file);
 		}
 
 		if (rawUnix.equals(formattedUnix)) {
 			// the formatting is fine, so it's a line-ending issue
-			String formatted = formatter.applyLineEndings(formattedUnix, file);
+			String formatted = formatter.computeLineEndings(formattedUnix, file);
 			return diffWhitespaceLineEndings(raw, formatted, false, true);
 		} else {
 			return diffWhitespaceLineEndings(rawUnix, formattedUnix, true, false);

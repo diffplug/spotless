@@ -33,7 +33,7 @@ public class ApplyFormatTask extends BaseFormatTask {
 				if (isPaddedCell()) {
 					PaddedCellBulk.apply(formatter, file);
 				} else {
-					formatter.applyFormat(file);
+					formatter.applyTo(file);
 				}
 			}
 		} finally {

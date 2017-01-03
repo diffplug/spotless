@@ -117,22 +117,22 @@ public final class Formatter {
 		}
 
 		// check the other formats
-		String formatted = applySteps(unix, file);
+		String formatted = compute(unix, file);
 
 		// return true iff the formatted string equals the unix one
 		return formatted.equals(unix);
 	}
 
 	/** Applies formatting to the given file. */
-	public void applyFormat(File file) throws IOException {
+	public void applyTo(File file) throws IOException {
 		byte[] rawBytes = Files.readAllBytes(file.toPath());
 		String raw = new String(rawBytes, encoding);
 		String rawUnix = LineEnding.toUnix(raw);
 
 		// enforce the format
-		String formattedUnix = applySteps(rawUnix, file);
+		String formattedUnix = compute(rawUnix, file);
 		// enforce the line endings
-		String formatted = applyLineEndings(formattedUnix, file);
+		String formatted = computeLineEndings(formattedUnix, file);
 
 		// write out the file iff it has changed
 		byte[] formattedBytes = formatted.getBytes(encoding);
@@ -142,7 +142,7 @@ public final class Formatter {
 	}
 
 	/** Applies the appropriate line endings to the given unix content. */
-	public String applyLineEndings(String unix, File file) {
+	public String computeLineEndings(String unix, File file) {
 		String ending = lineEndingsPolicy.getEndingFor(file);
 		if (!ending.equals(LineEnding.UNIX.str())) {
 			return unix.replace(LineEnding.UNIX.str(), ending);
@@ -156,7 +156,7 @@ public final class Formatter {
 	 * The input must have unix line endings, and the output
 	 * is guaranteed to also have unix line endings.
 	 */
-	public String applySteps(String unix, File file) throws Error {
+	public String compute(String unix, File file) throws Error {
 		for (FormatterStep step : steps) {
 			try {
 				String formatted = step.format(unix, file);
@@ -186,5 +186,34 @@ public final class Formatter {
 		for (FormatterStep step : steps) {
 			step.finish();
 		}
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + encoding.hashCode();
+		result = prime * result + lineEndingsPolicy.hashCode();
+		result = prime * result + rootDir.hashCode();
+		result = prime * result + steps.hashCode();
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		Formatter other = (Formatter) obj;
+		return encoding.equals(other.encoding) &&
+				lineEndingsPolicy.equals(other.lineEndingsPolicy) &&
+				rootDir.equals(other.rootDir) &&
+				steps.equals(other.steps);
 	}
 }
