@@ -25,6 +25,7 @@ import org.gradle.api.plugins.JavaBasePlugin;
 
 import com.diffplug.common.base.Errors;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import groovy.lang.Closure;
 
 public class SpotlessPlugin implements Plugin<Project> {
@@ -77,7 +78,7 @@ public class SpotlessPlugin implements Plugin<Project> {
 				private static final long serialVersionUID = 1L;
 
 				// called by gradle
-				@SuppressWarnings("unused")
+				@SuppressFBWarnings("UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS")
 				public Object doCall(TaskExecutionGraph graph) {
 					if (graph.hasTask(checkTask)) {
 						spotlessTask.setCheck();

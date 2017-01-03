@@ -188,16 +188,7 @@ public class FormatExtension {
 	 * that it must recheck the files it has already checked.
 	 */
 	public void bumpThisNumberIfACustomStepChanges(int number) {
-		if (isUnix()) {
-			getProject().getLogger().warn("bumpThisNumberIfACustomStepChanges does nothing on unix, see https://github.com/diffplug/spotless/issues/62");
-			return;
-		}
 		globalState = number;
-	}
-
-	// awkward way of detecting unix, temporary workaround
-	private static boolean isUnix() {
-		return LineEnding.PLATFORM_NATIVE.str().equals("\n");
 	}
 
 	private Serializable globalState = new NeverUpToDateBetweenRuns();

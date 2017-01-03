@@ -32,6 +32,7 @@ import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.common.tree.TreeDef;
 import com.diffplug.common.tree.TreeStream;
+import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ResourceHarness;
 
 public class GradleIntegrationTest extends ResourceHarness {
@@ -70,15 +71,19 @@ public class GradleIntegrationTest extends ResourceHarness {
 	}
 
 	protected void applyIsUpToDate(boolean upToDate) throws IOException {
-		checkTaskIsUpToDate("spotlessApply", upToDate);
+		taskIsUpToDate("spotlessApply", upToDate);
 	}
 
 	protected void checkIsUpToDate(boolean upToDate) throws IOException {
-		checkTaskIsUpToDate("spotlessCheck", upToDate);
+		taskIsUpToDate("spotlessCheck", upToDate);
 	}
 
-	private void checkTaskIsUpToDate(String task, boolean upToDate) throws IOException {
-		BuildResult buildResult = gradleRunner().withArguments(task, "--debug").build();
+	private static final boolean IS_UNIX = LineEnding.PLATFORM_NATIVE.str().equals("\n");
+	private static final int FILESYSTEM_RESOLUTION_MS = IS_UNIX ? 2000 : 150;
+
+	private void taskIsUpToDate(String task, boolean upToDate) throws IOException {
+		Errors.rethrow().run(() -> Thread.sleep(FILESYSTEM_RESOLUTION_MS));
+		BuildResult buildResult = gradleRunner().withArguments(task).build();
 
 		TaskOutcome expected = upToDate ? TaskOutcome.UP_TO_DATE : TaskOutcome.SUCCESS;
 		TaskOutcome notExpected = upToDate ? TaskOutcome.SUCCESS : TaskOutcome.UP_TO_DATE;
