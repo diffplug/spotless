@@ -20,22 +20,7 @@ import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.diffplug.spotless.LineEnding;
-
 public class BumpThisNumberIfACustomStepChangesTest extends GradleIntegrationTest {
-	// awkward way of detecting unix, temporary workaround for #62
-	private static boolean isUnix() {
-		return LineEnding.PLATFORM_NATIVE.str().equals("\n");
-	}
-
-	@Override
-	protected void checkIsUpToDate(boolean upToDate) throws IOException {
-		if (isUnix()) {
-			super.checkIsUpToDate(false);
-		} else {
-			super.checkIsUpToDate(upToDate);
-		}
-	}
 
 	private void writeBuildFile(String toInsert) throws IOException {
 		write("build.gradle",
@@ -57,8 +42,9 @@ public class BumpThisNumberIfACustomStepChangesTest extends GradleIntegrationTes
 		write("README.md", "ABC");
 	}
 
-	private void assertApplyWorks() throws IOException {
-		gradleRunner().withArguments("spotlessApply").build();
+	@Override
+	protected void applyIsUpToDate(boolean upToDate) throws IOException {
+		super.applyIsUpToDate(upToDate);
 		String result = read("README.md");
 		Assert.assertEquals("abc\n", result);
 	}
@@ -67,8 +53,7 @@ public class BumpThisNumberIfACustomStepChangesTest extends GradleIntegrationTes
 	public void customRuleNeverUpToDate() throws IOException {
 		writeBuildFile("");
 		writeContentWithBadFormatting();
-		assertApplyWorks();
-
+		applyIsUpToDate(false);
 		checkIsUpToDate(false);
 		checkIsUpToDate(false);
 	}
@@ -77,8 +62,13 @@ public class BumpThisNumberIfACustomStepChangesTest extends GradleIntegrationTes
 	public void unlessBumpThisNumberIfACustomStepChanges() throws IOException {
 		writeBuildFile("bumpThisNumberIfACustomStepChanges(1)");
 		writeContentWithBadFormatting();
-		assertApplyWorks();
+		applyIsUpToDate(false);
+		applyIsUpToDate(false);
+		applyIsUpToDate(true);
+		checkIsUpToDate(true);
 
+		writeContentWithBadFormatting();
+		applyIsUpToDate(false);
 		checkIsUpToDate(false);
 		checkIsUpToDate(true);
 	}
@@ -87,8 +77,7 @@ public class BumpThisNumberIfACustomStepChangesTest extends GradleIntegrationTes
 	public void andRunsAgainIfNumberChanges() throws IOException {
 		writeBuildFile("bumpThisNumberIfACustomStepChanges(1)");
 		writeContentWithBadFormatting();
-		assertApplyWorks();
-
+		applyIsUpToDate(false);
 		checkIsUpToDate(false);
 		checkIsUpToDate(true);
 
