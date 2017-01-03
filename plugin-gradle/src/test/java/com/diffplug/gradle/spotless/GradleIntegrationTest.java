@@ -81,8 +81,12 @@ public class GradleIntegrationTest extends ResourceHarness {
 	private static final boolean IS_UNIX = LineEnding.PLATFORM_NATIVE.str().equals("\n");
 	private static final int FILESYSTEM_RESOLUTION_MS = IS_UNIX ? 2000 : 150;
 
-	private void taskIsUpToDate(String task, boolean upToDate) throws IOException {
+	void pauseForFilesystem() {
 		Errors.rethrow().run(() -> Thread.sleep(FILESYSTEM_RESOLUTION_MS));
+	}
+
+	private void taskIsUpToDate(String task, boolean upToDate) throws IOException {
+		pauseForFilesystem();
 		BuildResult buildResult = gradleRunner().withArguments(task).build();
 
 		TaskOutcome expected = upToDate ? TaskOutcome.UP_TO_DATE : TaskOutcome.SUCCESS;
