@@ -28,50 +28,50 @@ import javax.annotation.Nullable;
 
 /**
  * Implements equality, hashcode, and serialization entirely in terms
- * of a lazily-computed key.  The key's serialized form is used to implement
+ * of lazily-computed state.  The state's serialized form is used to implement
  * equals() and hashCode(), so you don't have to.
  */
 public abstract class LazyForwardingEquality<T extends Serializable> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	/** Null indicates that the key has not yet been set. */
+	/** Null indicates that the state has not yet been set. */
 	@Nullable
-	private transient volatile T key;
+	private transient volatile T state;
 
 	/**
 	 * This function is guaranteed to be called at most once.
-	 * If the key is never required, then it will never be called at all.
+	 * If the state is never required, then it will never be called at all.
 	 *
 	 * Throws exception because it's likely that there will be some IO going on.
 	 */
-	protected abstract T calculateKey() throws Exception;
+	protected abstract T calculateState() throws Exception;
 
-	/** Returns the underlying key, possibly triggering a call to {{@link #calculateKey()}. */
-	protected final T key() {
-		// double-checked locking for lazy evaluation of calculateKey
-		if (key == null) {
+	/** Returns the underlying state, possibly triggering a call to {{@link #calculateState()}. */
+	protected final T state() {
+		// double-checked locking for lazy evaluation of calculateState
+		if (state == null) {
 			synchronized (this) {
-				if (key == null) {
+				if (state == null) {
 					try {
-						key = calculateKey();
+						state = calculateState();
 					} catch (Exception e) {
 						throw ThrowingEx.asRuntime(e);
 					}
 				}
 			}
 		}
-		return key; // will always be nonnull at this point
+		return state; // will always be nonnull at this point
 	}
 
 	// override serialize output
 	private void writeObject(ObjectOutputStream out) throws IOException {
-		out.writeObject(key());
+		out.writeObject(state());
 	}
 
 	// override serialize input
 	@SuppressWarnings("unchecked")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-		key = (T) Objects.requireNonNull(in.readObject());
+		state = (T) Objects.requireNonNull(in.readObject());
 	}
 
 	// override serialize input
@@ -85,8 +85,8 @@ public abstract class LazyForwardingEquality<T extends Serializable> implements 
 		if (other == null) {
 			return false;
 		} else if (getClass().equals(other.getClass())) {
-			Serializable otherKey = ((LazyForwardingEquality<?>) other).key();
-			return Arrays.equals(toBytes(otherKey), toBytes(key()));
+			Serializable otherState = ((LazyForwardingEquality<?>) other).state();
+			return Arrays.equals(toBytes(otherState), toBytes(state()));
 		} else {
 			return false;
 		}
@@ -94,7 +94,7 @@ public abstract class LazyForwardingEquality<T extends Serializable> implements 
 
 	@Override
 	public final int hashCode() {
-		return Arrays.hashCode(toBytes(key()));
+		return Arrays.hashCode(toBytes(state()));
 	}
 
 	static byte[] toBytes(Serializable obj) {

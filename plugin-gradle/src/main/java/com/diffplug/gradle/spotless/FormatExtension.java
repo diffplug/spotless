@@ -183,17 +183,17 @@ public class FormatExtension {
 	 * cannot tell if you have changed the rules, and will be forced to always recheck all files.
 	 */
 	public void bumpThisNumberIfACustomRuleChanges(int number) {
-		globalKey = number;
+		globalState = number;
 	}
 
-	private Serializable globalKey = new NeverUpToDateBetweenRuns();
+	private Serializable globalState = new NeverUpToDateBetweenRuns();
 
 	static class NeverUpToDateBetweenRuns extends LazyForwardingEquality<Integer> {
 		private static final long serialVersionUID = 1L;
 		private static final Random RANDOM = new Random();
 
 		@Override
-		protected Integer calculateKey() throws Exception {
+		protected Integer calculateState() throws Exception {
 			return RANDOM.nextInt();
 		}
 	}
@@ -207,7 +207,7 @@ public class FormatExtension {
 	 * {@link #customLazyGroovy(String, ThrowingEx.Supplier)}.
 	 */
 	public void customLazy(String name, ThrowingEx.Supplier<FormatterFunc> formatterSupplier) {
-		addStep(FormatterStep.createLazy(name, () -> globalKey, unusedKey -> formatterSupplier.get()));
+		addStep(FormatterStep.createLazy(name, () -> globalState, unusedState -> formatterSupplier.get()));
 	}
 
 	/** Same as {@link #customLazy(String, ThrowingEx.Supplier)}, but for Groovy closures. */

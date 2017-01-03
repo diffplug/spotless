@@ -32,18 +32,18 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * from the API.
  */
 @SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-abstract class FormatterStepImpl<Key extends Serializable> extends Strict<Key> {
+abstract class FormatterStepImpl<State extends Serializable> extends Strict<State> {
 	private static final long serialVersionUID = 1L;
 
-	/** Transient because only the key matters. */
+	/** Transient because only the state matters. */
 	final transient String name;
 
-	/** Transient because only the key matters. */
-	final transient ThrowingEx.Supplier<Key> keySupplier;
+	/** Transient because only the state matters. */
+	final transient ThrowingEx.Supplier<State> stateSupplier;
 
-	FormatterStepImpl(String name, ThrowingEx.Supplier<Key> keySupplier) {
+	FormatterStepImpl(String name, ThrowingEx.Supplier<State> stateSupplier) {
 		this.name = Objects.requireNonNull(name);
-		this.keySupplier = Objects.requireNonNull(keySupplier);
+		this.stateSupplier = Objects.requireNonNull(stateSupplier);
 	}
 
 	@Override
@@ -52,45 +52,45 @@ abstract class FormatterStepImpl<Key extends Serializable> extends Strict<Key> {
 	}
 
 	@Override
-	protected Key calculateKey() throws Exception {
-		return keySupplier.get();
+	protected State calculateState() throws Exception {
+		return stateSupplier.get();
 	}
 
-	static final class Standard<Key extends Serializable> extends FormatterStepImpl<Key> {
+	static final class Standard<State extends Serializable> extends FormatterStepImpl<State> {
 		private static final long serialVersionUID = 1L;
 
-		final transient ThrowingEx.Function<Key, FormatterFunc> keyToFormatter;
+		final transient ThrowingEx.Function<State, FormatterFunc> stateToFormatter;
 		transient FormatterFunc formatter; // initialized lazily
 
-		Standard(String name, ThrowingEx.Supplier<Key> keySupplier, ThrowingEx.Function<Key, FormatterFunc> keyToFormatter) {
-			super(name, keySupplier);
-			this.keyToFormatter = Objects.requireNonNull(keyToFormatter);
+		Standard(String name, ThrowingEx.Supplier<State> stateSupplier, ThrowingEx.Function<State, FormatterFunc> stateToFormatter) {
+			super(name, stateSupplier);
+			this.stateToFormatter = Objects.requireNonNull(stateToFormatter);
 		}
 
 		@Override
-		protected String format(Key key, String rawUnix, File file) throws Exception {
+		protected String format(State state, String rawUnix, File file) throws Exception {
 			if (formatter == null) {
-				formatter = keyToFormatter.apply(key());
+				formatter = stateToFormatter.apply(state());
 			}
 			return formatter.apply(rawUnix);
 		}
 	}
 
-	static class Closeable<Key extends Serializable> extends FormatterStepImpl<Key> {
+	static class Closeable<State extends Serializable> extends FormatterStepImpl<State> {
 		private static final long serialVersionUID = 1L;
 
-		final transient ThrowingEx.Function<Key, FormatterFunc.Closeable> keyToFormatter;
+		final transient ThrowingEx.Function<State, FormatterFunc.Closeable> stateToFormatter;
 		transient FormatterFunc.Closeable formatter; // initialized lazily
 
-		Closeable(String name, ThrowingEx.Supplier<Key> keySupplier, ThrowingEx.Function<Key, FormatterFunc.Closeable> keyToFormatter) {
-			super(name, keySupplier);
-			this.keyToFormatter = Objects.requireNonNull(keyToFormatter);
+		Closeable(String name, ThrowingEx.Supplier<State> stateSupplier, ThrowingEx.Function<State, FormatterFunc.Closeable> stateToFormatter) {
+			super(name, stateSupplier);
+			this.stateToFormatter = Objects.requireNonNull(stateToFormatter);
 		}
 
 		@Override
-		protected String format(Key key, String rawUnix, File file) throws Exception {
+		protected String format(State state, String rawUnix, File file) throws Exception {
 			if (formatter == null) {
-				formatter = keyToFormatter.apply(key());
+				formatter = stateToFormatter.apply(state());
 			}
 			return formatter.apply(rawUnix);
 		}
@@ -119,7 +119,7 @@ abstract class FormatterStepImpl<Key extends Serializable> extends Strict<Key> {
 		}
 
 		@Override
-		protected String format(Integer key, String rawUnix, File file) throws Exception {
+		protected String format(Integer state, String rawUnix, File file) throws Exception {
 			if (formatter == null) {
 				formatter = formatterSupplier.get();
 			}

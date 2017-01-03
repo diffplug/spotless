@@ -86,20 +86,20 @@ public final class GitAttributesLineEndings {
 		}
 
 		@Override
-		protected FileState calculateKey() throws Exception {
+		protected FileState calculateState() throws Exception {
 			return new FileState(projectDir, toFormat.get());
 		}
 
 		/**
-		 * Initializing the key() for up-to-date checking is faster than the full initialization
-		 * needed to actually do the formatting. We load the Runtime lazily from the key().
+		 * Initializing the state() for up-to-date checking is faster than the full initialization
+		 * needed to actually do the formatting. We load the Runtime lazily from the state().
 		 */
 		transient Runtime runtime;
 
 		@Override
 		public String getEndingFor(File file) {
 			if (runtime == null) {
-				runtime = key().atRuntime();
+				runtime = state().atRuntime();
 			}
 			return runtime.getEndingFor(file);
 		}

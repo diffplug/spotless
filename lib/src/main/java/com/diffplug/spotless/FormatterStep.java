@@ -69,89 +69,89 @@ public interface FormatterStep extends Serializable {
 	 * while also ensuring that gradle can detect changes in a step's settings to determine that
 	 * it needs to rerun a format.
 	 */
-	abstract class Strict<Key extends Serializable> extends LazyForwardingEquality<Key> implements FormatterStep {
+	abstract class Strict<State extends Serializable> extends LazyForwardingEquality<State> implements FormatterStep {
 		private static final long serialVersionUID = 1L;
 
 		/**
 		 * Implements the formatting function strictly in terms
-		 * of the input data and the result of {@link #calculateKey()}.
+		 * of the input data and the result of {@link #calculateState()}.
 		 */
-		protected abstract String format(Key key, String rawUnix, File file) throws Exception;
+		protected abstract String format(State state, String rawUnix, File file) throws Exception;
 
 		@Override
 		public final String format(String rawUnix, File file) throws Exception {
-			return format(key(), rawUnix, file);
+			return format(state(), rawUnix, file);
 		}
 	}
 
 	/**
 	 * @param name
 	 *             The name of the formatter step
-	 * @param keySupplier
+	 * @param stateSupplier
 	 *             If the rule has any state, this supplier will calculate it lazily, and the result
-	 *             will be passed to keyToFormatter
-	 * @param keyToFormatter
+	 *             will be passed to stateToFormatter
+	 * @param stateToFormatter
 	 *             A pure function which generates a formatting function using
-	 *             only the state supplied by key and nowhere else.
+	 *             only the state supplied by state and nowhere else.
 	 * @return A FormatterStep
 	 */
-	public static <Key extends Serializable> FormatterStep createLazy(
+	public static <State extends Serializable> FormatterStep createLazy(
 			String name,
-			ThrowingEx.Supplier<Key> keySupplier,
-			ThrowingEx.Function<Key, FormatterFunc> keyToFormatter) {
-		return new FormatterStepImpl.Standard<>(name, keySupplier, keyToFormatter);
+			ThrowingEx.Supplier<State> stateSupplier,
+			ThrowingEx.Function<State, FormatterFunc> stateToFormatter) {
+		return new FormatterStepImpl.Standard<>(name, stateSupplier, stateToFormatter);
 	}
 
 	/**
 	 * @param name
 	 *             The name of the formatter step
-	 * @param key
-	 *             If the rule has any state, this key must contain all of it
-	 * @param keyToFormatter
+	 * @param state
+	 *             If the rule has any state, this state must contain all of it
+	 * @param stateToFormatter
 	 *             A pure function which generates a formatting function using
-	 *             only the state supplied by key and nowhere else.
+	 *             only the state supplied by state and nowhere else.
 	 * @return A FormatterStep
 	 */
-	public static <Key extends Serializable> FormatterStep create(
+	public static <State extends Serializable> FormatterStep create(
 			String name,
-			Key key,
-			ThrowingEx.Function<Key, FormatterFunc> keyToFormatter) {
-		return createLazy(name, () -> key, keyToFormatter);
+			State state,
+			ThrowingEx.Function<State, FormatterFunc> stateToFormatter) {
+		return createLazy(name, () -> state, stateToFormatter);
 	}
 
 	/**
 	 * @param name
 	 *             The name of the formatter step
-	 * @param keySupplier
+	 * @param stateSupplier
 	 *             If the rule has any state, this supplier will calculate it lazily, and the result
-	 *             will be passed to keyToFormatter
-	 * @param keyToFormatter
+	 *             will be passed to stateToFormatter
+	 * @param stateToFormatter
 	 *             A pure function which generates a closeable formatting function using
-	 *             only the state supplied by key and nowhere else.
+	 *             only the state supplied by state and nowhere else.
 	 * @return A FormatterStep
 	 */
-	public static <Key extends Serializable> FormatterStep createCloseableLazy(
+	public static <State extends Serializable> FormatterStep createCloseableLazy(
 			String name,
-			ThrowingEx.Supplier<Key> keySupplier,
-			ThrowingEx.Function<Key, FormatterFunc.Closeable> keyToFormatter) {
-		return new FormatterStepImpl.Closeable<>(name, keySupplier, keyToFormatter);
+			ThrowingEx.Supplier<State> stateSupplier,
+			ThrowingEx.Function<State, FormatterFunc.Closeable> stateToFormatter) {
+		return new FormatterStepImpl.Closeable<>(name, stateSupplier, stateToFormatter);
 	}
 
 	/**
 	 * @param name
 	 *             The name of the formatter step
-	 * @param key
-	 *             If the rule has any state, this key must contain all of it
-	 * @param keyToFormatter
+	 * @param state
+	 *             If the rule has any state, this state must contain all of it
+	 * @param stateToFormatter
 	 *             A pure function which generates a formatting function using
-	 *             only the state supplied by key and nowhere else.
+	 *             only the state supplied by state and nowhere else.
 	 * @return A FormatterStep
 	 */
-	public static <Key extends Serializable> FormatterStep createCloseable(
+	public static <State extends Serializable> FormatterStep createCloseable(
 			String name,
-			Key key,
-			ThrowingEx.Function<Key, FormatterFunc.Closeable> keyToFormatter) {
-		return createCloseableLazy(name, () -> key, keyToFormatter);
+			State state,
+			ThrowingEx.Function<State, FormatterFunc.Closeable> stateToFormatter) {
+		return createCloseableLazy(name, () -> state, stateToFormatter);
 	}
 
 	/**

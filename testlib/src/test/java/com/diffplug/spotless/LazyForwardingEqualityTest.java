@@ -24,30 +24,30 @@ import com.diffplug.spotless.LazyForwardingEquality;
 
 @SuppressWarnings("serial")
 public class LazyForwardingEqualityTest {
-	static Str s(String key) {
-		return new Str(key);
+	static Str s(String state) {
+		return new Str(state);
 	}
 
-	static Other o(String key) {
-		return new Other(key);
+	static Other o(String state) {
+		return new Other(state);
 	}
 
 	static class Str extends LazyForwardingEquality<String> {
-		private String key;
+		private String state;
 
-		Str(String key) {
-			this.key = key;
+		Str(String state) {
+			this.state = state;
 		}
 
 		@Override
-		protected String calculateKey() {
-			return key;
+		protected String calculateState() {
+			return state;
 		}
 	}
 
 	static class Other extends Str {
-		Other(String key) {
-			super(key);
+		Other(String state) {
+			super(state);
 		}
 	}
 
