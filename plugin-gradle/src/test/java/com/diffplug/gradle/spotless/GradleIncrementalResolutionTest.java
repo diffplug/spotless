@@ -1,3 +1,18 @@
+/*
+ * Copyright 2016 DiffPlug
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.diffplug.gradle.spotless;
 
 import java.io.File;
@@ -38,7 +53,7 @@ public class GradleIncrementalResolutionTest extends GradleIntegrationTest {
 		assertState("aBc");
 		// check will run against all three the first time (and second and third)
 		checkRanAgainst("abc");
-		checkRanAgainst("abc"); 
+		checkRanAgainst("abc");
 		checkRanAgainst("abc");
 		// apply will run against all three the first time
 		applyRanAgainst("abc");
@@ -50,7 +65,14 @@ public class GradleIncrementalResolutionTest extends GradleIntegrationTest {
 		// if we change just one file
 		writeState("Abc");
 		// then check runs against just the changed file
-		checkRanAgainst("abc"); // NOT - it runs against all the files...
+		checkRanAgainst("a");
+		// even after failing, still just the one
+		checkRanAgainst("a");
+		// and so does apply
+		applyRanAgainst("a");
+		applyRanAgainst("a");
+		// until the issue has been fixed
+		applyRanAgainst("");
 	}
 
 	private String filename(String name) {
@@ -58,9 +80,12 @@ public class GradleIncrementalResolutionTest extends GradleIntegrationTest {
 	}
 
 	private void writeState(String state) throws IOException {
+		System.out.println("--- " + state + " ---");
 		for (char c : state.toCharArray()) {
 			String letter = new String(new char[]{c});
-			if (!new File(rootFolder(), filename(letter)).exists() || !read(filename(letter)).equals(letter)) {
+			boolean exists = new File(rootFolder(), filename(letter)).exists();
+			boolean needsChanging = exists && !read(filename(letter)).trim().equals(letter);
+			if (!exists || needsChanging) {
 				write(filename(letter), letter);
 			}
 		}
