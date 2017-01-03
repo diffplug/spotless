@@ -23,15 +23,18 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import org.assertj.core.api.Assertions;
+import org.gradle.api.GradleException;
 import org.gradle.api.Project;
+import org.gradle.api.tasks.TaskExecutionException;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Test;
 
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.ResourceHarness;
 
-public class DiffMessageFormatterTest extends GradleResourceHarness {
+public class DiffMessageFormatterTest extends ResourceHarness {
 	private SpotlessTask create(File... files) throws IOException {
 		return create(Arrays.asList(files));
 	}
@@ -55,6 +58,16 @@ public class DiffMessageFormatterTest extends GradleResourceHarness {
 		String middle = msg.substring(firstLine.length(), msg.length() - lastLine.length());
 		String expectedMessage = StringPrinter.buildStringFromLines(expectedLines);
 		Assertions.assertThat(middle).isEqualTo(expectedMessage.substring(0, expectedMessage.length() - 1));
+	}
+
+	protected String getTaskErrorMessage(SpotlessTask task) {
+		try {
+			task.execute();
+			throw new AssertionError("Expected a TaskExecutionException");
+		} catch (TaskExecutionException e) {
+			GradleException cause = (GradleException) e.getCause();
+			return cause.getMessage();
+		}
 	}
 
 	@Test

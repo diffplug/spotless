@@ -32,10 +32,11 @@ import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.common.tree.TreeDef;
 import com.diffplug.common.tree.TreeStream;
+import com.diffplug.spotless.ResourceHarness;
 
-public class GradleIntegrationTest extends GradleResourceHarness {
+public class GradleIntegrationTest extends ResourceHarness {
 	protected GradleRunner gradleRunner() throws IOException {
-		return GradleRunner.create().withProjectDir(rootFolder()).withPluginClasspath();
+		return GradleRunner.create().withProjectDir(rootFolder()).withPluginClasspath().forwardOutput();
 	}
 
 	/** Dumps the complete file contents of the folder to the console. */
@@ -68,8 +69,16 @@ public class GradleIntegrationTest extends GradleResourceHarness {
 		checkIsUpToDate(true);
 	}
 
+	protected void applyIsUpToDate(boolean upToDate) throws IOException {
+		checkTaskIsUpToDate("spotlessApply", upToDate);
+	}
+
 	protected void checkIsUpToDate(boolean upToDate) throws IOException {
-		BuildResult buildResult = gradleRunner().withArguments("spotlessCheck").build();
+		checkTaskIsUpToDate("spotlessCheck", upToDate);
+	}
+
+	private void checkTaskIsUpToDate(String task, boolean upToDate) throws IOException {
+		BuildResult buildResult = gradleRunner().withArguments(task, "--debug").build();
 
 		TaskOutcome expected = upToDate ? TaskOutcome.UP_TO_DATE : TaskOutcome.SUCCESS;
 		TaskOutcome notExpected = upToDate ? TaskOutcome.SUCCESS : TaskOutcome.UP_TO_DATE;

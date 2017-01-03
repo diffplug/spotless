@@ -99,19 +99,6 @@ public class SpotlessTask extends DefaultTask {
 		return this.steps.add(step);
 	}
 
-	protected Formatter buildFormatter() {
-		if (target == null) {
-			throw new GradleException("You must specify 'Iterable<File> toFormat'");
-		}
-		// combine them into the master formatter
-		return Formatter.builder()
-				.lineEndingsPolicy(lineEndingsPolicy)
-				.encoding(Charset.forName(encoding))
-				.rootDir(getProject().getProjectDir().toPath())
-				.steps(steps)
-				.build();
-	}
-
 	private boolean check = false;
 	private boolean apply = false;
 
@@ -135,9 +122,24 @@ public class SpotlessTask extends DefaultTask {
 
 	@TaskAction
 	public void performAction(IncrementalTaskInputs inputs) throws Exception {
+		if (target == null) {
+			throw new GradleException("You must specify 'Iterable<File> toFormat'");
+		}
+		if (!check && !apply) {
+			throw new GradleException("Don't call " + getName() + " directly, call " + getName() + SpotlessPlugin.CHECK + " or " + getName() + SpotlessPlugin.APPLY);
+		}
+
+		// create the formatter
+		Formatter formatter = Formatter.builder()
+				.lineEndingsPolicy(lineEndingsPolicy)
+				.encoding(Charset.forName(encoding))
+				.rootDir(getProject().getProjectDir().toPath())
+				.steps(steps)
+				.build();
+		// find the outOfDate files
 		List<File> outOfDate = new ArrayList<>();
 		inputs.outOfDate(inputDetails -> outOfDate.add(inputDetails.getFile()));
-		Formatter formatter = buildFormatter();
+
 		try {
 			if (apply) {
 				apply(formatter, outOfDate);

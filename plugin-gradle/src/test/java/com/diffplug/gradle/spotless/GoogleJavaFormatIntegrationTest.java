@@ -16,18 +16,9 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
-import java.util.function.Function;
 
-import org.assertj.core.api.Assertions;
-import org.gradle.api.Project;
-import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Assert;
 import org.junit.Test;
-
-import com.diffplug.gradle.spotless.GradleProvisioner;
-import com.diffplug.gradle.spotless.SpotlessTask;
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.java.GoogleJavaFormatStep;
 
 public class GoogleJavaFormatIntegrationTest extends GradleIntegrationTest {
 	@Test
@@ -58,31 +49,5 @@ public class GoogleJavaFormatIntegrationTest extends GradleIntegrationTest {
 				"googleJavaFormat('1.1')",
 				"googleJavaFormat('1.0')");
 		checkRunsThenUpToDate();
-	}
-
-	/** This passes, and confirms that the steps we're creating have proper equality. */
-	@Test
-	public void testStepEquality() throws IOException {
-		Project project = ProjectBuilder.builder().withProjectDir(rootFolder()).build();
-		project.getRepositories().mavenCentral();
-		// copied from JavaExtension.googleJavaFormat
-		Function<String, FormatterStep> create = version -> GoogleJavaFormatStep.create(version, GradleProvisioner.fromProject(project));
-
-		Assertions.assertThat(create.apply("1.0"))
-				.isEqualTo(create.apply("1.0"))
-				.isNotEqualTo(create.apply("1.1"));
-		Assertions.assertThat(create.apply("1.1"))
-				.isEqualTo(create.apply("1.1"))
-				.isNotEqualTo(create.apply("1.0"));
-	}
-
-	/** This passes, and confirms that the list of steps we're creating has proper equality. */
-	@Test
-	public void testTaskEquality() throws Exception {
-		SpotlessTask checks1_0a = createCheckTask(extension -> extension.java(java -> java.googleJavaFormat("1.0")));
-		SpotlessTask checks1_0b = createCheckTask(extension -> extension.java(java -> java.googleJavaFormat("1.0")));
-		SpotlessTask checks1_1 = createCheckTask(extension -> extension.java(java -> java.googleJavaFormat("1.1")));
-		Assertions.assertThat(checks1_0a.getSteps()).isEqualTo(checks1_0b.getSteps());
-		Assertions.assertThat(checks1_0a.getSteps()).isNotEqualTo(checks1_1.getSteps());
 	}
 }
