@@ -31,14 +31,16 @@ import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ResourceHarness;
 
 public class FormatTaskTest extends ResourceHarness {
-	private CheckFormatTask checkTask;
-	private ApplyFormatTask applyTask;
+	private SpotlessTask checkTask;
+	private SpotlessTask applyTask;
 
 	@Before
 	public void createTask() {
 		Project project = ProjectBuilder.builder().build();
-		checkTask = project.getTasks().create("checkTaskUnderTest", CheckFormatTask.class);
-		applyTask = project.getTasks().create("applyTaskUnderTest", ApplyFormatTask.class);
+		checkTask = project.getTasks().create("checkTaskUnderTest", SpotlessTask.class);
+		checkTask.setCheck();
+		applyTask = project.getTasks().create("applyTaskUnderTest", SpotlessTask.class);
+		applyTask.setApply();
 	}
 
 	@Test(expected = GradleException.class)

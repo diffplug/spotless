@@ -28,6 +28,8 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.Nullable;
+
 /** Formatter which performs the full formatting. */
 public final class Formatter {
 	private final LineEnding.Policy lineEndingsPolicy;
@@ -125,6 +127,17 @@ public final class Formatter {
 
 	/** Applies formatting to the given file. */
 	public void applyTo(File file) throws IOException {
+		applyToAndReturnResultIfDirty(file);
+	}
+
+	/**
+	 * Applies formatting to the given file.
+	 *
+	 * Returns null if the file was already clean, or the
+	 * formatted result with unix newlines if it was not.
+	 */
+	@Nullable
+	public String applyToAndReturnResultIfDirty(File file) throws IOException {
 		byte[] rawBytes = Files.readAllBytes(file.toPath());
 		String raw = new String(rawBytes, encoding);
 		String rawUnix = LineEnding.toUnix(raw);
@@ -138,6 +151,9 @@ public final class Formatter {
 		byte[] formattedBytes = formatted.getBytes(encoding);
 		if (!Arrays.equals(rawBytes, formattedBytes)) {
 			Files.write(file.toPath(), formattedBytes, StandardOpenOption.TRUNCATE_EXISTING);
+			return formattedUnix;
+		} else {
+			return null;
 		}
 	}
 

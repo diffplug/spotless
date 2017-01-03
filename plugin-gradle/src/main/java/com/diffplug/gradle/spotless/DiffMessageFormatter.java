@@ -42,7 +42,7 @@ final class DiffMessageFormatter {
 	private static final int MAX_CHECK_MESSAGE_LINES = 50;
 	static final int MAX_FILES_TO_LIST = 10;
 
-	static String messageFor(CheckFormatTask task, Formatter formatter, List<File> problemFiles) throws IOException {
+	static String messageFor(SpotlessTask task, Formatter formatter, List<File> problemFiles) throws IOException {
 		DiffMessageFormatter diffFormater = new DiffMessageFormatter(task, formatter, problemFiles);
 		return "The following files had format violations:\n"
 				+ diffFormater.buffer
@@ -55,7 +55,7 @@ final class DiffMessageFormatter {
 	private final StringBuilder buffer = new StringBuilder(MAX_CHECK_MESSAGE_LINES * 64);
 	private int numLines = 0;
 
-	private DiffMessageFormatter(CheckFormatTask task, Formatter formatter, List<File> problemFiles) throws IOException {
+	private DiffMessageFormatter(SpotlessTask task, Formatter formatter, List<File> problemFiles) throws IOException {
 		Preconditions.checkArgument(!problemFiles.isEmpty(), "Problem files must not be empty");
 
 		Path rootDir = task.getProject().getRootDir().toPath();
@@ -126,7 +126,7 @@ final class DiffMessageFormatter {
 	 * look like if formatted using the given formatter. Does not end with any newline
 	 * sequence (\n, \r, \r\n).
 	 */
-	private static String diff(CheckFormatTask task, Formatter formatter, File file) throws IOException {
+	private static String diff(SpotlessTask task, Formatter formatter, File file) throws IOException {
 		String raw = new String(Files.readAllBytes(file.toPath()), formatter.getEncoding());
 		String rawUnix = LineEnding.toUnix(raw);
 		String formattedUnix;

@@ -29,7 +29,7 @@ import com.diffplug.spotless.PaddedCellBulk;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- * Incorporates the PaddedCell machinery into ApplyFormatTask.apply() and CheckFormatTask.check().
+ * Incorporates the PaddedCell machinery into SpotlessTask.apply() and SpotlessTask.check().
  *
  * Here's the general workflow:
  *
@@ -41,12 +41,12 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * justifiably be frustrated.  Luckily, every time `spotlessCheck` fails, it passes the failed files to
  * {@link #anyMisbehave(Formatter, List)}, which checks to see if any of the rules are causing a cycle
  * or some other kind of mischief.  If they are, it throws a special error message,
- * {@link #youShouldTurnOnPaddedCell(CheckFormatTask)} which tells them to turn on paddedCell.
+ * {@link #youShouldTurnOnPaddedCell(SpotlessTask)} which tells them to turn on paddedCell.
  *
  * ### spotlessCheck with paddedCell on
  *
  * Spotless check behaves as normal, finding a list of problem files, but then passes that list
- * to {@link #check(CheckFormatTask, Formatter, List)}.  If there were no problem files, then `paddedCell`
+ * to {@link #check(SpotlessTask, Formatter, List)}.  If there were no problem files, then `paddedCell`
  * is no longer necessary, so users might as well turn it off, so we give that info as a warning.
  */
 // TODO: Cleanup this javadoc
@@ -54,7 +54,7 @@ class PaddedCellGradle {
 	/** URL to a page which describes the padded cell thing. */
 	private static final String URL = "https://github.com/diffplug/spotless/blob/master/PADDEDCELL.md";
 
-	static GradleException youShouldTurnOnPaddedCell(CheckFormatTask task) {
+	static GradleException youShouldTurnOnPaddedCell(SpotlessTask task) {
 		Path rootPath = task.getProject().getRootDir().toPath();
 		return new GradleException(StringPrinter.buildStringFromLines(
 				"You have a misbehaving rule which can't make up its mind.",
@@ -78,12 +78,12 @@ class PaddedCellGradle {
 				"For details see " + URL));
 	}
 
-	private static File diagnoseDir(CheckFormatTask task) {
+	private static File diagnoseDir(SpotlessTask task) {
 		return new File(task.getProject().getBuildDir(), "spotless-diagnose-" + task.formatName());
 	}
 
 	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
-	static void check(CheckFormatTask task, Formatter formatter, List<File> problemFiles) throws IOException {
+	static void check(SpotlessTask task, Formatter formatter, List<File> problemFiles) throws IOException {
 		if (problemFiles.isEmpty()) {
 			// if the first pass was successful, then paddedCell() mode is unnecessary
 			task.getLogger().info(StringPrinter.buildStringFromLines(

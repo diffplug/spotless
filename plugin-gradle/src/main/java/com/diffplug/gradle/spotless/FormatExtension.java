@@ -300,7 +300,7 @@ public class FormatExtension {
 	}
 
 	/** Sets up a format task according to the values in this extension. */
-	protected void setupTask(BaseFormatTask task) {
+	protected void setupTask(SpotlessTask task) {
 		task.setPaddedCell(paddedCell);
 		task.setEncoding(getEncoding().name());
 		task.setTarget(target);

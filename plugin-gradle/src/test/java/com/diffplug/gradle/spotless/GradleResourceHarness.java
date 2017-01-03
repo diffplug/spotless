@@ -39,7 +39,7 @@ public class GradleResourceHarness extends ResourceHarness {
 	/** Runs many test cases on the task created by this extension. */
 	protected StepHarness fromExtension(Consumer<SpotlessExtension> test) throws Exception {
 		// create the task
-		ApplyFormatTask task = createApplyTask(test);
+		SpotlessTask task = createApplyTask(test);
 		// get its formatter
 		task.target = Arrays.asList(this.rootFolder());
 		Formatter formatter = task.buildFormatter();
@@ -47,7 +47,7 @@ public class GradleResourceHarness extends ResourceHarness {
 		return StepHarness.forFormatter(formatter);
 	}
 
-	protected String getTaskErrorMessage(BaseFormatTask task) {
+	protected String getTaskErrorMessage(SpotlessTask task) {
 		try {
 			task.execute();
 			throw new AssertionError("Expected a TaskExecutionException");
@@ -57,7 +57,7 @@ public class GradleResourceHarness extends ResourceHarness {
 		}
 	}
 
-	/** Creates a collection of CheckFormatTask based on the given extension configuration. */
+	/** Creates a collection of SpotlessTask based on the given extension configuration. */
 	protected <T extends Task> List<T> createTasks(Consumer<SpotlessExtension> test, Class<T> clazz) throws Exception {
 		// write out the .gitattributes file
 		Files.write(
@@ -74,13 +74,13 @@ public class GradleResourceHarness extends ResourceHarness {
 		return new ArrayList<>(project.getTasks().withType(clazz).getAsMap().values());
 	}
 
-	/** Creates a single of CheckFormatTask based on the given extension configuration. */
-	protected CheckFormatTask createCheckTask(Consumer<SpotlessExtension> test) throws Exception {
-		return Iterables.getOnlyElement(createTasks(test, CheckFormatTask.class));
+	/** Creates a single of SpotlessTask based on the given extension configuration. */
+	protected SpotlessTask createCheckTask(Consumer<SpotlessExtension> test) throws Exception {
+		return Iterables.getOnlyElement(createTasks(test, SpotlessTask.class));
 	}
 
-	/** Creates a collection of CheckFormatTask based on the given extension configuration. */
-	protected ApplyFormatTask createApplyTask(Consumer<SpotlessExtension> test) throws Exception {
-		return Iterables.getOnlyElement(createTasks(test, ApplyFormatTask.class));
+	/** Creates a collection of SpotlessTask based on the given extension configuration. */
+	protected SpotlessTask createApplyTask(Consumer<SpotlessExtension> test) throws Exception {
+		return Iterables.getOnlyElement(createTasks(test, SpotlessTask.class));
 	}
 }

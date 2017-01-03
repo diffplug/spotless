@@ -20,9 +20,12 @@ import java.util.Map;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.execution.TaskExecutionGraph;
 import org.gradle.api.plugins.JavaBasePlugin;
 
 import com.diffplug.common.base.Errors;
+
+import groovy.lang.Closure;
 
 public class SpotlessPlugin implements Plugin<Project> {
 	Project project;
@@ -48,13 +51,43 @@ public class SpotlessPlugin implements Plugin<Project> {
 		return spotlessExtension;
 	}
 
+	@SuppressWarnings("rawtypes")
 	void createTasks() throws Exception {
 		Task rootCheckTask = project.task(EXTENSION + CHECK);
 		Task rootApplyTask = project.task(EXTENSION + APPLY);
 
 		for (Map.Entry<String, FormatExtension> entry : spotlessExtension.formats.entrySet()) {
-			rootCheckTask.dependsOn(createCheckTask(entry.getKey(), entry.getValue()));
-			rootApplyTask.dependsOn(createApplyTask(entry.getKey(), entry.getValue()));
+			// create the task that does the work
+			String taskName = EXTENSION + capitalize(entry.getKey());
+			SpotlessTask spotlessTask = project.getTasks().create(taskName, SpotlessTask.class);
+			entry.getValue().setupTask(spotlessTask);
+
+			// create the check and apply control tasks
+			Task checkTask = project.getTasks().create(taskName + CHECK);
+			Task applyTask = project.getTasks().create(taskName + APPLY);
+			// the root tasks depend on them
+			rootCheckTask.dependsOn(checkTask);
+			rootApplyTask.dependsOn(applyTask);
+			// and they depend on the work task
+			checkTask.dependsOn(spotlessTask);
+			applyTask.dependsOn(spotlessTask);
+
+			// when the task graph is ready, we'll configure the spotlessTask appropriately
+			project.getGradle().getTaskGraph().whenReady(new Closure(null) {
+				private static final long serialVersionUID = 1L;
+
+				// called by gradle
+				@SuppressWarnings("unused")
+				public Object doCall(TaskExecutionGraph graph) {
+					if (graph.hasTask(checkTask)) {
+						spotlessTask.setCheck();
+					}
+					if (graph.hasTask(applyTask)) {
+						spotlessTask.setApply();
+					}
+					return Closure.DONE;
+				}
+			});
 		}
 
 		// Add our check task as a dependency on the global check task
@@ -63,20 +96,6 @@ public class SpotlessPlugin implements Plugin<Project> {
 		project.getTasks()
 				.matching(task -> task.getName().equals(JavaBasePlugin.CHECK_TASK_NAME))
 				.all(task -> task.dependsOn(rootCheckTask));
-	}
-
-	CheckFormatTask createCheckTask(String name, FormatExtension format) {
-		CheckFormatTask task = project.getTasks().create(EXTENSION + capitalize(name) + CHECK, CheckFormatTask.class);
-		// sets toFormat and steps
-		format.setupTask(task);
-		return task;
-	}
-
-	ApplyFormatTask createApplyTask(String name, FormatExtension format) {
-		ApplyFormatTask task = project.getTasks().create(EXTENSION + capitalize(name) + APPLY, ApplyFormatTask.class);
-		// sets toFormat and steps
-		format.setupTask(task);
-		return task;
 	}
 
 	static String capitalize(String input) {

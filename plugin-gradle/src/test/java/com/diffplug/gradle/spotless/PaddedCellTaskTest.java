@@ -47,8 +47,8 @@ public class PaddedCellTaskTest extends ResourceHarness {
 	private class Bundle {
 		Project project = ProjectBuilder.builder().withProjectDir(rootFolder()).build();
 		File file;
-		CheckFormatTask check;
-		ApplyFormatTask apply;
+		SpotlessTask check;
+		SpotlessTask apply;
 
 		Bundle(String name, FormatterFunc function) throws IOException {
 			file = createTestFile("src/test." + name, "CCC");
@@ -57,16 +57,18 @@ public class PaddedCellTaskTest extends ResourceHarness {
 			apply = createApplyTask(name, step);
 		}
 
-		private CheckFormatTask createCheckTask(String name, FormatterStep step) {
-			CheckFormatTask task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + SpotlessPlugin.CHECK, CheckFormatTask.class);
+		private SpotlessTask createCheckTask(String name, FormatterStep step) {
+			SpotlessTask task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name), SpotlessTask.class);
+			task.setCheck();
 			task.addStep(step);
 			task.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
 			task.setTarget(Collections.singletonList(file));
 			return task;
 		}
 
-		private ApplyFormatTask createApplyTask(String name, FormatterStep step) {
-			ApplyFormatTask task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + SpotlessPlugin.APPLY, ApplyFormatTask.class);
+		private SpotlessTask createApplyTask(String name, FormatterStep step) {
+			SpotlessTask task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + SpotlessPlugin.APPLY, SpotlessTask.class);
+			task.setApply();
 			task.addStep(step);
 			task.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
 			task.setTarget(Collections.singletonList(file));

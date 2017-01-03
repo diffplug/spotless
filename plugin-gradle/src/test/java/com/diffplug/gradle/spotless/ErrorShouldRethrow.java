@@ -51,7 +51,7 @@ public class ErrorShouldRethrow extends GradleIntegrationTest {
 		BuildResult result = gradleRunner().withArguments("spotlessCheck").buildAndFail();
 
 		String expectedToStartWith = StringPrinter.buildStringFromLines(
-				":spotlessMiscCheckStep 'no swearing' found problem in 'README.md':",
+				":spotlessMiscStep 'no swearing' found problem in 'README.md':",
 				"No swearing!",
 				" FAILED",
 				"",
@@ -61,7 +61,7 @@ public class ErrorShouldRethrow extends GradleIntegrationTest {
 				"Build file '" + build + "' line: 9",
 				"",
 				"* What went wrong:",
-				"Execution failed for task ':spotlessMiscCheck'.",
+				"Execution failed for task ':spotlessMisc'.",
 				"> No swearing!");
 		int numNewlines = CharMatcher.is('\n').countIn(expectedToStartWith);
 		List<String> actualLines = Splitter.on('\n').splitToList(LineEnding.toUnix(result.getOutput()));

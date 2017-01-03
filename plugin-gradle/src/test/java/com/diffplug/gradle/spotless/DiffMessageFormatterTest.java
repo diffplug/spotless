@@ -32,19 +32,20 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 
 public class DiffMessageFormatterTest extends GradleResourceHarness {
-	private CheckFormatTask create(File... files) throws IOException {
+	private SpotlessTask create(File... files) throws IOException {
 		return create(Arrays.asList(files));
 	}
 
-	private CheckFormatTask create(List<File> files) throws IOException {
+	private SpotlessTask create(List<File> files) throws IOException {
 		Project project = ProjectBuilder.builder().withProjectDir(rootFolder()).build();
-		CheckFormatTask task = project.getTasks().create("underTest", CheckFormatTask.class);
+		SpotlessTask task = project.getTasks().create("underTest", SpotlessTask.class);
 		task.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
 		task.setTarget(files);
+		task.setCheck();
 		return task;
 	}
 
-	private void assertTaskFailure(CheckFormatTask task, String... expectedLines) {
+	private void assertTaskFailure(SpotlessTask task, String... expectedLines) {
 		String msg = getTaskErrorMessage(task);
 
 		String firstLine = "The following files had format violations:\n";
@@ -58,7 +59,7 @@ public class DiffMessageFormatterTest extends GradleResourceHarness {
 
 	@Test
 	public void lineEndingProblem() throws Exception {
-		CheckFormatTask task = create(createTestFile("testFile", "A\r\nB\r\nC\r\n"));
+		SpotlessTask task = create(createTestFile("testFile", "A\r\nB\r\nC\r\n"));
 		assertTaskFailure(task,
 				"    testFile",
 				"        @@ -1,3 +1,3 @@",
@@ -72,7 +73,7 @@ public class DiffMessageFormatterTest extends GradleResourceHarness {
 
 	@Test
 	public void whitespaceProblem() throws Exception {
-		CheckFormatTask task = create(createTestFile("testFile", "A \nB\t\nC  \n"));
+		SpotlessTask task = create(createTestFile("testFile", "A \nB\t\nC  \n"));
 		task.addStep(FormatterStep.createNeverUpToDate("trimTrailing", input -> {
 			Pattern pattern = Pattern.compile("[ \t]+$", Pattern.UNIX_LINES | Pattern.MULTILINE);
 			return pattern.matcher(input).replaceAll("");
@@ -90,7 +91,7 @@ public class DiffMessageFormatterTest extends GradleResourceHarness {
 
 	@Test
 	public void multipleFiles() throws Exception {
-		CheckFormatTask task = create(
+		SpotlessTask task = create(
 				createTestFile("A", "1\r\n2\r\n"),
 				createTestFile("B", "3\n4\r\n"));
 		assertTaskFailure(task,
@@ -113,7 +114,7 @@ public class DiffMessageFormatterTest extends GradleResourceHarness {
 		for (int i = 0; i < 9 + DiffMessageFormatter.MAX_FILES_TO_LIST - 1; ++i) {
 			testFiles.add(createTestFile(Integer.toString(i) + ".txt", "1\r\n2\r\n"));
 		}
-		CheckFormatTask task = create(testFiles);
+		SpotlessTask task = create(testFiles);
 		assertTaskFailure(task,
 				"    0.txt",
 				"        @@ -1,2 +1,2 @@",
@@ -186,7 +187,7 @@ public class DiffMessageFormatterTest extends GradleResourceHarness {
 		for (int i = 0; i < 9 + DiffMessageFormatter.MAX_FILES_TO_LIST; ++i) {
 			testFiles.add(createTestFile(Integer.toString(i) + ".txt", "1\r\n2\r\n"));
 		}
-		CheckFormatTask task = create(testFiles);
+		SpotlessTask task = create(testFiles);
 		assertTaskFailure(task,
 				"    0.txt",
 				"        @@ -1,2 +1,2 @@",
@@ -251,7 +252,7 @@ public class DiffMessageFormatterTest extends GradleResourceHarness {
 			builder.append(i);
 			builder.append("\r\n");
 		}
-		CheckFormatTask task = create(createTestFile("testFile", builder.toString()));
+		SpotlessTask task = create(createTestFile("testFile", builder.toString()));
 		assertTaskFailure(task,
 				"    testFile",
 				"        @@ -1,1000 +1,1000 @@",
