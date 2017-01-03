@@ -15,6 +15,10 @@ spotless {
 	freshmark {
 		target '**/*.md'
 		propertiesFile('gradle.properties')
+		properties {
+			it.put('yes', ':+1:')
+			it.put('no', ':white_large_square:')
+		}
 	}
 	format 'misc', {
 		target '**/*.gradle', '**/*.md', '**/*.gitignore'

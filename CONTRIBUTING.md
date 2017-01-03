@@ -4,19 +4,26 @@ Pull requests are welcome, preferably against `master`.  Feel free to develop sp
 
 ## How Spotless works
 
-Spotless' most basic element is the `FormatterStep`, which has one method that really matters: `String format(String rawUnix, File file)`.  Each step is guaranteed that its input string will contain only unix newlines, and the step's output should also contain only unix newlines.  The file argument is provided only to allow path-dependent formatting (e.g. special formatting for `package-info.java`), but most formatters are path-independent and won't use that input.
+Spotless' most basic element is the `FormatterStep`, which has one method that really matters: `String format(String rawUnix, File file)`.  Each step is guaranteed that its input string will contain only unix newlines, and the step's output should also contain only unix newlines.  The file argument is provided only to allow path-dependent formatting (e.g. special formatting for `package-info.java`), but most formatters are path-independent and won't use that argument.
 
 In order to use and combine `FormatterStep`, you first create a `Formatter`, which has the following parameters:
 
 - an encoding
 - a list of `FormatterStep`
-- a line endings policy (`LineEnding.GIT_ATTRIBUTES` is usually the best choice)
+- a line endings policy (`LineEnding.GIT_ATTRIBUTES` is almost always the best choice)
 
-Once you have an instance of `Formatter`, you can call `boolean isClean(File)`, or `void applyTo(File)` to either check or apply formatting to a file.  Spotless will use the encoding to turn the raw bytes into a String, normalize its line endings to `\n`, pass it to each `FormatterStep` one after the other, and then apply line endings according to the policy.  You can also use lower-level methods like `String compute(String unix, File file)` if you'd like to do lower-level processing.
+Once you have an instance of `Formatter`, you can call `boolean isClean(File)`, or `void applyTo(File)` to either check or apply formatting to a file.  Spotless will then:
 
-`Formatter` and all `FormatterStep` implement `equals` and `hashCode` correctly, which means that build systems that support up-to-date checks can easily and correctly determine if any actions need to be taken.
+- parse the raw bytes into a String according to the encoding
+- normalize its line endings to `\n`
+- pass the unix string to each `FormatterStep` one after the other
+- apply line endings according to the policy
 
-In addition to the standard usage above, Spotless also provides `PaddedCell`, which makes it easy to diagnose and correct idempotence problems.
+You can also use lower-level methods like `String compute(String unix, File file)` if you'd like to do lower-level processing.
+
+All `FormatterStep` implement `Serializable`, `equals`, and `hashCode`, so build systems that support up-to-date checks can easily and correctly determine if any actions need to be taken.
+
+Spotless also provides `PaddedCell`, which makes it easy to diagnose and correct idempotence problems.
 
 ## Project layout
 
@@ -31,7 +38,7 @@ For the folders below in monospace text, they are published on maven central at 
 | `plugin-maven` | Integrates spotless and all of its formatters into Maven. |
 | javadoc-publish | Logic for publishing javadoc to github-pages. |
 | ide | Generates and launches an IDE for developing spotless. |
-| _ext | Folder for generating glue jars (specifically packaging Eclipse jars from p2 for consumption using maven). 
+| _ext | Folder for generating glue jars (specifically packaging Eclipse jars from p2 for consumption using maven).
 
 ## How to add a new FormatterStep
 
@@ -43,26 +50,46 @@ FormatterStep identityStep = FormatterStep.createNeverUpToDate("identity", unix 
 
 This creates a step which will fail up-to-date checks (it is equal only to itself), and will use the function you passed in to do the formatting pass.
 
-To create a step which can handle up-to-date checks properly, use the method `<Key extends Serializable> FormatterStep create(String name, Key key, Function<Key, FormatterFunc> keyToFormatter)`.  Here's an example:
+To create a step which can handle up-to-date checks properly, use the method `<State extends Serializable> FormatterStep create(String name, State state, Function<State, FormatterFunc> stateToFormatter)`.  Here's an example:
 
 ```java
-public final class NeverImport implements Serializable {
-	Set<String> neverImport;
+public final class ReplaceStep {
+	private ReplaceStep() {}
 
-	private NeverImport(Set<String> neverImport) {
-    	this.neverImport = neverImport;
-    }
+	public static FormatterStep create(String name, CharSequence target, CharSequence replacement) {
+		return FormatterStep.create(name,
+				new State(target, replacement),
+				State::toFormatter);
+	}
 
-	private String format(String input) {
-    	
-    }
+	private static final class State implements Serializable {
+		private static final long serialVersionUID = 1L;
 
-	public static FormatterStep create(String... neverImport) {
-    	
-    }
+		private final CharSequence target;
+		private final CharSequence replacement;
+
+		State(CharSequence target, CharSequence replacement) {
+			this.target = target;
+			this.replacement = replacement;
+		}
+
+		FormatterFunc toFormatter() {
+			return raw -> raw.replace(target, replacement);
+		}
+	}
 }
 ```
 
+The `FormatterStep` created above implements `equals` and `hashCode` based on the serialized representation of its `State`.  This trick makes it quick and easy to write steps which properly support up-to-date checks.
+
+Oftentimes, a rule's state will be expensive to compute. `EclipseFormatterStep`, for example, depends on a formatting file.  Ideally, we would like to only pay the cost of the I/O needed to load that file if we have to - we'd like to create the FormatterStep now but load its state lazily at the last possible moment.  For this purpose, each of the `FormatterStep.create` methods has a lazy counterpart.  Here are their signatures:
+
+```java
+FormatterStep createNeverUpToDate    (String name, FormatterFunc function                  )
+FormatterStep createNeverUpToDateLazy(String name, Supplier<FormatterFunc> functionSupplier)
+FormatterStep create    (String name, State state                  , Function<State, FormatterFunc> stateToFormatter)
+FormatterStep createLazy(String name, Supplier<State> stateSupplier, Function<State, FormatterFunc> stateToFormatter)
+```
 
 If your formatting step only needs to call one or two methods of the external dependency, you can pull it in at runtime and call it via reflection.  See the logic for [`EclipseFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/java/EclipseFormatterStep.java) or [`GoogleJavaFormatStep`](lib/src/main/java/com/diffplug/spotless/extra/java/GoogleJavaFormatStep.java).
 
@@ -76,7 +103,7 @@ The gist of it is that you will have to:
 - (Optional) Tie into the build system's native up-to-date mechanism.
 - (Optional) Use `PaddedCell` to proactively catch and resolve idempotence issues.
 
-`plugin-gradle` is the canonical example which uses everything that Spotless has to offer.
+`plugin-gradle` is the canonical example which uses everything that Spotless has to offer.  It's only ~700 lines.
 
 If you get something running, we'd love to host your plugin within this repo as a peer to `plugin-gradle` and `plugin-maven`.
 
