@@ -20,7 +20,23 @@ import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.diffplug.spotless.LineEnding;
+
 public class BumpThisNumberIfACustomStepChangesTest extends GradleIntegrationTest {
+	// awkward way of detecting unix, temporary workaround for #62
+	private static boolean isUnix() {
+		return LineEnding.PLATFORM_NATIVE.str().equals("\n");
+	}
+
+	@Override
+	protected void checkIsUpToDate(boolean upToDate) throws IOException {
+		if (isUnix()) {
+			super.checkIsUpToDate(false);
+		} else {
+			super.checkIsUpToDate(upToDate);
+		}
+	}
+
 	private void writeBuildFile(String toInsert) throws IOException {
 		write("build.gradle",
 				"plugins {",
