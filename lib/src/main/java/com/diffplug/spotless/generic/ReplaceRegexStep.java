@@ -21,9 +21,9 @@ import java.util.regex.Pattern;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 
-public final class CustomReplaceRegexStep {
+public final class ReplaceRegexStep {
 	// prevent direct instantiation
-	private CustomReplaceRegexStep() {}
+	private ReplaceRegexStep() {}
 
 	public static FormatterStep create(String name, String regex, String replacement) {
 		return FormatterStep.createLazy(name,

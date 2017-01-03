@@ -22,6 +22,6 @@ public final class TrimTrailingWhitespaceStep {
 	private TrimTrailingWhitespaceStep() {}
 
 	public static FormatterStep create() {
-		return CustomReplaceRegexStep.create("trimTrailingWhitespace", "[ \t]+$", "");
+		return ReplaceRegexStep.create("trimTrailingWhitespace", "[ \t]+$", "");
 	}
 }

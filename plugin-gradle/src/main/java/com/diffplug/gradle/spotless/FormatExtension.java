@@ -37,11 +37,11 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LazyForwardingEquality;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ThrowingEx;
-import com.diffplug.spotless.generic.CustomReplaceRegexStep;
-import com.diffplug.spotless.generic.CustomReplaceStep;
 import com.diffplug.spotless.generic.EndWithNewlineStep;
 import com.diffplug.spotless.generic.IndentStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
+import com.diffplug.spotless.generic.ReplaceRegexStep;
+import com.diffplug.spotless.generic.ReplaceStep;
 import com.diffplug.spotless.generic.TrimTrailingWhitespaceStep;
 
 import groovy.lang.Closure;
@@ -172,17 +172,22 @@ public class FormatExtension {
 	}
 
 	/**
+	 * An optional performance optimization if you are using any of the `custom` or `customLazy`
+	 * methods.  If you aren't explicitly calling `custom` or `customLazy`, then this method
+	 * has no effect.
+	 *
 	 * Spotless tracks what files have changed from run to run, so that it can run faster
-	 * by only checking files which have changed.
+	 * by only checking files which have changed, or whose formatting steps have changed.
+	 * If you use either the `custom` or `customLazy` methods, then gradle can never mark
+	 * your files as `up-to-date`, because it can't know if perhaps the behavior of your
+	 * custom function has changed.
 	 *
-	 * If you have changed a custom function, then you must increment this number so
-	 * that spotless knows it needs to rerun the format check.  This is not necessary
-	 * if you don't use any custom functions.
-	 *
-	 * If you use a custom function and don't call bumpThisNumberIfACustomRuleChanges, then spotless
-	 * cannot tell if you have changed the rules, and will be forced to always recheck all files.
+	 * If you set `bumpThisNumberIfACustomStepChanges( <some number> )`, then spotless will
+	 * assume that the custom rules have not changed if the number has not changed.  If a
+	 * custom rule does change, then you must bump the number so that spotless will know
+	 * that it must recheck the files it has already checked.
 	 */
-	public void bumpThisNumberIfACustomRuleChanges(int number) {
+	public void bumpThisNumberIfACustomStepChanges(int number) {
 		globalState = number;
 	}
 
@@ -226,13 +231,13 @@ public class FormatExtension {
 	}
 
 	/** Highly efficient find-replace char sequence. */
-	public void customReplace(String name, CharSequence original, CharSequence after) {
-		addStep(CustomReplaceStep.create(name, original, after));
+	public void replace(String name, CharSequence original, CharSequence after) {
+		addStep(ReplaceStep.create(name, original, after));
 	}
 
 	/** Highly efficient find-replace regex. */
-	public void customReplaceRegex(String name, String regex, String replacement) {
-		addStep(CustomReplaceRegexStep.create(name, regex, replacement));
+	public void replaceRegex(String name, String regex, String replacement) {
+		addStep(ReplaceRegexStep.create(name, regex, replacement));
 	}
 
 	/** Removes trailing whitespace. */

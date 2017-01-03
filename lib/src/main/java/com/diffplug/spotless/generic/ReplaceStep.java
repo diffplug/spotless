@@ -20,9 +20,9 @@ import java.io.Serializable;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 
-public final class CustomReplaceStep {
+public final class ReplaceStep {
 	// prevent direct instantiation
-	private CustomReplaceStep() {}
+	private ReplaceStep() {}
 
 	public static FormatterStep create(String name, CharSequence target, CharSequence replacement) {
 		return FormatterStep.createLazy(name,

@@ -20,7 +20,7 @@ import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class BumpThisNumberIfACustomRuleChangesTest extends GradleIntegrationTest {
+public class BumpThisNumberIfACustomStepChangesTest extends GradleIntegrationTest {
 	private void writeBuildFile(String toInsert) throws IOException {
 		write("build.gradle",
 				"plugins {",
@@ -58,8 +58,8 @@ public class BumpThisNumberIfACustomRuleChangesTest extends GradleIntegrationTes
 	}
 
 	@Test
-	public void unlessBumpThisNumberIfACustomRuleChanges() throws IOException {
-		writeBuildFile("bumpThisNumberIfACustomRuleChanges(1)");
+	public void unlessBumpThisNumberIfACustomStepChanges() throws IOException {
+		writeBuildFile("bumpThisNumberIfACustomStepChanges(1)");
 		writeContentWithBadFormatting();
 		assertApplyWorks();
 
@@ -69,14 +69,14 @@ public class BumpThisNumberIfACustomRuleChangesTest extends GradleIntegrationTes
 
 	@Test
 	public void andRunsAgainIfNumberChanges() throws IOException {
-		writeBuildFile("bumpThisNumberIfACustomRuleChanges(1)");
+		writeBuildFile("bumpThisNumberIfACustomStepChanges(1)");
 		writeContentWithBadFormatting();
 		assertApplyWorks();
 
 		checkIsUpToDate(false);
 		checkIsUpToDate(true);
 
-		writeBuildFile("bumpThisNumberIfACustomRuleChanges(2)");
+		writeBuildFile("bumpThisNumberIfACustomStepChanges(2)");
 		checkIsUpToDate(false);
 		checkIsUpToDate(true);
 	}
