@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.java;
+package com.diffplug.spotless.java;
 
 import org.junit.Test;
 
