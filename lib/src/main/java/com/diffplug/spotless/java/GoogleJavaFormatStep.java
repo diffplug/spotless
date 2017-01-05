@@ -42,6 +42,9 @@ public class GoogleJavaFormatStep {
 	private static final String REMOVE_UNUSED_IMPORT_JavadocOnlyImports = "com.google.googlejavaformat.java.RemoveUnusedImports$JavadocOnlyImports";
 	private static final String REMOVE_UNUSED_IMPORT_JavadocOnlyImports_Keep = "KEEP";
 
+	private static final String IMPORT_ORDERER_CLASS = "com.google.googlejavaformat.java.ImportOrderer";
+	private static final String IMPORT_ORDERER_METHOD = "reorderImports";
+
 	/** Creates a formatter step for the given version and settings file. */
 	public static FormatterStep create(Provisioner provisioner) {
 		return create(defaultVersion(), provisioner);
@@ -82,10 +85,14 @@ public class GoogleJavaFormatStep {
 			Object removeJavadocConstant = Enum.valueOf((Class<Enum>) removeJavadocOnlyClass, REMOVE_UNUSED_IMPORT_JavadocOnlyImports_Keep);
 			Method removeUnusedMethod = removeUnusedClass.getMethod(REMOVE_UNUSED_METHOD, String.class, removeJavadocOnlyClass);
 
+			Class<?> importOrdererClass = classLoader.loadClass(IMPORT_ORDERER_CLASS);
+			Method importOrdererMethod = importOrdererClass.getMethod(IMPORT_ORDERER_METHOD, String.class);
+
 			return FormatterFunc.Closeable.of(classLoader, input -> {
 				String formatted = (String) formatterMethod.invoke(formatter, input);
 				String removedUnused = (String) removeUnusedMethod.invoke(null, formatted, removeJavadocConstant);
-				return removedUnused;
+				String sortedImports = (String) importOrdererMethod.invoke(null, removedUnused);
+				return sortedImports;
 			});
 		}
 	}
