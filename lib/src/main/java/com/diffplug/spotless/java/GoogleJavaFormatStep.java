@@ -71,7 +71,7 @@ public class GoogleJavaFormatStep {
 			this.jarState = Objects.requireNonNull(jarState);
 		}
 
-		@SuppressWarnings({ "unchecked", "rawtypes" })
+		@SuppressWarnings({"unchecked", "rawtypes"})
 		FormatterFunc.Closeable createFormat() throws Exception {
 			URLClassLoader classLoader = jarState.openIsolatedClassLoader();
 
