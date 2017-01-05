@@ -16,6 +16,9 @@
 package com.diffplug.spotless;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -27,8 +30,12 @@ import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.dsl.RepositoryHandler;
 import org.gradle.testfixtures.ProjectBuilder;
 
+import com.diffplug.common.base.Box;
+import com.diffplug.common.base.Errors;
+import com.diffplug.common.base.StandardSystemProperty;
 import com.diffplug.common.base.Suppliers;
 import com.diffplug.common.collect.ImmutableSet;
+import com.diffplug.common.io.Files;
 
 public class TestProvisioner {
 	/**
@@ -39,29 +46,53 @@ public class TestProvisioner {
 	 *
 	 * Every call to resolve will take about 1 second, even when all artifacts are resolved.
 	 */
-	private static Provisioner createWithRepositories(Consumer<RepositoryHandler> repoConfig) {
-		// use the default gradle home directory to ensure that files are always resolved to the same location
-		Project project = ProjectBuilder.builder().build();
-		repoConfig.accept(project.getRepositories());
-		// temporary, just while spotless-ext-eclipse isn't in mavenCentral
-		project.getRepositories().maven(mvn -> mvn.setUrl("https://dl.bintray.com/diffplug/opensource"));
-		return mavenCoords -> {
-			Dependency[] deps = mavenCoords.stream()
-					.map(project.getDependencies()::create)
-					.toArray(Dependency[]::new);
-			Configuration config = project.getConfigurations().detachedConfiguration(deps);
-			config.setDescription(mavenCoords.toString());
-			return config.resolve();
-		};
+	private static Supplier<Provisioner> createLazyWithRepositories(Consumer<RepositoryHandler> repoConfig) {
+		// Running this takes ~3 seconds the first time it is called. Probably because of classloading.
+		return Suppliers.memoize(() -> {
+			Project project = ProjectBuilder.builder().build();
+			repoConfig.accept(project.getRepositories());
+			return mavenCoords -> {
+				Dependency[] deps = mavenCoords.stream()
+						.map(project.getDependencies()::create)
+						.toArray(Dependency[]::new);
+				Configuration config = project.getConfigurations().detachedConfiguration(deps);
+				config.setDescription(mavenCoords.toString());
+				return config.resolve();
+			};
+		});
 	}
 
 	/** Creates a Provisioner which will cache the result of previous calls. */
-	private static Provisioner caching(Provisioner input) {
-		Map<ImmutableSet<String>, ImmutableSet<File>> cached = new HashMap<>();
+	@SuppressWarnings("unchecked")
+	private static Provisioner caching(Supplier<Provisioner> input) {
+		File spotlessDir = new File(StandardSystemProperty.USER_DIR.value()).getParentFile();
+		File testlib = new File(spotlessDir, "testlib");
+		File cacheFile = new File(testlib, "build/tmp/testprovisioner.cache");
+
+		Map<ImmutableSet<String>, ImmutableSet<File>> cached;
+		if (cacheFile.exists()) {
+			try (ObjectInputStream inputStream = new ObjectInputStream(Files.asByteSource(cacheFile).openBufferedStream())) {
+				cached = (Map<ImmutableSet<String>, ImmutableSet<File>>) inputStream.readObject();
+			} catch (IOException | ClassNotFoundException e) {
+				throw Errors.asRuntime(e);
+			}
+		} else {
+			cached = new HashMap<>();
+		}
 		return mavenCoords -> {
-			return cached.computeIfAbsent(ImmutableSet.copyOf(mavenCoords), coords -> {
-				return ImmutableSet.copyOf(input.provisionWithDependencies(coords));
+			Box<Boolean> wasChanged = Box.of(false);
+			ImmutableSet<File> result = cached.computeIfAbsent(ImmutableSet.copyOf(mavenCoords), coords -> {
+				wasChanged.set(true);
+				return ImmutableSet.copyOf(input.get().provisionWithDependencies(coords));
 			});
+			if (wasChanged.get()) {
+				try (ObjectOutputStream outputStream = new ObjectOutputStream(Files.asByteSink(cacheFile).openBufferedStream())) {
+					outputStream.writeObject(cached);
+				} catch (IOException e) {
+					throw Errors.asRuntime(e);
+				}
+			}
+			return result;
 		};
 	}
 
@@ -71,7 +102,7 @@ public class TestProvisioner {
 	}
 
 	private static final Supplier<Provisioner> jcenter = Suppliers.memoize(() -> {
-		return caching(createWithRepositories(repo -> repo.jcenter()));
+		return caching(createLazyWithRepositories(repo -> repo.jcenter()));
 	});
 
 	/** Creates a Provisioner for the mavenCentral repo. */
@@ -80,6 +111,6 @@ public class TestProvisioner {
 	}
 
 	private static final Supplier<Provisioner> mavenCentral = Suppliers.memoize(() -> {
-		return caching(createWithRepositories(repo -> repo.mavenCentral()));
+		return caching(createLazyWithRepositories(repo -> repo.mavenCentral()));
 	});
 }
