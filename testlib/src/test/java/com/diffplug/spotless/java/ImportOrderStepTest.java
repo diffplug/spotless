@@ -27,25 +27,25 @@ public class ImportOrderStepTest extends ResourceHarness {
 	@Test
 	public void sortImportsFromArray() throws Throwable {
 		FormatterStep step = ImportOrderStep.createFromOrder(Arrays.asList("java", "javax", "org", "\\#com"));
-		assertOnResources(step, "java/eclipse/importsorter/JavaCodeUnsortedImports.test", "java/eclipse/importsorter/JavaCodeSortedImports.test");
+		assertOnResources(step, "java/importsorter/JavaCodeUnsortedImports.test", "java/importsorter/JavaCodeSortedImports.test");
 	}
 
 	@Test
 	public void sortImportsFromFile() throws Throwable {
-		FormatterStep step = ImportOrderStep.createFromFile(createTestFile("java/eclipse/importsorter/import.properties"));
-		assertOnResources(step, "java/eclipse/importsorter/JavaCodeUnsortedImports.test", "java/eclipse/importsorter/JavaCodeSortedImports.test");
+		FormatterStep step = ImportOrderStep.createFromFile(createTestFile("java/importsorter/import.properties"));
+		assertOnResources(step, "java/importsorter/JavaCodeUnsortedImports.test", "java/importsorter/JavaCodeSortedImports.test");
 	}
 
 	@Test
 	public void sortImportsUnmatched() throws Throwable {
-		FormatterStep step = ImportOrderStep.createFromFile(createTestFile("java/eclipse/importsorter/import_unmatched.properties"));
-		assertOnResources(step, "java/eclipse/importsorter/JavaCodeUnsortedImportsUnmatched.test", "java/eclipse/importsorter/JavaCodeSortedImportsUnmatched.test");
+		FormatterStep step = ImportOrderStep.createFromFile(createTestFile("java/importsorter/import_unmatched.properties"));
+		assertOnResources(step, "java/importsorter/JavaCodeUnsortedImportsUnmatched.test", "java/importsorter/JavaCodeSortedImportsUnmatched.test");
 	}
 
 	@Test
 	public void removeDuplicates() throws Throwable {
-		FormatterStep step = ImportOrderStep.createFromFile(createTestFile("java/eclipse/importsorter/import_unmatched.properties"));
-		assertOnResources(step, "java/eclipse/importsorter/JavaCodeSortedDuplicateImportsUnmatched.test", "java/eclipse/importsorter/JavaCodeSortedImportsUnmatched.test");
+		FormatterStep step = ImportOrderStep.createFromFile(createTestFile("java/importsorter/import_unmatched.properties"));
+		assertOnResources(step, "java/importsorter/JavaCodeSortedDuplicateImportsUnmatched.test", "java/importsorter/JavaCodeSortedImportsUnmatched.test");
 	}
 
 	@Test
