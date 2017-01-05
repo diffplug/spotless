@@ -36,6 +36,12 @@ public class GoogleJavaFormatStep {
 	private static final String FORMATTER_CLASS = "com.google.googlejavaformat.java.Formatter";
 	private static final String FORMATTER_METHOD = "formatSource";
 
+	private static final String REMOVE_UNUSED_CLASS = "com.google.googlejavaformat.java.RemoveUnusedImports";
+	private static final String REMOVE_UNUSED_METHOD = "removeUnusedImports";
+
+	private static final String REMOVE_UNUSED_IMPORT_JavadocOnlyImports = "com.google.googlejavaformat.java.RemoveUnusedImports$JavadocOnlyImports";
+	private static final String REMOVE_UNUSED_IMPORT_JavadocOnlyImports_Keep = "KEEP";
+
 	/** Creates a formatter step for the given version and settings file. */
 	public static FormatterStep create(Provisioner provisioner) {
 		return create(defaultVersion(), provisioner);
@@ -62,14 +68,25 @@ public class GoogleJavaFormatStep {
 			this.jarState = Objects.requireNonNull(jarState);
 		}
 
+		@SuppressWarnings({ "unchecked", "rawtypes" })
 		FormatterFunc.Closeable createFormat() throws Exception {
 			URLClassLoader classLoader = jarState.openIsolatedClassLoader();
 
 			// instantiate the formatter and get its format method
 			Class<?> formatterClazz = classLoader.loadClass(FORMATTER_CLASS);
 			Object formatter = formatterClazz.getConstructor().newInstance();
-			Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
-			return FormatterFunc.Closeable.of(classLoader, input -> (String) method.invoke(formatter, input));
+			Method formatterMethod = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
+
+			Class<?> removeUnusedClass = classLoader.loadClass(REMOVE_UNUSED_CLASS);
+			Class<?> removeJavadocOnlyClass = classLoader.loadClass(REMOVE_UNUSED_IMPORT_JavadocOnlyImports);
+			Object removeJavadocConstant = Enum.valueOf((Class<Enum>) removeJavadocOnlyClass, REMOVE_UNUSED_IMPORT_JavadocOnlyImports_Keep);
+			Method removeUnusedMethod = removeUnusedClass.getMethod(REMOVE_UNUSED_METHOD, String.class, removeJavadocOnlyClass);
+
+			return FormatterFunc.Closeable.of(classLoader, input -> {
+				String formatted = (String) formatterMethod.invoke(formatter, input);
+				String removedUnused = (String) removeUnusedMethod.invoke(null, formatted, removeJavadocConstant);
+				return removedUnused;
+			});
 		}
 	}
 }
