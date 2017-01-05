@@ -30,13 +30,8 @@ import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
 
-import com.diffplug.common.debug.LapTimer;
-import com.diffplug.common.debug.StepProfiler;
-
 /** Formatter which performs the full formatting. */
 public final class Formatter {
-	public static final StepProfiler PROFILER = new StepProfiler(LapTimer.createNanoWrap2Sec());
-
 	private final LineEnding.Policy lineEndingsPolicy;
 	private final Charset encoding;
 	private final Path rootDir;

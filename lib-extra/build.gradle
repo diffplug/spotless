@@ -4,8 +4,6 @@ apply from: rootProject.file('gradle/java-setup.gradle')
 apply from: rootProject.file('gradle/java-publish.gradle')
 
 dependencies {
-	// temporary, for profiling
-	compile 'com.diffplug.durian:durian-debug:1.0.0'
 	compile project(':lib')
 	// misc useful utilities
 	compile "com.diffplug.durian:durian-core:${VER_DURIAN}"

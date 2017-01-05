@@ -7,8 +7,6 @@ apply plugin: 'com.gradle.plugin-publish'
 apply plugin: 'java-gradle-plugin'
 
 dependencies {
-	// temporary, for profiling
-	compile 'com.diffplug.durian:durian-debug:1.0.0'
 	compile project(':lib')
 	compile project(':lib-extra')
 	compile "com.diffplug.durian:durian-core:${VER_DURIAN}"

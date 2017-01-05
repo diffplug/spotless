@@ -53,12 +53,7 @@ abstract class FormatterStepImpl<State extends Serializable> extends Strict<Stat
 
 	@Override
 	protected State calculateState() throws Exception {
-		try {
-			Formatter.PROFILER.startStep(name + " calculateKey");
-			return stateSupplier.get();
-		} finally {
-			Formatter.PROFILER.finish();
-		}
+		return stateSupplier.get();
 	}
 
 	static final class Standard<State extends Serializable> extends FormatterStepImpl<State> {
@@ -75,16 +70,9 @@ abstract class FormatterStepImpl<State extends Serializable> extends Strict<Stat
 		@Override
 		protected String format(State state, String rawUnix, File file) throws Exception {
 			if (formatter == null) {
-				Formatter.PROFILER.startStep(name + " createFormatter");
 				formatter = stateToFormatter.apply(state());
-				Formatter.PROFILER.finish();
 			}
-			try {
-				Formatter.PROFILER.startStep(name + " apply");
-				return formatter.apply(rawUnix);
-			} finally {
-				Formatter.PROFILER.finish();
-			}
+			return formatter.apply(rawUnix);
 		}
 	}
 
@@ -102,24 +90,15 @@ abstract class FormatterStepImpl<State extends Serializable> extends Strict<Stat
 		@Override
 		protected String format(State state, String rawUnix, File file) throws Exception {
 			if (formatter == null) {
-				Formatter.PROFILER.startStep(name + " openFormatter");
 				formatter = stateToFormatter.apply(state());
-				Formatter.PROFILER.finish();
 			}
-			try {
-				Formatter.PROFILER.startStep(name + " apply");
-				return formatter.apply(rawUnix);
-			} finally {
-				Formatter.PROFILER.finish();
-			}
+			return formatter.apply(rawUnix);
 		}
 
 		@Override
 		public void finish() {
 			if (formatter != null) {
-				Formatter.PROFILER.startStep(name + " closeFormatter");
 				formatter.close();
-				Formatter.PROFILER.finish();
 				formatter = null;
 			}
 		}
