@@ -20,7 +20,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.net.URLClassLoader;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -54,7 +53,7 @@ public final class EclipseFormatterStep {
 
 	/** Creates a formatter step for the given version and settings file. */
 	public static FormatterStep create(String version, File settingsFile, Provisioner provisioner) {
-		return FormatterStep.createCloseableLazy(NAME,
+		return FormatterStep.createLazy(NAME,
 				() -> new State(JarState.from(MAVEN_COORDINATE + version, provisioner), settingsFile),
 				State::createFormat);
 	}
@@ -76,16 +75,16 @@ public final class EclipseFormatterStep {
 			this.settings = FileSignature.from(settingsFile);
 		}
 
-		FormatterFunc.Closeable createFormat() throws Exception {
+		FormatterFunc createFormat() throws Exception {
 			Properties parsedSettings = parseProperties(settings.getOnlyFile());
 
-			URLClassLoader classLoader = jarState.openIsolatedClassLoader();
+			ClassLoader classLoader = jarState.getClassLoader();
 
 			// instantiate the formatter and get its format method
 			Class<?> formatterClazz = classLoader.loadClass(FORMATTER_CLASS);
 			Object formatter = formatterClazz.getConstructor(Properties.class).newInstance(parsedSettings);
 			Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
-			return FormatterFunc.Closeable.of(classLoader, input -> (String) method.invoke(formatter, input));
+			return input -> (String) method.invoke(formatter, input);
 		}
 	}
 

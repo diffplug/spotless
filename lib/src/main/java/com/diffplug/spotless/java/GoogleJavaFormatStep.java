@@ -17,7 +17,6 @@ package com.diffplug.spotless.java;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.net.URLClassLoader;
 import java.util.Objects;
 
 import com.diffplug.spotless.FormatterFunc;
@@ -52,7 +51,7 @@ public class GoogleJavaFormatStep {
 
 	/** Creates a formatter step for the given version and settings file. */
 	public static FormatterStep create(String version, Provisioner provisioner) {
-		return FormatterStep.createCloseableLazy(NAME,
+		return FormatterStep.createLazy(NAME,
 				() -> new State(JarState.from(MAVEN_COORDINATE + version, provisioner)),
 				State::createFormat);
 	}
@@ -72,8 +71,8 @@ public class GoogleJavaFormatStep {
 		}
 
 		@SuppressWarnings({"unchecked", "rawtypes"})
-		FormatterFunc.Closeable createFormat() throws Exception {
-			URLClassLoader classLoader = jarState.openIsolatedClassLoader();
+		FormatterFunc createFormat() throws Exception {
+			ClassLoader classLoader = jarState.getClassLoader();
 
 			// instantiate the formatter and get its format method
 			Class<?> formatterClazz = classLoader.loadClass(FORMATTER_CLASS);
@@ -88,12 +87,12 @@ public class GoogleJavaFormatStep {
 			Class<?> importOrdererClass = classLoader.loadClass(IMPORT_ORDERER_CLASS);
 			Method importOrdererMethod = importOrdererClass.getMethod(IMPORT_ORDERER_METHOD, String.class);
 
-			return FormatterFunc.Closeable.of(classLoader, input -> {
+			return input -> {
 				String formatted = (String) formatterMethod.invoke(formatter, input);
 				String removedUnused = (String) removeUnusedMethod.invoke(null, formatted, removeJavadocConstant);
 				String sortedImports = (String) importOrdererMethod.invoke(null, removedUnused);
 				return sortedImports;
-			});
+			};
 		}
 	}
 }

@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
@@ -76,12 +75,16 @@ public final class JarState implements Serializable {
 		return new JarState(mavenCoordinate, fileSignature, jars);
 	}
 
-	private URL[] jarUrls() {
+	URL[] jarUrls() {
 		return jars.stream().map(ThrowingEx.wrap(file -> file.toURI().toURL())).toArray(URL[]::new);
 	}
 
-	@SuppressFBWarnings("DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED")
-	public URLClassLoader openIsolatedClassLoader() {
-		return new URLClassLoader(jarUrls(), null);
+	/**
+	 * Returns a classloader containing only the jars in this JarState.
+	 *
+	 * The lifetime of the underlying cacheloader is controlled by {@link SpotlessCache}.
+	 */
+	public ClassLoader getClassLoader() {
+		return SpotlessCache.instance().classloader(this);
 	}
 }

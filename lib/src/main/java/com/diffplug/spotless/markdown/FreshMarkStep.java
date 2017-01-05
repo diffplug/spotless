@@ -17,7 +17,6 @@ package com.diffplug.spotless.markdown;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.net.URLClassLoader;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -47,7 +46,7 @@ public class FreshMarkStep {
 
 	/** Creates a formatter step for the given version and settings file. */
 	public static FormatterStep create(String version, Supplier<Map<String, ?>> properties, Provisioner provisioner) {
-		return FormatterStep.createCloseableLazy(NAME,
+		return FormatterStep.createLazy(NAME,
 				() -> new State(JarState.from(MAVEN_COORDINATE + version, provisioner), properties.get()),
 				State::createFormat);
 	}
@@ -68,17 +67,17 @@ public class FreshMarkStep {
 			this.properties = Objects.requireNonNull(properties);
 		}
 
-		FormatterFunc.Closeable createFormat() throws Exception {
+		FormatterFunc createFormat() throws Exception {
 			Logger logger = Logger.getLogger(FreshMarkStep.class.getName());
 			Consumer<String> loggingStream = logger::warning;
 
-			URLClassLoader classLoader = jarState.openIsolatedClassLoader();
+			ClassLoader classLoader = jarState.getClassLoader();
 
 			// instantiate the formatter and get its format method
 			Class<?> formatterClazz = classLoader.loadClass(FORMATTER_CLASS);
 			Object formatter = formatterClazz.getConstructor(Map.class, Consumer.class).newInstance(properties, loggingStream);
 			Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
-			return FormatterFunc.Closeable.of(classLoader, input -> (String) method.invoke(formatter, input));
+			return input -> (String) method.invoke(formatter, input);
 		}
 	}
 }
