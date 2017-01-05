@@ -16,6 +16,9 @@
 package com.diffplug.spotless;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -27,8 +30,12 @@ import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.dsl.RepositoryHandler;
 import org.gradle.testfixtures.ProjectBuilder;
 
+import com.diffplug.common.base.Box;
+import com.diffplug.common.base.Errors;
+import com.diffplug.common.base.StandardSystemProperty;
 import com.diffplug.common.base.Suppliers;
 import com.diffplug.common.collect.ImmutableSet;
+import com.diffplug.common.io.Files;
 
 public class TestProvisioner {
 	/**
@@ -56,12 +63,36 @@ public class TestProvisioner {
 	}
 
 	/** Creates a Provisioner which will cache the result of previous calls. */
+	@SuppressWarnings("unchecked")
 	private static Provisioner caching(Provisioner input) {
-		Map<ImmutableSet<String>, ImmutableSet<File>> cached = new HashMap<>();
+		File spotlessDir = new File(StandardSystemProperty.USER_DIR.value()).getParentFile();
+		File testlib = new File(spotlessDir, "testlib");
+		File cacheFile = new File(testlib, "build/tmp/testprovisioner.cache");
+
+		Map<ImmutableSet<String>, ImmutableSet<File>> cached;
+		if (cacheFile.exists()) {
+			try (ObjectInputStream inputStream = new ObjectInputStream(Files.asByteSource(cacheFile).openBufferedStream())) {
+				cached = (Map<ImmutableSet<String>, ImmutableSet<File>>) inputStream.readObject();
+			} catch (IOException | ClassNotFoundException e) {
+				throw Errors.asRuntime(e);
+			}
+		} else {
+			cached = new HashMap<>();
+		}
 		return mavenCoords -> {
-			return cached.computeIfAbsent(ImmutableSet.copyOf(mavenCoords), coords -> {
+			Box<Boolean> wasChanged = Box.of(false);
+			ImmutableSet<File> result = cached.computeIfAbsent(ImmutableSet.copyOf(mavenCoords), coords -> {
+				wasChanged.set(true);
 				return ImmutableSet.copyOf(input.provisionWithDependencies(coords));
 			});
+			if (wasChanged.get()) {
+				try (ObjectOutputStream outputStream = new ObjectOutputStream(Files.asByteSink(cacheFile).openBufferedStream())) {
+					outputStream.writeObject(cached);
+				} catch (IOException e) {
+					throw Errors.asRuntime(e);
+				}
+			}
+			return result;
 		};
 	}
 
