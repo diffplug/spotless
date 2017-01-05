@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.diffplug.common.base.Box;
+import com.diffplug.common.debug.LapTimer;
+import com.diffplug.common.debug.StepProfiler;
 import com.diffplug.common.testing.EqualsTester;
 
 public abstract class StepEqualityTester {
@@ -34,13 +36,17 @@ public abstract class StepEqualityTester {
 		void areDifferentThan();
 	}
 
+	public static final StepProfiler PROFILER = new StepProfiler(LapTimer.createNanoWrap2Sec());
+
 	public void testEquals() {
 		List<List<Object>> allGroups = new ArrayList<>();
 		Box<List<Object>> currentGroup = Box.of(new ArrayList<>());
 		API api = new API() {
 			@Override
 			public void assertThis() {
+				PROFILER.startStep("create");
 				currentGroup.get().add(create());
+				PROFILER.finish();
 			}
 
 			@Override
@@ -64,6 +70,9 @@ public abstract class StepEqualityTester {
 		for (List<Object> step : allGroups) {
 			tester.addEqualityGroup(step.toArray());
 		}
+		PROFILER.startStep("equals");
 		tester.testEquals();
+		PROFILER.finish();
+		PROFILER.printResults();
 	}
 }

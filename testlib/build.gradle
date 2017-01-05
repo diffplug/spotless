@@ -3,6 +3,8 @@ ext.version = project.versionLib
 apply from: rootProject.file('gradle/java-setup.gradle')
 
 dependencies {
+	// temporary, for profiling
+	compile 'com.diffplug.durian:durian-debug:1.0.0'
 	compile project(':lib')
 	compile "com.diffplug.durian:durian-core:${VER_DURIAN}"
 	compile "com.diffplug.durian:durian-io:${VER_DURIAN}"
