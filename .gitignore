@@ -10,6 +10,7 @@ workspace/
 
 ### Gradle ###
 .gradle
+.gradle-selfapply
 build/
 
 # Ignore Gradle GUI config

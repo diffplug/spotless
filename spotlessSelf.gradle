@@ -3,22 +3,19 @@ plugins {
 	id 'com.diffplug.gradle.spotless'
 	id 'java'
 }
-println('###################################################')
-println('## Applying spotless to its own code is sketchy. ##')
-println('## If this fails, this will fix it:              ##')
-println('##     rm -rf .gradle/                           ##')
-println('##     rmdir /s /q .gradle/                      ##')
-println('###################################################')
 
 repositories { mavenCentral() }
 spotless {
 	java {
 		target '**/*.java'
+
 		custom 'noInternalDeps', {
 			if (it.contains('import org.gradle.internal.')) {
 				throw new AssertionError("Accidental internal import")
 			}
 		}
+		bumpThisNumberIfACustomStepChanges(1)
+
 		licenseHeaderFile 'spotless.license'
 		importOrderFile   'spotless.importorder'
 		eclipseFormatFile 'spotless.eclipseformat.xml'

@@ -132,7 +132,11 @@ public class SelfTest {
 		GradleRunner.create()
 				.withPluginClasspath()
 				.withProjectDir(new File(StandardSystemProperty.USER_DIR.value()).getParentFile())
-				.withArguments("-b", "spotlessSelf.gradle", "spotless" + type.checkApply("Check", "Apply"), "--stacktrace")
+				.withArguments(
+						"--build-file", "spotlessSelf.gradle",
+						"--project-cache-dir", ".gradle-selfapply",
+						"spotless" + type.checkApply("Check", "Apply"),
+						"--stacktrace")
 				.forwardOutput()
 				.build();
 	}
