@@ -195,15 +195,6 @@ public final class Formatter {
 		return unix;
 	}
 
-	/**
-	 * Hint that any resources which were opened by the steps can probably be closed now.
-	 */
-	public void finish() {
-		for (FormatterStep step : steps) {
-			step.finish();
-		}
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;

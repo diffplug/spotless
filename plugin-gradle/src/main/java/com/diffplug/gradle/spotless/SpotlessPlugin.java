@@ -24,6 +24,7 @@ import org.gradle.api.execution.TaskExecutionGraph;
 import org.gradle.api.plugins.JavaBasePlugin;
 
 import com.diffplug.common.base.Errors;
+import com.diffplug.spotless.SpotlessCache;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import groovy.lang.Closure;
@@ -97,6 +98,11 @@ public class SpotlessPlugin implements Plugin<Project> {
 		project.getTasks()
 				.matching(task -> task.getName().equals(JavaBasePlugin.CHECK_TASK_NAME))
 				.all(task -> task.dependsOn(rootCheckTask));
+
+		// clear spotless' cache when the user does a clean
+		project.getTasks()
+				.matching(task -> task.getName().equals("clean"))
+				.all(task -> task.doLast(unused -> SpotlessCache.clear()));
 	}
 
 	static String capitalize(String input) {
