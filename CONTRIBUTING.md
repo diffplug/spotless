@@ -93,6 +93,14 @@ FormatterStep createLazy(String name, Supplier<State> stateSupplier, Function<St
 
 If your formatting step only needs to call one or two methods of the external dependency, you can pull it in at runtime and call it via reflection.  See the logic for [`EclipseFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/java/EclipseFormatterStep.java) or [`GoogleJavaFormatStep`](lib/src/main/java/com/diffplug/spotless/java/GoogleJavaFormatStep.java).
 
+Here's a checklist for creating a new step for Spotless:
+
+- [ ] Class name ends in Step, `SomeNewStep`.
+- [ ] Class has a public static method named `create` that returns a `FormatterStep`.
+- [ ] Has a test class named `SomeNewStepTest`.
+- [ ] Test class has test methods to verify behavior.
+- [ ] Test class has a test method `equality()` which tests equality using `StepEqualityTester` (see existing methods for examples).
+
 ## How to add a new plugin for a build system
 
 The gist of it is that you will have to:
