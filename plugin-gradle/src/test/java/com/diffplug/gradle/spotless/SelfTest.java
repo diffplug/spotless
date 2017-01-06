@@ -129,9 +129,12 @@ public class SelfTest {
 
 	/** Runs against the `spotlessSelfApply.gradle` file. */
 	static void runWithTestKit(Type type) throws Exception {
+		File pluginGradleDir = new File(StandardSystemProperty.USER_DIR.value());
+		File rootDir = pluginGradleDir.getParentFile();
+		File selfApplyDir = new File(rootDir, "selfApply");
 		GradleRunner.create()
 				.withPluginClasspath()
-				.withProjectDir(new File(StandardSystemProperty.USER_DIR.value()).getParentFile())
+				.withProjectDir(selfApplyDir)
 				.withArguments("-b", "spotlessSelf.gradle", "spotless" + type.checkApply("Check", "Apply"), "--stacktrace")
 				.forwardOutput()
 				.build();

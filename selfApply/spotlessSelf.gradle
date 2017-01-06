@@ -1,27 +1,29 @@
 // applied by SelfTest
+// important for it to be in its own directory
 plugins {
 	id 'com.diffplug.gradle.spotless'
 	id 'java'
 }
+
 repositories { mavenCentral() }
 spotless {
 	java {
-		target '**/*.java'
+		target '../**/*.java'
 		licenseHeaderFile 'spotless.license'
 		importOrderFile   'spotless.importorder'
 		eclipseFormatFile 'spotless.eclipseformat.xml'
 		trimTrailingWhitespace()
 	}
 	freshmark {
-		target '**/*.md'
-		propertiesFile('gradle.properties')
+		target '../**/*.md'
+		propertiesFile('../gradle.properties')
 		properties {
 			it.put('yes', ':+1:')
 			it.put('no', ':white_large_square:')
 		}
 	}
 	format 'misc', {
-		target '**/*.gradle', '**/*.md', '**/*.gitignore'
+		target '../**/*.gradle', '../**/*.md', '../**/*.gitignore'
 		indentWithTabs()
 		trimTrailingWhitespace()
 		endWithNewline()
