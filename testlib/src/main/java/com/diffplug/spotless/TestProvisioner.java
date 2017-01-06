@@ -64,10 +64,10 @@ public class TestProvisioner {
 
 	/** Creates a Provisioner which will cache the result of previous calls. */
 	@SuppressWarnings("unchecked")
-	private static Provisioner caching(Supplier<Provisioner> input) {
+	private static Provisioner caching(String name, Supplier<Provisioner> input) {
 		File spotlessDir = new File(StandardSystemProperty.USER_DIR.value()).getParentFile();
 		File testlib = new File(spotlessDir, "testlib");
-		File cacheFile = new File(testlib, "build/tmp/testprovisioner.cache");
+		File cacheFile = new File(testlib, "build/tmp/testprovisioner." + name + ".cache");
 
 		Map<ImmutableSet<String>, ImmutableSet<File>> cached;
 		if (cacheFile.exists()) {
@@ -102,7 +102,7 @@ public class TestProvisioner {
 	}
 
 	private static final Supplier<Provisioner> jcenter = Suppliers.memoize(() -> {
-		return caching(createLazyWithRepositories(repo -> repo.jcenter()));
+		return caching("jcenter", createLazyWithRepositories(repo -> repo.jcenter()));
 	});
 
 	/** Creates a Provisioner for the mavenCentral repo. */
@@ -111,6 +111,6 @@ public class TestProvisioner {
 	}
 
 	private static final Supplier<Provisioner> mavenCentral = Suppliers.memoize(() -> {
-		return caching(createLazyWithRepositories(repo -> repo.mavenCentral()));
+		return caching("mavenCentral", createLazyWithRepositories(repo -> repo.mavenCentral()));
 	});
 }

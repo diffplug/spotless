@@ -16,14 +16,17 @@
 package com.diffplug.spotless.extra.java;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.junit.Test;
 
+import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
+import com.diffplug.spotless.StepEqualityTester;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
-public class EclipseFormatterTest extends ResourceHarness {
+public class EclipseFormatterStepTest extends ResourceHarness {
 	@Test
 	public void loadPropertiesSettings() throws Throwable {
 		File eclipseFormatFile = createTestFile("java/eclipse/format/formatter.properties");
@@ -45,5 +48,30 @@ public class EclipseFormatterTest extends ResourceHarness {
 		StepHarness.forStep(EclipseFormatterStep.create(eclipseFormatFile, TestProvisioner.mavenCentral()))
 				.testResourceUnaffected(folder + "Example1.test")
 				.testResourceUnaffected(folder + "Example2.test");
+	}
+
+	@Test
+	public void equality() throws IOException {
+		File xmlFile = createTestFile("java/eclipse/format/formatter.xml");
+		File propFile = createTestFile("java/eclipse/format/formatter.properties");
+		new StepEqualityTester() {
+			File settingsFile;
+
+			@Override
+			protected void setupTest(API api) {
+				settingsFile = xmlFile;
+				api.assertThisEqualToThis();
+				api.areDifferentThan();
+
+				settingsFile = propFile;
+				api.assertThisEqualToThis();
+				api.areDifferentThan();
+			}
+
+			@Override
+			protected FormatterStep create() {
+				return EclipseFormatterStep.create(settingsFile, TestProvisioner.mavenCentral());
+			}
+		}.testEquals();
 	}
 }

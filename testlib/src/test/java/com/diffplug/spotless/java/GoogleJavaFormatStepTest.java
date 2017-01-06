@@ -24,7 +24,7 @@ import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.java.GoogleJavaFormatStep;
 
-public class GoogleJavaFormatTest extends ResourceHarness {
+public class GoogleJavaFormatStepTest extends ResourceHarness {
 	@Test
 	public void behavior() throws Exception {
 		StepHarness.forStep(GoogleJavaFormatStep.create("1.1", TestProvisioner.mavenCentral()))

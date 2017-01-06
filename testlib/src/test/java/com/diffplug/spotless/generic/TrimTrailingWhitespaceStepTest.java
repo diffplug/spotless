@@ -17,10 +17,12 @@ package com.diffplug.spotless.generic;
 
 import org.junit.Test;
 
+import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
+import com.diffplug.spotless.StepEqualityTester;
 import com.diffplug.spotless.StepHarness;
 
-public class TrimTrailingWhitespaceTest extends ResourceHarness {
+public class TrimTrailingWhitespaceStepTest extends ResourceHarness {
 	@Test
 	public void trimTrailingWhitespace() throws Exception {
 		StepHarness step = StepHarness.forStep(TrimTrailingWhitespaceStep.create());
@@ -45,5 +47,21 @@ public class TrimTrailingWhitespaceTest extends ResourceHarness {
 		step.test("Line  \nLine  ", "Line\nLine");
 		step.test("  Line  \nLine  ", "  Line\nLine");
 		step.test("  Line  \n  Line  ", "  Line\n  Line");
+	}
+
+	@Test
+	public void equality() throws Exception {
+		new StepEqualityTester() {
+			@Override
+			protected void setupTest(API api) {
+				api.assertThisEqualToThis();
+				api.areDifferentThan();
+			}
+
+			@Override
+			protected FormatterStep create() {
+				return EndWithNewlineStep.create();
+			}
+		}.testEquals();
 	}
 }
