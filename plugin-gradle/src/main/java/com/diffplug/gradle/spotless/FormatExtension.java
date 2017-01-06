@@ -21,6 +21,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
@@ -48,13 +49,19 @@ import groovy.lang.Closure;
 
 /** Adds a `spotless{Name}Check` and `spotless{Name}Apply` task. */
 public class FormatExtension {
-	protected final String name;
-	protected final SpotlessExtension root;
+	final SpotlessExtension root;
 
-	public FormatExtension(String name, SpotlessExtension root) {
-		this.name = name;
+	public FormatExtension(SpotlessExtension root) {
 		this.root = root;
-		root.addFormatExtension(this);
+	}
+
+	private String formatName() {
+		for (Map.Entry<String, FormatExtension> entry : root.formats.entrySet()) {
+			if (entry.getValue() == this) {
+				return entry.getKey();
+			}
+		}
+		throw new IllegalStateException("This format is not contained by any SpotlessExtension.");
 	}
 
 	boolean paddedCell = false;
@@ -130,6 +137,7 @@ public class FormatExtension {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	protected FileCollection parseTarget(Object target) {
 		if (target instanceof FileCollection) {
 			return (FileCollection) target;
@@ -146,16 +154,11 @@ public class FormatExtension {
 				return (FileCollection) getProject().fileTree(dir).include((String) target).exclude(excludes);
 			} else {
 				// target can only be a List<String> at this point
-				return (FileCollection) getProject().fileTree(dir).include(castToStringList(target)).exclude(excludes);
+				return (FileCollection) getProject().fileTree(dir).include((List<String>) target).exclude(excludes);
 			}
 		} else {
 			return getProject().files(target);
 		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private List<String> castToStringList(Object target) {
-		return (List<String>) target;
 	}
 
 	/** The steps that need to be added. */
@@ -164,11 +167,16 @@ public class FormatExtension {
 	/** Adds a new step. */
 	public void addStep(FormatterStep newStep) {
 		for (FormatterStep step : steps) {
-			if (step.getName().equals(name)) {
-				throw new GradleException("Multiple steps with name '" + name + "' for spotless '" + name + "'");
+			if (newStep.getName().equals(step.getName())) {
+				throw new GradleException("Multiple steps with name '" + newStep.getName() + "' for spotless format '" + formatName() + "'");
 			}
 		}
 		steps.add(newStep);
+	}
+
+	/** Clears all of the existing steps. */
+	public void clearSteps() {
+		steps.clear();
 	}
 
 	/**

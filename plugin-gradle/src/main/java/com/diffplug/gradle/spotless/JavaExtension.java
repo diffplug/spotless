@@ -30,10 +30,10 @@ import com.diffplug.spotless.java.ImportOrderStep;
 import com.diffplug.spotless.java.RemoveUnusedImportsStep;
 
 public class JavaExtension extends FormatExtension {
-	public static final String NAME = "java";
+	static final String NAME = "java";
 
 	public JavaExtension(SpotlessExtension rootExtension) {
-		super(NAME, rootExtension);
+		super(rootExtension);
 	}
 
 	// If this constant changes, don't forget to change the similarly-named one in
@@ -66,7 +66,7 @@ public class JavaExtension extends FormatExtension {
 
 	/** Removes any unused imports. */
 	public void removeUnusedImports() {
-		this.addStep(RemoveUnusedImportsStep.create(GradleProvisioner.fromProject(getProject())));
+		addStep(RemoveUnusedImportsStep.create(GradleProvisioner.fromProject(getProject())));
 	}
 
 	/** Uses the [google-java-format](https://github.com/google/google-java-format) jar to format source code. */

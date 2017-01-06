@@ -15,6 +15,7 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.lang.reflect.Constructor;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
@@ -25,6 +26,7 @@ import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 
+import com.diffplug.common.base.Errors;
 import com.diffplug.spotless.LineEnding;
 
 public class SpotlessExtension {
@@ -71,27 +73,53 @@ public class SpotlessExtension {
 
 	/** Configures the special java-specific extension. */
 	public void java(Action<JavaExtension> closure) {
-		JavaExtension java = new JavaExtension(this);
-		closure.execute(java);
+		configure(JavaExtension.NAME, JavaExtension.class, closure);
 	}
 
 	/** Configures the special freshmark-specific extension. */
 	public void freshmark(Action<FreshMarkExtension> closure) {
-		FreshMarkExtension freshmark = new FreshMarkExtension(this);
-		closure.execute(freshmark);
+		configure(FreshMarkExtension.NAME, FreshMarkExtension.class, closure);
 	}
 
 	/** Configures a custom extension. */
 	public void format(String name, Action<FormatExtension> closure) {
-		FormatExtension extension = new FormatExtension(name, this);
-		closure.execute(extension);
+		configure(name, FormatExtension.class, closure);
 	}
 
-	/** Called by the FormatExtension constructor. */
-	void addFormatExtension(FormatExtension extension) {
-		FormatExtension former = formats.put(extension.name, extension);
-		if (former != null) {
-			throw new GradleException("Multiple spotless extensions with name '" + extension.name + "'");
+	/** Makes it possible to remove a format which was created earlier. */
+	public void removeFormat(String name) {
+		FormatExtension toRemove = formats.remove(name);
+		if (toRemove == null) {
+			project.getLogger().warn("Called removeFormat('" + name + "') but there was no such format.");
+		}
+	}
+
+	private <T extends FormatExtension> void configure(String name, Class<T> clazz, Action<T> configure) {
+		T value = maybeCreate(name, clazz);
+		configure.execute(value);
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T extends FormatExtension> T maybeCreate(String name, Class<T> clazz) {
+		FormatExtension existing = formats.get(name);
+		if (existing != null) {
+			if (!existing.getClass().equals(clazz)) {
+				throw new GradleException("Tried to add format named '" + name + "'" +
+						" of type " + clazz + " but one has already been created of type " + existing.getClass());
+			} else {
+				return (T) existing;
+			}
+		} else {
+			try {
+				Constructor<T> constructor = clazz.getConstructor(SpotlessExtension.class);
+				T newlyCreated = constructor.newInstance(this);
+				formats.put(name, newlyCreated);
+				return newlyCreated;
+			} catch (NoSuchMethodException e) {
+				throw new GradleException("Must have a constructor " + clazz.getSimpleName() + "(SpotlessExtension root)", e);
+			} catch (Exception e) {
+				throw Errors.asRuntime(e);
+			}
 		}
 	}
 }

@@ -31,12 +31,12 @@ import com.diffplug.common.io.Files;
 import com.diffplug.spotless.markdown.FreshMarkStep;
 
 public class FreshMarkExtension extends FormatExtension {
-	public static final String NAME = "freshmark";
+	static final String NAME = "freshmark";
 
 	public List<Action<Map<String, Object>>> propertyActions = new ArrayList<>();
 
 	public FreshMarkExtension(SpotlessExtension root) {
-		super(NAME, root);
+		super(root);
 		addStep(FreshMarkStep.create(() -> {
 			Map<String, Object> map = new HashMap<>();
 			for (Action<Map<String, Object>> action : propertyActions) {
