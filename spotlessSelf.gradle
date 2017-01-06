@@ -1,0 +1,36 @@
+// applied by SelfTest
+plugins {
+	id 'com.diffplug.gradle.spotless'
+	id 'java'
+}
+println('###################################################')
+println('## Applying spotless to its own code is sketchy. ##')
+println('## If this fails, this will fix it:              ##')
+println('##     rm -rf .gradle/                           ##')
+println('##     rmdir /s /q .gradle/                      ##')
+println('###################################################')
+
+repositories { mavenCentral() }
+spotless {
+	java {
+		target '**/*.java'
+		licenseHeaderFile 'spotless.license'
+		importOrderFile   'spotless.importorder'
+		eclipseFormatFile 'spotless.eclipseformat.xml'
+		trimTrailingWhitespace()
+	}
+	freshmark {
+		target '**/*.md'
+		propertiesFile('gradle.properties')
+		properties {
+			it.put('yes', ':+1:')
+			it.put('no', ':white_large_square:')
+		}
+	}
+	format 'misc', {
+		target '**/*.gradle', '**/*.md', '**/*.gitignore'
+		indentWithTabs()
+		trimTrailingWhitespace()
+		endWithNewline()
+	}
+}

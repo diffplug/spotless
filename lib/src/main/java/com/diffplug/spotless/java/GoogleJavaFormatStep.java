@@ -97,7 +97,7 @@ public class GoogleJavaFormatStep {
 			};
 		}
 
-		@SuppressWarnings({ "unchecked", "rawtypes" })
+		@SuppressWarnings({"unchecked", "rawtypes"})
 		FormatterFunc createRemoveUnusedImportsOnly() throws Exception {
 			ClassLoader classLoader = jarState.getClassLoader();
 
