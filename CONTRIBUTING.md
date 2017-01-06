@@ -91,7 +91,7 @@ FormatterStep create    (String name, State state                  , Function<St
 FormatterStep createLazy(String name, Supplier<State> stateSupplier, Function<State, FormatterFunc> stateToFormatter)
 ```
 
-If your formatting step only needs to call one or two methods of the external dependency, you can pull it in at runtime and call it via reflection.  See the logic for [`EclipseFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/java/EclipseFormatterStep.java) or [`GoogleJavaFormatStep`](lib/src/main/java/com/diffplug/spotless/extra/java/GoogleJavaFormatStep.java).
+If your formatting step only needs to call one or two methods of the external dependency, you can pull it in at runtime and call it via reflection.  See the logic for [`EclipseFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/java/EclipseFormatterStep.java) or [`GoogleJavaFormatStep`](lib/src/main/java/com/diffplug/spotless/java/GoogleJavaFormatStep.java).
 
 ## How to add a new plugin for a build system
 
