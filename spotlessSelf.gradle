@@ -14,6 +14,7 @@ repositories { mavenCentral() }
 spotless {
 	java {
 		target '**/*.java'
+		replace 'noInternalDeps', 'import org.gradle.internal.impldep.', 'import '
 		licenseHeaderFile 'spotless.license'
 		importOrderFile   'spotless.importorder'
 		eclipseFormatFile 'spotless.eclipseformat.xml'

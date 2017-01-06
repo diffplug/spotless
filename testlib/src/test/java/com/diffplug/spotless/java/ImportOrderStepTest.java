@@ -17,8 +17,9 @@ package com.diffplug.spotless.java;
 
 import java.util.Arrays;
 
-import org.gradle.internal.impldep.com.google.common.collect.ImmutableList;
 import org.junit.Test;
+
+import com.google.common.collect.ImmutableList;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.NonSerializableList;
