@@ -19,8 +19,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import com.google.common.collect.ImmutableList;
-
+import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.NonSerializableList;
 import com.diffplug.spotless.ResourceHarness;

@@ -14,7 +14,11 @@ repositories { mavenCentral() }
 spotless {
 	java {
 		target '**/*.java'
-		replace 'noInternalDeps', 'import org.gradle.internal.impldep.', 'import '
+		custom 'noInternalDeps', {
+			if (it.contains('import org.gradle.internal.')) {
+				throw new AssertionError("Accidental internal import")
+			}
+		}
 		licenseHeaderFile 'spotless.license'
 		importOrderFile   'spotless.importorder'
 		eclipseFormatFile 'spotless.eclipseformat.xml'
