@@ -82,6 +82,7 @@ model {
 					// add MavenCentral requirements to the POM
 					asNode().children().last() + {
 						resolveStrategy = Closure.DELEGATE_FIRST
+						name project.ext.artifactId
 						description project.description
 						url "https://github.com/${project.org}/${project.name}"
 						scm {

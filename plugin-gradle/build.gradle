@@ -40,6 +40,7 @@ test {
 //////////////////////////
 // GRADLE PLUGIN PORTAL //
 //////////////////////////
+version = project.ext.version
 pluginBundle {
 	// These settings are set for the whole plugin bundle
 	website = "https://github.com/${project.org}/${project.name}"
@@ -57,7 +58,7 @@ pluginBundle {
 	mavenCoordinates {
 		groupId = project.group
 		artifactId = project.artifactIdGradle
-		version = ext.version
+		version = project.ext.version
 	}
 }
 
