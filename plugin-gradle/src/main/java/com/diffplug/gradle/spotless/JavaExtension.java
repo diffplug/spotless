@@ -27,6 +27,7 @@ import com.diffplug.spotless.extra.java.EclipseFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.java.GoogleJavaFormatStep;
 import com.diffplug.spotless.java.ImportOrderStep;
+import com.diffplug.spotless.java.RemoveUnusedImportsStep;
 
 public class JavaExtension extends FormatExtension {
 	public static final String NAME = "java";
@@ -61,6 +62,11 @@ public class JavaExtension extends FormatExtension {
 
 	public void eclipseFormatFile(String eclipseVersion, Object eclipseFormatFile) {
 		addStep(EclipseFormatterStep.create(eclipseVersion, getProject().file(eclipseFormatFile), GradleProvisioner.fromProject(getProject())));
+	}
+
+	/** Removes any unused imports. */
+	public void removeUnusedImports() {
+		this.addStep(RemoveUnusedImportsStep.create(GradleProvisioner.fromProject(getProject())));
 	}
 
 	/** Uses the [google-java-format](https://github.com/google/google-java-format) jar to format source code. */

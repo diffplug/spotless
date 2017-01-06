@@ -6,6 +6,8 @@
 * BREAKING CHANGE: Plugin portal ID is still `com.diffplug.gradle.spotless`, but maven coordinate has changed to `com.diffplug.spotless:spotless-plugin-gradle`.
 * HUGE SPEEDUP: Now supports incremental build / up-to-date-checking.
 	+ If you are using `custom` or `customLazy`, you might want to take a look at [this javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/spotless-gradle-plugin/snapshot/com/diffplug/gradle/spotless/FormatExtension.html#bumpThisNumberIfACustomStepChanges-int-).
+* Fixed googleJavaFormat so that it can now sort imports and remove unused imports.
+* Added an à la carte `removeUnusedImports()` step.
 
 ### Version 2.4.1 - January 2nd 2017 ([javadoc](https://diffplug.github.io/spotless/javadoc/2.4.1/), [jcenter](https://bintray.com/diffplug/opensource/spotless/2.4.1/view))
 

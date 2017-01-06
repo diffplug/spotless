@@ -107,6 +107,8 @@ spotless {
 		// You probably want an empty string at the end - all of the imports you didn't specify
 		// explicitly will go there.
 
+		removeUnusedImports() // removes any unused imports
+
 		eclipseFormatFile 'spotless.eclipseformat.xml'	// XML file dumped out by the Eclipse formatter
 		// If you have an older Eclipse properties file, you can use that too.
 	}

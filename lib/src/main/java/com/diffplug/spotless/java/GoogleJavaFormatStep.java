@@ -15,9 +15,9 @@
  */
 package com.diffplug.spotless.java;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.util.Objects;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
@@ -30,10 +30,10 @@ public class GoogleJavaFormatStep {
 	private GoogleJavaFormatStep() {}
 
 	private static final String DEFAULT_VERSION = "1.1";
-	private static final String NAME = "google-java-format";
-	private static final String MAVEN_COORDINATE = "com.google.googlejavaformat:google-java-format:";
-	private static final String FORMATTER_CLASS = "com.google.googlejavaformat.java.Formatter";
-	private static final String FORMATTER_METHOD = "formatSource";
+	static final String NAME = "google-java-format";
+	static final String MAVEN_COORDINATE = "com.google.googlejavaformat:google-java-format:";
+	static final String FORMATTER_CLASS = "com.google.googlejavaformat.java.Formatter";
+	static final String FORMATTER_METHOD = "formatSource";
 
 	private static final String REMOVE_UNUSED_CLASS = "com.google.googlejavaformat.java.RemoveUnusedImports";
 	private static final String REMOVE_UNUSED_METHOD = "removeUnusedImports";
@@ -44,15 +44,15 @@ public class GoogleJavaFormatStep {
 	private static final String IMPORT_ORDERER_CLASS = "com.google.googlejavaformat.java.ImportOrderer";
 	private static final String IMPORT_ORDERER_METHOD = "reorderImports";
 
-	/** Creates a formatter step for the given version and settings file. */
+	/** Creates a step which formats everything - code, import order, and unused imports. */
 	public static FormatterStep create(Provisioner provisioner) {
 		return create(defaultVersion(), provisioner);
 	}
 
-	/** Creates a formatter step for the given version and settings file. */
+	/** Creates a step which formats everything - code, import order, and unused imports. */
 	public static FormatterStep create(String version, Provisioner provisioner) {
 		return FormatterStep.createLazy(NAME,
-				() -> new State(JarState.from(MAVEN_COORDINATE + version, provisioner)),
+				() -> new State(NAME, version, provisioner),
 				State::createFormat);
 	}
 
@@ -60,14 +60,16 @@ public class GoogleJavaFormatStep {
 		return DEFAULT_VERSION;
 	}
 
-	private static class State implements Serializable {
+	static final class State implements Serializable {
 		private static final long serialVersionUID = 1L;
 
 		/** The jar that contains the eclipse formatter. */
 		final JarState jarState;
+		final String stepName;
 
-		State(JarState jarState) {
-			this.jarState = Objects.requireNonNull(jarState);
+		State(String stepName, String version, Provisioner provisioner) throws IOException {
+			this.stepName = stepName;
+			this.jarState = JarState.from(MAVEN_COORDINATE + version, provisioner);
 		}
 
 		@SuppressWarnings({"unchecked", "rawtypes"})
@@ -93,6 +95,18 @@ public class GoogleJavaFormatStep {
 				String sortedImports = (String) importOrdererMethod.invoke(null, removedUnused);
 				return sortedImports;
 			};
+		}
+
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		FormatterFunc createRemoveUnusedImportsOnly() throws Exception {
+			ClassLoader classLoader = jarState.getClassLoader();
+
+			Class<?> removeUnusedClass = classLoader.loadClass(REMOVE_UNUSED_CLASS);
+			Class<?> removeJavadocOnlyClass = classLoader.loadClass(REMOVE_UNUSED_IMPORT_JavadocOnlyImports);
+			Object removeJavadocConstant = Enum.valueOf((Class<Enum>) removeJavadocOnlyClass, REMOVE_UNUSED_IMPORT_JavadocOnlyImports_Keep);
+			Method removeUnusedMethod = removeUnusedClass.getMethod(REMOVE_UNUSED_METHOD, String.class, removeJavadocOnlyClass);
+
+			return input -> (String) removeUnusedMethod.invoke(null, input, removeJavadocConstant);
 		}
 	}
 }
