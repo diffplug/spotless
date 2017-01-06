@@ -45,14 +45,6 @@ public interface FormatterStep extends Serializable {
 	public @Nullable String format(String rawUnix, File file) throws Exception;
 
 	/**
-	 * Hint to the FormatterStep that {@link #format(String, File)} will not
-	 * be called anytime soon, so clean up any resources that are being used.
-	 * Does NOT guarantee that format() won't be called ever again, but does
-	 * guarantee to be the best possible time to clean that you're going to get.
-	 */
-	public default void finish() {}
-
-	/**
 	 * Returns a new FormatterStep which will only apply its changes
 	 * to files which pass the given filter.
 	 *
@@ -117,41 +109,6 @@ public interface FormatterStep extends Serializable {
 			State state,
 			ThrowingEx.Function<State, FormatterFunc> stateToFormatter) {
 		return createLazy(name, () -> state, stateToFormatter);
-	}
-
-	/**
-	 * @param name
-	 *             The name of the formatter step
-	 * @param stateSupplier
-	 *             If the rule has any state, this supplier will calculate it lazily, and the result
-	 *             will be passed to stateToFormatter
-	 * @param stateToFormatter
-	 *             A pure function which generates a closeable formatting function using
-	 *             only the state supplied by state and nowhere else.
-	 * @return A FormatterStep
-	 */
-	public static <State extends Serializable> FormatterStep createCloseableLazy(
-			String name,
-			ThrowingEx.Supplier<State> stateSupplier,
-			ThrowingEx.Function<State, FormatterFunc.Closeable> stateToFormatter) {
-		return new FormatterStepImpl.Closeable<>(name, stateSupplier, stateToFormatter);
-	}
-
-	/**
-	 * @param name
-	 *             The name of the formatter step
-	 * @param state
-	 *             If the rule has any state, this state must contain all of it
-	 * @param stateToFormatter
-	 *             A pure function which generates a formatting function using
-	 *             only the state supplied by state and nowhere else.
-	 * @return A FormatterStep
-	 */
-	public static <State extends Serializable> FormatterStep createCloseable(
-			String name,
-			State state,
-			ThrowingEx.Function<State, FormatterFunc.Closeable> stateToFormatter) {
-		return createCloseableLazy(name, () -> state, stateToFormatter);
 	}
 
 	/**

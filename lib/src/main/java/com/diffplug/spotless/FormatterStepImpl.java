@@ -76,34 +76,6 @@ abstract class FormatterStepImpl<State extends Serializable> extends Strict<Stat
 		}
 	}
 
-	static class Closeable<State extends Serializable> extends FormatterStepImpl<State> {
-		private static final long serialVersionUID = 1L;
-
-		final transient ThrowingEx.Function<State, FormatterFunc.Closeable> stateToFormatter;
-		transient FormatterFunc.Closeable formatter; // initialized lazily
-
-		Closeable(String name, ThrowingEx.Supplier<State> stateSupplier, ThrowingEx.Function<State, FormatterFunc.Closeable> stateToFormatter) {
-			super(name, stateSupplier);
-			this.stateToFormatter = Objects.requireNonNull(stateToFormatter);
-		}
-
-		@Override
-		protected String format(State state, String rawUnix, File file) throws Exception {
-			if (formatter == null) {
-				formatter = stateToFormatter.apply(state());
-			}
-			return formatter.apply(rawUnix);
-		}
-
-		@Override
-		public void finish() {
-			if (formatter != null) {
-				formatter.close();
-				formatter = null;
-			}
-		}
-	}
-
 	/** Formatter which is equal to itself, but not to any other Formatter. */
 	static class NeverUpToDate extends FormatterStepImpl<Integer> {
 		private static final long serialVersionUID = 1L;
