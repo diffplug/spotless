@@ -138,7 +138,12 @@ public class SpotlessTask extends DefaultTask {
 				.build();
 		// find the outOfDate files
 		List<File> outOfDate = new ArrayList<>();
-		inputs.outOfDate(inputDetails -> outOfDate.add(inputDetails.getFile()));
+		inputs.outOfDate(inputDetails -> {
+			File file = inputDetails.getFile();
+			if (file.isFile()) {
+				outOfDate.add(file);
+			}
+		});
 
 		if (apply) {
 			apply(formatter, outOfDate);
