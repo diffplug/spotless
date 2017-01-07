@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.gradle.api.GradleException;
@@ -143,13 +141,21 @@ public class FormatExtension {
 			return (FileCollection) target;
 		} else if (target instanceof String ||
 				(target instanceof List && ((List<?>) target).stream().allMatch(o -> o instanceof String))) {
-
+			// since people are likely to do '**/*.md', we want to make sure to exclude folders
+			// they don't want to format which will slow down the operation greatly
 			File dir = getProject().getProjectDir();
-			Set<Project> subprojects = getProject().getSubprojects();
-			Stream<String> buildDirs = subprojects.stream().map(subproject -> subproject.getBuildDir().toString() + "/**");
-			Stream<String> localDotGradleDirs = subprojects.stream().map(subproject -> subproject.getProjectDir().toString() + "/.gradle/**");
-			Iterable<String> excludes = Stream.concat(buildDirs, localDotGradleDirs).collect(Collectors.toList());
-
+			List<String> excludes = new ArrayList<>();
+			// no git
+			excludes.add(".git");
+			// no .gradle
+			if (getProject() == getProject().getRootProject()) {
+				excludes.add(".gradle");
+			}
+			// no build folders
+			excludes.add(relativize(dir, getProject().getBuildDir()));
+			for (Project subproject : getProject().getSubprojects()) {
+				excludes.add(relativize(dir, subproject.getBuildDir()));
+			}
 			if (target instanceof String) {
 				return (FileCollection) getProject().fileTree(dir).include((String) target).exclude(excludes);
 			} else {
@@ -158,6 +164,16 @@ public class FormatExtension {
 			}
 		} else {
 			return getProject().files(target);
+		}
+	}
+
+	static String relativize(File root, File dest) {
+		String rootPath = root.getAbsolutePath();
+		String destPath = dest.getAbsolutePath();
+		if (!destPath.startsWith(rootPath)) {
+			throw new IllegalArgumentException(dest + " is not a child of " + root);
+		} else {
+			return destPath.substring(rootPath.length());
 		}
 	}
 
