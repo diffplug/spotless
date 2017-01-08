@@ -17,6 +17,7 @@ package com.diffplug.spotless;
 
 import java.io.FileFilter;
 import java.io.Serializable;
+import java.util.Arrays;
 
 /** A file filter with full support for serialization. */
 public interface SerializableFileFilter extends FileFilter, Serializable {
@@ -34,4 +35,31 @@ public interface SerializableFileFilter extends FileFilter, Serializable {
 	 * subclass.)
 	 */
 	public byte[] toBytes();
+
+	/** An implementation of SerializableFileFilter in which equality is based on the serialized representation. */
+	public static abstract class EqualityBasedOnSerialization implements SerializableFileFilter {
+		private static final long serialVersionUID = 1733798699224768949L;
+
+		@Override
+		public byte[] toBytes() {
+			return LazyForwardingEquality.toBytes(this);
+		}
+
+		@Override
+		public int hashCode() {
+			return Arrays.hashCode(toBytes());
+		}
+
+		@Override
+		public boolean equals(Object otherObj) {
+			if (otherObj == null) {
+				return false;
+			} else if (otherObj.getClass().equals(this.getClass())) {
+				EqualityBasedOnSerialization other = (EqualityBasedOnSerialization) otherObj;
+				return Arrays.equals(toBytes(), other.toBytes());
+			} else {
+				return false;
+			}
+		}
+	}
 }
