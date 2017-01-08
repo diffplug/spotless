@@ -8,16 +8,13 @@ def cred = {
 	}
 }
 
-
-String version_str = version.endsWith('-SNAPSHOT') ? 'snapshot' : version
-
 apply plugin: 'org.ajoberstar.github-pages'
 githubPages {
 	repoUri = 'https://github.com/diffplug/spotless'
 	deleteExistingFiles = false
 	pages {
-		from 'build/javadoc'
-		into "javadoc/${version_str}"
+		from 'build/javadoc-publish/build/javadoc/'
+		into 'javadoc/'
 	}
 	credentials {
 		username = cred('gh_token')
