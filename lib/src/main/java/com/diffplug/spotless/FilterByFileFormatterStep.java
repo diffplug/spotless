@@ -25,8 +25,8 @@ final class FilterByFileFormatterStep implements FormatterStep {
 	private final SerializableFileFilter filter;
 
 	FilterByFileFormatterStep(FormatterStep delegateStep, SerializableFileFilter filter) {
-		this.delegateStep = delegateStep;
-		this.filter = filter;
+		this.delegateStep = Objects.requireNonNull(delegateStep);
+		this.filter = Objects.requireNonNull(filter);
 	}
 
 	@Override
