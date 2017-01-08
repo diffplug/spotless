@@ -63,8 +63,7 @@ public enum LineEnding {
 		}
 	}
 
-	@Nullable
-	private static volatile BiFunction<File, Supplier<Iterable<File>>, Policy> gitAttributesPolicyCreator;
+	private static volatile @Nullable BiFunction<File, Supplier<Iterable<File>>, Policy> gitAttributesPolicyCreator;
 
 	// @formatter:off
 	/** Should use {@link #createPolicy(File, Supplier)} instead, but this will work iff its a path-independent LineEnding policy. */

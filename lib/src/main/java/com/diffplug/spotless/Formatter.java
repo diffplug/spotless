@@ -136,8 +136,7 @@ public final class Formatter {
 	 * Returns null if the file was already clean, or the
 	 * formatted result with unix newlines if it was not.
 	 */
-	@Nullable
-	public String applyToAndReturnResultIfDirty(File file) throws IOException {
+	public @Nullable String applyToAndReturnResultIfDirty(File file) throws IOException {
 		byte[] rawBytes = Files.readAllBytes(file.toPath());
 		String raw = new String(rawBytes, encoding);
 		String rawUnix = LineEnding.toUnix(raw);

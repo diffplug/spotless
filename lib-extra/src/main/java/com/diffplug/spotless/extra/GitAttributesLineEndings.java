@@ -113,12 +113,10 @@ public final class GitAttributesLineEndings {
 		transient final FileBasedConfig systemConfig, userConfig, repoConfig;
 
 		/** Global .gitattributes file pointed at by systemConfig or userConfig, and the file in the repo. */
-		@Nullable
-		transient final File globalAttributesFile, repoAttributesFile;
+		transient final @Nullable File globalAttributesFile, repoAttributesFile;
 
 		/** git worktree root, might not exist if we're not in a git repo. */
-		@Nullable
-		transient final File workTree;
+		transient final @Nullable File workTree;
 
 		/** All the .gitattributes files in the work tree that we're formatting. */
 		transient final List<File> gitattributes;
@@ -241,8 +239,7 @@ public final class GitAttributesLineEndings {
 		/** .git/info/attributes (and the worktree with that file) */
 		final List<AttributesRule> infoRules;
 
-		@Nullable
-		final File workTree;
+		final @Nullable File workTree;
 
 		/** Cache of local .gitattributes files. */
 		final AttributesCache cache = new AttributesCache();

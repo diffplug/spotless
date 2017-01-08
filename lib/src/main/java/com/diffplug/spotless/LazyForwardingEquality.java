@@ -34,8 +34,7 @@ import javax.annotation.Nullable;
 public abstract class LazyForwardingEquality<T extends Serializable> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	/** Null indicates that the state has not yet been set. */
-	@Nullable
+	/** Lazily initialized - null indicates that the state has not yet been set. */
 	private transient volatile T state;
 
 	/**
