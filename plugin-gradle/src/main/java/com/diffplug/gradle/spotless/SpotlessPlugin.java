@@ -37,6 +37,10 @@ public class SpotlessPlugin implements Plugin<Project> {
 	static final String CHECK = "Check";
 	static final String APPLY = "Apply";
 
+	private static final String TASK_GROUP = "Verification";
+	private static final String CHECK_DESCRIPTION = "Checks that sourcecode satisfies formatting steps.";
+	private static final String APPLY_DESCRIPTION = "Applies code formatting steps to sourcecode in-place.";
+
 	@Override
 	public void apply(Project project) {
 		this.project = project;
@@ -56,7 +60,11 @@ public class SpotlessPlugin implements Plugin<Project> {
 	@SuppressWarnings("rawtypes")
 	void createTasks() throws Exception {
 		Task rootCheckTask = project.task(EXTENSION + CHECK);
+		rootCheckTask.setGroup(TASK_GROUP);
+		rootCheckTask.setDescription(CHECK_DESCRIPTION);
 		Task rootApplyTask = project.task(EXTENSION + APPLY);
+		rootApplyTask.setGroup(TASK_GROUP);
+		rootApplyTask.setDescription(APPLY_DESCRIPTION);
 
 		for (Map.Entry<String, FormatExtension> entry : spotlessExtension.formats.entrySet()) {
 			// create the task that does the work
