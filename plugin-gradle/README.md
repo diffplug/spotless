@@ -14,7 +14,7 @@ output = [
 -->
 [![Gradle plugin](https://img.shields.io/badge/plugins.gradle.org-com.diffplug.gradle.spotless-blue.svg)](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless)
 [![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.gradle.spotless%3Aspotless-blue.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-gradle%22)
-[![Javadoc](https://img.shields.io/badge/javadoc-3.0.0.BETA3-blue.svg)](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.0.0.BETA3/)
+[![Javadoc](https://img.shields.io/badge/javadoc-3.0.0.BETA3-blue.svg)](https://diffplug.github.io/spotless/javadoc/3.0.0.BETA3/)
 
 [![Changelog](https://img.shields.io/badge/changelog-3.0.0--SNAPSHOT-brightgreen.svg)](CHANGES.md)
 [![Travis CI](https://travis-ci.org/diffplug/spotless.svg?branch=master)](https://travis-ci.org/diffplug/spotless)
