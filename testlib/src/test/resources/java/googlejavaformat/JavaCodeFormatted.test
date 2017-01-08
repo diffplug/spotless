@@ -1,3 +1,4 @@
+package hello.world;
 
 import mylib.UsedA;
 import mylib.UsedB;
