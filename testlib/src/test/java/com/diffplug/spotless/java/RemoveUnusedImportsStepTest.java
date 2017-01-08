@@ -25,8 +25,10 @@ import com.diffplug.spotless.TestProvisioner;
 public class RemoveUnusedImportsStepTest {
 	@Test
 	public void behavior() throws Exception {
-		StepHarness.forStep(RemoveUnusedImportsStep.create(TestProvisioner.mavenCentral()))
-				.testResource("java/removeunusedimports/JavaCodeUnformatted.test", "java/removeunusedimports/JavaCodeFormatted.test");
+		FormatterStep step = RemoveUnusedImportsStep.create(TestProvisioner.mavenCentral());
+		StepHarness.forStep(step)
+				.testResource("java/googlejavaformat/JavaCodeUnformatted.test", "java/googlejavaformat/JavaCodeFormatted.test")
+				.testResource("java/googlejavaformat/JavaCodeWithPackageUnformatted.test", "java/googlejavaformat/JavaCodeWithPackageFormatted.test");
 	}
 
 	@Test

@@ -1,6 +1,7 @@
+package hello.world;
 
-import mylib.UsedB;
 import mylib.UsedA;
+import mylib.UsedB;
 
 public class Java {
 public static void main(String[] args) {
