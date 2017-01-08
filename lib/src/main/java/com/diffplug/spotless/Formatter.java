@@ -188,8 +188,7 @@ public final class Formatter {
 				logger.severe("Step '" + step.getName() + "' found problem in '" + rootDir.relativize(file.toPath()) + "':\n" + e.getMessage());
 				throw e;
 			} catch (Throwable e) {
-				logger.warning("Unable to apply step '" + step.getName() + "' to '" + rootDir.relativize(file.toPath()) + "': " + e.getMessage());
-				logger.log(Level.FINE, "Exception is ", e);
+				logger.log(Level.WARNING, "Unable to apply step '" + step.getName() + "' to '" + rootDir.relativize(file.toPath()), e);
 			}
 		}
 		return unix;
