@@ -93,7 +93,7 @@ public class GoogleJavaFormatStep {
 				String formatted = (String) formatterMethod.invoke(formatter, input);
 				String removedUnused = (String) removeUnusedMethod.invoke(null, formatted, removeJavadocConstant);
 				String sortedImports = (String) importOrdererMethod.invoke(null, removedUnused);
-				return sortedImports;
+				return fixWindowsBug(sortedImports);
 			};
 		}
 
@@ -106,7 +106,16 @@ public class GoogleJavaFormatStep {
 			Object removeJavadocConstant = Enum.valueOf((Class<Enum>) removeJavadocOnlyClass, REMOVE_UNUSED_IMPORT_JavadocOnlyImports_Keep);
 			Method removeUnusedMethod = removeUnusedClass.getMethod(REMOVE_UNUSED_METHOD, String.class, removeJavadocOnlyClass);
 
-			return input -> (String) removeUnusedMethod.invoke(null, input, removeJavadocConstant);
+			return input -> fixWindowsBug((String) removeUnusedMethod.invoke(null, input, removeJavadocConstant));
+		}
+	}
+
+	/** Google-java-format's removeUnusedImports method adds an erroneous leading newline on windows.  Easy to detect and fix. */
+	private static String fixWindowsBug(String input) {
+		if (input.startsWith("\n\n")) {
+			return input.substring(1);
+		} else {
+			return input;
 		}
 	}
 }
