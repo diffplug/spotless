@@ -35,6 +35,7 @@ public abstract class LazyForwardingEquality<T extends Serializable> implements 
 	private static final long serialVersionUID = 1L;
 
 	/** Lazily initialized - null indicates that the state has not yet been set. */
+	@Nullable
 	private transient volatile T state;
 
 	/**
