@@ -27,8 +27,8 @@ public class RemoveUnusedImportsStepTest {
 	public void behavior() throws Exception {
 		FormatterStep step = RemoveUnusedImportsStep.create(TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
-				.testResource("java/removeunusedimport/JavaCodeUnformatted.test", "java/removeunusedimport/JavaCodeFormatted.test")
-				.testResource("java/removeunusedimport/JavaCodeWithPackageUnformatted.test", "java/removeunusedimport/JavaCodeWithPackageFormatted.test");
+				.testResource("java/removeunusedimports/JavaCodeUnformatted.test", "java/removeunusedimports/JavaCodeFormatted.test")
+				.testResource("java/removeunusedimports/JavaCodeWithPackageUnformatted.test", "java/removeunusedimports/JavaCodeWithPackageFormatted.test");
 	}
 
 	@Test
