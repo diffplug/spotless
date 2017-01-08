@@ -15,14 +15,15 @@
  */
 package com.diffplug.spotless.java;
 
+import org.junit.Assert;
 import org.junit.Test;
 
+import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.StepEqualityTester;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
-import com.diffplug.spotless.java.GoogleJavaFormatStep;
 
 public class GoogleJavaFormatStepTest extends ResourceHarness {
 	@Test
@@ -30,6 +31,8 @@ public class GoogleJavaFormatStepTest extends ResourceHarness {
 		FormatterStep step = GoogleJavaFormatStep.create("1.1", TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("java/googlejavaformat/JavaCodeUnformatted.test", "java/googlejavaformat/JavaCodeFormatted.test")
+				.testResource("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test", "java/googlejavaformat/JavaCodeWithLicenseFormatted.test")
+				.testResource("java/googlejavaformat/JavaCodeWithLicensePackageUnformatted.test", "java/googlejavaformat/JavaCodeWithLicensePackageFormatted.test")
 				.testResource("java/googlejavaformat/JavaCodeWithPackageUnformatted.test", "java/googlejavaformat/JavaCodeWithPackageFormatted.test");
 	}
 
@@ -55,5 +58,44 @@ public class GoogleJavaFormatStepTest extends ResourceHarness {
 				return GoogleJavaFormatStep.create(finalVersion, TestProvisioner.mavenCentral());
 			}
 		}.testEquals();
+	}
+
+	@Test
+	public void fixWindowsBug() {
+		fixWindowsBugTestcase("");
+		fixWindowsBugTestcase(
+				"",
+				"import somepackage;",
+				"");
+		fixWindowsBugTestcase(
+				"import somepackage;",
+				"",
+				"public class SomeClass {}");
+		fixWindowsBugTestcase(
+				"/** Some license */",
+				"import somepackage;",
+				"",
+				"public class SomeClass {}");
+		fixWindowsBugTestcase(
+				"package thispackage;",
+				"",
+				"import somepackage;",
+				"",
+				"public class SomeClass {}");
+		fixWindowsBugTestcase(
+				"/*",
+				" * A License.",
+				" */",
+				"",
+				"package thispackage;",
+				"",
+				"import somepackage;",
+				"",
+				"public class SomeClass {}");
+	}
+
+	private void fixWindowsBugTestcase(String... lines) {
+		String input = StringPrinter.buildStringFromLines(lines);
+		Assert.assertEquals(input, GoogleJavaFormatStep.fixWindowsBug(input));
 	}
 }

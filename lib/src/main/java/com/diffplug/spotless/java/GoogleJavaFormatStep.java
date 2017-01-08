@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
+import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Provisioner;
 
 /** Wraps up [google-java-format](https://github.com/google/google-java-format) as a FormatterStep. */
@@ -110,12 +111,36 @@ public class GoogleJavaFormatStep {
 		}
 	}
 
-	/** Google-java-format's removeUnusedImports method adds an erroneous leading newline on windows.  Easy to detect and fix. */
-	private static String fixWindowsBug(String input) {
-		if (input.startsWith("\n\n")) {
-			return input.substring(1);
-		} else {
-			return input;
+	private static final boolean IS_WINDOWS = LineEnding.PLATFORM_NATIVE.str().equals("\r\n");
+
+	/**
+	 * google-java-format's removeUnusedImports does *wacky* stuff on Windows.
+	 * The beauty of normalizing all line endings to unix!
+	 */
+	static String fixWindowsBug(String input) {
+		if (IS_WINDOWS) {
+			int firstImport = input.indexOf("\nimport ");
+			if (firstImport == 0) {
+				return input;
+			} else if (firstImport > 0) {
+				int numToTrim = 0;
+				char prevChar;
+				do {
+					++numToTrim;
+					prevChar = input.charAt(firstImport - numToTrim);
+				} while (Character.isWhitespace(prevChar) && (firstImport - numToTrim) > 0);
+				if (firstImport - numToTrim == 0) {
+					// import was the very first line, and we'd like to maintain a one-line gap
+					++numToTrim;
+				} else if (prevChar == ';' || prevChar == '/') {
+					// import came after either license or a package declaration
+					--numToTrim;
+				}
+				if (numToTrim > 0) {
+					return input.substring(0, firstImport - numToTrim + 2) + input.substring(firstImport + 1);
+				}
+			}
 		}
+		return input;
 	}
 }
