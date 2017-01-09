@@ -13,7 +13,7 @@ githubPages {
 	repoUri = 'https://github.com/diffplug/spotless'
 	deleteExistingFiles = false
 	pages {
-		from 'build/javadoc-publish/build/javadoc/'
+		from 'build/javadoc/'
 		into 'javadoc/'
 	}
 	credentials {
