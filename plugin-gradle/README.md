@@ -16,7 +16,7 @@ output = [
 [![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.gradle.spotless%3Aspotless-blue.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-gradle%22)
 [![Javadoc](https://img.shields.io/badge/javadoc-3.0.0.RC2-blue.svg)](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.0.0.RC2/)
 
-[![Changelog](https://img.shields.io/badge/changelog-3.0.0.RC2-brightgreen.svg)](CHANGES.md)
+[![Changelog](https://img.shields.io/badge/changelog-3.0.0--SNAPSHOT-brightgreen.svg)](CHANGES.md)
 [![Travis CI](https://travis-ci.org/diffplug/spotless.svg?branch=master)](https://travis-ci.org/diffplug/spotless)
 [![Live chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
 [![License Apache](https://img.shields.io/badge/license-apache-brightgreen.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
@@ -53,7 +53,7 @@ BUILD SUCCESSFUL
 
 Inside your buildscript, it looks like this:
 
-```groovy
+```gradle
 spotless {
 	format 'misc', {
 		target '**/*.gradle', '**/*.md', '**/.gitignore'
@@ -88,7 +88,7 @@ Spotless requires Gradle to be running on JRE 8+.<sup>See [issue #7](https://git
 
 ## Applying to Java source
 
-```groovy
+```gradle
 apply plugin: 'java'
 ...
 
@@ -119,7 +119,7 @@ See [ECLIPSE_SCREENSHOTS](../ECLIPSE_SCREENSHOTS.md) for screenshots that demons
 
 ## Applying to Java source ([google-java-format](https://github.com/google/google-java-format))
 
-```groovy
+```gradle
 spotless {
 	java {
 		googleJavaFormat() // googleJavaFormat('1.1') to specify a specific version
@@ -131,24 +131,19 @@ spotless {
 
 ## Applying [FreshMark](https://github.com/diffplug/freshmark) to markdown files
 
-To apply freshmark to all of the `.md` files in your project, with all of your project's properties available for templating, just use this snippet:
+Freshmark lets you generate markdown in the comments of your markdown.  This helps to keep badges and links up-to-date (see the source for this file), and can
+also be helpful for generating complex tables (see the source for [the parent readme](../README.md)).
 
-```groovy
-spotless {
-	freshmark {}
-}
-```
+To apply freshmark to all of the `.md` files in your project, with all of your project's properties available for templating, use this snippet:
 
-You can also specify properties manually.
-
-```groovy
+```gradle
 spotless {
 	freshmark {
-		target 'README.md', 'CONTRIBUTING.md'
-		properties([lib: 'MyLib', author: 'Me'])
-		trimTrailingWhitespace()
-		indentWithTabs()
-		endWithNewline()
+		target 'README.md', 'CONTRIBUTING.md'	// defaults to '**/*.md'
+		propertiesFile('gradle.properties')		// loads all the properties in the given file
+		properties {
+			it.put('key', 'value')				// specify other properties manually
+		}
 	}
 }
 ```
@@ -157,7 +152,7 @@ spotless {
 
 Spotless is a generic system for specifying a sequence of steps which are applied to a set of files.
 
-```groovy
+```gradle
 spotless {
 	// this will create two tasks: spotlessMiscCheck and spotlessMiscApply
 	format 'misc', {
