@@ -6,6 +6,19 @@
 * BREAKING CHANGE: Plugin portal ID is still `com.diffplug.gradle.spotless`, but maven coordinate has changed to `com.diffplug.spotless:spotless-plugin-gradle`.
 * HUGE SPEEDUP: Now supports incremental build / up-to-date-checking.
 	+ If you are using `custom` or `customLazy`, you might want to take a look at [this javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/spotless-gradle-plugin/snapshot/com/diffplug/gradle/spotless/FormatExtension.html#bumpThisNumberIfACustomStepChanges-int-).
+* BREAKING CHANGE: `freshmark` no longer includes all project properties by default.  All properties must now be added manually:
+
+```gradle
+spotless {
+	freshmark {
+		propertiesFile('gradle.properties')
+		properties {
+			it.put('key', 'value')
+		}
+	}
+}
+```
+
 * Fixed googleJavaFormat so that it can now sort imports and remove unused imports.
 * Added an à la carte `removeUnusedImports()` step.
 
