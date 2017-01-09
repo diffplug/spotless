@@ -15,21 +15,27 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.io.File;
+import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.file.UnionFileCollection;
 
+import com.diffplug.common.base.Errors;
+import com.diffplug.common.base.Suppliers;
 import com.diffplug.common.base.Throwing;
+import com.diffplug.common.collect.ImmutableMap;
 
 import groovy.lang.Closure;
 
@@ -100,7 +106,7 @@ public class FormatExtension {
 	/**
 	 * FileCollections pass through raw.
 	 * Strings are treated as the 'include' arg to fileTree, with project.rootDir as the dir.
-	 * List<String> are treates as the 'includes' arg to fileTree, with project.rootDir as the dir.
+	 * List<String> are treated as the 'includes' arg to fileTree, with project.rootDir as the dir.
 	 * Anything else gets passed to getProject().files().
 	 */
 	public void target(Object... targets) {
@@ -109,7 +115,7 @@ public class FormatExtension {
 		} else if (targets.length == 1) {
 			this.target = parseTarget(targets[0]);
 		} else {
-			if (Arrays.stream(targets).allMatch(o -> o instanceof String)) {
+			if (Stream.of(targets).allMatch(o -> o instanceof String)) {
 				this.target = parseTarget(Arrays.asList(targets));
 			} else {
 				UnionFileCollection union = new UnionFileCollection();
@@ -124,16 +130,20 @@ public class FormatExtension {
 	protected FileCollection parseTarget(Object target) {
 		if (target instanceof FileCollection) {
 			return (FileCollection) target;
-		} else if (target instanceof String) {
-			Map<String, Object> args = new HashMap<>();
-			args.put("dir", getProject().getProjectDir());
-			args.put("include", target);
-			return getProject().fileTree(args);
-		} else if (target instanceof List && ((List<?>) target).stream().allMatch(o -> o instanceof String)) {
-			Map<String, Object> args = new HashMap<>();
-			args.put("dir", getProject().getProjectDir());
-			args.put("includes", target);
-			return getProject().fileTree(args);
+		} else if (target instanceof String ||
+				(target instanceof List && ((List<?>) target).stream().allMatch(o -> o instanceof String))) {
+			Iterable<String> excludes = Arrays.asList(
+					getProject().getBuildDir().toString() + File.separatorChar + "**",
+					getProject().getProjectDir().toString() + File.separatorChar + ".gradle" + File.separatorChar + "**");
+			ImmutableMap.Builder<Object, Object> args = ImmutableMap.builder()
+					.put("dir", getProject().getProjectDir())
+					.put("excludes", excludes);
+			if (target instanceof String) {
+				args.put("include", target);
+			} else {
+				args.put("includes", target);
+			}
+			return getProject().fileTree(args.build());
 		} else {
 			return getProject().files(target);
 		}
@@ -141,6 +151,42 @@ public class FormatExtension {
 
 	/** The steps that need to be added. */
 	protected List<FormatterStep> steps = new ArrayList<>();
+
+	/** Adds a new step. */
+	protected void addStep(FormatterStep newStep) {
+		for (FormatterStep step : steps) {
+			if (step.getName().equals(name)) {
+				throw new GradleException("Multiple steps with name '" + name + "' for spotless '" + name + "'");
+			}
+		}
+		steps.add(newStep);
+	}
+
+	/**
+	 * Spotless tracks what files have changed from run to run, so that it can run faster
+	 * by only checking files which have changed.
+	 *
+	 * If you have changed a custom function, then you must increment this number so
+	 * that spotless knows it needs to rerun the format check.  This is not necessary
+	 * if you don't use any custom functions.
+	 *
+	 * If you use a custom function and don't call bumpThisNumberIfACustomRuleChanges, then spotless
+	 * cannot tell if you have changed the rules, and will be forced to always recheck all files.
+	 */
+	public void bumpThisNumberIfACustomRuleChanges(int number) {
+		globalKey = number;
+	}
+
+	private Serializable globalKey = new NeverUpToDateBetweenRuns();
+
+	static class NeverUpToDateBetweenRuns extends LazyForwardingEquality<Integer> {
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		protected Integer calculateKey() throws Exception {
+			return new Random().nextInt();
+		}
+	}
 
 	/**
 	 * Adds the given custom step, which is constructed lazily for performance reasons.
@@ -151,12 +197,9 @@ public class FormatExtension {
 	 * {@link #customLazyGroovy(String, com.diffplug.common.base.Throwing.Supplier)}.
 	 */
 	public void customLazy(String name, Throwing.Supplier<Throwing.Function<String, String>> formatterSupplier) {
-		for (FormatterStep step : steps) {
-			if (step.getName().equals(name)) {
-				throw new GradleException("Multiple steps with name '" + name + "' for spotless '" + name + "'");
-			}
-		}
-		steps.add(FormatterStep.createLazy(name, formatterSupplier));
+		Supplier<Throwing.Function<String, String>> nonThrowing = Errors.rethrow().wrap(formatterSupplier);
+		Supplier<Throwing.Function<String, String>> memoized = Suppliers.memoize(nonThrowing);
+		addStep(FormatterStep.createLazy(name, () -> globalKey, (unusedKey, unix) -> Errors.rethrow().get(() -> memoized.get().apply(unix))));
 	}
 
 	/** Same as {@link #customLazy(String, com.diffplug.common.base.Throwing.Supplier)}, but for Groovy closures. */
@@ -256,7 +299,9 @@ public class FormatExtension {
 	 *            Spotless will look for a line that starts with this to know what the "top" is.
 	 */
 	public void licenseHeader(String licenseHeader, String delimiter) {
-		customLazy(LicenseHeaderStep.NAME, () -> new LicenseHeaderStep(licenseHeader, delimiter)::format);
+		addStep(FormatterStep.create(LicenseHeaderStep.NAME,
+				new LicenseHeaderStep(licenseHeader, delimiter),
+				LicenseHeaderStep::format));
 	}
 
 	/**
@@ -266,11 +311,13 @@ public class FormatExtension {
 	 *            Spotless will look for a line that starts with this to know what the "top" is.
 	 */
 	public void licenseHeaderFile(Object licenseHeaderFile, String delimiter) {
-		customLazy(LicenseHeaderStep.NAME, () -> new LicenseHeaderStep(getProject().file(licenseHeaderFile), getEncoding(), delimiter)::format);
+		addStep(FormatterStep.createLazy(LicenseHeaderStep.NAME,
+				() -> new LicenseHeaderStep(getProject().file(licenseHeaderFile), getEncoding(), delimiter),
+				LicenseHeaderStep::format));
 	}
 
-	/** Sets up a FormatTask according to the values in this extension. */
-	protected void setupTask(FormatTask task) throws Exception {
+	/** Sets up a format task according to the values in this extension. */
+	protected void setupTask(BaseFormatTask task) {
 		task.paddedCell = paddedCell;
 		task.lineEndingsPolicy = getLineEndingPolicy();
 		task.encoding = getEncoding();

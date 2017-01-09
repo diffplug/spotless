@@ -39,7 +39,7 @@ import com.diffplug.common.base.StringPrinter;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- * Incorporates the PaddedCell machinery into FormatTask.apply() and FormatTask.check().
+ * Incorporates the PaddedCell machinery into ApplyFormatTask.apply() and CheckFormatTask.check().
  *
  * Here's the general workflow:
  *
@@ -51,12 +51,12 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * justifiably be frustrated.  Luckily, every time `spotlessCheck` fails, it passes the failed files to
  * {@link #anyMisbehave(Formatter, List)}, which checks to see if any of the rules are causing a cycle
  * or some other kind of mischief.  If they are, it throws a special error message,
- * {@link #youShouldTurnOnPaddedCell(FormatTask)} which tells them to turn on paddedCell.
+ * {@link #youShouldTurnOnPaddedCell(CheckFormatTask)} which tells them to turn on paddedCell.
  *
  * ### spotlessCheck with paddedCell on
  *
  * Spotless check behaves as normal, finding a list of problem files, but then passes that list
- * to {@link #check(FormatTask, Formatter, List)}.  If there were no problem files, then `paddedCell`
+ * to {@link #check(CheckFormatTask, Formatter, List)}.  If there were no problem files, then `paddedCell`
  * is no longer necessary, so users might as well turn it off, so we give that info as a warning.
  */
 class PaddedCellTaskMisc {
@@ -92,7 +92,7 @@ class PaddedCellTaskMisc {
 		return false;
 	}
 
-	static GradleException youShouldTurnOnPaddedCell(FormatTask task) {
+	static GradleException youShouldTurnOnPaddedCell(CheckFormatTask task) {
 		Path diagnosePath = diagnoseDir(task);
 		Path rootPath = task.getProject().getRootDir().toPath();
 		return new GradleException(StringPrinter.buildStringFromLines(
@@ -117,12 +117,12 @@ class PaddedCellTaskMisc {
 				"For details see " + URL));
 	}
 
-	private static Path diagnoseDir(FormatTask task) {
+	private static Path diagnoseDir(CheckFormatTask task) {
 		return task.getProject().getBuildDir().toPath().resolve("spotless-diagnose-" + task.getFormatName());
 	}
 
 	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
-	static void check(FormatTask task, Formatter formatter, List<File> problemFiles) throws IOException {
+	static void check(CheckFormatTask task, Formatter formatter, List<File> problemFiles) throws IOException {
 		if (problemFiles.isEmpty()) {
 			// if the first pass was successful, then paddedCell() mode is unnecessary
 			task.getLogger().info(StringPrinter.buildStringFromLines(
@@ -133,9 +133,12 @@ class PaddedCellTaskMisc {
 
 		// "fake" Formatter which can use the already-computed result of a PaddedCell as
 		Step paddedCellStep = new Step();
-		Formatter paddedFormatter = new Formatter(
-				formatter.lineEndingPolicy, formatter.encoding, formatter.projectDirectory,
-				Collections.singletonList(paddedCellStep));
+		Formatter paddedFormatter = Formatter.builder()
+				.lineEndingsPolicy(formatter.lineEndingsPolicy)
+				.encoding(formatter.encoding)
+				.projectDirectory(formatter.projectDirectory)
+				.steps(Collections.singletonList(paddedCellStep))
+				.build();
 
 		// empty out the diagnose folder
 		Path diagnoseDir = diagnoseDir(task);
@@ -183,6 +186,7 @@ class PaddedCellTaskMisc {
 	}
 
 	/** Helper for check(). */
+	@SuppressWarnings("serial")
 	static class Step implements FormatterStep {
 		private File file;
 		private String formatted;
@@ -208,7 +212,7 @@ class PaddedCellTaskMisc {
 		}
 	}
 
-	static void apply(FormatTask task, Formatter formatter, File file) throws IOException {
+	static void apply(ApplyFormatTask task, Formatter formatter, File file) throws IOException {
 		byte[] rawBytes = Files.readAllBytes(file.toPath());
 		String raw = new String(rawBytes, formatter.encoding);
 		String rawUnix = LineEnding.toUnix(raw);

@@ -85,8 +85,8 @@ public class ResourceHarness {
 		Assert.assertEquals(expected, formatted);
 	}
 
-	/** Creates a FormatTask based on the given consumer. */
-	protected FormatTask createTask(Consumer<FormatExtension> test) throws Exception {
+	/** Creates an ApplyFormatTask based on the given consumer. */
+	private ApplyFormatTask createTask(Consumer<FormatExtension> test) throws Exception {
 		Project project = ProjectBuilder.builder().withProjectDir(folder.getRoot()).build();
 		SpotlessPlugin plugin = project.getPlugins().apply(SpotlessPlugin.class);
 
@@ -97,27 +97,28 @@ public class ResourceHarness {
 			test.accept(ext);
 		});
 
-		boolean check = false;
-		return plugin.createTask("underTest", ref.get(), check);
+		return plugin.createApplyTask("underTest", ref.get());
 	}
 
 	/** Tests that the formatExtension causes the given change. */
 	protected void assertTask(Consumer<FormatExtension> test, String before, String afterExpected) throws Exception {
 		// create the task
-		FormatTask task = createTask(test);
+		ApplyFormatTask task = createTask(test);
+		// force unix line endings, since we're passing in raw strings
+		task.lineEndingsPolicy = LineEnding.UNIX.createPolicy();
 		// create the test file
 		File testFile = folder.newFile();
 		Files.write(testFile.toPath(), before.getBytes(StandardCharsets.UTF_8));
 		// set the task to use this test file
 		task.target = Collections.singleton(testFile);
 		// run the task
-		task.format();
+		task.run();
 		// check what the task did
 		String afterActual = new String(Files.readAllBytes(testFile.toPath()), StandardCharsets.UTF_8);
 		Assert.assertEquals(afterExpected, afterActual);
 	}
 
-	protected String getTaskErrorMessage(FormatTask task) {
+	protected String getTaskErrorMessage(BaseFormatTask task) {
 		try {
 			task.execute();
 			throw new AssertionError("Expected a TaskExecutionException");

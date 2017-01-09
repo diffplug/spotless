@@ -17,6 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -26,7 +27,9 @@ import java.util.regex.Pattern;
 import org.gradle.api.GradleException;
 
 /** Prefixes a license header before the package statement. */
-public class LicenseHeaderStep {
+public class LicenseHeaderStep implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	public static final String NAME = "LicenseHeader";
 
 	private final String license;

@@ -31,24 +31,68 @@ import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
 
 /** Formatter which performs the full formatting. */
-public class Formatter {
-	final LineEnding.Policy lineEndingPolicy;
+public final class Formatter {
+	final LineEnding.Policy lineEndingsPolicy;
 	final Charset encoding;
 	final Path projectDirectory;
 	final List<FormatterStep> steps;
-	final Logger logger = Logging.getLogger(Formatter.class);
+
+	private static final Logger logger = Logging.getLogger(Formatter.class);
 
 	/** It's important to specify the charset. */
 	@Deprecated
-	public Formatter(LineEnding.Policy lineEndingPolicy, Path projectDirectory, List<FormatterStep> steps) {
-		this(lineEndingPolicy, StandardCharsets.UTF_8, projectDirectory, steps);
+	public Formatter(LineEnding.Policy lineEndingsPolicy, Path projectDirectory, List<FormatterStep> steps) {
+		this(lineEndingsPolicy, StandardCharsets.UTF_8, projectDirectory, steps);
 	}
 
-	public Formatter(LineEnding.Policy lineEndingPolicy, Charset encoding, Path projectDirectory, List<FormatterStep> steps) {
-		this.lineEndingPolicy = Objects.requireNonNull(lineEndingPolicy);
-		this.encoding = Objects.requireNonNull(encoding);
-		this.projectDirectory = Objects.requireNonNull(projectDirectory);
-		this.steps = new ArrayList<>(steps);
+	/**
+	 * The number of required parameters is starting to get difficult to use. Use
+	 * {@link Formatter#builder()} instead.
+	 */
+	@Deprecated
+	public Formatter(LineEnding.Policy lineEndingsPolicy, Charset encoding, Path projectDirectory, List<FormatterStep> steps) {
+		this.lineEndingsPolicy = Objects.requireNonNull(lineEndingsPolicy, "lineEndingsPolicy");
+		this.encoding = Objects.requireNonNull(encoding, "encoding");
+		this.projectDirectory = Objects.requireNonNull(projectDirectory, "projectDirectory");
+		this.steps = new ArrayList<>(Objects.requireNonNull(steps, "steps"));
+	}
+
+	public static Formatter.Builder builder() {
+		return new Formatter.Builder();
+	}
+
+	public static class Builder {
+		// required parameters
+		private LineEnding.Policy lineEndingsPolicy;
+		private Charset encoding;
+		private Path projectDirectory;
+		private List<FormatterStep> steps;
+
+		private Builder() {}
+
+		public Builder lineEndingsPolicy(LineEnding.Policy lineEndingsPolicy) {
+			this.lineEndingsPolicy = lineEndingsPolicy;
+			return this;
+		}
+
+		public Builder encoding(Charset encoding) {
+			this.encoding = encoding;
+			return this;
+		}
+
+		public Builder projectDirectory(Path projectDirectory) {
+			this.projectDirectory = projectDirectory;
+			return this;
+		}
+
+		public Builder steps(List<FormatterStep> steps) {
+			this.steps = steps;
+			return this;
+		}
+
+		public Formatter build() {
+			return new Formatter(lineEndingsPolicy, encoding, projectDirectory, steps);
+		}
 	}
 
 	/** Returns true iff the given file's formatting is up-to-date. */
@@ -59,7 +103,7 @@ public class Formatter {
 		// check the newlines (we can find these problems without even running the steps)
 		int totalNewLines = (int) unix.codePoints().filter(val -> val == '\n').count();
 		int windowsNewLines = raw.length() - unix.length();
-		if (lineEndingPolicy.isUnix(file)) {
+		if (lineEndingsPolicy.isUnix(file)) {
 			if (windowsNewLines != 0) {
 				return false;
 			}
@@ -96,7 +140,7 @@ public class Formatter {
 
 	/** Applies the appropriate line endings to the given unix content. */
 	String applyLineEndings(String unix, File file) {
-		String ending = lineEndingPolicy.getEndingFor(file);
+		String ending = lineEndingsPolicy.getEndingFor(file);
 		if (!ending.equals(LineEnding.UNIX.str())) {
 			return unix.replace(LineEnding.UNIX.str(), ending);
 		} else {

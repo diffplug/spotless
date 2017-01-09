@@ -22,8 +22,8 @@ import org.gradle.api.internal.file.UnionFileCollection;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 
+import com.diffplug.gradle.spotless.BaseFormatTask;
 import com.diffplug.gradle.spotless.FormatExtension;
-import com.diffplug.gradle.spotless.FormatTask;
 import com.diffplug.gradle.spotless.LicenseHeaderStep;
 import com.diffplug.gradle.spotless.SpotlessExtension;
 
@@ -73,7 +73,7 @@ public class JavaExtension extends FormatExtension {
 
 	/** If the user hasn't specified the files yet, we'll assume he/she means all of the java files. */
 	@Override
-	protected void setupTask(FormatTask task) throws Exception {
+	protected void setupTask(BaseFormatTask task) {
 		if (target == null) {
 			JavaPluginConvention javaPlugin = getProject().getConvention().getPlugin(JavaPluginConvention.class);
 			if (javaPlugin == null) {

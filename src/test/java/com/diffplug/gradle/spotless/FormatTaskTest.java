@@ -27,39 +27,37 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class FormatTaskTest extends ResourceHarness {
-	private Project project;
-	private FormatTask task;
+	private CheckFormatTask checkTask;
+	private ApplyFormatTask applyTask;
 
 	@Before
 	public void createTask() {
-		project = ProjectBuilder.builder().build();
-		task = project.getTasks().create("underTest", FormatTask.class);
+		Project project = ProjectBuilder.builder().build();
+		checkTask = project.getTasks().create("checkTaskUnderTest", CheckFormatTask.class);
+		applyTask = project.getTasks().create("applyTaskUnderTest", ApplyFormatTask.class);
 	}
 
 	@Test(expected = GradleException.class)
 	public void testLineEndingsCheckFail() throws IOException {
-		task.check = true;
-		task.lineEndingsPolicy = LineEnding.UNIX.createPolicy();
-		task.target = Collections.singleton(createTestFile("testFile", "\r\n"));
-		task.execute();
+		checkTask.lineEndingsPolicy = LineEnding.UNIX.createPolicy();
+		checkTask.target = Collections.singleton(createTestFile("testFile", "\r\n"));
+		checkTask.execute();
 	}
 
 	@Test
 	public void testLineEndingsCheckPass() throws IOException {
-		task.check = true;
-		task.lineEndingsPolicy = LineEnding.UNIX.createPolicy();
-		task.target = Collections.singleton(createTestFile("testFile", "\n"));
-		task.execute();
+		checkTask.lineEndingsPolicy = LineEnding.UNIX.createPolicy();
+		checkTask.target = Collections.singleton(createTestFile("testFile", "\n"));
+		checkTask.execute();
 	}
 
 	@Test
 	public void testLineEndingsApply() throws IOException {
 		File testFile = createTestFile("testFile", "\r\n");
 
-		task.check = false;
-		task.lineEndingsPolicy = LineEnding.UNIX.createPolicy();
-		task.target = Collections.singleton(testFile);
-		task.execute();
+		applyTask.lineEndingsPolicy = LineEnding.UNIX.createPolicy();
+		applyTask.target = Collections.singleton(testFile);
+		applyTask.execute();
 
 		assertFileContent("\n", testFile);
 	}
@@ -67,16 +65,15 @@ public class FormatTaskTest extends ResourceHarness {
 	@Test
 	public void testStepCheckFail() throws IOException {
 		File testFile = createTestFile("testFile", "apple");
-		task.target = Collections.singleton(testFile);
+		checkTask.target = Collections.singleton(testFile);
 
-		task.check = true;
-		task.steps.add(FormatterStep.create("double-p", content -> content.replace("pp", "p")));
+		checkTask.steps.add(NonUpToDateCheckingTasks.create("double-p", content -> content.replace("pp", "p")));
 
 		String diff = String.join("\n",
 				"    @@ -1 +1 @@",
 				"    -apple",
 				"    +aple");
-		Assertions.assertThatThrownBy(() -> task.execute()).hasStackTraceContaining(diff);
+		Assertions.assertThatThrownBy(() -> checkTask.execute()).hasStackTraceContaining(diff);
 
 		assertFileContent("apple", testFile);
 	}
@@ -84,11 +81,10 @@ public class FormatTaskTest extends ResourceHarness {
 	@Test
 	public void testStepCheckPass() throws IOException {
 		File testFile = createTestFile("testFile", "aple");
-		task.target = Collections.singleton(testFile);
+		checkTask.target = Collections.singleton(testFile);
 
-		task.check = true;
-		task.steps.add(FormatterStep.create("double-p", content -> content.replace("pp", "p")));
-		task.execute();
+		checkTask.steps.add(NonUpToDateCheckingTasks.create("double-p", content -> content.replace("pp", "p")));
+		checkTask.execute();
 
 		assertFileContent("aple", testFile);
 	}
@@ -96,11 +92,10 @@ public class FormatTaskTest extends ResourceHarness {
 	@Test
 	public void testStepApply() throws IOException {
 		File testFile = createTestFile("testFile", "apple");
-		task.target = Collections.singleton(testFile);
+		applyTask.target = Collections.singleton(testFile);
 
-		task.check = false;
-		task.steps.add(FormatterStep.create("double-p", content -> content.replace("pp", "p")));
-		task.execute();
+		applyTask.steps.add(NonUpToDateCheckingTasks.create("double-p", content -> content.replace("pp", "p")));
+		applyTask.execute();
 
 		assertFileContent("aple", testFile);
 	}

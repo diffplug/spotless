@@ -52,8 +52,8 @@ public class SpotlessPlugin implements Plugin<Project> {
 		Task rootApplyTask = project.task(EXTENSION + APPLY);
 
 		for (Map.Entry<String, FormatExtension> entry : spotlessExtension.formats.entrySet()) {
-			rootCheckTask.dependsOn(createTask(entry.getKey(), entry.getValue(), true));
-			rootApplyTask.dependsOn(createTask(entry.getKey(), entry.getValue(), false));
+			rootCheckTask.dependsOn(createCheckTask(entry.getKey(), entry.getValue()));
+			rootApplyTask.dependsOn(createApplyTask(entry.getKey(), entry.getValue()));
 		}
 
 		// Add our check task as a dependency on the global check task
@@ -64,9 +64,15 @@ public class SpotlessPlugin implements Plugin<Project> {
 				.all(task -> task.dependsOn(rootCheckTask));
 	}
 
-	FormatTask createTask(String name, FormatExtension format, boolean check) throws Exception {
-		FormatTask task = project.getTasks().create(EXTENSION + capitalize(name) + (check ? CHECK : APPLY), FormatTask.class);
-		task.check = check;
+	CheckFormatTask createCheckTask(String name, FormatExtension format) throws Exception {
+		CheckFormatTask task = project.getTasks().create(EXTENSION + capitalize(name) + CHECK, CheckFormatTask.class);
+		// sets toFormat and steps
+		format.setupTask(task);
+		return task;
+	}
+
+	ApplyFormatTask createApplyTask(String name, FormatExtension format) throws Exception {
+		ApplyFormatTask task = project.getTasks().create(EXTENSION + capitalize(name) + APPLY, ApplyFormatTask.class);
 		// sets toFormat and steps
 		format.setupTask(task);
 		return task;
