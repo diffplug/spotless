@@ -21,6 +21,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class GoogleJavaFormatIntegrationTest extends GradleIntegrationTest {
+	// TODO: This test throws an exception because google-java-format-1.0 doesn't have
+	// RemoveUnusedImports.java (only 1.1+ does), but despite that, the test passes!
+	// Discover why this test passes and/or fix it or remove it.
 	@Test
 	public void integration() throws IOException {
 		write("build.gradle",
