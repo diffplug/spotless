@@ -28,8 +28,9 @@ It's easy to build such a function, but there are some gotchas and lots of integ
 function lib(className)   { return '| [`' + className + '`](lib/src/main/java/com/diffplug/spotless/' + className.replace('.', '/') + '.java) | ' }
 function extra(className) { return '| [`' + className + '`](lib-extra/src/main/java/com/diffplug/spotless/extra/' + className.replace('.', '/') + '.java) | ' }
 
+<!--                                             | GRADLE        | MAVEN        | (new)   | -->
 output = [
-'| Feature / FormatterStep                       | plugin-gradle | plugin-maven | [(Your build tool here)](CONTRIBUTING.md#how-to-add-a-new-plugin-for-a-build-system) |',
+'| Feature / FormatterStep                       | [plugin-gradle](plugin-gradle/README.md) | [plugin-maven](plugin-maven/README.md) | [(Your build tool here)](CONTRIBUTING.md#how-to-add-a-new-plugin-for-a-build-system) |',
 '| --------------------------------------------- | ------------- | ------------ | --------|',
 lib('generic.EndWithNewlineStep')                +'{{yes}}       | {{no}}       | {{no}}  |',
 lib('generic.IndentStep')                        +'{{yes}}       | {{no}}       | {{no}}  |',
@@ -47,7 +48,7 @@ lib('markdown.FreshMarkStep')                    +'{{yes}}       | {{no}}       
 ''
 ].join('\n');
 -->
-| Feature / FormatterStep                       | plugin-gradle | plugin-maven | [(Your build tool here)](CONTRIBUTING.md#how-to-add-a-new-plugin-for-a-build-system) |
+| Feature / FormatterStep                       | [plugin-gradle](plugin-gradle/README.md) | [plugin-maven](plugin-maven/README.md) | [(Your build tool here)](CONTRIBUTING.md#how-to-add-a-new-plugin-for-a-build-system) |
 | --------------------------------------------- | ------------- | ------------ | --------|
 | [`generic.EndWithNewlineStep`](lib/src/main/java/com/diffplug/spotless/generic/EndWithNewlineStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
 | [`generic.IndentStep`](lib/src/main/java/com/diffplug/spotless/generic/IndentStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
