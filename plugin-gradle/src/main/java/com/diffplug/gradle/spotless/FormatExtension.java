@@ -26,6 +26,8 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
+
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.file.FileCollection;
@@ -182,12 +184,32 @@ public class FormatExtension {
 
 	/** Adds a new step. */
 	public void addStep(FormatterStep newStep) {
-		for (FormatterStep step : steps) {
-			if (newStep.getName().equals(step.getName())) {
-				throw new GradleException("Multiple steps with name '" + newStep.getName() + "' for spotless format '" + formatName() + "'");
-			}
+		FormatterStep existing = getExistingStep(newStep.getName());
+		if (existing != null) {
+			throw new GradleException("Multiple steps with name '" + newStep.getName() + "' for spotless format '" + formatName() + "'");
 		}
 		steps.add(newStep);
+	}
+
+	/** Returns the existing step with the given name, if any. */
+	@Nullable
+	protected FormatterStep getExistingStep(String stepName) {
+		for (FormatterStep step : steps) {
+			if (stepName.equals(step.getName())) {
+				return step;
+			}
+		}
+		return null;
+	}
+
+	/** Replaces the given step. */
+	protected void replaceStep(FormatterStep replacementStep) {
+		FormatterStep existing = getExistingStep(replacementStep.getName());
+		if (existing == null) {
+			throw new GradleException("Cannot replace step '" + replacementStep.getName() + "' for spotless format '" + formatName() + "' because it hasn't been added yet.");
+		}
+		int index = steps.indexOf(existing);
+		steps.set(index, replacementStep);
 	}
 
 	/** Clears all of the existing steps. */
