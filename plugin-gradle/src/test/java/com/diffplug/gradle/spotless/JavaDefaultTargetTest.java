@@ -46,7 +46,7 @@ public class JavaDefaultTargetTest extends GradleIntegrationTest {
 		// write appends a line ending so re-read to see what groovy currently looks like
 		String groovyInput = read("src/main/groovy/test.groovy");
 
-		gradleRunner().forwardOutput().withArguments("spotlessApply").build();
+		gradleRunner().withArguments("spotlessApply").build();
 
 		String result = read("src/main/java/test.java");
 		String output = getTestResource("java/googlejavaformat/JavaCodeFormatted.test");

@@ -37,7 +37,7 @@ import com.diffplug.spotless.ResourceHarness;
 
 public class GradleIntegrationTest extends ResourceHarness {
 	protected GradleRunner gradleRunner() throws IOException {
-		return GradleRunner.create().withProjectDir(rootFolder()).withPluginClasspath().forwardOutput();
+		return GradleRunner.create().withProjectDir(rootFolder()).withPluginClasspath();
 	}
 
 	/** Dumps the complete file contents of the folder to the console. */

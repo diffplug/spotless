@@ -36,7 +36,7 @@ public class EncodingTest extends GradleIntegrationTest {
 				"    }",
 				"}");
 		write("test.java", "µ");
-		gradleRunner().withArguments("spotlessApply").forwardOutput().build();
+		gradleRunner().withArguments("spotlessApply").build();
 		Assert.assertEquals("A\n", read("test.java"));
 	}
 
