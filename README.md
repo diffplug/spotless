@@ -28,7 +28,7 @@ It's easy to build such a function, but there are some gotchas and lots of integ
 function lib(className)   { return '| [`' + className + '`](lib/src/main/java/com/diffplug/spotless/' + className.replace('.', '/') + '.java) | ' }
 function extra(className) { return '| [`' + className + '`](lib-extra/src/main/java/com/diffplug/spotless/extra/' + className.replace('.', '/') + '.java) | ' }
 
-<!--                                             | GRADLE        | MAVEN        | (new)   | -->
+//                                               | GRADLE        | MAVEN        | (new)   |
 output = [
 '| Feature / FormatterStep                       | [plugin-gradle](plugin-gradle/README.md) | [plugin-maven](plugin-maven/README.md) | [(Your build tool here)](CONTRIBUTING.md#how-to-add-a-new-plugin-for-a-build-system) |',
 '| --------------------------------------------- | ------------- | ------------ | --------|',
