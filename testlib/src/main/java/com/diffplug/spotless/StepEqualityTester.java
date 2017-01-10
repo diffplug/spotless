@@ -24,7 +24,7 @@ import com.diffplug.common.testing.EqualsTester;
 public abstract class StepEqualityTester {
 	protected abstract FormatterStep create();
 
-	protected abstract void setupTest(API api);
+	protected abstract void setupTest(API api) throws Exception;
 
 	public interface API {
 		void assertThis();
@@ -55,7 +55,11 @@ public abstract class StepEqualityTester {
 				currentGroup.set(new ArrayList<>());
 			}
 		};
-		setupTest(api);
+		try {
+			setupTest(api);
+		} catch (Exception e) {
+			throw new AssertionError("Error during setupTest", e);
+		}
 		List<Object> lastGroup = currentGroup.get();
 		if (!lastGroup.isEmpty()) {
 			throw new IllegalArgumentException("Looks like you forgot to make a final call to 'areDifferentThan()'.");
