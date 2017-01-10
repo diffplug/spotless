@@ -67,8 +67,7 @@ public final class JarState implements Serializable {
 				throw new NoSuchElementException("Resolved to an empty result.");
 			}
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "You probably need to add a repository containing the `" + mavenCoordinate + "` artifact to your buildscript,");
-			logger.log(Level.SEVERE, "e.g.: repositories { mavenCentral() }");
+			logger.log(Level.SEVERE, "You probably need to add a repository containing the `" + mavenCoordinate + "` artifact to your buildscript, e.g.: repositories { mavenCentral() }", e);
 			throw e;
 		}
 		FileSignature fileSignature = FileSignature.from(jars);
