@@ -41,6 +41,7 @@ lib('java.GoogleJavaFormatStep')                 +'{{yes}}       | {{no}}       
 lib('java.ImportOrderStep')                      +'{{yes}}       | {{no}}       | {{no}}  |',
 extra('java.EclipseFormatterStep')               +'{{yes}}       | {{no}}       | {{no}}  |',
 lib('markdown.FreshMarkStep')                    +'{{yes}}       | {{no}}       | {{no}}  |',
+lib('kotlin.KtLintFormatStep')                   +'{{yes}}       | {{no}}       | {{no}}  |',
 '| [(Your FormatterStep here)](https://github.com/nedtwigg/spotless/blob/markdown-preview-temp/CONTRIBUTING.md#how-to-add-a-new-formatterstep) | {{no}}        | {{no}}       | {{no}}  |',
 '| Fast up-to-date checking                      | {{yes}}       | {{no}}       | {{no}}  |',
 '| Automatic idempotency safeguard               | {{yes}}       | {{no}}       | {{no}}  |',
@@ -59,6 +60,7 @@ lib('markdown.FreshMarkStep')                    +'{{yes}}       | {{no}}       
 | [`java.ImportOrderStep`](lib/src/main/java/com/diffplug/spotless/java/ImportOrderStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
 | [`java.EclipseFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/java/EclipseFormatterStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
 | [`markdown.FreshMarkStep`](lib/src/main/java/com/diffplug/spotless/markdown/FreshMarkStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
+| [`kotlin.KtLintFormatStep`](lib/src/main/java/com/diffplug/spotless/kotlin/KtLintFormatStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
 | [(Your FormatterStep here)](https://github.com/nedtwigg/spotless/blob/markdown-preview-temp/CONTRIBUTING.md#how-to-add-a-new-formatterstep) | :white_large_square:        | :white_large_square:       | :white_large_square:  |
 | Fast up-to-date checking                      | :+1:       | :white_large_square:       | :white_large_square:  |
 | Automatic idempotency safeguard               | :+1:       | :white_large_square:       | :white_large_square:  |

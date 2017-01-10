@@ -148,6 +148,16 @@ spotless {
 }
 ```
 
+## Applying [KtLint](https://github.com/shyiko/ktlint) to Kotlin files
+
+```gradle
+spotless {
+	kotlin {
+		ktlint()
+	}
+}
+```
+
 ## Custom rules
 
 Spotless is a generic system for specifying a sequence of steps which are applied to a set of files.
