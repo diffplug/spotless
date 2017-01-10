@@ -148,6 +148,16 @@ spotless {
 }
 ```
 
+## Applying [scalafmt](https://olafurpg.github.io/scalafmt/#Scalafmt-codeformatterforScala) to Scala files
+
+```gradle
+spotless {
+	scala {
+		scalafmt()	// optional: specify a specific version
+	}
+}
+```
+
 ## Custom rules
 
 Spotless is a generic system for specifying a sequence of steps which are applied to a set of files.
