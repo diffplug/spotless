@@ -1,0 +1,15 @@
+<!---freshmark shields
+output = link(shield('License Apache', 'license', 'Apache', 'brightgreen'), 'https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)');
+-->
+[![License Apache](https://img.shields.io/badge/license-Apache-blue.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
+<!---freshmark /shields -->
+
+Unformatted stuff.
+
+<!---freshmark props
+output = 'lib=' + lib + ' author=' + author;
+-->
+
+<!---freshmark /props -->
+
+ 

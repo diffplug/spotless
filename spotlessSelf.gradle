@@ -3,15 +3,31 @@ plugins {
 	id 'com.diffplug.gradle.spotless'
 	id 'java'
 }
+
+repositories { mavenCentral() }
 spotless {
 	java {
-		licenseHeaderFile 'spotless.license.java'
+		target '**/*.java'
+
+		custom 'noInternalDeps', {
+			if (it.contains('import org.gradle.internal.')) {
+				throw new AssertionError("Accidental internal import")
+			}
+		}
+		bumpThisNumberIfACustomStepChanges(1)
+
+		licenseHeaderFile 'spotless.license'
 		importOrderFile   'spotless.importorder'
 		eclipseFormatFile 'spotless.eclipseformat.xml'
 		trimTrailingWhitespace()
 	}
 	freshmark {
 		target '**/*.md'
+		propertiesFile('gradle.properties')
+		properties {
+			it.put('yes', ':+1:')
+			it.put('no', ':white_large_square:')
+		}
 	}
 	format 'misc', {
 		target '**/*.gradle', '**/*.md', '**/*.gitignore'
