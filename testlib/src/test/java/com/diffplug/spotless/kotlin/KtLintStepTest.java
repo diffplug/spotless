@@ -28,7 +28,11 @@ public class KtLintStepTest extends ResourceHarness {
 	public void behavior() throws Exception {
 		FormatterStep step = KtLintStep.create(TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
-				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean");
+				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
+				.testException("kotlin/ktlint/unsolvable.dirty", assertion -> {
+					assertion.isInstanceOf(AssertionError.class);
+					assertion.hasMessage("Wildcard import");
+				});
 	}
 
 	@Test
