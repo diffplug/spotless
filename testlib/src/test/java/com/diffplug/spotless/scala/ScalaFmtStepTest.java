@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.scala;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.junit.Test;
@@ -27,16 +28,24 @@ import com.diffplug.spotless.TestProvisioner;
 
 public class ScalaFmtStepTest extends ResourceHarness {
 	@Test
-	public void behavior() throws Exception {
-		FormatterStep defaultConfStep = ScalaFmtStep.create(TestProvisioner.mavenCentral());
-		StepHarness.forStep(defaultConfStep)
+	public void behaviorDefaultConfig() throws Exception {
+		FormatterStep step = ScalaFmtStep.create(TestProvisioner.mavenCentral());
+		StepHarness.forStep(step)
 				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basic.clean");
+	}
+
+	@Test
+	public void behaviorCustomConfig() throws Exception {
+		FormatterStep step = ScalaFmtStep.create(ScalaFmtStep.defaultVersion(), TestProvisioner.mavenCentral(), createTestFile("scala/scalafmt/scalafmt.conf"));
+		StepHarness.forStep(step)
+				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basic.cleanWithCustomConf");
 	}
 
 	@Test
 	public void equality() throws Exception {
 		new StepEqualityTester() {
 			String version = "0.5.1";
+			File configFile = null;
 
 			@Override
 			protected void setupTest(API api) throws IOException {
@@ -47,11 +56,19 @@ public class ScalaFmtStepTest extends ResourceHarness {
 				version = "0.5.0";
 				api.assertThisEqualToThis();
 				api.areDifferentThan();
+				// add a config file, and its different
+				configFile = createTestFile("scala/scalafmt/scalafmt.conf");
+				api.assertThisEqualToThis();
+				api.areDifferentThan();
+				// change the config file and its different
+				configFile = createTestFile("scala/scalafmt/scalafmt2.conf");
+				api.assertThisEqualToThis();
+				api.areDifferentThan();
 			}
 
 			@Override
 			protected FormatterStep create() {
-				return ScalaFmtStep.create(version, TestProvisioner.mavenCentral());
+				return ScalaFmtStep.create(version, TestProvisioner.mavenCentral(), configFile);
 			}
 		}.testEquals();
 	}

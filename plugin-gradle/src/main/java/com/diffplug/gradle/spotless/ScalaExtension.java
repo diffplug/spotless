@@ -15,6 +15,7 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.io.File;
 import java.util.Objects;
 
 import javax.annotation.Nullable;
@@ -53,15 +54,14 @@ public class ScalaExtension extends FormatExtension {
 			addStep(createStep());
 		}
 
-		// TODO: support custom config
-		//		public void configFile(Object configFile) {
-		//			this.configFile = configFile;
-		//			replaceStep(createStep());
-		//		}
+		public void configFile(Object configFile) {
+			this.configFile = configFile;
+			replaceStep(createStep());
+		}
 
 		private FormatterStep createStep() {
-			// File resolvedConfigFile = configFile == null ? null : getProject().file(configFile);
-			return ScalaFmtStep.create(version, GradleProvisioner.fromProject(getProject()));
+			File resolvedConfigFile = configFile == null ? null : getProject().file(configFile);
+			return ScalaFmtStep.create(version, GradleProvisioner.fromProject(getProject()), resolvedConfigFile);
 		}
 	}
 

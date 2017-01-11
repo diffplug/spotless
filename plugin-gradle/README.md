@@ -153,7 +153,9 @@ spotless {
 ```gradle
 spotless {
 	scala {
-		scalafmt()	// optional: specify a specific version
+		scalafmt()
+		// optional: you can specify a specific version or config file
+		scalafmt('0.5.1').configFile('scalafmt.conf')
 	}
 }
 ```

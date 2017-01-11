@@ -15,10 +15,18 @@
  */
 package com.diffplug.spotless.scala;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.Collections;
+import java.util.List;
 
+import javax.annotation.Nullable;
+
+import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
@@ -34,12 +42,12 @@ public class ScalaFmtStep {
 	static final String MAVEN_COORDINATE = "com.geirsson:scalafmt_2.11:";
 
 	public static FormatterStep create(Provisioner provisioner) {
-		return create(defaultVersion(), provisioner);
+		return create(defaultVersion(), provisioner, null);
 	}
 
-	public static FormatterStep create(String version, Provisioner provisioner) {
+	public static FormatterStep create(String version, Provisioner provisioner, @Nullable File configFile) {
 		return FormatterStep.createLazy(NAME,
-				() -> new State(version, provisioner),
+				() -> new State(version, provisioner, configFile),
 				State::createFormat);
 	}
 
@@ -51,9 +59,12 @@ public class ScalaFmtStep {
 		private static final long serialVersionUID = 1L;
 
 		final JarState jarState;
+		final FileSignature configSignature;
 
-		State(String version, Provisioner provisioner) throws IOException {
+		State(String version, Provisioner provisioner, @Nullable File configFile) throws IOException {
 			this.jarState = JarState.from(MAVEN_COORDINATE + version, provisioner);
+			List<File> toSign = configFile == null ? Collections.emptyList() : Collections.singletonList(configFile);
+			this.configSignature = FileSignature.from(toSign);
 		}
 
 		FormatterFunc createFormat() throws Exception {
@@ -71,11 +82,33 @@ public class ScalaFmtStep {
 			Object emptyRange = scalafmt.getMethod("format$default$3").invoke(null);
 			Method formatMethod = scalafmt.getMethod("format", String.class, defaultScalaFmtConfig.getClass(), scalaSet);
 
+			// now we just need to parse the config, if any
+			Object config;
+			if (configSignature.files().isEmpty()) {
+				config = defaultScalaFmtConfig;
+			} else {
+				File file = configSignature.getOnlyFile();
+
+				Class<?> optionCls = classLoader.loadClass("scala.Option");
+				Class<?> configCls = classLoader.loadClass("org.scalafmt.config.Config");
+				Method fromHocon = configCls.getMethod("fromHocon", String.class, optionCls);
+				Object fromHoconEmptyPath = configCls.getMethod("fromHocon$default$2").invoke(null);
+
+				String configStr = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+				Object either = fromHocon.invoke(null, configStr, fromHoconEmptyPath);
+				config = invokeNoArg(invokeNoArg(either, "right"), "get");
+			}
 			return input -> {
-				Object resultInsideFormatted = formatMethod.invoke(null, input, defaultScalaFmtConfig, emptyRange);
+				Object resultInsideFormatted = formatMethod.invoke(null, input, config, emptyRange);
 				String result = (String) formattedGet.invoke(resultInsideFormatted);
 				return result;
 			};
 		}
+	}
+
+	private static Object invokeNoArg(Object obj, String toInvoke) throws Exception {
+		Class<?> clazz = obj.getClass();
+		Method method = clazz.getMethod(toInvoke);
+		return method.invoke(obj);
 	}
 }

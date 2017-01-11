@@ -31,10 +31,11 @@ public class ScalaExtensionTest extends GradleIntegrationTest {
 				"repositories { mavenCentral() }",
 				"spotless {",
 				"    scala {",
-				"        scalafmt()",
+				"        scalafmt().configFile('scalafmt.conf')",
 				"    }",
 				"}");
 		write("src/main/scala/basic.scala", getTestResource("scala/scalafmt/basic.dirty"));
+		write("scalafmt.conf", getTestResource("scala/scalafmt/scalafmt.conf"));
 		gradleRunner().withArguments("spotlessApply").build();
 		String result = read("src/main/scala/basic.scala");
 		String formatted = getTestResource("scala/scalafmt/basic.clean");
