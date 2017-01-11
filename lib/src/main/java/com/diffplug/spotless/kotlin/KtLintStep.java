@@ -17,6 +17,7 @@ package com.diffplug.spotless.kotlin;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Collections;
@@ -25,6 +26,7 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.ThrowingEx;
 
 /** Wraps up [ktlint](https://github.com/shyiko/ktlint) as a FormatterStep. */
 public class KtLintStep {
@@ -91,8 +93,12 @@ public class KtLintStep {
 			Method formatterMethod = ktlintClass.getMethod("format", String.class, Iterable.class, function2Interface);
 
 			return input -> {
-				String formatted = (String) formatterMethod.invoke(ktlint, input, ruleSets, formatterCallback);
-				return formatted;
+				try {
+					String formatted = (String) formatterMethod.invoke(ktlint, input, ruleSets, formatterCallback);
+					return formatted;
+				} catch (InvocationTargetException e) {
+					throw ThrowingEx.unwrapAsRuntimeOrRethrow(e);
+				}
 			};
 		}
 	}
