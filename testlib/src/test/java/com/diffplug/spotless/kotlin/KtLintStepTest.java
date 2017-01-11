@@ -28,7 +28,7 @@ public class KtLintStepTest extends ResourceHarness {
 	public void behavior() throws Exception {
 		FormatterStep step = KtLintStep.create(TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
-				.testResource("kotlin/ktlint/KotlinUnformatted.test", "kotlin/ktlint/KotlinFormatted.test");
+				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean");
 	}
 
 	@Test

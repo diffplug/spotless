@@ -31,14 +31,13 @@ public class KotlinExtensionTest extends GradleIntegrationTest {
 				"repositories { mavenCentral() }",
 				"spotless {",
 				"    kotlin {",
-				"        target '*.kt'",
 				"        ktlint()",
 				"    }",
 				"}");
-		write("test.kt", getTestResource("kotlin/ktlint/KotlinUnformatted.test"));
+		write("src/main/kotlin/basic.kt", getTestResource("kotlin/ktlint/basic.dirty"));
 		gradleRunner().withArguments("spotlessApply").build();
-		String result = read("test.kt");
-		String formatted = getTestResource("kotlin/ktlint/KotlinFormatted.test");
+		String result = read("src/main/kotlin/basic.kt");
+		String formatted = getTestResource("kotlin/ktlint/basic.clean");
 		Assert.assertEquals(formatted, result);
 	}
 }
