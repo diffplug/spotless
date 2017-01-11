@@ -75,7 +75,10 @@ public class ScalaExtension extends FormatExtension {
 			}
 			UnionFileCollection union = new UnionFileCollection();
 			for (SourceSet sourceSet : javaPlugin.getSourceSets()) {
-				union.add((FileCollection) sourceSet.getAllSource().include(fileTreeElement -> fileTreeElement.getName().endsWith(".scala")));
+				union.add((FileCollection) sourceSet.getAllSource().include(fileTreeElement -> {
+					String name = fileTreeElement.getName();
+					return name.endsWith(".scala") || name.endsWith(".sc");
+				}));
 			}
 			target = union;
 		}
