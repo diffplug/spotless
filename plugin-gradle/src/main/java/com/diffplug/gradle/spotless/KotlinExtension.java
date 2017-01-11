@@ -16,6 +16,7 @@
 package com.diffplug.gradle.spotless;
 
 import org.gradle.api.GradleException;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.file.UnionFileCollection;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
@@ -54,13 +55,14 @@ public class KotlinExtension extends FormatExtension {
 		if (target == null) {
 			JavaPluginConvention javaPlugin = getProject().getConvention().findPlugin(JavaPluginConvention.class);
 			if (javaPlugin == null) {
-				throw new GradleException("You must apply the java plugin before the spotless plugin if you are using the java extension.");
+				throw new GradleException("You must either specify 'target' manually or apply a kotlin plugin.");
 			}
 			UnionFileCollection union = new UnionFileCollection();
 			for (SourceSet sourceSet : javaPlugin.getSourceSets()) {
-				if (sourceSet.getClass().getSimpleName().startsWith("Kotlin")) {
-					union.add(sourceSet.getAllSource());
-				}
+				union.add((FileCollection) sourceSet.getAllSource().include(fileTreeElement -> {
+					String name = fileTreeElement.getName();
+					return name.endsWith(".kt") || name.endsWith(".kts");
+				}));
 			}
 			target = union;
 		}
