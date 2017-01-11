@@ -153,6 +153,7 @@ spotless {
 ```gradle
 spotless {
 	kotlin {
+		// optionally takes a version
 		ktlint()
 	}
 }
