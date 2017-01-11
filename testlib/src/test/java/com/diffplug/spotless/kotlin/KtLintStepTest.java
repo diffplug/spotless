@@ -23,10 +23,10 @@ import com.diffplug.spotless.StepEqualityTester;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
-public class KtLintFormatStepTest extends ResourceHarness {
+public class KtLintStepTest extends ResourceHarness {
 	@Test
 	public void behavior() throws Exception {
-		FormatterStep step = KtLintFormatStep.create(TestProvisioner.mavenCentral());
+		FormatterStep step = KtLintStep.create(TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("kotlin/ktlint/KotlinUnformatted.test", "kotlin/ktlint/KotlinFormatted.test");
 	}
@@ -50,7 +50,7 @@ public class KtLintFormatStepTest extends ResourceHarness {
 			@Override
 			protected FormatterStep create() {
 				String finalVersion = this.version;
-				return KtLintFormatStep.create(finalVersion, TestProvisioner.mavenCentral());
+				return KtLintStep.create(finalVersion, TestProvisioner.mavenCentral());
 			}
 		}.testEquals();
 	}

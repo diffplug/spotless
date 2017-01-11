@@ -20,7 +20,7 @@ import org.gradle.api.internal.file.UnionFileCollection;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 
-import com.diffplug.spotless.kotlin.KtLintFormatStep;
+import com.diffplug.spotless.kotlin.KtLintStep;
 
 public class KotlinExtension extends FormatExtension {
 	static final String NAME = "kotin";
@@ -41,11 +41,11 @@ public class KotlinExtension extends FormatExtension {
 
 	/** Adds the specified version of [ktlint](https://github.com/shyiko/ktlint). */
 	public void ktlint(String version) {
-		addStep(KtLintFormatStep.create(version, GradleProvisioner.fromProject(getProject())));
+		addStep(KtLintStep.create(version, GradleProvisioner.fromProject(getProject())));
 	}
 
 	public void ktlint() {
-		ktlint(KtLintFormatStep.defaultVersion());
+		ktlint(KtLintStep.defaultVersion());
 	}
 
 	/** If the user hasn't specified the files yet, we'll assume he/she means all of the kotlin files. */

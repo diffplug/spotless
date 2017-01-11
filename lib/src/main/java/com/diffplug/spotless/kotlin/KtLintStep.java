@@ -26,21 +26,19 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
-/** Wraps up [google-java-format](https://github.com/google/google-java-format) as a FormatterStep. */
-public class KtLintFormatStep {
+/** Wraps up [ktlint](https://github.com/shyiko/ktlint) as a FormatterStep. */
+public class KtLintStep {
 	// prevent direct instantiation
-	private KtLintFormatStep() {}
+	private KtLintStep() {}
 
 	private static final String DEFAULT_VERSION = "0.2.2";
 	static final String NAME = "ktlint";
 	static final String MAVEN_COORDINATE = "com.github.shyiko:ktlint:";
 
-	/** Creates a step which formats everything - code, import order, and unused imports. */
 	public static FormatterStep create(Provisioner provisioner) {
 		return create(defaultVersion(), provisioner);
 	}
 
-	/** Creates a step which formats everything - code, import order, and unused imports. */
 	public static FormatterStep create(String version, Provisioner provisioner) {
 		return FormatterStep.createLazy(NAME,
 				() -> new State(version, provisioner),
