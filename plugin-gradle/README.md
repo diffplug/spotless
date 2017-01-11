@@ -148,6 +148,21 @@ spotless {
 }
 ```
 
+## Applying [KtLint](https://github.com/shyiko/ktlint) to Kotlin files
+
+```gradle
+spotless {
+	kotlin {
+		// optionally takes a version
+		ktlint()
+
+		// also supports license headers
+		licenseHeader '/* Licensed under Apache-2.0 */'	// License header
+		licenseHeaderFile 'path-to-license-file'		// License header file
+	}
+}
+```
+
 ## Custom rules
 
 Spotless is a generic system for specifying a sequence of steps which are applied to a set of files.

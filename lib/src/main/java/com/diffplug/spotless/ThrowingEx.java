@@ -87,11 +87,42 @@ public final class ThrowingEx {
 		}
 	}
 
+	/**
+	 * Utility method for rethrowing an exception's cause with as few wrappers as possible.
+	 *
+	 * ```java
+	 * try {
+	 *     doSomething();
+	 * } catch (Throwable e) {
+	 *     throw unwrapAsRuntimeOrRethrow(e);
+	 * }
+	 * ```
+	 */
+	public static RuntimeException unwrapAsRuntimeOrRethrow(Throwable e) {
+		Throwable cause = e.getCause();
+		if (cause == null) {
+			return ifErrorRethrowElseAsRuntime(e);
+		} else {
+			return ifErrorRethrowElseAsRuntime(cause);
+		}
+	}
+
+	/** Rethrows errors, wraps and returns everything else as a runtime exception. */
+	private static RuntimeException ifErrorRethrowElseAsRuntime(Throwable e) {
+		if (e instanceof Error) {
+			throw (Error) e;
+		} else if (e instanceof RuntimeException) {
+			return (RuntimeException) e;
+		} else {
+			return new WrappedAsRuntimeException(e);
+		}
+	}
+
 	/** A RuntimeException specifically for the purpose of wrapping non-runtime Exceptions as RuntimeExceptions. */
 	public static class WrappedAsRuntimeException extends RuntimeException {
 		private static final long serialVersionUID = -912202209702586994L;
 
-		public WrappedAsRuntimeException(Exception e) {
+		public WrappedAsRuntimeException(Throwable e) {
 			super(e);
 		}
 	}

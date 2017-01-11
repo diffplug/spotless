@@ -76,6 +76,11 @@ public class SpotlessExtension {
 		configure(JavaExtension.NAME, JavaExtension.class, closure);
 	}
 
+	/** Configures the special kotlin-specific extension. */
+	public void kotlin(Action<KotlinExtension> closure) {
+		configure(KotlinExtension.NAME, KotlinExtension.class, closure);
+	}
+
 	/** Configures the special freshmark-specific extension. */
 	public void freshmark(Action<FreshMarkExtension> closure) {
 		configure(FreshMarkExtension.NAME, FreshMarkExtension.class, closure);
