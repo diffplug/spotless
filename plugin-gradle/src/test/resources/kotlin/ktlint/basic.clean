@@ -1,0 +1,6 @@
+fun main() {
+    fun name() { a(); return b }
+    println(";")
+    println()
+}
+

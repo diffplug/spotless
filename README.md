@@ -41,6 +41,7 @@ lib('generic.TrimTrailingWhitespaceStep')        +'{{yes}}       | {{no}}       
 lib('java.GoogleJavaFormatStep')                 +'{{yes}}       | {{no}}       | {{no}}  |',
 lib('java.ImportOrderStep')                      +'{{yes}}       | {{no}}       | {{no}}  |',
 extra('java.EclipseFormatterStep')               +'{{yes}}       | {{no}}       | {{no}}  |',
+lib('kotlin.KtLintStep')                         +'{{yes}}       | {{no}}       | {{no}}  |',
 lib('markdown.FreshMarkStep')                    +'{{yes}}       | {{no}}       | {{no}}  |',
 lib('scala.ScalaFmtStep')                        +'{{yes}}       | {{no}}       | {{no}}  |',
 '| [(Your FormatterStep here)](https://github.com/nedtwigg/spotless/blob/markdown-preview-temp/CONTRIBUTING.md#how-to-add-a-new-formatterstep) | {{no}}        | {{no}}       | {{no}}  |',
@@ -60,6 +61,7 @@ lib('scala.ScalaFmtStep')                        +'{{yes}}       | {{no}}       
 | [`java.GoogleJavaFormatStep`](lib/src/main/java/com/diffplug/spotless/java/GoogleJavaFormatStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
 | [`java.ImportOrderStep`](lib/src/main/java/com/diffplug/spotless/java/ImportOrderStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
 | [`java.EclipseFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/java/EclipseFormatterStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
+| [`kotlin.KtLintStep`](lib/src/main/java/com/diffplug/spotless/kotlin/KtLintStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
 | [`markdown.FreshMarkStep`](lib/src/main/java/com/diffplug/spotless/markdown/FreshMarkStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
 | [`scala.ScalaFmtStep`](lib/src/main/java/com/diffplug/spotless/scala/ScalaFmtStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
 | [(Your FormatterStep here)](https://github.com/nedtwigg/spotless/blob/markdown-preview-temp/CONTRIBUTING.md#how-to-add-a-new-formatterstep) | :white_large_square:        | :white_large_square:       | :white_large_square:  |
@@ -76,6 +78,7 @@ lib('scala.ScalaFmtStep')                        +'{{yes}}       | {{no}}       
 * Huge thanks to [Stefan Oehme](https://github.com/oehme) for tons of help on the internal mechanics of Gradle.
 * Formatting by Eclipse
 	+ Special thanks to [Mateusz Matela](https://waynebeaton.wordpress.com/2015/03/15/great-fixes-for-mars-winners-part-i/) for huge improvements to the eclipse code formatter!
+* Thanks to [Stanley Shyiko](https://github.com/shyiko) for his help integrating [ktlint](https://github.com/shyiko/ktlint).
 * Originally forked from [gradle-format-plugin](https://github.com/youribonnaffe/gradle-format-plugin) by Youri Bonnaffé.
 * Thanks to Gábor Bernát for improvements to logging and multi-project support.
 * Thanks to Andrew Oberstar for improvements to formatting java source in non-java source sets. [PR #60](https://github.com/diffplug/spotless/pull/60).
