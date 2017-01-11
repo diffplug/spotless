@@ -18,6 +18,8 @@ package com.diffplug.gradle.spotless;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,6 +36,7 @@ import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.PaddedCell;
 import com.diffplug.spotless.PaddedCellBulk;
 
 public class SpotlessTask extends DefaultTask {
@@ -170,7 +173,16 @@ public class SpotlessTask extends DefaultTask {
 					String onceMore = formatter.compute(unixResultIfDirty, file);
 					//  f(f(input) == f(input) for an idempotent function
 					if (!onceMore.equals(unixResultIfDirty)) {
-						anyMisbehave = true;
+						// it's not idempotent.  but, if it converges, then it's likely a glitch that won't reoccur,
+						// so there's no need to make a bunch of noise for the user
+						PaddedCell result = PaddedCell.check(formatter, file, onceMore);
+						if (result.type() == PaddedCell.Type.CONVERGE) {
+							String finalResult = formatter.computeLineEndings(result.canonical(), file);
+							Files.write(file.toPath(), finalResult.getBytes(formatter.getEncoding()), StandardOpenOption.TRUNCATE_EXISTING);
+						} else {
+							// it didn't converge, so the user is going to need padded cell mode
+							anyMisbehave = true;
+						}
 					}
 				}
 			}
