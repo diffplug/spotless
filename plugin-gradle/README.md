@@ -155,6 +155,10 @@ spotless {
 	kotlin {
 		// optionally takes a version
 		ktlint()
+
+		// also supports license headers
+		licenseHeader '/* Licensed under Apache-2.0 */'	// License header
+		licenseHeaderFile 'path-to-license-file'		// License header file
 	}
 }
 ```
