@@ -17,7 +17,10 @@ package com.diffplug.spotless;
 
 import java.io.File;
 import java.util.Objects;
+import java.util.function.Consumer;
 
+import org.assertj.core.api.AbstractThrowableAssert;
+import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 
 /** An api for adding test cases. */
@@ -64,5 +67,18 @@ public class StepHarness {
 	public StepHarness testResourceUnaffected(String resourceIdempotent) throws Exception {
 		String idempotentElement = ResourceHarness.getTestResource(resourceIdempotent);
 		return testUnaffected(idempotentElement);
+	}
+
+	/** Asserts that the given elements in the resources directory are transformed as expected. */
+	public StepHarness testException(String resourceBefore, Consumer<AbstractThrowableAssert<?, ? extends Throwable>> exceptionAssertion) throws Exception {
+		String before = ResourceHarness.getTestResource(resourceBefore);
+		try {
+			formatter.apply(before);
+			Assert.fail();
+		} catch (Throwable t) {
+			AbstractThrowableAssert<?, ? extends Throwable> abstractAssert = Assertions.assertThat(t);
+			exceptionAssertion.accept(abstractAssert);
+		}
+		return this;
 	}
 }
