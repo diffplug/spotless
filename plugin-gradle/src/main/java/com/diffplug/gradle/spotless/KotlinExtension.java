@@ -16,7 +16,6 @@
 package com.diffplug.gradle.spotless;
 
 import org.gradle.api.GradleException;
-import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.file.UnionFileCollection;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
@@ -59,8 +58,8 @@ public class KotlinExtension extends FormatExtension {
 			}
 			UnionFileCollection union = new UnionFileCollection();
 			for (SourceSet sourceSet : javaPlugin.getSourceSets()) {
-				union.add((FileCollection) sourceSet.getAllSource().include(fileTreeElement -> {
-					String name = fileTreeElement.getName();
+				union.add(sourceSet.getAllSource().filter(file -> {
+					String name = file.getName();
 					return name.endsWith(".kt") || name.endsWith(".kts");
 				}));
 			}
