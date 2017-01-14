@@ -148,6 +148,18 @@ spotless {
 }
 ```
 
+## Applying [scalafmt](https://olafurpg.github.io/scalafmt/#Scalafmt-codeformatterforScala) to Scala files
+
+```gradle
+spotless {
+	scala {
+		scalafmt()
+		// optional: you can specify a specific version or config file
+		scalafmt('0.5.1').configFile('scalafmt.conf')
+	}
+}
+```
+
 ## Applying [KtLint](https://github.com/shyiko/ktlint) to Kotlin files
 
 ```gradle

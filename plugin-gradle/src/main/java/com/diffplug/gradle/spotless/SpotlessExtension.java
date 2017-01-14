@@ -76,6 +76,11 @@ public class SpotlessExtension {
 		configure(JavaExtension.NAME, JavaExtension.class, closure);
 	}
 
+	/** Configures the special scala-specific extension. */
+	public void scala(Action<ScalaExtension> closure) {
+		configure(ScalaExtension.NAME, ScalaExtension.class, closure);
+	}
+
 	/** Configures the special kotlin-specific extension. */
 	public void kotlin(Action<KotlinExtension> closure) {
 		configure(KotlinExtension.NAME, KotlinExtension.class, closure);
