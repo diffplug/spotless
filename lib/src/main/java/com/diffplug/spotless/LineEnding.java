@@ -76,10 +76,25 @@ public enum LineEnding {
 		}
 	}
 
-	private static final Policy WINDOWS_POLICY = file -> WINDOWS.str();
-	private static final Policy UNIX_POLICY = file -> UNIX.str();
+	static class ConstantLineEndingPolicy extends NoLambda.EqualityBasedOnSerialization implements Policy {
+		private static final long serialVersionUID = 1L;
+
+		final String lineEnding;
+
+		ConstantLineEndingPolicy(String lineEnding) {
+			this.lineEnding = lineEnding;
+		}
+
+		@Override
+		public String getEndingFor(File file) {
+			return lineEnding;
+		}
+	}
+
+	private static final Policy WINDOWS_POLICY = new ConstantLineEndingPolicy(WINDOWS.str());
+	private static final Policy UNIX_POLICY = new ConstantLineEndingPolicy(UNIX.str());
 	private static final String _platformNative = System.getProperty("line.separator");
-	private static final Policy _platformNativePolicy = file -> _platformNative;
+	private static final Policy _platformNativePolicy = new ConstantLineEndingPolicy(_platformNative);
 
 	/** Returns the standard line ending for this policy. */
 	public String str() {
@@ -93,7 +108,7 @@ public enum LineEnding {
 	// @formatter:on
 
 	/** A policy for line endings which can vary based on the specific file being requested. */
-	public interface Policy extends Serializable {
+	public interface Policy extends Serializable, NoLambda {
 		/** Returns the line ending appropriate for the given file. */
 		String getEndingFor(File file);
 
