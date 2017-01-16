@@ -94,11 +94,11 @@ public final class ThrowingEx {
 	 * try {
 	 *     doSomething();
 	 * } catch (Throwable e) {
-	 *     throw unwrapAsRuntimeOrRethrow(e);
+	 *     throw unwrapCause(e);
 	 * }
 	 * ```
 	 */
-	public static RuntimeException unwrapAsRuntimeOrRethrow(Throwable e) {
+	public static RuntimeException unwrapCause(Throwable e) {
 		Throwable cause = e.getCause();
 		if (cause == null) {
 			return ifErrorRethrowElseAsRuntime(e);
