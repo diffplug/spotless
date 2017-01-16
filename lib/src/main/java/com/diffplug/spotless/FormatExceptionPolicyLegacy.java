@@ -20,7 +20,7 @@ import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-class FormatExceptionPolicyLegacy implements FormatExceptionPolicy {
+class FormatExceptionPolicyLegacy extends NoLambda.EqualityBasedOnSerialization implements FormatExceptionPolicy {
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger logger = Logger.getLogger(Formatter.class.getName());
@@ -33,10 +33,5 @@ class FormatExceptionPolicyLegacy implements FormatExceptionPolicy {
 		} else {
 			logger.log(Level.WARNING, "Unable to apply step '" + step.getName() + "' to '" + rootDir.relativize(file.toPath()), e);
 		}
-	}
-
-	@Override
-	public byte[] toBytes() {
-		return LazyForwardingEquality.toBytes(this);
 	}
 }
