@@ -25,8 +25,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
 
@@ -36,14 +34,14 @@ public final class Formatter {
 	private final Charset encoding;
 	private final Path rootDir;
 	private final List<FormatterStep> steps;
+	private final FormatExceptionPolicy exceptionPolicy;
 
-	private static final Logger logger = Logger.getLogger(Formatter.class.getName());
-
-	private Formatter(LineEnding.Policy lineEndingsPolicy, Charset encoding, Path rootDirectory, List<FormatterStep> steps) {
+	private Formatter(LineEnding.Policy lineEndingsPolicy, Charset encoding, Path rootDirectory, List<FormatterStep> steps, FormatExceptionPolicy exceptionPolicy) {
 		this.lineEndingsPolicy = Objects.requireNonNull(lineEndingsPolicy, "lineEndingsPolicy");
 		this.encoding = Objects.requireNonNull(encoding, "encoding");
 		this.rootDir = Objects.requireNonNull(rootDirectory, "rootDir");
 		this.steps = new ArrayList<>(Objects.requireNonNull(steps, "steps"));
+		this.exceptionPolicy = Objects.requireNonNull(exceptionPolicy, "exceptionPolicy");
 	}
 
 	public LineEnding.Policy getLineEndingsPolicy() {
@@ -62,6 +60,10 @@ public final class Formatter {
 		return steps;
 	}
 
+	public FormatExceptionPolicy getExceptionPolicy() {
+		return exceptionPolicy;
+	}
+
 	public static Formatter.Builder builder() {
 		return new Formatter.Builder();
 	}
@@ -72,6 +74,7 @@ public final class Formatter {
 		private Charset encoding;
 		private Path rootDir;
 		private List<FormatterStep> steps;
+		private FormatExceptionPolicy exceptionPolicy;
 
 		private Builder() {}
 
@@ -95,8 +98,14 @@ public final class Formatter {
 			return this;
 		}
 
+		public Builder exceptionPolicy(FormatExceptionPolicy exceptionPolicy) {
+			this.exceptionPolicy = exceptionPolicy;
+			return this;
+		}
+
 		public Formatter build() {
-			return new Formatter(lineEndingsPolicy, encoding, rootDir, steps);
+			return new Formatter(lineEndingsPolicy, encoding, rootDir, steps,
+					exceptionPolicy == null ? FormatExceptionPolicy.failOnlyOnError() : exceptionPolicy);
 		}
 	}
 
@@ -183,11 +192,8 @@ public final class Formatter {
 					// Should already be unix-only, but some steps might misbehave.
 					unix = LineEnding.toUnix(formatted);
 				}
-			} catch (Error e) {
-				logger.severe("Step '" + step.getName() + "' found problem in '" + rootDir.relativize(file.toPath()) + "':\n" + e.getMessage());
-				throw e;
 			} catch (Throwable e) {
-				logger.log(Level.WARNING, "Unable to apply step '" + step.getName() + "' to '" + rootDir.relativize(file.toPath()), e);
+				exceptionPolicy.handleError(e, step, file, rootDir);
 			}
 		}
 		return unix;
@@ -201,6 +207,7 @@ public final class Formatter {
 		result = prime * result + lineEndingsPolicy.hashCode();
 		result = prime * result + rootDir.hashCode();
 		result = prime * result + steps.hashCode();
+		result = prime * result + exceptionPolicy.hashCode();
 		return result;
 	}
 
@@ -219,6 +226,7 @@ public final class Formatter {
 		return encoding.equals(other.encoding) &&
 				lineEndingsPolicy.equals(other.lineEndingsPolicy) &&
 				rootDir.equals(other.rootDir) &&
-				steps.equals(other.steps);
+				steps.equals(other.steps) &&
+				exceptionPolicy.equals(other.exceptionPolicy);
 	}
 }
