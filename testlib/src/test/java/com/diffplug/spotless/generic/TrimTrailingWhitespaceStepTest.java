@@ -54,7 +54,6 @@ public class TrimTrailingWhitespaceStepTest extends ResourceHarness {
 		new StepEqualityTester() {
 			@Override
 			protected void setupTest(API api) {
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 			}
 

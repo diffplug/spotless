@@ -82,19 +82,15 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 
 			@Override
 			protected void setupTest(API api) {
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 
 				delimiter = "crate";
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 
 				header = "APACHE";
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 
 				delimiter = "package";
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 			}
 

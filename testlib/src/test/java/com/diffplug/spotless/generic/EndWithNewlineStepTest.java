@@ -38,7 +38,6 @@ public class EndWithNewlineStepTest {
 		new StepEqualityTester() {
 			@Override
 			protected void setupTest(API api) {
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 			}
 

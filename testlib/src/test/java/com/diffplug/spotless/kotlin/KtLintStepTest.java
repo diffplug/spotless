@@ -43,11 +43,9 @@ public class KtLintStepTest extends ResourceHarness {
 			@Override
 			protected void setupTest(API api) {
 				// same version == same
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 				// change the version, and it's different
 				version = "0.2.1";
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 			}
 

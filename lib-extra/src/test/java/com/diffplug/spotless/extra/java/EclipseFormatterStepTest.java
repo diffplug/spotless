@@ -60,11 +60,9 @@ public class EclipseFormatterStepTest extends ResourceHarness {
 			@Override
 			protected void setupTest(API api) {
 				settingsFile = xmlFile;
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 
 				settingsFile = propFile;
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 			}
 

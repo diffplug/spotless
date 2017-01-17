@@ -44,11 +44,9 @@ public class GoogleJavaFormatStepTest extends ResourceHarness {
 			@Override
 			protected void setupTest(API api) {
 				// same version == same
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 				// change the version, and it's different
 				version = "1.0";
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 			}
 

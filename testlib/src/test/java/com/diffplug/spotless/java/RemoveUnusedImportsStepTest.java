@@ -38,7 +38,6 @@ public class RemoveUnusedImportsStepTest {
 		new StepEqualityTester() {
 			@Override
 			protected void setupTest(API api) {
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 			}
 

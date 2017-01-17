@@ -39,23 +39,18 @@ public class FormatterTest {
 
 			@Override
 			protected void setupTest(API api) throws Exception {
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 
 				lineEndingsPolicy = LineEnding.WINDOWS.createPolicy();
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 
 				encoding = StandardCharsets.UTF_16;
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 
 				rootDir = rootDir.getParent();
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 
 				steps.add(EndWithNewlineStep.create());
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 
 				// TODO: create some second exception policy to test this

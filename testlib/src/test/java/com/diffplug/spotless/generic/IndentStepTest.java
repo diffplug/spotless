@@ -65,19 +65,15 @@ public class IndentStepTest extends ResourceHarness {
 
 			@Override
 			protected void setupTest(API api) {
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 
 				numSpacesPerTab = 4;
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 
 				type = IndentStep.Type.TAB;
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 
 				numSpacesPerTab = 2;
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 			}
 

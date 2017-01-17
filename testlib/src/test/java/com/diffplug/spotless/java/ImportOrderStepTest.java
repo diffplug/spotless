@@ -63,19 +63,15 @@ public class ImportOrderStepTest extends ResourceHarness {
 			@Override
 			protected void setupTest(API api) {
 				// same version == same
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 				// change the version, and it's different
 				imports = ImmutableList.of("a");
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 				// change the version, and it's different
 				imports = ImmutableList.of("b");
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 				// change the version, and it's different
 				imports = ImmutableList.of("a", "b");
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 			}
 

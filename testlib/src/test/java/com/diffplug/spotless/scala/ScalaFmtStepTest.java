@@ -50,19 +50,15 @@ public class ScalaFmtStepTest extends ResourceHarness {
 			@Override
 			protected void setupTest(API api) throws IOException {
 				// same version == same
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 				// change the version, and it's different
 				version = "0.5.0";
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 				// add a config file, and its different
 				configFile = createTestFile("scala/scalafmt/scalafmt.conf");
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 				// change the config file and its different
 				configFile = createTestFile("scala/scalafmt/scalafmt2.conf");
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 			}
 
