@@ -17,9 +17,14 @@ package com.diffplug.spotless;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamException;
+import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,12 +34,14 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 
 /** Formatter which performs the full formatting. */
-public final class Formatter {
-	private final LineEnding.Policy lineEndingsPolicy;
-	private final Charset encoding;
-	private final Path rootDir;
-	private final List<FormatterStep> steps;
-	private final FormatExceptionPolicy exceptionPolicy;
+public final class Formatter implements Serializable {
+	private static final long serialVersionUID = 1L;
+
+	private LineEnding.Policy lineEndingsPolicy;
+	private Charset encoding;
+	private Path rootDir;
+	private List<FormatterStep> steps;
+	private FormatExceptionPolicy exceptionPolicy;
 
 	private Formatter(LineEnding.Policy lineEndingsPolicy, Charset encoding, Path rootDirectory, List<FormatterStep> steps, FormatExceptionPolicy exceptionPolicy) {
 		this.lineEndingsPolicy = Objects.requireNonNull(lineEndingsPolicy, "lineEndingsPolicy");
@@ -42,6 +49,31 @@ public final class Formatter {
 		this.rootDir = Objects.requireNonNull(rootDirectory, "rootDir");
 		this.steps = new ArrayList<>(Objects.requireNonNull(steps, "steps"));
 		this.exceptionPolicy = Objects.requireNonNull(exceptionPolicy, "exceptionPolicy");
+	}
+
+	// override serialize output
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.writeObject(lineEndingsPolicy);
+		out.writeObject(encoding.name());
+		out.writeObject(rootDir.toString());
+		out.writeObject(steps);
+		out.writeObject(exceptionPolicy);
+	}
+
+	// override serialize input
+	@SuppressWarnings("unchecked")
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		lineEndingsPolicy = (LineEnding.Policy) in.readObject();
+		encoding = Charset.forName((String) in.readObject());
+		rootDir = Paths.get((String) in.readObject());
+		steps = (List<FormatterStep>) in.readObject();
+		exceptionPolicy = (FormatExceptionPolicy) in.readObject();
+	}
+
+	// override serialize input
+	@SuppressWarnings("unused")
+	private void readObjectNoData() throws ObjectStreamException {
+		throw new UnsupportedOperationException();
 	}
 
 	public LineEnding.Policy getLineEndingsPolicy() {

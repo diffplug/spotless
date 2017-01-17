@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +23,7 @@ import com.diffplug.common.base.Box;
 import com.diffplug.common.testing.EqualsTester;
 
 public abstract class StepEqualityTester {
-	protected abstract FormatterStep create();
+	protected abstract Serializable create();
 
 	protected abstract void setupTest(API api) throws Exception;
 
