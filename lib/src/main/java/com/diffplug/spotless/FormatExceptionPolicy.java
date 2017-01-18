@@ -15,14 +15,12 @@
  */
 package com.diffplug.spotless;
 
-import java.io.File;
 import java.io.Serializable;
-import java.nio.file.Path;
 
 /** A policy for handling exceptions in the format. */
 public interface FormatExceptionPolicy extends Serializable, NoLambda {
 	/** Called for every error in the formatter. */
-	void handleError(Throwable e, FormatterStep step, File file, Path rootDir);
+	void handleError(Throwable e, FormatterStep step, String relativePath);
 
 	/**
 	 * Returns a byte array representation of everything inside this `FormatExceptionPolicy`.

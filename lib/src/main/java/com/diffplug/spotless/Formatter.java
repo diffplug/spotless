@@ -225,7 +225,8 @@ public final class Formatter implements Serializable {
 					unix = LineEnding.toUnix(formatted);
 				}
 			} catch (Throwable e) {
-				exceptionPolicy.handleError(e, step, file, rootDir);
+				String relativePath = rootDir.relativize(file.toPath()).toString();
+				exceptionPolicy.handleError(e, step, relativePath);
 			}
 		}
 		return unix;

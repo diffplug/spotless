@@ -15,8 +15,6 @@
  */
 package com.diffplug.spotless;
 
-import java.io.File;
-import java.nio.file.Path;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -41,15 +39,14 @@ public class FormatExceptionPolicyStrict extends NoLambda.EqualityBasedOnSeriali
 	}
 
 	@Override
-	public void handleError(Throwable e, FormatterStep step, File file, Path rootDir) {
+	public void handleError(Throwable e, FormatterStep step, String relativePath) {
 		if (excludeSteps.contains(step.getName())) {
-			FormatExceptionPolicyLegacy.warning(e, step, file, rootDir);
+			FormatExceptionPolicyLegacy.warning(e, step, relativePath);
 		} else {
-			String path = rootDir.relativize(file.toPath()).toString();
-			if (excludePaths.contains(path)) {
-				FormatExceptionPolicyLegacy.warning(e, step, file, rootDir);
+			if (excludePaths.contains(relativePath)) {
+				FormatExceptionPolicyLegacy.warning(e, step, relativePath);
 			} else {
-				FormatExceptionPolicyLegacy.error(e, step, file, rootDir);
+				FormatExceptionPolicyLegacy.error(e, step, relativePath);
 				throw ThrowingEx.asRuntimeRethrowError(e);
 			}
 		}
