@@ -15,6 +15,9 @@
  */
 package com.diffplug.spotless;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +44,9 @@ public abstract class StepEqualityTester {
 					// create two instances, and add them to the group
 					current.add(create());
 					current.add(create());
+					// create two instances using a serialization roundtrip, and add them to the group
+					current.add(reserialize(create()));
+					current.add(reserialize(create()));
 					// add this group to the list of all groups
 					allGroups.add(current);
 					// and return a new blank group for the next call
@@ -62,5 +68,16 @@ public abstract class StepEqualityTester {
 			tester.addEqualityGroup(step.toArray());
 		}
 		tester.testEquals();
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T extends Serializable> T reserialize(T input) {
+		byte[] asBytes = LazyForwardingEquality.toBytes(input);
+		ByteArrayInputStream byteInput = new ByteArrayInputStream(asBytes);
+		try (ObjectInputStream objectInput = new ObjectInputStream(byteInput)) {
+			return (T) objectInput.readObject();
+		} catch (IOException | ClassNotFoundException e) {
+			throw ThrowingEx.asRuntime(e);
+		}
 	}
 }
