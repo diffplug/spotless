@@ -25,7 +25,7 @@ import java.util.List;
 import com.diffplug.common.base.Box;
 import com.diffplug.common.testing.EqualsTester;
 
-public abstract class StepEqualityTester {
+public abstract class SerializableEqualityTester {
 	protected abstract Serializable create();
 
 	protected abstract void setupTest(API api) throws Exception;

@@ -30,7 +30,7 @@ import com.diffplug.spotless.generic.EndWithNewlineStep;
 public class FormatterTest {
 	@Test
 	public void equality() {
-		new StepEqualityTester() {
+		new SerializableEqualityTester() {
 			private LineEnding.Policy lineEndingsPolicy = LineEnding.UNIX.createPolicy();
 			private Charset encoding = StandardCharsets.UTF_8;
 			private Path rootDir = Paths.get(StandardSystemProperty.USER_DIR.value());

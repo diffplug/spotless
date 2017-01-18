@@ -22,7 +22,7 @@ import org.junit.Test;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
-import com.diffplug.spotless.StepEqualityTester;
+import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
@@ -54,7 +54,7 @@ public class EclipseFormatterStepTest extends ResourceHarness {
 	public void equality() throws IOException {
 		File xmlFile = createTestFile("java/eclipse/format/formatter.xml");
 		File propFile = createTestFile("java/eclipse/format/formatter.properties");
-		new StepEqualityTester() {
+		new SerializableEqualityTester() {
 			File settingsFile;
 
 			@Override

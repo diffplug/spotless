@@ -34,7 +34,7 @@ public class FilterByFileFormatterStepTest extends ResourceHarness {
 
 	@Test
 	public void equality() throws Exception {
-		new StepEqualityTester() {
+		new SerializableEqualityTester() {
 			String state;
 			String filter;
 

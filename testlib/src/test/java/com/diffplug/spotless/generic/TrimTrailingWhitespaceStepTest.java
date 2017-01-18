@@ -19,7 +19,7 @@ import org.junit.Test;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
-import com.diffplug.spotless.StepEqualityTester;
+import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 
 public class TrimTrailingWhitespaceStepTest extends ResourceHarness {
@@ -51,7 +51,7 @@ public class TrimTrailingWhitespaceStepTest extends ResourceHarness {
 
 	@Test
 	public void equality() throws Exception {
-		new StepEqualityTester() {
+		new SerializableEqualityTester() {
 			@Override
 			protected void setupTest(API api) {
 				api.areDifferentThan();

@@ -21,7 +21,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.StepEqualityTester;
+import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
@@ -37,7 +37,7 @@ public class FreshMarkStepTest {
 
 	@Test
 	public void equality() throws Exception {
-		new StepEqualityTester() {
+		new SerializableEqualityTester() {
 			String version = "1.3.1";
 			Map<String, Object> props = new HashMap<>();
 
