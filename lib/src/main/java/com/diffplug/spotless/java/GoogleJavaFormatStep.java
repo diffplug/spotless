@@ -67,10 +67,12 @@ public class GoogleJavaFormatStep {
 		/** The jar that contains the eclipse formatter. */
 		final JarState jarState;
 		final String stepName;
+		final String version;
 
 		State(String stepName, String version, Provisioner provisioner) throws IOException {
-			this.stepName = stepName;
 			this.jarState = JarState.from(MAVEN_COORDINATE + version, provisioner);
+			this.stepName = stepName;
+			this.version = version;
 		}
 
 		@SuppressWarnings({"unchecked", "rawtypes"})
@@ -94,7 +96,7 @@ public class GoogleJavaFormatStep {
 				String formatted = (String) formatterMethod.invoke(formatter, input);
 				String removedUnused = (String) removeUnusedMethod.invoke(null, formatted, removeJavadocConstant);
 				String sortedImports = (String) importOrdererMethod.invoke(null, removedUnused);
-				return fixWindowsBug(sortedImports);
+				return fixWindowsBug(sortedImports, version);
 			};
 		}
 
@@ -107,18 +109,21 @@ public class GoogleJavaFormatStep {
 			Object removeJavadocConstant = Enum.valueOf((Class<Enum>) removeJavadocOnlyClass, REMOVE_UNUSED_IMPORT_JavadocOnlyImports_Keep);
 			Method removeUnusedMethod = removeUnusedClass.getMethod(REMOVE_UNUSED_METHOD, String.class, removeJavadocOnlyClass);
 
-			return input -> fixWindowsBug((String) removeUnusedMethod.invoke(null, input, removeJavadocConstant));
+			return input -> {
+				String removeUnused = (String) removeUnusedMethod.invoke(null, input, removeJavadocConstant);
+				return fixWindowsBug(removeUnused, version);
+			};
 		}
 	}
 
 	private static final boolean IS_WINDOWS = LineEnding.PLATFORM_NATIVE.str().equals("\r\n");
 
 	/**
-	 * google-java-format's removeUnusedImports does *wacky* stuff on Windows.
+	 * google-java-format-1.1's removeUnusedImports does *wacky* stuff on Windows.
 	 * The beauty of normalizing all line endings to unix!
 	 */
-	static String fixWindowsBug(String input) {
-		if (IS_WINDOWS) {
+	static String fixWindowsBug(String input, String version) {
+		if (IS_WINDOWS && version.equals("1.1")) {
 			int firstImport = input.indexOf("\nimport ");
 			if (firstImport == 0) {
 				return input;
