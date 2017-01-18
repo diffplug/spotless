@@ -53,7 +53,19 @@ public class FormatterTest {
 				steps.add(EndWithNewlineStep.create());
 				api.areDifferentThan();
 
-				// TODO: create some second exception policy to test this
+				{
+					FormatExceptionPolicyStrict standard = new FormatExceptionPolicyStrict();
+					standard.excludePath("path");
+					exceptionPolicy = standard;
+					api.areDifferentThan();
+				}
+
+				{
+					FormatExceptionPolicyStrict standard = new FormatExceptionPolicyStrict();
+					standard.excludeStep("step");
+					exceptionPolicy = standard;
+					api.areDifferentThan();
+				}
 			}
 
 			@Override

@@ -28,10 +28,18 @@ class FormatExceptionPolicyLegacy extends NoLambda.EqualityBasedOnSerialization 
 	@Override
 	public void handleError(Throwable e, FormatterStep step, File file, Path rootDir) {
 		if (e instanceof Error) {
-			logger.severe("Step '" + step.getName() + "' found problem in '" + rootDir.relativize(file.toPath()) + "':\n" + e.getMessage());
+			error(e, step, file, rootDir);
 			throw ((Error) e);
 		} else {
-			logger.log(Level.WARNING, "Unable to apply step '" + step.getName() + "' to '" + rootDir.relativize(file.toPath()), e);
+			warning(e, step, file, rootDir);
 		}
+	}
+
+	static void error(Throwable e, FormatterStep step, File file, Path rootDir) {
+		logger.severe("Step '" + step.getName() + "' found problem in '" + rootDir.relativize(file.toPath()) + "':\n" + e.getMessage());
+	}
+
+	static void warning(Throwable e, FormatterStep step, File file, Path rootDir) {
+		logger.log(Level.WARNING, "Unable to apply step '" + step.getName() + "' to '" + rootDir.relativize(file.toPath()), e);
 	}
 }
