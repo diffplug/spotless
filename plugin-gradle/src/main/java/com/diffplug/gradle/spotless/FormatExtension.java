@@ -33,6 +33,7 @@ import org.gradle.api.Project;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.file.UnionFileCollection;
 
+import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LazyForwardingEquality;
@@ -103,6 +104,18 @@ public class FormatExtension {
 	/** Sets the encoding to use (defaults to {@link SpotlessExtension#getEncoding()}. */
 	public void setEncoding(Charset charset) {
 		encoding = Objects.requireNonNull(charset);
+	}
+
+	FormatExceptionPolicyStrict exceptionPolicy = new FormatExceptionPolicyStrict();
+
+	/** Ignores errors in the given step. */
+	public void ignoreErrorForStep(String stepName) {
+		exceptionPolicy.excludeStep(stepName);
+	}
+
+	/** Ignores errors for the given relative path. */
+	public void ignoreErrorForPath(String relativePath) {
+		exceptionPolicy.excludePath(relativePath);
 	}
 
 	/** Sets encoding to use (defaults to {@link SpotlessExtension#getEncoding()}). */
@@ -340,6 +353,7 @@ public class FormatExtension {
 	protected void setupTask(SpotlessTask task) {
 		task.setPaddedCell(paddedCell);
 		task.setEncoding(getEncoding().name());
+		task.setExceptionPolicy(exceptionPolicy);
 		task.setTarget(target);
 		task.setSteps(steps);
 		task.setLineEndingsPolicy(getLineEndings().createPolicy(getProject().getProjectDir(), () -> task.target));
