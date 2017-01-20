@@ -15,22 +15,22 @@
  */
 package com.diffplug.spotless;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.diffplug.common.base.Box;
 import com.diffplug.common.testing.EqualsTester;
 
-public abstract class StepEqualityTester {
-	protected abstract FormatterStep create();
+public abstract class SerializableEqualityTester {
+	protected abstract Serializable create();
 
 	protected abstract void setupTest(API api) throws Exception;
 
 	public interface API {
-		void assertThis();
-
-		void assertThisEqualToThis();
-
 		void areDifferentThan();
 	}
 
@@ -39,20 +39,19 @@ public abstract class StepEqualityTester {
 		Box<List<Object>> currentGroup = Box.of(new ArrayList<>());
 		API api = new API() {
 			@Override
-			public void assertThis() {
-				currentGroup.get().add(create());
-			}
-
-			@Override
-			public void assertThisEqualToThis() {
-				assertThis();
-				assertThis();
-			}
-
-			@Override
 			public void areDifferentThan() {
-				allGroups.add(currentGroup.get());
-				currentGroup.set(new ArrayList<>());
+				currentGroup.modify(current -> {
+					// create two instances, and add them to the group
+					current.add(create());
+					current.add(create());
+					// create two instances using a serialization roundtrip, and add them to the group
+					current.add(reserialize(create()));
+					current.add(reserialize(create()));
+					// add this group to the list of all groups
+					allGroups.add(current);
+					// and return a new blank group for the next call
+					return new ArrayList<>();
+				});
 			}
 		};
 		try {
@@ -69,5 +68,16 @@ public abstract class StepEqualityTester {
 			tester.addEqualityGroup(step.toArray());
 		}
 		tester.testEquals();
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T extends Serializable> T reserialize(T input) {
+		byte[] asBytes = LazyForwardingEquality.toBytes(input);
+		ByteArrayInputStream byteInput = new ByteArrayInputStream(asBytes);
+		try (ObjectInputStream objectInput = new ObjectInputStream(byteInput)) {
+			return (T) objectInput.readObject();
+		} catch (IOException | ClassNotFoundException e) {
+			throw ThrowingEx.asRuntime(e);
+		}
 	}
 }

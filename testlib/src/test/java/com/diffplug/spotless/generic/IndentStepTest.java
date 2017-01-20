@@ -22,7 +22,7 @@ import org.junit.Test;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
-import com.diffplug.spotless.StepEqualityTester;
+import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.generic.IndentStep;
 
 public class IndentStepTest extends ResourceHarness {
@@ -59,25 +59,21 @@ public class IndentStepTest extends ResourceHarness {
 
 	@Test
 	public void equality() {
-		new StepEqualityTester() {
+		new SerializableEqualityTester() {
 			IndentStep.Type type = IndentStep.Type.SPACE;
 			int numSpacesPerTab = 2;
 
 			@Override
 			protected void setupTest(API api) {
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 
 				numSpacesPerTab = 4;
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 
 				type = IndentStep.Type.TAB;
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 
 				numSpacesPerTab = 2;
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 			}
 

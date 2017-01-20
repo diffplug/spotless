@@ -18,7 +18,7 @@ package com.diffplug.spotless.java;
 import org.junit.Test;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.StepEqualityTester;
+import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
@@ -35,10 +35,9 @@ public class RemoveUnusedImportsStepTest {
 
 	@Test
 	public void equality() throws Exception {
-		new StepEqualityTester() {
+		new SerializableEqualityTester() {
 			@Override
 			protected void setupTest(API api) {
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 			}
 

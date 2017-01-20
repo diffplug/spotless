@@ -19,7 +19,7 @@ import java.io.File;
 import java.util.Objects;
 
 class SerializableFileFilterImpl {
-	static class SkipFilesNamed extends SerializableFileFilter.EqualityBasedOnSerialization {
+	static class SkipFilesNamed extends NoLambda.EqualityBasedOnSerialization implements SerializableFileFilter {
 		private static final long serialVersionUID = 1L;
 
 		private final String nameToSkip;

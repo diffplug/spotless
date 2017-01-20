@@ -17,33 +17,63 @@ package com.diffplug.spotless;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamException;
+import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
 
 /** Formatter which performs the full formatting. */
-public final class Formatter {
-	private final LineEnding.Policy lineEndingsPolicy;
-	private final Charset encoding;
-	private final Path rootDir;
-	private final List<FormatterStep> steps;
+public final class Formatter implements Serializable {
+	private static final long serialVersionUID = 1L;
 
-	private static final Logger logger = Logger.getLogger(Formatter.class.getName());
+	private LineEnding.Policy lineEndingsPolicy;
+	private Charset encoding;
+	private Path rootDir;
+	private List<FormatterStep> steps;
+	private FormatExceptionPolicy exceptionPolicy;
 
-	private Formatter(LineEnding.Policy lineEndingsPolicy, Charset encoding, Path rootDirectory, List<FormatterStep> steps) {
+	private Formatter(LineEnding.Policy lineEndingsPolicy, Charset encoding, Path rootDirectory, List<FormatterStep> steps, FormatExceptionPolicy exceptionPolicy) {
 		this.lineEndingsPolicy = Objects.requireNonNull(lineEndingsPolicy, "lineEndingsPolicy");
 		this.encoding = Objects.requireNonNull(encoding, "encoding");
 		this.rootDir = Objects.requireNonNull(rootDirectory, "rootDir");
 		this.steps = new ArrayList<>(Objects.requireNonNull(steps, "steps"));
+		this.exceptionPolicy = Objects.requireNonNull(exceptionPolicy, "exceptionPolicy");
+	}
+
+	// override serialize output
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.writeObject(lineEndingsPolicy);
+		out.writeObject(encoding.name());
+		out.writeObject(rootDir.toString());
+		out.writeObject(steps);
+		out.writeObject(exceptionPolicy);
+	}
+
+	// override serialize input
+	@SuppressWarnings("unchecked")
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		lineEndingsPolicy = (LineEnding.Policy) in.readObject();
+		encoding = Charset.forName((String) in.readObject());
+		rootDir = Paths.get((String) in.readObject());
+		steps = (List<FormatterStep>) in.readObject();
+		exceptionPolicy = (FormatExceptionPolicy) in.readObject();
+	}
+
+	// override serialize input
+	@SuppressWarnings("unused")
+	private void readObjectNoData() throws ObjectStreamException {
+		throw new UnsupportedOperationException();
 	}
 
 	public LineEnding.Policy getLineEndingsPolicy() {
@@ -62,6 +92,10 @@ public final class Formatter {
 		return steps;
 	}
 
+	public FormatExceptionPolicy getExceptionPolicy() {
+		return exceptionPolicy;
+	}
+
 	public static Formatter.Builder builder() {
 		return new Formatter.Builder();
 	}
@@ -72,6 +106,7 @@ public final class Formatter {
 		private Charset encoding;
 		private Path rootDir;
 		private List<FormatterStep> steps;
+		private FormatExceptionPolicy exceptionPolicy;
 
 		private Builder() {}
 
@@ -95,8 +130,14 @@ public final class Formatter {
 			return this;
 		}
 
+		public Builder exceptionPolicy(FormatExceptionPolicy exceptionPolicy) {
+			this.exceptionPolicy = exceptionPolicy;
+			return this;
+		}
+
 		public Formatter build() {
-			return new Formatter(lineEndingsPolicy, encoding, rootDir, steps);
+			return new Formatter(lineEndingsPolicy, encoding, rootDir, steps,
+					exceptionPolicy == null ? FormatExceptionPolicy.failOnlyOnError() : exceptionPolicy);
 		}
 	}
 
@@ -183,11 +224,9 @@ public final class Formatter {
 					// Should already be unix-only, but some steps might misbehave.
 					unix = LineEnding.toUnix(formatted);
 				}
-			} catch (Error e) {
-				logger.severe("Step '" + step.getName() + "' found problem in '" + rootDir.relativize(file.toPath()) + "':\n" + e.getMessage());
-				throw e;
 			} catch (Throwable e) {
-				logger.log(Level.WARNING, "Unable to apply step '" + step.getName() + "' to '" + rootDir.relativize(file.toPath()), e);
+				String relativePath = rootDir.relativize(file.toPath()).toString();
+				exceptionPolicy.handleError(e, step, relativePath);
 			}
 		}
 		return unix;
@@ -201,6 +240,7 @@ public final class Formatter {
 		result = prime * result + lineEndingsPolicy.hashCode();
 		result = prime * result + rootDir.hashCode();
 		result = prime * result + steps.hashCode();
+		result = prime * result + exceptionPolicy.hashCode();
 		return result;
 	}
 
@@ -219,6 +259,7 @@ public final class Formatter {
 		return encoding.equals(other.encoding) &&
 				lineEndingsPolicy.equals(other.lineEndingsPolicy) &&
 				rootDir.equals(other.rootDir) &&
-				steps.equals(other.steps);
+				steps.equals(other.steps) &&
+				exceptionPolicy.equals(other.exceptionPolicy);
 	}
 }

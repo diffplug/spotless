@@ -18,7 +18,7 @@ package com.diffplug.spotless.generic;
 import org.junit.Test;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.StepEqualityTester;
+import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 
 public class EndWithNewlineStepTest {
@@ -35,10 +35,9 @@ public class EndWithNewlineStepTest {
 
 	@Test
 	public void equality() throws Exception {
-		new StepEqualityTester() {
+		new SerializableEqualityTester() {
 			@Override
 			protected void setupTest(API api) {
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 			}
 

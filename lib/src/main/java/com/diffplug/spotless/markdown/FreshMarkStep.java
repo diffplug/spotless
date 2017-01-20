@@ -18,7 +18,9 @@ package com.diffplug.spotless.markdown;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.Objects;
+import java.util.TreeMap;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
@@ -60,11 +62,13 @@ public class FreshMarkStep {
 
 		/** The jar that contains the eclipse formatter. */
 		final JarState jarState;
-		final Map<String, ?> properties;
+		final NavigableMap<String, ?> properties;
 
 		State(JarState jarState, Map<String, ?> properties) {
 			this.jarState = Objects.requireNonNull(jarState);
-			this.properties = Objects.requireNonNull(properties);
+			// because equality is computed based on serialization, it's important to order the properties
+			// before writing them
+			this.properties = new TreeMap<>(Objects.requireNonNull(properties));
 		}
 
 		FormatterFunc createFormat() throws Exception {

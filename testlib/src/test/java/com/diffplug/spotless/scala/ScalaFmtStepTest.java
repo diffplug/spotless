@@ -22,7 +22,7 @@ import org.junit.Test;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
-import com.diffplug.spotless.StepEqualityTester;
+import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
@@ -43,26 +43,22 @@ public class ScalaFmtStepTest extends ResourceHarness {
 
 	@Test
 	public void equality() throws Exception {
-		new StepEqualityTester() {
+		new SerializableEqualityTester() {
 			String version = "0.5.1";
 			File configFile = null;
 
 			@Override
 			protected void setupTest(API api) throws IOException {
 				// same version == same
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 				// change the version, and it's different
 				version = "0.5.0";
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 				// add a config file, and its different
 				configFile = createTestFile("scala/scalafmt/scalafmt.conf");
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 				// change the config file and its different
 				configFile = createTestFile("scala/scalafmt/scalafmt2.conf");
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 			}
 

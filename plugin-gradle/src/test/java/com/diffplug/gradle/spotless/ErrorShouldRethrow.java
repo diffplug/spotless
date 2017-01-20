@@ -15,7 +15,6 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,7 +32,7 @@ import com.diffplug.spotless.LineEnding;
 public class ErrorShouldRethrow extends GradleIntegrationTest {
 	@Test
 	public void noSwearing() throws Exception {
-		File build = write("build.gradle",
+		write("build.gradle",
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",
 				"}",
@@ -53,16 +52,7 @@ public class ErrorShouldRethrow extends GradleIntegrationTest {
 		String expectedToStartWith = StringPrinter.buildStringFromLines(
 				":spotlessMiscStep 'no swearing' found problem in 'README.md':",
 				"No swearing!",
-				" FAILED",
-				"",
-				"FAILURE: Build failed with an exception.",
-				"",
-				"* Where:",
-				"Build file '" + build + "' line: 9",
-				"",
-				"* What went wrong:",
-				"Execution failed for task ':spotlessMisc'.",
-				"> No swearing!");
+				"java.lang.AssertionError: No swearing!").trim();
 		int numNewlines = CharMatcher.is('\n').countIn(expectedToStartWith);
 		List<String> actualLines = Splitter.on('\n').splitToList(LineEnding.toUnix(result.getOutput()));
 		String actualStart = actualLines.subList(0, numNewlines + 1).stream().collect(Collectors.joining("\n"));

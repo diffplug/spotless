@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
@@ -33,6 +34,8 @@ import org.gradle.api.tasks.SkipWhenEmpty;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 
+import com.diffplug.spotless.FormatExceptionPolicy;
+import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
@@ -73,6 +76,17 @@ public class SpotlessTask extends DefaultTask {
 
 	public void setPaddedCell(boolean paddedCell) {
 		this.paddedCell = paddedCell;
+	}
+
+	@Input
+	protected FormatExceptionPolicy exceptionPolicy = new FormatExceptionPolicyStrict();
+
+	public void setExceptionPolicy(FormatExceptionPolicy exceptionPolicy) {
+		this.exceptionPolicy = Objects.requireNonNull(exceptionPolicy);
+	}
+
+	public FormatExceptionPolicy getExceptionPolicy() {
+		return exceptionPolicy;
 	}
 
 	@InputFiles

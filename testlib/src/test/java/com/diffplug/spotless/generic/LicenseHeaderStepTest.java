@@ -23,7 +23,7 @@ import org.junit.Test;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
-import com.diffplug.spotless.StepEqualityTester;
+import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 
 public class LicenseHeaderStepTest extends ResourceHarness {
@@ -76,25 +76,21 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 
 	@Test
 	public void equality() {
-		new StepEqualityTester() {
+		new SerializableEqualityTester() {
 			String header = "LICENSE";
 			String delimiter = "package";
 
 			@Override
 			protected void setupTest(API api) {
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 
 				delimiter = "crate";
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 
 				header = "APACHE";
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 
 				delimiter = "package";
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 			}
 

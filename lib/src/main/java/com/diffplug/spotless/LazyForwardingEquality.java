@@ -31,7 +31,7 @@ import javax.annotation.Nullable;
  * of lazily-computed state.  The state's serialized form is used to implement
  * equals() and hashCode(), so you don't have to.
  */
-public abstract class LazyForwardingEquality<T extends Serializable> implements Serializable {
+public abstract class LazyForwardingEquality<T extends Serializable> implements Serializable, NoLambda {
 	private static final long serialVersionUID = 1L;
 
 	/** Lazily initialized - null indicates that the state has not yet been set. */
@@ -81,12 +81,17 @@ public abstract class LazyForwardingEquality<T extends Serializable> implements 
 	}
 
 	@Override
+	public byte[] toBytes() {
+		return toBytes(state());
+	}
+
+	@Override
 	public final boolean equals(Object other) {
 		if (other == null) {
 			return false;
 		} else if (getClass().equals(other.getClass())) {
-			Serializable otherState = ((LazyForwardingEquality<?>) other).state();
-			return Arrays.equals(toBytes(otherState), toBytes(state()));
+			LazyForwardingEquality<?> otherCast = (LazyForwardingEquality<?>) other;
+			return Arrays.equals(otherCast.toBytes(), toBytes());
 		} else {
 			return false;
 		}
@@ -94,7 +99,7 @@ public abstract class LazyForwardingEquality<T extends Serializable> implements 
 
 	@Override
 	public final int hashCode() {
-		return Arrays.hashCode(toBytes(state()));
+		return Arrays.hashCode(toBytes());
 	}
 
 	static byte[] toBytes(Serializable obj) {

@@ -97,7 +97,7 @@ public class KtLintStep {
 					String formatted = (String) formatterMethod.invoke(ktlint, input, ruleSets, formatterCallback);
 					return formatted;
 				} catch (InvocationTargetException e) {
-					throw ThrowingEx.unwrapAsRuntimeOrRethrow(e);
+					throw ThrowingEx.unwrapCause(e);
 				}
 			};
 		}

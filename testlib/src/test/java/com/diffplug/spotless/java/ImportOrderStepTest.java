@@ -23,7 +23,7 @@ import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.NonSerializableList;
 import com.diffplug.spotless.ResourceHarness;
-import com.diffplug.spotless.StepEqualityTester;
+import com.diffplug.spotless.SerializableEqualityTester;
 
 public class ImportOrderStepTest extends ResourceHarness {
 	@Test
@@ -57,25 +57,21 @@ public class ImportOrderStepTest extends ResourceHarness {
 
 	@Test
 	public void equality() throws Exception {
-		new StepEqualityTester() {
+		new SerializableEqualityTester() {
 			ImmutableList<String> imports = ImmutableList.of();
 
 			@Override
 			protected void setupTest(API api) {
 				// same version == same
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 				// change the version, and it's different
 				imports = ImmutableList.of("a");
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 				// change the version, and it's different
 				imports = ImmutableList.of("b");
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 				// change the version, and it's different
 				imports = ImmutableList.of("a", "b");
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 			}
 

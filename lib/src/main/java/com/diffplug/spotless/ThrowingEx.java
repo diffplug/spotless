@@ -94,21 +94,31 @@ public final class ThrowingEx {
 	 * try {
 	 *     doSomething();
 	 * } catch (Throwable e) {
-	 *     throw unwrapAsRuntimeOrRethrow(e);
+	 *     throw unwrapCause(e);
 	 * }
 	 * ```
 	 */
-	public static RuntimeException unwrapAsRuntimeOrRethrow(Throwable e) {
+	public static RuntimeException unwrapCause(Throwable e) {
 		Throwable cause = e.getCause();
 		if (cause == null) {
-			return ifErrorRethrowElseAsRuntime(e);
+			return asRuntimeRethrowError(e);
 		} else {
-			return ifErrorRethrowElseAsRuntime(cause);
+			return asRuntimeRethrowError(cause);
 		}
 	}
 
-	/** Rethrows errors, wraps and returns everything else as a runtime exception. */
-	private static RuntimeException ifErrorRethrowElseAsRuntime(Throwable e) {
+	/**
+	 * Rethrows errors, wraps and returns everything else as a runtime exception.
+	 *
+	 * try {
+	 *     doSomething();
+	 * } catch (Throwable e) {
+	 *     throw asRuntimeRethrowError(e);
+	 * }
+	 * ```
+	 *
+	 * */
+	static RuntimeException asRuntimeRethrowError(Throwable e) {
 		if (e instanceof Error) {
 			throw (Error) e;
 		} else if (e instanceof RuntimeException) {

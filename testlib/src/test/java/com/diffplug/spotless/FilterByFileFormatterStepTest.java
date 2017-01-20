@@ -34,7 +34,7 @@ public class FilterByFileFormatterStepTest extends ResourceHarness {
 
 	@Test
 	public void equality() throws Exception {
-		new StepEqualityTester() {
+		new SerializableEqualityTester() {
 			String state;
 			String filter;
 
@@ -43,19 +43,15 @@ public class FilterByFileFormatterStepTest extends ResourceHarness {
 				// no filter, standard state
 				state = "state";
 				filter = null;
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 				// same state, but now with a filter
 				filter = "a";
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 				// same state, but now with a filter
 				filter = "b";
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 				// same filter, but the state has changed
 				state = "otherState";
-				api.assertThisEqualToThis();
 				api.areDifferentThan();
 			}
 
