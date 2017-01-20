@@ -28,7 +28,7 @@ import com.diffplug.spotless.TestProvisioner;
 public class GoogleJavaFormatStepTest extends ResourceHarness {
 	@Test
 	public void behavior() throws Exception {
-		FormatterStep step = GoogleJavaFormatStep.create("1.1", TestProvisioner.mavenCentral());
+		FormatterStep step = GoogleJavaFormatStep.create("1.2", TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("java/googlejavaformat/JavaCodeUnformatted.test", "java/googlejavaformat/JavaCodeFormatted.test")
 				.testResource("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test", "java/googlejavaformat/JavaCodeWithLicenseFormatted.test")
@@ -39,14 +39,14 @@ public class GoogleJavaFormatStepTest extends ResourceHarness {
 	@Test
 	public void equality() throws Exception {
 		new SerializableEqualityTester() {
-			String version = "1.1";
+			String version = "1.2";
 
 			@Override
 			protected void setupTest(API api) {
 				// same version == same
 				api.areDifferentThan();
 				// change the version, and it's different
-				version = "1.0";
+				version = "1.1";
 				api.areDifferentThan();
 			}
 
@@ -59,7 +59,7 @@ public class GoogleJavaFormatStepTest extends ResourceHarness {
 	}
 
 	@Test
-	public void fixWindowsBug() {
+	public void fixWindowsBugForGfj1Point1() {
 		fixWindowsBugTestcase("");
 		fixWindowsBugTestcase(
 				"",
@@ -94,6 +94,6 @@ public class GoogleJavaFormatStepTest extends ResourceHarness {
 
 	private void fixWindowsBugTestcase(String... lines) {
 		String input = StringPrinter.buildStringFromLines(lines);
-		Assert.assertEquals(input, GoogleJavaFormatStep.fixWindowsBug(input));
+		Assert.assertEquals(input, GoogleJavaFormatStep.fixWindowsBug(input, "1.1"));
 	}
 }
