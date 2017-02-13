@@ -20,6 +20,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -72,7 +73,9 @@ public final class EclipseFormatterStep {
 
 		State(JarState jar, File settingsFile) throws Exception {
 			this.jarState = Objects.requireNonNull(jar);
-			this.settings = FileSignature.from(settingsFile);
+			this.settings = FileSignature.from(
+					Arrays.asList(settingsFile),
+					FileSignature.Ignore.PREVIOUS_DUPLICATES);
 		}
 
 		FormatterFunc createFormat() throws Exception {
