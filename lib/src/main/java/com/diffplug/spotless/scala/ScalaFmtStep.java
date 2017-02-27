@@ -37,9 +37,9 @@ public class ScalaFmtStep {
 	// prevent direct instantiation
 	private ScalaFmtStep() {}
 
-	private static final String DEFAULT_VERSION = "0.5.1";
+	private static final String DEFAULT_VERSION = "0.5.7";
 	static final String NAME = "scalafmt";
-	static final String MAVEN_COORDINATE = "com.geirsson:scalafmt_2.11:";
+	static final String MAVEN_COORDINATE = "com.geirsson:scalafmt-core_2.11:";
 
 	public static FormatterStep create(Provisioner provisioner) {
 		return create(defaultVersion(), provisioner, null);
