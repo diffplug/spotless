@@ -160,7 +160,7 @@ spotless {
 }
 ```
 
-## Applying [KtLint](https://github.com/shyiko/ktlint) to Kotlin files
+## Applying [ktlint](https://github.com/shyiko/ktlint) to Kotlin files
 
 ```gradle
 spotless {

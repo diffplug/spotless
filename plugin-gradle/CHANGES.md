@@ -1,8 +1,18 @@
 # spotless-plugin-gradle releases
 
-### Version 3.1.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-plugin-gradle/))
+### Version 3.2.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-plugin-gradle/))
 
-### Version 3.0.0 - January 9th 2017 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.0.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle))
+### Version 3.1.0 - February 27th 2017 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.1.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.1.0))
+
+* Added support for Scala via [scalafmt](https://github.com/olafurpg/scalafmt).
+* Added support for Kotlin via [ktlint](https://github.com/shyiko/ktlint).
+* Added `FormatExtension::replaceStep`.
+* `paddedCell()` is no longer required if a misbehaving rule converges.
+* Any errors in a step will now fail the build - previously they were only warned.
+* Added `FormatExtension::ignoreErrorForStep` and `FormatExtension::ignoreErrorForPath`.
+* Bumped `google-java-format` to `1.3`.
+
+### Version 3.0.0 - January 9th 2017 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.0.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.0.0))
 
 * BREAKING CHANGE: `customReplace` and `customReplaceRegex` renamed to just `replace` and `replaceRegex`.
 * BREAKING CHANGE: Plugin portal ID is still `com.diffplug.gradle.spotless`, but maven coordinate has changed to `com.diffplug.spotless:spotless-plugin-gradle`.
