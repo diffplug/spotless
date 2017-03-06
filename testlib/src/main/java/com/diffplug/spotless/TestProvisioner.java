@@ -60,8 +60,7 @@ public class TestProvisioner {
 				config.setDescription(mavenCoords.toString());
 				try {
 					return config.resolve();
-				}
-				catch(ResolveException e) {
+				} catch (ResolveException e) {
 					/* Provide Maven coordinates in exception message instead of static string 'detachedConfiguration' */
 					throw new ResolveException(config.getDescription(), e);
 				}
@@ -120,13 +119,11 @@ public class TestProvisioner {
 	private static final Supplier<Provisioner> mavenCentral = Suppliers.memoize(() -> {
 		return caching("mavenCentral", createLazyWithRepositories(repo -> repo.mavenCentral()));
 	});
-	
+
 	/** Creates a Provisioner for the local maven repo for development purpose. */
 	public static Provisioner mavenLocal() {
 		return mavenLocal.get();
-	}	
-	
-	private static final Supplier<Provisioner> mavenLocal = Suppliers.memoize(() -> {
-		return caching("mavenLocal", createLazyWithRepositories(repo -> repo.mavenLocal()));
-	});		
+	}
+
+	private static final Supplier<Provisioner> mavenLocal = createLazyWithRepositories(repo -> repo.mavenLocal());
 }
