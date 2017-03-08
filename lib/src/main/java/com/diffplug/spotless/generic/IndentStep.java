@@ -102,6 +102,10 @@ public final class IndentStep {
 						for (int i = 0; i < numSpaces / state.numSpacesPerTab; ++i) {
 							builder.append('\t');
 						}
+						// add remainder spaces
+						for (int i = 0; i < numSpaces % state.numSpacesPerTab; ++i) {
+							builder.append(' ');
+						}
 						break;
 					default:
 						throw new IllegalArgumentException("Unexpected enum " + state.type);
