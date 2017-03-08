@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<profiles version="12">
+	<profile kind="First" name="Used Profile" version="SomeVersion">
+		<setting id="valid_xml_profiles.xml.string" value="string" />
+		<setting id="valid_xml_profiles.xml.true" value="Gets overridden by next line" />
+		<setting id="valid_xml_profiles.xml.true" value="true" />
+		<setting id="valid_xml_profiles.xml.42" value="42" />
+		<setting id="valid_xml_profiles.xml.null"/>
+		<setting id="common" value="valid_xml_profiles.xml" />
+	</profile>
+	<profile kind="Second" name="Skipped Profile" version="AnotherVersion">
+		<setting id="valid_xml_profiles.xml.string" value="Second profile should be skipped" />
+		<setting id="valid_xml_profiles.xml.true" value="Second profile should be skipped" />
+		<setting id="valid_xml_profiles.xml.42" value="Second profile should be skipped" />
+		<setting id="valid_xml_profiles.xml.null" value="Second profile should be skipped" />
+		<setting id="common" value="Second profile should be skipped" />
+	</profile>
+</profiles>
