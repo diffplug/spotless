@@ -64,7 +64,7 @@ public class ScalaFmtStep {
 		State(String version, Provisioner provisioner, @Nullable File configFile) throws IOException {
 			this.jarState = JarState.from(MAVEN_COORDINATE + version, provisioner);
 			List<File> toSign = configFile == null ? Collections.emptyList() : Collections.singletonList(configFile);
-			this.configSignature = FileSignature.from(toSign, FileSignature.Ignore.ORDER_AND_DUPLICATES);
+			this.configSignature = FileSignature.fromSet(toSign);
 		}
 
 		FormatterFunc createFormat() throws Exception {

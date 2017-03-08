@@ -17,6 +17,7 @@ package com.diffplug.spotless.extra.java;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 
 import org.junit.Test;
 
@@ -29,14 +30,14 @@ import com.diffplug.spotless.TestProvisioner;
 public class EclipseFormatterStepTest extends ResourceHarness {
 	@Test
 	public void loadPropertiesSettings() throws Throwable {
-		File eclipseFormatFile = createTestFile("java/eclipse/format/formatter.properties");
+		Collection<File> eclipseFormatFile = createTestFiles("java/eclipse/format/formatter.properties");
 		StepHarness.forStep(EclipseFormatterStep.create(eclipseFormatFile, TestProvisioner.mavenCentral()))
 				.testResource("java/eclipse/format/JavaCodeUnformatted.test", "java/eclipse/format/JavaCodeFormatted.test");
 	}
 
 	@Test
 	public void loadXmlSettings() throws Throwable {
-		File eclipseFormatFile = createTestFile("java/eclipse/format/formatter.xml");
+		Collection<File> eclipseFormatFile = createTestFiles("java/eclipse/format/formatter.xml");
 		StepHarness.forStep(EclipseFormatterStep.create(eclipseFormatFile, TestProvisioner.mavenCentral()))
 				.testResource("java/eclipse/format/JavaCodeUnformatted.test", "java/eclipse/format/JavaCodeFormatted.test");
 	}
@@ -44,7 +45,7 @@ public class EclipseFormatterStepTest extends ResourceHarness {
 	@Test
 	public void longLiteralProblem() throws Throwable {
 		String folder = "java/eclipse/format/long_literals/";
-		File eclipseFormatFile = createTestFile(folder + "spotless.eclipseformat.xml");
+		Collection<File> eclipseFormatFile = createTestFiles(folder + "spotless.eclipseformat.xml");
 		StepHarness.forStep(EclipseFormatterStep.create(eclipseFormatFile, TestProvisioner.mavenCentral()))
 				.testResourceUnaffected(folder + "Example1.test")
 				.testResourceUnaffected(folder + "Example2.test");
@@ -52,23 +53,23 @@ public class EclipseFormatterStepTest extends ResourceHarness {
 
 	@Test
 	public void equality() throws IOException {
-		File xmlFile = createTestFile("java/eclipse/format/formatter.xml");
-		File propFile = createTestFile("java/eclipse/format/formatter.properties");
+		Collection<File> xmlFile = createTestFiles("java/eclipse/format/formatter.xml");
+		Collection<File> propFile = createTestFiles("java/eclipse/format/formatter.properties");
 		new SerializableEqualityTester() {
-			File settingsFile;
+			Collection<File> settingsFiles;
 
 			@Override
 			protected void setupTest(API api) {
-				settingsFile = xmlFile;
+				settingsFiles = xmlFile;
 				api.areDifferentThan();
 
-				settingsFile = propFile;
+				settingsFiles = propFile;
 				api.areDifferentThan();
 			}
 
 			@Override
 			protected FormatterStep create() {
-				return EclipseFormatterStep.create(settingsFile, TestProvisioner.mavenCentral());
+				return EclipseFormatterStep.create(settingsFiles, TestProvisioner.mavenCentral());
 			}
 		}.testEquals();
 	}

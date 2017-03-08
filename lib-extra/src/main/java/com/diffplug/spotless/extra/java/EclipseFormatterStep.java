@@ -20,7 +20,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -48,14 +48,14 @@ public final class EclipseFormatterStep {
 	private static final String FORMATTER_METHOD = "format";
 
 	/** Creates a formatter step for the given version and settings file. */
-	public static FormatterStep create(File settingsFile, Provisioner provisioner) {
-		return create(defaultVersion(), settingsFile, provisioner);
+	public static FormatterStep create(Collection<File> settingsFiles, Provisioner provisioner) {
+		return create(defaultVersion(), settingsFiles, provisioner);
 	}
 
 	/** Creates a formatter step for the given version and settings file. */
-	public static FormatterStep create(String version, File settingsFile, Provisioner provisioner) {
+	public static FormatterStep create(String version, Collection<File> settingsFiles, Provisioner provisioner) {
 		return FormatterStep.createLazy(NAME,
-				() -> new State(JarState.from(MAVEN_COORDINATE + version, provisioner), settingsFile),
+				() -> new State(JarState.from(MAVEN_COORDINATE + version, provisioner), settingsFiles),
 				State::createFormat);
 	}
 
@@ -71,11 +71,9 @@ public final class EclipseFormatterStep {
 		/** The signature of the settings file. */
 		final FileSignature settings;
 
-		State(JarState jar, File settingsFile) throws Exception {
+		State(JarState jar, final Collection<File> settingsFiles) throws Exception {
 			this.jarState = Objects.requireNonNull(jar);
-			this.settings = FileSignature.from(
-					Arrays.asList(settingsFile),
-					FileSignature.Ignore.PREVIOUS_DUPLICATES);
+			this.settings = FileSignature.fromList(settingsFiles);
 		}
 
 		FormatterFunc createFormat() throws Exception {

@@ -18,6 +18,7 @@ package com.diffplug.gradle.spotless;
 import java.util.List;
 
 import org.gradle.api.GradleException;
+import org.gradle.api.Project;
 import org.gradle.api.internal.file.UnionFileCollection;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
@@ -60,8 +61,11 @@ public class JavaExtension extends FormatExtension {
 		eclipseFormatFile(EclipseFormatterStep.defaultVersion(), eclipseFormatFile);
 	}
 
-	public void eclipseFormatFile(String eclipseVersion, Object eclipseFormatFile) {
-		addStep(EclipseFormatterStep.create(eclipseVersion, getProject().file(eclipseFormatFile), GradleProvisioner.fromProject(getProject())));
+	public void eclipseFormatFile(String eclipseVersion, Object... eclipseFormatFiles) {
+		Project project = getProject();
+		addStep(EclipseFormatterStep.create(eclipseVersion,
+				project.files(eclipseFormatFiles).getFiles(),
+				GradleProvisioner.fromProject(project)));
 	}
 
 	/** Removes any unused imports. */

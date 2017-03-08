@@ -110,7 +110,7 @@ spotless {
 		removeUnusedImports() // removes any unused imports
 
 		eclipseFormatFile 'spotless.eclipseformat.xml'	// XML file dumped out by the Eclipse formatter
-		// If you have an older Eclipse properties file, you can use that too.
+		// If you have Eclipse preference or property files, you can use them too.
 	}
 }
 ```
@@ -139,10 +139,10 @@ To apply freshmark to all of the `.md` files in your project, with all of your p
 ```gradle
 spotless {
 	freshmark {
-		target 'README.md', 'CONTRIBUTING.md'	// defaults to '**/*.md'
-		propertiesFile('gradle.properties')		// loads all the properties in the given file
+		target 'README.md', 'CONTRIBUTING.md'			// defaults to '**/*.md'
+		propertiesFile 'fresh.xml', 'mark.properties'	// loads all the properties in the given files
 		properties {
-			it.put('key', 'value')				// specify other properties manually
+			it.put('key', 'value')						// specify other properties manually
 		}
 	}
 }

@@ -187,7 +187,7 @@ public final class GitAttributesLineEndings {
 					.filter(file -> file != null && file.exists() && file.isFile())
 					.collect(Collectors.toList());
 			// sign it for up-to-date checking
-			signature = FileSignature.from(toSign, FileSignature.Ignore.ORDER_AND_DUPLICATES);
+			signature = FileSignature.fromSet(toSign);
 		}
 
 		/** Returns all of the .gitattributes files which affect the given files. */

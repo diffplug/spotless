@@ -22,7 +22,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 import org.junit.Assert;
@@ -105,6 +107,15 @@ public class ResourceHarness {
 			throw new IllegalArgumentException("No such resource " + filename);
 		}
 		return Resources.toString(url, StandardCharsets.UTF_8);
+	}
+
+	/** Returns Files (in a temporary folder) which has the contents of the given file from the src/test/resources directory. */
+	protected Collection<File> createTestFiles(String... filenames) throws IOException {
+		Collection<File> files = new ArrayList<File>(filenames.length);
+		for (String filename : filenames) {
+			files.add(createTestFile(filename));
+		}
+		return files;
 	}
 
 	/** Returns a File (in a temporary folder) which has the contents of the given file from the src/test/resources directory. */
