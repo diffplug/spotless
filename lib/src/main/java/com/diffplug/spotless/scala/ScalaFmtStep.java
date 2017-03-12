@@ -21,8 +21,6 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.Collections;
-import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -63,8 +61,7 @@ public class ScalaFmtStep {
 
 		State(String version, Provisioner provisioner, @Nullable File configFile) throws IOException {
 			this.jarState = JarState.from(MAVEN_COORDINATE + version, provisioner);
-			List<File> toSign = configFile == null ? Collections.emptyList() : Collections.singletonList(configFile);
-			this.configSignature = FileSignature.from(toSign);
+			this.configSignature = FileSignature.signAsList(configFile);
 		}
 
 		FormatterFunc createFormat() throws Exception {

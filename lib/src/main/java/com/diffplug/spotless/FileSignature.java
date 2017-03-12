@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -38,75 +37,81 @@ public final class FileSignature implements Serializable {
 	 * incremental builds.
 	 */
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-	private final transient List<File> sortedFiles;
+	private final transient List<File> files;
 
-	@SuppressWarnings("unused")
 	private final String[] filenames;
-	@SuppressWarnings("unused")
 	private final long[] filesizes;
-	@SuppressWarnings("unused")
 	private final long[] lastModified;
 
+	/** Method has been renamed to {@link FileSignature#signAsSet}.
+	 * In case no sorting and removal of duplicates is required,
+	 * use {@link FileSignature#signAsList} instead.*/
+	@Deprecated
 	public static FileSignature from(File... files) throws IOException {
 		return from(Arrays.asList(files));
 	}
 
+	/** Method has been renamed to {@link FileSignature#signAsSet}.
+	 * In case no sorting and removal of duplicates is required,
+	 * use {@link FileSignature#signAsList} instead.*/
+	@Deprecated
 	public static FileSignature from(Iterable<File> files) throws IOException {
-		List<File> sortedFiles = toSortedSet(Objects.requireNonNull(files));
+		return signAsSet(files);
+	}
 
-		String[] filenames = new String[sortedFiles.size()];
-		long[] filesizes = new long[sortedFiles.size()];
-		long[] lastModified = new long[sortedFiles.size()];
+	/** Creates file signature whereas order of the files remains unchanged. */
+	public static FileSignature signAsList(File... files) throws IOException {
+		return signAsList(Arrays.asList(files));
+	}
+
+	/** Creates file signature whereas order of the files remains unchanged. */
+	public static FileSignature signAsList(Iterable<File> files) throws IOException {
+		return new FileSignature(asNonNullList(files));
+	}
+
+	/** Creates file signature insensitive to the order of the files. */
+	public static FileSignature signAsSet(Iterable<File> files) throws IOException {
+		return new FileSignature(
+				toSortedSet(asNonNullList(files)));
+	}
+
+	private FileSignature(final List<File> files) throws IOException {
+		this.files = files;
+
+		filenames = new String[this.files.size()];
+		filesizes = new long[this.files.size()];
+		lastModified = new long[this.files.size()];
 
 		int i = 0;
-		for (File file : sortedFiles) {
+		for (File file : this.files) {
 			filenames[i] = file.getCanonicalPath();
 			filesizes[i] = file.length();
 			lastModified[i] = file.lastModified();
 			++i;
 		}
-
-		return new FileSignature(sortedFiles, filenames, filesizes, lastModified);
-	}
-
-	private FileSignature(List<File> sortedFiles, String[] filenames, long[] filesizes, long[] lastModified) {
-		this.sortedFiles = sortedFiles;
-		this.filenames = filenames;
-		this.filesizes = filesizes;
-		this.lastModified = lastModified;
 	}
 
 	/** Returns all of the files in this signature, throwing an exception if there are more or less than 1 file. */
 	public Collection<File> files() {
-		return Collections.unmodifiableList(sortedFiles);
+		return Collections.unmodifiableList(files);
 	}
 
 	/** Returns the only file in this signature, throwing an exception if there are more or less than 1 file. */
 	public File getOnlyFile() {
-		if (sortedFiles.size() == 1) {
-			return sortedFiles.get(0);
+		if (files.size() == 1) {
+			return files.iterator().next();
 		} else {
-			throw new IllegalArgumentException("Expected one file, but was " + sortedFiles.size());
+			throw new IllegalArgumentException("Expected one file, but was " + files.size());
 		}
 	}
 
-	/** Returns a "sortedSet" by copying the input to an ArrayList, sorting, and removing duplicates. */
-	private static <T extends Comparable<T>> List<T> toSortedSet(Iterable<T> unsorted) {
-		// copy the whole unsorted into a list
-		List<T> result;
-		if (unsorted instanceof Collection) {
-			result = new ArrayList<>((Collection<T>) unsorted);
-		} else {
-			result = new ArrayList<>();
-			for (T element : unsorted) {
-				result.add(element);
-			}
-		}
+	/** Sorts "toBeSorted" and removes duplicates. */
+	private static <T extends Comparable<T>> List<T> toSortedSet(List<T> toBeSorted) {
 		// sort it
-		Collections.sort(result);
+		Collections.sort(toBeSorted);
 		// remove any duplicates (normally there won't be any)
-		if (result.size() > 1) {
-			Iterator<T> iter = result.iterator();
+		if (toBeSorted.size() > 1) {
+			Iterator<T> iter = toBeSorted.iterator();
 			T last = iter.next();
 			while (iter.hasNext()) {
 				T next = iter.next();
@@ -117,6 +122,19 @@ public final class FileSignature implements Serializable {
 				}
 			}
 		}
-		return result;
+		return toBeSorted;
 	}
+
+	/** Returns a shallow copy of input elements omitting null elements */
+	private static <T> List<T> asNonNullList(Iterable<T> input) {
+		List<T> shallowCopy = (input instanceof Collection)
+				? new ArrayList<T>(((Collection<?>) input).size())
+				: new ArrayList<T>();
+		input.forEach(element -> {
+			if (null != element)
+				shallowCopy.add(element);
+		});
+		return shallowCopy;
+	}
+
 }

@@ -70,7 +70,7 @@ public final class JarState implements Serializable {
 			logger.log(Level.SEVERE, "You probably need to add a repository containing the `" + mavenCoordinate + "` artifact to your buildscript, e.g.: repositories { mavenCentral() }", e);
 			throw e;
 		}
-		FileSignature fileSignature = FileSignature.from(jars);
+		FileSignature fileSignature = FileSignature.signAsSet(jars);
 		return new JarState(mavenCoordinate, fileSignature, jars);
 	}
 
