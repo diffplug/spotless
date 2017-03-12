@@ -72,7 +72,7 @@ public final class EclipseFormatterStep {
 
 		State(JarState jar, File settingsFile) throws Exception {
 			this.jarState = Objects.requireNonNull(jar);
-			this.settings = FileSignature.from(settingsFile);
+			this.settings = FileSignature.signAsList(settingsFile);
 		}
 
 		FormatterFunc createFormat() throws Exception {
