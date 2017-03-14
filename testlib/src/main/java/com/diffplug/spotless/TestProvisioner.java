@@ -126,4 +126,15 @@ public class TestProvisioner {
 	}
 
 	private static final Supplier<Provisioner> mavenLocal = createLazyWithRepositories(repo -> repo.mavenLocal());
+
+	/** Creates a Provisioner for the Sonatype snapshots maven repo for development purpose. */
+	public static Provisioner snapshots() {
+		return snapshots.get();
+	}
+
+	private static final Supplier<Provisioner> snapshots = createLazyWithRepositories(repo -> {
+		repo.maven(setup -> {
+			setup.setUrl("https://oss.sonatype.org/content/repositories/snapshots");
+		});
+	});
 }
