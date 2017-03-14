@@ -358,7 +358,7 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 	from javadoc.destinationDir
 }
 
-def isSnapshot = project.version.endsWith('-SNAPSHOT')
+def isSnapshot = grec_version.endsWith('-SNAPSHOT')
 // pulls the credentials from either the environment variable or gradle.properties
 def cred = {
 	if (System.env[it] != null) {
@@ -387,6 +387,7 @@ model {
 					// add MavenCentral requirements to the POM
 					asNode().children().last() + {
 						resolveStrategy = Closure.DELEGATE_FIRST
+						name project.grec_artifactId
 						description project.grec_description
 						url "https://github.com/${project.grec_org}/${project.name}"
 						scm {
