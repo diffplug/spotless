@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<profiles version="42">
+	<profile kind="Profile without a name can be handled."/>
+	<profile name="More than one profile cannot be handled."/>
+</profiles>
