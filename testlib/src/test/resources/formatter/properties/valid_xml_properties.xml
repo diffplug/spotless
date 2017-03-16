@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment>Some comment</comment>
+	<entry key="valid_xml_properties.xml.string">string</entry>
+	<entry key="valid_xml_properties.xml.true">Gets overridden by next line</entry>
+	<entry key="valid_xml_properties.xml.true">true</entry>
+	<entry key="valid_xml_properties.xml.42">42</entry>
+	<entry key="common">valid_xml_properties.xml</entry>
+	<entry key="valid_xml_properties.xml.null"/>
+</properties>

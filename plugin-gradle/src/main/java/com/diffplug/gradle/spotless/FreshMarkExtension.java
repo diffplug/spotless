@@ -15,19 +15,14 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.gradle.api.Action;
 
-import com.diffplug.common.base.Errors;
-import com.diffplug.common.io.Files;
+import com.diffplug.spotless.FormatterProperties;
 import com.diffplug.spotless.markdown.FreshMarkStep;
 
 public class FreshMarkExtension extends FormatExtension {
@@ -50,18 +45,12 @@ public class FreshMarkExtension extends FormatExtension {
 		propertyActions.add(action);
 	}
 
-	public void propertiesFile(Object file) {
+	public void propertiesFile(Object... files) {
 		propertyActions.add(map -> {
-			File propFile = getProject().file(file);
-			try (InputStream input = Files.asByteSource(propFile).openBufferedStream()) {
-				Properties props = new Properties();
-				props.load(input);
-				for (String key : props.stringPropertyNames()) {
-					map.put(key, props.getProperty(key));
-				}
-			} catch (IOException e) {
-				throw Errors.asRuntime(e);
-			}
+			FormatterProperties preferences = FormatterProperties.from(getProject().files(files));
+			/* FreshMarkStep.State serializes the properties and not the files.
+			 * Therefore they must be stored in a hash-map like used by Properties.*/
+			preferences.getProperties().forEach((key, value) -> map.put(key.toString(), value));
 		});
 	}
 

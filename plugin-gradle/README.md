@@ -110,7 +110,7 @@ spotless {
 		removeUnusedImports() // removes any unused imports
 
 		eclipseFormatFile 'spotless.eclipseformat.xml'	// XML file dumped out by the Eclipse formatter
-		// If you have an older Eclipse properties file, you can use that too.
+		// If you have Eclipse preference or property files, you can use them too.
 	}
 }
 ```
