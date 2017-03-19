@@ -33,7 +33,7 @@ public class KtLintStep {
 	// prevent direct instantiation
 	private KtLintStep() {}
 
-	private static final String DEFAULT_VERSION = "0.3.1";
+	private static final String DEFAULT_VERSION = "0.6.1";
 	static final String NAME = "ktlint";
 	static final String MAVEN_COORDINATE = "com.github.shyiko:ktlint:";
 
@@ -67,7 +67,7 @@ public class KtLintStep {
 			// String KtLint::format(String input, Iterable<RuleSet> rules, Function2 errorCallback)
 
 			// first, we get the standard rules
-			Class<?> standardRuleSetProviderClass = classLoader.loadClass("com.gihub.shyiko.ktlint.ruleset.standard.StandardRuleSetProvider");
+			Class<?> standardRuleSetProviderClass = classLoader.loadClass("com.github.shyiko.ktlint.ruleset.standard.StandardRuleSetProvider");
 			Object standardRuleSet = standardRuleSetProviderClass.getMethod("get").invoke(standardRuleSetProviderClass.newInstance());
 			Iterable<?> ruleSets = Collections.singletonList(standardRuleSet);
 
