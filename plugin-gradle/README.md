@@ -79,6 +79,7 @@ Spotless can check and apply formatting to any plain-text file, using simple rul
 
 * Eclipse's java code formatter (including style and import ordering)
 * Google's [google-java-format](https://github.com/google/google-java-format)
+* [Groovy Eclipse](https://github.com/groovy/groovy-eclipse/wiki)'s groovy code formatter
 * [FreshMark](https://github.com/diffplug/freshmark) (markdown with variables)
 * Any user-defined function which takes an unformatted string and outputs a formatted version.
 
@@ -86,7 +87,12 @@ Contributions are welcome, see [the contributing guide](../CONTRIBUTING.md) for 
 
 Spotless requires Gradle to be running on JRE 8+.<sup>See [issue #7](https://github.com/diffplug/spotless/issues/7) for details.</sup>
 
+<a name="javasource"></a>
+
 ## Applying to Java source
+
+By default, all Java source sets will be formatted. To change this,
+set the `target` parameter as described in the [Custom rules](#customrules) section.
 
 ```gradle
 apply plugin: 'java'
@@ -94,9 +100,6 @@ apply plugin: 'java'
 
 spotless {
 	java {
-		// By default, all Java source sets will be formatted.  To change
-		// this, set the 'target' parameter as described in the next section.
-
 		licenseHeader '/* Licensed under Apache-2.0 */'	// License header
 		licenseHeaderFile 'spotless.license.java'		// License header file
 		// Obviously, you can't specify both licenseHeader and licenseHeaderFile at the same time
@@ -127,6 +130,50 @@ spotless {
 		licenseHeaderFile 'spotless.license.java'
 	}
 }
+```
+<a name="groovysource"></a>
+
+## Applying to Groovy source
+
+The spotless configuration for Groovy source is similar to one of the [Java source](#javasource). Most configuration steps, like `licenseHeader` and `importOrder`
+are supporting Groovy as well as Java.
+
+By default all `.groovy` and `.java` files found in the Groovy source directories will be formatted. In case the `.java` files shall be handled by a Java specific
+formatter or configuration, the parameter `excludeJava` can be set, to avoid
+applying to concurrent formatters on the same files.
+
+Alternatively the `target` parameter can be used to individually select the sources
+as described in the [Custom rules](#customrules) section.
+
+```gradle
+apply plugin: 'groovy'
+...
+
+spotless {
+	java {
+		licenseHeaderFile 'spotless.license.java'
+		googleJavaFormat()	//Use specific formatter for Java files
+	}
+	groovy {
+		licenseHeaderFile 'spotless.license.java' // License header file
+		excludeJava // Exclude the java
+		//The Groovy-Eclipse formatter step basically extends the JDT formatter.
+		//It can format Java files as well as Groovy files
+		greclipseFormatFile 'greclipse.properties'
+	}
+}
+```
+
+The [Groovy-Eclipse](https://github.com/groovy/groovy-eclipse) fromatter is based on the
+Eclipse Java formatter as it is use by `eclipseFormatFile` and it uses the same configuration parameters plus a few additional once. These parameters can be configured
+within a single file, like the Java properties file [greclipse.properties](../lib-extra/src/test/resources/groovy/greclipse/format/greclipse.properties) in the previous example. But the formatter step can also load the [exported Eclipse properties](../ECLIPSE_SCREENSHOTS.md) and augment it with the `org.codehaus.groovy.eclipse.ui.prefs` from the Eclipse workspace as shown below.
+
+```gradle
+...
+	groovy {
+		greclipseFormatFile 'spotless.eclipseformat.xml' 'org.codehaus.groovy.eclipse.ui.prefs'
+		}
+...
 ```
 
 ## Applying [FreshMark](https://github.com/diffplug/freshmark) to markdown files
@@ -174,6 +221,7 @@ spotless {
 	}
 }
 ```
+<a name="customrules"></a>
 
 ## Custom rules
 
