@@ -104,6 +104,23 @@ public class SpotlessExtension {
 		}
 	}
 
+	boolean enforceCheck = true;
+
+	/** Returns `true` if Gradle's `check` task should run `spotlessCheck`; `false` otherwise. */
+	public boolean isEnforceCheck() {
+		return enforceCheck;
+	}
+
+	/**
+	 * Configures Gradle's `check` task to run `spotlessCheck` if `true`,
+	 * but to not do so if `false`.
+	 *
+	 * `true` by default.
+	 */
+	public void setEnforceCheck(boolean enforceCheck) {
+		this.enforceCheck = enforceCheck;
+	}
+
 	private <T extends FormatExtension> void configure(String name, Class<T> clazz, Action<T> configure) {
 		T value = maybeCreate(name, clazz);
 		configure.execute(value);
