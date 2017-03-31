@@ -103,9 +103,11 @@ public class SpotlessPlugin implements Plugin<Project> {
 		// Add our check task as a dependency on the global check task
 		// getTasks() returns a "live" collection, so this works even if the
 		// task doesn't exist at the time this call is made
-		project.getTasks()
-				.matching(task -> task.getName().equals(JavaBasePlugin.CHECK_TASK_NAME))
-				.all(task -> task.dependsOn(rootCheckTask));
+		if (spotlessExtension.enforceCheck) {
+			project.getTasks()
+					.matching(task -> task.getName().equals(JavaBasePlugin.CHECK_TASK_NAME))
+					.all(task -> task.dependsOn(rootCheckTask));
+		}
 
 		// clear spotless' cache when the user does a clean
 		project.getTasks()
