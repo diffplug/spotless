@@ -31,8 +31,8 @@ import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.java.ImportOrderStep;
 
 public class GroovyExtension extends FormatExtension {
-	public static final String NAME = "groovy";
-	public static final boolean EXCLUDE_JAVA_DEFAULT = false;
+	static final String NAME = "groovy";
+	private static final boolean EXCLUDE_JAVA_DEFAULT = false;
 	private boolean excludeJava;
 
 	public GroovyExtension(SpotlessExtension rootExtension) {
