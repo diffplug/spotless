@@ -61,10 +61,10 @@ public class JavaExtension extends FormatExtension {
 		eclipseFormatFile(EclipseFormatterStep.defaultVersion(), eclipseFormatFile);
 	}
 
-	public void eclipseFormatFile(String eclipseVersion, Object... eclipseFormatFiles) {
+	public void eclipseFormatFile(String eclipseVersion, Object eclipseFormatFile) {
 		Project project = getProject();
 		addStep(EclipseFormatterStep.create(eclipseVersion,
-				project.files(eclipseFormatFiles).getFiles(),
+				project.files(eclipseFormatFile).getFiles(),
 				GradleProvisioner.fromProject(project)));
 	}
 

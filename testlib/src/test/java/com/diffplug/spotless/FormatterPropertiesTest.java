@@ -103,9 +103,13 @@ public class FormatterPropertiesTest extends ResourceHarness {
 	}
 
 	@Test
-	public void nonExisitingFile() throws IOException {
+	public void nonExistingFile() throws IOException {
 		boolean exceptionCaught = false;
 		String filePath = "does/not/exist.properties";
+		boolean isWin = LineEnding.PLATFORM_NATIVE.str().equals(LineEnding.WINDOWS.str());
+		if (isWin) {
+			filePath = filePath.replace('/', '\\');
+		}
 		try {
 			FormatterProperties.from(new File(filePath));
 		} catch (IllegalArgumentException ex) {

@@ -152,6 +152,7 @@ public class SpotlessTask extends DefaultTask {
 				.encoding(Charset.forName(encoding))
 				.rootDir(getProject().getProjectDir().toPath())
 				.steps(steps)
+				.exceptionPolicy(exceptionPolicy)
 				.build();
 		// find the outOfDate files
 		List<File> outOfDate = new ArrayList<>();

@@ -118,6 +118,7 @@ public final class PaddedCellBulk {
 				.encoding(formatter.getEncoding())
 				.rootDir(formatter.getRootDir())
 				.steps(Collections.singletonList(paddedCellStep))
+				.exceptionPolicy(formatter.getExceptionPolicy())
 				.build();
 
 		// empty out the diagnose folder
