@@ -236,6 +236,34 @@ Line endings can also be set globally or per-format using the `lineEndings` prop
 
 You can easily set the line endings of different files using [a `.gitattributes` file](https://help.github.com/articles/dealing-with-line-endings/).  Here's an example `.gitattributes` which sets all files to unix newlines: `* text eol=lf`.
 
+## Disabling warnings and error messages
+
+The `check` task is Gradle's built-in task for grouping all verification tasks - unit tests, static analysis, etc.  By default, `spotlessCheck` is added as a dependency to `check`.
+
+You might want to disable this behavior.  We [recommend against this](https://github.com/diffplug/spotless/issues/79#issuecomment-290844602), but it's easy to do if you'd like:
+
+```gradle
+spotless {
+	enforceCheck false
+}
+```
+
+If a formatter throws an exception, possibly because of malformed code or a bug in a formatter step, Spotless will report a build failure.  You can suppress these specific failures as such:
+
+```gradle
+spotless {
+	java {
+		googleJavaFormat()
+		custom 'my-glitchy-step', { }
+
+		ignoreErrorForStep('my-glitchy-step')   // ignore errors on all files thrown by a specific step
+		ignoreErrorForPath('path/to/file.java') // ignore errors by all steps on this specific file
+	}
+}
+```
+
+Note that `enforceCheck` is a global property which affects all formats (outside the java block), while `ignoreErrorForStep/Path` are local to a single format (inside the java block).
+
 ## How do I preview what `spotlessApply` will do?
 
 - Save your working tree with `git add -A`, then `git commit -m "Checkpoint before spotless."`

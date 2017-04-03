@@ -2,6 +2,12 @@
 
 ### Version 3.2.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-plugin-gradle/))
 
+* Update default KtLint from 0.3.1 to 0.6.1 (thanks to @kvnxiao [#93](https://github.com/diffplug/spotless/pull/93)).
+	+ This means we no longer look for rules in the typo package `com.gihub.shyiko`, now only in `com.github.shyiko` (note the `t`).
+* Added an `enforceCheck` property which allows users to disable adding `spotlessCheck` as a dependency of `check` (thanks to @gdecaso [#95](https://github.com/diffplug/spotless/pull/95)).
+* Any errors in a step will now fail the build - previously they were only warned.
+	+ We claimed that we implemented this in 3.1.0, but it was broken.  We really fixed it this time.
+
 ### Version 3.1.0 - February 27th 2017 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.1.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.1.0))
 
 * Added support for Scala via [scalafmt](https://github.com/olafurpg/scalafmt).
