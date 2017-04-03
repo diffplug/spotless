@@ -37,7 +37,7 @@ public class GrEclipseFormatterStep {
 
 	private static final String NAME = "groovy-eclipse formatter";
 	private static final String FORMATTER_CLASS = "com.diffplug.gradle.spotless.groovy.eclipse.GrEclipseFormatterStepImpl";
-	private static final String DEFAULT_VERSION = "2.3.0-SNAPSHOT";
+	private static final String DEFAULT_VERSION = "2.3.0";
 	private static final String MAVEN_COORDINATE = "com.diffplug.spotless:spotless-ext-greclipse:";
 	private static final String FORMATTER_METHOD = "format";
 

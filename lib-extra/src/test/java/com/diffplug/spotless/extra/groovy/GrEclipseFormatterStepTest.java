@@ -22,6 +22,7 @@ import java.util.List;
 import org.junit.Test;
 
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
@@ -35,17 +36,21 @@ public class GrEclipseFormatterStepTest extends ResourceHarness {
 	//String is hard-coded in the GrEclipseFormatter
 	private static final String FORMATTER_FILENAME_REPALCEMENT = "Hello.groovy";
 
+	private static Provisioner provisioner() {
+		return TestProvisioner.jcenter();
+	}
+
 	@Test
 	public void nominal() throws Throwable {
 		List<File> config = createTestFiles(CONFIG_FILE);
-		StepHarness.forStep(GrEclipseFormatterStep.create(config, TestProvisioner.snapshots()))
+		StepHarness.forStep(GrEclipseFormatterStep.create(config, provisioner()))
 				.testResource(RESOURCE_PATH + "unformatted.test", RESOURCE_PATH + "formatted.test");
 	}
 
 	@Test
 	public void formatterException() throws Throwable {
 		List<File> config = createTestFiles(CONFIG_FILE);
-		StepHarness.forStep(GrEclipseFormatterStep.create(config, TestProvisioner.snapshots()))
+		StepHarness.forStep(GrEclipseFormatterStep.create(config, provisioner()))
 				.testException(RESOURCE_PATH + "exception.test", assertion -> {
 					assertion.isInstanceOf(IllegalArgumentException.class);
 					assertion.hasMessageContaining(FORMATTER_FILENAME_REPALCEMENT);
@@ -56,7 +61,7 @@ public class GrEclipseFormatterStepTest extends ResourceHarness {
 	public void configurationException() throws Throwable {
 		String configFileName = "greclipse.exception";
 		List<File> config = createTestFiles(RESOURCE_PATH + configFileName);
-		StepHarness.forStep(GrEclipseFormatterStep.create(config, TestProvisioner.snapshots()))
+		StepHarness.forStep(GrEclipseFormatterStep.create(config, provisioner()))
 				.testException(RESOURCE_PATH + "unformatted.test", assertion -> {
 					assertion.isInstanceOf(IllegalArgumentException.class);
 					assertion.hasMessageContaining(configFileName);
@@ -75,7 +80,7 @@ public class GrEclipseFormatterStepTest extends ResourceHarness {
 
 			@Override
 			protected FormatterStep create() {
-				return GrEclipseFormatterStep.create(configFile, TestProvisioner.snapshots());
+				return GrEclipseFormatterStep.create(configFile, provisioner());
 			}
 		}.testEquals();
 	}

@@ -74,8 +74,6 @@ public class GroovyExtension extends FormatExtension {
 
 	public void greclipseFormatFile(String greclipseVersion, Object... greclipseFormatFiles) {
 		Project project = getProject();
-		// add the snapshot repo for dev until the spotless-ext-greclipse jar is released
-		project.getRepositories().maven(mvn -> mvn.setUrl("https://oss.sonatype.org/content/repositories/snapshots"));
 		addStep(GrEclipseFormatterStep.create(greclipseVersion,
 				project.files(greclipseFormatFiles).getFiles(),
 				GradleProvisioner.fromProject(project)));
