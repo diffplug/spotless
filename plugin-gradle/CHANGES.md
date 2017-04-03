@@ -2,6 +2,12 @@
 
 ### Version 3.2.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-plugin-gradle/))
 
+* Update default KtLint from 0.3.1 to 0.6.1
+	+ This means we no longer look for rules in the typo package `com.gihub.shyiko`, now only in `com.github.shyiko` (note the `t`).
+* Added support for formatting groovy using greclipse.
+* Added an `enforceCheck` property which allows users to disable adding `spotlessCheck` as a dependency of `check`.
+* Fixed a bug that prevented `ignoreErrorForStep` and `ignoreErrorForPath` from working.
+
 ### Version 3.1.0 - February 27th 2017 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.1.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.1.0))
 
 * Added support for Scala via [scalafmt](https://github.com/olafurpg/scalafmt).
