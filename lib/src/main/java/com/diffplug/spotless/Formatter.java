@@ -212,7 +212,7 @@ public final class Formatter implements Serializable {
 	 * The input must have unix line endings, and the output
 	 * is guaranteed to also have unix line endings.
 	 */
-	public String compute(String unix, File file) throws Error {
+	public String compute(String unix, File file) {
 		for (FormatterStep step : steps) {
 			try {
 				String formatted = step.format(unix, file);
