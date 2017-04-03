@@ -4,11 +4,13 @@ plugins {
 	id 'java'
 }
 
-repositories { mavenCentral() }
+repositories { jcenter() }
 spotless {
 	java {
-		target '**/*.java'
-
+		target fileTree('.') {
+			include '**/*.java'
+			exclude '_ext/*/build/**'
+		}
 		custom 'noInternalDeps', {
 			if (it.contains('import org.gradle.internal.')) {
 				throw new AssertionError("Accidental internal import")
@@ -21,6 +23,11 @@ spotless {
 		eclipseFormatFile 'spotless.eclipseformat.xml'
 		trimTrailingWhitespace()
 	}
+	groovy {
+		target 'build.gradle', 'spotlessSelf.gradle', 'settings.gradle'
+		greclipseFormatFile 'spotless.eclipseformat.xml'
+		paddedCell()
+	}
 	freshmark {
 		target '**/*.md'
 		propertiesFile('gradle.properties')
@@ -30,7 +37,7 @@ spotless {
 		}
 	}
 	format 'misc', {
-		target '**/*.gradle', '**/*.md', '**/*.gitignore'
+		target '**/*.md', '**/*.gitignore'
 		indentWithTabs()
 		trimTrailingWhitespace()
 		endWithNewline()

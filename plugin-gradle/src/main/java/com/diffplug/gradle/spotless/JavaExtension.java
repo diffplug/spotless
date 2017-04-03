@@ -62,6 +62,12 @@ public class JavaExtension extends FormatExtension {
 	}
 
 	public void eclipseFormatFile(String eclipseVersion, Object... eclipseFormatFiles) {
+		// disambiguate the ambiguous methods
+		// see ScalaExtension.scalafmt() for a much better mechanism: https://github.com/diffplug/spotless/blob/a8ab1c1331376e57e63441417316139198c285de/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/ScalaExtension.java#L38-L65
+		if (eclipseFormatFiles.length == 0) {
+			eclipseFormatFiles = new Object[]{eclipseVersion};
+			eclipseVersion = EclipseFormatterStep.defaultVersion();
+		}
 		Project project = getProject();
 		addStep(EclipseFormatterStep.create(eclipseVersion,
 				project.files(eclipseFormatFiles).getFiles(),
