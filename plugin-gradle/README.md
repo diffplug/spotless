@@ -87,12 +87,12 @@ Contributions are welcome, see [the contributing guide](../CONTRIBUTING.md) for 
 
 Spotless requires Gradle to be running on JRE 8+.<sup>See [issue #7](https://github.com/diffplug/spotless/issues/7) for details.</sup>
 
-<a name="javasource"></a>
+<a name="java"></a>
 
 ## Applying to Java source
 
 By default, all Java source sets will be formatted. To change this,
-set the `target` parameter as described in the [Custom rules](#customrules) section.
+set the `target` parameter as described in the [Custom rules](#custom) section.
 
 ```gradle
 apply plugin: 'java'
@@ -120,6 +120,8 @@ spotless {
 
 See [ECLIPSE_SCREENSHOTS](../ECLIPSE_SCREENSHOTS.md) for screenshots that demonstrate how to get and install the eclipseFormatFile and importOrderFile mentioned above.
 
+<a name="google-java-format"></a>
+
 ## Applying to Java source ([google-java-format](https://github.com/google/google-java-format))
 
 ```gradle
@@ -131,19 +133,14 @@ spotless {
 	}
 }
 ```
-<a name="groovysource"></a>
+
+<a name="groovy"></a>
 
 ## Applying to Groovy source
 
-The spotless configuration for Groovy source is similar to one of the [Java source](#javasource). Most configuration steps, like `licenseHeader` and `importOrder`
-are supporting Groovy as well as Java.
+Configuration for Groovy is similar to [Java](#java).  Most java steps, like `licenseHeader` and `importOrder`, support Groovy as well as Java.
 
-By default all `.groovy` and `.java` files found in the Groovy source directories will be formatted. In case the `.java` files shall be handled by a Java specific
-formatter or configuration, the parameter `excludeJava` can be set, to avoid
-applying to concurrent formatters on the same files.
-
-Alternatively the `target` parameter can be used to individually select the sources
-as described in the [Custom rules](#customrules) section.
+The groovy formatter's default behavior is to format all `.groovy` and `.java` files found in the Groovy source directories.  If you would like to exclude the `.java` files, set the parameter `excludeJava` to `true`, or you can set the `target` parameter as described in the [Custom rules](#custom) section.
 
 ```gradle
 apply plugin: 'groovy'
@@ -164,17 +161,17 @@ spotless {
 }
 ```
 
-The [Groovy-Eclipse](https://github.com/groovy/groovy-eclipse) fromatter is based on the
-Eclipse Java formatter as it is use by `eclipseFormatFile` and it uses the same configuration parameters plus a few additional once. These parameters can be configured
-within a single file, like the Java properties file [greclipse.properties](../lib-extra/src/test/resources/groovy/greclipse/format/greclipse.properties) in the previous example. But the formatter step can also load the [exported Eclipse properties](../ECLIPSE_SCREENSHOTS.md) and augment it with the `org.codehaus.groovy.eclipse.ui.prefs` from the Eclipse workspace as shown below.
+The [Groovy-Eclipse](https://github.com/groovy/groovy-eclipse) formatter is based on the Eclipse Java formatter as used by `eclipseFormatFile`.  It uses the same configuration parameters plus a few additional ones.  These parameters can be configured within a single file, like the Java properties file [greclipse.properties](../lib-extra/src/test/resources/groovy/greclipse/format/greclipse.properties) in the previous example.  The formatter step can also load the [exported Eclipse properties](../ECLIPSE_SCREENSHOTS.md) and augment it with the `org.codehaus.groovy.eclipse.ui.prefs` from the Eclipse workspace as shown below.
 
 ```gradle
-...
+spotless {
 	groovy {
 		greclipseFormatFile 'spotless.eclipseformat.xml' 'org.codehaus.groovy.eclipse.ui.prefs'
-		}
-...
+	}
+}
 ```
+
+<a name="freshmark"></a>
 
 ## Applying [FreshMark](https://github.com/diffplug/freshmark) to markdown files
 
@@ -195,6 +192,8 @@ spotless {
 }
 ```
 
+<a name="scala"></a>
+
 ## Applying [scalafmt](https://olafurpg.github.io/scalafmt/#Scalafmt-codeformatterforScala) to Scala files
 
 ```gradle
@@ -206,6 +205,8 @@ spotless {
 	}
 }
 ```
+
+<a name="ktlint"></a>
 
 ## Applying [ktlint](https://github.com/shyiko/ktlint) to Kotlin files
 
@@ -221,7 +222,7 @@ spotless {
 	}
 }
 ```
-<a name="customrules"></a>
+<a name="custom"></a>
 
 ## Custom rules
 
@@ -266,6 +267,8 @@ If you use `custom` or `customLazy`, you might want to take a look at [this java
 
 See [`JavaExtension.java`](src/main/java/com/diffplug/gradle/spotless/java/JavaExtension.java?ts=4) if you'd like to see how a language-specific set of custom rules is implemented.  We'd love PR's which add support for other languages.
 
+<a name="invisible"></a>
+
 ## Line endings and encodings (invisible stuff)
 
 Spotless uses UTF-8 by default, but you can use [any encoding which Java supports](https://docs.oracle.com/javase/8/docs/technotes/guides/intl/encoding.doc.html).  You can set it globally, and you can also set it per-format.
@@ -284,6 +287,8 @@ Line endings can also be set globally or per-format using the `lineEndings` prop
 
 You can easily set the line endings of different files using [a `.gitattributes` file](https://help.github.com/articles/dealing-with-line-endings/).  Here's an example `.gitattributes` which sets all files to unix newlines: `* text eol=lf`.
 
+<a name="preview"></a>
+
 ## How do I preview what `spotlessApply` will do?
 
 - Save your working tree with `git add -A`, then `git commit -m "Checkpoint before spotless."`
@@ -291,6 +296,8 @@ You can easily set the line endings of different files using [a `.gitattributes`
 - View the changes with `git diff`
 - If you don't like what spotless did, `git reset --hard`
 - If you'd like to remove the "checkpoint" commit, `git reset --soft head~1` will make the checkpoint commit "disappear" from history, but keeps the changes in your working directory.
+
+<a name="examples"></a>
 
 ## Example configurations (from real-world projects)
 
