@@ -16,26 +16,31 @@
 package com.diffplug.spotless;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 class SerializableFileFilterImpl {
 	static class SkipFilesNamed extends NoLambda.EqualityBasedOnSerialization implements SerializableFileFilter {
 		private static final long serialVersionUID = 1L;
 
-		private final Set<String> namesToSkip;
+		private final String[] namesToSkip;
 
 		SkipFilesNamed(String... namesToSkip) {
 			Objects.requireNonNull(namesToSkip);
-			this.namesToSkip = new HashSet<String>(namesToSkip.length);
-			Collections.addAll(this.namesToSkip, namesToSkip);
+			List<String> sorted = FileSignature.toSortedSet(Arrays.asList(namesToSkip));
+			this.namesToSkip = sorted.toArray(new String[sorted.size()]);
 		}
 
 		@Override
 		public boolean accept(File pathname) {
-			return !namesToSkip.contains(pathname.getName());
+			String name = pathname.getName();
+			for (String toSkip : namesToSkip) {
+				if (toSkip.equals(name)) {
+					return false;
+				}
+			}
+			return true;
 		}
 	}
 }
