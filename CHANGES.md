@@ -12,7 +12,6 @@ You might be looking for:
 * `SerializableFileFilter.skipFilesNamed` can now skip multiple file names.
 * Update default KtLint from 0.3.1 to 0.6.1.
 	+ This means we no longer look for rules in the typo package `com.gihub.shyiko`, now only in `com.github.shyiko` (note the `t`).
-* Added support for formatting groovy using greclipse.
 
 ### Version 1.1.0 - February 27th 2017 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.1.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.1.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
