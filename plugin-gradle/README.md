@@ -149,13 +149,14 @@ apply plugin: 'groovy'
 spotless {
 	java {
 		licenseHeaderFile 'spotless.license.java'
-		googleJavaFormat()	//Use specific formatter for Java files
+		googleJavaFormat() // use a specific formatter for Java files
 	}
 	groovy {
-		licenseHeaderFile 'spotless.license.java' // License header file
-		excludeJava // Exclude the java
-		//The Groovy-Eclipse formatter step basically extends the JDT formatter.
-		//It can format Java files as well as Groovy files
+		licenseHeaderFile 'spotless.license.java'
+		excludeJava // excludes all Java sources within the Groovy source dirs from formatting
+
+		// the Groovy Eclipse formatter extends the Java Eclipse formatter,
+		// so it formats Java files by default (unless `excludeJava` is used).
 		greclipseFormatFile 'greclipse.properties'
 	}
 }
