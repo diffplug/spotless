@@ -38,6 +38,7 @@ lib('generic.LicenseHeaderStep')                 +'{{yes}}       | {{no}}       
 lib('generic.ReplaceRegexStep')                  +'{{yes}}       | {{no}}       | {{no}}  |',
 lib('generic.ReplaceStep')                       +'{{yes}}       | {{no}}       | {{no}}  |',
 lib('generic.TrimTrailingWhitespaceStep')        +'{{yes}}       | {{no}}       | {{no}}  |',
+extra('groovy.GrEclipseFormatterStep')           +'{{yes}}       | {{no}}       | {{no}}  |',
 lib('java.GoogleJavaFormatStep')                 +'{{yes}}       | {{no}}       | {{no}}  |',
 lib('java.ImportOrderStep')                      +'{{yes}}       | {{no}}       | {{no}}  |',
 extra('java.EclipseFormatterStep')               +'{{yes}}       | {{no}}       | {{no}}  |',
@@ -58,6 +59,7 @@ lib('scala.ScalaFmtStep')                        +'{{yes}}       | {{no}}       
 | [`generic.ReplaceRegexStep`](lib/src/main/java/com/diffplug/spotless/generic/ReplaceRegexStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
 | [`generic.ReplaceStep`](lib/src/main/java/com/diffplug/spotless/generic/ReplaceStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
 | [`generic.TrimTrailingWhitespaceStep`](lib/src/main/java/com/diffplug/spotless/generic/TrimTrailingWhitespaceStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
+| [`groovy.GrEclipseFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/groovy/GrEclipseFormatterStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
 | [`java.GoogleJavaFormatStep`](lib/src/main/java/com/diffplug/spotless/java/GoogleJavaFormatStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
 | [`java.ImportOrderStep`](lib/src/main/java/com/diffplug/spotless/java/ImportOrderStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
 | [`java.EclipseFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/java/EclipseFormatterStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
