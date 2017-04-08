@@ -30,7 +30,7 @@ spotless {
 			exclude '_ext/**'
 		}
 		custom 'noInternalDeps', noInternalDepsClosure
-		custom 'preventFormatPingPong', { return it.replaceAll('}[ \t\f]+}', '}}') }
+		custom 'preventFormatPingPong', { return it.replaceAll('}[ \t]+}', '}}') }
 		bumpThisNumberIfACustomStepChanges(1)
 		greclipseFormat().configFile('spotless.eclipseformat.xml', 'spotless.groovyformat.prefs')
 	}
