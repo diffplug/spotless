@@ -20,7 +20,7 @@ javadoc {
 // use markdown in javadoc
 def makeLink = { url, text -> "<a href=\"${url}\" style=\"text-transform: none;\">${text}</a>" }
 def javadocInfo = '<h2>' + makeLink("https://github.com/${org}/${name}", "${group}:${project.ext.artifactId}:${ext.version}") +
-' by ' + makeLink('http://www.diffplug.com', 'DiffPlug') + '</h2>'
+		' by ' + makeLink('http://www.diffplug.com', 'DiffPlug') + '</h2>'
 
 String version_str = ext.version.endsWith('-SNAPSHOT') ? 'snapshot' : ext.version
 apply plugin: 'ch.raffael.pegdown-doclet'
@@ -110,13 +110,14 @@ model {
 		}
 		if (project.ext.isSnapshot) {
 			// upload snapshots to oss.sonatype.org
-			repositories { maven {
-				url = 'https://oss.sonatype.org/content/repositories/snapshots'
-				credentials {
-					username = cred('nexus_user')
-					password = cred('nexus_pass')
-				}
-			} }
+			repositories {
+				maven {
+					url = 'https://oss.sonatype.org/content/repositories/snapshots'
+					credentials {
+						username = cred('nexus_user')
+						password = cred('nexus_pass')
+					}
+				}}
 		}
 	}
 }
@@ -143,5 +144,10 @@ if (!ext.isSnapshot) {
 	}
 
 	publish.dependsOn(bintrayUpload)
-	bintrayUpload.dependsOn(['generatePomFileForPluginMavenPublication', jar, sourcesJar, javadocJar])
+	bintrayUpload.dependsOn([
+		'generatePomFileForPluginMavenPublication',
+		jar,
+		sourcesJar,
+		javadocJar
+	])
 }

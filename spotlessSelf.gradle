@@ -24,9 +24,12 @@ spotless {
 		trimTrailingWhitespace()
 	}
 	groovy {
-		target 'build.gradle', 'spotlessSelf.gradle', 'settings.gradle'
-		greclipseFormat().configFile('spotless.eclipseformat.xml')
-		paddedCell()
+		target fileTree('.') {
+			include '**/*.gradle'
+			exclude '_ext/**'
+		}
+		custom 'preventFormatPingPong', { return it.replaceAll('}[ \t\f]+}', '}}') }
+		greclipseFormat().configFile('spotless.eclipseformat.xml', 'spotless.groovyformat.prefs')
 	}
 	freshmark {
 		target '**/*.md'
