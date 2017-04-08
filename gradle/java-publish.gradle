@@ -127,7 +127,9 @@ if (!ext.isSnapshot) {
 	bintray {
 		user = cred('bintray_user')
 		key = cred('bintray_pass')
-		publications = ['pluginMaven']
+		publications = [
+			'pluginMaven'
+		]
 		publish = true
 		pkg {
 			repo = 'opensource'

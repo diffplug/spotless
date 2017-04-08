@@ -6,18 +6,19 @@ plugins {
 
 repositories { jcenter() }
 spotless {
+	def noInternalDepsClosure = {
+		if (it.contains('import org.gradle.internal.') &&
+		!it.contains('def noInternalDepsClosure')) {
+			throw new AssertionError("Accidental internal import")
+		}
+	}
 	java {
 		target fileTree('.') {
 			include '**/*.java'
 			exclude '_ext/*/build/**'
 		}
-		custom 'noInternalDeps', {
-			if (it.contains('import org.gradle.internal.')) {
-				throw new AssertionError("Accidental internal import")
-			}
-		}
+		custom 'noInternalDeps', noInternalDepsClosure
 		bumpThisNumberIfACustomStepChanges(1)
-
 		licenseHeaderFile 'spotless.license'
 		importOrderFile   'spotless.importorder'
 		eclipseFormatFile 'spotless.eclipseformat.xml'
@@ -28,7 +29,9 @@ spotless {
 			include '**/*.gradle'
 			exclude '_ext/**'
 		}
+		custom 'noInternalDeps', noInternalDepsClosure
 		custom 'preventFormatPingPong', { return it.replaceAll('}[ \t\f]+}', '}}') }
+		bumpThisNumberIfACustomStepChanges(1)
 		greclipseFormat().configFile('spotless.eclipseformat.xml', 'spotless.groovyformat.prefs')
 	}
 	freshmark {

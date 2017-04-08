@@ -35,7 +35,9 @@ apply plugin: 'findbugs'
 findbugs {
 	toolVersion = VER_FINDBUGS
 	sourceSets = [
-		sourceSets.main]	// don't check the test code
+		// don't check the test code
+		sourceSets.main
+	]
 	ignoreFailures = false 	// bug free or it doesn't ship!
 	reportsDir = file('build/findbugs')
 	effort = 'max'			// min|default|max
