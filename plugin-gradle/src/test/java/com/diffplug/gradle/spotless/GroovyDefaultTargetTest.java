@@ -63,19 +63,20 @@ public class GroovyDefaultTargetTest extends GradleIntegrationTest {
 
 		// write appends a line ending so re-read to see what the original currently looks like
 		original = read("src/main/java/test.java");
-		// The modified files containing the header
-		String modified = HEADER + "\n" + original;
 
 		// Run
 		gradleRunner().withArguments("spotlessApply").build();
 
 		// Common checks
 		assertFileContent(original, javaSrcJavaFile);
-		assertFileContent(modified, groovySrcGroovyFile);
 
-		String expected = excludeJava ? original : modified;
-		assertFileContent(expected, groovySrcJavaFile);
+		Assertions.assertThat(read(groovySrcGroovyFile.toPath())).contains(HEADER);
 
+		if (excludeJava) {
+			assertFileContent(original, groovySrcJavaFile);
+		} else {
+			Assertions.assertThat(read(groovySrcJavaFile.toPath())).contains(HEADER);
+		}
 	}
 
 	@Test
