@@ -39,7 +39,7 @@ public class GroovyDefaultTargetTest extends GradleIntegrationTest {
 	}
 
 	private void testIncludeExcludeOption(boolean excludeJava) throws IOException {
-		String excludeStatement = excludeJava ? "excludeJava" : "";
+		String excludeStatement = excludeJava ? "excludeJava()" : "";
 		write("build.gradle",
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",

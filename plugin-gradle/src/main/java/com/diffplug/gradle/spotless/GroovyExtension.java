@@ -34,22 +34,21 @@ import com.diffplug.spotless.java.ImportOrderStep;
 
 public class GroovyExtension extends FormatExtension {
 	static final String NAME = "groovy";
-	private static final boolean EXCLUDE_JAVA_DEFAULT = false;
-	private boolean excludeJava;
 
 	public GroovyExtension(SpotlessExtension rootExtension) {
 		super(rootExtension);
-		excludeJava = EXCLUDE_JAVA_DEFAULT;
 	}
 
-	void excludeJava() {
-		excludeJava = !EXCLUDE_JAVA_DEFAULT;
+	boolean excludeJava = false;
+
+	/** Excludes .java files, to focus on only .groovy files. */
+	public void excludeJava() {
+		excludeJava(true);
 	}
 
-	public boolean getExcludeJava() {
-		//getExcludeJava only used for DSL convenience so that braces can be omitted.
-		excludeJava();
-		return excludeJava;
+	/** Determines whether to exclude .java files, to focus on only .groovy files. */
+	public void excludeJava(boolean excludeJava) {
+		this.excludeJava = excludeJava;
 	}
 
 	public static final String LICENSE_HEADER_DELIMITER = "package ";
@@ -107,7 +106,7 @@ public class GroovyExtension extends FormatExtension {
 		if (target == null) {
 			JavaPluginConvention convention = getProject().getConvention().getPlugin(JavaPluginConvention.class);
 			if (convention == null) {
-				throw new GradleException("You must apply the goovy plugin before the spotless plugin if you are using the groovy extension.");
+				throw new GradleException("You must apply the groovy plugin before the spotless plugin if you are using the groovy extension.");
 			}
 			//Add all Groovy files (may contain Java files as well)
 
@@ -121,7 +120,7 @@ public class GroovyExtension extends FormatExtension {
 				}
 			}
 			target = union;
-		} else if (excludeJava != EXCLUDE_JAVA_DEFAULT) {
+		} else if (excludeJava) {
 			throw new IllegalArgumentException("'excludeJava' is not supported in combination with a custom 'target'.");
 		}
 		// LicenseHeaderStep completely blows apart package-info.java/groovy - this common-sense check
