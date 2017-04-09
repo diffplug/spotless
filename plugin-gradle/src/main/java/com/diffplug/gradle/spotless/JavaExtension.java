@@ -39,7 +39,7 @@ public class JavaExtension extends FormatExtension {
 
 	// If this constant changes, don't forget to change the similarly-named one in
 	// testlib/src/test/java/com/diffplug/spotless/generic/LicenseHeaderStepTest.java as well
-	private static final String LICENSE_HEADER_DELIMITER = "package ";
+	static final String LICENSE_HEADER_DELIMITER = "package ";
 
 	public void licenseHeader(String licenseHeader) {
 		licenseHeader(licenseHeader, LICENSE_HEADER_DELIMITER);

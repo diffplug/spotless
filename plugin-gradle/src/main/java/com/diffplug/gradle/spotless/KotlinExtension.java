@@ -29,14 +29,12 @@ public class KotlinExtension extends FormatExtension {
 		super(rootExtension);
 	}
 
-	private static final String LICENSE_HEADER_DELIMITER = "package ";
-
 	public void licenseHeader(String licenseHeader) {
-		licenseHeader(licenseHeader, LICENSE_HEADER_DELIMITER);
+		licenseHeader(licenseHeader, JavaExtension.LICENSE_HEADER_DELIMITER);
 	}
 
 	public void licenseHeaderFile(Object licenseHeaderFile) {
-		licenseHeaderFile(licenseHeaderFile, LICENSE_HEADER_DELIMITER);
+		licenseHeaderFile(licenseHeaderFile, JavaExtension.LICENSE_HEADER_DELIMITER);
 	}
 
 	/** Adds the specified version of [ktlint](https://github.com/shyiko/ktlint). */
