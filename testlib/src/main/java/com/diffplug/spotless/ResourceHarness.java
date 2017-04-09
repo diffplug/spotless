@@ -25,11 +25,15 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.junit.Assert;
+import org.junit.ComparisonFailure;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 
 import com.diffplug.common.io.Resources;
 
@@ -43,6 +47,30 @@ public class ResourceHarness {
 	 */
 	@Rule
 	public TemporaryFolder folderDontUseDirectly = new TemporaryFolder();
+
+	/** Log nontruncated diff in case of a comparison failure to ease test development.*/
+	@Rule
+	public TestWatcher logComparisonFailureDiff = new TestWatcher() {
+		private static final String COMPARISON_SEPARATOR = "------------------------------------";
+
+		@Override
+		protected void failed(Throwable e, Description description) {
+			if (e instanceof ComparisonFailure) {
+				ComparisonFailure failure = (ComparisonFailure) e;
+				String msg = new String();
+				msg += String.format("Output:  %n%1$s%n%2$s%n%1$s%n", COMPARISON_SEPARATOR, failure.getActual());
+				msg += String.format("Expected:%n%1$s%n%2$s%n%1$s%n", COMPARISON_SEPARATOR, failure.getExpected());
+				logFailure(msg, description);
+			}
+
+		}
+
+		private void logFailure(String message, Description description) {
+			Logger log = Logger.getLogger(description.getClassName());
+			log.warning(String.format("Step '%s' failed.%n%s", description.getDisplayName(), message));
+		}
+
+	};
 
 	/** Returns the root folder (canonicalized to fix OS X issue) */
 	protected File rootFolder() throws IOException {
