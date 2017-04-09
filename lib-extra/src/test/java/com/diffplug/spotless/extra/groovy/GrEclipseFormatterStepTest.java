@@ -37,7 +37,7 @@ public class GrEclipseFormatterStepTest extends ResourceHarness {
 	private static final String FORMATTER_FILENAME_REPALCEMENT = "Hello.groovy";
 
 	private static Provisioner provisioner() {
-		return TestProvisioner.jcenter();
+		return TestProvisioner.mavenCentral();
 	}
 
 	@Test
