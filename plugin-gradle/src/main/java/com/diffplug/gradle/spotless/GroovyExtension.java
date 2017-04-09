@@ -67,19 +67,19 @@ public class GroovyExtension extends FormatExtension {
 		addStep(ImportOrderStep.createFromFile(getProject().file(importOrderFile)));
 	}
 
-	public GrEclipseFormatConfig greclipseFormat() {
-		return greclipseFormat(GrEclipseFormatterStep.defaultVersion());
+	public GrEclipseConfig greclipse() {
+		return greclipse(GrEclipseFormatterStep.defaultVersion());
 	}
 
-	public GrEclipseFormatConfig greclipseFormat(String version) {
-		return new GrEclipseFormatConfig(version);
+	public GrEclipseConfig greclipse(String version) {
+		return new GrEclipseConfig(version);
 	}
 
-	public class GrEclipseFormatConfig {
+	public class GrEclipseConfig {
 		final String version;
 		Object[] configFiles;
 
-		GrEclipseFormatConfig(String version) {
+		GrEclipseConfig(String version) {
 			configFiles = new Object[0];
 			this.version = Objects.requireNonNull(version);
 			addStep(createStep());

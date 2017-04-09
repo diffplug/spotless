@@ -32,7 +32,7 @@ spotless {
 		custom 'noInternalDeps', noInternalDepsClosure
 		custom 'preventFormatPingPong', { return it.replaceAll('}[ \t]+}', '}}') }
 		bumpThisNumberIfACustomStepChanges(1)
-		greclipseFormat().configFile('spotless.eclipseformat.xml', 'spotless.groovyformat.prefs')
+		greclipse().configFile('spotless.eclipseformat.xml', 'spotless.groovyformat.prefs')
 	}
 	freshmark {
 		target '**/*.md'
