@@ -1,0 +1,2 @@
+groovy.formatter.remove.unnecessary.semicolons=true
+groovy.formatter.longListLength=1

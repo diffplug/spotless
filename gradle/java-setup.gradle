@@ -1,18 +1,14 @@
 //////////
 // JAVA //
 //////////
-repositories {
-	jcenter()
-}
+repositories { jcenter() }
 
 // setup java
 apply plugin: 'java'
 
 sourceCompatibility = VER_JAVA
 targetCompatibility = VER_JAVA
-tasks.withType(JavaCompile) {
-	options.encoding = 'UTF-8'
-}
+tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
 
 /////////////
 // ECLIPSE //
@@ -38,7 +34,10 @@ eclipseResourceFilters {
 apply plugin: 'findbugs'
 findbugs {
 	toolVersion = VER_FINDBUGS
-	sourceSets = [sourceSets.main]	// don't check the test code
+	sourceSets = [
+		// don't check the test code
+		sourceSets.main
+	]
 	ignoreFailures = false 	// bug free or it doesn't ship!
 	reportsDir = file('build/findbugs')
 	effort = 'max'			// min|default|max

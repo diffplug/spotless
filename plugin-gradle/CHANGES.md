@@ -2,6 +2,8 @@
 
 ### Version 3.3.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-plugin-gradle/))
 
+* Added support for groovy formatting (huge thanks to Frank Vennemeyer! [#94](https://github.com/diffplug/spotless/pull/94), [#89](https://github.com/diffplug/spotless/pull/89), [#88](https://github.com/diffplug/spotless/pull/88), [#85](https://github.com/diffplug/spotless/pull/85))
+
 ### Version 3.2.0 - April 3rd 2017 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.2.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.2.0))
 
 * Update default KtLint from 0.3.1 to 0.6.1 (thanks to @kvnxiao [#93](https://github.com/diffplug/spotless/pull/93)).

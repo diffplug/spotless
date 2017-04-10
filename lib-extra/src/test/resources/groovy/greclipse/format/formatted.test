@@ -1,0 +1,22 @@
+/**
+ * Class description
+ */
+class Foo
+{
+  String foo
+
+  /* Method */
+  def callBar()
+  {
+    new Bar().bar(foo) }
+
+  /** Inner class */
+  class Bar
+  {
+
+    def bar(foo)
+    {
+      println "${foo}Bar" }}}
+
+def foo = new Foo(foo: 'Foo')
+foo.callBar()

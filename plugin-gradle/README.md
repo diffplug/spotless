@@ -79,6 +79,7 @@ Spotless can check and apply formatting to any plain-text file, using simple rul
 
 * Eclipse's java code formatter (including style and import ordering)
 * Google's [google-java-format](https://github.com/google/google-java-format)
+* [Groovy Eclipse](https://github.com/groovy/groovy-eclipse/wiki)'s groovy code formatter
 * [FreshMark](https://github.com/diffplug/freshmark) (markdown with variables)
 * Any user-defined function which takes an unformatted string and outputs a formatted version.
 
@@ -86,7 +87,12 @@ Contributions are welcome, see [the contributing guide](../CONTRIBUTING.md) for 
 
 Spotless requires Gradle to be running on JRE 8+.<sup>See [issue #7](https://github.com/diffplug/spotless/issues/7) for details.</sup>
 
+<a name="java"></a>
+
 ## Applying to Java source
+
+By default, all Java source sets will be formatted. To change this,
+set the `target` parameter as described in the [Custom rules](#custom) section.
 
 ```gradle
 apply plugin: 'java'
@@ -94,9 +100,6 @@ apply plugin: 'java'
 
 spotless {
 	java {
-		// By default, all Java source sets will be formatted.  To change
-		// this, set the 'target' parameter as described in the next section.
-
 		licenseHeader '/* Licensed under Apache-2.0 */'	// License header
 		licenseHeaderFile 'spotless.license.java'		// License header file
 		// Obviously, you can't specify both licenseHeader and licenseHeaderFile at the same time
@@ -117,6 +120,8 @@ spotless {
 
 See [ECLIPSE_SCREENSHOTS](../ECLIPSE_SCREENSHOTS.md) for screenshots that demonstrate how to get and install the eclipseFormatFile and importOrderFile mentioned above.
 
+<a name="google-java-format"></a>
+
 ## Applying to Java source ([google-java-format](https://github.com/google/google-java-format))
 
 ```gradle
@@ -128,6 +133,49 @@ spotless {
 	}
 }
 ```
+
+<a name="groovy"></a>
+
+## Applying to Groovy source
+
+Configuration for Groovy is similar to [Java](#java).  Most java steps, like `licenseHeader` and `importOrder`, support Groovy as well as Java.
+
+The groovy formatter's default behavior is to format all `.groovy` and `.java` files found in the Groovy source directories.  If you would like to exclude the `.java` files, set the parameter `excludeJava`, or you can set the `target` parameter as described in the [Custom rules](#custom) section.
+
+```gradle
+apply plugin: 'groovy'
+...
+
+spotless {
+	java {
+		licenseHeaderFile 'spotless.license.java'
+		googleJavaFormat() // use a specific formatter for Java files
+	}
+	groovy {
+		licenseHeaderFile 'spotless.license.java'
+		excludeJava() // excludes all Java sources within the Groovy source dirs from formatting
+
+		// the Groovy Eclipse formatter extends the Java Eclipse formatter,
+		// so it formats Java files by default (unless `excludeJava` is used).
+		greclipse().configFile('greclipse.properties')
+	}
+}
+```
+
+The [Groovy-Eclipse](https://github.com/groovy/groovy-eclipse) formatter is based on the Eclipse Java formatter as used by `eclipseFormatFile`. It uses the same configuration parameters plus a few additional ones.  These parameters can be configured within a single file, like the Java properties file [greclipse.properties](../lib-extra/src/test/resources/groovy/greclipse/format/greclipse.properties) in the previous example.  The formatter step can also load the [exported Eclipse properties](../ECLIPSE_SCREENSHOTS.md) and augment it with the `org.codehaus.groovy.eclipse.ui.prefs` from the Eclipse workspace as shown below.
+
+```gradle
+spotless {
+	groovy {
+		// Use the default version and Groovy-Eclipse default configuration
+		greclipse()
+		// optional: you can specify a specific version or config file(s)
+		greclipse('2.3.0').configFile('spotless.eclipseformat.xml', 'org.codehaus.groovy.eclipse.ui.prefs')
+	}
+}
+```
+
+<a name="freshmark"></a>
 
 ## Applying [FreshMark](https://github.com/diffplug/freshmark) to markdown files
 
@@ -148,6 +196,8 @@ spotless {
 }
 ```
 
+<a name="scala"></a>
+
 ## Applying [scalafmt](https://olafurpg.github.io/scalafmt/#Scalafmt-codeformatterforScala) to Scala files
 
 ```gradle
@@ -159,6 +209,8 @@ spotless {
 	}
 }
 ```
+
+<a name="ktlint"></a>
 
 ## Applying [ktlint](https://github.com/shyiko/ktlint) to Kotlin files
 
@@ -174,6 +226,7 @@ spotless {
 	}
 }
 ```
+<a name="custom"></a>
 
 ## Custom rules
 
@@ -218,6 +271,8 @@ If you use `custom` or `customLazy`, you might want to take a look at [this java
 
 See [`JavaExtension.java`](src/main/java/com/diffplug/gradle/spotless/java/JavaExtension.java?ts=4) if you'd like to see how a language-specific set of custom rules is implemented.  We'd love PR's which add support for other languages.
 
+<a name="invisible"></a>
+
 ## Line endings and encodings (invisible stuff)
 
 Spotless uses UTF-8 by default, but you can use [any encoding which Java supports](https://docs.oracle.com/javase/8/docs/technotes/guides/intl/encoding.doc.html).  You can set it globally, and you can also set it per-format.
@@ -235,6 +290,8 @@ spotless {
 Line endings can also be set globally or per-format using the `lineEndings` property.  Spotless supports four line ending modes: `UNIX`, `WINDOWS`, `PLATFORM_NATIVE`, and `GIT_ATTRIBUTES`.  The default value is `GIT_ATTRIBUTES`, and *we highly recommend that you* ***do not change*** *this value*.  Git has opinions about line endings, and if Spotless and git disagree, then you're going to have a bad time.
 
 You can easily set the line endings of different files using [a `.gitattributes` file](https://help.github.com/articles/dealing-with-line-endings/).  Here's an example `.gitattributes` which sets all files to unix newlines: `* text eol=lf`.
+
+<a name="enforceCheck"></a>
 
 ## Disabling warnings and error messages
 
@@ -264,6 +321,8 @@ spotless {
 
 Note that `enforceCheck` is a global property which affects all formats (outside the java block), while `ignoreErrorForStep/Path` are local to a single format (inside the java block).
 
+<a name="preview"></a>
+
 ## How do I preview what `spotlessApply` will do?
 
 - Save your working tree with `git add -A`, then `git commit -m "Checkpoint before spotless."`
@@ -271,6 +330,8 @@ Note that `enforceCheck` is a global property which affects all formats (outside
 - View the changes with `git diff`
 - If you don't like what spotless did, `git reset --hard`
 - If you'd like to remove the "checkpoint" commit, `git reset --soft head~1` will make the checkpoint commit "disappear" from history, but keeps the changes in your working directory.
+
+<a name="examples"></a>
 
 ## Example configurations (from real-world projects)
 

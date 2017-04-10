@@ -91,6 +91,11 @@ public class SpotlessExtension {
 		configure(FreshMarkExtension.NAME, FreshMarkExtension.class, closure);
 	}
 
+	/** Configures the special groovy-specific extension. */
+	public void groovy(Action<GroovyExtension> closure) {
+		configure(GroovyExtension.NAME, GroovyExtension.class, closure);
+	}
+
 	/** Configures a custom extension. */
 	public void format(String name, Action<FormatExtension> closure) {
 		configure(name, FormatExtension.class, closure);

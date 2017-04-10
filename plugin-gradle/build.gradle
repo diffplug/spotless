@@ -33,9 +33,7 @@ task spotlessApply(type: JavaExec) {
 	classpath sourceSets.test.runtimeClasspath
 	main = 'com.diffplug.gradle.spotless.SelfTestApply'
 }
-test {
-	testLogging.showStandardStreams = true
-}
+test { testLogging.showStandardStreams = true }
 
 //////////////////////////
 // GRADLE PLUGIN PORTAL //
@@ -51,7 +49,12 @@ pluginBundle {
 		spotlessPlugin {
 			id = 'com.diffplug.gradle.spotless'
 			displayName = 'Spotless formatting plugin'
-			tags = ['format', 'style', 'license', 'header']
+			tags = [
+				'format',
+				'style',
+				'license',
+				'header'
+			]
 		}
 	}
 

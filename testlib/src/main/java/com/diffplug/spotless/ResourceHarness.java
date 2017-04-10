@@ -104,6 +104,10 @@ public class ResourceHarness {
 		return target.toFile();
 	}
 
+	protected String read(Path path) throws IOException {
+		return read(path, LineEnding.UNIX);
+	}
+
 	protected String read(String path) throws IOException {
 		return read(path, LineEnding.UNIX);
 	}
@@ -112,9 +116,17 @@ public class ResourceHarness {
 		return read(path, ending, StandardCharsets.UTF_8);
 	}
 
+	protected String read(Path path, LineEnding ending) throws IOException {
+		return read(path, ending, StandardCharsets.UTF_8);
+	}
+
 	protected String read(String path, LineEnding ending, Charset encoding) throws IOException {
 		Path target = newFile(path).toPath();
-		String content = new String(Files.readAllBytes(target), encoding);
+		return read(target, ending, encoding);
+	}
+
+	protected String read(Path path, LineEnding ending, Charset encoding) throws IOException {
+		String content = new String(Files.readAllBytes(path), encoding);
 		String allUnixNewline = LineEnding.toUnix(content);
 		return allUnixNewline.replace("\n", ending.str());
 	}

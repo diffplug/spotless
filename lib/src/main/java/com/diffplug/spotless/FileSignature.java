@@ -69,10 +69,14 @@ public final class FileSignature implements Serializable {
 		return new FileSignature(asNonNullList(files));
 	}
 
+	/** Creates file signature whereas order of the files remains unchanged. */
+	public static FileSignature signAsSet(File... files) throws IOException {
+		return signAsSet(Arrays.asList(files));
+	}
+
 	/** Creates file signature insensitive to the order of the files. */
 	public static FileSignature signAsSet(Iterable<File> files) throws IOException {
-		return new FileSignature(
-				toSortedSet(asNonNullList(files)));
+		return new FileSignature(toSortedSet(files));
 	}
 
 	private FileSignature(final List<File> files) throws IOException {
@@ -106,7 +110,8 @@ public final class FileSignature implements Serializable {
 	}
 
 	/** Sorts "toBeSorted" and removes duplicates. */
-	private static <T extends Comparable<T>> List<T> toSortedSet(List<T> toBeSorted) {
+	static <T extends Comparable<T>> List<T> toSortedSet(Iterable<T> raw) {
+		List<T> toBeSorted = asNonNullList(raw);
 		// sort it
 		Collections.sort(toBeSorted);
 		// remove any duplicates (normally there won't be any)
@@ -136,5 +141,4 @@ public final class FileSignature implements Serializable {
 		});
 		return shallowCopy;
 	}
-
 }
