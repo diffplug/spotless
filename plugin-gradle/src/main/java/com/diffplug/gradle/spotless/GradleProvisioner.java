@@ -15,6 +15,9 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
@@ -27,12 +30,19 @@ public class GradleProvisioner {
 
 	public static Provisioner fromProject(Project project) {
 		return mavenCoords -> {
-			Dependency[] deps = mavenCoords.stream()
-					.map(project.getDependencies()::create)
-					.toArray(Dependency[]::new);
-			Configuration config = project.getConfigurations().detachedConfiguration(deps);
-			config.setDescription(mavenCoords.toString());
-			return config.resolve();
+			try {
+				Dependency[] deps = mavenCoords.stream()
+						.map(project.getBuildscript().getDependencies()::create)
+						.toArray(Dependency[]::new);
+				Configuration config = project.getBuildscript().getConfigurations().detachedConfiguration(deps);
+				config.setDescription(mavenCoords.toString());
+				return config.resolve();
+			} catch (Exception e) {
+				logger.log(Level.SEVERE, "You probably need to add a repository containing the '" + mavenCoords + "' artifact, e.g.: 'buildscript { repositories { mavenCentral() }}'", e);
+				throw e;
+			}
 		};
 	}
+
+	private static final Logger logger = Logger.getLogger(GradleProvisioner.class.getName());
 }

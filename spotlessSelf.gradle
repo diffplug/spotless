@@ -1,3 +1,5 @@
+buildscript { repositories { jcenter() }}
+
 // applied by SelfTest
 plugins {
 	id 'com.diffplug.gradle.spotless'
