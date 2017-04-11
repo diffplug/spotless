@@ -22,8 +22,6 @@ import java.net.URL;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -37,7 +35,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 public final class JarState implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private static final Logger logger = Logger.getLogger(JarState.class.getName());
 
 	@SuppressWarnings("unused")
 	private final String mavenCoordinate;
@@ -60,15 +57,9 @@ public final class JarState implements Serializable {
 
 	public static JarState from(String mavenCoordinate, Provisioner provisioner) throws IOException {
 		Objects.requireNonNull(mavenCoordinate);
-		Set<File> jars;
-		try {
-			jars = provisioner.provisionWithDependencies(mavenCoordinate);
-			if (jars.isEmpty()) {
-				throw new NoSuchElementException("Resolved to an empty result.");
-			}
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, "You probably need to add a repository containing the `" + mavenCoordinate + "` artifact to your buildscript, e.g.: repositories { mavenCentral() }", e);
-			throw e;
+		Set<File> jars = provisioner.provisionWithDependencies(mavenCoordinate);
+		if (jars.isEmpty()) {
+			throw new NoSuchElementException("Resolved to an empty result: " + mavenCoordinate);
 		}
 		FileSignature fileSignature = FileSignature.signAsSet(jars);
 		return new JarState(mavenCoordinate, fileSignature, jars);
