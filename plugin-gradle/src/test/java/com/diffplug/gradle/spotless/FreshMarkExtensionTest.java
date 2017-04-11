@@ -24,11 +24,11 @@ public class FreshMarkExtensionTest extends GradleIntegrationTest {
 	@Test
 	public void integration() throws IOException {
 		write("build.gradle",
+				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'java'",
 				"    id 'com.diffplug.gradle.spotless'",
 				"}",
-				"repositories { mavenCentral() }",
 				"spotless {",
 				"    freshmark {",
 				"        properties {",

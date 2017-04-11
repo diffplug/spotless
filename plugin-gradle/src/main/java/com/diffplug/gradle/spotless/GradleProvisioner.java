@@ -28,9 +28,9 @@ public class GradleProvisioner {
 	public static Provisioner fromProject(Project project) {
 		return mavenCoords -> {
 			Dependency[] deps = mavenCoords.stream()
-					.map(project.getDependencies()::create)
+					.map(project.getBuildscript().getDependencies()::create)
 					.toArray(Dependency[]::new);
-			Configuration config = project.getConfigurations().detachedConfiguration(deps);
+			Configuration config = project.getBuildscript().getConfigurations().detachedConfiguration(deps);
 			config.setDescription(mavenCoords.toString());
 			return config.resolve();
 		};

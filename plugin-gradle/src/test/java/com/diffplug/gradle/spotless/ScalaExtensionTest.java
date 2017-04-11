@@ -24,11 +24,11 @@ public class ScalaExtensionTest extends GradleIntegrationTest {
 	@Test
 	public void integration() throws IOException {
 		write("build.gradle",
+				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",
 				"}",
 				"apply plugin: 'scala'",
-				"repositories { mavenCentral() }",
 				"spotless {",
 				"    scala {",
 				"        scalafmt().configFile('scalafmt.conf')",
