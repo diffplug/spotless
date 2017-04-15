@@ -151,7 +151,7 @@ public class ResourceHarness {
 
 	/** Returns Files (in a temporary folder) which has the contents of the given file from the src/test/resources directory. */
 	protected List<File> createTestFiles(String... filenames) throws IOException {
-		List<File> files = new ArrayList<File>(filenames.length);
+		List<File> files = new ArrayList<>(filenames.length);
 		for (String filename : filenames) {
 			files.add(createTestFile(filename));
 		}
