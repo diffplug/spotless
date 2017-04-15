@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -178,11 +179,8 @@ public final class FormatterProperties {
 			protected Properties execute(final File xmlFile, final Node rootNode)
 					throws IOException, IllegalArgumentException {
 				final Properties properties = new Properties();
-				InputStream xmlInput = new FileInputStream(xmlFile);
-				try {
+				try (InputStream xmlInput = new FileInputStream(xmlFile)) {
 					properties.loadFromXML(xmlInput);
-				} finally {
-					xmlInput.close();
 				}
 				return properties;
 			}
@@ -227,15 +225,11 @@ public final class FormatterProperties {
 			}
 
 			private List<Node> getChildren(final Node node, final String nodeName) {
-				List<Node> matchingChildren = new LinkedList<Node>();
 				NodeList children = node.getChildNodes();
-				for (int i = 0; i < children.getLength(); i++) {
-					Node child = children.item(i);
-					if (child.getNodeName().equals(nodeName)) {
-						matchingChildren.add(child);
-					}
-				}
-				return matchingChildren;
+				return IntStream.range(0, children.getLength()) //
+						.mapToObj(children::item) //
+						.filter(child -> child.getNodeName().equals(nodeName)) //
+						.collect(Collectors.toCollection(LinkedList::new));
 			}
 
 		};
