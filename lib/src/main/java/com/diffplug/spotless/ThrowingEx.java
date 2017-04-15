@@ -28,16 +28,19 @@ public final class ThrowingEx {
 	private ThrowingEx() {}
 
 	/** A function that can throw any exception. */
+	@FunctionalInterface
 	public interface Function<T, R> {
 		R apply(T input) throws Exception;
 	}
 
 	/** A supplier that can throw any exception. */
+	@FunctionalInterface
 	public interface Supplier<T> {
 		T get() throws Exception;
 	}
 
 	/** A runnable that can throw any exception. */
+	@FunctionalInterface
 	public interface Runnable {
 		void run() throws Exception;
 	}
