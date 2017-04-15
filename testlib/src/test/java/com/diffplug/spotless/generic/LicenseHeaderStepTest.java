@@ -24,7 +24,6 @@ import org.junit.Test;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
-import com.diffplug.spotless.generic.LicenseHeaderStep;
 
 public class LicenseHeaderStepTest extends ResourceHarness {
 	private static final String KEY_LICENSE = "license/TestLicense";

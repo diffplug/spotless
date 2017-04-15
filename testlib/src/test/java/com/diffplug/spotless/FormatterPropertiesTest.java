@@ -28,8 +28,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import com.diffplug.spotless.ResourceHarness;
-
 public class FormatterPropertiesTest extends ResourceHarness {
 
 	@Rule
@@ -171,7 +169,7 @@ public class FormatterPropertiesTest extends ResourceHarness {
 			return this;
 		}
 
-	};
+	}
 
 	private static FormatterSettingsAssert assertFor(FormatterProperties actual) {
 		return new FormatterSettingsAssert(actual);

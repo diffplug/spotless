@@ -23,7 +23,6 @@ import org.junit.Test;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
-import com.diffplug.spotless.generic.IndentStep;
 
 public class IndentStepTest extends ResourceHarness {
 	@Test

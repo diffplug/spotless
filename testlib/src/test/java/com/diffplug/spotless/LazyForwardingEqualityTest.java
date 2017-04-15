@@ -20,7 +20,6 @@ import static com.diffplug.common.testing.SerializableTester.*;
 import org.junit.Test;
 
 import com.diffplug.common.testing.EqualsTester;
-import com.diffplug.spotless.LazyForwardingEquality;
 
 @SuppressWarnings("serial")
 public class LazyForwardingEqualityTest {
