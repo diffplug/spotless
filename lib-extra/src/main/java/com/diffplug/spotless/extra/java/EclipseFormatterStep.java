@@ -18,7 +18,7 @@ package com.diffplug.spotless.extra.java;
 import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -45,7 +45,7 @@ public final class EclipseFormatterStep {
 	 * to many files. Use {@link #create(Iterable, Provisioner)} instead.*/
 	@Deprecated
 	public static FormatterStep create(File settingsFile, Provisioner provisioner) {
-		return create(Arrays.asList(settingsFile), provisioner);
+		return create(Collections.singletonList(settingsFile), provisioner);
 	}
 
 	/** Creates a formatter step for the given version and settings file. */
@@ -58,7 +58,7 @@ public final class EclipseFormatterStep {
 	 * to many files. Use {@link #create(String, Iterable, Provisioner)} instead.*/
 	@Deprecated
 	public static FormatterStep create(String version, File settingsFile, Provisioner provisioner) {
-		return create(version, Arrays.asList(settingsFile), provisioner);
+		return create(version, Collections.singletonList(settingsFile), provisioner);
 	}
 
 	/** Creates a formatter step for the given version and settings files. */
