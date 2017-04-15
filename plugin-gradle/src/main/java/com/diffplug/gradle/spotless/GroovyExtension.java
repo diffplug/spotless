@@ -15,6 +15,8 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -64,6 +66,7 @@ public class GroovyExtension extends FormatExtension {
 	}
 
 	public void importOrderFile(Object importOrderFile) {
+		Objects.requireNonNull(importOrderFile);
 		addStep(ImportOrderStep.createFromFile(getProject().file(importOrderFile)));
 	}
 
@@ -86,7 +89,7 @@ public class GroovyExtension extends FormatExtension {
 		}
 
 		public void configFile(Object... configFiles) {
-			this.configFiles = configFiles;
+			this.configFiles = requireElementsNonNull(configFiles);
 			replaceStep(createStep());
 		}
 

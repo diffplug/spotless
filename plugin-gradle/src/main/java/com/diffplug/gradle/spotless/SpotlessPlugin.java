@@ -15,8 +15,6 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.util.Map;
-
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -66,11 +64,11 @@ public class SpotlessPlugin implements Plugin<Project> {
 		rootApplyTask.setGroup(TASK_GROUP);
 		rootApplyTask.setDescription(APPLY_DESCRIPTION);
 
-		for (Map.Entry<String, FormatExtension> entry : spotlessExtension.formats.entrySet()) {
+		spotlessExtension.formats.forEach((key, value) -> {
 			// create the task that does the work
-			String taskName = EXTENSION + capitalize(entry.getKey());
+			String taskName = EXTENSION + capitalize(key);
 			SpotlessTask spotlessTask = project.getTasks().create(taskName, SpotlessTask.class);
-			entry.getValue().setupTask(spotlessTask);
+			value.setupTask(spotlessTask);
 
 			// create the check and apply control tasks
 			Task checkTask = project.getTasks().create(taskName + CHECK);
@@ -98,7 +96,7 @@ public class SpotlessPlugin implements Plugin<Project> {
 					return Closure.DONE;
 				}
 			});
-		}
+		});
 
 		// Add our check task as a dependency on the global check task
 		// getTasks() returns a "live" collection, so this works even if the

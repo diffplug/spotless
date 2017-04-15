@@ -15,6 +15,9 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
+import static java.util.Objects.requireNonNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -24,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
@@ -52,7 +54,7 @@ public class SpotlessTask extends DefaultTask {
 	}
 
 	public void setEncoding(String encoding) {
-		this.encoding = encoding;
+		this.encoding = requireNonNull(encoding);
 	}
 
 	@Input
@@ -63,7 +65,7 @@ public class SpotlessTask extends DefaultTask {
 	}
 
 	public void setLineEndingsPolicy(LineEnding.Policy lineEndingsPolicy) {
-		this.lineEndingsPolicy = lineEndingsPolicy;
+		this.lineEndingsPolicy = requireNonNull(lineEndingsPolicy);
 	}
 
 	// set by FormatExtension
@@ -82,7 +84,7 @@ public class SpotlessTask extends DefaultTask {
 	protected FormatExceptionPolicy exceptionPolicy = new FormatExceptionPolicyStrict();
 
 	public void setExceptionPolicy(FormatExceptionPolicy exceptionPolicy) {
-		this.exceptionPolicy = Objects.requireNonNull(exceptionPolicy);
+		this.exceptionPolicy = requireNonNull(exceptionPolicy);
 	}
 
 	public FormatExceptionPolicy getExceptionPolicy() {
@@ -98,7 +100,7 @@ public class SpotlessTask extends DefaultTask {
 	}
 
 	public void setTarget(Iterable<File> target) {
-		this.target = target;
+		this.target = requireElementsNonNull(target);
 	}
 
 	@Input
@@ -109,11 +111,11 @@ public class SpotlessTask extends DefaultTask {
 	}
 
 	public void setSteps(List<FormatterStep> steps) {
-		this.steps = steps;
+		this.steps = requireElementsNonNull(steps);
 	}
 
 	public boolean addStep(FormatterStep step) {
-		return this.steps.add(step);
+		return this.steps.add(requireNonNull(step));
 	}
 
 	private boolean check = false;

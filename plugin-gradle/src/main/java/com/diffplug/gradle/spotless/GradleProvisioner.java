@@ -15,6 +15,7 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,6 +30,7 @@ public class GradleProvisioner {
 	private GradleProvisioner() {}
 
 	public static Provisioner fromProject(Project project) {
+		Objects.requireNonNull(project);
 		return mavenCoords -> {
 			try {
 				Dependency[] deps = mavenCoords.stream()
