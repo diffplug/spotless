@@ -69,7 +69,7 @@ public class FormatterPropertiesTest extends ResourceHarness {
 
 	@Test
 	public void multiplePropertyFiles() throws IOException {
-		LinkedList<File> settingsFiles = new LinkedList<File>();
+		LinkedList<File> settingsFiles = new LinkedList<>();
 		for (String settingsResource : VALID_SETTINGS_RESOURCES) {
 			File settingsFile = createTestFile(settingsResource);
 			settingsFiles.add(settingsFile);

@@ -57,7 +57,7 @@ public class ResourceHarness {
 		protected void failed(Throwable e, Description description) {
 			if (e instanceof ComparisonFailure) {
 				ComparisonFailure failure = (ComparisonFailure) e;
-				String msg = new String();
+				String msg = "";
 				msg += String.format("Output:  %n%1$s%n%2$s%n%1$s%n", COMPARISON_SEPARATOR, failure.getActual());
 				msg += String.format("Expected:%n%1$s%n%2$s%n%1$s%n", COMPARISON_SEPARATOR, failure.getExpected());
 				logFailure(msg, description);

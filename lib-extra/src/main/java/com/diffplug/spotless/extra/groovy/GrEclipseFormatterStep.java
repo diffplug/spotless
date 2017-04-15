@@ -31,10 +31,6 @@ import com.diffplug.spotless.Provisioner;
 
 /** Formatter step which calls out to the Groovy-Eclipse formatter. */
 public class GrEclipseFormatterStep {
-	public static final String defaultVersion() {
-		return DEFAULT_VERSION;
-	}
-
 	private static final String NAME = "groovy-eclipse formatter";
 	private static final String FORMATTER_CLASS = "com.diffplug.gradle.spotless.groovy.eclipse.GrEclipseFormatterStepImpl";
 	private static final String DEFAULT_VERSION = "2.3.0";
@@ -52,6 +48,10 @@ public class GrEclipseFormatterStep {
 				NAME,
 				() -> new State(JarState.from(MAVEN_COORDINATE + version, provisioner), settingsFiles),
 				State::createFormat);
+	}
+
+	public static String defaultVersion() {
+		return DEFAULT_VERSION;
 	}
 
 	private static class State implements Serializable {

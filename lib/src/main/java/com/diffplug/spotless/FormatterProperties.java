@@ -35,7 +35,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /** Utility manages settings of formatter configured by properties. */
-public class FormatterProperties {
+public final class FormatterProperties {
 
 	private final Properties properties;
 
@@ -144,7 +144,7 @@ public class FormatterProperties {
 
 		private final List<String> supportedFileNameExtensions;
 
-		private FileParser(final String... supportedFileNameExtensions) {
+		FileParser(final String... supportedFileNameExtensions) {
 			this.supportedFileNameExtensions = Arrays.asList(supportedFileNameExtensions);
 		}
 
@@ -214,13 +214,12 @@ public class FormatterProperties {
 
 			private Node getSingleProfile(final Node rootNode) throws IllegalArgumentException {
 				List<Node> profiles = getChildren(rootNode, "profile");
-				if (profiles.size() == 0) {
+				if (profiles.isEmpty()) {
 					throw new IllegalArgumentException("The formatter configuration profile files does not contain any 'profile' elements.");
 				}
 				if (profiles.size() > 1) {
 					String message = "Formatter configuration file contains multiple profiles: [";
-					message += profiles.stream().map(profile -> getProfileName(profile))
-							.collect(Collectors.joining("; "));
+					message += profiles.stream().map(XmlParser::getProfileName).collect(Collectors.joining("; "));
 					message += "]%n The formatter can only cope with a single profile per configuration file. Please remove the other profiles.";
 					throw new IllegalArgumentException(message);
 				}
@@ -248,7 +247,7 @@ public class FormatterProperties {
 
 		private final String rootNodeName;
 
-		private XmlParser(final String rootNodeName) {
+		XmlParser(final String rootNodeName) {
 			this.rootNodeName = rootNodeName;
 		}
 

@@ -15,7 +15,7 @@
  */
 package com.diffplug.spotless;
 
-import static com.diffplug.common.testing.SerializableTester.*;
+import static com.diffplug.common.testing.SerializableTester.reserializeAndAssert;
 
 import org.junit.Test;
 
