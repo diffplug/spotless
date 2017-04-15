@@ -15,8 +15,11 @@
  */
 package com.diffplug.spotless;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+
+import javax.annotation.Nullable;
 
 /**
  * A policy for handling exceptions in the format.  Any exceptions will
@@ -30,16 +33,18 @@ public class FormatExceptionPolicyStrict extends NoLambda.EqualityBasedOnSeriali
 
 	/** Adds a step name to exclude. */
 	public void excludeStep(String stepName) {
-		excludeSteps.add(stepName);
+		excludeSteps.add(Objects.requireNonNull(stepName));
 	}
 
 	/** Adds a realtive pathx to exclude. */
 	public void excludePath(String relativePath) {
-		excludePaths.add(relativePath);
+		excludePaths.add(Objects.requireNonNull(relativePath));
 	}
 
 	@Override
-	public void handleError(Throwable e, FormatterStep step, String relativePath) {
+	public void handleError(@Nullable Throwable e, FormatterStep step, String relativePath) {
+		Objects.requireNonNull(step, "step");
+		Objects.requireNonNull(relativePath, "relativePath");
 		if (excludeSteps.contains(step.getName())) {
 			FormatExceptionPolicyLegacy.warning(e, step, relativePath);
 		} else {

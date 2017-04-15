@@ -16,6 +16,7 @@
 package com.diffplug.spotless.generic;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
@@ -40,6 +41,7 @@ public final class IndentStep {
 
 	/** Creates a step which will indent with the given type of whitespace, converting between tabs and spaces at the given ratio. */
 	public static FormatterStep create(Type type, int numSpacesPerTab) {
+		Objects.requireNonNull(type, "type");
 		return FormatterStep.create("indentWith" + type.tabSpace("Tabs", "Spaces"),
 				new State(type, numSpacesPerTab), State::toFormatter);
 	}

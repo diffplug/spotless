@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless;
 
+import static com.diffplug.spotless.MoreIterables.toNullHostileList;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -22,6 +24,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -53,6 +56,7 @@ public final class FormatterProperties {
 	 *            In case the import of a file fails
 	 */
 	public static FormatterProperties from(File... files) throws IllegalArgumentException {
+		Objects.requireNonNull(files);
 		return from(Arrays.asList(files));
 	}
 
@@ -65,8 +69,9 @@ public final class FormatterProperties {
 	 *            In case the import of a file fails
 	 */
 	public static FormatterProperties from(Iterable<File> files) throws IllegalArgumentException {
+		List<File> nonNullFiles = toNullHostileList(files);
 		FormatterProperties properties = new FormatterProperties();
-		files.forEach(file -> properties.add(file));
+		nonNullFiles.forEach(properties::add);
 		return properties;
 	}
 
@@ -80,6 +85,7 @@ public final class FormatterProperties {
 	 *            In case the import of the file fails
 	 */
 	private void add(final File settingsFile) throws IllegalArgumentException {
+		Objects.requireNonNull(settingsFile);
 		if (!(settingsFile.isFile() || settingsFile.canRead())) {
 			String msg = String.format("Settings file '%s' does not exist or can not be read.", settingsFile);
 			throw new IllegalArgumentException(msg);

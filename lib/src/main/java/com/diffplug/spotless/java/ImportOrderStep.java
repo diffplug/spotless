@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.java;
 
+import static com.diffplug.spotless.java.LibJavaPreconditions.requireElementsNonNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -36,10 +38,9 @@ public final class ImportOrderStep {
 	private ImportOrderStep() {}
 
 	public static FormatterStep createFromOrder(List<String> importOrder) {
-		Objects.requireNonNull(importOrder);
-		return importOrder instanceof Serializable
-				? createFromOrderImpl(importOrder)
-				: createFromOrderImpl(new ArrayList<>(importOrder));
+		// defensive copying and null checking
+		importOrder = requireElementsNonNull(new ArrayList<>(importOrder));
+		return createFromOrderImpl(importOrder);
 	}
 
 	public static FormatterStep createFromFile(File importsFile) {

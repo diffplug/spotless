@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -30,24 +31,22 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * Spotless' global cache. {@link SpotlessCache#clear()} should be called
  * when Spotless is no longer in use to release any resources it has grabbed.
  */
-public class SpotlessCache {
+public final class SpotlessCache {
 	/** Allows comparing keys based on their serialization. */
 	static final class SerializedKey {
 		final byte[] serialized;
 		final int hashCode;
 
 		SerializedKey(Serializable key) {
+			Objects.requireNonNull(key);
 			serialized = LazyForwardingEquality.toBytes(key);
 			hashCode = Arrays.hashCode(serialized);
 		}
 
 		@Override
 		public final boolean equals(Object other) {
-			if (other instanceof SerializedKey) {
-				return Arrays.equals(serialized, ((SerializedKey) other).serialized);
-			} else {
-				return false;
-			}
+			return other instanceof SerializedKey
+					&& Arrays.equals(serialized, ((SerializedKey) other).serialized);
 		}
 
 		@Override
@@ -56,17 +55,13 @@ public class SpotlessCache {
 		}
 	}
 
-	Map<SerializedKey, URLClassLoader> cache = new HashMap<>();
+	final Map<SerializedKey, URLClassLoader> cache = new HashMap<>();
 
 	@SuppressFBWarnings("DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED")
 	synchronized ClassLoader classloader(JarState state) {
 		SerializedKey key = new SerializedKey(state);
-		URLClassLoader value = cache.get(key);
-		if (value == null) {
-			value = new URLClassLoader(state.jarUrls(), null);
-			cache.put(key, value);
-		}
-		return value;
+		return cache
+				.computeIfAbsent(key, k -> new URLClassLoader(state.jarUrls(), null));
 	}
 
 	static SpotlessCache instance() {

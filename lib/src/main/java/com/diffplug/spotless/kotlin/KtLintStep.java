@@ -21,6 +21,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Collections;
+import java.util.Objects;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
@@ -42,6 +43,8 @@ public class KtLintStep {
 	}
 
 	public static FormatterStep create(String version, Provisioner provisioner) {
+		Objects.requireNonNull(version, "version");
+		Objects.requireNonNull(provisioner, "provisioner");
 		return FormatterStep.createLazy(NAME,
 				() -> new State(version, provisioner),
 				State::createFormat);

@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Collections;
+import java.util.Objects;
 
 import javax.annotation.Nullable;
 
@@ -45,6 +46,8 @@ public class ScalaFmtStep {
 	}
 
 	public static FormatterStep create(String version, Provisioner provisioner, @Nullable File configFile) {
+		Objects.requireNonNull(version, "version");
+		Objects.requireNonNull(provisioner, "provisioner");
 		return FormatterStep.createLazy(NAME,
 				() -> new State(version, provisioner, configFile),
 				State::createFormat);

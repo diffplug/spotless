@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.markdown;
 
+import static com.diffplug.spotless.markdown.LibMarkdownPreconditions.requireKeysAndValuesNonNull;
+
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -48,6 +50,9 @@ public class FreshMarkStep {
 
 	/** Creates a formatter step for the given version and settings file. */
 	public static FormatterStep create(String version, Supplier<Map<String, ?>> properties, Provisioner provisioner) {
+		Objects.requireNonNull(version, "version");
+		Objects.requireNonNull(properties, "properties");
+		Objects.requireNonNull(provisioner, "provisioner");
 		return FormatterStep.createLazy(NAME,
 				() -> new State(JarState.from(MAVEN_COORDINATE + version, provisioner), properties.get()),
 				State::createFormat);
@@ -65,10 +70,11 @@ public class FreshMarkStep {
 		final NavigableMap<String, ?> properties;
 
 		State(JarState jarState, Map<String, ?> properties) {
-			this.jarState = Objects.requireNonNull(jarState);
+			this.jarState = jarState;
 			// because equality is computed based on serialization, it's important to order the properties
 			// before writing them
-			this.properties = new TreeMap<>(Objects.requireNonNull(properties));
+			this.properties = new TreeMap<>(properties);
+			requireKeysAndValuesNonNull(this.properties);
 		}
 
 		FormatterFunc createFormat() throws Exception {

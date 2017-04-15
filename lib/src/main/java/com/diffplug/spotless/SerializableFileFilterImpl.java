@@ -37,12 +37,7 @@ class SerializableFileFilterImpl {
 		@Override
 		public boolean accept(File pathname) {
 			String name = pathname.getName();
-			for (String toSkip : namesToSkip) {
-				if (toSkip.equals(name)) {
-					return false;
-				}
-			}
-			return true;
+			return Arrays.stream(namesToSkip).noneMatch(name::equals);
 		}
 	}
 }

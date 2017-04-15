@@ -16,6 +16,7 @@
 package com.diffplug.spotless.generic;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
@@ -25,6 +26,9 @@ public final class ReplaceStep {
 	private ReplaceStep() {}
 
 	public static FormatterStep create(String name, CharSequence target, CharSequence replacement) {
+		Objects.requireNonNull(name, "name");
+		Objects.requireNonNull(target, "target");
+		Objects.requireNonNull(replacement, "replacement");
 		return FormatterStep.createLazy(name,
 				() -> new State(target, replacement),
 				State::toFormatter);

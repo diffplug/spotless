@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,6 +38,8 @@ public final class LicenseHeaderStep implements Serializable {
 
 	/** Creates a FormatterStep which forces the start of each file to match a license header. */
 	public static FormatterStep createFromHeader(String licenseHeader, String delimiter) {
+		Objects.requireNonNull(licenseHeader, "licenseHeader");
+		Objects.requireNonNull(delimiter, "delimiter");
 		return FormatterStep.create(LicenseHeaderStep.NAME,
 				new LicenseHeaderStep(licenseHeader, delimiter),
 				step -> step::format);
@@ -47,6 +50,9 @@ public final class LicenseHeaderStep implements Serializable {
 	 * contained in the given file.
 	 */
 	public static FormatterStep createFromFile(File licenseHeaderFile, Charset encoding, String delimiter) {
+		Objects.requireNonNull(licenseHeaderFile, "licenseHeaderFile");
+		Objects.requireNonNull(encoding, "encoding");
+		Objects.requireNonNull(delimiter, "delimiter");
 		return FormatterStep.createLazy(LicenseHeaderStep.NAME,
 				() -> new LicenseHeaderStep(licenseHeaderFile, encoding, delimiter),
 				step -> step::format);

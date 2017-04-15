@@ -18,13 +18,15 @@ package com.diffplug.spotless;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.Nullable;
+
 class FormatExceptionPolicyLegacy extends NoLambda.EqualityBasedOnSerialization implements FormatExceptionPolicy {
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger logger = Logger.getLogger(Formatter.class.getName());
 
 	@Override
-	public void handleError(Throwable e, FormatterStep step, String relativePath) {
+	public void handleError(@Nullable Throwable e, FormatterStep step, String relativePath) {
 		if (e instanceof Error) {
 			error(e, step, relativePath);
 			throw ((Error) e);
@@ -33,11 +35,11 @@ class FormatExceptionPolicyLegacy extends NoLambda.EqualityBasedOnSerialization 
 		}
 	}
 
-	static void error(Throwable e, FormatterStep step, String relativePath) {
-		logger.log(Level.SEVERE, "Step '" + step.getName() + "' found problem in '" + relativePath + "':\n" + e.getMessage(), e);
+	static void error(@Nullable Throwable e, FormatterStep step, String relativePath) {
+		logger.log(Level.SEVERE, "Step '" + step.getName() + "' found problem in '" + relativePath + "':\n" + (e == null ? null : e.getMessage()), e);
 	}
 
-	static void warning(Throwable e, FormatterStep step, String relativePath) {
+	static void warning(@Nullable Throwable e, FormatterStep step, String relativePath) {
 		logger.log(Level.WARNING, "Unable to apply step '" + step.getName() + "' to '" + relativePath + "'", e);
 	}
 }

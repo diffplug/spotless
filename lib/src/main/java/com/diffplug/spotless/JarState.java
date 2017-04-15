@@ -57,7 +57,8 @@ public final class JarState implements Serializable {
 	}
 
 	public static JarState from(String mavenCoordinate, Provisioner provisioner) throws IOException {
-		Objects.requireNonNull(mavenCoordinate);
+		Objects.requireNonNull(mavenCoordinate, "mavenCoordinate");
+		Objects.requireNonNull(provisioner, "provisioner");
 		Set<File> jars = provisioner.provisionWithDependencies(mavenCoordinate);
 		if (jars.isEmpty()) {
 			throw new NoSuchElementException("Resolved to an empty result: " + mavenCoordinate);
