@@ -15,8 +15,6 @@
  */
 package com.diffplug.spotless;
 
-import javax.annotation.Nullable;
-
 /**
  * Basic functional interfaces which throw exception, along with
  * static helper methods for calling them.
@@ -81,7 +79,7 @@ public final class ThrowingEx {
 	 * cast and returned.  Otherwise, it wrapped in a
 	 * {@link WrappedAsRuntimeException} and returned.
 	 */
-	public static RuntimeException asRuntime(@Nullable Exception e) {
+	public static RuntimeException asRuntime(Exception e) {
 		if (e instanceof RuntimeException) {
 			return (RuntimeException) e;
 		} else {
@@ -100,8 +98,8 @@ public final class ThrowingEx {
 	 * }
 	 * ```
 	 */
-	public static RuntimeException unwrapCause(@Nullable Throwable e) {
-		Throwable cause = (e == null) ? null : e.getCause();
+	public static RuntimeException unwrapCause(Throwable e) {
+		Throwable cause = e.getCause();
 		if (cause == null) {
 			return asRuntimeRethrowError(e);
 		} else {
@@ -120,7 +118,7 @@ public final class ThrowingEx {
 	 * ```
 	 *
 	 * */
-	static RuntimeException asRuntimeRethrowError(@Nullable Throwable e) {
+	static RuntimeException asRuntimeRethrowError(Throwable e) {
 		if (e instanceof Error) {
 			throw (Error) e;
 		} else if (e instanceof RuntimeException) {
@@ -134,7 +132,7 @@ public final class ThrowingEx {
 	public static class WrappedAsRuntimeException extends RuntimeException {
 		private static final long serialVersionUID = -912202209702586994L;
 
-		public WrappedAsRuntimeException(@Nullable Throwable e) {
+		public WrappedAsRuntimeException(Throwable e) {
 			super(e);
 		}
 	}

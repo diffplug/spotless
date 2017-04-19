@@ -16,7 +16,6 @@
 package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
-import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.Serializable;
@@ -25,11 +24,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
-
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.file.FileCollection;
@@ -55,7 +54,7 @@ public class FormatExtension {
 	final SpotlessExtension root;
 
 	public FormatExtension(SpotlessExtension root) {
-		this.root = requireNonNull(root);
+		this.root = Objects.requireNonNull(root);
 	}
 
 	private String formatName() {
@@ -88,7 +87,7 @@ public class FormatExtension {
 
 	/** Sets the line endings to use (defaults to {@link SpotlessExtension#getLineEndings()}. */
 	public void setLineEndings(LineEnding lineEndings) {
-		this.lineEndings = requireNonNull(lineEndings);
+		this.lineEndings = Objects.requireNonNull(lineEndings);
 	}
 
 	Charset encoding;
@@ -100,24 +99,24 @@ public class FormatExtension {
 
 	/** Sets the encoding to use (defaults to {@link SpotlessExtension#getEncoding()}. */
 	public void setEncoding(String name) {
-		setEncoding(Charset.forName(requireNonNull(name)));
+		setEncoding(Charset.forName(Objects.requireNonNull(name)));
 	}
 
 	/** Sets the encoding to use (defaults to {@link SpotlessExtension#getEncoding()}. */
 	public void setEncoding(Charset charset) {
-		encoding = requireNonNull(charset);
+		encoding = Objects.requireNonNull(charset);
 	}
 
 	final FormatExceptionPolicyStrict exceptionPolicy = new FormatExceptionPolicyStrict();
 
 	/** Ignores errors in the given step. */
 	public void ignoreErrorForStep(String stepName) {
-		exceptionPolicy.excludeStep(requireNonNull(stepName));
+		exceptionPolicy.excludeStep(Objects.requireNonNull(stepName));
 	}
 
 	/** Ignores errors for the given relative path. */
 	public void ignoreErrorForPath(String relativePath) {
-		exceptionPolicy.excludePath(requireNonNull(relativePath));
+		exceptionPolicy.excludePath(Objects.requireNonNull(relativePath));
 	}
 
 	/** Sets encoding to use (defaults to {@link SpotlessExtension#getEncoding()}). */
@@ -200,7 +199,7 @@ public class FormatExtension {
 
 	/** Adds a new step. */
 	public void addStep(FormatterStep newStep) {
-		requireNonNull(newStep);
+		Objects.requireNonNull(newStep);
 		FormatterStep existing = getExistingStep(newStep.getName());
 		if (existing != null) {
 			throw new GradleException("Multiple steps with name '" + newStep.getName() + "' for spotless format '" + formatName() + "'");
@@ -209,7 +208,8 @@ public class FormatExtension {
 	}
 
 	/** Returns the existing step with the given name, if any. */
-	protected @Nullable FormatterStep getExistingStep(String stepName) {
+	protected @Nullable
+	FormatterStep getExistingStep(String stepName) {
 		return steps.stream() //
 				.filter(step -> stepName.equals(step.getName())) //
 				.findFirst() //
@@ -272,26 +272,26 @@ public class FormatExtension {
 	 * {@link #customLazyGroovy(String, ThrowingEx.Supplier)}.
 	 */
 	public void customLazy(String name, ThrowingEx.Supplier<FormatterFunc> formatterSupplier) {
-		requireNonNull(name, "name");
-		requireNonNull(formatterSupplier, "formatterSupplier");
+		Objects.requireNonNull(name, "name");
+		Objects.requireNonNull(formatterSupplier, "formatterSupplier");
 		addStep(FormatterStep.createLazy(name, () -> globalState, unusedState -> formatterSupplier.get()));
 	}
 
 	/** Same as {@link #customLazy(String, ThrowingEx.Supplier)}, but for Groovy closures. */
 	public void customLazyGroovy(String name, ThrowingEx.Supplier<Closure<String>> formatterSupplier) {
-		requireNonNull(formatterSupplier, "formatterSupplier");
+		Objects.requireNonNull(formatterSupplier, "formatterSupplier");
 		customLazy(name, () -> formatterSupplier.get()::call);
 	}
 
 	/** Adds a custom step. Receives a string with unix-newlines, must return a string with unix newlines. */
 	public void custom(String name, Closure<String> formatter) {
-		requireNonNull(formatter, "formatter");
+		Objects.requireNonNull(formatter, "formatter");
 		custom(name, formatter::call);
 	}
 
 	/** Adds a custom step. Receives a string with unix-newlines, must return a string with unix newlines. */
 	public void custom(String name, FormatterFunc formatter) {
-		requireNonNull(formatter, "formatter");
+		Objects.requireNonNull(formatter, "formatter");
 		customLazy(name, () -> formatter);
 	}
 
@@ -352,8 +352,8 @@ public class FormatExtension {
 	 *            Spotless will look for a line that starts with this to know what the "top" is.
 	 */
 	public void licenseHeaderFile(Object licenseHeaderFile, String delimiter) {
-		requireNonNull(licenseHeaderFile, "licenseHeaderFile");
-		requireNonNull(delimiter, "delimiter");
+		Objects.requireNonNull(licenseHeaderFile, "licenseHeaderFile");
+		Objects.requireNonNull(delimiter, "delimiter");
 		addStep(LicenseHeaderStep.createFromFile(getProject().file(licenseHeaderFile), getEncoding(), delimiter));
 	}
 

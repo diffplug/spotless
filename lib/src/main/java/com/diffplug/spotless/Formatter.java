@@ -16,7 +16,6 @@
 package com.diffplug.spotless;
 
 import static com.diffplug.spotless.LibPreconditions.requireElementsNonNull;
-import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,6 +31,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import javax.annotation.Nullable;
 
@@ -46,11 +46,11 @@ public final class Formatter implements Serializable {
 	private FormatExceptionPolicy exceptionPolicy;
 
 	private Formatter(LineEnding.Policy lineEndingsPolicy, Charset encoding, Path rootDirectory, List<FormatterStep> steps, FormatExceptionPolicy exceptionPolicy) {
-		this.lineEndingsPolicy = requireNonNull(lineEndingsPolicy, "lineEndingsPolicy");
-		this.encoding = requireNonNull(encoding, "encoding");
-		this.rootDir = requireNonNull(rootDirectory, "rootDir");
+		this.lineEndingsPolicy = Objects.requireNonNull(lineEndingsPolicy, "lineEndingsPolicy");
+		this.encoding = Objects.requireNonNull(encoding, "encoding");
+		this.rootDir = Objects.requireNonNull(rootDirectory, "rootDir");
 		this.steps = requireElementsNonNull(new ArrayList<>(steps));
-		this.exceptionPolicy = requireNonNull(exceptionPolicy, "exceptionPolicy");
+		this.exceptionPolicy = Objects.requireNonNull(exceptionPolicy, "exceptionPolicy");
 	}
 
 	// override serialize output
@@ -145,7 +145,7 @@ public final class Formatter implements Serializable {
 
 	/** Returns true iff the given file's formatting is up-to-date. */
 	public boolean isClean(File file) throws IOException {
-		requireNonNull(file);
+		Objects.requireNonNull(file);
 
 		String raw = new String(Files.readAllBytes(file.toPath()), encoding);
 		String unix = LineEnding.toUnix(raw);
@@ -182,7 +182,7 @@ public final class Formatter implements Serializable {
 	 * formatted result with unix newlines if it was not.
 	 */
 	public @Nullable String applyToAndReturnResultIfDirty(File file) throws IOException {
-		requireNonNull(file);
+		Objects.requireNonNull(file);
 
 		byte[] rawBytes = Files.readAllBytes(file.toPath());
 		String raw = new String(rawBytes, encoding);
@@ -205,8 +205,8 @@ public final class Formatter implements Serializable {
 
 	/** Applies the appropriate line endings to the given unix content. */
 	public String computeLineEndings(String unix, File file) {
-		requireNonNull(unix, "unix");
-		requireNonNull(file, "file");
+		Objects.requireNonNull(unix, "unix");
+		Objects.requireNonNull(file, "file");
 
 		String ending = lineEndingsPolicy.getEndingFor(file);
 		if (!ending.equals(LineEnding.UNIX.str())) {
@@ -222,8 +222,8 @@ public final class Formatter implements Serializable {
 	 * is guaranteed to also have unix line endings.
 	 */
 	public String compute(String unix, File file) {
-		requireNonNull(unix, "unix");
-		requireNonNull(file, "file");
+		Objects.requireNonNull(unix, "unix");
+		Objects.requireNonNull(file, "file");
 
 		for (FormatterStep step : steps) {
 			try {

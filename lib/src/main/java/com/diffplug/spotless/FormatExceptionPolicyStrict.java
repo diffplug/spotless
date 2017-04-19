@@ -19,8 +19,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.annotation.Nullable;
-
 /**
  * A policy for handling exceptions in the format.  Any exceptions will
  * halt the build except for a specifically excluded path or step.
@@ -42,7 +40,8 @@ public class FormatExceptionPolicyStrict extends NoLambda.EqualityBasedOnSeriali
 	}
 
 	@Override
-	public void handleError(@Nullable Throwable e, FormatterStep step, String relativePath) {
+	public void handleError(Throwable e, FormatterStep step, String relativePath) {
+		Objects.requireNonNull(e, "e");
 		Objects.requireNonNull(step, "step");
 		Objects.requireNonNull(relativePath, "relativePath");
 		if (excludeSteps.contains(step.getName())) {
