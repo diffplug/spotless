@@ -22,8 +22,6 @@ import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
-import com.diffplug.spotless.Provisioner;
-
 public class ProvisionerTest {
 	@Test
 	public void testManipulation() {

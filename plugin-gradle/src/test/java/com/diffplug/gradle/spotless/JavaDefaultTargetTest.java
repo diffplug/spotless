@@ -20,8 +20,6 @@ import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.diffplug.gradle.spotless.GradleIntegrationTest;
-
 public class JavaDefaultTargetTest extends GradleIntegrationTest {
 	@Test
 	public void integration() throws IOException {

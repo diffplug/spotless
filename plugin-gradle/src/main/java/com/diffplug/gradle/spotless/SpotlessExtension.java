@@ -15,12 +15,13 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.reflect.Constructor;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
@@ -33,7 +34,7 @@ public class SpotlessExtension {
 	final Project project;
 
 	public SpotlessExtension(Project project) {
-		this.project = project;
+		this.project = requireNonNull(project);
 	}
 
 	/** Line endings (if any). */
@@ -44,7 +45,7 @@ public class SpotlessExtension {
 	}
 
 	public void setLineEndings(LineEnding lineEndings) {
-		this.lineEndings = lineEndings;
+		this.lineEndings = requireNonNull(lineEndings);
 	}
 
 	Charset encoding = StandardCharsets.UTF_8;
@@ -56,12 +57,13 @@ public class SpotlessExtension {
 
 	/** Sets encoding to use (defaults to UTF_8). */
 	public void setEncoding(String name) {
+		requireNonNull(name);
 		setEncoding(Charset.forName(name));
 	}
 
 	/** Sets encoding to use (defaults to UTF_8). */
 	public void setEncoding(Charset charset) {
-		encoding = Objects.requireNonNull(charset);
+		encoding = requireNonNull(charset);
 	}
 
 	/** Sets encoding to use (defaults to UTF_8). */
@@ -69,25 +71,29 @@ public class SpotlessExtension {
 		setEncoding(charset);
 	}
 
-	Map<String, FormatExtension> formats = new LinkedHashMap<>();
+	final Map<String, FormatExtension> formats = new LinkedHashMap<>();
 
 	/** Configures the special java-specific extension. */
 	public void java(Action<JavaExtension> closure) {
+		requireNonNull(closure);
 		configure(JavaExtension.NAME, JavaExtension.class, closure);
 	}
 
 	/** Configures the special scala-specific extension. */
 	public void scala(Action<ScalaExtension> closure) {
+		requireNonNull(closure);
 		configure(ScalaExtension.NAME, ScalaExtension.class, closure);
 	}
 
 	/** Configures the special kotlin-specific extension. */
 	public void kotlin(Action<KotlinExtension> closure) {
+		requireNonNull(closure);
 		configure(KotlinExtension.NAME, KotlinExtension.class, closure);
 	}
 
 	/** Configures the special freshmark-specific extension. */
 	public void freshmark(Action<FreshMarkExtension> closure) {
+		requireNonNull(closure);
 		configure(FreshMarkExtension.NAME, FreshMarkExtension.class, closure);
 	}
 
@@ -98,11 +104,14 @@ public class SpotlessExtension {
 
 	/** Configures a custom extension. */
 	public void format(String name, Action<FormatExtension> closure) {
+		requireNonNull(name, "name");
+		requireNonNull(closure, "closure");
 		configure(name, FormatExtension.class, closure);
 	}
 
 	/** Makes it possible to remove a format which was created earlier. */
 	public void removeFormat(String name) {
+		requireNonNull(name);
 		FormatExtension toRemove = formats.remove(name);
 		if (toRemove == null) {
 			project.getLogger().warn("Called removeFormat('" + name + "') but there was no such format.");

@@ -15,14 +15,15 @@
  */
 package com.diffplug.spotless;
 
+import static com.diffplug.spotless.MoreIterables.toNullHostileList;
+import static com.diffplug.spotless.MoreIterables.toSortedSet;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -66,7 +67,7 @@ public final class FileSignature implements Serializable {
 
 	/** Creates file signature whereas order of the files remains unchanged. */
 	public static FileSignature signAsList(Iterable<File> files) throws IOException {
-		return new FileSignature(asNonNullList(files));
+		return new FileSignature(toNullHostileList(files));
 	}
 
 	/** Creates file signature whereas order of the files remains unchanged. */
@@ -109,36 +110,4 @@ public final class FileSignature implements Serializable {
 		}
 	}
 
-	/** Sorts "toBeSorted" and removes duplicates. */
-	static <T extends Comparable<T>> List<T> toSortedSet(Iterable<T> raw) {
-		List<T> toBeSorted = asNonNullList(raw);
-		// sort it
-		Collections.sort(toBeSorted);
-		// remove any duplicates (normally there won't be any)
-		if (toBeSorted.size() > 1) {
-			Iterator<T> iter = toBeSorted.iterator();
-			T last = iter.next();
-			while (iter.hasNext()) {
-				T next = iter.next();
-				if (next.compareTo(last) == 0) {
-					iter.remove();
-				} else {
-					last = next;
-				}
-			}
-		}
-		return toBeSorted;
-	}
-
-	/** Returns a shallow copy of input elements omitting null elements */
-	private static <T> List<T> asNonNullList(Iterable<T> input) {
-		List<T> shallowCopy = (input instanceof Collection)
-				? new ArrayList<T>(((Collection<?>) input).size())
-				: new ArrayList<T>();
-		input.forEach(element -> {
-			if (null != element)
-				shallowCopy.add(element);
-		});
-		return shallowCopy;
-	}
 }

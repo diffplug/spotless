@@ -16,6 +16,7 @@
 package com.diffplug.spotless.generic;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import com.diffplug.spotless.FormatterFunc;
@@ -26,6 +27,9 @@ public final class ReplaceRegexStep {
 	private ReplaceRegexStep() {}
 
 	public static FormatterStep create(String name, String regex, String replacement) {
+		Objects.requireNonNull(name, "name");
+		Objects.requireNonNull(regex, "regex");
+		Objects.requireNonNull(replacement, "replacement");
 		return FormatterStep.createLazy(name,
 				() -> new State(Pattern.compile(regex, Pattern.UNIX_LINES | Pattern.MULTILINE), replacement),
 				State::toFormatter);

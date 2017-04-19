@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless;
 
+import static com.diffplug.spotless.LibPreconditions.requireElementsNonNull;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -48,7 +50,9 @@ public final class PaddedCell {
 	private PaddedCell(File file, Type type, List<String> steps) {
 		this.file = Objects.requireNonNull(file, "file");
 		this.type = Objects.requireNonNull(type, "type");
-		this.steps = Objects.requireNonNull(steps, "steps");
+		// defensive copy
+		this.steps = new ArrayList<>(steps);
+		requireElementsNonNull(this.steps);
 	}
 
 	/** Returns the file which was tested. */
@@ -63,7 +67,7 @@ public final class PaddedCell {
 
 	/** Returns the steps it takes to get to the result. */
 	public List<String> steps() {
-		return steps;
+		return Collections.unmodifiableList(steps);
 	}
 
 	/**

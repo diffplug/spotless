@@ -69,6 +69,9 @@ abstract class FormatterStepImpl<State extends Serializable> extends Strict<Stat
 
 		@Override
 		protected String format(State state, String rawUnix, File file) throws Exception {
+			Objects.requireNonNull(state, "state");
+			Objects.requireNonNull(rawUnix, "rawUnix");
+			Objects.requireNonNull(file, "file");
 			if (formatter == null) {
 				formatter = stateToFormatter.apply(state());
 			}
@@ -87,7 +90,7 @@ abstract class FormatterStepImpl<State extends Serializable> extends Strict<Stat
 
 		NeverUpToDate(String name, ThrowingEx.Supplier<FormatterFunc> formatterSupplier) {
 			super(name, RANDOM::nextInt);
-			this.formatterSupplier = formatterSupplier;
+			this.formatterSupplier = Objects.requireNonNull(formatterSupplier, "formatterSupplier");
 		}
 
 		@Override

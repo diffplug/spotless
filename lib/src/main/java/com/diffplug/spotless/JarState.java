@@ -18,6 +18,7 @@ package com.diffplug.spotless;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URI;
 import java.net.URL;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -56,7 +57,8 @@ public final class JarState implements Serializable {
 	}
 
 	public static JarState from(String mavenCoordinate, Provisioner provisioner) throws IOException {
-		Objects.requireNonNull(mavenCoordinate);
+		Objects.requireNonNull(mavenCoordinate, "mavenCoordinate");
+		Objects.requireNonNull(provisioner, "provisioner");
 		Set<File> jars = provisioner.provisionWithDependencies(mavenCoordinate);
 		if (jars.isEmpty()) {
 			throw new NoSuchElementException("Resolved to an empty result: " + mavenCoordinate);
@@ -66,7 +68,7 @@ public final class JarState implements Serializable {
 	}
 
 	URL[] jarUrls() {
-		return jars.stream().map(ThrowingEx.wrap(file -> file.toURI().toURL())).toArray(URL[]::new);
+		return jars.stream().map(File::toURI).map(ThrowingEx.wrap(URI::toURL)).toArray(URL[]::new);
 	}
 
 	/**

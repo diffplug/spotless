@@ -25,6 +25,7 @@ spotless {
 		importOrderFile   'spotless.importorder'
 		eclipseFormatFile 'spotless.eclipseformat.xml'
 		trimTrailingWhitespace()
+		removeUnusedImports()
 	}
 	groovy {
 		target fileTree('.') {

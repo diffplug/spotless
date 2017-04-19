@@ -28,8 +28,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import com.diffplug.spotless.ResourceHarness;
-
 public class FormatterPropertiesTest extends ResourceHarness {
 
 	@Rule
@@ -71,7 +69,7 @@ public class FormatterPropertiesTest extends ResourceHarness {
 
 	@Test
 	public void multiplePropertyFiles() throws IOException {
-		LinkedList<File> settingsFiles = new LinkedList<File>();
+		LinkedList<File> settingsFiles = new LinkedList<>();
 		for (String settingsResource : VALID_SETTINGS_RESOURCES) {
 			File settingsFile = createTestFile(settingsResource);
 			settingsFiles.add(settingsFile);
@@ -171,7 +169,7 @@ public class FormatterPropertiesTest extends ResourceHarness {
 			return this;
 		}
 
-	};
+	}
 
 	private static FormatterSettingsAssert assertFor(FormatterProperties actual) {
 		return new FormatterSettingsAssert(actual);

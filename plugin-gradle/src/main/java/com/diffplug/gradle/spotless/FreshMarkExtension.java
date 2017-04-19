@@ -15,10 +15,13 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.gradle.api.Action;
 
@@ -28,7 +31,7 @@ import com.diffplug.spotless.markdown.FreshMarkStep;
 public class FreshMarkExtension extends FormatExtension {
 	static final String NAME = "freshmark";
 
-	public List<Action<Map<String, Object>>> propertyActions = new ArrayList<>();
+	public final List<Action<Map<String, Object>>> propertyActions = new ArrayList<>();
 
 	public FreshMarkExtension(SpotlessExtension root) {
 		super(root);
@@ -42,10 +45,11 @@ public class FreshMarkExtension extends FormatExtension {
 	}
 
 	public void properties(Action<Map<String, Object>> action) {
-		propertyActions.add(action);
+		propertyActions.add(Objects.requireNonNull(action));
 	}
 
 	public void propertiesFile(Object... files) {
+		requireElementsNonNull(files);
 		propertyActions.add(map -> {
 			FormatterProperties preferences = FormatterProperties.from(getProject().files(files));
 			/* FreshMarkStep.State serializes the properties and not the files.

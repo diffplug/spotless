@@ -50,7 +50,7 @@ public class FileSignatureTest extends ResourceHarness {
 	}
 
 	private List<File> getTestFiles(final String[] paths) throws IOException {
-		final List<File> result = new ArrayList<File>(paths.length);
+		final List<File> result = new ArrayList<>(paths.length);
 		for (String path : paths) {
 			result.add(createTestFile(path, ""));
 		}

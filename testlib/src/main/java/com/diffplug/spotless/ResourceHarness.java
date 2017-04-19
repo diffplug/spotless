@@ -57,7 +57,7 @@ public class ResourceHarness {
 		protected void failed(Throwable e, Description description) {
 			if (e instanceof ComparisonFailure) {
 				ComparisonFailure failure = (ComparisonFailure) e;
-				String msg = new String();
+				String msg = "";
 				msg += String.format("Output:  %n%1$s%n%2$s%n%1$s%n", COMPARISON_SEPARATOR, failure.getActual());
 				msg += String.format("Expected:%n%1$s%n%2$s%n%1$s%n", COMPARISON_SEPARATOR, failure.getExpected());
 				logFailure(msg, description);
@@ -151,7 +151,7 @@ public class ResourceHarness {
 
 	/** Returns Files (in a temporary folder) which has the contents of the given file from the src/test/resources directory. */
 	protected List<File> createTestFiles(String... filenames) throws IOException {
-		List<File> files = new ArrayList<File>(filenames.length);
+		List<File> files = new ArrayList<>(filenames.length);
 		for (String filename : filenames) {
 			files.add(createTestFile(filename));
 		}

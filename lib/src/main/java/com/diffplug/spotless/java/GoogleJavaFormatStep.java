@@ -18,6 +18,7 @@ package com.diffplug.spotless.java;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.Objects;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
@@ -52,6 +53,8 @@ public class GoogleJavaFormatStep {
 
 	/** Creates a step which formats everything - code, import order, and unused imports. */
 	public static FormatterStep create(String version, Provisioner provisioner) {
+		Objects.requireNonNull(version, "version");
+		Objects.requireNonNull(provisioner, "provisioner");
 		return FormatterStep.createLazy(NAME,
 				() -> new State(NAME, version, provisioner),
 				State::createFormat);

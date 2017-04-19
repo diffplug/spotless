@@ -17,6 +17,7 @@ package com.diffplug.spotless;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.annotation.Nullable;
 
@@ -108,6 +109,7 @@ public interface FormatterStep extends Serializable {
 			String name,
 			State state,
 			ThrowingEx.Function<State, FormatterFunc> stateToFormatter) {
+		Objects.requireNonNull(state, "state");
 		return createLazy(name, () -> state, stateToFormatter);
 	}
 
@@ -137,6 +139,7 @@ public interface FormatterStep extends Serializable {
 	public static FormatterStep createNeverUpToDate(
 			String name,
 			FormatterFunc function) {
+		Objects.requireNonNull(function, "function");
 		return createNeverUpToDateLazy(name, () -> function);
 	}
 }

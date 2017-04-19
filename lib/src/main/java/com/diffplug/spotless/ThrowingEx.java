@@ -15,8 +15,6 @@
  */
 package com.diffplug.spotless;
 
-import static java.util.Objects.requireNonNull;
-
 /**
  * Basic functional interfaces which throw exception, along with
  * static helper methods for calling them.
@@ -28,16 +26,19 @@ public final class ThrowingEx {
 	private ThrowingEx() {}
 
 	/** A function that can throw any exception. */
+	@FunctionalInterface
 	public interface Function<T, R> {
 		R apply(T input) throws Exception;
 	}
 
 	/** A supplier that can throw any exception. */
+	@FunctionalInterface
 	public interface Supplier<T> {
 		T get() throws Exception;
 	}
 
 	/** A runnable that can throw any exception. */
+	@FunctionalInterface
 	public interface Runnable {
 		void run() throws Exception;
 	}
@@ -79,7 +80,6 @@ public final class ThrowingEx {
 	 * {@link WrappedAsRuntimeException} and returned.
 	 */
 	public static RuntimeException asRuntime(Exception e) {
-		requireNonNull(e);
 		if (e instanceof RuntimeException) {
 			return (RuntimeException) e;
 		} else {

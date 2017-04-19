@@ -16,6 +16,7 @@
 package com.diffplug.gradle.spotless;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
@@ -54,6 +55,7 @@ public class JavaExtension extends FormatExtension {
 	}
 
 	public void importOrderFile(Object importOrderFile) {
+		Objects.requireNonNull(importOrderFile);
 		addStep(ImportOrderStep.createFromFile(getProject().file(importOrderFile)));
 	}
 
@@ -62,6 +64,8 @@ public class JavaExtension extends FormatExtension {
 	}
 
 	public void eclipseFormatFile(String eclipseVersion, Object eclipseFormatFile) {
+		Objects.requireNonNull(eclipseVersion, "eclipseVersion");
+		Objects.requireNonNull(eclipseFormatFile, "eclipseFormatFile");
 		Project project = getProject();
 		addStep(EclipseFormatterStep.create(eclipseVersion,
 				project.files(eclipseFormatFile).getFiles(),
@@ -85,6 +89,7 @@ public class JavaExtension extends FormatExtension {
 	 * for an workaround for using snapshot versions.
 	 */
 	public void googleJavaFormat(String version) {
+		Objects.requireNonNull(version);
 		addStep(GoogleJavaFormatStep.create(version, GradleProvisioner.fromProject(getProject())));
 	}
 

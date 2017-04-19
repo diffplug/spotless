@@ -191,6 +191,9 @@ public final class PaddedCellBulk {
 
 	/** Performs the typical spotlessApply, but with PaddedCell handling of misbehaving FormatterSteps. */
 	public static void apply(Formatter formatter, File file) throws IOException {
+		Objects.requireNonNull(formatter, "formatter");
+		Objects.requireNonNull(file, "file");
+
 		byte[] rawBytes = Files.readAllBytes(file.toPath());
 		String raw = new String(rawBytes, formatter.getEncoding());
 		String rawUnix = LineEnding.toUnix(raw);
@@ -227,36 +230,39 @@ public final class PaddedCellBulk {
 	private static void cleanDir(Path folder) throws IOException {
 		if (Files.exists(folder)) {
 			if (Files.isDirectory(folder)) {
-				Files.walkFileTree(folder, new SimpleFileVisitor<Path>() {
-					@Override
-					public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
-						Files.delete(file);
-						return FileVisitResult.CONTINUE;
-					}
-
-					@Override
-					public FileVisitResult visitFileFailed(final Path file, final IOException e) {
-						return handleException(e);
-					}
-
-					private FileVisitResult handleException(final IOException e) {
-						logger.log(Level.SEVERE, e.getMessage(), e);
-						return FileVisitResult.TERMINATE;
-					}
-
-					@Override
-					public FileVisitResult postVisitDirectory(final Path dir, final IOException e) throws IOException {
-						if (e != null) {
-							return handleException(e);
-						}
-						Files.delete(dir);
-						return FileVisitResult.CONTINUE;
-					}
-				});
+				Files.walkFileTree(folder, FOLDER_CLEANING_VISITOR);
 			} else {
 				Files.delete(folder);
 			}
 		}
 		Files.createDirectories(folder);
 	}
+
+	private static final SimpleFileVisitor<Path> FOLDER_CLEANING_VISITOR = new SimpleFileVisitor<Path>() {
+		@Override
+		public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
+			Files.delete(file);
+			return FileVisitResult.CONTINUE;
+		}
+
+		@Override
+		public FileVisitResult visitFileFailed(final Path file, final IOException e) {
+			return handleException(e);
+		}
+
+		private FileVisitResult handleException(final IOException e) {
+			logger.log(Level.SEVERE, e.getMessage(), e);
+			return FileVisitResult.TERMINATE;
+		}
+
+		@Override
+		public FileVisitResult postVisitDirectory(final Path dir, final IOException e)
+				throws IOException {
+			if (e != null) {
+				return handleException(e);
+			}
+			Files.delete(dir);
+			return FileVisitResult.CONTINUE;
+		}
+	};
 }

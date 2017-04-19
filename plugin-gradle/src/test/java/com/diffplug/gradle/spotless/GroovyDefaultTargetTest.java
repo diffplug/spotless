@@ -22,8 +22,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.diffplug.gradle.spotless.GradleIntegrationTest;
-
 public class GroovyDefaultTargetTest extends GradleIntegrationTest {
 
 	private final String HEADER = "//My tests header";

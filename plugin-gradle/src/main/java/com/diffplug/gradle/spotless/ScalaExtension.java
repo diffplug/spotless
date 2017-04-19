@@ -54,7 +54,7 @@ public class ScalaExtension extends FormatExtension {
 		}
 
 		public void configFile(Object configFile) {
-			this.configFile = configFile;
+			this.configFile = Objects.requireNonNull(configFile);
 			replaceStep(createStep());
 		}
 

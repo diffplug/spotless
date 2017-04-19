@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless;
 
+import static com.diffplug.spotless.MoreIterables.toNullHostileList;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -22,8 +24,10 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -35,7 +39,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /** Utility manages settings of formatter configured by properties. */
-public class FormatterProperties {
+public final class FormatterProperties {
 
 	private final Properties properties;
 
@@ -52,6 +56,7 @@ public class FormatterProperties {
 	 *            In case the import of a file fails
 	 */
 	public static FormatterProperties from(File... files) throws IllegalArgumentException {
+		Objects.requireNonNull(files);
 		return from(Arrays.asList(files));
 	}
 
@@ -64,8 +69,9 @@ public class FormatterProperties {
 	 *            In case the import of a file fails
 	 */
 	public static FormatterProperties from(Iterable<File> files) throws IllegalArgumentException {
+		List<File> nonNullFiles = toNullHostileList(files);
 		FormatterProperties properties = new FormatterProperties();
-		files.forEach(file -> properties.add(file));
+		nonNullFiles.forEach(properties::add);
 		return properties;
 	}
 
@@ -79,6 +85,7 @@ public class FormatterProperties {
 	 *            In case the import of the file fails
 	 */
 	private void add(final File settingsFile) throws IllegalArgumentException {
+		Objects.requireNonNull(settingsFile);
 		if (!(settingsFile.isFile() || settingsFile.canRead())) {
 			String msg = String.format("Settings file '%s' does not exist or can not be read.", settingsFile);
 			throw new IllegalArgumentException(msg);
@@ -144,7 +151,7 @@ public class FormatterProperties {
 
 		private final List<String> supportedFileNameExtensions;
 
-		private FileParser(final String... supportedFileNameExtensions) {
+		FileParser(final String... supportedFileNameExtensions) {
 			this.supportedFileNameExtensions = Arrays.asList(supportedFileNameExtensions);
 		}
 
@@ -178,11 +185,8 @@ public class FormatterProperties {
 			protected Properties execute(final File xmlFile, final Node rootNode)
 					throws IOException, IllegalArgumentException {
 				final Properties properties = new Properties();
-				InputStream xmlInput = new FileInputStream(xmlFile);
-				try {
+				try (InputStream xmlInput = new FileInputStream(xmlFile)) {
 					properties.loadFromXML(xmlInput);
-				} finally {
-					xmlInput.close();
 				}
 				return properties;
 			}
@@ -214,13 +218,12 @@ public class FormatterProperties {
 
 			private Node getSingleProfile(final Node rootNode) throws IllegalArgumentException {
 				List<Node> profiles = getChildren(rootNode, "profile");
-				if (profiles.size() == 0) {
+				if (profiles.isEmpty()) {
 					throw new IllegalArgumentException("The formatter configuration profile files does not contain any 'profile' elements.");
 				}
 				if (profiles.size() > 1) {
 					String message = "Formatter configuration file contains multiple profiles: [";
-					message += profiles.stream().map(profile -> getProfileName(profile))
-							.collect(Collectors.joining("; "));
+					message += profiles.stream().map(XmlParser::getProfileName).collect(Collectors.joining("; "));
 					message += "]%n The formatter can only cope with a single profile per configuration file. Please remove the other profiles.";
 					throw new IllegalArgumentException(message);
 				}
@@ -228,15 +231,11 @@ public class FormatterProperties {
 			}
 
 			private List<Node> getChildren(final Node node, final String nodeName) {
-				List<Node> matchingChildren = new LinkedList<Node>();
 				NodeList children = node.getChildNodes();
-				for (int i = 0; i < children.getLength(); i++) {
-					Node child = children.item(i);
-					if (child.getNodeName().equals(nodeName)) {
-						matchingChildren.add(child);
-					}
-				}
-				return matchingChildren;
+				return IntStream.range(0, children.getLength()) //
+						.mapToObj(children::item) //
+						.filter(child -> child.getNodeName().equals(nodeName)) //
+						.collect(Collectors.toCollection(LinkedList::new));
 			}
 
 		};
@@ -248,7 +247,7 @@ public class FormatterProperties {
 
 		private final String rootNodeName;
 
-		private XmlParser(final String rootNodeName) {
+		XmlParser(final String rootNodeName) {
 			this.rootNodeName = rootNodeName;
 		}
 

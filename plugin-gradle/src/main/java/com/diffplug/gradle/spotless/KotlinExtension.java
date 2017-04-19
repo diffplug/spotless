@@ -15,6 +15,8 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.util.Objects;
+
 import org.gradle.api.GradleException;
 import org.gradle.api.internal.file.UnionFileCollection;
 import org.gradle.api.plugins.JavaPluginConvention;
@@ -39,6 +41,7 @@ public class KotlinExtension extends FormatExtension {
 
 	/** Adds the specified version of [ktlint](https://github.com/shyiko/ktlint). */
 	public void ktlint(String version) {
+		Objects.requireNonNull(version);
 		addStep(KtLintStep.create(version, GradleProvisioner.fromProject(getProject())));
 	}
 

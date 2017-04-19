@@ -18,6 +18,7 @@ package com.diffplug.spotless;
 import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
@@ -46,6 +47,8 @@ public enum LineEnding {
 
 	/** Returns a {@link Policy} appropriate for files which are contained within the given rootFolder. */
 	public Policy createPolicy(File projectDir, Supplier<Iterable<File>> toFormat) {
+		Objects.requireNonNull(projectDir, "projectDir");
+		Objects.requireNonNull(toFormat, "toFormat");
 		if (this != GIT_ATTRIBUTES) {
 			return createPolicy();
 		} else {
@@ -113,7 +116,8 @@ public enum LineEnding {
 		String getEndingFor(File file);
 
 		/** Returns true iff this file has unix line endings. */
-		default boolean isUnix(File file) {
+		public default boolean isUnix(File file) {
+			Objects.requireNonNull(file);
 			String ending = getEndingFor(file);
 			return ending.equals(UNIX.str());
 		}

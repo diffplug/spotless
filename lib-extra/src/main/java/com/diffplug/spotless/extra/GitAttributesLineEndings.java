@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.extra;
 
+import static com.diffplug.spotless.extra.LibExtraPreconditions.requireElementsNonNull;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -81,8 +83,8 @@ public final class GitAttributesLineEndings {
 		final transient Supplier<Iterable<File>> toFormat;
 
 		Policy(File projectDir, Supplier<Iterable<File>> toFormat) {
-			this.projectDir = Objects.requireNonNull(projectDir);
-			this.toFormat = Objects.requireNonNull(toFormat);
+			this.projectDir = Objects.requireNonNull(projectDir, "projectDir");
+			this.toFormat = Objects.requireNonNull(toFormat, "toFormat");
 		}
 
 		@Override
@@ -126,8 +128,7 @@ public final class GitAttributesLineEndings {
 
 		@SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
 		FileState(File projectDir, Iterable<File> toFormat) throws IOException {
-			Objects.requireNonNull(projectDir);
-			Objects.requireNonNull(toFormat);
+			requireElementsNonNull(toFormat);
 			/////////////////////////////////
 			// USER AND SYSTEM-WIDE VALUES //
 			/////////////////////////////////

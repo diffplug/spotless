@@ -17,20 +17,15 @@ package com.diffplug.spotless.java;
 
 import java.util.Objects;
 
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.Provisioner;
-
-/** Uses google-java-format, but only to remove unused imports. */
-public class RemoveUnusedImportsStep {
+final class LibJavaPreconditions {
 	// prevent direct instantiation
-	private RemoveUnusedImportsStep() {}
+	private LibJavaPreconditions() {}
 
-	static final String NAME = "removeUnusedImports";
-
-	public static FormatterStep create(Provisioner provisioner) {
-		Objects.requireNonNull(provisioner, "provisioner");
-		return FormatterStep.createLazy(NAME,
-				() -> new GoogleJavaFormatStep.State(NAME, GoogleJavaFormatStep.defaultVersion(), provisioner),
-				GoogleJavaFormatStep.State::createRemoveUnusedImportsOnly);
+	static <T, I extends Iterable<T>> I requireElementsNonNull(I elements) {
+		Objects.requireNonNull(elements);
+		for (Object element : elements) {
+			Objects.requireNonNull(element);
+		}
+		return elements;
 	}
 }

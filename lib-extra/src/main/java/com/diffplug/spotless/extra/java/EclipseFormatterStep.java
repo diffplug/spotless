@@ -18,7 +18,7 @@ package com.diffplug.spotless.extra.java;
 import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -45,7 +45,7 @@ public final class EclipseFormatterStep {
 	 * to many files. Use {@link #create(Iterable, Provisioner)} instead.*/
 	@Deprecated
 	public static FormatterStep create(File settingsFile, Provisioner provisioner) {
-		return create(Arrays.asList(settingsFile), provisioner);
+		return create(Collections.singletonList(settingsFile), provisioner);
 	}
 
 	/** Creates a formatter step for the given version and settings file. */
@@ -58,11 +58,14 @@ public final class EclipseFormatterStep {
 	 * to many files. Use {@link #create(String, Iterable, Provisioner)} instead.*/
 	@Deprecated
 	public static FormatterStep create(String version, File settingsFile, Provisioner provisioner) {
-		return create(version, Arrays.asList(settingsFile), provisioner);
+		return create(version, Collections.singletonList(settingsFile), provisioner);
 	}
 
 	/** Creates a formatter step for the given version and settings files. */
 	public static FormatterStep create(String version, Iterable<File> settingsFiles, Provisioner provisioner) {
+		Objects.requireNonNull(version, "version");
+		Objects.requireNonNull(settingsFiles, "settingsFiles");
+		Objects.requireNonNull(provisioner, "provisioner");
 		return FormatterStep.createLazy(NAME,
 				() -> new State(JarState.from(MAVEN_COORDINATE + version, provisioner), settingsFiles),
 				State::createFormat);
@@ -81,7 +84,7 @@ public final class EclipseFormatterStep {
 		final FileSignature settings;
 
 		State(JarState jar, final Iterable<File> settingsFiles) throws Exception {
-			this.jarState = Objects.requireNonNull(jar);
+			this.jarState = jar;
 			this.settings = FileSignature.signAsList(settingsFiles);
 		}
 

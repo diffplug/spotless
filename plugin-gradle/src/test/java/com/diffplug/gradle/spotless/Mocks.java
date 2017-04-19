@@ -21,10 +21,10 @@ import org.gradle.api.Action;
 import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 import org.gradle.api.tasks.incremental.InputFileDetails;
 
-public final class Mocks {
+final class Mocks {
 	private Mocks() {}
 
-	public static IncrementalTaskInputs mockIncrementalTaskInputs(Iterable<File> target) {
+	static IncrementalTaskInputs mockIncrementalTaskInputs(Iterable<File> target) {
 		return new IncrementalTaskInputs() {
 			@Override
 			public boolean isIncremental() {

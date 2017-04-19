@@ -13,24 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.java;
+package com.diffplug.spotless.extra;
 
 import java.util.Objects;
 
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.Provisioner;
-
-/** Uses google-java-format, but only to remove unused imports. */
-public class RemoveUnusedImportsStep {
+final class LibExtraPreconditions {
 	// prevent direct instantiation
-	private RemoveUnusedImportsStep() {}
+	private LibExtraPreconditions() {}
 
-	static final String NAME = "removeUnusedImports";
-
-	public static FormatterStep create(Provisioner provisioner) {
-		Objects.requireNonNull(provisioner, "provisioner");
-		return FormatterStep.createLazy(NAME,
-				() -> new GoogleJavaFormatStep.State(NAME, GoogleJavaFormatStep.defaultVersion(), provisioner),
-				GoogleJavaFormatStep.State::createRemoveUnusedImportsOnly);
+	static <T, I extends Iterable<T>> I requireElementsNonNull(I elements) {
+		Objects.requireNonNull(elements);
+		for (Object element : elements) {
+			Objects.requireNonNull(element);
+		}
+		return elements;
 	}
 }

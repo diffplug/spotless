@@ -20,7 +20,7 @@ import java.io.Serializable;
 /** A policy for handling exceptions in the format. */
 public interface FormatExceptionPolicy extends Serializable, NoLambda {
 	/** Called for every error in the formatter. */
-	void handleError(Throwable e, FormatterStep step, String relativePath);
+	public void handleError(Throwable e, FormatterStep step, String relativePath);
 
 	/**
 	 * Returns a byte array representation of everything inside this `FormatExceptionPolicy`.

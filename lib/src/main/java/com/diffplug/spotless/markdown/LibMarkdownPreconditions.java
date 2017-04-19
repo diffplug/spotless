@@ -13,24 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.java;
+package com.diffplug.spotless.markdown;
 
+import java.util.Map;
 import java.util.Objects;
 
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.Provisioner;
-
-/** Uses google-java-format, but only to remove unused imports. */
-public class RemoveUnusedImportsStep {
+final class LibMarkdownPreconditions {
 	// prevent direct instantiation
-	private RemoveUnusedImportsStep() {}
+	private LibMarkdownPreconditions() {}
 
-	static final String NAME = "removeUnusedImports";
-
-	public static FormatterStep create(Provisioner provisioner) {
-		Objects.requireNonNull(provisioner, "provisioner");
-		return FormatterStep.createLazy(NAME,
-				() -> new GoogleJavaFormatStep.State(NAME, GoogleJavaFormatStep.defaultVersion(), provisioner),
-				GoogleJavaFormatStep.State::createRemoveUnusedImportsOnly);
+	static <K, V> Map<K, V> requireKeysAndValuesNonNull(Map<K, V> map) {
+		Objects.requireNonNull(map);
+		map.forEach((key, value) -> {
+			Objects.requireNonNull(key);
+			Objects.requireNonNull(value);
+		});
+		return map;
 	}
 }
