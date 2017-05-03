@@ -7,6 +7,10 @@ You might be looking for:
 
 ### Version 1.4.0-SNAPSHOT - TBD (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/snapshot/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/snapshot/), [snapshot repo](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/))
 
+### Version 1.3.1 - May 3rd 2017 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.3.1/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.3.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
+
+* Fixed a bug in `PaddedCellBulk.check()` which caused a `check` to fail even after an `apply` for cases which caused CYCLE.
+
 ### Version 1.3.0 - April 11th 2017 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.3.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.3.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
 * Added support for Groovy via [greclipse](https://github.com/groovy/groovy-eclipse).
