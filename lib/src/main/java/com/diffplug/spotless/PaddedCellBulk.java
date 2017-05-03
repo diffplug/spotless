@@ -151,7 +151,7 @@ public final class PaddedCellBulk {
 				} else {
 					// if the input is resolvable, we'll use that to try again at
 					// determining if it's clean
-					paddedCellStep.set(problemFile, padded.steps().get(0));
+					paddedCellStep.set(problemFile, padded.canonical());
 					if (!paddedFormatter.isClean(problemFile)) {
 						stillFailing.add(problemFile);
 					}

@@ -124,6 +124,10 @@ public class PaddedCellTaskTest extends ResourceHarness {
 		assertFileContent("A", cycle.file);		// cycle -> first element in cycle
 		assertFileContent("", converge.file);	// converge -> converges
 		assertFileContent("CCC", diverge.file);	// diverge -> no change
+
+		cycle.check.execute();
+		converge.check.execute();
+		diverge.check.execute();
 	}
 
 	@Test
