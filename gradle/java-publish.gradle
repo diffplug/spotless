@@ -117,7 +117,8 @@ model {
 						username = cred('nexus_user')
 						password = cred('nexus_pass')
 					}
-				}}
+				}
+			}
 		}
 	}
 }

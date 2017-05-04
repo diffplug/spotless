@@ -1,4 +1,4 @@
-buildscript { repositories { jcenter() }}
+buildscript { repositories { jcenter() } }
 
 // applied by SelfTest
 plugins {
@@ -32,9 +32,9 @@ spotless {
 			include '**/*.gradle'
 			exclude '_ext/**'
 		}
+		paddedCell()
 		custom 'noInternalDeps', noInternalDepsClosure
-		custom 'preventFormatPingPong', { return it.replaceAll('}[ \t]+}', '}}') }
-		bumpThisNumberIfACustomStepChanges(1)
+		bumpThisNumberIfACustomStepChanges(3)
 		greclipse().configFile('spotless.eclipseformat.xml', 'spotless.groovyformat.prefs')
 	}
 	freshmark {
