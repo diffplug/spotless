@@ -2,7 +2,7 @@
 
 ### Version 3.4.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-plugin-gradle/))
 
-### Version 3.3.1 - May 3rd 2017 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.3.1/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.3.1))
+### Version 3.3.2 - May 3rd 2017 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.3.1/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.3.1))
 
 * Fixed a bug in `paddedCell()` which caused `spotlessCheck` to fail even after `spotlessApply` for cases where a rule is misbehaving and causing a cycle.
 
