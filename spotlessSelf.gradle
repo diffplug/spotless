@@ -23,7 +23,7 @@ spotless {
 		bumpThisNumberIfACustomStepChanges(1)
 		licenseHeaderFile 'spotless.license'
 		importOrderFile   'spotless.importorder'
-		eclipseFormatFile 'spotless.eclipseformat.xml'
+		eclipse().configFile 'spotless.eclipseformat.xml'
 		trimTrailingWhitespace()
 		removeUnusedImports()
 	}
