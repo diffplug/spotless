@@ -94,7 +94,7 @@ public class SelfTest {
 				java.target("**/*.java");
 				java.licenseHeaderFile("spotless.license.java");
 				java.importOrderFile("spotless.importorder");
-				java.eclipseFormatFile("spotless.eclipseformat.xml");
+				java.eclipse().configFile("spotless.eclipseformat.xml");
 				java.trimTrailingWhitespace();
 				java.customLazy("Lambda fix", () -> raw -> {
 					if (!raw.contains("public class SelfTest ")) {

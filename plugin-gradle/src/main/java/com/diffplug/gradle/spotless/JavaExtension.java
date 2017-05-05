@@ -15,6 +15,8 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -24,6 +26,8 @@ import org.gradle.api.internal.file.UnionFileCollection;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 
+import com.diffplug.common.base.StringPrinter;
+import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.SerializableFileFilter;
 import com.diffplug.spotless.extra.java.EclipseFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
@@ -59,17 +63,23 @@ public class JavaExtension extends FormatExtension {
 		addStep(ImportOrderStep.createFromFile(getProject().file(importOrderFile)));
 	}
 
+	/** Use {@link #eclipse()} instead */
+	@Deprecated
 	public void eclipseFormatFile(Object eclipseFormatFile) {
 		eclipseFormatFile(EclipseFormatterStep.defaultVersion(), eclipseFormatFile);
 	}
 
+	/** Use {@link #eclipse(String)} instead */
+	@Deprecated
 	public void eclipseFormatFile(String eclipseVersion, Object eclipseFormatFile) {
 		Objects.requireNonNull(eclipseVersion, "eclipseVersion");
 		Objects.requireNonNull(eclipseFormatFile, "eclipseFormatFile");
-		Project project = getProject();
-		addStep(EclipseFormatterStep.create(eclipseVersion,
-				project.files(eclipseFormatFile).getFiles(),
-				GradleProvisioner.fromProject(project)));
+		getProject().getLogger().warn(
+				StringPrinter.buildStringFromLines(
+						"'eclipseFormatFile [version] <file>' is deprecated.",
+						"Use 'eclipse([version]).configFile(<file>)' instead.",
+						"For details see https://github.com/diffplug/spotless/tree/master/plugin-gradle#applying-to-java-source"));
+		eclipse(eclipseVersion).configFile(eclipseFormatFile);
 	}
 
 	/** Removes any unused imports. */
@@ -91,6 +101,37 @@ public class JavaExtension extends FormatExtension {
 	public void googleJavaFormat(String version) {
 		Objects.requireNonNull(version);
 		addStep(GoogleJavaFormatStep.create(version, GradleProvisioner.fromProject(getProject())));
+	}
+
+	public EclipseConfig eclipse() {
+		return eclipse(EclipseFormatterStep.defaultVersion());
+	}
+
+	public EclipseConfig eclipse(String version) {
+		return new EclipseConfig(version);
+	}
+
+	public class EclipseConfig {
+		final String version;
+		Object[] configFiles;
+
+		EclipseConfig(String version) {
+			configFiles = new Object[0];
+			this.version = Objects.requireNonNull(version);
+			addStep(createStep());
+		}
+
+		public void configFile(Object... configFiles) {
+			this.configFiles = requireElementsNonNull(configFiles);
+			replaceStep(createStep());
+		}
+
+		private FormatterStep createStep() {
+			Project project = getProject();
+			return EclipseFormatterStep.create(version,
+					project.files(configFiles).getFiles(),
+					GradleProvisioner.fromProject(project));
+		}
 	}
 
 	/** If the user hasn't specified the files yet, we'll assume he/she means all of the java files. */
