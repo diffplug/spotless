@@ -24,6 +24,7 @@ import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.internal.file.UnionFileCollection;
 import org.gradle.api.internal.plugins.DslObject;
+import org.gradle.api.plugins.GroovyBasePlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.GroovySourceSet;
 import org.gradle.api.tasks.SourceSet;
@@ -106,7 +107,7 @@ public class GroovyExtension extends FormatExtension {
 	protected void setupTask(SpotlessTask task) {
 		if (target == null) {
 			JavaPluginConvention convention = getProject().getConvention().getPlugin(JavaPluginConvention.class);
-			if (convention == null) {
+			if (convention == null || !getProject().getPlugins().hasPlugin(GroovyBasePlugin.class)) {
 				throw new GradleException("You must apply the groovy plugin before the spotless plugin if you are using the groovy extension.");
 			}
 			//Add all Groovy files (may contain Java files as well)
