@@ -42,8 +42,6 @@ public class GroovyDefaultTargetTest extends GradleIntegrationTest {
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",
 				"}",
-				"repositories { mavenLocal() }",
-				"",
 				"apply plugin: 'groovy'",
 				"",
 				"spotless {",
@@ -83,8 +81,6 @@ public class GroovyDefaultTargetTest extends GradleIntegrationTest {
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",
 				"}",
-				"repositories { mavenLocal() }",
-				"",
 				"apply plugin: 'groovy'",
 				"",
 				"spotless {",
@@ -99,6 +95,27 @@ public class GroovyDefaultTargetTest extends GradleIntegrationTest {
 			Assert.fail("Exception expected when running 'excludeJava' in combination with 'target'.");
 		} catch (Throwable t) {
 			Assertions.assertThat(t).hasMessageContaining("'excludeJava' is not supported");
+		}
+	}
+
+	@Test
+	public void groovyPluginMissingCheck() throws IOException {
+		write("build.gradle",
+				"plugins {",
+				"    id 'com.diffplug.gradle.spotless'",
+				"}",
+				"apply plugin: 'java'",
+				"",
+				"spotless {",
+				"    groovy {",
+				"    }",
+				"}");
+
+		try {
+			gradleRunner().withArguments("spotlessApply").build();
+			Assert.fail("Exception expected when using 'groovy' without 'target' if groovy-plugin is not applied.");
+		} catch (Throwable t) {
+			Assertions.assertThat(t).hasMessageContaining("must apply the groovy plugin before");
 		}
 	}
 
