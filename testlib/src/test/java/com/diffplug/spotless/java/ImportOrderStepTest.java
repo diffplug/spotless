@@ -51,6 +51,18 @@ public class ImportOrderStepTest extends ResourceHarness {
 	}
 
 	@Test
+	public void removeComments() throws Throwable {
+		FormatterStep step = ImportOrderStep.createFromFile(createTestFile("java/importsorter/import.properties"));
+		assertOnResources(step, "java/importsorter/JavaCodeImportComments.test", "java/importsorter/JavaCodeSortedImports.test");
+	}
+
+	@Test
+	public void misplacedImports() throws Throwable {
+		FormatterStep step = ImportOrderStep.createFromFile(createTestFile("java/importsorter/import.properties"));
+		assertOnResources(step, "java/importsorter/JavaCodeUnsortedMisplacedImports.test", "java/importsorter/JavaCodeSortedMisplacedImports.test");
+	}
+
+	@Test
 	public void doesntThrowIfImportOrderIsntSerializable() {
 		ImportOrderStep.createFromOrder(NonSerializableList.of("java", "javax", "org", "\\#com"));
 	}

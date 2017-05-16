@@ -40,6 +40,7 @@ final class ImportSorter {
 		int firstImportLine = 0;
 		int lastImportLine = 0;
 		int line = 0;
+		boolean isMultiLineComment = false;
 		List<String> imports = new ArrayList<>();
 		while (scanner.hasNext()) {
 			line++;
@@ -47,6 +48,15 @@ final class ImportSorter {
 			if (next == null) {
 				break;
 			}
+			//Since we have no AST, we only consider the most common use cases.
+			isMultiLineComment |= next.contains("/*");
+			if (isMultiLineComment && next.contains("*/")) {
+				isMultiLineComment = false;
+				if (!next.contains("/*")) {
+					continue;
+				}
+			}
+
 			if (next.startsWith("import ")) {
 				int i = next.indexOf(".");
 				if (isNotValidImport(i)) {
@@ -59,15 +69,26 @@ final class ImportSorter {
 				int endIndex = next.indexOf(";");
 
 				String imprt = next.substring(START_INDEX_OF_IMPORTS_PACKAGE_DECLARATION, endIndex != -1 ? endIndex : next.length());
-				if (!imports.contains(imprt)) {
+				if (!isMultiLineComment && !imports.contains(imprt)) {
 					imports.add(imprt);
 				}
+			}
+			if (!isMultiLineComment && isBeginningOfScope(next)) {
+				break; //Don't dare to touch lines after a scope started
 			}
 		}
 		scanner.close();
 
 		List<String> sortedImports = ImportSorterImpl.sort(imports, importsOrder);
 		return applyImportsToDocument(raw, firstImportLine, lastImportLine, sortedImports);
+	}
+
+	private static boolean isBeginningOfScope(String line) {
+		int scope = line.indexOf("{");
+		if (0 <= scope) {
+			return !line.substring(0, scope).contains("//");
+		}
+		return false;
 	}
 
 	private static String applyImportsToDocument(final String document, int firstImportLine, int lastImportLine, List<String> strings) {

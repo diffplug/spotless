@@ -1,0 +1,14 @@
+import static java.lang.Exception.*;
+//Will be removed
+import org.dooda.Didoo; /* Comment removed, import stays */
+import java.lang.Thread; /* Don't */ /* get */ /* confused */
+import java.lang.Runnable;
+/* import org.comments.will
+import org.comments.be
+import org.comments.removed
+*/
+import static java.lang.Runnable.*; 
+/*
+import other.multiline.comments
+import will.be.removed.too */ 
+import static com.foo.Bar
