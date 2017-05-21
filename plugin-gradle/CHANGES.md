@@ -1,6 +1,15 @@
 # spotless-plugin-gradle releases
 
-### Version 3.4.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-plugin-gradle/))
+### Version 3.5.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-plugin-gradle/))
+
+### Version 3.4.0 - May 21st 2017 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.4.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.4.0))
+
+* `ImportOrderStep` can now handle multi-line comments and misplaced imports.
+* Groovy extension now checks for the `groovy` plugin to be applied.
+* Deprecated the old syntax for the the eclipse formatter:
+	+ New syntax better separates the version from the other configuration options, and is more consistent with the other
+	+ `eclipseFormatFile('format.xml')` -> `eclipse().configFile('format.xml')`
+	+ `eclipseFormatFile('4.4.0', 'format.xml')` -> `eclipse('4.4.0').configFile('format.xml')`
 
 ### Version 3.3.2 - May 3rd 2017 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.3.1/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.3.1))
 
