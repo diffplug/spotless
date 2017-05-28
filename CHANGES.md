@@ -7,6 +7,8 @@ You might be looking for:
 
 ### Version 1.5.0-SNAPSHOT - TBD (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/snapshot/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/snapshot/), [snapshot repo](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/))
 
+* Default eclipse version for `EclipseFormatterStep` bumped to `4.6.3` from `4.6.1`. ([#116](https://github.com/diffplug/spotless/issues/116))
+
 ### Version 1.4.0 - May 21st 2017 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.4.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.4.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
 * `ImportOrderStep` can now handle multi-line comments and misplaced imports.

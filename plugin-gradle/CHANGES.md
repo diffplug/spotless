@@ -2,6 +2,8 @@
 
 ### Version 3.5.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-plugin-gradle/))
 
+* Default eclipse version for `EclipseFormatterStep` bumped to `4.6.3` from `4.6.1`. ([#116](https://github.com/diffplug/spotless/issues/116))
+
 ### Version 3.4.0 - May 21st 2017 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.4.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.4.0))
 
 * `ImportOrderStep` can now handle multi-line comments and misplaced imports.
