@@ -169,10 +169,10 @@ public class FormatExtension {
 			if (getProject() == getProject().getRootProject()) {
 				excludes.add(".gradle");
 			}
-			// no build folders
-			excludes.add(relativize(dir, getProject().getBuildDir()));
+			// no build folders (flatInclude means that subproject might not be subfolders, see https://github.com/diffplug/spotless/issues/121)
+			relativizeIfSubdir(excludes, dir, getProject().getBuildDir());
 			for (Project subproject : getProject().getSubprojects()) {
-				excludes.add(relativize(dir, subproject.getBuildDir()));
+				relativizeIfSubdir(excludes, dir, subproject.getBuildDir());
 			}
 			if (target instanceof String) {
 				return (FileCollection) getProject().fileTree(dir).include((String) target).exclude(excludes);
@@ -185,11 +185,22 @@ public class FormatExtension {
 		}
 	}
 
-	static String relativize(File root, File dest) {
+	private static void relativizeIfSubdir(List<String> relativePaths, File root, File dest) {
+		String relativized = relativize(root, dest);
+		if (relativized != null) {
+			relativePaths.add(relativized);
+		}
+	}
+
+	/**
+	 * Returns the relative path between root and dest,
+	 * or null if dest is not a child of root.
+	 */
+	static @Nullable String relativize(File root, File dest) {
 		String rootPath = root.getAbsolutePath();
 		String destPath = dest.getAbsolutePath();
 		if (!destPath.startsWith(rootPath)) {
-			throw new IllegalArgumentException(dest + " is not a child of " + root);
+			return null;
 		} else {
 			return destPath.substring(rootPath.length());
 		}
