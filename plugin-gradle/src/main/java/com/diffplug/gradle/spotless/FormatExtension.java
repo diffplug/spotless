@@ -196,8 +196,7 @@ public class FormatExtension {
 	 * Returns the relative path between root and dest,
 	 * or null if dest is not a child of root.
 	 */
-	@Nullable
-	static String relativize(File root, File dest) {
+	static @Nullable String relativize(File root, File dest) {
 		String rootPath = root.getAbsolutePath();
 		String destPath = dest.getAbsolutePath();
 		if (!destPath.startsWith(rootPath)) {
