@@ -83,6 +83,20 @@ Spotless can check and apply formatting to any plain-text file, using simple rul
 * [FreshMark](https://github.com/diffplug/freshmark) (markdown with variables)
 * Any user-defined function which takes an unformatted string and outputs a formatted version.
 
+Formatters relying on external libraries (like Eclipse and Google formatters), use the repositories specified in the **root project** build script to download missing libraries on demand. All external libraries are available via [Maven Central](http://search.maven.org/), so a typical script looks like:
+```gradle
+buildscript { repositories { mavenCentral() } }
+
+plugins {
+	id 'com.diffplug.gradle.spotless'
+	id 'java'
+}
+
+spotless {
+	java { googleJavaFormat() }
+}
+```
+
 Contributions are welcome, see [the contributing guide](../CONTRIBUTING.md) for development info.
 
 Spotless requires Gradle to be running on JRE 8+.<sup>See [issue #7](https://github.com/diffplug/spotless/issues/7) for details.</sup>
