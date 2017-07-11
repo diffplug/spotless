@@ -37,7 +37,7 @@ public class ScalaFmtStep {
 	// prevent direct instantiation
 	private ScalaFmtStep() {}
 
-	private static final String DEFAULT_VERSION = "0.5.7";
+	private static final String DEFAULT_VERSION = "1.1.0";
 	static final String NAME = "scalafmt";
 	static final String MAVEN_COORDINATE = "com.geirsson:scalafmt-core_2.11:";
 
@@ -92,11 +92,28 @@ public class ScalaFmtStep {
 
 				Class<?> optionCls = classLoader.loadClass("scala.Option");
 				Class<?> configCls = classLoader.loadClass("org.scalafmt.config.Config");
-				Method fromHocon = configCls.getMethod("fromHocon", String.class, optionCls);
-				Object fromHoconEmptyPath = configCls.getMethod("fromHocon$default$2").invoke(null);
 
-				String configStr = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
-				Object either = fromHocon.invoke(null, configStr, fromHoconEmptyPath);
+				Object either;
+
+				try {
+					// scalafmt >= v0.7.0-RC1
+					Method fromHocon = configCls.getMethod("fromHoconString", String.class, optionCls);
+					Object fromHoconEmptyPath = configCls.getMethod("fromHoconString$default$2").invoke(null);
+
+					String configStr = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+
+					Object configured = fromHocon.invoke(null, configStr, fromHoconEmptyPath);
+					either = invokeNoArg(configured, "toEither");
+				} catch (NoSuchMethodException e) {
+					// In case of a NoSuchMethodException try old configuration API
+					// scalafmt <= v0.6.8
+					Method fromHocon = configCls.getMethod("fromHocon", String.class, optionCls);
+					Object fromHoconEmptyPath = configCls.getMethod("fromHocon$default$2").invoke(null);
+
+					String configStr = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+					either = fromHocon.invoke(null, configStr, fromHoconEmptyPath);
+				}
+
 				config = invokeNoArg(invokeNoArg(either, "right"), "get");
 			}
 			return input -> {
