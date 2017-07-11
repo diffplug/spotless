@@ -23,6 +23,7 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
 
+import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.Provisioner;
 
 /** Gradle integration for Provisioner. */
@@ -36,11 +37,16 @@ public class GradleProvisioner {
 				Dependency[] deps = mavenCoords.stream()
 						.map(project.getBuildscript().getDependencies()::create)
 						.toArray(Dependency[]::new);
-				Configuration config = project.getBuildscript().getConfigurations().detachedConfiguration(deps);
+				Configuration config = project.getRootProject().getBuildscript().getConfigurations().detachedConfiguration(deps);
 				config.setDescription(mavenCoords.toString());
 				return config.resolve();
 			} catch (Exception e) {
-				logger.log(Level.SEVERE, "You probably need to add a repository containing the '" + mavenCoords + "' artifact, e.g.: 'buildscript { repositories { mavenCentral() }}'", e);
+				logger.log(Level.SEVERE,
+						StringPrinter.buildStringFromLines("You probably need to add a repository containing the '" + mavenCoords + "' artifact in the 'build.gradle' of your root project.",
+								"E.g.: 'buildscript { repositories { mavenCentral() }}'",
+								"Note that included buildscripts (using 'apply from') do not share their buildscript repositories with the underlying project.",
+								"You have to specify the missing repository explicitly in the buildscript of the root project."),
+						e);
 				throw e;
 			}
 		};
