@@ -9,7 +9,8 @@ object a
   def foo[
       T: Int#Double#Triple,
       R <% String](
-      @annot1 x: Int @annot2 =
+      @annot1
+      x: Int @annot2 =
         2,
       y: Int = 3)
     : Int = {
