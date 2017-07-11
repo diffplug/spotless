@@ -3,7 +3,10 @@
 ### Version 3.5.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-plugin-gradle/))
 
 * Default eclipse version for `EclipseFormatterStep` bumped to `4.6.3` from `4.6.1`. ([#116](https://github.com/diffplug/spotless/issues/116))
+* Default scalafmt version for `ScalaFmtStep` bumped to `1.1.0` from `0.5.7` ([#124](https://github.com/diffplug/spotless/pull/124))
+	+ Also added support for the API change to scalafmt introduced in `0.7.0-RC1`
 * Fixed wildcard targets for `includeFlat` subprojects ([#121](https://github.com/diffplug/spotless/issues/121))
+* When spotless needs to download a formatter, it now uses the buildscript repositories specified in the root buildscript. ([#123](https://github.com/diffplug/spotless/pull/123), [#120](https://github.com/diffplug/spotless/issues/120))
 
 ### Version 3.4.0 - May 21st 2017 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.4.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.4.0))
 
