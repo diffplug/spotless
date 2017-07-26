@@ -62,7 +62,14 @@ public class GroovyExtension extends FormatExtension {
 		licenseHeaderFile(licenseHeaderFile, JavaExtension.LICENSE_HEADER_DELIMITER);
 	}
 
+	/** Method interface has been changed to
+	 * {@link GroovyExtension#importOrder(String...)}.*/
+	@Deprecated
 	public void importOrder(List<String> importOrder) {
+		addStep(ImportOrderStep.createFromOrder(importOrder));
+	}
+
+	public void importOrder(String... importOrder) {
 		addStep(ImportOrderStep.createFromOrder(importOrder));
 	}
 
