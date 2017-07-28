@@ -58,6 +58,11 @@ public class JavaExtension extends FormatExtension {
 	 * {@link JavaExtension#importOrder(String...)}.*/
 	@Deprecated
 	public void importOrder(List<String> importOrder) {
+		getProject().getLogger().warn(
+				StringPrinter.buildStringFromLines(
+						"'importOrder([x, y, z])' is deprecated.",
+						"Use 'importOrder x, y, z' instead.",
+						"For details see https://github.com/diffplug/spotless/tree/master/plugin-gradle#applying-to-java-source"));
 		addStep(ImportOrderStep.createFromOrder(importOrder));
 	}
 

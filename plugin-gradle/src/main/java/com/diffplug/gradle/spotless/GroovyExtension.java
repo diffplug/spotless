@@ -29,6 +29,7 @@ import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.GroovySourceSet;
 import org.gradle.api.tasks.SourceSet;
 
+import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.SerializableFileFilter;
 import com.diffplug.spotless.extra.groovy.GrEclipseFormatterStep;
@@ -66,6 +67,11 @@ public class GroovyExtension extends FormatExtension {
 	 * {@link GroovyExtension#importOrder(String...)}.*/
 	@Deprecated
 	public void importOrder(List<String> importOrder) {
+		getProject().getLogger().warn(
+				StringPrinter.buildStringFromLines(
+						"'importOrder([x, y, z])' is deprecated.",
+						"Use 'importOrder x, y, z' instead.",
+						"For details see https://github.com/diffplug/spotless/tree/master/plugin-gradle#applying-to-java-source"));
 		addStep(ImportOrderStep.createFromOrder(importOrder));
 	}
 
