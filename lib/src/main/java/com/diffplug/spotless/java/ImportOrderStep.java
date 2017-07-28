@@ -24,6 +24,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -37,10 +38,19 @@ public final class ImportOrderStep {
 	// prevent direct instantiation
 	private ImportOrderStep() {}
 
+	/** Method interface has been changed to
+	 * {@link ImportOrderStep#importOrder(String...)}.*/
+	@Deprecated
 	public static FormatterStep createFromOrder(List<String> importOrder) {
 		// defensive copying and null checking
 		importOrder = requireElementsNonNull(new ArrayList<>(importOrder));
 		return createFromOrderImpl(importOrder);
+	}
+
+	public static FormatterStep createFromOrder(String... importOrder) {
+		// defensive copying and null checking
+		List<String> importOrderList = requireElementsNonNull(Arrays.asList(importOrder));
+		return createFromOrderImpl(importOrderList);
 	}
 
 	public static FormatterStep createFromFile(File importsFile) {

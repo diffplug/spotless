@@ -2,6 +2,8 @@
 
 ### Version 3.5.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-plugin-gradle/))
 
+* Changed `importOrder` interface from array to varargs ([#125](https://github.com/diffplug/spotless/issues/125))
+
 ### Version 3.4.1 - July 11th 2017 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.4.1/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.4.1))
 
 * Default eclipse version for `EclipseFormatterStep` bumped to `4.6.3` from `4.6.1`. ([#116](https://github.com/diffplug/spotless/issues/116))

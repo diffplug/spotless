@@ -54,7 +54,14 @@ public class JavaExtension extends FormatExtension {
 		licenseHeaderFile(licenseHeaderFile, LICENSE_HEADER_DELIMITER);
 	}
 
+	/** Method interface has been changed to
+	 * {@link JavaExtension#importOrder(String...)}.*/
+	@Deprecated
 	public void importOrder(List<String> importOrder) {
+		addStep(ImportOrderStep.createFromOrder(importOrder));
+	}
+
+	public void importOrder(String... importOrder) {
 		addStep(ImportOrderStep.createFromOrder(importOrder));
 	}
 

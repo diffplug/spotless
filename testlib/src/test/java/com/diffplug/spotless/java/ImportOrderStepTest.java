@@ -15,20 +15,16 @@
  */
 package com.diffplug.spotless.java;
 
-import java.util.Arrays;
-
 import org.junit.Test;
 
-import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.NonSerializableList;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
 
 public class ImportOrderStepTest extends ResourceHarness {
 	@Test
 	public void sortImportsFromArray() throws Throwable {
-		FormatterStep step = ImportOrderStep.createFromOrder(Arrays.asList("java", "javax", "org", "\\#com"));
+		FormatterStep step = ImportOrderStep.createFromOrder("java", "javax", "org", "\\#com");
 		assertOnResources(step, "java/importsorter/JavaCodeUnsortedImports.test", "java/importsorter/JavaCodeSortedImports.test");
 	}
 
@@ -64,26 +60,26 @@ public class ImportOrderStepTest extends ResourceHarness {
 
 	@Test
 	public void doesntThrowIfImportOrderIsntSerializable() {
-		ImportOrderStep.createFromOrder(NonSerializableList.of("java", "javax", "org", "\\#com"));
+		ImportOrderStep.createFromOrder("java", "javax", "org", "\\#com");
 	}
 
 	@Test
 	public void equality() throws Exception {
 		new SerializableEqualityTester() {
-			ImmutableList<String> imports = ImmutableList.of();
+			String[] imports = {};
 
 			@Override
 			protected void setupTest(API api) {
 				// same version == same
 				api.areDifferentThan();
 				// change the version, and it's different
-				imports = ImmutableList.of("a");
+				imports = new String[]{"a"};
 				api.areDifferentThan();
 				// change the version, and it's different
-				imports = ImmutableList.of("b");
+				imports = new String[]{"b"};
 				api.areDifferentThan();
 				// change the version, and it's different
-				imports = ImmutableList.of("a", "b");
+				imports = new String[]{"a", "b"};
 				api.areDifferentThan();
 			}
 
