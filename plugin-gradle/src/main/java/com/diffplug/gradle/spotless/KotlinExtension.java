@@ -25,7 +25,7 @@ import org.gradle.api.tasks.SourceSet;
 import com.diffplug.spotless.kotlin.KtLintStep;
 
 public class KotlinExtension extends FormatExtension {
-	static final String NAME = "kotin";
+	static final String NAME = "kotlin";
 
 	public KotlinExtension(SpotlessExtension rootExtension) {
 		super(rootExtension);
