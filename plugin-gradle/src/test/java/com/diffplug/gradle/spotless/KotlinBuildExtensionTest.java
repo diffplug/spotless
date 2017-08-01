@@ -27,7 +27,7 @@ public class KotlinBuildExtensionTest extends GradleIntegrationTest {
 	}
 
 	@Test
-	public void integration_companion_in_subdir() throws IOException {
+	public void integration_script_in_subdir() throws IOException {
 		testInDirectory("companionScripts");
 	}
 
@@ -39,8 +39,9 @@ public class KotlinBuildExtensionTest extends GradleIntegrationTest {
 				"}",
 				"repositories { mavenCentral() }",
 				"spotless {",
-				"    kotlinBuild {",
+				"    kotlinGradle {",
 				"        ktlint()",
+				"        target '**/*.gradle.kts'",
 				"    }",
 				"}");
 		String filePath = "configuration.gradle.kts";
@@ -56,7 +57,7 @@ public class KotlinBuildExtensionTest extends GradleIntegrationTest {
 	}
 
 	@Test
-	public void integration_companions_disabled() throws IOException {
+	public void integration_default() throws IOException {
 		write("build.gradle",
 				"plugins {",
 				"    id 'nebula.kotlin' version '1.0.6'",
@@ -64,17 +65,15 @@ public class KotlinBuildExtensionTest extends GradleIntegrationTest {
 				"}",
 				"repositories { mavenCentral() }",
 				"spotless {",
-				"    kotlinBuild {",
+				"    kotlinGradle {",
 				"        ktlint()",
-				"        setFindCompanionScripts(false)",
 				"    }",
 				"}");
 		write("configuration.gradle.kts",
 				getTestResource("kotlin/ktlint/basic.dirty"));
-		// Whatever the output of this should not change after running `spotlessApply`.
-		String expectedResult = read("configuration.gradle.kts");
 		gradleRunner().withArguments("spotlessApply").build();
 		String result = read("configuration.gradle.kts");
-		Assert.assertEquals(expectedResult, result);
+		String formatted = getTestResource("kotlin/ktlint/basic.clean");
+		Assert.assertEquals(formatted, result);
 	}
 }

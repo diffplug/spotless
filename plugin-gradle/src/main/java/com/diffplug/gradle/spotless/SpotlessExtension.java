@@ -92,7 +92,7 @@ public class SpotlessExtension {
 	}
 
 	/** Configures the special Gradle Kotlin DSL specific extension. */
-	public void kotlinBuild(Action<KotlinBuildExtension> closure) {
+	public void kotlinGradle(Action<KotlinBuildExtension> closure) {
 		requireNonNull(closure);
 		configure(KotlinBuildExtension.NAME, KotlinBuildExtension.class, closure);
 	}
