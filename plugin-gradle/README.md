@@ -226,20 +226,14 @@ spotless {
 		licenseHeader '/* Licensed under Apache-2.0 */'	// License header
 		licenseHeaderFile 'path-to-license-file'		// License header file
 	}
-}
-```
-
-<a name="ktlint-gradle"></a>
-
-## Applying [ktlint](https://github.com/shyiko/ktlint) to [Gradle Kotlin DSL](https://github.com/gradle/kotlin-dsl) files
-
-```gradle
-spotless {
 	kotlinGradle {
-		// optionally takes a version
-		ktlint()
-		// optionally specify a subdirectory you also want linted
+		// same as kotlin, but for .gradle.kts files (defaults to '*.gradle.kts')
 		target '*.gradle.kts', 'additionalScripts/*.gradle.kts'
+
+		ktlint()
+
+		// doesn't support licenseHeader, because scripts don't have a package statement
+		// to clearly mark where the license should go
 	}
 }
 ```
