@@ -228,6 +228,22 @@ spotless {
 	}
 }
 ```
+
+<a name="ktlint-gradle"></a>
+
+## Applying [ktlint](https://github.com/shyiko/ktlint) to [Gradle Kotlin DSL](https://github.com/gradle/kotlin-dsl) files
+
+```gradle
+spotless {
+	kotlinGradle {
+		// optionally takes a version
+		ktlint()
+		// optionally specify a subdirectory you also want linted
+		target '*.gradle.kts', 'additionalScripts/*.gradle.kts'
+	}
+}
+```
+
 <a name="custom"></a>
 
 ## Custom rules

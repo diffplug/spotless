@@ -19,12 +19,12 @@ import java.util.Objects;
 
 import com.diffplug.spotless.kotlin.KtLintStep;
 
-public class KotlinBuildExtension extends FormatExtension {
+public class KotlinGradleExtension extends FormatExtension {
 	private static final String GRADLE_KOTLIN_DSL_FILE_EXTENSION = "*.gradle.kts";
 
 	static final String NAME = "kotlinGradle";
 
-	public KotlinBuildExtension(SpotlessExtension rootExtension) {
+	public KotlinGradleExtension(SpotlessExtension rootExtension) {
 		super(rootExtension);
 	}
 

@@ -92,9 +92,9 @@ public class SpotlessExtension {
 	}
 
 	/** Configures the special Gradle Kotlin DSL specific extension. */
-	public void kotlinGradle(Action<KotlinBuildExtension> closure) {
+	public void kotlinGradle(Action<KotlinGradleExtension> closure) {
 		requireNonNull(closure);
-		configure(KotlinBuildExtension.NAME, KotlinBuildExtension.class, closure);
+		configure(KotlinGradleExtension.NAME, KotlinGradleExtension.class, closure);
 	}
 
 	/** Configures the special freshmark-specific extension. */

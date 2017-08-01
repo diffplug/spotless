@@ -20,7 +20,7 @@ import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class KotlinBuildExtensionTest extends GradleIntegrationTest {
+public class KotlinGradleExtensionTest extends GradleIntegrationTest {
 	@Test
 	public void integration() throws IOException {
 		testInDirectory(null);
