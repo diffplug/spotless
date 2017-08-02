@@ -4,6 +4,7 @@
 
 * Changed `importOrder` interface from array to varargs ([#125](https://github.com/diffplug/spotless/issues/125))
 * The `kotlin` extension was mis-spelled as `kotin`.
+* Added `kotlinGradle` method to `SpotlessExtension` for linting [Gradle Kotlin DSL](https://github.com/gradle/kotlin-dsl) files with [ktlint](https://github.com/shyiko/ktlint). ([#115](https://github.com/diffplug/spotless/issues/115))
 
 ### Version 3.4.1 - July 11th 2017 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.4.1/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.4.1))
 

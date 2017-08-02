@@ -226,8 +226,18 @@ spotless {
 		licenseHeader '/* Licensed under Apache-2.0 */'	// License header
 		licenseHeaderFile 'path-to-license-file'		// License header file
 	}
+	kotlinGradle {
+		// same as kotlin, but for .gradle.kts files (defaults to '*.gradle.kts')
+		target '*.gradle.kts', 'additionalScripts/*.gradle.kts'
+
+		ktlint()
+
+		// doesn't support licenseHeader, because scripts don't have a package statement
+		// to clearly mark where the license should go
+	}
 }
 ```
+
 <a name="custom"></a>
 
 ## Custom rules
