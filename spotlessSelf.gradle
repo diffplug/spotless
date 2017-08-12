@@ -27,7 +27,7 @@ spotless {
 		trimTrailingWhitespace()
 		removeUnusedImports()
 	}
-	groovy {
+	groovyGradle {
 		target fileTree('.') {
 			include '**/*.gradle'
 			exclude '_ext/**'

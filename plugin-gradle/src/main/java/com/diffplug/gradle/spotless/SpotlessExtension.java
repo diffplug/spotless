@@ -108,6 +108,11 @@ public class SpotlessExtension {
 		configure(GroovyExtension.NAME, GroovyExtension.class, closure);
 	}
 
+	/** Configures the special groovy-specific extension for Gradle files. */
+	public void groovyGradle(Action<GroovyGradleExtension> closure) {
+		configure(GroovyGradleExtension.NAME, GroovyGradleExtension.class, closure);
+	}
+
 	/** Configures a custom extension. */
 	public void format(String name, Action<FormatExtension> closure) {
 		requireNonNull(name, "name");

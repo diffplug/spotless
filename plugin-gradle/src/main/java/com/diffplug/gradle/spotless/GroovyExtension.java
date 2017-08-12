@@ -89,26 +89,29 @@ public class GroovyExtension extends FormatExtension {
 	}
 
 	public GrEclipseConfig greclipse(String version) {
-		return new GrEclipseConfig(version);
+		return new GrEclipseConfig(version, this);
 	}
 
-	public class GrEclipseConfig {
+	public static class GrEclipseConfig {
 		final String version;
 		Object[] configFiles;
+		final FormatExtension extension;
 
-		GrEclipseConfig(String version) {
+		GrEclipseConfig(String version, FormatExtension extension) {
+			this.extension = extension;
 			configFiles = new Object[0];
 			this.version = Objects.requireNonNull(version);
-			addStep(createStep());
+
+			extension.addStep(createStep());
 		}
 
 		public void configFile(Object... configFiles) {
 			this.configFiles = requireElementsNonNull(configFiles);
-			replaceStep(createStep());
+			extension.replaceStep(createStep());
 		}
 
 		private FormatterStep createStep() {
-			Project project = getProject();
+			Project project = extension.getProject();
 			return GrEclipseFormatterStep.create(version,
 					project.files(configFiles).getFiles(),
 					GradleProvisioner.fromProject(project));

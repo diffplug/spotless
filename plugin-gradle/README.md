@@ -161,6 +161,11 @@ spotless {
 		// so it formats Java files by default (unless `excludeJava` is used).
 		greclipse().configFile('greclipse.properties')
 	}
+	groovyGradle {
+		// same as groovy, but for .gradle (defaults to '*.gradle')
+		target '*.gradle', 'additionalScripts/*.gradle'
+		greclipse().configFile('greclipse.properties')
+	}
 }
 ```
 
