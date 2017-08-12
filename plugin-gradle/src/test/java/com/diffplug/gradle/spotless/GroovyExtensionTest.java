@@ -22,7 +22,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class GroovyDefaultTargetTest extends GradleIntegrationTest {
+public class GroovyExtensionTest extends GradleIntegrationTest {
 
 	private final String HEADER = "//My tests header";
 
