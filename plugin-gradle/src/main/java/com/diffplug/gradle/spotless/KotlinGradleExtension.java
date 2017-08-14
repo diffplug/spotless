@@ -31,7 +31,7 @@ public class KotlinGradleExtension extends FormatExtension {
 	/** Adds the specified version of [ktlint](https://github.com/shyiko/ktlint). */
 	public void ktlint(String version) {
 		Objects.requireNonNull(version, "version");
-		addStep(KtLintStep.create(version, GradleProvisioner.fromProject(getProject())));
+		addStep(KtLintStep.createForScript(version, GradleProvisioner.fromProject(getProject())));
 	}
 
 	public void ktlint() {
