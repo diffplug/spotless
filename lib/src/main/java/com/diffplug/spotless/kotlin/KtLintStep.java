@@ -43,10 +43,18 @@ public class KtLintStep {
 	}
 
 	public static FormatterStep create(String version, Provisioner provisioner) {
+		return create(version, provisioner, false);
+	}
+
+	public static FormatterStep createForScript(String version, Provisioner provisioner) {
+		return create(version, provisioner, true);
+	}
+
+	private static FormatterStep create(String version, Provisioner provisioner, boolean isScript) {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(provisioner, "provisioner");
 		return FormatterStep.createLazy(NAME,
-				() -> new State(version, provisioner),
+				() -> new State(version, provisioner, isScript),
 				State::createFormat);
 	}
 
@@ -57,11 +65,14 @@ public class KtLintStep {
 	static final class State implements Serializable {
 		private static final long serialVersionUID = 1L;
 
+		/** Are the files being linted Kotlin script files. */
+		private final boolean isScript;
 		/** The jar that contains the eclipse formatter. */
 		final JarState jarState;
 
-		State(String version, Provisioner provisioner) throws IOException {
+		State(String version, Provisioner provisioner, boolean isScript) throws IOException {
 			this.jarState = JarState.from(MAVEN_COORDINATE + version, provisioner);
+			this.isScript = isScript;
 		}
 
 		FormatterFunc createFormat() throws Exception {
@@ -93,7 +104,8 @@ public class KtLintStep {
 			Class<?> ktlintClass = classLoader.loadClass("com.github.shyiko.ktlint.core.KtLint");
 			Object ktlint = ktlintClass.getDeclaredField("INSTANCE").get(null);
 			// and its format method
-			Method formatterMethod = ktlintClass.getMethod("format", String.class, Iterable.class, function2Interface);
+			String formatterMethodName = isScript ? "formatScript" : "format";
+			Method formatterMethod = ktlintClass.getMethod(formatterMethodName, String.class, Iterable.class, function2Interface);
 
 			return input -> {
 				try {
