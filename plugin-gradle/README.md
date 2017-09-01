@@ -51,7 +51,7 @@ cmd> gradlew build
 BUILD SUCCESSFUL
 ```
 
-Inside your buildscript, it looks like this:
+To use it in your buildscript, just [add the Spotless dependency](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless), and configure it like so:
 
 ```gradle
 spotless {
