@@ -63,10 +63,13 @@ public class KotlinExtensionTest extends GradleIntegrationTest {
 		final String original = read(testFile.toPath());
 		gradleRunner().withArguments("spotlessApply").build();
 		final String result = read(testFile.toPath());
-		// Make sure the header gets added.
-		Assertions.assertThat(result).startsWith(HEADER);
-		// Make sure that the rest of the file is still there with nothing removed.
-		Assertions.assertThat(result).endsWith(original);
-
+		Assertions
+				.assertThat(result)
+				// Make sure the header gets added.
+				.startsWith(HEADER)
+				// Make sure that the rest of the file is still there with nothing removed.
+				.endsWith(original)
+				// Make sure that no additional stuff got added to the file.
+				.contains(HEADER + '\n' + original);
 	}
 }

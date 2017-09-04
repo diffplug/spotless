@@ -25,8 +25,8 @@ import org.gradle.api.tasks.SourceSet;
 import com.diffplug.spotless.kotlin.KtLintStep;
 
 public class KotlinExtension extends FormatExtension {
-	// The delimiter has the '^' prepended to the regex where the pattern is compiled.
-	static final String LICENSE_HEADER_DELIMITER = "(package |@file)";
+	// '^' is prepended to the regex in LICENSE_HEADER_DELIMITER later in FormatExtension.licenseHeader(String, String)
+	private static final String LICENSE_HEADER_DELIMITER = "(package |@file)";
 	static final String NAME = "kotlin";
 
 	public KotlinExtension(SpotlessExtension rootExtension) {
