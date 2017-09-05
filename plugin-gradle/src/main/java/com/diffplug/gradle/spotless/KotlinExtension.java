@@ -25,6 +25,8 @@ import org.gradle.api.tasks.SourceSet;
 import com.diffplug.spotless.kotlin.KtLintStep;
 
 public class KotlinExtension extends FormatExtension {
+	// '^' is prepended to the regex in LICENSE_HEADER_DELIMITER later in FormatExtension.licenseHeader(String, String)
+	private static final String LICENSE_HEADER_DELIMITER = "(package |@file)";
 	static final String NAME = "kotlin";
 
 	public KotlinExtension(SpotlessExtension rootExtension) {
@@ -32,11 +34,11 @@ public class KotlinExtension extends FormatExtension {
 	}
 
 	public void licenseHeader(String licenseHeader) {
-		licenseHeader(licenseHeader, JavaExtension.LICENSE_HEADER_DELIMITER);
+		licenseHeader(licenseHeader, LICENSE_HEADER_DELIMITER);
 	}
 
 	public void licenseHeaderFile(Object licenseHeaderFile) {
-		licenseHeaderFile(licenseHeaderFile, JavaExtension.LICENSE_HEADER_DELIMITER);
+		licenseHeaderFile(licenseHeaderFile, LICENSE_HEADER_DELIMITER);
 	}
 
 	/** Adds the specified version of [ktlint](https://github.com/shyiko/ktlint). */

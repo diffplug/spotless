@@ -15,12 +15,16 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.io.File;
 import java.io.IOException;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class KotlinExtensionTest extends GradleIntegrationTest {
+	private static final String HEADER = "// License Header";
+
 	@Test
 	public void integration() throws IOException {
 		write("build.gradle",
@@ -39,5 +43,33 @@ public class KotlinExtensionTest extends GradleIntegrationTest {
 		String result = read("src/main/kotlin/basic.kt");
 		String formatted = getTestResource("kotlin/ktlint/basic.clean");
 		Assert.assertEquals(formatted, result);
+	}
+
+	@Test
+	public void testWithHeader() throws IOException {
+		write("build.gradle",
+				"plugins {",
+				"    id 'nebula.kotlin' version '1.0.6'",
+				"    id 'com.diffplug.gradle.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlin {",
+				"        licenseHeader('" + HEADER + "')",
+				"        ktlint()",
+				"    }",
+				"}");
+		final File testFile = write("src/main/kotlin/test.kt", getTestResource("kotlin/licenseheader/KotlinCodeWithoutHeader.test"));
+		final String original = read(testFile.toPath());
+		gradleRunner().withArguments("spotlessApply").build();
+		final String result = read(testFile.toPath());
+		Assertions
+				.assertThat(result)
+				// Make sure the header gets added.
+				.startsWith(HEADER)
+				// Make sure that the rest of the file is still there with nothing removed.
+				.endsWith(original)
+				// Make sure that no additional stuff got added to the file.
+				.contains(HEADER + '\n' + original);
 	}
 }
