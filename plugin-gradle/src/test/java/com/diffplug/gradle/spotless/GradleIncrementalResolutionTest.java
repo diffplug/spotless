@@ -68,11 +68,12 @@ public class GradleIncrementalResolutionTest extends GradleIntegrationTest {
 		// if we change just one file
 		writeState("Abc");
 		// then check runs against just the changed file
-		checkRanAgainst("a");
+		// and also (because #144) the last files to be changed
+		checkRanAgainst("a", "b");
 		// even after failing, still just the one
-		checkRanAgainst("a");
+		checkRanAgainst("a", "b");
 		// and so does apply
-		applyRanAgainst("a");
+		applyRanAgainst("a", "b");
 		applyRanAgainst("a");
 		// until the issue has been fixed
 		applyRanAgainst("");
