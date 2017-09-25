@@ -46,9 +46,9 @@ import com.diffplug.spotless.PaddedCellBulk;
 
 public class SpotlessTask extends DefaultTask {
 	// set by SpotlessExtension, but possibly overridden by FormatExtension
-	@Input
 	protected String encoding = "UTF-8";
 
+	@Input
 	public String getEncoding() {
 		return encoding;
 	}
@@ -57,9 +57,9 @@ public class SpotlessTask extends DefaultTask {
 		this.encoding = Objects.requireNonNull(encoding);
 	}
 
-	@Input
 	protected LineEnding.Policy lineEndingsPolicy = LineEnding.UNIX.createPolicy();
 
+	@Input
 	public LineEnding.Policy getLineEndingsPolicy() {
 		return lineEndingsPolicy;
 	}
@@ -69,9 +69,9 @@ public class SpotlessTask extends DefaultTask {
 	}
 
 	// set by FormatExtension
-	@Input
 	protected boolean paddedCell = false;
 
+	@Input
 	public boolean isPaddedCell() {
 		return paddedCell;
 	}
@@ -80,21 +80,21 @@ public class SpotlessTask extends DefaultTask {
 		this.paddedCell = paddedCell;
 	}
 
-	@Input
 	protected FormatExceptionPolicy exceptionPolicy = new FormatExceptionPolicyStrict();
 
 	public void setExceptionPolicy(FormatExceptionPolicy exceptionPolicy) {
 		this.exceptionPolicy = Objects.requireNonNull(exceptionPolicy);
 	}
 
+	@Input
 	public FormatExceptionPolicy getExceptionPolicy() {
 		return exceptionPolicy;
 	}
 
-	@InputFiles
-	@SkipWhenEmpty
 	protected Iterable<File> target;
 
+	@InputFiles
+	@SkipWhenEmpty
 	public Iterable<File> getTarget() {
 		return target;
 	}
@@ -103,9 +103,9 @@ public class SpotlessTask extends DefaultTask {
 		this.target = requireElementsNonNull(target);
 	}
 
-	@Input
 	protected List<FormatterStep> steps = new ArrayList<>();
 
+	@Input
 	public List<FormatterStep> getSteps() {
 		return Collections.unmodifiableList(steps);
 	}
