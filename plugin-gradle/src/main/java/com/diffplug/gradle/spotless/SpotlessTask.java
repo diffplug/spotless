@@ -19,6 +19,7 @@ import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElem
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -32,10 +33,11 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
-import org.gradle.api.tasks.SkipWhenEmpty;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 
+import com.diffplug.common.collect.ImmutableList;
+import com.diffplug.common.collect.Iterables;
 import com.diffplug.spotless.FormatExceptionPolicy;
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
@@ -93,14 +95,24 @@ public class SpotlessTask extends DefaultTask {
 
 	protected Iterable<File> target;
 
-	@InputFiles
-	@SkipWhenEmpty
 	public Iterable<File> getTarget() {
 		return target;
 	}
 
 	public void setTarget(Iterable<File> target) {
 		this.target = requireElementsNonNull(target);
+	}
+
+	/** Internal use only. */
+	@InputFiles
+	@Deprecated
+	public Iterable<File> getInternalTarget() {
+		// used to combine the special cache file and the real target
+		return Iterables.concat(ImmutableList.of(getCacheFile()), target);
+	}
+
+	private File getCacheFile() {
+		return new File(getProject().getBuildDir(), getName());
 	}
 
 	protected List<FormatterStep> steps = new ArrayList<>();
@@ -160,30 +172,64 @@ public class SpotlessTask extends DefaultTask {
 		List<File> outOfDate = new ArrayList<>();
 		inputs.outOfDate(inputDetails -> {
 			File file = inputDetails.getFile();
-			if (file.isFile()) {
+			if (file.isFile() && !file.equals(getCacheFile())) {
 				outOfDate.add(file);
 			}
 		});
+		// load the files that were changed by the last run
+		// because it's possible the user changed them back to their
+		// unformatted form, so we need to treat them as dirty
+		// (see bug #144)
+		if (getCacheFile().exists()) {
+			LastApply lastApply = SerializableMisc.fromFile(LastApply.class, getCacheFile());
+			for (File file : lastApply.changedFiles) {
+				if (!outOfDate.contains(file) && file.exists()) {
+					outOfDate.add(file);
+				}
+			}
+		}
 
 		if (apply) {
-			apply(formatter, outOfDate);
+			List<File> changedFiles = applyAnyChanged(formatter, outOfDate);
+			if (!changedFiles.isEmpty()) {
+				// If any file changed, we need to mark the task as dirty
+				// next time to avoid bug #144.
+				LastApply lastApply = new LastApply();
+				lastApply.timestamp = System.currentTimeMillis();
+				lastApply.changedFiles = changedFiles;
+
+				SerializableMisc.toFile(lastApply, getCacheFile());
+			}
 		}
 		if (check) {
 			check(formatter, outOfDate);
 		}
 	}
 
-	private void apply(Formatter formatter, List<File> outOfDate) throws Exception {
+	static class LastApply implements Serializable {
+		private static final long serialVersionUID = 6245070824310295090L;
+
+		long timestamp;
+		List<File> changedFiles;
+	}
+
+	private List<File> applyAnyChanged(Formatter formatter, List<File> outOfDate) throws Exception {
+		List<File> changed = new ArrayList<>(outOfDate.size());
 		if (isPaddedCell()) {
 			for (File file : outOfDate) {
 				getLogger().debug("Applying format to " + file);
-				PaddedCellBulk.apply(formatter, file);
+				if (PaddedCellBulk.applyAnyChanged(formatter, file)) {
+					changed.add(file);
+				}
 			}
 		} else {
 			boolean anyMisbehave = false;
 			for (File file : outOfDate) {
 				getLogger().debug("Applying format to " + file);
 				String unixResultIfDirty = formatter.applyToAndReturnResultIfDirty(file);
+				if (unixResultIfDirty != null) {
+					changed.add(file);
+				}
 				// because apply will count as up-to-date, it's important
 				// that every call to apply will get a PaddedCell check
 				if (!anyMisbehave && unixResultIfDirty != null) {
@@ -207,6 +253,7 @@ public class SpotlessTask extends DefaultTask {
 				throw PaddedCellGradle.youShouldTurnOnPaddedCell(this);
 			}
 		}
+		return changed;
 	}
 
 	private void check(Formatter formatter, List<File> outOfDate) throws Exception {
