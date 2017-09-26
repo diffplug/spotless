@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import org.assertj.core.api.AbstractFileAssert;
+import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.ComparisonFailure;
 import org.junit.Rule;
@@ -102,6 +104,10 @@ public class ResourceHarness {
 		Files.createDirectories(target.getParent());
 		Files.write(target, content.getBytes(encoding));
 		return target.toFile();
+	}
+
+	protected AbstractFileAssert<?> assertFile(String path) throws IOException {
+		return Assertions.assertThat(newFile(path)).usingCharset(StandardCharsets.UTF_8);
 	}
 
 	protected String read(Path path) throws IOException {
