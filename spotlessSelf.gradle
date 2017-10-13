@@ -9,7 +9,7 @@ plugins {
 repositories { jcenter() }
 spotless {
 	def noInternalDepsClosure = {
-		if (it.contains('import org.gradle.internal.') &&
+		if ((it.contains('import org.gradle.internal.') || it.contains('import org.gradle.api.internal.')) &&
 		!it.contains('def noInternalDepsClosure')) {
 			throw new AssertionError("Accidental internal import")
 		}

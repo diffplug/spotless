@@ -22,7 +22,7 @@ import java.util.Objects;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
-import org.gradle.api.internal.file.UnionFileCollection;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.plugins.DslObject;
 import org.gradle.api.plugins.GroovyBasePlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
@@ -128,13 +128,13 @@ public class GroovyExtension extends FormatExtension {
 			}
 			//Add all Groovy files (may contain Java files as well)
 
-			UnionFileCollection union = new UnionFileCollection();
+			FileCollection union = getProject().files();
 			for (SourceSet sourceSet : convention.getSourceSets()) {
 				GroovySourceSet groovySourceSet = new DslObject(sourceSet).getConvention().getPlugin(GroovySourceSet.class);
 				if (excludeJava) {
-					union.add(groovySourceSet.getAllGroovy());
+					union = union.plus(groovySourceSet.getAllGroovy());
 				} else {
-					union.add(groovySourceSet.getGroovy());
+					union = union.plus(groovySourceSet.getGroovy());
 				}
 			}
 			target = union;
