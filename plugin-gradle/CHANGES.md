@@ -2,6 +2,8 @@
 
 ### Version 3.7.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-plugin-gradle/))
 
+* Updated default eclipse-jdt version to `4.7.1` from `4.6.3`.
+
 ### Version 3.6.0 - September 29th 2017 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.6.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.6.0))
 
 * Fixes a rare up-to-date bug. ([#144](https://github.com/diffplug/spotless/issues/144) and [#146](https://github.com/diffplug/spotless/pull/146))

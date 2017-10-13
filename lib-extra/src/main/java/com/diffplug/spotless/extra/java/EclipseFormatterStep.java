@@ -34,7 +34,7 @@ public final class EclipseFormatterStep {
 	// prevent direct instantiation
 	private EclipseFormatterStep() {}
 
-	private static final String DEFAULT_VERSION = "4.6.3";
+	private static final String DEFAULT_VERSION = "4.7.1";
 	private static final String NAME = "eclipse formatter";
 	private static final String MAVEN_COORDINATE = "com.diffplug.spotless:spotless-ext-eclipse-jdt:";
 	private static final String FORMATTER_CLASS = "com.diffplug.gradle.spotless.java.eclipse.EclipseFormatterStepImpl";
