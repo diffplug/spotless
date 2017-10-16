@@ -9,8 +9,14 @@ plugins {
 repositories { jcenter() }
 spotless {
 	def noInternalDepsClosure = {
-		if ((it.contains('import org.gradle.internal.') || it.contains('import org.gradle.api.internal.')) &&
-		!it.contains('def noInternalDepsClosure')) {
+		String text = it
+		/*
+		 * No good way to get around using this import:
+		 * https://github.com/gradle/gradle/issues/3191
+		 */
+		String regex = "import org\\.gradle\\.api\\.internal\\.(?!plugins\\.DslObject)"
+		if ((text.contains('import org.gradle.internal.') || text.find(regex)) &&
+		!text.contains('def noInternalDepsClosure')) {
 			throw new AssertionError("Accidental internal import")
 		}
 	}
