@@ -21,7 +21,7 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 
 import org.gradle.api.GradleException;
-import org.gradle.api.internal.file.UnionFileCollection;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 
@@ -72,9 +72,9 @@ public class ScalaExtension extends FormatExtension {
 			if (javaPlugin == null) {
 				throw new GradleException("You must either specify 'target' manually or apply the 'scala' plugin.");
 			}
-			UnionFileCollection union = new UnionFileCollection();
+			FileCollection union = getProject().files();
 			for (SourceSet sourceSet : javaPlugin.getSourceSets()) {
-				union.add(sourceSet.getAllSource().filter(file -> {
+				union = union.plus(sourceSet.getAllSource().filter(file -> {
 					String name = file.getName();
 					return name.endsWith(".scala") || name.endsWith(".sc");
 				}));

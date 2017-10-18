@@ -22,7 +22,7 @@ import java.util.Objects;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
-import org.gradle.api.internal.file.UnionFileCollection;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 
@@ -154,9 +154,9 @@ public class JavaExtension extends FormatExtension {
 			if (javaPlugin == null) {
 				throw new GradleException("You must apply the java plugin before the spotless plugin if you are using the java extension.");
 			}
-			UnionFileCollection union = new UnionFileCollection();
+			FileCollection union = getProject().files();
 			for (SourceSet sourceSet : javaPlugin.getSourceSets()) {
-				union.add(sourceSet.getAllJava());
+				union = union.plus(sourceSet.getAllJava());
 			}
 			target = union;
 		}
