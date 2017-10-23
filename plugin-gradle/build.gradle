@@ -47,8 +47,8 @@ test { testLogging.showStandardStreams = true }
 version = project.ext.version
 pluginBundle {
 	// These settings are set for the whole plugin bundle
-	website = "https://github.com/${project.org}/${project.name}"
-	vcsUrl = "https://github.com/${project.org}/${project.name}"
+	website = "https://github.com/diffplug/spotless"
+	vcsUrl = "https://github.com/diffplug/spotless"
 	description = project.description
 
 	plugins {
