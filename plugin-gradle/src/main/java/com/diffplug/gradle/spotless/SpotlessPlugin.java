@@ -112,7 +112,7 @@ public class SpotlessPlugin implements Plugin<Project> {
 		clean.doLast(unused -> SpotlessCache.clear());
 		project.getTasks()
 				.matching(task -> task instanceof SpotlessTask)
-				.all(task -> clean.mustRunAfter(task));
+				.all(task -> task.mustRunAfter(clean));
 	}
 
 	static String capitalize(String input) {
