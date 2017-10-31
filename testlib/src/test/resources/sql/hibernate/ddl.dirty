@@ -1,0 +1,4 @@
+ALTER TABLE userinfo ALTER COLUMN id drop DEFAULT;
+ALTER TABLE userinfo drop constraint userinfo_pkey cascade;
+alter table userinfo add primary key (user_id);
+ALTER TABLE userinfo DROP COLUMN id;
