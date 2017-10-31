@@ -19,16 +19,15 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.execution.TaskExecutionGraph;
+import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaBasePlugin;
 
-import com.diffplug.common.base.Errors;
 import com.diffplug.spotless.SpotlessCache;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import groovy.lang.Closure;
 
 public class SpotlessPlugin implements Plugin<Project> {
-	Project project;
 	SpotlessExtension spotlessExtension;
 
 	static final String EXTENSION = "spotless";
@@ -41,13 +40,14 @@ public class SpotlessPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
-		this.project = project;
+		// make sure there's a `clean` task
+		project.getPlugins().apply(BasePlugin.class);
 
 		// setup the extension
 		spotlessExtension = project.getExtensions().create(EXTENSION, SpotlessExtension.class, project);
 
 		// after the project has been evaluated, configure the check and format tasks per source set
-		project.afterEvaluate(unused -> Errors.rethrow().run(this::createTasks));
+		project.afterEvaluate(this::createTasks);
 	}
 
 	/** The extension for this plugin. */
@@ -56,7 +56,7 @@ public class SpotlessPlugin implements Plugin<Project> {
 	}
 
 	@SuppressWarnings("rawtypes")
-	void createTasks() throws Exception {
+	void createTasks(Project project) {
 		Task rootCheckTask = project.task(EXTENSION + CHECK);
 		rootCheckTask.setGroup(TASK_GROUP);
 		rootCheckTask.setDescription(CHECK_DESCRIPTION);
@@ -107,10 +107,12 @@ public class SpotlessPlugin implements Plugin<Project> {
 					.all(task -> task.dependsOn(rootCheckTask));
 		}
 
-		// clear spotless' cache when the user does a clean
+		// clear spotless' cache when the user does a clean, but only after any spotless tasks
+		Task clean = project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME);
+		clean.doLast(unused -> SpotlessCache.clear());
 		project.getTasks()
-				.matching(task -> task.getName().equals("clean"))
-				.all(task -> task.doLast(unused -> SpotlessCache.clear()));
+				.matching(task -> task instanceof SpotlessTask)
+				.all(task -> clean.mustRunAfter(task));
 	}
 
 	static String capitalize(String input) {
