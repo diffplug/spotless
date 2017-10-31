@@ -111,7 +111,7 @@ public class SpotlessPlugin implements Plugin<Project> {
 		Task clean = project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME);
 		clean.doLast(unused -> SpotlessCache.clear());
 		project.getTasks()
-				.matching(task -> task instanceof SpotlessTask)
+				.withType(SpotlessTask.class)
 				.all(task -> task.mustRunAfter(clean));
 	}
 
