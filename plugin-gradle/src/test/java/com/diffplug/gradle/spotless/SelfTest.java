@@ -122,7 +122,7 @@ public class SelfTest {
 		SpotlessPlugin plugin = project.getPlugins().apply(SpotlessPlugin.class);
 		// setup the plugin
 		test.accept(plugin.getExtension());
-		plugin.createTasks();
+		plugin.createTasks(project);
 		// return the configured plugin
 		return project;
 	}
