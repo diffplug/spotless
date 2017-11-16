@@ -8,6 +8,8 @@ You might be looking for:
 ### Version 1.7.0-SNAPSHOT - TBD (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/snapshot/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/snapshot/), [snapshot repo](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/))
 
 * Updated default eclipse-jdt version to `4.7.1` from `4.6.3`.
+* Updated jgit from `4.5.0.201609210915-r` to `4.9.0.201710071750-r`.
+* Updated concurrent-trees from `2.6.0` to `2.6.1` (performance improvement).
 
 ### Version 1.6.0 - September 29th 2017 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.6.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.6.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
