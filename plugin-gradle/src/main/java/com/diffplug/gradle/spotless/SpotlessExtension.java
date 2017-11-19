@@ -113,6 +113,11 @@ public class SpotlessExtension {
 		configure(GroovyGradleExtension.NAME, GroovyGradleExtension.class, closure);
 	}
 
+	/** Configures the special sql-specific extension for SQL files. */
+	public void sql(Action<SqlExtension> closure) {
+		configure(SqlExtension.NAME, SqlExtension.class, closure);
+	}
+
 	/** Configures a custom extension. */
 	public void format(String name, Action<FormatExtension> closure) {
 		requireNonNull(name, "name");

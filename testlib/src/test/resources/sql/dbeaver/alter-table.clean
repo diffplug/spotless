@@ -1,0 +1,7 @@
+ALTER TABLE
+    userinfo ALTER COLUMN id DROP
+        DEFAULT;
+
+ALTER TABLE
+    userinfo DROP
+        CONSTRAINT userinfo_pkey CASCADE;
