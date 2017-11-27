@@ -122,6 +122,19 @@ See [ECLIPSE_SCREENSHOTS](../ECLIPSE_SCREENSHOTS.md) for screenshots that demons
 
 <a name="google-java-format"></a>
 
+### Applying to Android Java source
+Be sure to add `target '**/*.java'` otherwise spotless will not detect Java code inside Android modules.
+
+```gradle
+spotless {
+	java {
+		// ...
+		target '**/*.java'
+		// ...
+	}
+}
+```
+
 ## Applying to Java source ([google-java-format](https://github.com/google/google-java-format))
 
 ```gradle
