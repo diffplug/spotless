@@ -243,7 +243,7 @@ spotless {
 }
 ```
 
-<a name="sql-debeaver"></a>
+<a name="sql-dbeaver"></a>
 
 ## Applying [DBeaver](https://dbeaver.jkiss.org/) to SQL scripts
 
