@@ -120,7 +120,7 @@ spotless {
 
 See [ECLIPSE_SCREENSHOTS](../ECLIPSE_SCREENSHOTS.md) for screenshots that demonstrate how to get and install the eclipseFormatFile and importOrderFile mentioned above.
 
-<a name="google-java-format"></a>
+<a name="android"></a>
 
 ### Applying to Android Java source
 Be sure to add `target '**/*.java'` otherwise spotless will not detect Java code inside Android modules.
@@ -134,6 +134,8 @@ spotless {
 	}
 }
 ```
+
+<a name="google-java-format"></a>
 
 ## Applying to Java source ([google-java-format](https://github.com/google/google-java-format))
 
