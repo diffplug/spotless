@@ -10,6 +10,9 @@ You might be looking for:
 * Updated default eclipse-jdt version to `4.7.1` from `4.6.3`.
 * Updated jgit from `4.5.0.201609210915-r` to `4.9.0.201710071750-r`.
 * Updated concurrent-trees from `2.6.0` to `2.6.1` (performance improvement).
+* Added `dbeaverSql` formatter step, for formatting sql scripts. ([#166](https://github.com/diffplug/spotless/pull/166))
+	+ Many thanks to [Baptiste Mesta](https://github.com/baptistemesta) for porting to Spotless.
+	+ Many thanks to [DBeaver](https://dbeaver.jkiss.org/) and the [DBeaver contributors](https://github.com/serge-rider/dbeaver/graphs/contributors) for building the implementation.
 
 ### Version 1.6.0 - September 29th 2017 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.6.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.6.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 

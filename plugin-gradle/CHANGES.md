@@ -4,6 +4,9 @@
 
 * Updated default eclipse-jdt version to `4.7.1` from `4.6.3`.
 * All spotless tasks now run before the `clean` task. ([#159](https://github.com/diffplug/spotless/issues/159))
+* Added `sql` ([#166](https://github.com/diffplug/spotless/pull/166)) and `dbeaverSql`. ([#166](https://github.com/diffplug/spotless/pull/166))
+	+ Many thanks to [Baptiste Mesta](https://github.com/baptistemesta) for porting to Spotless.
+	+ Many thanks to [DBeaver](https://dbeaver.jkiss.org/) and the [DBeaver contributors](https://github.com/serge-rider/dbeaver/graphs/contributors) for building the implementation.
 
 ### Version 3.6.0 - September 29th 2017 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.6.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.6.0))
 

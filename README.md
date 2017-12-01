@@ -73,12 +73,13 @@ lib('scala.ScalaFmtStep')                        +'{{yes}}       | {{no}}       
 
 ## Acknowledgements
 
-* Huge thanks to [Jonathan Bluett-Duncan](https://github.com/jbduncan) for
+* Thanks to [Baptiste Mesta](https://github.com/baptistemesta) for porting the DBeaver formatter to Spotless, and thanks to [DBeaver](https://dbeaver.jkiss.org/) and [its authors](https://github.com/serge-rider/dbeaver/graphs/contributors) for their excellent SQL formatter.
+* Thanks to [Jonathan Bluett-Duncan](https://github.com/jbduncan) for
 	+ implementing up-to-date checking [#31](https://github.com/diffplug/spotless/issues/31)
 	+ breaking spotless into libraries [#56](https://github.com/diffplug/spotless/issues/56)
 	+ lots of other things, but especially the diff support in `spotlessCheck`
-* Huge thanks to [Frank Vennemeyer](https://github.com/fvgh) for [Groovy support via greclipse](https://github.com/diffplug/spotless/issues/13).
-* Huge thanks to [Stefan Oehme](https://github.com/oehme) for tons of help on the internal mechanics of Gradle.
+* Thanks to [Frank Vennemeyer](https://github.com/fvgh) for [Groovy support via greclipse](https://github.com/diffplug/spotless/issues/13).
+* Thanks to [Stefan Oehme](https://github.com/oehme) for tons of help on the internal mechanics of Gradle.
 * Formatting by Eclipse
 	+ Special thanks to [Mateusz Matela](https://waynebeaton.wordpress.com/2015/03/15/great-fixes-for-mars-winners-part-i/) for huge improvements to the eclipse code formatter!
 * Thanks to [Stanley Shyiko](https://github.com/shyiko) for his help integrating [ktlint](https://github.com/shyiko/ktlint).
