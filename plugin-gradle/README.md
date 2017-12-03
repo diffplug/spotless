@@ -265,10 +265,10 @@ spotless {
 ```gradle
 spotless {
 	sql {
-		// you have to specify the target
+		// default value for target files
 		target '**/*.sql'
 		// configFile is optional, arguments available here: https://github.com/diffplug/spotless/blob/master/lib/src/main/java/com/diffplug/spotless/sql/DBeaverSQLFormatterStep.java
-		dbeaverSql().configFile('dbeaver.props')
+		dbeaver().configFile('dbeaver.props')
 	}
 }
 ```
