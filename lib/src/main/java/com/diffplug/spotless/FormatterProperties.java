@@ -86,7 +86,7 @@ public final class FormatterProperties {
 	 */
 	private void add(final File settingsFile) throws IllegalArgumentException {
 		Objects.requireNonNull(settingsFile);
-		if (!(settingsFile.isFile() || settingsFile.canRead())) {
+		if (!(settingsFile.isFile() && settingsFile.canRead())) {
 			String msg = String.format("Settings file '%s' does not exist or can not be read.", settingsFile);
 			throw new IllegalArgumentException(msg);
 		}
@@ -111,7 +111,7 @@ public final class FormatterProperties {
 	private enum FileParser {
 		LINE_ORIENTED("properties", "prefs") {
 			@Override
-			protected Properties execute(File file) throws IOException, IllegalArgumentException {
+			protected Properties execute(final File file) throws IOException, IllegalArgumentException {
 				Properties properties = new Properties();
 				try (InputStream inputProperties = new FileInputStream(file)) {
 					properties.load(inputProperties);
@@ -133,11 +133,17 @@ public final class FormatterProperties {
 
 			private Node getRootNode(final File file) throws IOException, IllegalArgumentException {
 				try {
-					/*
-					 * The parser does not validate, since the root node is only
-					 * used to decide on further processing.
-					 */
 					DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+					/*
+					 * It is not required to validate or normalize attribute values for
+					 * the XMLs currently supported. Disabling validation is supported by
+					 * JavaX XML, but disabling normalization of attributes is not,
+					 * since it contradicts the usage of XML.
+					 * Here we work-around the attempt to load the properties.dtd.
+					 * With Java 9, this work-around can be replaced by the usage of the XML
+					 * catalog and provision of the SUN preperties.dtd.
+					 */
+					dbf.setFeature(LOAD_EXTERNAL_DTD_PROP, false);
 					DocumentBuilder db = dbf.newDocumentBuilder();
 					return db.parse(file).getDocumentElement();
 				} catch (SAXException | ParserConfigurationException e) {
@@ -147,6 +153,8 @@ public final class FormatterProperties {
 			}
 
 		};
+
+		private static final String LOAD_EXTERNAL_DTD_PROP = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
 		private static final char FILE_EXTENSION_SEPARATOR = '.';
 
 		private final List<String> supportedFileNameExtensions;
@@ -232,9 +240,9 @@ public final class FormatterProperties {
 
 			private List<Node> getChildren(final Node node, final String nodeName) {
 				NodeList children = node.getChildNodes();
-				return IntStream.range(0, children.getLength()) //
-						.mapToObj(children::item) //
-						.filter(child -> child.getNodeName().equals(nodeName)) //
+				return IntStream.range(0, children.getLength())
+						.mapToObj(children::item)
+						.filter(child -> child.getNodeName().equals(nodeName))
 						.collect(Collectors.toCollection(LinkedList::new));
 			}
 
