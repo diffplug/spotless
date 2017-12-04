@@ -23,10 +23,10 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterProperties;
 import com.diffplug.spotless.FormatterStep;
 
-/** Wraps up [BasicFormatterImpl](https://docs.jboss.org/hibernate/orm/4.1/javadocs/org/hibernate/engine/jdbc/internal/BasicFormatterImpl.html) as a FormatterStep. */
+/** SQL formatter step which wraps up DBeaver's SqlTokenizedFormatter implementation. */
 public class DBeaverSQLFormatterStep {
 
-	static final String NAME = "dbeaverSql";
+	private static final String NAME = "dbeaverSql";
 
 	// prevent direct instantiation
 	private DBeaverSQLFormatterStep() {}
@@ -40,17 +40,16 @@ public class DBeaverSQLFormatterStep {
 	static final class State implements Serializable {
 		private static final long serialVersionUID = 1L;
 
-		/** The signature of the settings file. */
-		final FileSignature settings;
+		final FileSignature settingsSignature;
 
 		State(final Iterable<File> settingsFiles) throws Exception {
-			this.settings = FileSignature.signAsList(settingsFiles);
+			this.settingsSignature = FileSignature.signAsList(settingsFiles);
 		}
 
 		FormatterFunc createFormat() throws Exception {
-			FormatterProperties preferences = FormatterProperties.from(settings.files());
-			DBeaverSQLFormatter DBeaverSqlFormatter = new DBeaverSQLFormatter(preferences.getProperties());
-			return DBeaverSqlFormatter::format;
+			FormatterProperties preferences = FormatterProperties.from(settingsSignature.files());
+			DBeaverSQLFormatter dbeaverSqlFormatter = new DBeaverSQLFormatter(preferences.getProperties());
+			return dbeaverSqlFormatter::format;
 		}
 	}
 }
