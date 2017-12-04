@@ -20,7 +20,8 @@ package com.diffplug.spotless.sql.dbeaver;
  * DBeaver - Universal Database Manager
  * Copyright (C) 2010-2017 Serge Rider (serge@jkiss.org)
  *
- * SQL editor constants
+ * Based on SQLConstants from https://github.com/serge-rider/dbeaver,
+ * which itself is licensed under the Apache 2.0 license.
  */
 class SQLConstants {
 

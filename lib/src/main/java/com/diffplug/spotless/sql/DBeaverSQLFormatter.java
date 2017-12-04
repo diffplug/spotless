@@ -17,7 +17,7 @@ package com.diffplug.spotless.sql;
 
 import java.util.Properties;
 
-import com.diffplug.spotless.sql.dbeaver.SQLFormatterConfiguration;
+import com.diffplug.spotless.sql.dbeaver.DBeaverSQLFormatterConfiguration;
 import com.diffplug.spotless.sql.dbeaver.SQLTokenizedFormatter;
 
 /**
@@ -28,7 +28,7 @@ public class DBeaverSQLFormatter {
 	private final SQLTokenizedFormatter sqlTokenizedFormatter;
 
 	DBeaverSQLFormatter(Properties properties) {
-		SQLFormatterConfiguration configuration = new SQLFormatterConfiguration(properties);
+		DBeaverSQLFormatterConfiguration configuration = new DBeaverSQLFormatterConfiguration(properties);
 		sqlTokenizedFormatter = new SQLTokenizedFormatter(configuration);
 	}
 

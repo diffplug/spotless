@@ -20,22 +20,29 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import com.diffplug.spotless.annotations.Internal;
+
 /**
+ * **Warning:** Use this class at your own risk. It is an implementation detail and is not
+ * guaranteed to exist in future versions.
+ *
  * Forked from
  * DBeaver - Universal Database Manager
  * Copyright (C) 2010-2017 Serge Rider (serge@jkiss.org)
  *
- * SQL formatter
+ * Based on SQLTokenizedFormatter from https://github.com/serge-rider/dbeaver,
+ * which itself is licensed under the Apache 2.0 license.
  */
+@Internal
 public class SQLTokenizedFormatter {
 
 	private static final String[] JOIN_BEGIN = {"LEFT", "RIGHT", "INNER", "OUTER", "JOIN"};
 	private static final SQLDialect sqlDialect = SQLDialect.INSTANCE;
-	private SQLFormatterConfiguration formatterCfg;
+	private DBeaverSQLFormatterConfiguration formatterCfg;
 	private List<Boolean> functionBracket = new ArrayList<>();
 	private List<String> statementDelimiters = new ArrayList<>(2);
 
-	public SQLTokenizedFormatter(SQLFormatterConfiguration formatterCfg) {
+	public SQLTokenizedFormatter(DBeaverSQLFormatterConfiguration formatterCfg) {
 		this.formatterCfg = formatterCfg;
 	}
 
@@ -364,7 +371,7 @@ public class SQLTokenizedFormatter {
 		return false;
 	}
 
-	boolean isFunction(String name) {
+	private boolean isFunction(String name) {
 		return sqlDialect.getKeywordType(name) == DBPKeywordType.FUNCTION;
 	}
 

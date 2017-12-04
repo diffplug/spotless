@@ -15,10 +15,21 @@
  */
 package com.diffplug.spotless.sql.dbeaver;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
- * Basic SQL Dialect
+ * Forked from
+ * DBeaver - Universal Database Manager
+ * Copyright (C) 2010-2017 Serge Rider (serge@jkiss.org)
+ *
+ * Based on SQLDialect from https://github.com/serge-rider/dbeaver,
+ * which itself is licensed under the Apache 2.0 license.
  */
 class SQLDialect {
 

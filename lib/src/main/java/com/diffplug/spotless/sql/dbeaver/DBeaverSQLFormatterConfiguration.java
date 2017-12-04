@@ -17,34 +17,45 @@ package com.diffplug.spotless.sql.dbeaver;
 
 import java.util.Properties;
 
+import com.diffplug.spotless.annotations.Internal;
+
 /**
- * SQLFormatterConfiguration
+ * **Warning:** Use this class at your own risk. It is an implementation detail and is not
+ * guaranteed to exist in future versions.
+ *
+ * Forked from
+ * DBeaver - Universal Database Manager
+ * Copyright (C) 2010-2017 Serge Rider (serge@jkiss.org)
+ *
+ * Based on SQLFormatterConfiguration from https://github.com/serge-rider/dbeaver,
+ * which itself is licensed under the Apache 2.0 license.
  */
-public class SQLFormatterConfiguration {
+@Internal
+public class DBeaverSQLFormatterConfiguration {
 
 	/**
 	 * UPPER, LOWER or ORIGINAL
 	 */
-	public static final String SQL_FORMATTER_KEYWORD_CASE = "sql.formatter.keyword.case";
+	private static final String SQL_FORMATTER_KEYWORD_CASE = "sql.formatter.keyword.case";
 
 	/**
 	 * ';' by default
 	 */
-	public static final String SQL_FORMATTER_STATEMENT_DELIMITER = "sql.formatter.statement.delimiter";
+	private static final String SQL_FORMATTER_STATEMENT_DELIMITER = "sql.formatter.statement.delimiter";
 	/**
 	 * space or tag
 	 */
-	public static final String SQL_FORMATTER_INDENT_TYPE = "sql.formatter.indent.type";
+	private static final String SQL_FORMATTER_INDENT_TYPE = "sql.formatter.indent.type";
 	/**
 	 * 4 by default
 	 */
-	public static final String SQL_FORMATTER_INDENT_SIZE = "sql.formatter.indent.size";
+	private static final String SQL_FORMATTER_INDENT_SIZE = "sql.formatter.indent.size";
 
 	private String statementDelimiters;
 	private KeywordCase keywordCase;
 	private String indentString;
 
-	public SQLFormatterConfiguration(Properties properties) {
+	public DBeaverSQLFormatterConfiguration(Properties properties) {
 		this.keywordCase = KeywordCase.valueOf(properties.getProperty(SQL_FORMATTER_KEYWORD_CASE, "UPPER"));
 		this.statementDelimiters = properties.getProperty(SQL_FORMATTER_STATEMENT_DELIMITER, SQLDialect.INSTANCE
 				.getScriptDelimiter());

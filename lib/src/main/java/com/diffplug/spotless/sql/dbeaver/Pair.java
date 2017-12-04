@@ -16,30 +16,35 @@
 package com.diffplug.spotless.sql.dbeaver;
 
 /**
- * Pair
+ * Forked from
+ * DBeaver - Universal Database Manager
+ * Copyright (C) 2010-2017 Serge Rider (serge@jkiss.org)
+ *
+ * Based on Pair from https://github.com/serge-rider/dbeaver,
+ * which itself is licensed under the Apache 2.0 license.
  */
-public class Pair<T1, T2> {
+class Pair<T1, T2> {
 	private T1 first;
 	private T2 second;
 
-	public Pair(T1 first, T2 second) {
+	Pair(T1 first, T2 second) {
 		this.first = first;
 		this.second = second;
 	}
 
-	public T1 getFirst() {
+	T1 getFirst() {
 		return first;
 	}
 
-	public void setFirst(T1 first) {
+	void setFirst(T1 first) {
 		this.first = first;
 	}
 
-	public T2 getSecond() {
+	T2 getSecond() {
 		return second;
 	}
 
-	public void setSecond(T2 second) {
+	void setSecond(T2 second) {
 		this.second = second;
 	}
 
