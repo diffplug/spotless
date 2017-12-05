@@ -29,7 +29,8 @@ public class StepHarness {
 
 	/** Creates a StepHarness around the given FormatterFunc. */
 	public StepHarness(FormatterFunc formatter) {
-		this.formatter = Objects.requireNonNull(formatter);
+		Objects.requireNonNull(formatter);
+		this.formatter = input -> LineEnding.toUnix(formatter.apply(input));
 	}
 
 	/** Creates a harness for testing steps which don't depend on the file. */
