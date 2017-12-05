@@ -106,12 +106,8 @@ public class ResourceHarness {
 		return target.toFile();
 	}
 
-	protected AbstractFileAssert<?> assertThatNewFile(String path) throws IOException {
+	protected AbstractFileAssert<?> assertFile(String path) throws IOException {
 		return Assertions.assertThat(newFile(path)).usingCharset(StandardCharsets.UTF_8);
-	}
-
-	protected AbstractFileAssert<?> assertThatExistingFile(File path) {
-		return Assertions.assertThat(path).usingCharset(StandardCharsets.UTF_8);
 	}
 
 	protected String read(Path path) throws IOException {
@@ -188,7 +184,9 @@ public class ResourceHarness {
 
 	/** Asserts that the given resource from the src/test/resources directory has the same content as the given file. */
 	protected void assertFileContent(String expectedContent, File actual) throws IOException {
-		assertThatExistingFile(actual).hasContent(expectedContent);
+		// This line thing is necessary for the tests to pass when Windows git screws up the line-endings
+		String actualContent = new String(Files.readAllBytes(actual.toPath()), StandardCharsets.UTF_8);
+		Assert.assertEquals(expectedContent, actualContent);
 	}
 
 	/** Reads the given resource from "before", applies the step, and makes sure the result is "after". */

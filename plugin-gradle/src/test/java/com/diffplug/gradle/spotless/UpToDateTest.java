@@ -43,7 +43,7 @@ public class UpToDateTest extends GradleIntegrationTest {
 		write("README.md", "ABC");
 		// first time, the task runs as expected
 		applyIsUpToDate(false);
-		assertThatNewFile("README.md").hasContent("abc");
+		assertFile("README.md").hasContent("abc");
 		// because a file was changed (by spotless),
 		// up-to-date is false, even though nothing is
 		// going to change during this run.  This second
@@ -61,13 +61,13 @@ public class UpToDateTest extends GradleIntegrationTest {
 		write("README.md", "ABC");
 		// first time, up-to-date is false
 		applyIsUpToDate(false);
-		assertThatNewFile("README.md").hasContent("abc");
+		assertFile("README.md").hasContent("abc");
 
 		// now we'll change the file
 		write("README.md", "AB");
 		// as expected, the task will run again
 		applyIsUpToDate(false);
-		assertThatNewFile("README.md").hasContent("ab");
+		assertFile("README.md").hasContent("ab");
 		// and it'll take two more runs to get to up-to-date
 		applyIsUpToDate(false);
 		applyIsUpToDate(true);
@@ -79,14 +79,14 @@ public class UpToDateTest extends GradleIntegrationTest {
 		write("README.md", "ABC");
 		// first time, up-to-date is false
 		applyIsUpToDate(false);
-		assertThatNewFile("README.md").hasContent("abc");
+		assertFile("README.md").hasContent("abc");
 
 		// now we'll change the file back to EXACTLY its original content
 		write("README.md", "ABC");
 		// the task should run again, but instead the next line will
 		// fail an assertion, because the task is actually reported as up-to-date
 		applyIsUpToDate(false);
-		assertThatNewFile("README.md").hasContent("abc");
+		assertFile("README.md").hasContent("abc");
 		// and it'll take two more runs to get to up-to-date
 		applyIsUpToDate(false);
 		applyIsUpToDate(true);
