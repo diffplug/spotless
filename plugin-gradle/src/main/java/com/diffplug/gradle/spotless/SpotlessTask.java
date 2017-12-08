@@ -183,7 +183,7 @@ public class SpotlessTask extends DefaultTask {
 		if (getCacheFile().exists()) {
 			LastApply lastApply = SerializableMisc.fromFile(LastApply.class, getCacheFile());
 			for (File file : lastApply.changedFiles) {
-				if (!outOfDate.contains(file) && file.exists()) {
+				if (!outOfDate.contains(file) && file.exists() && Iterables.contains(target, file)) {
 					outOfDate.add(file);
 				}
 			}
