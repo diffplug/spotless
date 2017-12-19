@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.time.YearMonth;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,6 +36,11 @@ public final class LicenseHeaderStep implements Serializable {
 
 	private final String licenseHeader;
 	private final Pattern delimiterPattern;
+	private Pattern yearMatcherPattern;
+	private boolean hasYearToken;
+	private String licenseHeaderBeforeYEARToken;
+	private String licenseHeaderAfterYEARToken;
+	private String licenseHeaderWithYEARTokenReplaced;
 
 	/** Creates a FormatterStep which forces the start of each file to match a license header. */
 	public static FormatterStep createFromHeader(String licenseHeader, String delimiter) {
@@ -74,6 +80,14 @@ public final class LicenseHeaderStep implements Serializable {
 		}
 		this.licenseHeader = licenseHeader;
 		this.delimiterPattern = Pattern.compile('^' + delimiter, Pattern.UNIX_LINES | Pattern.MULTILINE);
+		hasYearToken = licenseHeader.contains("$YEAR");
+		if (hasYearToken) {
+			int yearTokenIndex = licenseHeader.indexOf("$YEAR");
+			licenseHeaderBeforeYEARToken = licenseHeader.substring(0, yearTokenIndex);
+			licenseHeaderAfterYEARToken = licenseHeader.substring(yearTokenIndex + 5, licenseHeader.length());
+			licenseHeaderWithYEARTokenReplaced = licenseHeader.replace("$YEAR", String.valueOf(YearMonth.now().getYear()));
+			this.yearMatcherPattern = Pattern.compile("[0-9]{4}(-[0-9]{4})?");
+		}
 	}
 
 	/** Reads the license file from the given file. */
@@ -87,7 +101,14 @@ public final class LicenseHeaderStep implements Serializable {
 		if (!matcher.find()) {
 			throw new IllegalArgumentException("Unable to find delimiter regex " + delimiterPattern);
 		} else {
-			if (matcher.start() == licenseHeader.length() && raw.startsWith(licenseHeader)) {
+			if (hasYearToken) {
+				if (matchesLicenseWithYearToken(raw, matcher)) {
+					//that means we have the license like `licenseHeaderBeforeYEARToken 1990-2015 licenseHeaderAfterYEARToken`
+					return raw;
+				} else {
+					return licenseHeaderWithYEARTokenReplaced + raw.substring(matcher.start());
+				}
+			} else if (matcher.start() == licenseHeader.length() && raw.startsWith(licenseHeader)) {
 				// if no change is required, return the raw string without
 				// creating any other new strings for maximum performance
 				return raw;
@@ -96,5 +117,11 @@ public final class LicenseHeaderStep implements Serializable {
 				return licenseHeader + raw.substring(matcher.start());
 			}
 		}
+	}
+
+	private boolean matchesLicenseWithYearToken(String raw, Matcher matcher) {
+		int startOfTheSecondPart = raw.indexOf(licenseHeaderAfterYEARToken);
+		return (raw.startsWith(licenseHeaderBeforeYEARToken) && startOfTheSecondPart + licenseHeaderAfterYEARToken.length() == matcher.start())
+				&& yearMatcherPattern.matcher(raw.substring(licenseHeaderBeforeYEARToken.length(), startOfTheSecondPart)).matches();
 	}
 }

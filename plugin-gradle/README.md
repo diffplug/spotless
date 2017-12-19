@@ -273,6 +273,32 @@ spotless {
 }
 ```
 
+<a name="license-header"></a>
+
+## License header options
+
+The license header can contains a `$YEAR` variable that will be replaced by the current year.
+
+For example:
+```
+/* Licensed under Apache-2.0 $YEAR. */
+```
+will produce
+```
+/* Licensed under Apache-2.0 2017. */
+```
+if build is launched in 2017
+
+
+The step will change the license according to the following rules
+* It replace the license using the current year when
+	* The license is missing
+	* The license is not formatted correctly
+* It will *not* replace the license when
+	* The year variable is already present and is a single year, e.g. `/* Licensed under Apache-2.0 1990. */`
+	* The year variable is already present and is a year span, e.g. `/* Licensed under Apache-2.0 1990-2003. */`
+
+
 <a name="custom"></a>
 
 ## Custom rules
