@@ -27,6 +27,7 @@ import org.gradle.testkit.runner.BuildTask;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.Assert;
+import org.junit.Before;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StringPrinter;
@@ -36,6 +37,11 @@ import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ResourceHarness;
 
 public class GradleIntegrationTest extends ResourceHarness {
+	@Before
+	public void gitAttributes() throws IOException {
+		write(".gitattributes", "* text eol=lf");
+	}
+
 	protected GradleRunner gradleRunner() throws IOException {
 		return GradleRunner.create().withProjectDir(rootFolder()).withPluginClasspath();
 	}
