@@ -78,10 +78,10 @@ public class EncodingTest extends GradleIntegrationTest {
 				"}");
 		write("test.java", "µ");
 		write("utf32.encoded", LineEnding.UNIX, Charset.forName("UTF-32"), "µ");
-		Assert.assertEquals("µ\n", read("utf32.encoded", LineEnding.UNIX, Charset.forName("UTF-32")));
+		Assert.assertEquals("µ\n", read("utf32.encoded", Charset.forName("UTF-32")));
 
 		gradleRunner().withArguments("spotlessApply").build();
 		Assert.assertEquals("??\n", read("test.java"));
-		Assert.assertEquals("A\n", read("utf32.encoded", LineEnding.UNIX, Charset.forName("UTF-32")));
+		Assert.assertEquals("A\n", read("utf32.encoded", Charset.forName("UTF-32")));
 	}
 }

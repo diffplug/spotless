@@ -110,31 +110,20 @@ public class ResourceHarness {
 		return Assertions.assertThat(newFile(path)).usingCharset(StandardCharsets.UTF_8);
 	}
 
-	protected String read(Path path) throws IOException {
-		return read(path, LineEnding.UNIX);
-	}
-
 	protected String read(String path) throws IOException {
-		return read(path, LineEnding.UNIX);
+		return read(newFile(path).toPath());
 	}
 
-	protected String read(String path, LineEnding ending) throws IOException {
-		return read(path, ending, StandardCharsets.UTF_8);
+	protected String read(Path path) throws IOException {
+		return read(path, StandardCharsets.UTF_8);
 	}
 
-	protected String read(Path path, LineEnding ending) throws IOException {
-		return read(path, ending, StandardCharsets.UTF_8);
+	protected String read(String path, Charset encoding) throws IOException {
+		return read(newFile(path).toPath(), encoding);
 	}
 
-	protected String read(String path, LineEnding ending, Charset encoding) throws IOException {
-		Path target = newFile(path).toPath();
-		return read(target, ending, encoding);
-	}
-
-	protected String read(Path path, LineEnding ending, Charset encoding) throws IOException {
-		String content = new String(Files.readAllBytes(path), encoding);
-		String allUnixNewline = LineEnding.toUnix(content);
-		return allUnixNewline.replace("\n", ending.str());
+	protected String read(Path path, Charset encoding) throws IOException {
+		return new String(Files.readAllBytes(path), encoding);
 	}
 
 	protected void replace(String path, String toReplace, String replaceWith) throws IOException {
