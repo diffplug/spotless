@@ -277,7 +277,9 @@ spotless {
 
 ## License header options
 
-The license header can contains a `$YEAR` variable that will be replaced by the current year.
+If the string contents of a licenseHeader step or the file contents of a licenseHeaderFile step contains a $YEAR token,
+then in the end-result generated license headers which use this license header as a template, $YEAR will be replaced with the current year.
+
 
 For example:
 ```
@@ -287,16 +289,19 @@ will produce
 ```
 /* Licensed under Apache-2.0 2017. */
 ```
-if build is launched in 2017
+if Spotless is launched in 2017
 
 
-The step will change the license according to the following rules
-* It replace the license using the current year when
-	* The license is missing
-	* The license is not formatted correctly
-* It will *not* replace the license when
-	* The year variable is already present and is a single year, e.g. `/* Licensed under Apache-2.0 1990. */`
-	* The year variable is already present and is a year span, e.g. `/* Licensed under Apache-2.0 1990-2003. */`
+The `licenseHeader` and `licenseHeaderFile` steps will generate license headers with automatic years from the base license header according to the following rules:
+* A generated license header will be updated with the current year when
+	* the generated license header is missing
+	* the generated license header is not formatted correctly
+* A generated license header will _not_ be updated when
+	* a single year is already present, e.g.
+	`/* Licensed under Apache-2.0 1990. */`
+	* a hyphen-separated year range is already present, e.g.
+	`/* Licensed under Apache-2.0 1990-2003. */`
+	* the `$YEAR` token is otherwise missing
 
 
 <a name="custom"></a>
