@@ -5,7 +5,11 @@ You might be looking for:
 - [plugin-gradle/CHANGES.md](plugin-gradle/CHANGES.md)
 - [plugin-maven/CHANGES.md](plugin-maven/CHANGES.md)
 
-### Version 1.8.0-SNAPSHOT - TBD (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/snapshot/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/snapshot/), [snapshot repo](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/))
+### Version 1.9.0-SNAPSHOT - TBD (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/snapshot/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/snapshot/), [snapshot repo](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/))
+
+### Version 1.8.0 - January 2nd 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.8.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.8.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
+
+* LicenseHeaderStep now supports time-aware copyright notices in license headers. ([#180](https://github.com/diffplug/spotless/pull/180), thanks to @baptistemesta)
 
 ### Version 1.7.0 - December 2nd 2017 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.7.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.7.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 

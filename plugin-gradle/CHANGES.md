@@ -1,8 +1,11 @@
 # spotless-plugin-gradle releases
 
-### Version 3.8.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-plugin-gradle/))
+### Version 3.9.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-plugin-gradle/))
+
+### Version 3.8.0 - January 2nd 2018 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.8.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.8.0))
 
 * Bugfix: if the specified target of a spotless task was reduced, Spotless could keep giving warnings until the cache file was deleted.
+* LicenseHeader now supports time-aware license headers. ([docs](https://github.com/diffplug/spotless/tree/master/plugin-gradle#license-header), [#180](https://github.com/diffplug/spotless/pull/180), thanks to @baptistemesta)
 
 ### Version 3.7.0 - December 2nd 2017 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.7.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.7.0))
 
