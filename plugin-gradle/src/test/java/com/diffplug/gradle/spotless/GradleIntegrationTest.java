@@ -42,8 +42,13 @@ public class GradleIntegrationTest extends ResourceHarness {
 		write(".gitattributes", "* text eol=lf");
 	}
 
-	protected GradleRunner gradleRunner() throws IOException {
-		return GradleRunner.create().withProjectDir(rootFolder()).withPluginClasspath();
+	protected final GradleRunner gradleRunner() throws IOException {
+		return GradleRunner.create()
+				// Test against Gradle 2.14.1 in order to maintain backwards compatibility.
+				// https://github.com/diffplug/spotless/issues/161
+				.withGradleVersion("2.14.1")
+				.withProjectDir(rootFolder())
+				.withPluginClasspath();
 	}
 
 	/** Dumps the complete file contents of the folder to the console. */
