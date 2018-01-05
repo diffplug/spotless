@@ -1,4 +1,4 @@
 @file:JvmName("SomeFileName")
 package my.test
 
-object AnObject { }
+object AnObject

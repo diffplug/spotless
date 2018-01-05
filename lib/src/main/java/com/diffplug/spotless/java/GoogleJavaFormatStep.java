@@ -31,7 +31,7 @@ public class GoogleJavaFormatStep {
 	// prevent direct instantiation
 	private GoogleJavaFormatStep() {}
 
-	private static final String DEFAULT_VERSION = "1.3";
+	private static final String DEFAULT_VERSION = "1.5";
 	static final String NAME = "google-java-format";
 	static final String MAVEN_COORDINATE = "com.google.googlejavaformat:google-java-format:";
 	static final String FORMATTER_CLASS = "com.google.googlejavaformat.java.Formatter";
