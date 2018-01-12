@@ -15,19 +15,22 @@
  */
 package com.diffplug.spotless.kotlin;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.Collections;
-import java.util.Objects;
-
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.ThrowingEx;
+import com.github.shyiko.ktlint.core.KtLint;
+import com.github.shyiko.ktlint.core.LintError;
+import com.github.shyiko.ktlint.core.RuleSet;
+import com.github.shyiko.ktlint.ruleset.standard.StandardRuleSetProvider;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function2;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 /** Wraps up [ktlint](https://github.com/shyiko/ktlint) as a FormatterStep. */
 public class KtLintStep {
@@ -76,43 +79,24 @@ public class KtLintStep {
 		}
 
 		FormatterFunc createFormat() throws Exception {
-			ClassLoader classLoader = jarState.getClassLoader();
 
-			// String KtLint::format(String input, Iterable<RuleSet> rules, Function2 errorCallback)
+			RuleSet ruleSet = new StandardRuleSetProvider().get();
+			List<RuleSet> rules = Collections.singletonList(ruleSet);
 
-			// first, we get the standard rules
-			Class<?> standardRuleSetProviderClass = classLoader.loadClass("com.github.shyiko.ktlint.ruleset.standard.StandardRuleSetProvider");
-			Object standardRuleSet = standardRuleSetProviderClass.getMethod("get").invoke(standardRuleSetProviderClass.newInstance());
-			Iterable<?> ruleSets = Collections.singletonList(standardRuleSet);
-
-			// next, we create an error callback which throws an assertion error when the format is bad
-			Class<?> function2Interface = classLoader.loadClass("kotlin.jvm.functions.Function2");
-			Class<?> lintErrorClass = classLoader.loadClass("com.github.shyiko.ktlint.core.LintError");
-			Method detailGetter = lintErrorClass.getMethod("getDetail");
-			Object formatterCallback = Proxy.newProxyInstance(classLoader, new Class[]{function2Interface},
-					(proxy, method, args) -> {
-						Object lintError = args[0]; // com.github.shyiko.ktlint.core.LintError
-						boolean corrected = (Boolean) args[1];
-						if (!corrected) {
-							String detail = (String) detailGetter.invoke(lintError);
-							throw new AssertionError(detail);
-						}
-						return null;
-					});
+			Function2<? super LintError,? super Boolean, Unit> formatterCallback = (LintError error, Boolean corrected) -> {
+				if (!corrected) {
+					throw new AssertionError(error.getDetail());
+				}
+				return null;
+			};
 
 			// grab the KtLint singleton
-			Class<?> ktlintClass = classLoader.loadClass("com.github.shyiko.ktlint.core.KtLint");
-			Object ktlint = ktlintClass.getDeclaredField("INSTANCE").get(null);
-			// and its format method
-			String formatterMethodName = isScript ? "formatScript" : "format";
-			Method formatterMethod = ktlintClass.getMethod(formatterMethodName, String.class, Iterable.class, function2Interface);
-
+			KtLint ktLint = KtLint.INSTANCE;
 			return input -> {
-				try {
-					String formatted = (String) formatterMethod.invoke(ktlint, input, ruleSets, formatterCallback);
-					return formatted;
-				} catch (InvocationTargetException e) {
-					throw ThrowingEx.unwrapCause(e);
+				if (isScript) {
+					return ktLint.format(input, rules, formatterCallback);
+				} else {
+					return ktLint.formatScript(input, rules, formatterCallback);
 				}
 			};
 		}
