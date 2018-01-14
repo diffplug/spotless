@@ -15,13 +15,22 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static java.util.stream.Collectors.toSet;
+
+import java.util.Objects;
+
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.ThrowingEx;
 
 /** Maven integration for Provisioner. */
 public class MavenProvisioner {
 	private MavenProvisioner() {}
 
-	public static Provisioner create() {
-		throw new UnsupportedOperationException();
+	public static Provisioner create(ArtifactResolver artifactResolver) {
+		Objects.requireNonNull(artifactResolver);
+
+		return mavenCoords -> mavenCoords.stream()
+				.map(ThrowingEx.wrap(artifactResolver::resolve))
+				.collect(toSet());
 	}
 }

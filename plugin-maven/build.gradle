@@ -7,10 +7,74 @@ dependencies {
 	compile project(':lib')
 	compile project(':lib-extra')
 	compile "org.apache.maven:maven-plugin-api:3.0"
+	compileOnly "org.apache.maven:maven-core:3.0"
 	compileOnly "org.apache.maven.plugin-tools:maven-plugin-annotations:3.4"
+	compileOnly "org.eclipse.aether:aether-api:1.1.0"
+	compileOnly "org.eclipse.aether:aether-util:1.1.0"
 
 	testCompile project(':testlib')
 	testCompile "junit:junit:${VER_JUNIT}"
 	testCompile "org.assertj:assertj-core:${VER_ASSERTJ}"
 	testCompile "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
 }
+
+task copyDependencies(type: Copy) {
+	from configurations.runtime
+	include 'lib.jar', 'lib-extra.jar'
+	into 'build/tmpMavenProject'
+}
+
+task installLibInLocalRepo(type: Exec) {
+	workingDir 'build/tmpMavenProject'
+	commandLine "mvn", "org.apache.maven.plugins:maven-install-plugin:2.3.1:install-file",
+			"-Dfile=lib.jar",
+			"-DgroupId=com.diffplug",
+			"-DartifactId=lib",
+			"-Dversion=1.0-SNAPSHOT",
+			"-Dpackaging=jar",
+			"-DlocalRepositoryPath=local-repo"
+}
+
+task installLibExtraInLocalRepo(type: Exec) {
+	workingDir 'build/tmpMavenProject'
+	commandLine "mvn", "org.apache.maven.plugins:maven-install-plugin:2.3.1:install-file",
+			"-Dfile=lib-extra.jar",
+			"-DgroupId=com.diffplug",
+			"-DartifactId=lib-extra",
+			"-Dversion=1.0-SNAPSHOT",
+			"-Dpackaging=jar",
+			"-DlocalRepositoryPath=local-repo"
+}
+
+task createLocalRepo(dependsOn: [
+	copyDependencies,
+	installLibInLocalRepo,
+	installLibExtraInLocalRepo
+]){
+}
+
+task copySourceFiles(type: Copy) {
+	from 'src/main/java'
+	into 'build/tmpMavenProject/src/main/java'
+}
+
+task copyPomXml(type: Copy) {
+	from 'src/main/resources/pom.xml'
+	into 'build/tmpMavenProject'
+}
+
+task runMavenBuild(type: Exec, dependsOn: [
+	createLocalRepo,
+	copySourceFiles,
+	copyPomXml
+]) {
+	workingDir 'build/tmpMavenProject'
+	commandLine 'mvn', 'clean', 'install'
+}
+
+task buildMavenPlugin(type: Copy, dependsOn: runMavenBuild) {
+	from 'build/tmpMavenProject/target'
+	into 'build/libs'
+}
+
+build.finalizedBy buildMavenPlugin
