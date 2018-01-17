@@ -30,7 +30,8 @@ task copyPomXml(type: Copy) {
 
 	// inject versions while copying
 	filter { String line ->
-		line.replace("VER_MAVEN_API", "${VER_MAVEN_API}")
+		line.replace("VER_PLUGIN", "${project.versionMaven}")
+				.replace("VER_MAVEN_API", "${VER_MAVEN_API}")
 				.replace("VER_ECLIPSE_AETHER", "${VER_ECLIPSE_AETHER}")
 				.replace("VER_SPOTLESS_LIB", "${project.stableLib}")
 	}

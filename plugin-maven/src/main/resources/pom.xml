@@ -4,7 +4,7 @@
 
   <groupId>com.diffplug.spotless</groupId>
   <artifactId>spotless-maven-plugin</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>VER_PLUGIN</version>
   <packaging>maven-plugin</packaging>
 
   <name>Spotless Maven Plugin</name>
