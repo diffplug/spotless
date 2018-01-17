@@ -70,7 +70,7 @@ public class SpotlessMojo extends AbstractSpotlessMojo {
 				.lineEndingsPolicy(getLineEndingsPolicy(filesToFormat))
 				.exceptionPolicy(new FormatExceptionPolicyStrict())
 				.steps(singletonList(createEclipseFormatterStep()))
-				.rootDir(getRootDir().toPath())
+				.rootDir(getBaseDir().toPath())
 				.build();
 	}
 

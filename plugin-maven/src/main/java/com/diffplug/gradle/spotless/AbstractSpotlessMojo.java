@@ -28,7 +28,6 @@ import java.util.stream.Stream;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.project.MavenProject;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.repository.RemoteRepository;
@@ -49,8 +48,14 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Parameter(defaultValue = "${project.remotePluginRepositories}", required = true, readonly = true)
 	private List<RemoteRepository> repositories;
 
-	@Parameter(defaultValue = "${project}", required = true, readonly = true)
-	private MavenProject project;
+	@Parameter(defaultValue = "${project.basedir}", required = true, readonly = true)
+	private File baseDir;
+
+	@Parameter(defaultValue = "${project.compileSourceRoots}", required = true, readonly = true)
+	private List<String> compileSourceRoots;
+
+	@Parameter(defaultValue = "${project.testCompileSourceRoots}", required = true, readonly = true)
+	private List<String> testCompileSourceRoots;
 
 	@Parameter(defaultValue = DEFAULT_ENCODING)
 	private String encoding;
@@ -66,9 +71,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	protected List<Path> getAllSourceRoots() {
-		Stream<String> compileSourceRoots = project.getCompileSourceRoots().stream();
-		Stream<String> testCompileSourceRoots = project.getTestCompileSourceRoots().stream();
-		return Stream.concat(compileSourceRoots, testCompileSourceRoots)
+		return Stream.concat(compileSourceRoots.stream(), testCompileSourceRoots.stream())
 				.map(Paths::get)
 				.filter(Files::isDirectory)
 				.collect(toList());
@@ -79,11 +82,11 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	protected LineEnding.Policy getLineEndingsPolicy(List<File> filesToFormat) {
-		return lineEndings.createPolicy(getRootDir(), () -> filesToFormat);
+		return lineEndings.createPolicy(getBaseDir(), () -> filesToFormat);
 	}
 
-	protected File getRootDir() {
-		return project.getBasedir();
+	protected File getBaseDir() {
+		return baseDir;
 	}
 
 	protected Java getJavaConfig() {

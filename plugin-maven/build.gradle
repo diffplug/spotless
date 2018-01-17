@@ -7,7 +7,6 @@ dependencies {
 	compile project(':lib')
 	compile project(':lib-extra')
 	compile "org.apache.maven:maven-plugin-api:3.0"
-	compileOnly "org.apache.maven:maven-core:3.0"
 	compileOnly "org.apache.maven.plugin-tools:maven-plugin-annotations:3.4"
 	compileOnly "org.eclipse.aether:aether-api:1.1.0"
 	compileOnly "org.eclipse.aether:aether-util:1.1.0"
