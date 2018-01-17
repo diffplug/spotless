@@ -1,79 +1,55 @@
 ext.artifactId = project.artifactIdMaven
 ext.version = project.versionMaven
-apply from: rootProject.file('gradle/java-setup.gradle')
-apply from: rootProject.file('gradle/java-publish.gradle')
+apply from: rootProject.file("gradle/java-setup.gradle")
+apply from: rootProject.file("gradle/java-publish.gradle")
 
 dependencies {
-	compile project(':lib')
-	compile project(':lib-extra')
-	compile "org.apache.maven:maven-plugin-api:3.0"
-	compileOnly "org.apache.maven.plugin-tools:maven-plugin-annotations:3.4"
-	compileOnly "org.eclipse.aether:aether-api:1.1.0"
-	compileOnly "org.eclipse.aether:aether-util:1.1.0"
+	compile project(":lib")
+	compile project(":lib-extra")
+	compileOnly "org.apache.maven:maven-plugin-api:${VER_MAVEN_API}"
+	compileOnly "org.apache.maven.plugin-tools:maven-plugin-annotations:${VER_MAVEN_API}"
+	compileOnly "org.eclipse.aether:aether-api:${VER_ECLIPSE_AETHER}"
+	compileOnly "org.eclipse.aether:aether-util:${VER_ECLIPSE_AETHER}"
 
-	testCompile project(':testlib')
+	testCompile project(":testlib")
 	testCompile "junit:junit:${VER_JUNIT}"
 	testCompile "org.assertj:assertj-core:${VER_ASSERTJ}"
 	testCompile "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
 }
 
-task copyDependencies(type: Copy) {
-	from configurations.runtime
-	include 'lib.jar', 'lib-extra.jar'
-	into 'build/tmpMavenProject'
-}
-
-task installLibInLocalRepo(type: Exec) {
-	workingDir 'build/tmpMavenProject'
-	commandLine "mvn", "org.apache.maven.plugins:maven-install-plugin:2.3.1:install-file",
-			"-Dfile=lib.jar",
-			"-DgroupId=com.diffplug",
-			"-DartifactId=lib",
-			"-Dversion=1.0-SNAPSHOT",
-			"-Dpackaging=jar",
-			"-DlocalRepositoryPath=local-repo"
-}
-
-task installLibExtraInLocalRepo(type: Exec) {
-	workingDir 'build/tmpMavenProject'
-	commandLine "mvn", "org.apache.maven.plugins:maven-install-plugin:2.3.1:install-file",
-			"-Dfile=lib-extra.jar",
-			"-DgroupId=com.diffplug",
-			"-DartifactId=lib-extra",
-			"-Dversion=1.0-SNAPSHOT",
-			"-Dpackaging=jar",
-			"-DlocalRepositoryPath=local-repo"
-}
-
-task createLocalRepo(dependsOn: [
-	copyDependencies,
-	installLibInLocalRepo,
-	installLibExtraInLocalRepo
-]){
-}
+task cleanMavenProjectDir(type: Delete) { delete "build/tmpMavenProject" }
 
 task copySourceFiles(type: Copy) {
-	from 'src/main/java'
-	into 'build/tmpMavenProject/src/main/java'
+	from "src/main/java"
+	into "build/tmpMavenProject/src/main/java"
 }
 
 task copyPomXml(type: Copy) {
-	from 'src/main/resources/pom.xml'
-	into 'build/tmpMavenProject'
+	from "src/main/resources/pom.xml"
+	into "build/tmpMavenProject"
+
+	// inject versions while copying
+	filter { String line ->
+		line.replace("VER_MAVEN_API", "${VER_MAVEN_API}")
+				.replace("VER_ECLIPSE_AETHER", "${VER_ECLIPSE_AETHER}")
+				.replace("VER_SPOTLESS_LIB", "${project.stableLib}")
+	}
+
+	filteringCharset = "UTF-8"
 }
 
 task runMavenBuild(type: Exec, dependsOn: [
-	createLocalRepo,
+	cleanMavenProjectDir,
 	copySourceFiles,
 	copyPomXml
 ]) {
-	workingDir 'build/tmpMavenProject'
-	commandLine 'mvn', 'clean', 'install'
+	workingDir "build/tmpMavenProject"
+	commandLine "mvn", "clean", "install"
 }
 
 task buildMavenPlugin(type: Copy, dependsOn: runMavenBuild) {
-	from 'build/tmpMavenProject/target'
-	into 'build/libs'
+	from "build/tmpMavenProject/target"
+	into "build/libs"
 }
 
 build.finalizedBy buildMavenPlugin

@@ -13,85 +13,61 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.compiler.source>1.8</maven.compiler.source>
-  </properties>
 
-  <repositories>
-    <repository>
-      <id>local-repo</id>
-      <url>file://${basedir}/local-repo</url>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>always</updatePolicy>
-        <checksumPolicy>ignore</checksumPolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-        <updatePolicy>always</updatePolicy>
-        <checksumPolicy>ignore</checksumPolicy>
-      </snapshots>
-    </repository>
-  </repositories>
+    <!-- Following versions are expected to be injected by the Gradle build script -->
+    <maven.api.version>VER_MAVEN_API</maven.api.version>
+    <eclipse.aether.version>VER_ECLIPSE_AETHER</eclipse.aether.version>
+    <spotless.lib.version>VER_SPOTLESS_LIB</spotless.lib.version>
+  </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-plugin-api</artifactId>
-      <version>3.0</version>
+      <version>${maven.api.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.plugin-tools</groupId>
       <artifactId>maven-plugin-annotations</artifactId>
-      <version>3.2</version>
+      <version>${maven.api.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.eclipse.aether</groupId>
       <artifactId>aether-api</artifactId>
-      <version>1.1.0</version>
+      <version>${eclipse.aether.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.eclipse.aether</groupId>
       <artifactId>aether-util</artifactId>
-      <version>1.1.0</version>
+      <version>${eclipse.aether.version}</version>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
-      <groupId>com.diffplug</groupId>
-      <artifactId>lib</artifactId>
-      <version>${project.version}</version>
+      <groupId>com.diffplug.spotless</groupId>
+      <artifactId>spotless-lib</artifactId>
+      <version>${spotless.lib.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.diffplug</groupId>
-      <artifactId>lib-extra</artifactId>
-      <version>${project.version}</version>
+      <groupId>com.diffplug.spotless</groupId>
+      <artifactId>spotless-lib-extra</artifactId>
+      <version>${spotless.lib.version}</version>
     </dependency>
   </dependencies>
 
   <build>
     <plugins>
+      <!--
+      New-ish version of the maven-plugin-plugin is required because of Java 8.
+      See https://issues.apache.org/jira/browse/MPLUGIN-272 for more details.
+       -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-plugin-plugin</artifactId>
         <version>3.5</version>
-      </plugin>
-      <plugin>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>3.1.0</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <configuration>
-              <artifactSet>
-                <includes>
-                  <include>com.diffplug:*</include>
-                </includes>
-              </artifactSet>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
