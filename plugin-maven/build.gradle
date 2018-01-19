@@ -12,16 +12,13 @@ ext.version = project.versionMaven
 apply from: rootProject.file("gradle/java-setup.gradle")
 apply from: rootProject.file("gradle/java-publish.gradle")
 
-final MAVEN_PROJECT_DIR = "mavenProject"
 final PROJECT_DIR = project.projectDir.toString()
+final BUILD_DIR = project.buildDir.toString()
+final MAVEN_PROJECT_DIR = "${BUILD_DIR}/mavenProject"
 
 buildscript {
-	repositories {
-		mavenCentral()
-	}
-	dependencies {
-		classpath "com.github.spullara.mustache.java:compiler:0.9.5"
-	}
+	repositories { mavenCentral() }
+	dependencies { classpath "com.github.spullara.mustache.java:compiler:0.9.5" }
 }
 
 dependencies {
@@ -38,24 +35,24 @@ dependencies {
 	testCompile "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
 }
 
-task cleanMavenProjectDir(type: Delete) { delete "build/${MAVEN_PROJECT_DIR}" }
+task cleanMavenProjectDir(type: Delete) { delete MAVEN_PROJECT_DIR }
 
 task copySourceFiles(type: Copy) {
 	from "src/main/java"
-	into "build/${MAVEN_PROJECT_DIR}/src/main/java"
+	into "${MAVEN_PROJECT_DIR}/src/main/java"
 }
 
 task createPomXml {
 	doLast {
 		def versions = [
-				SpotlessMavenPluginVersion: project.versionMaven,
-				MavenApiVersion           : VER_MAVEN_API,
-				EclipseAetherVersion      : VER_ECLIPSE_AETHER,
-				SpotlessLibVersion        : project.stableLib
+			SpotlessMavenPluginVersion: project.versionMaven,
+			MavenApiVersion           : VER_MAVEN_API,
+			EclipseAetherVersion      : VER_ECLIPSE_AETHER,
+			SpotlessLibVersion        : project.stableLib
 		]
 
 		def pomXmlTemplate = Paths.get(PROJECT_DIR, "src", "main", "resources", "pom.xml.mustache")
-		def newPomXml = Paths.get(PROJECT_DIR, "build", MAVEN_PROJECT_DIR, "pom.xml")
+		def newPomXml = Paths.get(MAVEN_PROJECT_DIR, "pom.xml")
 
 		Files.newBufferedReader(pomXmlTemplate).withCloseable { reader ->
 			Files.newBufferedWriter(newPomXml, UTF_8, CREATE_NEW, TRUNCATE_EXISTING).withCloseable { writer ->
@@ -67,17 +64,17 @@ task createPomXml {
 }
 
 task runMavenBuild(type: Exec, dependsOn: [
-		cleanMavenProjectDir,
-		copySourceFiles,
-		createPomXml
+	cleanMavenProjectDir,
+	copySourceFiles,
+	createPomXml
 ]) {
-	workingDir "build/${MAVEN_PROJECT_DIR}"
+	workingDir MAVEN_PROJECT_DIR
 	commandLine "mvn", "clean", "install"
 }
 
 task buildMavenPlugin(type: Copy, dependsOn: runMavenBuild) {
-	from "build/${MAVEN_PROJECT_DIR}/target"
-	into "build/libs"
+	from "${MAVEN_PROJECT_DIR}/target"
+	into "${BUILD_DIR}/libs"
 }
 
 build.finalizedBy buildMavenPlugin
