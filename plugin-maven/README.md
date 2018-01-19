@@ -2,14 +2,14 @@
 
 <!---freshmark shields
 output = [
-	link(shield('Maven central', 'mavencentral', 'com.diffplug.spotless:spotless-plugin-maven', 'blue'), 'http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-maven%22'),
-	link(shield('Javadoc', 'javadoc', '{{stableMaven}}', 'blue'), 'https://{{org}}.github.io/{{name}}/javadoc/spotless-plugin-maven/{{stableMaven}}/'),
-	'',
-	link(shield('Changelog', 'changelog', '{{stableMaven}}', 'brightgreen'), 'CHANGES.md'),
-	link(image('Travis CI', 'https://travis-ci.org/{{org}}/{{name}}.svg?branch=master'), 'https://travis-ci.org/{{org}}/{{name}}'),
-	link(shield('Live chat', 'gitter', 'chat', 'brightgreen'), 'https://gitter.im/{{org}}/{{name}}'),
-	link(shield('License Apache', 'license', 'apache', 'brightgreen'), 'https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)')
-	].join('\n');
+  link(shield('Maven central', 'mavencentral', 'com.diffplug.spotless:spotless-plugin-maven', 'blue'), 'http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-maven%22'),
+  link(shield('Javadoc', 'javadoc', '{{stableMaven}}', 'blue'), 'https://{{org}}.github.io/{{name}}/javadoc/spotless-plugin-maven/{{stableMaven}}/'),
+  '',
+  link(shield('Changelog', 'changelog', '{{stableMaven}}', 'brightgreen'), 'CHANGES.md'),
+  link(image('Travis CI', 'https://travis-ci.org/{{org}}/{{name}}.svg?branch=master'), 'https://travis-ci.org/{{org}}/{{name}}'),
+  link(shield('Live chat', 'gitter', 'chat', 'brightgreen'), 'https://gitter.im/{{org}}/{{name}}'),
+  link(shield('License Apache', 'license', 'apache', 'brightgreen'), 'https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)')
+  ].join('\n');
 -->
 [![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--plugin--maven-blue.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-maven%22)
 [![Javadoc](https://img.shields.io/badge/javadoc-unreleased-blue.svg)](https://diffplug.github.io/spotless/javadoc/spotless-plugin-maven/unreleased/)
@@ -33,13 +33,13 @@ cmd> mvn com.diffplug.spotless:spotless-maven-plugin:spotless-check
 ...
 :spotlessJavaCheck FAILED
 > The following files had format violations:
-	src\main\java\com\diffplug\gradle\spotless\FormatExtension.java
-		@@ -109,7 +109,7 @@
-		...
-		-\t\t····if·(targets.length·==·0)·{
-		+\t\tif·(targets.length·==·0)·{
-		...
-	Run 'mvn com.diffplug.spotless:spotless-maven-plugin:spotless-apply' to fix these violations.
+  src\main\java\com\diffplug\gradle\spotless\FormatExtension.java
+    @@ -109,7 +109,7 @@
+    ...
+    -\t\t····if·(targets.length·==·0)·{
+    +\t\tif·(targets.length·==·0)·{
+    ...
+  Run 'mvn com.diffplug.spotless:spotless-maven-plugin:spotless-apply' to fix these violations.
 
 cmd> mvn com.diffplug.spotless:spotless-maven-plugin:spotless-apply
 :spotlessApply
@@ -53,17 +53,17 @@ To use it in your pom, just [add the Spotless dependency](http://search.maven.or
 
 ```xml
 <plugin>
-	<groupId>com.diffplug.spotless</groupId>
-	<artifactId>spotless-maven-plugin</artifactId>
-	<version>${spotless.version}</version>
-	<configuration>
-		<java>
-			<stepEclipse>
-				<file>${basedir}/eclipse-fmt.xml</file>
-				<version>4.7.1</version>
-			</stepEclipse>
-		</java>
-	</configuration>
+  <groupId>com.diffplug.spotless</groupId>
+  <artifactId>spotless-maven-plugin</artifactId>
+  <version>${spotless.version}</version>
+  <configuration>
+    <java>
+      <stepEclipse>
+        <file>${basedir}/eclipse-fmt.xml</file>
+        <version>4.7.1</version>
+      </stepEclipse>
+    </java>
+  </configuration>
 </plugin>
 ```
 
@@ -85,28 +85,28 @@ By default, all compileSourceRoots will be formatted.  Each element under `<java
 
 ```xml
 <configuration>
-	<java>
-		<licenseHeader>
-			<!-- Specify either content or file, but not both -->
-			<content>/* Licensed under Apache-2.0 */</content>
-			<file>${basedir}/license-header</file>
-		</licenseHeader>
-		<eclipse>
-			<file>${basedir}/eclipse-fmt.xml</file>
-			<!-- Optional, available versions: https://bintray.com/diffplug/opensource/spotless-ext-eclipse-jdt -->
-			<version>4.7.1</version>
-		</eclipse>
-		<googleJavaFormat>
-			<!-- Optional, available versions: https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.google.googlejavaformat%22%20AND%20a%3A%22google-java-format%22 -->
-			<version>1.5</version>
-		</googleJavaFormat>
-		<removeUnusedImports/>
-		<importOrder>
-			<!-- Specify either order or file, but not both -->
-			<order>java,javax,org,com,com.diffplug,</order>
-			<file>${basedir}/importOrder</file>
-		</importOrder>
-	</java>
+  <java>
+    <licenseHeader>
+      <!-- Specify either content or file, but not both -->
+      <content>/* Licensed under Apache-2.0 */</content>
+      <file>${basedir}/license-header</file>
+    </licenseHeader>
+    <eclipse>
+      <file>${basedir}/eclipse-fmt.xml</file>
+      <!-- Optional, available versions: https://bintray.com/diffplug/opensource/spotless-ext-eclipse-jdt -->
+      <version>4.7.1</version>
+    </eclipse>
+    <googleJavaFormat>
+      <!-- Optional, available versions: https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.google.googlejavaformat%22%20AND%20a%3A%22google-java-format%22 -->
+      <version>1.5</version>
+    </googleJavaFormat>
+    <removeUnusedImports/>
+    <importOrder>
+      <!-- Specify either order or file, but not both -->
+      <order>java,javax,org,com,com.diffplug,</order>
+      <file>${basedir}/importOrder</file>
+    </importOrder>
+  </java>
 </configuration>
 ```
 
@@ -118,10 +118,10 @@ Spotless uses UTF-8 by default, but you can use [any encoding which Java support
 
 ```gradle
 <configuration>
-	<java>
-		<encoding>Cp1252</encoding>
-	</java>
-	<encoding>US-ASCII</encoding>
+  <java>
+    <encoding>Cp1252</encoding>
+  </java>
+  <encoding>US-ASCII</encoding>
 </configuration>
 ```
 
@@ -139,7 +139,7 @@ You might want to disable this behavior.  We [recommend against this](https://gi
 
 ```xml
 <configuration>
-	<enforceCheck>false</enforceCheck>
+  <enforceCheck>false</enforceCheck>
 </configuration>
 ```
 
