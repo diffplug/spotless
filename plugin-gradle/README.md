@@ -114,6 +114,8 @@ spotless {
 
 		eclipse().configFile 'spotless.eclipseformat.xml'	// XML file dumped out by the Eclipse formatter
 		// If you have Eclipse preference or property files, you can use them too.
+		// eclipse('4.7.1') to specify a specific version of eclipse,
+		// available versions are: https://bintray.com/diffplug/opensource/spotless-ext-eclipse-jdt
 	}
 }
 ```
@@ -192,6 +194,7 @@ spotless {
 		// Use the default version and Groovy-Eclipse default configuration
 		greclipse()
 		// optional: you can specify a specific version or config file(s)
+		// available versions: https://bintray.com/diffplug/opensource/spotless-ext-greclipse
 		greclipse('2.3.0').configFile('spotless.eclipseformat.xml', 'org.codehaus.groovy.eclipse.ui.prefs')
 	}
 }
