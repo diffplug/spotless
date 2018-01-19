@@ -75,6 +75,7 @@ lib('sql.DBeaverSQLFormatterStep')               +'{{yes}}       | {{no}}       
 
 ## Acknowledgements
 
+* Thanks to [Konstantin Lutovich](https://github.com/lutovich) for [implementing the maven plugin](https://github.com/diffplug/spotless/pull/188).
 * Thanks to [Baptiste Mesta](https://github.com/baptistemesta) for
 	+ porting the DBeaver formatter to Spotless, and thanks to [DBeaver](https://dbeaver.jkiss.org/) and [its authors](https://github.com/serge-rider/dbeaver/graphs/contributors) for their excellent SQL formatter.
 	+ making license headers date-aware [#180](https://github.com/diffplug/spotless/pull/180)
