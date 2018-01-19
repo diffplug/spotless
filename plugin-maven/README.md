@@ -29,7 +29,7 @@ Spotless is a general-purpose formatting plugin.  It is completely à la carte, 
 To people who use your build, it looks like this:
 
 ```
-cmd> mvn com.diffplug.spotless:spotless-maven-plugin:spotless-check
+cmd> mvn com.diffplug.spotless:spotless-plugin-maven:spotless-check
 ...
 :spotlessJavaCheck FAILED
 > The following files had format violations:
@@ -39,13 +39,13 @@ cmd> mvn com.diffplug.spotless:spotless-maven-plugin:spotless-check
     -\t\t····if·(targets.length·==·0)·{
     +\t\tif·(targets.length·==·0)·{
     ...
-  Run 'mvn com.diffplug.spotless:spotless-maven-plugin:spotless-apply' to fix these violations.
+  Run 'mvn com.diffplug.spotless:spotless-plugin-maven:spotless-apply' to fix these violations.
 
-cmd> mvn com.diffplug.spotless:spotless-maven-plugin:spotless-apply
+cmd> mvn com.diffplug.spotless:spotless-plugin-maven:spotless-apply
 :spotlessApply
 BUILD SUCCESSFUL
 
-cmd> mvn com.diffplug.spotless:spotless-maven-plugin:spotless-check
+cmd> mvn com.diffplug.spotless:spotless-plugin-maven:spotless-check
 BUILD SUCCESSFUL
 ```
 
@@ -54,7 +54,7 @@ To use it in your pom, just [add the Spotless dependency](http://search.maven.or
 ```xml
 <plugin>
   <groupId>com.diffplug.spotless</groupId>
-  <artifactId>spotless-maven-plugin</artifactId>
+  <artifactId>spotless-plugin-maven</artifactId>
   <version>${spotless.version}</version>
   <configuration>
     <java>
@@ -148,7 +148,7 @@ You might want to disable this behavior.  We [recommend against this](https://gi
 ## How do I preview what `spotless-apply` will do?
 
 - Save your working tree with `git add -A`, then `git commit -m "Checkpoint before spotless."`
-- Run `mvn com.diffplug.spotless:spotless-maven-plugin:spotless-apply`
+- Run `mvn com.diffplug.spotless:spotless-plugin-maven:spotless-apply`
 - View the changes with `git diff`
 - If you don't like what spotless did, `git reset --hard`
 - If you'd like to remove the "checkpoint" commit, `git reset --soft head~1` will make the checkpoint commit "disappear" from history, but keeps the changes in your working directory.
