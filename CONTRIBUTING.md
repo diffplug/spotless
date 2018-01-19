@@ -54,29 +54,29 @@ To create a step which can handle up-to-date checks properly, use the method `<S
 
 ```java
 public final class ReplaceStep {
-	private ReplaceStep() {}
+  private ReplaceStep() {}
 
-	public static FormatterStep create(String name, CharSequence target, CharSequence replacement) {
-		return FormatterStep.create(name,
-				new State(target, replacement),
-				State::toFormatter);
-	}
+  public static FormatterStep create(String name, CharSequence target, CharSequence replacement) {
+    return FormatterStep.create(name,
+        new State(target, replacement),
+        State::toFormatter);
+  }
 
-	private static final class State implements Serializable {
-		private static final long serialVersionUID = 1L;
+  private static final class State implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-		private final CharSequence target;
-		private final CharSequence replacement;
+    private final CharSequence target;
+    private final CharSequence replacement;
 
-		State(CharSequence target, CharSequence replacement) {
-			this.target = target;
-			this.replacement = replacement;
-		}
+    State(CharSequence target, CharSequence replacement) {
+      this.target = target;
+      this.replacement = replacement;
+    }
 
-		FormatterFunc toFormatter() {
-			return raw -> raw.replace(target, replacement);
-		}
-	}
+    FormatterFunc toFormatter() {
+      return raw -> raw.replace(target, replacement);
+    }
+  }
 }
 ```
 
@@ -128,7 +128,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-	http://www.apache.org/licenses/LICENSE-2.0
+  http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,

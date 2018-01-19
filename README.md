@@ -2,10 +2,10 @@
 
 <!---freshmark shields
 output = [
-	link(image('Travis CI', 'https://travis-ci.org/{{org}}/{{name}}.svg?branch=master'), 'https://travis-ci.org/{{org}}/{{name}}'),
-	link(shield('Live chat', 'gitter', 'chat', 'brightgreen'), 'https://gitter.im/{{org}}/{{name}}'),
-	link(shield('License Apache', 'license', 'apache', 'brightgreen'), 'https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)')
-	].join('\n');
+  link(image('Travis CI', 'https://travis-ci.org/{{org}}/{{name}}.svg?branch=master'), 'https://travis-ci.org/{{org}}/{{name}}'),
+  link(shield('Live chat', 'gitter', 'chat', 'brightgreen'), 'https://gitter.im/{{org}}/{{name}}'),
+  link(shield('License Apache', 'license', 'apache', 'brightgreen'), 'https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)')
+  ].join('\n');
 -->
 [![Travis CI](https://travis-ci.org/diffplug/spotless.svg?branch=master)](https://travis-ci.org/diffplug/spotless)
 [![Live chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
@@ -78,16 +78,16 @@ lib('sql.DBeaverSQLFormatterStep')               +'{{yes}}       | {{no}}       
 ## Acknowledgements
 
 * Thanks to [Baptiste Mesta](https://github.com/baptistemesta) for
-	+ porting the DBeaver formatter to Spotless, and thanks to [DBeaver](https://dbeaver.jkiss.org/) and [its authors](https://github.com/serge-rider/dbeaver/graphs/contributors) for their excellent SQL formatter.
-	+ making license headers date-aware [#180](https://github.com/diffplug/spotless/pull/180)
+  + porting the DBeaver formatter to Spotless, and thanks to [DBeaver](https://dbeaver.jkiss.org/) and [its authors](https://github.com/serge-rider/dbeaver/graphs/contributors) for their excellent SQL formatter.
+  + making license headers date-aware [#180](https://github.com/diffplug/spotless/pull/180)
 * Thanks to [Jonathan Bluett-Duncan](https://github.com/jbduncan) for
-	+ implementing up-to-date checking [#31](https://github.com/diffplug/spotless/issues/31)
-	+ breaking spotless into libraries [#56](https://github.com/diffplug/spotless/issues/56)
-	+ lots of other things, but especially the diff support in `spotlessCheck`
+  + implementing up-to-date checking [#31](https://github.com/diffplug/spotless/issues/31)
+  + breaking spotless into libraries [#56](https://github.com/diffplug/spotless/issues/56)
+  + lots of other things, but especially the diff support in `spotlessCheck`
 * Thanks to [Frank Vennemeyer](https://github.com/fvgh) for [Groovy support via greclipse](https://github.com/diffplug/spotless/issues/13).
 * Thanks to [Stefan Oehme](https://github.com/oehme) for tons of help on the internal mechanics of Gradle.
 * Formatting by Eclipse
-	+ Special thanks to [Mateusz Matela](https://waynebeaton.wordpress.com/2015/03/15/great-fixes-for-mars-winners-part-i/) for huge improvements to the eclipse code formatter!
+  + Special thanks to [Mateusz Matela](https://waynebeaton.wordpress.com/2015/03/15/great-fixes-for-mars-winners-part-i/) for huge improvements to the eclipse code formatter!
 * Thanks to [Nelson Osacky](https://github.com/runningcode) for android doc improvements, versions bump, and a build improvement.
 * Thanks to [Stanley Shyiko](https://github.com/shyiko) for his help integrating [ktlint](https://github.com/shyiko/ktlint).
 * Thanks to [Jonathan Leitschuh](https://github.com/JLLeitschuh) for adding [ktlint](https://github.com/shyiko/ktlint) support for [Gradle Kotlin DSL](https://github.com/gradle/kotlin-dsl) files.

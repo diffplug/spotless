@@ -5,7 +5,7 @@
 * BREAKING CHANGE: `customReplace` and `customReplaceRegex` renamed to just `replace` and `replaceRegex`.
 * BREAKING CHANGE: Plugin portal ID is still `com.diffplug.gradle.spotless`, but maven coordinate has changed to `com.diffplug.spotless:spotless-plugin-gradle`.
 * HUGE SPEEDUP: Now supports incremental build / up-to-date-checking.
-	+ If you are using `custom` or `customLazy`, you might want to take a look at [this javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/spotless-gradle-plugin/snapshot/com/diffplug/gradle/spotless/FormatExtension.html#bumpThisNumberIfACustomStepChanges-int-).
+  + If you are using `custom` or `customLazy`, you might want to take a look at [this javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/spotless-gradle-plugin/snapshot/com/diffplug/gradle/spotless/FormatExtension.html#bumpThisNumberIfACustomStepChanges-int-).
 
 ### Version 2.4.1 - January 2nd 2017 ([javadoc](https://diffplug.github.io/spotless/javadoc/2.4.1/), [jcenter](https://bintray.com/diffplug/opensource/spotless/2.4.1/view))
 
@@ -14,13 +14,13 @@
 ### Version 2.4.0 - November 1st 2016 ([javadoc](https://diffplug.github.io/spotless/javadoc/2.4.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless/2.4.0/view))
 
 * If a formatter step throws an `Error` or any of its subclasses, such as the `AssertionError`s thrown by JUnit, AssertJ, etc. that error will kill the build ([#46](https://github.com/diffplug/spotless/issues/46))
-	+ This allows custom rules like this:
+  + This allows custom rules like this:
 
 ```gradle
 custom 'no swearing', {
-	if (it.toLowerCase().contains('fubar')) {
-		throw new AssertionError('No swearing!');
-	}
+  if (it.toLowerCase().contains('fubar')) {
+    throw new AssertionError('No swearing!');
+  }
 }
 ```
 
@@ -38,9 +38,9 @@ custom 'no swearing', {
 
 ```
 spotless {
-	java {
-		googleJavaFormat()  // googleJavaFormat('1.1') to specify a specific version
-	}
+  java {
+    googleJavaFormat()  // googleJavaFormat('1.1') to specify a specific version
+  }
 }
 ```
 
@@ -55,7 +55,7 @@ spotless {
 * Eclipse formatter now warns if the formatter xml contains multiple profiles.
 * Updated eclipse formatter to Eclipse Neon (4.6).
 * BREAKING CHANGE: Eclipse formatter now formats javadoc comments.
-	+ You might want to look at the following settings in your `spotless.eclipseformat.xml`:
+  + You might want to look at the following settings in your `spotless.eclipseformat.xml`:
 
 ```
 org.eclipse.jdt.core.formatter.join_lines_in_comments=true/false

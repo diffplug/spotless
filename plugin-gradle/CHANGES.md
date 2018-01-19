@@ -15,8 +15,8 @@
 * Updated default eclipse-jdt version to `4.7.1` from `4.6.3`.
 * All spotless tasks now run before the `clean` task. ([#159](https://github.com/diffplug/spotless/issues/159))
 * Added `sql` ([#166](https://github.com/diffplug/spotless/pull/166)) and `dbeaverSql`. ([#166](https://github.com/diffplug/spotless/pull/166))
-	+ Many thanks to [Baptiste Mesta](https://github.com/baptistemesta) for porting to Spotless.
-	+ Many thanks to [DBeaver](https://dbeaver.jkiss.org/) and the [DBeaver contributors](https://github.com/serge-rider/dbeaver/graphs/contributors) for building the implementation.
+  + Many thanks to [Baptiste Mesta](https://github.com/baptistemesta) for porting to Spotless.
+  + Many thanks to [DBeaver](https://dbeaver.jkiss.org/) and the [DBeaver contributors](https://github.com/serge-rider/dbeaver/graphs/contributors) for building the implementation.
 
 ### Version 3.6.0 - September 29th 2017 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.6.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.6.0))
 
@@ -41,7 +41,7 @@
 
 * Default eclipse version for `EclipseFormatterStep` bumped to `4.6.3` from `4.6.1`. ([#116](https://github.com/diffplug/spotless/issues/116))
 * Default scalafmt version for `ScalaFmtStep` bumped to `1.1.0` from `0.5.7` ([#124](https://github.com/diffplug/spotless/pull/124))
-	+ Also added support for the API change to scalafmt introduced in `0.7.0-RC1`
+  + Also added support for the API change to scalafmt introduced in `0.7.0-RC1`
 * Fixed wildcard targets for `includeFlat` subprojects ([#121](https://github.com/diffplug/spotless/issues/121))
 * When spotless needs to download a formatter, it now uses the buildscript repositories specified in the root buildscript. ([#123](https://github.com/diffplug/spotless/pull/123), [#120](https://github.com/diffplug/spotless/issues/120))
 
@@ -50,9 +50,9 @@
 * `ImportOrderStep` can now handle multi-line comments and misplaced imports.
 * Groovy extension now checks for the `groovy` plugin to be applied.
 * Deprecated the old syntax for the the eclipse formatter:
-	+ New syntax better separates the version from the other configuration options, and is more consistent with the other
-	+ `eclipseFormatFile('format.xml')` -> `eclipse().configFile('format.xml')`
-	+ `eclipseFormatFile('4.4.0', 'format.xml')` -> `eclipse('4.4.0').configFile('format.xml')`
+  + New syntax better separates the version from the other configuration options, and is more consistent with the other
+  + `eclipseFormatFile('format.xml')` -> `eclipse().configFile('format.xml')`
+  + `eclipseFormatFile('4.4.0', 'format.xml')` -> `eclipse('4.4.0').configFile('format.xml')`
 
 ### Version 3.3.2 - May 3rd 2017 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.3.1/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.3.1))
 
@@ -66,10 +66,10 @@
 ### Version 3.2.0 - April 3rd 2017 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.2.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.2.0))
 
 * Update default KtLint from 0.3.1 to 0.6.1 (thanks to @kvnxiao [#93](https://github.com/diffplug/spotless/pull/93)).
-	+ This means we no longer look for rules in the typo package `com.gihub.shyiko`, now only in `com.github.shyiko` (note the `t`).
+  + This means we no longer look for rules in the typo package `com.gihub.shyiko`, now only in `com.github.shyiko` (note the `t`).
 * Added an `enforceCheck` property which allows users to disable adding `spotlessCheck` as a dependency of `check` (thanks to @gdecaso [#95](https://github.com/diffplug/spotless/pull/95)).
 * Any errors in a step will now fail the build - previously they were only warned.
-	+ We claimed that we implemented this in 3.1.0, but it was broken.  We really fixed it this time.
+  + We claimed that we implemented this in 3.1.0, but it was broken.  We really fixed it this time.
 
 ### Version 3.1.0 - February 27th 2017 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.1.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.1.0))
 
@@ -86,17 +86,17 @@
 * BREAKING CHANGE: `customReplace` and `customReplaceRegex` renamed to just `replace` and `replaceRegex`.
 * BREAKING CHANGE: Plugin portal ID is still `com.diffplug.gradle.spotless`, but maven coordinate has changed to `com.diffplug.spotless:spotless-plugin-gradle`.
 * HUGE SPEEDUP: Now supports incremental build / up-to-date-checking.
-	+ If you are using `custom` or `customLazy`, you might want to take a look at [this javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/spotless-gradle-plugin/snapshot/com/diffplug/gradle/spotless/FormatExtension.html#bumpThisNumberIfACustomStepChanges-int-).
+  + If you are using `custom` or `customLazy`, you might want to take a look at [this javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/spotless-gradle-plugin/snapshot/com/diffplug/gradle/spotless/FormatExtension.html#bumpThisNumberIfACustomStepChanges-int-).
 * BREAKING CHANGE: `freshmark` no longer includes all project properties by default.  All properties must now be added manually:
 
 ```gradle
 spotless {
-	freshmark {
-		propertiesFile('gradle.properties')
-		properties {
-			it.put('key', 'value')
-		}
-	}
+  freshmark {
+    propertiesFile('gradle.properties')
+    properties {
+      it.put('key', 'value')
+    }
+  }
 }
 ```
 
@@ -110,13 +110,13 @@ spotless {
 ### Version 2.4.0 - November 1st 2016 ([javadoc](https://diffplug.github.io/spotless/javadoc/2.4.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless/2.4.0/view))
 
 * If a formatter step throws an `Error` or any of its subclasses, such as the `AssertionError`s thrown by JUnit, AssertJ, etc. that error will kill the build ([#46](https://github.com/diffplug/spotless/issues/46))
-	+ This allows custom rules like this:
+  + This allows custom rules like this:
 
 ```gradle
 custom 'no swearing', {
-	if (it.toLowerCase().contains('fubar')) {
-		throw new AssertionError('No swearing!');
-	}
+  if (it.toLowerCase().contains('fubar')) {
+    throw new AssertionError('No swearing!');
+  }
 }
 ```
 
@@ -134,9 +134,9 @@ custom 'no swearing', {
 
 ```
 spotless {
-	java {
-		googleJavaFormat()  // googleJavaFormat('1.1') to specify a specific version
-	}
+  java {
+    googleJavaFormat()  // googleJavaFormat('1.1') to specify a specific version
+  }
 }
 ```
 
@@ -151,7 +151,7 @@ spotless {
 * Eclipse formatter now warns if the formatter xml contains multiple profiles.
 * Updated eclipse formatter to Eclipse Neon (4.6).
 * BREAKING CHANGE: Eclipse formatter now formats javadoc comments.
-	+ You might want to look at the following settings in your `spotless.eclipseformat.xml`:
+  + You might want to look at the following settings in your `spotless.eclipseformat.xml`:
 
 ```
 org.eclipse.jdt.core.formatter.join_lines_in_comments=true/false

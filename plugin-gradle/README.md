@@ -2,15 +2,15 @@
 
 <!---freshmark shields
 output = [
-	link(shield('Gradle plugin', 'plugins.gradle.org', 'com.diffplug.gradle.spotless', 'blue'), 'https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless'),
-	link(shield('Maven central', 'mavencentral', 'com.diffplug.gradle.spotless:spotless', 'blue'), 'http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-gradle%22'),
-	link(shield('Javadoc', 'javadoc', '{{stableGradle}}', 'blue'), 'https://{{org}}.github.io/{{name}}/javadoc/spotless-plugin-gradle/{{stableGradle}}/'),
-	'',
-	link(shield('Changelog', 'changelog', '{{versionGradle}}', 'brightgreen'), 'CHANGES.md'),
-	link(image('Travis CI', 'https://travis-ci.org/{{org}}/{{name}}.svg?branch=master'), 'https://travis-ci.org/{{org}}/{{name}}'),
-	link(shield('Live chat', 'gitter', 'chat', 'brightgreen'), 'https://gitter.im/{{org}}/{{name}}'),
-	link(shield('License Apache', 'license', 'apache', 'brightgreen'), 'https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)')
-	].join('\n');
+  link(shield('Gradle plugin', 'plugins.gradle.org', 'com.diffplug.gradle.spotless', 'blue'), 'https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless'),
+  link(shield('Maven central', 'mavencentral', 'com.diffplug.gradle.spotless:spotless', 'blue'), 'http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-gradle%22'),
+  link(shield('Javadoc', 'javadoc', '{{stableGradle}}', 'blue'), 'https://{{org}}.github.io/{{name}}/javadoc/spotless-plugin-gradle/{{stableGradle}}/'),
+  '',
+  link(shield('Changelog', 'changelog', '{{versionGradle}}', 'brightgreen'), 'CHANGES.md'),
+  link(image('Travis CI', 'https://travis-ci.org/{{org}}/{{name}}.svg?branch=master'), 'https://travis-ci.org/{{org}}/{{name}}'),
+  link(shield('Live chat', 'gitter', 'chat', 'brightgreen'), 'https://gitter.im/{{org}}/{{name}}'),
+  link(shield('License Apache', 'license', 'apache', 'brightgreen'), 'https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)')
+  ].join('\n');
 -->
 [![Gradle plugin](https://img.shields.io/badge/plugins.gradle.org-com.diffplug.gradle.spotless-blue.svg)](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless)
 [![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.gradle.spotless%3Aspotless-blue.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-gradle%22)
@@ -35,13 +35,13 @@ cmd> gradlew build
 ...
 :spotlessJavaCheck FAILED
 > The following files had format violations:
-	src\main\java\com\diffplug\gradle\spotless\FormatExtension.java
-		@@ -109,7 +109,7 @@
-		...
-		-\t\t····if·(targets.length·==·0)·{
-		+\t\tif·(targets.length·==·0)·{
-		...
-	Run 'gradlew spotlessApply' to fix these violations.
+  src\main\java\com\diffplug\gradle\spotless\FormatExtension.java
+    @@ -109,7 +109,7 @@
+    ...
+    -\t\t····if·(targets.length·==·0)·{
+    +\t\tif·(targets.length·==·0)·{
+    ...
+  Run 'gradlew spotlessApply' to fix these violations.
 
 cmd> gradlew spotlessApply
 :spotlessApply
@@ -55,23 +55,23 @@ To use it in your buildscript, just [add the Spotless dependency](https://plugin
 
 ```gradle
 spotless {
-	format 'misc', {
-		target '**/*.gradle', '**/*.md', '**/.gitignore'
+  format 'misc', {
+    target '**/*.gradle', '**/*.md', '**/.gitignore'
 
-		trimTrailingWhitespace()
-		indentWithTabs() // or spaces. Takes an integer argument if you don't like 4
-		endWithNewline()
-	}
-	format 'cpp', {
-		target '**/*.hpp', '**/*.cpp'
+    trimTrailingWhitespace()
+    indentWithTabs() // or spaces. Takes an integer argument if you don't like 4
+    endWithNewline()
+  }
+  format 'cpp', {
+    target '**/*.hpp', '**/*.cpp'
 
-		replace      'Not enough space after if', 'if(', 'if ('
-		replaceRegex 'Too much space after if', 'if +\\(', 'if ('
+    replace      'Not enough space after if', 'if(', 'if ('
+    replaceRegex 'Too much space after if', 'if +\\(', 'if ('
 
-		// Everything before the first #include or #pragma will
-		// be replaced with whatever is in `spotless.license.cpp`
-		licenseHeaderFile 'spotless.license.cpp', '#'
-	}
+    // Everything before the first #include or #pragma will
+    // be replaced with whatever is in `spotless.license.cpp`
+    licenseHeaderFile 'spotless.license.cpp', '#'
+  }
 }
 ```
 
@@ -102,24 +102,24 @@ apply plugin: 'java'
 ...
 
 spotless {
-	java {
-		licenseHeader '/* Licensed under Apache-2.0 */'	// License header
-		licenseHeaderFile 'spotless.license.java'		// License header file
-		// Obviously, you can't specify both licenseHeader and licenseHeaderFile at the same time
+  java {
+    licenseHeader '/* Licensed under Apache-2.0 */'	// License header
+    licenseHeaderFile 'spotless.license.java'		// License header file
+    // Obviously, you can't specify both licenseHeader and licenseHeaderFile at the same time
 
-		importOrder 'java', 'javax', 'org', 'com', 'com.diffplug', ''	// A sequence of package names
-		importOrderFile 'spotless.importorder'				// An import ordering file, exported from Eclipse
-		// As before, you can't specify both importOrder and importOrderFile at the same time
-		// You probably want an empty string at the end - all of the imports you didn't specify
-		// explicitly will go there.
+    importOrder 'java', 'javax', 'org', 'com', 'com.diffplug', ''	// A sequence of package names
+    importOrderFile 'spotless.importorder'				// An import ordering file, exported from Eclipse
+    // As before, you can't specify both importOrder and importOrderFile at the same time
+    // You probably want an empty string at the end - all of the imports you didn't specify
+    // explicitly will go there.
 
-		removeUnusedImports() // removes any unused imports
+    removeUnusedImports() // removes any unused imports
 
-		eclipse().configFile 'spotless.eclipseformat.xml'	// XML file dumped out by the Eclipse formatter
-		// If you have Eclipse preference or property files, you can use them too.
-		// eclipse('4.7.1') to specify a specific version of eclipse,
-		// available versions are: https://bintray.com/diffplug/opensource/spotless-ext-eclipse-jdt
-	}
+    eclipse().configFile 'spotless.eclipseformat.xml'	// XML file dumped out by the Eclipse formatter
+    // If you have Eclipse preference or property files, you can use them too.
+    // eclipse('4.7.1') to specify a specific version of eclipse,
+    // available versions are: https://bintray.com/diffplug/opensource/spotless-ext-eclipse-jdt
+  }
 }
 ```
 
@@ -132,11 +132,11 @@ Be sure to add `target '**/*.java'` otherwise spotless will not detect Java code
 
 ```gradle
 spotless {
-	java {
-		// ...
-		target '**/*.java'
-		// ...
-	}
+  java {
+    // ...
+    target '**/*.java'
+    // ...
+  }
 }
 ```
 
@@ -146,11 +146,11 @@ spotless {
 
 ```gradle
 spotless {
-	java {
-		googleJavaFormat() // googleJavaFormat('1.1') to specify a specific version
-		// you can then layer other format steps, such as
-		licenseHeaderFile 'spotless.license.java'
-	}
+  java {
+    googleJavaFormat() // googleJavaFormat('1.1') to specify a specific version
+    // you can then layer other format steps, such as
+    licenseHeaderFile 'spotless.license.java'
+  }
 }
 ```
 
@@ -169,23 +169,23 @@ apply plugin: 'groovy'
 ...
 
 spotless {
-	java {
-		licenseHeaderFile 'spotless.license.java'
-		googleJavaFormat() // use a specific formatter for Java files
-	}
-	groovy {
-		licenseHeaderFile 'spotless.license.java'
-		excludeJava() // excludes all Java sources within the Groovy source dirs from formatting
-		paddedCell() // Avoid cyclic ambiguities
-		// the Groovy Eclipse formatter extends the Java Eclipse formatter,
-		// so it formats Java files by default (unless `excludeJava` is used).
-		greclipse().configFile('greclipse.properties')
-	}
-	groovyGradle {
-		// same as groovy, but for .gradle (defaults to '*.gradle')
-		target '*.gradle', 'additionalScripts/*.gradle'
-		greclipse().configFile('greclipse.properties')
-	}
+  java {
+    licenseHeaderFile 'spotless.license.java'
+    googleJavaFormat() // use a specific formatter for Java files
+  }
+  groovy {
+    licenseHeaderFile 'spotless.license.java'
+    excludeJava() // excludes all Java sources within the Groovy source dirs from formatting
+    paddedCell() // Avoid cyclic ambiguities
+    // the Groovy Eclipse formatter extends the Java Eclipse formatter,
+    // so it formats Java files by default (unless `excludeJava` is used).
+    greclipse().configFile('greclipse.properties')
+  }
+  groovyGradle {
+    // same as groovy, but for .gradle (defaults to '*.gradle')
+    target '*.gradle', 'additionalScripts/*.gradle'
+    greclipse().configFile('greclipse.properties')
+  }
 }
 ```
 
@@ -193,13 +193,13 @@ The [Groovy-Eclipse](https://github.com/groovy/groovy-eclipse) formatter is base
 
 ```gradle
 spotless {
-	groovy {
-		// Use the default version and Groovy-Eclipse default configuration
-		greclipse()
-		// optional: you can specify a specific version or config file(s)
-		// available versions: https://bintray.com/diffplug/opensource/spotless-ext-greclipse
-		greclipse('2.3.0').configFile('spotless.eclipseformat.xml', 'org.codehaus.groovy.eclipse.ui.prefs')
-	}
+  groovy {
+    // Use the default version and Groovy-Eclipse default configuration
+    greclipse()
+    // optional: you can specify a specific version or config file(s)
+    // available versions: https://bintray.com/diffplug/opensource/spotless-ext-greclipse
+    greclipse('2.3.0').configFile('spotless.eclipseformat.xml', 'org.codehaus.groovy.eclipse.ui.prefs')
+  }
 }
 ```
 
@@ -214,13 +214,13 @@ To apply freshmark to all of the `.md` files in your project, with all of your p
 
 ```gradle
 spotless {
-	freshmark {
-		target 'README.md', 'CONTRIBUTING.md'	// defaults to '**/*.md'
-		propertiesFile('gradle.properties')		// loads all the properties in the given file
-		properties {
-			it.put('key', 'value')				// specify other properties manually
-		}
-	}
+  freshmark {
+    target 'README.md', 'CONTRIBUTING.md'	// defaults to '**/*.md'
+    propertiesFile('gradle.properties')		// loads all the properties in the given file
+    properties {
+      it.put('key', 'value')				// specify other properties manually
+    }
+  }
 }
 ```
 
@@ -230,11 +230,11 @@ spotless {
 
 ```gradle
 spotless {
-	scala {
-		scalafmt()
-		// optional: you can specify a specific version or config file
-		scalafmt('0.5.1').configFile('scalafmt.conf')
-	}
+  scala {
+    scalafmt()
+    // optional: you can specify a specific version or config file
+    scalafmt('0.5.1').configFile('scalafmt.conf')
+  }
 }
 ```
 
@@ -244,23 +244,23 @@ spotless {
 
 ```gradle
 spotless {
-	kotlin {
-		// optionally takes a version
-		ktlint()
+  kotlin {
+    // optionally takes a version
+    ktlint()
 
-		// also supports license headers
-		licenseHeader '/* Licensed under Apache-2.0 */'	// License header
-		licenseHeaderFile 'path-to-license-file'		// License header file
-	}
-	kotlinGradle {
-		// same as kotlin, but for .gradle.kts files (defaults to '*.gradle.kts')
-		target '*.gradle.kts', 'additionalScripts/*.gradle.kts'
+    // also supports license headers
+    licenseHeader '/* Licensed under Apache-2.0 */'	// License header
+    licenseHeaderFile 'path-to-license-file'		// License header file
+  }
+  kotlinGradle {
+    // same as kotlin, but for .gradle.kts files (defaults to '*.gradle.kts')
+    target '*.gradle.kts', 'additionalScripts/*.gradle.kts'
 
-		ktlint()
+    ktlint()
 
-		// doesn't support licenseHeader, because scripts don't have a package statement
-		// to clearly mark where the license should go
-	}
+    // doesn't support licenseHeader, because scripts don't have a package statement
+    // to clearly mark where the license should go
+  }
 }
 ```
 
@@ -270,12 +270,12 @@ spotless {
 
 ```gradle
 spotless {
-	sql {
-		// default value for target files
-		target '**/*.sql'
-		// configFile is optional, arguments available here: https://github.com/diffplug/spotless/blob/master/lib/src/main/java/com/diffplug/spotless/sql/DBeaverSQLFormatterStep.java
-		dbeaver().configFile('dbeaver.props')
-	}
+  sql {
+    // default value for target files
+    target '**/*.sql'
+    // configFile is optional, arguments available here: https://github.com/diffplug/spotless/blob/master/lib/src/main/java/com/diffplug/spotless/sql/DBeaverSQLFormatterStep.java
+    dbeaver().configFile('dbeaver.props')
+  }
 }
 ```
 
@@ -300,14 +300,14 @@ if Spotless is launched in 2017
 
 The `licenseHeader` and `licenseHeaderFile` steps will generate license headers with automatic years from the base license header according to the following rules:
 * A generated license header will be updated with the current year when
-	* the generated license header is missing
-	* the generated license header is not formatted correctly
+  * the generated license header is missing
+  * the generated license header is not formatted correctly
 * A generated license header will _not_ be updated when
-	* a single year is already present, e.g.
-	`/* Licensed under Apache-2.0 1990. */`
-	* a hyphen-separated year range is already present, e.g.
-	`/* Licensed under Apache-2.0 1990-2003. */`
-	* the `$YEAR` token is otherwise missing
+  * a single year is already present, e.g.
+  `/* Licensed under Apache-2.0 1990. */`
+  * a hyphen-separated year range is already present, e.g.
+  `/* Licensed under Apache-2.0 1990-2003. */`
+  * the `$YEAR` token is otherwise missing
 
 
 <a name="custom"></a>
@@ -318,36 +318,36 @@ Spotless is a generic system for specifying a sequence of steps which are applie
 
 ```gradle
 spotless {
-	// this will create two tasks: spotlessMiscCheck and spotlessMiscApply
-	format 'misc', {
-		// target determines which files this format will apply to
-		// - if you pass a string or a list of strings, they will be treated
-		//       as 'include' parameters to a fileTree in the root directory
-		// - if you pass a FileCollection, it will pass through untouched
-		//       e.g. project.files('build.gradle', 'settings.gradle')
-		// - if you pass anything else, it will be sent to project.files(yourArg)
-		target '**/*.gradle', '**/*.md', '**/.gitignore'
+  // this will create two tasks: spotlessMiscCheck and spotlessMiscApply
+  format 'misc', {
+    // target determines which files this format will apply to
+    // - if you pass a string or a list of strings, they will be treated
+    //       as 'include' parameters to a fileTree in the root directory
+    // - if you pass a FileCollection, it will pass through untouched
+    //       e.g. project.files('build.gradle', 'settings.gradle')
+    // - if you pass anything else, it will be sent to project.files(yourArg)
+    target '**/*.gradle', '**/*.md', '**/.gitignore'
 
-		// spotless has built-in rules for the most basic formatting tasks
-		trimTrailingWhitespace()
-		indentWithTabs() // or spaces. Takes an integer argument if you don't like 4
-		endWithNewline()
+    // spotless has built-in rules for the most basic formatting tasks
+    trimTrailingWhitespace()
+    indentWithTabs() // or spaces. Takes an integer argument if you don't like 4
+    endWithNewline()
 
-		// you can also call out to your own function
-		custom 'superFormatter', {
-			// when writing a custom step, it will be helpful to know
-			// how the formatting process works, which is as follows:
+    // you can also call out to your own function
+    custom 'superFormatter', {
+      // when writing a custom step, it will be helpful to know
+      // how the formatting process works, which is as follows:
 
-			// 1) Load each target file, and convert it to unix-style line endings ('\n')
-			// 2) Pass its content through a series of steps, feeding the output of each step to the next
-			// 3) Put the correct line endings back on, then either check or apply
+      // 1) Load each target file, and convert it to unix-style line endings ('\n')
+      // 2) Pass its content through a series of steps, feeding the output of each step to the next
+      // 3) Put the correct line endings back on, then either check or apply
 
-			// each step receives a string as input, and should output
-			// a formatted string as output.  Each step can trust that its
-			// input will have unix newlines, and it must promise to output
-			// only unix newlines.  Other than that, anything is fair game!
-		}
-	}
+      // each step receives a string as input, and should output
+      // a formatted string as output.  Each step can trust that its
+      // input will have unix newlines, and it must promise to output
+      // only unix newlines.  Other than that, anything is fair game!
+    }
+  }
 }
 ```
 
@@ -363,11 +363,11 @@ Spotless uses UTF-8 by default, but you can use [any encoding which Java support
 
 ```gradle
 spotless {
-	java {
-		...
-		encoding 'Cp1252' // java will have Cp1252
-	}
-	encoding 'US-ASCII'   // but all other formats will be interpreted as US-ASCII
+  java {
+    ...
+    encoding 'Cp1252' // java will have Cp1252
+  }
+  encoding 'US-ASCII'   // but all other formats will be interpreted as US-ASCII
 }
 ```
 
@@ -385,7 +385,7 @@ You might want to disable this behavior.  We [recommend against this](https://gi
 
 ```gradle
 spotless {
-	enforceCheck false
+  enforceCheck false
 }
 ```
 
@@ -393,13 +393,13 @@ If a formatter throws an exception, possibly because of malformed code or a bug 
 
 ```gradle
 spotless {
-	java {
-		googleJavaFormat()
-		custom 'my-glitchy-step', { }
+  java {
+    googleJavaFormat()
+    custom 'my-glitchy-step', { }
 
-		ignoreErrorForStep('my-glitchy-step')   // ignore errors on all files thrown by a specific step
-		ignoreErrorForPath('path/to/file.java') // ignore errors by all steps on this specific file
-	}
+    ignoreErrorForStep('my-glitchy-step')   // ignore errors on all files thrown by a specific step
+    ignoreErrorForPath('path/to/file.java') // ignore errors by all steps on this specific file
+  }
 }
 ```
 

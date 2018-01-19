@@ -20,8 +20,8 @@ You might be looking for:
 * Updated jgit from `4.5.0.201609210915-r` to `4.9.0.201710071750-r`.
 * Updated concurrent-trees from `2.6.0` to `2.6.1` (performance improvement).
 * Added `dbeaverSql` formatter step, for formatting sql scripts. ([#166](https://github.com/diffplug/spotless/pull/166))
-	+ Many thanks to [Baptiste Mesta](https://github.com/baptistemesta) for porting to Spotless.
-	+ Many thanks to [DBeaver](https://dbeaver.jkiss.org/) and the [DBeaver contributors](https://github.com/serge-rider/dbeaver/graphs/contributors) for building the implementation.
+  + Many thanks to [Baptiste Mesta](https://github.com/baptistemesta) for porting to Spotless.
+  + Many thanks to [DBeaver](https://dbeaver.jkiss.org/) and the [DBeaver contributors](https://github.com/serge-rider/dbeaver/graphs/contributors) for building the implementation.
 
 ### Version 1.6.0 - September 29th 2017 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.6.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.6.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
@@ -39,12 +39,12 @@ You might be looking for:
 
 * Default eclipse version for `EclipseFormatterStep` bumped to `4.6.3` from `4.6.1`. ([#116](https://github.com/diffplug/spotless/issues/116))
 * Default scalafmt version for `ScalaFmtStep` bumped to `1.1.0` from `0.5.7` ([#124](https://github.com/diffplug/spotless/pull/124))
-	+ Also added support for the API change to scalafmt introduced in `0.7.0-RC1`
+  + Also added support for the API change to scalafmt introduced in `0.7.0-RC1`
 
 ### Version 1.4.0 - May 21st 2017 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.4.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.4.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
 * `ImportOrderStep` can now handle multi-line comments and misplaced imports.
-	+ Especially helpful for Groovy and Gradle files.
+  + Especially helpful for Groovy and Gradle files.
 
 ### Version 1.3.2 - May 3rd 2017 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.3.1/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.3.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
@@ -61,7 +61,7 @@ You might be looking for:
 * Added a `FormatterProperties` class which loads `.properties` files and eclipse-style `.xml` files.
 * `SerializableFileFilter.skipFilesNamed` can now skip multiple file names.
 * Update default KtLint from 0.3.1 to 0.6.1.
-	+ This means we no longer look for rules in the typo package `com.gihub.shyiko`, now only in `com.github.shyiko` (note the `t`).
+  + This means we no longer look for rules in the typo package `com.gihub.shyiko`, now only in `com.github.shyiko` (note the `t`).
 
 ### Version 1.1.0 - February 27th 2017 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.1.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.1.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
