@@ -81,6 +81,9 @@ Spotless can check and apply formatting to any plain-text file, using simple rul
 * Google's [google-java-format](https://github.com/google/google-java-format)
 * [Groovy Eclipse](https://github.com/groovy/groovy-eclipse/wiki)'s groovy code formatter
 * [FreshMark](https://github.com/diffplug/freshmark) (markdown with variables)
+* [ktlint](https://github.com/shyiko/ktlint)
+* [scalafmt](https://github.com/olafurpg/scalafmt)
+* [DBeaver sql format](https://dbeaver.jkiss.org/)
 * Any user-defined function which takes an unformatted string and outputs a formatted version.
 
 Contributions are welcome, see [the contributing guide](../CONTRIBUTING.md) for development info.
