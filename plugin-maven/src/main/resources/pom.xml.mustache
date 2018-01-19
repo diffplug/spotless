@@ -4,7 +4,7 @@
 
   <groupId>com.diffplug.spotless</groupId>
   <artifactId>spotless-maven-plugin</artifactId>
-  <version>VER_PLUGIN</version>
+  <version>{{SpotlessMavenPluginVersion}}</version>
   <packaging>maven-plugin</packaging>
 
   <name>Spotless Maven Plugin</name>
@@ -15,9 +15,9 @@
     <maven.compiler.source>1.8</maven.compiler.source>
 
     <!-- Following versions are expected to be injected by the Gradle build script -->
-    <maven.api.version>VER_MAVEN_API</maven.api.version>
-    <eclipse.aether.version>VER_ECLIPSE_AETHER</eclipse.aether.version>
-    <spotless.lib.version>VER_SPOTLESS_LIB</spotless.lib.version>
+    <maven.api.version>{{MavenApiVersion}}</maven.api.version>
+    <eclipse.aether.version>{{EclipseAetherVersion}}</eclipse.aether.version>
+    <spotless.lib.version>{{SpotlessLibVersion}}</spotless.lib.version>
   </properties>
 
   <dependencies>

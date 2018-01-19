@@ -1,7 +1,28 @@
+import com.github.mustachejava.DefaultMustacheFactory
+
+import java.nio.file.Files
+import java.nio.file.Paths
+
+import static java.nio.charset.StandardCharsets.UTF_8
+import static java.nio.file.StandardOpenOption.CREATE_NEW
+import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING
+
 ext.artifactId = project.artifactIdMaven
 ext.version = project.versionMaven
 apply from: rootProject.file("gradle/java-setup.gradle")
 apply from: rootProject.file("gradle/java-publish.gradle")
+
+final MAVEN_PROJECT_DIR = "mavenProject"
+final PROJECT_DIR = project.projectDir.toString()
+
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath "com.github.spullara.mustache.java:compiler:0.9.5"
+	}
+}
 
 dependencies {
 	compile project(":lib")
@@ -17,39 +38,45 @@ dependencies {
 	testCompile "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
 }
 
-task cleanMavenProjectDir(type: Delete) { delete "build/tmpMavenProject" }
+task cleanMavenProjectDir(type: Delete) { delete "build/${MAVEN_PROJECT_DIR}" }
 
 task copySourceFiles(type: Copy) {
 	from "src/main/java"
-	into "build/tmpMavenProject/src/main/java"
+	into "build/${MAVEN_PROJECT_DIR}/src/main/java"
 }
 
-task copyPomXml(type: Copy) {
-	from "src/main/resources/pom.xml"
-	into "build/tmpMavenProject"
+task createPomXml {
+	doLast {
+		def versions = [
+				SpotlessMavenPluginVersion: project.versionMaven,
+				MavenApiVersion           : VER_MAVEN_API,
+				EclipseAetherVersion      : VER_ECLIPSE_AETHER,
+				SpotlessLibVersion        : project.stableLib
+		]
 
-	// inject versions while copying
-	filter { String line ->
-		line.replace("VER_PLUGIN", "${project.versionMaven}")
-				.replace("VER_MAVEN_API", "${VER_MAVEN_API}")
-				.replace("VER_ECLIPSE_AETHER", "${VER_ECLIPSE_AETHER}")
-				.replace("VER_SPOTLESS_LIB", "${project.stableLib}")
+		def pomXmlTemplate = Paths.get(PROJECT_DIR, "src", "main", "resources", "pom.xml.mustache")
+		def newPomXml = Paths.get(PROJECT_DIR, "build", MAVEN_PROJECT_DIR, "pom.xml")
+
+		Files.newBufferedReader(pomXmlTemplate).withCloseable { reader ->
+			Files.newBufferedWriter(newPomXml, UTF_8, CREATE_NEW, TRUNCATE_EXISTING).withCloseable { writer ->
+				def mustache = new DefaultMustacheFactory().compile(reader, "pom")
+				mustache.execute(writer, versions)
+			}
+		}
 	}
-
-	filteringCharset = "UTF-8"
 }
 
 task runMavenBuild(type: Exec, dependsOn: [
-	cleanMavenProjectDir,
-	copySourceFiles,
-	copyPomXml
+		cleanMavenProjectDir,
+		copySourceFiles,
+		createPomXml
 ]) {
-	workingDir "build/tmpMavenProject"
+	workingDir "build/${MAVEN_PROJECT_DIR}"
 	commandLine "mvn", "clean", "install"
 }
 
 task buildMavenPlugin(type: Copy, dependsOn: runMavenBuild) {
-	from "build/tmpMavenProject/target"
+	from "build/${MAVEN_PROJECT_DIR}/target"
 	into "build/libs"
 }
 
