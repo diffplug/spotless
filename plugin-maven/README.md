@@ -2,7 +2,7 @@
 
 <!---freshmark shields
 output = [
-  link(shield('Maven central', 'mavencentral', 'com.diffplug.spotless:spotless-plugin-maven', 'blue'), 'http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-maven%22'),
+  link(shield('Maven central', 'mavencentral', '{{group}}:{{artifactIdMaven}}', 'blue'), 'http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22{{group}}%22%20AND%20a%3A%22{{artifactIdMaven}}%22'),
   link(shield('Javadoc', 'javadoc', '{{stableMaven}}', 'blue'), 'https://{{org}}.github.io/{{name}}/javadoc/spotless-plugin-maven/{{stableMaven}}/'),
   '',
   link(shield('Changelog', 'changelog', '{{stableMaven}}', 'brightgreen'), 'CHANGES.md'),
@@ -11,7 +11,7 @@ output = [
   link(shield('License Apache', 'license', 'apache', 'brightgreen'), 'https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)')
   ].join('\n');
 -->
-[![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--plugin--maven-blue.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-maven%22)
+[![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
 [![Javadoc](https://img.shields.io/badge/javadoc-unreleased-blue.svg)](https://diffplug.github.io/spotless/javadoc/spotless-plugin-maven/unreleased/)
 
 [![Changelog](https://img.shields.io/badge/changelog-unreleased-brightgreen.svg)](CHANGES.md)
@@ -29,7 +29,7 @@ Spotless is a general-purpose formatting plugin.  It is completely à la carte, 
 To people who use your build, it looks like this:
 
 ```
-cmd> mvn com.diffplug.spotless:spotless-plugin-maven:spotless-check
+cmd> mvn spotless:spotless-check
 ...
 :spotlessJavaCheck FAILED
 > The following files had format violations:
@@ -39,22 +39,22 @@ cmd> mvn com.diffplug.spotless:spotless-plugin-maven:spotless-check
     -\t\t····if·(targets.length·==·0)·{
     +\t\tif·(targets.length·==·0)·{
     ...
-  Run 'mvn com.diffplug.spotless:spotless-plugin-maven:spotless-apply' to fix these violations.
+  Run 'mvn spotless:spotless-apply' to fix these violations.
 
-cmd> mvn com.diffplug.spotless:spotless-plugin-maven:spotless-apply
+cmd> mvn spotless:spotless-apply
 :spotlessApply
 BUILD SUCCESSFUL
 
-cmd> mvn com.diffplug.spotless:spotless-plugin-maven:spotless-check
+cmd> mvn spotless:spotless-check
 BUILD SUCCESSFUL
 ```
 
-To use it in your pom, just [add the Spotless dependency](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-maven%22), and configure it like so:
+To use it in your pom, just [add the Spotless dependency](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22), and configure it like so:
 
 ```xml
 <plugin>
   <groupId>com.diffplug.spotless</groupId>
-  <artifactId>spotless-plugin-maven</artifactId>
+  <artifactId>spotless-maven-plugin</artifactId>
   <version>${spotless.version}</version>
   <configuration>
     <java>
@@ -148,7 +148,7 @@ You might want to disable this behavior.  We [recommend against this](https://gi
 ## How do I preview what `spotless-apply` will do?
 
 - Save your working tree with `git add -A`, then `git commit -m "Checkpoint before spotless."`
-- Run `mvn com.diffplug.spotless:spotless-plugin-maven:spotless-apply`
+- Run `mvn spotless:spotless-apply`
 - View the changes with `git diff`
 - If you don't like what spotless did, `git reset --hard`
 - If you'd like to remove the "checkpoint" commit, `git reset --soft head~1` will make the checkpoint commit "disappear" from history, but keeps the changes in your working directory.
