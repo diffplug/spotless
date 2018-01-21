@@ -18,7 +18,6 @@ package com.diffplug.gradle.spotless;
 import static java.util.stream.Collectors.toList;
 
 import java.io.File;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -33,6 +32,7 @@ import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.repository.RemoteRepository;
 
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.Provisioner;
 
 public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
@@ -63,12 +63,8 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Parameter(defaultValue = DEFAULT_LINE_ENDINGS)
 	private LineEnding lineEndings;
 
-	@Parameter(required = true)
+	@Parameter
 	private Java java;
-
-	protected ArtifactResolver createArtifactResolver() {
-		return new ArtifactResolver(repositorySystem, repositorySystemSession, repositories);
-	}
 
 	protected List<Path> getAllSourceRoots() {
 		return Stream.concat(compileSourceRoots.stream(), testCompileSourceRoots.stream())
@@ -77,19 +73,13 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 				.collect(toList());
 	}
 
-	protected Charset getEncoding() {
-		return Charset.forName(encoding);
+	protected MojoConfig getMojoConfig() {
+		ArtifactResolver resolver = new ArtifactResolver(repositorySystem, repositorySystemSession, repositories);
+		Provisioner provisioner = MavenProvisioner.create(resolver);
+		return new MojoConfig(baseDir, encoding, lineEndings, provisioner);
 	}
 
-	protected LineEnding.Policy getLineEndingsPolicy(List<File> filesToFormat) {
-		return lineEndings.createPolicy(getBaseDir(), () -> filesToFormat);
-	}
-
-	protected File getBaseDir() {
-		return baseDir;
-	}
-
-	protected Java getJavaConfig() {
+	protected Java getJava() {
 		return java;
 	}
 }

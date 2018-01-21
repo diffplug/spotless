@@ -15,70 +15,55 @@
  */
 package com.diffplug.gradle.spotless;
 
-import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 
-import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.extra.java.EclipseFormatterStep;
 
 @Mojo(name = "apply")
 public class SpotlessMojo extends AbstractSpotlessMojo {
 
+	private static final String FILE_EXTENSION_SEPARATOR = ".";
+
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		List<File> filesToFormat = collectFilesToFormat();
+		List<FormatterFactory> formatterFactories = singletonList(getJava());
 
-		Formatter formatter = createFormatter(filesToFormat);
+		for (FormatterFactory formatterFactory : formatterFactories) {
+			execute(formatterFactory);
+		}
+	}
+
+	private void execute(FormatterFactory formatterFactory) throws MojoExecutionException {
+		MojoConfig mojoConfig = getMojoConfig();
+		List<File> filesToFormat = collectFilesToFormat(formatterFactory.fileExtension());
+
+		Formatter formatter = formatterFactory.newFormatter(filesToFormat, mojoConfig);
 
 		formatAll(filesToFormat, formatter);
 	}
 
-	private List<File> collectFilesToFormat() throws MojoExecutionException {
-		List<File> filesToFormat = new ArrayList<>();
-		for (Path root : getAllSourceRoots()) {
-			try (Stream<Path> entries = Files.walk(root)) {
-				entries.filter(Files::isRegularFile)
-						.filter(file -> file.getFileName().toString().endsWith(".java"))
-						.map(Path::toFile)
-						.forEach(filesToFormat::add);
-			} catch (IOException e) {
-				throw new MojoExecutionException("Unable to walk the file tree", e);
-			}
+	private List<File> collectFilesToFormat(String extension) throws MojoExecutionException {
+		try {
+			return getAllSourceRoots().stream()
+					.flatMap(root -> collectFilesToFormat(root, extension).stream())
+					.map(Path::toFile)
+					.collect(toList());
+		} catch (Exception e) {
+			throw new MojoExecutionException("Unable to collect files to format", e);
 		}
-		return filesToFormat;
-	}
-
-	private Formatter createFormatter(List<File> filesToFormat) {
-		return Formatter.builder()
-				.encoding(getEncoding())
-				.lineEndingsPolicy(getLineEndingsPolicy(filesToFormat))
-				.exceptionPolicy(new FormatExceptionPolicyStrict())
-				.steps(singletonList(createEclipseFormatterStep()))
-				.rootDir(getBaseDir().toPath())
-				.build();
-	}
-
-	private FormatterStep createEclipseFormatterStep() {
-		ArtifactResolver artifactResolver = createArtifactResolver();
-		Provisioner provisioner = MavenProvisioner.create(artifactResolver);
-		Set<File> settingFiles = singleton(getJavaConfig().getEclipseConfigFile());
-		return EclipseFormatterStep.create(EclipseFormatterStep.defaultVersion(), settingFiles, provisioner);
 	}
 
 	private static void formatAll(List<File> files, Formatter formatter) throws MojoExecutionException {
@@ -88,6 +73,26 @@ public class SpotlessMojo extends AbstractSpotlessMojo {
 			} catch (IOException e) {
 				throw new MojoExecutionException("Unable to format file " + file, e);
 			}
+		}
+	}
+
+	private static List<Path> collectFilesToFormat(Path root, String extension) {
+		try (Stream<Path> entries = Files.walk(root)) {
+			return entries.filter(Files::isRegularFile)
+					.filter(file -> hasExtension(file, extension))
+					.collect(toList());
+		} catch (IOException e) {
+			throw new UncheckedIOException("Unable to walk the file tree rooted at " + root, e);
+		}
+	}
+
+	private static boolean hasExtension(Path file, String extension) {
+		Path fileName = file.getFileName();
+		if (fileName == null) {
+			return false;
+		} else {
+			String fileNameString = fileName.toString();
+			return fileNameString.endsWith(FILE_EXTENSION_SEPARATOR + extension);
 		}
 	}
 }
