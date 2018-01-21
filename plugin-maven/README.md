@@ -29,7 +29,7 @@ Spotless is a general-purpose formatting plugin.  It is completely à la carte, 
 To people who use your build, it looks like this:
 
 ```
-cmd> mvn spotless:spotless-check
+cmd> mvn spotless:check
 ...
 :spotlessJavaCheck FAILED
 > The following files had format violations:
@@ -39,13 +39,13 @@ cmd> mvn spotless:spotless-check
     -\t\t····if·(targets.length·==·0)·{
     +\t\tif·(targets.length·==·0)·{
     ...
-  Run 'mvn spotless:spotless-apply' to fix these violations.
+  Run 'mvn spotless:apply' to fix these violations.
 
-cmd> mvn spotless:spotless-apply
+cmd> mvn spotless:apply
 :spotlessApply
 BUILD SUCCESSFUL
 
-cmd> mvn spotless:spotless-check
+cmd> mvn spotless:check
 BUILD SUCCESSFUL
 ```
 
@@ -150,10 +150,10 @@ You might want to disable this behavior.  We [recommend against this](https://gi
 
 <a name="preview"></a>
 
-## How do I preview what `spotless-apply` will do?
+## How do I preview what `mvn spotless:apply` will do?
 
 - Save your working tree with `git add -A`, then `git commit -m "Checkpoint before spotless."`
-- Run `mvn spotless:spotless-apply`
+- Run `mvn spotless:apply`
 - View the changes with `git diff`
 - If you don't like what spotless did, `git reset --hard`
 - If you'd like to remove the "checkpoint" commit, `git reset --soft head~1` will make the checkpoint commit "disappear" from history, but keeps the changes in your working directory.
