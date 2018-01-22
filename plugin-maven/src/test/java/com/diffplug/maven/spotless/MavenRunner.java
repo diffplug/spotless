@@ -15,6 +15,8 @@
  */
 package com.diffplug.maven.spotless;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -25,8 +27,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
-import org.assertj.core.api.Assertions;
 
 import com.diffplug.common.base.Throwables;
 import com.diffplug.common.io.ByteStreams;
@@ -75,14 +75,14 @@ public class MavenRunner {
 	/** Runs the command and asserts that nothing was printed to stderr. */
 	public Result runNoError() throws IOException, InterruptedException {
 		Result result = run();
-		Assertions.assertThat(result.error()).as("Run without error %s", result).isEmpty();
+		assertThat(result.exitValue()).as("Run without error %s", result).isEqualTo(0);
 		return result;
 	}
 
 	/** Runs the command and asserts that something was printed to stderr. */
 	public Result runHasError() throws IOException, InterruptedException {
 		Result result = run();
-		Assertions.assertThat(result.error()).as("Run with error %s", result).isNotEmpty();
+		assertThat(result.exitValue()).as("Run with error %s", result).isEqualTo(1);
 		return result;
 	}
 
