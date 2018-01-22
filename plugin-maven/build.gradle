@@ -93,6 +93,7 @@ task createLocalMavenRepositoryForTests(type: Exec, dependsOn: buildMavenPlugin)
 }
 
 test {
+	testLogging { exceptionFormat = 'full' }
 	// pass location of the local maven repository and plugin version to junit tests
 	systemProperty "localMavenRepositoryDir", "${LOCAL_MAVEN_REPO_DIR}"
 	systemProperty "spotlessMavenPluginVersion", project.versionMaven

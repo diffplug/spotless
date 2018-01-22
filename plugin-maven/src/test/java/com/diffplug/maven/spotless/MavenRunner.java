@@ -75,14 +75,14 @@ public class MavenRunner {
 	/** Runs the command and asserts that nothing was printed to stderr. */
 	public Result runNoError() throws IOException, InterruptedException {
 		Result result = run();
-		Assertions.assertThat(result.error()).isEmpty();
+		Assertions.assertThat(result.error()).as("Run without error %s", result).isEmpty();
 		return result;
 	}
 
 	/** Runs the command and asserts that something was printed to stderr. */
 	public Result runHasError() throws IOException, InterruptedException {
 		Result result = run();
-		Assertions.assertThat(result.error()).isNotEmpty();
+		Assertions.assertThat(result.error()).as("Run with error %s", result).isNotEmpty();
 		return result;
 	}
 
@@ -108,6 +108,15 @@ public class MavenRunner {
 
 		public String error() {
 			return error;
+		}
+
+		@Override
+		public String toString() {
+			return "Result{" +
+					"exitValue=" + exitValue +
+					", output='" + output + '\'' +
+					", error='" + error + '\'' +
+					'}';
 		}
 	}
 
