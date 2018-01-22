@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
 
 import com.diffplug.common.base.Throwables;
+import com.diffplug.common.io.ByteStreams;
 
 /**
  * Harness for running a maven build, same idea as the
@@ -137,11 +138,7 @@ public class MavenRunner {
 		public void run() {
 			try {
 				ByteArrayOutputStream output = new ByteArrayOutputStream();
-				byte[] buffer = new byte[1024];
-				int numRead;
-				while ((numRead = input.read(buffer)) != -1) {
-					output.write(buffer, 0, numRead);
-				}
+				ByteStreams.copy(input, output);
 				result = output.toString(Charset.defaultCharset().name());
 			} catch (Exception e) {
 				result = Throwables.getStackTraceAsString(e);
