@@ -15,37 +15,27 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.io.IOException;
-
 import org.assertj.core.api.Assertions;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- * This test is ignored because it doesn't work.
- * To make it work, we'll need something like the following:
- *
- * build.gradle
- *     task publishTestToLocalRepo()
- *     test.dependsOn(publishTestToLocalRepo)
- *
- * Then in MavenIntegratonTest.POM_HEADER, set <pluginRepositories> appropriately
- *
  * Would also be good if we had mvnw setup, so that
  * the test harness used mvnw to control the verison
  * of maven that was used.
  */
-@Ignore
 public class EclipseFormatStepTest extends MavenIntegrationTest {
+
 	@Test
-	public void testEclipse() throws IOException, InterruptedException {
+	public void testEclipse() throws Exception {
 		// write the pom
-		writePomJavaSteps(
+		writePomWithJavaSteps(
 				"<eclipse>",
-				"  <file>${basedir}/eclipse-fmt.xml</file>",
+				"  <file>${basedir}/formatter.xml</file>",
 				"  <version>4.7.1</version>",
 				"</eclipse>");
+
 		write("src/main/java/test.java", getTestResource("java/eclipse/format/JavaCodeUnformatted.test"));
+		write("formatter.xml", getTestResource("java/eclipse/format/formatter.xml"));
 		mavenRunner().withArguments("spotless:apply").runNoError();
 
 		String actual = read("src/main/java/test.java");

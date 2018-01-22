@@ -15,15 +15,36 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static com.diffplug.common.base.Strings.isNullOrEmpty;
+import static java.util.stream.Collectors.joining;
+import static org.junit.Assert.fail;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Before;
+
+import com.github.mustachejava.DefaultMustacheFactory;
+import com.github.mustachejava.Mustache;
+import com.github.mustachejava.MustacheFactory;
 
 import com.diffplug.spotless.ResourceHarness;
 
 public class MavenIntegrationTest extends ResourceHarness {
+
+	private static final String LOCAL_MAVEN_REPOSITORY_DIR = "localMavenRepositoryDir";
+	private static final String SPOTLESS_MAVEN_PLUGIN_VERSION = "spotlessMavenPluginVersion";
+	private static final String JAVA_CONFIGURATION = "javaConfiguration";
+
+	private final MustacheFactory mustacheFactory = new DefaultMustacheFactory();
+
 	/**
 	 * Each test gets its own temp folder, and we create a maven
 	 * build there and run it.
@@ -43,60 +64,44 @@ public class MavenIntegrationTest extends ResourceHarness {
 		write(".gitattributes", "* text eol=lf");
 	}
 
-	private static final String POM_HEADER = "" +
-			"<project>\n" +
-			"  <modelVersion>4.0.0</modelVersion>\n" +
-			"  <repositories>\n" +
-			"    <repository>\n" +
-			"      <id>central</id>\n" +
-			"      <name>Central Repository</name>\n" +
-			"      <url>http://repo.maven.apache.org/maven2</url>\n" +
-			"      <layout>default</layout>\n" +
-			"      <snapshots>\n" +
-			"        <enabled>false</enabled>\n" +
-			"      </snapshots>\n" +
-			"    </repository>\n" +
-			"  </repositories>\n" +
-			"  <pluginRepositories>\n" + // TODO: setup test so that the plugin gets compiled first, and put into this repository
-			"    <pluginRepository>\n" +
-			"      <id>central</id>\n" +
-			"      <name>Central Repository</name>\n" +
-			"      <url>http://repo.maven.apache.org/maven2</url>\n" +
-			"      <layout>default</layout>\n" +
-			"      <snapshots>\n" +
-			"        <enabled>false</enabled>\n" +
-			"      </snapshots>\n" +
-			"      <releases>\n" +
-			"        <updatePolicy>never</updatePolicy>\n" +
-			"      </releases>\n" +
-			"    </pluginRepository>\n" +
-			"  </pluginRepositories>\n" +
-			"  <build>\n" +
-			"    <plugins>\n" +
-			"      <plugin>\n" +
-			"        <groupId>com.diffplug.spotless</groupId>\n" +
-			"        <artifactId>spotless-maven-plugin</artifactId>\n" +
-			"        <version>+</version>\n" +
-			"        <configuration>\n";
-
-	private static final String POM_FOOTER = "" +
-			"        </configuration>\n" +
-			"      </plugin>\n" +
-			"    </plugins>\n" +
-			"  </build>\n" +
-			"</project>\n";
-
-	protected void writePomJavaSteps(String... steps) throws IOException {
-		write("pom.xml",
-				POM_HEADER,
-				"<java><steps>",
-				Arrays.stream(steps).collect(Collectors.joining("\n")),
-				"</steps></java>",
-				POM_FOOTER);
+	protected void writePomWithJavaSteps(String... steps) throws IOException {
+		String pomXmlContent = createPomXmlContent(steps);
+		write("pom.xml", pomXmlContent);
 	}
 
 	protected MavenRunner mavenRunner() throws IOException {
 		return MavenRunner.create()
 				.withProjectDir(rootFolder());
+	}
+
+	private String createPomXmlContent(String... steps) throws IOException {
+		Path pomXml = Paths.get("src", "test", "resources", "pom.xml.mustache");
+
+		try (BufferedReader reader = Files.newBufferedReader(pomXml)) {
+			Mustache mustache = mustacheFactory.compile(reader, "pom");
+			StringWriter writer = new StringWriter();
+			Map<String, String> params = buildPomXmlParams(steps);
+			mustache.execute(writer, params);
+			return writer.toString();
+		}
+	}
+
+	private static Map<String, String> buildPomXmlParams(String... steps) {
+		Map<String, String> params = new HashMap<>();
+		params.put(LOCAL_MAVEN_REPOSITORY_DIR, getSystemProperty(LOCAL_MAVEN_REPOSITORY_DIR));
+		params.put(SPOTLESS_MAVEN_PLUGIN_VERSION, getSystemProperty(SPOTLESS_MAVEN_PLUGIN_VERSION));
+
+		String stepsXml = Arrays.stream(steps).collect(joining("\n", "<steps>\n", "\n</steps>"));
+		params.put(JAVA_CONFIGURATION, stepsXml);
+
+		return params;
+	}
+
+	private static String getSystemProperty(String name) {
+		String value = System.getProperty(name);
+		if (isNullOrEmpty(value)) {
+			fail("System property '" + name + "' is not defined");
+		}
+		return value;
 	}
 }

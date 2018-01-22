@@ -1,0 +1,53 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.diffplug.spotless</groupId>
+    <artifactId>spotless-maven-plugin-tests</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+
+    <name>Spotless Maven Plugin Tests</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>local-repo</id>
+            <url>file://{{localMavenRepositoryDir}}</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>{{spotlessMavenPluginVersion}}</version>
+                <configuration>
+                    {{#pluginConfiguration}}
+                        {{{pluginConfiguration}}}
+                    {{/pluginConfiguration}}
+
+                    {{#javaConfiguration}}
+                        <java>
+                            {{{javaConfiguration}}}
+                        </java>
+                    {{/javaConfiguration}}
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
