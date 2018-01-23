@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -31,6 +32,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 
 import com.diffplug.spotless.Formatter;
+import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
 @Mojo(name = "apply")
 public class SpotlessMojo extends AbstractSpotlessMojo {
@@ -52,17 +54,11 @@ public class SpotlessMojo extends AbstractSpotlessMojo {
 
 		Formatter formatter = formatterFactory.newFormatter(filesToFormat, mojoConfig);
 
-		formatAll(filesToFormat, formatter);
-	}
-
-	private List<File> collectFilesToFormat(String extension) throws MojoExecutionException {
-		try {
-			return getAllSourceRoots().stream()
-					.flatMap(root -> collectFilesToFormat(root, extension).stream())
-					.map(Path::toFile)
-					.collect(toList());
-		} catch (Exception e) {
-			throw new MojoExecutionException("Unable to collect files to format", e);
+		boolean check = false;
+		if (!check) {
+			formatAll(filesToFormat, formatter);
+		} else {
+			checkAll(filesToFormat, formatter);
 		}
 	}
 
@@ -73,6 +69,39 @@ public class SpotlessMojo extends AbstractSpotlessMojo {
 			} catch (IOException e) {
 				throw new MojoExecutionException("Unable to format file " + file, e);
 			}
+		}
+	}
+
+	private static void checkAll(List<File> files, Formatter formatter) throws MojoExecutionException {
+		List<File> problemFiles = new ArrayList<>();
+		for (File file : files) {
+			try {
+				if (!formatter.isClean(file)) {
+					problemFiles.add(file);
+				}
+			} catch (IOException e) {
+				throw new MojoExecutionException("Unable to format file " + file, e);
+			}
+		}
+		if (!problemFiles.isEmpty()) {
+			throw new MojoExecutionException(DiffMessageFormatter.builder()
+					.runToFix("Run 'gradlew spotless:apply' to fix these violations.")
+					.rootDir(null)
+					.isPaddedCell(false)
+					.formatter(formatter)
+					.problemFiles(problemFiles)
+					.getMessage());
+		}
+	}
+
+	private List<File> collectFilesToFormat(String extension) throws MojoExecutionException {
+		try {
+			return getAllSourceRoots().stream()
+					.flatMap(root -> collectFilesToFormat(root, extension).stream())
+					.map(Path::toFile)
+					.collect(toList());
+		} catch (Exception e) {
+			throw new MojoExecutionException("Unable to collect files to format", e);
 		}
 	}
 
