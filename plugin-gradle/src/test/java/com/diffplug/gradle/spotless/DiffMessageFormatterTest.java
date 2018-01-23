@@ -33,6 +33,7 @@ import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ResourceHarness;
+import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
 public class DiffMessageFormatterTest extends ResourceHarness {
 	private SpotlessTask create(File... files) throws IOException {
