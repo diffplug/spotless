@@ -20,6 +20,23 @@
     <spotless.lib.version>{{SpotlessLibVersion}}</spotless.lib.version>
   </properties>
 
+  <repositories>
+    <repository>
+      <id>local-repo</id>
+      <url>file://{{localMavenRepositoryDir}}</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+        <checksumPolicy>ignore</checksumPolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+        <checksumPolicy>ignore</checksumPolicy>
+      </snapshots>
+    </repository>
+  </repositories>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.maven</groupId>
@@ -56,6 +73,9 @@
       <artifactId>spotless-lib-extra</artifactId>
       <version>${spotless.lib.version}</version>
     </dependency>
+
+    {{{additionalDependencies}}}
+
   </dependencies>
 
   <build>
