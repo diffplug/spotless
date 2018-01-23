@@ -94,10 +94,10 @@ task createPomXml(dependsOn: installAllCompileDependenciesInLocalMavenRepo) {
 		}.join("\n")
 
 		def versions = [
-			SpotlessMavenPluginVersion: project.versionMaven,
-			MavenApiVersion           : VER_MAVEN_API,
-			EclipseAetherVersion      : VER_ECLIPSE_AETHER,
-			SpotlessLibVersion        : SPOTLESS_LIB_VERSION,
+			spotlessMavenPluginVersion: project.versionMaven,
+			mavenApiVersion           : VER_MAVEN_API,
+			eclipseAetherVersion      : VER_ECLIPSE_AETHER,
+			spotlessLibVersion        : SPOTLESS_LIB_VERSION,
 			additionalDependencies    : additionalDependencies,
 			localMavenRepositoryDir   : LOCAL_MAVEN_REPO_DIR
 		]
