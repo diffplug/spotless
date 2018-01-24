@@ -20,6 +20,7 @@ import static java.util.stream.Collectors.toList;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
@@ -53,6 +54,7 @@ public class Java implements FormatterFactory {
 		LineEnding.Policy formatterLineEndingPolicy = formatterLineEndings.createPolicy(mojoConfig.getBaseDir(), () -> filesToFormat);
 
 		List<FormatterStep> formatterSteps = steps.stream()
+				.filter(Objects::nonNull) // all unrecognized steps from XML config appear as nulls in the list
 				.map(factory -> factory.newFormatterStep(mojoConfig))
 				.collect(toList());
 

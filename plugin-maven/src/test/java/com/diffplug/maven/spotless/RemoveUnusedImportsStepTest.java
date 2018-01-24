@@ -19,22 +19,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 
-public class EclipseFormatStepTest extends MavenIntegrationTest {
+public class RemoveUnusedImportsStepTest extends MavenIntegrationTest {
 
 	@Test
-	public void testEclipse() throws Exception {
-		writePomWithJavaSteps(
-				"<eclipse>",
-				"  <file>${basedir}/formatter.xml</file>",
-				"  <version>4.7.1</version>",
-				"</eclipse>");
-
-		write("src/main/java/test.java", getTestResource("java/eclipse/format/JavaCodeUnformatted.test"));
-		write("formatter.xml", getTestResource("java/eclipse/format/formatter.xml"));
+	public void testRemoveUnusedInports() throws Exception {
+		writePomWithJavaSteps("<removeUnusedImports/>");
+		write("src/main/java/test.java", getTestResource("java/removeunusedimports/JavaCodeWithPackageUnformatted.test"));
 
 		mavenRunner().withArguments("spotless:apply").runNoError();
 
 		String actual = read("src/main/java/test.java");
-		assertThat(actual).isEqualTo(getTestResource("java/eclipse/format/JavaCodeFormatted.test"));
+		assertThat(actual).isEqualTo(getTestResource("java/removeunusedimports/JavaCodeWithPackageFormatted.test"));
 	}
 }

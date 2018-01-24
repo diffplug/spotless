@@ -15,18 +15,19 @@
  */
 package com.diffplug.maven.spotless;
 
-import com.diffplug.spotless.Provisioner;
-import org.junit.Test;
-
-import java.io.File;
-import java.util.Set;
-
 import static com.diffplug.common.collect.Sets.newHashSet;
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import java.io.File;
+import java.util.Set;
+
+import org.junit.Test;
+
+import com.diffplug.spotless.Provisioner;
 
 public class MavenProvisionerTest {
 

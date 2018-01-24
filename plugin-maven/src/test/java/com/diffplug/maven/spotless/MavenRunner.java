@@ -72,17 +72,17 @@ public class MavenRunner {
 		return new Result(exitValue, output.result(), error.result());
 	}
 
-	/** Runs the command and asserts that nothing was printed to stderr. */
+	/** Runs the command and asserts that exit code is 0. */
 	public Result runNoError() throws IOException, InterruptedException {
 		Result result = run();
 		assertThat(result.exitValue()).as("Run without error %s", result).isEqualTo(0);
 		return result;
 	}
 
-	/** Runs the command and asserts that something was printed to stderr. */
+	/** Runs the command and asserts that exit code is not 0. */
 	public Result runHasError() throws IOException, InterruptedException {
 		Result result = run();
-		assertThat(result.exitValue()).as("Run with error %s", result).isEqualTo(1);
+		assertThat(result.exitValue()).as("Run with error %s", result).isNotEqualTo(0);
 		return result;
 	}
 
