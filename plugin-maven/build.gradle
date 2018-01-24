@@ -134,7 +134,7 @@ task createLocalMavenRepositoryForTests(type: Exec, dependsOn: buildMavenPlugin)
 	commandLine "mvn", "org.apache.maven.plugins:maven-install-plugin:2.3.1:install-file",
 			"-Dfile=spotless-maven-plugin-${project.versionMaven}.jar",
 			"-DgroupId=com.diffplug.spotless",
-			"-DartifactId=spotless",
+			"-DartifactId=spotless-maven-plugin",
 			"-Dversion=${project.versionMaven}",
 			"-Dpackaging=maven-plugin",
 			"-DlocalRepositoryPath=${LOCAL_MAVEN_REPO_DIR}"
