@@ -86,7 +86,7 @@ public class SpotlessMojo extends AbstractSpotlessMojo {
 		if (!problemFiles.isEmpty()) {
 			throw new MojoExecutionException(DiffMessageFormatter.builder()
 					.runToFix("Run 'gradlew spotless:apply' to fix these violations.")
-					.rootDir(null)
+					.rootDir(formatter.getRootDir().toFile())
 					.isPaddedCell(false)
 					.formatter(formatter)
 					.problemFiles(problemFiles)
