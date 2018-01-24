@@ -74,7 +74,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	protected MojoConfig getMojoConfig() {
-		ArtifactResolver resolver = new ArtifactResolver(repositorySystem, repositorySystemSession, repositories);
+		ArtifactResolver resolver = new ArtifactResolver(repositorySystem, repositorySystemSession, repositories, getLog());
 		Provisioner provisioner = MavenProvisioner.create(resolver);
 		return new MojoConfig(baseDir, encoding, lineEndings, provisioner);
 	}

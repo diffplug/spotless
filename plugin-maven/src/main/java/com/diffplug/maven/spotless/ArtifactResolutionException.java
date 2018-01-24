@@ -15,21 +15,9 @@
  */
 package com.diffplug.maven.spotless;
 
-import static java.util.stream.Collectors.toSet;
+public class ArtifactResolutionException extends RuntimeException {
 
-import java.util.Objects;
-
-import com.diffplug.spotless.Provisioner;
-
-/** Maven integration for Provisioner. */
-public class MavenProvisioner {
-	private MavenProvisioner() {}
-
-	public static Provisioner create(ArtifactResolver artifactResolver) {
-		Objects.requireNonNull(artifactResolver);
-
-		return mavenCoords -> mavenCoords.stream()
-				.flatMap(coord -> artifactResolver.resolve(coord).stream())
-				.collect(toSet());
+	public ArtifactResolutionException(String message, Throwable cause) {
+		super(message, cause);
 	}
 }
