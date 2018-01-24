@@ -15,9 +15,12 @@
  */
 package com.diffplug.maven.spotless;
 
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -25,12 +28,15 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.repository.RemoteRepository;
 
+import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Provisioner;
 
@@ -38,6 +44,8 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	private static final String DEFAULT_ENCODING = "UTF-8";
 	private static final String DEFAULT_LINE_ENDINGS = "GIT_ATTRIBUTES";
+
+	private static final String FILE_EXTENSION_SEPARATOR = ".";
 
 	@Component
 	private RepositorySystem repositorySystem;
@@ -66,20 +74,64 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Parameter
 	private Java java;
 
-	protected List<Path> getAllSourceRoots() {
+	protected abstract void process(List<File> files, Formatter formatter) throws MojoExecutionException;
+
+	@Override
+	public final void execute() throws MojoExecutionException, MojoFailureException {
+		List<FormatterFactory> formatterFactories = singletonList(java);
+
+		for (FormatterFactory formatterFactory : formatterFactories) {
+			execute(formatterFactory);
+		}
+	}
+
+	private void execute(FormatterFactory formatterFactory) throws MojoExecutionException {
+		List<File> files = collectFiles(formatterFactory.fileExtension());
+		Formatter formatter = formatterFactory.newFormatter(files, getMojoConfig());
+		process(files, formatter);
+	}
+
+	private List<File> collectFiles(String extension) throws MojoExecutionException {
+		try {
+			return getAllSourceRoots().stream()
+					.flatMap(root -> collectFiles(root, extension).stream())
+					.map(Path::toFile)
+					.collect(toList());
+		} catch (Exception e) {
+			throw new MojoExecutionException("Unable to collect files to format", e);
+		}
+	}
+
+	private static List<Path> collectFiles(Path root, String extension) {
+		try (Stream<Path> entries = Files.walk(root)) {
+			return entries.filter(Files::isRegularFile)
+					.filter(file -> hasExtension(file, extension))
+					.collect(toList());
+		} catch (IOException e) {
+			throw new UncheckedIOException("Unable to walk the file tree rooted at " + root, e);
+		}
+	}
+
+	private static boolean hasExtension(Path file, String extension) {
+		Path fileName = file.getFileName();
+		if (fileName == null) {
+			return false;
+		} else {
+			String fileNameString = fileName.toString();
+			return fileNameString.endsWith(FILE_EXTENSION_SEPARATOR + extension);
+		}
+	}
+
+	private List<Path> getAllSourceRoots() {
 		return Stream.concat(compileSourceRoots.stream(), testCompileSourceRoots.stream())
 				.map(Paths::get)
 				.filter(Files::isDirectory)
 				.collect(toList());
 	}
 
-	protected MojoConfig getMojoConfig() {
+	private MojoConfig getMojoConfig() {
 		ArtifactResolver resolver = new ArtifactResolver(repositorySystem, repositorySystemSession, repositories, getLog());
 		Provisioner provisioner = MavenProvisioner.create(resolver);
 		return new MojoConfig(baseDir, encoding, lineEndings, provisioner);
-	}
-
-	protected Java getJava() {
-		return java;
 	}
 }
