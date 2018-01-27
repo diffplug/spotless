@@ -58,7 +58,7 @@ public class Java implements FormatterFactory {
 
 		List<FormatterStep> formatterSteps = steps.stream()
 				.filter(Objects::nonNull) // all unrecognized steps from XML config appear as nulls in the list
-				.map(factory -> factory.newFormatterStep(mojoConfig))
+				.map(factory -> factory.newFormatterStep(this, mojoConfig))
 				.collect(toList());
 
 		return Formatter.builder()

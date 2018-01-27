@@ -21,6 +21,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.java.ImportOrderStep;
+import com.diffplug.spotless.maven.FormatterFactory;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 import com.diffplug.spotless.maven.MojoConfig;
 
@@ -32,7 +33,7 @@ public class ImportOrder implements FormatterStepFactory {
 	private String order;
 
 	@Override
-	public FormatterStep newFormatterStep(MojoConfig mojoConfig) {
+	public FormatterStep newFormatterStep(FormatterFactory parent, MojoConfig mojoConfig) {
 		if (file != null ^ order != null) {
 			if (file != null) {
 				return ImportOrderStep.createFromFile(file);
