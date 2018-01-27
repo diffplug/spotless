@@ -42,7 +42,7 @@ dependencies {
 
 task cleanMavenProjectDir(type: Delete) { delete MAVEN_PROJECT_DIR }
 
-task copySourceFiles(type: Copy) {
+task copySourceFiles(type: Sync) {
 	from "src/main/java"
 	into "${MAVEN_PROJECT_DIR}/src/main/java"
 }
@@ -119,20 +119,13 @@ task runMavenBuild(type: Exec, dependsOn: [
 	commandLine "mvn", "clean", "install"
 }
 
-task buildMavenPlugin(type: Copy, dependsOn: runMavenBuild) {
-	from "${MAVEN_PROJECT_DIR}/target"
-	into "${BUILD_DIR}/libs"
-}
-
-task createLocalMavenRepositoryForTests(type: Exec, dependsOn: buildMavenPlugin) {
-	workingDir "${BUILD_DIR}/libs"
-	commandLine "mvn", "org.apache.maven.plugins:maven-install-plugin:2.3.1:install-file",
-			"-Dfile=spotless-maven-plugin-${project.versionMaven}.jar",
-			"-DgroupId=com.diffplug.spotless",
-			"-DartifactId=spotless-maven-plugin",
-			"-Dversion=${project.versionMaven}",
-			"-Dpackaging=maven-plugin",
-			"-DlocalRepositoryPath=${LOCAL_MAVEN_REPO_DIR}"
+jar.deleteAllActions()
+jar.dependsOn(runMavenBuild)
+jar.doLast {
+	Files.copy(
+			file("${MAVEN_PROJECT_DIR}/target/spotless-maven-plugin-${project.versionMaven}.jar").toPath(),
+			jar.archivePath.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING
+			)
 }
 
 test {
@@ -141,6 +134,3 @@ test {
 	systemProperty "localMavenRepositoryDir", "${LOCAL_MAVEN_REPO_DIR}"
 	systemProperty "spotlessMavenPluginVersion", project.versionMaven
 }
-
-test.dependsOn createLocalMavenRepositoryForTests
-build.dependsOn buildMavenPlugin
