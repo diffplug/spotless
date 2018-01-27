@@ -1,0 +1,30 @@
+// If you can't trust a man's word
+// Does it help to have it in writing?
+package com.github.youribonnaffe.gradle.format;
+
+import java.util.function.Function;
+
+
+public class Java8Test {
+    public void doStuff() throws Exception {
+        Function<String, Integer> example = Integer::parseInt;
+        example.andThen(val -> {
+            return val + 2;
+        } );
+        SimpleEnum val = SimpleEnum.A;
+        switch (val) {
+            case A:
+                break;
+            case B:
+                break;
+            case C:
+                break;
+            default:
+                throw new Exception();
+        }
+    }
+
+    public enum SimpleEnum {
+        A, B, C;
+    }
+}
