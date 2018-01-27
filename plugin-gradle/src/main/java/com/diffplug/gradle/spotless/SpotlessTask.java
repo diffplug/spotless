@@ -164,7 +164,7 @@ public class SpotlessTask extends DefaultTask {
 		Formatter formatter = Formatter.builder()
 				.lineEndingsPolicy(lineEndingsPolicy)
 				.encoding(Charset.forName(encoding))
-				.rootDir(getProject().getProjectDir().toPath())
+				.rootDir(getProject().getRootDir().toPath())
 				.steps(steps)
 				.exceptionPolicy(exceptionPolicy)
 				.build();
@@ -282,7 +282,6 @@ public class SpotlessTask extends DefaultTask {
 	GradleException formatViolationsFor(Formatter formatter, List<File> problemFiles) {
 		return new GradleException(DiffMessageFormatter.builder()
 				.runToFix("Run 'gradlew spotlessApply' to fix these violations.")
-				.rootDir(getProject().getRootDir())
 				.isPaddedCell(paddedCell)
 				.formatter(formatter)
 				.problemFiles(problemFiles)

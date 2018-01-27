@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
@@ -49,7 +48,6 @@ public final class DiffMessageFormatter {
 		private Builder() {}
 
 		private String runToFix;
-		private File rootDir;
 		private boolean isPaddedCell;
 		private Formatter formatter;
 		private List<File> problemFiles;
@@ -57,11 +55,6 @@ public final class DiffMessageFormatter {
 		/** "Run 'gradlew spotlessApply' to fix these violations." */
 		public Builder runToFix(String runToFix) {
 			this.runToFix = Objects.requireNonNull(runToFix);
-			return this;
-		}
-
-		public Builder rootDir(File rootDir) {
-			this.rootDir = Objects.requireNonNull(rootDir);
 			return this;
 		}
 
@@ -85,7 +78,6 @@ public final class DiffMessageFormatter {
 		public String getMessage() {
 			try {
 				Objects.requireNonNull(runToFix, "runToFix");
-				Objects.requireNonNull(rootDir, "rootDir");
 				Objects.requireNonNull(formatter, "formatter");
 				Objects.requireNonNull(problemFiles, "problemFiles");
 				DiffMessageFormatter diffFormater = new DiffMessageFormatter(this);
@@ -96,6 +88,10 @@ public final class DiffMessageFormatter {
 				throw Errors.asRuntime(e);
 			}
 		}
+
+		String relativePath(File file) {
+			return formatter.getRootDir().relativize(file.toPath()).toString();
+		}
 	}
 
 	private static final int MAX_CHECK_MESSAGE_LINES = 50;
@@ -105,12 +101,10 @@ public final class DiffMessageFormatter {
 	private int numLines = 0;
 
 	private DiffMessageFormatter(Builder builder) throws IOException {
-		Path rootDir = builder.rootDir.toPath();
 		ListIterator<File> problemIter = builder.problemFiles.listIterator();
 		while (problemIter.hasNext() && numLines < MAX_CHECK_MESSAGE_LINES) {
 			File file = problemIter.next();
-			addFile(rootDir.relativize(file.toPath()) + "\n" +
-					DiffMessageFormatter.diff(builder, file));
+			addFile(builder.relativePath(file) + "\n" + DiffMessageFormatter.diff(builder, file));
 		}
 		if (problemIter.hasNext()) {
 			int remainingFiles = builder.problemFiles.size() - problemIter.nextIndex();
@@ -119,7 +113,7 @@ public final class DiffMessageFormatter {
 			} else {
 				buffer.append("Violations also present in:\n");
 				while (problemIter.hasNext()) {
-					addIntendedLine(NORMAL_INDENT, rootDir.relativize(problemIter.next().toPath()).toString());
+					addIntendedLine(NORMAL_INDENT, builder.relativePath(problemIter.next()));
 				}
 			}
 		}
