@@ -25,9 +25,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.extra.java.EclipseFormatterStep;
-import com.diffplug.spotless.maven.FormatterFactory;
+import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
-import com.diffplug.spotless.maven.MojoConfig;
 
 public class Eclipse implements FormatterStepFactory {
 
@@ -38,9 +37,9 @@ public class Eclipse implements FormatterStepFactory {
 	private String version;
 
 	@Override
-	public FormatterStep newFormatterStep(FormatterFactory parent, MojoConfig mojoConfig) {
+	public FormatterStep newFormatterStep(FormatterStepConfig config) {
 		String formatterVersion = version == null ? defaultVersion() : version;
 		Set<File> settingsFiles = singleton(file);
-		return EclipseFormatterStep.create(formatterVersion, settingsFiles, mojoConfig.getProvisioner());
+		return EclipseFormatterStep.create(formatterVersion, settingsFiles, config.getProvisioner());
 	}
 }

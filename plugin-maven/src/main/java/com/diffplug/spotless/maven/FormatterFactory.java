@@ -41,14 +41,18 @@ public abstract class FormatterFactory {
 
 	public abstract String fileExtension();
 
-	public Formatter newFormatter(List<File> filesToFormat, MojoConfig mojoConfig) {
-		Charset formatterEncoding = encoding(mojoConfig);
-		LineEnding formatterLineEndings = lineEndings(mojoConfig);
-		LineEnding.Policy formatterLineEndingPolicy = formatterLineEndings.createPolicy(mojoConfig.getBaseDir(), () -> filesToFormat);
+	public abstract String licenseHeaderDelimiter();
+
+	public final Formatter newFormatter(List<File> filesToFormat, FormatterConfig config) {
+		Charset formatterEncoding = encoding(config);
+		LineEnding formatterLineEndings = lineEndings(config);
+		LineEnding.Policy formatterLineEndingPolicy = formatterLineEndings.createPolicy(config.getBaseDir(), () -> filesToFormat);
+
+		FormatterStepConfig stepConfig = stepConfig(formatterEncoding, config);
 
 		List<FormatterStep> formatterSteps = steps.stream()
 				.filter(Objects::nonNull) // all unrecognized steps from XML config appear as nulls in the list
-				.map(factory -> factory.newFormatterStep(this, mojoConfig))
+				.map(factory -> factory.newFormatterStep(stepConfig))
 				.collect(toList());
 
 		return Formatter.builder()
@@ -56,15 +60,19 @@ public abstract class FormatterFactory {
 				.lineEndingsPolicy(formatterLineEndingPolicy)
 				.exceptionPolicy(new FormatExceptionPolicyStrict())
 				.steps(formatterSteps)
-				.rootDir(mojoConfig.getBaseDir().toPath())
+				.rootDir(config.getBaseDir().toPath())
 				.build();
 	}
 
-	public Charset encoding(MojoConfig mojoConfig) {
-		return Charset.forName(encoding == null ? mojoConfig.getEncoding() : encoding);
+	private Charset encoding(FormatterConfig config) {
+		return Charset.forName(encoding == null ? config.getEncoding() : encoding);
 	}
 
-	public LineEnding lineEndings(MojoConfig mojoConfig) {
-		return lineEndings == null ? mojoConfig.getLineEndings() : lineEndings;
+	private LineEnding lineEndings(FormatterConfig config) {
+		return lineEndings == null ? config.getLineEndings() : lineEndings;
+	}
+
+	private FormatterStepConfig stepConfig(Charset encoding, FormatterConfig config) {
+		return new FormatterStepConfig(encoding, licenseHeaderDelimiter(), config.getProvisioner());
 	}
 }

@@ -19,9 +19,15 @@ import com.diffplug.spotless.maven.FormatterFactory;
 
 public class Java extends FormatterFactory {
 	private static final String EXTENSION = "java";
+	private static final String LICENSE_HEADER_DELIMITER = "package ";
 
 	@Override
 	public String fileExtension() {
 		return EXTENSION;
+	}
+
+	@Override
+	public String licenseHeaderDelimiter() {
+		return LICENSE_HEADER_DELIMITER;
 	}
 }

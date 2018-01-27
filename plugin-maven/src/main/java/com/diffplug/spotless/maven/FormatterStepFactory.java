@@ -19,5 +19,5 @@ import com.diffplug.spotless.FormatterStep;
 
 public interface FormatterStepFactory {
 
-	FormatterStep newFormatterStep(FormatterFactory parent, MojoConfig mojoConfig);
+	FormatterStep newFormatterStep(FormatterStepConfig config);
 }

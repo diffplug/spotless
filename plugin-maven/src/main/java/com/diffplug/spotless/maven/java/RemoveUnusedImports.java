@@ -17,14 +17,13 @@ package com.diffplug.spotless.maven.java;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.java.RemoveUnusedImportsStep;
-import com.diffplug.spotless.maven.FormatterFactory;
+import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
-import com.diffplug.spotless.maven.MojoConfig;
 
 public class RemoveUnusedImports implements FormatterStepFactory {
 
 	@Override
-	public FormatterStep newFormatterStep(FormatterFactory parent, MojoConfig mojoConfig) {
-		return RemoveUnusedImportsStep.create(mojoConfig.getProvisioner());
+	public FormatterStep newFormatterStep(FormatterStepConfig config) {
+		return RemoveUnusedImportsStep.create(config.getProvisioner());
 	}
 }

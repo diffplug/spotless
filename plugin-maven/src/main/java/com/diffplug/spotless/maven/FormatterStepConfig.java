@@ -15,35 +15,28 @@
  */
 package com.diffplug.spotless.maven;
 
-import java.io.File;
+import java.nio.charset.Charset;
 
-import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Provisioner;
 
-public class MojoConfig {
+public class FormatterStepConfig {
 
-	private final File baseDir;
-	private final String encoding;
-	private final LineEnding lineEndings;
+	private final Charset encoding;
+	private final String licenseHeaderDelimiter;
 	private final Provisioner provisioner;
 
-	public MojoConfig(File baseDir, String encoding, LineEnding lineEndings, Provisioner provisioner) {
-		this.baseDir = baseDir;
+	public FormatterStepConfig(Charset encoding, String licenseHeaderDelimiter, Provisioner provisioner) {
 		this.encoding = encoding;
-		this.lineEndings = lineEndings;
+		this.licenseHeaderDelimiter = licenseHeaderDelimiter;
 		this.provisioner = provisioner;
 	}
 
-	public File getBaseDir() {
-		return baseDir;
-	}
-
-	public String getEncoding() {
+	public Charset getEncoding() {
 		return encoding;
 	}
 
-	public LineEnding getLineEndings() {
-		return lineEndings;
+	public String getLicenseHeaderDelimiter() {
+		return licenseHeaderDelimiter;
 	}
 
 	public Provisioner getProvisioner() {

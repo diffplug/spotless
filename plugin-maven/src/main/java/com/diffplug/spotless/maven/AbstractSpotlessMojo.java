@@ -88,7 +88,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	private void execute(FormatterFactory formatterFactory) throws MojoExecutionException {
 		List<File> files = collectFiles(formatterFactory.fileExtension());
-		Formatter formatter = formatterFactory.newFormatter(files, getMojoConfig());
+		Formatter formatter = formatterFactory.newFormatter(files, getFormatterConfig());
 		process(files, formatter);
 	}
 
@@ -130,9 +130,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 				.collect(toList());
 	}
 
-	private MojoConfig getMojoConfig() {
+	private FormatterConfig getFormatterConfig() {
 		ArtifactResolver resolver = new ArtifactResolver(repositorySystem, repositorySystemSession, repositories, getLog());
 		Provisioner provisioner = MavenProvisioner.create(resolver);
-		return new MojoConfig(baseDir, encoding, lineEndings, provisioner);
+		return new FormatterConfig(baseDir, encoding, lineEndings, provisioner);
 	}
 }

@@ -19,17 +19,16 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.java.GoogleJavaFormatStep;
-import com.diffplug.spotless.maven.FormatterFactory;
+import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
-import com.diffplug.spotless.maven.MojoConfig;
 
 public class GoogleJavaFormat implements FormatterStepFactory {
 	@Parameter
 	private String version;
 
 	@Override
-	public FormatterStep newFormatterStep(FormatterFactory parent, MojoConfig mojoConfig) {
+	public FormatterStep newFormatterStep(FormatterStepConfig config) {
 		String formatterVersion = version == null ? GoogleJavaFormatStep.defaultVersion() : version;
-		return GoogleJavaFormatStep.create(formatterVersion, mojoConfig.getProvisioner());
+		return GoogleJavaFormatStep.create(formatterVersion, config.getProvisioner());
 	}
 }

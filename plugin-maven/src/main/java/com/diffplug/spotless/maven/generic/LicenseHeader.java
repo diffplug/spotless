@@ -21,10 +21,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
-import com.diffplug.spotless.maven.FormatterFactory;
+import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
-import com.diffplug.spotless.maven.MojoConfig;
-import com.diffplug.spotless.maven.java.Java;
 
 public class LicenseHeader implements FormatterStepFactory {
 	@Parameter
@@ -37,20 +35,15 @@ public class LicenseHeader implements FormatterStepFactory {
 	private String delimiter;
 
 	@Override
-	public FormatterStep newFormatterStep(FormatterFactory parent, MojoConfig mojoConfig) {
-		String delimiterString;
-		if (delimiter != null) {
-			delimiterString = delimiter;
-		} else {
-			if (parent instanceof Java) {
-				delimiterString = "package ";
-			} else {
-				throw new IllegalArgumentException("You need to specify 'delimiter'.");
-			}
+	public FormatterStep newFormatterStep(FormatterStepConfig config) {
+		String delimiterString = delimiter != null ? delimiter : config.getLicenseHeaderDelimiter();
+		if (delimiterString == null) {
+			throw new IllegalArgumentException("You need to specify 'delimiter'.");
 		}
+
 		if (file != null ^ content != null) {
 			if (file != null) {
-				return LicenseHeaderStep.createFromFile(file, parent.encoding(mojoConfig), delimiterString);
+				return LicenseHeaderStep.createFromFile(file, config.getEncoding(), delimiterString);
 			} else {
 				return LicenseHeaderStep.createFromHeader(content, delimiterString);
 			}
