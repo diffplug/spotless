@@ -13,31 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.maven.spotless;
-
-import static com.diffplug.spotless.extra.java.EclipseFormatterStep.defaultVersion;
-import static java.util.Collections.singleton;
-
-import java.io.File;
-import java.util.Set;
-
-import org.apache.maven.plugins.annotations.Parameter;
+package com.diffplug.spotless.maven.java;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.extra.java.EclipseFormatterStep;
+import com.diffplug.spotless.java.RemoveUnusedImportsStep;
+import com.diffplug.spotless.maven.FormatterStepFactory;
+import com.diffplug.spotless.maven.MojoConfig;
 
-public class Eclipse implements FormatterStepFactory {
-
-	@Parameter(required = true)
-	private File file;
-
-	@Parameter
-	private String version;
+public class RemoveUnusedImports implements FormatterStepFactory {
 
 	@Override
 	public FormatterStep newFormatterStep(MojoConfig mojoConfig) {
-		String formatterVersion = version == null ? defaultVersion() : version;
-		Set<File> settingsFiles = singleton(file);
-		return EclipseFormatterStep.create(formatterVersion, settingsFiles, mojoConfig.getProvisioner());
+		return RemoveUnusedImportsStep.create(mojoConfig.getProvisioner());
 	}
 }

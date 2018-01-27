@@ -13,26 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.maven.spotless;
+package com.diffplug.spotless.maven.java;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 
-public class GoogleJavaFormatTest extends MavenIntegrationTest {
+import com.diffplug.spotless.maven.MavenIntegrationTest;
+
+public class ImportOrderTest extends MavenIntegrationTest {
 	@Test
-	public void defaultVersion() throws Exception {
+	public void file() throws Exception {
+		write("import.properties", getTestResource("java/importsorter/import.properties"));
 		writePomWithJavaSteps(
-				"<googleJavaFormat>",
-				"  <version>1.2</version>",
-				"</googleJavaFormat>");
+				"<importOrder>",
+				"  <file>${basedir}/import.properties</file>",
+				"</importOrder>");
+		runTest();
+	}
 
-		write("src/main/java/test.java", getTestResource("java/googlejavaformat/JavaCodeUnformatted.test"));
-		write("formatter.xml", getTestResource("java/eclipse/format/formatter.xml"));
+	@Test
+	public void order() throws Exception {
+		writePomWithJavaSteps(
+				"<importOrder>",
+				"  <order>java,javax,org,\\#com</order>",
+				"</importOrder>");
+		runTest();
+	}
 
+	private void runTest() throws Exception {
+		write("src/main/java/test.java", getTestResource("java/importsorter/JavaCodeUnsortedImports.test"));
 		mavenRunner().withArguments("spotless:apply").runNoError();
-
 		String actual = read("src/main/java/test.java");
-		assertThat(actual).isEqualTo(getTestResource("java/googlejavaformat/JavaCodeFormatted.test"));
+		assertThat(actual).isEqualTo(getTestResource("java/importsorter/JavaCodeSortedImports.test"));
 	}
 }

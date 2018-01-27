@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.maven.spotless;
+package com.diffplug.spotless.maven;
 
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.java.RemoveUnusedImportsStep;
+import java.io.File;
+import java.util.List;
 
-public class RemoveUnusedImports implements FormatterStepFactory {
+import com.diffplug.spotless.Formatter;
 
-	@Override
-	public FormatterStep newFormatterStep(MojoConfig mojoConfig) {
-		return RemoveUnusedImportsStep.create(mojoConfig.getProvisioner());
-	}
+public interface FormatterFactory {
+
+	String fileExtension();
+
+	Formatter newFormatter(List<File> filesToFormat, MojoConfig mojoConfig);
 }

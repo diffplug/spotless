@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.maven.spotless;
+package com.diffplug.spotless.maven;
 
 import static com.diffplug.common.collect.Sets.newHashSet;
 import static java.util.Collections.emptySet;

@@ -13,32 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.maven.spotless;
-
-import java.io.File;
+package com.diffplug.spotless.maven.java;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.java.ImportOrderStep;
+import com.diffplug.spotless.java.GoogleJavaFormatStep;
+import com.diffplug.spotless.maven.FormatterStepFactory;
+import com.diffplug.spotless.maven.MojoConfig;
 
-public class ImportOrder implements FormatterStepFactory {
+public class GoogleJavaFormat implements FormatterStepFactory {
 	@Parameter
-	private File file;
-
-	@Parameter
-	private String order;
+	private String version;
 
 	@Override
 	public FormatterStep newFormatterStep(MojoConfig mojoConfig) {
-		if (file != null ^ order != null) {
-			if (file != null) {
-				return ImportOrderStep.createFromFile(file);
-			} else {
-				return ImportOrderStep.createFromOrder(order.split(","));
-			}
-		} else {
-			throw new IllegalArgumentException("Must specify exactly one of 'file' or 'order'.");
-		}
+		String formatterVersion = version == null ? GoogleJavaFormatStep.defaultVersion() : version;
+		return GoogleJavaFormatStep.create(formatterVersion, mojoConfig.getProvisioner());
 	}
 }

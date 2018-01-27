@@ -13,16 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.maven.spotless;
+package com.diffplug.spotless.maven;
 
-import java.io.File;
-import java.util.List;
+import com.diffplug.spotless.FormatterStep;
 
-import com.diffplug.spotless.Formatter;
+public interface FormatterStepFactory {
 
-public interface FormatterFactory {
-
-	String fileExtension();
-
-	Formatter newFormatter(List<File> filesToFormat, MojoConfig mojoConfig);
+	FormatterStep newFormatterStep(MojoConfig mojoConfig);
 }

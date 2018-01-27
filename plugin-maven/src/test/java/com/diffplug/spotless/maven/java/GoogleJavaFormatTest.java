@@ -13,28 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.maven.spotless;
+package com.diffplug.spotless.maven.java;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 
-public class EclipseFormatStepTest extends MavenIntegrationTest {
+import com.diffplug.spotless.maven.MavenIntegrationTest;
 
+public class GoogleJavaFormatTest extends MavenIntegrationTest {
 	@Test
-	public void testEclipse() throws Exception {
+	public void defaultVersion() throws Exception {
 		writePomWithJavaSteps(
-				"<eclipse>",
-				"  <file>${basedir}/formatter.xml</file>",
-				"  <version>4.7.1</version>",
-				"</eclipse>");
+				"<googleJavaFormat>",
+				"  <version>1.2</version>",
+				"</googleJavaFormat>");
 
-		write("src/main/java/test.java", getTestResource("java/eclipse/format/JavaCodeUnformatted.test"));
+		write("src/main/java/test.java", getTestResource("java/googlejavaformat/JavaCodeUnformatted.test"));
 		write("formatter.xml", getTestResource("java/eclipse/format/formatter.xml"));
 
 		mavenRunner().withArguments("spotless:apply").runNoError();
 
 		String actual = read("src/main/java/test.java");
-		assertThat(actual).isEqualTo(getTestResource("java/eclipse/format/JavaCodeFormatted.test"));
+		assertThat(actual).isEqualTo(getTestResource("java/googlejavaformat/JavaCodeFormatted.test"));
 	}
 }

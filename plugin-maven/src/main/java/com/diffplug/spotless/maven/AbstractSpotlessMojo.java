@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.maven.spotless;
+package com.diffplug.spotless.maven;
 
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
@@ -39,6 +39,7 @@ import org.eclipse.aether.repository.RemoteRepository;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.maven.java.Java;
 
 public abstract class AbstractSpotlessMojo extends AbstractMojo {
 

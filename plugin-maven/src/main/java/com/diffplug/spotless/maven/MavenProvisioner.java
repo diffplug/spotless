@@ -13,20 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.maven.spotless;
+package com.diffplug.spotless.maven;
 
-import org.apache.maven.plugins.annotations.Parameter;
+import static java.util.stream.Collectors.toSet;
 
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.java.GoogleJavaFormatStep;
+import java.util.Objects;
 
-public class GoogleJavaFormat implements FormatterStepFactory {
-	@Parameter
-	private String version;
+import com.diffplug.spotless.Provisioner;
 
-	@Override
-	public FormatterStep newFormatterStep(MojoConfig mojoConfig) {
-		String formatterVersion = version == null ? GoogleJavaFormatStep.defaultVersion() : version;
-		return GoogleJavaFormatStep.create(formatterVersion, mojoConfig.getProvisioner());
+/** Maven integration for Provisioner. */
+public class MavenProvisioner {
+	private MavenProvisioner() {}
+
+	public static Provisioner create(ArtifactResolver artifactResolver) {
+		Objects.requireNonNull(artifactResolver);
+
+		return mavenCoords -> mavenCoords.stream()
+				.flatMap(coord -> artifactResolver.resolve(coord).stream())
+				.collect(toSet());
 	}
 }

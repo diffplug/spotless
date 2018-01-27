@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.maven.spotless;
+package com.diffplug.spotless.maven;
 
-import com.diffplug.spotless.FormatterStep;
+public class ArtifactResolutionException extends RuntimeException {
 
-public interface FormatterStepFactory {
-
-	FormatterStep newFormatterStep(MojoConfig mojoConfig);
+	public ArtifactResolutionException(String message, Throwable cause) {
+		super(message, cause);
+	}
 }
