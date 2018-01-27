@@ -15,14 +15,56 @@
  */
 package com.diffplug.spotless.maven;
 
+import static java.util.stream.Collectors.toList;
+
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Objects;
 
+import org.apache.maven.plugins.annotations.Parameter;
+
+import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.LineEnding;
 
-public interface FormatterFactory {
+public abstract class FormatterFactory {
+	@Parameter
+	protected String encoding;
 
-	String fileExtension();
+	@Parameter
+	protected LineEnding lineEndings;
 
-	Formatter newFormatter(List<File> filesToFormat, MojoConfig mojoConfig);
+	@Parameter
+	protected List<FormatterStepFactory> steps;
+
+	public abstract String fileExtension();
+
+	public Formatter newFormatter(List<File> filesToFormat, MojoConfig mojoConfig) {
+		Charset formatterEncoding = encoding(mojoConfig);
+		LineEnding formatterLineEndings = lineEndings(mojoConfig);
+		LineEnding.Policy formatterLineEndingPolicy = formatterLineEndings.createPolicy(mojoConfig.getBaseDir(), () -> filesToFormat);
+
+		List<FormatterStep> formatterSteps = steps.stream()
+				.filter(Objects::nonNull) // all unrecognized steps from XML config appear as nulls in the list
+				.map(factory -> factory.newFormatterStep(this, mojoConfig))
+				.collect(toList());
+
+		return Formatter.builder()
+				.encoding(formatterEncoding)
+				.lineEndingsPolicy(formatterLineEndingPolicy)
+				.exceptionPolicy(new FormatExceptionPolicyStrict())
+				.steps(formatterSteps)
+				.rootDir(mojoConfig.getBaseDir().toPath())
+				.build();
+	}
+
+	public Charset encoding(MojoConfig mojoConfig) {
+		return Charset.forName(encoding == null ? mojoConfig.getEncoding() : encoding);
+	}
+
+	public LineEnding lineEndings(MojoConfig mojoConfig) {
+		return lineEndings == null ? mojoConfig.getLineEndings() : lineEndings;
+	}
 }
