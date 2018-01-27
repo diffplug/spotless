@@ -25,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -87,15 +88,15 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private void execute(FormatterFactory formatterFactory) throws MojoExecutionException {
-		List<File> files = collectFiles(formatterFactory.fileExtension());
+		List<File> files = collectFiles(formatterFactory.fileExtensions());
 		Formatter formatter = formatterFactory.newFormatter(files, getFormatterConfig());
 		process(files, formatter);
 	}
 
-	private List<File> collectFiles(String extension) throws MojoExecutionException {
+	private List<File> collectFiles(Set<String> extensions) throws MojoExecutionException {
 		try {
 			return getAllSourceRoots().stream()
-					.flatMap(root -> collectFiles(root, extension).stream())
+					.flatMap(root -> collectFiles(root, extensions).stream())
 					.map(Path::toFile)
 					.collect(toList());
 		} catch (Exception e) {
@@ -103,23 +104,28 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		}
 	}
 
-	private static List<Path> collectFiles(Path root, String extension) {
+	private static List<Path> collectFiles(Path root, Set<String> extensions) {
 		try (Stream<Path> entries = Files.walk(root)) {
 			return entries.filter(Files::isRegularFile)
-					.filter(file -> hasExtension(file, extension))
+					.filter(file -> hasExtension(file, extensions))
 					.collect(toList());
 		} catch (IOException e) {
 			throw new UncheckedIOException("Unable to walk the file tree rooted at " + root, e);
 		}
 	}
 
-	private static boolean hasExtension(Path file, String extension) {
+	private static boolean hasExtension(Path file, Set<String> extensions) {
 		Path fileName = file.getFileName();
 		if (fileName == null) {
 			return false;
 		} else {
 			String fileNameString = fileName.toString();
-			return fileNameString.endsWith(FILE_EXTENSION_SEPARATOR + extension);
+			for (String extension : extensions) {
+				if (fileNameString.endsWith(FILE_EXTENSION_SEPARATOR + extension)) {
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 

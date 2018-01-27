@@ -15,6 +15,10 @@
  */
 package com.diffplug.spotless.maven.java;
 
+import static java.util.Collections.singleton;
+
+import java.util.Set;
+
 import com.diffplug.spotless.maven.FormatterFactory;
 
 public class Java extends FormatterFactory {
@@ -22,8 +26,8 @@ public class Java extends FormatterFactory {
 	private static final String LICENSE_HEADER_DELIMITER = "package ";
 
 	@Override
-	public String fileExtension() {
-		return EXTENSION;
+	public Set<String> fileExtensions() {
+		return singleton(EXTENSION);
 	}
 
 	@Override

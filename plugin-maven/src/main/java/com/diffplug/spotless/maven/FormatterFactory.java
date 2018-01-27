@@ -21,6 +21,7 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
@@ -39,7 +40,7 @@ public abstract class FormatterFactory {
 	@Parameter
 	protected List<FormatterStepFactory> steps;
 
-	public abstract String fileExtension();
+	public abstract Set<String> fileExtensions();
 
 	public abstract String licenseHeaderDelimiter();
 
