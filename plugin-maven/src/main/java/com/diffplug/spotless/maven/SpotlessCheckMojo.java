@@ -26,7 +26,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
-@Mojo(name = "check")
+@Mojo(name = "check", threadSafe = true)
 public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 
 	@Override

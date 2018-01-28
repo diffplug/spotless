@@ -24,7 +24,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 
 import com.diffplug.spotless.Formatter;
 
-@Mojo(name = "apply")
+@Mojo(name = "apply", threadSafe = true)
 public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 
 	@Override
