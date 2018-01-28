@@ -15,13 +15,13 @@
  */
 package com.diffplug.spotless.maven;
 
-import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -39,6 +39,7 @@ import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.maven.java.Java;
+import com.diffplug.spotless.maven.scala.Scala;
 
 public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
@@ -71,14 +72,19 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Parameter
 	private Java java;
 
+	@Parameter
+	private Scala scala;
+
 	protected abstract void process(List<File> files, Formatter formatter) throws MojoExecutionException;
 
 	@Override
 	public final void execute() throws MojoExecutionException, MojoFailureException {
-		List<FormatterFactory> formatterFactories = singletonList(java);
+		List<FormatterFactory> formatterFactories = Arrays.asList(java, scala);
 
 		for (FormatterFactory formatterFactory : formatterFactories) {
-			execute(formatterFactory);
+			if (formatterFactory != null) {
+				execute(formatterFactory);
+			}
 		}
 	}
 

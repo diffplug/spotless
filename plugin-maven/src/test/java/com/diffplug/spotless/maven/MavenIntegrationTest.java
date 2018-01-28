@@ -41,7 +41,7 @@ public class MavenIntegrationTest extends ResourceHarness {
 
 	private static final String LOCAL_MAVEN_REPOSITORY_DIR = "localMavenRepositoryDir";
 	private static final String SPOTLESS_MAVEN_PLUGIN_VERSION = "spotlessMavenPluginVersion";
-	private static final String JAVA_CONFIGURATION = "javaConfiguration";
+	private static final String CONFIGURATION = "configuration";
 
 	private final MustacheFactory mustacheFactory = new DefaultMustacheFactory();
 
@@ -65,8 +65,11 @@ public class MavenIntegrationTest extends ResourceHarness {
 	}
 
 	protected void writePomWithJavaSteps(String... steps) throws IOException {
-		String pomXmlContent = createPomXmlContent(steps);
-		write("pom.xml", pomXmlContent);
+		writePomWithSteps("java", steps);
+	}
+
+	protected void writePomWithScalaSteps(String... steps) throws IOException {
+		writePomWithSteps("scala", steps);
 	}
 
 	protected MavenRunner mavenRunner() throws IOException {
@@ -74,25 +77,32 @@ public class MavenIntegrationTest extends ResourceHarness {
 				.withProjectDir(rootFolder());
 	}
 
-	private String createPomXmlContent(String... steps) throws IOException {
+	private void writePomWithSteps(String group, String... steps) throws IOException {
+		String pomXmlContent = createPomXmlContent(group, steps);
+		write("pom.xml", pomXmlContent);
+	}
+
+	private String createPomXmlContent(String group, String... steps) throws IOException {
 		Path pomXml = Paths.get("src", "test", "resources", "pom.xml.mustache");
 
 		try (BufferedReader reader = Files.newBufferedReader(pomXml)) {
 			Mustache mustache = mustacheFactory.compile(reader, "pom");
 			StringWriter writer = new StringWriter();
-			Map<String, String> params = buildPomXmlParams(steps);
+			Map<String, String> params = buildPomXmlParams(group, steps);
 			mustache.execute(writer, params);
 			return writer.toString();
 		}
 	}
 
-	private static Map<String, String> buildPomXmlParams(String... steps) {
+	private static Map<String, String> buildPomXmlParams(String group, String... steps) {
 		Map<String, String> params = new HashMap<>();
 		params.put(LOCAL_MAVEN_REPOSITORY_DIR, getSystemProperty(LOCAL_MAVEN_REPOSITORY_DIR));
 		params.put(SPOTLESS_MAVEN_PLUGIN_VERSION, getSystemProperty(SPOTLESS_MAVEN_PLUGIN_VERSION));
 
-		String stepsXml = Arrays.stream(steps).collect(joining("\n", "<steps>\n", "\n</steps>"));
-		params.put(JAVA_CONFIGURATION, stepsXml);
+		String prefix = String.format("<%s>\n<steps>\n", group);
+		String suffix = String.format("\n</steps>\n</%s>", group);
+		String stepsXml = Arrays.stream(steps).collect(joining("\n", prefix, suffix));
+		params.put(CONFIGURATION, stepsXml);
 
 		return params;
 	}
