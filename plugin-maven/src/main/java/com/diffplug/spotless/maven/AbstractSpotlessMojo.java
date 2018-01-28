@@ -20,10 +20,8 @@ import static java.util.stream.Collectors.toList;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -61,11 +59,8 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Parameter(defaultValue = "${project.basedir}", required = true, readonly = true)
 	private File baseDir;
 
-	@Parameter(defaultValue = "${project.compileSourceRoots}", required = true, readonly = true)
-	private List<String> compileSourceRoots;
-
-	@Parameter(defaultValue = "${project.testCompileSourceRoots}", required = true, readonly = true)
-	private List<String> testCompileSourceRoots;
+	@Parameter(defaultValue = "${project.build.directory}", required = true, readonly = true)
+	private File targetDir;
 
 	@Parameter(defaultValue = DEFAULT_ENCODING)
 	private String encoding;
@@ -94,23 +89,17 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private List<File> collectFiles(Set<String> extensions) throws MojoExecutionException {
-		try {
-			return getAllSourceRoots().stream()
-					.flatMap(root -> collectFiles(root, extensions).stream())
+		Path projectDir = baseDir.toPath();
+		Path outputDir = targetDir.toPath();
+
+		try (Stream<Path> entries = Files.walk(projectDir)) {
+			return entries.filter(entry -> !entry.startsWith(outputDir))
+					.filter(Files::isRegularFile)
+					.filter(file -> hasExtension(file, extensions))
 					.map(Path::toFile)
 					.collect(toList());
-		} catch (Exception e) {
-			throw new MojoExecutionException("Unable to collect files to format", e);
-		}
-	}
-
-	private static List<Path> collectFiles(Path root, Set<String> extensions) {
-		try (Stream<Path> entries = Files.walk(root)) {
-			return entries.filter(Files::isRegularFile)
-					.filter(file -> hasExtension(file, extensions))
-					.collect(toList());
 		} catch (IOException e) {
-			throw new UncheckedIOException("Unable to walk the file tree rooted at " + root, e);
+			throw new MojoExecutionException("Unable to walk the file tree rooted at " + projectDir, e);
 		}
 	}
 
@@ -127,13 +116,6 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 			}
 			return false;
 		}
-	}
-
-	private List<Path> getAllSourceRoots() {
-		return Stream.concat(compileSourceRoots.stream(), testCompileSourceRoots.stream())
-				.map(Paths::get)
-				.filter(Files::isDirectory)
-				.collect(toList());
 	}
 
 	private FormatterConfig getFormatterConfig() {
