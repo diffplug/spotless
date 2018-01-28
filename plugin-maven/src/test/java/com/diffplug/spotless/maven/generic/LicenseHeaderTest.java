@@ -17,22 +17,25 @@ package com.diffplug.spotless.maven.generic;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.Test;
+
 import com.diffplug.spotless.maven.MavenIntegrationTest;
 
 public class LicenseHeaderTest extends MavenIntegrationTest {
 	private static final String KEY_LICENSE = "license/TestLicense";
 
+	@Test
 	public void fromFile() throws Exception {
-		write("license.java", getTestResource(KEY_LICENSE));
+		write("license.txt", getTestResource(KEY_LICENSE));
 		writePomWithJavaSteps(
 				"<licenseHeader>",
-				"  <file>${basedir}/license.java</file>",
+				"  <file>${basedir}/license.txt</file>",
 				"</licenseHeader>");
 		runTest();
 	}
 
+	@Test
 	public void fromContent() throws Exception {
-		write("license.java", getTestResource(KEY_LICENSE));
 		writePomWithJavaSteps(
 				"<licenseHeader>",
 				"  <content>",

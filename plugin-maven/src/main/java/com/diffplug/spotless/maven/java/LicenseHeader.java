@@ -13,27 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.maven;
+package com.diffplug.spotless.maven.java;
 
-import java.nio.charset.Charset;
+import com.diffplug.spotless.maven.generic.AbstractLicenseHeader;
 
-import com.diffplug.spotless.Provisioner;
+public class LicenseHeader extends AbstractLicenseHeader {
 
-public class FormatterStepConfig {
+	private static final String DELIMITER = "package ";
 
-	private final Charset encoding;
-	private final Provisioner provisioner;
-
-	public FormatterStepConfig(Charset encoding, Provisioner provisioner) {
-		this.encoding = encoding;
-		this.provisioner = provisioner;
-	}
-
-	public Charset getEncoding() {
-		return encoding;
-	}
-
-	public Provisioner getProvisioner() {
-		return provisioner;
+	@Override
+	protected String defaultDelimiter() {
+		return DELIMITER;
 	}
 }

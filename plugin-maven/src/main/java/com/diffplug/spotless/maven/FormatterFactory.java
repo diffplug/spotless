@@ -42,8 +42,6 @@ public abstract class FormatterFactory {
 
 	public abstract Set<String> fileExtensions();
 
-	public abstract String licenseHeaderDelimiter();
-
 	public final Formatter newFormatter(List<File> filesToFormat, FormatterConfig config) {
 		Charset formatterEncoding = encoding(config);
 		LineEnding formatterLineEndings = lineEndings(config);
@@ -73,7 +71,7 @@ public abstract class FormatterFactory {
 		return lineEndings == null ? config.getLineEndings() : lineEndings;
 	}
 
-	private FormatterStepConfig stepConfig(Charset encoding, FormatterConfig config) {
-		return new FormatterStepConfig(encoding, licenseHeaderDelimiter(), config.getProvisioner());
+	private static FormatterStepConfig stepConfig(Charset encoding, FormatterConfig config) {
+		return new FormatterStepConfig(encoding, config.getProvisioner());
 	}
 }
