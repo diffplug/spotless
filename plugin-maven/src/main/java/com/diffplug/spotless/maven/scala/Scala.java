@@ -21,13 +21,27 @@ import static java.util.Collections.unmodifiableSet;
 import java.util.Set;
 
 import com.diffplug.spotless.maven.FormatterFactory;
+import com.diffplug.spotless.maven.generic.LicenseHeader;
 
 public class Scala extends FormatterFactory {
-
 	private static final Set<String> FILE_EXTENSIONS = unmodifiableSet(newHashSet("scala", "sc"));
+	private static final String LICENSE_HEADER_DELIMITER = "package ";
 
 	@Override
 	public Set<String> fileExtensions() {
 		return FILE_EXTENSIONS;
+	}
+
+	@Override
+	public String licenseHeaderDelimiter() {
+		return LICENSE_HEADER_DELIMITER;
+	}
+
+	public void addLicenseHeader(LicenseHeader licenseHeader) {
+		addStepFactory(licenseHeader);
+	}
+
+	public void addScalafmt(Scalafmt scalafmt) {
+		addStepFactory(scalafmt);
 	}
 }

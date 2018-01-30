@@ -20,12 +20,39 @@ import static java.util.Collections.singleton;
 import java.util.Set;
 
 import com.diffplug.spotless.maven.FormatterFactory;
+import com.diffplug.spotless.maven.generic.LicenseHeader;
 
 public class Java extends FormatterFactory {
 	private static final String EXTENSION = "java";
+	private static final String LICENSE_HEADER_DELIMITER = "package ";
 
 	@Override
 	public Set<String> fileExtensions() {
 		return singleton(EXTENSION);
+	}
+
+	@Override
+	public String licenseHeaderDelimiter() {
+		return LICENSE_HEADER_DELIMITER;
+	}
+
+	public void addLicenseHeader(LicenseHeader licenseHeader) {
+		addStepFactory(licenseHeader);
+	}
+
+	public void addEclipse(Eclipse eclipse) {
+		addStepFactory(eclipse);
+	}
+
+	public void addGoogleJavaFormat(GoogleJavaFormat googleJavaFormat) {
+		addStepFactory(googleJavaFormat);
+	}
+
+	public void addImportOrder(ImportOrder importOrder) {
+		addStepFactory(importOrder);
+	}
+
+	public void addRemoveUnusedImports(RemoveUnusedImports removeUnusedImports) {
+		addStepFactory(removeUnusedImports);
 	}
 }

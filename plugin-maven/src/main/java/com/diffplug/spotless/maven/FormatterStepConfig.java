@@ -22,15 +22,21 @@ import com.diffplug.spotless.Provisioner;
 public class FormatterStepConfig {
 
 	private final Charset encoding;
+	private final String licenseHeaderDelimiter;
 	private final Provisioner provisioner;
 
-	public FormatterStepConfig(Charset encoding, Provisioner provisioner) {
+	public FormatterStepConfig(Charset encoding, String licenseHeaderDelimiter, Provisioner provisioner) {
 		this.encoding = encoding;
+		this.licenseHeaderDelimiter = licenseHeaderDelimiter;
 		this.provisioner = provisioner;
 	}
 
 	public Charset getEncoding() {
 		return encoding;
+	}
+
+	public String getLicenseHeaderDelimiter() {
+		return licenseHeaderDelimiter;
 	}
 
 	public Provisioner getProvisioner() {

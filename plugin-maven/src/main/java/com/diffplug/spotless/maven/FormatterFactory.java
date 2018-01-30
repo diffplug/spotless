@@ -19,6 +19,7 @@ import static java.util.stream.Collectors.toList;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -32,15 +33,16 @@ import com.diffplug.spotless.LineEnding;
 
 public abstract class FormatterFactory {
 	@Parameter
-	protected String encoding;
+	private String encoding;
 
 	@Parameter
-	protected LineEnding lineEndings;
+	private LineEnding lineEndings;
 
-	@Parameter
-	protected List<FormatterStepFactory> steps;
+	private final List<FormatterStepFactory> stepFactories = new ArrayList<>();
 
 	public abstract Set<String> fileExtensions();
+
+	public abstract String licenseHeaderDelimiter();
 
 	public final Formatter newFormatter(List<File> filesToFormat, FormatterConfig config) {
 		Charset formatterEncoding = encoding(config);
@@ -49,7 +51,7 @@ public abstract class FormatterFactory {
 
 		FormatterStepConfig stepConfig = stepConfig(formatterEncoding, config);
 
-		List<FormatterStep> formatterSteps = steps.stream()
+		List<FormatterStep> formatterSteps = stepFactories.stream()
 				.filter(Objects::nonNull) // all unrecognized steps from XML config appear as nulls in the list
 				.map(factory -> factory.newFormatterStep(stepConfig))
 				.collect(toList());
@@ -63,6 +65,11 @@ public abstract class FormatterFactory {
 				.build();
 	}
 
+	protected void addStepFactory(FormatterStepFactory stepFactory) {
+		Objects.requireNonNull(stepFactory);
+		stepFactories.add(stepFactory);
+	}
+
 	private Charset encoding(FormatterConfig config) {
 		return Charset.forName(encoding == null ? config.getEncoding() : encoding);
 	}
@@ -71,7 +78,7 @@ public abstract class FormatterFactory {
 		return lineEndings == null ? config.getLineEndings() : lineEndings;
 	}
 
-	private static FormatterStepConfig stepConfig(Charset encoding, FormatterConfig config) {
-		return new FormatterStepConfig(encoding, config.getProvisioner());
+	private FormatterStepConfig stepConfig(Charset encoding, FormatterConfig config) {
+		return new FormatterStepConfig(encoding, licenseHeaderDelimiter(), config.getProvisioner());
 	}
 }

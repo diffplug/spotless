@@ -21,16 +21,10 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
-import com.diffplug.spotless.maven.FormatterFactory;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 
-/**
- * Base class for license header formatting.
- * Implementations should be located in the same package tree as the implementation of {@link FormatterFactory}.
- * It is important because Maven's parameter injection framework looks for implementations in the same package tree.
- */
-public abstract class AbstractLicenseHeader implements FormatterStepFactory {
+public class LicenseHeader implements FormatterStepFactory {
 	@Parameter
 	private File file;
 
@@ -40,11 +34,9 @@ public abstract class AbstractLicenseHeader implements FormatterStepFactory {
 	@Parameter
 	private String delimiter;
 
-	protected abstract String defaultDelimiter();
-
 	@Override
 	public final FormatterStep newFormatterStep(FormatterStepConfig config) {
-		String delimiterString = delimiter != null ? delimiter : defaultDelimiter();
+		String delimiterString = delimiter != null ? delimiter : config.getLicenseHeaderDelimiter();
 		if (delimiterString == null) {
 			throw new IllegalArgumentException("You need to specify 'delimiter'.");
 		}

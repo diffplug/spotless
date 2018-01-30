@@ -99,8 +99,8 @@ public class MavenIntegrationTest extends ResourceHarness {
 		params.put(LOCAL_MAVEN_REPOSITORY_DIR, getSystemProperty(LOCAL_MAVEN_REPOSITORY_DIR));
 		params.put(SPOTLESS_MAVEN_PLUGIN_VERSION, getSystemProperty(SPOTLESS_MAVEN_PLUGIN_VERSION));
 
-		String prefix = String.format("<%s>\n<steps>\n", group);
-		String suffix = String.format("\n</steps>\n</%s>", group);
+		String prefix = String.format("<%s>\n", group);
+		String suffix = String.format("\n</%s>", group);
 		String stepsXml = Arrays.stream(steps).collect(joining("\n", prefix, suffix));
 		params.put(CONFIGURATION, stepsXml);
 

@@ -58,12 +58,10 @@ To use it in your pom, just [add the Spotless dependency](http://search.maven.or
   <version>${spotless.version}</version>
   <configuration>
     <java>
-      <steps>
-        <eclipse>
-          <file>${basedir}/eclipse-fmt.xml</file>
-          <version>4.7.1</version>
-        </eclipse>
-      </steps>
+      <eclipse>
+        <file>${basedir}/eclipse-fmt.xml</file>
+        <version>4.7.1</version>
+      </eclipse>
     </java>
   </configuration>
 </plugin>
@@ -88,28 +86,26 @@ By default, all compileSourceRoots will be formatted.  Each element under `<java
 ```xml
 <configuration>
   <java>
-    <steps>
-       <licenseHeader>
-         <!-- Specify either content or file, but not both -->
-         <content>/* Licensed under Apache-2.0 */</content>
-         <file>${basedir}/license-header</file>
-       </licenseHeader>
-       <eclipse>
-         <file>${basedir}/eclipse-fmt.xml</file>
-         <!-- Optional, available versions: https://bintray.com/diffplug/opensource/spotless-ext-eclipse-jdt -->
-         <version>4.7.1</version>
-       </eclipse>
-       <googleJavaFormat>
-         <!-- Optional, available versions: https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.google.googlejavaformat%22%20AND%20a%3A%22google-java-format%22 -->
-         <version>1.5</version>
-       </googleJavaFormat>
-       <removeUnusedImports/>
-       <importOrder>
-         <!-- Specify either order or file, but not both -->
-         <order>java,javax,org,com,com.diffplug,</order>
-         <file>${basedir}/importOrder</file>
-       </importOrder>
-    </steps>
+     <licenseHeader>
+       <!-- Specify either content or file, but not both -->
+       <content>/* Licensed under Apache-2.0 */</content>
+       <file>${basedir}/license-header</file>
+     </licenseHeader>
+     <eclipse>
+       <file>${basedir}/eclipse-fmt.xml</file>
+       <!-- Optional, available versions: https://bintray.com/diffplug/opensource/spotless-ext-eclipse-jdt -->
+       <version>4.7.1</version>
+     </eclipse>
+     <googleJavaFormat>
+       <!-- Optional, available versions: https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.google.googlejavaformat%22%20AND%20a%3A%22google-java-format%22 -->
+       <version>1.5</version>
+     </googleJavaFormat>
+     <removeUnusedImports/>
+     <importOrder>
+       <!-- Specify either order or file, but not both -->
+       <order>java,javax,org,com,com.diffplug,</order>
+       <file>${basedir}/importOrder</file>
+     </importOrder>
   </java>
 </configuration>
 ```
@@ -120,11 +116,11 @@ By default, all compileSourceRoots will be formatted.  Each element under `<java
 
 Spotless uses UTF-8 by default, but you can use [any encoding which Java supports](https://docs.oracle.com/javase/8/docs/technotes/guides/intl/encoding.doc.html).  You can set it globally, and you can also set it per-format.
 
-```gradle
+```xml
 <configuration>
   <java>
     <encoding>Cp1252</encoding>
-    <steps>...</steps>
+    <!-- ... other steps ... -->
   </java>
   <encoding>US-ASCII</encoding>
 </configuration>
