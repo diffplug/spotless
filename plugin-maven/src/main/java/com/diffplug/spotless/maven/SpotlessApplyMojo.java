@@ -24,6 +24,9 @@ import org.apache.maven.plugins.annotations.Mojo;
 
 import com.diffplug.spotless.Formatter;
 
+/**
+ * Performs formatting of all source files according to configured formatters.
+ */
 @Mojo(name = "apply", threadSafe = true)
 public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 

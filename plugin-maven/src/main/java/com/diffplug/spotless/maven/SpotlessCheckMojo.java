@@ -27,6 +27,10 @@ import org.apache.maven.plugins.annotations.Parameter;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
+/**
+ * Performs code formatting analysis and prints all violations to the console.
+ * Fails the build if violations are discovered.
+ */
 @Mojo(name = "check", threadSafe = true)
 public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 
