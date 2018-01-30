@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
@@ -29,8 +30,16 @@ import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 @Mojo(name = "check", threadSafe = true)
 public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 
+	@Parameter(property = "spotless.check.skip", defaultValue = "false")
+	private boolean skip;
+
 	@Override
 	protected void process(List<File> files, Formatter formatter) throws MojoExecutionException {
+		if (skip) {
+			getLog().info("Spotless check skipped");
+			return;
+		}
+
 		List<File> problemFiles = new ArrayList<>();
 		for (File file : files) {
 			try {
