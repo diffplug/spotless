@@ -15,6 +15,10 @@
  */
 package com.diffplug.spotless.maven;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.io.IOException;
+
 import org.junit.Test;
 
 public class SpotlessCheckMojoTest extends MavenIntegrationTest {
@@ -24,39 +28,58 @@ public class SpotlessCheckMojoTest extends MavenIntegrationTest {
 
 	@Test
 	public void testSpotlessCheckWithFormattingViolations() throws Exception {
-		testSpotlessCheck(UNFORMATTED_FILE, null, true);
+		writePomWithJavaLicenseHeaderStep();
+		testSpotlessCheck(UNFORMATTED_FILE, "spotless:check", true);
 	}
 
 	@Test
 	public void testSpotlessCheckWithoutFormattingViolations() throws Exception {
-		testSpotlessCheck(FORMATTED_FILE, null, false);
+		writePomWithJavaLicenseHeaderStep();
+		testSpotlessCheck(FORMATTED_FILE, "spotless:check", false);
 	}
 
 	@Test
 	public void testSkipSpotlessCheckWithFormattingViolations() throws Exception {
-		testSpotlessCheck(UNFORMATTED_FILE, "-Dspotless.check.skip", false);
+		writePomWithJavaLicenseHeaderStep();
+		testSpotlessCheck(UNFORMATTED_FILE, "spotless:check -Dspotless.check.skip", false);
 	}
 
-	private void testSpotlessCheck(String fileName, String additionalMvnArg, boolean expectError) throws Exception {
+	@Test
+	public void testSpotlessCheckBindingToVerifyPhase() throws Exception {
+		writePom("java",
+				new String[]{
+						"<execution>",
+						"  <id>check</id>",
+						"  <goals>",
+						"    <goal>check</goal>",
+						"  </goals>",
+						"</execution>"},
+				new String[]{
+						"<licenseHeader>",
+						"  <file>${basedir}/license.txt</file>",
+						"</licenseHeader>"});
+
+		testSpotlessCheck(UNFORMATTED_FILE, "verify", true);
+	}
+
+	private void testSpotlessCheck(String fileName, String command, boolean expectError) throws Exception {
+		write("license.txt", getTestResource("license/TestLicense"));
+		write("src/main/java/com.github.youribonnaffe.gradle.format/Java8Test.java", getTestResource(fileName));
+
+		MavenRunner mavenRunner = mavenRunner().withArguments(command);
+
+		if (expectError) {
+			MavenRunner.Result result = mavenRunner.runHasError();
+			assertThat(result.output()).contains("The following files had format violations");
+		} else {
+			mavenRunner.runNoError();
+		}
+	}
+
+	private void writePomWithJavaLicenseHeaderStep() throws IOException {
 		writePomWithJavaSteps(
 				"<licenseHeader>",
 				"  <file>${basedir}/license.txt</file>",
 				"</licenseHeader>");
-
-		write("license.txt", getTestResource("license/TestLicense"));
-		write("src/main/java/test.java", getTestResource(fileName));
-
-		MavenRunner mavenRunner = mavenRunner();
-		if (additionalMvnArg == null) {
-			mavenRunner.withArguments("spotless:check");
-		} else {
-			mavenRunner.withArguments("spotless:check", additionalMvnArg);
-		}
-
-		if (expectError) {
-			mavenRunner.runHasError();
-		} else {
-			mavenRunner.runNoError();
-		}
 	}
 }
