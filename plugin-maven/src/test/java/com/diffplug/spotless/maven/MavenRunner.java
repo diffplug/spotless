@@ -59,7 +59,7 @@ public class MavenRunner {
 		Objects.requireNonNull(projectDir, "Need to call withProjectDir() first");
 		Objects.requireNonNull(args, "Need to call withArguments() first");
 		// run maven with the given args in the given directory
-		List<String> cmds = getPlatformCmds("mvn " + Arrays.stream(args).collect(Collectors.joining(" ")));
+		List<String> cmds = getPlatformCmds("mvn -e " + Arrays.stream(args).collect(Collectors.joining(" ")));
 		ProcessBuilder builder = new ProcessBuilder(cmds);
 		builder.directory(projectDir);
 		Process process = builder.start();
