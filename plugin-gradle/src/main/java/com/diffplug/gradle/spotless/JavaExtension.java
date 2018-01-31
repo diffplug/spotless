@@ -100,8 +100,8 @@ public class JavaExtension extends FormatExtension {
 	}
 
 	/** Uses the [google-java-format](https://github.com/google/google-java-format) jar to format source code. */
-	public void googleJavaFormat() {
-		googleJavaFormat(GoogleJavaFormatStep.defaultVersion());
+	public GoogleJavaFormatConfig googleJavaFormat() {
+		return googleJavaFormat(GoogleJavaFormatStep.defaultVersion());
 	}
 
 	/**
@@ -110,9 +110,36 @@ public class JavaExtension extends FormatExtension {
 	 * Limited to published versions.  See [issue #33](https://github.com/diffplug/spotless/issues/33#issuecomment-252315095)
 	 * for an workaround for using snapshot versions.
 	 */
-	public void googleJavaFormat(String version) {
+	public GoogleJavaFormatConfig googleJavaFormat(String version) {
 		Objects.requireNonNull(version);
-		addStep(GoogleJavaFormatStep.create(version, GradleProvisioner.fromProject(getProject())));
+		return new GoogleJavaFormatConfig(version);
+	}
+
+	public class GoogleJavaFormatConfig {
+		final String version;
+		String style;
+
+		GoogleJavaFormatConfig(String version) {
+			this.version = Objects.requireNonNull(version);
+			this.style = GoogleJavaFormatStep.defaultStyle();
+			addStep(createStep());
+		}
+
+		public void style(String style) {
+			this.style = Objects.requireNonNull(style);
+			replaceStep(createStep());
+		}
+
+		public void aosp() {
+			style("AOSP");
+		}
+
+		private FormatterStep createStep() {
+			Project project = getProject();
+			return GoogleJavaFormatStep.create(version,
+					style,
+					GradleProvisioner.fromProject(project));
+		}
 	}
 
 	public EclipseConfig eclipse() {
