@@ -23,21 +23,21 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Before;
 
+import com.diffplug.common.io.Resources;
+import com.diffplug.spotless.ResourceHarness;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
-
-import com.diffplug.common.io.Resources;
-import com.diffplug.spotless.ResourceHarness;
 
 public class MavenIntegrationTest extends ResourceHarness {
 
@@ -99,9 +99,8 @@ public class MavenIntegrationTest extends ResourceHarness {
 	}
 
 	private String createPomXmlContent(String group, String[] executions, String[] steps) throws IOException {
-		Path pomXml = Paths.get("src", "test", "resources", "pom.xml.mustache");
-
-		try (BufferedReader reader = Files.newBufferedReader(pomXml)) {
+		URL url = MavenIntegrationTest.class.getResource("/pom-test.xml.mustache");
+		try (BufferedReader reader = Resources.asCharSource(url, StandardCharsets.UTF_8).openBufferedStream()) {
 			Mustache mustache = mustacheFactory.compile(reader, "pom");
 			StringWriter writer = new StringWriter();
 			Map<String, String> params = buildPomXmlParams(group, executions, steps);

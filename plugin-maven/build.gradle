@@ -65,7 +65,7 @@ task copySourceFiles(type: Sync) {
 }
 
 task copyMvnw(type: Copy) {
-	from 'src/main/resources'
+	from 'src/test/resources'
 	include 'mvnw'
 	include 'mvnw.cmd'
 	include '.mvn/**'
@@ -124,7 +124,7 @@ task createPomXml(dependsOn: installLocalDependencies) {
 			localMavenRepositoryDir   : LOCAL_MAVEN_REPO_DIR
 		]
 
-		def pomXmlTemplate = Paths.get(PROJECT_DIR, "src", "main", "resources", "pom.xml.mustache")
+		def pomXmlTemplate = Paths.get(PROJECT_DIR, "src/test/resources/pom-build.xml.mustache")
 		def newPomXml = Paths.get(MAVEN_PROJECT_DIR, "pom.xml")
 
 		Files.newBufferedReader(pomXmlTemplate).withCloseable { reader ->
