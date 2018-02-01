@@ -20,6 +20,7 @@ import static java.util.stream.Collectors.joining;
 import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.file.Files;
@@ -35,6 +36,7 @@ import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
 
+import com.diffplug.common.io.Resources;
 import com.diffplug.spotless.ResourceHarness;
 
 public class MavenIntegrationTest extends ResourceHarness {
@@ -63,6 +65,19 @@ public class MavenIntegrationTest extends ResourceHarness {
 	@Before
 	public void gitAttributes() throws IOException {
 		write(".gitattributes", "* text eol=lf");
+		// copy the mvnw resources
+		copy("mvnw").setExecutable(true);
+		copy("mvnw.cmd");
+		copy(".mvn/wrapper/maven-wrapper.jar");
+		copy(".mvn/wrapper/maven-wrapper.properties");
+	}
+
+	private File copy(String path) throws IOException {
+		byte[] bytes = Resources.toByteArray(ResourceHarness.class.getResource("/" + path));
+		Path target = newFile(path).toPath();
+		Files.createDirectories(target.getParent());
+		Files.write(target, bytes);
+		return target.toFile();
 	}
 
 	protected void writePomWithJavaSteps(String... steps) throws IOException {
