@@ -7,10 +7,10 @@ plugins {
 }
 
 // to generate taskGraph.pdf
-// - set enabled to true
-// - run './gradlew :plugin-maven:test'
-// - run 'rm plugin-maven/output.pdf'
-// - run 'dot -Tpdf plugin-maven/build/reports/visteg.dot > plugin-maven/taskGraph.pdf'
+// - set enabled (below) to true
+// - run: ./gradlew :plugin-maven:test
+// - run: rm plugin-maven/output.pdf
+// - run: dot -Tpdf plugin-maven/build/reports/visteg.dot > plugin-maven/taskGraph.pdf
 visteg {
 	enabled = false
 	nodeShape = 'box'
@@ -154,6 +154,9 @@ jar.doLast {
 			jar.archivePath.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING
 			)
 }
+
+// usually test only depends on testClasses, which doesn't run the maven build that we need
+test.dependsOn(jar)
 
 test {
 	testLogging { exceptionFormat = 'full' }
