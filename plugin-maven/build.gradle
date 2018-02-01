@@ -48,14 +48,6 @@ task copySourceFiles(type: Sync) {
 	into "${MAVEN_PROJECT_DIR}/src/main/java"
 }
 
-task copyMvnw(type: Copy) {
-	from 'src/main/resources'
-	include 'mvnw'
-	include 'mvnw.cmd'
-	include '.mvn/**'
-	into MAVEN_PROJECT_DIR
-}
-
 task installLocalDependencies
 def libs = [
 	'lib',
@@ -123,7 +115,6 @@ task createPomXml(dependsOn: installLocalDependencies) {
 task runMavenBuild(type: Exec, dependsOn: [
 	cleanMavenProjectDir,
 	copySourceFiles,
-	copyMvnw,
 	createPomXml
 ]) {
 	workingDir MAVEN_PROJECT_DIR

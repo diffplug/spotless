@@ -36,7 +36,6 @@ import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
 
-import com.diffplug.common.io.Resources;
 import com.diffplug.spotless.ResourceHarness;
 
 public class MavenIntegrationTest extends ResourceHarness {
@@ -73,11 +72,10 @@ public class MavenIntegrationTest extends ResourceHarness {
 	}
 
 	private File copy(String path) throws IOException {
-		byte[] bytes = Resources.toByteArray(ResourceHarness.class.getResource("/" + path));
-		Path target = newFile(path).toPath();
-		Files.createDirectories(target.getParent());
-		Files.write(target, bytes);
-		return target.toFile();
+		File dst = newFile(path);
+		dst.getParentFile().mkdirs();
+		Files.copy(Paths.get(path), dst.toPath());
+		return dst;
 	}
 
 	protected void writePomWithJavaSteps(String... steps) throws IOException {
