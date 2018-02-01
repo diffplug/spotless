@@ -33,11 +33,12 @@ import java.util.Map;
 
 import org.junit.Before;
 
-import com.diffplug.common.io.Resources;
-import com.diffplug.spotless.ResourceHarness;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
+
+import com.diffplug.common.io.Resources;
+import com.diffplug.spotless.ResourceHarness;
 
 public class MavenIntegrationTest extends ResourceHarness {
 
