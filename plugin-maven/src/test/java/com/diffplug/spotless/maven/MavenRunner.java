@@ -59,7 +59,9 @@ public class MavenRunner {
 		Objects.requireNonNull(projectDir, "Need to call withProjectDir() first");
 		Objects.requireNonNull(args, "Need to call withArguments() first");
 		// run maven with the given args in the given directory
-		List<String> cmds = getPlatformCmds("-e " + Arrays.stream(args).collect(Collectors.joining(" ")));
+		//   -e to display execution errors at the console
+		//   -o to force offline mode, so that it uses the locally-built plugin and not one from a snapshot repo
+		List<String> cmds = getPlatformCmds("-e -o " + Arrays.stream(args).collect(Collectors.joining(" ")));
 		ProcessBuilder builder = new ProcessBuilder(cmds);
 		builder.directory(projectDir);
 		Process process = builder.start();
