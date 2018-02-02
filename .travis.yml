@@ -3,7 +3,7 @@ jdk:
 - oraclejdk8
 install: true
 before_script:
-  - cp plugin-maven/.travis.m2.settings.xml $HOME/.m2/settings.xml
+  - rm $HOME/.m2/settings.xml
 script:
   - ./gradlew :plugin-maven:test
 #  - ./.ci/ci.sh
