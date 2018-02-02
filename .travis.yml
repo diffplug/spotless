@@ -1,9 +1,11 @@
 language: java
 jdk:
 - oraclejdk8
+install: true
+before_script:
+  - cp plugin-maven/.travis.m2.settings.xml $HOME/.m2/settings.xml
 script:
-  - cat $HOME/.m2/settings.xml
-#  - ./gradlew :plugin-maven:test
+  - ./gradlew :plugin-maven:test
 #  - ./.ci/ci.sh
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
