@@ -1,7 +1,10 @@
 language: java
 jdk:
 - oraclejdk8
-#script: "./.ci/ci.sh"
+script:
+  - cat $HOME/.m2/settings.xml
+#  - ./gradlew :plugin-maven:test
+#  - ./.ci/ci.sh
 script: "./gradlew :plugin-maven:test"
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
