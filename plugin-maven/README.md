@@ -134,15 +134,10 @@ You can easily set the line endings of different files using [a `.gitattributes`
 
 ## Disabling warnings and error messages
 
-The `test` phase is Maven's built-in task for grouping all verification tasks - unit tests, static analysis, etc.  By default, `spotless-check` is added as a dependency to `test`.
+By default, `spotless:check` is bound to the `verify` phase.  You might want to disable this behavior.  We [recommend against this](https://github.com/diffplug/spotless/issues/79#issuecomment-290844602), but it's easy to do if you'd like:
 
-You might want to disable this behavior.  We [recommend against this](https://github.com/diffplug/spotless/issues/79#issuecomment-290844602), but it's easy to do if you'd like:
-
-```xml
-<configuration>
-  <enforceCheck>false</enforceCheck>
-</configuration>
-```
+- set `-Dspotless.check.skip=true` at the command line
+- set `spotless.check.skip` to `true` in the `<properties>` section
 
 <a name="preview"></a>
 
