@@ -96,7 +96,8 @@ public class MavenIntegrationTest extends ResourceHarness {
 
 	protected MavenRunner mavenRunner() throws IOException {
 		return MavenRunner.create()
-				.withProjectDir(rootFolder());
+				.withProjectDir(rootFolder())
+				.withLocalRepository(new File(getSystemProperty(LOCAL_MAVEN_REPOSITORY_DIR)));
 	}
 
 	private String createPomXmlContent(String group, String[] executions, String[] steps) throws IOException {

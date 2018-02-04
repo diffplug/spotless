@@ -44,6 +44,7 @@ public class MavenRunner {
 
 	private File projectDir;
 	private String[] args;
+	private File localRepositoryDir;
 
 	public MavenRunner withProjectDir(File projectDir) {
 		this.projectDir = Objects.requireNonNull(projectDir);
@@ -55,13 +56,16 @@ public class MavenRunner {
 		return this;
 	}
 
+	public MavenRunner withLocalRepository(File localRepositoryDir) {
+		this.localRepositoryDir = localRepositoryDir;
+		return this;
+	}
+
 	private Result run() throws IOException, InterruptedException {
 		Objects.requireNonNull(projectDir, "Need to call withProjectDir() first");
 		Objects.requireNonNull(args, "Need to call withArguments() first");
 		// run maven with the given args in the given directory
-		//   -e to display execution errors at the console
-		//   -U to force update of snapshots
-		List<String> cmds = getPlatformCmds("-X -U  " + Arrays.stream(args).collect(Collectors.joining(" ")));
+		List<String> cmds = getPlatformCmds("-X -Dmaven.repo.local=" + localRepositoryDir + " " + Arrays.stream(args).collect(Collectors.joining(" ")));
 		ProcessBuilder builder = new ProcessBuilder(cmds);
 		builder.directory(projectDir);
 		Process process = builder.start();
