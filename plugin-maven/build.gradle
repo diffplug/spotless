@@ -157,7 +157,8 @@ task runMavenBuild(type: Exec, dependsOn: [
 	createPomXml
 ]) {
 	workingDir MAVEN_PROJECT_DIR
-	commandLine mvnw("clean install -Dmaven.repo.local=${LOCAL_MAVEN_REPO_DIR}")
+	// -B batch mode to make dependency download logging less verbose
+	commandLine mvnw("clean install -B -Dmaven.repo.local=${LOCAL_MAVEN_REPO_DIR}")
 }
 
 jar.deleteAllActions()
