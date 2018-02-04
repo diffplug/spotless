@@ -2,11 +2,8 @@ language: java
 jdk:
 - oraclejdk8
 install: true
-before_script:
-  - rm $HOME/.m2/settings.xml
 script:
-  - ./gradlew :plugin-maven:test
-#  - ./.ci/ci.sh
+  - ./.ci/ci.sh
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
