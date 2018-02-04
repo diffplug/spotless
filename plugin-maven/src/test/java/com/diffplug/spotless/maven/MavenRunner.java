@@ -60,7 +60,8 @@ public class MavenRunner {
 		Objects.requireNonNull(args, "Need to call withArguments() first");
 		// run maven with the given args in the given directory
 		//   -e to display execution errors at the console
-		List<String> cmds = getPlatformCmds("-X " + Arrays.stream(args).collect(Collectors.joining(" ")));
+		//   -U to force update of snapshots
+		List<String> cmds = getPlatformCmds("-X -U  " + Arrays.stream(args).collect(Collectors.joining(" ")));
 		ProcessBuilder builder = new ProcessBuilder(cmds);
 		builder.directory(projectDir);
 		Process process = builder.start();
