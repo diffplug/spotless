@@ -135,8 +135,7 @@ task createPomXml(dependsOn: installLocalDependencies) {
 			mavenApiVersion           : VER_MAVEN_API,
 			eclipseAetherVersion      : VER_ECLIPSE_AETHER,
 			spotlessLibVersion        : project.versionLib,
-			additionalDependencies    : additionalDependencies,
-			localMavenRepositoryDir   : LOCAL_MAVEN_REPO_DIR
+			additionalDependencies    : additionalDependencies
 		]
 
 		def pomXmlTemplate = Paths.get(PROJECT_DIR, "src/test/resources/pom-build.xml.mustache")
