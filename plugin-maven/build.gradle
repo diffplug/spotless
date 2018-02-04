@@ -43,13 +43,13 @@ def mvnw(String args) {
 		return [
 			'cmd',
 			'/c',
-			'mvnw.cmd ' + args
+			'mvnw.cmd -X ' + args
 		]
 	} else {
 		return [
 			'/bin/sh',
 			'-c',
-			'./mvnw ' + args
+			'./mvnw -X ' + args
 		]
 	}
 }
