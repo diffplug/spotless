@@ -99,6 +99,8 @@ By default, all compileSourceRoots will be formatted.  Each element under `<java
      <googleJavaFormat>
        <!-- Optional, available versions: https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.google.googlejavaformat%22%20AND%20a%3A%22google-java-format%22 -->
        <version>1.5</version>
+       <!-- Optional, available versions: GOOGLE, AOSP  https://github.com/google/google-java-format/blob/master/core/src/main/java/com/google/googlejavaformat/java/JavaFormatterOptions.java -->
+       <style>GOOGLE</style>
      </googleJavaFormat>
      <removeUnusedImports/>
      <importOrder>

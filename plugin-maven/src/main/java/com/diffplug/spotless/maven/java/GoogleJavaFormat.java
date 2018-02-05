@@ -26,9 +26,13 @@ public class GoogleJavaFormat implements FormatterStepFactory {
 	@Parameter
 	private String version;
 
+	@Parameter
+	private String style;
+
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
-		String formatterVersion = version == null ? GoogleJavaFormatStep.defaultVersion() : version;
-		return GoogleJavaFormatStep.create(formatterVersion, config.getProvisioner());
+		String version = this.version != null ? this.version : GoogleJavaFormatStep.defaultVersion();
+		String style = this.style != null ? this.style : GoogleJavaFormatStep.defaultStyle();
+		return GoogleJavaFormatStep.create(version, style, config.getProvisioner());
 	}
 }
