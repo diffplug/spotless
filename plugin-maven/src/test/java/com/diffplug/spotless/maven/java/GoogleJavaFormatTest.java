@@ -23,18 +23,33 @@ import com.diffplug.spotless.maven.MavenIntegrationTest;
 
 public class GoogleJavaFormatTest extends MavenIntegrationTest {
 	@Test
-	public void defaultVersion() throws Exception {
+	public void specificVersionDefaultStyle() throws Exception {
 		writePomWithJavaSteps(
 				"<googleJavaFormat>",
 				"  <version>1.2</version>",
 				"</googleJavaFormat>");
 
 		write("src/main/java/test.java", getTestResource("java/googlejavaformat/JavaCodeUnformatted.test"));
-		write("formatter.xml", getTestResource("java/eclipse/format/formatter.xml"));
 
 		mavenRunner().withArguments("spotless:apply").runNoError();
 
 		String actual = read("src/main/java/test.java");
 		assertThat(actual).isEqualTo(getTestResource("java/googlejavaformat/JavaCodeFormatted.test"));
+	}
+
+	@Test
+	public void specificVersionSpecificStyle() throws Exception {
+		writePomWithJavaSteps(
+				"<googleJavaFormat>",
+				"  <version>1.2</version>",
+				"  <style>AOSP</style>",
+				"</googleJavaFormat>");
+
+		write("src/main/java/test.java", getTestResource("java/googlejavaformat/JavaCodeUnformatted.test"));
+
+		mavenRunner().withArguments("spotless:apply").runNoError();
+
+		String actual = read("src/main/java/test.java");
+		assertThat(actual).isEqualTo(getTestResource("java/googlejavaformat/JavaCodeFormattedAOSP.test"));
 	}
 }
