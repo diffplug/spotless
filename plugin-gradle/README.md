@@ -147,7 +147,9 @@ spotless {
 ```gradle
 spotless {
   java {
-    googleJavaFormat() // googleJavaFormat('1.1') to specify a specific version
+    googleJavaFormat()
+    // optional: you can specify a specific version and/or switch to AOSP style
+    googleJavaFormat('1.1').aosp()
     // you can then layer other format steps, such as
     licenseHeaderFile 'spotless.license.java'
   }
