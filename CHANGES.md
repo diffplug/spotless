@@ -10,6 +10,7 @@ You might be looking for:
 * Updated default ktlint from 0.6.1 to 0.14.0
 * Updated default google-java-format from 1.3 to 1.5
 * Updated default eclipse-jdt from 4.7.1 to 4.7.2
+* Added a configuration option to `googleJavaFormat` to switch the formatter style ([#193](https://github.com/diffplug/spotless/pull/193))
 
 ### Version 1.8.0 - January 2nd 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.8.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.8.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 

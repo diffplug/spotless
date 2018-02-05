@@ -32,10 +32,18 @@ public class GoogleJavaFormatStep {
 	private GoogleJavaFormatStep() {}
 
 	private static final String DEFAULT_VERSION = "1.5";
+	private static final String DEFAULT_STYLE = "GOOGLE";
 	static final String NAME = "google-java-format";
 	static final String MAVEN_COORDINATE = "com.google.googlejavaformat:google-java-format:";
 	static final String FORMATTER_CLASS = "com.google.googlejavaformat.java.Formatter";
 	static final String FORMATTER_METHOD = "formatSource";
+
+	private static final String OPTIONS_CLASS = "com.google.googlejavaformat.java.JavaFormatterOptions";
+	private static final String OPTIONS_BUILDER_METHOD = "builder";
+	private static final String OPTIONS_BUILDER_CLASS = "com.google.googlejavaformat.java.JavaFormatterOptions$Builder";
+	private static final String OPTIONS_BUILDER_STYLE_METHOD = "style";
+	private static final String OPTIONS_BUILDER_BUILD_METHOD = "build";
+	private static final String OPTIONS_Style = "com.google.googlejavaformat.java.JavaFormatterOptions$Style";
 
 	private static final String REMOVE_UNUSED_CLASS = "com.google.googlejavaformat.java.RemoveUnusedImports";
 	private static final String REMOVE_UNUSED_METHOD = "removeUnusedImports";
@@ -53,15 +61,25 @@ public class GoogleJavaFormatStep {
 
 	/** Creates a step which formats everything - code, import order, and unused imports. */
 	public static FormatterStep create(String version, Provisioner provisioner) {
+		return create(version, DEFAULT_STYLE, provisioner);
+	}
+
+	/** Creates a step which formats everything - code, import order, and unused imports. */
+	public static FormatterStep create(String version, String style, Provisioner provisioner) {
 		Objects.requireNonNull(version, "version");
+		Objects.requireNonNull(style, "style");
 		Objects.requireNonNull(provisioner, "provisioner");
 		return FormatterStep.createLazy(NAME,
-				() -> new State(NAME, version, provisioner),
+				() -> new State(NAME, version, style, provisioner),
 				State::createFormat);
 	}
 
 	public static String defaultVersion() {
 		return DEFAULT_VERSION;
+	}
+
+	public static String defaultStyle() {
+		return DEFAULT_STYLE;
 	}
 
 	static final class State implements Serializable {
@@ -71,11 +89,17 @@ public class GoogleJavaFormatStep {
 		final JarState jarState;
 		final String stepName;
 		final String version;
+		final String style;
 
 		State(String stepName, String version, Provisioner provisioner) throws IOException {
+			this(stepName, version, DEFAULT_STYLE, provisioner);
+		}
+
+		State(String stepName, String version, String style, Provisioner provisioner) throws IOException {
 			this.jarState = JarState.from(MAVEN_COORDINATE + version, provisioner);
 			this.stepName = stepName;
 			this.version = version;
+			this.style = style;
 		}
 
 		@SuppressWarnings({"unchecked", "rawtypes"})
@@ -83,8 +107,21 @@ public class GoogleJavaFormatStep {
 			ClassLoader classLoader = jarState.getClassLoader();
 
 			// instantiate the formatter and get its format method
+			Class<?> optionsClass = classLoader.loadClass(OPTIONS_CLASS);
+			Class<?> optionsBuilderClass = classLoader.loadClass(OPTIONS_BUILDER_CLASS);
+			Method optionsBuilderMethod = optionsClass.getMethod(OPTIONS_BUILDER_METHOD);
+			Object optionsBuilder = optionsBuilderMethod.invoke(null);
+
+			Class<?> optionsStyleClass = classLoader.loadClass(OPTIONS_Style);
+			Object styleConstant = Enum.valueOf((Class<Enum>) optionsStyleClass, style);
+			Method optionsBuilderStyleMethod = optionsBuilderClass.getMethod(OPTIONS_BUILDER_STYLE_METHOD, optionsStyleClass);
+			optionsBuilderStyleMethod.invoke(optionsBuilder, styleConstant);
+
+			Method optionsBuilderBuildMethod = optionsBuilderClass.getMethod(OPTIONS_BUILDER_BUILD_METHOD);
+			Object options = optionsBuilderBuildMethod.invoke(optionsBuilder);
+
 			Class<?> formatterClazz = classLoader.loadClass(FORMATTER_CLASS);
-			Object formatter = formatterClazz.getConstructor().newInstance();
+			Object formatter = formatterClazz.getConstructor(optionsClass).newInstance(options);
 			Method formatterMethod = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
 
 			Class<?> removeUnusedClass = classLoader.loadClass(REMOVE_UNUSED_CLASS);

@@ -5,6 +5,8 @@
 * Updated default ktlint from 0.6.1 to 0.14.0
 * Updated default google-java-format from 1.3 to 1.5
 * Updated default eclipse-jdt from 4.7.1 to 4.7.2
+* Added a configuration option to `googleJavaFormat` to switch the formatter style ([#193](https://github.com/diffplug/spotless/pull/193))
+  + Use `googleJavaFormat().aosp()` to use AOSP-compliant style (4-space indentation) instead of the default Google Style
 
 ### Version 3.8.0 - January 2nd 2018 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.8.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.8.0))
 
