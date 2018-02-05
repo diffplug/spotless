@@ -12,4 +12,5 @@ cache:
   directories:
   - $HOME/.gradle/caches/
   - $HOME/.gradle/wrapper/
+  - $HOME/.m2/
   - plugin-maven/localMavenRepository
