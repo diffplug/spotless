@@ -1,6 +1,8 @@
 # spotless-plugin-gradle releases
 
-### Version 3.9.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-plugin-gradle/))
+### Version 3.10.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-plugin-gradle/))
+
+### Version 3.9.0 - February 5th 2018 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.9.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.9.0))
 
 * Updated default ktlint from 0.6.1 to 0.14.0
 * Updated default google-java-format from 1.3 to 1.5
