@@ -17,6 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.YearMonth;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
@@ -24,6 +25,7 @@ import org.junit.Test;
 
 public class KotlinExtensionTest extends GradleIntegrationTest {
 	private static final String HEADER = "// License Header";
+	private static final String HEADER_WITH_YEAR = "// License Header $YEAR";
 
 	@Test
 	public void integration() throws IOException {
@@ -71,5 +73,67 @@ public class KotlinExtensionTest extends GradleIntegrationTest {
 				.endsWith(original)
 				// Make sure that no additional stuff got added to the file.
 				.contains(HEADER + '\n' + original);
+	}
+
+	@Test
+	public void testWithCustomHeaderSeparator() throws IOException {
+		write("build.gradle",
+				"plugins {",
+				"    id 'nebula.kotlin' version '1.0.6'",
+				"    id 'com.diffplug.gradle.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlin {",
+				"        licenseHeader ('" + HEADER + "', '@file')",
+				"        ktlint()",
+				"    }",
+				"}");
+		final File testFile = write("src/main/kotlin/test.kt", getTestResource("kotlin/licenseheader/KotlinCodeWithoutHeader.test"));
+		final String original = read(testFile.toPath());
+		gradleRunner().withArguments("spotlessApply").build();
+		final String result = read(testFile.toPath());
+		Assertions
+				.assertThat(result)
+				// Make sure the header gets added.
+				.startsWith(HEADER)
+				// Make sure that the rest of the file is still there with nothing removed.
+				.endsWith(original)
+				// Make sure that no additional stuff got added to the file.
+				.contains(HEADER + '\n' + original);
+	}
+
+	@Test
+	public void testWithNonStandardYearSeparator() throws IOException {
+		write("build.gradle",
+				"plugins {",
+				"    id 'nebula.kotlin' version '1.0.6'",
+				"    id 'com.diffplug.gradle.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlin {",
+				"        licenseHeader('" + HEADER_WITH_YEAR + "').yearSeparator(', ')",
+				"        ktlint()",
+				"    }",
+				"}");
+
+		final File testFile = write("src/main/kotlin/test.kt", getTestResource("kotlin/licenseheader/KotlinCodeWithMultiYearHeader.test"));
+		final String original = read(testFile.toPath());
+		final File testFile2 = write("src/main/kotlin/test2.kt", getTestResource("kotlin/licenseheader/KotlinCodeWithMultiYearHeader2.test"));
+		final String original2 = read(testFile.toPath());
+		gradleRunner().withArguments("spotlessApply").build();
+		final String result = read(testFile.toPath());
+		final String result2 = read(testFile2.toPath());
+
+		Assertions
+				.assertThat(result)
+				// Make sure the a "valid" header isn't changed
+				.contains("// License Header 2012, 2014");
+
+		Assertions
+				.assertThat(result2)
+				// Make sure that an "invalid" header is rewritten
+				.startsWith(HEADER_WITH_YEAR.replace("$YEAR", String.valueOf(YearMonth.now().getYear())));
 	}
 }

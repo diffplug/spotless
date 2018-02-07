@@ -7,6 +7,8 @@ You might be looking for:
 
 ### Version 1.10.0-SNAPSHOT - TBD (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/snapshot/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/snapshot/), [snapshot repo](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/))
 
+* LicenseHeaderStep now supports customizing the year range separator in copyright notices. ([#199](https://github.com/diffplug/spotless/pull/199))
+
 ### Version 1.9.0 - February 5th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.9.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.9.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
 * Updated default ktlint from 0.6.1 to 0.14.0

@@ -55,12 +55,12 @@ public class GroovyExtension extends FormatExtension {
 		this.excludeJava = excludeJava;
 	}
 
-	public void licenseHeader(String licenseHeader) {
-		licenseHeader(licenseHeader, JavaExtension.LICENSE_HEADER_DELIMITER);
+	public LicenseHeaderConfig licenseHeader(String licenseHeader) {
+		return licenseHeader(licenseHeader, JavaExtension.LICENSE_HEADER_DELIMITER);
 	}
 
-	public void licenseHeaderFile(Object licenseHeaderFile) {
-		licenseHeaderFile(licenseHeaderFile, JavaExtension.LICENSE_HEADER_DELIMITER);
+	public LicenseHeaderConfig licenseHeaderFile(Object licenseHeaderFile) {
+		return licenseHeaderFile(licenseHeaderFile, JavaExtension.LICENSE_HEADER_DELIMITER);
 	}
 
 	/** Method interface has been changed to

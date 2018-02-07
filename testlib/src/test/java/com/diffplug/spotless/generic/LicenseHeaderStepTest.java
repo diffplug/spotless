@@ -66,6 +66,36 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 				.test(fileWithPlaceholderContaining("not a year"), fileWithPlaceholderContaining(currentYear()));
 	}
 
+	@Test
+	public void should_apply_license_containing_YEAR_token_with_non_default_year_separator() throws Throwable {
+		FormatterStep step = LicenseHeaderStep.createFromFile(createTestFile(KEY_LICENSE_WITH_YEAR_TOKEN), StandardCharsets.UTF_8, LICENSE_HEADER_DELIMITER, ", ");
+
+		StepHarness.forStep(step)
+				.testUnaffected(fileWithPlaceholderContaining("1990, 2015"))
+				.test(fileWithPlaceholderContaining("1990-2015"), fileWithPlaceholderContaining(currentYear()));
+	}
+
+	@Test
+	public void should_apply_license_containing_YEAR_token_with_special_character_in_year_separator() throws Throwable {
+		FormatterStep step = LicenseHeaderStep.createFromFile(createTestFile(KEY_LICENSE_WITH_YEAR_TOKEN), StandardCharsets.UTF_8, LICENSE_HEADER_DELIMITER, "(");
+
+		StepHarness.forStep(step)
+				.testUnaffected(fileWithPlaceholderContaining("1990(2015"))
+				.test(fileWithPlaceholderContaining("1990-2015"), fileWithPlaceholderContaining(currentYear()));
+	}
+
+	@Test
+	public void should_apply_license_containing_YEAR_token_with_custom_separator() throws Throwable {
+		FormatterStep step = LicenseHeaderStep.createFromFile(createTestFile(KEY_LICENSE_WITH_YEAR_TOKEN), StandardCharsets.UTF_8, LICENSE_HEADER_DELIMITER);
+
+		StepHarness.forStep(step)
+				.test(getTestResource(KEY_FILE_WITHOUT_LICENSE), fileWithPlaceholderContaining(currentYear()))
+				.testUnaffected(fileWithPlaceholderContaining(currentYear()))
+				.testUnaffected(fileWithPlaceholderContaining("2003"))
+				.testUnaffected(fileWithPlaceholderContaining("1990-2015"))
+				.test(fileWithPlaceholderContaining("not a year"), fileWithPlaceholderContaining(currentYear()));
+	}
+
 	private String fileWithPlaceholderContaining(String placeHolderContent) throws IOException {
 		return getTestResource(KEY_FILE_WITH_LICENSE_AND_PLACEHOLDER).replace("__PLACEHOLDER__", placeHolderContent);
 	}

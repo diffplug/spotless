@@ -25,6 +25,8 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 
@@ -33,6 +35,7 @@ public final class LicenseHeaderStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static final String NAME = "licenseHeader";
+	private static final String DEFAULT_YEAR_DELIMITER = "-";
 
 	private final String licenseHeader;
 	private final Pattern delimiterPattern;
@@ -44,10 +47,15 @@ public final class LicenseHeaderStep implements Serializable {
 
 	/** Creates a FormatterStep which forces the start of each file to match a license header. */
 	public static FormatterStep createFromHeader(String licenseHeader, String delimiter) {
+		return createFromHeader(licenseHeader, delimiter, null);
+	}
+
+	public static FormatterStep createFromHeader(String licenseHeader, String delimiter,
+			@Nullable String yearSeparator) {
 		Objects.requireNonNull(licenseHeader, "licenseHeader");
 		Objects.requireNonNull(delimiter, "delimiter");
 		return FormatterStep.create(LicenseHeaderStep.NAME,
-				new LicenseHeaderStep(licenseHeader, delimiter),
+				new LicenseHeaderStep(licenseHeader, delimiter, yearSeparator),
 				step -> step::format);
 	}
 
@@ -56,11 +64,20 @@ public final class LicenseHeaderStep implements Serializable {
 	 * contained in the given file.
 	 */
 	public static FormatterStep createFromFile(File licenseHeaderFile, Charset encoding, String delimiter) {
+		return createFromFile(licenseHeaderFile, encoding, delimiter, null);
+	}
+
+	/**
+	 * Creates a FormatterStep which forces the start of each file to match the license header
+	 * contained in the given file.
+	 */
+	public static FormatterStep createFromFile(File licenseHeaderFile, Charset encoding, String delimiter,
+			@Nullable String yearSeparator) {
 		Objects.requireNonNull(licenseHeaderFile, "licenseHeaderFile");
 		Objects.requireNonNull(encoding, "encoding");
 		Objects.requireNonNull(delimiter, "delimiter");
 		return FormatterStep.createLazy(LicenseHeaderStep.NAME,
-				() -> new LicenseHeaderStep(licenseHeaderFile, encoding, delimiter),
+				() -> new LicenseHeaderStep(licenseHeaderFile, encoding, delimiter, yearSeparator),
 				step -> step::format);
 	}
 
@@ -68,8 +85,15 @@ public final class LicenseHeaderStep implements Serializable {
 		return NAME;
 	}
 
+	public static String defaultYearDelimiter() {
+		return DEFAULT_YEAR_DELIMITER;
+	}
+
 	/** The license that we'd like enforced. */
-	private LicenseHeaderStep(String licenseHeader, String delimiter) {
+	private LicenseHeaderStep(String licenseHeader, String delimiter, @Nullable String yearSeparator) {
+		if (yearSeparator == null) {
+			yearSeparator = defaultYearDelimiter();
+		}
 		if (delimiter.contains("\n")) {
 			throw new IllegalArgumentException("The delimiter must not contain any newlines.");
 		}
@@ -86,13 +110,13 @@ public final class LicenseHeaderStep implements Serializable {
 			this.licenseHeaderBeforeYearToken = licenseHeader.substring(0, yearTokenIndex);
 			this.licenseHeaderAfterYearToken = licenseHeader.substring(yearTokenIndex + 5, licenseHeader.length());
 			this.licenseHeaderWithYearTokenReplaced = licenseHeader.replace("$YEAR", String.valueOf(YearMonth.now().getYear()));
-			this.yearMatcherPattern = Pattern.compile("[0-9]{4}(-[0-9]{4})?");
+			this.yearMatcherPattern = Pattern.compile("[0-9]{4}(" + Pattern.quote(yearSeparator) + "[0-9]{4})?");
 		}
 	}
 
 	/** Reads the license file from the given file. */
-	private LicenseHeaderStep(File licenseFile, Charset encoding, String delimiter) throws IOException {
-		this(new String(Files.readAllBytes(licenseFile.toPath()), encoding), delimiter);
+	private LicenseHeaderStep(File licenseFile, Charset encoding, String delimiter, @Nullable String yearSeparator) throws IOException {
+		this(new String(Files.readAllBytes(licenseFile.toPath()), encoding), delimiter, yearSeparator);
 	}
 
 	/** Formats the given string. */
