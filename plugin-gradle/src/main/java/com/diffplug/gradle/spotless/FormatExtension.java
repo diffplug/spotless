@@ -346,9 +346,8 @@ public class FormatExtension {
 	}
 
 	abstract class LicenseHeaderConfig {
-
 		String delimiter;
-		String yearSeparator;
+		String yearSeparator = LicenseHeaderStep.defaultYearDelimiter();
 
 		public LicenseHeaderConfig(String delimiter) {
 			this.delimiter = Objects.requireNonNull(delimiter, "delimiter");
