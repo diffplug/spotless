@@ -307,9 +307,21 @@ The `licenseHeader` and `licenseHeaderFile` steps will generate license headers 
 * A generated license header will _not_ be updated when
   * a single year is already present, e.g.
   `/* Licensed under Apache-2.0 1990. */`
-  * a hyphen-separated year range is already present, e.g.
+  * a year range is already present, e.g.
   `/* Licensed under Apache-2.0 1990-2003. */`
   * the `$YEAR` token is otherwise missing
+
+The separator for the year range defaults to the hyphen character, e.g `1990-2003`, but can be customized with the `yearSeparator` property.
+
+For instance, the following configuration treats `1990, 2003` as a valid year range.
+
+```gradle
+spotless {
+  format java {
+     licenseHeader(''Licensed under Apache-2.0 $YEAR').yearSeparator(', ')
+  }
+}
+```
 
 
 <a name="custom"></a>

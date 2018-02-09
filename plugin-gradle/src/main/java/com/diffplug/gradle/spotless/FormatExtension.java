@@ -345,26 +345,89 @@ public class FormatExtension {
 		indentWithTabs(4);
 	}
 
+	abstract class LicenseHeaderConfig {
+		String delimiter;
+		String yearSeparator = LicenseHeaderStep.defaultYearDelimiter();
+
+		public LicenseHeaderConfig(String delimiter) {
+			this.delimiter = Objects.requireNonNull(delimiter, "delimiter");
+		}
+
+		/**
+		 * @param delimiter
+		 *            Spotless will look for a line that starts with this regular expression pattern to know what the "top" is.
+		 */
+		public LicenseHeaderConfig delimiter(String delimiter) {
+			this.delimiter = Objects.requireNonNull(delimiter, "delimiter");
+			replaceStep(createStep());
+			return this;
+		}
+
+		/**
+		 * @param yearSeparator
+		 *           The characters used to separate the first and last years in multi years patterns.
+		 */
+		public LicenseHeaderConfig yearSeparator(String yearSeparator) {
+			this.yearSeparator = Objects.requireNonNull(yearSeparator, "yearSeparator");
+			replaceStep(createStep());
+			return this;
+		}
+
+		abstract FormatterStep createStep();
+	}
+
+	class LicenseStringHeaderConfig extends LicenseHeaderConfig {
+
+		private String header;
+
+		LicenseStringHeaderConfig(String delimiter, String header) {
+			super(delimiter);
+			this.header = Objects.requireNonNull(header, "header");
+		}
+
+		FormatterStep createStep() {
+			return LicenseHeaderStep.createFromHeader(header, delimiter, yearSeparator);
+		}
+	}
+
+	class LicenseFileHeaderConfig extends LicenseHeaderConfig {
+
+		private Object headerFile;
+
+		LicenseFileHeaderConfig(String delimiter, Object headerFile) {
+			super(delimiter);
+			this.headerFile = Objects.requireNonNull(headerFile, "headerFile");
+		}
+
+		FormatterStep createStep() {
+			return LicenseHeaderStep
+					.createFromFile(getProject().file(headerFile), getEncoding(), delimiter,
+							yearSeparator);
+		}
+	}
+
 	/**
 	 * @param licenseHeader
-	 *            Content that should be at the top of every file
+	 *            Content that should be at the top of every file.
 	 * @param delimiter
-	 *            Spotless will look for a line that starts with this to know what the "top" is.
+	 *            Spotless will look for a line that starts with this regular expression pattern to know what the "top" is.
 	 */
-	public void licenseHeader(String licenseHeader, String delimiter) {
-		addStep(LicenseHeaderStep.createFromHeader(licenseHeader, delimiter));
+	public LicenseHeaderConfig licenseHeader(String licenseHeader, String delimiter) {
+		LicenseHeaderConfig config = new LicenseStringHeaderConfig(delimiter, licenseHeader);
+		addStep(config.createStep());
+		return config;
 	}
 
 	/**
 	 * @param licenseHeaderFile
-	 *            Content that should be at the top of every file
+	 *            Content that should be at the top of every file.
 	 * @param delimiter
-	 *            Spotless will look for a line that starts with this to know what the "top" is.
+	 *            Spotless will look for a line that starts with this regular expression pattern to know what the "top" is.
 	 */
-	public void licenseHeaderFile(Object licenseHeaderFile, String delimiter) {
-		Objects.requireNonNull(licenseHeaderFile, "licenseHeaderFile");
-		Objects.requireNonNull(delimiter, "delimiter");
-		addStep(LicenseHeaderStep.createFromFile(getProject().file(licenseHeaderFile), getEncoding(), delimiter));
+	public LicenseHeaderConfig licenseHeaderFile(Object licenseHeaderFile, String delimiter) {
+		LicenseHeaderConfig config = new LicenseFileHeaderConfig(delimiter, licenseHeaderFile);
+		addStep(config.createStep());
+		return config;
 	}
 
 	/** Sets up a format task according to the values in this extension. */
