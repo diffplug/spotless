@@ -15,7 +15,8 @@
  */
 package com.diffplug.spotless.maven.java;
 
-import static java.util.Collections.singleton;
+import static com.diffplug.common.collect.Sets.newHashSet;
+import static java.util.Collections.unmodifiableSet;
 
 import java.util.Set;
 
@@ -23,12 +24,13 @@ import com.diffplug.spotless.maven.FormatterFactory;
 import com.diffplug.spotless.maven.generic.LicenseHeader;
 
 public class Java extends FormatterFactory {
-	private static final String EXTENSION = "java";
+	private static final Set<String> DEFAULT_INCLUDES = unmodifiableSet(newHashSet("src/main/java/**/*.java",
+			"src/test/java/**/*.java"));
 	private static final String LICENSE_HEADER_DELIMITER = "package ";
 
 	@Override
-	public Set<String> fileExtensions() {
-		return singleton(EXTENSION);
+	public Set<String> defaultIncludes() {
+		return DEFAULT_INCLUDES;
 	}
 
 	@Override

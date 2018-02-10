@@ -15,22 +15,19 @@
  */
 package com.diffplug.spotless.maven;
 
-import static java.util.stream.Collectors.toList;
-
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.repository.RemoteRepository;
@@ -45,8 +42,6 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	private static final String DEFAULT_ENCODING = "UTF-8";
 	private static final String DEFAULT_LINE_ENDINGS = "GIT_ATTRIBUTES";
-
-	private static final String FILE_EXTENSION_SEPARATOR = ".";
 
 	@Component
 	private RepositorySystem repositorySystem;
@@ -89,39 +84,34 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private void execute(FormatterFactory formatterFactory) throws MojoExecutionException {
-		List<File> files = collectFiles(formatterFactory.fileExtensions());
+		List<File> files = collectFiles(formatterFactory);
 		Formatter formatter = formatterFactory.newFormatter(files, getFormatterConfig());
 		process(files, formatter);
 	}
 
-	private List<File> collectFiles(Set<String> extensions) throws MojoExecutionException {
-		Path projectDir = baseDir.toPath();
-		Path outputDir = targetDir.toPath();
+	@SuppressWarnings("unchecked")
+	private List<File> collectFiles(FormatterFactory formatterFactory) throws MojoExecutionException {
+		Set<String> configuredIncludes = formatterFactory.includes();
+		Set<String> configuredExcludes = formatterFactory.excludes();
 
-		try (Stream<Path> entries = Files.walk(projectDir)) {
-			return entries.filter(entry -> !entry.startsWith(outputDir))
-					.filter(Files::isRegularFile)
-					.filter(file -> hasExtension(file, extensions))
-					.map(Path::toFile)
-					.collect(toList());
+		Set<String> includes = configuredIncludes.isEmpty() ? formatterFactory.defaultIncludes() : configuredIncludes;
+
+		Set<String> excludes = new HashSet<>(FileUtils.getDefaultExcludesAsList());
+		excludes.add(withTrailingSeparator(targetDir.toString()));
+		excludes.addAll(configuredExcludes);
+
+		String includesString = String.join(",", includes);
+		String excludesString = String.join(",", excludes);
+
+		try {
+			return FileUtils.getFiles(baseDir, includesString, excludesString);
 		} catch (IOException e) {
-			throw new MojoExecutionException("Unable to walk the file tree rooted at " + projectDir, e);
+			throw new MojoExecutionException("Unable to scan file tree rooted at " + baseDir, e);
 		}
 	}
 
-	private static boolean hasExtension(Path file, Set<String> extensions) {
-		Path fileName = file.getFileName();
-		if (fileName == null) {
-			return false;
-		} else {
-			String fileNameString = fileName.toString();
-			for (String extension : extensions) {
-				if (fileNameString.endsWith(FILE_EXTENSION_SEPARATOR + extension)) {
-					return true;
-				}
-			}
-			return false;
-		}
+	private static String withTrailingSeparator(String path) {
+		return path.endsWith(File.separator) ? path : path + File.separator;
 	}
 
 	private FormatterConfig getFormatterConfig() {

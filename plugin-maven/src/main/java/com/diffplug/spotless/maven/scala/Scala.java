@@ -24,12 +24,13 @@ import com.diffplug.spotless.maven.FormatterFactory;
 import com.diffplug.spotless.maven.generic.LicenseHeader;
 
 public class Scala extends FormatterFactory {
-	private static final Set<String> FILE_EXTENSIONS = unmodifiableSet(newHashSet("scala", "sc"));
+	private static final Set<String> DEFAULT_INCLUDES = unmodifiableSet(newHashSet("src/main/scala/**/*.scala",
+			"src/test/scala/**/*.scala", "src/main/scala/**/*.sc", "src/test/scala/**/*.sc"));
 	private static final String LICENSE_HEADER_DELIMITER = "package ";
 
 	@Override
-	public Set<String> fileExtensions() {
-		return FILE_EXTENSIONS;
+	public Set<String> defaultIncludes() {
+		return DEFAULT_INCLUDES;
 	}
 
 	@Override

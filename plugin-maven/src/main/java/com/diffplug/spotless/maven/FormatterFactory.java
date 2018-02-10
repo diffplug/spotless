@@ -15,17 +15,16 @@
  */
 package com.diffplug.spotless.maven;
 
+import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toList;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
+import com.diffplug.common.collect.Sets;
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
@@ -38,11 +37,25 @@ public abstract class FormatterFactory {
 	@Parameter
 	private LineEnding lineEndings;
 
+	@Parameter
+	private String[] includes;
+
+	@Parameter
+	private String[] excludes;
+
 	private final List<FormatterStepFactory> stepFactories = new ArrayList<>();
 
-	public abstract Set<String> fileExtensions();
+	public abstract Set<String> defaultIncludes();
 
 	public abstract String licenseHeaderDelimiter();
+
+	public final Set<String> includes() {
+		return includes == null ? emptySet() : Sets.newHashSet(includes);
+	}
+
+	public final Set<String> excludes() {
+		return excludes == null ? emptySet() : Sets.newHashSet(excludes);
+	}
 
 	public final Formatter newFormatter(List<File> filesToFormat, FormatterConfig config) {
 		Charset formatterEncoding = encoding(config);
