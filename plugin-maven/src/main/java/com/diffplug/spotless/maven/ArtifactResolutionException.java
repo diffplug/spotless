@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.maven;
 
+@SuppressWarnings("serial")
 public class ArtifactResolutionException extends RuntimeException {
 
 	public ArtifactResolutionException(String message, Throwable cause) {
