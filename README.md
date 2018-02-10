@@ -45,7 +45,7 @@ lib('java.RemoveUnusedImportsStep')              +'{{yes}}       | {{yes}}      
 extra('java.EclipseFormatterStep')               +'{{yes}}       | {{yes}}      | {{no}}  |',
 lib('kotlin.KtLintStep')                         +'{{yes}}       | {{no}}       | {{no}}  |',
 lib('markdown.FreshMarkStep')                    +'{{yes}}       | {{no}}       | {{no}}  |',
-lib('scala.ScalaFmtStep')                        +'{{yes}}       | {{no}}       | {{no}}  |',
+lib('scala.ScalaFmtStep')                        +'{{yes}}       | {{yes}}       | {{no}}  |',
 lib('sql.DBeaverSQLFormatterStep')               +'{{yes}}       | {{no}}       | {{no}}  |',
 '| [(Your FormatterStep here)](https://github.com/nedtwigg/spotless/blob/markdown-preview-temp/CONTRIBUTING.md#how-to-add-a-new-formatterstep) | {{no}}        | {{no}}       | {{no}}  |',
 '| Fast up-to-date checking                      | {{yes}}       | {{no}}       | {{no}}  |',
@@ -68,7 +68,7 @@ lib('sql.DBeaverSQLFormatterStep')               +'{{yes}}       | {{no}}       
 | [`java.EclipseFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/java/EclipseFormatterStep.java) | :+1:       | :+1:      | :white_large_square:  |
 | [`kotlin.KtLintStep`](lib/src/main/java/com/diffplug/spotless/kotlin/KtLintStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
 | [`markdown.FreshMarkStep`](lib/src/main/java/com/diffplug/spotless/markdown/FreshMarkStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
-| [`scala.ScalaFmtStep`](lib/src/main/java/com/diffplug/spotless/scala/ScalaFmtStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
+| [`scala.ScalaFmtStep`](lib/src/main/java/com/diffplug/spotless/scala/ScalaFmtStep.java) | :+1:       | :+1:       | :white_large_square:  |
 | [`sql.DBeaverSQLFormatterStep`](lib/src/main/java/com/diffplug/spotless/sql/DBeaverSQLFormatterStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
 | [(Your FormatterStep here)](https://github.com/nedtwigg/spotless/blob/markdown-preview-temp/CONTRIBUTING.md#how-to-add-a-new-formatterstep) | :white_large_square:        | :white_large_square:       | :white_large_square:  |
 | Fast up-to-date checking                      | :+1:       | :white_large_square:       | :white_large_square:  |
