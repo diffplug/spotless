@@ -31,22 +31,25 @@ To people who use your build, it looks like this:
 ```
 cmd> mvn spotless:check
 ...
-:spotlessJavaCheck FAILED
-> The following files had format violations:
-  src\main\java\com\diffplug\gradle\spotless\FormatExtension.java
-    @@ -109,7 +109,7 @@
-    ...
-    -\t\t····if·(targets.length·==·0)·{
-    +\t\tif·(targets.length·==·0)·{
-    ...
-  Run 'mvn spotless:apply' to fix these violations.
+[ERROR] ... The following files had format violations:
+[ERROR]  src\main\java\com\diffplug\gradle\spotless\FormatExtension.java
+[ERROR]    @@ -109,7 +109,7 @@
+[ERROR]    ...
+[ERROR]    -\t\t····if·(targets.length·==·0)·{
+[ERROR]    +\t\tif·(targets.length·==·0)·{
+[ERROR]    ...
+[ERROR]  Run 'mvn spotless:apply' to fix these violations.
+...
 
 cmd> mvn spotless:apply
-:spotlessApply
-BUILD SUCCESSFUL
+...
+[INFO] BUILD SUCCESS
+...
 
 cmd> mvn spotless:check
-BUILD SUCCESSFUL
+...
+[INFO] BUILD SUCCESS
+...
 ```
 
 To use it in your pom, just [add the Spotless dependency](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22), and configure it like so:
@@ -81,7 +84,7 @@ Spotless requires Maven to be running on JRE 8+.
 
 ## Applying to Java source
 
-By default, all compileSourceRoots will be formatted.  Each element under `<java>` is a step, and they will be applied in the order specified.  Every step is optional, and they will be applied in the order specified.  It doesn't make sense to use both eclipse and google-java-format.
+By default, all files matching `src/main/java/**/*.java` and `src/test/java/**/*.java` Ant style pattern will be formatted.  Each element under `<java>` is a step, and they will be applied in the order specified.  Every step is optional, and they will be applied in the order specified.  It doesn't make sense to use both eclipse and google-java-format.
 
 ```xml
 <configuration>
@@ -134,12 +137,41 @@ You can easily set the line endings of different files using [a `.gitattributes`
 
 <a name="enforceCheck"></a>
 
+<a name="includeExclude"></a>
+
+## File incudes and excludes
+
+Spotless uses [Ant style patterns](https://ant.apache.org/manual/dirtasks.html) to define included and excluded files.
+By default, most common compile and test source roots for the supported languages are included. They are `scr/main/java/**/*.java`, `scr/test/java/**/*.java` for Java and `scr/main/scala/**/*.scala`, `scr/main/scala/**/*.sc`, `scr/test/scala/**/*.scala`, `scr/test/scala/**/*.sc` for Scala.
+Includes can be completely overriden using `<includes>...</includes>` configuration section.
+
+Default excludes only contain output directory (usually `target/`) and various temporary and VCS-related files. Additional excludes can also be configured.
+
+Includes and excludes can be configured the same way for all supported languages. Excample for Java:
+
+```xml
+<java>
+  <includes>
+    <!-- include all java files in "java" folders under "src" -->
+    <include>src/**/java/**/*.java</include>
+
+    <!-- include all java files in "java" folders under "other" -->
+    <include>other/java/**/*.java</include>
+  </includes>
+
+  <excludes>
+    <!-- exclude examples from formatting -->
+    <exclude>src/test/java/**/*Example.java</exclude>
+  </excludes>
+</java>
+```
+
 ## Disabling warnings and error messages
 
 By default, `spotless:check` is bound to the `verify` phase.  You might want to disable this behavior.  We [recommend against this](https://github.com/diffplug/spotless/issues/79#issuecomment-290844602), but it's easy to do if you'd like:
 
 - set `-Dspotless.check.skip=true` at the command line
-- set `spotless.check.skip` to `true` in the `<properties>` section
+- set `spotless.check.skip` to `true` in the `<properties>` section of the `pom.xml`
 
 <a name="preview"></a>
 
