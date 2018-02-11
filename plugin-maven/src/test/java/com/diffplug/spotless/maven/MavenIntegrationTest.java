@@ -16,7 +16,6 @@
 package com.diffplug.spotless.maven;
 
 import static com.diffplug.common.base.Strings.isNullOrEmpty;
-import static java.util.stream.Collectors.joining;
 import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
@@ -27,7 +26,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -82,15 +80,19 @@ public class MavenIntegrationTest extends ResourceHarness {
 	}
 
 	protected void writePomWithJavaSteps(String... steps) throws IOException {
-		writePom("java", null, steps);
+		writePom(groupWithSteps("java", steps));
 	}
 
 	protected void writePomWithScalaSteps(String... steps) throws IOException {
-		writePom("scala", null, steps);
+		writePom(groupWithSteps("scala", steps));
 	}
 
-	protected void writePom(String group, String[] executions, String[] steps) throws IOException {
-		String pomXmlContent = createPomXmlContent(group, executions, steps);
+	protected void writePom(String... configuration) throws IOException {
+		writePom(null, configuration);
+	}
+
+	protected void writePom(String[] executions, String[] configuration) throws IOException {
+		String pomXmlContent = createPomXmlContent(executions, configuration);
 		write("pom.xml", pomXmlContent);
 	}
 
@@ -100,26 +102,25 @@ public class MavenIntegrationTest extends ResourceHarness {
 				.withLocalRepository(new File(getSystemProperty(LOCAL_MAVEN_REPOSITORY_DIR)));
 	}
 
-	private String createPomXmlContent(String group, String[] executions, String[] steps) throws IOException {
+	private String createPomXmlContent(String[] executions, String[] configuration) throws IOException {
 		URL url = MavenIntegrationTest.class.getResource("/pom-test.xml.mustache");
 		try (BufferedReader reader = Resources.asCharSource(url, StandardCharsets.UTF_8).openBufferedStream()) {
 			Mustache mustache = mustacheFactory.compile(reader, "pom");
 			StringWriter writer = new StringWriter();
-			Map<String, String> params = buildPomXmlParams(group, executions, steps);
+			Map<String, String> params = buildPomXmlParams(executions, configuration);
 			mustache.execute(writer, params);
 			return writer.toString();
 		}
 	}
 
-	private static Map<String, String> buildPomXmlParams(String group, String[] executions, String[] steps) {
+	private static Map<String, String> buildPomXmlParams(String[] executions, String[] configuration) {
 		Map<String, String> params = new HashMap<>();
 		params.put(LOCAL_MAVEN_REPOSITORY_DIR, getSystemProperty(LOCAL_MAVEN_REPOSITORY_DIR));
 		params.put(SPOTLESS_MAVEN_PLUGIN_VERSION, getSystemProperty(SPOTLESS_MAVEN_PLUGIN_VERSION));
 
-		String prefix = String.format("<%s>\n", group);
-		String suffix = String.format("\n</%s>", group);
-		String stepsXml = Arrays.stream(steps).collect(joining("\n", prefix, suffix));
-		params.put(CONFIGURATION, stepsXml);
+		if (configuration != null) {
+			params.put(CONFIGURATION, String.join("\n", configuration));
+		}
 
 		if (executions != null) {
 			params.put(EXECUTIONS, String.join("\n", executions));
@@ -134,5 +135,13 @@ public class MavenIntegrationTest extends ResourceHarness {
 			fail("System property '" + name + "' is not defined");
 		}
 		return value;
+	}
+
+	private static String[] groupWithSteps(String group, String... steps) {
+		String[] result = new String[steps.length + 2];
+		result[0] = '<' + group + '>';
+		System.arraycopy(steps, 0, result, 1, steps.length);
+		result[result.length - 1] = "</" + group + '>';
+		return result;
 	}
 }

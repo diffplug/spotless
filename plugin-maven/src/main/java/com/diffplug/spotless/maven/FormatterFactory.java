@@ -20,7 +20,10 @@ import static java.util.stream.Collectors.toList;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
@@ -63,8 +66,9 @@ public abstract class FormatterFactory {
 		LineEnding.Policy formatterLineEndingPolicy = formatterLineEndings.createPolicy(config.getBaseDir(), () -> filesToFormat);
 
 		FormatterStepConfig stepConfig = stepConfig(formatterEncoding, config);
+		List<FormatterStepFactory> factories = gatherStepFactories(config.getGlobalStepFactories(), stepFactories);
 
-		List<FormatterStep> formatterSteps = stepFactories.stream()
+		List<FormatterStep> formatterSteps = factories.stream()
 				.filter(Objects::nonNull) // all unrecognized steps from XML config appear as nulls in the list
 				.map(factory -> factory.newFormatterStep(stepConfig))
 				.collect(toList());
@@ -93,5 +97,21 @@ public abstract class FormatterFactory {
 
 	private FormatterStepConfig stepConfig(Charset encoding, FormatterConfig config) {
 		return new FormatterStepConfig(encoding, licenseHeaderDelimiter(), config.getProvisioner());
+	}
+
+	private static List<FormatterStepFactory> gatherStepFactories(List<FormatterStepFactory> allGlobal, List<FormatterStepFactory> allConfigured) {
+		List<FormatterStepFactory> result = new ArrayList<>();
+		for (FormatterStepFactory global : allGlobal) {
+			if (!formatterStepOverriden(global, allConfigured)) {
+				result.add(global);
+			}
+		}
+		result.addAll(allConfigured);
+		return result;
+	}
+
+	private static boolean formatterStepOverriden(FormatterStepFactory global, List<FormatterStepFactory> allConfigured) {
+		return allConfigured.stream()
+				.anyMatch(configured -> configured.getClass() == global.getClass());
 	}
 }

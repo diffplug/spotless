@@ -46,7 +46,7 @@ public class SpotlessCheckMojoTest extends MavenIntegrationTest {
 
 	@Test
 	public void testSpotlessCheckBindingToVerifyPhase() throws Exception {
-		writePom("java",
+		writePom(
 				new String[]{
 						"<execution>",
 						"  <id>check</id>",
@@ -55,9 +55,11 @@ public class SpotlessCheckMojoTest extends MavenIntegrationTest {
 						"  </goals>",
 						"</execution>"},
 				new String[]{
-						"<licenseHeader>",
-						"  <file>${basedir}/license.txt</file>",
-						"</licenseHeader>"});
+						"<java>",
+						"  <licenseHeader>",
+						"    <file>${basedir}/license.txt</file>",
+						"  </licenseHeader>",
+						"</java>"});
 
 		testSpotlessCheck(UNFORMATTED_FILE, "verify", true);
 	}

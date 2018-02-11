@@ -15,7 +15,10 @@
  */
 package com.diffplug.spotless.maven;
 
+import static java.util.Collections.unmodifiableList;
+
 import java.io.File;
+import java.util.List;
 
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Provisioner;
@@ -26,12 +29,15 @@ public class FormatterConfig {
 	private final String encoding;
 	private final LineEnding lineEndings;
 	private final Provisioner provisioner;
+	private final List<FormatterStepFactory> globalStepFactories;
 
-	public FormatterConfig(File baseDir, String encoding, LineEnding lineEndings, Provisioner provisioner) {
+	public FormatterConfig(File baseDir, String encoding, LineEnding lineEndings, Provisioner provisioner,
+			List<FormatterStepFactory> globalStepFactories) {
 		this.baseDir = baseDir;
 		this.encoding = encoding;
 		this.lineEndings = lineEndings;
 		this.provisioner = provisioner;
+		this.globalStepFactories = globalStepFactories;
 	}
 
 	public File getBaseDir() {
@@ -48,5 +54,9 @@ public class FormatterConfig {
 
 	public Provisioner getProvisioner() {
 		return provisioner;
+	}
+
+	public List<FormatterStepFactory> getGlobalStepFactories() {
+		return unmodifiableList(globalStepFactories);
 	}
 }

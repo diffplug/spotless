@@ -15,12 +15,15 @@
  */
 package com.diffplug.spotless.maven;
 
+import static java.util.stream.Collectors.toList;
+
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -35,6 +38,7 @@ import org.eclipse.aether.repository.RemoteRepository;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.maven.generic.LicenseHeader;
 import com.diffplug.spotless.maven.java.Java;
 import com.diffplug.spotless.maven.scala.Scala;
 
@@ -65,6 +69,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	private LineEnding lineEndings;
 
 	@Parameter
+	private LicenseHeader licenseHeader;
+
+	@Parameter
 	private Java java;
 
 	@Parameter
@@ -74,12 +81,10 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	@Override
 	public final void execute() throws MojoExecutionException, MojoFailureException {
-		List<FormatterFactory> formatterFactories = Arrays.asList(java, scala);
+		List<FormatterFactory> formatterFactories = getFormatterFactories();
 
 		for (FormatterFactory formatterFactory : formatterFactories) {
-			if (formatterFactory != null) {
-				execute(formatterFactory);
-			}
+			execute(formatterFactory);
 		}
 	}
 
@@ -117,6 +122,19 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	private FormatterConfig getFormatterConfig() {
 		ArtifactResolver resolver = new ArtifactResolver(repositorySystem, repositorySystemSession, repositories, getLog());
 		Provisioner provisioner = MavenProvisioner.create(resolver);
-		return new FormatterConfig(baseDir, encoding, lineEndings, provisioner);
+		List<FormatterStepFactory> formatterStepFactories = getFormatterStepFactories();
+		return new FormatterConfig(baseDir, encoding, lineEndings, provisioner, formatterStepFactories);
+	}
+
+	private List<FormatterFactory> getFormatterFactories() {
+		return Stream.of(java, scala)
+				.filter(Objects::nonNull)
+				.collect(toList());
+	}
+
+	private List<FormatterStepFactory> getFormatterStepFactories() {
+		return Stream.of(licenseHeader)
+				.filter(Objects::nonNull)
+				.collect(toList());
 	}
 }

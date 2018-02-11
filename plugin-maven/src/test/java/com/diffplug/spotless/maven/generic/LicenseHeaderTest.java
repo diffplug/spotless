@@ -46,6 +46,17 @@ public class LicenseHeaderTest extends MavenIntegrationTest {
 		runTest();
 	}
 
+	@Test
+	public void fromFileGlobal() throws Exception {
+		write("license.txt", getTestResource(KEY_LICENSE));
+		writePom("<licenseHeader>",
+				"  <file>${basedir}/license.txt</file>",
+				"</licenseHeader>",
+				"<java/>");
+
+		runTest();
+	}
+
 	private void runTest() throws Exception {
 		write("src/main/java/test.java", getTestResource("license/MissingLicense.test"));
 		mavenRunner().withArguments("spotless:apply").runNoError();
