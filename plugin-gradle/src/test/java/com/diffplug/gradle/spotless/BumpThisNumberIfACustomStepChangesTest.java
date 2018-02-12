@@ -46,7 +46,7 @@ public class BumpThisNumberIfACustomStepChangesTest extends GradleIntegrationTes
 	protected void applyIsUpToDate(boolean upToDate) throws IOException {
 		super.applyIsUpToDate(upToDate);
 		String result = read("README.md");
-		Assert.assertEquals("abc\n", result);
+		Assert.assertEquals("abc", result);
 	}
 
 	@Test

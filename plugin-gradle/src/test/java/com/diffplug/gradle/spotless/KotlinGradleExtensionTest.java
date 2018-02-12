@@ -93,7 +93,7 @@ public class KotlinGradleExtensionTest extends GradleIntegrationTest {
 		write("configuration.gradle.kts", "buildscript {}");
 		gradleRunner().withArguments("spotlessApply").build();
 		String result = read("configuration.gradle.kts");
-		String formatted = "buildscript {}\n";
+		String formatted = "buildscript {}";
 		Assert.assertEquals(formatted, result);
 	}
 }

@@ -56,7 +56,7 @@ public class SqlExtensionTest extends GradleIntegrationTest {
 				"}");
 
 		File sqlFile = write("src/main/resources/aFolder/create.sql", getTestResource("sql/dbeaver/create.dirty"));
-		write("myConfig.properties", getTestResource("sql/dbeaver/myConfig.properties"));
+		write("myConfig.properties", getTestResource("sql/dbeaver/sqlConfig2.properties"));
 
 		// Run
 		gradleRunner().withArguments("spotlessApply").build();

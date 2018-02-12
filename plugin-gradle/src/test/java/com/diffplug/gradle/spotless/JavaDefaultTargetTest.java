@@ -33,7 +33,7 @@ public class JavaDefaultTargetTest extends GradleIntegrationTest {
 				"",
 				"spotless {",
 				"    java {",
-				"        googleJavaFormat()",
+				"        googleJavaFormat('1.2')",
 				"    }",
 				"}");
 		String input = getTestResource("java/googlejavaformat/JavaCodeUnformatted.test");

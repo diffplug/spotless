@@ -38,6 +38,6 @@ public class CustomLazyGroovyTest extends GradleIntegrationTest {
 		write("README.md", "ABC");
 		gradleRunner().withArguments("spotlessApply").build();
 		String result = read("README.md");
-		Assert.assertEquals("abc\n", result);
+		Assert.assertEquals("abc", result);
 	}
 }

@@ -32,7 +32,7 @@ For the folders below in monospace text, they are published on maven central at 
 | Folder | Description |
 | ------ | ----------- |
 | `lib` | Contains all of Spotless' core infrastructure and most of its `FormatterStep` - has no external dependencies. |
-| `testlib` | Contains testing infrastructure, as well as all tests for `spotless-lib`, since those tests need the testing infrastructure in `testlib`. |
+| `testlib` | Contains testing infrastructure and all test resources, so that they can be reused in plugin-specific integration tests.  Also contains tests for `lib`. |
 | `lib-extra` | Contains the optional parts of Spotless which require external dependencies.  `LineEnding.GIT_ATTRIBUTES` won't work unless `lib-extra` is available. |
 | `plugin-gradle` | Integrates spotless and all of its formatters into Gradle. |
 | `plugin-maven` | Integrates spotless and all of its formatters into Maven. |

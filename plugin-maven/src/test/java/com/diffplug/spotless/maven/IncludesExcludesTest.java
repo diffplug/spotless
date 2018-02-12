@@ -23,8 +23,8 @@ import org.junit.Test;
 
 public class IncludesExcludesTest extends MavenIntegrationTest {
 
-	private static final String JAVA_FORMATTED = "java/eclipse/format/JavaCodeFormatted.test";
-	private static final String JAVA_UNFORMATTED = "java/eclipse/format/JavaCodeUnformatted.test";
+	private static final String JAVA_FORMATTED = "java/eclipse/JavaCodeFormatted.test";
+	private static final String JAVA_UNFORMATTED = "java/eclipse/JavaCodeUnformatted.test";
 	private static final String SCALA_UNFORMATTED = "scala/scalafmt/basic.dirty";
 	private static final String SCALA_FORMATTED = "scala/scalafmt/basic.clean";
 
@@ -43,7 +43,7 @@ public class IncludesExcludesTest extends MavenIntegrationTest {
 				"  <file>${basedir}/formatter.xml</file>",
 				"</eclipse>");
 
-		write("formatter.xml", getTestResource("java/eclipse/format/formatter.xml"));
+		write("formatter.xml", getTestResource("java/eclipse/formatter.xml"));
 
 		writeUnformattedJava(unformattedCorrectLocation1);
 		writeUnformattedJava(unformattedCorrectLocation2);
@@ -167,8 +167,7 @@ public class IncludesExcludesTest extends MavenIntegrationTest {
 	}
 
 	private void assertUnformattedJava(String target) throws IOException {
-		// #write() call adds a new line, append '\n' to the original unformatted java
-		assertThat(read(target)).isEqualTo(getTestResource(JAVA_UNFORMATTED) + '\n');
+		assertThat(read(target)).isEqualTo(getTestResource(JAVA_UNFORMATTED));
 	}
 
 	private void writeFormattedScala(String target) throws IOException {
@@ -184,7 +183,6 @@ public class IncludesExcludesTest extends MavenIntegrationTest {
 	}
 
 	private void assertUnformattedScala(String target) throws IOException {
-		// #write() call adds a new line, append '\n' to the original unformatted scala
-		assertThat(read(target)).isEqualTo(getTestResource(SCALA_UNFORMATTED) + '\n');
+		assertThat(read(target)).isEqualTo(getTestResource(SCALA_UNFORMATTED));
 	}
 }

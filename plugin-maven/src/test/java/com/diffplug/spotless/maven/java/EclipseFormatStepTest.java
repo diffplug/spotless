@@ -31,12 +31,12 @@ public class EclipseFormatStepTest extends MavenIntegrationTest {
 				"  <version>4.7.1</version>",
 				"</eclipse>");
 
-		write("src/main/java/test.java", getTestResource("java/eclipse/format/JavaCodeUnformatted.test"));
-		write("formatter.xml", getTestResource("java/eclipse/format/formatter.xml"));
+		write("src/main/java/test.java", getTestResource("java/eclipse/JavaCodeUnformatted.test"));
+		write("formatter.xml", getTestResource("java/eclipse/formatter.xml"));
 
 		mavenRunner().withArguments("spotless:apply").runNoError();
 
 		String actual = read("src/main/java/test.java");
-		assertThat(actual).isEqualTo(getTestResource("java/eclipse/format/JavaCodeFormatted.test"));
+		assertThat(actual).isEqualTo(getTestResource("java/eclipse/JavaCodeFormatted.test"));
 	}
 }

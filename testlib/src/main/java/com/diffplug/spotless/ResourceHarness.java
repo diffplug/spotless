@@ -99,7 +99,12 @@ public class ResourceHarness {
 	}
 
 	protected File write(String path, LineEnding ending, Charset encoding, String... lines) throws IOException {
-		String content = Arrays.stream(lines).collect(Collectors.joining(ending.str())) + ending.str();
+		String content;
+		if (lines.length == 1) {
+			content = lines[0];
+		} else {
+			content = Arrays.stream(lines).collect(Collectors.joining(ending.str())) + ending.str();
+		}
 		Path target = newFile(path).toPath();
 		Files.createDirectories(target.getParent());
 		Files.write(target, content.getBytes(encoding));
