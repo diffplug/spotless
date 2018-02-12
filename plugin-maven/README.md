@@ -3,7 +3,7 @@
 <!---freshmark shields
 output = [
   link(shield('Maven central', 'mavencentral', '{{group}}:{{artifactIdMaven}}', 'blue'), 'http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22{{group}}%22%20AND%20a%3A%22{{artifactIdMaven}}%22'),
-  link(shield('Javadoc', 'javadoc', '{{stableMaven}}', 'blue'), 'https://{{org}}.github.io/{{name}}/javadoc/spotless-plugin-maven/{{stableMaven}}/'),
+  link(shield('Javadoc', 'javadoc', '{{stableMaven}}', 'blue'), 'https://{{org}}.github.io/{{name}}/javadoc/{{artifactIdMaven}}/{{stableMaven}}/'),
   '',
   link(shield('Changelog', 'changelog', '{{stableMaven}}', 'brightgreen'), 'CHANGES.md'),
   link(image('Travis CI', 'https://travis-ci.org/{{org}}/{{name}}.svg?branch=master'), 'https://travis-ci.org/{{org}}/{{name}}'),
@@ -12,7 +12,7 @@ output = [
   ].join('\n');
 -->
 [![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
-[![Javadoc](https://img.shields.io/badge/javadoc-1.0.0.BETA1-blue.svg)](https://diffplug.github.io/spotless/javadoc/spotless-plugin-maven/1.0.0.BETA1/)
+[![Javadoc](https://img.shields.io/badge/javadoc-1.0.0.BETA1-blue.svg)](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/1.0.0.BETA1/)
 
 [![Changelog](https://img.shields.io/badge/changelog-1.0.0.BETA1-brightgreen.svg)](CHANGES.md)
 [![Travis CI](https://travis-ci.org/diffplug/spotless.svg?branch=master)](https://travis-ci.org/diffplug/spotless)

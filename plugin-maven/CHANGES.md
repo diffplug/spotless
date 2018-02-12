@@ -1,8 +1,8 @@
 # spotless-plugin-maven releases
 
-### Version 1.0.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-maven/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-plugin-maven/))
+### Version 1.10.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-maven-plugin/))
 
-### Version 0.9.0 - February 11th 2017 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-maven/0.9.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-maven-plugin/0.9.0))
+### Version 1.0.0.BETA1 - February 11th 2017 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/1.0.0.BETA1/), [jcenter](https://bintray.com/diffplug/opensource/spotless-maven-plugin/1.0.0.BETA1))
 
 * Maven plugin written by [Konstantin Lutovich](https://github.com/lutovich).
 * Full support for the Java and Scala formatters.
