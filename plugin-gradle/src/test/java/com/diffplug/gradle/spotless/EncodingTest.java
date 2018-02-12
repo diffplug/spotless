@@ -17,15 +17,12 @@ package com.diffplug.gradle.spotless;
 
 import java.nio.charset.Charset;
 
-import org.junit.Assert;
 import org.junit.Test;
-
-import com.diffplug.spotless.LineEnding;
 
 public class EncodingTest extends GradleIntegrationTest {
 	@Test
 	public void defaultIsUtf8() throws Exception {
-		write("build.gradle",
+		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",
 				"}",
@@ -35,14 +32,14 @@ public class EncodingTest extends GradleIntegrationTest {
 				"        custom 'replaceMicro', { it.replace('µ', 'A') }",
 				"    }",
 				"}");
-		write("test.java", "µ");
+		setFile("test.java").toContent("µ");
 		gradleRunner().withArguments("spotlessApply").build();
-		Assert.assertEquals("A\n", read("test.java"));
+		assertFile("test.java").hasContent("A");
 	}
 
 	@Test
 	public void globalIsRespected() throws Exception {
-		write("build.gradle",
+		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",
 				"}",
@@ -53,14 +50,14 @@ public class EncodingTest extends GradleIntegrationTest {
 				"    }",
 				"    encoding 'US-ASCII'",
 				"}");
-		write("test.java", "µ");
+		setFile("test.java").toContent("µ");
 		gradleRunner().withArguments("spotlessApply").build();
-		Assert.assertEquals("??\n", read("test.java"));
+		assertFile("test.java").hasContent("??");
 	}
 
 	@Test
 	public void globalIsRespectedButCanBeOverridden() throws Exception {
-		write("build.gradle",
+		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",
 				"}",
@@ -76,12 +73,10 @@ public class EncodingTest extends GradleIntegrationTest {
 				"    }",
 				"    encoding 'US-ASCII'",
 				"}");
-		write("test.java", "µ");
-		write("utf32.encoded", LineEnding.UNIX, Charset.forName("UTF-32"), "µ");
-		Assert.assertEquals("µ\n", read("utf32.encoded", Charset.forName("UTF-32")));
-
+		setFile("test.java").toContent("µ");
+		setFile("utf32.encoded").toContent("µ", Charset.forName("UTF-32"));
 		gradleRunner().withArguments("spotlessApply").build();
-		Assert.assertEquals("??\n", read("test.java"));
-		Assert.assertEquals("A\n", read("utf32.encoded", Charset.forName("UTF-32")));
+		assertFile("test.java").hasContent("??");
+		assertFile("utf32.encoded").hasContent("A", Charset.forName("UTF-32"));
 	}
 }

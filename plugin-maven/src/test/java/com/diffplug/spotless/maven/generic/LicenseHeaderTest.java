@@ -26,7 +26,7 @@ public class LicenseHeaderTest extends MavenIntegrationTest {
 
 	@Test
 	public void fromFile() throws Exception {
-		write("license.txt", getTestResource(KEY_LICENSE));
+		setFile("license.txt").toResource(KEY_LICENSE);
 		writePomWithJavaSteps(
 				"<licenseHeader>",
 				"  <file>${basedir}/license.txt</file>",
@@ -48,7 +48,7 @@ public class LicenseHeaderTest extends MavenIntegrationTest {
 
 	@Test
 	public void fromFileGlobal() throws Exception {
-		write("license.txt", getTestResource(KEY_LICENSE));
+		setFile("license.txt").toResource(KEY_LICENSE);
 		writePom("<licenseHeader>",
 				"  <file>${basedir}/license.txt</file>",
 				"</licenseHeader>",
@@ -58,7 +58,7 @@ public class LicenseHeaderTest extends MavenIntegrationTest {
 	}
 
 	private void runTest() throws Exception {
-		write("src/main/java/test.java", getTestResource("license/MissingLicense.test"));
+		setFile("src/main/java/test.java").toResource("license/MissingLicense.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		String actual = read("src/main/java/test.java");
 		assertThat(actual).isEqualTo(getTestResource("license/HasLicense.test"));

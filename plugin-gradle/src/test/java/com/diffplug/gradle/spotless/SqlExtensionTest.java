@@ -15,7 +15,6 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.junit.Test;
@@ -24,7 +23,7 @@ public class SqlExtensionTest extends GradleIntegrationTest {
 
 	@Test
 	public void should_format_sql_with_default_configuration() throws IOException {
-		write("build.gradle",
+		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",
 				"}",
@@ -34,18 +33,14 @@ public class SqlExtensionTest extends GradleIntegrationTest {
 				"    }",
 				"}");
 
-		File sqlFile = write("src/main/resources/aFolder/create.sql", getTestResource("sql/dbeaver/create.dirty"));
-
-		// Run
+		setFile("src/main/resources/aFolder/create.sql").toResource("sql/dbeaver/create.dirty");
 		gradleRunner().withArguments("spotlessApply").build();
-
-		// Common checks
-		assertFileContent(getTestResource("sql/dbeaver/create.clean"), sqlFile);
+		assertFile("src/main/resources/aFolder/create.sql").sameAsResource("sql/dbeaver/create.clean");
 	}
 
 	@Test
 	public void should_format_sql_with_alternative_configuration() throws IOException {
-		write("build.gradle",
+		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",
 				"}",
@@ -54,15 +49,10 @@ public class SqlExtensionTest extends GradleIntegrationTest {
 				"       dbeaver().configFile 'myConfig.properties'",
 				"    }",
 				"}");
+		setFile("myConfig.properties").toResource("sql/dbeaver/sqlConfig2.properties");
 
-		File sqlFile = write("src/main/resources/aFolder/create.sql", getTestResource("sql/dbeaver/create.dirty"));
-		write("myConfig.properties", getTestResource("sql/dbeaver/myConfig.properties"));
-
-		// Run
+		setFile("src/main/resources/aFolder/create.sql").toResource("sql/dbeaver/create.dirty");
 		gradleRunner().withArguments("spotlessApply").build();
-
-		// Common checks
-		assertFileContent(getTestResource("sql/dbeaver/create.clean.alternative"), sqlFile);
+		assertFile("src/main/resources/aFolder/create.sql").sameAsResource("sql/dbeaver/create.clean.alternative");
 	}
-
 }

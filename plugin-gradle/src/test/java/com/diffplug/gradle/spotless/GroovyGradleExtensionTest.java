@@ -15,15 +15,14 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.io.File;
 import java.io.IOException;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
-public class GroovyGradleExtensionTest extends GradleIntegrationTest {
+import com.diffplug.common.base.StringPrinter;
 
-	private final String HEADER = "//My tests header";
+public class GroovyGradleExtensionTest extends GradleIntegrationTest {
+	private static final String HEADER = "//My tests header";
 
 	@Test
 	public void defaultTarget() throws IOException {
@@ -37,7 +36,7 @@ public class GroovyGradleExtensionTest extends GradleIntegrationTest {
 
 	private void testTarget(boolean useDefaultTarget) throws IOException {
 		String target = useDefaultTarget ? "" : "target 'other.gradle'";
-		File projectFile = write("build.gradle",
+		String buildContent = StringPrinter.buildStringFromLines(
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",
 				"}",
@@ -47,18 +46,14 @@ public class GroovyGradleExtensionTest extends GradleIntegrationTest {
 				"        licenseHeader('" + HEADER + "', 'plugins')",
 				"    }",
 				"}");
+		setFile("build.gradle").toContent(buildContent);
 
-		// write appends a line ending so re-read to see what the original currently looks like
-		String unModified = read(projectFile.toPath());
-
-		// Run
 		gradleRunner().withArguments("spotlessApply").build();
 
 		if (useDefaultTarget) {
-			Assertions.assertThat(read(projectFile.toPath())).contains(HEADER);
+			assertFile("build.gradle").hasContent(HEADER + "\n" + buildContent);
 		} else {
-			assertFileContent(unModified, projectFile);
+			assertFile("build.gradle").hasContent(buildContent);
 		}
 	}
-
 }

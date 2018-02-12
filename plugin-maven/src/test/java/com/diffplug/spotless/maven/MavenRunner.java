@@ -15,7 +15,6 @@
  */
 package com.diffplug.spotless.maven;
 
-import static java.util.stream.Collectors.joining;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.ByteArrayOutputStream;
@@ -65,7 +64,7 @@ public class MavenRunner {
 		Objects.requireNonNull(projectDir, "Need to call withProjectDir() first");
 		Objects.requireNonNull(args, "Need to call withArguments() first");
 		// run maven with the given args in the given directory
-		String argsString = Arrays.stream(args).collect(joining(" "));
+		String argsString = String.join(" ", Arrays.asList(args));
 		List<String> cmds = getPlatformCmds("-e -Dmaven.repo.local=" + localRepositoryDir + ' ' + argsString);
 		ProcessBuilder builder = new ProcessBuilder(cmds);
 		builder.directory(projectDir);

@@ -63,7 +63,7 @@ public class MavenIntegrationTest extends ResourceHarness {
 	 */
 	@Before
 	public void gitAttributes() throws IOException {
-		write(".gitattributes", "* text eol=lf");
+		setFile(".gitattributes").toContent("* text eol=lf");
 		// copy the mvnw resources
 		copy("mvnw").setExecutable(true);
 		copy("mvnw.cmd");
@@ -93,7 +93,7 @@ public class MavenIntegrationTest extends ResourceHarness {
 
 	protected void writePom(String[] executions, String[] configuration) throws IOException {
 		String pomXmlContent = createPomXmlContent(executions, configuration);
-		write("pom.xml", pomXmlContent);
+		setFile("pom.xml").toContent(pomXmlContent);
 	}
 
 	protected MavenRunner mavenRunner() throws IOException {

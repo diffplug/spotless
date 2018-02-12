@@ -17,13 +17,12 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 public class GoogleJavaFormatIntegrationTest extends GradleIntegrationTest {
 	@Test
 	public void integration() throws IOException {
-		write("build.gradle",
+		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",
@@ -35,16 +34,12 @@ public class GoogleJavaFormatIntegrationTest extends GradleIntegrationTest {
 				"        googleJavaFormat('1.2')",
 				"    }",
 				"}");
-		String input = getTestResource("java/googlejavaformat/JavaCodeUnformatted.test");
-		write("test.java", input);
-		gradleRunner().withArguments("spotlessApply").build();
 
-		String result = read("test.java");
-		String output = getTestResource("java/googlejavaformat/JavaCodeFormatted.test");
-		Assert.assertEquals(output, result);
+		setFile("test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("test.java").sameAsResource("java/googlejavaformat/JavaCodeFormatted.test");
 
 		checkRunsThenUpToDate();
-
 		replace("build.gradle",
 				"googleJavaFormat('1.2')",
 				"googleJavaFormat('1.3')");

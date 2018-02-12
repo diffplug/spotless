@@ -17,13 +17,12 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 public class CustomLazyGroovyTest extends GradleIntegrationTest {
 	@Test
 	public void integration() throws IOException {
-		write("build.gradle",
+		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",
 				"}",
@@ -35,9 +34,8 @@ public class CustomLazyGroovyTest extends GradleIntegrationTest {
 				"        }",
 				"    }",
 				"}");
-		write("README.md", "ABC");
+		setFile("README.md").toContent("ABC");
 		gradleRunner().withArguments("spotlessApply").build();
-		String result = read("README.md");
-		Assert.assertEquals("abc\n", result);
+		assertFile("README.md").hasContent("abc");
 	}
 }

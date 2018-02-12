@@ -15,23 +15,18 @@
  */
 package com.diffplug.spotless.maven.scala;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationTest;
 
 public class ScalafmtTest extends MavenIntegrationTest {
-
 	@Test
 	public void testScalafmtWithDefaultConfig() throws Exception {
 		writePomWithScalaSteps("<scalafmt/>");
 
-		write("src/main/scala/test.scala", getTestResource("scala/scalafmt/basic.dirty"));
+		setFile("src/main/scala/test.scala").toResource("scala/scalafmt/basic.dirty");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-
-		String actual = read("src/main/scala/test.scala");
-		assertThat(actual).isEqualTo(getTestResource("scala/scalafmt/basic.clean"));
+		assertFile("src/main/scala/test.scala").sameAsResource("scala/scalafmt/basic.clean");
 	}
 
 	@Test
@@ -40,12 +35,10 @@ public class ScalafmtTest extends MavenIntegrationTest {
 				"<scalafmt>",
 				"  <file>${project.basedir}/scalafmt.conf</file>",
 				"</scalafmt>");
+		setFile("scalafmt.conf").toResource("scala/scalafmt/scalafmt.conf");
 
-		write("src/main/scala/test.scala", getTestResource("scala/scalafmt/basic.dirty"));
-		write("scalafmt.conf", getTestResource("scala/scalafmt/scalafmt.conf"));
+		setFile("src/main/scala/test.scala").toResource("scala/scalafmt/basic.dirty");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-
-		String actual = read("src/main/scala/test.scala");
-		assertThat(actual).isEqualTo(getTestResource("scala/scalafmt/basic.cleanWithCustomConf"));
+		assertFile("src/main/scala/test.scala").sameAsResource("scala/scalafmt/basic.cleanWithCustomConf");
 	}
 }

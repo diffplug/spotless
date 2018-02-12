@@ -17,13 +17,12 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 public class BumpThisNumberIfACustomStepChangesTest extends GradleIntegrationTest {
 
 	private void writeBuildFile(String toInsert) throws IOException {
-		write("build.gradle",
+		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",
 				"}",
@@ -39,14 +38,13 @@ public class BumpThisNumberIfACustomStepChangesTest extends GradleIntegrationTes
 	}
 
 	private void writeContentWithBadFormatting() throws IOException {
-		write("README.md", "ABC");
+		setFile("README.md").toContent("ABC");
 	}
 
 	@Override
 	protected void applyIsUpToDate(boolean upToDate) throws IOException {
 		super.applyIsUpToDate(upToDate);
-		String result = read("README.md");
-		Assert.assertEquals("abc\n", result);
+		assertFile("README.md").hasContent("abc");
 	}
 
 	@Test

@@ -53,7 +53,7 @@ public class GradleIntegrationTest extends ResourceHarness {
 	 */
 	@Before
 	public void gitAttributes() throws IOException {
-		write(".gitattributes", "* text eol=lf");
+		setFile(".gitattributes").toContent("* text eol=lf");
 	}
 
 	protected final GradleRunner gradleRunner() throws IOException {

@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
 import org.gradle.api.GradleException;
@@ -51,7 +50,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 		SpotlessTask apply;
 
 		Bundle(String name, FormatterFunc function) throws IOException {
-			file = createTestFile("src/test." + name, "CCC");
+			file = setFile("src/test." + name).toContent("CCC");
 			FormatterStep step = FormatterStep.createNeverUpToDate(name, function);
 			check = createCheckTask(name, step);
 			apply = createApplyTask(name, step);
@@ -121,9 +120,9 @@ public class PaddedCellTaskTest extends ResourceHarness {
 		converge.apply.execute();
 		diverge.apply.execute();
 
-		assertFileContent("A", cycle.file);		// cycle -> first element in cycle
-		assertFileContent("", converge.file);	// converge -> converges
-		assertFileContent("CCC", diverge.file);	// diverge -> no change
+		assertFile(cycle.file).hasContent("A");		// cycle -> first element in cycle
+		assertFile(converge.file).hasContent("");	// converge -> converges
+		assertFile(diverge.file).hasContent("CCC");	// diverge -> no change
 
 		cycle.check.execute();
 		converge.check.execute();
@@ -163,7 +162,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 	private void assertFolderContents(String subfolderName, String... files) throws IOException {
 		File subfolder = new File(rootFolder(), subfolderName);
 		Assert.assertTrue(subfolder.isDirectory());
-		String asList = Arrays.stream(subfolder.list()).sorted().collect(Collectors.joining("\n"));
+		String asList = String.join("\n", Arrays.asList(files));
 		Assert.assertEquals(StringPrinter.buildStringFromLines(files).trim(), asList);
 	}
 
