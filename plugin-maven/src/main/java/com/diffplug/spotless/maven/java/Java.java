@@ -21,7 +21,6 @@ import static java.util.Collections.unmodifiableSet;
 import java.util.Set;
 
 import com.diffplug.spotless.maven.FormatterFactory;
-import com.diffplug.spotless.maven.generic.LicenseHeader;
 
 public class Java extends FormatterFactory {
 	private static final Set<String> DEFAULT_INCLUDES = unmodifiableSet(newHashSet("src/main/java/**/*.java",
@@ -36,10 +35,6 @@ public class Java extends FormatterFactory {
 	@Override
 	public String licenseHeaderDelimiter() {
 		return LICENSE_HEADER_DELIMITER;
-	}
-
-	public void addLicenseHeader(LicenseHeader licenseHeader) {
-		addStepFactory(licenseHeader);
 	}
 
 	public void addEclipse(Eclipse eclipse) {

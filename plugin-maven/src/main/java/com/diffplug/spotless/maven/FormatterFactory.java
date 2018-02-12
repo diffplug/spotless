@@ -32,6 +32,7 @@ import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.maven.generic.LicenseHeader;
 
 public abstract class FormatterFactory {
 	@Parameter
@@ -80,6 +81,10 @@ public abstract class FormatterFactory {
 				.steps(formatterSteps)
 				.rootDir(config.getBaseDir().toPath())
 				.build();
+	}
+
+	public final void addLicenseHeader(LicenseHeader licenseHeader) {
+		addStepFactory(licenseHeader);
 	}
 
 	protected void addStepFactory(FormatterStepFactory stepFactory) {
