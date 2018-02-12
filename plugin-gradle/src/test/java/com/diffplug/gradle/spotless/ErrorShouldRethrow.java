@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.BuildResult;
@@ -49,7 +48,7 @@ public class ErrorShouldRethrow extends GradleIntegrationTest {
 		lines.add("             }");
 		lines.add("        }");
 		lines.addAll(Arrays.asList(toInsert));
-		setFile("build.gradle").toContent(lines.stream().collect(Collectors.joining("\n")));
+		setFile("build.gradle").toContent(String.join("\n", lines));
 	}
 
 	@Test
@@ -133,7 +132,7 @@ public class ErrorShouldRethrow extends GradleIntegrationTest {
 		String expectedToStartWith = StringPrinter.buildStringFromLines(messages).trim();
 		int numNewlines = CharMatcher.is('\n').countIn(expectedToStartWith);
 		List<String> actualLines = Splitter.on('\n').splitToList(LineEnding.toUnix(result.getOutput()));
-		String actualStart = actualLines.subList(0, numNewlines + 1).stream().collect(Collectors.joining("\n"));
+		String actualStart = String.join("\n", actualLines.subList(0, numNewlines + 1));
 		Assertions.assertThat(actualStart).isEqualTo(expectedToStartWith);
 		Assertions.assertThat(result.tasks(outcome).size() + result.tasks(TaskOutcome.UP_TO_DATE).size())
 				.isEqualTo(result.getTasks().size());

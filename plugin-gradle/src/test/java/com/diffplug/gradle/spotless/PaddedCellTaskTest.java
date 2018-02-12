@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
 import org.gradle.api.GradleException;
@@ -163,7 +162,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 	private void assertFolderContents(String subfolderName, String... files) throws IOException {
 		File subfolder = new File(rootFolder(), subfolderName);
 		Assert.assertTrue(subfolder.isDirectory());
-		String asList = Arrays.stream(subfolder.list()).sorted().collect(Collectors.joining("\n"));
+		String asList = String.join("\n", Arrays.asList(files));
 		Assert.assertEquals(StringPrinter.buildStringFromLines(files).trim(), asList);
 	}
 

@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import org.assertj.core.api.AbstractCharSequenceAssert;
 import org.assertj.core.api.Assertions;
@@ -175,7 +174,7 @@ public class ResourceHarness {
 		}
 
 		public void hasLines(String... lines) {
-			hasContent(Arrays.stream(lines).collect(Collectors.joining("\n")));
+			hasContent(String.join("\n", Arrays.asList(lines)));
 		}
 
 		public void sameAsResource(String resource) throws IOException {
@@ -201,7 +200,7 @@ public class ResourceHarness {
 		}
 
 		public File toLines(String... lines) throws IOException {
-			return toContent(Arrays.stream(lines).collect(Collectors.joining("\n")));
+			return toContent(String.join("\n", Arrays.asList(lines)));
 		}
 
 		public File toContent(String content) throws IOException {
