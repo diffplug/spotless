@@ -49,7 +49,7 @@ public class ErrorShouldRethrow extends GradleIntegrationTest {
 		lines.add("             }");
 		lines.add("        }");
 		lines.addAll(Arrays.asList(toInsert));
-		write("build.gradle", lines.toArray(new String[lines.size()]));
+		setFile("build.gradle").toContent(lines.stream().collect(Collectors.joining("\n")));
 	}
 
 	@Test
@@ -57,7 +57,7 @@ public class ErrorShouldRethrow extends GradleIntegrationTest {
 		writeBuild(
 				"    } // format",
 				"}     // spotless");
-		write("README.md", "This code is fun.");
+		setFile("README.md").toContent("This code is fun.");
 		runWithSuccess(":spotlessMisc");
 	}
 
@@ -66,7 +66,7 @@ public class ErrorShouldRethrow extends GradleIntegrationTest {
 		writeBuild(
 				"    } // format",
 				"}     // spotless");
-		write("README.md", "This code is fubar.");
+		setFile("README.md").toContent("This code is fubar.");
 		runWithFailure(
 				":spotlessMiscStep 'no swearing' found problem in 'README.md':",
 				"No swearing!",
@@ -79,7 +79,7 @@ public class ErrorShouldRethrow extends GradleIntegrationTest {
 				"    } // format",
 				"    enforceCheck false",
 				"}     // spotless");
-		write("README.md", "This code is fubar.");
+		setFile("README.md").toContent("This code is fubar.");
 		runWithSuccess(":compileJava UP-TO-DATE");
 	}
 
@@ -89,7 +89,7 @@ public class ErrorShouldRethrow extends GradleIntegrationTest {
 				"        ignoreErrorForStep 'no swearing'",
 				"    } // format",
 				"}     // spotless");
-		write("README.md", "This code is fubar.");
+		setFile("README.md").toContent("This code is fubar.");
 		runWithSuccess(":spotlessMisc",
 				"Unable to apply step 'no swearing' to 'README.md'");
 	}
@@ -100,7 +100,7 @@ public class ErrorShouldRethrow extends GradleIntegrationTest {
 				"        ignoreErrorForPath 'README.md'",
 				"    } // format",
 				"}     // spotless");
-		write("README.md", "This code is fubar.");
+		setFile("README.md").toContent("This code is fubar.");
 		runWithSuccess(":spotlessMisc",
 				"Unable to apply step 'no swearing' to 'README.md'");
 	}
@@ -112,7 +112,7 @@ public class ErrorShouldRethrow extends GradleIntegrationTest {
 				"        ignoreErrorForPath 'nope'",
 				"    } // format",
 				"}     // spotless");
-		write("README.md", "This code is fubar.");
+		setFile("README.md").toContent("This code is fubar.");
 		runWithFailure(
 				":spotlessMiscStep 'no swearing' found problem in 'README.md':",
 				"No swearing!",

@@ -31,7 +31,7 @@ import com.diffplug.common.base.StringPrinter;
 public class GradleIncrementalResolutionTest extends GradleIntegrationTest {
 	@Test
 	public void failureDoesntTriggerAll() throws IOException {
-		write("build.gradle",
+		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",
 				"}",
@@ -86,7 +86,7 @@ public class GradleIncrementalResolutionTest extends GradleIntegrationTest {
 			boolean exists = new File(rootFolder(), filename(letter)).exists();
 			boolean needsChanging = exists && !read(filename(letter)).trim().equals(letter);
 			if (!exists || needsChanging) {
-				write(filename(letter), letter);
+				setFile(filename(letter)).toContent(letter);
 			}
 		}
 	}

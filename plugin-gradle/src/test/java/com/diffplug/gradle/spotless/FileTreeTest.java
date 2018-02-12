@@ -43,7 +43,7 @@ public class FileTreeTest extends ResourceHarness {
 
 	@Test
 	public void absolutePathDoesntWork() throws IOException {
-		File someFile = write("someFolder/someFile");
+		File someFile = setFile("someFolder/someFile").toContent("");
 		File someFolder = someFile.getParentFile();
 		fileTree.exclude(someFolder.getAbsolutePath());
 		Assertions.assertThat(fileTree).containsExactlyInAnyOrder(someFile);
@@ -51,7 +51,7 @@ public class FileTreeTest extends ResourceHarness {
 
 	@Test
 	public void relativePathDoes() throws IOException {
-		File someFile = write("someFolder/someFile");
+		File someFile = setFile("someFolder/someFile").toContent("");
 		File someFolder = someFile.getParentFile();
 		fileTree.exclude(relativize(rootFolder(), someFolder));
 		Assertions.assertThat(fileTree).containsExactlyInAnyOrder();

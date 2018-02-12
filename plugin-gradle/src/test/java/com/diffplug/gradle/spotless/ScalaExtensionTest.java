@@ -17,13 +17,12 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 public class ScalaExtensionTest extends GradleIntegrationTest {
 	@Test
 	public void integration() throws IOException {
-		write("build.gradle",
+		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",
@@ -34,11 +33,9 @@ public class ScalaExtensionTest extends GradleIntegrationTest {
 				"        scalafmt().configFile('scalafmt.conf')",
 				"    }",
 				"}");
-		write("src/main/scala/basic.scala", getTestResource("scala/scalafmt/basic.dirty"));
-		write("scalafmt.conf", getTestResource("scala/scalafmt/scalafmt.conf"));
+		setFile("scalafmt.conf").toResource("scala/scalafmt/scalafmt.conf");
+		setFile("src/main/scala/basic.scala").toResource("scala/scalafmt/basic.dirty");
 		gradleRunner().withArguments("spotlessApply").build();
-		String result = read("src/main/scala/basic.scala");
-		String formatted = getTestResource("scala/scalafmt/basic.cleanWithCustomConf");
-		Assert.assertEquals(formatted, result);
+		assertFile("src/main/scala/basic.scala").sameAsResource("scala/scalafmt/basic.cleanWithCustomConf");
 	}
 }

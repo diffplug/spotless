@@ -51,7 +51,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 		SpotlessTask apply;
 
 		Bundle(String name, FormatterFunc function) throws IOException {
-			file = createTestFile("src/test." + name, "CCC");
+			file = setFile("src/test." + name).toContent("CCC");
 			FormatterStep step = FormatterStep.createNeverUpToDate(name, function);
 			check = createCheckTask(name, step);
 			apply = createApplyTask(name, step);
@@ -121,9 +121,9 @@ public class PaddedCellTaskTest extends ResourceHarness {
 		converge.apply.execute();
 		diverge.apply.execute();
 
-		assertFileContent("A", cycle.file);		// cycle -> first element in cycle
-		assertFileContent("", converge.file);	// converge -> converges
-		assertFileContent("CCC", diverge.file);	// diverge -> no change
+		assertFile(cycle.file).hasContent("A");		// cycle -> first element in cycle
+		assertFile(converge.file).hasContent("");	// converge -> converges
+		assertFile(diverge.file).hasContent("CCC");	// diverge -> no change
 
 		cycle.check.execute();
 		converge.check.execute();

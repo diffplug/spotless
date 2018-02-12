@@ -15,8 +15,6 @@
  */
 package com.diffplug.spotless.maven.java;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationTest;
@@ -24,7 +22,7 @@ import com.diffplug.spotless.maven.MavenIntegrationTest;
 public class ImportOrderTest extends MavenIntegrationTest {
 	@Test
 	public void file() throws Exception {
-		write("import.properties", getTestResource("java/importsorter/import.properties"));
+		setFile("import.properties").toResource("java/importsorter/import.properties");
 		writePomWithJavaSteps(
 				"<importOrder>",
 				"  <file>${basedir}/import.properties</file>",
@@ -42,9 +40,8 @@ public class ImportOrderTest extends MavenIntegrationTest {
 	}
 
 	private void runTest() throws Exception {
-		write("src/main/java/test.java", getTestResource("java/importsorter/JavaCodeUnsortedImports.test"));
+		setFile("src/main/java/test.java").toResource("java/importsorter/JavaCodeUnsortedImports.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		String actual = read("src/main/java/test.java");
-		assertThat(actual).isEqualTo(getTestResource("java/importsorter/JavaCodeSortedImports.test"));
+		assertFile("src/main/java/test.java").sameAsResource("java/importsorter/JavaCodeSortedImports.test");
 	}
 }

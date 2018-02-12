@@ -73,7 +73,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 
 	@Test
 	public void lineEndingProblem() throws Exception {
-		SpotlessTask task = create(createTestFile("testFile", "A\r\nB\r\nC\r\n"));
+		SpotlessTask task = create(setFile("testFile").toContent("A\r\nB\r\nC\r\n"));
 		assertTaskFailure(task,
 				"    testFile",
 				"        @@ -1,3 +1,3 @@",
@@ -87,7 +87,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 
 	@Test
 	public void whitespaceProblem() throws Exception {
-		SpotlessTask task = create(createTestFile("testFile", "A \nB\t\nC  \n"));
+		SpotlessTask task = create(setFile("testFile").toContent("A \nB\t\nC  \n"));
 		task.addStep(FormatterStep.createNeverUpToDate("trimTrailing", input -> {
 			Pattern pattern = Pattern.compile("[ \t]+$", Pattern.UNIX_LINES | Pattern.MULTILINE);
 			return pattern.matcher(input).replaceAll("");
@@ -106,8 +106,8 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 	@Test
 	public void multipleFiles() throws Exception {
 		SpotlessTask task = create(
-				createTestFile("A", "1\r\n2\r\n"),
-				createTestFile("B", "3\n4\r\n"));
+				setFile("A").toContent("1\r\n2\r\n"),
+				setFile("B").toContent("3\n4\r\n"));
 		assertTaskFailure(task,
 				"    A",
 				"        @@ -1,2 +1,2 @@",
@@ -126,7 +126,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 	public void manyFiles() throws Exception {
 		List<File> testFiles = new ArrayList<>();
 		for (int i = 0; i < 9 + DiffMessageFormatter.MAX_FILES_TO_LIST - 1; ++i) {
-			testFiles.add(createTestFile(Integer.toString(i) + ".txt", "1\r\n2\r\n"));
+			testFiles.add(setFile(Integer.toString(i) + ".txt").toContent("1\r\n2\r\n"));
 		}
 		SpotlessTask task = create(testFiles);
 		assertTaskFailure(task,
@@ -199,7 +199,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 	public void manyManyFiles() throws Exception {
 		List<File> testFiles = new ArrayList<>();
 		for (int i = 0; i < 9 + DiffMessageFormatter.MAX_FILES_TO_LIST; ++i) {
-			testFiles.add(createTestFile(Integer.toString(i) + ".txt", "1\r\n2\r\n"));
+			testFiles.add(setFile(Integer.toString(i) + ".txt").toContent("1\r\n2\r\n"));
 		}
 		SpotlessTask task = create(testFiles);
 		assertTaskFailure(task,
@@ -266,7 +266,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 			builder.append(i);
 			builder.append("\r\n");
 		}
-		SpotlessTask task = create(createTestFile("testFile", builder.toString()));
+		SpotlessTask task = create(setFile("testFile").toContent(builder.toString()));
 		assertTaskFailure(task,
 				"    testFile",
 				"        @@ -1,1000 +1,1000 @@",

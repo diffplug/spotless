@@ -15,8 +15,6 @@
  */
 package com.diffplug.spotless.maven;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.io.IOException;
 
 import org.junit.Test;
@@ -43,7 +41,7 @@ public class IncludesExcludesTest extends MavenIntegrationTest {
 				"  <file>${basedir}/formatter.xml</file>",
 				"</eclipse>");
 
-		write("formatter.xml", getTestResource("java/eclipse/formatter.xml"));
+		setFile("formatter.xml").toResource("java/eclipse/formatter.xml");
 
 		writeUnformattedJava(unformattedCorrectLocation1);
 		writeUnformattedJava(unformattedCorrectLocation2);
@@ -155,34 +153,34 @@ public class IncludesExcludesTest extends MavenIntegrationTest {
 	}
 
 	private void writeFormattedJava(String target) throws IOException {
-		write(target, getTestResource(JAVA_FORMATTED));
+		setFile(target).toResource(JAVA_FORMATTED);
 	}
 
 	private void writeUnformattedJava(String target) throws IOException {
-		write(target, getTestResource(JAVA_UNFORMATTED));
+		setFile(target).toResource(JAVA_UNFORMATTED);
 	}
 
 	private void assertFormattedJava(String target) throws IOException {
-		assertThat(read(target)).isEqualTo(getTestResource(JAVA_FORMATTED));
+		assertFile(target).sameAsResource(JAVA_FORMATTED);
 	}
 
 	private void assertUnformattedJava(String target) throws IOException {
-		assertThat(read(target)).isEqualTo(getTestResource(JAVA_UNFORMATTED));
+		assertFile(target).sameAsResource(JAVA_UNFORMATTED);
 	}
 
 	private void writeFormattedScala(String target) throws IOException {
-		write(target, getTestResource(SCALA_FORMATTED));
+		setFile(target).toResource(SCALA_FORMATTED);
 	}
 
 	private void writeUnformattedScala(String target) throws IOException {
-		write(target, getTestResource(SCALA_UNFORMATTED));
+		setFile(target).toResource(SCALA_UNFORMATTED);
 	}
 
 	private void assertFormattedScala(String target) throws IOException {
-		assertThat(read(target)).isEqualTo(getTestResource(SCALA_FORMATTED));
+		assertFile(target).sameAsResource(SCALA_FORMATTED);
 	}
 
 	private void assertUnformattedScala(String target) throws IOException {
-		assertThat(read(target)).isEqualTo(getTestResource(SCALA_UNFORMATTED));
+		assertFile(target).sameAsResource(SCALA_UNFORMATTED);
 	}
 }

@@ -15,8 +15,6 @@
  */
 package com.diffplug.spotless.maven.java;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationTest;
@@ -26,11 +24,9 @@ public class RemoveUnusedImportsStepTest extends MavenIntegrationTest {
 	@Test
 	public void testRemoveUnusedInports() throws Exception {
 		writePomWithJavaSteps("<removeUnusedImports/>");
-		write("src/main/java/test.java", getTestResource("java/removeunusedimports/JavaCodeWithPackageUnformatted.test"));
 
+		setFile("src/main/java/test.java").toResource("java/removeunusedimports/JavaCodeWithPackageUnformatted.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-
-		String actual = read("src/main/java/test.java");
-		assertThat(actual).isEqualTo(getTestResource("java/removeunusedimports/JavaCodeWithPackageFormatted.test"));
+		assertFile("src/main/java/test.java").sameAsResource("java/removeunusedimports/JavaCodeWithPackageFormatted.test");
 	}
 }

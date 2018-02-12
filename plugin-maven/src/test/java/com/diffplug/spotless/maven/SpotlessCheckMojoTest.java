@@ -65,8 +65,8 @@ public class SpotlessCheckMojoTest extends MavenIntegrationTest {
 	}
 
 	private void testSpotlessCheck(String fileName, String command, boolean expectError) throws Exception {
-		write("license.txt", getTestResource("license/TestLicense"));
-		write("src/main/java/com.github.youribonnaffe.gradle.format/Java8Test.java", getTestResource(fileName));
+		setFile("license.txt").toResource("license/TestLicense");
+		setFile("src/main/java/com.github.youribonnaffe.gradle.format/Java8Test.java").toResource(fileName);
 
 		MavenRunner mavenRunner = mavenRunner().withArguments(command);
 

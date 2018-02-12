@@ -15,8 +15,6 @@
  */
 package com.diffplug.spotless.maven.java;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationTest;
@@ -29,12 +27,9 @@ public class GoogleJavaFormatTest extends MavenIntegrationTest {
 				"  <version>1.2</version>",
 				"</googleJavaFormat>");
 
-		write("src/main/java/test.java", getTestResource("java/googlejavaformat/JavaCodeUnformatted.test"));
-
+		setFile("src/main/java/test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-
-		String actual = read("src/main/java/test.java");
-		assertThat(actual).isEqualTo(getTestResource("java/googlejavaformat/JavaCodeFormatted.test"));
+		assertFile("src/main/java/test.java").sameAsResource("java/googlejavaformat/JavaCodeFormatted.test");
 	}
 
 	@Test
@@ -45,11 +40,8 @@ public class GoogleJavaFormatTest extends MavenIntegrationTest {
 				"  <style>AOSP</style>",
 				"</googleJavaFormat>");
 
-		write("src/main/java/test.java", getTestResource("java/googlejavaformat/JavaCodeUnformatted.test"));
-
+		setFile("src/main/java/test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-
-		String actual = read("src/main/java/test.java");
-		assertThat(actual).isEqualTo(getTestResource("java/googlejavaformat/JavaCodeFormattedAOSP.test"));
+		assertFile("src/main/java/test.java").sameAsResource("java/googlejavaformat/JavaCodeFormattedAOSP.test");
 	}
 }

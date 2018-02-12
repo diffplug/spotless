@@ -15,8 +15,6 @@
  */
 package com.diffplug.spotless.maven.java;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationTest;
@@ -30,13 +28,10 @@ public class EclipseFormatStepTest extends MavenIntegrationTest {
 				"  <file>${basedir}/formatter.xml</file>",
 				"  <version>4.7.1</version>",
 				"</eclipse>");
+		setFile("formatter.xml").toResource("java/eclipse/formatter.xml");
 
-		write("src/main/java/test.java", getTestResource("java/eclipse/JavaCodeUnformatted.test"));
-		write("formatter.xml", getTestResource("java/eclipse/formatter.xml"));
-
+		setFile("src/main/java/test.java").toResource("java/eclipse/JavaCodeUnformatted.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-
-		String actual = read("src/main/java/test.java");
-		assertThat(actual).isEqualTo(getTestResource("java/eclipse/JavaCodeFormatted.test"));
+		assertFile("src/main/java/test.java").sameAsResource("java/eclipse/JavaCodeFormatted.test");
 	}
 }
