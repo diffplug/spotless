@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless;
+package com.diffplug.spotless.extra.integration;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Objects;
 
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.EditList;
@@ -31,6 +31,7 @@ import org.eclipse.jgit.diff.RawText;
 import org.eclipse.jgit.diff.RawTextComparator;
 
 import com.diffplug.common.base.CharMatcher;
+import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.base.Splitter;
 import com.diffplug.spotless.Formatter;
@@ -38,41 +39,81 @@ import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.PaddedCell;
 
 /** Formats the messages of failed spotlessCheck invocations with a nice diff message. */
-final class DiffMessageFormatter {
-	private static final int MAX_CHECK_MESSAGE_LINES = 50;
-	static final int MAX_FILES_TO_LIST = 10;
-
-	static String messageFor(SpotlessTask task, Formatter formatter, List<File> problemFiles) throws IOException {
-		DiffMessageFormatter diffFormater = new DiffMessageFormatter(task, formatter, problemFiles);
-		return "The following files had format violations:\n"
-				+ diffFormater.buffer
-				+ "Run 'gradlew "
-				+ SpotlessPlugin.EXTENSION
-				+ SpotlessPlugin.APPLY
-				+ "' to fix these violations.";
+public final class DiffMessageFormatter {
+	public static Builder builder() {
+		return new Builder();
 	}
+
+	public static class Builder {
+		private Builder() {}
+
+		private String runToFix;
+		private boolean isPaddedCell;
+		private Formatter formatter;
+		private List<File> problemFiles;
+
+		/** "Run 'gradlew spotlessApply' to fix these violations." */
+		public Builder runToFix(String runToFix) {
+			this.runToFix = Objects.requireNonNull(runToFix);
+			return this;
+		}
+
+		public Builder isPaddedCell(boolean isPaddedCell) {
+			this.isPaddedCell = isPaddedCell;
+			return this;
+		}
+
+		public Builder formatter(Formatter formatter) {
+			this.formatter = Objects.requireNonNull(formatter);
+			return this;
+		}
+
+		public Builder problemFiles(List<File> problemFiles) {
+			this.problemFiles = Objects.requireNonNull(problemFiles);
+			Preconditions.checkArgument(!problemFiles.isEmpty(), "cannot be empty");
+			return this;
+		}
+
+		/** Returns the error message. */
+		public String getMessage() {
+			try {
+				Objects.requireNonNull(runToFix, "runToFix");
+				Objects.requireNonNull(formatter, "formatter");
+				Objects.requireNonNull(problemFiles, "problemFiles");
+				DiffMessageFormatter diffFormater = new DiffMessageFormatter(this);
+				return "The following files had format violations:\n"
+						+ diffFormater.buffer
+						+ runToFix;
+			} catch (IOException e) {
+				throw Errors.asRuntime(e);
+			}
+		}
+
+		String relativePath(File file) {
+			return formatter.getRootDir().relativize(file.toPath()).toString();
+		}
+	}
+
+	private static final int MAX_CHECK_MESSAGE_LINES = 50;
+	public static final int MAX_FILES_TO_LIST = 10;
 
 	private final StringBuilder buffer = new StringBuilder(MAX_CHECK_MESSAGE_LINES * 64);
 	private int numLines = 0;
 
-	private DiffMessageFormatter(SpotlessTask task, Formatter formatter, List<File> problemFiles) throws IOException {
-		Preconditions.checkArgument(!problemFiles.isEmpty(), "Problem files must not be empty");
-
-		Path rootDir = task.getProject().getRootDir().toPath();
-		ListIterator<File> problemIter = problemFiles.listIterator();
+	private DiffMessageFormatter(Builder builder) throws IOException {
+		ListIterator<File> problemIter = builder.problemFiles.listIterator();
 		while (problemIter.hasNext() && numLines < MAX_CHECK_MESSAGE_LINES) {
 			File file = problemIter.next();
-			addFile(rootDir.relativize(file.toPath()) + "\n" +
-					DiffMessageFormatter.diff(task, formatter, file));
+			addFile(builder.relativePath(file) + "\n" + DiffMessageFormatter.diff(builder, file));
 		}
 		if (problemIter.hasNext()) {
-			int remainingFiles = problemFiles.size() - problemIter.nextIndex();
+			int remainingFiles = builder.problemFiles.size() - problemIter.nextIndex();
 			if (remainingFiles >= MAX_FILES_TO_LIST) {
 				buffer.append("Violations also present in ").append(remainingFiles).append(" other files.\n");
 			} else {
 				buffer.append("Violations also present in:\n");
 				while (problemIter.hasNext()) {
-					addIntendedLine(NORMAL_INDENT, rootDir.relativize(problemIter.next().toPath()).toString());
+					addIntendedLine(NORMAL_INDENT, builder.relativePath(problemIter.next()));
 				}
 			}
 		}
@@ -126,19 +167,19 @@ final class DiffMessageFormatter {
 	 * look like if formatted using the given formatter. Does not end with any newline
 	 * sequence (\n, \r, \r\n).
 	 */
-	private static String diff(SpotlessTask task, Formatter formatter, File file) throws IOException {
-		String raw = new String(Files.readAllBytes(file.toPath()), formatter.getEncoding());
+	private static String diff(Builder builder, File file) throws IOException {
+		String raw = new String(Files.readAllBytes(file.toPath()), builder.formatter.getEncoding());
 		String rawUnix = LineEnding.toUnix(raw);
 		String formattedUnix;
-		if (task.isPaddedCell()) {
-			formattedUnix = PaddedCell.check(formatter, file, rawUnix).canonical();
+		if (builder.isPaddedCell) {
+			formattedUnix = PaddedCell.check(builder.formatter, file, rawUnix).canonical();
 		} else {
-			formattedUnix = formatter.compute(rawUnix, file);
+			formattedUnix = builder.formatter.compute(rawUnix, file);
 		}
 
 		if (rawUnix.equals(formattedUnix)) {
 			// the formatting is fine, so it's a line-ending issue
-			String formatted = formatter.computeLineEndings(formattedUnix, file);
+			String formatted = builder.formatter.computeLineEndings(formattedUnix, file);
 			return diffWhitespaceLineEndings(raw, formatted, false, true);
 		} else {
 			return diffWhitespaceLineEndings(rawUnix, formattedUnix, true, false);

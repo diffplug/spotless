@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless;
+package com.diffplug.spotless.maven;
 
-import org.junit.Test;
+import com.diffplug.spotless.FormatterStep;
 
-public class MavenProvisionerTest {
-	@Test
-	public void test() {
+public interface FormatterStepFactory {
 
-	}
+	FormatterStep newFormatterStep(FormatterStepConfig config);
 }

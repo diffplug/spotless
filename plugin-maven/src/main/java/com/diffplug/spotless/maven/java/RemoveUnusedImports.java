@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless;
+package com.diffplug.spotless.maven.java;
 
-import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.java.RemoveUnusedImportsStep;
+import com.diffplug.spotless.maven.FormatterStepConfig;
+import com.diffplug.spotless.maven.FormatterStepFactory;
 
-/** Maven integration for Provisioner. */
-public class MavenProvisioner {
-	private MavenProvisioner() {}
+public class RemoveUnusedImports implements FormatterStepFactory {
 
-	public static Provisioner create() {
-		throw new UnsupportedOperationException();
+	@Override
+	public FormatterStep newFormatterStep(FormatterStepConfig config) {
+		return RemoveUnusedImportsStep.create(config.getProvisioner());
 	}
 }

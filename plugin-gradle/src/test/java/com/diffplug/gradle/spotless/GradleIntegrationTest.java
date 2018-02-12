@@ -37,6 +37,20 @@ import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ResourceHarness;
 
 public class GradleIntegrationTest extends ResourceHarness {
+	/**
+	 * Each test gets its own temp folder, and we create a gradle
+	 * build there and run it.
+	 *
+	 * Because those test folders don't have a .gitattributes file,
+	 * git (on windows) will default to \r\n. So now if you read a
+	 * test file from the spotless test resources, and compare it
+	 * to a build result, the line endings won't match.
+	 *
+	 * By sticking this .gitattributes file into the test directory,
+	 * we ensure that the default Spotless line endings policy of
+	 * GIT_ATTRIBUTES will use \n, so that tests match the test
+	 * resources on win and linux.
+	 */
 	@Before
 	public void gitAttributes() throws IOException {
 		write(".gitattributes", "* text eol=lf");

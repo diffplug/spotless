@@ -18,7 +18,6 @@ package com.diffplug.gradle.spotless;
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -45,6 +44,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.PaddedCell;
 import com.diffplug.spotless.PaddedCellBulk;
+import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
 public class SpotlessTask extends DefaultTask {
 	// set by SpotlessExtension, but possibly overridden by FormatExtension
@@ -164,7 +164,7 @@ public class SpotlessTask extends DefaultTask {
 		Formatter formatter = Formatter.builder()
 				.lineEndingsPolicy(lineEndingsPolicy)
 				.encoding(Charset.forName(encoding))
-				.rootDir(getProject().getProjectDir().toPath())
+				.rootDir(getProject().getRootDir().toPath())
 				.steps(steps)
 				.exceptionPolicy(exceptionPolicy)
 				.build();
@@ -279,7 +279,12 @@ public class SpotlessTask extends DefaultTask {
 	}
 
 	/** Returns an exception which indicates problem files nicely. */
-	GradleException formatViolationsFor(Formatter formatter, List<File> problemFiles) throws IOException {
-		return new GradleException(DiffMessageFormatter.messageFor(this, formatter, problemFiles));
+	GradleException formatViolationsFor(Formatter formatter, List<File> problemFiles) {
+		return new GradleException(DiffMessageFormatter.builder()
+				.runToFix("Run 'gradlew spotlessApply' to fix these violations.")
+				.isPaddedCell(paddedCell)
+				.formatter(formatter)
+				.problemFiles(problemFiles)
+				.getMessage());
 	}
 }
