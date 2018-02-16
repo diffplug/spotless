@@ -1,3 +1,6 @@
 * text eol=lf
 *.png binary
 *.jar binary
+
+# for newline tests this file needs crlf
+testlib/src/main/resources/lineEndings/JavaCode-WINDOWS.test eol=crlf

@@ -32,12 +32,12 @@ function extra(className) { return '| [`' + className + '`](lib-extra/src/main/j
 output = [
 '| Feature / FormatterStep                       | [plugin-gradle](plugin-gradle/README.md) | [plugin-maven](plugin-maven/README.md) | [(Your build tool here)](CONTRIBUTING.md#how-to-add-a-new-plugin-for-a-build-system) |',
 '| --------------------------------------------- | ------------- | ------------ | --------|',
-lib('generic.EndWithNewlineStep')                +'{{yes}}       | {{no}}       | {{no}}  |',
-lib('generic.IndentStep')                        +'{{yes}}       | {{no}}       | {{no}}  |',
+lib('generic.EndWithNewlineStep')                +'{{yes}}       | {{yes}}       | {{no}}  |',
+lib('generic.IndentStep')                        +'{{yes}}       | {{yes}}       | {{no}}  |',
 lib('generic.LicenseHeaderStep')                 +'{{yes}}       | {{yes}}      | {{no}}  |',
-lib('generic.ReplaceRegexStep')                  +'{{yes}}       | {{no}}       | {{no}}  |',
-lib('generic.ReplaceStep')                       +'{{yes}}       | {{no}}       | {{no}}  |',
-lib('generic.TrimTrailingWhitespaceStep')        +'{{yes}}       | {{no}}       | {{no}}  |',
+lib('generic.ReplaceRegexStep')                  +'{{yes}}       | {{yes}}       | {{no}}  |',
+lib('generic.ReplaceStep')                       +'{{yes}}       | {{yes}}       | {{no}}  |',
+lib('generic.TrimTrailingWhitespaceStep')        +'{{yes}}       | {{yes}}       | {{no}}  |',
 extra('groovy.GrEclipseFormatterStep')           +'{{yes}}       | {{no}}       | {{no}}  |',
 lib('java.GoogleJavaFormatStep')                 +'{{yes}}       | {{yes}}      | {{no}}  |',
 lib('java.ImportOrderStep')                      +'{{yes}}       | {{yes}}      | {{no}}  |',
@@ -55,12 +55,12 @@ lib('sql.DBeaverSQLFormatterStep')               +'{{yes}}       | {{no}}       
 -->
 | Feature / FormatterStep                       | [plugin-gradle](plugin-gradle/README.md) | [plugin-maven](plugin-maven/README.md) | [(Your build tool here)](CONTRIBUTING.md#how-to-add-a-new-plugin-for-a-build-system) |
 | --------------------------------------------- | ------------- | ------------ | --------|
-| [`generic.EndWithNewlineStep`](lib/src/main/java/com/diffplug/spotless/generic/EndWithNewlineStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
-| [`generic.IndentStep`](lib/src/main/java/com/diffplug/spotless/generic/IndentStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
+| [`generic.EndWithNewlineStep`](lib/src/main/java/com/diffplug/spotless/generic/EndWithNewlineStep.java) | :+1:       | :+1:       | :white_large_square:  |
+| [`generic.IndentStep`](lib/src/main/java/com/diffplug/spotless/generic/IndentStep.java) | :+1:       | :+1:       | :white_large_square:  |
 | [`generic.LicenseHeaderStep`](lib/src/main/java/com/diffplug/spotless/generic/LicenseHeaderStep.java) | :+1:       | :+1:      | :white_large_square:  |
-| [`generic.ReplaceRegexStep`](lib/src/main/java/com/diffplug/spotless/generic/ReplaceRegexStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
-| [`generic.ReplaceStep`](lib/src/main/java/com/diffplug/spotless/generic/ReplaceStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
-| [`generic.TrimTrailingWhitespaceStep`](lib/src/main/java/com/diffplug/spotless/generic/TrimTrailingWhitespaceStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
+| [`generic.ReplaceRegexStep`](lib/src/main/java/com/diffplug/spotless/generic/ReplaceRegexStep.java) | :+1:       | :+1:       | :white_large_square:  |
+| [`generic.ReplaceStep`](lib/src/main/java/com/diffplug/spotless/generic/ReplaceStep.java) | :+1:       | :+1:       | :white_large_square:  |
+| [`generic.TrimTrailingWhitespaceStep`](lib/src/main/java/com/diffplug/spotless/generic/TrimTrailingWhitespaceStep.java) | :+1:       | :+1:       | :white_large_square:  |
 | [`groovy.GrEclipseFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/groovy/GrEclipseFormatterStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
 | [`java.GoogleJavaFormatStep`](lib/src/main/java/com/diffplug/spotless/java/GoogleJavaFormatStep.java) | :+1:       | :+1:      | :white_large_square:  |
 | [`java.ImportOrderStep`](lib/src/main/java/com/diffplug/spotless/java/ImportOrderStep.java) | :+1:       | :+1:      | :white_large_square:  |

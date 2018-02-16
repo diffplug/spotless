@@ -13,31 +13,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.maven.scala;
+package com.diffplug.spotless.maven.generic;
 
-import com.diffplug.spotless.maven.generic.Format;
-
+import java.util.Collections;
 import java.util.Set;
 
-import static com.diffplug.common.collect.Sets.newHashSet;
-import static java.util.Collections.unmodifiableSet;
+import com.diffplug.spotless.maven.FormatterFactory;
 
-public class Scala extends Format {
-	private static final Set<String> DEFAULT_INCLUDES = unmodifiableSet(newHashSet("src/main/scala/**/*.scala",
-			"src/test/scala/**/*.scala", "src/main/scala/**/*.sc", "src/test/scala/**/*.sc"));
-	private static final String LICENSE_HEADER_DELIMITER = "package ";
+public class Format extends FormatterFactory {
 
 	@Override
 	public Set<String> defaultIncludes() {
-		return DEFAULT_INCLUDES;
+		return Collections.emptySet();
 	}
 
 	@Override
 	public String licenseHeaderDelimiter() {
-		return LICENSE_HEADER_DELIMITER;
+		// do not specify a default delimiter
+		return null;
 	}
 
-	public void addScalafmt(Scalafmt scalafmt) {
-		addStepFactory(scalafmt);
+	public void addEndWithNewline(EndWithNewline endWithNewline) {
+		addStepFactory(endWithNewline);
+	}
+
+	public void addIndent(Indent indent) {
+		addStepFactory(indent);
+	}
+
+	public void addTrimTrailingWhitespace(TrimTrailingWhitespace trimTrailingWhitespace) {
+		addStepFactory(trimTrailingWhitespace);
+	}
+
+	public void addReplace(Replace replace) {
+		addStepFactory(replace);
+	}
+
+	public void addReplaceRegex(ReplaceRegex replaceRegex) {
+		addStepFactory(replaceRegex);
 	}
 }

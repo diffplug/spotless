@@ -15,14 +15,14 @@
  */
 package com.diffplug.spotless.maven.java;
 
-import static com.diffplug.common.collect.Sets.newHashSet;
-import static java.util.Collections.unmodifiableSet;
+import com.diffplug.spotless.maven.generic.Format;
 
 import java.util.Set;
 
-import com.diffplug.spotless.maven.FormatterFactory;
+import static com.diffplug.common.collect.Sets.newHashSet;
+import static java.util.Collections.unmodifiableSet;
 
-public class Java extends FormatterFactory {
+public class Java extends Format {
 	private static final Set<String> DEFAULT_INCLUDES = unmodifiableSet(newHashSet("src/main/java/**/*.java",
 			"src/test/java/**/*.java"));
 	private static final String LICENSE_HEADER_DELIMITER = "package ";

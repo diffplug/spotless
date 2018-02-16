@@ -79,6 +79,10 @@ public class MavenIntegrationTest extends ResourceHarness {
 		return target.toFile();
 	}
 
+	protected void writePomWithFormatSteps(String... steps) throws IOException {
+		writePom(groupWithSteps("format", including("<include>src/**/java/**/*.java</include>"), steps));
+	}
+
 	protected void writePomWithJavaSteps(String... steps) throws IOException {
 		writePom(groupWithSteps("java", steps));
 	}
@@ -137,11 +141,24 @@ public class MavenIntegrationTest extends ResourceHarness {
 		return value;
 	}
 
+	private static String[] groupWithSteps(String group, String[] includes, String... steps) {
+		String[] result = new String[steps.length + includes.length + 2];
+		result[0] = "<" + group + ">";
+		System.arraycopy(includes, 0, result, 1, includes.length);
+		System.arraycopy(steps, 0, result, includes.length + 1, steps.length);
+		result[result.length - 1] = "</" + group + ">";
+		return result;
+	}
+
 	private static String[] groupWithSteps(String group, String... steps) {
-		String[] result = new String[steps.length + 2];
-		result[0] = '<' + group + '>';
-		System.arraycopy(steps, 0, result, 1, steps.length);
-		result[result.length - 1] = "</" + group + '>';
+		return groupWithSteps(group, new String[]{}, steps);
+	}
+
+	private static String[] including(String... include) {
+		String[] result = new String[include.length + 2];
+		result[0] = "<includes>";
+		System.arraycopy(include, 0, result, 1, include.length);
+		result[result.length - 1] = "</includes>";
 		return result;
 	}
 }

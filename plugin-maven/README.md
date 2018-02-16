@@ -115,6 +115,60 @@ By default, all files matching `src/main/java/**/*.java` and `src/test/java/**/*
 </configuration>
 ```
 
+<a name="format"></a>
+
+## Applying to custom sources
+
+By default, no Ant-Style include patterns are defined.  Each element under `<format>` is a step, and they will be applied in the order specified.  Every step is optional, and they will be applied in the order specified.
+
+```xml
+<configuration>
+  <format>
+    <includes>
+      <!-- include all property files in "resource" folders under "src" -->
+      <include>src/**/resources/**/*.properties</include>
+    </includes>
+
+    <licenseHeader>
+      <!-- Specify either content or file, but not both -->
+      <content>/* Licensed under Apache-2.0 */</content>
+      <file>${basedir}/license-header</file>
+      <!-- conent until first occurrence of the delimiter regex will be interpreted as header section -->
+      <delimiter>#</delimiter>
+    </licenseHeader>
+
+    <!-- Files must end with a newline -->
+    <endWithNewline />
+
+    <!-- Specify whether to use tabs or spaces for indentation -->
+    <indent>
+      <!-- Specify either withSpaces or withTabs. Defaults to withSpaces -->
+      <withSpaces>true</withSpaces>
+      <withTabs>true</withTabs>
+      <!-- Specify how many spaces are used to convert one tab and vice versa. Defaults to 4 -->
+      <spacesPerTab>4</spacesPerTab>
+    </indent>
+
+    <!-- Trim trailing whitespaces -->
+    <trimTrailingWhitespace />
+
+    <!-- Specify replacements using search and replace -->
+    <replace>
+      <name>Say Hello to Mars</name>
+      <search>World</search>
+      <replacement>Mars</replacement>
+    </replace>
+
+    <!-- Specify replacements using regex match and replace -->
+    <replaceRegex>
+      <name>Say Hello to Mars from Regex</name>
+      <searchRegex>(Hello) W[a-z]{3}d</searchRegex>
+      <replacement>$1 Mars</replacement>
+    </replaceRegex>
+  </format>
+</configuration>
+```
+
 <a name="invisible"></a>
 
 ## Line endings and encodings (invisible stuff)
