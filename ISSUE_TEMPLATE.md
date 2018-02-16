@@ -1,7 +1,7 @@
 If you are submitting a **bug**, please include the following:
 
 - [ ] summary of problem
-- [ ] gradle version
+- [ ] gradle or maven version
 - [ ] spotless version
 - [ ] operating system and version
 - [ ] copy-paste your full Spotless configuration block(s), and a link to a public git repo that reproduces the problem if possible
