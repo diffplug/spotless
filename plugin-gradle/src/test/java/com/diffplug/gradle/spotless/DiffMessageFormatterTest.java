@@ -15,6 +15,8 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static com.diffplug.gradle.spotless.Tasks.execute;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,7 +27,6 @@ import java.util.regex.Pattern;
 import org.assertj.core.api.Assertions;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
-import org.gradle.api.tasks.TaskExecutionException;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Test;
 
@@ -49,7 +50,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 		return task;
 	}
 
-	private void assertTaskFailure(SpotlessTask task, String... expectedLines) {
+	private void assertTaskFailure(SpotlessTask task, String... expectedLines) throws Exception {
 		String msg = getTaskErrorMessage(task);
 
 		String firstLine = "The following files had format violations:\n";
@@ -61,13 +62,12 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 		Assertions.assertThat(middle).isEqualTo(expectedMessage.substring(0, expectedMessage.length() - 1));
 	}
 
-	protected String getTaskErrorMessage(SpotlessTask task) {
+	protected String getTaskErrorMessage(SpotlessTask task) throws Exception {
 		try {
-			task.execute();
-			throw new AssertionError("Expected a TaskExecutionException");
-		} catch (TaskExecutionException e) {
-			GradleException cause = (GradleException) e.getCause();
-			return cause.getMessage();
+			execute(task);
+			throw new AssertionError("Expected a GradleException");
+		} catch (GradleException e) {
+			return e.getMessage();
 		}
 	}
 
