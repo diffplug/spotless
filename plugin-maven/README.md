@@ -142,9 +142,9 @@ By default, no Ant-Style include patterns are defined.  Each element under `<for
 
     <!-- Specify whether to use tabs or spaces for indentation -->
     <indent>
-      <!-- Specify either withSpaces or withTabs. Defaults to withSpaces -->
-      <withSpaces>true</withSpaces>
-      <withTabs>true</withTabs>
+      <!-- Specify either spaces or tabs -->
+      <spaces>true</spaces>
+      <tabs>true</tabs>
       <!-- Specify how many spaces are used to convert one tab and vice versa. Defaults to 4 -->
       <spacesPerTab>4</spacesPerTab>
     </indent>

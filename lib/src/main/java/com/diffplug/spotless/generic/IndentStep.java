@@ -23,6 +23,9 @@ import com.diffplug.spotless.FormatterStep;
 
 /** Simple step which checks for consistent indentation characters. */
 public final class IndentStep {
+
+	private static final int DEFAULT_NUM_SPACES_PER_TAB = 4;
+
 	// prevent direct instantiation
 	private IndentStep() {}
 
@@ -31,6 +34,11 @@ public final class IndentStep {
 
 		private <T> T tabSpace(T tab, T space) {
 			return this == TAB ? tab : space;
+		}
+
+		/** Creates a step which will indent with the given type of whitespace, converting between tabs and spaces at the default ratio. */
+		public FormatterStep create() {
+			return IndentStep.create(this, defaultNumSpacesPerTab());
 		}
 
 		/** Synonym for {@link IndentStep#create(Type, int)}. */
@@ -127,5 +135,9 @@ public final class IndentStep {
 
 	private static boolean isSpaceOrTab(char c) {
 		return c == ' ' || c == '\t';
+	}
+
+	public static int defaultNumSpacesPerTab() {
+		return DEFAULT_NUM_SPACES_PER_TAB;
 	}
 }

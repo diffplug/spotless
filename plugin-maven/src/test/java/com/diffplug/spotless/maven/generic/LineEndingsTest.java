@@ -15,8 +15,6 @@
  */
 package com.diffplug.spotless.maven.generic;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationTest;
@@ -38,17 +36,25 @@ public class LineEndingsTest extends MavenIntegrationTest {
 	}
 
 	private void runToWindowsTest() throws Exception {
-		runTest("lineEndings/JavaCode-UNIX.test", "lineEndings/JavaCode-WINDOWS.test");
+		runTest(getClassWithLineEndings("\n"), getClassWithLineEndings("\r\n"));
 	}
 
 	private void runToUnixTest() throws Exception {
-		runTest("lineEndings/JavaCode-WINDOWS.test", "lineEndings/JavaCode-UNIX.test");
+		runTest(getClassWithLineEndings("\r\n"), getClassWithLineEndings("\n"));
 	}
 
-	private void runTest(String source, String target) throws Exception {
-		setFile("src/main/java/test.java").toResource(source);
+	private void runTest(String sourceContent, String targetContent) throws Exception {
+		String path = "src/main/java/test.java";
+		setFile(path).toContent(sourceContent);
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		String actual = read("src/main/java/test.java");
-		assertThat(actual).isEqualTo(getTestResource(target));
+		assertFile(path).hasContent(targetContent);
+	}
+
+	private String getClassWithLineEndings(String lineEnding) {
+		return "public class Java {" + lineEnding +
+				"    public static void main(String[] args) {" + lineEnding +
+				"        System.out.println(\"hello\");" + lineEnding +
+				"    }" + lineEnding +
+				"}";
 	}
 }

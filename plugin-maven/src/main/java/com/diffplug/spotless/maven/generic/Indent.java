@@ -24,40 +24,30 @@ import com.diffplug.spotless.maven.FormatterStepFactory;
 
 public class Indent implements FormatterStepFactory {
 
-	private static final int DEFAULT_NUM_SPACES_PER_TAB = 4;
+	@Parameter
+	private boolean tabs;
 
 	@Parameter
-	private boolean withTabs;
-
-	@Parameter
-	private boolean withSpaces;
+	private boolean spaces;
 
 	@Parameter
 	private Integer spacesPerTab;
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
-		System.out.println("withTabs: " + withTabs);
-		System.out.println("withSpaces: " + withSpaces);
-		System.out.println("spacesPerTab: " + spacesPerTab);
 
-		int amountOfSpacesPerTab = DEFAULT_NUM_SPACES_PER_TAB;
-		if (spacesPerTab != null) {
-			amountOfSpacesPerTab = spacesPerTab;
+		if (spacesPerTab == null) {
+			spacesPerTab = IndentStep.defaultNumSpacesPerTab();
 		}
 
-		if (withSpaces && withTabs) {
-			throw new IllegalArgumentException("Must specify exactly one of 'withSpaces' or 'withTabs'.");
-		}
-
-		if (!withTabs && !withSpaces) {
-			return IndentStep.create(IndentStep.Type.SPACE, amountOfSpacesPerTab);
-		} else {
-			if (withSpaces) {
-				return IndentStep.create(IndentStep.Type.SPACE, amountOfSpacesPerTab);
+		if (spaces ^ tabs) {
+			if (spaces) {
+				return IndentStep.create(IndentStep.Type.SPACE, spacesPerTab);
 			} else {
-				return IndentStep.create(IndentStep.Type.TAB, amountOfSpacesPerTab);
+				return IndentStep.create(IndentStep.Type.TAB, spacesPerTab);
 			}
+		} else {
+			throw new IllegalArgumentException("Must specify exactly one of 'spaces' or 'tabs'.");
 		}
 	}
 }

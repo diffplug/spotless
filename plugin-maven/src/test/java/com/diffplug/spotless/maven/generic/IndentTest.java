@@ -15,8 +15,6 @@
  */
 package com.diffplug.spotless.maven.generic;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationTest;
@@ -27,7 +25,7 @@ public class IndentTest extends MavenIntegrationTest {
 	public void fromContentToTabs() throws Exception {
 		writePomWithFormatSteps(
 				"<indent>",
-				"  <withTabs>true</withTabs>",
+				"  <tabs>true</tabs>",
 				"</indent>");
 		runToTabTest();
 	}
@@ -36,7 +34,7 @@ public class IndentTest extends MavenIntegrationTest {
 	public void fromContentToSpaces() throws Exception {
 		writePomWithFormatSteps(
 				"<indent>",
-				"  <withSpaces>true</withSpaces>",
+				"  <spaces>true</spaces>",
 				"</indent>");
 		runToSpacesTest();
 	}
@@ -50,9 +48,9 @@ public class IndentTest extends MavenIntegrationTest {
 	}
 
 	private void runTest(String source, String target) throws Exception {
-		setFile("src/main/java/test.java").toResource(source);
+		String path = "src/main/java/test.java";
+		setFile(path).toResource(source);
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		String actual = read("src/main/java/test.java");
-		assertThat(actual).isEqualTo(getTestResource(target));
+		assertFile(path).sameAsResource(target);
 	}
 }

@@ -15,8 +15,6 @@
  */
 package com.diffplug.spotless.maven.generic;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationTest;
@@ -39,9 +37,10 @@ public class EndWithNewlineTest extends MavenIntegrationTest {
 	}
 
 	private void runTest() throws Exception {
-		setFile("src/main/java/test.java").toResource("newline/MissingNewline.test");
+		String noTrailingNewline = "public class Java {}";
+		String hasTrailingNewline = noTrailingNewline + "\n";
+		setFile("src/main/java/test.java").toContent(noTrailingNewline);
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		String actual = read("src/main/java/test.java");
-		assertThat(actual).isEqualTo(getTestResource("newline/HasNewline.test"));
+		assertFile("src/main/java/test.java").hasContent(hasTrailingNewline);
 	}
 }
