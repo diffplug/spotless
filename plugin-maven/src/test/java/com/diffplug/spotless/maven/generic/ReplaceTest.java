@@ -26,16 +26,16 @@ public class ReplaceTest extends MavenIntegrationTest {
 		writePomWithFormatSteps(
 				"<replace>",
 				"  <name>Greetings to Mars</name>",
-				"  <search>world</search>",
-				"  <replacement>mars</replacement>",
+				"  <search>World</search>",
+				"  <replacement>Mars</replacement>",
 				"</replace>");
-		runTest();
+		runTest("Hello World", "Hello Mars");
 	}
 
-	private void runTest() throws Exception {
+	private void runTest(String sourceContent, String targetContent) throws Exception {
 		String path = "src/main/java/test.java";
-		setFile(path).toResource("replace/JavaCodeUnformatted.test");
+		setFile(path).toContent(sourceContent);
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("replace/JavaCodeFormatted.test");
+		assertFile(path).hasContent(targetContent);
 	}
 }

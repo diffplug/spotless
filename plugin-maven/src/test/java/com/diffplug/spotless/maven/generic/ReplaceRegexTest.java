@@ -29,13 +29,14 @@ public class ReplaceRegexTest extends MavenIntegrationTest {
 				"  <searchRegex>(hello) w[a-z]{3}d</searchRegex>",
 				"  <replacement>$1 mars</replacement>",
 				"</replaceRegex>");
-		runTest();
+
+		runTest("hello world", "hello mars");
 	}
 
-	private void runTest() throws Exception {
+	private void runTest(String sourceContent, String targetContent) throws Exception {
 		String path = "src/main/java/test.java";
-		setFile(path).toResource("replace/JavaCodeUnformatted.test");
+		setFile(path).toContent(sourceContent);
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("replace/JavaCodeFormatted.test");
+		assertFile(path).hasContent(targetContent);
 	}
 }

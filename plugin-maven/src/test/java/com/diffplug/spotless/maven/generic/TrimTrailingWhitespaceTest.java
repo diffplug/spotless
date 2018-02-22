@@ -25,14 +25,17 @@ public class TrimTrailingWhitespaceTest extends MavenIntegrationTest {
 	public void fromContentToTabs() throws Exception {
 		writePomWithFormatSteps(
 				"<trimTrailingWhitespace />");
-		runTest();
+
+		String target = "This line ends with whitespaces";
+		String source = target + "                    ";
+		runTest(source, target);
 	}
 
-	private void runTest() throws Exception {
+	private void runTest(String sourceContent, String targetContent) throws Exception {
 		String path = "src/main/java/test.java";
-		setFile(path).toResource("trailingWhitespace/JavaCodeUnformated.test");
+		setFile(path).toContent(sourceContent);
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("trailingWhitespace/JavaCodeFormated.test");
+		assertFile(path).hasContent(targetContent);
 	}
 
 }
