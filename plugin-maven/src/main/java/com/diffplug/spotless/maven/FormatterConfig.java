@@ -29,14 +29,16 @@ public class FormatterConfig {
 	private final String encoding;
 	private final LineEnding lineEndings;
 	private final Provisioner provisioner;
+	private final FileLocator fileLocator;
 	private final List<FormatterStepFactory> globalStepFactories;
 
 	public FormatterConfig(File baseDir, String encoding, LineEnding lineEndings, Provisioner provisioner,
-			List<FormatterStepFactory> globalStepFactories) {
+			FileLocator fileLocator, List<FormatterStepFactory> globalStepFactories) {
 		this.baseDir = baseDir;
 		this.encoding = encoding;
 		this.lineEndings = lineEndings;
 		this.provisioner = provisioner;
+		this.fileLocator = fileLocator;
 		this.globalStepFactories = globalStepFactories;
 	}
 
@@ -58,5 +60,9 @@ public class FormatterConfig {
 
 	public List<FormatterStepFactory> getGlobalStepFactories() {
 		return unmodifiableList(globalStepFactories);
+	}
+
+	public FileLocator getFileLocator() {
+		return fileLocator;
 	}
 }

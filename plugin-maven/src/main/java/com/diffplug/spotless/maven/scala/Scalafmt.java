@@ -27,7 +27,7 @@ import com.diffplug.spotless.scala.ScalaFmtStep;
 public class Scalafmt implements FormatterStepFactory {
 
 	@Parameter
-	private File file;
+	private String file;
 
 	@Parameter
 	private String version;
@@ -35,6 +35,7 @@ public class Scalafmt implements FormatterStepFactory {
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
 		String scalafmtVersion = version != null ? version : ScalaFmtStep.defaultVersion();
-		return ScalaFmtStep.create(scalafmtVersion, config.getProvisioner(), file);
+		File configFile = config.getFileLocator().locateFile(file);
+		return ScalaFmtStep.create(scalafmtVersion, config.getProvisioner(), configFile);
 	}
 }

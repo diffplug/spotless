@@ -19,7 +19,6 @@ import static com.diffplug.spotless.extra.java.EclipseFormatterStep.defaultVersi
 import static java.util.Collections.singleton;
 
 import java.io.File;
-import java.util.Set;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
@@ -31,7 +30,7 @@ import com.diffplug.spotless.maven.FormatterStepFactory;
 public class Eclipse implements FormatterStepFactory {
 
 	@Parameter(required = true)
-	private File file;
+	private String file;
 
 	@Parameter
 	private String version;
@@ -39,7 +38,7 @@ public class Eclipse implements FormatterStepFactory {
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
 		String formatterVersion = version == null ? defaultVersion() : version;
-		Set<File> settingsFiles = singleton(file);
-		return EclipseFormatterStep.create(formatterVersion, settingsFiles, config.getProvisioner());
+		File settingsFile = config.getFileLocator().locateFile(file);
+		return EclipseFormatterStep.create(formatterVersion, singleton(settingsFile), config.getProvisioner());
 	}
 }

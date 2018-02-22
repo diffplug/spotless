@@ -67,6 +67,7 @@ dependencies {
 	compileOnly "org.apache.maven.plugin-tools:maven-plugin-annotations:${VER_MAVEN_API}"
 	compileOnly "org.eclipse.aether:aether-api:${VER_ECLIPSE_AETHER}"
 	compileOnly "org.eclipse.aether:aether-util:${VER_ECLIPSE_AETHER}"
+	compileOnly "org.codehaus.plexus:plexus-resources:${VER_PLEXUS_RESOURCES}"
 
 	testCompile project(":testlib")
 	testCompile "junit:junit:${VER_JUNIT}"
@@ -76,6 +77,7 @@ dependencies {
 	testCompile "com.github.spullara.mustache.java:compiler:${VER_MUSTACHE}"
 	testCompile "org.apache.maven:maven-plugin-api:${VER_MAVEN_API}"
 	testCompile "org.eclipse.aether:aether-api:${VER_ECLIPSE_AETHER}"
+	testCompile "org.codehaus.plexus:plexus-resources:${VER_PLEXUS_RESOURCES}"
 }
 
 task cleanMavenProjectDir(type: Delete) { delete MAVEN_PROJECT_DIR }
@@ -141,6 +143,7 @@ task createPomXml(dependsOn: installLocalDependencies) {
 			mavenApiVersion           : VER_MAVEN_API,
 			eclipseAetherVersion      : VER_ECLIPSE_AETHER,
 			spotlessLibVersion        : project.versionLib,
+			plexusResourcesVersion    : VER_PLEXUS_RESOURCES,
 			additionalDependencies    : additionalDependencies
 		]
 
@@ -182,6 +185,6 @@ test.dependsOn(jar)
 test {
 	testLogging { exceptionFormat = 'full' }
 	// pass location of the local maven repository and plugin version to junit tests
-	systemProperty "localMavenRepositoryDir", "${LOCAL_MAVEN_REPO_DIR}"
+	systemProperty "localMavenRepositoryDir", LOCAL_MAVEN_REPO_DIR
 	systemProperty "spotlessMavenPluginVersion", project.versionMaven
 }

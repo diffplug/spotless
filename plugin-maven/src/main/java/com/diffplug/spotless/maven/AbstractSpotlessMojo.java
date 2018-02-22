@@ -29,6 +29,8 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.codehaus.plexus.resource.ResourceManager;
+import org.codehaus.plexus.resource.loader.FileResourceLoader;
 import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
@@ -49,6 +51,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	@Component
 	private RepositorySystem repositorySystem;
+
+	@Component
+	private ResourceManager resourceManager;
 
 	@Parameter(defaultValue = "${repositorySystemSession}", required = true, readonly = true)
 	private RepositorySystemSession repositorySystemSession;
@@ -126,7 +131,15 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		ArtifactResolver resolver = new ArtifactResolver(repositorySystem, repositorySystemSession, repositories, getLog());
 		Provisioner provisioner = MavenProvisioner.create(resolver);
 		List<FormatterStepFactory> formatterStepFactories = getFormatterStepFactories();
-		return new FormatterConfig(baseDir, encoding, lineEndings, provisioner, formatterStepFactories);
+		FileLocator fileLocator = getFileLocator();
+		return new FormatterConfig(baseDir, encoding, lineEndings, provisioner, fileLocator, formatterStepFactories);
+	}
+
+	private FileLocator getFileLocator() {
+		resourceManager.addSearchPath(FileResourceLoader.ID, baseDir.getAbsolutePath());
+		resourceManager.addSearchPath("url", "");
+		resourceManager.setOutputDirectory(targetDir);
+		return new FileLocator(resourceManager);
 	}
 
 	private List<FormatterFactory> getFormatterFactories() {
