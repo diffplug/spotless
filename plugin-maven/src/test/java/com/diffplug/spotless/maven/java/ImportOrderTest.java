@@ -40,8 +40,9 @@ public class ImportOrderTest extends MavenIntegrationTest {
 	}
 
 	private void runTest() throws Exception {
-		setFile("src/main/java/test.java").toResource("java/importsorter/JavaCodeUnsortedImports.test");
+		String path = "src/main/java/test.java";
+		setFile(path).toResource("java/importsorter/JavaCodeUnsortedImports.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile("src/main/java/test.java").sameAsResource("java/importsorter/JavaCodeSortedImports.test");
+		assertFile(path).sameAsResource("java/importsorter/JavaCodeSortedImports.test");
 	}
 }

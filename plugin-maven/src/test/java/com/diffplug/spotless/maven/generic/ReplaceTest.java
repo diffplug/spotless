@@ -15,8 +15,6 @@
  */
 package com.diffplug.spotless.maven.generic;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationTest;
@@ -35,9 +33,9 @@ public class ReplaceTest extends MavenIntegrationTest {
 	}
 
 	private void runTest() throws Exception {
-		setFile("src/main/java/test.java").toResource("replace/JavaCodeUnformatted.test");
+		String path = "src/main/java/test.java";
+		setFile(path).toResource("replace/JavaCodeUnformatted.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		String actual = read("src/main/java/test.java");
-		assertThat(actual).isEqualTo(getTestResource("replace/JavaCodeFormatted.test"));
+		assertFile(path).sameAsResource("replace/JavaCodeFormatted.test");
 	}
 }

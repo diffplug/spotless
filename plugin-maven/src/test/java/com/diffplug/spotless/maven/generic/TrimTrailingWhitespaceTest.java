@@ -15,8 +15,6 @@
  */
 package com.diffplug.spotless.maven.generic;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationTest;
@@ -31,10 +29,10 @@ public class TrimTrailingWhitespaceTest extends MavenIntegrationTest {
 	}
 
 	private void runTest() throws Exception {
-		setFile("src/main/java/test.java").toResource("trailingWhitespace/JavaCodeUnformated.test");
+		String path = "src/main/java/test.java";
+		setFile(path).toResource("trailingWhitespace/JavaCodeUnformated.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		String actual = read("src/main/java/test.java");
-		assertThat(actual).isEqualTo(getTestResource("trailingWhitespace/JavaCodeFormated.test"));
+		assertFile(path).sameAsResource("trailingWhitespace/JavaCodeFormated.test");
 	}
 
 }

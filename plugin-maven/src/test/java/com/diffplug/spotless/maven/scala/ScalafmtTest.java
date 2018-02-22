@@ -24,21 +24,25 @@ public class ScalafmtTest extends MavenIntegrationTest {
 	public void testScalafmtWithDefaultConfig() throws Exception {
 		writePomWithScalaSteps("<scalafmt/>");
 
-		setFile("src/main/scala/test.scala").toResource("scala/scalafmt/basic.dirty");
-		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile("src/main/scala/test.scala").sameAsResource("scala/scalafmt/basic.clean");
+		runTest("scala/scalafmt/basic.clean");
 	}
 
 	@Test
 	public void testScalafmtWithCustomConfig() throws Exception {
+		setFile("scalafmt.conf").toResource("scala/scalafmt/scalafmt.conf");
+
 		writePomWithScalaSteps(
 				"<scalafmt>",
 				"  <file>${project.basedir}/scalafmt.conf</file>",
 				"</scalafmt>");
-		setFile("scalafmt.conf").toResource("scala/scalafmt/scalafmt.conf");
 
-		setFile("src/main/scala/test.scala").toResource("scala/scalafmt/basic.dirty");
+		runTest("scala/scalafmt/basic.cleanWithCustomConf");
+	}
+
+	private void runTest(String s) throws Exception {
+		String path = "src/main/scala/test.scala";
+		setFile(path).toResource("scala/scalafmt/basic.dirty");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile("src/main/scala/test.scala").sameAsResource("scala/scalafmt/basic.cleanWithCustomConf");
+		assertFile(path).sameAsResource(s);
 	}
 }

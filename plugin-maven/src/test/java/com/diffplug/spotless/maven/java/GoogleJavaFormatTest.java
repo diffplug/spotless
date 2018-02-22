@@ -27,9 +27,7 @@ public class GoogleJavaFormatTest extends MavenIntegrationTest {
 				"  <version>1.2</version>",
 				"</googleJavaFormat>");
 
-		setFile("src/main/java/test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
-		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile("src/main/java/test.java").sameAsResource("java/googlejavaformat/JavaCodeFormatted.test");
+		runTest("java/googlejavaformat/JavaCodeFormatted.test");
 	}
 
 	@Test
@@ -40,8 +38,13 @@ public class GoogleJavaFormatTest extends MavenIntegrationTest {
 				"  <style>AOSP</style>",
 				"</googleJavaFormat>");
 
-		setFile("src/main/java/test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
+		runTest("java/googlejavaformat/JavaCodeFormattedAOSP.test");
+	}
+
+	private void runTest(String targetResource) throws Exception {
+		String path = "src/main/java/test.java";
+		setFile(path).toResource("java/googlejavaformat/JavaCodeUnformatted.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile("src/main/java/test.java").sameAsResource("java/googlejavaformat/JavaCodeFormattedAOSP.test");
+		assertFile(path).sameAsResource(targetResource);
 	}
 }
