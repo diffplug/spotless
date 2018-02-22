@@ -15,12 +15,12 @@
  */
 package com.diffplug.spotless.maven.java;
 
-import com.diffplug.spotless.maven.generic.Format;
+import static com.diffplug.common.collect.Sets.newHashSet;
+import static java.util.Collections.unmodifiableSet;
 
 import java.util.Set;
 
-import static com.diffplug.common.collect.Sets.newHashSet;
-import static java.util.Collections.unmodifiableSet;
+import com.diffplug.spotless.maven.generic.Format;
 
 public class Java extends Format {
 	private static final Set<String> DEFAULT_INCLUDES = unmodifiableSet(newHashSet("src/main/java/**/*.java",

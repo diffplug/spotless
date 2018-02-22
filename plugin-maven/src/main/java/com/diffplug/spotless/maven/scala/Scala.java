@@ -15,12 +15,12 @@
  */
 package com.diffplug.spotless.maven.scala;
 
-import com.diffplug.spotless.maven.generic.Format;
+import static com.diffplug.common.collect.Sets.newHashSet;
+import static java.util.Collections.unmodifiableSet;
 
 import java.util.Set;
 
-import static com.diffplug.common.collect.Sets.newHashSet;
-import static java.util.Collections.unmodifiableSet;
+import com.diffplug.spotless.maven.generic.Format;
 
 public class Scala extends Format {
 	private static final Set<String> DEFAULT_INCLUDES = unmodifiableSet(newHashSet("src/main/scala/**/*.scala",

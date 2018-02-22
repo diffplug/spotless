@@ -15,10 +15,11 @@
  */
 package com.diffplug.spotless.maven.generic;
 
-import com.diffplug.spotless.maven.MavenIntegrationTest;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import com.diffplug.spotless.maven.MavenIntegrationTest;
 
 public class ReplaceRegexTest extends MavenIntegrationTest {
 

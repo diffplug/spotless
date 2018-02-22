@@ -26,16 +26,14 @@ public class LineEndingsTest extends MavenIntegrationTest {
 	@Test
 	public void fromContentToWindows() throws Exception {
 		writePomWithFormatSteps(
-				"<lineEndings>WINDOWS</lineEndings>"
-		);
+				"<lineEndings>WINDOWS</lineEndings>");
 		runToWindowsTest();
 	}
 
 	@Test
 	public void fromContentToUnix() throws Exception {
 		writePomWithFormatSteps(
-				"<lineEndings>UNIX</lineEndings>"
-		);
+				"<lineEndings>UNIX</lineEndings>");
 		runToUnixTest();
 	}
 
