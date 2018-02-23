@@ -16,7 +16,7 @@
 package com.diffplug.spotless.maven.generic;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.generic.ReplaceRegexStep;
+import com.diffplug.spotless.generic.TrimTrailingWhitespaceStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 
@@ -24,6 +24,6 @@ public class TrimTrailingWhitespace implements FormatterStepFactory {
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
-		return ReplaceRegexStep.create("trimTrailingWhitespace", "[ \t]+$", "");
+		return TrimTrailingWhitespaceStep.create();
 	}
 }
