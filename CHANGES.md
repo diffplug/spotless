@@ -7,6 +7,8 @@ You might be looking for:
 
 ### Version 1.11.0-SNAPSHOT - TBD (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/snapshot/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/snapshot/), [snapshot repo](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/))
 
+* Added generic format support for maven-plugin ([#209](https://github.com/diffplug/spotless/pull/209))
+
 ### Version 1.10.0 - February 15th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.10.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.10.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
 * LicenseHeaderStep now supports customizing the year range separator in copyright notices. ([#199](https://github.com/diffplug/spotless/pull/199))

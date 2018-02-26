@@ -15,8 +15,6 @@
  */
 package com.diffplug.spotless.maven.generic;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationTest;
@@ -25,7 +23,7 @@ public class LicenseHeaderTest extends MavenIntegrationTest {
 	private static final String KEY_LICENSE = "license/TestLicense";
 
 	@Test
-	public void fromFile() throws Exception {
+	public void fromFileJava() throws Exception {
 		setFile("license.txt").toResource(KEY_LICENSE);
 		writePomWithJavaSteps(
 				"<licenseHeader>",
@@ -35,7 +33,7 @@ public class LicenseHeaderTest extends MavenIntegrationTest {
 	}
 
 	@Test
-	public void fromContent() throws Exception {
+	public void fromContentJava() throws Exception {
 		writePomWithJavaSteps(
 				"<licenseHeader>",
 				"  <content>",
@@ -57,10 +55,34 @@ public class LicenseHeaderTest extends MavenIntegrationTest {
 		runTest();
 	}
 
+	@Test
+	public void fromFileFormat() throws Exception {
+		setFile("license.txt").toResource(KEY_LICENSE);
+		writePomWithFormatSteps(
+				"<licenseHeader>",
+				"  <file>${basedir}/license.txt</file>",
+				"  <delimiter>package</delimiter>",
+				"</licenseHeader>");
+		runTest();
+	}
+
+	@Test
+	public void fromContentFormat() throws Exception {
+		writePomWithFormatSteps(
+				"<licenseHeader>",
+				"  <content>",
+				"// If you can't trust a man's word",
+				"// Does it help to have it in writing?",
+				"  </content>",
+				"  <delimiter>package</delimiter>",
+				"</licenseHeader>");
+		runTest();
+	}
+
 	private void runTest() throws Exception {
-		setFile("src/main/java/test.java").toResource("license/MissingLicense.test");
+		String path = "src/main/java/test.java";
+		setFile(path).toResource("license/MissingLicense.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		String actual = read("src/main/java/test.java");
-		assertThat(actual).isEqualTo(getTestResource("license/HasLicense.test"));
+		assertFile(path).sameAsResource("license/HasLicense.test");
 	}
 }

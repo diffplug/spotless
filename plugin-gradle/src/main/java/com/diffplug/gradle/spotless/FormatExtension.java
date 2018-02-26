@@ -332,7 +332,7 @@ public class FormatExtension {
 
 	/** Ensures that the files are indented using spaces. */
 	public void indentWithSpaces() {
-		indentWithSpaces(4);
+		addStep(IndentStep.Type.SPACE.create());
 	}
 
 	/** Ensures that the files are indented using tabs. */
@@ -342,7 +342,7 @@ public class FormatExtension {
 
 	/** Ensures that the files are indented using tabs. */
 	public void indentWithTabs() {
-		indentWithTabs(4);
+		addStep(IndentStep.Type.TAB.create());
 	}
 
 	abstract class LicenseHeaderConfig {

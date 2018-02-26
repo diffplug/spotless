@@ -27,7 +27,6 @@ import java.util.stream.Stream;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.FileUtils;
@@ -38,6 +37,7 @@ import org.eclipse.aether.repository.RemoteRepository;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.maven.generic.Format;
 import com.diffplug.spotless.maven.generic.LicenseHeader;
 import com.diffplug.spotless.maven.java.Java;
 import com.diffplug.spotless.maven.scala.Scala;
@@ -72,6 +72,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	private LicenseHeader licenseHeader;
 
 	@Parameter
+	private Format format;
+
+	@Parameter
 	private Java java;
 
 	@Parameter
@@ -80,7 +83,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	protected abstract void process(List<File> files, Formatter formatter) throws MojoExecutionException;
 
 	@Override
-	public final void execute() throws MojoExecutionException, MojoFailureException {
+	public final void execute() throws MojoExecutionException {
 		List<FormatterFactory> formatterFactories = getFormatterFactories();
 
 		for (FormatterFactory formatterFactory : formatterFactories) {
@@ -127,7 +130,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private List<FormatterFactory> getFormatterFactories() {
-		return Stream.of(java, scala)
+		return Stream.of(format, java, scala)
 				.filter(Objects::nonNull)
 				.collect(toList());
 	}

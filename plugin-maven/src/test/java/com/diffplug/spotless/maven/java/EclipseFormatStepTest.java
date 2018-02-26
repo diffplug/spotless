@@ -30,8 +30,9 @@ public class EclipseFormatStepTest extends MavenIntegrationTest {
 				"</eclipse>");
 		setFile("formatter.xml").toResource("java/eclipse/formatter.xml");
 
-		setFile("src/main/java/test.java").toResource("java/eclipse/JavaCodeUnformatted.test");
+		String path = "src/main/java/test.java";
+		setFile(path).toResource("java/eclipse/JavaCodeUnformatted.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile("src/main/java/test.java").sameAsResource("java/eclipse/JavaCodeFormatted.test");
+		assertFile(path).sameAsResource("java/eclipse/JavaCodeFormatted.test");
 	}
 }

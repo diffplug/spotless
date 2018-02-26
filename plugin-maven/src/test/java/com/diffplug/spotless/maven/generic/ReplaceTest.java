@@ -13,21 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.maven.java;
+package com.diffplug.spotless.maven.generic;
 
 import org.junit.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationTest;
 
-public class RemoveUnusedImportsStepTest extends MavenIntegrationTest {
+public class ReplaceTest extends MavenIntegrationTest {
 
 	@Test
-	public void testRemoveUnusedInports() throws Exception {
-		writePomWithJavaSteps("<removeUnusedImports/>");
+	public void fromContent() throws Exception {
+		writePomWithFormatSteps(
+				"<replace>",
+				"  <name>Greetings to Mars</name>",
+				"  <search>World</search>",
+				"  <replacement>Mars</replacement>",
+				"</replace>");
+		runTest("Hello World", "Hello Mars");
+	}
 
+	private void runTest(String sourceContent, String targetContent) throws Exception {
 		String path = "src/main/java/test.java";
-		setFile(path).toResource("java/removeunusedimports/JavaCodeWithPackageUnformatted.test");
+		setFile(path).toContent(sourceContent);
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("java/removeunusedimports/JavaCodeWithPackageFormatted.test");
+		assertFile(path).hasContent(targetContent);
 	}
 }

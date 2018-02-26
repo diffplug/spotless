@@ -13,21 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.maven.java;
+package com.diffplug.spotless.maven.generic;
 
 import org.junit.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationTest;
 
-public class RemoveUnusedImportsStepTest extends MavenIntegrationTest {
+public class EndWithNewlineTest extends MavenIntegrationTest {
 
 	@Test
-	public void testRemoveUnusedInports() throws Exception {
-		writePomWithJavaSteps("<removeUnusedImports/>");
+	public void fromContent() throws Exception {
+		writePomWithFormatSteps(
+				"<endWithNewline>",
+				"</endWithNewline>");
+		runTest();
+	}
 
-		String path = "src/main/java/test.java";
-		setFile(path).toResource("java/removeunusedimports/JavaCodeWithPackageUnformatted.test");
+	@Test
+	public void fromContentWithSelfclosingTag() throws Exception {
+		writePomWithFormatSteps(
+				"<endWithNewline />");
+		runTest();
+	}
+
+	private void runTest() throws Exception {
+		String noTrailingNewline = "public class Java {}";
+		String hasTrailingNewline = noTrailingNewline + "\n";
+		setFile("src/main/java/test.java").toContent(noTrailingNewline);
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("java/removeunusedimports/JavaCodeWithPackageFormatted.test");
+		assertFile("src/main/java/test.java").hasContent(hasTrailingNewline);
 	}
 }

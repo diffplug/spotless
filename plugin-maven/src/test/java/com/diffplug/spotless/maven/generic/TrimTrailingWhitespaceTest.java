@@ -13,21 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.maven.java;
+package com.diffplug.spotless.maven.generic;
 
 import org.junit.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationTest;
 
-public class RemoveUnusedImportsStepTest extends MavenIntegrationTest {
+public class TrimTrailingWhitespaceTest extends MavenIntegrationTest {
 
 	@Test
-	public void testRemoveUnusedInports() throws Exception {
-		writePomWithJavaSteps("<removeUnusedImports/>");
+	public void fromContentToTabs() throws Exception {
+		writePomWithFormatSteps(
+				"<trimTrailingWhitespace />");
 
-		String path = "src/main/java/test.java";
-		setFile(path).toResource("java/removeunusedimports/JavaCodeWithPackageUnformatted.test");
-		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("java/removeunusedimports/JavaCodeWithPackageFormatted.test");
+		String target = "This line ends with whitespaces";
+		String source = target + "                    ";
+		runTest(source, target);
 	}
+
+	private void runTest(String sourceContent, String targetContent) throws Exception {
+		String path = "src/main/java/test.java";
+		setFile(path).toContent(sourceContent);
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile(path).hasContent(targetContent);
+	}
+
 }
