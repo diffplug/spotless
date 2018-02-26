@@ -20,13 +20,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 
 import org.codehaus.plexus.resource.ResourceManager;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+
+import com.diffplug.spotless.LineEnding;
 
 public class FileLocatorTest {
 
@@ -42,6 +46,8 @@ public class FileLocatorTest {
 	public void locateNull() {
 		assertNull(fileLocator.locateFile(null));
 	}
+
+	private static final boolean IS_WINDOWS = LineEnding.PLATFORM_NATIVE.str().equals("\r\n");
 
 	@Test
 	public void locateValidFile() throws Exception {
