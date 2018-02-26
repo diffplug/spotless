@@ -26,7 +26,7 @@ import com.diffplug.spotless.maven.FormatterStepFactory;
 
 public class ImportOrder implements FormatterStepFactory {
 	@Parameter
-	private File file;
+	private String file;
 
 	@Parameter
 	private String order;
@@ -35,7 +35,8 @@ public class ImportOrder implements FormatterStepFactory {
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
 		if (file != null ^ order != null) {
 			if (file != null) {
-				return ImportOrderStep.createFromFile(file);
+				File importsFile = config.getFileLocator().locateFile(file);
+				return ImportOrderStep.createFromFile(importsFile);
 			} else {
 				return ImportOrderStep.createFromOrder(order.split(","));
 			}

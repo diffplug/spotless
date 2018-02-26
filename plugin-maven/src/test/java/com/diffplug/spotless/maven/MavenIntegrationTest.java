@@ -16,6 +16,11 @@
 package com.diffplug.spotless.maven;
 
 import static com.diffplug.common.base.Strings.isNullOrEmpty;
+import static java.util.Arrays.asList;
+import static java.util.Arrays.stream;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonMap;
+import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
@@ -26,8 +31,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import org.junit.Before;
 
@@ -44,6 +48,9 @@ public class MavenIntegrationTest extends ResourceHarness {
 	private static final String SPOTLESS_MAVEN_PLUGIN_VERSION = "spotlessMavenPluginVersion";
 	private static final String CONFIGURATION = "configuration";
 	private static final String EXECUTIONS = "executions";
+	private static final String MODULES = "modules";
+	private static final String MODULE_NAME = "name";
+	private static final String CHILD_ID = "childId";
 
 	private final MustacheFactory mustacheFactory = new DefaultMustacheFactory();
 
@@ -106,20 +113,27 @@ public class MavenIntegrationTest extends ResourceHarness {
 				.withLocalRepository(new File(getSystemProperty(LOCAL_MAVEN_REPOSITORY_DIR)));
 	}
 
+	protected MultiModuleProjectCreator multiModuleProject() {
+		return new MultiModuleProjectCreator();
+	}
+
 	private String createPomXmlContent(String[] executions, String[] configuration) throws IOException {
-		URL url = MavenIntegrationTest.class.getResource("/pom-test.xml.mustache");
+		Map<String, Object> params = buildPomXmlParams(executions, configuration, null);
+		return createPomXmlContent("/pom-test.xml.mustache", params);
+	}
+
+	private String createPomXmlContent(String pomTemplate, Map<String, Object> params) throws IOException {
+		URL url = MavenIntegrationTest.class.getResource(pomTemplate);
 		try (BufferedReader reader = Resources.asCharSource(url, StandardCharsets.UTF_8).openBufferedStream()) {
 			Mustache mustache = mustacheFactory.compile(reader, "pom");
 			StringWriter writer = new StringWriter();
-			Map<String, String> params = buildPomXmlParams(executions, configuration);
 			mustache.execute(writer, params);
 			return writer.toString();
 		}
 	}
 
-	private static Map<String, String> buildPomXmlParams(String[] executions, String[] configuration) {
-		Map<String, String> params = new HashMap<>();
-		params.put(LOCAL_MAVEN_REPOSITORY_DIR, getSystemProperty(LOCAL_MAVEN_REPOSITORY_DIR));
+	private static Map<String, Object> buildPomXmlParams(String[] executions, String[] configuration, String[] modules) {
+		Map<String, Object> params = new HashMap<>();
 		params.put(SPOTLESS_MAVEN_PLUGIN_VERSION, getSystemProperty(SPOTLESS_MAVEN_PLUGIN_VERSION));
 
 		if (configuration != null) {
@@ -128,6 +142,11 @@ public class MavenIntegrationTest extends ResourceHarness {
 
 		if (executions != null) {
 			params.put(EXECUTIONS, String.join("\n", executions));
+		}
+
+		if (modules != null) {
+			List<Map<String, String>> moduleNames = stream(modules).map(name -> singletonMap(MODULE_NAME, name)).collect(toList());
+			params.put(MODULES, moduleNames);
 		}
 
 		return params;
@@ -160,5 +179,87 @@ public class MavenIntegrationTest extends ResourceHarness {
 		System.arraycopy(include, 0, result, 1, include.length);
 		result[result.length - 1] = "</includes>";
 		return result;
+	}
+
+	protected class MultiModuleProjectCreator {
+
+		private String configSubProject;
+		private SubProjectFile[] configSubProjectFiles;
+		private String[] configuration;
+		private final Map<String, List<SubProjectFile>> subProjects = new LinkedHashMap<>();
+
+		protected MultiModuleProjectCreator withConfigSubProject(String name, SubProjectFile... files) {
+			configSubProject = name;
+			configSubProjectFiles = files;
+			return this;
+		}
+
+		protected MultiModuleProjectCreator withConfiguration(String... lines) {
+			configuration = lines;
+			return this;
+		}
+
+		protected MultiModuleProjectCreator addSubProject(String name, SubProjectFile... files) {
+			subProjects.put(name, asList(files));
+			return this;
+		}
+
+		protected void create() throws IOException {
+			createRootPom();
+			createConfigSubProject();
+			createSubProjects();
+		}
+
+		private void createRootPom() throws IOException {
+			List<Object> modulesList = new ArrayList<>();
+			modulesList.add(configSubProject);
+			modulesList.addAll(subProjects.keySet());
+			String[] modules = modulesList.toArray(new String[0]);
+
+			Map<String, Object> rootPomParams = buildPomXmlParams(null, configuration, modules);
+			setFile("pom.xml").toContent(createPomXmlContent("/multi-module/pom-parent.xml.mustache", rootPomParams));
+		}
+
+		private void createConfigSubProject() throws IOException {
+			if (configSubProject != null) {
+				String content = createPomXmlContent("/multi-module/pom-config.xml.mustache", emptyMap());
+				setFile(configSubProject + "/pom.xml").toContent(content);
+
+				createSubProjectFiles(configSubProject, asList(configSubProjectFiles));
+			}
+		}
+
+		private void createSubProjects() throws IOException {
+			for (Map.Entry<String, List<SubProjectFile>> entry : subProjects.entrySet()) {
+				String subProjectName = entry.getKey();
+				List<SubProjectFile> subProjectFiles = entry.getValue();
+
+				String content = createPomXmlContent("/multi-module/pom-child.xml.mustache", singletonMap(CHILD_ID, subProjectName));
+				setFile(subProjectName + "/pom.xml").toContent(content);
+
+				createSubProjectFiles(subProjectName, subProjectFiles);
+			}
+		}
+
+		private void createSubProjectFiles(String subProjectName, List<SubProjectFile> subProjectFiles) throws IOException {
+			for (SubProjectFile file : subProjectFiles) {
+				setFile(subProjectName + '/' + file.to).toResource(file.from);
+			}
+		}
+	}
+
+	protected static class SubProjectFile {
+
+		private final String from;
+		private final String to;
+
+		private SubProjectFile(String from, String to) {
+			this.from = from;
+			this.to = to;
+		}
+
+		protected static SubProjectFile file(String from, String to) {
+			return new SubProjectFile(from, to);
+		}
 	}
 }

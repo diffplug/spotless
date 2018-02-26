@@ -26,7 +26,7 @@ import com.diffplug.spotless.maven.FormatterStepFactory;
 
 public class LicenseHeader implements FormatterStepFactory {
 	@Parameter
-	private File file;
+	private String file;
 
 	@Parameter
 	private String content;
@@ -43,7 +43,8 @@ public class LicenseHeader implements FormatterStepFactory {
 
 		if (file != null ^ content != null) {
 			if (file != null) {
-				return LicenseHeaderStep.createFromFile(file, config.getEncoding(), delimiterString);
+				File licenseHeaderFile = config.getFileLocator().locateFile(file);
+				return LicenseHeaderStep.createFromFile(licenseHeaderFile, config.getEncoding(), delimiterString);
 			} else {
 				return LicenseHeaderStep.createFromHeader(content, delimiterString);
 			}

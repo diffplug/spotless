@@ -24,11 +24,13 @@ public class FormatterStepConfig {
 	private final Charset encoding;
 	private final String licenseHeaderDelimiter;
 	private final Provisioner provisioner;
+	private final FileLocator fileLocator;
 
-	public FormatterStepConfig(Charset encoding, String licenseHeaderDelimiter, Provisioner provisioner) {
+	public FormatterStepConfig(Charset encoding, String licenseHeaderDelimiter, Provisioner provisioner, FileLocator fileLocator) {
 		this.encoding = encoding;
 		this.licenseHeaderDelimiter = licenseHeaderDelimiter;
 		this.provisioner = provisioner;
+		this.fileLocator = fileLocator;
 	}
 
 	public Charset getEncoding() {
@@ -41,5 +43,9 @@ public class FormatterStepConfig {
 
 	public Provisioner getProvisioner() {
 		return provisioner;
+	}
+
+	public FileLocator getFileLocator() {
+		return fileLocator;
 	}
 }

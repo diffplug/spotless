@@ -18,6 +18,7 @@
     <maven.api.version>{{mavenApiVersion}}</maven.api.version>
     <eclipse.aether.version>{{eclipseAetherVersion}}</eclipse.aether.version>
     <spotless.lib.version>{{spotlessLibVersion}}</spotless.lib.version>
+    <plexus.resources.version>{{plexusResourcesVersion}}</plexus.resources.version>
   </properties>
 
   <dependencies>
@@ -44,6 +45,11 @@
       <artifactId>aether-util</artifactId>
       <version>${eclipse.aether.version}</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-resources</artifactId>
+      <version>${plexus.resources.version}</version>
     </dependency>
 
     <dependency>
