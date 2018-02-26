@@ -102,7 +102,6 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		process(files, formatter);
 	}
 
-	@SuppressWarnings("unchecked")
 	private List<File> collectFiles(FormatterFactory formatterFactory) throws MojoExecutionException {
 		Set<String> configuredIncludes = formatterFactory.includes();
 		Set<String> configuredExcludes = formatterFactory.excludes();
