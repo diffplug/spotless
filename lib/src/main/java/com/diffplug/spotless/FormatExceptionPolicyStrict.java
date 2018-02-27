@@ -34,7 +34,7 @@ public class FormatExceptionPolicyStrict extends NoLambda.EqualityBasedOnSeriali
 		excludeSteps.add(Objects.requireNonNull(stepName));
 	}
 
-	/** Adds a realtive pathx to exclude. */
+	/** Adds a relative path to exclude. */
 	public void excludePath(String relativePath) {
 		excludePaths.add(Objects.requireNonNull(relativePath));
 	}
