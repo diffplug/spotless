@@ -20,9 +20,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
+import java.nio.file.Paths;
 
 import org.codehaus.plexus.resource.ResourceManager;
 import org.junit.Test;
@@ -45,15 +48,16 @@ public class FileLocatorTest {
 
 	@Test
 	public void locateValidFile() throws Exception {
-		File file = new File("test-config.xml");
-		when(resourceManager.getResourceAsFile(any(), any())).thenReturn(file);
+		String path = Paths.get("tmp", "configs", "my-config.xml").toString();
+		File tmpOutputFile = new File("tmp-my-config.xml");
+		when(resourceManager.getResourceAsFile(any(), any())).thenReturn(tmpOutputFile);
 
-		File locatedFile = fileLocator.locateFile("/tmp/configs/my-config.xml");
+		File locatedFile = fileLocator.locateFile(path);
 
-		assertEquals(file, locatedFile);
+		assertEquals(tmpOutputFile, locatedFile);
 
 		ArgumentCaptor<String> argCaptor = ArgumentCaptor.forClass(String.class);
-		verify(resourceManager).getResourceAsFile(eq("/tmp/configs/my-config.xml"), argCaptor.capture());
+		verify(resourceManager).getResourceAsFile(eq(path), argCaptor.capture());
 		assertThat(argCaptor.getValue()).startsWith("my-config").endsWith(".xml");
 	}
 }
