@@ -25,7 +25,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
@@ -196,7 +195,7 @@ public class ResourceHarness {
 
 		private WriteAsserter(File file) {
 			file.getParentFile().mkdirs();
-			this.file = Objects.requireNonNull(file);
+			this.file = file;
 		}
 
 		public File toLines(String... lines) throws IOException {
