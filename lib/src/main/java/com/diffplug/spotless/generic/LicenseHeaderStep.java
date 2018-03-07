@@ -140,7 +140,8 @@ public final class LicenseHeaderStep implements Serializable {
 
 	private boolean matchesLicenseWithYearToken(String raw, Matcher matcher) {
 		int startOfTheSecondPart = raw.indexOf(licenseHeaderAfterYearToken);
-		return (raw.startsWith(licenseHeaderBeforeYearToken) && startOfTheSecondPart + licenseHeaderAfterYearToken.length() == matcher.start())
+		return startOfTheSecondPart > licenseHeaderBeforeYearToken.length()
+				&& (raw.startsWith(licenseHeaderBeforeYearToken) && startOfTheSecondPart + licenseHeaderAfterYearToken.length() == matcher.start())
 				&& yearMatcherPattern.matcher(raw.substring(licenseHeaderBeforeYearToken.length(), startOfTheSecondPart)).matches();
 	}
 }
