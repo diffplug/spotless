@@ -7,7 +7,7 @@ You might be looking for:
 
 ### Version 1.12.0-SNAPSHOT - TBD (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/snapshot/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/snapshot/), [snapshot repo](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/))
 
-### Version 1.11.0-SNAPSHOT - February 26th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.11.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.11.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
+### Version 1.11.0 - February 26th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.11.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.11.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
 * Added default indentation of `4` to `IndentStep`. ([#209](https://github.com/diffplug/spotless/pull/209))
 
