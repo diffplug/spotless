@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 import java.util.logging.Logger;
 
 import org.assertj.core.api.AbstractCharSequenceAssert;
@@ -122,11 +123,19 @@ public class ResourceHarness {
 
 	/** Returns a File (in a temporary folder) which has the contents of the given file from the src/test/resources directory. */
 	protected File createTestFile(String filename) throws IOException {
+		return createTestFile(filename, UnaryOperator.identity());
+	}
+
+	/**
+	 * Returns a File (in a temporary folder) which has the contents, possibly processed, of the given file from the
+	 * src/test/resources directory.
+	 */
+	protected File createTestFile(String filename, UnaryOperator<String> fileContentsProcessor) throws IOException {
 		int lastSlash = filename.lastIndexOf('/');
 		String name = lastSlash >= 0 ? filename.substring(lastSlash) : filename;
 		File file = newFile(name);
 		file.getParentFile().mkdirs();
-		Files.write(file.toPath(), getTestResource(filename).getBytes(StandardCharsets.UTF_8));
+		Files.write(file.toPath(), fileContentsProcessor.apply(getTestResource(filename)).getBytes(StandardCharsets.UTF_8));
 		return file;
 	}
 
