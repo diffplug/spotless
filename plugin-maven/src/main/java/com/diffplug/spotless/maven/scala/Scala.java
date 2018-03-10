@@ -20,9 +20,17 @@ import static java.util.Collections.unmodifiableSet;
 
 import java.util.Set;
 
-import com.diffplug.spotless.maven.generic.Format;
+import com.diffplug.spotless.maven.FormatterFactory;
+import com.diffplug.spotless.maven.generic.LicenseHeader;
 
-public class Scala extends Format {
+/**
+ * A {@link FormatterFactory} implementation that corresponds to {@code <scala>...</scala>} configuration element.
+ * <p>
+ * It defines a formatter for scala source files that can execute both language agnostic (e.g. {@link LicenseHeader})
+ * and scala-specific (e.g. {@link Scalafmt}) steps.
+ */
+public class Scala extends FormatterFactory {
+
 	private static final Set<String> DEFAULT_INCLUDES = unmodifiableSet(newHashSet("src/main/scala/**/*.scala",
 			"src/test/scala/**/*.scala", "src/main/scala/**/*.sc", "src/test/scala/**/*.sc"));
 	private static final String LICENSE_HEADER_DELIMITER = "package ";

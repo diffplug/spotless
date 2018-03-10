@@ -32,7 +32,7 @@ import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
-import com.diffplug.spotless.maven.generic.LicenseHeader;
+import com.diffplug.spotless.maven.generic.*;
 
 public abstract class FormatterFactory {
 	@Parameter
@@ -87,7 +87,27 @@ public abstract class FormatterFactory {
 		addStepFactory(licenseHeader);
 	}
 
-	protected void addStepFactory(FormatterStepFactory stepFactory) {
+	public final void addEndWithNewline(EndWithNewline endWithNewline) {
+		addStepFactory(endWithNewline);
+	}
+
+	public final void addIndent(Indent indent) {
+		addStepFactory(indent);
+	}
+
+	public final void addTrimTrailingWhitespace(TrimTrailingWhitespace trimTrailingWhitespace) {
+		addStepFactory(trimTrailingWhitespace);
+	}
+
+	public final void addReplace(Replace replace) {
+		addStepFactory(replace);
+	}
+
+	public final void addReplaceRegex(ReplaceRegex replaceRegex) {
+		addStepFactory(replaceRegex);
+	}
+
+	protected final void addStepFactory(FormatterStepFactory stepFactory) {
 		Objects.requireNonNull(stepFactory);
 		stepFactories.add(stepFactory);
 	}

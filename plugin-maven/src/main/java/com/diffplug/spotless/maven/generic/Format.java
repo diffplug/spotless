@@ -20,6 +20,12 @@ import java.util.Set;
 
 import com.diffplug.spotless.maven.FormatterFactory;
 
+/**
+ * A {@link FormatterFactory} implementation that corresponds to {@code <format>...</format>} configuration element.
+ * <p>
+ * It defines a formatter for custom includes/excludes that executes list of generic, language agnostic steps,
+ * like {@link LicenseHeader}.
+ */
 public class Format extends FormatterFactory {
 
 	@Override
@@ -31,25 +37,5 @@ public class Format extends FormatterFactory {
 	public String licenseHeaderDelimiter() {
 		// do not specify a default delimiter
 		return null;
-	}
-
-	public void addEndWithNewline(EndWithNewline endWithNewline) {
-		addStepFactory(endWithNewline);
-	}
-
-	public void addIndent(Indent indent) {
-		addStepFactory(indent);
-	}
-
-	public void addTrimTrailingWhitespace(TrimTrailingWhitespace trimTrailingWhitespace) {
-		addStepFactory(trimTrailingWhitespace);
-	}
-
-	public void addReplace(Replace replace) {
-		addStepFactory(replace);
-	}
-
-	public void addReplaceRegex(ReplaceRegex replaceRegex) {
-		addStepFactory(replaceRegex);
 	}
 }
