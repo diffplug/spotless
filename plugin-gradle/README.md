@@ -317,8 +317,8 @@ For instance, the following configuration treats `1990, 2003` as a valid year ra
 
 ```gradle
 spotless {
-  format java {
-     licenseHeader(''Licensed under Apache-2.0 $YEAR').yearSeparator(', ')
+  java {
+    licenseHeader('Licensed under Apache-2.0 $YEAR').yearSeparator(', ')
   }
 }
 ```
