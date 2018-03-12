@@ -21,6 +21,7 @@ import com.diffplug.spotless.maven.MavenIntegrationTest;
 
 public class LicenseHeaderTest extends MavenIntegrationTest {
 	private static final String KEY_LICENSE = "license/TestLicense";
+	private static final String KOTLIN_LICENSE_HEADER = "// Hello, I'm Kotlin license header";
 
 	@Test
 	public void fromFileJava() throws Exception {
@@ -77,6 +78,23 @@ public class LicenseHeaderTest extends MavenIntegrationTest {
 				"  <delimiter>package</delimiter>",
 				"</licenseHeader>");
 		runTest();
+	}
+
+	@Test
+	public void fromContentKotlin() throws Exception {
+		writePomWithKotlinSteps(
+				"<licenseHeader>",
+				"  <content>",
+				KOTLIN_LICENSE_HEADER,
+				"  </content>",
+				"</licenseHeader>");
+
+		String path = "src/main/kotlin/test.kt";
+		String noLicenseHeader = getTestResource("kotlin/licenseheader/KotlinCodeWithoutHeader.test");
+
+		setFile(path).toContent(noLicenseHeader);
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile(path).hasContent(KOTLIN_LICENSE_HEADER + '\n' + noLicenseHeader);
 	}
 
 	private void runTest() throws Exception {

@@ -42,6 +42,7 @@ import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.maven.generic.Format;
 import com.diffplug.spotless.maven.generic.LicenseHeader;
 import com.diffplug.spotless.maven.java.Java;
+import com.diffplug.spotless.maven.kotlin.Kotlin;
 import com.diffplug.spotless.maven.scala.Scala;
 
 public abstract class AbstractSpotlessMojo extends AbstractMojo {
@@ -84,6 +85,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	@Parameter
 	private Scala scala;
+
+	@Parameter
+	private Kotlin kotlin;
 
 	protected abstract void process(List<File> files, Formatter formatter) throws MojoExecutionException;
 
@@ -142,7 +146,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private List<FormatterFactory> getFormatterFactories() {
-		return Stream.of(format, java, scala)
+		return Stream.of(format, java, scala, kotlin)
 				.filter(Objects::nonNull)
 				.collect(toList());
 	}
