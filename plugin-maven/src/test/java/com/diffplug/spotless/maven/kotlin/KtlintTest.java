@@ -19,7 +19,7 @@ import org.junit.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationTest;
 
-public class KtLintTest extends MavenIntegrationTest {
+public class KtlintTest extends MavenIntegrationTest {
 
 	@Test
 	public void testKtlint() throws Exception {
