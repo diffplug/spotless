@@ -15,16 +15,21 @@
  */
 package com.diffplug.spotless.maven.java;
 
-import static com.diffplug.common.collect.Sets.newHashSet;
-import static java.util.Collections.unmodifiableSet;
-
 import java.util.Set;
 
-import com.diffplug.spotless.maven.generic.Format;
+import com.diffplug.common.collect.ImmutableSet;
+import com.diffplug.spotless.maven.FormatterFactory;
+import com.diffplug.spotless.maven.generic.LicenseHeader;
 
-public class Java extends Format {
-	private static final Set<String> DEFAULT_INCLUDES = unmodifiableSet(newHashSet("src/main/java/**/*.java",
-			"src/test/java/**/*.java"));
+/**
+ * A {@link FormatterFactory} implementation that corresponds to {@code <java>...</java>} configuration element.
+ * <p>
+ * It defines a formatter for java source files that can execute both language agnostic (e.g. {@link LicenseHeader})
+ * and java-specific (e.g. {@link Eclipse}) steps.
+ */
+public class Java extends FormatterFactory {
+
+	private static final Set<String> DEFAULT_INCLUDES = ImmutableSet.of("src/main/java/**/*.java", "src/test/java/**/*.java");
 	private static final String LICENSE_HEADER_DELIMITER = "package ";
 
 	@Override

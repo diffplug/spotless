@@ -13,25 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.maven.scala;
+package com.diffplug.spotless.maven.kotlin;
+
+import static com.diffplug.spotless.kotlin.KotlinConstants.LICENSE_HEADER_DELIMITER;
 
 import java.util.Set;
 
 import com.diffplug.common.collect.ImmutableSet;
 import com.diffplug.spotless.maven.FormatterFactory;
-import com.diffplug.spotless.maven.generic.LicenseHeader;
 
-/**
- * A {@link FormatterFactory} implementation that corresponds to {@code <scala>...</scala>} configuration element.
- * <p>
- * It defines a formatter for scala source files that can execute both language agnostic (e.g. {@link LicenseHeader})
- * and scala-specific (e.g. {@link Scalafmt}) steps.
- */
-public class Scala extends FormatterFactory {
+public class Kotlin extends FormatterFactory {
 
-	private static final Set<String> DEFAULT_INCLUDES = ImmutableSet.of("src/main/scala/**/*.scala",
-			"src/test/scala/**/*.scala", "src/main/scala/**/*.sc", "src/test/scala/**/*.sc");
-	private static final String LICENSE_HEADER_DELIMITER = "package ";
+	private static final Set<String> DEFAULT_INCLUDES = ImmutableSet.of("src/main/kotlin/**/*.kt", "src/test/kotlin/**/*.kt");
 
 	@Override
 	public Set<String> defaultIncludes() {
@@ -43,7 +36,7 @@ public class Scala extends FormatterFactory {
 		return LICENSE_HEADER_DELIMITER;
 	}
 
-	public void addScalafmt(Scalafmt scalafmt) {
-		addStepFactory(scalafmt);
+	public void addKtlint(Ktlint ktlint) {
+		addStepFactory(ktlint);
 	}
 }
