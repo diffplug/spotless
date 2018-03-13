@@ -115,6 +115,55 @@ By default, all files matching `src/main/java/**/*.java` and `src/test/java/**/*
 </configuration>
 ```
 
+<a name="scala"></a>
+
+## Applying to Scala source
+
+By default, all files matching `src/main/scala/**/*.scala`, `src/test/scala/**/*.scala`, `src/main/scala/**/*.sc` and `src/test/scala/**/*.sc` Ant style pattern will be formatted.  Each element under `<scala>` is a step, and they will be applied in the order specified.  Every step is optional.
+
+```xml
+<configuration>
+  <scala>
+     <licenseHeader>
+       <!-- Specify either content or file, but not both -->
+       <content>/* Licensed under Apache-2.0 */</content>
+       <file>${basedir}/license-header</file>
+     </licenseHeader>
+     <endWithNewLine/>
+     <trimTrailingWhitespace/>
+     <scalafmt>
+       <file>${basedir}/scalafmt.conf</file>
+       <!-- Optional, available versions: https://github.com/scalameta/scalafmt/releases -->
+       <version>1.1.0</version>
+     </scalafmt>
+  </scala>
+</configuration>
+```
+
+<a name="kotlin"></a>
+
+## Applying to Kotlin source
+
+By default, all files matching `src/main/kotlin/**/*.kt` and `src/test/kotlin/**/*.kt` Ant style pattern will be formatted.  Each element under `<kotlin>` is a step, and they will be applied in the order specified.  Every step is optional.
+
+```xml
+<configuration>
+  <kotlin>
+     <licenseHeader>
+       <!-- Specify either content or file, but not both -->
+       <content>/* Licensed under Apache-2.0 */</content>
+       <file>${basedir}/license-header</file>
+     </licenseHeader>
+     <endWithNewLine/>
+     <trimTrailingWhitespace/>
+     <ktlint>
+       <!-- Optional, available versions: https://github.com/shyiko/ktlint/releases -->
+       <version>0.14.0</version>
+     </ktlint>
+  </kotlin>
+</configuration>
+```
+
 <a name="format"></a>
 
 ## Applying to custom sources
