@@ -15,11 +15,9 @@
  */
 package com.diffplug.spotless.maven.scala;
 
-import static com.diffplug.common.collect.Sets.newHashSet;
-import static java.util.Collections.unmodifiableSet;
-
 import java.util.Set;
 
+import com.diffplug.common.collect.ImmutableSet;
 import com.diffplug.spotless.maven.FormatterFactory;
 import com.diffplug.spotless.maven.generic.LicenseHeader;
 
@@ -31,8 +29,8 @@ import com.diffplug.spotless.maven.generic.LicenseHeader;
  */
 public class Scala extends FormatterFactory {
 
-	private static final Set<String> DEFAULT_INCLUDES = unmodifiableSet(newHashSet("src/main/scala/**/*.scala",
-			"src/test/scala/**/*.scala", "src/main/scala/**/*.sc", "src/test/scala/**/*.sc"));
+	private static final Set<String> DEFAULT_INCLUDES = ImmutableSet.of("src/main/scala/**/*.scala",
+			"src/test/scala/**/*.scala", "src/main/scala/**/*.sc", "src/test/scala/**/*.sc");
 	private static final String LICENSE_HEADER_DELIMITER = "package ";
 
 	@Override

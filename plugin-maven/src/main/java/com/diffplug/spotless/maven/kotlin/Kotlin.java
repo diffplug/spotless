@@ -15,18 +15,16 @@
  */
 package com.diffplug.spotless.maven.kotlin;
 
-import static com.diffplug.common.collect.Sets.newHashSet;
 import static com.diffplug.spotless.kotlin.KotlinConstants.LICENSE_HEADER_DELIMITER;
-import static java.util.Collections.unmodifiableSet;
 
 import java.util.Set;
 
+import com.diffplug.common.collect.ImmutableSet;
 import com.diffplug.spotless.maven.FormatterFactory;
 
 public class Kotlin extends FormatterFactory {
 
-	private static final Set<String> DEFAULT_INCLUDES = unmodifiableSet(newHashSet("src/main/kotlin/**/*.kt",
-			"src/test/kotlin/**/*.kt"));
+	private static final Set<String> DEFAULT_INCLUDES = ImmutableSet.of("src/main/kotlin/**/*.kt", "src/test/kotlin/**/*.kt");
 
 	@Override
 	public Set<String> defaultIncludes() {
