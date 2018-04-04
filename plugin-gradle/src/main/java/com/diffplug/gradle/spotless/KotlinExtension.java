@@ -17,6 +17,8 @@ package com.diffplug.gradle.spotless;
 
 import static com.diffplug.spotless.kotlin.KotlinConstants.LICENSE_HEADER_DELIMITER;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
 
 import org.gradle.api.GradleException;
@@ -24,6 +26,7 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 
+import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.kotlin.KtLintStep;
 
 public class KotlinExtension extends FormatExtension {
@@ -42,13 +45,34 @@ public class KotlinExtension extends FormatExtension {
 	}
 
 	/** Adds the specified version of [ktlint](https://github.com/shyiko/ktlint). */
-	public void ktlint(String version) {
+	public KotlinFormatExtension ktlint(String version) {
 		Objects.requireNonNull(version);
-		addStep(KtLintStep.create(version, GradleProvisioner.fromProject(getProject())));
+		return new KotlinFormatExtension(version, Collections.emptyMap());
 	}
 
-	public void ktlint() {
-		ktlint(KtLintStep.defaultVersion());
+	public KotlinFormatExtension ktlint() {
+		return ktlint(KtLintStep.defaultVersion());
+	}
+
+	public class KotlinFormatExtension {
+
+		private final String version;
+		private Map<String, String> userData;
+
+		KotlinFormatExtension(String version, Map<String, String> config) {
+			this.version = version;
+			this.userData = config;
+			addStep(createStep());
+		}
+
+		public void userData(Map<String, String> userData) {
+			this.userData = userData;
+			replaceStep(createStep());
+		}
+
+		private FormatterStep createStep() {
+			return KtLintStep.create(version, GradleProvisioner.fromProject(getProject()), userData);
+		}
 	}
 
 	/** If the user hasn't specified the files yet, we'll assume he/she means all of the kotlin files. */

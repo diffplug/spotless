@@ -21,6 +21,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
 
 import com.diffplug.spotless.FormatterFunc;
@@ -46,6 +47,10 @@ public class KtLintStep {
 		return create(version, provisioner, false);
 	}
 
+	public static FormatterStep create(String version, Provisioner provisioner, Map<String, String> userData) {
+		return create(version, provisioner, false, userData);
+	}
+
 	public static FormatterStep createForScript(String version, Provisioner provisioner) {
 		return create(version, provisioner, true);
 	}
@@ -54,7 +59,15 @@ public class KtLintStep {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(provisioner, "provisioner");
 		return FormatterStep.createLazy(NAME,
-				() -> new State(version, provisioner, isScript),
+				() -> new State(version, provisioner, isScript, Collections.emptyMap()),
+				State::createFormat);
+	}
+
+	private static FormatterStep create(String version, Provisioner provisioner, boolean isScript, Map<String, String> userData) {
+		Objects.requireNonNull(version, "version");
+		Objects.requireNonNull(provisioner, "provisioner");
+		return FormatterStep.createLazy(NAME,
+				() -> new State(version, provisioner, isScript, userData),
 				State::createFormat);
 	}
 
@@ -69,8 +82,10 @@ public class KtLintStep {
 		private final boolean isScript;
 		/** The jar that contains the eclipse formatter. */
 		final JarState jarState;
+		private final Map<String, String> userData;
 
-		State(String version, Provisioner provisioner, boolean isScript) throws IOException {
+		State(String version, Provisioner provisioner, boolean isScript, Map<String, String> userData) throws IOException {
+			this.userData = userData;
 			this.jarState = JarState.from(MAVEN_COORDINATE + version, provisioner);
 			this.isScript = isScript;
 		}
@@ -105,11 +120,11 @@ public class KtLintStep {
 			Object ktlint = ktlintClass.getDeclaredField("INSTANCE").get(null);
 			// and its format method
 			String formatterMethodName = isScript ? "formatScript" : "format";
-			Method formatterMethod = ktlintClass.getMethod(formatterMethodName, String.class, Iterable.class, function2Interface);
+			Method formatterMethod = ktlintClass.getMethod(formatterMethodName, String.class, Iterable.class, Map.class, function2Interface);
 
 			return input -> {
 				try {
-					String formatted = (String) formatterMethod.invoke(ktlint, input, ruleSets, formatterCallback);
+					String formatted = (String) formatterMethod.invoke(ktlint, input, ruleSets, userData, formatterCallback);
 					return formatted;
 				} catch (InvocationTargetException e) {
 					throw ThrowingEx.unwrapCause(e);
