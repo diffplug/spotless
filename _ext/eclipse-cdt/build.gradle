@@ -1,0 +1,217 @@
+plugins {
+	// bintray uploading
+	id 'com.jfrog.bintray' version '1.3.1'
+	// p2 dependencies
+	id 'com.diffplug.gradle.p2.asmaven' version '3.9.0'
+}
+
+repositories {
+	mavenCentral()
+	maven { url 'https://plugins.gradle.org/m2/' }
+}
+
+apply plugin: 'java'
+sourceCompatibility = VER_JAVA
+targetCompatibility = VER_JAVA
+
+import java.io.File
+
+// The dependencies to pull from CDT's p2 repositories
+def eclipseCdtDeps = [
+	'org.eclipse.cdt.core':'+', // CodeFormatter and related
+]
+
+// The dependencies to pull from Eclipse's p2 repositories
+def eclipseDeps = [
+	'org.eclipse.core.jobs':'+', // Required by CDT ParserUtil
+	'org.eclipse.core.resources':'+',
+	'org.eclipse.core.runtime':'+',  // Provides central logging and plugin interface
+	'org.eclipse.equinox.common':'+', // Provides runtime status used during exception reporting
+	'org.eclipse.jface':'+', // PreferenceStore for creating preferences from properties
+	'org.eclipse.text':'+', // Provides Document data structure for formatter
+	'org.eclipse.osgi':'+', // CCorePlugin requires OSGI bundle interfaces (but not effectively used)
+	'org.eclipse.osgi.services':'+',
+]
+
+
+// build a maven repo in our build folder containing these artifacts
+p2AsMaven {
+	group 'p2', {
+		repoEclipse cdt_VER_ECLIPSE
+		eclipseDeps.keySet.each { p2.addIU(it) }
+		eclipseDeps.keySet.each { p2.addIU(it + '.source') }
+		repo "http://download.eclipse.org/tools/cdt/releases/${cdt_VER_ECLIPSE_CDT}"
+		eclipseCdtDeps.keySet.each { p2.addIU(it) }
+		eclipseCdtDeps.keySet.each { p2.addIU(it + '.source') }
+	}
+}
+
+configurations
+{ 
+	embeddedJars // JARs (Eclipse and WTP) the fat-jar is based uppon
+	embeddedSource // Source for Eclipse JARS (GrEclipse provides no source packages)
+	compile.extendsFrom(embeddedJars)
+}
+
+dependencies {
+	// Add the Eclipse and Eclipse-WTP jars to the embedded configuration.
+	eclipseDeps.each { groupArtifact, version ->
+		embeddedJars "p2:${groupArtifact}:${version}"
+		embeddedSource "p2:${groupArtifact}:${version}:sources"
+	}
+	eclipseCdtDeps.each { groupArtifact, version ->
+		embeddedJars "p2:${groupArtifact}:${version}"
+		embeddedSource "p2:${groupArtifact}:${version}:sources"
+	}
+	
+	testCompile "junit:junit:${cdt_VER_JUNIT}"
+}
+
+jar {
+	// this embeds the eclipse jars into our "fat jar"
+	from {
+		configurations.embeddedJars.collect{ it.isDirectory() ? it : zipTree(it) }
+	}
+	// the eclipse jars are signed, and our fat jar breaks the signatures
+	// so we've got to be sure to filter out the signatures
+	exclude 'META-INF/*.RSA'
+	exclude 'META-INF/*.SF'
+}
+
+//////////
+// Test //
+//////////
+sourceSets {
+	// Use JAR file with all resources for Eclipse-XML integration-tests
+	test.runtimeClasspath = jar.outputs.files + sourceSets.test.output + sourceSets.test.compileClasspath
+}
+
+/////////
+// IDE //
+/////////
+
+apply plugin: 'eclipse'
+
+eclipse {
+	classpath {
+		downloadSources true
+		downloadJavadoc true
+	}
+}
+
+// always create fresh projects
+tasks.eclipse.dependsOn(cleanEclipse)
+
+////////////////
+// Publishing //
+////////////////
+apply plugin: 'maven-publish'
+
+task sourcesJar(type: Jar) {
+	classifier = 'sources'
+	from sourceSets.main.allJava
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+	classifier = 'javadoc'
+	from javadoc.destinationDir
+}
+
+def isSnapshot = cdt_version.endsWith('-SNAPSHOT')
+// pulls the credentials from either the environment variable or gradle.properties
+def cred = {
+	if (System.env[it] != null) {
+		return System.env[it]
+	} else if (project.hasProperty(it)) {
+		return project[it]
+	} else {
+		return 'unknown_' + it
+	}
+}
+
+model {
+	publishing {
+		publications {
+			mavenJava(MavenPublication) {
+
+				groupId project.cdt_group
+				artifactId project.cdt_artifactId
+				version project.cdt_version
+				from components.java
+
+				pom.withXml {
+
+					// add MavenCentral requirements to the POM
+					asNode().children().last() + {
+						resolveStrategy = Closure.DELEGATE_FIRST
+						name project.cdt_artifactId
+						description project.cdt_description
+						url "https://github.com/${project.cdt_org}/${project.name}"
+						scm {
+							url "https://github.com/${project.cdt_org}/${project.name}"
+							connection "scm:git:git://github.com/${project.cdt_org}/${project.name}"
+							developerConnection "scm:git:ssh:git@github.com/${project.cdt_org}/${project.name}"
+						}
+						licenses {
+							license {
+								name 'Eclipse Public License - v 1.0'
+								url 'https://www.eclipse.org/legal/epl-v10.html'
+								distribution 'repo'
+							}
+						}
+						developers {
+							developer {
+								id 'fvgh'
+								name 'Frank Vennemeyer'
+								email 'frankgh@zoho.com'
+							}
+						}
+					}
+				}
+			}
+		}
+		if (isSnapshot) {
+			// upload snapshots to oss.sonatype.org
+			repositories {
+				maven {
+					url = 'https://oss.sonatype.org/content/repositories/snapshots'
+					credentials {
+						username = cred('nexus_user')
+						password = cred('nexus_pass')
+					}
+				} }
+		}
+	}
+}
+
+if (!isSnapshot) {
+	// upload releases to bintray and then mavenCentral
+	bintray {
+		user = cred('bintray_user')
+		key = cred('bintray_pass')
+		publications = [
+			'mavenJava'
+		]
+		publish = true
+		pkg {
+			repo = 'opensource'
+			name = project.cdt_artifactId
+			userOrg = project.cdt_org
+			version {
+				name = project.cdt_version
+				mavenCentralSync {
+					user = cred('nexus_user')
+					password = cred('nexus_pass')
+				}
+			}
+		}
+	}
+
+	publish.dependsOn(bintrayUpload)
+	bintrayUpload.dependsOn([
+		'generatePomFileForMavenJavaPublication',
+		jar,
+		sourcesJar,
+		javadocJar
+	])
+}
