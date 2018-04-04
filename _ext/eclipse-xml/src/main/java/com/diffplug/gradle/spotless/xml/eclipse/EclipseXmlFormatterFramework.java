@@ -125,7 +125,7 @@ class EclipseXmlFormatterFramework {
 		if (catalog.isPresent()) {
 			try {
 				InputStream inputStream = new FileInputStream(catalog.get());
-				String orgBase = defaultCatalog.getBase(); 
+				String orgBase = defaultCatalog.getBase();
 				defaultCatalog.setBase(catalog.get().toURI().toString());
 				CatalogReader.read((Catalog) defaultCatalog, inputStream);
 				defaultCatalog.setBase(orgBase);
