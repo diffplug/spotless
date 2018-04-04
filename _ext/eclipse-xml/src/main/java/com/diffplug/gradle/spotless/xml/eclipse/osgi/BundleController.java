@@ -40,13 +40,13 @@ import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 
-/** 
+/**
  * OSGi bundle controller allowing a minimal Eclipse platform setup
  * by bypassing the Eclipse internal platform.
- * 
+ *
  * Bundles are loaded by the same class loader, sharing the same context.
- * Services do not provide individual properties, but making use of the framework properties 
- * All bundles have a persistent state. The OSGi life-cycle is not supported.  
+ * Services do not provide individual properties, but making use of the framework properties
+ * All bundles have a persistent state. The OSGi life-cycle is not supported.
  */
 public final class BundleController implements StaticBundleContext {
 	public static final String SYMBOLIC_NAME = "com.diffplug.gradle.spotless.xml";
@@ -85,7 +85,7 @@ public final class BundleController implements StaticBundleContext {
 		}
 	}
 
-	/** Adds and starts a new bundle. 
+	/** Adds and starts a new bundle.
 	 * @throws BundleException */
 	public void addBundle(BundleActivator activator, Function<Bundle, BundleException> register) throws BundleException {
 		BundleContext contextFacade = new BundleControllerContextFacade(activator);
@@ -153,9 +153,9 @@ public final class BundleController implements StaticBundleContext {
 		private final BundleContext context;
 		private final int id;
 		private final BundleFile bundleFile;
-		/** 
+		/**
 		 * META-INF information would get overridden in the fat JAR. Hence they provided under the activators path name.
-		 * TODO: Future versions of Eclipse will provide M2 artifacts which will obsolete the fat JAR and this work-around.  
+		 * TODO: Future versions of Eclipse will provide M2 artifacts which will obsolete the fat JAR and this work-around.
 		 */
 		private final String metaInfFatJarResourcePath;
 
@@ -244,7 +244,7 @@ public final class BundleController implements StaticBundleContext {
 					if (null == elements) {
 						throw new BundleException(String.format("Symbolic name not found in '%s'.", headerValue), BundleException.MANIFEST_ERROR);
 					}
-					//The parser already checked that at least one value exists 
+					//The parser already checked that at least one value exists
 					return elements[0].getValueComponents()[0];
 
 				} catch (IOException e) {
@@ -286,7 +286,7 @@ public final class BundleController implements StaticBundleContext {
 	}
 
 	/**
-	 * Facade providing access to bundle controller 
+	 * Facade providing access to bundle controller
 	 * <p>
 	 * All bundles have unrestricted access to the framework services and properties.
 	 * However, each bundle and its context needs to maintain its individual

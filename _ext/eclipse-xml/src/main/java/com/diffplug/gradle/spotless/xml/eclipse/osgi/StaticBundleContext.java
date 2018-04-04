@@ -36,10 +36,10 @@ import org.osgi.framework.ServiceObjects;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
-/** 
+/**
  * Restriction of the BundleContext interface rejecting run-time provision of bundles.
- * Services provided are run-time are ignored. 
- * Only dedicated services specified in the 
+ * Services provided are run-time are ignored.
+ * Only dedicated services specified in the
  * {@link com.diffplug.gradle.spotless.xml.eclipse.EclipseXmlFormatterFramework framework}
  * are used.
  * <p>

@@ -16,13 +16,11 @@
 package com.diffplug.gradle.spotless.xml.eclipse;
 
 import static com.diffplug.gradle.spotless.xml.eclipse.EclipseXmlFormatterStepImpl.LINE_DELIMITER;
-
+import static org.eclipse.wst.xml.core.internal.preferences.XMLCorePreferenceNames.*;
 import static org.junit.Assert.*;
 
 import java.util.Properties;
 import java.util.function.Consumer;
-
-import static org.eclipse.wst.xml.core.internal.preferences.XMLCorePreferenceNames.*;
 
 import org.junit.BeforeClass;
 import org.junit.Test;

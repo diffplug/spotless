@@ -15,8 +15,8 @@
  */
 package com.diffplug.gradle.spotless.xml.eclipse;
 
-import static org.eclipse.wst.xml.core.internal.preferences.XMLCorePreferenceNames.*;
 import static com.diffplug.gradle.spotless.xml.eclipse.EclipseXmlFormatterPreferenceNames.*;
+import static org.eclipse.wst.xml.core.internal.preferences.XMLCorePreferenceNames.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -67,15 +67,15 @@ class EclipseXmlFormatterFramework {
 	}
 
 	private final Plugin[] plugins = {
-			//The WST uses the workspace to resolve file URIs 
+			//The WST uses the workspace to resolve file URIs
 			new org.eclipse.core.resources.ResourcesPlugin(),
-			//The WST XML formatter 
+			//The WST XML formatter
 			new org.eclipse.wst.xml.core.internal.XMLCorePlugin(),
 			//XSDs/DTDs must be resolved by URI
 			new org.eclipse.wst.common.uriresolver.internal.provisional.URIResolverPlugin(),
 			//Support formatting based on DTD restrictions
 			new org.eclipse.wst.dtd.core.internal.DTDCorePlugin(),
-			//Support formatting based on XSD restrictions 
+			//Support formatting based on XSD restrictions
 			new org.eclipse.wst.xsd.core.internal.XSDCorePlugin()
 	};
 
@@ -86,13 +86,13 @@ class EclipseXmlFormatterFramework {
 	private EclipseXmlFormatterFramework() throws BundleException {
 		//Eclipse framework
 		BundleActivator[] framework = {
-				//Plugins ask the platform whether core runtime bundle is in debug mode 
+				//Plugins ask the platform whether core runtime bundle is in debug mode
 				new org.eclipse.core.internal.runtime.PlatformActivator(),
-				//The BundleController wraps the OSGi layer. The plugin/extension look-up still works via the registry. 
+				//The BundleController wraps the OSGi layer. The plugin/extension look-up still works via the registry.
 				new org.eclipse.core.internal.registry.osgi.Activator(),
-				//Preferences always check whether bundle has been activated before preference are been set. 
+				//Preferences always check whether bundle has been activated before preference are been set.
 				new org.eclipse.core.internal.preferences.Activator(),
-				//Workspace is used for resolving URIs. Though the look-up will not be successful, 
+				//Workspace is used for resolving URIs. Though the look-up will not be successful,
 				//since no projects are available, the look-up must be supported.
 				new org.eclipse.core.internal.runtime.Activator()
 		};
@@ -154,7 +154,7 @@ class EclipseXmlFormatterFramework {
 		return Optional.empty();
 	}
 
-	/** 
+	/**
 	 * Provides XmlFormattingPreferences factory.
 	 * <p>
 	 * Note that multiple preference setups (for example project specific once)

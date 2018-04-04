@@ -33,7 +33,7 @@ public class NoEclipsePreferences implements IPreferencesService {
 
 	@Override
 	public IEclipsePreferences getRootNode() {
-		//Return value is not effectively used. 
+		//Return value is not effectively used.
 		return DefaultScope.INSTANCE.getNode(UNUSED);
 	}
 

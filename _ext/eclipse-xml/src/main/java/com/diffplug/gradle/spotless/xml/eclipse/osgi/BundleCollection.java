@@ -42,7 +42,7 @@ class BundleCollection {
 		return id2bundle.get(id);
 	}
 
-	/** Add bundle to collection. 
+	/** Add bundle to collection.
 	 * @throws BundleException */
 	public void add(Bundle bundle) throws BundleException {
 		if (null != symbolicName2bundle.put(bundle.getSymbolicName(), bundle)) {

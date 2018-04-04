@@ -62,7 +62,7 @@ public class PluginRegistrar {
 		return new RegistryContributor(
 				Long.toString(bundle.getBundleId()),
 				bundle.getSymbolicName(),
-				// Local host 
+				// Local host
 				null,
 				null);
 	}

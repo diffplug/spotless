@@ -81,10 +81,10 @@ public class ServiceCollection {
 		return (null == singleService) ? null : new ServiceReference<?>[]{singleService};
 	}
 
-	/** 
-	 * Return service for reference if it belongs to the system bundle. 
+	/**
+	 * Return service for reference if it belongs to the system bundle.
 	 * @param reference Service reference
-	 * @return null, if service does not belong to the system bundle 
+	 * @return null, if service does not belong to the system bundle
 	 */
 	<S> S getService(ServiceReference<S> reference) {
 		if (systemBundle == reference.getBundle()) {

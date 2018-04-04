@@ -42,7 +42,7 @@ interface TemporaryBundle extends Bundle {
 
 	@Override
 	default public Version getVersion() {
-		return Version.emptyVersion; //Cannot support multiple version using single class loader. 
+		return Version.emptyVersion; //Cannot support multiple version using single class loader.
 	}
 
 	@Override
