@@ -1,0 +1,189 @@
+Manifest-Version: 1.0
+Bundle-Localization: plugin
+Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Built-By: genie.webtools
+Bundle-SymbolicName: org.eclipse.wst.xsd.core; singleton:=true
+Bundle-Activator: org.eclipse.wst.xsd.core.internal.XSDCorePlugin
+Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.2.0,4.0.0)
+ ",org.eclipse.wst.common.uriresolver;bundle-version="[1.2.0,2.0.0)",o
+ rg.eclipse.xsd;bundle-version="[2.2.0,3.0.0)",org.eclipse.wst.xml.cor
+ e;bundle-version="[1.1.0,1.2.0)",org.eclipse.wst.validation;bundle-ve
+ rsion="[1.2.0,1.3.0)",org.eclipse.core.resources;bundle-version="[3.8
+ .0,4.0.0)"
+Export-Package: org.eclipse.wst.xsd.contentmodel.internal;x-friends:="
+ org.eclipse.wst.xsd.ui",org.eclipse.wst.xsd.contentmodel.internal.uti
+ l;x-internal:=true,org.eclipse.wst.xsd.core.internal;x-friends:="org.
+ eclipse.wst.xsd.ui",org.eclipse.wst.xsd.core.internal.preferences;x-f
+ riends:="org.eclipse.wst.xsd.ui",org.eclipse.wst.xsd.core.internal.va
+ lidation;x-internal:=true,org.eclipse.wst.xsd.core.internal.validatio
+ n.eclipse;x-internal:=true 
+Bundle-Version: 1.1.900.v201401141857
+Build-Jdk: 1.7.0_51
+Bundle-ActivationPolicy: lazy
+Bundle-Vendor: %Bundle-Vendor.0
+Bundle-Name: %_UI_PLUGIN_NAME
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Bundle-ManifestVersion: 2
+
+Name: org/eclipse/wst/xsd/contentmodel/internal/XSDImpl$XSDAttributeUs
+ eAdapter.class
+SHA1-Digest: wAKIaKEogXEJMOcb0rHhXK1wIRU=
+
+Name: org/eclipse/wst/xsd/contentmodel/internal/XSDImpl$XSDCMVisitor.c
+ lass
+SHA1-Digest: 5YJtMZGoaLqd00ojMzauaDeYGf4=
+
+Name: org/eclipse/wst/xsd/contentmodel/internal/XSDImpl$XSDModelGroupD
+ efinitionAdapter.class
+SHA1-Digest: EFBxPBiDcbRwRhJtW0he1J+ca4k=
+
+Name: org/eclipse/wst/xsd/contentmodel/internal/XSDImpl$DocumentationI
+ mpl.class
+SHA1-Digest: OVz4s2dW4PCTzxKErxK3UKJmGmk=
+
+Name: org/eclipse/wst/xsd/contentmodel/internal/XSDTypeUtil.class
+SHA1-Digest: StmXvRRzkPhL0GGxtH8dTHJiMdM=
+
+Name: plugin.properties
+SHA1-Digest: XeQgoXnHZlXp6YiSF0Zj4GHnyS8=
+
+Name: org/eclipse/wst/xsd/contentmodel/internal/XSDImpl.class
+SHA1-Digest: HaHoMS635Do8MRUPM9EpBwSWiu8=
+
+Name: org/eclipse/wst/xsd/contentmodel/internal/XSDImpl$XSDElementDecl
+ arationAdapter.class
+SHA1-Digest: +X2lzTmioHvYKSRL8hPvKIUZ31U=
+
+Name: org/eclipse/wst/xsd/core/internal/validation/eclipse/XSDMessageI
+ nfoHelper.class
+SHA1-Digest: hJEZhdxXi2Jda6khiKNfCVPBPeY=
+
+Name: org/eclipse/wst/xsd/core/internal/preferences/XSDCorePreferenceI
+ nitializer.class
+SHA1-Digest: 28NTSLlKLew7eUUvtWw3RT3JSI8=
+
+Name: org/eclipse/wst/xsd/contentmodel/internal/XSDVisitor.class
+SHA1-Digest: keTrnMptlhxZ+CrvK7gnkj8HR+4=
+
+Name: org/eclipse/wst/xsd/contentmodel/internal/XSDImpl$XSDWildcardAda
+ pter.class
+SHA1-Digest: F7CTiZghz8ch3+pVMLue8uqlNKo=
+
+Name: org/eclipse/wst/xsd/contentmodel/internal/XSDImpl$XSIDocument.cl
+ ass
+SHA1-Digest: md3ejPbEjy47s+6LBjXELGi4MS0=
+
+Name: org/eclipse/wst/xsd/contentmodel/internal/XSDImpl$ElementDeclara
+ tionBaseImpl.class
+SHA1-Digest: yosQyzLzsWS0jDS8rjzEXNhW10g=
+
+Name: org/eclipse/wst/xsd/contentmodel/internal/XSDImpl$XSDModelGroupA
+ dapter.class
+SHA1-Digest: 1M2sdGi81U0n2+bG7Rmubnlnh3w=
+
+Name: org/eclipse/wst/xsd/contentmodel/internal/CMNodeImpl.class
+SHA1-Digest: 9yBT2UR/iRazYc/+r4DLS29RWD8=
+
+Name: plugin.xml
+SHA1-Digest: 9IPciW+qI6irYAdNT/P74o/Ju+w=
+
+Name: org/eclipse/wst/xsd/core/internal/validation/eclipse/XSDDelegati
+ ngValidator.class
+SHA1-Digest: 1dMxpQ7Rin+GerxhFHjceZXUNCU=
+
+Name: org/eclipse/wst/xsd/contentmodel/internal/XSDImpl$1.class
+SHA1-Digest: Dl022q0oazXtzcWsj5iD9E4Ml4o=
+
+Name: org/eclipse/wst/xsd/contentmodel/internal/util/XSDSchemaLocatorI
+ mpl.class
+SHA1-Digest: /DgGbpswsNftv8b4nGEP/POSeDA=
+
+Name: META-INF/maven/org.eclipse.webtools.sourceediting/org.eclipse.ws
+ t.xsd.core/pom.xml
+SHA1-Digest: NJcR+pTEDpjxw+KPSQfOwWlBwps=
+
+Name: org/eclipse/wst/xsd/core/internal/validation/XSDValidationConfig
+ uration.class
+SHA1-Digest: aMq+Hh4pb+JoEnhz+WzVYMDi42I=
+
+Name: org/eclipse/wst/xsd/contentmodel/internal/XSDImpl$ElementDeclara
+ tionBaseImpl$DataTypeImpl.class
+SHA1-Digest: GGakv0FK4ZpCOc+yBu3+cGyUBNM=
+
+Name: org/eclipse/wst/xsd/core/internal/validation/XSDValidator$XSDEnt
+ ityResolver.class
+SHA1-Digest: RJOj2PqaDvOjgYpNTfVOIq6uVfg=
+
+Name: org/eclipse/wst/xsd/contentmodel/internal/XSDCMManager.class
+SHA1-Digest: Ucj+oxaGd9Xktkmpce2L1MU1QxU=
+
+Name: org/eclipse/wst/xsd/contentmodel/internal/XSDImpl$DerivedElement
+ DeclarationImpl.class
+SHA1-Digest: OWCDPcaz5losHbuxU7s6Zv1E8Tc=
+
+Name: META-INF/maven/org.eclipse.webtools.sourceediting/org.eclipse.ws
+ t.xsd.core/pom.properties
+SHA1-Digest: Qy6AwWiujTT19XFUG4+L2oFW2bM=
+
+Name: org/eclipse/wst/xsd/contentmodel/internal/XSDImpl$LocalElementVi
+ sitor.class
+SHA1-Digest: nUXP7qM3xk9F0l5uOZ4t1sFdtqs=
+
+Name: about.html
+SHA1-Digest: mUOvxSYxCUot6WW9T8TxmOQUrws=
+
+Name: org/eclipse/wst/xsd/contentmodel/internal/XSDImpl$XSDSchemaAdapt
+ er.class
+SHA1-Digest: RGPgQOBKiPnMOI66Goswe3C8D4w=
+
+Name: org/eclipse/wst/xsd/contentmodel/internal/XSDImpl$XSDAdapterFact
+ oryImpl.class
+SHA1-Digest: 2lVpIduP1BV5KI75+u3/TpavGqw=
+
+Name: org/eclipse/wst/xsd/core/internal/validation/eclipse/Validator.c
+ lass
+SHA1-Digest: wRd5oRfKHkref4n9DjJvD5yvL0c=
+
+Name: org/eclipse/wst/xsd/contentmodel/internal/CMDocumentFactoryXSD.c
+ lass
+SHA1-Digest: JiV9NZzBLErhHTlMOP7PIckBEO4=
+
+Name: org/eclipse/wst/xsd/core/internal/XSDCorePlugin.class
+SHA1-Digest: 4+nJCVX5eMhKAvUO0aBt57oCtTk=
+
+Name: org/eclipse/wst/xsd/core/internal/validation/XSDValidator.class
+SHA1-Digest: J4U63rzgu94aiSAmNHzjUwBj1Bg=
+
+Name: org/eclipse/wst/xsd/core/internal/preferences/XSDCorePreferenceN
+ ames.class
+SHA1-Digest: 9/7+MntQsd4qcbpgZTB5WzFilCg=
+
+Name: org/eclipse/wst/xsd/contentmodel/internal/XSDImpl$XSDAttributeUs
+ eAdapter$DataTypeImpl.class
+SHA1-Digest: nJf3tgxw/DtoBkg3n8MrxAy3uJo=
+
+Name: org/eclipse/wst/xsd/contentmodel/internal/XSDImpl$InternalURICon
+ verter.class
+SHA1-Digest: 82TO577N66z44ZIOdbeyES54MsI=
+
+Name: org/eclipse/wst/xsd/contentmodel/internal/XSDImpl$DerivedChildVi
+ sitor.class
+SHA1-Digest: /3rj0Sd5fK1cCMlSeKWOcVn0y0w=
+
+Name: org/eclipse/wst/xsd/contentmodel/internal/util/XSDSchemaLocatorA
+ dapterFactory.class
+SHA1-Digest: mmjjPzhFbGcr86Fa6weR0NhZH0g=
+
+Name: org/eclipse/wst/xsd/contentmodel/internal/XSDImpl$XSDBaseAdapter
+ .class
+SHA1-Digest: Clue8c44UFNu6V7ZgtOZVoExxXE=
+
+Name: org/eclipse/wst/xsd/core/internal/validation/XSDValidator$XSDErr
+ orHandler.class
+SHA1-Digest: 4Yb5XZMzwDmC45M7FKk1PwDXAZg=
+
+Name: org/eclipse/wst/xsd/core/internal/validation/eclipse/XSDValidato
+ r.class
+SHA1-Digest: whzLyjMAUWUfgrsCqpXXpU8K26I=
+
