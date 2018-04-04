@@ -125,8 +125,10 @@ class EclipseXmlFormatterFramework {
 		if (catalog.isPresent()) {
 			try {
 				InputStream inputStream = new FileInputStream(catalog.get());
+				String orgBase = defaultCatalog.getBase(); 
 				defaultCatalog.setBase(catalog.get().toURI().toString());
 				CatalogReader.read((Catalog) defaultCatalog, inputStream);
+				defaultCatalog.setBase(orgBase);
 			} catch (IOException e) {
 				throw new IllegalArgumentException(
 						String.format("Value of '%s' refers to '%s', which cannot be read.", USER_CATALOG, catalog.get()));
