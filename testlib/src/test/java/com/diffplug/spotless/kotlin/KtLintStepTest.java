@@ -15,22 +15,16 @@
  */
 package com.diffplug.spotless.kotlin;
 
-import java.util.Collections;
-
 import org.junit.Test;
 
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.ResourceHarness;
-import com.diffplug.spotless.SerializableEqualityTester;
-import com.diffplug.spotless.StepHarness;
-import com.diffplug.spotless.TestProvisioner;
+import com.diffplug.spotless.*;
 
 public class KtLintStepTest extends ResourceHarness {
 	@Test
 	public void behavior() throws Exception {
 		// Must use jcenter because `com.andreapivetta.kolor:kolor:0.0.2` isn't available on mavenCentral.
 		// It is a dependency of ktlint.
-		FormatterStep step = KtLintStep.create(KtLintStep.defaultVersion(), TestProvisioner.jcenter(), Collections.emptyMap());
+		FormatterStep step = KtLintStep.create(TestProvisioner.jcenter());
 		StepHarness.forStep(step)
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
 				.testException("kotlin/ktlint/unsolvable.dirty", assertion -> {
@@ -56,7 +50,7 @@ public class KtLintStepTest extends ResourceHarness {
 			@Override
 			protected FormatterStep create() {
 				String finalVersion = this.version;
-				return KtLintStep.create(finalVersion, TestProvisioner.mavenCentral(), Collections.emptyMap());
+				return KtLintStep.create(finalVersion, TestProvisioner.mavenCentral());
 			}
 		}.testEquals();
 	}

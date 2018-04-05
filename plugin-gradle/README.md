@@ -261,7 +261,7 @@ spotless {
     target '*.gradle.kts', 'additionalScripts/*.gradle.kts'
 
     ktlint()
-    
+
     // Optional user arguments can be set as such:
     ktlint().userData(['indent_size': '2', 'continuation_indent_size' : '2'])
 
