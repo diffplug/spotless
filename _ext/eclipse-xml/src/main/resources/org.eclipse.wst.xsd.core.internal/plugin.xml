@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+
+	<extension point="org.eclipse.core.contenttype.contentTypes">
+		<content-type
+			priority="high"
+			name="%XSD_Content_Type"
+			id="org.eclipse.wst.xsd.core.xsdsource"
+			base-type="org.eclipse.core.runtime.xml"
+			default-charset="UTF-8"
+			file-extensions="xsd" />
+	</extension>
+
+	<extension point="org.eclipse.wst.xml.core.documentFactories">
+		<factory
+			type="xsd"
+			class="org.eclipse.wst.xsd.contentmodel.internal.CMDocumentFactoryXSD">
+		</factory>
+	</extension>
+	
+	<!-- ====================================================== -->
+	<!-- Register the XSD validator with the validation 		-->
+	<!-- framework. 										    -->
+	<!-- ====================================================== -->
+	<!--
+	<extension
+		id="xsdValidator"
+		name="%_UI_XML_SCHEMA_VALIDATOR"
+		point="org.eclipse.wst.validation.validator">
+		<validator>
+			<filter
+				objectClass="org.eclipse.core.resources.IFile"
+				caseSensitive="false"
+				nameFilter="*.xsd">
+			</filter>
+			
+			<helper
+				class="org.eclipse.wst.xml.core.internal.validation.core.Helper">
+			</helper>
+			
+			<run
+         async="true"
+         class="org.eclipse.wst.xsd.core.internal.validation.eclipse.XSDDelegatingValidator"
+         enabled="true"
+         fullBuild="true"
+         incremental="true">
+			</run>
+		</validator>
+	</extension>
+	-->
+	
+   <extension id="xsd" name="%_UI_XML_SCHEMA_VALIDATOR" point="org.eclipse.wst.validation.validatorV2">
+      <validator
+            build="true"
+            class="org.eclipse.wst.xsd.core.internal.validation.eclipse.XSDDelegatingValidator"
+            manual="true"
+            sourceid="org.eclipse.wst.xsd.ui.internal.validation.DelegatingSourceValidatorForXSD"
+            version="2"
+            markerId="org.eclipse.xsd.diagnostic">
+         <include>
+            <rules>
+               <fileext caseSensitive="false" ext="xsd"></fileext>
+            </rules>
+         </include>
+      </validator>
+   </extension>
+
+	<extension
+       point="org.eclipse.wst.validation.validatorDelegates">
+    	<delegate
+        	class="org.eclipse.wst.xsd.core.internal.validation.eclipse.Validator"
+			name="%_UI_XERCES_VALIDATOR_DELEGATE"
+        	target="org.eclipse.wst.xsd.core.internal.validation.eclipse.XSDDelegatingValidator"/>
+	 </extension>
+ 	 
+	 <!-- initialize xml core preferences -->
+	<extension point="org.eclipse.core.runtime.preferences">
+		<initializer
+			class="org.eclipse.wst.xsd.core.internal.preferences.XSDCorePreferenceInitializer" />
+	</extension>
+
+	<!-- ====================================================== -->
+	<!-- Add schemas to XML Catalog                             -->
+	<!-- ====================================================== -->
+	<extension
+		point="org.eclipse.wst.xml.core.catalogContributions">
+		<catalogContribution id="default">
+			<uri
+				name="http://www.w3.org/2001/XMLSchema"
+				uri="platform:/plugin/org.eclipse.xsd/cache/www.w3.org/2001/XMLSchema.xsd" />
+			<system
+				systemId="http://www.w3.org/2001/xml.xsd"
+				uri="platform:/plugin/org.eclipse.xsd/cache/www.w3.org/2001/xml.xsd"/>				
+		</catalogContribution>
+	</extension>
+
+</plugin>
