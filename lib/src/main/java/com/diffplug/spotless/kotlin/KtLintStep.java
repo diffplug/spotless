@@ -44,23 +44,15 @@ public class KtLintStep {
 	}
 
 	public static FormatterStep create(String version, Provisioner provisioner) {
-		return create(version, provisioner, false);
+		return create(version, provisioner, Collections.emptyMap());
 	}
 
 	public static FormatterStep create(String version, Provisioner provisioner, Map<String, String> userData) {
 		return create(version, provisioner, false, userData);
 	}
 
-	public static FormatterStep createForScript(String version, Provisioner provisioner) {
-		return create(version, provisioner, true);
-	}
-
-	private static FormatterStep create(String version, Provisioner provisioner, boolean isScript) {
-		Objects.requireNonNull(version, "version");
-		Objects.requireNonNull(provisioner, "provisioner");
-		return FormatterStep.createLazy(NAME,
-				() -> new State(version, provisioner, isScript, Collections.emptyMap()),
-				State::createFormat);
+	public static FormatterStep createForScript(String version, Provisioner provisioner, Map<String, String> userData) {
+		return create(version, provisioner, true, userData);
 	}
 
 	private static FormatterStep create(String version, Provisioner provisioner, boolean isScript, Map<String, String> userData) {
