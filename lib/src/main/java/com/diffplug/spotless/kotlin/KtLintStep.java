@@ -51,6 +51,10 @@ public class KtLintStep {
 		return create(version, provisioner, false, userData);
 	}
 
+	public static FormatterStep createForScript(String version, Provisioner provisioner) {
+		return create(version, provisioner, true, Collections.emptyMap());
+	}
+
 	public static FormatterStep createForScript(String version, Provisioner provisioner, Map<String, String> userData) {
 		return create(version, provisioner, true, userData);
 	}
