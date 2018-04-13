@@ -38,6 +38,28 @@ In the constructor of your formatter, the Spotless Eclipse Framework can be conf
   ...
 ```
 
+The framework also supports fat JARs. In this cases the resources required by plugins, especially the `META-INF` and plugin information, must be located in locations unique
+to the plugin.
+For this purpose the framework expects that these resources are stored in a sub-directory
+which has the name of the package containing the plugin. For example in case the JDT plugin
+is included in your formatter fat JAR, the directory structure should be:
+
+```
++ resources
+|
++--+ org.eclipse.jdt.core
+|  |
+|  +--+ META-INF
+|  |  |
+|  |  +-- MANIFEST.MF
+|  |
+|  +--- plugin.properties
+|  |
+|  +--- plugin.xml
+
+```
+
+
 ## Build
 
 ```
