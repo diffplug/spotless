@@ -1,6 +1,12 @@
 apply from: rootProject.file('../gradle/java-setup.gradle')
 apply from: rootProject.file('../gradle/java-publish.gradle')
 
+ext {
+	developers = [
+		fvgh: [ name: 'Frank Vennemeyer', email: 'frankgh@zoho.com' ]
+	]
+}
+
 dependencies {
 	compile("org.eclipse.platform:org.eclipse.core.resources:${VER_ECLIPSE_CORE_RESOURCES}") {
 		exclude group: 'org.eclipse.platform', module: 'org.eclipse.ant.core'

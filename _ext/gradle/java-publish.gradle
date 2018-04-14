@@ -53,10 +53,12 @@ model {
 							}
 						}
 						developers {
-							developer {
-								id 'fvgh'
-								name 'Frank Vennemeyer'
-								email 'frankgh@zoho.com'
+							project.ext.developers.each { extId, extValues -> 
+								developer {
+									id extId
+									name extValues['name']
+									email extValues['email']
+								}
 							}
 						}
 					}
