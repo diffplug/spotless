@@ -35,7 +35,7 @@ import com.diffplug.spotless.java.GoogleJavaFormatStep;
 import com.diffplug.spotless.java.ImportOrderStep;
 import com.diffplug.spotless.java.RemoveUnusedImportsStep;
 
-public class JavaExtension extends FormatExtension {
+public class JavaExtension extends FormatExtension implements SimpleLicenseHeaderExtension {
 	static final String NAME = "java";
 
 	public JavaExtension(SpotlessExtension rootExtension) {
@@ -46,10 +46,12 @@ public class JavaExtension extends FormatExtension {
 	// testlib/src/test/java/com/diffplug/spotless/generic/LicenseHeaderStepTest.java as well
 	static final String LICENSE_HEADER_DELIMITER = "package ";
 
+	@Override
 	public LicenseHeaderConfig licenseHeader(String licenseHeader) {
 		return licenseHeader(licenseHeader, LICENSE_HEADER_DELIMITER);
 	}
 
+	@Override
 	public LicenseHeaderConfig licenseHeaderFile(Object licenseHeaderFile) {
 		return licenseHeaderFile(licenseHeaderFile, LICENSE_HEADER_DELIMITER);
 	}

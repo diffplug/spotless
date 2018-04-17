@@ -36,7 +36,7 @@ import com.diffplug.spotless.extra.groovy.GrEclipseFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.java.ImportOrderStep;
 
-public class GroovyExtension extends FormatExtension {
+public class GroovyExtension extends FormatExtension implements SimpleLicenseHeaderExtension {
 	static final String NAME = "groovy";
 
 	public GroovyExtension(SpotlessExtension rootExtension) {
@@ -55,10 +55,12 @@ public class GroovyExtension extends FormatExtension {
 		this.excludeJava = excludeJava;
 	}
 
+	@Override
 	public LicenseHeaderConfig licenseHeader(String licenseHeader) {
 		return licenseHeader(licenseHeader, JavaExtension.LICENSE_HEADER_DELIMITER);
 	}
 
+	@Override
 	public LicenseHeaderConfig licenseHeaderFile(Object licenseHeaderFile) {
 		return licenseHeaderFile(licenseHeaderFile, JavaExtension.LICENSE_HEADER_DELIMITER);
 	}
