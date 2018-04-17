@@ -15,6 +15,8 @@
  */
 package com.diffplug.gradle.spotless.eclipse;
 
+import java.util.Map;
+
 import org.eclipse.core.runtime.content.IContentTypeManager;
 import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.eclipse.osgi.service.datalocation.Location;
@@ -25,14 +27,20 @@ import com.diffplug.gradle.spotless.eclipse.service.*;
 
 /**
  * Configuration/Provision of services which shall be provided by the SpotlessEclipseFramework.
- * <br>
+ * <p>
  * The SpotlessEclipseFramework plugins are customized by these services to provide the minimal
  * functionality as required by the Spotless formatter.
- * <p>
- * Note that the configuration must not be changed after adding plugins, since a concurrent
- * access is not supported.
+ * </p>
  */
 public interface SpotlessEclipseServiceConfig {
+
+	/** Sets property/preference value available to all bundles, plugins and services. */
+	void set(String key, String value);
+
+	/** Sets property/preference values available to all bundles, plugins and services. */
+	default void set(Map<String, String> properties) {
+		properties.entrySet().stream().forEach(x -> set(x.getKey(), x.getValue()));
+	}
 
 	/**
 	 * Add custom service to collection.
@@ -82,4 +90,12 @@ public interface SpotlessEclipseServiceConfig {
 		add(Location.class, new TemporaryLocation());
 	}
 
+	/** Applies the default configurations. */
+	default public void applyDefault() {
+		hideEnvironment();
+		ignoreContentType();
+		disableDebugging();
+		ignoreUnsupportedPreferences();
+		useTemporaryLocations();
+	}
 }

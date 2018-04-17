@@ -50,6 +50,11 @@ public class ServiceCollection implements SpotlessEclipseServiceConfig {
 	}
 
 	@Override
+	public void set(String key, String value) {
+		properties.put(key, value);
+	}
+
+	@Override
 	public <S> void add(Class<S> interfaceClass, S service) {
 		String className = interfaceClass.getName();
 		if (null != className2Service.put(interfaceClass.getName(), new FrameworkServiceReference<S>(className, service))) {

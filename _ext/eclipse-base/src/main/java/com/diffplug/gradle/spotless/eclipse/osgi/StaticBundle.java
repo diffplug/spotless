@@ -28,7 +28,7 @@ import org.osgi.framework.ServiceReference;
  * Installation related methods (update/uninstall) are unsupported.
  * Unsupported methods are marked as deprecated and causing an exception.
  */
-interface StaticBundle extends Bundle {
+public interface StaticBundle extends Bundle {
 
 	@Override
 	default public void start(int options) throws BundleException {}

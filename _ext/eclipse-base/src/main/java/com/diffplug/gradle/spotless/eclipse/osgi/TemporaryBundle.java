@@ -38,7 +38,7 @@ import org.osgi.framework.Version;
  * Installation related methods (update/uninstall) are not supported.
  * Unsupported methods are marked as deprecated and causing an exception.
  */
-interface TemporaryBundle extends Bundle {
+public interface TemporaryBundle extends Bundle {
 
 	@Override
 	default public Version getVersion() {

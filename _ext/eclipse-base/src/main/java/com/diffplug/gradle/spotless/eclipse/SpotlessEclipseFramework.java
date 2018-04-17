@@ -17,15 +17,15 @@ package com.diffplug.gradle.spotless.eclipse;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.xml.parsers.SAXParserFactory;
 
-import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleException;
@@ -36,34 +36,12 @@ import com.diffplug.gradle.spotless.eclipse.runtime.PluginRegistrar;
 /** Setup a framework for Spotless Eclipse based formatters */
 public final class SpotlessEclipseFramework {
 
-	/** Default plugins required by most Spotless formatters */
-	public enum DefaultPlugins {
-		/**
-		 * The resources plugin initialized the Eclipse workspace and allows URL look-up.
-		 * Most formatters using the workspace to resolve URLs or create
-		 * file interfaces (org.eclipse.core.resources.IFile).
-		 */
-		RESOURCES(org.eclipse.core.resources.ResourcesPlugin.class);
-
-		private final Class<? extends Plugin> pluginClass;
-
-		DefaultPlugins(Class<? extends Plugin> clazz) {
-			pluginClass = clazz;
-		}
-
-		/** Create new plugin instance. */
-		public Plugin create() {
-			return createInstance(pluginClass);
-		}
-
-		/** Create plugin instances for all enumerated values. */
-		public static Plugin[] createValues() {
-			List<Plugin> instances = Arrays.stream(values()).map(value -> value.create()).collect(Collectors.toList());
-			return instances.toArray(new Plugin[0]);
-		}
-	}
-
-	/** Default internal bundles/services required by most plugins */
+	/**
+	 * Default internal bundles required by most plugins.
+	 * <p>
+	 * Services provided by an internal bundle are not accessed via the plugin registry, but by static methods.
+	 * </p>
+	 */
 	public enum DefaultBundles {
 		/** Plugins ask the platform whether core runtime bundle is in debug mode. Note that the bundle requires the EnvironmentInfo service. */
 		PLATFORM(org.eclipse.core.internal.runtime.PlatformActivator.class),
@@ -86,9 +64,42 @@ public final class SpotlessEclipseFramework {
 		}
 
 		/** Create bundle activator instances for all enumerated values. */
-		public static BundleActivator[] createValues() {
-			List<BundleActivator> instances = Arrays.stream(values()).map(value -> value.create()).collect(Collectors.toList());
-			return instances.toArray(new BundleActivator[0]);
+		public static Collection<BundleActivator> createAll() {
+			return Arrays.stream(values()).map(value -> value.create()).collect(Collectors.toList());
+		}
+	}
+
+	/**
+	 * Default plugins required by most Spotless formatters.
+	 * <p>
+	 * Eclipse plugins are OSGI bundles itself and do not necessarily derive from the Eclipse Plugin class.
+	 * BundleActivator implementation may as well server as plugins.
+	 * All plugins must provide a MANIFEST.MF, plugin.properties and plugin.xml description file,
+	 * required for the plugin registration.
+	 * </p>
+	 */
+	public enum DefaultPlugins {
+		/**
+		 * The resources plugin initialized the Eclipse workspace and allows URL look-up.
+		 * Most formatters using the workspace to resolve URLs or create
+		 * file interfaces (org.eclipse.core.resources.IFile).
+		 */
+		RESOURCES(org.eclipse.core.resources.ResourcesPlugin.class);
+
+		private final Class<? extends BundleActivator> pluginClass;
+
+		DefaultPlugins(Class<? extends BundleActivator> clazz) {
+			pluginClass = clazz;
+		}
+
+		/** Create new plugin instance. */
+		public BundleActivator create() {
+			return createInstance(pluginClass);
+		}
+
+		/** Create plugin instances for all enumerated values. */
+		public static Collection<BundleActivator> createAll() {
+			return Arrays.stream(values()).map(value -> value.create()).collect(Collectors.toList());
 		}
 	}
 
@@ -104,60 +115,60 @@ public final class SpotlessEclipseFramework {
 	private static SpotlessEclipseFramework INSTANCE = null;
 
 	/**
-	 * Creates and configures a new SpotlessEclipseFramework using DefaultBundles, DefaultPlugins and default services.
+	 * Creates and configures a new SpotlessEclipseFramework using DefaultBundles, DefaultPlugins and default configuration.
 	 * If there is already a an instance, the call is ignored.
 	 * @return False if the SpotlessEclipseFramework instance already exists, true otherwise.
 	 * @throws BundleException Throws exception in case the setup failed.
 	 */
 	public synchronized static boolean setup() throws BundleException {
-		return setup(config -> {
-			config.disableDebugging();
-			config.hideEnvironment();
-			config.ignoreContentType();
-			config.ignoreUnsupportedPreferences();
-			config.useTemporaryLocations();
-		});
+		return setup(plugins -> plugins.addAll(DefaultPlugins.createAll()));
 	}
 
 	/**
 	 * Creates and configures a new SpotlessEclipseFramework using DefaultBundles and DefaultPlugins.
 	 * If there is already a an instance, the call is ignored.
-	 * @param config Framework service configuration
+	 * @param plugins Eclipse plugins (which are also OSGi bundles) to start
 	 * @return False if the SpotlessEclipseFramework instance already exists, true otherwise.
 	 * @throws BundleException Throws exception in case the setup failed.
 	 */
-	public synchronized static boolean setup(final Consumer<SpotlessEclipseServiceConfig> config) throws BundleException {
-		return setup(DefaultPlugins.createValues(), config);
+	public synchronized static boolean setup(final Consumer<Collection<BundleActivator>> plugins) throws BundleException {
+		return setup(config -> config.applyDefault(), plugins);
 	}
 
 	/**
 	 * Creates and configures a new SpotlessEclipseFramework using DefaultBundles.
 	 * If there is already a an instance, the call is ignored.
-	 * @param plugins Eclipse plugins (which are also OSGi bundles) to start
 	 * @param config Framework service configuration
+	 * @param plugins Eclipse plugins (which are also OSGi bundles) to start
 	 * @return False if the SpotlessEclipseFramework instance already exists, true otherwise.
 	 * @throws BundleException Throws exception in case the setup failed.
 	 */
-	public synchronized static boolean setup(Plugin[] plugins, final Consumer<SpotlessEclipseServiceConfig> config) throws BundleException {
-		return setup(DefaultBundles.createValues(), plugins, config);
+	public synchronized static boolean setup(Consumer<SpotlessEclipseServiceConfig> config, Consumer<Collection<BundleActivator>> plugins) throws BundleException {
+		return setup(bundles -> bundles.addAll(DefaultBundles.createAll()), config, plugins);
 	}
 
 	/**
 	 * Creates and configures a new SpotlessEclipseFramework if there is none.
 	 * If there is already a an instance, the call is ignored.
-	 * @param bundleActivators Activators of internal bundles
-	 * @param plugins Eclipse plugins (which are also OSGi bundles) to start
+	 * @param bundles Activators of internal bundles
 	 * @param config Framework service configuration
+	 * @param plugins Eclipse plugins to start
 	 * @return False if the SpotlessEclipseFramework instance already exists, true otherwise.
 	 * @throws BundleException Throws exception in case the setup failed.
 	 */
-	public synchronized static boolean setup(BundleActivator[] bundleActivators, Plugin[] plugins, final Consumer<SpotlessEclipseServiceConfig> config) throws BundleException {
+	public synchronized static boolean setup(Consumer<Collection<BundleActivator>> bundles, Consumer<SpotlessEclipseServiceConfig> config, Consumer<Collection<BundleActivator>> plugins) throws BundleException {
 		if (null != INSTANCE) {
 			return false;
 		}
-		INSTANCE = new SpotlessEclipseFramework(bundleActivators);
+
+		Collection<BundleActivator> internalBundleActivators = new ArrayList<BundleActivator>();
+		bundles.accept(internalBundleActivators);
+		INSTANCE = new SpotlessEclipseFramework(internalBundleActivators);
 		config.accept(INSTANCE.getServiceConfig());
-		for (Plugin plugin : plugins) {
+
+		Collection<BundleActivator> pluginsList = new ArrayList<BundleActivator>();
+		plugins.accept(pluginsList);
+		for (BundleActivator plugin : pluginsList) {
 			INSTANCE.addPlugin(plugin);
 		}
 		return true;
@@ -165,10 +176,10 @@ public final class SpotlessEclipseFramework {
 
 	private final Function<Bundle, BundleException> registry;
 	private final BundleController controller;
-	private final BundleActivator[] bundleActivators;
+	private final Collection<BundleActivator> bundleActivators;
 	private boolean bundleActivatorsStarted;
 
-	private SpotlessEclipseFramework(BundleActivator[] bundleActivators) throws BundleException {
+	private SpotlessEclipseFramework(Collection<BundleActivator> bundleActivators) throws BundleException {
 
 		controller = new BundleController();
 		registry = (pluginBundle) -> {
@@ -185,7 +196,7 @@ public final class SpotlessEclipseFramework {
 	}
 
 	/** Add a plugin to the framework. */
-	private void addPlugin(Plugin plugin) throws BundleException {
+	private void addPlugin(BundleActivator plugin) throws BundleException {
 		if (!bundleActivatorsStarted) {
 			//The SAXParserFactory.class is required for parsing the plugin XML files
 			addMandatoryServiceIfMissing(SAXParserFactory.class, SAXParserFactory.newInstance());

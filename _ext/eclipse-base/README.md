@@ -20,25 +20,16 @@ dependencies {
 In the constructor of your formatter, the Spotless Eclipse Framework can be configured depending on your formatters requirements. For example the JDT formatter can be configured like:
 
 ```Java
-  //Eclipse plugins can be statically created, since their constructors
-  //do not require a running Eclipse environment.
-  private final static Plugin[] PLUGINS = {
-      SpotlessEclipseFramework.DefaultPlugins.RESOURCES.create(),
-      new org.eclipse.jdt.core.JavaCore()
-  };
-
-  public EclipseFormatterStepImpl(Properties settings) throws Exception {
-    SpotlessEclipseFramework.setup(PLUGINS, config -> {
-      config.disableDebugging();
-      config.hideEnvironment();
-      config.ignoreContentType();
-      config.ignoreUnsupportedPreferences();
-      config.useTemporaryLocations();
-    });
+public EclipseFormatterStepImpl(Properties settings) throws Exception {
+    SpotlessEclipseFramework.setup(plugins -> {
+        plugins.addAll(SpotlessEclipseFramework.DefaultPlugins.createAll());
+        plugins.add(new org.eclipse.jdt.core.JavaCore());
+  });
   ...
 ```
 
-The framework also supports fat JARs. In this cases the resources required by plugins, especially the `META-INF` and plugin information, must be located in locations unique
+The framework also supports fat JARs, providing multiple plugins.
+In this cases the resources required by plugins, especially the `META-INF` and plugin information, must be located in locations unique
 to the plugin.
 For this purpose the framework expects that these resources are stored in a sub-directory
 which has the name of the package containing the plugin. For example in case the JDT plugin

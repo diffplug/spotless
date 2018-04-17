@@ -18,7 +18,7 @@ package com.diffplug.gradle.spotless.eclipse;
 import org.junit.Test;
 import org.osgi.framework.BundleException;
 
-/** Smoke tests (no mocking) */
+/** Smoke tests */
 public class SpotlessEclipseFrameworkTest {
 
 	@Test
