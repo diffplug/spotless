@@ -26,7 +26,6 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 
-import com.diffplug.common.collect.ImmutableSortedMap;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.kotlin.KtLintStep;
 
@@ -69,7 +68,7 @@ public class KotlinExtension extends FormatExtension {
 		public void userData(Map<String, String> userData) {
 			// Copy the map to a sorted map because up-to-date checking is based on binary-equals of the serialized
 			// representation.
-			this.userData = ImmutableSortedMap.copyOf(userData);
+			this.userData = userData;
 			replaceStep(createStep());
 		}
 

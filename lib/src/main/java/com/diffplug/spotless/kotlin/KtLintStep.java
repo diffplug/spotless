@@ -23,6 +23,7 @@ import java.lang.reflect.Proxy;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
@@ -78,10 +79,10 @@ public class KtLintStep {
 		private final boolean isScript;
 		/** The jar that contains the eclipse formatter. */
 		final JarState jarState;
-		private final Map<String, String> userData;
+		private final TreeMap<String, String> userData;
 
 		State(String version, Provisioner provisioner, boolean isScript, Map<String, String> userData) throws IOException {
-			this.userData = userData;
+			this.userData = new TreeMap<>(userData);
 			this.jarState = JarState.from(MAVEN_COORDINATE + version, provisioner);
 			this.isScript = isScript;
 		}
