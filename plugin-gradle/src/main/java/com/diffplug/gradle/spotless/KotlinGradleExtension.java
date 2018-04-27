@@ -15,8 +15,12 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
 
+import com.diffplug.common.collect.ImmutableSortedMap;
+import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.kotlin.KtLintStep;
 
 public class KotlinGradleExtension extends FormatExtension {
@@ -29,13 +33,36 @@ public class KotlinGradleExtension extends FormatExtension {
 	}
 
 	/** Adds the specified version of [ktlint](https://github.com/shyiko/ktlint). */
-	public void ktlint(String version) {
+	public KotlinFormatExtension ktlint(String version) {
 		Objects.requireNonNull(version, "version");
-		addStep(KtLintStep.createForScript(version, GradleProvisioner.fromProject(getProject())));
+		return new KotlinFormatExtension(version, Collections.emptyMap());
 	}
 
-	public void ktlint() {
-		ktlint(KtLintStep.defaultVersion());
+	public KotlinFormatExtension ktlint() {
+		return ktlint(KtLintStep.defaultVersion());
+	}
+
+	public class KotlinFormatExtension {
+
+		private final String version;
+		private Map<String, String> userData;
+
+		KotlinFormatExtension(String version, Map<String, String> config) {
+			this.version = version;
+			this.userData = config;
+			addStep(createStep());
+		}
+
+		public void userData(Map<String, String> userData) {
+			// Copy the map to a sorted map because up-to-date checking is based on binary-equals of the serialized
+			// representation.
+			this.userData = ImmutableSortedMap.copyOf(userData);
+			replaceStep(createStep());
+		}
+
+		private FormatterStep createStep() {
+			return KtLintStep.createForScript(version, GradleProvisioner.fromProject(getProject()), userData);
+		}
 	}
 
 	@Override

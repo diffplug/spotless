@@ -15,9 +15,12 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.IOException;
 import java.time.YearMonth;
 
+import org.gradle.testkit.runner.BuildResult;
 import org.junit.Test;
 
 public class KotlinExtensionTest extends GradleIntegrationTest {
@@ -40,6 +43,24 @@ public class KotlinExtensionTest extends GradleIntegrationTest {
 		setFile("src/main/kotlin/basic.kt").toResource("kotlin/ktlint/basic.dirty");
 		gradleRunner().withArguments("spotlessApply").build();
 		assertFile("src/main/kotlin/basic.kt").sameAsResource("kotlin/ktlint/basic.clean");
+	}
+
+	@Test
+	public void testWithIndentation() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'nebula.kotlin' version '1.0.6'",
+				"    id 'com.diffplug.gradle.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlin {",
+				"        ktlint('0.21.0').userData(['indent_size': '6'])",
+				"    }",
+				"}");
+		setFile("src/main/kotlin/basic.kt").toResource("kotlin/ktlint/basic.dirty");
+		BuildResult result = gradleRunner().withArguments("spotlessApply").buildAndFail();
+		assertThat(result.getOutput()).contains("Unexpected indentation (4) (it should be 6)");
 	}
 
 	@Test
