@@ -35,6 +35,8 @@ import com.diffplug.spotless.extra.eclipse.base.runtime.PluginRegistrar;
 
 /** Setup a framework for Spotless Eclipse based formatters */
 public final class SpotlessEclipseFramework {
+	/** Spotless always uses \n internally as line delimiter */
+	public static final String LINE_DELIMITER = "\n";
 
 	/**
 	 * Default internal bundles required by most plugins.

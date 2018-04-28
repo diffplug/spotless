@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.extra.eclipse.base;
 
+import static com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework.LINE_DELIMITER;
+
 import java.util.Map;
 
 import org.eclipse.core.runtime.content.IContentTypeManager;
@@ -33,9 +35,6 @@ import com.diffplug.spotless.extra.eclipse.base.service.*;
  * </p>
  */
 public interface SpotlessEclipseServiceConfig {
-
-	/** Spotless always uses \n internally as line delimiter */
-	public static final String LINE_DELIMITER = "\n";
 
 	/** Sets property/preference value available to all bundles, plugins and services. */
 	void set(String key, String value);
