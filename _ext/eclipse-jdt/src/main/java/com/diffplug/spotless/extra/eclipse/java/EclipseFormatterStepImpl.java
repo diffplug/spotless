@@ -13,29 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless.java.eclipse;
+package com.diffplug.spotless.extra.eclipse.java;
 
 import java.util.Properties;
 
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.ToolFactory;
 import org.eclipse.jdt.core.formatter.CodeFormatter;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.text.edits.TextEdit;
 
+import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework;
+
 /** Formatter step which calls out to the Eclipse formatter. */
 public class EclipseFormatterStepImpl {
 
 	private final CodeFormatter codeFormatter;
 
-	public EclipseFormatterStepImpl(Properties settings) {
+	public EclipseFormatterStepImpl(Properties settings) throws Exception {
+		SpotlessEclipseFramework.setup(
+				plugins -> {
+					plugins.addAll(SpotlessEclipseFramework.DefaultPlugins.createAll());
+					plugins.add(new JavaCore());
+				});
 		this.codeFormatter = ToolFactory.createCodeFormatter(settings, ToolFactory.M_FORMAT_EXISTING);
 	}
 
-	private static final String UNIX = "\n";
-
 	public String format(String raw) throws Exception {
-		TextEdit edit = codeFormatter.format(CodeFormatter.K_COMPILATION_UNIT | CodeFormatter.F_INCLUDE_COMMENTS, raw, 0, raw.length(), 0, UNIX);
+		TextEdit edit = codeFormatter.format(CodeFormatter.K_COMPILATION_UNIT | CodeFormatter.F_INCLUDE_COMMENTS, raw, 0, raw.length(), 0, SpotlessEclipseFramework.LINE_DELIMITER);
 		if (edit == null) {
 			throw new IllegalArgumentException("Invalid java syntax for formatting.");
 		} else {
@@ -44,4 +50,5 @@ public class EclipseFormatterStepImpl {
 			return doc.get();
 		}
 	}
+
 }
