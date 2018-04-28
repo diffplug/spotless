@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless.cdt.eclipse;
+package com.diffplug.spotless.extra.eclipse.cdt;
 
-import static com.diffplug.gradle.spotless.cdt.eclipse.EclipseCdtFormatterStepImpl.LINE_DELIMITER;
+import static com.diffplug.spotless.extra.eclipse.cdt.EclipseCdtFormatterStepImpl.LINE_DELIMITER;
 import static org.junit.Assert.*;
 
 import java.util.Properties;
@@ -41,7 +41,7 @@ public class EclipseCdtFormatterStepImplTest {
 			"\treturn 0;\n" +
 			"}\n".replaceAll("\n", LINE_DELIMITER);
 
-	private final static String DOXYGEN_HTML = "/** <ul> <li>Hello</li> </ul> */" + LINE_DELIMITER;
+	private final static String DOXYGEN_HTML = "/**\n *<pre>void f() {int a =1;} </pre>\n */\n".replaceAll("\n", LINE_DELIMITER);
 
 	private final static String ILLEGAL_CHAR = Character.toString((char) 254);
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless.cdt.eclipse;
+package com.diffplug.spotless.extra.eclipse.cdt;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -26,6 +26,8 @@ import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.text.edits.TextEdit;
 
+import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework;
+
 /** Formatter step which calls out to the Eclipse formatter. */
 public class EclipseCdtFormatterStepImpl {
 	/** Spotless always uses \n internally as line delimiter */
@@ -33,7 +35,14 @@ public class EclipseCdtFormatterStepImpl {
 
 	private final CodeFormatter codeFormatter;
 
-	public EclipseCdtFormatterStepImpl(Properties settings) {
+	public EclipseCdtFormatterStepImpl(Properties settings) throws Exception {
+		SpotlessEclipseFramework.setup(
+				bundles -> {}, //CDT does not use the internal Eclipse feature
+				config -> {
+					config.changeSystemLineSeparator();
+				},
+				plugins -> {} //CDT does not use other Eclipse plugins);
+		);
 		Stream<Entry<Object, Object>> stream = settings.entrySet().stream();
 		Map<String, String> settingsMap = stream.collect(Collectors.toMap(
 				e -> String.valueOf(e.getKey()),
