@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless.eclipse.osgi;
+package com.diffplug.spotless.extra.eclipse.base.osgi;
 
 import java.util.Collection;
 import java.util.Dictionary;
@@ -26,7 +26,7 @@ import org.osgi.framework.Filter;
 import org.osgi.framework.ServiceException;
 import org.osgi.framework.ServiceReference;
 
-import com.diffplug.gradle.spotless.eclipse.SpotlessEclipseServiceConfig;
+import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseServiceConfig;
 
 /**
  * Collection of services.

@@ -9,11 +9,14 @@ The `com.diffplug.gradle.spotless:spotless-eclipse-base` artifact mocks the redu
 
 ## Usage
 
-Include the artifact to your Spotless Eclipse formatter project, whereas the minor/major version must match the Eclipse version your formatter supports. The exact default version should be selected by the **lib-extra**. Patch versions are backward compatible.
+Include the artifact to your Spotless Eclipse formatter project, whereas the major version must match the Eclipse core version your formatter supports. The exact default version should be selected by the **lib-extra**.
+Minor versions indicate a change in the minimum Eclipse (core/resource) dependencies.
+Patch versions are always backward compatible.
+
 
 ```Gradle
 dependencies {
-  compile "com.diffplug.spotless:spotless-ext-eclipse-base:4.7.+"
+  compile "com.diffplug.spotless:spotless-eclipse-base:3.+"
 }
 ```
 

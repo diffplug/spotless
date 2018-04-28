@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless.eclipse;
+package com.diffplug.spotless.extra.eclipse.base;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -30,8 +30,8 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleException;
 
-import com.diffplug.gradle.spotless.eclipse.osgi.BundleController;
-import com.diffplug.gradle.spotless.eclipse.runtime.PluginRegistrar;
+import com.diffplug.spotless.extra.eclipse.base.osgi.BundleController;
+import com.diffplug.spotless.extra.eclipse.base.runtime.PluginRegistrar;
 
 /** Setup a framework for Spotless Eclipse based formatters */
 public final class SpotlessEclipseFramework {
@@ -131,7 +131,7 @@ public final class SpotlessEclipseFramework {
 	 * @return False if the SpotlessEclipseFramework instance already exists, true otherwise.
 	 * @throws BundleException Throws exception in case the setup failed.
 	 */
-	public synchronized static boolean setup(final Consumer<Collection<BundleActivator>> plugins) throws BundleException {
+	public synchronized static boolean setup(Consumer<Collection<BundleActivator>> plugins) throws BundleException {
 		return setup(config -> config.applyDefault(), plugins);
 	}
 

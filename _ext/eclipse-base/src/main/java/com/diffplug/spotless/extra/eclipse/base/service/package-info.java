@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 /** Mocking Eclipse Equinox OSGi services. */
-package com.diffplug.gradle.spotless.eclipse.service;
+package com.diffplug.spotless.extra.eclipse.base.service;

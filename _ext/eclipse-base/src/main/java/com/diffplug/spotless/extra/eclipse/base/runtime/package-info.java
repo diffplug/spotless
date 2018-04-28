@@ -16,4 +16,4 @@
 /**
  * Eclipse Core Runtime adapters allowing runtime modifications which normally requires an Eclipse restart.
  */
-package com.diffplug.gradle.spotless.eclipse.runtime;
+package com.diffplug.spotless.extra.eclipse.base.runtime;

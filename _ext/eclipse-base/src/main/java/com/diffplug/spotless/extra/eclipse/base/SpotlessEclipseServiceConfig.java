@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless.eclipse;
+package com.diffplug.spotless.extra.eclipse.base;
 
 import java.util.Map;
 
@@ -23,7 +23,7 @@ import org.eclipse.osgi.service.datalocation.Location;
 import org.eclipse.osgi.service.debug.DebugOptions;
 import org.eclipse.osgi.service.environment.EnvironmentInfo;
 
-import com.diffplug.gradle.spotless.eclipse.service.*;
+import com.diffplug.spotless.extra.eclipse.base.service.*;
 
 /**
  * Configuration/Provision of services which shall be provided by the SpotlessEclipseFramework.
@@ -33,6 +33,9 @@ import com.diffplug.gradle.spotless.eclipse.service.*;
  * </p>
  */
 public interface SpotlessEclipseServiceConfig {
+
+	/** Spotless always uses \n internally as line delimiter */
+	public static final String LINE_DELIMITER = "\n";
 
 	/** Sets property/preference value available to all bundles, plugins and services. */
 	void set(String key, String value);
@@ -90,6 +93,17 @@ public interface SpotlessEclipseServiceConfig {
 		add(Location.class, new TemporaryLocation());
 	}
 
+	/**
+	 * In case the string which will be formatted does not contain any
+	 * line delimiter (single line), Eclipse falls back to use the
+	 * system property.
+	 * Change the system default to the UNIX line separator as required
+	 * by Spotless.
+	 */
+	default public void changeSystemLineSeparator() {
+		System.setProperty("line.separator", LINE_DELIMITER);
+	}
+
 	/** Applies the default configurations. */
 	default public void applyDefault() {
 		hideEnvironment();
@@ -97,5 +111,6 @@ public interface SpotlessEclipseServiceConfig {
 		disableDebugging();
 		ignoreUnsupportedPreferences();
 		useTemporaryLocations();
+		changeSystemLineSeparator();
 	}
 }

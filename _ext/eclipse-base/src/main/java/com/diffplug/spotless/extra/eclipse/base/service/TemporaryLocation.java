@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless.eclipse.service;
+package com.diffplug.spotless.extra.eclipse.base.service;
 
 import java.io.IOError;
 import java.io.IOException;
@@ -27,7 +27,7 @@ import org.eclipse.osgi.service.datalocation.Location;
 
 /** All files generated at runtime are stored in a temporary location. */
 public class TemporaryLocation implements Location {
-	private static final String TEMP_PREFIX = "com_diffplug_gradle_spotless";
+	private static final String TEMP_PREFIX = "com_diffplug_spotless_extra_eclipse";
 	private final URL location;
 	private Location parent;
 

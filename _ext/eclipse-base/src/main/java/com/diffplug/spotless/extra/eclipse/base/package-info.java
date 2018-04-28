@@ -18,6 +18,6 @@
  * Please refer to the eclipse-base README.md for usage instructions.
  */
 @ParametersAreNonnullByDefault
-package com.diffplug.gradle.spotless.eclipse;
+package com.diffplug.spotless.extra.eclipse.base;
 
 import javax.annotation.ParametersAreNonnullByDefault;

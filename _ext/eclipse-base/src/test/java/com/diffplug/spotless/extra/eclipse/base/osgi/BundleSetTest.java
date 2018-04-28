@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless.eclipse.osgi;
+package com.diffplug.spotless.extra.eclipse.base.osgi;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;

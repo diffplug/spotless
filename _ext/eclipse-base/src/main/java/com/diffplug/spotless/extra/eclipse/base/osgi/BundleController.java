@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless.eclipse.osgi;
+package com.diffplug.spotless.extra.eclipse.base.osgi;
 
 import java.io.File;
 import java.io.IOException;
@@ -260,14 +260,11 @@ public final class BundleController implements StaticBundleContext {
 			if (!(jarOrDirectory.exists() && jarOrDirectory.canRead())) {
 				throw new BundleException(String.format("Path '%s' for '%s' is not accessible exist on local file system.", objUrl, obj.getClass().getName()), BundleException.READ_ERROR);
 			}
-			BundleFile bundleFile = null;
 			try {
-				bundleFile = jarOrDirectory.isDirectory() ? new DirBundleFile(jarOrDirectory, false) : new ZipBundleFile(jarOrDirectory, null, null, null);
+				return jarOrDirectory.isDirectory() ? new DirBundleFile(jarOrDirectory, false) : new ZipBundleFile(jarOrDirectory, null, null, null);
 			} catch (IOException e) {
 				throw new BundleException(String.format("Cannot access bundle at '%s'.", jarOrDirectory), BundleException.READ_ERROR);
 			}
-			return bundleFile;
-
 		}
 
 	}

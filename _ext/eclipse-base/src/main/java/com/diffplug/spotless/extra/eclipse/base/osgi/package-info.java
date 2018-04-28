@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 /** Simplified OSGIi implementation bypassing Equinox module layer. */
-package com.diffplug.gradle.spotless.eclipse.osgi;
+package com.diffplug.spotless.extra.eclipse.base.osgi;
