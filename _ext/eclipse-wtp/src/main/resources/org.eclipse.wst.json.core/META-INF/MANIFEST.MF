@@ -1,0 +1,598 @@
+Manifest-Version: 1.0
+Bundle-SymbolicName: org.eclipse.wst.json.core;singleton:=true
+Archiver-Version: Plexus Archiver
+Built-By: genie.webtools
+Require-Bundle: org.eclipse.core.runtime,org.eclipse.wst.sse.core,com.
+ ibm.icu,org.eclipse.core.resources,org.eclipse.wst.validation,org.ecl
+ ipse.wst.common.uriresolver,org.eclipse.json,org.eclipse.core.net
+Bundle-ManifestVersion: 2
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Eclipse-SourceReferences: scm:git:git://git.eclipse.org/gitroot/source
+ editing/webtools.sourceediting.git;path="bundles/org.eclipse.wst.json
+ .core";tag="R3_9_1";commitId=577dba332adfa8ae0a7b7dc595524fb647f6e6fb
+Bundle-Vendor: %providerName
+Import-Package: org.apache.http,org.apache.http.client,org.apache.http
+ .util,org.apache.http.client.config,org.apache.http.client.methods,or
+ g.apache.http.conn,org.apache.http.entity,org.apache.http.impl.client
+ ,org.apache.http.conn.routing,org.apache.http.protocol
+Export-Package: org.eclipse.wst.json.core,org.eclipse.wst.json.core.cl
+ eanup,org.eclipse.wst.json.core.contenttype,org.eclipse.wst.json.core
+ .document,org.eclipse.wst.json.core.format,org.eclipse.wst.json.core.
+ internal,org.eclipse.wst.json.core.internal.contenttype,org.eclipse.w
+ st.json.core.internal.document,org.eclipse.wst.json.core.internal.dow
+ nload,org.eclipse.wst.json.core.internal.encoding,org.eclipse.wst.jso
+ n.core.internal.format,org.eclipse.wst.json.core.internal.modelhandle
+ r,org.eclipse.wst.json.core.internal.parser;x-friends:="org.eclipse.w
+ st.json.core.tests",org.eclipse.wst.json.core.internal.parser.regions
+ ,org.eclipse.wst.json.core.internal.preferences,org.eclipse.wst.json.
+ core.internal.schema,org.eclipse.wst.json.core.internal.schema.catalo
+ g,org.eclipse.wst.json.core.internal.text,org.eclipse.wst.json.core.i
+ nternal.util,org.eclipse.wst.json.core.internal.validation,org.eclips
+ e.wst.json.core.internal.validation.core,org.eclipse.wst.json.core.in
+ ternal.validation.eclipse,org.eclipse.wst.json.core.jsonpath,org.ecli
+ pse.wst.json.core.modelhandler,org.eclipse.wst.json.core.preferences,
+ org.eclipse.wst.json.core.regions,org.eclipse.wst.json.core.schema.ca
+ talog,org.eclipse.wst.json.core.text,org.eclipse.wst.json.core.util,o
+ rg.eclipse.wst.json.core.validation
+Bundle-Name: %pluginName
+Bundle-Version: 1.0.100.v201707252002
+Bundle-Localization: plugin
+Bundle-Activator: org.eclipse.wst.json.core.JSONCorePlugin
+Created-By: Apache Maven 3.2.5
+Build-Jdk: 1.8.0_131
+
+Name: org/eclipse/wst/json/core/document/JSONException.class
+SHA-256-Digest: X3ZMqWf+nqferq9uPv5kmBZZmRcCv0M9hVFLg8K3D8M=
+
+Name: org/eclipse/wst/json/core/internal/validation/core/AbstractNeste
+ dValidator$LocalizedMessage.class
+SHA-256-Digest: x/GgiXRKuUlXGkRRfiaDqmKghPE3oksRVepC6LmX4hU=
+
+Name: org/eclipse/wst/json/core/internal/validation/JSONValidationInfo
+ .class
+SHA-256-Digest: sipw/5eeqIlN0cK2f24X1Ox6xRf4dESTH9bSL9kkvKg=
+
+Name: org/eclipse/wst/json/core/internal/parser/JSONLineTokenizer.clas
+ s
+SHA-256-Digest: rBBBnr5Zyz7nDV87oJgYMlegCztwcmiwcd6+cPMQVjE=
+
+Name: plugin.xml
+SHA-256-Digest: xo3GvTMicN+m1pxfCOf3kkse0v8EyG6JCZFEeFpHBgo=
+
+Name: org/eclipse/wst/json/core/internal/text/JSONStructuredDocumentRe
+ Parser.class
+SHA-256-Digest: TP33/n43vdJ+ydc4yBeaJQj6S3dcEd93cOQgSQjwqp8=
+
+Name: org/eclipse/wst/json/core/internal/text/StructuredTextPartitione
+ rForJSON.class
+SHA-256-Digest: JCCoV9hZlBs7qSl0H58uZd0QSwSNPS45W7zyiTg+oCk=
+
+Name: org/eclipse/wst/json/core/internal/schema/catalog/CatalogSchemas
+ toreReader.class
+SHA-256-Digest: IGhqHcWC2srx+T5XJ1eoGuTmCQS/GVJOaFzYW/IFb3M=
+
+Name: org/eclipse/wst/json/core/internal/document/JSONModelParser.clas
+ s
+SHA-256-Digest: Pb7YdXDrwvhNAG9oX8Kbn6Wwot+grTCSfbg6ccz3B6A=
+
+Name: org/eclipse/wst/json/core/internal/schema/catalog/CatalogUserCat
+ alogReader.class
+SHA-256-Digest: GdhagQFcrpDMvJFE0Miu8Bnb2THggfv9/EByO12iVNI=
+
+Name: schemastore/bower
+SHA-256-Digest: fOqt4zDbhx2LTldxPbVx5uGnMumPzc5z/BhUwFLzg1Q=
+
+Name: org/eclipse/wst/json/core/internal/document/JSONModelImpl.class
+SHA-256-Digest: jKDjZWQGIYxHDrF5UGrpd6BYdgtb4Nio6VVZ3fULY+0=
+
+Name: org/eclipse/wst/json/core/internal/document/JSONNumberValueImpl.
+ class
+SHA-256-Digest: ghMX3rnTyOduyyFr92SF0j8JngJ3tb9fYMovSg8Tn+o=
+
+Name: org/eclipse/wst/json/core/schema/catalog/INextCatalog.class
+SHA-256-Digest: M/6HldPdgfWma5+8ko7OGl09DVP75MT9/SRyP4sEpP0=
+
+Name: org/eclipse/wst/json/core/internal/document/JSONStructureImpl.cl
+ ass
+SHA-256-Digest: hMDxY9AJ0RUyzu62/tr8FSxhS1IEdKtIjdIzV8LBPt0=
+
+Name: org/eclipse/wst/json/core/internal/validation/JSONNestedValidato
+ rContext.class
+SHA-256-Digest: VBTy4aAlzz5Nd8ohQ+jH1w0c76QnNkwk8xFTDrtZYq8=
+
+Name: org/eclipse/wst/json/core/internal/format/DefaultJSONSourceForma
+ tter.class
+SHA-256-Digest: EMOyKo0aidjP9CDhHoXwLZitG1JbawKtQf20xKPKjTk=
+
+Name: org/eclipse/wst/json/core/internal/validation/eclipse/Validator.
+ class
+SHA-256-Digest: 8Pu5e+BWD2Dw00Bh2syw3oibUUb+vLPv1M8ofBhCeek=
+
+Name: org/eclipse/wst/json/core/internal/document/JSONNodeImpl.class
+SHA-256-Digest: kCdVJs0SOsGTm1Zbr5ExC5tDnz/LeuHYQs5lD/BFLdo=
+
+Name: org/eclipse/wst/json/core/internal/format/FormatRegion.class
+SHA-256-Digest: yiEoT8flMjYrE3DYj8vnKS5Po2JLCv6ITzO/UspNemA=
+
+Name: org/eclipse/wst/json/core/jsonpath/JSONPathMatcher.class
+SHA-256-Digest: RpeSFO/OcZVvFJHngpcJ+bawVqRLEjxFxBut/CRiI54=
+
+Name: org/eclipse/wst/json/core/document/IJSONNullValue.class
+SHA-256-Digest: CeLlIRjs02xX1VfAoZq6H/LFa2uOrrhNwVhnN6d+hh4=
+
+Name: schema/schemaProcessors.exsd
+SHA-256-Digest: +VtRID8evO5e81pIvY/w7tYzhU2TyncqpkblirxuugE=
+
+Name: org/eclipse/wst/json/core/internal/schema/catalog/UserEntry.clas
+ s
+SHA-256-Digest: 0sOV+duz43bXLJoBxFrd7QscBCBgcD0mJ3YSpXCwqxA=
+
+Name: org/eclipse/wst/json/core/internal/validation/eclipse/JSONValida
+ tor.class
+SHA-256-Digest: Zbj0KgYqDwUPeYwE1dHtLgLy/DXe46I4hcf8p5ouDFA=
+
+Name: org/eclipse/wst/json/core/internal/document/JSONModelContext.cla
+ ss
+SHA-256-Digest: KEJI3F0tjsU8hKc33PlYgshRDSPBaorhb+Ih0Bzu9xg=
+
+Name: org/eclipse/wst/json/core/document/IJSONStringValue.class
+SHA-256-Digest: ECUo/ADGiLr/WijVUnGvKphegy91vhW4AW3/UVxjLn4=
+
+Name: org/eclipse/wst/json/core/internal/validation/JSONSyntaxValidato
+ r.class
+SHA-256-Digest: gWIxAotBk44dSBXl533glwLRVw5QVD23OsJ+pKDqjUs=
+
+Name: org/eclipse/wst/json/core/cleanup/JSONCleanupStrategyImpl.class
+SHA-256-Digest: eMfp7IFDGuA8J/HvTN/r2LCNUCh3z0Nnvy1WcIbiScw=
+
+Name: org/eclipse/wst/json/core/document/IJSONNumberValue.class
+SHA-256-Digest: M0MjH/QJkC7mBusso0Jw28EqDPFnwhx8/m2xSunOOwc=
+
+Name: org/eclipse/wst/json/core/internal/document/JSONBooleanValueImpl
+ .class
+SHA-256-Digest: nIKO+K8mqREL0F9O3ne3vLPaQz7yAVlTQIzia56c/yw=
+
+Name: org/eclipse/wst/json/core/document/IJSONDocument.class
+SHA-256-Digest: eieOka8bKSE4gMzSHnKuykJOxZLNcdpeX1z9X0E/9Ms=
+
+Name: org/eclipse/wst/json/core/internal/modelhandler/ModelHandlerForJ
+ SON.class
+SHA-256-Digest: tyNnI+GPnIOWlxdOZMevkkS1iNDnBQcGvRl9Myx6mxE=
+
+Name: schemastore/package-schema.json
+SHA-256-Digest: 43iJpgLdoYwyH7JKDYFV/YqCn6Z5ntQN89/nFmDjR4M=
+
+Name: org/eclipse/wst/json/core/internal/format/JSONSourceFormatterFac
+ tory.class
+SHA-256-Digest: rZjojgw5xguwfY7eMDJ8inxu5CciWOuF8q+GkuLlE6U=
+
+Name: org/eclipse/wst/json/core/contenttype/ContentTypeIdForJSON.class
+SHA-256-Digest: RCynamOswyQAAgldt9cERX288VXKYTKdQnOquYhiGso=
+
+Name: org/eclipse/wst/json/core/cleanup/IJSONCleanupStrategy.class
+SHA-256-Digest: ZEGoW0rjsbwt0I18EfZRqdH7w1TzO+KMt6q6zl0tKpQ=
+
+Name: org/eclipse/wst/json/core/regions/JSONRegionContexts.class
+SHA-256-Digest: nuJqewWOT25XN0J2/eNEX7kW4WyTTzO1w5CdSicSME0=
+
+Name: org/eclipse/wst/json/core/internal/schema/catalog/CatalogContrib
+ utorRegistryReader.class
+SHA-256-Digest: UDapk6u3AwLlR/LEU9JWLajrflh9AO+aymqzGPUaMUE=
+
+Name: org/eclipse/wst/json/core/internal/format/UnknownRuleFormatter.c
+ lass
+SHA-256-Digest: uXkB1y+PJXjAna9DM434pH4Z58N+CkCWEJ+rwHW8O/o=
+
+Name: schema/schemaCatalogContributions.exsd
+SHA-256-Digest: sykpyFKJmhrPbtsM3aBIhGsZH1bmoaGKn2U10Nt2SGk=
+
+Name: org/eclipse/wst/json/core/internal/schema/catalog/NextCatalog.cl
+ ass
+SHA-256-Digest: O/OcFTvA5bpA6DOrMSR0XxduIw7m10nmqjlzMWRYOFM=
+
+Name: org/eclipse/wst/json/core/internal/download/HttpClientProvider.c
+ lass
+SHA-256-Digest: xKbMP8sSmBwfHSXlYgetqVqc/u1plXyMCe+5pKPu++I=
+
+Name: org/eclipse/wst/json/core/internal/parser/regions/JSONTextRegion
+ Factory.class
+SHA-256-Digest: hB+CSmzox3GK2reDGhM9a3ShPVVcaWcWJXZOSd/0OH4=
+
+Name: org/eclipse/wst/json/core/internal/validation/JSONValidationRepo
+ rt.class
+SHA-256-Digest: lysAS8YRRWD/TDxzTi36KpyczSAThwWRq+6EkbnGaHk=
+
+Name: org/eclipse/wst/json/core/internal/format/JSONObjectFormatter.cl
+ ass
+SHA-256-Digest: JH+nWtIB9+VNei8yDOs/iTYSEgdjMKEP1M1b2mZedOE=
+
+Name: org/eclipse/wst/json/core/schema/catalog/ISuffixEntry.class
+SHA-256-Digest: T4nL8Z15PapMQ0eqYfOZMsprAGVgQJyz7fwROWindfs=
+
+Name: org/eclipse/wst/json/core/internal/schema/catalog/JSONCatalogURI
+ ResolverExtension.class
+SHA-256-Digest: pGG+vVmmaCc0NQJ7nfM3klU+/Fdw+0vGftPMSjpINKc=
+
+Name: org/eclipse/wst/json/core/internal/validation/eclipse/JSONMessag
+ eInfoHelper.class
+SHA-256-Digest: BgVcQXGrc7eH3OKW43JB9jvWztpfbKsXZj4+zSxcyks=
+
+Name: org/eclipse/wst/json/core/internal/contenttype/JSONResourceEncod
+ ingDetector.class
+SHA-256-Digest: 5pVtt1v5csLhKfvlJyBJUWOxnxJ++JXPCYGHidW3K9k=
+
+Name: org/eclipse/wst/json/core/internal/document/JSONValueImpl.class
+SHA-256-Digest: bZeqCegm4/36UJ1zSj06d3XV2b84+IddCjHV5zR9eQQ=
+
+Name: org/eclipse/wst/json/core/internal/document/JSONModelNotifier.cl
+ ass
+SHA-256-Digest: GzZOn1T7kSKPZTc2KLPZHjq1OQY7aBhRJJrAk68nLqQ=
+
+Name: org/eclipse/wst/json/core/internal/document/JSONStructureImpl$Ch
+ ildNodesCache.class
+SHA-256-Digest: zvrsTyeFAWkcUKSjeJRJB4P054FZyFs/OTwAm5C/LHU=
+
+Name: org/eclipse/wst/json/core/internal/validation/JSONValidationConf
+ iguration.class
+SHA-256-Digest: drDsDXzK2CYeIDiAgIhsvC17e2/Q/lgIdlvp4fYKERo=
+
+Name: org/eclipse/wst/json/core/internal/validation/ProblemIDsJSON.cla
+ ss
+SHA-256-Digest: HQcj3gz3jII6bfGdpjhYRj4PJYbAILMtCeVygrcKcus=
+
+Name: org/eclipse/wst/json/core/internal/format/JSONDocumentFormatter.
+ class
+SHA-256-Digest: 7kEOF+i5N2ZI84kFgy2yU23hoYEnUvXU3GR3LFfTJpg=
+
+Name: org/eclipse/wst/json/core/schema/catalog/IDelegateCatalog.class
+SHA-256-Digest: PFZKOeRlTkM+b5nNGUYhyRn+jYBB1gbewJVI4OMOc7c=
+
+Name: org/eclipse/wst/json/core/validation/AnnotationMsg.class
+SHA-256-Digest: eFt5v9lqqHViCWSaxxCvyE0K/o1JHLDnukSuiug4iUQ=
+
+Name: org/eclipse/wst/json/core/internal/schema/catalog/EntryParser$En
+ triesWrapper.class
+SHA-256-Digest: +fkruCpR7PV+xaGPIHlWYpXFJINWzo+S9wfE7UdDqRU=
+
+Name: org/eclipse/wst/json/core/schema/catalog/ICatalogEvent.class
+SHA-256-Digest: JLTykoBtGum3W20nJ8SH6PR1Y5Anp78vBYr46EwxlRM=
+
+Name: org/eclipse/wst/json/core/internal/text/JSONStructuredDocumentRe
+ Parser$ReparseRange.class
+SHA-256-Digest: IVchk4zY9yfVIu4+S3XbSiOQV7kyqyxL8XwgTEXIz28=
+
+Name: org/eclipse/wst/json/core/schema/catalog/ICatalogElement.class
+SHA-256-Digest: tDZmeapF6YS84XxiBzEAAFDKFvB4UDlDGG1WxWR5OcY=
+
+Name: org/eclipse/wst/json/core/document/IJSONNode.class
+SHA-256-Digest: 7uUSKkCkGVy/fk0BSGGAn5zIDcoWrYYZ/ShW8WXkFRY=
+
+Name: org/eclipse/wst/json/core/internal/contenttype/ByteReader.class
+SHA-256-Digest: 538NGxOkigLMVpTNpct0/6lwf4opg4PpReRchw1HQRw=
+
+Name: org/eclipse/wst/json/core/internal/schema/catalog/Catalog$3.clas
+ s
+SHA-256-Digest: BeBMlnckmtknKACXaBEADGfAfCTY0A2kzEHjXXOxehY=
+
+Name: org/eclipse/wst/json/core/internal/schema/catalog/Catalog$System
+ CatalogLS.class
+SHA-256-Digest: b0Y60KEFOJSQIYv3LxN86WEl/KRGkGyNG5BBX4em8HY=
+
+Name: org/eclipse/wst/json/core/internal/document/JSONArrayImpl.class
+SHA-256-Digest: yEa1Sf/WFsXrNNbL+Gjk44FbCmfDPSU26CpS/bQqDvQ=
+
+Name: org/eclipse/wst/json/core/internal/format/CompoundRegion.class
+SHA-256-Digest: kimGRj1Lyjyl4J0nb0w9WPMlnhmiFynL8PYjlpAPeoE=
+
+Name: org/eclipse/wst/json/core/document/IJSONObject.class
+SHA-256-Digest: 7Z4yBQGFJDenUnTpQyerUCe7PlOQ5kIOFOLsGAgrbsU=
+
+Name: org/eclipse/wst/json/core/internal/schema/catalog/Catalog$2.clas
+ s
+SHA-256-Digest: r/GmprusRSN0vjxbyPBtoBjrSnk3NE6jzcyME9gOB5g=
+
+Name: org/eclipse/wst/json/core/internal/format/IJSONSourceFormatter.c
+ lass
+SHA-256-Digest: MKPIZRWtNLF8JQ2EZf8+Vlz5yU3Azht/eN2+kKEK3fo=
+
+Name: org/eclipse/wst/json/core/validation/JSONSyntaxValidatorHelper.c
+ lass
+SHA-256-Digest: nxVtfV4FdCEDDAGaezgpNjBQi2sLsduw6CJZ90QUNMg=
+
+Name: schemastore/jshintrc
+SHA-256-Digest: g0kjVxB/8ZE9Stu2UoG4ZbAoT/ou68M4cpY4iLW9pjY=
+
+Name: org/eclipse/wst/json/core/internal/format/AbstractJSONSourceForm
+ atter.class
+SHA-256-Digest: IQK63u9DdcBWoCtD2I2Y/BVIqHmL8qoBaOB/chouJkg=
+
+Name: org/eclipse/wst/json/core/internal/schema/catalog/Catalog.class
+SHA-256-Digest: 8fb+8rCvg/QriTRDuO6ES1HdLoHoLFvHnDDyrUU1M1s=
+
+Name: org/eclipse/wst/json/core/internal/encoding/JSONDocumentCharsetD
+ etector.class
+SHA-256-Digest: 5omHujE/XaK3N9nxvQl+yIxog0NH072ljKY6fwIielw=
+
+Name: org/eclipse/wst/json/core/internal/schema/catalog/CatalogEntry.c
+ lass
+SHA-256-Digest: 30+X2EXsvZFAH77Y8ufTZGaplwojGpjKGFi0S7b5cso=
+
+Name: org/eclipse/wst/json/core/internal/document/JSONNullValueImpl.cl
+ ass
+SHA-256-Digest: iw8vcPPF4nU5x0CukyVcbYjZ0GHl34vwbF41S1dDDyU=
+
+Name: org/eclipse/wst/json/core/text/IJSONPartitions.class
+SHA-256-Digest: DLKjChm3fL3qf4aBPZTmCSTRQFRePEQ9pkk6dxkwgU0=
+
+Name: org/eclipse/wst/json/core/internal/validation/core/ValidationMes
+ sage.class
+SHA-256-Digest: LHPdIeiEgzTK6x8F5eWTpmbDLcxJchSM2VCkwPkpIf4=
+
+Name: org/eclipse/wst/json/core/internal/document/StructuredDocumentRe
+ gionUtil.class
+SHA-256-Digest: 1D542Z20ttyEOEW+CP+DxK4ymh3IYsB8U8gagvNw4mY=
+
+Name: org/eclipse/wst/json/core/internal/validation/core/ValidationRep
+ ort.class
+SHA-256-Digest: lV9ZCjDDitcSxshOQf4kiE72dsO39tWW8jhLNbo4qh8=
+
+Name: org/eclipse/wst/json/core/internal/document/JSONStringValueImpl.
+ class
+SHA-256-Digest: u7XSHZQSpxF7vJqLYfNzwHZ31z12Ts9JDF1ajINL0R4=
+
+Name: org/eclipse/wst/json/core/validation/JSONSyntaxValidatorHelper$T
+ oken.class
+SHA-256-Digest: a6mkxYX/EK+RUGLauBqvmLWwi1BXB3m9W1lYwnXm2Bk=
+
+Name: org/eclipse/wst/json/core/internal/document/JSONModelUpdater.cla
+ ss
+SHA-256-Digest: NRg4X7921FfAVFp91zswje96o94BOmL9OItSXEs6fl0=
+
+Name: schemastore/catalog.json
+SHA-256-Digest: Qndk3ibRG9T5bTNjts5Y0hDEmoyOdx3ecumQLjj1aKY=
+
+Name: org/eclipse/wst/json/core/internal/schema/catalog/CatalogElement
+ .class
+SHA-256-Digest: khYprQKuuDEUStmiKTRCQFKG6W0Kswe4YdW4ZxrGRXM=
+
+Name: org/eclipse/wst/json/core/internal/schema/catalog/Catalog$Catalo
+ gLS.class
+SHA-256-Digest: u92lJkOYBZUdXiSlINS6NWrvLCAOcvCXRaJzk29v9ic=
+
+Name: org/eclipse/wst/json/core/internal/validation/core/AbstractNeste
+ dValidator.class
+SHA-256-Digest: N04AzbQXUuktgW7TyySvu6cWcnGEPjHIovEOiQ/2/ls=
+
+Name: org/eclipse/wst/json/core/internal/schema/SchemaProcessorRegistr
+ yReader.class
+SHA-256-Digest: 2uK9PHHUIgHnCZ2AgYCXvYFXvkeYwHYn3pFEk99ON8o=
+
+Name: org/eclipse/wst/json/core/internal/schema/catalog/Catalog$1.clas
+ s
+SHA-256-Digest: DxfOdicQG6ZIbhZX+AQZB7ECnWpK6pxtmtrWYtaQeVU=
+
+Name: org/eclipse/wst/json/core/internal/document/StructuredDocumentRe
+ gionContainer.class
+SHA-256-Digest: 0xYRNfSUpwO+/m6t02m06bmT7OVgq47jMVoezic5wj8=
+
+Name: org/eclipse/wst/json/core/schema/catalog/IRewriteEntry.class
+SHA-256-Digest: 3c3Sk0BJ0CuhPVBewOUQfhKY5/GgMsmFVcAlCpL6SJM=
+
+Name: org/eclipse/wst/json/core/cleanup/CleanupProcessorJSON.class
+SHA-256-Digest: 9IAyvpM2p6xSIxT7NTVhLCNZG/vdScWnIhtdKCfTPZM=
+
+Name: org/eclipse/wst/json/core/internal/parser/JSONTokenizer.class
+SHA-256-Digest: 1tK/di4aXlLgYZqah+TskG4s7XEUCno+YfCdMoz8m0A=
+
+Name: org/eclipse/wst/json/core/internal/validation/JSONSyntaxValidato
+ r$1.class
+SHA-256-Digest: vgSwO9VY4EqYkM0xvXi9IYppZzhe7c1ftNO7MFIJI1k=
+
+Name: org/eclipse/wst/json/core/internal/contenttype/JSONResourceEncod
+ ingDetector$NullMemento.class
+SHA-256-Digest: AC5yubB+/Qayco3YHrVU6s7JRwUgUgozN0Je3LmFeSI=
+
+Name: plugin.properties
+SHA-256-Digest: MU9Qt+b5OzB8uu+dehoAqcGRV7D9q2P3yd032NJYN/Q=
+
+Name: org/eclipse/wst/json/core/internal/JSONCoreMessages.properties
+SHA-256-Digest: zgXUYAHR/b/pa/W3RVy6U7x/EpjQyh9wMYLQvys9wxw=
+
+Name: org/eclipse/wst/json/core/internal/schema/catalog/Catalog$Defaul
+ tCatalogLS.class
+SHA-256-Digest: OWzc7Eyjg4FuMvacDwqxemuaIcnG+/2mEmw8+1izm3M=
+
+Name: META-INF/maven/org.eclipse.webtools.sourceediting/org.eclipse.ws
+ t.json.core/pom.xml
+SHA-256-Digest: 5F8QRtwloYWZWkbxAoIC6uLCi2iVFcMbUyt+mvW9NSU=
+
+Name: org/eclipse/wst/json/core/internal/schema/catalog/CatalogSet.cla
+ ss
+SHA-256-Digest: e9rwY/ckgJ8f/F69kzpofk+LTBsxv9UHTcxGH3D7z2Q=
+
+Name: org/eclipse/wst/json/core/internal/schema/catalog/Catalog$UserCa
+ talogLS.class
+SHA-256-Digest: I+wbKk1YX5fSSUaFmJ3sfwA7opIivS3zsZTM2NvuOiw=
+
+Name: org/eclipse/wst/json/core/internal/document/JSONModelNotifierImp
+ l$NotifyEvent.class
+SHA-256-Digest: OkqU3ByTttVWGI+UTaO3H2Md3YqOgHfgRf9Bd04rrbA=
+
+Name: META-INF/maven/org.eclipse.webtools.sourceediting/org.eclipse.ws
+ t.json.core/pom.properties
+SHA-256-Digest: xqCg9RmYLgdZrptYwIWMHNskwabW1hhCWvaFkiAiqSY=
+
+Name: org/eclipse/wst/json/core/internal/schema/catalog/Catalog$Intern
+ alResolver.class
+SHA-256-Digest: sPmWqMgYDo1OfkG1Z6henkVonCFuNvNIgx8imJ6yVWM=
+
+Name: org/eclipse/wst/json/core/document/IJSONValue.class
+SHA-256-Digest: o2lhrj8Yw2ikE4SoHFTqhtm2egGCxB4VNmjLQOo13JI=
+
+Name: org/eclipse/wst/json/core/internal/schema/catalog/EntryParser.cl
+ ass
+SHA-256-Digest: 6DccIag8PR5HZGQOEwYgodkbpbHt4FFoKfLoXi3yIZU=
+
+Name: org/eclipse/wst/json/core/internal/format/JSONArrayFormatter.cla
+ ss
+SHA-256-Digest: onISYSvKvieW/QuJMseG23hSZ0p4k6F2KQgAU79FhOQ=
+
+Name: org/eclipse/wst/json/core/internal/Logger.class
+SHA-256-Digest: qvN1PCFueE922RYHpr9lCXXExscGUvJo0Y28SQmqIec=
+
+Name: org/eclipse/wst/json/core/document/IJSONArray.class
+SHA-256-Digest: bjiohX+qGScfNozkQHXgxdMxPaZdu1jfdc6ygZH+E10=
+
+Name: org/eclipse/wst/json/core/internal/parser/AbstractJSONTokenizer.
+ class
+SHA-256-Digest: nOWTCpq6uG6G3GYSPuQ/bPtqdAsNlPUROWP4qCGJ5mk=
+
+Name: org/eclipse/wst/json/core/internal/format/JSONPairFormatter.clas
+ s
+SHA-256-Digest: UNi/mSm4G2X9yd3psz+F/ElSXZnH2N4higfJmZtluuI=
+
+Name: org/eclipse/wst/json/core/internal/document/JSONObjectImpl.class
+SHA-256-Digest: 4aQCFwKzGa07HcmlI0cPxQU55E6gihMaiCVzsRyHuEo=
+
+Name: org/eclipse/wst/json/core/internal/validation/JSONValidator.clas
+ s
+SHA-256-Digest: 8rwaPZ3A1iQcFmxR2HvV8nIJEMV26Odhaj/Y6Q2jnfQ=
+
+Name: org/eclipse/wst/json/core/internal/encoding/JSONDocumentLoader.c
+ lass
+SHA-256-Digest: GARTEmrzvW+ERsc8ZEDZUCZgEuVhZGw9tL7d68/m67U=
+
+Name: org/eclipse/wst/json/core/preferences/JSONCorePreferenceNames.cl
+ ass
+SHA-256-Digest: BkhMll14urwHsfxNdgxEkx3LRXMWzEMzb2OgKHQA2uw=
+
+Name: org/eclipse/wst/json/core/internal/parser/IJSONLineTokenizer.cla
+ ss
+SHA-256-Digest: c/RZjFTOMGLDQTiPBTU1Z1Gqnpyo5yHazwq+4++dmOU=
+
+Name: org/eclipse/wst/json/core/internal/schema/catalog/UserEntries.cl
+ ass
+SHA-256-Digest: 7WK1nrc0CBRPhV79yTXAFi7OFP+uMM7+685Zi3N9nAM=
+
+Name: org/eclipse/wst/json/core/internal/document/ISourceGenerator.cla
+ ss
+SHA-256-Digest: LlTxL9vo8KzAT6yUVgTujk0x9IJeHtCXCE4JYTgrPSI=
+
+Name: org/eclipse/wst/json/core/internal/document/JSONDocumentImpl.cla
+ ss
+SHA-256-Digest: 3ytSB/eM2XfA0f+nmrjuiBUcaO2ulFgAQqIqda5i3Cw=
+
+Name: org/eclipse/wst/json/core/document/IJSONPair.class
+SHA-256-Digest: B/m9SHW5TzzOLjJBefHQv/EBYmh2ko1jbwx6LQcDUoM=
+
+Name: org/eclipse/wst/json/core/internal/parser/JSONStructuredDocument
+ RegionFactory.class
+SHA-256-Digest: Jqc287cj5qxvmAfcV15U2osEmNBB/2OvqZxfv3nIqTQ=
+
+Name: org/eclipse/wst/json/core/internal/parser/IJSONTokenizer.class
+SHA-256-Digest: 6kdxyz8UnRbJ186BfnG5w540mk0IFukG5G7GEpYAROA=
+
+Name: org/eclipse/wst/json/core/internal/document/JSONGeneratorImpl.cl
+ ass
+SHA-256-Digest: sloW0Z8449e+qvpG+4BzUBcoksgYkzSmxCV8XjxhwEM=
+
+Name: org/eclipse/wst/json/core/internal/document/StructuredDocumentRe
+ gionManagementException.class
+SHA-256-Digest: lFon2VGIHd8QAfqDBpWPtNydc+Ygo8AwCfZz0wP7FPY=
+
+Name: org/eclipse/wst/json/core/format/FormatProcessorJSON.class
+SHA-256-Digest: APpU+wKxGMwhxv1a4x3Trt6/DoX1p17W/jScuSr1Kws=
+
+Name: org/eclipse/wst/json/core/internal/format/JSONStructureFormatter
+ .class
+SHA-256-Digest: JbNdLPErrUTfHI+lOzYx6HZk+CdTdVPyTzVP+LBkUVs=
+
+Name: org/eclipse/wst/json/core/internal/util/RegionIterator.class
+SHA-256-Digest: DBvulIhodriXoXT/rMLc7TdRv2brguQQZ5S1aCjl2/k=
+
+Name: org/eclipse/wst/json/core/internal/validation/core/NestedValidat
+ orContext.class
+SHA-256-Digest: Zk4hhXW36Lo85encXwNHvxce5r4vEjeDNp7I0obCyoc=
+
+Name: org/eclipse/wst/json/core/internal/document/JSONModelNotifierImp
+ l.class
+SHA-256-Digest: +Qbd++skm7R+m4kjMJcfzcG7+jT5IQfVmXc1q7EW2eQ=
+
+Name: org/eclipse/wst/json/core/JSONCorePlugin.class
+SHA-256-Digest: jkEuPzB1m/NtBjHw0wQZ0a2pM+wPTFZ+7dWM7+qUJZY=
+
+Name: org/eclipse/wst/json/core/schema/catalog/ICatalogEntry.class
+SHA-256-Digest: TK0Tm4FUSnZnDektOE5iPjE6Ca+XyUR3d3aiSIXOMak=
+
+Name: org/eclipse/wst/json/core/internal/schema/catalog/SchemaStoreCat
+ alogConstants.class
+SHA-256-Digest: whyFSiZIPnwEgi03TndPx1lp9MuQsqfLANCjxT3Mbsg=
+
+Name: org/eclipse/wst/json/core/internal/format/JSONFormatUtil.class
+SHA-256-Digest: azpD7kUOu+CAAioywLu1HcQqyCOcRfhB+Qy3z9j4BoA=
+
+Name: org/eclipse/wst/json/core/document/IJSONBooleanValue.class
+SHA-256-Digest: eRw3cZclWzYcelJC4YMnjwRy8npyTUm2RPBb2x1MI0M=
+
+Name: org/eclipse/wst/json/core/internal/modelhandler/JSONModelLoader.
+ class
+SHA-256-Digest: wp57GqfdYq2LnjeE0GebYPx5s/+G0TQktCSlwCSEHCs=
+
+Name: org/eclipse/wst/json/core/util/JSONUtil.class
+SHA-256-Digest: GzNI5TyyWMYCe3762lkz3qCvUrVeiZ6KToeX9/G3+lA=
+
+Name: org/eclipse/wst/json/core/internal/document/JSONPairImpl.class
+SHA-256-Digest: HSjUYzMko7aUx9uXpI6mxAX6F5j0p9hVTrf+3MdxTxA=
+
+Name: about.html
+SHA-256-Digest: xAPJBS0IRL96L7yb0XPiv7Oct1ZQMU6jDOc+/FQCshM=
+
+Name: org/eclipse/wst/json/core/validation/ISeverityProvider.class
+SHA-256-Digest: sr9FpwRUFl5jr1eNGmFDn7YyR138kM/jlPlB8AsbrfA=
+
+Name: org/eclipse/wst/json/core/internal/parser/JSONSourceParser.class
+SHA-256-Digest: OrXbP0fJoJHZMgvG0XeVCoFid0O3sqCORdaWiuJbTeQ=
+
+Name: org/eclipse/wst/json/core/modelhandler/IIModelHandlerForJSON.cla
+ ss
+SHA-256-Digest: HisLQToYrn1RoSfplHO/Y3xj3Znjblxd6BR/hqTa+IU=
+
+Name: schemastore/bowerrc
+SHA-256-Digest: dpjT5F7FmGbkIuWjSerW6G2X5TN+xX5d/Nputj2IhvQ=
+
+Name: org/eclipse/wst/json/core/document/IJSONStructure.class
+SHA-256-Digest: geoTp9xmoH52PZUInCxmvtFi2VMiSfjFHxFBDDsJxZ0=
+
+Name: org/eclipse/wst/json/core/internal/validation/core/ValidationInf
+ o.class
+SHA-256-Digest: 89eQ2x6VGkFAirmZpLSg4brUKmhsArTiOjtsS6/TSx8=
+
+Name: org/eclipse/wst/json/core/document/IJSONModel.class
+SHA-256-Digest: CJaLmJpjE4C+C0Jjm+s+AmIY0iBu9CO4Y8dtympIt4Q=
+
+Name: org/eclipse/wst/json/core/internal/JSONCoreMessages.class
+SHA-256-Digest: YNwyhDjT3+QUsj/yiYqIDSiUfGi6S2CjMF4bMEHCW4g=
+
+Name: org/eclipse/wst/json/core/schema/catalog/ICatalogListener.class
+SHA-256-Digest: pn/9N4D2WP+gSAIZ520TPxMB0d3Ksw9I9Lhg/Qzn7ks=
+
+Name: org/eclipse/wst/json/core/internal/schema/catalog/CatalogEvent.c
+ lass
+SHA-256-Digest: +NiMI+oembsmELzK6F+sr41ci7I9bFsMHstcCgnSYVo=
+
+Name: org/eclipse/wst/json/core/internal/document/StructuredDocumentRe
+ gionProxy.class
+SHA-256-Digest: Bw9jzO68ReYQrkrZo7ACt7Q5Nk/KKzZPMfkzuZJRdu0=
+
+Name: org/eclipse/wst/json/core/schema/catalog/ICatalog.class
+SHA-256-Digest: qA8o+ZRk0YWwH4VT698NdxSiJwNooB5L+yIXhux4TlQ=
+
+Name: org/eclipse/wst/json/core/internal/contenttype/ContentDescriberF
+ orJSON.class
+SHA-256-Digest: h2zzR+X45bSQatRAJBs+ba+5onfBWNBh7d+W/muJ31k=
+
+Name: org/eclipse/wst/json/core/internal/preferences/JSONCorePreferenc
+ eInitializer.class
+SHA-256-Digest: 1nSLOHipxhJix2YgN9SViEZQwSYK9DZgwYzJfe5gqDg=
+

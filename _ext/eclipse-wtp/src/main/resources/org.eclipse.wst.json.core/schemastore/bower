@@ -1,0 +1,116 @@
+{
+	"title": "JSON schema for Bower configuration files",
+	"$schema": "http://json-schema.org/draft-04/schema#",
+
+	"type": "object",
+	"required": [ "name" ],
+
+	"patternProperties": {
+		"^_": {
+			"description": "Any property starting with _ is valid.",
+			"additionalProperties": true,
+			"additionalItems": true
+		}
+	},
+
+	"properties": {
+		"name": {
+			"description": "The name of your package.",
+			"type": "string",
+			"maxLength": 50,
+			"minLength": 1
+		},
+		"description": {
+			"description": "Help users identify and search for your package with a brief description.",
+			"type": "string"
+		},
+		"version": {
+			"description": "A semantic version number.",
+			"type": "string"
+		},
+		"main": {
+			"description": "The primary acting files necessary to use your package.",
+			"type": [ "string", "array" ]
+		},
+		"license": {
+			"description": "SPDX license identifier or path/url to a license.",
+			"type": [ "string", "array" ],
+			"maxLength": 140
+		},
+		"ignore": {
+			"description": "A list of files for Bower to ignore when installing your package.",
+			"type": [ "string", "array" ]
+		},
+		"keywords": {
+			"description": "Used for search by keyword. Helps make your package easier to discover without people needing to know its name.",
+			"type": "array",
+			"items": {
+				"type": "string",
+				"maxLength": 50
+			}
+		},
+		"authors": {
+			"description": "A list of people that authored the contents of the package.",
+			"type": "array",
+			"items": {
+				"type": [ "string", "object" ]
+			}
+		},
+		"homepage": {
+			"description": "URL to learn more about the package. Falls back to GitHub project if not specified and it's a GitHub endpoint.",
+			"type": "string"
+		},
+		"repository": {
+			"description": "The repository in which the source code can be found.",
+			"type": "object",
+			"properties": {
+				"type": {
+					"type": "string",
+					"enum": [ "git" ]
+				},
+				"url": {
+					"type": "string"
+				}
+			}
+		},
+		"dependencies": {
+			"description": "Dependencies are specified with a simple hash of package name to a semver compatible identifier or URL.",
+			"type": "object",
+			"additionalProperties": {
+				"type": "string"
+			}
+		},
+		"devDependencies": {
+			"description": "Dependencies that are only needed for development of the package, e.g., test framework or building documentation.",
+			"type": "object",
+			"additionalProperties": {
+				"type": "string"
+			}
+		},
+		"resolutions": {
+			"description": "Dependency versions to automatically resolve with if conflicts occur between packages.",
+			"type": "object"
+		},
+		"private": {
+			"description": "If you set it to  true  it will refuse to publish it. This is a way to prevent accidental publication of private repositories.",
+			"type": "boolean"
+		},
+		"exportsOverride": {
+			"description": "Used by grunt-bower-task to specify custom install locations.",
+			"type": "object",
+			"additionalProperties": {
+				"type": "object",
+				"additionalProperties": {
+					"type": [ "string", "array" ]
+				}
+			}
+		},
+		"moduleType": {
+			"description": "The types of modules this package exposes",
+			"type": "array",
+			"items": {
+				"enum": [ "amd", "es6", "globals", "node", "yui" ]
+			}
+		}
+	}
+}

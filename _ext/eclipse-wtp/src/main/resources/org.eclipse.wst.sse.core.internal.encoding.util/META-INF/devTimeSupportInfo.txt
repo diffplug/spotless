@@ -1,0 +1,15 @@
+
+
+This directory, DevTimeSupport, normally contains
+the source for some of our parser generators. 
+
+See :pserver:dev.eclipse.org:/cvsroot/webtools/sourceediting/plugins/org.eclipse.wst.sse.core/DevTimeSupport
+
+This particular text file you are reading 
+is the only one shipped 
+with an SDK build, since the other files 
+are seldom needed during development or debugging, 
+and some of those files cause problems with long 
+filename or paths that end up being too long for 
+some platforms, and some unzip programs. 
+

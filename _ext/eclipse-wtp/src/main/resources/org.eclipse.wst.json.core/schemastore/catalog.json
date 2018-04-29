@@ -1,0 +1,488 @@
+{
+  "$schema": "http://json.schemastore.org/schema-catalog",
+
+  "version": 1.0,
+  "schemas": [
+    {
+      "name": "babelrc.json",
+      "description": "Babel configuration file",
+      "fileMatch": [ ".babelrc" ],
+      "url": "http://json.schemastore.org/babelrc"
+    },
+    {
+      "name": ".bootstraprc",
+      "description": "Webpack bootstrap-loader configuration file",
+      "fileMatch": [ ".bootstraprc" ],
+      "url": "http://json.schemastore.org/bootstraprc"
+    },
+    {
+      "name": "bower.json",
+      "description": "Bower package description file",
+      "fileMatch": [ "bower.json", ".bower.json" ],
+      "url": "http://json.schemastore.org/bower"
+    },
+    {
+      "name": ".bowerrc",
+      "description": "Bower configuration file",
+      "fileMatch": [ ".bowerrc" ],
+      "url": "http://json.schemastore.org/bowerrc"
+    },
+    {
+      "name": "bundleconfig.json",
+      "description": "Schema for bundleconfig.json files",
+      "fileMatch": [ "bundleconfig.json" ],
+      "url": "http://json.schemastore.org/bundleconfig"
+    },
+    {
+      "name": "Chrome Extension",
+      "description": "Google Chrome extension manifest file",
+      "url": "http://json.schemastore.org/chrome-manifest"
+    },
+    {
+      "name": "chutzpah.json",
+      "description": "Chutzpah configuration file",
+      "fileMatch": [ "chutzpah.json" ],
+      "url": "http://json.schemastore.org/chutzpah"
+    },
+    {
+      "name": "coffeelint.json",
+      "description": "CoffeeLint configuration file",
+      "fileMatch": [ "coffeelint.json" ],
+      "url": "http://json.schemastore.org/coffeelint"
+    },
+    {
+      "name": "composer.json",
+      "description": "PHP Composer configuration file",
+      "fileMatch": [ "composer.json" ],
+      "url": "http://json.schemastore.org/composer"
+    },
+    {
+      "name": "component.json",
+      "description": "Web component file",
+      "fileMatch": [ "component.json" ],
+      "url": "http://json.schemastore.org/component"
+    },
+    {
+      "name": "config.json",
+      "description": "ASP.NET project config file",
+      "fileMatch": [ "config.json" ],
+      "url": "http://json.schemastore.org/config"
+    },
+    {
+      "name": "contribute.json",
+      "description": "A JSON schema for open-source project contribution data by Mozilla",
+      "fileMatch": [ "contribute.json" ],
+      "url": "http://json.schemastore.org/contribute"
+    },
+    {
+      "name": ".csscomb.json",
+      "description": "A JSON schema CSS Comb's configuration file",
+      "fileMatch": [ ".csscomb.json" ],
+      "url": "http://json.schemastore.org/csscomb"
+    },
+    {
+      "name": ".csslintrc",
+      "description": "A JSON schema CSS Lint's configuration file",
+      "fileMatch": [ ".csslintrc" ],
+      "url": "http://json.schemastore.org/csslintrc"
+    },
+    {
+      "name": "debugsettings.json",
+      "description": "A JSON schema for the ASP.NET DebugSettings.json files",
+      "fileMatch": [ "debugsettings.json" ],
+      "url": "http://json.schemastore.org/launchsettings"
+    },
+    {
+      "name": "epr-manifest.json",
+      "description": "Entry Point Regulation manifest file",
+      "fileMatch": [ "epr-manifest.json" ],
+      "url": "http://json.schemastore.org/epr-manifest"
+    },
+    {
+      "name": ".eslintrc",
+      "description": "JSON schema for ESLint configuration files",
+      "fileMatch": [ ".eslintrc", ".eslintrc.json" ],
+      "url": "http://json.schemastore.org/eslintrc"
+    },
+    {
+      "name": "geojson.json",
+      "description": "GeoJSON format for representing geographic data.",
+      "url": "http://json.schemastore.org/geojson"
+    },
+    {
+      "name": "global.json",
+      "description": "ASP.NET global configuration file",
+      "fileMatch": [ "global.json" ],
+      "url": "http://json.schemastore.org/global"
+    },
+    {
+      "name": "Grunt copy task",
+      "description": "Grunt copy task configuration file",
+      "fileMatch": [ "copy.json" ],
+      "url": "http://json.schemastore.org/grunt-copy-task"
+    },
+    {
+      "name": "Grunt clean task",
+      "description": "Grunt clean task configuration file",
+      "fileMatch": [ "clean.json" ],
+      "url": "http://json.schemastore.org/grunt-clean-task"
+    },
+    {
+      "name": "Grunt cssmin task",
+      "description": "Grunt cssmin task configuration file",
+      "fileMatch": [ "cssmin.json" ],
+      "url": "http://json.schemastore.org/grunt-cssmin-task"
+    },
+    {
+      "name": "Grunt JSHint task",
+      "description": "Grunt JSHint task configuration file",
+      "fileMatch": [ "jshint.json" ],
+      "url": "http://json.schemastore.org/grunt-jshint-task"
+    },
+    {
+      "name": "Grunt Watch task",
+      "description": "Grunt Watch task configuration file",
+      "fileMatch": [ "watch.json" ],
+      "url": "http://json.schemastore.org/grunt-watch-task"
+    },
+    {
+      "name": "Grunt base task",
+      "description": "Schema for standard Grunt tasks",
+      "fileMatch": [ "grunt/*.json", "*-tasks.json" ],
+      "url": "http://json.schemastore.org/grunt-task"
+    },
+    {
+      "name": "haxelib.json",
+      "description": "Haxelib manifest",
+      "fileMatch": [ "haxelib.json" ],
+      "url": "http://json.schemastore.org/haxelib"
+    },
+    {
+      "name": "host-meta.json",
+      "description": "Schema for host-meta JDR files",
+      "fileMatch": [ "host-meta.json" ],
+      "url": "http://json.schemastore.org/host-meta"
+    },
+    {
+      "name": ".htmlhintrc",
+      "description": "HTML Hint configuration file",
+      "fileMatch": [ ".htmlhintrc" ],
+      "url": "http://json.schemastore.org/htmlhint"
+    },
+    {
+      "name": ".jsbeautifyrc",
+      "description": "js-beautify configuration file",
+      "fileMatch": [ ".jsbeautifyrc" ],
+      "url": "http://json.schemastore.org/jsbeautifyrc"
+    },
+    {
+      "name": ".jscsrc",
+      "description": "JSCS configuration file",
+      "fileMatch": [ ".jscsrc", "jscsrc.json" ],
+      "url": "http://json.schemastore.org/jscsrc"
+    },
+    {
+      "name": ".jshintrc",
+      "description": "JSHint configuration file",
+      "fileMatch": [ ".jshintrc" ],
+      "url": "http://json.schemastore.org/jshintrc"
+    },
+    {
+      "name": ".jsinspectrc",
+      "description": "JSInspect configuration file",
+      "fileMatch": [ ".jsinspectrc" ],
+      "url": "http://json.schemastore.org/jsinspectrc"
+    },
+    {
+      "name": "*.jsonld",
+      "description": "JSON Linked Data files",
+      "fileMatch": [ "*.jsonld" ],
+      "url": "http://json.schemastore.org/jsonld"
+    },
+    {
+      "name": "JSONPatch",
+      "description": "JSONPatch files",
+      "fileMatch": [ "*.patch" ],
+      "url": "http://json.schemastore.org/json-patch"
+    },
+    {
+      "name": "jsconfig.json",
+      "description": "JavaScript project configuration file",
+      "fileMatch": [ "jsconfig.json" ],
+      "url": "http://json.schemastore.org/jsconfig"
+    },
+    {
+      "name": "launchsettings.json",
+      "description": "A JSON schema for the ASP.NET LaunchSettings.json files",
+      "fileMatch": [ "launchsettings.json" ],
+      "url": "http://json.schemastore.org/launchsettings"
+    },
+    {
+      "name": "Microsoft Band Web Tile",
+      "description": "Microsoft Band Web Tile manifest file",
+      "url": "http://json.schemastore.org/band-manifest"
+    },
+    {
+      "name": ".modernizrrc",
+      "description": "Webpack modernizr-loader configuration file",
+      "fileMatch": [ ".modernizrrc" ],
+      "url": "http://json.schemastore.org/modernizrrc"
+    },
+    {
+      "name": "mycode.json",
+      "description": "JSON schema for mycode.js files",
+      "fileMatch": [ "mycode.json" ],
+      "url": "http://json.schemastore.org/mycode"
+    },
+    {
+      "name": "news in JSON",
+      "description": "A JSON Schema for ninjs by the IPTC. News and publishing information. See http://dev.iptc.org/ninjs",
+      "fileMatch": [ "ninjs.json" ],
+      "url": "http://json.schemastore.org/ninjs"
+    },
+    {
+      "name": "nuget-project.json",
+      "description": "JSON schema for NuGet project.json files.",
+      "url": "http://json.schemastore.org/nuget-project",
+      "versions": {
+        "3.3.0": "http://json.schemastore.org/nuget-project-3.3.0"
+      }
+    },
+    {
+      "name": "package.json",
+      "description": "NPM configuration file",
+      "fileMatch": [ "package.json" ],
+      "url": "http://json.schemastore.org/package"
+    },
+    {
+      "name": "package.manifest",
+      "description": "Umbraco package configuration file",
+      "fileMatch": [ "package.manifest" ],
+      "url": "http://json.schemastore.org/package.manifest"
+    },
+    {
+      "name": "pattern.json",
+      "description": "Patternplate pattern manifest file",
+      "fileMatch": [ "pattern.json" ],
+      "url": "http://json.schemastore.org/pattern"
+    },
+    {
+      "name": "project.json",
+      "description": "ASP.NET vNext project configuration file",
+      "fileMatch": [ "project.json" ],
+      "url": "http://json.schemastore.org/project",
+      "versions": {
+        "1.0.0-beta3": "http://json.schemastore.org/project-1.0.0-beta3",
+        "1.0.0-beta4": "http://json.schemastore.org/project-1.0.0-beta4",
+        "1.0.0-beta5": "http://json.schemastore.org/project-1.0.0-beta5",
+        "1.0.0-beta6": "http://json.schemastore.org/project-1.0.0-beta6",
+        "1.0.0-beta8": "http://json.schemastore.org/project-1.0.0-beta8",
+        "1.0.0-rc1": "http://json.schemastore.org/project-1.0.0-rc1",
+        "1.0.0-rc1-update1": "http://json.schemastore.org/project-1.0.0-rc1",
+        "1.0.0-rc2": "http://json.schemastore.org/project-1.0.0-rc2"
+      }
+    },
+    {
+      "name": "project-1.0.0-beta3.json",
+      "description": "ASP.NET vNext project configuration file",
+      "url": "http://json.schemastore.org/project-1.0.0-beta3"
+    },
+    {
+      "name": "project-1.0.0-beta4.json",
+      "description": "ASP.NET vNext project configuration file",
+      "url": "http://json.schemastore.org/project-1.0.0-beta4"
+    },
+    {
+      "name": "project-1.0.0-beta5.json",
+      "description": "ASP.NET vNext project configuration file",
+      "url": "http://json.schemastore.org/project-1.0.0-beta5"
+    },
+    {
+      "name": "project-1.0.0-beta6.json",
+      "description": "ASP.NET vNext project configuration file",
+      "url": "http://json.schemastore.org/project-1.0.0-beta6"
+    },
+    {
+      "name": "project-1.0.0-beta8.json",
+      "description": "ASP.NET vNext project configuration file",
+      "url": "http://json.schemastore.org/project-1.0.0-beta8"
+    },
+    {
+      "name": "project-1.0.0-rc1.json",
+      "description": "ASP.NET vNext project configuration file",
+      "url": "http://json.schemastore.org/project-1.0.0-rc1"
+    },
+    {
+      "name": "project-1.0.0-rc2.json",
+      "description": ".NET Core project configuration file",
+      "url": "http://json.schemastore.org/project-1.0.0-rc2"
+    },
+    {
+      "name": "*.resjson",
+      "description": "Windows App localization file",
+      "fileMatch": [ "*.resjson" ],
+      "url": "http://json.schemastore.org/resjson"
+    },
+    {
+      "name": "JSON Resume",
+      "description": "A JSON format to describe resumes",
+      "fileMatch": [ "resume.json" ],
+      "url": "http://json.schemastore.org/resume"
+    },
+    {
+      "name": "sarif-1.0.0.json",
+      "description": "Static Analysis Results Interchange Format (SARIF)",
+      "fileMatch": [ "*.sarif,*.sarif.json" ],
+      "url": "http://json.schemastore.org/sarif",
+      "versions": {
+        "1.0.0-beta.4": "http://json.schemastore.org/sarif-1.0.0-beta.4.json",
+        "1.0.0-beta.5": "http://json.schemastore.org/sarif-1.0.0-beta.5.json",
+        "1.0.0": "http://json.schemastore.org/sarif-1.0.0"
+      }
+    },
+    {
+      "name": "sarif-1.0.0.json",
+      "description": "Static Analysis Results Interchange Format (SARIF)",
+      "url": "http://json.schemastore.org/sarif-1.0.0.json"
+    },
+    {
+      "name": "sarif-1.0.0-beta.5.json",
+      "description": "Static Analysis Results Interchange Format (SARIF)",
+      "url": "http://json.schemastore.org/sarif-1.0.0-beta.5.json"
+    },
+    {
+      "name": "sarif-1.0.0-beta.4.json",
+      "description": "Static Analysis Results Interchange Format (SARIF)",
+      "url": "http://json.schemastore.org/sarif-1.0.0-beta.4.json"
+    },
+    {
+      "name": "Schema Catalog",
+      "description": "JSON Schema catalog files compatible with SchemaStore.org",
+      "url": "http://json.schemastore.org/schema-catalog"
+    },
+    {
+      "name": "settings.job",
+      "description": "Azure Webjob settings file",
+      "fileMatch": [ "settings.job" ],
+      "url": "http://json.schemastore.org/settings.job"
+    },
+    {
+      "name": "Source Maps v3",
+      "description": "Source Map files version 3",
+      "fileMatch": [ "*.map" ],
+      "url": "http://json.schemastore.org/sourcemap-v3"
+    },
+    {
+      "name": ".sprite files",
+      "description": "Schema for image sprite generation files",
+      "fileMatch": [ "*.sprite" ],
+      "url": "http://json.schemastore.org/sprite"
+    },
+    {
+      "name": "StyleCop Analyzers Configuration",
+      "description": "Configuration file for StyleCop Analyzers",
+      "fileMatch": [ "stylecop.json" ],
+      "url": "https://raw.githubusercontent.com/DotNetAnalyzers/StyleCopAnalyzers/master/StyleCop.Analyzers/StyleCop.Analyzers/Settings/stylecop.schema.json"
+    },
+    {
+      "name": "Swagger API 2.0",
+      "description": "Swagger API 2.0 schema",
+      "url": "http://json.schemastore.org/swagger-2.0"
+    },
+
+    {
+      "name": "templatsources.json",
+      "description": "SideWaffle template source schema",
+      "fileMatch": [ "templatesources.json" ],
+      "url": "http://json.schemastore.org/templatesources"
+    },
+    {
+      "name": "tsconfig.json",
+      "description": "TypeScript compiler configuration file",
+      "fileMatch": [ "tsconfig.json" ],
+      "url": "http://json.schemastore.org/tsconfig"
+    },
+    {
+      "name": "tsd.json",
+      "description": "JSON schema for DefinatelyTyped description manager (TSD)",
+      "fileMatch": [ "tsd.json" ],
+      "url": "http://json.schemastore.org/tsd"
+    },
+    {
+      "name": "tsdrc.json",
+      "description": "TypeScript Definition manager (tsd) global settings file",
+      "fileMatch": [ ".tsdrc" ],
+      "url": "http://json.schemastore.org/tsdrc"
+    },
+    {
+      "name": "tslint.json",
+      "description": "TypeScript Lint configuration file",
+      "fileMatch": [ "tslint.json" ],
+      "url": "http://json.schemastore.org/tslint"
+    },
+    {
+      "name": "typings.json",
+      "description": "Typings TypeScript definitions manager definition file",
+      "fileMatch": [ "typings.json" ],
+      "url": "http://json.schemastore.org/typings"
+    },
+    {
+      "name": "typingsrc.json",
+      "description": "Typings TypeScript definitions manager configuration file",
+      "fileMatch": [ ".typingsrc" ],
+      "url": "http://json.schemastore.org/typingsrc"
+    },
+    {
+      "name": "vega.json",
+      "description": "Vega visualization specification file",
+      "fileMatch": [ "*.vg", "*.vg.json" ],
+      "url": "http://json.schemastore.org/vega"
+    },
+    {
+      "name": "vega-lite.json",
+      "description": "Vega-Lite visualization specification file",
+      "fileMatch": [ "*.vl", "*.vl.json" ],
+      "url": "http://json.schemastore.org/vega-lite"
+    },
+    {
+      "name": "version.json",
+      "description": "A project version descriptor file used by Nerdbank.GitVersioning",
+      "fileMatch": [ "version.json" ],
+      "url": "https://raw.githubusercontent.com/AArnott/Nerdbank.GitVersioning/master/src/NerdBank.GitVersioning/version.schema.json"
+    },
+    {
+      "name": "Web Manifest",
+      "description": "Web Appliation manifest file",
+      "fileMatch": [ "manifest.json" ],
+      "url": "http://json.schemastore.org/web-manifest"
+    },
+    {
+      "name": "webjobs-list.json",
+      "description": "Azure Webjob list file",
+      "fileMatch": [ "webjobs-list.json" ],
+      "url": "http://json.schemastore.org/webjobs-list"
+    },
+    {
+      "name": "webjobpublishsettings.json",
+      "description": "Azure Webjobs publish settings file",
+      "fileMatch": [ "webjobpublishsettings.json" ],
+      "url": "http://json.schemastore.org/webjob-publish-settings"
+    },
+    {
+      "name": "JSON-stat 2.0",
+      "description": "JSON-stat 2.0 Schema",
+      "url": "https://json-stat.org/format/schema/2.0/"
+    },
+    {
+      "name": "KSP-CKAN 1.16",
+      "description": "Metadata spec v1.16 for KSP-CKAN",
+      "fileMatch": [ "*.ckan" ],
+      "url": "http://json.schemastore.org/ksp-ckan-1.16"
+    },
+    {
+      "name": "JSON Schema Draft 4",
+      "description": "Meta-validation schema for JSON Schema Draft 4",
+      "url": "http://json-schema.org/draft-04/schema"
+    }
+  ]
+}

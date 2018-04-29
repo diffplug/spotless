@@ -1,0 +1,177 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.eclipse.wst.json.core" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appInfo>
+         <meta.schema plugin="org.eclipse.wst.json.core" id="schemaStoreContributions" name="JSON Schema Store Contributions Extension Point"/>
+      </appInfo>
+      <documentation>
+         This extension point allows to specify entries for XML Catalog.  Catalog entries have format specified in &lt;a href=&quot;http://www.oasis-open.org/committees/download.php/14041/xml-catalogs.html&quot;&gt;http://www.oasis-open.org/committees/entity/spec.html&lt;/a&gt;.  
+Each catalog extension consists of a single catalogContribution element.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <appInfo>
+            <meta.element />
+         </appInfo>
+      </annotation>
+      <complexType>
+         <choice>
+            <element ref="schemaCatalogContribution"/>
+         </choice>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  a fully qualified identifier of the target extension point
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  an optional identifier of the extension instance
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  an optional name of the extension instance
+               </documentation>
+               <appInfo>
+                  <meta.attribute translatable="true"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="schemaCatalogContribution">
+      <annotation>
+         <documentation>
+            The catalogContribution element may have id, and it is just a container for the contributed catalog entries.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="schema" minOccurs="0" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  Id of the catalog to which entries will be added. Could be &quot;default&quot;, and if ommited, entries are added to the default workspace catalog.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="schema">
+      <annotation>
+         <documentation>
+            The schema element associates a Schema reference with the a Schema reference that is not part of an external identifier.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+         </sequence>
+         <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Schema name
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="description" type="string">
+            <annotation>
+               <documentation>
+                  Id of the element, optional.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="fileMatch" type="string" use="required">
+            <annotation>
+               <documentation>
+                  File match
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="uri" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="resource"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+         <attribute name="url" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="since"/>
+      </appInfo>
+      <documentation>
+         1.0
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="examples"/>
+      </appInfo>
+      <documentation>
+         &lt;pre&gt;
+   &lt;extension 
+         point=&quot;org.eclipse.wst.xml.core.catalogContributions&quot;&gt;
+      &lt;catalogContribution&gt; 
+         &lt;system 
+               systemId=&quot;http://schemas.xmlsoap.org/wsdl/&quot;
+               uri=&quot;data/xsd/wsdl.xml&quot; &gt; 
+            &lt;property 
+                  name=&quot;webURL&quot;
+                  value=&quot;http://schemas.xmlsoap.org/wsdl/&quot;/&gt;
+         &lt;/system&gt;
+         &lt;uri
+               name=&quot;http://schemas.xmlsoap.org/wsdl/soap/&quot; 
+               uri=&quot;data/xsd/soap.xsd&quot;/&gt; 
+         &lt;public
+               publicId=&quot;http://www.w3.org/1999/XSL/Transform&quot;
+               uri=&quot;data/xsd/XSLSchema.xsd&quot;&gt;
+         &lt;/public&gt;
+         &lt;nextCatalog
+               id=&quot;nestedCatalog&quot; 
+               catalog=&quot;data/catalog1.xml&quot;/&gt; 
+      &lt;/catalogContribution&gt; 
+   &lt;/extension&gt;
+&lt;/pre&gt;
+      </documentation>
+   </annotation>
+
+
+
+   <annotation>
+      <appInfo>
+         <meta.section type="copyright"/>
+      </appInfo>
+      <documentation>
+         Copyright (c) 2005 IBM Corporation and others.&lt;br&gt;
+All rights reserved. This program and the accompanying materials are made 
+available under the terms of the Eclipse Public License v1.0 which accompanies 
+this distribution, and is available at &lt;a
+href=&quot;http://www.eclipse.org/legal/epl-v10.html&quot;&gt;http://www.eclipse.org/legal/epl-v10.html&lt;/a&gt;
+      </documentation>
+   </annotation>
+
+</schema>

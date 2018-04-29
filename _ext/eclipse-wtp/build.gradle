@@ -1,0 +1,136 @@
+plugins {
+	// bintray uploading
+	id 'com.jfrog.bintray' version '1.3.1'
+	// p2 dependencies
+	id 'com.diffplug.gradle.p2.asmaven' version '3.9.0'
+}
+
+apply from: rootProject.file('../gradle/java-setup.gradle')
+apply from: rootProject.file('../gradle/java-publish.gradle')
+
+ext {
+	developers = [
+		fvgh: [ name: 'Frank Vennemeyer', email: 'frankgh@zoho.com' ],
+	]
+}
+
+// The dependencies to pull from WebTools's p2 repositories
+def eclipseWtpDeps = [
+	// XML/HTML Formatter  - Dependencies
+	'org.eclipse.wst.xml.core':'+', // DefaultXMLPartitionFormatter and XMLAssociationProvider
+	'org.eclipse.wst.sse.core':'+', // Structure models
+	'org.eclipse.wst.common.uriresolver':'+', // URI resolver for model queries
+	'org.eclipse.wst.dtd.core':'+', // Support DTD extensions
+	
+	// XML Formatter - Dependencies
+	'org.eclipse.wst.xsd.core':'+', // Support XSD extensions
+	
+	// JS Formatter - Dependencies
+	'org.eclipse.wst.jsdt.core':'+', // DefaultCodeFormatter and related
+	'org.eclipse.wst.jsdt.ui':'+', // Functionality to format comments
+	
+	// JSON Formatter - Dependencies
+	'org.eclipse.wst.json.core':'+', // FormatProcessorJSON and related
+	'org.eclipse.json':'+', // Provides JSON node interfaces
+	
+	// CSS Formatter - Dependencies
+	'org.eclipse.wst.css.core':'+', // FormatProcessorCSS and related
+	
+	// HTML Formatter - Dependencies
+	'org.eclipse.wst.html.core':'+', // HTMLFormatProcessorImpl and related
+]
+
+// build a maven repo in our build folder containing these artifacts
+p2AsMaven {
+	group 'p2', {
+		repo "http://download.eclipse.org/webtools/repository/${VER_ECLIPSE_WTP}"
+		eclipseWtpDeps.keySet.each { p2.addIU(it) }
+		eclipseWtpDeps.keySet.each { p2.addIU(it + '.source') }
+	}
+}
+
+configurations
+{ 
+	embeddedJars // WTP JARs the fat-jar is based uppon
+	embeddedSource // Source for WTP JARs (to facilitate debugging)
+	compile.extendsFrom(embeddedJars)
+}
+
+dependencies {
+	compile "com.diffplug.spotless:spotless-eclipse-base:${VER_SPOTLESS_ECLISPE_BASE}"
+	// Required by most WPT formatters
+	compile "com.ibm.icu:icu4j:${VER_IBM_ICU}"
+	// The XSD/DTD and other models are defined with EMF. 
+	compile "org.eclipse.emf:org.eclipse.emf.common:${VER_ECLISPE_EMF}"
+	compile "org.eclipse.emf:org.eclipse.emf.ecore:${VER_ECLISPE_EMF}"
+	// Some WPT plugins requires OSGI bundle interfaces (but not effectively used)
+	compile "org.eclipse.platform:org.eclipse.osgi.services:${VER_ECLISPE_PLATFORM}"
+	// Provides document data structure and file buffers for formatters
+	compile "org.eclipse.platform:org.eclipse.core.filebuffers:${VER_ECLISPE_PLATFORM}"
+	// Provides text partitioners for formatters
+	compile ("org.eclipse.platform:org.eclipse.jface.text:${VER_ECLISPE_JFACE}") {
+		exclude group: 'org.eclipse.platform', module: 'org.eclipse.swt'
+	}
+	// Some WPT plugins use the EFS for storing temporary worspace data 
+	compile "org.eclipse.platform:org.eclipse.core.filesystem:${VER_ECLISPE_EFS}"
+	// Required by org.eclipse.wst.xsd.core
+	compile "org.eclipse.xsd:org.eclipse.xsd:${VER_ECLISPE_XSD}"
+	eclipseWtpDeps.each { groupArtifact, version ->
+		embeddedJars "p2:${groupArtifact}:${version}"
+		embeddedSource "p2:${groupArtifact}:${version}:sources"
+	}
+}
+
+jar {
+	// this embeds the WTP JARs into our "fat JAR"
+	from {
+		configurations.embeddedJars.collect{ it.isDirectory() ? it : zipTree(it) }
+	}
+	// the WTP JARs are signed, and our fat JAR breaks the signatures
+	// so we've got to be sure to filter out the signatures
+	exclude 'META-INF/*.RSA'
+	exclude 'META-INF/*.SF'
+	//Exclude Eclipse plugin information
+	exclude '*.options'
+	exclude '*.html'
+	exclude '*.api_description'
+	exclude '*.properties'
+	exclude '*.xml'
+}
+
+//////////
+// Test //
+//////////
+/*
+ * All test classes need to run separately since they all instatiate different setups of the
+ * Eclipse framework.
+ */
+test {
+    //Skip default tests, which would run every test case.
+    exclude '**'
+}
+
+sourceSets {
+	// Use JAR file with all resources for Eclipse-WTP integration-tests
+	test.runtimeClasspath = jar.outputs.files + sourceSets.test.output + sourceSets.test.compileClasspath
+}
+
+//Instead make a separate test task per case
+def testLocation = 'src/test/java'
+fileTree(dir: testLocation).include('**/*Test.java').each { file ->
+	def testFile = file.getName().replace(".java", "")
+	def filePath = file.getAbsolutePath().replace(".java", "**") //Don't ask me why the task is not happy when it gets no asterisk 
+	filePath = filePath.substring(filePath.lastIndexOf(testLocation) + testLocation.length() + 1)
+	task "${testFile}"(type: Test) {
+		group = LifecycleBasePlugin.VERIFICATION_GROUP
+		description = "Runs ${testFile} integration test."
+		include "${filePath}"
+	    reports { 
+	        html.destination = new File("$buildDir/reports/${testFile}")
+	        junitXml.destination = new File("$buildDir/${testFile}")
+	    }
+	    //classpath = jar.outputs.files + sourceSets.test.output + sourceSets.test.compileClasspath
+		mustRunAfter tasks.jar
+	}
+	test.dependsOn "${testFile}"
+}
