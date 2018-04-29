@@ -1,6 +1,8 @@
-# spotless-eclipse
+# spotless-eclipse-jdt
 
-Eclipse is not available in a form which can be easily consumed by maven or gradle.  To fix this, we publish Eclipse's formatter and all its dependencies, along with a small amount of glue code, into the `com.diffplug.gradle.spotless:spotless-eclipse` artifact.
+Eclipse JDT and its dependencies require a large amount of byte code.
+Hence they should not be directly be required by the Spotless, but only be requested in case
+they are configured by the Spotless configuration. Hence we publish Eclipse's formatter and all its dependencies, along with a small amount of glue code, into the `com.diffplug.gradle.spotless:spotless-eclipse-jdt` artifact.
 
 To publish a new version, update the `_ext/eclipse-jdt/gradle.properties` appropriately and run this from the root directory:
 
