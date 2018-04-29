@@ -177,10 +177,14 @@ public final class BundleController implements StaticBundleContext {
 			Object bundleObj = (null != activator) ? activator : this;
 			String bundleObjPath = bundleObj.getClass().getName();
 			fatJarResourcePath = bundleObjPath.substring(0, bundleObjPath.lastIndexOf('.'));
-			bundleFile = getBundlFile(bundleObj);
-			name = (null != symbolicName) ? symbolicName : getSymbolicName(getEntry(JarFile.MANIFEST_NAME));
-			if (null == name) {
-				throw new BundleException(String.format("No resource URL found for '%s'.", JarFile.MANIFEST_NAME));
+			try {
+				bundleFile = getBundlFile(bundleObj);
+				name = (null != symbolicName) ? symbolicName : getSymbolicName(getEntry(JarFile.MANIFEST_NAME));
+				if (null == name) {
+					throw new BundleException(String.format("No resource URL found for '%s'. Cannot determine bundle name of '%s'.", JarFile.MANIFEST_NAME, bundleObjPath));
+				}
+			} catch (BundleException e) {
+				throw new BundleException(String.format("Failed to load bundle for '%s'.", bundleObjPath), e);
 			}
 		}
 
