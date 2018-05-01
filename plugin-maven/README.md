@@ -168,53 +168,60 @@ By default, all files matching `src/main/kotlin/**/*.kt` and `src/test/kotlin/**
 
 ## Applying to custom sources
 
-By default, no Ant-Style include patterns are defined.  Each element under `<format>` is a step, and they will be applied in the order specified.  Every step is optional, and they will be applied in the order specified.
+By default, no Ant-Style include patterns are defined.  Each element under `<format>` is a step, and they will be applied in the order specified.  Every step is optional, and they will be applied in the order specified. It is possible to define multiple custom formats.
 
 ```xml
 <configuration>
-  <format>
-    <includes>
-      <!-- include all property files in "resource" folders under "src" -->
-      <include>src/**/resources/**/*.properties</include>
-    </includes>
+  <formats>
 
-    <licenseHeader>
-      <!-- Specify either content or file, but not both -->
-      <content>/* Licensed under Apache-2.0 */</content>
-      <file>${basedir}/license-header</file>
-      <!-- conent until first occurrence of the delimiter regex will be interpreted as header section -->
-      <delimiter>#</delimiter>
-    </licenseHeader>
+    <!-- Define first formatter that operates on properties files -->
+    <format>
+      <includes>
+        <!-- Include all property files in "resource" folders under "src" -->
+        <include>src/**/resources/**/*.properties</include>
+      </includes>
 
-    <!-- Files must end with a newline -->
-    <endWithNewline />
+      <licenseHeader>
+        <!-- Specify either content or file, but not both -->
+        <content>/* Licensed under Apache-2.0 */</content>
+        <file>${basedir}/license-header</file>
+        <!-- conent until first occurrence of the delimiter regex will be interpreted as header section -->
+        <delimiter>#</delimiter>
+      </licenseHeader>
 
-    <!-- Specify whether to use tabs or spaces for indentation -->
-    <indent>
-      <!-- Specify either spaces or tabs -->
-      <spaces>true</spaces>
-      <tabs>true</tabs>
-      <!-- Specify how many spaces are used to convert one tab and vice versa. Defaults to 4 -->
-      <spacesPerTab>4</spacesPerTab>
-    </indent>
+      <!-- Files must end with a newline -->
+      <endWithNewline />
 
-    <!-- Trim trailing whitespaces -->
-    <trimTrailingWhitespace />
+      <!-- Specify whether to use tabs or spaces for indentation -->
+      <indent>
+        <!-- Specify either spaces or tabs -->
+        <spaces>true</spaces>
+        <tabs>true</tabs>
+        <!-- Specify how many spaces are used to convert one tab and vice versa. Defaults to 4 -->
+        <spacesPerTab>4</spacesPerTab>
+      </indent>
 
-    <!-- Specify replacements using search and replace -->
-    <replace>
-      <name>Say Hello to Mars</name>
-      <search>World</search>
-      <replacement>Mars</replacement>
-    </replace>
+      <!-- Trim trailing whitespaces -->
+      <trimTrailingWhitespace />
 
-    <!-- Specify replacements using regex match and replace -->
-    <replaceRegex>
-      <name>Say Hello to Mars from Regex</name>
-      <searchRegex>(Hello) W[a-z]{3}d</searchRegex>
-      <replacement>$1 Mars</replacement>
-    </replaceRegex>
-  </format>
+      <!-- Specify replacements using search and replace -->
+      <replace>
+        <name>Say Hello to Mars</name>
+        <search>World</search>
+        <replacement>Mars</replacement>
+      </replace>
+
+      <!-- Specify replacements using regex match and replace -->
+      <replaceRegex>
+        <name>Say Hello to Mars from Regex</name>
+        <searchRegex>(Hello) W[a-z]{3}d</searchRegex>
+        <replacement>$1 Mars</replacement>
+      </replaceRegex>
+    </format>
+
+    <!-- Other formats can be defined here, they will be applied in the order specified -->
+
+  </formats>
 </configuration>
 ```
 
