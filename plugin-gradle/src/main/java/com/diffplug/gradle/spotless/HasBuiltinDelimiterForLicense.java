@@ -16,9 +16,16 @@
 package com.diffplug.gradle.spotless;
 
 /**
- *
+ * Every {@link FormatExtension} has a method
+ * {@link FormatExtension#licenseHeader(String, String) license(licenseContent, licenseDelimiter)},
+ * where licenseDelimiter is a regex that separates the license part of the code from the content.
+ * For some kinds of format -
+ * such as {@link JavaExtension java}, {@link KotlinExtension kotlin}, and {@link GroovyExtension groovy} -
+ * we already have a defined delimiter, so users don't have to provide it.
+ * By having the java, kotlin, and groovy formats implement this interface,
+ * you can write generic code for enforcing whitespace and licenses.
  */
-public interface SimpleLicenseHeaderExtension {
+public interface HasBuiltinDelimiterForLicense {
 
 	/**
 	 * @param licenseHeader

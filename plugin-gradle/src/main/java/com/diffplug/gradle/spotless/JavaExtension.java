@@ -35,7 +35,7 @@ import com.diffplug.spotless.java.GoogleJavaFormatStep;
 import com.diffplug.spotless.java.ImportOrderStep;
 import com.diffplug.spotless.java.RemoveUnusedImportsStep;
 
-public class JavaExtension extends FormatExtension implements SimpleLicenseHeaderExtension {
+public class JavaExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "java";
 
 	public JavaExtension(SpotlessExtension rootExtension) {
