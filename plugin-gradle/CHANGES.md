@@ -6,6 +6,7 @@
 * Fixed a bug in `LicenseHeaderStep` which caused an exception with some malformed date-aware licenses. ([#222](https://github.com/diffplug/spotless/pull/222))
 * Updated default ktlint from 0.14.0 to 0.21.0
 * Add ability to pass custom options to ktlint. See README for details.
+* Added interface `HasBuiltinDelimiterForLicense` to language extensions that have pre-defined licence header delimiter. ([#235](https://github.com/diffplug/spotless/pull/235))
 
 ### Version 3.10.0 - February 15th 2018 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.10.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.10.0))
 
