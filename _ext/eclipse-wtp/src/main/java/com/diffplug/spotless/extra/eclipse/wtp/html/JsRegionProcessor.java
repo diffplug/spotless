@@ -30,7 +30,7 @@ import org.eclipse.wst.sse.core.internal.provisional.text.IStructuredDocument;
 import com.diffplug.spotless.extra.eclipse.wtp.html.StructuredDocumentProcessor.RegionProcessor;
 
 /**
- * Provides additional formating to the plain JS CodeFormatter:
+ * Provides additional formating to the plain JS {@link CodeFormatter}:
  * <ul>
  *  <li> Eclipse HTML places the embedded JS in separated lines by adding a line break after/before &lt;script/&gt; tag. </li>
  *  <li> Eclipse HTML treats the text before the closing &lt;/script&gt; tag as part of the script region.</li>
@@ -71,6 +71,7 @@ public class JsRegionProcessor extends RegionProcessor<CodeFormatter> {
 		modifications.apply(document);
 	}
 
+	/** Factory for {@link StructuredDocumentProcessor}*/
 	public static BiFunction<IStructuredDocument, ITypedRegion, JsRegionProcessor> createFactory(String htmlIndent) {
 		return new BiFunction<IStructuredDocument, ITypedRegion, JsRegionProcessor>() {
 

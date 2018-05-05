@@ -16,6 +16,7 @@
 package com.diffplug.spotless.extra.eclipse.wtp;
 
 import static com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework.LINE_DELIMITER;
+import static com.diffplug.spotless.extra.eclipse.wtp.EclipseJsFormatterStepImpl.JS_CORE_CONFIG;
 import static org.eclipse.wst.css.core.internal.preferences.CSSCorePreferenceNames.*;
 import static org.eclipse.wst.xml.core.internal.preferences.XMLCorePreferenceNames.CMDOCUMENT_GLOBAL_CACHE_ENABLED;
 
@@ -48,14 +49,14 @@ import com.diffplug.spotless.extra.eclipse.wtp.html.StructuredDocumentProcessor;
 import com.diffplug.spotless.extra.eclipse.wtp.sse.CleanupStep;
 import com.diffplug.spotless.extra.eclipse.wtp.sse.SpotlessPreferences;
 
-/** Formatter step which calls out to the Eclipse HTML formatter and cleanup. */
+/** Formatter step which calls out to the Eclipse HTML cleanup and formatter. */
 public class EclipseHtmlFormatterStepImpl extends CleanupStep<EclipseHtmlFormatterStepImpl.SpotlessHtmlCleanup> {
 
 	private final String htmlFormatterIndent;
 	private final CodeFormatter jsFormatter;
 
 	public EclipseHtmlFormatterStepImpl(Properties properties) throws Exception {
-		super(new SpotlessHtmlCleanup(), additionalPlugins -> {
+		super(new SpotlessHtmlCleanup(), JS_CORE_CONFIG, additionalPlugins -> {
 			additionalPlugins.add(new CSSCorePlugin());
 			additionalPlugins.add(new XMLCorePlugin());
 			//DTDs must be resolved by URI
@@ -100,12 +101,12 @@ public class EclipseHtmlFormatterStepImpl extends CleanupStep<EclipseHtmlFormatt
 	}
 
 	/**
-	 * * The HTMLFormatProcessorImpl does not allow a strict case formatting.
-	 * Hence additionally the HTMLCleanupProcessorImpl is used.
+	 * * The WTP {@link HTMLFormatProcessorImpl} does not allow a strict case formatting.
+	 * Hence additionally the {@link HTMLCleanupProcessorImpl} is used.
 	 * <p>
-	 * Note that a preferences like TAG_NAME_CASE are not used by the
+	 * Note that a preferences like {@code TAG_NAME_CASE} are not used by the
 	 * formatter, though configurable in the formatters preference GUI.
-	 * The user must instead configure for example CLEANUP_TAG_NAME_CASE
+	 * The user must instead configure for example {@code CLEANUP_TAG_NAME_CASE}
 	 * in the cleanup GUI.
 	 * </p>
 	 */

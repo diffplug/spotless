@@ -16,6 +16,8 @@
 package com.diffplug.spotless.extra.eclipse.wtp.sse;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 import java.util.function.Consumer;
 
@@ -29,6 +31,7 @@ import org.eclipse.wst.sse.core.internal.format.AbstractStructuredFormatProcesso
 import org.eclipse.wst.sse.core.internal.format.IStructuredFormatProcessor;
 import org.osgi.framework.BundleActivator;
 
+import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseCoreConfig;
 import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework;
 
 /**
@@ -74,7 +77,12 @@ public class CleanupStep<T extends AbstractStructuredCleanupProcessor & CleanupS
 	protected final T processor;
 
 	protected CleanupStep(T processor, Consumer<Collection<BundleActivator>> addptionalPlugins) throws Exception {
+		this(processor, core -> core.applyDefault(), addptionalPlugins);
+	}
+
+	protected CleanupStep(T processor, Consumer<SpotlessEclipseCoreConfig> core, Consumer<Collection<BundleActivator>> addptionalPlugins) throws Exception {
 		SpotlessEclipseFramework.setup(
+				core,
 				config -> {
 					config.disableDebugging();
 					config.hideEnvironment();
@@ -86,8 +94,10 @@ public class CleanupStep<T extends AbstractStructuredCleanupProcessor & CleanupS
 					config.add(IPreferencesService.class, PreferencesService.getDefault());
 				},
 				plugins -> {
-					plugins.addAll(SpotlessEclipseFramework.DefaultPlugins.createAll());
-					addptionalPlugins.accept(plugins);
+					plugins.applyDefault();
+					List<BundleActivator> additional = new LinkedList<BundleActivator>();
+					addptionalPlugins.accept(additional);
+					plugins.add(additional);
 					/*
 					 * The core preferences require do lookup the resources "config/override.properties"
 					 * from the plugin ID.

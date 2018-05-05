@@ -47,6 +47,12 @@ public class StructuredDocumentProcessor<T> {
 	private final IStructuredDocument document;
 	private final int numberOfRegions;
 
+	/**
+	 * Constructs a document processor
+	 * @param document Document to be processed
+	 * @param type Document type ID recognized by {@code IContentTypeManager} service
+	 * @param factory Factory for structured document processor
+	 */
 	public StructuredDocumentProcessor(IStructuredDocument document, String type,
 			BiFunction<IStructuredDocument, ITypedRegion, ? extends RegionProcessor<T>> factory) {
 		this.type = type;
@@ -55,6 +61,7 @@ public class StructuredDocumentProcessor<T> {
 		numberOfRegions = getRegions().size();
 	}
 
+	/** Applies processor on document, using a given formatter */
 	public void apply(T formatter) {
 		for (int currentRegionId = 0; currentRegionId < numberOfRegions; currentRegionId++) {
 			applyOnRegion(currentRegionId, formatter);

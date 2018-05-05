@@ -68,7 +68,7 @@ public class EclipseXmlFormatterStepImpl {
 	private static void setupFramework() throws BundleException {
 		if (SpotlessEclipseFramework.setup(
 				plugins -> {
-					plugins.addAll(SpotlessEclipseFramework.DefaultPlugins.createAll());
+					plugins.applyDefault();
 					//The WST XML formatter
 					plugins.add(new XMLCorePlugin());
 					//XSDs/DTDs must be resolved by URI

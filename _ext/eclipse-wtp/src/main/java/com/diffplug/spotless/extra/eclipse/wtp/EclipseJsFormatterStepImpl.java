@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.extra.eclipse.wtp;
 
+import static com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework.DefaultBundles.*;
 import static com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework.LINE_DELIMITER;
 
 import java.util.AbstractMap.SimpleEntry;
@@ -24,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -47,11 +49,20 @@ import org.eclipse.wst.jsdt.internal.ui.text.FastJavaPartitionScanner;
 import org.eclipse.wst.jsdt.internal.ui.text.comment.CommentFormattingContext;
 import org.eclipse.wst.jsdt.internal.ui.text.comment.CommentFormattingStrategy;
 import org.eclipse.wst.jsdt.ui.text.IJavaScriptPartitions;
+import org.osgi.framework.Bundle;
 
+import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseCoreConfig;
 import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework;
 
 /** Formatter step which calls out to the Eclipse JS formatter. */
 public class EclipseJsFormatterStepImpl {
+
+	/** Spotless Eclipse framework core setup for JS formatter support.*/
+	public static final Consumer<SpotlessEclipseCoreConfig> JS_CORE_CONFIG = (core) -> {
+		//The JS model requires the JDT indexer, hence a headless Eclipse cannot be used.
+		core.add(PLATFORM, Bundle.ACTIVE);
+		core.add(REGISTRY, PREFERENCES, COMMON);
+	};
 
 	private final static String[] COMMENT_TYPES = {
 			IJavaScriptPartitions.JAVA_DOC,
@@ -72,8 +83,10 @@ public class EclipseJsFormatterStepImpl {
 
 	public EclipseJsFormatterStepImpl(Properties properties) throws Exception {
 		SpotlessEclipseFramework.setup(
+				JS_CORE_CONFIG,
+				config -> config.applyDefault(),
 				plugins -> {
-					plugins.addAll(SpotlessEclipseFramework.DefaultPlugins.createAll());
+					plugins.applyDefault();
 					// The JS core uses EFS for determination of temporary storage location
 					plugins.add(new org.eclipse.core.internal.filesystem.Activator());
 					// The JS core provides the JSDT formatter

@@ -36,7 +36,7 @@ public class SpotlessPreferences {
 	 * Optional XML catalog for XSD/DTD lookup.
 	 * Catalog versions 1.0 and 1.1 are supported.
 	 * <p>
-	 * Value is of type <code>Path</code>.
+	 * Value is of type {@code Path}.
 	 * </p>
 	 */
 	public static final String USER_CATALOG = "userCatalog";

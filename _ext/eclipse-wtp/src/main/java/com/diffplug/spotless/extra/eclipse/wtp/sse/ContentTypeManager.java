@@ -52,7 +52,6 @@ class ContentTypeManager extends NoContentTypeSpecificHandling {
 
 	/**
 	 * Content type manager as required for cleanup steps.
-	 * Only the
 	 * @param formatterContentTypeID The content type of the formatter step
 	 */
 	ContentTypeManager(CleanupStep.ProcessorAccessor processor) {
@@ -90,7 +89,7 @@ class ContentTypeManager extends NoContentTypeSpecificHandling {
 	/**
 	 * The WTP uses the manager only for ID mapping, so most of the methods are not used.
 	 * Actually it has a hand stitched way for transforming the content type ID
-	 * 'org.eclipse.wst...source' to the plugin ID 'org.eclipse.wst...core'.
+	 * {@code org.eclipse.wst...source} to the plugin ID {@code org.eclipse.wst...core}.
 	 * @see org.eclipse.wst.sse.core.internal.encoding.ContentBasedPreferenceGateway
 	 */
 	private static class ContentTypeId implements IContentType {
