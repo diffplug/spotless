@@ -33,23 +33,23 @@ class BundleSet {
 	}
 
 	/** Get all bundles in collection */
-	public Collection<Bundle> getAll() {
+	Collection<Bundle> getAll() {
 		return symbolicName2bundle.values();
 	}
 
 	/** Get bundle by symbolic name or null if collection does not contain the corresponding bundle. */
-	public Bundle get(String symbolicName) {
+	Bundle get(String symbolicName) {
 		return symbolicName2bundle.get(symbolicName);
 	}
 
 	/** Get bundle by its ID or null if collection does not contain the corresponding bundle. */
-	public Bundle get(long id) {
+	Bundle get(long id) {
 		return id2bundle.get(id);
 	}
 
 	/** Add bundle to collection.
 	 * @throws BundleException */
-	public void add(Bundle bundle) throws BundleException {
+	void add(Bundle bundle) throws BundleException {
 		Bundle existingBundle = symbolicName2bundle.put(bundle.getSymbolicName(), bundle);
 		if (null != existingBundle) {
 			throw new BundleException(
@@ -67,4 +67,5 @@ class BundleSet {
 					BundleException.DUPLICATE_BUNDLE_ERROR);
 		}
 	}
+
 }

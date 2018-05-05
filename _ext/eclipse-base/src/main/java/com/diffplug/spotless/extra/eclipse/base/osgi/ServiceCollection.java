@@ -43,7 +43,7 @@ public class ServiceCollection implements SpotlessEclipseServiceConfig {
 	 * @param systemBundle All services will belong to the system bundles
 	 * @param All services share the same properties
 	 */
-	public ServiceCollection(Bundle systemBundle, Map<String, String> properties) {
+	ServiceCollection(Bundle systemBundle, Map<String, String> properties) {
 		className2Service = new HashMap<String, ServiceReference<?>>();
 		this.systemBundle = systemBundle;
 		this.properties = properties;
@@ -101,12 +101,12 @@ public class ServiceCollection implements SpotlessEclipseServiceConfig {
 		private final String className;
 		private final S service;
 
-		public FrameworkServiceReference(String className, S service) {
+		private FrameworkServiceReference(String className, S service) {
 			this.className = className;
 			this.service = service;
 		}
 
-		public S getService() {
+		private S getService() {
 			return service;
 		}
 
@@ -155,7 +155,7 @@ public class ServiceCollection implements SpotlessEclipseServiceConfig {
 
 		private final String className;
 
-		public ClassNameBasedFilter(Optional<String> className) {
+		private ClassNameBasedFilter(Optional<String> className) {
 			this.className = className.orElse(NO_MATCH_CLASS_NAME);
 		}
 

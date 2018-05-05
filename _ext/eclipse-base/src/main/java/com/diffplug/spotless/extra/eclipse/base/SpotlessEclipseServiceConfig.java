@@ -28,10 +28,11 @@ import org.eclipse.osgi.service.environment.EnvironmentInfo;
 import com.diffplug.spotless.extra.eclipse.base.service.*;
 
 /**
- * Configuration/Provision of services which shall be provided by the SpotlessEclipseFramework.
+ * Configuration/Provision of services which shall be provided by the {@link SpotlessEclipseFramework}.
  * <p>
- * The SpotlessEclipseFramework plugins are customized by these services to provide the minimal
- * functionality as required by the Spotless formatter.
+ * The services provide basic functions/configuration to the {@link SpotlessEclipseFramework} bundles use the services.
+ * Hence the services can be used to customize the behavior of core bundles and plugins configured
+ * in the {@link SpotlessEclipseCoreConfig} and {@link SpotlessEclipsePluginConfig}.
  * </p>
  */
 public interface SpotlessEclipseServiceConfig {
@@ -41,7 +42,7 @@ public interface SpotlessEclipseServiceConfig {
 
 	/** Sets property/preference values available to all bundles, plugins and services. */
 	default void set(Map<String, String> properties) {
-		properties.entrySet().stream().forEach(x -> set(x.getKey(), x.getValue()));
+		properties.forEach((k, v) -> this.set(k, v));
 	}
 
 	/**

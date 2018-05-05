@@ -15,22 +15,11 @@
  */
 package com.diffplug.spotless.extra.eclipse.base.osgi;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.jar.JarFile;
-import java.util.jar.Manifest;
 
-import org.eclipse.osgi.storage.bundlefile.BundleEntry;
-import org.eclipse.osgi.storage.bundlefile.BundleFile;
-import org.eclipse.osgi.storage.bundlefile.DirBundleFile;
-import org.eclipse.osgi.storage.bundlefile.ZipBundleFile;
-import org.eclipse.osgi.util.ManifestElement;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -51,7 +40,7 @@ import org.osgi.framework.ServiceReference;
 public final class BundleController implements StaticBundleContext {
 	private static final String ECLIPSE_LAUNCHER_SYMBOLIC_NAME = "org.eclipse.osgi";
 
-	private final Bundle systemBundle;
+	private final SimpleBundle systemBundle;
 	private final Map<String, String> properties;
 	private final ServiceCollection services;
 	private final BundleSet bundles;
@@ -70,7 +59,7 @@ public final class BundleController implements StaticBundleContext {
 		properties.put(org.eclipse.core.internal.runtime.FindSupport.PROP_NL, "");
 
 		bundles = new BundleSet();
-		systemBundle = new SystemBundle(this);
+		systemBundle = new SimpleBundle(this, Bundle.ACTIVE);
 		bundles.add(systemBundle);
 
 		services = new ServiceCollection(systemBundle, properties);
@@ -78,7 +67,7 @@ public final class BundleController implements StaticBundleContext {
 		services.add(org.osgi.service.packageadmin.PackageAdmin.class, new EclipseBundleLookup(bundles));
 
 		//Redirect framework activator requests to the the org.eclipse.osgi bundle to this instance.
-		bundles.add(new SystemBundle(ECLIPSE_LAUNCHER_SYMBOLIC_NAME, Bundle.ACTIVE, this));
+		bundles.add(new SimpleBundle(systemBundle, ECLIPSE_LAUNCHER_SYMBOLIC_NAME, Bundle.ACTIVE));
 	}
 
 	public ServiceCollection getServices() {
@@ -86,8 +75,8 @@ public final class BundleController implements StaticBundleContext {
 	}
 
 	/** Adds and starts a new bundle. */
-	public void addBundle(BundleActivator activator, Function<Bundle, BundleException> register) throws BundleException {
-		BundleContext contextFacade = new BundleControllerContextFacade(activator);
+	public void addBundle(int bundleState, BundleActivator activator, Function<Bundle, BundleException> register) throws BundleException {
+		BundleContext contextFacade = new BundleControllerContextFacade(this, bundleState, activator);
 		bundles.add(contextFacade.getBundle());
 		BundleException exception = register.apply(contextFacade.getBundle());
 		if (null != exception)
@@ -97,6 +86,14 @@ public final class BundleController implements StaticBundleContext {
 		} catch (Exception e) {
 			throw new BundleException(String.format("Failed do start %s.", activator.getClass().getName()), BundleException.ACTIVATOR_ERROR, e);
 		}
+	}
+
+	/** Creates a context with an individual state if required. */
+	public BundleContext createContext(int state) {
+		if (state == systemBundle.getState()) {
+			return this;
+		}
+		return new BundleControllerContextFacade(systemBundle, state);
 	}
 
 	@Override
@@ -145,165 +142,33 @@ public final class BundleController implements StaticBundleContext {
 		return services.createFilter(filter);
 	}
 
-	/** Fixed state system bundle. */
-	private static class SystemBundle implements StaticBundle, TemporaryBundle {
-		private final String name;
-		private final int state;
-		private final BundleContext context;
-		private final int id;
-		private final BundleFile bundleFile;
-		/**
-		 * Spotless Eclipse formatters using in many cases fat JARs, compressing multiple
-		 * bundles within one JAR. Their resources can get overridden in a fat JAR.
-		 * Hence they provided under the bundle activators path name.
-		 */
-		private final String fatJarResourcePath;
-
-		/** Active system bundle corresponding to the local JARs manifest */
-		private SystemBundle(BundleContext bundleController) throws BundleException {
-			this(null, null, Bundle.ACTIVE, bundleController);
-		}
-
-		/** System bundle with a custom fixed state and symbolic name */
-		private SystemBundle(String symbolicName, int fixedState, BundleContext bundleController) throws BundleException {
-			this(symbolicName, null, fixedState, bundleController);
-		}
-
-		/** Internal initialization of system bundle. */
-		private SystemBundle(String symbolicName, BundleActivator activator, int fixedState, BundleContext bundleController) throws BundleException {
-			state = fixedState;
-			context = bundleController;
-			id = context.getBundles().length;
-			Object bundleObj = (null != activator) ? activator : this;
-			String bundleObjPath = bundleObj.getClass().getName();
-			fatJarResourcePath = bundleObjPath.substring(0, bundleObjPath.lastIndexOf('.'));
-			try {
-				bundleFile = getBundlFile(bundleObj);
-				name = (null != symbolicName) ? symbolicName : getSymbolicName(getEntry(JarFile.MANIFEST_NAME));
-				if (null == name) {
-					throw new BundleException(String.format("No resource URL found for '%s'. Cannot determine bundle name of '%s'.", JarFile.MANIFEST_NAME, bundleObjPath));
-				}
-			} catch (BundleException e) {
-				throw new BundleException(String.format("Failed to load bundle for '%s'.", bundleObjPath), e);
-			}
-		}
-
-		@Override
-		public int getState() {
-			return state;
-		}
-
-		@Override
-		public long getBundleId() {
-			return id;
-		}
-
-		@Override
-		public ServiceReference<?>[] getRegisteredServices() {
-			try {
-				return context.getAllServiceReferences(null, null);
-			} catch (InvalidSyntaxException e) {
-				throw new RuntimeException(e); //Filter 'null' is valid for 'select all'.
-			}
-		}
-
-		@Override
-		public String getSymbolicName() {
-			return name;
-		}
-
-		@Override
-		public BundleContext getBundleContext() {
-			return context;
-		}
-
-		@Override
-		public Enumeration<String> getEntryPaths(String path) {
-			return bundleFile.getEntryPaths(path);
-		}
-
-		@Override
-		public URL getEntry(String path) {
-			URL result = tryFatJarMetaInf(path);
-			if (null == result) {
-				BundleEntry entry = bundleFile.getEntry(path);
-				result = null == entry ? null : entry.getLocalURL();
-			}
-			return result;
-		}
-
-		private URL tryFatJarMetaInf(String path) {
-			return getResource(fatJarResourcePath + "/" + path);
-		}
-
-		private static String getSymbolicName(URL manifestUrl) throws BundleException {
-			if (null != manifestUrl) {
-				try {
-					Manifest manifest = new Manifest(manifestUrl.openStream());
-					String headerValue = manifest.getMainAttributes().getValue(Constants.BUNDLE_SYMBOLICNAME);
-					if (null == headerValue) {
-						throw new BundleException(String.format("Symbolic values not found in '%s'.", manifestUrl), BundleException.MANIFEST_ERROR);
-					}
-					ManifestElement[] elements = ManifestElement.parseHeader(Constants.BUNDLE_SYMBOLICNAME, headerValue);
-					if (null == elements) {
-						throw new BundleException(String.format("Symbolic name not found in '%s'.", headerValue), BundleException.MANIFEST_ERROR);
-					}
-					//The parser already checked that at least one value exists
-					return elements[0].getValueComponents()[0];
-
-				} catch (IOException e) {
-					throw new BundleException(String.format("Failed to parse Manifest '%s'.", manifestUrl), BundleException.MANIFEST_ERROR, e);
-				}
-			}
-			return null;
-		}
-
-		private static BundleFile getBundlFile(Object obj) throws BundleException {
-			URL objUrl = obj.getClass().getProtectionDomain().getCodeSource().getLocation();
-			File jarOrDirectory = new File(objUrl.getPath());
-			if (!(jarOrDirectory.exists() && jarOrDirectory.canRead())) {
-				throw new BundleException(String.format("Path '%s' for '%s' is not accessible exist on local file system.", objUrl, obj.getClass().getName()), BundleException.READ_ERROR);
-			}
-			try {
-				return jarOrDirectory.isDirectory() ? new DirBundleFile(jarOrDirectory, false) : new ZipBundleFile(jarOrDirectory, null, null, null);
-			} catch (IOException e) {
-				throw new BundleException(String.format("Cannot access bundle at '%s'.", jarOrDirectory), BundleException.READ_ERROR);
-			}
-		}
-
-	}
-
 	/**
-	 * Additional bundle provided in JAR file.
-	 * <p>
-	 * The JAR file is determined by the location of the plugin / bundle activator location.
-	 */
-	private static class AdditionalBundle extends SystemBundle {
-
-		private AdditionalBundle(BundleActivator activator, BundleContext bundleContext) throws BundleException {
-			super(null, activator, Bundle.ACTIVE, bundleContext);
-		}
-
-	}
-
-	/**
-	 * Facade providing access to bundle controller
+	 * Facade providing access to an existing controller for a bundle
 	 * <p>
 	 * All bundles have unrestricted access to the framework services and properties.
 	 * However, each bundle and its context needs to maintain its individual
 	 * symbolic name for look-up.
+	 * </p>
 	 */
-	private class BundleControllerContextFacade implements StaticBundleContext {
+	private static class BundleControllerContextFacade implements StaticBundleContext {
 
+		private final BundleContext context;
 		private final Bundle bundle;
 
-		private BundleControllerContextFacade(BundleActivator activator) throws BundleException {
-			this.bundle = new AdditionalBundle(activator, this);
+		private BundleControllerContextFacade(BundleContext context, int bundleState, BundleActivator activator) throws BundleException {
+			this.context = context;
+			bundle = new SimpleBundle(this, bundleState, activator);
+		}
+
+		/** Fakes an individual bundle state */
+		private BundleControllerContextFacade(SimpleBundle bundle, int bundleState) {
+			this.context = bundle.getBundleContext();
+			this.bundle = new SimpleBundle(bundle, bundleState);
 		}
 
 		@Override
 		public String getProperty(String key) {
-			return BundleController.this.getProperty(key);
+			return context.getProperty(key);
 		}
 
 		@Override
@@ -313,32 +178,32 @@ public final class BundleController implements StaticBundleContext {
 
 		@Override
 		public Bundle[] getBundles() {
-			return BundleController.this.getBundles();
+			return context.getBundles();
 		}
 
 		@Override
 		public Bundle getBundle(long id) {
-			return BundleController.this.getBundle(id);
+			return context.getBundle(id);
 		}
 
 		@Override
 		public Bundle getBundle(String location) {
-			return BundleController.this.getBundle(location);
+			return context.getBundle(location);
 		}
 
 		@Override
 		public ServiceReference<?>[] getAllServiceReferences(String clazz, String filter) throws InvalidSyntaxException {
-			return BundleController.this.getAllServiceReferences(clazz, filter);
+			return context.getAllServiceReferences(clazz, filter);
 		}
 
 		@Override
 		public <S> S getService(ServiceReference<S> reference) {
-			return BundleController.this.getService(reference);
+			return context.getService(reference);
 		}
 
 		@Override
 		public Filter createFilter(String filter) throws InvalidSyntaxException {
-			return BundleController.this.createFilter(filter);
+			return context.createFilter(filter);
 		}
 
 	}

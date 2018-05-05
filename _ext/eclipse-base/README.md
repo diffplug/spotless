@@ -1,15 +1,15 @@
 # spotless-eclipse-base
 
-Eclipse formatters are part of the the Eclipse User Interface implementations. Hence their public interfaces are depending on various Eclipse modules.
+Eclipse formatters are embedded in plugins serving multiple purposes and not necessarily supporting headless builds. Hence the plugin interfaces are depending on various Eclipse plugins and services not required for the formatting purpose.
 
-Spotless provides its own plugin framework with `com.diffplug.spotless.JarState`. This allows Spotless the usage of different Eclipse versions in parallel.
+Spotless provides its own plugin framework with `com.diffplug.spotless.JarState`. This allows Spotless to use different Eclipse versions in parallel.
 
 
-The `com.diffplug.gradle.spotless:spotless-eclipse-base` artifact mocks the redundant Eclipse OSGI/plugin framework for Spotless. Furthermore it provides Eclipse services adapted for Spotless, which avoids for example the creation of a permanent workspace and reduces the dependencies on Eclipse modules unused by the Eclipse code formatters.
+The `com.diffplug.gradle.spotless:spotless-eclipse-base` artifact mocks the redundant Eclipse OSGI/plugin framework for Spotless. Furthermore it provides Eclipse services adapted for Spotless's own use, which avoids for example the creation of a permanent Eclipse workspace and reduces dependencies on Eclipse modules unused by the Eclipse code formatters.
 
 ## Usage
 
-Include the artifact to your Spotless Eclipse formatter project, whereas the major version must match the Eclipse core version your formatter supports. The exact default version should be selected by the **lib-extra**.
+Include the artifact in your Spotless Eclipse formatter project, where the major version must match the Eclipse core version your formatter supports. The exact default version should be selected by the **lib-extra**.
 Minor versions indicate a change in the minimum Eclipse (core/resource) dependencies.
 Patch versions are always backward compatible.
 
@@ -20,12 +20,12 @@ dependencies {
 }
 ```
 
-In the constructor of your formatter, the Spotless Eclipse Framework can be configured depending on your formatters requirements. For example the JDT formatter can be configured like:
+In the constructor of your formatter, the Spotless Eclipse Framework can be configured depending on your formatter's requirements. For example the JDT formatter can be configured like:
 
 ```Java
 public EclipseFormatterStepImpl(Properties settings) throws Exception {
     SpotlessEclipseFramework.setup(plugins -> {
-        plugins.addAll(SpotlessEclipseFramework.DefaultPlugins.createAll());
+        plugins.applyDefault();
         plugins.add(new org.eclipse.jdt.core.JavaCore());
   });
   ...

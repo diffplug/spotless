@@ -21,11 +21,11 @@ import org.osgi.service.packageadmin.PackageAdmin;
 import org.osgi.service.packageadmin.RequiredBundle;
 
 /**
- * PackageAdmin service for bundle look-up and bypassing wiring.
+ * {@link PackageAdmin} service for bundle look-up and bypassing wiring.
  * <p>
  * The wiring information will always claim that all required bundles are present.
  * Other functionality is not supported.
- * Unsupported methods are marked as deprecated and throw an UnsupportedOperationException.
+ * Unsupported methods are marked as deprecated and throw an {@link UnsupportedOperationException}.
  * <p>
  * Interface is deprecated, but for example the InternalPlatform still uses PackageAdmin.
  */
@@ -34,7 +34,7 @@ class EclipseBundleLookup implements PackageAdmin {
 
 	private final BundleSet bundles;
 
-	public EclipseBundleLookup(final BundleSet bundles) {
+	EclipseBundleLookup(final BundleSet bundles) {
 		this.bundles = bundles;
 	}
 

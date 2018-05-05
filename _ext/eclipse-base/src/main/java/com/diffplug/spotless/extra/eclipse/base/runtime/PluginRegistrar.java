@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.extra.eclipse.base.runtime;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -71,7 +72,8 @@ public class PluginRegistrar {
 	}
 
 	private ResourceBundle getPluginProperties() throws BundleException {
-		InputStream is = getStreamForEntry(PLUGIN_PROPERTIES);
+		//Some plugins, like the org.codehaus.groovy.eclipse.core, do not provide a property file.
+		InputStream is = entryExists(PLUGIN_PROPERTIES) ? getStreamForEntry(PLUGIN_PROPERTIES) : new ByteArrayInputStream(new byte[0]);
 		try {
 			return new PropertyResourceBundle(is);
 		} catch (IOException e) {
@@ -95,4 +97,7 @@ public class PluginRegistrar {
 		return url;
 	}
 
+	private boolean entryExists(String path) {
+		return null != bundle.getEntry(path);
+	}
 }

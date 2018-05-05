@@ -15,7 +15,8 @@
  */
 /**
  * Common Spotless Eclipse Equinox setup classes.
- * Please refer to the eclipse-base README.md for usage instructions.
+ * Please refer to the {@code eclipse-base} {@code README.md} for
+ * usage instructions.
  */
 @ParametersAreNonnullByDefault
 package com.diffplug.spotless.extra.eclipse.base;

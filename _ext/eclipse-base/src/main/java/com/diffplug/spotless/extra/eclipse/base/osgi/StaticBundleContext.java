@@ -37,7 +37,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
 /**
- * Restriction of the BundleContext interface rejecting run-time provision of bundles.
+ * Restriction of the {@link BundleContext} interface rejecting run-time provision of bundles.
  * Services provided at run-time are ignored.
  * <p>
  * Multiple service instances per class are not supported, hence the services can be filtered by class name.
