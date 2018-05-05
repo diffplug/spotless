@@ -15,7 +15,7 @@
  */
 package com.diffplug.spotless.extra.eclipse.cdt;
 
-import static com.diffplug.spotless.extra.eclipse.cdt.EclipseCdtFormatterStepImpl.LINE_DELIMITER;
+import static com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework.LINE_DELIMITER;
 import static org.junit.Assert.*;
 
 import java.util.Properties;
