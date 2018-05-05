@@ -12,13 +12,13 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 
 def isSnapshot = ext_version.endsWith('-SNAPSHOT')
 // pulls the credentials from either the environment variable or gradle.properties
-def cred = {
-	if (System.env[it] != null) {
-		return System.env[it]
-	} else if (project.hasProperty(it)) {
-		return project[it]
+def lookup = { key, defaultVal ->
+	if (System.env[key] != null) {
+		return System.env[key]
+	} else if (project.hasProperty(key)) {
+		return project[key]
 	} else {
-		return 'unknown_' + it
+		return defaultVal
 	}
 }
 
@@ -69,10 +69,10 @@ model {
 			// upload snapshots to oss.sonatype.org
 			repositories {
 				maven {
-					url = 'https://oss.sonatype.org/content/repositories/snapshots'
+					url = lookup('snapshot_url', 'https://oss.sonatype.org/content/repositories/snapshots')
 					credentials {
-						username = cred('nexus_user')
-						password = cred('nexus_pass')
+						username = lookup('nexus_user', 'unknown_nexus_user')
+						password = lookup('nexus_pass', 'unknown_nexus_pass')
 					}
 				} }
 		}
@@ -82,8 +82,8 @@ model {
 if (!isSnapshot) {
 	// upload releases to bintray and then mavenCentral
 	bintray {
-		user = cred('bintray_user')
-		key = cred('bintray_pass')
+		user = lookup('bintray_user', 'unknown_bintray_user')
+		key = lookup('bintray_pass', 'unknown_bintray_pass')
 		publications = [
 			'mavenJava'
 		]
@@ -95,8 +95,8 @@ if (!isSnapshot) {
 			version {
 				name = project.ext_version
 				mavenCentralSync {
-					user = cred('nexus_user')
-					password = cred('nexus_pass')
+					user = lookup('nexus_user', 'unknown_nexus_user')
+					password = lookup('nexus_pass', 'unknown_nexus_user')
 				}
 			}
 		}
