@@ -26,15 +26,15 @@ import org.eclipse.text.edits.TextEdit;
 
 import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework;
 
-/** Formatter step which calls out to the Eclipse formatter. */
-public class EclipseFormatterStepImpl {
+/** Formatter step which calls out to the Eclipse JDT formatter. */
+public class EclipseJdtFormatterStepImpl {
 
 	private final CodeFormatter codeFormatter;
 
-	public EclipseFormatterStepImpl(Properties settings) throws Exception {
+	public EclipseJdtFormatterStepImpl(Properties settings) throws Exception {
 		SpotlessEclipseFramework.setup(
 				plugins -> {
-					plugins.addAll(SpotlessEclipseFramework.DefaultPlugins.createAll());
+					plugins.applyDefault();
 					plugins.add(new JavaCore());
 				});
 		this.codeFormatter = ToolFactory.createCodeFormatter(settings, ToolFactory.M_FORMAT_EXISTING);

@@ -26,7 +26,7 @@ import org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants;
 import org.junit.Test;
 
 /** Eclipse JDT wrapper integration tests */
-public class EclipseFormatterStepImplTest {
+public class EclipseJdtFormatterStepImplTest {
 
 	private final static String UNFORMATTED = "package com.diffplug.gradle.spotless;\n" +
 			"public class C {\n" +
@@ -90,7 +90,7 @@ public class EclipseFormatterStepImplTest {
 	private static String format(final String input, final Consumer<Properties> config) throws Exception {
 		Properties properties = new Properties();
 		config.accept(properties);
-		EclipseFormatterStepImpl formatter = new EclipseFormatterStepImpl(properties);
+		EclipseJdtFormatterStepImpl formatter = new EclipseJdtFormatterStepImpl(properties);
 		return formatter.format(input);
 	}
 
