@@ -15,30 +15,41 @@
  */
 package com.diffplug.spotless.maven.java;
 
-import static com.diffplug.spotless.extra.java.EclipseFormatterStep.defaultVersion;
-import static java.util.Collections.singleton;
-
 import java.io.File;
+import java.util.Arrays;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.extra.java.EclipseFormatterStep;
+import com.diffplug.spotless.extra.config.EclipseConfiguration;
+import com.diffplug.spotless.extra.java.EclipseJdtFormatterStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 
 public class Eclipse implements FormatterStepFactory {
 
-	@Parameter(required = true)
+	@Parameter
 	private String file;
 
 	@Parameter
 	private String version;
 
+	@Parameter
+	private String[] dependencies;
+
 	@Override
-	public FormatterStep newFormatterStep(FormatterStepConfig config) {
-		String formatterVersion = version == null ? defaultVersion() : version;
-		File settingsFile = config.getFileLocator().locateFile(file);
-		return EclipseFormatterStep.create(formatterVersion, singleton(settingsFile), config.getProvisioner());
+	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
+		EclipseConfiguration eclipseConfig = EclipseJdtFormatterStep.createConfig(stepConfig.getProvisioner());
+		if (null != version) {
+			eclipseConfig.setVersion(version);
+		}
+		if (null != file) {
+			File settingsFile = stepConfig.getFileLocator().locateFile(file);
+			eclipseConfig.setPreferences(Arrays.asList(settingsFile));
+		}
+		if (null != dependencies) {
+			eclipseConfig.setDepenencies(dependencies);
+		}
+		return EclipseJdtFormatterStep.createStep(eclipseConfig);
 	}
 }

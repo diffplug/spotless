@@ -20,9 +20,13 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -38,7 +42,7 @@ public final class JarState implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@SuppressWarnings("unused")
-	private final String mavenCoordinate;
+	private final Set<String> mavenCoordinates;
 	@SuppressWarnings("unused")
 	private final FileSignature fileSignature;
 
@@ -51,20 +55,31 @@ public final class JarState implements Serializable {
 	private final transient Set<File> jars;
 
 	public JarState(String mavenCoordinate, FileSignature fileSignature, Set<File> jars) {
-		this.mavenCoordinate = mavenCoordinate;
+		this(Arrays.asList(mavenCoordinate), fileSignature, jars);
+	}
+
+	public JarState(Collection<String> mavenCoordinates, FileSignature fileSignature, Set<File> jars) {
+		this.mavenCoordinates = new TreeSet<String>(mavenCoordinates);
 		this.fileSignature = fileSignature;
 		this.jars = jars;
 	}
 
+	/** Use {@link #from(Provisioner, String[])} instead.*/
+	@Deprecated
 	public static JarState from(String mavenCoordinate, Provisioner provisioner) throws IOException {
-		Objects.requireNonNull(mavenCoordinate, "mavenCoordinate");
+		return from(provisioner, mavenCoordinate);
+	}
+
+	public static JarState from(Provisioner provisioner, String... mavenCoordinates) throws IOException {
 		Objects.requireNonNull(provisioner, "provisioner");
-		Set<File> jars = provisioner.provisionWithDependencies(mavenCoordinate);
+		Objects.requireNonNull(mavenCoordinates, "mavenCoordinates");
+		Set<File> jars = provisioner.provisionWithDependencies(mavenCoordinates);
 		if (jars.isEmpty()) {
-			throw new NoSuchElementException("Resolved to an empty result: " + mavenCoordinate);
+			throw new NoSuchElementException("Resolved to an empty result: " +
+					Arrays.asList(mavenCoordinates).stream().collect(Collectors.joining(", ")));
 		}
 		FileSignature fileSignature = FileSignature.signAsSet(jars);
-		return new JarState(mavenCoordinate, fileSignature, jars);
+		return new JarState(Arrays.asList(mavenCoordinates), fileSignature, jars);
 	}
 
 	URL[] jarUrls() {

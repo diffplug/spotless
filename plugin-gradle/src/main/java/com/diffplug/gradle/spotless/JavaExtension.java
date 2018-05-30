@@ -20,6 +20,8 @@ import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElem
 import java.util.List;
 import java.util.Objects;
 
+import javax.annotation.Nullable;
+
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.file.FileCollection;
@@ -29,12 +31,15 @@ import org.gradle.api.tasks.SourceSet;
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.SerializableFileFilter;
+import com.diffplug.spotless.extra.config.EclipseConfiguration;
 import com.diffplug.spotless.extra.java.EclipseFormatterStep;
+import com.diffplug.spotless.extra.java.EclipseJdtFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.java.GoogleJavaFormatStep;
 import com.diffplug.spotless.java.ImportOrderStep;
 import com.diffplug.spotless.java.RemoveUnusedImportsStep;
 
+@SuppressWarnings("deprecation")
 public class JavaExtension extends FormatExtension {
 	static final String NAME = "java";
 
@@ -143,7 +148,7 @@ public class JavaExtension extends FormatExtension {
 	}
 
 	public EclipseConfig eclipse() {
-		return eclipse(EclipseFormatterStep.defaultVersion());
+		return new EclipseConfig(null);
 	}
 
 	public EclipseConfig eclipse(String version) {
@@ -151,26 +156,28 @@ public class JavaExtension extends FormatExtension {
 	}
 
 	public class EclipseConfig {
-		final String version;
-		Object[] configFiles;
+		private final EclipseConfiguration config;
 
-		EclipseConfig(String version) {
-			configFiles = new Object[0];
-			this.version = Objects.requireNonNull(version);
-			addStep(createStep());
+		EclipseConfig(@Nullable String version) {
+			config = EclipseJdtFormatterStep.createConfig(GradleProvisioner.fromProject(getProject()));
+			if (null != version) {
+				config.setVersion(version);
+			}
+			addStep(EclipseJdtFormatterStep.createStep(config));
 		}
 
 		public void configFile(Object... configFiles) {
-			this.configFiles = requireElementsNonNull(configFiles);
-			replaceStep(createStep());
+			requireElementsNonNull(configFiles);
+			Project project = getProject();
+			config.setPreferences(project.files(configFiles).getFiles());
+			replaceStep(EclipseJdtFormatterStep.createStep(config));
 		}
 
-		private FormatterStep createStep() {
-			Project project = getProject();
-			return EclipseFormatterStep.create(version,
-					project.files(configFiles).getFiles(),
-					GradleProvisioner.fromProject(project));
+		public void dependency(String... dependencies) {
+			config.setDepenencies(dependencies);
+			replaceStep(EclipseJdtFormatterStep.createStep(config));
 		}
+
 	}
 
 	/** If the user hasn't specified the files yet, we'll assume he/she means all of the java files. */

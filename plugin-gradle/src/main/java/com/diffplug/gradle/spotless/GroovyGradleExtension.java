@@ -17,7 +17,6 @@ package com.diffplug.gradle.spotless;
 
 import java.util.Objects;
 
-import com.diffplug.spotless.extra.groovy.GrEclipseFormatterStep;
 import com.diffplug.spotless.java.ImportOrderStep;
 
 public class GroovyGradleExtension extends FormatExtension {
@@ -38,7 +37,7 @@ public class GroovyGradleExtension extends FormatExtension {
 	}
 
 	public GroovyExtension.GrEclipseConfig greclipse() {
-		return greclipse(GrEclipseFormatterStep.defaultVersion());
+		return new GroovyExtension.GrEclipseConfig(null, this);
 	}
 
 	public GroovyExtension.GrEclipseConfig greclipse(String version) {

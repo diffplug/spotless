@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -108,6 +109,23 @@ public final class FileSignature implements Serializable {
 		} else {
 			throw new IllegalArgumentException("Expected one file, but was " + files.size());
 		}
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof FileSignature) {
+			FileSignature other = (FileSignature) obj;
+			return this.hashCode() == other.hashCode();
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(
+				Arrays.hashCode(filenames),
+				Arrays.hashCode(filesizes),
+				Arrays.hashCode(lastModified));
 	}
 
 }

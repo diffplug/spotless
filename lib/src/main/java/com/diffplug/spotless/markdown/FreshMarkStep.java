@@ -54,7 +54,7 @@ public class FreshMarkStep {
 		Objects.requireNonNull(properties, "properties");
 		Objects.requireNonNull(provisioner, "provisioner");
 		return FormatterStep.createLazy(NAME,
-				() -> new State(JarState.from(MAVEN_COORDINATE + version, provisioner), properties.get()),
+				() -> new State(JarState.from(provisioner, MAVEN_COORDINATE + version), properties.get()),
 				State::createFormat);
 	}
 

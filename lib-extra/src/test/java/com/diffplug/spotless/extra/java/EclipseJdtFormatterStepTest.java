@@ -13,35 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.groovy;
+package com.diffplug.spotless.extra.java;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.extra.config.EclipseConfiguration;
 import com.diffplug.spotless.extra.eclipse.EclipseCommonTests;
 
-public class GrEclipseFormatterStepTest extends EclipseCommonTests {
+public class EclipseJdtFormatterStepTest extends EclipseCommonTests {
 
 	@Override
 	protected String[] getSupportedVersions() {
-		return GrEclipseFormatterStep.VERSIONS;
+		return EclipseJdtFormatterStep.VERSIONS;
 	}
 
 	@Override
 	protected String getTestInput(String version) {
-		return "class F{ def m(){} }";
+		return "package p; class C{}";
 	}
 
 	@Override
 	protected String getTestExpectation(String version) {
-		return "class F{\n\tdef m(){}\n}";
+		return "package p;\nclass C {\n}";
 	}
 
 	@Override
 	protected FormatterStep createStep(String version) {
-		EclipseConfiguration config = GrEclipseFormatterStep.createConfig(TestProvisioner.mavenCentral());
+		EclipseConfiguration config = EclipseJdtFormatterStep.createConfig(TestProvisioner.mavenCentral());
 		config.setVersion(version);
-		return GrEclipseFormatterStep.createStep(config);
+		return EclipseJdtFormatterStep.createStep(config);
 	}
 
 }

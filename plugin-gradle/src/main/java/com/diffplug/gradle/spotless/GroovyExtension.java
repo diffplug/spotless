@@ -20,6 +20,8 @@ import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElem
 import java.util.List;
 import java.util.Objects;
 
+import javax.annotation.Nullable;
+
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.file.FileCollection;
@@ -30,8 +32,8 @@ import org.gradle.api.tasks.GroovySourceSet;
 import org.gradle.api.tasks.SourceSet;
 
 import com.diffplug.common.base.StringPrinter;
-import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.SerializableFileFilter;
+import com.diffplug.spotless.extra.config.EclipseConfiguration;
 import com.diffplug.spotless.extra.groovy.GrEclipseFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.java.ImportOrderStep;
@@ -85,7 +87,7 @@ public class GroovyExtension extends FormatExtension {
 	}
 
 	public GrEclipseConfig greclipse() {
-		return greclipse(GrEclipseFormatterStep.defaultVersion());
+		return new GrEclipseConfig(null, this);
 	}
 
 	public GrEclipseConfig greclipse(String version) {
@@ -93,28 +95,28 @@ public class GroovyExtension extends FormatExtension {
 	}
 
 	public static class GrEclipseConfig {
-		final String version;
-		Object[] configFiles;
-		final FormatExtension extension;
+		private final EclipseConfiguration config;
+		private final FormatExtension extension;
 
-		GrEclipseConfig(String version, FormatExtension extension) {
+		GrEclipseConfig(@Nullable String version, FormatExtension extension) {
 			this.extension = extension;
-			configFiles = new Object[0];
-			this.version = Objects.requireNonNull(version);
-
-			extension.addStep(createStep());
+			config = GrEclipseFormatterStep.createConfig(GradleProvisioner.fromProject(extension.getProject()));
+			if (null != version) {
+				config.setVersion(version);
+			}
+			extension.addStep(GrEclipseFormatterStep.createStep(config));
 		}
 
 		public void configFile(Object... configFiles) {
-			this.configFiles = requireElementsNonNull(configFiles);
-			extension.replaceStep(createStep());
+			requireElementsNonNull(configFiles);
+			Project project = extension.getProject();
+			config.setPreferences(project.files(configFiles).getFiles());
+			extension.replaceStep(GrEclipseFormatterStep.createStep(config));
 		}
 
-		private FormatterStep createStep() {
-			Project project = extension.getProject();
-			return GrEclipseFormatterStep.create(version,
-					project.files(configFiles).getFiles(),
-					GradleProvisioner.fromProject(project));
+		public void dependency(String... dependencyVersions) {
+			config.setDepenencies(dependencyVersions);
+			extension.replaceStep(GrEclipseFormatterStep.createStep(config));
 		}
 	}
 
