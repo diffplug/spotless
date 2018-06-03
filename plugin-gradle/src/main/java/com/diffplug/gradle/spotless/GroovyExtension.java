@@ -115,7 +115,7 @@ public class GroovyExtension extends FormatExtension {
 		}
 
 		public void dependency(String... dependencyVersions) {
-			config.setDepenencies(dependencyVersions);
+			config.setDependencies(dependencyVersions);
 			extension.replaceStep(GrEclipseFormatterStep.createStep(config));
 		}
 	}

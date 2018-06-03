@@ -61,7 +61,6 @@ public class EclipseConfiguration implements ThrowingEx.Supplier<EclipseConfigur
 	private MavenCoordinates coordinateAdaptations;
 	private SemanticVersion version;
 	private Iterable<File> settingsFiles;
-	private EclipseConfiguration.State state;
 
 	/** Initialize valid default configuration, taking latest version */
 	public EclipseConfiguration(String formatterName, Provisioner jarProvisioner, String... supportedEclipseVersions) {
@@ -88,7 +87,6 @@ public class EclipseConfiguration implements ThrowingEx.Supplier<EclipseConfigur
 
 		coordinateAdaptations = new MavenCoordinates(); //Use default coordinates configured for version
 		settingsFiles = new ArrayList<File>(); //Use default preferences
-		state = null; //Create state only on demand too speed up initialization
 	}
 
 	/** Set Eclipse version */
@@ -104,12 +102,12 @@ public class EclipseConfiguration implements ThrowingEx.Supplier<EclipseConfigur
 				defaultCoordinatesUrl = getDefaultCoordinatesUrl(eclipseConfigContext, newVersion);
 				version = newVersion;
 			} else {
-				throw new UserArgumentException(versionOrUrl,
-						String.format("Version is not part of the supported versions '%s'.",
+				throw new IllegalArgumentException(
+						String.format("Version '%s' is not part of the supported versions '%s'.",
+								versionOrUrl,
 								supportedEclipseVersions.stream().map(v -> v.toString()).collect(Collectors.joining(", "))));
 			}
 		}
-		invalidateState();
 	}
 
 	private static URL getDefaultCoordinatesUrl(URL eclipseConfigContext, SemanticVersion version) {
@@ -121,7 +119,7 @@ public class EclipseConfiguration implements ThrowingEx.Supplier<EclipseConfigur
 			 *  This exception must be prevented by the strict syntax checking of
 			 *  SemanticVersion and unit-tests of all allowed versions.
 			 */
-			throw new RuntimeException(e);
+			throw new IllegalStateException(e);
 		}
 	}
 
@@ -129,33 +127,30 @@ public class EclipseConfiguration implements ThrowingEx.Supplier<EclipseConfigur
 	 * Modify default Maven dependencies configured for the formatter.
 	 * The default dependencies are located in {@link #ECLIPSE_FORMATTER_RESOURCES}.
 	 */
-	public void setDepenencies(String... coordinates) {
+	public void setDependencies(String... coordinates) {
 		coordinateAdaptations = new MavenCoordinates();
 		coordinateAdaptations.update(coordinates);
-		invalidateState();
 	}
 
 	/** Set settings files containing Eclipse preferences */
 	public void setPreferences(Iterable<File> settingsFiles) {
 		this.settingsFiles = settingsFiles;
-		invalidateState();
-	}
-
-	/** The current state becomes invalid in case a configuration item has successfully changed */
-	private void invalidateState() {
-		state = null;
 	}
 
 	/** Creates the state of the configuration */
 	public EclipseConfiguration.State get() {
-		if (null == state) {
-			state = new State(
-					jarProvisioner,
-					createMavenCoordinates(),
-					version,
-					settingsFiles);
-		}
-		return state;
+		/*
+		 * The current use case is tailored for Gradle.
+		 * Gradle calls this method only once per execution
+		 * and compares the State with the one of a previous run
+		 * for incremental building.
+		 * Hence a lazy construction is not required.
+		 */
+		return new State(
+				jarProvisioner,
+				createMavenCoordinates(),
+				version,
+				settingsFiles);
 	}
 
 	private MavenCoordinates createMavenCoordinates() {
@@ -195,25 +190,10 @@ public class EclipseConfiguration implements ThrowingEx.Supplier<EclipseConfigur
 			try {
 				this.settingsFiles = FileSignature.signAsList(settingsFiles);
 			} catch (NullPointerException e) {
-				throw new UserArgumentException(null, "Configuration file settings", e);
+				throw new IllegalArgumentException("Some configuration files are 'null'.", e);
 			} catch (IOException e) {
-				throw new RuntimeException(e); //Canonical path problems are not user argument problems
+				throw new IllegalStateException(e); //Canonical path problems are not user argument problems
 			}
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (obj instanceof EclipseConfiguration.State) {
-				EclipseConfiguration.State other = (EclipseConfiguration.State) obj;
-				return this.hashCode() == other.hashCode();
-			}
-			return false;
-		}
-
-		@Override
-		public int hashCode() {
-			//Omit transient/derived information when providing the hash
-			return Objects.hash(settingsFiles, coordinates, version);
 		}
 
 		/**
@@ -236,8 +216,10 @@ public class EclipseConfiguration implements ThrowingEx.Supplier<EclipseConfigur
 			try {
 				return getClassLoader().loadClass(name);
 			} catch (ClassNotFoundException e) {
-				throw new UserArgumentException(coordinates,
-						String.format("Could not find class '%s' in Maven coordinates.", name), e);
+				throw new IllegalArgumentException(
+						String.format("Could not find class '%s' in Maven coordinates:%n%s%n",
+								name, coordinates),
+						e);
 			}
 		}
 
@@ -248,7 +230,10 @@ public class EclipseConfiguration implements ThrowingEx.Supplier<EclipseConfigur
 					JarState jarState = JarState.from(jarProvisioner, mavenCoordinates);
 					lazyClassLoader = jarState.getClassLoader();
 				} catch (IOException e) {
-					throw new UserArgumentException(mavenCoordinates, "Not all dependencies have been resolved successfully.", e);
+					throw new IllegalArgumentException(
+							String.format(
+									"Not all dependencies have been resolved successfully by the Maven coordinates:%n%s%n", coordinates),
+							e);
 				}
 			}
 			return lazyClassLoader;

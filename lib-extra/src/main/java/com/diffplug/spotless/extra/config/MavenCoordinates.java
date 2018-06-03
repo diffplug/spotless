@@ -20,12 +20,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
+import java.util.Objects;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
@@ -34,7 +33,12 @@ class MavenCoordinates implements Serializable {
 
 	// Not used, only the serialization output is required to determine whether the object has changed
 	private static final long serialVersionUID = 1L;
-	private final Set<Coordinate> coordinates;
+	/*
+	 *  The maven coordinates list is expected to be flat, meaning that most transitive dependencies
+	 *  are resolved and part of the list. Since for Maven and Gradle, direct dependencies take precedence
+	 *  over transient dependencies, the order of the dependencies does not matter anymore.
+	 */
+	private final TreeSet<Coordinate> coordinates;
 
 	/** Creates empty coordinate set */
 	MavenCoordinates() {
@@ -74,16 +78,12 @@ class MavenCoordinates implements Serializable {
 	 * Each line must correspond to the {@link Coordinate#FORMAT}.
 	 */
 	void add(URL coordinates) {
-		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(coordinates.openStream(), "UTF-8"));
-			try {
-				List<Coordinate> additionalCoordinates = reader.lines().map(l -> new Coordinate(l)).collect(Collectors.toList());
-				this.coordinates.addAll(additionalCoordinates);
-			} finally {
-				reader.close();
-			}
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(coordinates.openStream(), "UTF-8"))) {
+			List<Coordinate> additionalCoordinates = reader.lines().map(l -> new Coordinate(l)).collect(Collectors.toList());
+			this.coordinates.addAll(additionalCoordinates);
 		} catch (IOException e) {
-			throw new UserArgumentException(coordinates, "Cannot access URL for optaining Maven coordinates.", e);
+			throw new IllegalArgumentException(
+					String.format("Cannot access URL '%s' for optaining Maven coordinates.", coordinates), e);
 		}
 	}
 
@@ -92,23 +92,6 @@ class MavenCoordinates implements Serializable {
 		for (Coordinate coordinate : coordinates) {
 			this.coordinates.add(coordinate);
 		}
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof MavenCoordinates) {
-			MavenCoordinates other = (MavenCoordinates) obj;
-			//Compare restrictions and not only the dependency
-			List<Coordinate> otherRestrictions = new ArrayList<Coordinate>(other.coordinates);
-			List<Coordinate> myRestrictions = new ArrayList<Coordinate>(coordinates);
-			return otherRestrictions.equals(myRestrictions);
-		}
-		return false;
-	}
-
-	@Override
-	public int hashCode() {
-		return coordinates.hashCode();
 	}
 
 	@Override
@@ -139,14 +122,14 @@ class MavenCoordinates implements Serializable {
 
 		/** Creates version restriction from string. String format is {@value #FORMAT}. */
 		Coordinate(String coordinate) {
-			if (null == coordinate) {
-				throw new UserArgumentException(null, "Maven coordinate");
-			}
+			Objects.requireNonNull("Maven coordinate", coordinate);
 			LinkedList<String> dependencyParts = new LinkedList<String>(
 					Arrays.asList(coordinate.split(":", -1)));
 			if (dependencyParts.size() < 3 || dependencyParts.size() > 5) {
-				throw new UserArgumentException(dependencyParts,
-						String.format("Maven coordinate format '%s', does not allow %d elements.", FORMAT, dependencyParts.size()));
+				throw new IllegalArgumentException(
+						String.format(
+								"Value '%s' not in line with maven coordinate format '%s'. %d elements are not allowed.",
+								dependencyParts, FORMAT, dependencyParts.size()));
 			}
 			versionRange = trimAndCheckNotEmpty(coordinate, dependencyParts.pollLast());
 			groupId = trimAndCheckNotEmpty(coordinate, dependencyParts.pollFirst());
@@ -158,7 +141,7 @@ class MavenCoordinates implements Serializable {
 		private static String trimAndCheckNotEmpty(String coordinate, String item) {
 			item = item.trim();
 			if (item.isEmpty()) {
-				throw new UserArgumentException(coordinate, String.format("Empty elements are not allowed by format '%s'.", FORMAT));
+				throw new IllegalArgumentException(String.format("Empty elements are not allowed by format '%s'.", FORMAT));
 			}
 			return item;
 		}
@@ -190,19 +173,6 @@ class MavenCoordinates implements Serializable {
 		@Override
 		public String toString() {
 			return String.format("%s:%s", getDependency(), getVersionRange());
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (obj instanceof Coordinate) {
-				return ((Coordinate) obj).toString().equals(toString());
-			}
-			return false;
-		}
-
-		@Override
-		public int hashCode() {
-			return toString().hashCode();
 		}
 
 	}

@@ -48,7 +48,7 @@ public class Eclipse implements FormatterStepFactory {
 			eclipseConfig.setPreferences(Arrays.asList(settingsFile));
 		}
 		if (null != dependencies) {
-			eclipseConfig.setDepenencies(dependencies);
+			eclipseConfig.setDependencies(dependencies);
 		}
 		return EclipseJdtFormatterStep.createStep(eclipseConfig);
 	}

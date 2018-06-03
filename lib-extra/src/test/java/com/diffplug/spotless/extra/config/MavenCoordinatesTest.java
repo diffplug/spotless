@@ -26,7 +26,6 @@ import java.util.List;
 import org.junit.Test;
 
 import com.diffplug.spotless.ResourceHarness;
-import com.diffplug.spotless.SerializableEqualityTester;
 
 public class MavenCoordinatesTest extends ResourceHarness {
 	private static final Coordinate C1 = new Coordinate("a:b:c:d:e");
@@ -65,7 +64,7 @@ public class MavenCoordinatesTest extends ResourceHarness {
 	}
 
 	@Test
-	public void coordinatesParsingRobustness() {
+	public void userArgumentRobustness() {
 		List<String> complete = Arrays.asList("a:b:c:d:e", " a: b: c: d: e", "a :b :c :d :e");
 		List<String> withoutClassifier = Arrays.asList("a:b:c:e", " a: b: c: e", "a :b :c :e");
 		List<String> withoutPackaging = Arrays.asList("a:b:e", " a: b: e", "a :b :e");
@@ -76,47 +75,16 @@ public class MavenCoordinatesTest extends ResourceHarness {
 					expected = new Coordinate(validArgument);
 				}
 				Coordinate current = new Coordinate(validArgument);
-				assertThat(current).isEqualTo(expected);
+				assertThat(current.toString()).isEqualTo(expected.toString());
 			}
 		});
 	}
 
 	@Test
-	public void validateCoordinatesFormat() {
-		Arrays.asList(null, ":", "a:e", "a:b:", "a::c:e", ":b:c:e").forEach(invalidArgument -> {
-			assertThatExceptionOfType(UserArgumentException.class).isThrownBy(() -> new Coordinate(invalidArgument));
+	public void userArgumentValidation() {
+		Arrays.asList(":", "a:e", "a:b:", "a::c:e", ":b:c:e").forEach(invalidArgument -> {
+			assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Coordinate(invalidArgument));
 		});
 	}
 
-	@Test
-	public void equality() {
-		new SerializableEqualityTester() {
-			String C1, C2;
-
-			@Override
-			protected void setupTest(API api) {
-				C1 = "a:b:c:d:e";
-				C2 = "a:b:c:d:e";
-				api.areDifferentThan();
-				C1 = "a:b:c:d:e";
-				C2 = "a:b:c:d:f";
-				api.areDifferentThan();
-				C1 = "a:b:c:d:e";
-				C2 = "a:b:c:f:e";
-				api.areDifferentThan();
-				C1 = "a:b:c:d:e";
-				C2 = "a:b:c:e";
-				api.areDifferentThan();
-				C1 = "a:b:c:d:e";
-				C2 = "a:b:e";
-			}
-
-			@Override
-			protected MavenCoordinates create() {
-				MavenCoordinates config = new MavenCoordinates();
-				config.update(C1, C2);
-				return config;
-			}
-		}.testEquals();
-	}
 }

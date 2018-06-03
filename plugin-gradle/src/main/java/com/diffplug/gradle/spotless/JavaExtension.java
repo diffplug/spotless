@@ -174,7 +174,7 @@ public class JavaExtension extends FormatExtension {
 		}
 
 		public void dependency(String... dependencies) {
-			config.setDepenencies(dependencies);
+			config.setDependencies(dependencies);
 			replaceStep(EclipseJdtFormatterStep.createStep(config));
 		}
 

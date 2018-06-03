@@ -46,8 +46,8 @@ public class VersionConfigurationTest {
 
 	@Test
 	public void userArgumentValidation() {
-		Arrays.asList(null, ".", "a", "1.", "1.2.", "1.2.a").forEach(invalidArgument -> {
-			assertThatExceptionOfType(UserArgumentException.class).isThrownBy(() -> new SemanticVersion(invalidArgument));
+		Arrays.asList(".", "a", "1.", "1.2.", "1.2.a").forEach(invalidArgument -> {
+			assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new SemanticVersion(invalidArgument));
 		});
 	}
 

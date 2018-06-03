@@ -19,7 +19,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Objects;
-import java.util.Optional;
 
 /** Semantic version configuration */
 class SemanticVersion implements Serializable, Comparable<SemanticVersion> {
@@ -36,14 +35,12 @@ class SemanticVersion implements Serializable, Comparable<SemanticVersion> {
 
 	/** Convert string into semantic version */
 	SemanticVersion(final String version) {
-		if (null == version) {
-			throw new UserArgumentException(null, "Version information");
-		}
+		Objects.requireNonNull("Version information", version);
 		LinkedList<String> versionParts = new LinkedList<String>(
 				Arrays.asList(version.split("\\.", -1)));
 		if (versionParts.size() <= MAJOR || versionParts.size() > PATCH + 1) {
-			throw new UserArgumentException(version,
-					String.format("Value does not corrsepond to the format '%s'.", FORMAT));
+			throw new IllegalArgumentException(
+					String.format("Version '%s' does not corrsepond to the format '%s'.", version, FORMAT));
 		}
 		while (versionParts.size() <= PATCH) {
 			versionParts.addLast("0");
@@ -57,8 +54,8 @@ class SemanticVersion implements Serializable, Comparable<SemanticVersion> {
 	private static int convertVersionNumber(String version, String versionPart) {
 		versionPart = versionPart.trim();
 		if (versionPart.isEmpty()) {
-			throw new UserArgumentException(version,
-					String.format("Version format is '%s'. The major version is mandatory. None of the version information after a ' must be empty.", FORMAT));
+			throw new IllegalArgumentException(
+					String.format("Version '%s' has not the format is '%s'. The major version is mandatory. None of the version information after a '.' must be empty.", version, FORMAT));
 		}
 		try {
 			int versionInformation = Integer.parseInt(versionPart);
@@ -67,8 +64,10 @@ class SemanticVersion implements Serializable, Comparable<SemanticVersion> {
 			}
 			return versionInformation;
 		} catch (NumberFormatException e) {
-			throw new UserArgumentException(Optional.of(version),
-					String.format("Version information '%s' is not a valid number.", versionPart), e);
+			throw new IllegalArgumentException(
+					String.format("Version information '%s' in '%s' is not a valid number.",
+							versionPart, version),
+					e);
 		}
 	}
 
@@ -99,7 +98,7 @@ class SemanticVersion implements Serializable, Comparable<SemanticVersion> {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(version[MAJOR], version[MINOR], version[PATCH]);
+		return Arrays.hashCode(version);
 	}
 
 }
