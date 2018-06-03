@@ -16,6 +16,18 @@ sourceCompatibility = ext_VER_JAVA
 targetCompatibility = ext_VER_JAVA
 tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
 
+// Use file locking
+configurations {
+    compileClasspath {
+        def gradleVersion = GradleVersion.current()
+        def requiredVersion = GradleVersion.version('4.8')
+        if (gradleVersion >= requiredVersion) {
+            resolutionStrategy.activateDependencyLocking()
+        }
+    }
+}
+
+
 /////////////
 // ECLIPSE //
 /////////////
