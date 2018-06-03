@@ -87,7 +87,7 @@ public class MavenIntegrationTest extends ResourceHarness {
 	}
 
 	protected void writePomWithFormatSteps(String... steps) throws IOException {
-		writePom(groupWithSteps("format", including("<include>src/**/java/**/*.java</include>"), steps));
+		writePom(formats(groupWithSteps("format", including("<include>src/**/java/**/*.java</include>"), steps)));
 	}
 
 	protected void writePomWithJavaSteps(String... steps) throws IOException {
@@ -177,12 +177,12 @@ public class MavenIntegrationTest extends ResourceHarness {
 		return groupWithSteps(group, new String[]{}, steps);
 	}
 
-	private static String[] including(String... include) {
-		String[] result = new String[include.length + 2];
-		result[0] = "<includes>";
-		System.arraycopy(include, 0, result, 1, include.length);
-		result[result.length - 1] = "</includes>";
-		return result;
+	private static String[] including(String... includes) {
+		return groupWithSteps("includes", includes);
+	}
+
+	private static String[] formats(String... formats) {
+		return groupWithSteps("formats", formats);
 	}
 
 	protected class MultiModuleProjectCreator {

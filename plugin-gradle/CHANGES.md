@@ -1,11 +1,18 @@
 # spotless-plugin-gradle releases
 
-### Version 3.11.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-plugin-gradle/))
+### Version 3.14.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-plugin-gradle/))
+
+### Version 3.13.0 - June 1st 2018 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.13.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.13.0))
+
+* Add line and column numbers to ktlint errors. ([#251](https://github.com/diffplug/spotless/pull/251))
+
+### Version 3.12.0 - May 14th 2018 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.12.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.12.0))
 
 * Migrated `plugin-gradle`'s tests away from `TaskInternal#execute` to a custom method to help with Gradle 5.0 migration later on. ([#208](https://github.com/diffplug/spotless/pull/208))
 * Fixed a bug in `LicenseHeaderStep` which caused an exception with some malformed date-aware licenses. ([#222](https://github.com/diffplug/spotless/pull/222))
 * Updated default ktlint from 0.14.0 to 0.21.0
 * Add ability to pass custom options to ktlint. See README for details.
+* Added interface `HasBuiltinDelimiterForLicense` to language extensions that have pre-defined licence header delimiter. ([#235](https://github.com/diffplug/spotless/pull/235))
 
 ### Version 3.10.0 - February 15th 2018 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.10.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.10.0))
 
