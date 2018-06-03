@@ -32,7 +32,7 @@ public class MavenCoordinatesTest extends ResourceHarness {
 	private static final Coordinate C2 = new Coordinate("i:j:k:l");
 	private static final Coordinate C3 = new Coordinate("x:y:z");
 	private static final String TEST_FILES_FOLDER = "extra/config/";
-	private static final String COORDINATES_VALID = TEST_FILES_FOLDER + "coordinates_valid.txt";
+	private static final String COORDINATES_VALID = TEST_FILES_FOLDER + "coordinates_valid.lockfile";
 
 	@Test
 	public void addFromUrl() throws IOException {

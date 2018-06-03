@@ -42,7 +42,7 @@ public class EclipseConfigurationTest extends ResourceHarness {
 	private static final String DEPENDENCY_OLD = "com.diffplug.spotless:spotless-lib:1.0.0";
 	private static final String TEST_FILES_FOLDER = "extra/config/";
 	private static final String PREFERENCES_FILE = TEST_FILES_FOLDER + "preferences.properties";
-	private static final String DEPENDENCY_OLD_FILE = TEST_FILES_FOLDER + "dependencies_old.txt";
+	private static final String DEPENDENCY_OLD_FILE = TEST_FILES_FOLDER + "dependencies_old.lockfile";
 
 	private EclipseConfiguration testConfig;
 

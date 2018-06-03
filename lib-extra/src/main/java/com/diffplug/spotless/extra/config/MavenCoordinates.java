@@ -33,6 +33,8 @@ class MavenCoordinates implements Serializable {
 
 	// Not used, only the serialization output is required to determine whether the object has changed
 	private static final long serialVersionUID = 1L;
+
+	static final String GRADLE_LOCKFILE_EXTENSION = ".lockfile";
 	/*
 	 *  The maven coordinates list is expected to be flat, meaning that most transitive dependencies
 	 *  are resolved and part of the list. Since for Maven and Gradle, direct dependencies take precedence
@@ -78,8 +80,17 @@ class MavenCoordinates implements Serializable {
 	 * Each line must correspond to the {@link Coordinate#FORMAT}.
 	 */
 	void add(URL coordinates) {
+		if (!coordinates.getFile().endsWith(GRADLE_LOCKFILE_EXTENSION)) {
+			throw new IllegalArgumentException(
+					String.format(
+							"Unexpected file extension in '%s'. Only Gradle Lockfiles are supported, ending with '%s'.",
+							coordinates, GRADLE_LOCKFILE_EXTENSION));
+		}
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(coordinates.openStream(), "UTF-8"))) {
-			List<Coordinate> additionalCoordinates = reader.lines().map(l -> new Coordinate(l)).collect(Collectors.toList());
+			List<Coordinate> additionalCoordinates = reader.lines().filter(l -> {
+				String trimmedLine = l.trim();
+				return !(trimmedLine.isEmpty() || trimmedLine.startsWith("#"));
+			}).map(l -> new Coordinate(l)).collect(Collectors.toList());
 			this.coordinates.addAll(additionalCoordinates);
 		} catch (IOException e) {
 			throw new IllegalArgumentException(

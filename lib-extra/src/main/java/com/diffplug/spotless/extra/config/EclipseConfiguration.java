@@ -112,7 +112,8 @@ public class EclipseConfiguration implements ThrowingEx.Supplier<EclipseConfigur
 
 	private static URL getDefaultCoordinatesUrl(URL eclipseConfigContext, SemanticVersion version) {
 		try {
-			Path filePath = Paths.get(eclipseConfigContext.getPath(), String.format("v%s.txt", version.toString()));
+			Path filePath = Paths.get(eclipseConfigContext.getPath(), String.format("v%s%s",
+					version.toString(), MavenCoordinates.GRADLE_LOCKFILE_EXTENSION));
 			return new URL(eclipseConfigContext.getProtocol(), eclipseConfigContext.getHost(), filePath.toString());
 		} catch (MalformedURLException e) {
 			/*

@@ -1,1 +1,0 @@
-com.diffplug.spotless:spotless-lib:1.5.0
