@@ -138,8 +138,8 @@ public class EclipseConfiguration implements ThrowingEx.Supplier<EclipseConfigur
 		this.settingsFiles = settingsFiles;
 	}
 
-	/** Creates the state of the configuration */
-	public EclipseConfiguration.State get() {
+	/** Creates the state of the configuration. */
+	public EclipseConfiguration.State get() throws IOException {
 		/*
 		 * The current use case is tailored for Gradle.
 		 * Gradle calls this method only once per execution
@@ -182,19 +182,12 @@ public class EclipseConfiguration implements ThrowingEx.Supplier<EclipseConfigur
 		private final transient Provisioner jarProvisioner;
 
 		/** State constructor expects that all passed items are not modified afterwards */
-		protected State(Provisioner jarProvisioner, MavenCoordinates coordinates, SemanticVersion version, Iterable<File> settingsFiles) {
+		protected State(Provisioner jarProvisioner, MavenCoordinates coordinates, SemanticVersion version, Iterable<File> settingsFiles) throws IOException {
 			this.jarProvisioner = jarProvisioner;
 			this.coordinates = coordinates;
 			this.version = version;
 			lazyClassLoader = null;
-
-			try {
-				this.settingsFiles = FileSignature.signAsList(settingsFiles);
-			} catch (NullPointerException e) {
-				throw new IllegalArgumentException("Some configuration files are 'null'.", e);
-			} catch (IOException e) {
-				throw new IllegalStateException(e); //Canonical path problems are not user argument problems
-			}
+			this.settingsFiles = FileSignature.signAsList(settingsFiles);
 		}
 
 		/**

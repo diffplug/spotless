@@ -18,7 +18,6 @@ package com.diffplug.spotless.extra.config;
 import static org.assertj.core.api.Assertions.*;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Properties;
@@ -47,29 +46,29 @@ public class EclipseConfigurationTest extends ResourceHarness {
 	private EclipseConfiguration testConfig;
 
 	@Before
-	public void initTestConfig() throws IOException {
+	public void initTestConfig() throws Exception {
 		testConfig = new EclipseConfiguration(NAME, TestProvisioner.mavenCentral(), VERSIONS);
 	}
 
 	@Test
-	public void testDefaultVersionIsLatest() {
+	public void testDefaultVersionIsLatest() throws Exception {
 		assertThat(testConfig.get().compareVersionTo(VERSION_HIGH)).isEqualTo(0);
 	}
 
 	@Test
-	public void testSetVersion() {
+	public void testSetVersion() throws Exception {
 		testConfig.setVersion(VERSION_LOW);
 		assertThat(testConfig.get().compareVersionTo(VERSION_LOW)).isEqualTo(0);
 	}
 
 	@Test
-	public void testSetUnsupportedVersion() {
+	public void testSetUnsupportedVersion() throws Exception {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> testConfig.setVersion(VERSION_TOO_HIGH));
 		assertThat(testConfig.get().compareVersionTo(VERSION_HIGH)).isEqualTo(0);
 	}
 
 	@Test
-	public void testSetUrlInsteadOfVersion() throws IOException {
+	public void testSetUrlInsteadOfVersion() throws Exception {
 		URL userDepURL = createTestFile(DEPENDENCY_OLD_FILE).toURI().toURL();
 		testConfig.setVersion(userDepURL.toString());
 		//Version is not altered in this case
@@ -80,13 +79,13 @@ public class EclipseConfigurationTest extends ResourceHarness {
 	}
 
 	@Test
-	public void testSetMalformedUrl() {
+	public void testSetMalformedUrl() throws Exception {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> testConfig.setVersion("invalidProtocol://some.domain/some.properties"));
 		assertThat(testConfig.get().compareVersionTo(VERSION_HIGH)).isEqualTo(0);
 	}
 
 	@Test
-	public void testVersionComparison() {
+	public void testVersionComparison() throws Exception {
 		assertThat(testConfig.get().compareVersionTo(VERSION_HIGH)).isEqualTo(0);
 		assertThat(testConfig.get().compareVersionTo(VERSION_TOO_HIGH)).isEqualTo(-1);
 		assertThat(testConfig.get().compareVersionTo(VERSION_LOW)).isEqualTo(1);
@@ -98,7 +97,7 @@ public class EclipseConfigurationTest extends ResourceHarness {
 	}
 
 	@Test
-	public void testPreferences() throws IOException {
+	public void testPreferences() throws Exception {
 		File propFile = createTestFile(PREFERENCES_FILE);
 		testConfig.setPreferences(Arrays.asList(propFile));
 		Properties prop = testConfig.get().getPreferences();
@@ -106,14 +105,14 @@ public class EclipseConfigurationTest extends ResourceHarness {
 	}
 
 	@Test
-	public void testInvalidPreferences() throws IOException {
+	public void testInvalidPreferences() throws Exception {
 		File doesNotExist = new File("doesNotExist");
 		testConfig.setPreferences(Arrays.asList(doesNotExist));
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> testConfig.get().getPreferences());
 	}
 
 	@Test
-	public void testDefaultDependencyResolution() {
+	public void testDefaultDependencyResolution() throws Exception {
 		testConfig.get().loadClass(KtLintStep.class.getCanonicalName());
 		testConfig.get().loadClass(ImportOrderStep.class.getCanonicalName());
 		testConfig.setVersion(VERSION_LOW);
@@ -122,7 +121,7 @@ public class EclipseConfigurationTest extends ResourceHarness {
 	}
 
 	@Test
-	public void testUserDependencyResolution() {
+	public void testUserDependencyResolution() throws Exception {
 		testConfig.setDependencies(DEPENDENCY_OLD);
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> testConfig.get().loadClass(KtLintStep.class.getCanonicalName()));
 		testConfig.get().loadClass(ImportOrderStep.class.getCanonicalName());
