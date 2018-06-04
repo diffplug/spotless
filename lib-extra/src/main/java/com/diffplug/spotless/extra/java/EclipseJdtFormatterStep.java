@@ -19,14 +19,12 @@ import java.lang.reflect.Method;
 import java.util.Properties;
 
 import com.diffplug.spotless.FormatterFunc;
-import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.extra.config.EclipseConfiguration;
 import com.diffplug.spotless.extra.config.EclipseConfiguration.State;
 
 /** Formatter step which calls out to the Eclipse JDT formatter. */
-public final class EclipseJdtFormatterStep implements ThrowingEx.Function<EclipseConfiguration.State, FormatterFunc> {
+public final class EclipseJdtFormatterStep {
 
 	static final String NAME = "eclipse jdt formatter";
 	static final String FORMATTER_CLASS = "com.diffplug.gradle.spotless.java.eclipse.EclipseFormatterStepImpl";
@@ -40,20 +38,13 @@ public final class EclipseJdtFormatterStep implements ThrowingEx.Function<Eclips
 
 	/** Provides default configuration */
 	public static EclipseConfiguration createConfig(Provisioner provisioner) {
-		return new EclipseConfiguration(NAME, provisioner, VERSIONS);
+		return new EclipseConfiguration(NAME, provisioner, EclipseJdtFormatterStep::apply, VERSIONS);
 	}
 
-	/** Creates a formatter step for the given configuration state. */
-	public static FormatterStep createStep(EclipseConfiguration config) {
-		return FormatterStep.createLazy(NAME, config, new EclipseJdtFormatterStep());
-	}
-
-	@Override
-	public FormatterFunc apply(State state) throws Exception {
+	private static FormatterFunc apply(State state) throws Exception {
 		Class<?> formatterClazz = state.loadClass(FORMATTER_CLASS);
 		Object formatter = formatterClazz.getConstructor(Properties.class).newInstance(state.getPreferences());
 		Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
 		return input -> (String) method.invoke(formatter, input);
 	}
-
 }

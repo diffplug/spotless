@@ -63,7 +63,7 @@ public final class EclipseFormatterStep {
 		EclipseConfiguration config = EclipseJdtFormatterStep.createConfig(provisioner);
 		config.setPreferences(settingsFiles);
 		config.setVersion(DEFAULT_VERSION);
-		return EclipseJdtFormatterStep.createStep(config);
+		return config.build();
 	}
 
 	public static String defaultVersion() {

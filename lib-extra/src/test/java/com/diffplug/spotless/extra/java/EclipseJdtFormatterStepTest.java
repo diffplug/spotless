@@ -41,7 +41,7 @@ public class EclipseJdtFormatterStepTest extends EclipseCommonTests {
 	protected FormatterStep createStep(String version) {
 		EclipseConfiguration config = EclipseJdtFormatterStep.createConfig(TestProvisioner.mavenCentral());
 		config.setVersion(version);
-		return EclipseJdtFormatterStep.createStep(config);
+		return config.build();
 	}
 
 }

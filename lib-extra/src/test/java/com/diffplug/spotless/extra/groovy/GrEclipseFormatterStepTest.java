@@ -41,7 +41,7 @@ public class GrEclipseFormatterStepTest extends EclipseCommonTests {
 	protected FormatterStep createStep(String version) {
 		EclipseConfiguration config = GrEclipseFormatterStep.createConfig(TestProvisioner.mavenCentral());
 		config.setVersion(version);
-		return GrEclipseFormatterStep.createStep(config);
+		return config.build();
 	}
 
 }

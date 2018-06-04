@@ -23,12 +23,10 @@ import java.util.Properties;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.extra.config.EclipseConfiguration;
-import com.diffplug.spotless.extra.config.EclipseConfiguration.State;
 
 /** Formatter step which calls out to the Groovy-Eclipse formatter. */
-public class GrEclipseFormatterStep implements ThrowingEx.Function<EclipseConfiguration.State, FormatterFunc> {
+public class GrEclipseFormatterStep {
 	private static final String NAME = "groovy eclipse formatter";
 	private static final String FORMATTER_CLASS = "com.diffplug.gradle.spotless.groovy.eclipse.GrEclipseFormatterStepImpl";
 	private static final String FORMATTER_METHOD = "format";
@@ -48,7 +46,7 @@ public class GrEclipseFormatterStep implements ThrowingEx.Function<EclipseConfig
 		EclipseConfiguration config = createConfig(provisioner);
 		config.setVersion(version);
 		config.setPreferences(settingsFiles);
-		return createStep(config);
+		return config.build();
 	}
 
 	@Deprecated
@@ -63,23 +61,10 @@ public class GrEclipseFormatterStep implements ThrowingEx.Function<EclipseConfig
 
 	/** Provides default configuration */
 	public static EclipseConfiguration createConfig(Provisioner provisioner) {
-		return new EclipseConfiguration(NAME, provisioner, VERSIONS);
+		return new EclipseConfiguration(NAME, provisioner, GrEclipseFormatterStep::apply, VERSIONS);
 	}
 
-	/** Creates a formatter step for the given configuration state. */
-	public static FormatterStep createStep(EclipseConfiguration config) {
-		/*
-		 * TODO:
-		 * Here we need some logging. If the user still uses version '2.3.0',
-		 * a warning should be logged, to remind the user to use the equivalent
-		 * Eclipse version identifier '4.6.3' should be used instead.
-		 * A common logging feature should be added as part of issue 236.
-		 */
-		return FormatterStep.createLazy(NAME, config, new GrEclipseFormatterStep());
-	}
-
-	@Override
-	public FormatterFunc apply(State state) throws Exception {
+	private static FormatterFunc apply(EclipseConfiguration.State state) throws Exception {
 		Class<?> formatterClazz = state.loadClass(FORMATTER_CLASS);
 		Object formatter = formatterClazz.getConstructor(Properties.class).newInstance(state.getPreferences());
 		Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);

@@ -106,19 +106,19 @@ public class GroovyExtension extends FormatExtension implements HasBuiltinDelimi
 			if (null != version) {
 				config.setVersion(version);
 			}
-			extension.addStep(GrEclipseFormatterStep.createStep(config));
+			extension.addStep(config.build());
 		}
 
 		public void configFile(Object... configFiles) {
 			requireElementsNonNull(configFiles);
 			Project project = extension.getProject();
 			config.setPreferences(project.files(configFiles).getFiles());
-			extension.replaceStep(GrEclipseFormatterStep.createStep(config));
+			extension.replaceStep(config.build());
 		}
 
 		public void dependency(String... dependencyVersions) {
 			config.setDependencies(dependencyVersions);
-			extension.replaceStep(GrEclipseFormatterStep.createStep(config));
+			extension.replaceStep(config.build());
 		}
 	}
 

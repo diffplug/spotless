@@ -165,20 +165,20 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 			if (null != version) {
 				config.setVersion(version);
 			}
-			addStep(EclipseJdtFormatterStep.createStep(config));
+			addStep(config.build());
 		}
 
 		public EclipseConfig configFile(Object... configFiles) {
 			requireElementsNonNull(configFiles);
 			Project project = getProject();
 			config.setPreferences(project.files(configFiles).getFiles());
-			replaceStep(EclipseJdtFormatterStep.createStep(config));
+			replaceStep(config.build());
 			return this;
 		}
 
 		public EclipseConfig dependency(String... dependencies) {
 			config.setDependencies(dependencies);
-			replaceStep(EclipseJdtFormatterStep.createStep(config));
+			replaceStep(config.build());
 			return this;
 		}
 

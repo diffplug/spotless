@@ -29,7 +29,9 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import com.diffplug.spotless.FileSignature;
+import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterProperties;
+import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx;
@@ -38,7 +40,10 @@ import com.diffplug.spotless.ThrowingEx;
  * Eclipse formatter generic configuration validates the user arguments and creates on request
  * a {@link State} of the current values.
  */
-public class EclipseConfiguration implements ThrowingEx.Supplier<EclipseConfiguration.State> {
+public class EclipseConfiguration {
+	private final String formatterName;
+	private final ThrowingEx.Function<State, FormatterFunc> stateToFormatter;
+
 	/**
 	 * Resource location of Spotless Eclipse Formatter Maven coordinate lists.
 	 * <p>
@@ -61,9 +66,10 @@ public class EclipseConfiguration implements ThrowingEx.Supplier<EclipseConfigur
 	private Iterable<File> settingsFiles;
 
 	/** Initialize valid default configuration, taking latest version */
-	public EclipseConfiguration(String formatterName, Provisioner jarProvisioner, String... supportedEclipseVersions) {
-		Objects.requireNonNull(formatterName, "formatterName");
-		Objects.requireNonNull(jarProvisioner, "jarProvisioner");
+	public EclipseConfiguration(String formatterName, Provisioner jarProvisioner, ThrowingEx.Function<State, FormatterFunc> stateToFormatter, String... supportedEclipseVersions) {
+		this.formatterName = Objects.requireNonNull(formatterName, "formatterName");
+		this.jarProvisioner = Objects.requireNonNull(jarProvisioner, "jarProvisioner");
+		this.stateToFormatter = Objects.requireNonNull(stateToFormatter, "stateToFormatter");
 		Objects.requireNonNull(supportedEclipseVersions, "supportedEclipseVersions");
 		if (supportedEclipseVersions.length < 1) {
 			throw new IllegalArgumentException("At lease one version must be allowed.");
@@ -81,10 +87,14 @@ public class EclipseConfiguration implements ThrowingEx.Supplier<EclipseConfigur
 		}
 		version = this.supportedEclipseVersions.last(); //Use latest version per default
 		defaultCoordinatesUrl = getDefaultCoordinatesUrl(eclipseConfigContext, version);
-		this.jarProvisioner = jarProvisioner;
 
 		coordinateAdaptations = new MavenCoordinates(); //Use default coordinates configured for version
 		settingsFiles = new ArrayList<File>(); //Use default preferences
+	}
+
+	/** Returns the FormatterStep (whose state will be calculated lazily). */
+	public FormatterStep build() {
+		return FormatterStep.createLazy(formatterName, this::get, stateToFormatter);
 	}
 
 	/** Set Eclipse version */
@@ -137,7 +147,7 @@ public class EclipseConfiguration implements ThrowingEx.Supplier<EclipseConfigur
 	}
 
 	/** Creates the state of the configuration. */
-	public EclipseConfiguration.State get() throws IOException {
+	EclipseConfiguration.State get() throws IOException {
 		/*
 		 * The current use case is tailored for Gradle.
 		 * Gradle calls this method only once per execution

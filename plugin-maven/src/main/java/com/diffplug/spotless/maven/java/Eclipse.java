@@ -50,6 +50,6 @@ public class Eclipse implements FormatterStepFactory {
 		if (null != dependencies) {
 			eclipseConfig.setDependencies(dependencies);
 		}
-		return EclipseJdtFormatterStep.createStep(eclipseConfig);
+		return eclipseConfig.build();
 	}
 }

@@ -47,7 +47,7 @@ public class EclipseConfigurationTest extends ResourceHarness {
 
 	@Before
 	public void initTestConfig() throws Exception {
-		testConfig = new EclipseConfiguration(NAME, TestProvisioner.mavenCentral(), VERSIONS);
+		testConfig = new EclipseConfiguration(NAME, TestProvisioner.mavenCentral(), state -> null, VERSIONS);
 	}
 
 	@Test
