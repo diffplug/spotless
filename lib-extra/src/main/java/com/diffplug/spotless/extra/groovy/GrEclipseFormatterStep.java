@@ -23,7 +23,7 @@ import java.util.Properties;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.extra.config.EclipseConfiguration;
+import com.diffplug.spotless.extra.config.EclipseBasedStepBuilder;
 
 /** Formatter step which calls out to the Groovy-Eclipse formatter. */
 public class GrEclipseFormatterStep {
@@ -43,10 +43,10 @@ public class GrEclipseFormatterStep {
 	/** Creates a formatter step for the given version and settings file. */
 	@Deprecated
 	public static FormatterStep create(String version, Iterable<File> settingsFiles, Provisioner provisioner) {
-		EclipseConfiguration config = createConfig(provisioner);
-		config.setVersion(version);
-		config.setPreferences(settingsFiles);
-		return config.build();
+		EclipseBasedStepBuilder builder = createBuilder(provisioner);
+		builder.setVersion(version);
+		builder.setPreferences(settingsFiles);
+		return builder.build();
 	}
 
 	@Deprecated
@@ -60,11 +60,11 @@ public class GrEclipseFormatterStep {
 	}
 
 	/** Provides default configuration */
-	public static EclipseConfiguration createConfig(Provisioner provisioner) {
-		return new EclipseConfiguration(NAME, provisioner, GrEclipseFormatterStep::apply, VERSIONS);
+	public static EclipseBasedStepBuilder createBuilder(Provisioner provisioner) {
+		return new EclipseBasedStepBuilder(NAME, provisioner, GrEclipseFormatterStep::apply, VERSIONS);
 	}
 
-	private static FormatterFunc apply(EclipseConfiguration.State state) throws Exception {
+	private static FormatterFunc apply(EclipseBasedStepBuilder.State state) throws Exception {
 		Class<?> formatterClazz = state.loadClass(FORMATTER_CLASS);
 		Object formatter = formatterClazz.getConstructor(Properties.class).newInstance(state.getPreferences());
 		Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);

@@ -21,7 +21,7 @@ import java.util.Arrays;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.extra.config.EclipseConfiguration;
+import com.diffplug.spotless.extra.config.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.java.EclipseJdtFormatterStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
@@ -39,7 +39,7 @@ public class Eclipse implements FormatterStepFactory {
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
-		EclipseConfiguration eclipseConfig = EclipseJdtFormatterStep.createConfig(stepConfig.getProvisioner());
+		EclipseBasedStepBuilder eclipseConfig = EclipseJdtFormatterStep.createBuilder(stepConfig.getProvisioner());
 		if (null != version) {
 			eclipseConfig.setVersion(version);
 		}

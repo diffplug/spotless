@@ -17,7 +17,7 @@ package com.diffplug.spotless.extra.java;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.TestProvisioner;
-import com.diffplug.spotless.extra.config.EclipseConfiguration;
+import com.diffplug.spotless.extra.config.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.eclipse.EclipseCommonTests;
 
 public class EclipseJdtFormatterStepTest extends EclipseCommonTests {
@@ -39,9 +39,9 @@ public class EclipseJdtFormatterStepTest extends EclipseCommonTests {
 
 	@Override
 	protected FormatterStep createStep(String version) {
-		EclipseConfiguration config = EclipseJdtFormatterStep.createConfig(TestProvisioner.mavenCentral());
-		config.setVersion(version);
-		return config.build();
+		EclipseBasedStepBuilder builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral());
+		builder.setVersion(version);
+		return builder.build();
 	}
 
 }

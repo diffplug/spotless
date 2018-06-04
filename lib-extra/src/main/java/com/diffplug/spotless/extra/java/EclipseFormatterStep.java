@@ -21,7 +21,7 @@ import java.util.Objects;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.extra.config.EclipseConfiguration;
+import com.diffplug.spotless.extra.config.EclipseBasedStepBuilder;
 
 /**
  * Formatter step which calls out to the Eclipse formatter.
@@ -60,10 +60,10 @@ public final class EclipseFormatterStep {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(settingsFiles, "settingsFiles");
 		Objects.requireNonNull(provisioner, "provisioner");
-		EclipseConfiguration config = EclipseJdtFormatterStep.createConfig(provisioner);
-		config.setPreferences(settingsFiles);
-		config.setVersion(DEFAULT_VERSION);
-		return config.build();
+		EclipseBasedStepBuilder builder = EclipseJdtFormatterStep.createBuilder(provisioner);
+		builder.setPreferences(settingsFiles);
+		builder.setVersion(DEFAULT_VERSION);
+		return builder.build();
 	}
 
 	public static String defaultVersion() {

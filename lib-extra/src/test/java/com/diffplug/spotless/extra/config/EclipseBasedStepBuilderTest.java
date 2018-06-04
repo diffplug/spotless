@@ -30,7 +30,7 @@ import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.java.ImportOrderStep;
 import com.diffplug.spotless.kotlin.KtLintStep;
 
-public class EclipseConfigurationTest extends ResourceHarness {
+public class EclipseBasedStepBuilderTest extends ResourceHarness {
 
 	private static final String NAME = "test configuration";
 	private static final String VERSION_LOW = "0.0.1";
@@ -43,11 +43,11 @@ public class EclipseConfigurationTest extends ResourceHarness {
 	private static final String PREFERENCES_FILE = TEST_FILES_FOLDER + "preferences.properties";
 	private static final String DEPENDENCY_OLD_FILE = TEST_FILES_FOLDER + "dependencies_old.lockfile";
 
-	private EclipseConfiguration testConfig;
+	private EclipseBasedStepBuilder testConfig;
 
 	@Before
 	public void initTestConfig() throws Exception {
-		testConfig = new EclipseConfiguration(NAME, TestProvisioner.mavenCentral(), state -> null, VERSIONS);
+		testConfig = new EclipseBasedStepBuilder(NAME, TestProvisioner.mavenCentral(), state -> null, VERSIONS);
 	}
 
 	@Test

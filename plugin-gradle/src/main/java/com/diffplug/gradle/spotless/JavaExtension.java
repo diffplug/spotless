@@ -31,7 +31,7 @@ import org.gradle.api.tasks.SourceSet;
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.SerializableFileFilter;
-import com.diffplug.spotless.extra.config.EclipseConfiguration;
+import com.diffplug.spotless.extra.config.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.java.EclipseFormatterStep;
 import com.diffplug.spotless.extra.java.EclipseJdtFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
@@ -158,27 +158,27 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 	}
 
 	public class EclipseConfig {
-		private final EclipseConfiguration config;
+		private final EclipseBasedStepBuilder builder;
 
 		EclipseConfig(@Nullable String version) {
-			config = EclipseJdtFormatterStep.createConfig(GradleProvisioner.fromProject(getProject()));
+			builder = EclipseJdtFormatterStep.createBuilder(GradleProvisioner.fromProject(getProject()));
 			if (null != version) {
-				config.setVersion(version);
+				builder.setVersion(version);
 			}
-			addStep(config.build());
+			addStep(builder.build());
 		}
 
 		public EclipseConfig configFile(Object... configFiles) {
 			requireElementsNonNull(configFiles);
 			Project project = getProject();
-			config.setPreferences(project.files(configFiles).getFiles());
-			replaceStep(config.build());
+			builder.setPreferences(project.files(configFiles).getFiles());
+			replaceStep(builder.build());
 			return this;
 		}
 
 		public EclipseConfig dependency(String... dependencies) {
-			config.setDependencies(dependencies);
-			replaceStep(config.build());
+			builder.setDependencies(dependencies);
+			replaceStep(builder.build());
 			return this;
 		}
 

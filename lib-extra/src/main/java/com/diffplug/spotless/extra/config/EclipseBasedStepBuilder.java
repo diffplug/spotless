@@ -40,7 +40,7 @@ import com.diffplug.spotless.ThrowingEx;
  * Eclipse formatter generic configuration validates the user arguments and creates on request
  * a {@link State} of the current values.
  */
-public class EclipseConfiguration {
+public class EclipseBasedStepBuilder {
 	private final String formatterName;
 	private final ThrowingEx.Function<State, FormatterFunc> stateToFormatter;
 
@@ -55,7 +55,7 @@ public class EclipseConfiguration {
 	 * Each line in the text file corresponds to the {@link MavenCoordinates.Coordinate#FORMAT}.
 	 * </p>
 	 */
-	private static final String ECLIPSE_FORMATTER_RESOURCES = EclipseConfiguration.class.getPackage().getName().replace('.', '/');
+	private static final String ECLIPSE_FORMATTER_RESOURCES = EclipseBasedStepBuilder.class.getPackage().getName().replace('.', '/');
 
 	private final TreeSet<SemanticVersion> supportedEclipseVersions;
 	private final URL eclipseConfigContext;
@@ -66,7 +66,7 @@ public class EclipseConfiguration {
 	private Iterable<File> settingsFiles;
 
 	/** Initialize valid default configuration, taking latest version */
-	public EclipseConfiguration(String formatterName, Provisioner jarProvisioner, ThrowingEx.Function<State, FormatterFunc> stateToFormatter, String... supportedEclipseVersions) {
+	public EclipseBasedStepBuilder(String formatterName, Provisioner jarProvisioner, ThrowingEx.Function<State, FormatterFunc> stateToFormatter, String... supportedEclipseVersions) {
 		this.formatterName = Objects.requireNonNull(formatterName, "formatterName");
 		this.jarProvisioner = Objects.requireNonNull(jarProvisioner, "jarProvisioner");
 		this.stateToFormatter = Objects.requireNonNull(stateToFormatter, "stateToFormatter");
@@ -147,7 +147,7 @@ public class EclipseConfiguration {
 	}
 
 	/** Creates the state of the configuration. */
-	EclipseConfiguration.State get() throws IOException {
+	EclipseBasedStepBuilder.State get() throws IOException {
 		/*
 		 * The current use case is tailored for Gradle.
 		 * Gradle calls this method only once per execution

@@ -20,8 +20,8 @@ import java.util.Properties;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.extra.config.EclipseConfiguration;
-import com.diffplug.spotless.extra.config.EclipseConfiguration.State;
+import com.diffplug.spotless.extra.config.EclipseBasedStepBuilder;
+import com.diffplug.spotless.extra.config.EclipseBasedStepBuilder.State;
 
 /** Formatter step which calls out to the Eclipse JDT formatter. */
 public final class EclipseJdtFormatterStep {
@@ -37,8 +37,8 @@ public final class EclipseJdtFormatterStep {
 	}
 
 	/** Provides default configuration */
-	public static EclipseConfiguration createConfig(Provisioner provisioner) {
-		return new EclipseConfiguration(NAME, provisioner, EclipseJdtFormatterStep::apply, VERSIONS);
+	public static EclipseBasedStepBuilder createBuilder(Provisioner provisioner) {
+		return new EclipseBasedStepBuilder(NAME, provisioner, EclipseJdtFormatterStep::apply, VERSIONS);
 	}
 
 	private static FormatterFunc apply(State state) throws Exception {
