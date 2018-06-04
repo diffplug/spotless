@@ -34,8 +34,6 @@ import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /**
  * Eclipse formatter generic configuration validates the user arguments and creates on request
  * a {@link State} of the current values.
@@ -169,24 +167,16 @@ public class EclipseConfiguration implements ThrowingEx.Supplier<EclipseConfigur
 		// Not used, only the serialization output is required to determine whether the object has changed
 		private static final long serialVersionUID = 1L;
 
-		private final FileSignature settingsFiles;
+		private final JarState jarState;
 		private final MavenCoordinates coordinates;
 		private final SemanticVersion version;
-
-		/*
-		 * Fields are transient because not needed to uniquely identify a Eclipse configuration state, and also because
-		 * Gradle only needs this class to be serializable so it can compare its members for incremental builds.
-		 */
-		private transient ClassLoader lazyClassLoader;
-		@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-		private final transient Provisioner jarProvisioner;
+		private final FileSignature settingsFiles;
 
 		/** State constructor expects that all passed items are not modified afterwards */
 		protected State(Provisioner jarProvisioner, MavenCoordinates coordinates, SemanticVersion version, Iterable<File> settingsFiles) throws IOException {
-			this.jarProvisioner = jarProvisioner;
+			this.jarState = JarState.from(jarProvisioner, coordinates.get());
 			this.coordinates = coordinates;
 			this.version = version;
-			lazyClassLoader = null;
 			this.settingsFiles = FileSignature.signAsList(settingsFiles);
 		}
 
@@ -208,29 +198,13 @@ public class EclipseConfiguration implements ThrowingEx.Supplier<EclipseConfigur
 		/** Load class based on the given configuration of JAR provider and Maven coordinates. */
 		public Class<?> loadClass(String name) {
 			try {
-				return getClassLoader().loadClass(name);
+				return jarState.getClassLoader().loadClass(name);
 			} catch (ClassNotFoundException e) {
 				throw new IllegalArgumentException(
 						String.format("Could not find class '%s' in Maven coordinates:%n%s%n",
 								name, coordinates),
 						e);
 			}
-		}
-
-		private ClassLoader getClassLoader() {
-			if (null == lazyClassLoader) {
-				String[] mavenCoordinates = coordinates.get();
-				try {
-					JarState jarState = JarState.from(jarProvisioner, mavenCoordinates);
-					lazyClassLoader = jarState.getClassLoader();
-				} catch (IOException e) {
-					throw new IllegalArgumentException(
-							String.format(
-									"Not all dependencies have been resolved successfully by the Maven coordinates:%n%s%n", coordinates),
-							e);
-				}
-			}
-			return lazyClassLoader;
 		}
 	}
 }
