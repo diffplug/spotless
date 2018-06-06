@@ -83,7 +83,7 @@ public class KtLintStep {
 
 		State(String version, Provisioner provisioner, boolean isScript, Map<String, String> userData) throws IOException {
 			this.userData = new TreeMap<>(userData);
-			this.jarState = JarState.from(provisioner, MAVEN_COORDINATE + version);
+			this.jarState = JarState.from(MAVEN_COORDINATE + version, provisioner);
 			this.isScript = isScript;
 		}
 

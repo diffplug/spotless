@@ -96,7 +96,7 @@ public class GoogleJavaFormatStep {
 		}
 
 		State(String stepName, String version, String style, Provisioner provisioner) throws IOException {
-			this.jarState = JarState.from(provisioner, MAVEN_COORDINATE + version);
+			this.jarState = JarState.from(MAVEN_COORDINATE + version, provisioner);
 			this.stepName = stepName;
 			this.version = version;
 			this.style = style;
