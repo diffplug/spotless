@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.extra.config;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,7 +28,6 @@ import java.util.Objects;
 import java.util.Properties;
 
 import com.diffplug.common.base.Errors;
-import com.diffplug.common.io.ByteStreams;
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterProperties;
@@ -80,7 +80,7 @@ public class EclipseBasedStepBuilder {
 		if (depsFile == null) {
 			throw new IllegalArgumentException("No such version " + version + ", expected at " + url);
 		}
-		byte[] content = Errors.rethrow().get(() -> ByteStreams.toByteArray(depsFile));
+		byte[] content = toByteArray(depsFile);
 		String allLines = new String(content, StandardCharsets.UTF_8);
 		String[] lines = allLines.split("\n");
 		dependencies.clear();
@@ -88,6 +88,23 @@ public class EclipseBasedStepBuilder {
 			if (!line.startsWith("#")) {
 				dependencies.add(line);
 			}
+		}
+	}
+
+	private static byte[] toByteArray(InputStream in) {
+		ByteArrayOutputStream to = new ByteArrayOutputStream();
+		byte[] buf = new byte[8192];
+		try {
+			while (true) {
+				int r = in.read(buf);
+				if (r == -1) {
+					break;
+				}
+				to.write(buf, 0, r);
+			}
+			return to.toByteArray();
+		} catch (IOException e) {
+			throw Errors.asRuntime(e);
 		}
 	}
 
