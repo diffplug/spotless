@@ -20,8 +20,6 @@ import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElem
 import java.util.List;
 import java.util.Objects;
 
-import javax.annotation.Nullable;
-
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.file.FileCollection;
@@ -150,7 +148,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 	}
 
 	public EclipseConfig eclipse() {
-		return new EclipseConfig(null);
+		return new EclipseConfig(EclipseJdtFormatterStep.defaultVersion());
 	}
 
 	public EclipseConfig eclipse(String version) {
@@ -160,11 +158,9 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 	public class EclipseConfig {
 		private final EclipseBasedStepBuilder builder;
 
-		EclipseConfig(@Nullable String version) {
+		EclipseConfig(String version) {
 			builder = EclipseJdtFormatterStep.createBuilder(GradleProvisioner.fromProject(getProject()));
-			if (null != version) {
-				builder.setVersion(version);
-			}
+			builder.setVersion(version);
 			addStep(builder.build());
 		}
 

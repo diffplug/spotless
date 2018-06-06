@@ -20,8 +20,6 @@ import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElem
 import java.util.List;
 import java.util.Objects;
 
-import javax.annotation.Nullable;
-
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.file.FileCollection;
@@ -89,7 +87,7 @@ public class GroovyExtension extends FormatExtension implements HasBuiltinDelimi
 	}
 
 	public GrEclipseConfig greclipse() {
-		return new GrEclipseConfig(null, this);
+		return greclipse(GrEclipseFormatterStep.defaultVersion());
 	}
 
 	public GrEclipseConfig greclipse(String version) {
@@ -100,12 +98,10 @@ public class GroovyExtension extends FormatExtension implements HasBuiltinDelimi
 		private final EclipseBasedStepBuilder builder;
 		private final FormatExtension extension;
 
-		GrEclipseConfig(@Nullable String version, FormatExtension extension) {
+		GrEclipseConfig(String version, FormatExtension extension) {
 			this.extension = extension;
 			builder = GrEclipseFormatterStep.createBuilder(GradleProvisioner.fromProject(extension.getProject()));
-			if (null != version) {
-				builder.setVersion(version);
-			}
+			builder.setVersion(version);
 			extension.addStep(builder.build());
 		}
 

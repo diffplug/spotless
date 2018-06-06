@@ -27,6 +27,10 @@ import com.diffplug.spotless.extra.config.EclipseBasedStepBuilder;
 
 /** Formatter step which calls out to the Groovy-Eclipse formatter. */
 public class GrEclipseFormatterStep {
+	public static String defaultVersion() {
+		return "4.6.3";
+	}
+
 	private static final String NAME = "groovy eclipse formatter";
 	private static final String FORMATTER_CLASS = "com.diffplug.gradle.spotless.groovy.eclipse.GrEclipseFormatterStepImpl";
 	private static final String FORMATTER_METHOD = "format";
@@ -46,11 +50,6 @@ public class GrEclipseFormatterStep {
 		builder.setVersion(version);
 		builder.setPreferences(settingsFiles);
 		return builder.build();
-	}
-
-	@Deprecated
-	public static String defaultVersion() {
-		return "2.3.0";
 	}
 
 	/** Constructs a formatter step adapted for a certain Groovy Eclipse formatter version */

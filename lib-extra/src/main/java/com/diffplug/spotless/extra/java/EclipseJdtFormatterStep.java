@@ -25,6 +25,9 @@ import com.diffplug.spotless.extra.config.EclipseBasedStepBuilder.State;
 
 /** Formatter step which calls out to the Eclipse JDT formatter. */
 public final class EclipseJdtFormatterStep {
+	public static String defaultVersion() {
+		return "4.7.2";
+	}
 
 	static final String NAME = "eclipse jdt formatter";
 	static final String FORMATTER_CLASS = "com.diffplug.gradle.spotless.java.eclipse.EclipseFormatterStepImpl";
