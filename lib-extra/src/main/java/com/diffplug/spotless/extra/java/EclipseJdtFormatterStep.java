@@ -29,7 +29,6 @@ public final class EclipseJdtFormatterStep {
 	static final String NAME = "eclipse jdt formatter";
 	static final String FORMATTER_CLASS = "com.diffplug.gradle.spotless.java.eclipse.EclipseFormatterStepImpl";
 	static final String FORMATTER_METHOD = "format";
-	static final String VERSIONS[] = {"4.6.1", "4.6.3", "4.7.0", "4.7.1", "4.7.2"};
 
 	/** Constructs a formatter step adapted for a certain Eclipse JDT formatter version */
 	private EclipseJdtFormatterStep() {
@@ -38,7 +37,7 @@ public final class EclipseJdtFormatterStep {
 
 	/** Provides default configuration */
 	public static EclipseBasedStepBuilder createBuilder(Provisioner provisioner) {
-		return new EclipseBasedStepBuilder(NAME, provisioner, EclipseJdtFormatterStep::apply, VERSIONS);
+		return new EclipseBasedStepBuilder(NAME, provisioner, EclipseJdtFormatterStep::apply);
 	}
 
 	private static FormatterFunc apply(State state) throws Exception {

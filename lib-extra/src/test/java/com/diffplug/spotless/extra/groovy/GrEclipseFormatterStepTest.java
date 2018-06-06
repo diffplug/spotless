@@ -21,10 +21,9 @@ import com.diffplug.spotless.extra.config.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.eclipse.EclipseCommonTests;
 
 public class GrEclipseFormatterStepTest extends EclipseCommonTests {
-
 	@Override
 	protected String[] getSupportedVersions() {
-		return GrEclipseFormatterStep.VERSIONS;
+		return new String[] {"2.3.0", "4.6.3"};
 	}
 
 	@Override

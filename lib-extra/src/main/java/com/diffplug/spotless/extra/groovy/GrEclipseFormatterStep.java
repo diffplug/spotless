@@ -30,7 +30,6 @@ public class GrEclipseFormatterStep {
 	private static final String NAME = "groovy eclipse formatter";
 	private static final String FORMATTER_CLASS = "com.diffplug.gradle.spotless.groovy.eclipse.GrEclipseFormatterStepImpl";
 	private static final String FORMATTER_METHOD = "format";
-	static final String VERSIONS[] = {"2.3.0", "4.6.3"};
 
 	/**
 	 * Creates a formatter step using the default version for the given settings file.
@@ -61,7 +60,7 @@ public class GrEclipseFormatterStep {
 
 	/** Provides default configuration */
 	public static EclipseBasedStepBuilder createBuilder(Provisioner provisioner) {
-		return new EclipseBasedStepBuilder(NAME, provisioner, GrEclipseFormatterStep::apply, VERSIONS);
+		return new EclipseBasedStepBuilder(NAME, provisioner, GrEclipseFormatterStep::apply);
 	}
 
 	private static FormatterFunc apply(EclipseBasedStepBuilder.State state) throws Exception {

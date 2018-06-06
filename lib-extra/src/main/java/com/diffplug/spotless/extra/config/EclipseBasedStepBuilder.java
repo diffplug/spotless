@@ -17,17 +17,17 @@ package com.diffplug.spotless.extra.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
 
+import com.diffplug.common.base.Errors;
+import com.diffplug.common.io.ByteStreams;
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterProperties;
@@ -43,6 +43,7 @@ import com.diffplug.spotless.ThrowingEx;
 public class EclipseBasedStepBuilder {
 	private final String formatterName;
 	private final ThrowingEx.Function<State, FormatterFunc> stateToFormatter;
+	private final Provisioner jarProvisioner;
 
 	/**
 	 * Resource location of Spotless Eclipse Formatter Maven coordinate lists.
@@ -57,39 +58,14 @@ public class EclipseBasedStepBuilder {
 	 */
 	private static final String ECLIPSE_FORMATTER_RESOURCES = EclipseBasedStepBuilder.class.getPackage().getName().replace('.', '/');
 
-	private final TreeSet<SemanticVersion> supportedEclipseVersions;
-	private final URL eclipseConfigContext;
-	private final Provisioner jarProvisioner;
-	private URL defaultCoordinatesUrl;
-	private MavenCoordinates coordinateAdaptations;
-	private SemanticVersion version;
-	private Iterable<File> settingsFiles;
+	private List<String> dependencies = new ArrayList<>();
+	private Iterable<File> settingsFiles = new ArrayList<>();
 
 	/** Initialize valid default configuration, taking latest version */
-	public EclipseBasedStepBuilder(String formatterName, Provisioner jarProvisioner, ThrowingEx.Function<State, FormatterFunc> stateToFormatter, String... supportedEclipseVersions) {
+	public EclipseBasedStepBuilder(String formatterName, Provisioner jarProvisioner, ThrowingEx.Function<State, FormatterFunc> stateToFormatter) {
 		this.formatterName = Objects.requireNonNull(formatterName, "formatterName");
 		this.jarProvisioner = Objects.requireNonNull(jarProvisioner, "jarProvisioner");
 		this.stateToFormatter = Objects.requireNonNull(stateToFormatter, "stateToFormatter");
-		Objects.requireNonNull(supportedEclipseVersions, "supportedEclipseVersions");
-		if (supportedEclipseVersions.length < 1) {
-			throw new IllegalArgumentException("At lease one version must be allowed.");
-		}
-
-		Path relativeFormatterResourcePath = Paths.get(ECLIPSE_FORMATTER_RESOURCES, formatterName.replace(' ', '_'));
-		eclipseConfigContext = getClass().getClassLoader().getResource(relativeFormatterResourcePath.toString());
-		if (null == eclipseConfigContext) {
-			throw new IllegalArgumentException(String.format("Eclipse configuration context resource path '%s' not found.", relativeFormatterResourcePath));
-		}
-
-		this.supportedEclipseVersions = new TreeSet<SemanticVersion>();
-		for (String allowedVersion : supportedEclipseVersions) {
-			this.supportedEclipseVersions.add(new SemanticVersion(allowedVersion));
-		}
-		version = this.supportedEclipseVersions.last(); //Use latest version per default
-		defaultCoordinatesUrl = getDefaultCoordinatesUrl(eclipseConfigContext, version);
-
-		coordinateAdaptations = new MavenCoordinates(); //Use default coordinates configured for version
-		settingsFiles = new ArrayList<File>(); //Use default preferences
 	}
 
 	/** Returns the FormatterStep (whose state will be calculated lazily). */
@@ -98,37 +74,20 @@ public class EclipseBasedStepBuilder {
 	}
 
 	/** Set Eclipse version */
-	public void setVersion(String versionOrUrl) {
-		try {
-			// For development purpose and patch delivery it is allowed
-			// to specify directly the URL of a M2 coordinates file.
-			defaultCoordinatesUrl = new URL(versionOrUrl);
-			// The default version is not changed.
-		} catch (MalformedURLException ignored) {
-			SemanticVersion newVersion = new SemanticVersion(versionOrUrl);
-			if (supportedEclipseVersions.contains(newVersion)) {
-				defaultCoordinatesUrl = getDefaultCoordinatesUrl(eclipseConfigContext, newVersion);
-				version = newVersion;
-			} else {
-				throw new IllegalArgumentException(
-						String.format("Version '%s' is not part of the supported versions '%s'.",
-								versionOrUrl,
-								supportedEclipseVersions.stream().map(v -> v.toString()).collect(Collectors.joining(", "))));
-			}
+	public void setVersion(String version) {
+		String url = "/" + ECLIPSE_FORMATTER_RESOURCES + "/" + formatterName.replace(' ', '_') + "/v" + version + ".lockfile";
+		InputStream depsFile = EclipseBasedStepBuilder.class.getResourceAsStream(url);
+		if (depsFile == null) {
+			throw new IllegalArgumentException("No such version " + version + ", expected at " + url);
 		}
-	}
-
-	private static URL getDefaultCoordinatesUrl(URL eclipseConfigContext, SemanticVersion version) {
-		try {
-			Path filePath = Paths.get(eclipseConfigContext.getPath(), String.format("v%s%s",
-					version.toString(), MavenCoordinates.GRADLE_LOCKFILE_EXTENSION));
-			return new URL(eclipseConfigContext.getProtocol(), eclipseConfigContext.getHost(), filePath.toString());
-		} catch (MalformedURLException e) {
-			/*
-			 *  This exception must be prevented by the strict syntax checking of
-			 *  SemanticVersion and unit-tests of all allowed versions.
-			 */
-			throw new IllegalStateException(e);
+		byte[] content = Errors.rethrow().get(() -> ByteStreams.toByteArray(depsFile));
+		String allLines = new String(content, StandardCharsets.UTF_8);
+		String[] lines = allLines.split("\n");
+		dependencies.clear();
+		for (String line : lines) {
+			if (!line.startsWith("#")) {
+				dependencies.add(line);
+			}
 		}
 	}
 
@@ -137,8 +96,8 @@ public class EclipseBasedStepBuilder {
 	 * The default dependencies are located in {@link #ECLIPSE_FORMATTER_RESOURCES}.
 	 */
 	public void setDependencies(String... coordinates) {
-		coordinateAdaptations = new MavenCoordinates();
-		coordinateAdaptations.update(coordinates);
+		dependencies.clear();
+		dependencies.addAll(Arrays.asList(coordinates));
 	}
 
 	/** Set settings files containing Eclipse preferences */
@@ -157,16 +116,8 @@ public class EclipseBasedStepBuilder {
 		 */
 		return new State(
 				jarProvisioner,
-				createMavenCoordinates(),
-				version,
+				dependencies,
 				settingsFiles);
-	}
-
-	private MavenCoordinates createMavenCoordinates() {
-		MavenCoordinates coordinates = new MavenCoordinates();
-		coordinates.add(defaultCoordinatesUrl);
-		coordinates.update(coordinateAdaptations);
-		return coordinates;
 	}
 
 	/**
@@ -178,24 +129,12 @@ public class EclipseBasedStepBuilder {
 		private static final long serialVersionUID = 1L;
 
 		private final JarState jarState;
-		private final MavenCoordinates coordinates;
-		private final SemanticVersion version;
 		private final FileSignature settingsFiles;
 
 		/** State constructor expects that all passed items are not modified afterwards */
-		protected State(Provisioner jarProvisioner, MavenCoordinates coordinates, SemanticVersion version, Iterable<File> settingsFiles) throws IOException {
-			this.jarState = JarState.from(jarProvisioner, coordinates.get());
-			this.coordinates = coordinates;
-			this.version = version;
+		protected State(Provisioner jarProvisioner, List<String> dependencies, Iterable<File> settingsFiles) throws IOException {
+			this.jarState = JarState.from(dependencies, jarProvisioner);
 			this.settingsFiles = FileSignature.signAsList(settingsFiles);
-		}
-
-		/**
-		 * Comparison of configured Eclipse version with another version.
-		 * Return one of -1, 0, or 1 according to whether the other version is higher, equal or lower.
-		 */
-		public int compareVersionTo(String otherVersion) {
-			return version.compareTo(new SemanticVersion(otherVersion));
 		}
 
 		/** Get formatter preferences */
@@ -210,10 +149,7 @@ public class EclipseBasedStepBuilder {
 			try {
 				return jarState.getClassLoader().loadClass(name);
 			} catch (ClassNotFoundException e) {
-				throw new IllegalArgumentException(
-						String.format("Could not find class '%s' in Maven coordinates:%n%s%n",
-								name, coordinates),
-						e);
+				throw Errors.asRuntime(e);
 			}
 		}
 	}
