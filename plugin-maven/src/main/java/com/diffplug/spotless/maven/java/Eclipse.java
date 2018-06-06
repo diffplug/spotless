@@ -40,9 +40,7 @@ public class Eclipse implements FormatterStepFactory {
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
 		EclipseBasedStepBuilder eclipseConfig = EclipseJdtFormatterStep.createBuilder(stepConfig.getProvisioner());
-		if (null != version) {
-			eclipseConfig.setVersion(version);
-		}
+		eclipseConfig.setVersion(version == null ? EclipseJdtFormatterStep.defaultVersion() : version);
 		if (null != file) {
 			File settingsFile = stepConfig.getFileLocator().locateFile(file);
 			eclipseConfig.setPreferences(Arrays.asList(settingsFile));
