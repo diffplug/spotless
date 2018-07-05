@@ -29,7 +29,7 @@ import org.gradle.api.tasks.SourceSet;
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.SerializableFileFilter;
-import com.diffplug.spotless.extra.config.EclipseBasedStepBuilder;
+import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.java.EclipseFormatterStep;
 import com.diffplug.spotless.extra.java.EclipseJdtFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
@@ -164,18 +164,11 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 			addStep(builder.build());
 		}
 
-		public EclipseConfig configFile(Object... configFiles) {
+		public void configFile(Object... configFiles) {
 			requireElementsNonNull(configFiles);
 			Project project = getProject();
 			builder.setPreferences(project.files(configFiles).getFiles());
 			replaceStep(builder.build());
-			return this;
-		}
-
-		public EclipseConfig dependency(String... dependencies) {
-			builder.setDependencies(dependencies);
-			replaceStep(builder.build());
-			return this;
 		}
 
 	}

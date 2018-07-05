@@ -299,34 +299,4 @@ By default, `spotless:check` is bound to the `verify` phase.  You might want to 
 
 TODO
 
-<a name="custom_eclipse"></a>
-
-## Custom Eclipse versions
-
-As described in the corresponding language specific sections, for Spotless Eclipse formatters multiple versions are supported. Not all Eclipse versions are supported, since not all Eclipse version changes have a direct impact on the formatting.
-
-For example the formatter versions for Java Eclipse are listed [here](https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/config/eclipse_jdt_formatter). For each formatter version a file is defined listing all its dependencies with a fixed version. For example:
-
-```
-...
-org.eclipse.jdt:org.eclipse.jdt.core:3.12.0
-org.eclipse.platform:org.eclipse.core.resources:3.11.0
-...
-```
-
-In case you are missing a latest change, you can override the default dependencies. For example:
-
-```xml
-...
-     <eclipse>
-       <file>${basedir}/eclipse-fmt.xml</file>
-       <dependencies>
-         <param>org.eclipse.jdt:org.eclipse.jdt.core:3.13.2</param>
-         <param>org.eclipse.platform:org.eclipse.core.resources:3.+</param>
-       </dependencies>
-     </eclipse>
-...
-```
-
-
 <!---freshmark /javadoc -->

@@ -17,7 +17,7 @@ package com.diffplug.spotless.extra.java;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.TestProvisioner;
-import com.diffplug.spotless.extra.config.EclipseBasedStepBuilder;
+import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.eclipse.EclipseCommonTests;
 
 public class EclipseJdtFormatterStepTest extends EclipseCommonTests {

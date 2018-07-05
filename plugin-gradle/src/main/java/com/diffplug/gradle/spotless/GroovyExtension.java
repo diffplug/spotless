@@ -31,7 +31,7 @@ import org.gradle.api.tasks.SourceSet;
 
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.SerializableFileFilter;
-import com.diffplug.spotless.extra.config.EclipseBasedStepBuilder;
+import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.groovy.GrEclipseFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.java.ImportOrderStep;
@@ -109,11 +109,6 @@ public class GroovyExtension extends FormatExtension implements HasBuiltinDelimi
 			requireElementsNonNull(configFiles);
 			Project project = extension.getProject();
 			builder.setPreferences(project.files(configFiles).getFiles());
-			extension.replaceStep(builder.build());
-		}
-
-		public void dependency(String... dependencyVersions) {
-			builder.setDependencies(dependencyVersions);
 			extension.replaceStep(builder.build());
 		}
 	}

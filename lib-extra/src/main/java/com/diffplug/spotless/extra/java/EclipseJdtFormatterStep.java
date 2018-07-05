@@ -20,22 +20,21 @@ import java.util.Properties;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.extra.config.EclipseBasedStepBuilder;
-import com.diffplug.spotless.extra.config.EclipseBasedStepBuilder.State;
+import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
+import com.diffplug.spotless.extra.EclipseBasedStepBuilder.State;
 
 /** Formatter step which calls out to the Eclipse JDT formatter. */
 public final class EclipseJdtFormatterStep {
+	// prevent direct instantiation
+	private EclipseJdtFormatterStep() {}
+
+	private static final String NAME = "eclipse jdt formatter";
+	private static final String FORMATTER_CLASS = "com.diffplug.gradle.spotless.java.eclipse.EclipseFormatterStepImpl";
+	private static final String DEFAULT_VERSION = "4.7.2";
+	private static final String FORMATTER_METHOD = "format";
+
 	public static String defaultVersion() {
-		return "4.7.2";
-	}
-
-	static final String NAME = "eclipse jdt formatter";
-	static final String FORMATTER_CLASS = "com.diffplug.gradle.spotless.java.eclipse.EclipseFormatterStepImpl";
-	static final String FORMATTER_METHOD = "format";
-
-	/** Constructs a formatter step adapted for a certain Eclipse JDT formatter version */
-	private EclipseJdtFormatterStep() {
-		//Currently all supported versions behaves equally. No adaptation required.
+		return DEFAULT_VERSION;
 	}
 
 	/** Provides default configuration */

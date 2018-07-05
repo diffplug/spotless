@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.config;
+package com.diffplug.spotless.extra;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
@@ -37,8 +36,7 @@ import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx;
 
 /**
- * Eclipse formatter generic configuration validates the user arguments and creates on request
- * a {@link State} of the current values.
+ * Generic Eclipse based formatter step {@link State} builder.
  */
 public class EclipseBasedStepBuilder {
 	private final String formatterName;
@@ -53,7 +51,8 @@ public class EclipseBasedStepBuilder {
 	 * version change, including minor and patch version changes.
 	 * At the resource location for each supported Spotless Eclipse Formatter, a text file is provided, containing
 	 * the fixed versions for the formatter and its transitive dependencies.
-	 * Each line in the text file corresponds to the {@link MavenCoordinates.Coordinate#FORMAT}.
+	 * Each line is either a comment starting with {@code #} or corresponds to the format
+	 * {@code <groupId>:<artifactId>[:packaging][:classifier]:<versionRestriction>}
 	 * </p>
 	 */
 	private static final String ECLIPSE_FORMATTER_RESOURCES = EclipseBasedStepBuilder.class.getPackage().getName().replace('.', '/');
@@ -73,7 +72,7 @@ public class EclipseBasedStepBuilder {
 		return FormatterStep.createLazy(formatterName, this::get, stateToFormatter);
 	}
 
-	/** Set Eclipse version */
+	/** Set dependencies for the corresponding Eclipse version */
 	public void setVersion(String version) {
 		String url = "/" + ECLIPSE_FORMATTER_RESOURCES + "/" + formatterName.replace(' ', '_') + "/v" + version + ".lockfile";
 		InputStream depsFile = EclipseBasedStepBuilder.class.getResourceAsStream(url);
@@ -106,15 +105,6 @@ public class EclipseBasedStepBuilder {
 		} catch (IOException e) {
 			throw Errors.asRuntime(e);
 		}
-	}
-
-	/**
-	 * Modify default Maven dependencies configured for the formatter.
-	 * The default dependencies are located in {@link #ECLIPSE_FORMATTER_RESOURCES}.
-	 */
-	public void setDependencies(String... coordinates) {
-		dependencies.clear();
-		dependencies.addAll(Arrays.asList(coordinates));
 	}
 
 	/** Set settings files containing Eclipse preferences */

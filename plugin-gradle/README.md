@@ -452,28 +452,4 @@ Spotless is hosted on jcenter and at plugins.gradle.org. [Go here](https://plugi
 * [JScriptBox](https://github.com/diffplug/jscriptbox) ([direct link to spotless section in its build.gradle](https://github.com/diffplug/jscriptbox/blob/v3.0.0/build.gradle#L45-L65))
 * (Your project here)
 
-<a name="custom_eclipse"></a>
-
-## Custom Eclipse versions
-
-As described in the corresponding language specific sections, for Spotless Eclipse formatters multiple versions are supported. Not all Eclipse versions are supported, since not all Eclipse version changes have a direct impact on the formatting.
-
-For example the formatter versions for Java Eclipse are listed [here](https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/config/eclipse_jdt_formatter). For each formatter version a file is defined listing all its dependencies with a fixed version. For example:
-
-```
-...
-org.eclipse.jdt:org.eclipse.jdt.core:3.12.0
-org.eclipse.platform:org.eclipse.core.resources:3.11.0
-...
-```
-
-In case you are missing a latest change, you can override the default dependencies. For example:
-
-```gradle
-...
-    eclipse().configFile('spotless.eclipseformat.xml').
-      dependency('org.eclipse.jdt:org.eclipse.jdt.core:3.13.2' 'org.eclipse.platform:org.eclipse.core.resources:3.+')
-...
-```
-
 <!---freshmark /javadoc -->

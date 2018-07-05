@@ -21,7 +21,7 @@ import java.util.Objects;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.extra.config.EclipseBasedStepBuilder;
+import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 
 /**
  * Formatter step which calls out to the Eclipse formatter.
