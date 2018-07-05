@@ -30,8 +30,8 @@ import org.gradle.api.tasks.GroovySourceSet;
 import org.gradle.api.tasks.SourceSet;
 
 import com.diffplug.common.base.StringPrinter;
-import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.SerializableFileFilter;
+import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.groovy.GrEclipseFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.java.ImportOrderStep;
@@ -95,28 +95,21 @@ public class GroovyExtension extends FormatExtension implements HasBuiltinDelimi
 	}
 
 	public static class GrEclipseConfig {
-		final String version;
-		Object[] configFiles;
-		final FormatExtension extension;
+		private final EclipseBasedStepBuilder builder;
+		private final FormatExtension extension;
 
 		GrEclipseConfig(String version, FormatExtension extension) {
 			this.extension = extension;
-			configFiles = new Object[0];
-			this.version = Objects.requireNonNull(version);
-
-			extension.addStep(createStep());
+			builder = GrEclipseFormatterStep.createBuilder(GradleProvisioner.fromProject(extension.getProject()));
+			builder.setVersion(version);
+			extension.addStep(builder.build());
 		}
 
 		public void configFile(Object... configFiles) {
-			this.configFiles = requireElementsNonNull(configFiles);
-			extension.replaceStep(createStep());
-		}
-
-		private FormatterStep createStep() {
+			requireElementsNonNull(configFiles);
 			Project project = extension.getProject();
-			return GrEclipseFormatterStep.create(version,
-					project.files(configFiles).getFiles(),
-					GradleProvisioner.fromProject(project));
+			builder.setPreferences(project.files(configFiles).getFiles());
+			extension.replaceStep(builder.build());
 		}
 	}
 

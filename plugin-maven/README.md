@@ -96,7 +96,7 @@ By default, all files matching `src/main/java/**/*.java` and `src/test/java/**/*
      </licenseHeader>
      <eclipse>
        <file>${basedir}/eclipse-fmt.xml</file>
-       <!-- Optional, available versions: https://bintray.com/diffplug/opensource/spotless-ext-eclipse-jdt -->
+       <!-- Optional, available versions: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/config/eclipse_jdt_formatter -->
        <version>4.7.1</version>
      </eclipse>
      <googleJavaFormat>

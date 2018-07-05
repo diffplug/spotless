@@ -38,7 +38,7 @@ public class GroovyGradleExtension extends FormatExtension {
 	}
 
 	public GroovyExtension.GrEclipseConfig greclipse() {
-		return greclipse(GrEclipseFormatterStep.defaultVersion());
+		return new GroovyExtension.GrEclipseConfig(GrEclipseFormatterStep.defaultVersion(), this);
 	}
 
 	public GroovyExtension.GrEclipseConfig greclipse(String version) {
