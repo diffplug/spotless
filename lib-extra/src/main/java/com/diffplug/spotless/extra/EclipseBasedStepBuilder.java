@@ -24,6 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 
 import com.diffplug.common.base.Errors;
@@ -149,6 +150,12 @@ public class EclipseBasedStepBuilder {
 			//Keep the IllegalArgumentException since it contains detailed information
 			FormatterProperties preferences = FormatterProperties.from(settingsFiles.files());
 			return preferences.getProperties();
+		}
+
+		/** Returns first coordinate from sorted set that starts with a given prefix.*/
+		public Optional<String> getMavenCoordinate(String prefix) {
+			return jarState.getMavenCoordinates().stream()
+					.filter(coordinate -> coordinate.startsWith(prefix)).findFirst();
 		}
 
 		/** Load class based on the given configuration of JAR provider and Maven coordinates. */

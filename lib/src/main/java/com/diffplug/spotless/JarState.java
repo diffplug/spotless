@@ -42,8 +42,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 public final class JarState implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@SuppressWarnings("unused")
-	private final Set<String> mavenCoordinates;
+	private final TreeSet<String> mavenCoordinates;
 	@SuppressWarnings("unused")
 	private final FileSignature fileSignature;
 
@@ -91,5 +90,10 @@ public final class JarState implements Serializable {
 	 */
 	public ClassLoader getClassLoader() {
 		return SpotlessCache.instance().classloader(this);
+	}
+
+	/** Returns unmodifiable view on sorted Maven coordinates */
+	public Set<String> getMavenCoordinates() {
+		return Collections.unmodifiableSet(mavenCoordinates);
 	}
 }
