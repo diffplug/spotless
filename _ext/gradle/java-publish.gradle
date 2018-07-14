@@ -1,3 +1,13 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
+    }
+}
+
+apply plugin: com.jfrog.bintray.gradle.BintrayPlugin
 apply plugin: 'maven-publish'
 
 task sourcesJar(type: Jar) {
@@ -22,60 +32,58 @@ def lookup = { key, defaultVal ->
 	}
 }
 
-model {
-	publishing {
-		publications {
-			mavenJava(MavenPublication) {
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
 
-				groupId project.ext_group
-				artifactId project.ext_artifactId
-				version project.ext_version
-				from components.java
+			groupId project.ext_group
+			artifactId project.ext_artifactId
+			version project.ext_version
+			from components.java
 
-				pom.withXml {
+			pom.withXml {
 
-					// add MavenCentral requirements to the POM
-					asNode().children().last() + {
-						resolveStrategy = Closure.DELEGATE_FIRST
-						name project.ext_artifactId
-						description project.ext_description
+				// add MavenCentral requirements to the POM
+				asNode().children().last() + {
+					resolveStrategy = Closure.DELEGATE_FIRST
+					name project.ext_artifactId
+					description project.ext_description
+					url "https://github.com/${project.ext_org}/${project.name}"
+					scm {
 						url "https://github.com/${project.ext_org}/${project.name}"
-						scm {
-							url "https://github.com/${project.ext_org}/${project.name}"
-							connection "scm:git:git://github.com/${project.ext_org}/${project.name}"
-							developerConnection "scm:git:ssh:git@github.com/${project.ext_org}/${project.name}"
+						connection "scm:git:git://github.com/${project.ext_org}/${project.name}"
+						developerConnection "scm:git:ssh:git@github.com/${project.ext_org}/${project.name}"
+					}
+					licenses {
+						license {
+							name 'Eclipse Public License - v 1.0'
+							url 'https://www.eclipse.org/legal/epl-v10.html'
+							distribution 'repo'
 						}
-						licenses {
-							license {
-								name 'Eclipse Public License - v 1.0'
-								url 'https://www.eclipse.org/legal/epl-v10.html'
-								distribution 'repo'
-							}
-						}
-						developers {
-							project.ext.developers.each { extId, extValues -> 
-								developer {
-									id extId
-									name extValues['name']
-									email extValues['email']
-								}
+					}
+					developers {
+						project.ext.developers.each { extId, extValues -> 
+							developer {
+								id extId
+								name extValues['name']
+								email extValues['email']
 							}
 						}
 					}
 				}
 			}
 		}
-		if (isSnapshot) {
-			// upload snapshots to oss.sonatype.org
-			repositories {
-				maven {
-					url = lookup('snapshot_url', 'https://oss.sonatype.org/content/repositories/snapshots')
-					credentials {
-						username = lookup('nexus_user', 'unknown_nexus_user')
-						password = lookup('nexus_pass', 'unknown_nexus_pass')
-					}
-				} }
-		}
+	}
+	if (isSnapshot) {
+		// upload snapshots to oss.sonatype.org
+		repositories {
+			maven {
+				url = lookup('snapshot_url', 'https://oss.sonatype.org/content/repositories/snapshots')
+				credentials {
+					username = lookup('nexus_user', 'unknown_nexus_user')
+					password = lookup('nexus_pass', 'unknown_nexus_pass')
+				}
+			} }
 	}
 }
 
