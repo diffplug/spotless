@@ -76,7 +76,8 @@ public abstract class BundleConfig<T extends Enum<T>> {
 	}
 
 	/** Add a set of default bundles with their default states */
-	public void add(@SuppressWarnings("unchecked") T... bundles) {
+	@SuppressWarnings("unchecked")
+	public void add(T... bundles) {
 		Arrays.asList(bundles).forEach(bundle -> add(bundle));
 	}
 
