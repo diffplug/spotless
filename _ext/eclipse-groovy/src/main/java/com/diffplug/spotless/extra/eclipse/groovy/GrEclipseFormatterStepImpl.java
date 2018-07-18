@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-import org.codehaus.groovy.activator.GroovyActivator;
 import org.codehaus.groovy.eclipse.GroovyLogManager;
 import org.codehaus.groovy.eclipse.IGroovyLogger;
 import org.codehaus.groovy.eclipse.TraceCategory;
@@ -52,18 +51,14 @@ public class GrEclipseFormatterStepImpl {
 	 * Value is either 'true' or 'false'
 	 * </p>
 	 */
-	public static final String IGNORE_COMPILER_PROBLEMS = "ignoreCompilerProblems";
+	public static final String IGNORE_FORMATTER_PROBLEMS = "ignoreFormatterProblems";
 
 	private final FormatterPreferencesOnStore preferencesStore;
-	private final boolean ignoreCompilerProblems;
+	private final boolean ignoreFormatterProblems;
 
 	public GrEclipseFormatterStepImpl(final Properties properties) throws Exception {
 		SpotlessLogService logService = new SpotlessLogService();
 		if (SpotlessEclipseFramework.setup(
-				core -> {
-					core.applyDefault();
-					core.add(new GroovyActivator());
-				},
 				config -> {
 					config.applyDefault();
 					config.add(ExtendedLogService.class, logService);
@@ -74,7 +69,7 @@ public class GrEclipseFormatterStepImpl {
 				})) {}
 		PreferenceStore preferences = createPreferences(properties);
 		preferencesStore = new FormatterPreferencesOnStore(preferences);
-		ignoreCompilerProblems = Boolean.parseBoolean(properties.getProperty(IGNORE_COMPILER_PROBLEMS, "false"));
+		ignoreFormatterProblems = Boolean.parseBoolean(properties.getProperty(IGNORE_FORMATTER_PROBLEMS, "false"));
 	}
 
 	/** Formatting Groovy string  */
@@ -84,7 +79,7 @@ public class GrEclipseFormatterStepImpl {
 		TextSelection selectAll = new TextSelection(doc, 0, doc.getLength());
 		GroovyFormatter codeFormatter = new DefaultGroovyFormatter(selectAll, doc, preferencesStore, false);
 		TextEdit edit = codeFormatter.format();
-		if (!ignoreCompilerProblems && errorListener.errorsDetected()) {
+		if (!ignoreFormatterProblems && errorListener.errorsDetected()) {
 			throw new IllegalArgumentException(errorListener.toString());
 		}
 		edit.apply(doc);

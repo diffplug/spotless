@@ -15,7 +15,7 @@
  */
 package com.diffplug.spotless.extra.eclipse.groovy;
 
-import static com.diffplug.spotless.extra.eclipse.groovy.GrEclipseFormatterStepImpl.IGNORE_COMPILER_PROBLEMS;
+import static com.diffplug.spotless.extra.eclipse.groovy.GrEclipseFormatterStepImpl.IGNORE_FORMATTER_PROBLEMS;
 import static org.codehaus.groovy.eclipse.refactoring.PreferenceConstants.*;
 import static org.junit.Assert.assertEquals;
 
@@ -35,28 +35,28 @@ public class GrEclipseFormatterStepImplTest {
 
 	@Test
 	public void defaultFormat() throws Throwable {
-		String output = format(TEST_DATA.input("nominal.groovy"), config -> {});
+		String output = format(TEST_DATA.input("nominal.test"), config -> {});
 		assertEquals("Unexpected default formatting.",
-				TEST_DATA.expected("nominal.groovy"), output);
+				TEST_DATA.expected("nominal.test"), output);
 	}
 
 	@Test
 	public void validConfiguration() throws Throwable {
-		String output = format(TEST_DATA.input("nominal.groovy"), config -> {
+		String output = format(TEST_DATA.input("nominal.test"), config -> {
 			config.put(GROOVY_FORMATTER_REMOVE_UNNECESSARY_SEMICOLONS, "true");
 		});
 		assertEquals("Unexpected formatting fro custom configuration.",
-				TEST_DATA.expected("nominal.groovy").replace(";", ""), output);
+				TEST_DATA.expected("nominal.test").replace(";", ""), output);
 	}
 
 	@Test
 	public void invalidConfiguration() throws Throwable {
-		String output = format(TEST_DATA.input("nominal.groovy"), config -> {
+		String output = format(TEST_DATA.input("nominal.test"), config -> {
 			config.put(GROOVY_FORMATTER_INDENTATION, JavaCore.SPACE);
 			config.put(GROOVY_FORMATTER_INDENTATION_SIZE, "noInteger");
 		});
 		assertEquals("Groovy formatter does not replace invalid preferences by their defaults.",
-				TEST_DATA.expected("nominal.groovy").replace("\t", "    "), output);
+				TEST_DATA.expected("nominal.test").replace("\t", "    "), output);
 	}
 
 	/** Test the handling AntlrParserPlugin exceptions by GroovyLogManager.manager logging */
@@ -80,7 +80,7 @@ public class GrEclipseFormatterStepImplTest {
 	@Test
 	public void ignoreCompilerProblems() throws Throwable {
 		Consumer<Properties> ignoreCompilerProblems = config -> {
-			config.setProperty(IGNORE_COMPILER_PROBLEMS, "true");
+			config.setProperty(IGNORE_FORMATTER_PROBLEMS, "true");
 		};
 		format(PARSER_EXCEPTION, ignoreCompilerProblems);
 		format(SCANNER_EXCEPTION, ignoreCompilerProblems);

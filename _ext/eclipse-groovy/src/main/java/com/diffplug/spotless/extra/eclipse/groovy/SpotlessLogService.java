@@ -25,7 +25,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.core.internal.runtime.InternalPlatform;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.equinox.log.ExtendedLogReaderService;
 import org.eclipse.equinox.log.ExtendedLogService;
 import org.eclipse.equinox.log.LogFilter;
@@ -33,32 +32,44 @@ import org.eclipse.equinox.log.Logger;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogEntry;
+import org.osgi.service.log.LogLevel;
 import org.osgi.service.log.LogListener;
+import org.osgi.service.log.LogService;
+import org.osgi.service.log.LoggerConsumer;
 
-/** Simple log service. */
+/**
+ * Simple log service for errors and warnings.
+ * Unsupported methods are marked as deprecated and throw an {@link UnsupportedOperationException}
+ */
 public class SpotlessLogService implements ExtendedLogService, ExtendedLogReaderService {
 
-	public final static Set<Integer> QUIET_SEVERITIES = Collections.unmodifiableSet(new HashSet<Integer>(Arrays.asList(IStatus.INFO, IStatus.OK)));
-	public final static Set<Integer> FATAL_SEVERITIES = Collections.unmodifiableSet(new HashSet<Integer>(Arrays.asList(IStatus.ERROR, IStatus.CANCEL)));
-
+	public final static Set<LogLevel> FATAL_SEVERITIES = Collections.unmodifiableSet(new HashSet<LogLevel>(Arrays.asList(LogLevel.ERROR, LogLevel.WARN)));
 	private final Set<LogListener> listener = new HashSet<LogListener>();
 
 	@Override
+	@Deprecated
+	//Backward compatibility with Eclipse OSGI 3.12
 	public void log(int level, String message) {}
 
 	@Override
+	@Deprecated
+	//Backward compatibility with Eclipse OSGI 3.12
 	public void log(int level, String message, Throwable exception) {
 		log(level, message);
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Override
+	@Deprecated
+	//Backward compatibility with Eclipse OSGI 3.12
 	public void log(ServiceReference sr, int level, String message) {
 		log(level, message);
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Override
+	@Deprecated
+	//Backward compatibility with Eclipse OSGI 3.12
 	public void log(ServiceReference sr, int level, String message, Throwable exception) {
 		log(level, message, exception);
 	}
@@ -68,14 +79,32 @@ public class SpotlessLogService implements ExtendedLogService, ExtendedLogReader
 		log(level, message);
 	}
 
+	@SuppressWarnings("deprecation") ////Backward compatibility with Eclipse OSGI 3.12
 	@Override
 	public void log(Object context, int level, String message, Throwable exception) {
-		log(new SimpleLogEntry(level, message, exception));
+		LogLevel logLevel;
+		switch (level) {
+		case LogService.LOG_DEBUG:
+			logLevel = LogLevel.DEBUG;
+			break;
+		case LogService.LOG_INFO:
+			logLevel = LogLevel.INFO;
+			break;
+		case LogService.LOG_ERROR:
+			logLevel = LogLevel.ERROR;
+			break;
+		case LogService.LOG_WARNING:
+			logLevel = LogLevel.WARN;
+			break;
+		default:
+			logLevel = LogLevel.AUDIT;
+		}
+		log(new SimpleLogEntry(logLevel, message, exception));
 	}
 
 	@Override
 	public boolean isLoggable(int level) {
-		return !QUIET_SEVERITIES.contains(level);
+		return true;
 	}
 
 	@Override
@@ -108,20 +137,20 @@ public class SpotlessLogService implements ExtendedLogService, ExtendedLogReader
 	}
 
 	public void log(LogEntry entry) {
-		if (QUIET_SEVERITIES.contains(entry.getLevel())) {
-			return;
-		}
-		if (FATAL_SEVERITIES.contains(entry.getLevel())
-				&& 0 != listener.size()) {
-			System.err.println(entry.toString());
-		}
-		synchronized (listener) {
-			listener.stream().forEach(l -> l.logged(entry));
+		if (FATAL_SEVERITIES.contains(entry.getLogLevel())) {
+			synchronized (listener) {
+				if (0 != listener.size()) {
+					System.err.println(entry.toString());
+					listener.stream().forEach(l -> l.logged(entry));
+				}
+			}
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
+	@Deprecated
+	//Backward compatibility with Eclipse OSGI 3.12
 	public Enumeration getLog() {
 		return Collections.emptyEnumeration(); //We do not provide historical information
 	}
@@ -132,21 +161,219 @@ public class SpotlessLogService implements ExtendedLogService, ExtendedLogReader
 
 	}
 
+	@Override
+	public org.osgi.service.log.Logger getLogger(Class<?> clazz) {
+		return this;
+	}
+
+	@Override
+	@Deprecated
+	public <L extends org.osgi.service.log.Logger> L getLogger(String name, Class<L> loggerType) {
+		throw new UnsupportedOperationException("Logger Factory currently not supported.");
+	}
+
+	@Override
+	@Deprecated
+	public <L extends org.osgi.service.log.Logger> L getLogger(Class<?> clazz, Class<L> loggerType) {
+		return getLogger(getName(), loggerType);
+	}
+
+	@Override
+	@Deprecated
+	public <L extends org.osgi.service.log.Logger> L getLogger(Bundle bundle, String name, Class<L> loggerType) {
+		return getLogger(getName(), loggerType);
+	}
+
+	@Override
+	public boolean isTraceEnabled() {
+		return false;
+	}
+
+	@Override
+	public void trace(String message) {
+		log(new SimpleLogEntry(LogLevel.TRACE, message));
+	}
+
+	@Override
+	public void trace(String format, Object arg) {
+		trace(String.format(format, arg));
+	}
+
+	@Override
+	public void trace(String format, Object arg1, Object arg2) {
+		trace(String.format(format, arg1, arg2));
+	}
+
+	@Override
+	public void trace(String format, Object... arguments) {
+		trace(String.format(format, arguments));
+	}
+
+	@Override
+	@Deprecated
+	public <E extends Exception> void trace(LoggerConsumer<E> consumer) throws E {
+		throw new UnsupportedOperationException("Logger Consumer currently not supported.");
+	}
+
+	@Override
+	public boolean isDebugEnabled() {
+		return false;
+	}
+
+	@Override
+	public void debug(String message) {
+		log(new SimpleLogEntry(LogLevel.DEBUG, message));
+	}
+
+	@Override
+	public void debug(String format, Object arg) {
+		debug(String.format(format, arg));
+	}
+
+	@Override
+	public void debug(String format, Object arg1, Object arg2) {
+		debug(String.format(format, arg1, arg2));
+	}
+
+	@Override
+	public void debug(String format, Object... arguments) {
+		trace(String.format(format, arguments));
+	}
+
+	@Override
+	@Deprecated
+	public <E extends Exception> void debug(LoggerConsumer<E> consumer) throws E {
+		throw new UnsupportedOperationException("Logger Consumer currently not supported.");
+	}
+
+	@Override
+	public boolean isInfoEnabled() {
+		return false;
+	}
+
+	@Override
+	public void info(String message) {
+		log(new SimpleLogEntry(LogLevel.INFO, message));
+	}
+
+	@Override
+	public void info(String format, Object arg) {
+		info(String.format(format, arg));
+	}
+
+	@Override
+	public void info(String format, Object arg1, Object arg2) {
+		info(String.format(format, arg1, arg2));
+	}
+
+	@Override
+	public void info(String format, Object... arguments) {
+		info(String.format(format, arguments));
+	}
+
+	@Override
+	@Deprecated
+	public <E extends Exception> void info(LoggerConsumer<E> consumer) throws E {
+		throw new UnsupportedOperationException("Logger Consumer currently not supported.");
+	}
+
+	@Override
+	public boolean isWarnEnabled() {
+		return true;
+	}
+
+	@Override
+	public void warn(String message) {
+		log(new SimpleLogEntry(LogLevel.WARN, message));
+	}
+
+	@Override
+	public void warn(String format, Object arg) {
+		warn(String.format(format, arg));
+	}
+
+	@Override
+	public void warn(String format, Object arg1, Object arg2) {
+		warn(String.format(format, arg1, arg2));
+	}
+
+	@Override
+	public void warn(String format, Object... arguments) {
+		warn(String.format(format, arguments));
+	}
+
+	@Override
+	@Deprecated
+	public <E extends Exception> void warn(LoggerConsumer<E> consumer) throws E {
+		throw new UnsupportedOperationException("Logger Consumer currently not supported.");
+	}
+
+	@Override
+	public boolean isErrorEnabled() {
+		return true;
+	}
+
+	@Override
+	public void error(String message) {
+		log(new SimpleLogEntry(LogLevel.ERROR, message));
+	}
+
+	@Override
+	public void error(String format, Object arg) {
+		error(String.format(format, arg));
+	}
+
+	@Override
+	public void error(String format, Object arg1, Object arg2) {
+		error(String.format(format, arg1, arg2));
+	}
+
+	@Override
+	public void error(String format, Object... arguments) {
+		error(String.format(format, arguments));
+	}
+
+	@Override
+	@Deprecated
+	public <E extends Exception> void error(LoggerConsumer<E> consumer) throws E {
+		throw new UnsupportedOperationException("Logger Consumer currently not supported.");
+	}
+
+	@Override
+	public void audit(String message) {
+		log(new SimpleLogEntry(LogLevel.AUDIT, message));
+	}
+
+	@Override
+	public void audit(String format, Object arg) {
+		audit(String.format(format, arg));
+	}
+
+	@Override
+	public void audit(String format, Object arg1, Object arg2) {
+		audit(String.format(format, arg1, arg2));
+	}
+
+	@Override
+	public void audit(String format, Object... arguments) {
+		audit(String.format(format, arguments));
+	}
+
 	public static class SimpleLogEntry implements LogEntry {
 
-		private final int level;
+		private final LogLevel level;
 		private final String message;
 		private final Optional<Throwable> execption;
 
-		public SimpleLogEntry(int level, String message) {
+		public SimpleLogEntry(LogLevel level, String message) {
 			this(level, message, Optional.empty());
 		}
 
-		public SimpleLogEntry(int level, String message, Throwable execption) {
+		public SimpleLogEntry(LogLevel level, String message, Throwable execption) {
 			this(level, message, Optional.of(execption));
 		}
 
-		private SimpleLogEntry(int level, String message, Optional<Throwable> execption) {
+		private SimpleLogEntry(LogLevel level, String message, Optional<Throwable> execption) {
 			this.level = level;
 			this.message = message;
 			this.execption = execption;
@@ -158,15 +385,29 @@ public class SpotlessLogService implements ExtendedLogService, ExtendedLogReader
 			return InternalPlatform.getDefault().getBundleContext().getBundle();
 		}
 
-		@SuppressWarnings("rawtypes")
+		@SuppressWarnings({"rawtypes", "unchecked"})
 		@Override
 		public ServiceReference getServiceReference() {
 			return null;
 		}
 
 		@Override
+		@Deprecated
+		//Backward compatibility with Eclipse OSGI 3.12
 		public int getLevel() {
-			return level;
+			switch (level) {
+			case DEBUG:
+			case TRACE:
+				return LogService.LOG_DEBUG;
+			case AUDIT:
+			case INFO:
+				return LogService.LOG_INFO;
+			case ERROR:
+				return LogService.LOG_ERROR;
+			case WARN:
+				return LogService.LOG_WARNING;
+			}
+			return LogService.LOG_ERROR; //Don't fail here. Just log it as error. This is anyway just for debugging internal problems.
 		}
 
 		@Override
@@ -195,6 +436,31 @@ public class SpotlessLogService implements ExtendedLogService, ExtendedLogReader
 				execption.get().printStackTrace(new PrintWriter(result));
 			}
 			return result.toString();
+		}
+
+		@Override
+		public LogLevel getLogLevel() {
+			return level;
+		}
+
+		@Override
+		public String getLoggerName() {
+			return this.getClass().getSimpleName();
+		}
+
+		@Override
+		public long getSequence() {
+			return 0;
+		}
+
+		@Override
+		public String getThreadInfo() {
+			return null;
+		}
+
+		@Override
+		public StackTraceElement getLocation() {
+			return null;
 		}
 
 	}
