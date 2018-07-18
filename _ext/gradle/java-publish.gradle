@@ -40,6 +40,8 @@ publishing {
 			artifactId project.ext_artifactId
 			version project.ext_version
 			from components.java
+			artifact sourcesJar
+			artifact javadocJar
 
 			pom.withXml {
 
