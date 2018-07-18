@@ -27,6 +27,7 @@ import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
+@Deprecated
 public class EclipseFormatterStepTest extends ResourceHarness {
 	@Test
 	public void loadPropertiesSettings() throws Throwable {

@@ -33,7 +33,8 @@ public class KtLintStepTest extends ResourceHarness {
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
 				.testException("kotlin/ktlint/unsolvable.dirty", assertion -> {
 					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("Wildcard import");
+					assertion.hasMessage("Error on line: 1, column: 1\n" +
+							"Wildcard import");
 				});
 	}
 

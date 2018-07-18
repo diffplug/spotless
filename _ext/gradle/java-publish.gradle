@@ -83,7 +83,8 @@ publishing {
 					username = lookup('nexus_user', 'unknown_nexus_user')
 					password = lookup('nexus_pass', 'unknown_nexus_pass')
 				}
-			} }
+			} 
+    }
 	}
 }
 
