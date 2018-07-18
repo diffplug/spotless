@@ -105,7 +105,7 @@ public final class SpotlessEclipseFramework {
 		 * The resources plugin initialized the Eclipse workspace and allows URL look-up.
 		 * Most formatters using the workspace to resolve URLs or create
 		 * file interfaces.
-		 * @see org.eclipse.core.resources.IFile
+		 * See {@code org.eclipse.core.resources.IFile} implementation for details.
 		 */
 		RESOURCES(org.eclipse.core.resources.ResourcesPlugin.class);
 

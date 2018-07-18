@@ -18,6 +18,7 @@ package com.diffplug.spotless.extra.eclipse.base.osgi;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.Optional;
 
@@ -140,6 +141,11 @@ public class ServiceCollection implements SpotlessEclipseServiceConfig {
 		@edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "EQ_COMPARETO_USE_OBJECT_EQUALS")
 		public int compareTo(Object reference) {
 			return (this == reference) ? 0 : 1;
+		}
+
+		@Override
+		public Dictionary<String, Object> getProperties() {
+			return new Hashtable<String, Object>(properties);
 		}
 
 	}

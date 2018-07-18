@@ -28,7 +28,7 @@ import com.diffplug.spotless.extra.eclipse.base.osgi.BundleConfig;
  * Hence they do not require a registration, which allows a lightweight
  * setup.
  * </p>
- * @see org.eclipse.core.internal.runtime.PlatformActivator
+ * See {@code org.eclipse.core.internal.runtime.PlatformActivator} implementation for details.
  */
 public class SpotlessEclipseCoreConfig extends BundleConfig<SpotlessEclipseFramework.DefaultBundles> {
 
