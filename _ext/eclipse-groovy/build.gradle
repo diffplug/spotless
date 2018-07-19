@@ -1,0 +1,179 @@
+import java.io.File
+
+import org.apache.commons.io.filefilter.DirectoryFileFilter
+
+plugins {
+	// p2 dependencies
+	id 'com.diffplug.gradle.p2.asmaven' version '3.9.0'
+}
+
+apply from: rootProject.file('../gradle/java-setup.gradle')
+apply from: rootProject.file('../gradle/java-publish.gradle')
+
+// The dependencies to pull from GrEclipse's p2 repositories
+def grEclipseDeps = [
+	'org.codehaus.groovy.eclipse.refactoring':'+', // GroovyFormatter and related
+
+	// The following lists does not reflect the complete transitive required packages, but
+	// the once used during code formatting
+	'org.codehaus.groovy':'+', // Groovy compiler patches supporting use within GrEclipse and Groovy itself
+	'org.codehaus.groovy.eclipse.core':'+', // Groovy core classes (provides central logging used by formatter)
+	'org.eclipse.jdt.core':"${VER_JDT_PATCH}", // Patches org.eclipse.jdt.core classes supporting use within GrEclipse (provides AST generator)
+	'org.eclipse.jdt.groovy.core':'+' // Extends org.eclipse.jdt.core for Groovy
+]
+
+ext {
+	developers = [
+		fvgh: [ name: 'Frank Vennemeyer', email: 'frankgh@zoho.com' ],
+	]
+
+	//Include/Excludes form the JARs, which goes into a fat-jar with the spottless formatter interface.
+	jarInclude = [
+		'**/*.class', // Take all classes
+		'**/*.java', // ... and sources.
+		'**/*.properties', // Text resources (for messages, etc)
+		'**/*.xml', // Plugin XML and other resources
+		'*.html', // License information about the included JARs,
+		'META-INF/**' // Information about the origin of the individual class files
+	]
+	jarExclude = [
+		'META-INF/*.RSA', // The eclipse jars are signed, and our fat-jar breaks the signatures
+		'META-INF/*.SF', // ... so all signatures are filtered
+	]
+
+	//Some JARs include JARs themselfs
+	internalJars = [
+		//Jars included by org.codehaus.groovy
+		"**/groovy-all-${VER_GROOVY}-indy", // Use Groovy compiler compatible with GrEclipse instead of localGroovy
+		'**/groovy-eclipse', // Patches/Overrides some of the Groovy compiler classes
+		'**/eclipse-trace', // Provides logging capabilities for groovy-eclipse
+
+		//Jars included by org.eclipse.jdt.groovy.core
+		'**/nlcl' //Non locking class loader used by groovy compiler
+	]
+
+	// The directory contains all external classes for the fat-jar
+	embeddedClassesDirName = 'build/embeddedClasses'
+	embeddedClassesDir = project.file(embeddedClassesDirName)
+	embeddedClassesLibDirName = 'build/embeddedClasses/lib'
+	embeddedClassesLibDir = project.file(embeddedClassesLibDirName)
+}
+
+// build a maven repo in our build folder containing these artifacts
+p2AsMaven {
+	group 'p2', {
+		repo "http://dist.springsource.org/release/GRECLIPSE/e${VER_ECLIPSE}"
+		grEclipseDeps.keySet.each { p2.addIU(it) }
+	}
+}
+
+configurations {
+	embeddedJars // GrEclipse JARs the fat-jar is based uppon
+}
+
+dependencies {
+	grEclipseDeps.each { groupArtifact, version ->
+		embeddedJars "p2:${groupArtifact}:${version}"
+	}
+
+	// The resulting fat-jar includes the classes from GRECLIPSE.
+	compile files(embeddedClassesDir)
+
+	compile "com.diffplug.spotless:spotless-eclipse-base:${VER_SPOTLESS_ECLISPE_BASE}"
+	// Provides text partitioners for formatters
+	compile ("org.eclipse.platform:org.eclipse.jface.text:${VER_ECLISPE_JFACE}") {
+		exclude group: 'org.eclipse.platform', module: 'org.eclipse.swt'
+	}
+}
+
+jar {
+	// this embeds the Eclipse-Groovy clases into our "fat JAR"
+	from embeddedClassesDir
+}
+
+//////////
+// Test //
+//////////
+sourceSets {
+	// Use JAR file with all resources for Eclipse-Groovy integration-tests
+	test.runtimeClasspath = jar.outputs.files + sourceSets.test.output + sourceSets.test.compileClasspath
+}
+
+///////////////////
+// External Deps //
+///////////////////
+
+task unjarEmbeddedClasses {
+	description = "Copies filtered set of embedded classes from the Eclise/GrEclipse dependencies to '${project.relativePath(embeddedClassesDir)}'."
+	inputs.files(configurations.embeddedJars)
+	inputs.property('internalJars', internalJars)
+	inputs.property('jarInclude', jarInclude)
+	inputs.property('jarExclude', jarExclude)
+	outputs.file(embeddedClassesDir)
+
+	doLast {
+		embeddedClassesDir.deleteDir()
+		embeddedClassesDir.mkdirs()
+		embeddedClassesLibDir.deleteDir()
+		embeddedClassesLibDir.mkdirs()
+		configurations.embeddedJars.each {
+			unjar(it, embeddedClassesDir)
+		}
+		//Unpack internal JARs. Maintain the order defined in internalJars
+		internalJars.each {
+			fileTree(embeddedClassesDir).include("${it}.jar").each {
+				unjar(it, embeddedClassesDir)
+				delete(it)
+			}
+		}
+	}
+}
+
+def unjar(File jarFile, File destDir) {
+	ant.unjar(src: jarFile, dest: destDir) {
+		patternset {
+			jarInclude.each {
+				include(name: "${it}")
+			}
+			internalJars.each {
+				include(name: "**/${it}.jar")
+			}
+			jarExclude.each {
+				exclude(name: "${it}")
+			}
+		}
+	}
+	//Provide Fat JAR resources (following naming convention of spotless-eclipse-base)
+	def fat_jar_resource_dir = jarFile.getName().split('-')[0]
+	ant.move(todir: "${destDir}/${fat_jar_resource_dir}/META-INF", quiet: 'true', failonerror: 'false') {
+		fileset(dir: "${destDir}/META-INF")
+	}
+	//Keep licenses and other human readable information for transparency
+	ant.move(todir: "${destDir}/${fat_jar_resource_dir}", quiet: 'true') {
+		fileset(dir: destDir) {
+		    include(name: 'META-INF')  
+			include(name: '*')
+			type(type: 'file')
+			exclude(name: '*jar-*')
+			exclude(name: '*.jar')
+		}
+	}
+}
+
+tasks.compileJava.dependsOn(unjarEmbeddedClasses)
+
+/////////
+// IDE //
+/////////
+
+apply plugin: 'eclipse'
+
+// always create fresh projects
+tasks.eclipse.dependsOn(cleanEclipse)
+// Encure that the dependent classes are preovided for compilation if project is build via Eclipse instead of command line
+tasks.eclipseClasspath.dependsOn(unjarEmbeddedClasses)
+
+apply plugin: 'idea'
+
+// Encure that the dependent classes are preovided for compilation if project is build via Eclipse instead of command line
+tasks.idea.dependsOn(unjarEmbeddedClasses)

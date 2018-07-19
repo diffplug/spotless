@@ -13,15 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless.groovy.eclipse;
+package com.diffplug.spotless.extra.eclipse.groovy;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
+import org.codehaus.groovy.eclipse.GroovyLogManager;
+import org.codehaus.groovy.eclipse.IGroovyLogger;
+import org.codehaus.groovy.eclipse.TraceCategory;
 import org.codehaus.groovy.eclipse.core.GroovyCoreActivator;
 import org.codehaus.groovy.eclipse.refactoring.formatter.DefaultGroovyFormatter;
 import org.codehaus.groovy.eclipse.refactoring.formatter.FormatterPreferencesOnStore;
@@ -29,54 +33,86 @@ import org.codehaus.groovy.eclipse.refactoring.formatter.GroovyFormatter;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.equinox.log.ExtendedLogReaderService;
+import org.eclipse.equinox.log.ExtendedLogService;
 import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.text.edits.TextEdit;
 
+import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework;
+
 /** Spotless-Formatter step which calls out to the Groovy-Eclipse formatter. */
 public class GrEclipseFormatterStepImpl {
+	/**
+	 * Groovy compiler problems can be ignored.
+	 * <p>
+	 * Value is either 'true' or 'false'
+	 * </p>
+	 */
+	public static final String IGNORE_FORMATTER_PROBLEMS = "ignoreFormatterProblems";
+
 	private final FormatterPreferencesOnStore preferencesStore;
+	private final boolean ignoreFormatterProblems;
 
 	public GrEclipseFormatterStepImpl(final Properties properties) throws Exception {
+		SpotlessLogService logService = new SpotlessLogService();
+		if (SpotlessEclipseFramework.setup(
+				config -> {
+					config.applyDefault();
+					config.add(ExtendedLogService.class, logService);
+					config.add(ExtendedLogReaderService.class, logService);
+				},
+				plugins -> {
+					plugins.add(new GroovyCoreActivator());
+				})) {}
 		PreferenceStore preferences = createPreferences(properties);
 		preferencesStore = new FormatterPreferencesOnStore(preferences);
+		ignoreFormatterProblems = Boolean.parseBoolean(properties.getProperty(IGNORE_FORMATTER_PROBLEMS, "false"));
 	}
 
+	/** Formatting Groovy string  */
 	public String format(String raw) throws Exception {
 		IDocument doc = new Document(raw);
 		GroovyErrorListener errorListener = new GroovyErrorListener();
 		TextSelection selectAll = new TextSelection(doc, 0, doc.getLength());
 		GroovyFormatter codeFormatter = new DefaultGroovyFormatter(selectAll, doc, preferencesStore, false);
 		TextEdit edit = codeFormatter.format();
-		if (errorListener.errorsDetected()) {
+		if (!ignoreFormatterProblems && errorListener.errorsDetected()) {
 			throw new IllegalArgumentException(errorListener.toString());
 		}
 		edit.apply(doc);
 		return doc.get();
 	}
 
-	private static class GroovyErrorListener implements ILogListener {
+	/**
+	 * Eclipse Groovy formatter does not signal problems by its return value, but by logging errors.
+	 */
+	private static class GroovyErrorListener implements ILogListener, IGroovyLogger {
 
 		private final List<String> errors;
 
 		public GroovyErrorListener() {
-			errors = new LinkedList<String>();
+			/*
+			 * We need a synchronized list here, in case multiple instantiations
+			 * run in parallel.
+			 */
+			errors = Collections.synchronizedList(new ArrayList<String>());
 			ILog groovyLogger = GroovyCoreActivator.getDefault().getLog();
 			groovyLogger.addLogListener(this);
+			GroovyLogManager.manager.addLogger(this);
 		}
 
 		@Override
 		public void logging(final IStatus status, final String plugin) {
-			if (!status.isOK()) {
-				errors.add(status.getMessage());
-			}
+			errors.add(status.getMessage());
 		}
 
 		public boolean errorsDetected() {
 			ILog groovyLogger = GroovyCoreActivator.getDefault().getLog();
 			groovyLogger.removeLogListener(this);
+			GroovyLogManager.manager.removeLogger(this);
 			return 0 != errors.size();
 		}
 
@@ -94,6 +130,22 @@ public class GrEclipseFormatterStepImpl {
 			}
 
 			return string.toString();
+		}
+
+		@Override
+		public boolean isCategoryEnabled(TraceCategory cat) {
+			/*
+			 * Note that the compiler errors are just additionally caught here.
+			 * They are also printed directly to System.err.
+			 * See org.codehaus.jdt.groovy.internal.compiler.ast.GroovyCompilationUnitDeclaration.recordProblems
+			 * for details.
+			 */
+			return TraceCategory.COMPILER.equals(cat);
+		}
+
+		@Override
+		public void log(TraceCategory arg0, String arg1) {
+			errors.add(arg1);
 		}
 
 	}
