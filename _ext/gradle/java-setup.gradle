@@ -14,7 +14,11 @@ apply plugin: 'java'
 
 sourceCompatibility = ext_VER_JAVA
 targetCompatibility = ext_VER_JAVA
-tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
+tasks.withType(JavaCompile) { 
+	options.encoding = 'UTF-8'
+	options.compilerArgs << "-Xlint:unchecked"
+	options.compilerArgs << "-Xlint:deprecation" 
+}
 
 // Use file locking
 configurations {

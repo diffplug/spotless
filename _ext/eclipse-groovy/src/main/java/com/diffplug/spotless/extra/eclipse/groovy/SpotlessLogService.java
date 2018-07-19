@@ -147,11 +147,10 @@ public class SpotlessLogService implements ExtendedLogService, ExtendedLogReader
 		}
 	}
 
-	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
 	@Deprecated
 	//Backward compatibility with Eclipse OSGI 3.12
-	public Enumeration getLog() {
+	public Enumeration<LogEntry> getLog() {
 		return Collections.emptyEnumeration(); //We do not provide historical information
 	}
 
