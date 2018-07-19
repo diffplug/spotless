@@ -42,7 +42,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 public final class JarState implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private final TreeSet<String> mavenCoordinates;
+	private final Set<String> mavenCoordinates;
 	@SuppressWarnings("unused")
 	private final FileSignature fileSignature;
 
