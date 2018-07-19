@@ -29,8 +29,10 @@ public final class EclipseJdtFormatterStep {
 	private EclipseJdtFormatterStep() {}
 
 	private static final String NAME = "eclipse jdt formatter";
-	private static final String FORMATTER_CLASS = "com.diffplug.gradle.spotless.java.eclipse.EclipseFormatterStepImpl";
-	private static final String DEFAULT_VERSION = "4.7.2";
+	private static final String FORMATTER_CLASS_OLD = "com.diffplug.gradle.spotless.java.eclipse.EclipseFormatterStepImpl";
+	private static final String FORMATTER_CLASS = "com.diffplug.spotless.extra.eclipse.java.EclipseJdtFormatterStepImpl";
+	private static final String MAVEN_GROUP_ARTIFACT = "com.diffplug.spotless:spotless-eclipse-jdt";
+	private static final String DEFAULT_VERSION = "4.8.0";
 	private static final String FORMATTER_METHOD = "format";
 
 	public static String defaultVersion() {
@@ -43,9 +45,16 @@ public final class EclipseJdtFormatterStep {
 	}
 
 	private static FormatterFunc apply(State state) throws Exception {
-		Class<?> formatterClazz = state.loadClass(FORMATTER_CLASS);
+		Class<?> formatterClazz = getClass(state);
 		Object formatter = formatterClazz.getConstructor(Properties.class).newInstance(state.getPreferences());
 		Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
 		return input -> (String) method.invoke(formatter, input);
+	}
+
+	private static Class<?> getClass(State state) {
+		if (state.getMavenCoordinate(MAVEN_GROUP_ARTIFACT).isPresent()) {
+			return state.loadClass(FORMATTER_CLASS);
+		}
+		return state.loadClass(FORMATTER_CLASS_OLD);
 	}
 }

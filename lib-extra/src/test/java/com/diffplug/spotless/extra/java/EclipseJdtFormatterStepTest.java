@@ -24,7 +24,7 @@ public class EclipseJdtFormatterStepTest extends EclipseCommonTests {
 
 	@Override
 	protected String[] getSupportedVersions() {
-		return new String[]{"4.6.1", "4.6.3", "4.7.0", "4.7.1", "4.7.2"};
+		return new String[]{"4.6.1", "4.6.3", "4.7.0", "4.7.1", "4.7.2", "4.8.0"};
 	}
 
 	@Override
