@@ -7,6 +7,7 @@ You might be looking for:
 
 ### Version 1.14.0-SNAPSHOT - TBD (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/snapshot/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/snapshot/), [snapshot repo](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/))
 
+* Updated default eclipse-jdt from 4.7.2 to 4.8.0 ([#239](https://github.com/diffplug/spotless/pull/239)). New version fixes a bug preventing Java code formatting within JavaDoc comments ([#191](https://github.com/diffplug/spotless/issues/191)).
 * Eclipse formatter versions decoupled from Spotless formatter step implementations to allow independent updates of M2 based Eclipse dependencies. ([#253](https://github.com/diffplug/spotless/pull/253))
 
 ### Version 1.13.0 - June 1st 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.11.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.13.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
