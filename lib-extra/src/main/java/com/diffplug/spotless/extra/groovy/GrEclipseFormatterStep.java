@@ -34,7 +34,7 @@ public final class GrEclipseFormatterStep {
 	private static final String NAME = "groovy eclipse formatter";
 	private static final String FORMATTER_CLASS = "com.diffplug.spotless.extra.eclipse.groovy.GrEclipseFormatterStepImpl";
 	private static final String FORMATTER_CLASS_OLD = "com.diffplug.gradle.spotless.groovy.eclipse.GrEclipseFormatterStepImpl";
-	private static final String MAVEN_GROUP_ARTIFACT = "com.diffplug.spotless:	spotless-eclipse-groovy";
+	private static final String MAVEN_GROUP_ARTIFACT = "com.diffplug.spotless:spotless-eclipse-groovy";
 	private static final String DEFAULT_VERSION = "4.8.0";
 	private static final String FORMATTER_METHOD = "format";
 
@@ -63,7 +63,8 @@ public final class GrEclipseFormatterStep {
 	}
 
 	private static FormatterFunc apply(EclipseBasedStepBuilder.State state) throws Exception {
-		Class<?> formatterClazz = getClass(state);		Object formatter = formatterClazz.getConstructor(Properties.class).newInstance(state.getPreferences());
+		Class<?> formatterClazz = getClass(state);
+		Object formatter = formatterClazz.getConstructor(Properties.class).newInstance(state.getPreferences());
 		Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
 		return input -> {
 			try {
