@@ -2,7 +2,7 @@
 
 ### Version 1.14.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-maven-plugin/))
 
-* Updated default eclipse-jdt from 4.7.2 to 4.8.0 ([#239](https://github.com/diffplug/spotless/pull/239)). New version fixes a bug preventing Java code formatting within JavaDoc comments ([#191](https://github.com/diffplug/spotless/issues/191)).
+* Updated default eclipse-jdt from 4.7.2 to 4.7.3a ([#263](https://github.com/diffplug/spotless/pull/263)). New version fixes a bug preventing Java code formatting within JavaDoc comments ([#191](https://github.com/diffplug/spotless/issues/191)).
 * Require 3.1.0+ version of Maven ([#259](https://github.com/diffplug/spotless/pull/259)).
 * Eclipse formatter versions decoupled from Spotless formatter step implementations to allow independent updates of M2 based Eclipse dependencies. ([#253](https://github.com/diffplug/spotless/pull/253))
 
