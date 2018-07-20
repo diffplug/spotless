@@ -191,7 +191,11 @@ spotless {
 }
 ```
 
-The [Groovy-Eclipse](https://github.com/groovy/groovy-eclipse) formatter is based on the Eclipse Java formatter as used by `eclipseFormatFile`. It uses the same configuration parameters plus a few additional ones.  These parameters can be configured within a single file, like the Java properties file [greclipse.properties](../lib-extra/src/test/resources/groovy/greclipse/format/greclipse.properties) in the previous example.  The formatter step can also load the [exported Eclipse properties](../ECLIPSE_SCREENSHOTS.md) and augment it with the `org.codehaus.groovy.eclipse.ui.prefs` from the Eclipse workspace as shown below.
+The [Groovy-Eclipse](https://github.com/groovy/groovy-eclipse) formatter is based on the Eclipse Java formatter as used by `eclipseFormatFile`. It uses the same configuration parameters plus a few additional ones.  These parameters can be configured within a single file, like the Java properties file [greclipse.properties](../lib-extra/src/test/resources/groovy/greclipse/format/greclipse.properties) in the previous example. The formatter step can also load the [exported Eclipse properties](../ECLIPSE_SCREENSHOTS.md) and augment it with the `org.codehaus.groovy.eclipse.ui.prefs` from the Eclipse workspace as shown below.
+
+[Groovy-Eclipse](https://github.com/groovy/groovy-eclipse) formatter errors/warnings lead
+per default to a build failure. This behavior can be changed by adding the property/key value: `ignoreFormatterProblems=true` to the configuration. In this scenario, files
+causing problems, will not be modified by this formatter step.
 
 ```gradle
 spotless {
