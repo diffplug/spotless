@@ -1,0 +1,30 @@
+apply from: rootProject.file('../gradle/java-setup.gradle')
+apply from: rootProject.file('../gradle/java-publish.gradle')
+
+ext {
+	developers = [
+		fvgh: [ name: 'Frank Vennemeyer', email: 'frankgh@zoho.com' ]
+	]
+}
+
+dependencies {
+	compile("org.eclipse.platform:org.eclipse.core.resources:${VER_ECLIPSE_CORE_RESOURCES}") {
+		exclude group: 'org.eclipse.platform', module: 'org.eclipse.ant.core'
+		exclude group: 'org.eclipse.platform', module: 'org.eclipse.core.expressions'
+		exclude group: 'org.eclipse.platform', module: 'org.eclipse.core.filesystem'
+	}
+}
+
+jar {
+	manifest {
+		from 'src/main/resources/META-INF/MANIFEST.MF'
+	}
+}
+
+//////////
+// Test //
+//////////
+sourceSets {
+	// Use JAR file with all resources for Eclipse-Base integration-tests
+	test.runtimeClasspath = jar.outputs.files + sourceSets.test.output + sourceSets.test.compileClasspath
+}

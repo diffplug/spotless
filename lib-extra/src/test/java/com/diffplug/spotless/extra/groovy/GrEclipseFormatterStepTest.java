@@ -15,74 +15,32 @@
  */
 package com.diffplug.spotless.extra.groovy;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
-import org.junit.Test;
-
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.ResourceHarness;
-import com.diffplug.spotless.SerializableEqualityTester;
-import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
+import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
+import com.diffplug.spotless.extra.eclipse.EclipseCommonTests;
 
-public class GrEclipseFormatterStepTest extends ResourceHarness {
-
-	private static final String RESOURCE_PATH = "groovy/greclipse/format/";
-	private static final String CONFIG_FILE = RESOURCE_PATH + "greclipse.properties";
-
-	//String is hard-coded in the GrEclipseFormatter
-	private static final String FORMATTER_FILENAME_REPALCEMENT = "Hello.groovy";
-
-	private static Provisioner provisioner() {
-		return TestProvisioner.mavenCentral();
+public class GrEclipseFormatterStepTest extends EclipseCommonTests {
+	@Override
+	protected String[] getSupportedVersions() {
+		return new String[]{"2.3.0", "4.6.3"};
 	}
 
-	@Test
-	public void nominal() throws Throwable {
-		List<File> config = createTestFiles(CONFIG_FILE);
-		StepHarness.forStep(GrEclipseFormatterStep.create(config, provisioner()))
-				.testResource(RESOURCE_PATH + "unformatted.test", RESOURCE_PATH + "formatted.test");
+	@Override
+	protected String getTestInput(String version) {
+		return "class F{ def m(){} }";
 	}
 
-	@Test
-	public void formatterException() throws Throwable {
-		List<File> config = createTestFiles(CONFIG_FILE);
-		StepHarness.forStep(GrEclipseFormatterStep.create(config, provisioner()))
-				.testException(RESOURCE_PATH + "exception.test", assertion -> {
-					assertion.isInstanceOf(IllegalArgumentException.class);
-					assertion.hasMessageContaining(FORMATTER_FILENAME_REPALCEMENT);
-				});
+	@Override
+	protected String getTestExpectation(String version) {
+		return "class F{\n\tdef m(){}\n}";
 	}
 
-	@Test
-	public void configurationException() throws Throwable {
-		String configFileName = "greclipse.exception";
-		List<File> config = createTestFiles(RESOURCE_PATH + configFileName);
-		StepHarness.forStep(GrEclipseFormatterStep.create(config, provisioner()))
-				.testException(RESOURCE_PATH + "unformatted.test", assertion -> {
-					assertion.isInstanceOf(IllegalArgumentException.class);
-					assertion.hasMessageContaining(configFileName);
-				});
-	}
-
-	@Test
-	public void equality() throws IOException {
-		List<File> configFile = createTestFiles(CONFIG_FILE);
-		new SerializableEqualityTester() {
-
-			@Override
-			protected void setupTest(API api) {
-				api.areDifferentThan();
-			}
-
-			@Override
-			protected FormatterStep create() {
-				return GrEclipseFormatterStep.create(configFile, provisioner());
-			}
-		}.testEquals();
+	@Override
+	protected FormatterStep createStep(String version) {
+		EclipseBasedStepBuilder builder = GrEclipseFormatterStep.createBuilder(TestProvisioner.mavenCentral());
+		builder.setVersion(version);
+		return builder.build();
 	}
 
 }

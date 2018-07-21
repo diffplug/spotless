@@ -101,13 +101,17 @@ public class KtLintStep {
 			Class<?> function2Interface = classLoader.loadClass("kotlin.jvm.functions.Function2");
 			Class<?> lintErrorClass = classLoader.loadClass("com.github.shyiko.ktlint.core.LintError");
 			Method detailGetter = lintErrorClass.getMethod("getDetail");
+			Method lineGetter = lintErrorClass.getMethod("getLine");
+			Method colGetter = lintErrorClass.getMethod("getCol");
 			Object formatterCallback = Proxy.newProxyInstance(classLoader, new Class[]{function2Interface},
 					(proxy, method, args) -> {
 						Object lintError = args[0]; // com.github.shyiko.ktlint.core.LintError
 						boolean corrected = (Boolean) args[1];
 						if (!corrected) {
 							String detail = (String) detailGetter.invoke(lintError);
-							throw new AssertionError(detail);
+							int line = (Integer) lineGetter.invoke(lintError);
+							int col = (Integer) colGetter.invoke(lintError);
+							throw new AssertionError("Error on line: " + line + ", column: " + col + "\n" + detail);
 						}
 						return null;
 					});
