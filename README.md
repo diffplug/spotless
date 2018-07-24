@@ -12,7 +12,7 @@ output = [
 [![License Apache](https://img.shields.io/badge/license-apache-brightgreen.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
 <!---freshmark /shields -->
 
-Spotless can format &lt;java | markdown | license headers | anything> using &lt;gradle | maven | anything>.
+Spotless can format &lt;java | kotlin | scala | sql | groovy | markdown | license headers | anything> using &lt;gradle | maven | anything>.
 
 - [Spotless for Gradle](plugin-gradle)
 - [Spotless for Maven](plugin-maven)
