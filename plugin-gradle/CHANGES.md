@@ -3,6 +3,7 @@
 ### Version 3.14.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-plugin-gradle/))
 
 * Eclipse formatter versions decoupled from Spotless formatter step implementations to allow independent updates of M2 based Eclipse dependencies. ([#253](https://github.com/diffplug/spotless/pull/253))
+* Use guaranteed binary and source compatibility between releases of Scalafmt. ([#260](https://github.com/diffplug/spotless/pull/260))
 
 ### Version 3.13.0 - June 1st 2018 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.13.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.13.0))
 
