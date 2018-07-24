@@ -33,6 +33,7 @@ public class DeprecatedGrEclipseFormatterStepTest extends ResourceHarness {
 
 	private static final String RESOURCE_PATH = "groovy/greclipse/format/";
 	private static final String CONFIG_FILE = RESOURCE_PATH + "greclipse.properties";
+	private static final String DEPRECATED_VERSION = "4.6.3";
 
 	//String is hard-coded in the GrEclipseFormatter
 	private static final String FORMATTER_FILENAME_REPALCEMENT = "Hello.groovy";
@@ -44,14 +45,14 @@ public class DeprecatedGrEclipseFormatterStepTest extends ResourceHarness {
 	@Test
 	public void nominal() throws Throwable {
 		List<File> config = createTestFiles(CONFIG_FILE);
-		StepHarness.forStep(GrEclipseFormatterStep.create(config, provisioner()))
+		StepHarness.forStep(GrEclipseFormatterStep.create(DEPRECATED_VERSION, config, provisioner()))
 				.testResource(RESOURCE_PATH + "unformatted.test", RESOURCE_PATH + "formatted.test");
 	}
 
 	@Test
 	public void formatterException() throws Throwable {
 		List<File> config = createTestFiles(CONFIG_FILE);
-		StepHarness.forStep(GrEclipseFormatterStep.create(config, provisioner()))
+		StepHarness.forStep(GrEclipseFormatterStep.create(DEPRECATED_VERSION, config, provisioner()))
 				.testException(RESOURCE_PATH + "exception.test", assertion -> {
 					assertion.isInstanceOf(IllegalArgumentException.class);
 					assertion.hasMessageContaining(FORMATTER_FILENAME_REPALCEMENT);
@@ -62,7 +63,7 @@ public class DeprecatedGrEclipseFormatterStepTest extends ResourceHarness {
 	public void configurationException() throws Throwable {
 		String configFileName = "greclipse.exception";
 		List<File> config = createTestFiles(RESOURCE_PATH + configFileName);
-		StepHarness.forStep(GrEclipseFormatterStep.create(config, provisioner()))
+		StepHarness.forStep(GrEclipseFormatterStep.create(DEPRECATED_VERSION, config, provisioner()))
 				.testException(RESOURCE_PATH + "unformatted.test", assertion -> {
 					assertion.isInstanceOf(IllegalArgumentException.class);
 					assertion.hasMessageContaining(configFileName);
@@ -81,7 +82,7 @@ public class DeprecatedGrEclipseFormatterStepTest extends ResourceHarness {
 
 			@Override
 			protected FormatterStep create() {
-				return GrEclipseFormatterStep.create(configFile, provisioner());
+				return GrEclipseFormatterStep.create(DEPRECATED_VERSION, configFile, provisioner());
 			}
 		}.testEquals();
 	}

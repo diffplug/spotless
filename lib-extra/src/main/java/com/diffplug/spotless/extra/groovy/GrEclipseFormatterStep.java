@@ -24,6 +24,7 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
+import com.diffplug.spotless.extra.EclipseBasedStepBuilder.State;
 
 /** Formatter step which calls out to the Groovy-Eclipse formatter. */
 public final class GrEclipseFormatterStep {
@@ -31,8 +32,10 @@ public final class GrEclipseFormatterStep {
 	private GrEclipseFormatterStep() {}
 
 	private static final String NAME = "groovy eclipse formatter";
-	private static final String FORMATTER_CLASS = "com.diffplug.gradle.spotless.groovy.eclipse.GrEclipseFormatterStepImpl";
-	private static final String DEFAULT_VERSION = "4.6.3";
+	private static final String FORMATTER_CLASS = "com.diffplug.spotless.extra.eclipse.groovy.GrEclipseFormatterStepImpl";
+	private static final String FORMATTER_CLASS_OLD = "com.diffplug.gradle.spotless.groovy.eclipse.GrEclipseFormatterStepImpl";
+	private static final String MAVEN_GROUP_ARTIFACT = "com.diffplug.spotless:spotless-eclipse-groovy";
+	private static final String DEFAULT_VERSION = "4.8.0";
 	private static final String FORMATTER_METHOD = "format";
 
 	/** Creates a formatter step using the default version for the given settings file. */
@@ -60,7 +63,7 @@ public final class GrEclipseFormatterStep {
 	}
 
 	private static FormatterFunc apply(EclipseBasedStepBuilder.State state) throws Exception {
-		Class<?> formatterClazz = state.loadClass(FORMATTER_CLASS);
+		Class<?> formatterClazz = getClass(state);
 		Object formatter = formatterClazz.getConstructor(Properties.class).newInstance(state.getPreferences());
 		Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
 		return input -> {
@@ -72,6 +75,13 @@ public final class GrEclipseFormatterStep {
 				throw (null == exception) ? exceptionWrapper : exception;
 			}
 		};
+	}
+
+	private static Class<?> getClass(State state) {
+		if (state.getMavenCoordinate(MAVEN_GROUP_ARTIFACT).isPresent()) {
+			return state.loadClass(FORMATTER_CLASS);
+		}
+		return state.loadClass(FORMATTER_CLASS_OLD);
 	}
 
 }
