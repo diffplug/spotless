@@ -35,7 +35,7 @@ import java.util.function.Function;
 public final class PaddedCell {
 	/** The kind of result. */
 	public enum Type {
-	CONVERGE, CYCLE, DIVERGE;
+		CONVERGE, CYCLE, DIVERGE;
 
 		/** Creates a PaddedCell with the given file and steps. */
 		PaddedCell create(File file, List<String> steps) {
