@@ -1,3 +1,8 @@
+buildscript {
+	repositories { maven { url 'https://plugins.gradle.org/m2/' } }
+	dependencies { classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:${VER_SPOTBUGS_PLUGIN}" }
+}
+
 //////////
 // JAVA //
 //////////
@@ -29,23 +34,23 @@ eclipseResourceFilters {
 }
 
 //////////////
-// FINDBUGS //
+// SPOTBUGS //
 //////////////
-apply plugin: 'findbugs'
-findbugs {
-	toolVersion = VER_FINDBUGS
+apply plugin: 'com.github.spotbugs'
+spotbugs {
+	toolVersion = VER_SPOTBUGS
 	sourceSets = [
 		// don't check the test code
 		sourceSets.main
 	]
 	ignoreFailures = false 	// bug free or it doesn't ship!
-	reportsDir = file('build/findbugs')
+	reportsDir = file('build/spotbugs')
 	effort = 'max'			// min|default|max
 	reportLevel = 'medium'	// low|medium|high (low = sensitive to even minor mistakes)
 	omitVisitors = []		// bugs that we want to ignore
 }
 // HTML instead of XML
-tasks.withType(FindBugs) {
+tasks.withType(com.github.spotbugs.SpotBugsTask) {
 	reports {
 		xml.enabled = false
 		html.enabled = true

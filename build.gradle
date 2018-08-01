@@ -6,6 +6,7 @@ buildscript {
 		classpath "com.gradle.publish:plugin-publish-plugin:${VER_PLUGIN_PUBLISH}"
 		classpath "org.ajoberstar:gradle-git:${VER_GRADLE_GIT}"
 		classpath "ch.raffael.pegdown-doclet:pegdown-doclet:${VER_PEGDOWN_DOCLET}"
+		classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:${VER_SPOTBUGS_PLUGIN}"
 	}
 }
 
