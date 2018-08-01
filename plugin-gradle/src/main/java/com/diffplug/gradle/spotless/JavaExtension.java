@@ -187,11 +187,17 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 			}
 			target = union;
 		}
-		// LicenseHeaderStep completely blows apart package-info.java - this common-sense check ensures that
-		// it skips package-info.java. See https://github.com/diffplug/spotless/issues/1
+		// LicenseHeaderStep completely blows apart package-info.java & module-info.java;
+		// this common-sense check ensures that it skips package-info.java & module-info.java.
+		//
+		// See:
+		//  - https://github.com/diffplug/spotless/issues/1
+		//  - https://github.com/diffplug/spotless/issues/270
 		steps.replaceAll(step -> {
 			if (LicenseHeaderStep.name().equals(step.getName())) {
-				return step.filterByFile(SerializableFileFilter.skipFilesNamed("package-info.java"));
+				return step.filterByFile(SerializableFileFilter.skipFilesNamed(
+						"package-info.java",
+						"module-info.java"));
 			} else {
 				return step;
 			}
