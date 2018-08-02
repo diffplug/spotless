@@ -58,6 +58,7 @@ tasks.withType(com.github.spotbugs.SpotBugsTask) {
 }
 // we'll want the findbugs annotations (they don't have a 3.0.1 version)
 dependencies {
-	compileOnly 'com.google.code.findbugs:annotations:3.0.0'
+	compileOnly 'net.jcip:jcip-annotations:1.0'
+	compileOnly 'com.github.spotbugs:spotbugs-annotations:3.1.6'
 	compileOnly 'com.google.code.findbugs:jsr305:3.0.0'
 }
