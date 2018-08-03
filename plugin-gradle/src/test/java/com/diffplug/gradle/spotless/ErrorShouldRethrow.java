@@ -15,19 +15,17 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.Test;
 
-import com.diffplug.common.base.CharMatcher;
-import com.diffplug.common.base.Splitter;
-import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.LineEnding;
 
 /** Tests the desired behavior from https://github.com/diffplug/spotless/issues/46. */
@@ -67,8 +65,8 @@ public class ErrorShouldRethrow extends GradleIntegrationTest {
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
 		runWithFailure(
-				":spotlessMiscStep 'no swearing' found problem in 'README.md':",
-				"No swearing!",
+				":spotlessMisc",
+				"Step 'no swearing' found problem in 'README.md'",
 				"java.lang.RuntimeException: No swearing!");
 	}
 
@@ -79,7 +77,7 @@ public class ErrorShouldRethrow extends GradleIntegrationTest {
 				"    enforceCheck false",
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
-		runWithSuccess(":compileJava UP-TO-DATE");
+		runWithSuccess(":compileJava NO-SOURCE");
 	}
 
 	@Test
@@ -113,28 +111,25 @@ public class ErrorShouldRethrow extends GradleIntegrationTest {
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
 		runWithFailure(
-				":spotlessMiscStep 'no swearing' found problem in 'README.md':",
-				"No swearing!",
+				":spotlessMisc",
+				"Step 'no swearing' found problem in 'README.md'",
 				"java.lang.RuntimeException: No swearing!");
 	}
 
-	private void runWithSuccess(String... messages) throws Exception {
+	private void runWithSuccess(String... messagePartsInOrder) throws Exception {
 		BuildResult result = gradleRunner().withArguments("check").build();
-		assertResultAndMessages(result, TaskOutcome.SUCCESS, messages);
+		assertResultAndOutputContainsMessages(result, TaskOutcome.SUCCESS, messagePartsInOrder);
 	}
 
-	private void runWithFailure(String... messages) throws Exception {
+	private void runWithFailure(String... messagePartsInOrder) throws Exception {
 		BuildResult result = gradleRunner().withArguments("check").buildAndFail();
-		assertResultAndMessages(result, TaskOutcome.FAILED, messages);
+		assertResultAndOutputContainsMessages(result, TaskOutcome.FAILED, messagePartsInOrder);
 	}
 
-	private void assertResultAndMessages(BuildResult result, TaskOutcome outcome, String... messages) {
-		String expectedToStartWith = StringPrinter.buildStringFromLines(messages).trim();
-		int numNewlines = CharMatcher.is('\n').countIn(expectedToStartWith);
-		List<String> actualLines = Splitter.on('\n').splitToList(LineEnding.toUnix(result.getOutput()));
-		String actualStart = String.join("\n", actualLines.subList(0, numNewlines + 1));
-		Assertions.assertThat(actualStart).isEqualTo(expectedToStartWith);
-		Assertions.assertThat(result.tasks(outcome).size() + result.tasks(TaskOutcome.UP_TO_DATE).size())
+	private void assertResultAndOutputContainsMessages(BuildResult result, TaskOutcome outcome, String... messagePartsInOrder) {
+		String actualOutput = LineEnding.toUnix(result.getOutput());
+		assertThat(actualOutput).containsSequence(messagePartsInOrder);
+		assertThat(result.tasks(outcome).size() + result.tasks(TaskOutcome.UP_TO_DATE).size() + result.tasks(TaskOutcome.NO_SOURCE).size())
 				.isEqualTo(result.getTasks().size());
 	}
 }
