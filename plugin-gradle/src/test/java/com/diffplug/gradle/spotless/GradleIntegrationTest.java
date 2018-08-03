@@ -58,6 +58,8 @@ public class GradleIntegrationTest extends ResourceHarness {
 
 	protected final GradleRunner gradleRunner() throws IOException {
 		return GradleRunner.create()
+				// Gradle 4.9 required for Task Configuration Avoidance
+				// (https://github.com/diffplug/spotless/issues/269)
 				.withGradleVersion("4.9")
 				.withProjectDir(rootFolder())
 				.withPluginClasspath();
