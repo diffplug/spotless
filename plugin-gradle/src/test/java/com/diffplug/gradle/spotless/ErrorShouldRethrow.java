@@ -128,7 +128,7 @@ public class ErrorShouldRethrow extends GradleIntegrationTest {
 
 	private void assertResultAndOutputContainsMessages(BuildResult result, TaskOutcome outcome, String... messagePartsInOrder) {
 		String actualOutput = LineEnding.toUnix(result.getOutput());
-		assertThat(actualOutput).containsSequence(messagePartsInOrder);
+		assertThat(actualOutput).containsSubsequence(messagePartsInOrder);
 		assertThat(result.tasks(outcome).size() + result.tasks(TaskOutcome.UP_TO_DATE).size() + result.tasks(TaskOutcome.NO_SOURCE).size())
 				.isEqualTo(result.getTasks().size());
 	}
