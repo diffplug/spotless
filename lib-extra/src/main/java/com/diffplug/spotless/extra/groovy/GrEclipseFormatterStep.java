@@ -22,6 +22,7 @@ import java.util.Properties;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder.State;
@@ -68,7 +69,7 @@ public final class GrEclipseFormatterStep {
 		Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
 		return input -> {
 			try {
-				return (String) method.invoke(formatter, input);
+				return LineEnding.toUnix((String) method.invoke(formatter, input));
 			} catch (InvocationTargetException exceptionWrapper) {
 				Throwable throwable = exceptionWrapper.getTargetException();
 				Exception exception = (throwable instanceof Exception) ? (Exception) throwable : null;
