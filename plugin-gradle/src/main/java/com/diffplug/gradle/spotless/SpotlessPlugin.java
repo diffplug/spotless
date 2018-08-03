@@ -21,6 +21,7 @@ import org.gradle.api.Task;
 import org.gradle.api.execution.TaskExecutionGraph;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaBasePlugin;
+import org.gradle.api.tasks.TaskProvider;
 
 import com.diffplug.spotless.SpotlessCache;
 
@@ -57,62 +58,70 @@ public class SpotlessPlugin implements Plugin<Project> {
 
 	@SuppressWarnings("rawtypes")
 	void createTasks(Project project) {
-		Task rootCheckTask = project.task(EXTENSION + CHECK);
-		rootCheckTask.setGroup(TASK_GROUP);
-		rootCheckTask.setDescription(CHECK_DESCRIPTION);
-		Task rootApplyTask = project.task(EXTENSION + APPLY);
-		rootApplyTask.setGroup(TASK_GROUP);
-		rootApplyTask.setDescription(APPLY_DESCRIPTION);
+		TaskProvider<Task> rootCheckTaskProvider = project.getTasks().register(
+				EXTENSION + CHECK,
+				task -> {
+					task.setGroup(TASK_GROUP);
+					task.setDescription(CHECK_DESCRIPTION);
+				});
+		TaskProvider<Task> rootApplyTaskProvider = project.getTasks().register(
+				EXTENSION + APPLY,
+				task -> {
+					task.setGroup(TASK_GROUP);
+					task.setDescription(APPLY_DESCRIPTION);
+				});
 
 		spotlessExtension.formats.forEach((key, value) -> {
 			// create the task that does the work
 			String taskName = EXTENSION + capitalize(key);
-			SpotlessTask spotlessTask = project.getTasks().create(taskName, SpotlessTask.class);
-			value.setupTask(spotlessTask);
+			TaskProvider<SpotlessTask> spotlessTaskProvider = project.getTasks().register(taskName, SpotlessTask.class);
+			spotlessTaskProvider.configure(value::setupTask);
 
 			// create the check and apply control tasks
-			Task checkTask = project.getTasks().create(taskName + CHECK);
-			Task applyTask = project.getTasks().create(taskName + APPLY);
+			TaskProvider<Task> checkTaskProvider = project.getTasks().register(taskName + CHECK);
+			TaskProvider<Task> applyTaskProvider = project.getTasks().register(taskName + APPLY);
 			// the root tasks depend on them
-			rootCheckTask.dependsOn(checkTask);
-			rootApplyTask.dependsOn(applyTask);
+			rootCheckTaskProvider.configure(rootCheckTask -> rootCheckTask.dependsOn(checkTaskProvider));
+			rootApplyTaskProvider.configure(rootApplyTask -> rootApplyTask.dependsOn(applyTaskProvider));
 			// and they depend on the work task
-			checkTask.dependsOn(spotlessTask);
-			applyTask.dependsOn(spotlessTask);
+			checkTaskProvider.configure(checkTask -> checkTask.dependsOn(spotlessTaskProvider));
+			applyTaskProvider.configure(applyTask -> applyTask.dependsOn(spotlessTaskProvider));
 
 			// when the task graph is ready, we'll configure the spotlessTask appropriately
+			// TODO: Consider swapping out the Closure below for a type-safe Action<TaskExecutionGraph>
 			project.getGradle().getTaskGraph().whenReady(new Closure(null) {
 				private static final long serialVersionUID = 1L;
 
 				// called by gradle
 				@SuppressFBWarnings("UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS")
 				public Object doCall(TaskExecutionGraph graph) {
-					if (graph.hasTask(checkTask)) {
-						spotlessTask.setCheck();
+					if (checkTaskProvider.isPresent() && graph.hasTask(checkTaskProvider.get())) {
+						spotlessTaskProvider.configure(SpotlessTask::setCheck);
 					}
-					if (graph.hasTask(applyTask)) {
-						spotlessTask.setApply();
+					if (applyTaskProvider.isPresent() && graph.hasTask(applyTaskProvider.get())) {
+						spotlessTaskProvider.configure(SpotlessTask::setApply);
 					}
 					return Closure.DONE;
 				}
 			});
 		});
 
-		// Add our check task as a dependency on the global check task
-		// getTasks() returns a "live" collection, so this works even if the
-		// task doesn't exist at the time this call is made
+		// Add our check task as a dependency on the global check task.
+		// getTasks() returns a "live" collection and configureEach() is lazy,
+		// so this works even if the task doesn't exist at the time this call
+		// is made.
 		if (spotlessExtension.enforceCheck) {
 			project.getTasks()
 					.matching(task -> task.getName().equals(JavaBasePlugin.CHECK_TASK_NAME))
-					.all(task -> task.dependsOn(rootCheckTask));
+					.configureEach(task -> task.dependsOn(rootCheckTaskProvider));
 		}
 
 		// clear spotless' cache when the user does a clean, but only after any spotless tasks
-		Task clean = project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME);
-		clean.doLast(unused -> SpotlessCache.clear());
+		TaskProvider<Task> cleanTaskProvider = project.getTasks().named(BasePlugin.CLEAN_TASK_NAME);
+		cleanTaskProvider.configure(task -> task.doLast(unused -> SpotlessCache.clear()));
 		project.getTasks()
 				.withType(SpotlessTask.class)
-				.all(task -> task.mustRunAfter(clean));
+				.configureEach(task -> task.mustRunAfter(cleanTaskProvider));
 	}
 
 	static String capitalize(String input) {
