@@ -40,7 +40,6 @@ public class HasBuiltinDelimiterForLicenseTest extends GradleIntegrationTest {
 				"    }",
 				"}");
 		gradleRunner()
-				.withGradleVersion("4.6")
 				.withArguments("spotlessApply")
 				.forwardOutput()
 				.build();
