@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.io.File;
 
+import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
 
 import com.diffplug.spotless.FormatterStep;
@@ -65,8 +66,8 @@ public abstract class EclipseCommonTests extends ResourceHarness {
 
 	@Test
 	public void testSupportedVersions() throws Exception {
-		String[] versions = getSupportedVersions();
-		for (String version : versions) {
+		SoftAssertions softly = new SoftAssertions();
+		for (String version : getSupportedVersions()) {
 			String input = getTestInput(version);
 			String expected = getTestExpectation(version);
 			File inputFile = setFile("someInputFile").toContent(input);
@@ -74,16 +75,17 @@ public abstract class EclipseCommonTests extends ResourceHarness {
 			try {
 				step = createStep(version);
 			} catch (Exception e) {
-				fail("Exception occured when instantiating step for version: " + version, e);
+				fail("Exception occurred when instantiating step for version: " + version, e);
 			}
 			String output = null;
 			try {
 				output = step.format(input, inputFile);
 			} catch (Exception e) {
-				fail("Exception occured when formatting input with version: " + version, e);
+				fail("Exception occurred when formatting input with version: " + version, e);
 			}
-			assertThat(output).as("Formatting output unexpected with version: " + version).isEqualTo(expected);
+			softly.assertThat(output).as("Formatting output unexpected with version: " + version).isEqualTo(expected);
 		}
+		softly.assertAll();
 	}
 
 }
