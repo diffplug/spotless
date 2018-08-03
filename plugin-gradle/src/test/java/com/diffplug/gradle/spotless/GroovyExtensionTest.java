@@ -15,10 +15,9 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.io.IOException;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import org.assertj.core.api.Assertions;
-import org.junit.Assert;
+import java.io.IOException;
 import org.junit.Test;
 
 public class GroovyExtensionTest extends GradleIntegrationTest {
@@ -82,12 +81,9 @@ public class GroovyExtensionTest extends GradleIntegrationTest {
 				"    }",
 				"}");
 
-		try {
-			gradleRunner().withArguments("spotlessApply").build();
-			Assert.fail("Exception expected when running 'excludeJava' in combination with 'target'.");
-		} catch (Throwable t) {
-			Assertions.assertThat(t).hasMessageContaining("'excludeJava' is not supported");
-		}
+		assertThatThrownBy(() -> gradleRunner().withArguments("spotlessApply").build())
+			.as("Exception expected when running 'excludeJava' in combination with 'target'.")
+			.hasMessageContaining("'excludeJava' is not supported");
 	}
 
 	@Test
@@ -103,12 +99,9 @@ public class GroovyExtensionTest extends GradleIntegrationTest {
 				"    }",
 				"}");
 
-		try {
-			gradleRunner().withArguments("spotlessApply").build();
-			Assert.fail("Exception expected when using 'groovy' without 'target' if groovy-plugin is not applied.");
-		} catch (Throwable t) {
-			Assertions.assertThat(t).hasMessageContaining("must apply the groovy plugin before");
-		}
+		assertThatThrownBy(() -> gradleRunner().withArguments("spotlessApply").build())
+			.as("Exception expected when using 'groovy' without 'target' if groovy-plugin is not applied.")
+			.hasMessageContaining("must apply the groovy plugin before");
 	}
 
 }
