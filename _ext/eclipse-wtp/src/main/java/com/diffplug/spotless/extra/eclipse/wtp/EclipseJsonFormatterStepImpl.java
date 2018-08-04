@@ -45,7 +45,7 @@ public class EclipseJsonFormatterStepImpl extends CleanupStep<EclipseJsonFormatt
 	 *  Here we just use the CleanupProcessorJSON to reuse the common
 	 *  interface to trigger the formatting.
 	 *  </p>
-	 *  @see org.eclipse.wst.json.core.internal.format.AbstractJSONSourceFormatter
+	 *  See {@code org.eclipse.wst.json.core.internal.format.AbstractJSONSourceFormatter} for details.
 	 */
 	public static class SpotlessJsonCleanup extends CleanupProcessorJSON implements CleanupStep.ProcessorAccessor {
 		@Override
