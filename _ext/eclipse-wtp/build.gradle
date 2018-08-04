@@ -1,60 +1,57 @@
-plugins {
-	// bintray uploading
-	id 'com.jfrog.bintray' version '1.3.1'
-	// p2 dependencies
-	id 'com.diffplug.gradle.p2.asmaven' version '3.9.0'
-}
-
-apply from: rootProject.file('../gradle/java-setup.gradle')
-apply from: rootProject.file('../gradle/java-publish.gradle')
-
 ext {
 	developers = [
 		fvgh: [ name: 'Frank Vennemeyer', email: 'frankgh@zoho.com' ],
 	]
+	
+	p2Repository = "http://download.eclipse.org/webtools/repository/${VER_ECLIPSE_WTP}"
+	
+    p2Dependencies = [
+		// XML/HTML Formatter  - Dependencies
+		'org.eclipse.wst.xml.core':'+', // DefaultXMLPartitionFormatter and XMLAssociationProvider
+		'org.eclipse.wst.sse.core':'+', // Structure models
+		'org.eclipse.wst.common.uriresolver':'+', // URI resolver for model queries
+		'org.eclipse.wst.dtd.core':'+', // Support DTD extensions
+		
+		// XML Formatter - Dependencies
+		'org.eclipse.wst.xsd.core':'+', // Support XSD extensions
+		
+		// JS Formatter - Dependencies
+		'org.eclipse.wst.jsdt.core':'+', // DefaultCodeFormatter and related
+		'org.eclipse.wst.jsdt.ui':'+', // Functionality to format comments
+
+		// JSON Formatter - Dependencies
+		'org.eclipse.wst.json.core':'+', // FormatProcessorJSON and related
+		'org.eclipse.json':'+', // Provides JSON node interfaces
+		
+		// CSS Formatter - Dependencies
+		'org.eclipse.wst.css.core':'+', // FormatProcessorCSS and related
+		
+		// HTML Formatter - Dependencies
+		'org.eclipse.wst.html.core':'+', // HTMLFormatProcessorImpl and related
+	]
+	
+	jarInclude = [
+		'**/*.class', // Take all classes
+		'**/*.properties', // Text resources (for messages, etc)
+		'**/*.rsc', // JSDT requires gramar files
+		'**/*.xml', // Plugin XML and other resources
+		'*.html', // License information about the included JARs,
+		'META-INF/**' // Plugin manifest and addtional information
+	]
+			
+	fatJarResourcesMap = [
+		'org.eclipse.wst.common.uriresolver': 'org.eclipse.wst.common.uriresolver.internal.provisional',
+		'org.eclipse.wst.css.core': 'org.eclipse.wst.css.core.internal',
+		'org.eclipse.wst.dtd.core': 'org.eclipse.wst.dtd.core.internal',
+		'org.eclipse.wst.html.core': 'org.eclipse.wst.html.core.internal',
+		'org.eclipse.wst.sse.core': 'org.eclipse.wst.sse.core.internal.encoding.util',
+		'org.eclipse.wst.xml.core': 'org.eclipse.wst.xml.core.internal',
+		'org.eclipse.wst.xsd.core': 'org.eclipse.wst.xsd.core.internal'
+	]
 }
 
-// The dependencies to pull from WebTools's p2 repositories
-def eclipseWtpDeps = [
-	// XML/HTML Formatter  - Dependencies
-	'org.eclipse.wst.xml.core':'+', // DefaultXMLPartitionFormatter and XMLAssociationProvider
-	'org.eclipse.wst.sse.core':'+', // Structure models
-	'org.eclipse.wst.common.uriresolver':'+', // URI resolver for model queries
-	'org.eclipse.wst.dtd.core':'+', // Support DTD extensions
-	
-	// XML Formatter - Dependencies
-	'org.eclipse.wst.xsd.core':'+', // Support XSD extensions
-	
-	// JS Formatter - Dependencies
-	'org.eclipse.wst.jsdt.core':'+', // DefaultCodeFormatter and related
-	'org.eclipse.wst.jsdt.ui':'+', // Functionality to format comments
-	
-	// JSON Formatter - Dependencies
-	'org.eclipse.wst.json.core':'+', // FormatProcessorJSON and related
-	'org.eclipse.json':'+', // Provides JSON node interfaces
-	
-	// CSS Formatter - Dependencies
-	'org.eclipse.wst.css.core':'+', // FormatProcessorCSS and related
-	
-	// HTML Formatter - Dependencies
-	'org.eclipse.wst.html.core':'+', // HTMLFormatProcessorImpl and related
-]
-
-// build a maven repo in our build folder containing these artifacts
-p2AsMaven {
-	group 'p2', {
-		repo "http://download.eclipse.org/webtools/repository/${VER_ECLIPSE_WTP}"
-		eclipseWtpDeps.keySet.each { p2.addIU(it) }
-		eclipseWtpDeps.keySet.each { p2.addIU(it + '.source') }
-	}
-}
-
-configurations
-{ 
-	embeddedJars // WTP JARs the fat-jar is based uppon
-	embeddedSource // Source for WTP JARs (to facilitate debugging)
-	compile.extendsFrom(embeddedJars)
-}
+apply from: rootProject.file('../gradle/p2-fat-jar-setup.gradle')
+apply from: rootProject.file('../gradle/java-publish.gradle')
 
 dependencies {
 	compile "com.diffplug.spotless:spotless-eclipse-base:${VER_SPOTLESS_ECLISPE_BASE}"
@@ -75,32 +72,16 @@ dependencies {
 	compile "org.eclipse.platform:org.eclipse.core.filesystem:${VER_ECLISPE_EFS}"
 	// Required by org.eclipse.wst.xsd.core
 	compile "org.eclipse.xsd:org.eclipse.xsd:${VER_ECLISPE_XSD}"
-	eclipseWtpDeps.each { groupArtifact, version ->
-		embeddedJars "p2:${groupArtifact}:${version}"
-		embeddedSource "p2:${groupArtifact}:${version}:sources"
-	}
-}
-
-jar {
-	// this embeds the WTP JARs into our "fat JAR"
-	from {
-		configurations.embeddedJars.collect{ it.isDirectory() ? it : zipTree(it) }
-	}
-	// the WTP JARs are signed, and our fat JAR breaks the signatures
-	// so we've got to be sure to filter out the signatures
-	exclude 'META-INF/*.RSA'
-	exclude 'META-INF/*.SF'
-	//Exclude Eclipse plugin information
-	exclude '*.options'
-	exclude '*.html'
-	exclude '*.api_description'
-	exclude '*.properties'
-	exclude '*.xml'
 }
 
 //////////
 // Test //
 //////////
+sourceSets {
+	// Use JAR file with all resources for Eclipse-WTP integration-tests
+	test.runtimeClasspath = jar.outputs.files + sourceSets.test.output + sourceSets.test.compileClasspath
+}
+
 /*
  * All test classes need to run separately since they all instatiate different setups of the
  * Eclipse framework.
@@ -108,11 +89,6 @@ jar {
 test {
     //Skip default tests, which would run every test case.
     exclude '**'
-}
-
-sourceSets {
-	// Use JAR file with all resources for Eclipse-WTP integration-tests
-	test.runtimeClasspath = jar.outputs.files + sourceSets.test.output + sourceSets.test.compileClasspath
 }
 
 //Instead make a separate test task per case
