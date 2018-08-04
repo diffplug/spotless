@@ -18,15 +18,11 @@ package com.diffplug.gradle.spotless;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
-import org.gradle.api.execution.TaskExecutionGraph;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.tasks.TaskProvider;
 
 import com.diffplug.spotless.SpotlessCache;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import groovy.lang.Closure;
 
 public class SpotlessPlugin implements Plugin<Project> {
 	SpotlessExtension spotlessExtension;
@@ -74,8 +70,7 @@ public class SpotlessPlugin implements Plugin<Project> {
 		spotlessExtension.formats.forEach((key, value) -> {
 			// create the task that does the work
 			String taskName = EXTENSION + capitalize(key);
-			TaskProvider<SpotlessTask> spotlessTaskProvider = project.getTasks().register(taskName, SpotlessTask.class);
-			spotlessTaskProvider.configure(value::setupTask);
+			TaskProvider<SpotlessTask> spotlessTaskProvider = project.getTasks().register(taskName, SpotlessTask.class, value::setupTask);
 
 			// create the check and apply control tasks
 			TaskProvider<Task> checkTaskProvider = project.getTasks().register(taskName + CHECK);
@@ -88,20 +83,12 @@ public class SpotlessPlugin implements Plugin<Project> {
 			applyTaskProvider.configure(applyTask -> applyTask.dependsOn(spotlessTaskProvider));
 
 			// when the task graph is ready, we'll configure the spotlessTask appropriately
-			// TODO: Consider swapping out the Closure below for a type-safe Action<TaskExecutionGraph>
-			project.getGradle().getTaskGraph().whenReady(new Closure(null) {
-				private static final long serialVersionUID = 1L;
-
-				// called by gradle
-				@SuppressFBWarnings("UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS")
-				public Object doCall(TaskExecutionGraph graph) {
-					if (checkTaskProvider.isPresent() && graph.hasTask(checkTaskProvider.get())) {
-						spotlessTaskProvider.configure(SpotlessTask::setCheck);
-					}
-					if (applyTaskProvider.isPresent() && graph.hasTask(applyTaskProvider.get())) {
-						spotlessTaskProvider.configure(SpotlessTask::setApply);
-					}
-					return Closure.DONE;
+			project.getGradle().getTaskGraph().whenReady(graph -> {
+				if (checkTaskProvider.isPresent() && graph.hasTask(checkTaskProvider.get())) {
+					spotlessTaskProvider.configure(SpotlessTask::setCheck);
+				}
+				if (applyTaskProvider.isPresent() && graph.hasTask(applyTaskProvider.get())) {
+					spotlessTaskProvider.configure(SpotlessTask::setApply);
 				}
 			});
 		});
