@@ -27,21 +27,27 @@ import org.junit.Test;
 public class EclipseJsonFormatterStepImplTest {
 	private final static String ILLEGAL_CHAR = Character.toString((char) 254);
 	private final static String UNFORMATTED = "{\n \"x\": { \"a\" : \"v\",\"properties\" : \"v\" }}".replaceAll("\n", LINE_DELIMITER);
-	private final static String FORMATTED = "{\n\t\"x\": {\n\t\t\"a\": \"v\",\n\t\t\"properties\": \"v\"\n\t}\n}".replaceAll("\n", LINE_DELIMITER);
+	private final static String FORMATTED = "{\n   \"x\": {\n      \"a\": \"v\",\n      \"properties\": \"v\"\n   }\n}".replaceAll("\n", LINE_DELIMITER);
 
 	private static EclipseJsonFormatterStepImpl formatter;
 
 	@Before
 	public void initialize() throws Exception {
-		//The instantiation can be repeated for each step, but only with the same configuration
+		/*
+		 * The instantiation can be repeated for each step, but only with the same configuration
+		 * All formatter configuration is stored in
+		 * org.eclipse.core.runtime/.settings/org.eclipse.wst.json.core.prefs.
+		 * So a simple test of one configuration item change is considered sufficient.
+		 */
 		Properties properties = new Properties();
-		properties.put(INDENTATION_CHAR, TAB); //Done by formatter
+		properties.put(INDENTATION_SIZE, "3"); //Default is 1
+		properties.put(INDENTATION_CHAR, SPACE); //Default is TAB
 		properties.put(CASE_PROPERTY_NAME, Integer.toString(UPPER)); //Dead code, ignored
 		formatter = new EclipseJsonFormatterStepImpl(properties);
 	}
 
 	@Test
-	public void defaultFormat() throws Exception {
+	public void format() throws Exception {
 		String output = formatter.format(UNFORMATTED);
 		assertEquals("Unexpected formatting with default preferences.",
 				FORMATTED, output);

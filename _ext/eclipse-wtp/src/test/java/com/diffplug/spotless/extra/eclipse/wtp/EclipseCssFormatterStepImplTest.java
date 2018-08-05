@@ -29,16 +29,22 @@ public class EclipseCssFormatterStepImplTest {
 
 	private final static String ILLEGAL_CHAR = Character.toString((char) 254);
 	private final static String UNFORMATTED = " body {a: v; b: v;}\n".replaceAll("\n", LINE_DELIMITER);
-	private final static String FORMATTED = "BODY {\n\ta: v;\n\tb: v;\n}".replaceAll("\n", LINE_DELIMITER);
+	private final static String FORMATTED = "BODY {\n   a: v;\n   b: v;\n}".replaceAll("\n", LINE_DELIMITER);
 	private final static String PRE_CODE_UNFORMATTED = "/**<pre>\"Hello\"</pre>*/\n".replaceAll("\n", LINE_DELIMITER);
 
 	private EclipseCssFormatterStepImpl formatter;
 
 	@Before
 	public void initialize() throws Exception {
-		//The instantiation can be repeated for each step, but only with the same configuration
+		/*
+		 * The instantiation can be repeated for each step, but only with the same configuration
+		 * All formatter configuration is stored in
+		 * org.eclipse.core.runtime/.settings/org.eclipse.wst.css.core.prefs.
+		 * So a simple test of one configuration item change is considered sufficient.
+		 */
 		Properties properties = new Properties();
-		properties.put(INDENTATION_CHAR, TAB); //Done be formatter
+		properties.put(INDENTATION_SIZE, "3"); //Default is 1
+		properties.put(INDENTATION_CHAR, SPACE); //Default is TAB
 		properties.put(CLEANUP_CASE_SELECTOR, Integer.toString(UPPER)); //Done by cleanup
 		formatter = new EclipseCssFormatterStepImpl(properties);
 	}
