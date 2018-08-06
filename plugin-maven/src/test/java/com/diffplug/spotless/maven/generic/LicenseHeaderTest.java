@@ -97,10 +97,37 @@ public class LicenseHeaderTest extends MavenIntegrationTest {
 		assertFile(path).hasContent(KOTLIN_LICENSE_HEADER + '\n' + noLicenseHeader);
 	}
 
+	@Test
+	public void unsupportedPackageInfo() throws Exception {
+		testUnsupportedFile("package-info.java");
+	}
+
+	@Test
+	public void unsupportedModuleInfo() throws Exception {
+		testUnsupportedFile("module-info.java");
+	}
+
 	private void runTest() throws Exception {
 		String path = "src/main/java/test.java";
 		setFile(path).toResource("license/MissingLicense.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).sameAsResource("license/HasLicense.test");
+	}
+
+	private void testUnsupportedFile(String file) throws Exception {
+		writePomWithJavaSteps(
+				"<licenseHeader>",
+				"  <content>",
+				"// Hello!",
+				"  </content>",
+				"</licenseHeader>");
+
+		String path = "src/main/java/com/diffplug/spotless/" + file;
+		setFile(path).toResource("license/" + file);
+
+		mavenRunner().withArguments("spotless:apply").runNoError();
+
+		// file should remain the same
+		assertFile(path).sameAsResource("license/" + file);
 	}
 }

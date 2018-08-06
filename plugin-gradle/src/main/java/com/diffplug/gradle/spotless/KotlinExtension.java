@@ -29,17 +29,19 @@ import org.gradle.api.tasks.SourceSet;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.kotlin.KtLintStep;
 
-public class KotlinExtension extends FormatExtension {
+public class KotlinExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "kotlin";
 
 	public KotlinExtension(SpotlessExtension rootExtension) {
 		super(rootExtension);
 	}
 
+	@Override
 	public LicenseHeaderConfig licenseHeader(String licenseHeader) {
 		return licenseHeader(licenseHeader, LICENSE_HEADER_DELIMITER);
 	}
 
+	@Override
 	public LicenseHeaderConfig licenseHeaderFile(Object licenseHeaderFile) {
 		return licenseHeaderFile(licenseHeaderFile, LICENSE_HEADER_DELIMITER);
 	}

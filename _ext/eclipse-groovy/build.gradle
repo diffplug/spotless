@@ -1,0 +1,48 @@
+ext {
+	developers = [
+		fvgh: [ name: 'Frank Vennemeyer', email: 'frankgh@zoho.com' ],
+	]
+
+	p2Repository = "http://dist.springsource.org/release/GRECLIPSE/e${VER_ECLIPSE}"
+	
+    p2Dependencies = [
+		'org.codehaus.groovy.eclipse.refactoring':'+', // GroovyFormatter and related
+	
+		// The following lists does not reflect the complete transitive required packages, but
+		// the once used during code formatting
+		'org.codehaus.groovy':'+', // Groovy compiler patches supporting use within GrEclipse and Groovy itself
+		'org.codehaus.groovy.eclipse.core':'+', // Groovy core classes (provides central logging used by formatter)
+		//'org.eclipse.jdt.core':"${VER_JDT_PATCH}", // Patches org.eclipse.jdt.core classes supporting use within GrEclipse (provides AST generator)
+		'org.eclipse.jdt.groovy.core':'+' // Extends org.eclipse.jdt.core for Groovy
+	]
+
+	internalJars = [
+		//Jars included by org.codehaus.groovy
+		"**/groovy-all-${VER_GROOVY}-indy", // Use Groovy compiler compatible with GrEclipse instead of localGroovy
+		'**/groovy-eclipse', // Patches/Overrides some of the Groovy compiler classes
+		'**/eclipse-trace', // Provides logging capabilities for groovy-eclipse
+
+		//Jars included by org.eclipse.jdt.groovy.core
+		'**/nlcl' //Non locking class loader used by groovy compiler
+	]
+
+}
+
+apply from: rootProject.file('../gradle/p2-fat-jar-setup.gradle')
+apply from: rootProject.file('../gradle/java-publish.gradle')
+
+dependencies {
+	compile "com.diffplug.spotless:spotless-eclipse-base:${VER_SPOTLESS_ECLISPE_BASE}"
+	// Provides text partitioners for formatters
+	compile ("org.eclipse.platform:org.eclipse.jface.text:${VER_ECLISPE_JFACE}") {
+		exclude group: 'org.eclipse.platform', module: 'org.eclipse.swt'
+	}
+}
+
+//////////
+// Test //
+//////////
+sourceSets {
+	// Use JAR file with all resources for Eclipse-Groovy integration-tests
+	test.runtimeClasspath = jar.outputs.files + sourceSets.test.output + sourceSets.test.compileClasspath
+}

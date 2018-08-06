@@ -12,7 +12,7 @@ output = [
 [![License Apache](https://img.shields.io/badge/license-apache-brightgreen.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
 <!---freshmark /shields -->
 
-Spotless can format &lt;java | markdown | license headers | anything> using &lt;gradle | maven | anything>.
+Spotless can format &lt;java | kotlin | scala | sql | groovy | markdown | license headers | anything> using &lt;gradle | maven | anything>.
 
 - [Spotless for Gradle](plugin-gradle)
 - [Spotless for Maven](plugin-maven)
@@ -77,7 +77,9 @@ lib('sql.DBeaverSQLFormatterStep')               +'{{yes}}       | {{no}}       
 
 ## Acknowledgements
 
+* Thanks to [Frank Vennemeyer](https://github.com/fvgh) for [Groovy support via greclipse](https://github.com/diffplug/spotless/issues/13), and a huge body of work with other eclipse-based formatters.
 * Thanks to [Konstantin Lutovich](https://github.com/lutovich) for [implementing the maven plugin](https://github.com/diffplug/spotless/pull/188).
+* Thanks to [Joan Goyeau](https://github.com/joan38) for [fixing scalafmt integration](https://github.com/diffplug/spotless/pull/260).
 * Thanks to [Baptiste Mesta](https://github.com/baptistemesta) for
   + porting the DBeaver formatter to Spotless, and thanks to [DBeaver](https://dbeaver.jkiss.org/) and [its authors](https://github.com/serge-rider/dbeaver/graphs/contributors) for their excellent SQL formatter.
   + making license headers date-aware [#179](https://github.com/diffplug/spotless/pull/179)
@@ -85,7 +87,6 @@ lib('sql.DBeaverSQLFormatterStep')               +'{{yes}}       | {{no}}       
   + implementing up-to-date checking [#31](https://github.com/diffplug/spotless/issues/31)
   + breaking spotless into libraries [#56](https://github.com/diffplug/spotless/issues/56)
   + lots of other things, but especially the diff support in `spotlessCheck`
-* Thanks to [Frank Vennemeyer](https://github.com/fvgh) for [Groovy support via greclipse](https://github.com/diffplug/spotless/issues/13).
 * Thanks to [Stefan Oehme](https://github.com/oehme) for tons of help on the internal mechanics of Gradle.
 * Thanks to [eyalkaspi](https://github.com/eyalkaspi) for adding configurable date ranges to the date-aware license headers.
 * Thanks to [Oliver Horn](https://github.com/ohorn) for adding AOSP support for Spotless' google-java-format integration.

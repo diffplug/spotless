@@ -5,7 +5,23 @@ You might be looking for:
 - [plugin-gradle/CHANGES.md](plugin-gradle/CHANGES.md)
 - [plugin-maven/CHANGES.md](plugin-maven/CHANGES.md)
 
-### Version 1.12.0-SNAPSHOT - TBD (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/snapshot/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/snapshot/), [snapshot repo](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/))
+### Version 1.15.0-SNAPSHOT - TBD (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/snapshot/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/snapshot/), [snapshot repo](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/))
+
+* Updated JSR305 annotation from 3.0.0 to 3.0.2 ([#274](https://github.com/diffplug/spotless/pull/274))
+* Migrated from FindBugs annotations 3.0.0 to SpotBugs annotations 3.1.6 ([#274](https://github.com/diffplug/spotless/pull/274))
+
+### Version 1.14.0 - July 24th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.14.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.14.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
+
+* Updated default groovy-eclipse from 4.6.3 to 4.8.0 ([#244](https://github.com/diffplug/spotless/pull/244)). New version allows to ignore internal formatter errors/warnings.
+* Updated default eclipse-jdt from 4.7.2 to 4.8.0 ([#239](https://github.com/diffplug/spotless/pull/239)). New version fixes a bug preventing Java code formatting within JavaDoc comments ([#191](https://github.com/diffplug/spotless/issues/191)).
+* Eclipse formatter versions decoupled from Spotless formatter step implementations to allow independent updates of maven-based Eclipse dependencies. ([#253](https://github.com/diffplug/spotless/pull/253))
+* Use guaranteed binary and source compatibility between releases of Scalafmt. ([#260](https://github.com/diffplug/spotless/pull/260))
+
+### Version 1.13.0 - June 1st 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.13.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.13.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
+
+* Add line and column numbers to ktlint errors. ([#251](https://github.com/diffplug/spotless/pull/251))
+
+### Version 1.12.0 - May 14th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.12.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.12.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
 * Fixed a bug in `LicenseHeaderStep` which caused an exception with some malformed date-aware licenses. ([#222](https://github.com/diffplug/spotless/pull/222))
 * Updated default ktlint from 0.14.0 to 0.21.0

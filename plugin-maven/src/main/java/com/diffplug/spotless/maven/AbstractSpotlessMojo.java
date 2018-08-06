@@ -19,10 +19,7 @@ import static java.util.stream.Collectors.toList;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -78,7 +75,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	private LicenseHeader licenseHeader;
 
 	@Parameter
-	private Format format;
+	private List<Format> formats = Collections.emptyList();
 
 	@Parameter
 	private Java java;
@@ -146,7 +143,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private List<FormatterFactory> getFormatterFactories() {
-		return Stream.of(format, java, scala, kotlin)
+		return Stream.concat(formats.stream(), Stream.of(java, scala, kotlin))
 				.filter(Objects::nonNull)
 				.collect(toList());
 	}

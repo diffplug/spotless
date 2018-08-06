@@ -15,9 +15,10 @@
  */
 package com.diffplug.spotless.maven;
 
-import static com.diffplug.common.base.Strings.*;
+import static com.diffplug.common.base.Strings.isNullOrEmpty;
 
 import java.io.File;
+import java.util.UUID;
 
 import org.codehaus.plexus.resource.ResourceManager;
 import org.codehaus.plexus.resource.loader.FileResourceCreationException;
@@ -25,6 +26,8 @@ import org.codehaus.plexus.resource.loader.ResourceNotFoundException;
 import org.codehaus.plexus.util.FileUtils;
 
 public class FileLocator {
+
+	static final String TMP_RESOURCE_FILE_PREFIX = "spotless-resource-";
 
 	private final ResourceManager resourceManager;
 
@@ -48,9 +51,7 @@ public class FileLocator {
 	}
 
 	private static String tmpOutputFileName(String path) {
-		String nameWithExtension = FileUtils.filename(path);
 		String extension = FileUtils.extension(path);
-		String name = nameWithExtension.replace('.' + extension, "");
-		return name + '-' + System.currentTimeMillis() + '.' + extension;
+		return TMP_RESOURCE_FILE_PREFIX + UUID.randomUUID() + '.' + extension;
 	}
 }

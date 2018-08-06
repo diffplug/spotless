@@ -16,76 +16,72 @@
 package com.diffplug.spotless.extra.groovy;
 
 import java.io.File;
-import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Objects;
 import java.util.Properties;
 
-import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterFunc;
-import com.diffplug.spotless.FormatterProperties;
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
+import com.diffplug.spotless.extra.EclipseBasedStepBuilder.State;
 
 /** Formatter step which calls out to the Groovy-Eclipse formatter. */
-public class GrEclipseFormatterStep {
-	private static final String NAME = "groovy-eclipse formatter";
-	private static final String FORMATTER_CLASS = "com.diffplug.gradle.spotless.groovy.eclipse.GrEclipseFormatterStepImpl";
-	private static final String DEFAULT_VERSION = "2.3.0";
-	private static final String MAVEN_COORDINATE = "com.diffplug.spotless:spotless-ext-greclipse:";
+public final class GrEclipseFormatterStep {
+	// prevent direct instantiation
+	private GrEclipseFormatterStep() {}
+
+	private static final String NAME = "groovy eclipse formatter";
+	private static final String FORMATTER_CLASS = "com.diffplug.spotless.extra.eclipse.groovy.GrEclipseFormatterStepImpl";
+	private static final String FORMATTER_CLASS_OLD = "com.diffplug.gradle.spotless.groovy.eclipse.GrEclipseFormatterStepImpl";
+	private static final String MAVEN_GROUP_ARTIFACT = "com.diffplug.spotless:spotless-eclipse-groovy";
+	private static final String DEFAULT_VERSION = "4.8.0";
 	private static final String FORMATTER_METHOD = "format";
 
 	/** Creates a formatter step using the default version for the given settings file. */
+	@Deprecated
 	public static FormatterStep create(Iterable<File> settingsFiles, Provisioner provisioner) {
 		return create(defaultVersion(), settingsFiles, provisioner);
 	}
 
 	/** Creates a formatter step for the given version and settings file. */
+	@Deprecated
 	public static FormatterStep create(String version, Iterable<File> settingsFiles, Provisioner provisioner) {
-		return FormatterStep.createLazy(
-				NAME,
-				() -> new State(JarState.from(MAVEN_COORDINATE + version, provisioner), settingsFiles),
-				State::createFormat);
+		EclipseBasedStepBuilder builder = createBuilder(provisioner);
+		builder.setVersion(version);
+		builder.setPreferences(settingsFiles);
+		return builder.build();
 	}
 
 	public static String defaultVersion() {
 		return DEFAULT_VERSION;
 	}
 
-	private static class State implements Serializable {
-		private static final long serialVersionUID = 1L;
+	/** Provides default configuration */
+	public static EclipseBasedStepBuilder createBuilder(Provisioner provisioner) {
+		return new EclipseBasedStepBuilder(NAME, provisioner, GrEclipseFormatterStep::apply);
+	}
 
-		/** The jar that contains the eclipse formatter. */
-		final JarState jarState;
-		/** The signature of the settings file. */
-		final FileSignature settings;
+	private static FormatterFunc apply(EclipseBasedStepBuilder.State state) throws Exception {
+		Class<?> formatterClazz = getClass(state);
+		Object formatter = formatterClazz.getConstructor(Properties.class).newInstance(state.getPreferences());
+		Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
+		return input -> {
+			try {
+				return (String) method.invoke(formatter, input);
+			} catch (InvocationTargetException exceptionWrapper) {
+				Throwable throwable = exceptionWrapper.getTargetException();
+				Exception exception = (throwable instanceof Exception) ? (Exception) throwable : null;
+				throw (null == exception) ? exceptionWrapper : exception;
+			}
+		};
+	}
 
-		State(JarState jar, final Iterable<File> settingsFiles) throws Exception {
-			this.jarState = Objects.requireNonNull(jar);
-			this.settings = FileSignature.signAsList(settingsFiles);
+	private static Class<?> getClass(State state) {
+		if (state.getMavenCoordinate(MAVEN_GROUP_ARTIFACT).isPresent()) {
+			return state.loadClass(FORMATTER_CLASS);
 		}
-
-		FormatterFunc createFormat() throws Exception {
-			FormatterProperties preferences = FormatterProperties.from(settings.files());
-
-			ClassLoader classLoader = jarState.getClassLoader();
-
-			// instantiate the formatter and get its format method
-			Class<?> formatterClazz = classLoader.loadClass(FORMATTER_CLASS);
-			Object formatter = formatterClazz.getConstructor(Properties.class).newInstance(preferences.getProperties());
-			Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
-			return input -> {
-				try {
-					return (String) method.invoke(formatter, input);
-				} catch (InvocationTargetException exceptionWrapper) {
-					Throwable throwable = exceptionWrapper.getTargetException();
-					Exception exception = (throwable instanceof Exception) ? (Exception) throwable : null;
-					throw (null == exception) ? exceptionWrapper : exception;
-				}
-			};
-		}
+		return state.loadClass(FORMATTER_CLASS_OLD);
 	}
 
 }
