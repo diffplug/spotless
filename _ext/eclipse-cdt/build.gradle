@@ -1,39 +1,19 @@
-plugins {
-	// bintray uploading
-	id 'com.jfrog.bintray' version '1.3.1'
-	// p2 dependencies
-	id 'com.diffplug.gradle.p2.asmaven' version '3.9.0'
-}
-
-apply from: rootProject.file('../gradle/java-setup.gradle')
-apply from: rootProject.file('../gradle/java-publish.gradle')
-
 ext {
 	developers = [
 		fvgh: [ name: 'Frank Vennemeyer', email: 'frankgh@zoho.com' ],
 	]
+
+	p2Repository = "http://download.eclipse.org/tools/cdt/releases/${VER_ECLIPSE_CDT}"
+	
+	p2Dependencies = [
+		'org.eclipse.cdt.core':'+', // CodeFormatter and related
+	]
+
 }
 
-// The dependencies to pull from CDT's p2 repositories
-def eclipseCdtDeps = [
-	'org.eclipse.cdt.core':'+', // CodeFormatter and related
-]
+apply from: rootProject.file('../gradle/p2-fat-jar-setup.gradle')
+apply from: rootProject.file('../gradle/java-publish.gradle')
 
-// build a maven repo in our build folder containing these artifacts
-p2AsMaven {
-	group 'p2', {
-		repo "http://download.eclipse.org/tools/cdt/releases/${VER_ECLIPSE_CDT}"
-		eclipseCdtDeps.keySet.each { p2.addIU(it) }
-		eclipseCdtDeps.keySet.each { p2.addIU(it + '.source') }
-	}
-}
-
-configurations
-{ 
-	embeddedJars // JARs (Eclipse and WTP) the fat-jar is based uppon
-	embeddedSource // Source for Eclipse JARS (GrEclipse provides no source packages)
-	compile.extendsFrom(embeddedJars)
-}
 
 dependencies {
 	compile "com.diffplug.spotless:spotless-eclipse-base:${VER_SPOTLESS_ECLISPE_BASE}"
@@ -41,24 +21,8 @@ dependencies {
 	compile ("org.eclipse.platform:org.eclipse.jface.text:${VER_ECLISPE_JFACE}") {
 		exclude group: 'org.eclipse.platform', module: 'org.eclipse.swt'
 	}
-
-	// Add the Eclipse and Eclipse-WTP jars to the embedded configuration.
-	eclipseCdtDeps.each { groupArtifact, version ->
-		embeddedJars "p2:${groupArtifact}:${version}"
-		embeddedSource "p2:${groupArtifact}:${version}:sources"
-	}
 }
 
-jar {
-	// this embeds the eclipse jars into our "fat jar"
-	from {
-		configurations.embeddedJars.collect{ it.isDirectory() ? it : zipTree(it) }
-	}
-	// the eclipse jars are signed, and our fat jar breaks the signatures
-	// so we've got to be sure to filter out the signatures
-	exclude 'META-INF/*.RSA'
-	exclude 'META-INF/*.SF'
-}
 
 //////////
 // Test //
