@@ -5,7 +5,7 @@ ext {
 	
 	p2Repository = "http://download.eclipse.org/webtools/repository/${VER_ECLIPSE_WTP}"
 	
-    p2Dependencies = [
+	p2Dependencies = [
 		// XML/HTML Formatter  - Dependencies
 		'org.eclipse.wst.xml.core':'+', // DefaultXMLPartitionFormatter and XMLAssociationProvider
 		'org.eclipse.wst.sse.core':'+', // Structure models
