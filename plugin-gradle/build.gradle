@@ -29,6 +29,7 @@ tasks.eclipse.dependsOn(pluginUnderTestMetadata)
 /////////////////////
 // SPOTLESS (fake) //
 /////////////////////
+println "sourceSets.test.runtimeClasspath (before spotless[Check|Apply] configured) = \n" + sourceSets.test.runtimeClasspath.join("\n") + "\n\n"
 task spotlessCheck(type: JavaExec) {
 	classpath sourceSets.test.runtimeClasspath
 	main = 'com.diffplug.gradle.spotless.SelfTestCheck'
@@ -76,3 +77,5 @@ pluginBundle {
 if (ext.isSnapshot) {
 	publishPlugins.enabled = false
 }
+
+println "sourceSets.test.runtimeClasspath (after spotless[Check|Apply] configured) = \n" + sourceSets.test.runtimeClasspath.join("\n") + "\n\n"
