@@ -71,7 +71,11 @@ p2AsMaven {
 		repo project.p2Repository
 		p2Dependencies.keySet.each { p2.addIU(it) }
 		p2ant {
-			if (!project.hasProperty('p2AntProxy')) {
+			/*
+			Define p2ant proxy settings as a closure. Refer to the API documents for instructions:
+			https://diffplug.github.io/goomph/javadoc/3.3.0/com/diffplug/gradle/p2/AsMavenPlugin.html
+			*/
+			if (project.hasProperty('setP2AntProxy')) {
 				setP2AntProxy(it)
 			}
  		}
