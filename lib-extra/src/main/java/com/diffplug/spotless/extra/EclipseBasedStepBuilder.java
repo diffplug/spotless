@@ -41,6 +41,7 @@ import com.diffplug.spotless.ThrowingEx;
  */
 public class EclipseBasedStepBuilder {
 	private final String formatterName;
+	private final String formatterStepExt;
 	private final ThrowingEx.Function<State, FormatterFunc> stateToFormatter;
 	private final Provisioner jarProvisioner;
 
@@ -63,14 +64,20 @@ public class EclipseBasedStepBuilder {
 
 	/** Initialize valid default configuration, taking latest version */
 	public EclipseBasedStepBuilder(String formatterName, Provisioner jarProvisioner, ThrowingEx.Function<State, FormatterFunc> stateToFormatter) {
+		this(formatterName, "", jarProvisioner, stateToFormatter);
+	}
+
+	/** Initialize valid default configuration, taking latest version */
+	public EclipseBasedStepBuilder(String formatterName, String formatterStepExt, Provisioner jarProvisioner, ThrowingEx.Function<State, FormatterFunc> stateToFormatter) {
 		this.formatterName = Objects.requireNonNull(formatterName, "formatterName");
+		this.formatterStepExt = Objects.requireNonNull(formatterStepExt, "formatterStepExt");
 		this.jarProvisioner = Objects.requireNonNull(jarProvisioner, "jarProvisioner");
 		this.stateToFormatter = Objects.requireNonNull(stateToFormatter, "stateToFormatter");
 	}
 
 	/** Returns the FormatterStep (whose state will be calculated lazily). */
 	public FormatterStep build() {
-		return FormatterStep.createLazy(formatterName, this::get, stateToFormatter);
+		return FormatterStep.createLazy(formatterName + formatterStepExt, this::get, stateToFormatter);
 	}
 
 	/** Set dependencies for the corresponding Eclipse version */
@@ -123,6 +130,7 @@ public class EclipseBasedStepBuilder {
 		 * Hence a lazy construction is not required.
 		 */
 		return new State(
+				formatterStepExt,
 				jarProvisioner,
 				dependencies,
 				settingsFiles);
@@ -137,12 +145,16 @@ public class EclipseBasedStepBuilder {
 		private static final long serialVersionUID = 1L;
 
 		private final JarState jarState;
+		//The formatterStepExt assures that different class loaders are used for different step types
+		@SuppressWarnings("unused")
+		private final String formatterStepExt;
 		private final FileSignature settingsFiles;
 
 		/** State constructor expects that all passed items are not modified afterwards */
-		protected State(Provisioner jarProvisioner, List<String> dependencies, Iterable<File> settingsFiles) throws IOException {
+		protected State(String formatterStepExt, Provisioner jarProvisioner, List<String> dependencies, Iterable<File> settingsFiles) throws IOException {
 			this.jarState = JarState.from(dependencies, jarProvisioner);
 			this.settingsFiles = FileSignature.signAsList(settingsFiles);
+			this.formatterStepExt = formatterStepExt;
 		}
 
 		/** Get formatter preferences */
@@ -158,10 +170,18 @@ public class EclipseBasedStepBuilder {
 					.filter(coordinate -> coordinate.startsWith(prefix)).findFirst();
 		}
 
-		/** Load class based on the given configuration of JAR provider and Maven coordinates. */
+		/**
+		 * Load class based on the given configuration of JAR provider and Maven coordinates.
+		 * Different class loader instances are provided in the following scenarios:
+		 * <ol>
+		 * <li>The JARs ({@link #jarState}) have changes (this should only occur during development)</li>
+		 * <li>Different configurations ({@link #settingsFiles}) are used for different sub-projects</li>
+		 * <li>The same Eclipse step implementation provides different formatter types ({@link #formatterStepExt})</li>
+		 * </ol>
+		 */
 		public Class<?> loadClass(String name) {
 			try {
-				return jarState.getClassLoader().loadClass(name);
+				return jarState.getClassLoader(this).loadClass(name);
 			} catch (ClassNotFoundException e) {
 				throw Errors.asRuntime(e);
 			}
