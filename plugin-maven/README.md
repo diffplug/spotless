@@ -297,6 +297,6 @@ By default, `spotless:check` is bound to the `verify` phase.  You might want to 
 
 ## Example configurations (from real-world projects)
 
-TODO
+- [JUNG: Java Universal Network/Graph Framework](https://github.com/jrtom/jung/blob/b3a2461b97bb3ab40acc631e21feef74976489e4/pom.xml#L187-L208)
 
 <!---freshmark /javadoc -->
