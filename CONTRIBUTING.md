@@ -117,7 +117,7 @@ If you get something running, we'd love to host your plugin within this repo as 
 
 ## License
 
-By contributing your code, you agree to license your contribution under the terms of the APLv2: https://github.com/diffplug/spotless/blob/master/LICENSE
+By contributing your code, you agree to license your contribution under the terms of the APLv2: https://github.com/diffplug/spotless/blob/master/LICENSE.txt
 
 All files are released with the Apache 2.0 license as such:
 

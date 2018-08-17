@@ -18,9 +18,9 @@ Spotless can format &lt;java | kotlin | scala | sql | groovy | markdown | licens
 - [Spotless for Maven](plugin-maven)
 - [Other build systems](CONTRIBUTING.md#how-to-add-a-new-plugin-for-a-build-system)
 
-Ideally, a code formatter can do more than just find formatting errors - it should fix them as well.  Such a formatter is really just a `Function<String, String>`, which returns a formatted version of its potentially unformatted input.
+Ideally, a code formatter can do more than just find formatting errors - it should fix them as well. Such a formatter is really just a `Function<String, String>`, which returns a formatted version of its potentially unformatted input.
 
-It's easy to build such a function, but there are some gotchas and lots of integration work (newlines, character encodings, idempotency, and build-system integration).  Spotless tackles those for you so you can focus on just a simple `Function<String, String>` which can compose with any of the other formatters and build tools in Spotless' arsenal.
+It's easy to build such a function, but there are some gotchas and lots of integration work (newlines, character encodings, idempotency, and build-system integration). Spotless tackles those for you so you can focus on just a simple `Function<String, String>` which can compose with any of the other formatters and build tools in Spotless' arsenal.
 
 ## Current feature matrix
 
@@ -47,7 +47,7 @@ lib('kotlin.KtLintStep')                         +'{{yes}}       | {{yes}}      
 lib('markdown.FreshMarkStep')                    +'{{yes}}       | {{no}}       | {{no}}  |',
 lib('scala.ScalaFmtStep')                        +'{{yes}}       | {{yes}}       | {{no}}  |',
 lib('sql.DBeaverSQLFormatterStep')               +'{{yes}}       | {{no}}       | {{no}}  |',
-'| [(Your FormatterStep here)](https://github.com/nedtwigg/spotless/blob/markdown-preview-temp/CONTRIBUTING.md#how-to-add-a-new-formatterstep) | {{no}}        | {{no}}       | {{no}}  |',
+'| [(Your FormatterStep here)](CONTRIBUTING.md#how-to-add-a-new-formatterstep) | {{no}}        | {{no}}       | {{no}}  |',
 '| Fast up-to-date checking                      | {{yes}}       | {{no}}       | {{no}}  |',
 '| Automatic idempotency safeguard               | {{yes}}       | {{no}}       | {{no}}  |',
 ''
@@ -70,35 +70,35 @@ lib('sql.DBeaverSQLFormatterStep')               +'{{yes}}       | {{no}}       
 | [`markdown.FreshMarkStep`](lib/src/main/java/com/diffplug/spotless/markdown/FreshMarkStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
 | [`scala.ScalaFmtStep`](lib/src/main/java/com/diffplug/spotless/scala/ScalaFmtStep.java) | :+1:       | :+1:       | :white_large_square:  |
 | [`sql.DBeaverSQLFormatterStep`](lib/src/main/java/com/diffplug/spotless/sql/DBeaverSQLFormatterStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
-| [(Your FormatterStep here)](https://github.com/nedtwigg/spotless/blob/markdown-preview-temp/CONTRIBUTING.md#how-to-add-a-new-formatterstep) | :white_large_square:        | :white_large_square:       | :white_large_square:  |
+| [(Your FormatterStep here)](CONTRIBUTING.md#how-to-add-a-new-formatterstep) | :white_large_square:        | :white_large_square:       | :white_large_square:  |
 | Fast up-to-date checking                      | :+1:       | :white_large_square:       | :white_large_square:  |
 | Automatic idempotency safeguard               | :+1:       | :white_large_square:       | :white_large_square:  |
 <!---freshmark /matrix -->
 
 ## Acknowledgements
 
-* Thanks to [Frank Vennemeyer](https://github.com/fvgh) for [Groovy support via greclipse](https://github.com/diffplug/spotless/issues/13), and a huge body of work with other eclipse-based formatters.
-* Thanks to [Konstantin Lutovich](https://github.com/lutovich) for [implementing the maven plugin](https://github.com/diffplug/spotless/pull/188).
-* Thanks to [Joan Goyeau](https://github.com/joan38) for [fixing scalafmt integration](https://github.com/diffplug/spotless/pull/260).
-* Thanks to [Baptiste Mesta](https://github.com/baptistemesta) for
-  + porting the DBeaver formatter to Spotless, and thanks to [DBeaver](https://dbeaver.jkiss.org/) and [its authors](https://github.com/serge-rider/dbeaver/graphs/contributors) for their excellent SQL formatter.
-  + making license headers date-aware [#179](https://github.com/diffplug/spotless/pull/179)
-* Thanks to [Jonathan Bluett-Duncan](https://github.com/jbduncan) for
-  + implementing up-to-date checking [#31](https://github.com/diffplug/spotless/issues/31)
-  + breaking spotless into libraries [#56](https://github.com/diffplug/spotless/issues/56)
-  + lots of other things, but especially the diff support in `spotlessCheck`
-* Thanks to [Stefan Oehme](https://github.com/oehme) for tons of help on the internal mechanics of Gradle.
-* Thanks to [eyalkaspi](https://github.com/eyalkaspi) for adding configurable date ranges to the date-aware license headers.
-* Thanks to [Oliver Horn](https://github.com/ohorn) for adding AOSP support for Spotless' google-java-format integration.
-* Formatting by Eclipse
-  + Special thanks to [Mateusz Matela](https://waynebeaton.wordpress.com/2015/03/15/great-fixes-for-mars-winners-part-i/) for huge improvements to the eclipse code formatter!
-* Thanks to [Nelson Osacky](https://github.com/runningcode) for android doc improvements, versions bump, and a build improvement.
-* Thanks to [Stanley Shyiko](https://github.com/shyiko) for his help integrating [ktlint](https://github.com/shyiko/ktlint).
-* Thanks to [Jonathan Leitschuh](https://github.com/JLLeitschuh) for adding [ktlint](https://github.com/shyiko/ktlint) support for [Gradle Kotlin DSL](https://github.com/gradle/kotlin-dsl) files.
-* Originally forked from [gradle-format-plugin](https://github.com/youribonnaffe/gradle-format-plugin) by Youri Bonnaffé.
-* Thanks to Gábor Bernát for improvements to logging and multi-project support.
-* Thanks to Andrew Oberstar for improvements to formatting java source in non-java source sets. [PR #60](https://github.com/diffplug/spotless/pull/60).
-* Import ordering from [EclipseCodeFormatter](https://github.com/krasa/EclipseCodeFormatter).
-* Built by [gradle](http://gradle.org/).
-* Tested by [junit](http://junit.org/).
-* Maintained by [DiffPlug](http://www.diffplug.com/).
+- Thanks to [Frank Vennemeyer](https://github.com/fvgh) for [Groovy support via greclipse](https://github.com/diffplug/spotless/issues/13), and a huge body of work with other eclipse-based formatters.
+- Thanks to [Konstantin Lutovich](https://github.com/lutovich) for [implementing the maven plugin](https://github.com/diffplug/spotless/pull/188).
+- Thanks to [Joan Goyeau](https://github.com/joan38) for [fixing scalafmt integration](https://github.com/diffplug/spotless/pull/260).
+- Thanks to [Baptiste Mesta](https://github.com/baptistemesta) for
+  - porting the DBeaver formatter to Spotless, and thanks to [DBeaver](https://dbeaver.jkiss.org/) and [its authors](https://github.com/serge-rider/dbeaver/graphs/contributors) for their excellent SQL formatter.
+  - making license headers date-aware [#179](https://github.com/diffplug/spotless/pull/179)
+- Thanks to [Jonathan Bluett-Duncan](https://github.com/jbduncan) for
+  - implementing up-to-date checking [#31](https://github.com/diffplug/spotless/issues/31)
+  - breaking spotless into libraries [#56](https://github.com/diffplug/spotless/issues/56)
+  - lots of other things, but especially the diff support in `spotlessCheck`
+- Thanks to [Stefan Oehme](https://github.com/oehme) for tons of help on the internal mechanics of Gradle.
+- Thanks to [eyalkaspi](https://github.com/eyalkaspi) for adding configurable date ranges to the date-aware license headers.
+- Thanks to [Oliver Horn](https://github.com/ohorn) for adding AOSP support for Spotless' google-java-format integration.
+- Formatting by Eclipse
+  - Special thanks to [Mateusz Matela](https://waynebeaton.wordpress.com/2015/03/15/great-fixes-for-mars-winners-part-i/) for huge improvements to the eclipse code formatter!
+- Thanks to [Nelson Osacky](https://github.com/runningcode) for android doc improvements, versions bump, and a build improvement.
+- Thanks to [Stanley Shyiko](https://github.com/shyiko) for his help integrating [ktlint](https://github.com/shyiko/ktlint).
+- Thanks to [Jonathan Leitschuh](https://github.com/JLLeitschuh) for adding [ktlint](https://github.com/shyiko/ktlint) support for [Gradle Kotlin DSL](https://github.com/gradle/kotlin-dsl) files.
+- Originally forked from [gradle-format-plugin](https://github.com/youribonnaffe/gradle-format-plugin) by Youri Bonnaffé.
+- Thanks to Gábor Bernát for improvements to logging and multi-project support.
+- Thanks to Andrew Oberstar for improvements to formatting java source in non-java source sets. [PR #60](https://github.com/diffplug/spotless/pull/60).
+- Import ordering from [EclipseCodeFormatter](https://github.com/krasa/EclipseCodeFormatter).
+- Built by [gradle](http://gradle.org/).
+- Tested by [junit](http://junit.org/).
+- Maintained by [DiffPlug](http://www.diffplug.com/).
