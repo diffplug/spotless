@@ -77,6 +77,12 @@ abstract class FormatterStepImpl<State extends Serializable> extends Strict<Stat
 			}
 			return formatter.apply(rawUnix);
 		}
+
+		void cleanupFormatterFunc() {
+			if (formatter instanceof FormatterFunc.Closeable) {
+				((FormatterFunc.Closeable) formatter).close();
+			}
+		}
 	}
 
 	/** Formatter which is equal to itself, but not to any other Formatter. */

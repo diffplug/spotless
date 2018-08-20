@@ -113,52 +113,53 @@ public final class PaddedCellBulk {
 
 		// "fake" Formatter which can use the already-computed result of a PaddedCell as
 		FakeStep paddedCellStep = new FakeStep();
-		Formatter paddedFormatter = Formatter.builder()
+		try (Formatter paddedFormatter = Formatter.builder()
 				.lineEndingsPolicy(formatter.getLineEndingsPolicy())
 				.encoding(formatter.getEncoding())
 				.rootDir(formatter.getRootDir())
 				.steps(Collections.singletonList(paddedCellStep))
 				.exceptionPolicy(formatter.getExceptionPolicy())
-				.build();
+				.build()) {
 
-		// empty out the diagnose folder
-		Path rootPath = rootDir.toPath();
-		Path diagnosePath = diagnoseDir.toPath();
-		cleanDir(diagnosePath);
+			// empty out the diagnose folder
+			Path rootPath = rootDir.toPath();
+			Path diagnosePath = diagnoseDir.toPath();
+			cleanDir(diagnosePath);
 
-		List<File> stillFailing = new ArrayList<>();
-		for (File problemFile : problemFiles) {
-			logger.fine("Running padded cell check on " + problemFile);
-			PaddedCell padded = PaddedCell.check(formatter, problemFile);
-			if (!padded.misbehaved()) {
-				logger.fine("    well-behaved.");
-			} else {
-				// the file is misbehaved, so we'll write all its steps to DIAGNOSE_DIR
-				Path relative = rootPath.relativize(problemFile.toPath());
-				Path diagnoseFile = diagnosePath.resolve(relative);
-				for (int i = 0; i < padded.steps().size(); ++i) {
-					Path path = Paths.get(diagnoseFile + "." + padded.type().name().toLowerCase(Locale.ROOT) + i);
-					Files.createDirectories(path.getParent());
-					String version = padded.steps().get(i);
-					Files.write(path, version.getBytes(formatter.getEncoding()));
-				}
-				// dump the type of the misbehavior to console
-				logger.finer("    " + relative + " " + padded.userMessage());
-
-				if (!padded.isResolvable()) {
-					// if it's not resolvable, then there's
-					// no point killing the build over it
+			List<File> stillFailing = new ArrayList<>();
+			for (File problemFile : problemFiles) {
+				logger.fine("Running padded cell check on " + problemFile);
+				PaddedCell padded = PaddedCell.check(formatter, problemFile);
+				if (!padded.misbehaved()) {
+					logger.fine("    well-behaved.");
 				} else {
-					// if the input is resolvable, we'll use that to try again at
-					// determining if it's clean
-					paddedCellStep.set(problemFile, padded.canonical());
-					if (!paddedFormatter.isClean(problemFile)) {
-						stillFailing.add(problemFile);
+					// the file is misbehaved, so we'll write all its steps to DIAGNOSE_DIR
+					Path relative = rootPath.relativize(problemFile.toPath());
+					Path diagnoseFile = diagnosePath.resolve(relative);
+					for (int i = 0; i < padded.steps().size(); ++i) {
+						Path path = Paths.get(diagnoseFile + "." + padded.type().name().toLowerCase(Locale.ROOT) + i);
+						Files.createDirectories(path.getParent());
+						String version = padded.steps().get(i);
+						Files.write(path, version.getBytes(formatter.getEncoding()));
+					}
+					// dump the type of the misbehavior to console
+					logger.finer("    " + relative + " " + padded.userMessage());
+
+					if (!padded.isResolvable()) {
+						// if it's not resolvable, then there's
+						// no point killing the build over it
+					} else {
+						// if the input is resolvable, we'll use that to try again at
+						// determining if it's clean
+						paddedCellStep.set(problemFile, padded.canonical());
+						if (!paddedFormatter.isClean(problemFile)) {
+							stillFailing.add(problemFile);
+						}
 					}
 				}
 			}
+			return stillFailing;
 		}
-		return stillFailing;
 	}
 
 	/** Helper for check(). */
