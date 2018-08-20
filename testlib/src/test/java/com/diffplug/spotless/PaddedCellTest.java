@@ -49,29 +49,30 @@ public class PaddedCellTest {
 	private void testCase(FormatterFunc step, String input, PaddedCell.Type expectedOutputType, String expectedSteps, String canonical, boolean misbehaved) throws IOException {
 		List<FormatterStep> formatterSteps = new ArrayList<>();
 		formatterSteps.add(FormatterStep.createNeverUpToDate("step", step));
-		Formatter formatter = Formatter.builder()
+		try (Formatter formatter = Formatter.builder()
 				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
 				.encoding(StandardCharsets.UTF_8)
 				.rootDir(folder.getRoot().toPath())
-				.steps(formatterSteps).build();
+				.steps(formatterSteps).build()) {
 
-		File file = folder.newFile();
-		Files.write(file.toPath(), input.getBytes(StandardCharsets.UTF_8));
+			File file = folder.newFile();
+			Files.write(file.toPath(), input.getBytes(StandardCharsets.UTF_8));
 
-		PaddedCell result = PaddedCell.check(formatter, file);
-		Assert.assertEquals(misbehaved, result.misbehaved());
-		Assert.assertEquals(expectedOutputType, result.type());
+			PaddedCell result = PaddedCell.check(formatter, file);
+			Assert.assertEquals(misbehaved, result.misbehaved());
+			Assert.assertEquals(expectedOutputType, result.type());
 
-		String actual = String.join(",", result.steps());
-		Assert.assertEquals(expectedSteps, actual);
+			String actual = String.join(",", result.steps());
+			Assert.assertEquals(expectedSteps, actual);
 
-		if (canonical == null) {
-			try {
-				result.canonical();
-				Assert.fail("Expected exception");
-			} catch (IllegalArgumentException expected) {}
-		} else {
-			Assert.assertEquals(canonical, result.canonical());
+			if (canonical == null) {
+				try {
+					result.canonical();
+					Assert.fail("Expected exception");
+				} catch (IllegalArgumentException expected) {}
+			} else {
+				Assert.assertEquals(canonical, result.canonical());
+			}
 		}
 	}
 

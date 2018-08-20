@@ -28,6 +28,7 @@ import com.diffplug.common.base.StandardSystemProperty;
 import com.diffplug.spotless.generic.EndWithNewlineStep;
 
 public class FormatterTest {
+	// Formatter normally needs to be closed, but no resources will be leaked in this special case
 	@Test
 	public void equality() {
 		new SerializableEqualityTester() {

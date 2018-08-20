@@ -36,7 +36,7 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 
 /** Formatter which performs the full formatting. */
-public final class Formatter implements Serializable {
+public final class Formatter implements Serializable, AutoCloseable {
 	private static final long serialVersionUID = 1L;
 
 	private LineEnding.Policy lineEndingsPolicy;
@@ -273,5 +273,15 @@ public final class Formatter implements Serializable {
 				rootDir.equals(other.rootDir) &&
 				steps.equals(other.steps) &&
 				exceptionPolicy.equals(other.exceptionPolicy);
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	public void close() {
+		for (FormatterStep step : steps) {
+			if (step instanceof FormatterStepImpl.Standard) {
+				((FormatterStepImpl.Standard) step).cleanupFormatterFunc();
+			}
+		}
 	}
 }
