@@ -30,7 +30,6 @@ import org.gradle.api.tasks.GroovySourceSet;
 import org.gradle.api.tasks.SourceSet;
 
 import com.diffplug.common.base.StringPrinter;
-import com.diffplug.spotless.SerializableFileFilter;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.groovy.GrEclipseFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
@@ -140,7 +139,7 @@ public class GroovyExtension extends FormatExtension implements HasBuiltinDelimi
 		// ensures that it skips both. See https://github.com/diffplug/spotless/issues/1
 		steps.replaceAll(step -> {
 			if (LicenseHeaderStep.name().equals(step.getName())) {
-				return step.filterByFile(SerializableFileFilter.skipFilesNamed("package-info.java", "package-info.groovy"));
+				return step.filterByFile(LicenseHeaderStep.unsupportedJvmFilesFilter());
 			} else {
 				return step;
 			}
