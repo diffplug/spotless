@@ -21,9 +21,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import com.diffplug.spotless.*;
+import com.diffplug.spotless.extra.nodebased.NpmTest;
 
+@Category(NpmTest.class)
 public class TsFmtFormatterStepTest {
 
 	@Test

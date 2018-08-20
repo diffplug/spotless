@@ -21,11 +21,18 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
-import com.diffplug.spotless.*;
+import com.diffplug.spotless.FormatExceptionPolicy;
+import com.diffplug.spotless.Formatter;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.TestProvisioner;
+import com.diffplug.spotless.extra.nodebased.NpmTest;
 import com.diffplug.spotless.extra.nodebased.prettier.options.PrettierOptions;
 import com.diffplug.spotless.extra.nodebased.prettier.options.PrettierParser;
 
+@Category(NpmTest.class)
 public class PrettierFormatterStepTest {
 
 	@Test
