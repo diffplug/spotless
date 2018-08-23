@@ -36,6 +36,7 @@ import org.eclipse.aether.repository.RemoteRepository;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.maven.cpp.Cpp;
 import com.diffplug.spotless.maven.generic.Format;
 import com.diffplug.spotless.maven.generic.LicenseHeader;
 import com.diffplug.spotless.maven.java.Java;
@@ -85,6 +86,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	@Parameter
 	private Kotlin kotlin;
+
+	@Parameter
+	private Cpp cpp;
 
 	protected abstract void process(List<File> files, Formatter formatter) throws MojoExecutionException;
 
@@ -143,7 +147,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private List<FormatterFactory> getFormatterFactories() {
-		return Stream.concat(formats.stream(), Stream.of(java, scala, kotlin))
+		return Stream.concat(formats.stream(), Stream.of(java, scala, kotlin, cpp))
 				.filter(Objects::nonNull)
 				.collect(toList());
 	}

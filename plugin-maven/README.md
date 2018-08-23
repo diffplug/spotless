@@ -164,6 +164,30 @@ By default, all files matching `src/main/kotlin/**/*.kt` and `src/test/kotlin/**
 </configuration>
 ```
 
+<a name="cpp"></a>
+
+## Applying to C/C++ source
+
+By default, all files matching `src/main/cpp/**/*.<ext>` and `src/test/cpp/**/*.<ext>` Ant style pattern will be formatted, whereas the file extensions `c`, `h`, `C`, `cpp`, `cxx`, `cc`, `c++`, `h`, `hpp`, `hh`, `hxx` and `inc` are supported.  Each element under `<cpp>` is a step, and they will be applied in the order specified.  Every step is optional, and they will be applied in the order specified.
+
+```xml
+<configuration>
+  <cpp>
+     <licenseHeader>
+       <!-- Specify either content or file, but not both -->
+       <content>/* Licensed under Apache-2.0 */</content>
+       <file>${basedir}/license-header</file>
+     </licenseHeader>
+     <eclipse>
+       <file>${basedir}/eclipse-fmt.xml</file>
+       <!-- Optional, available versions: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/config/eclipse_cdt_formatter -->
+       <version>4.7.3a</version>
+     </eclipse>
+  </cpp>
+</configuration>
+```
+Use the Eclipse code-style editor to [export](https://eclipsebook.in/c-cpp-development/editing-code/code-style/) your configuration as XML file.
+
 <a name="format"></a>
 
 ## Applying to custom sources

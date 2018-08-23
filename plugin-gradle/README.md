@@ -290,6 +290,22 @@ spotless {
 }
 ```
 
+<a name="cpp-cdt"></a>
+
+## Applying [CDT](https://www.eclipse.org/cdt/) to C/C++ sources
+
+```gradle
+spotless {
+  cpp {
+    eclipse().configFile 'spotless.eclipseformat.xml'	// XML file dumped out by the Eclipse formatter
+    // If you have Eclipse preference or property files, you can use them too.
+    // eclipse('4.7.1') to specify a specific version of Eclipse,
+    // available versions are: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/config/eclipse_cdt_formatter
+  }
+}
+```
+Use the Eclipse code-style editor to [export](https://eclipsebook.in/c-cpp-development/editing-code/code-style/) your configuration as XML file.
+
 <a name="license-header"></a>
 
 ## License header options

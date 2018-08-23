@@ -13,34 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless;
-
-import java.io.IOException;
+package com.diffplug.spotless.maven.cpp;
 
 import org.junit.Test;
 
-public class CppExtensionTest extends GradleIntegrationTest {
+import com.diffplug.spotless.maven.MavenIntegrationTest;
+
+public class EclipseTest extends MavenIntegrationTest {
 
 	@Test
-	public void testEclipseFormatter() throws IOException {
+	public void testConfigAndIncludes() throws Exception {
+		writePomWithCppSteps("<eclipse><file>./cdt.properties</file></eclipse>");
+
+		String input = "int main() {\n\tint a = 1;\n}";
 		setFile("cdt.properties").toContent(
 				"org.eclipse.cdt.core.formatter.tabulation.size=3\n" +
 						"org.eclipse.cdt.core.formatter.tabulation.char=space");
-		setFile("build.gradle").toLines(
-				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
-				"}",
-				"spotless {",
-				"    cpp {",
-				"        eclipse().configFile('./cdt.properties')",
-				"    }",
-				"}");
 
-		String path = "src/main/test.c++";
-		String input = "int main() {\n\tint a = 1;\n}";
+		String path = "src/main/cpp/file1.c++";
 		setFile(path).toContent(input);
-		gradleRunner().withArguments("spotlessApply").build();
+		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).hasContent(input.replace("\t", "   "));
 	}
-
 }

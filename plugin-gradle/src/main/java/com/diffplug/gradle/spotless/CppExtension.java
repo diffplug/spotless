@@ -17,14 +17,13 @@ package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
 
-import java.util.Arrays;
-
 import org.gradle.api.Project;
 
+import com.diffplug.spotless.cpp.CppDefaults;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.cpp.EclipseCdtFormatterStep;
 
-public class CppExtension extends FormatExtension {
+public class CppExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "cpp";
 
 	public CppExtension(SpotlessExtension rootExtension) {
@@ -67,12 +66,18 @@ public class CppExtension extends FormatExtension {
 			 * Hence file extension based filtering is used in line with the org.eclipse.core.contenttype.contentTypes
 			 * defined by the CDT plugin.
 			 */
-			target(
-					Arrays.asList("c", "h", "C", "cpp", "cxx", "cc", "c\\+\\+", "h", "hpp", "hh", "hxx", "inc")
-							.stream().map(s -> {
-								return "**/*." + s;
-							}).toArray());
+			target(CppDefaults.FILE_FILTER.toArray());
 		}
 		super.setupTask(task);
+	}
+
+	@Override
+	public LicenseHeaderConfig licenseHeader(String licenseHeader) {
+		return licenseHeader(licenseHeader, CppDefaults.DELIMITER_EXPR);
+	}
+
+	@Override
+	public LicenseHeaderConfig licenseHeaderFile(Object licenseHeaderFile) {
+		return licenseHeaderFile(licenseHeaderFile, CppDefaults.DELIMITER_EXPR);
 	}
 }
