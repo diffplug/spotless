@@ -142,7 +142,7 @@ spotless {
 
 <a name="google-java-format"></a>
 
-## Applying to Java source ([google-java-format](https://github.com/google/google-java-format))
+### Applying to Java source with [google-java-format](https://github.com/google/google-java-format)
 
 ```gradle
 spotless {
