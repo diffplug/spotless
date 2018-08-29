@@ -34,12 +34,21 @@ public class CppDefaultsTest extends ResourceHarness {
 		FormatterStep step = LicenseHeaderStep.createFromHeader(header, CppDefaults.DELIMITER_EXPR);
 		final File dummyFile = setFile("src/main/cpp/file1.dummy").toContent("");
 		for (String testSource : Arrays.asList(
-				"//Accpet multiple spaces between composed term.@int  main() {};",
-				"//Accpet line delimiters between composed term.@void\n main() {};",
-				"//Perfere 'using namespace' over 'namespace'.@using namespace std;",
-				"//Detecting 'namespace' without 'using'.@namespace std {}",
-				"//Detecting pre-processor statements.@#include <stdio.h>\nint i;")) {
-			String output = step.format(testSource, dummyFile);
+				"//Accpet multiple spaces between composed term.@using  namespace std;",
+				"//Accpet line delimiters between composed term.@using\n namespace std;",
+				"//Detecting 'namespace' without 'using'.@namespace foo {}",
+				"//Assure key is beginning of word. along foo; @long foo;",
+				"//Detecting pre-processor statements.@#include <stdio.h>\nint i;",
+				"//Primitive C headers@void  foo();",
+				"//Pointer in C headers@int* foo();",
+				"//Microsoft C headers@__int8_t foo();")) {
+			String output = null;
+			try {
+				output = step.format(testSource, dummyFile);
+			}
+			catch(IllegalArgumentException e) {
+				throw new AssertionError(String.format("No delimiter found in '%s'", testSource), e); 
+			}
 			String expected = testSource.replaceAll("(.*?)\\@", header + '\n');
 			assertThat(output).isEqualTo(expected).as("Unexpected header insertion for '$s'.", testSource);
 		}

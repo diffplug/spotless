@@ -33,14 +33,20 @@ public class CppDefaults {
 
 	/**
 	 * Default delimiter expression shall cover most valid and common starts of C/C++ declarations and definitions.
-	 * Furthermore it shall not conflict with terms used within  license header.
+	 * Furthermore it shall not conflict with terms commonly used within license headers.
 	 * Note that the longest match is selected. Hence "using namespace foo" is preferred over "namespace foo".
 	 */
 	public static final String DELIMITER_EXPR = Arrays.asList(
 			"#define", "#error", "#if", "#ifdef", "#ifndef", "#include", "#pragma", "#undef",
-			"namespace", "using namespace", "extern", "int main", "void main", "class", "struct")
+			"asm", "class", "namespace", "struct", "typedef", "using namespace",
+			"const", "extern", "mutable", "signed", "unsigned", "volatile",
+			"auto", "char", "double", "float", "int", "long", "void",
+			"char16_t", "char32_t", "char64_t",
+			"int8_t", "int16_t", "int32_t", "int64_t",
+			"__int8_t", "__int16_t", "__int32_t", "__int64_t",
+			"uint8_t", "uint16_t", "uint32_t", "uint64_t")
 			.stream().map(s -> {
-				return s.replaceAll("#", "\\\\#").replaceAll(" ", "[\\\\n\\\\s]+") + "[\\(\\s\\n]+";
+				return "(?<![0-9a-zA-Z]+)" + s.replaceAll("#", "\\\\#").replaceAll(" ", "[\\\\n\\\\s]+") + "[\\*\\s\\n]+";
 			}).collect(Collectors.joining("|"));
 
 }
