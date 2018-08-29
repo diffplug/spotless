@@ -92,6 +92,15 @@ public final class JarState implements Serializable {
 		return SpotlessCache.instance().classloader(this);
 	}
 
+	/**
+	 * Returns a classloader containing only the jars in this JarState.
+	 *
+	 * The lifetime of the underlying cacheloader is controlled by {@link SpotlessCache}.
+	 */
+	public ClassLoader getClassLoader(Serializable key) {
+		return SpotlessCache.instance().classloader(key, this);
+	}
+
 	/** Returns unmodifiable view on sorted Maven coordinates */
 	public Set<String> getMavenCoordinates() {
 		return Collections.unmodifiableSet(mavenCoordinates);

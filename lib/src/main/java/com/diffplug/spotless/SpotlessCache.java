@@ -59,9 +59,14 @@ public final class SpotlessCache {
 
 	@SuppressFBWarnings("DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED")
 	synchronized ClassLoader classloader(JarState state) {
-		SerializedKey key = new SerializedKey(state);
+		return classloader(state, state);
+	}
+
+	@SuppressFBWarnings("DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED")
+	synchronized ClassLoader classloader(Serializable key, JarState state) {
+		SerializedKey serializedKey = new SerializedKey(key);
 		return cache
-				.computeIfAbsent(key, k -> new URLClassLoader(state.jarUrls(), null));
+				.computeIfAbsent(serializedKey, k -> new URLClassLoader(state.jarUrls(), null));
 	}
 
 	static SpotlessCache instance() {
