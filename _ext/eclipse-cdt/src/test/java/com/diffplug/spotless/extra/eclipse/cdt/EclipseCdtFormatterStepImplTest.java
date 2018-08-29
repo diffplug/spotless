@@ -45,6 +45,9 @@ public class EclipseCdtFormatterStepImplTest {
 
 	private final static String ILLEGAL_CHAR = Character.toString((char) 254);
 
+	private final static String FUNCT_PTR_UNFORMATTED = "void  (*getFunc(void))  (int);";
+	private final static String FUNCT_PTR_FORMATTED = "void (*getFunc(void)) (int);";
+
 	@Test
 	public void defaultFormat() throws Throwable {
 		String output = format(CPP_UNFORMATTED, config -> {});
@@ -79,6 +82,12 @@ public class EclipseCdtFormatterStepImplTest {
 		String output = format(DOXYGEN_HTML + CPP_FORMATTED, config -> {});
 		assertEquals("HTML comments not ignored by formatter.",
 				DOXYGEN_HTML + CPP_FORMATTED, output);
+	}
+
+	@Test
+	public void regionWarning() throws Throwable {
+		String output = format(FUNCT_PTR_UNFORMATTED, config -> {});
+		assertEquals("Code not formatted at all due to regional error.", FUNCT_PTR_FORMATTED, output);
 	}
 
 	private static String format(final String input, final Consumer<Properties> config) throws Exception {
