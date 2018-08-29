@@ -7,7 +7,7 @@ ext {
 	
 	p2Dependencies = [
 		'org.eclipse.cdt.core':'+', // CodeFormatter and related
-	]
+		]
 
 }
 
@@ -21,6 +21,10 @@ dependencies {
 	compile ("org.eclipse.platform:org.eclipse.jface.text:${VER_ECLISPE_JFACE}") {
 		exclude group: 'org.eclipse.platform', module: 'org.eclipse.swt'
 	}
+	// Required to by CCorePlugin calling CDTLogWriter
+	compile "com.ibm.icu:icu4j:${VER_IBM_ICU}"
+	// Required to by CCorePlugin calling PositionTrackerManager
+	compile "org.eclipse.platform:org.eclipse.core.filebuffers:${VER_ECLISPE_PLATFORM}"
 }
 
 

@@ -21,7 +21,11 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.formatter.CodeFormatter;
+import org.eclipse.core.internal.filebuffers.FileBuffersPlugin;
+import org.eclipse.equinox.log.ExtendedLogReaderService;
+import org.eclipse.equinox.log.ExtendedLogService;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.text.edits.TextEdit;
@@ -33,12 +37,18 @@ public class EclipseCdtFormatterStepImpl {
 	private final CodeFormatter codeFormatter;
 
 	public EclipseCdtFormatterStepImpl(Properties settings) throws Exception {
+		LogErrorService logService = new LogErrorService();
 		SpotlessEclipseFramework.setup(
-				bundles -> {}, //CDT does not use the internal Eclipse feature
 				config -> {
-					config.changeSystemLineSeparator();
+					config.applyDefault();;
+					config.add(ExtendedLogService.class, logService);
+					config.add(ExtendedLogReaderService.class, logService);
 				},
-				plugins -> {} //CDT does not use other Eclipse plugins
+				plugins -> {
+					plugins.applyDefault();
+					plugins.add(new FileBuffersPlugin());
+					plugins.add(new CCorePlugin());
+				}
 		);
 		Stream<Entry<Object, Object>> stream = settings.entrySet().stream();
 		Map<String, String> settingsMap = stream.collect(Collectors.toMap(
