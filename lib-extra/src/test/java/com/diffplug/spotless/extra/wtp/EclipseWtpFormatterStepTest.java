@@ -43,7 +43,22 @@ import com.diffplug.spotless.extra.eclipse.EclipseCommonTests;
 public class EclipseWtpFormatterStepTest extends EclipseCommonTests {
 
 	private enum WTP {
-		CSS("body {\na: v;   b:   \nv;\n}  \n", "body {\n\ta: v;\n\tb: v;\n}", WtpEclipseFormatterStep::createCssBuilder), HTML("<!DOCTYPE html> <html>\t<head> <meta   charset=\"UTF-8\"></head>\n</html>  ", "<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"UTF-8\">\n</head>\n</html>\n", WtpEclipseFormatterStep::createHtmlBuilder), JS("function f(  )   {\na.b(1,\n2);}", "function f() {\n    a.b(1, 2);\n}", WtpEclipseFormatterStep::createJsBuilder), JSON("{\"a\": \"b\",	\"c\":   { \"d\": \"e\",\"f\": \"g\"}}", "{\n\t\"a\": \"b\",\n\t\"c\": {\n\t\t\"d\": \"e\",\n\t\t\"f\": \"g\"\n\t}\n}", WtpEclipseFormatterStep::createJsonBuilder), XML("<a><b>   c</b></a>", "<a>\n\t<b> c</b>\n</a>", WtpEclipseFormatterStep::createXmlBuilder);
+		// @formatter:off
+		CSS(	"body {\na: v;   b:   \nv;\n}  \n",
+				"body {\n\ta: v;\n\tb: v;\n}",
+				WtpEclipseFormatterStep::createCssBuilder),
+		HTML(	"<!DOCTYPE html> <html>\t<head> <meta   charset=\"UTF-8\"></head>\n</html>  ",
+				"<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"UTF-8\">\n</head>\n</html>\n",
+				WtpEclipseFormatterStep::createHtmlBuilder),
+		JS(		"function f(  )   {\na.b(1,\n2);}",
+				"function f() {\n    a.b(1, 2);\n}",
+				WtpEclipseFormatterStep::createJsBuilder),
+		JSON(	"{\"a\": \"b\",	\"c\":   { \"d\": \"e\",\"f\": \"g\"}}",
+				"{\n\t\"a\": \"b\",\n\t\"c\": {\n\t\t\"d\": \"e\",\n\t\t\"f\": \"g\"\n\t}\n}",
+				WtpEclipseFormatterStep::createJsonBuilder),
+		XML(	"<a><b>   c</b></a>", "<a>\n\t<b> c</b>\n</a>",
+				WtpEclipseFormatterStep::createXmlBuilder);
+		// @formatter:on
 
 		public final String input;
 		public final String expectation;
