@@ -31,7 +31,7 @@ public class GrEclipseFormatterStepImplTest {
 	private final static TestData TEST_DATA = TestData.getTestDataOnFileSystem();
 	private final static String PARSER_EXCEPTION = "class Test { void method() {} ";
 	private final static String SCANNER_EXCEPTION = "{";
-	private final static String BOUNDED_WILDCARDS = "foo(Map<String, ? extends Object> e) {}";
+	private final static String BOUNDED_WILDCARDS = "foo(Map<String, ? extends  Object> e)\n{\ne.clear();\n}";
 
 	@Test
 	public void defaultFormat() throws Throwable {
@@ -71,10 +71,15 @@ public class GrEclipseFormatterStepImplTest {
 		format(SCANNER_EXCEPTION, config -> {});
 	}
 
-	/** Test the handling bounded wildcards templates */
-	@Test(expected = IllegalArgumentException.class)
+	/**
+	 * Test the handling bounded wildcards templates
+	 * No exception since Groovy-Eclipse 3.0.0.
+	 */
+	@Test
 	public void boundedWildCards() throws Throwable {
-		format(BOUNDED_WILDCARDS, config -> {});
+		String output = format(BOUNDED_WILDCARDS, config -> {});
+		assertEquals("Groovy formatter does  notformat after bounded wildcards correctly.",
+				BOUNDED_WILDCARDS.replace("\n", " "), output);
 	}
 
 	@Test

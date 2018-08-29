@@ -369,7 +369,7 @@ public class SpotlessLogService implements ExtendedLogService, ExtendedLogReader
 		}
 
 		public SimpleLogEntry(LogLevel level, String message, Throwable execption) {
-			this(level, message, Optional.of(execption));
+			this(level, message, Optional.ofNullable(execption));
 		}
 
 		private SimpleLogEntry(LogLevel level, String message, Optional<Throwable> execption) {
