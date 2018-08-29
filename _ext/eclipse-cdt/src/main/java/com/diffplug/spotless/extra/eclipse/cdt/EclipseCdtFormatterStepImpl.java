@@ -40,7 +40,7 @@ public class EclipseCdtFormatterStepImpl {
 		LogErrorService logService = new LogErrorService();
 		SpotlessEclipseFramework.setup(
 				config -> {
-					config.applyDefault();;
+					config.applyDefault();
 					config.add(ExtendedLogService.class, logService);
 					config.add(ExtendedLogReaderService.class, logService);
 				},
@@ -48,8 +48,7 @@ public class EclipseCdtFormatterStepImpl {
 					plugins.applyDefault();
 					plugins.add(new FileBuffersPlugin());
 					plugins.add(new CCorePlugin());
-				}
-		);
+				});
 		Stream<Entry<Object, Object>> stream = settings.entrySet().stream();
 		Map<String, String> settingsMap = stream.collect(Collectors.toMap(
 				e -> String.valueOf(e.getKey()),

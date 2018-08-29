@@ -35,14 +35,14 @@ import org.osgi.service.log.LogService;
 import org.osgi.service.log.LoggerConsumer;
 
 /**
- * Simple log service for errors. 
+ * Simple log service for errors.
  * The CDT formatter logs warnings for dedicated regional problems.
  * For example the CDT formatter logs a warning for standard C function provider
  * methods which do not use dedicated typedef for their return type.
  * The warnings do not contain any information about the type or source of problem.
  * Furthermore the other regions of the code(-line) are correctly formatted.
  * Hence the useless warnings are eaten. Just errors are logged (though it seems
- * that the formatter does not log any messages with an error level). 
+ * that the formatter does not log any messages with an error level).
  */
 public class LogErrorService implements ExtendedLogService, ExtendedLogReaderService {
 
