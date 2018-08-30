@@ -1,0 +1,37 @@
+ext {
+	developers = [
+		fvgh: [ name: 'Frank Vennemeyer', email: 'frankgh@zoho.com' ],
+	]
+
+	p2Repository = "http://download.eclipse.org/tools/cdt/releases/${VER_ECLIPSE_CDT}"
+	
+	p2Dependencies = [
+		'org.eclipse.cdt.core':'+', // CodeFormatter and related
+		]
+
+}
+
+apply from: rootProject.file('../gradle/p2-fat-jar-setup.gradle')
+apply from: rootProject.file('../gradle/java-publish.gradle')
+
+
+dependencies {
+	compile "com.diffplug.spotless:spotless-eclipse-base:${VER_SPOTLESS_ECLISPE_BASE}"
+	// Provides text partitioners for formatters
+	compile ("org.eclipse.platform:org.eclipse.jface.text:${VER_ECLISPE_JFACE}") {
+		exclude group: 'org.eclipse.platform', module: 'org.eclipse.swt'
+	}
+	// Required to by CCorePlugin calling CDTLogWriter
+	compile "com.ibm.icu:icu4j:${VER_IBM_ICU}"
+	// Required to by CCorePlugin calling PositionTrackerManager
+	compile "org.eclipse.platform:org.eclipse.core.filebuffers:${VER_ECLISPE_PLATFORM}"
+}
+
+
+//////////
+// Test //
+//////////
+sourceSets {
+	// Use JAR file with all resources for Eclipse-XML integration-tests
+	test.runtimeClasspath = jar.outputs.files + sourceSets.test.output + sourceSets.test.compileClasspath
+}

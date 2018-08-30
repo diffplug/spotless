@@ -32,7 +32,7 @@ For the folders below in monospace text, they are published on maven central at 
 | Folder | Description |
 | ------ | ----------- |
 | `lib` | Contains all of Spotless' core infrastructure and most of its `FormatterStep` - has no external dependencies. |
-| `testlib` | Contains testing infrastructure, as well as all tests for `spotless-lib`, since those tests need the testing infrastructure in `testlib`. |
+| `testlib` | Contains testing infrastructure and all test resources, so that they can be reused in plugin-specific integration tests.  Also contains tests for `lib`. |
 | `lib-extra` | Contains the optional parts of Spotless which require external dependencies.  `LineEnding.GIT_ATTRIBUTES` won't work unless `lib-extra` is available. |
 | `plugin-gradle` | Integrates spotless and all of its formatters into Gradle. |
 | `plugin-maven` | Integrates spotless and all of its formatters into Maven. |
@@ -54,29 +54,29 @@ To create a step which can handle up-to-date checks properly, use the method `<S
 
 ```java
 public final class ReplaceStep {
-	private ReplaceStep() {}
+  private ReplaceStep() {}
 
-	public static FormatterStep create(String name, CharSequence target, CharSequence replacement) {
-		return FormatterStep.create(name,
-				new State(target, replacement),
-				State::toFormatter);
-	}
+  public static FormatterStep create(String name, CharSequence target, CharSequence replacement) {
+    return FormatterStep.create(name,
+        new State(target, replacement),
+        State::toFormatter);
+  }
 
-	private static final class State implements Serializable {
-		private static final long serialVersionUID = 1L;
+  private static final class State implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-		private final CharSequence target;
-		private final CharSequence replacement;
+    private final CharSequence target;
+    private final CharSequence replacement;
 
-		State(CharSequence target, CharSequence replacement) {
-			this.target = target;
-			this.replacement = replacement;
-		}
+    State(CharSequence target, CharSequence replacement) {
+      this.target = target;
+      this.replacement = replacement;
+    }
 
-		FormatterFunc toFormatter() {
-			return raw -> raw.replace(target, replacement);
-		}
-	}
+    FormatterFunc toFormatter() {
+      return raw -> raw.replace(target, replacement);
+    }
+  }
 }
 ```
 
@@ -117,7 +117,7 @@ If you get something running, we'd love to host your plugin within this repo as 
 
 ## License
 
-By contributing your code, you agree to license your contribution under the terms of the APLv2: https://github.com/diffplug/spotless/blob/master/LICENSE
+By contributing your code, you agree to license your contribution under the terms of the APLv2: https://github.com/diffplug/spotless/blob/master/LICENSE.txt
 
 All files are released with the Apache 2.0 license as such:
 
@@ -128,7 +128,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-	http://www.apache.org/licenses/LICENSE-2.0
+  http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,

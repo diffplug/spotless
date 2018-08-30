@@ -27,14 +27,11 @@ import org.junit.Test;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StringPrinter;
-import com.diffplug.spotless.LineEnding;
 
 public class GradleIncrementalResolutionTest extends GradleIntegrationTest {
-	private static final boolean IS_UNIX = LineEnding.PLATFORM_NATIVE.str().equals("\n");
-
 	@Test
 	public void failureDoesntTriggerAll() throws IOException {
-		write("build.gradle",
+		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",
 				"}",
@@ -60,9 +57,9 @@ public class GradleIncrementalResolutionTest extends GradleIntegrationTest {
 		checkRanAgainst("abc");
 		// apply will run against all three the first time
 		applyRanAgainst("abc");
-		// for some reason, it appears unix has higher resolution on which files need to be checked
-		applyRanAgainst(IS_UNIX ? "b" : "abc");
-		// but nobody the last time
+		// the second time, it will only run on the file that was changes
+		applyRanAgainst("b");
+		// and nobody the last time
 		applyRanAgainst("");
 
 		// if we change just one file
@@ -89,7 +86,7 @@ public class GradleIncrementalResolutionTest extends GradleIntegrationTest {
 			boolean exists = new File(rootFolder(), filename(letter)).exists();
 			boolean needsChanging = exists && !read(filename(letter)).trim().equals(letter);
 			if (!exists || needsChanging) {
-				write(filename(letter), letter);
+				setFile(filename(letter)).toContent(letter);
 			}
 		}
 	}

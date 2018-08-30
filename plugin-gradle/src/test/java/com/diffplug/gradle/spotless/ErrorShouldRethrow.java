@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.BuildResult;
@@ -49,7 +48,7 @@ public class ErrorShouldRethrow extends GradleIntegrationTest {
 		lines.add("             }");
 		lines.add("        }");
 		lines.addAll(Arrays.asList(toInsert));
-		write("build.gradle", lines.toArray(new String[lines.size()]));
+		setFile("build.gradle").toContent(String.join("\n", lines));
 	}
 
 	@Test
@@ -57,7 +56,7 @@ public class ErrorShouldRethrow extends GradleIntegrationTest {
 		writeBuild(
 				"    } // format",
 				"}     // spotless");
-		write("README.md", "This code is fun.");
+		setFile("README.md").toContent("This code is fun.");
 		runWithSuccess(":spotlessMisc");
 	}
 
@@ -66,7 +65,7 @@ public class ErrorShouldRethrow extends GradleIntegrationTest {
 		writeBuild(
 				"    } // format",
 				"}     // spotless");
-		write("README.md", "This code is fubar.");
+		setFile("README.md").toContent("This code is fubar.");
 		runWithFailure(
 				":spotlessMiscStep 'no swearing' found problem in 'README.md':",
 				"No swearing!",
@@ -79,7 +78,7 @@ public class ErrorShouldRethrow extends GradleIntegrationTest {
 				"    } // format",
 				"    enforceCheck false",
 				"}     // spotless");
-		write("README.md", "This code is fubar.");
+		setFile("README.md").toContent("This code is fubar.");
 		runWithSuccess(":compileJava UP-TO-DATE");
 	}
 
@@ -89,7 +88,7 @@ public class ErrorShouldRethrow extends GradleIntegrationTest {
 				"        ignoreErrorForStep 'no swearing'",
 				"    } // format",
 				"}     // spotless");
-		write("README.md", "This code is fubar.");
+		setFile("README.md").toContent("This code is fubar.");
 		runWithSuccess(":spotlessMisc",
 				"Unable to apply step 'no swearing' to 'README.md'");
 	}
@@ -100,7 +99,7 @@ public class ErrorShouldRethrow extends GradleIntegrationTest {
 				"        ignoreErrorForPath 'README.md'",
 				"    } // format",
 				"}     // spotless");
-		write("README.md", "This code is fubar.");
+		setFile("README.md").toContent("This code is fubar.");
 		runWithSuccess(":spotlessMisc",
 				"Unable to apply step 'no swearing' to 'README.md'");
 	}
@@ -112,7 +111,7 @@ public class ErrorShouldRethrow extends GradleIntegrationTest {
 				"        ignoreErrorForPath 'nope'",
 				"    } // format",
 				"}     // spotless");
-		write("README.md", "This code is fubar.");
+		setFile("README.md").toContent("This code is fubar.");
 		runWithFailure(
 				":spotlessMiscStep 'no swearing' found problem in 'README.md':",
 				"No swearing!",
@@ -133,7 +132,7 @@ public class ErrorShouldRethrow extends GradleIntegrationTest {
 		String expectedToStartWith = StringPrinter.buildStringFromLines(messages).trim();
 		int numNewlines = CharMatcher.is('\n').countIn(expectedToStartWith);
 		List<String> actualLines = Splitter.on('\n').splitToList(LineEnding.toUnix(result.getOutput()));
-		String actualStart = actualLines.subList(0, numNewlines + 1).stream().collect(Collectors.joining("\n"));
+		String actualStart = String.join("\n", actualLines.subList(0, numNewlines + 1));
 		Assertions.assertThat(actualStart).isEqualTo(expectedToStartWith);
 		Assertions.assertThat(result.tasks(outcome).size() + result.tasks(TaskOutcome.UP_TO_DATE).size())
 				.isEqualTo(result.getTasks().size());

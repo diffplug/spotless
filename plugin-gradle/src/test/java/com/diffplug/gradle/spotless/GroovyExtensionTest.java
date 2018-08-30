@@ -15,7 +15,6 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.assertj.core.api.Assertions;
@@ -24,7 +23,7 @@ import org.junit.Test;
 
 public class GroovyExtensionTest extends GradleIntegrationTest {
 
-	private final String HEADER = "//My tests header";
+	private static final String HEADER = "//My tests header";
 
 	@Test
 	public void includeJava() throws IOException {
@@ -38,7 +37,7 @@ public class GroovyExtensionTest extends GradleIntegrationTest {
 
 	private void testIncludeExcludeOption(boolean excludeJava) throws IOException {
 		String excludeStatement = excludeJava ? "excludeJava()" : "";
-		write("build.gradle",
+		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",
 				"}",
@@ -51,33 +50,26 @@ public class GroovyExtensionTest extends GradleIntegrationTest {
 				"    }",
 				"}");
 
-		String original = getTestResource("groovy/licenseheader/JavaCodeWithoutHeader.test");
+		String withoutHeader = getTestResource("groovy/licenseheader/JavaCodeWithoutHeader.test");
 
-		File javaSrcJavaFile = write("src/main/java/test.java", original);
-		File groovySrcJavaFile = write("src/main/groovy/test.java", original);
-		File groovySrcGroovyFile = write("src/main/groovy/test.groovy", original);
+		setFile("src/main/java/test.java").toContent(withoutHeader);
+		setFile("src/main/groovy/test.java").toContent(withoutHeader);
+		setFile("src/main/groovy/test.groovy").toContent(withoutHeader);
 
-		// write appends a line ending so re-read to see what the original currently looks like
-		original = read("src/main/java/test.java");
-
-		// Run
 		gradleRunner().withArguments("spotlessApply").build();
 
-		// Common checks
-		assertFileContent(original, javaSrcJavaFile);
-
-		Assertions.assertThat(read(groovySrcGroovyFile.toPath())).contains(HEADER);
-
+		assertFile("src/main/java/test.java").hasContent(withoutHeader);
+		assertFile("src/main/groovy/test.groovy").hasContent(HEADER + "\n" + withoutHeader);
 		if (excludeJava) {
-			assertFileContent(original, groovySrcJavaFile);
+			assertFile("src/main/groovy/test.java").hasContent(withoutHeader);
 		} else {
-			Assertions.assertThat(read(groovySrcJavaFile.toPath())).contains(HEADER);
+			assertFile("src/main/groovy/test.java").hasContent(HEADER + "\n" + withoutHeader);
 		}
 	}
 
 	@Test
 	public void excludeJavaWithCustomTarget() throws IOException {
-		write("build.gradle",
+		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",
 				"}",
@@ -100,7 +92,7 @@ public class GroovyExtensionTest extends GradleIntegrationTest {
 
 	@Test
 	public void groovyPluginMissingCheck() throws IOException {
-		write("build.gradle",
+		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",
 				"}",

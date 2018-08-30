@@ -25,11 +25,13 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
-import org.assertj.core.api.AbstractFileAssert;
+import org.assertj.core.api.AbstractCharSequenceAssert;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.util.CheckReturnValue;
 import org.junit.Assert;
 import org.junit.ComparisonFailure;
 import org.junit.Rule;
@@ -84,57 +86,12 @@ public class ResourceHarness {
 		return new File(rootFolder(), subpath);
 	}
 
-	/** Returns a random child of the root folder. */
-	protected File newFile() throws IOException {
-		return folderDontUseDirectly.newFile().getCanonicalFile();
-	}
-
-	/** Writes the given content to the given path. */
-	protected File write(String path, String... lines) throws IOException {
-		return write(path, LineEnding.UNIX, lines);
-	}
-
-	protected File write(String path, LineEnding ending, String... lines) throws IOException {
-		return write(path, ending, StandardCharsets.UTF_8, lines);
-	}
-
-	protected File write(String path, LineEnding ending, Charset encoding, String... lines) throws IOException {
-		String content = Arrays.stream(lines).collect(Collectors.joining(ending.str())) + ending.str();
-		Path target = newFile(path).toPath();
-		Files.createDirectories(target.getParent());
-		Files.write(target, content.getBytes(encoding));
-		return target.toFile();
-	}
-
-	protected AbstractFileAssert<?> assertFile(String path) throws IOException {
-		return Assertions.assertThat(newFile(path)).usingCharset(StandardCharsets.UTF_8);
-	}
-
-	protected String read(Path path) throws IOException {
-		return read(path, LineEnding.UNIX);
-	}
-
 	protected String read(String path) throws IOException {
-		return read(path, LineEnding.UNIX);
+		return read(newFile(path).toPath(), StandardCharsets.UTF_8);
 	}
 
-	protected String read(String path, LineEnding ending) throws IOException {
-		return read(path, ending, StandardCharsets.UTF_8);
-	}
-
-	protected String read(Path path, LineEnding ending) throws IOException {
-		return read(path, ending, StandardCharsets.UTF_8);
-	}
-
-	protected String read(String path, LineEnding ending, Charset encoding) throws IOException {
-		Path target = newFile(path).toPath();
-		return read(target, ending, encoding);
-	}
-
-	protected String read(Path path, LineEnding ending, Charset encoding) throws IOException {
-		String content = new String(Files.readAllBytes(path), encoding);
-		String allUnixNewline = LineEnding.toUnix(content);
-		return allUnixNewline.replace("\n", ending.str());
+	protected String read(Path path, Charset encoding) throws IOException {
+		return new String(Files.readAllBytes(path), encoding);
 	}
 
 	protected void replace(String path, String toReplace, String replaceWith) throws IOException {
@@ -143,7 +100,7 @@ public class ResourceHarness {
 		if (before.equals(after)) {
 			throw new IllegalArgumentException("Replace was ineffective! '" + toReplace + "' was not found in " + path);
 		}
-		write(path, after);
+		setFile(path).toContent(after);
 	}
 
 	/** Returns the contents of the given file from the src/test/resources directory. */
@@ -166,27 +123,20 @@ public class ResourceHarness {
 
 	/** Returns a File (in a temporary folder) which has the contents of the given file from the src/test/resources directory. */
 	protected File createTestFile(String filename) throws IOException {
+		return createTestFile(filename, UnaryOperator.identity());
+	}
+
+	/**
+	 * Returns a File (in a temporary folder) which has the contents, possibly processed, of the given file from the
+	 * src/test/resources directory.
+	 */
+	protected File createTestFile(String filename, UnaryOperator<String> fileContentsProcessor) throws IOException {
 		int lastSlash = filename.lastIndexOf('/');
 		String name = lastSlash >= 0 ? filename.substring(lastSlash) : filename;
 		File file = newFile(name);
 		file.getParentFile().mkdirs();
-		Files.write(file.toPath(), getTestResource(filename).getBytes(StandardCharsets.UTF_8));
+		Files.write(file.toPath(), fileContentsProcessor.apply(getTestResource(filename)).getBytes(StandardCharsets.UTF_8));
 		return file;
-	}
-
-	/** Returns a File (in a temporary folder) which has the given contents. */
-	protected File createTestFile(String filename, String content) throws IOException {
-		File file = newFile(filename);
-		file.getParentFile().mkdirs();
-		Files.write(file.toPath(), content.getBytes(StandardCharsets.UTF_8));
-		return file;
-	}
-
-	/** Asserts that the given resource from the src/test/resources directory has the same content as the given file. */
-	protected void assertFileContent(String expectedContent, File actual) throws IOException {
-		// This line thing is necessary for the tests to pass when Windows git screws up the line-endings
-		String actualContent = new String(Files.readAllBytes(actual.toPath()), StandardCharsets.UTF_8);
-		Assert.assertEquals(expectedContent, actualContent);
 	}
 
 	/** Reads the given resource from "before", applies the step, and makes sure the result is "after". */
@@ -204,5 +154,75 @@ public class ResourceHarness {
 		// unix-ify the test resource output in case git screwed it up
 		String expected = LineEnding.toUnix(getTestResource(expectedPath)); // unix-ified output
 		Assert.assertEquals(expected, formatted);
+	}
+
+	@CheckReturnValue
+	protected ReadAsserter assertFile(String path) throws IOException {
+		return new ReadAsserter(newFile(path));
+	}
+
+	@CheckReturnValue
+	protected ReadAsserter assertFile(File file) throws IOException {
+		return new ReadAsserter(file);
+	}
+
+	public static class ReadAsserter {
+		private final File file;
+
+		private ReadAsserter(File file) {
+			this.file = file;
+		}
+
+		public void hasContent(String expected) {
+			hasContent(expected, StandardCharsets.UTF_8);
+		}
+
+		public void hasContent(String expected, Charset charset) {
+			Assertions.assertThat(file).usingCharset(charset).hasContent(expected);
+		}
+
+		public void hasLines(String... lines) {
+			hasContent(String.join("\n", Arrays.asList(lines)));
+		}
+
+		public void sameAsResource(String resource) throws IOException {
+			hasContent(getTestResource(resource));
+		}
+
+		public void matches(Consumer<AbstractCharSequenceAssert<?, String>> conditions) throws IOException {
+			String content = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+			conditions.accept(Assertions.assertThat(content));
+		}
+	}
+
+	protected WriteAsserter setFile(String path) throws IOException {
+		return new WriteAsserter(newFile(path));
+	}
+
+	public static class WriteAsserter {
+		private File file;
+
+		private WriteAsserter(File file) {
+			file.getParentFile().mkdirs();
+			this.file = file;
+		}
+
+		public File toLines(String... lines) throws IOException {
+			return toContent(String.join("\n", Arrays.asList(lines)));
+		}
+
+		public File toContent(String content) throws IOException {
+			return toContent(content, StandardCharsets.UTF_8);
+		}
+
+		public File toContent(String content, Charset charset) throws IOException {
+			Files.write(file.toPath(), content.getBytes(charset));
+			return file;
+		}
+
+		public File toResource(String path) throws IOException {
+			Files.write(file.toPath(), getTestResource(path).getBytes(StandardCharsets.UTF_8));
+			return file;
+		}
 	}
 }

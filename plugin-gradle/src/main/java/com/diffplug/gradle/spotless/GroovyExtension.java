@@ -30,13 +30,12 @@ import org.gradle.api.tasks.GroovySourceSet;
 import org.gradle.api.tasks.SourceSet;
 
 import com.diffplug.common.base.StringPrinter;
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.SerializableFileFilter;
+import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.groovy.GrEclipseFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.java.ImportOrderStep;
 
-public class GroovyExtension extends FormatExtension {
+public class GroovyExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "groovy";
 
 	public GroovyExtension(SpotlessExtension rootExtension) {
@@ -55,12 +54,14 @@ public class GroovyExtension extends FormatExtension {
 		this.excludeJava = excludeJava;
 	}
 
-	public void licenseHeader(String licenseHeader) {
-		licenseHeader(licenseHeader, JavaExtension.LICENSE_HEADER_DELIMITER);
+	@Override
+	public LicenseHeaderConfig licenseHeader(String licenseHeader) {
+		return licenseHeader(licenseHeader, JavaExtension.LICENSE_HEADER_DELIMITER);
 	}
 
-	public void licenseHeaderFile(Object licenseHeaderFile) {
-		licenseHeaderFile(licenseHeaderFile, JavaExtension.LICENSE_HEADER_DELIMITER);
+	@Override
+	public LicenseHeaderConfig licenseHeaderFile(Object licenseHeaderFile) {
+		return licenseHeaderFile(licenseHeaderFile, JavaExtension.LICENSE_HEADER_DELIMITER);
 	}
 
 	/** Method interface has been changed to
@@ -93,28 +94,21 @@ public class GroovyExtension extends FormatExtension {
 	}
 
 	public static class GrEclipseConfig {
-		final String version;
-		Object[] configFiles;
-		final FormatExtension extension;
+		private final EclipseBasedStepBuilder builder;
+		private final FormatExtension extension;
 
 		GrEclipseConfig(String version, FormatExtension extension) {
 			this.extension = extension;
-			configFiles = new Object[0];
-			this.version = Objects.requireNonNull(version);
-
-			extension.addStep(createStep());
+			builder = GrEclipseFormatterStep.createBuilder(GradleProvisioner.fromProject(extension.getProject()));
+			builder.setVersion(version);
+			extension.addStep(builder.build());
 		}
 
 		public void configFile(Object... configFiles) {
-			this.configFiles = requireElementsNonNull(configFiles);
-			extension.replaceStep(createStep());
-		}
-
-		private FormatterStep createStep() {
+			requireElementsNonNull(configFiles);
 			Project project = extension.getProject();
-			return GrEclipseFormatterStep.create(version,
-					project.files(configFiles).getFiles(),
-					GradleProvisioner.fromProject(project));
+			builder.setPreferences(project.files(configFiles).getFiles());
+			extension.replaceStep(builder.build());
 		}
 	}
 
@@ -145,7 +139,7 @@ public class GroovyExtension extends FormatExtension {
 		// ensures that it skips both. See https://github.com/diffplug/spotless/issues/1
 		steps.replaceAll(step -> {
 			if (LicenseHeaderStep.name().equals(step.getName())) {
-				return step.filterByFile(SerializableFileFilter.skipFilesNamed("package-info.java", "package-info.groovy"));
+				return step.filterByFile(LicenseHeaderStep.unsupportedJvmFilesFilter());
 			} else {
 				return step;
 			}

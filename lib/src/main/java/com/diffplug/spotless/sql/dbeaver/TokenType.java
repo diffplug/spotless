@@ -15,6 +15,14 @@
  */
 package com.diffplug.spotless.sql.dbeaver;
 
+/**
+ * Forked from
+ * DBeaver - Universal Database Manager
+ * Copyright (C) 2010-2017 Serge Rider (serge@jkiss.org)
+ *
+ * Based on TokenType from https://github.com/serge-rider/dbeaver,
+ * which itself is licensed under the Apache 2.0 license.
+ */
 enum TokenType {
 
 	SPACE, SYMBOL, KEYWORD, NAME, VALUE, COMMAND, COMMENT, END, UNKNOWN

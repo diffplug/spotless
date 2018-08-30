@@ -26,7 +26,8 @@ import java.util.Set;
  * DBeaver - Universal Database Manager
  * Copyright (C) 2010-2017 Serge Rider (serge@jkiss.org)
  *
- * SQLTokensParser
+ * Based on SQLTokensParser from https://github.com/serge-rider/dbeaver,
+ * which itself is licensed under the Apache 2.0 license.
  */
 class SQLTokensParser {
 
@@ -42,7 +43,7 @@ class SQLTokensParser {
 	private String[] singleLineComments;
 	private char[] singleLineCommentStart;
 
-	public SQLTokensParser() {
+	SQLTokensParser() {
 		this.structSeparator = sqlDialect.getStructSeparator();
 		this.catalogSeparator = sqlDialect.getCatalogSeparator();
 		this.quoteStrings = sqlDialect.getIdentifierQuoteStrings();
@@ -56,19 +57,19 @@ class SQLTokensParser {
 		}
 	}
 
-	public static boolean isSpace(final char argChar) {
+	private static boolean isSpace(final char argChar) {
 		return Character.isWhitespace(argChar);
 	}
 
-	public static boolean isLetter(final char argChar) {
+	private static boolean isLetter(final char argChar) {
 		return !isSpace(argChar) && !isDigit(argChar) && !isSymbol(argChar);
 	}
 
-	public static boolean isDigit(final char argChar) {
+	private static boolean isDigit(final char argChar) {
 		return Character.isDigit(argChar);
 	}
 
-	public static boolean isSymbol(final char argChar) {
+	private static boolean isSymbol(final char argChar) {
 		switch (argChar) {
 		case '"': // double quote
 		case '?': // question mark
@@ -100,7 +101,7 @@ class SQLTokensParser {
 		}
 	}
 
-	FormatterToken nextToken() {
+	private FormatterToken nextToken() {
 		int start_pos = fPos;
 		if (fPos >= fBefore.length()) {
 			fPos++;

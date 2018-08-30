@@ -15,6 +15,8 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static com.diffplug.gradle.spotless.Tasks.execute;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -44,33 +46,33 @@ public class FormatTaskTest extends ResourceHarness {
 	}
 
 	@Test(expected = GradleException.class)
-	public void testLineEndingsCheckFail() throws IOException {
+	public void testLineEndingsCheckFail() throws Exception {
 		checkTask.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
-		checkTask.setTarget(Collections.singleton(createTestFile("testFile", "\r\n")));
-		checkTask.execute();
+		checkTask.setTarget(Collections.singleton(setFile("testFile").toContent("\r\n")));
+		execute(checkTask);
 	}
 
 	@Test
-	public void testLineEndingsCheckPass() throws IOException {
+	public void testLineEndingsCheckPass() throws Exception {
 		checkTask.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
-		checkTask.setTarget(Collections.singleton(createTestFile("testFile", "\n")));
-		checkTask.execute();
+		checkTask.setTarget(Collections.singleton(setFile("testFile").toContent("\n")));
+		execute(checkTask);
 	}
 
 	@Test
-	public void testLineEndingsApply() throws IOException {
-		File testFile = createTestFile("testFile", "\r\n");
+	public void testLineEndingsApply() throws Exception {
+		File testFile = setFile("testFile").toContent("\r\n");
 
 		applyTask.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
 		applyTask.setTarget(Collections.singleton(testFile));
-		applyTask.execute();
+		execute(applyTask);
 
-		assertFileContent("\n", testFile);
+		assertFile(testFile).hasContent("\n");
 	}
 
 	@Test
 	public void testStepCheckFail() throws IOException {
-		File testFile = createTestFile("testFile", "apple");
+		File testFile = setFile("testFile").toContent("apple");
 		checkTask.setTarget(Collections.singleton(testFile));
 
 		checkTask.addStep(FormatterStep.createNeverUpToDate("double-p", content -> content.replace("pp", "p")));
@@ -79,30 +81,30 @@ public class FormatTaskTest extends ResourceHarness {
 				"        @@ -1 +1 @@",
 				"        -apple",
 				"        +aple");
-		Assertions.assertThatThrownBy(() -> checkTask.execute()).hasStackTraceContaining(diff);
+		Assertions.assertThatThrownBy(() -> execute(checkTask)).hasStackTraceContaining(diff);
 
-		assertFileContent("apple", testFile);
+		assertFile(testFile).hasContent("apple");
 	}
 
 	@Test
-	public void testStepCheckPass() throws IOException {
-		File testFile = createTestFile("testFile", "aple");
+	public void testStepCheckPass() throws Exception {
+		File testFile = setFile("testFile").toContent("aple");
 		checkTask.setTarget(Collections.singleton(testFile));
 
 		checkTask.addStep(FormatterStep.createNeverUpToDate("double-p", content -> content.replace("pp", "p")));
-		checkTask.execute();
+		execute(checkTask);
 
-		assertFileContent("aple", testFile);
+		assertFile(testFile).hasContent("aple");
 	}
 
 	@Test
-	public void testStepApply() throws IOException {
-		File testFile = createTestFile("testFile", "apple");
+	public void testStepApply() throws Exception {
+		File testFile = setFile("testFile").toContent("apple");
 		applyTask.setTarget(Collections.singleton(testFile));
 
 		applyTask.addStep(FormatterStep.createNeverUpToDate("double-p", content -> content.replace("pp", "p")));
-		applyTask.execute();
+		execute(applyTask);
 
-		assertFileContent("aple", testFile);
+		assertFile(testFile).hasContent("aple");
 	}
 }

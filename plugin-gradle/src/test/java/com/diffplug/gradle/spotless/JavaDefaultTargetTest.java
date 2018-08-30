@@ -17,13 +17,12 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 public class JavaDefaultTargetTest extends GradleIntegrationTest {
 	@Test
 	public void integration() throws IOException {
-		write("build.gradle",
+		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",
@@ -33,27 +32,17 @@ public class JavaDefaultTargetTest extends GradleIntegrationTest {
 				"",
 				"spotless {",
 				"    java {",
-				"        googleJavaFormat()",
+				"        googleJavaFormat('1.2')",
 				"    }",
 				"}");
-		String input = getTestResource("java/googlejavaformat/JavaCodeUnformatted.test");
-		write("src/main/java/test.java", input);
-		write("src/main/groovy/test.java", input);
-		write("src/main/groovy/test.groovy", input);
-
-		// write appends a line ending so re-read to see what groovy currently looks like
-		String groovyInput = read("src/main/groovy/test.groovy");
+		setFile("src/main/java/test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
+		setFile("src/main/groovy/test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
+		setFile("src/main/groovy/test.groovy").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
 
 		gradleRunner().withArguments("spotlessApply").build();
 
-		String result = read("src/main/java/test.java");
-		String output = getTestResource("java/googlejavaformat/JavaCodeFormatted.test");
-		Assert.assertEquals("Java code in the java directory should be formatted.", output, result);
-
-		result = read("src/main/groovy/test.java");
-		Assert.assertEquals("Java code in the groovy directory should be formatted.", output, result);
-
-		result = read("src/main/groovy/test.groovy");
-		Assert.assertEquals("Groovy code in the groovy directory should not be formatted.", groovyInput, result);
+		assertFile("src/main/java/test.java").sameAsResource("java/googlejavaformat/JavaCodeFormatted.test");
+		assertFile("src/main/groovy/test.java").sameAsResource("java/googlejavaformat/JavaCodeFormatted.test");
+		assertFile("src/main/groovy/test.groovy").sameAsResource("java/googlejavaformat/JavaCodeUnformatted.test");
 	}
 }

@@ -26,12 +26,15 @@ import com.diffplug.spotless.TestProvisioner;
 public class KtLintStepTest extends ResourceHarness {
 	@Test
 	public void behavior() throws Exception {
-		FormatterStep step = KtLintStep.create(TestProvisioner.mavenCentral());
+		// Must use jcenter because `com.andreapivetta.kolor:kolor:0.0.2` isn't available on mavenCentral.
+		// It is a dependency of ktlint.
+		FormatterStep step = KtLintStep.create(TestProvisioner.jcenter());
 		StepHarness.forStep(step)
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
 				.testException("kotlin/ktlint/unsolvable.dirty", assertion -> {
 					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("Wildcard import");
+					assertion.hasMessage("Error on line: 1, column: 1\n" +
+							"Wildcard import");
 				});
 	}
 

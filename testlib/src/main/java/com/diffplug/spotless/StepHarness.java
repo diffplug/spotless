@@ -34,7 +34,10 @@ public class StepHarness {
 
 	/** Creates a harness for testing steps which don't depend on the file. */
 	public static StepHarness forStep(FormatterStep step) {
-		return new StepHarness(input -> step.format(input, new File("")));
+		// We don't care if an individual FormatterStep is misbehaving on line-endings, because
+		// Formatter fixes that.  No reason to care in tests either.  It's likely to pop up when
+		// running tests on Windows from time-to-time
+		return new StepHarness(input -> LineEnding.toUnix(step.format(input, new File(""))));
 	}
 
 	/** Creates a harness for testing a formatter whose steps don't depend on the file. */

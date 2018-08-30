@@ -17,13 +17,12 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 public class FreshMarkExtensionTest extends GradleIntegrationTest {
 	@Test
 	public void integration() throws IOException {
-		write("build.gradle",
+		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'java'",
@@ -37,11 +36,8 @@ public class FreshMarkExtensionTest extends GradleIntegrationTest {
 				"        }",
 				"    }",
 				"}");
-		String unformatted = getTestResource("freshmark/FreshMarkUnformatted.test");
-		write("README.md", unformatted);
+		setFile("README.md").toResource("freshmark/FreshMarkUnformatted.test");
 		gradleRunner().withArguments("spotlessApply").build();
-		String result = read("README.md");
-		String formatted = getTestResource("freshmark/FreshMarkFormatted.test");
-		Assert.assertEquals(formatted, result);
+		assertFile("README.md").sameAsResource("freshmark/FreshMarkFormatted.test");
 	}
 }

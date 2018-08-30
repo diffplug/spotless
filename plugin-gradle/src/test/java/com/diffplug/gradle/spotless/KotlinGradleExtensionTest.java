@@ -15,9 +15,11 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.IOException;
 
-import org.junit.Assert;
+import org.gradle.testkit.runner.BuildResult;
 import org.junit.Test;
 
 public class KotlinGradleExtensionTest extends GradleIntegrationTest {
@@ -32,7 +34,7 @@ public class KotlinGradleExtensionTest extends GradleIntegrationTest {
 	}
 
 	private void testInDirectory(final String directory) throws IOException {
-		write("build.gradle",
+		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'nebula.kotlin' version '1.0.6'",
 				"    id 'com.diffplug.gradle.spotless'",
@@ -48,17 +50,14 @@ public class KotlinGradleExtensionTest extends GradleIntegrationTest {
 		if (directory != null) {
 			filePath = directory + "/" + filePath;
 		}
-		write(filePath,
-				getTestResource("kotlin/ktlint/basic.dirty"));
+		setFile(filePath).toResource("kotlin/ktlint/basic.dirty");
 		gradleRunner().withArguments("spotlessApply").build();
-		String result = read(filePath);
-		String formatted = getTestResource("kotlin/ktlint/basic.clean");
-		Assert.assertEquals(formatted, result);
+		assertFile(filePath).sameAsResource("kotlin/ktlint/basic.clean");
 	}
 
 	@Test
 	public void integration_default() throws IOException {
-		write("build.gradle",
+		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'nebula.kotlin' version '1.0.6'",
 				"    id 'com.diffplug.gradle.spotless'",
@@ -69,17 +68,32 @@ public class KotlinGradleExtensionTest extends GradleIntegrationTest {
 				"        ktlint()",
 				"    }",
 				"}");
-		write("configuration.gradle.kts",
-				getTestResource("kotlin/ktlint/basic.dirty"));
+		setFile("configuration.gradle.kts").toResource("kotlin/ktlint/basic.dirty");
 		gradleRunner().withArguments("spotlessApply").build();
-		String result = read("configuration.gradle.kts");
-		String formatted = getTestResource("kotlin/ktlint/basic.clean");
-		Assert.assertEquals(formatted, result);
+		assertFile("configuration.gradle.kts").sameAsResource("kotlin/ktlint/basic.clean");
+	}
+
+	@Test
+	public void indentStep() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'nebula.kotlin' version '1.0.6'",
+				"    id 'com.diffplug.gradle.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlinGradle {",
+				"        ktlint().userData(['indent_size': '6'])",
+				"    }",
+				"}");
+		setFile("configuration.gradle.kts").toResource("kotlin/ktlint/basic.dirty");
+		BuildResult result = gradleRunner().withArguments("spotlessApply").buildAndFail();
+		assertThat(result.getOutput()).contains("Unexpected indentation (4) (it should be 6)");
 	}
 
 	@Test
 	public void integration_lint_script_files_without_top_level_declaration() throws IOException {
-		write("build.gradle",
+		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'nebula.kotlin' version '1.0.6'",
 				"    id 'com.diffplug.gradle.spotless'",
@@ -90,10 +104,8 @@ public class KotlinGradleExtensionTest extends GradleIntegrationTest {
 				"        ktlint()",
 				"    }",
 				"}");
-		write("configuration.gradle.kts", "buildscript {}");
+		setFile("configuration.gradle.kts").toContent("buildscript {}");
 		gradleRunner().withArguments("spotlessApply").build();
-		String result = read("configuration.gradle.kts");
-		String formatted = "buildscript {}\n";
-		Assert.assertEquals(formatted, result);
+		assertFile("configuration.gradle.kts").hasContent("buildscript {}");
 	}
 }

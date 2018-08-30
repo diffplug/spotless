@@ -21,7 +21,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
@@ -34,7 +36,7 @@ public class KtLintStep {
 	// prevent direct instantiation
 	private KtLintStep() {}
 
-	private static final String DEFAULT_VERSION = "0.6.1";
+	private static final String DEFAULT_VERSION = "0.21.0";
 	static final String NAME = "ktlint";
 	static final String MAVEN_COORDINATE = "com.github.shyiko:ktlint:";
 
@@ -43,18 +45,26 @@ public class KtLintStep {
 	}
 
 	public static FormatterStep create(String version, Provisioner provisioner) {
-		return create(version, provisioner, false);
+		return create(version, provisioner, Collections.emptyMap());
+	}
+
+	public static FormatterStep create(String version, Provisioner provisioner, Map<String, String> userData) {
+		return create(version, provisioner, false, userData);
 	}
 
 	public static FormatterStep createForScript(String version, Provisioner provisioner) {
-		return create(version, provisioner, true);
+		return create(version, provisioner, true, Collections.emptyMap());
 	}
 
-	private static FormatterStep create(String version, Provisioner provisioner, boolean isScript) {
+	public static FormatterStep createForScript(String version, Provisioner provisioner, Map<String, String> userData) {
+		return create(version, provisioner, true, userData);
+	}
+
+	private static FormatterStep create(String version, Provisioner provisioner, boolean isScript, Map<String, String> userData) {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(provisioner, "provisioner");
 		return FormatterStep.createLazy(NAME,
-				() -> new State(version, provisioner, isScript),
+				() -> new State(version, provisioner, isScript, userData),
 				State::createFormat);
 	}
 
@@ -69,8 +79,10 @@ public class KtLintStep {
 		private final boolean isScript;
 		/** The jar that contains the eclipse formatter. */
 		final JarState jarState;
+		private final TreeMap<String, String> userData;
 
-		State(String version, Provisioner provisioner, boolean isScript) throws IOException {
+		State(String version, Provisioner provisioner, boolean isScript, Map<String, String> userData) throws IOException {
+			this.userData = new TreeMap<>(userData);
 			this.jarState = JarState.from(MAVEN_COORDINATE + version, provisioner);
 			this.isScript = isScript;
 		}
@@ -89,13 +101,17 @@ public class KtLintStep {
 			Class<?> function2Interface = classLoader.loadClass("kotlin.jvm.functions.Function2");
 			Class<?> lintErrorClass = classLoader.loadClass("com.github.shyiko.ktlint.core.LintError");
 			Method detailGetter = lintErrorClass.getMethod("getDetail");
+			Method lineGetter = lintErrorClass.getMethod("getLine");
+			Method colGetter = lintErrorClass.getMethod("getCol");
 			Object formatterCallback = Proxy.newProxyInstance(classLoader, new Class[]{function2Interface},
 					(proxy, method, args) -> {
 						Object lintError = args[0]; // com.github.shyiko.ktlint.core.LintError
 						boolean corrected = (Boolean) args[1];
 						if (!corrected) {
 							String detail = (String) detailGetter.invoke(lintError);
-							throw new AssertionError(detail);
+							int line = (Integer) lineGetter.invoke(lintError);
+							int col = (Integer) colGetter.invoke(lintError);
+							throw new AssertionError("Error on line: " + line + ", column: " + col + "\n" + detail);
 						}
 						return null;
 					});
@@ -105,11 +121,11 @@ public class KtLintStep {
 			Object ktlint = ktlintClass.getDeclaredField("INSTANCE").get(null);
 			// and its format method
 			String formatterMethodName = isScript ? "formatScript" : "format";
-			Method formatterMethod = ktlintClass.getMethod(formatterMethodName, String.class, Iterable.class, function2Interface);
+			Method formatterMethod = ktlintClass.getMethod(formatterMethodName, String.class, Iterable.class, Map.class, function2Interface);
 
 			return input -> {
 				try {
-					String formatted = (String) formatterMethod.invoke(ktlint, input, ruleSets, formatterCallback);
+					String formatted = (String) formatterMethod.invoke(ktlint, input, ruleSets, userData, formatterCallback);
 					return formatted;
 				} catch (InvocationTargetException e) {
 					throw ThrowingEx.unwrapCause(e);

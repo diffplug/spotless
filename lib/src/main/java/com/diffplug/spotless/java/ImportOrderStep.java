@@ -39,7 +39,7 @@ public final class ImportOrderStep {
 	private ImportOrderStep() {}
 
 	/** Method interface has been changed to
-	 * {@link ImportOrderStep#importOrder(String...)}.*/
+	 * {@link ImportOrderStep#createFromOrder(String...)}.*/
 	@Deprecated
 	public static FormatterStep createFromOrder(List<String> importOrder) {
 		// defensive copying and null checking

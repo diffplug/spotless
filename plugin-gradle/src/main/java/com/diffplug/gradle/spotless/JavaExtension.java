@@ -28,14 +28,16 @@ import org.gradle.api.tasks.SourceSet;
 
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.SerializableFileFilter;
+import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.java.EclipseFormatterStep;
+import com.diffplug.spotless.extra.java.EclipseJdtFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.java.GoogleJavaFormatStep;
 import com.diffplug.spotless.java.ImportOrderStep;
 import com.diffplug.spotless.java.RemoveUnusedImportsStep;
 
-public class JavaExtension extends FormatExtension {
+@SuppressWarnings("deprecation")
+public class JavaExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "java";
 
 	public JavaExtension(SpotlessExtension rootExtension) {
@@ -46,12 +48,14 @@ public class JavaExtension extends FormatExtension {
 	// testlib/src/test/java/com/diffplug/spotless/generic/LicenseHeaderStepTest.java as well
 	static final String LICENSE_HEADER_DELIMITER = "package ";
 
-	public void licenseHeader(String licenseHeader) {
-		licenseHeader(licenseHeader, LICENSE_HEADER_DELIMITER);
+	@Override
+	public LicenseHeaderConfig licenseHeader(String licenseHeader) {
+		return licenseHeader(licenseHeader, LICENSE_HEADER_DELIMITER);
 	}
 
-	public void licenseHeaderFile(Object licenseHeaderFile) {
-		licenseHeaderFile(licenseHeaderFile, LICENSE_HEADER_DELIMITER);
+	@Override
+	public LicenseHeaderConfig licenseHeaderFile(Object licenseHeaderFile) {
+		return licenseHeaderFile(licenseHeaderFile, LICENSE_HEADER_DELIMITER);
 	}
 
 	/** Method interface has been changed to
@@ -100,8 +104,8 @@ public class JavaExtension extends FormatExtension {
 	}
 
 	/** Uses the [google-java-format](https://github.com/google/google-java-format) jar to format source code. */
-	public void googleJavaFormat() {
-		googleJavaFormat(GoogleJavaFormatStep.defaultVersion());
+	public GoogleJavaFormatConfig googleJavaFormat() {
+		return googleJavaFormat(GoogleJavaFormatStep.defaultVersion());
 	}
 
 	/**
@@ -110,13 +114,40 @@ public class JavaExtension extends FormatExtension {
 	 * Limited to published versions.  See [issue #33](https://github.com/diffplug/spotless/issues/33#issuecomment-252315095)
 	 * for an workaround for using snapshot versions.
 	 */
-	public void googleJavaFormat(String version) {
+	public GoogleJavaFormatConfig googleJavaFormat(String version) {
 		Objects.requireNonNull(version);
-		addStep(GoogleJavaFormatStep.create(version, GradleProvisioner.fromProject(getProject())));
+		return new GoogleJavaFormatConfig(version);
+	}
+
+	public class GoogleJavaFormatConfig {
+		final String version;
+		String style;
+
+		GoogleJavaFormatConfig(String version) {
+			this.version = Objects.requireNonNull(version);
+			this.style = GoogleJavaFormatStep.defaultStyle();
+			addStep(createStep());
+		}
+
+		public void style(String style) {
+			this.style = Objects.requireNonNull(style);
+			replaceStep(createStep());
+		}
+
+		public void aosp() {
+			style("AOSP");
+		}
+
+		private FormatterStep createStep() {
+			Project project = getProject();
+			return GoogleJavaFormatStep.create(version,
+					style,
+					GradleProvisioner.fromProject(project));
+		}
 	}
 
 	public EclipseConfig eclipse() {
-		return eclipse(EclipseFormatterStep.defaultVersion());
+		return new EclipseConfig(EclipseJdtFormatterStep.defaultVersion());
 	}
 
 	public EclipseConfig eclipse(String version) {
@@ -124,26 +155,21 @@ public class JavaExtension extends FormatExtension {
 	}
 
 	public class EclipseConfig {
-		final String version;
-		Object[] configFiles;
+		private final EclipseBasedStepBuilder builder;
 
 		EclipseConfig(String version) {
-			configFiles = new Object[0];
-			this.version = Objects.requireNonNull(version);
-			addStep(createStep());
+			builder = EclipseJdtFormatterStep.createBuilder(GradleProvisioner.fromProject(getProject()));
+			builder.setVersion(version);
+			addStep(builder.build());
 		}
 
 		public void configFile(Object... configFiles) {
-			this.configFiles = requireElementsNonNull(configFiles);
-			replaceStep(createStep());
+			requireElementsNonNull(configFiles);
+			Project project = getProject();
+			builder.setPreferences(project.files(configFiles).getFiles());
+			replaceStep(builder.build());
 		}
 
-		private FormatterStep createStep() {
-			Project project = getProject();
-			return EclipseFormatterStep.create(version,
-					project.files(configFiles).getFiles(),
-					GradleProvisioner.fromProject(project));
-		}
 	}
 
 	/** If the user hasn't specified the files yet, we'll assume he/she means all of the java files. */
@@ -160,11 +186,10 @@ public class JavaExtension extends FormatExtension {
 			}
 			target = union;
 		}
-		// LicenseHeaderStep completely blows apart package-info.java - this common-sense check ensures that
-		// it skips package-info.java. See https://github.com/diffplug/spotless/issues/1
+
 		steps.replaceAll(step -> {
 			if (LicenseHeaderStep.name().equals(step.getName())) {
-				return step.filterByFile(SerializableFileFilter.skipFilesNamed("package-info.java"));
+				return step.filterByFile(LicenseHeaderStep.unsupportedJvmFilesFilter());
 			} else {
 				return step;
 			}

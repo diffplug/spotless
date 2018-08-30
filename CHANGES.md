@@ -5,7 +5,48 @@ You might be looking for:
 - [plugin-gradle/CHANGES.md](plugin-gradle/CHANGES.md)
 - [plugin-maven/CHANGES.md](plugin-maven/CHANGES.md)
 
-### Version 1.8.0-SNAPSHOT - TBD (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/snapshot/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/snapshot/), [snapshot repo](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/))
+### Version 1.15.0-SNAPSHOT - TBD (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/snapshot/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/snapshot/), [snapshot repo](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/))
+
+* Updated JSR305 annotation from 3.0.0 to 3.0.2 ([#274](https://github.com/diffplug/spotless/pull/274))
+* Migrated from FindBugs annotations 3.0.0 to SpotBugs annotations 3.1.6 ([#274](https://github.com/diffplug/spotless/pull/274))
+* `Formatter` now implements `AutoCloseable`.  This means that users of `Formatter` are expected to use the try-with-resources pattern.  The reason for this change is so that `FormatterFunc.Closeable` actually works. ([#284](https://github.com/diffplug/spotless/pull/284))
+
+### Version 1.14.0 - July 24th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.14.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.14.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
+
+* Updated default groovy-eclipse from 4.6.3 to 4.8.0 ([#244](https://github.com/diffplug/spotless/pull/244)). New version allows to ignore internal formatter errors/warnings.
+* Updated default eclipse-jdt from 4.7.2 to 4.8.0 ([#239](https://github.com/diffplug/spotless/pull/239)). New version fixes a bug preventing Java code formatting within JavaDoc comments ([#191](https://github.com/diffplug/spotless/issues/191)).
+* Eclipse formatter versions decoupled from Spotless formatter step implementations to allow independent updates of maven-based Eclipse dependencies. ([#253](https://github.com/diffplug/spotless/pull/253))
+* Use guaranteed binary and source compatibility between releases of Scalafmt. ([#260](https://github.com/diffplug/spotless/pull/260))
+
+### Version 1.13.0 - June 1st 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.13.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.13.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
+
+* Add line and column numbers to ktlint errors. ([#251](https://github.com/diffplug/spotless/pull/251))
+
+### Version 1.12.0 - May 14th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.12.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.12.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
+
+* Fixed a bug in `LicenseHeaderStep` which caused an exception with some malformed date-aware licenses. ([#222](https://github.com/diffplug/spotless/pull/222))
+* Updated default ktlint from 0.14.0 to 0.21.0
+* Add ability to pass custom options to ktlint in gradle plugin. See plugin-gradle/README for details.
+
+### Version 1.11.0 - February 26th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.11.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.11.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
+
+* Added default indentation of `4` to `IndentStep`. ([#209](https://github.com/diffplug/spotless/pull/209))
+
+### Version 1.10.0 - February 15th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.10.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.10.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
+
+* LicenseHeaderStep now supports customizing the year range separator in copyright notices. ([#199](https://github.com/diffplug/spotless/pull/199))
+* Breaking change to testlib - removed `ResourceHarness.write` and added `ResourceHarness.[set/assert]File` for easier-to-read tests. ([#203](https://github.com/diffplug/spotless/pull/203))
+
+### Version 1.9.0 - February 5th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.9.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.9.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
+
+* Updated default ktlint from 0.6.1 to 0.14.0
+* Updated default google-java-format from 1.3 to 1.5
+* Updated default eclipse-jdt from 4.7.1 to 4.7.2
+* Added a configuration option to `googleJavaFormat` to switch the formatter style ([#193](https://github.com/diffplug/spotless/pull/193))
+
+### Version 1.8.0 - January 2nd 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.8.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.8.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
+
+* LicenseHeaderStep now supports time-aware copyright notices in license headers. ([#179](https://github.com/diffplug/spotless/pull/179), thanks to @baptistemesta)
 
 ### Version 1.7.0 - December 2nd 2017 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.7.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.7.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
@@ -13,8 +54,8 @@ You might be looking for:
 * Updated jgit from `4.5.0.201609210915-r` to `4.9.0.201710071750-r`.
 * Updated concurrent-trees from `2.6.0` to `2.6.1` (performance improvement).
 * Added `dbeaverSql` formatter step, for formatting sql scripts. ([#166](https://github.com/diffplug/spotless/pull/166))
-	+ Many thanks to [Baptiste Mesta](https://github.com/baptistemesta) for porting to Spotless.
-	+ Many thanks to [DBeaver](https://dbeaver.jkiss.org/) and the [DBeaver contributors](https://github.com/serge-rider/dbeaver/graphs/contributors) for building the implementation.
+  + Many thanks to [Baptiste Mesta](https://github.com/baptistemesta) for porting to Spotless.
+  + Many thanks to [DBeaver](https://dbeaver.jkiss.org/) and the [DBeaver contributors](https://github.com/serge-rider/dbeaver/graphs/contributors) for building the implementation.
 
 ### Version 1.6.0 - September 29th 2017 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.6.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.6.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
@@ -32,12 +73,12 @@ You might be looking for:
 
 * Default eclipse version for `EclipseFormatterStep` bumped to `4.6.3` from `4.6.1`. ([#116](https://github.com/diffplug/spotless/issues/116))
 * Default scalafmt version for `ScalaFmtStep` bumped to `1.1.0` from `0.5.7` ([#124](https://github.com/diffplug/spotless/pull/124))
-	+ Also added support for the API change to scalafmt introduced in `0.7.0-RC1`
+  + Also added support for the API change to scalafmt introduced in `0.7.0-RC1`
 
 ### Version 1.4.0 - May 21st 2017 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.4.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.4.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
 * `ImportOrderStep` can now handle multi-line comments and misplaced imports.
-	+ Especially helpful for Groovy and Gradle files.
+  + Especially helpful for Groovy and Gradle files.
 
 ### Version 1.3.2 - May 3rd 2017 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.3.1/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.3.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
@@ -54,7 +95,7 @@ You might be looking for:
 * Added a `FormatterProperties` class which loads `.properties` files and eclipse-style `.xml` files.
 * `SerializableFileFilter.skipFilesNamed` can now skip multiple file names.
 * Update default KtLint from 0.3.1 to 0.6.1.
-	+ This means we no longer look for rules in the typo package `com.gihub.shyiko`, now only in `com.github.shyiko` (note the `t`).
+  + This means we no longer look for rules in the typo package `com.gihub.shyiko`, now only in `com.github.shyiko` (note the `t`).
 
 ### Version 1.1.0 - February 27th 2017 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.1.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.1.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 

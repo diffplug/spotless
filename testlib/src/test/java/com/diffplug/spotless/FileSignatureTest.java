@@ -26,7 +26,6 @@ import java.util.List;
 import org.junit.Test;
 
 public class FileSignatureTest extends ResourceHarness {
-
 	private final static String[] inputPaths = {"A", "C", "C", "A", "B"};
 	private final static String[] expectedPathList = inputPaths;
 	private final static String[] expectedPathSet = {"A", "B", "C"};
@@ -52,7 +51,7 @@ public class FileSignatureTest extends ResourceHarness {
 	private List<File> getTestFiles(final String[] paths) throws IOException {
 		final List<File> result = new ArrayList<>(paths.length);
 		for (String path : paths) {
-			result.add(createTestFile(path, ""));
+			result.add(setFile(path).toContent(""));
 		}
 		return result;
 	}

@@ -15,17 +15,16 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static com.diffplug.gradle.spotless.Tasks.execute;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
-import org.gradle.api.GradleException;
 import org.gradle.api.Project;
-import org.gradle.api.tasks.TaskExecutionException;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Assert;
 import org.junit.Test;
@@ -51,7 +50,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 		SpotlessTask apply;
 
 		Bundle(String name, FormatterFunc function) throws IOException {
-			file = createTestFile("src/test." + name, "CCC");
+			file = setFile("src/test." + name).toContent("CCC");
 			FormatterStep step = FormatterStep.createNeverUpToDate(name, function);
 			check = createCheckTask(name, step);
 			apply = createApplyTask(name, step);
@@ -83,11 +82,10 @@ public class PaddedCellTaskTest extends ResourceHarness {
 
 		private String checkFailureMsg() {
 			try {
-				check.execute();
+				execute(check);
 				throw new AssertionError();
-			} catch (TaskExecutionException e) {
-				GradleException cause = (GradleException) e.getCause();
-				return cause.getMessage();
+			} catch (Exception e) {
+				return e.getMessage();
 			}
 		}
 	}
@@ -112,29 +110,29 @@ public class PaddedCellTaskTest extends ResourceHarness {
 	}
 
 	@Test
-	public void paddedCellApply() throws IOException {
+	public void paddedCellApply() throws Exception {
 		Bundle cycle = cycle().paddedCell();
 		Bundle converge = converge().paddedCell();
 		Bundle diverge = diverge().paddedCell();
 
-		cycle.apply.execute();
-		converge.apply.execute();
-		diverge.apply.execute();
+		execute(cycle.apply);
+		execute(converge.apply);
+		execute(diverge.apply);
 
-		assertFileContent("A", cycle.file);		// cycle -> first element in cycle
-		assertFileContent("", converge.file);	// converge -> converges
-		assertFileContent("CCC", diverge.file);	// diverge -> no change
+		assertFile(cycle.file).hasContent("A");		// cycle -> first element in cycle
+		assertFile(converge.file).hasContent("");	// converge -> converges
+		assertFile(diverge.file).hasContent("CCC");	// diverge -> no change
 
-		cycle.check.execute();
-		converge.check.execute();
-		diverge.check.execute();
+		execute(cycle.check);
+		execute(converge.check);
+		execute(diverge.check);
 	}
 
 	@Test
-	public void paddedCellCheckFailureFiles() throws Throwable {
+	public void paddedCellCheckFailureFiles() throws Exception {
 		cycle().paddedCell().checkFailureMsg();
 		converge().paddedCell().checkFailureMsg();
-		diverge().paddedCell().check.execute();
+		execute(diverge().paddedCell().check);
 
 		assertFolderContents("build",
 				"spotless-diagnose-converge",
@@ -163,12 +161,12 @@ public class PaddedCellTaskTest extends ResourceHarness {
 	private void assertFolderContents(String subfolderName, String... files) throws IOException {
 		File subfolder = new File(rootFolder(), subfolderName);
 		Assert.assertTrue(subfolder.isDirectory());
-		String asList = Arrays.stream(subfolder.list()).sorted().collect(Collectors.joining("\n"));
+		String asList = String.join("\n", Arrays.asList(files));
 		Assert.assertEquals(StringPrinter.buildStringFromLines(files).trim(), asList);
 	}
 
 	@Test
-	public void paddedCellCheckCycleFailureMsg() throws Throwable {
+	public void paddedCellCheckCycleFailureMsg() throws IOException {
 		assertFailureMessage(cycle().paddedCell(),
 				"The following files had format violations:",
 				slashify("    src/test.cycle"),
@@ -179,7 +177,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 	}
 
 	@Test
-	public void paddedCellCheckConvergeFailureMsg() throws Throwable {
+	public void paddedCellCheckConvergeFailureMsg() throws IOException {
 		assertFailureMessage(converge().paddedCell(),
 				"The following files had format violations:",
 				slashify("    src/test.converge"),
@@ -188,7 +186,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 				"Run 'gradlew spotlessApply' to fix these violations.");
 	}
 
-	private void assertFailureMessage(Bundle bundle, String... expectedOutput) throws Throwable {
+	private void assertFailureMessage(Bundle bundle, String... expectedOutput) {
 		String msg = bundle.checkFailureMsg();
 		String expected = StringPrinter.buildStringFromLines(expectedOutput).trim();
 		Assert.assertEquals(expected, msg);

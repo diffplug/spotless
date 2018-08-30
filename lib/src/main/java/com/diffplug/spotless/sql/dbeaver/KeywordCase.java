@@ -20,7 +20,7 @@ import java.util.Locale;
 /**
  * @author Baptiste Mesta.
  */
-public enum KeywordCase {
+enum KeywordCase {
 	UPPER {
 		public String transform(String value) {
 			return value.toUpperCase(Locale.ENGLISH);

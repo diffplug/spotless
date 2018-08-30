@@ -22,7 +22,7 @@ import org.junit.Test;
 public class UpToDateTest extends GradleIntegrationTest {
 	/** Requires that README be lowercase. */
 	private void writeBuildFile() throws IOException {
-		write("build.gradle",
+		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",
 				"}",
@@ -40,7 +40,7 @@ public class UpToDateTest extends GradleIntegrationTest {
 	@Test
 	public void testNormalCase() throws IOException {
 		writeBuildFile();
-		write("README.md", "ABC");
+		setFile("README.md").toContent("ABC");
 		// first time, the task runs as expected
 		applyIsUpToDate(false);
 		assertFile("README.md").hasContent("abc");
@@ -58,13 +58,13 @@ public class UpToDateTest extends GradleIntegrationTest {
 	@Test
 	public void testNearPathologicalCase() throws IOException {
 		writeBuildFile();
-		write("README.md", "ABC");
+		setFile("README.md").toContent("ABC");
 		// first time, up-to-date is false
 		applyIsUpToDate(false);
 		assertFile("README.md").hasContent("abc");
 
 		// now we'll change the file
-		write("README.md", "AB");
+		setFile("README.md").toContent("AB");
 		// as expected, the task will run again
 		applyIsUpToDate(false);
 		assertFile("README.md").hasContent("ab");
@@ -76,13 +76,13 @@ public class UpToDateTest extends GradleIntegrationTest {
 	@Test
 	public void testPathologicalCase() throws IOException {
 		writeBuildFile();
-		write("README.md", "ABC");
+		setFile("README.md").toContent("ABC");
 		// first time, up-to-date is false
 		applyIsUpToDate(false);
 		assertFile("README.md").hasContent("abc");
 
 		// now we'll change the file back to EXACTLY its original content
-		write("README.md", "ABC");
+		setFile("README.md").toContent("ABC");
 		// the task should run again, but instead the next line will
 		// fail an assertion, because the task is actually reported as up-to-date
 		applyIsUpToDate(false);

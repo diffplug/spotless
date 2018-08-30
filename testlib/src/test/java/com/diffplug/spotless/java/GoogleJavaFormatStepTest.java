@@ -37,9 +37,20 @@ public class GoogleJavaFormatStepTest extends ResourceHarness {
 	}
 
 	@Test
+	public void behaviorWithAospStyle() throws Exception {
+		FormatterStep step = GoogleJavaFormatStep.create("1.2", "AOSP", TestProvisioner.mavenCentral());
+		StepHarness.forStep(step)
+				.testResource("java/googlejavaformat/JavaCodeUnformatted.test", "java/googlejavaformat/JavaCodeFormattedAOSP.test")
+				.testResource("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test", "java/googlejavaformat/JavaCodeWithLicenseFormattedAOSP.test")
+				.testResource("java/googlejavaformat/JavaCodeWithLicensePackageUnformatted.test", "java/googlejavaformat/JavaCodeWithLicensePackageFormattedAOSP.test")
+				.testResource("java/googlejavaformat/JavaCodeWithPackageUnformatted.test", "java/googlejavaformat/JavaCodeWithPackageFormattedAOSP.test");
+	}
+
+	@Test
 	public void equality() throws Exception {
 		new SerializableEqualityTester() {
 			String version = "1.2";
+			String style = "";
 
 			@Override
 			protected void setupTest(API api) {
@@ -48,12 +59,15 @@ public class GoogleJavaFormatStepTest extends ResourceHarness {
 				// change the version, and it's different
 				version = "1.1";
 				api.areDifferentThan();
+				// change the style, and it's different
+				style = "AOSP";
+				api.areDifferentThan();
 			}
 
 			@Override
 			protected FormatterStep create() {
 				String finalVersion = this.version;
-				return GoogleJavaFormatStep.create(finalVersion, TestProvisioner.mavenCentral());
+				return GoogleJavaFormatStep.create(finalVersion, style, TestProvisioner.mavenCentral());
 			}
 		}.testEquals();
 	}

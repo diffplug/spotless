@@ -16,29 +16,23 @@
 package com.diffplug.spotless.extra.java;
 
 import java.io.File;
-import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Objects;
-import java.util.Properties;
 
-import com.diffplug.spotless.FileSignature;
-import com.diffplug.spotless.FormatterFunc;
-import com.diffplug.spotless.FormatterProperties;
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 
-/** Formatter step which calls out to the Eclipse formatter. */
+/**
+ * Formatter step which calls out to the Eclipse formatter.
+ * This class is deprecated. Use {@link EclipseJdtFormatterStep} instead.
+ */
+@Deprecated
 public final class EclipseFormatterStep {
 	// prevent direct instantiation
 	private EclipseFormatterStep() {}
 
-	private static final String DEFAULT_VERSION = "4.7.1";
-	private static final String NAME = "eclipse formatter";
-	private static final String MAVEN_COORDINATE = "com.diffplug.spotless:spotless-ext-eclipse-jdt:";
-	private static final String FORMATTER_CLASS = "com.diffplug.gradle.spotless.java.eclipse.EclipseFormatterStepImpl";
-	private static final String FORMATTER_METHOD = "format";
+	private static final String DEFAULT_VERSION = "4.7.2";
 
 	/** Creates a formatter step for the given version and settings file.
 	 * Formatter steps based on property configuration should support zero (default configuration)
@@ -66,39 +60,14 @@ public final class EclipseFormatterStep {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(settingsFiles, "settingsFiles");
 		Objects.requireNonNull(provisioner, "provisioner");
-		return FormatterStep.createLazy(NAME,
-				() -> new State(JarState.from(MAVEN_COORDINATE + version, provisioner), settingsFiles),
-				State::createFormat);
+		EclipseBasedStepBuilder builder = EclipseJdtFormatterStep.createBuilder(provisioner);
+		builder.setPreferences(settingsFiles);
+		builder.setVersion(DEFAULT_VERSION);
+		return builder.build();
 	}
 
 	public static String defaultVersion() {
 		return DEFAULT_VERSION;
-	}
-
-	private static class State implements Serializable {
-		private static final long serialVersionUID = 1L;
-
-		/** The jar that contains the eclipse formatter. */
-		final JarState jarState;
-		/** The signature of the settings file. */
-		final FileSignature settings;
-
-		State(JarState jar, final Iterable<File> settingsFiles) throws Exception {
-			this.jarState = jar;
-			this.settings = FileSignature.signAsList(settingsFiles);
-		}
-
-		FormatterFunc createFormat() throws Exception {
-			FormatterProperties preferences = FormatterProperties.from(settings.files());
-
-			ClassLoader classLoader = jarState.getClassLoader();
-
-			// instantiate the formatter and get its format method
-			Class<?> formatterClazz = classLoader.loadClass(FORMATTER_CLASS);
-			Object formatter = formatterClazz.getConstructor(Properties.class).newInstance(preferences.getProperties());
-			Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
-			return input -> (String) method.invoke(formatter, input);
-		}
 	}
 
 }
