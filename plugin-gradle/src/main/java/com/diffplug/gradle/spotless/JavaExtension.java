@@ -39,9 +39,11 @@ import com.diffplug.spotless.java.RemoveUnusedImportsStep;
 @SuppressWarnings("deprecation")
 public class JavaExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "java";
+	private final ImportOrderStep importOrderStepFactory;
 
 	public JavaExtension(SpotlessExtension rootExtension) {
 		super(rootExtension);
+		importOrderStepFactory = new ImportOrderStep();
 	}
 
 	// If this constant changes, don't forget to change the similarly-named one in
@@ -71,12 +73,12 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 	}
 
 	public void importOrder(String... importOrder) {
-		addStep(ImportOrderStep.createFromOrder(importOrder));
+		addStep(importOrderStepFactory.createFrom(importOrder));
 	}
 
 	public void importOrderFile(Object importOrderFile) {
 		Objects.requireNonNull(importOrderFile);
-		addStep(ImportOrderStep.createFromFile(getProject().file(importOrderFile)));
+		addStep(importOrderStepFactory.createFrom(getProject().file(importOrderFile)));
 	}
 
 	/** Use {@link #eclipse()} instead */

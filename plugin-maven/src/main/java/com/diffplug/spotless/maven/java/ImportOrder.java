@@ -34,11 +34,12 @@ public class ImportOrder implements FormatterStepFactory {
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
 		if (file != null ^ order != null) {
+			ImportOrderStep importOrderStepFactory = new ImportOrderStep();
 			if (file != null) {
 				File importsFile = config.getFileLocator().locateFile(file);
-				return ImportOrderStep.createFromFile(importsFile);
+				return importOrderStepFactory.createFrom(importsFile);
 			} else {
-				return ImportOrderStep.createFromOrder(order.split(","));
+				return importOrderStepFactory.createFrom(order.split(","));
 			}
 		} else {
 			throw new IllegalArgumentException("Must specify exactly one of 'file' or 'order'.");

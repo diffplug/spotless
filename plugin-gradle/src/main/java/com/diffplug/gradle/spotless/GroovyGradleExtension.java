@@ -23,18 +23,20 @@ import com.diffplug.spotless.java.ImportOrderStep;
 public class GroovyGradleExtension extends FormatExtension {
 	private static final String GRADLE_FILE_EXTENSION = "*.gradle";
 	static final String NAME = "groovyGradle";
+	private final ImportOrderStep importOrderStepFactory;
 
 	public GroovyGradleExtension(SpotlessExtension rootExtension) {
 		super(rootExtension);
+		importOrderStepFactory = new ImportOrderStep("import %s");
 	}
 
 	public void importOrder(String... importOrder) {
-		addStep(ImportOrderStep.createFromOrder(importOrder));
+		addStep(importOrderStepFactory.createFrom(importOrder));
 	}
 
 	public void importOrderFile(Object importOrderFile) {
 		Objects.requireNonNull(importOrderFile);
-		addStep(ImportOrderStep.createFromFile(getProject().file(importOrderFile)));
+		addStep(importOrderStepFactory.createFrom(getProject().file(importOrderFile)));
 	}
 
 	public GroovyExtension.GrEclipseConfig greclipse() {

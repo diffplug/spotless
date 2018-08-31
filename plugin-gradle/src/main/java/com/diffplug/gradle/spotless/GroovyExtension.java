@@ -37,9 +37,11 @@ import com.diffplug.spotless.java.ImportOrderStep;
 
 public class GroovyExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "groovy";
+	private final ImportOrderStep importOrderStepFactory;
 
 	public GroovyExtension(SpotlessExtension rootExtension) {
 		super(rootExtension);
+		importOrderStepFactory = new ImportOrderStep("import %s");
 	}
 
 	boolean excludeJava = false;
@@ -73,16 +75,16 @@ public class GroovyExtension extends FormatExtension implements HasBuiltinDelimi
 						"'importOrder([x, y, z])' is deprecated.",
 						"Use 'importOrder x, y, z' instead.",
 						"For details see https://github.com/diffplug/spotless/tree/master/plugin-gradle#applying-to-java-source"));
-		addStep(ImportOrderStep.createFromOrder(importOrder));
+		importOrder(importOrder.toArray(new String[0]));
 	}
 
 	public void importOrder(String... importOrder) {
-		addStep(ImportOrderStep.createFromOrder(importOrder));
+		addStep(importOrderStepFactory.createFrom(importOrder));
 	}
 
 	public void importOrderFile(Object importOrderFile) {
 		Objects.requireNonNull(importOrderFile);
-		addStep(ImportOrderStep.createFromFile(getProject().file(importOrderFile)));
+		addStep(importOrderStepFactory.createFrom(getProject().file(importOrderFile)));
 	}
 
 	public GrEclipseConfig greclipse() {

@@ -35,8 +35,32 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 
 public final class ImportOrderStep {
-	// prevent direct instantiation
-	private ImportOrderStep() {}
+	private final String lineFormat;
+
+	public ImportOrderStep() {
+		this("import %s;");
+	}
+
+	public ImportOrderStep(String lineFormat) {
+		this.lineFormat = lineFormat;
+	}
+
+	public FormatterStep createFrom(String... importOrder) {
+		// defensive copying and null checking
+		List<String> importOrderList = requireElementsNonNull(Arrays.asList(importOrder));
+		return createFrom(importOrderList);
+	}
+
+	public FormatterStep createFrom(File importsFile) {
+		Objects.requireNonNull(importsFile);
+		return createFrom(getImportOrder(importsFile));
+	}
+
+	private FormatterStep createFrom(List<String> importOrder) {
+		return FormatterStep.createLazy("importOrder",
+				() -> new State(importOrder, lineFormat),
+				State::toFormatter);
+	}
 
 	/** Method interface has been changed to
 	 * {@link ImportOrderStep#createFromOrder(String...)}.*/
@@ -44,24 +68,21 @@ public final class ImportOrderStep {
 	public static FormatterStep createFromOrder(List<String> importOrder) {
 		// defensive copying and null checking
 		importOrder = requireElementsNonNull(new ArrayList<>(importOrder));
-		return createFromOrderImpl(importOrder);
+		return new ImportOrderStep().createFrom(importOrder);
 	}
 
+	/** Static method has been replaced by instance method
+	 * {@link ImportOrderStep#createFrom(String...)}.*/
+	@Deprecated
 	public static FormatterStep createFromOrder(String... importOrder) {
-		// defensive copying and null checking
-		List<String> importOrderList = requireElementsNonNull(Arrays.asList(importOrder));
-		return createFromOrderImpl(importOrderList);
+		return new ImportOrderStep().createFrom(importOrder);
 	}
 
+	/** Static method has been replaced by instance method
+	 * {@link ImportOrderStep#createFrom(File)}.*/
+	@Deprecated
 	public static FormatterStep createFromFile(File importsFile) {
-		Objects.requireNonNull(importsFile);
-		return createFromOrderImpl(getImportOrder(importsFile));
-	}
-
-	private static FormatterStep createFromOrderImpl(List<String> importOrder) {
-		return FormatterStep.createLazy("importOrder",
-				() -> new State(importOrder),
-				State::toFormatter);
+		return new ImportOrderStep().createFrom(importsFile);
 	}
 
 	private static List<String> getImportOrder(File importsFile) {
@@ -88,13 +109,15 @@ public final class ImportOrderStep {
 		private static final long serialVersionUID = 1L;
 
 		private final List<String> importOrder;
+		private final String lineFormat;
 
-		State(List<String> importOrder) {
+		State(List<String> importOrder, String lineFormat) {
 			this.importOrder = importOrder;
+			this.lineFormat = lineFormat;
 		}
 
 		FormatterFunc toFormatter() {
-			return raw -> new ImportSorter(importOrder).format(raw);
+			return raw -> new ImportSorter(importOrder).format(raw, lineFormat);
 		}
 	}
 }
