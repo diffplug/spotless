@@ -64,6 +64,8 @@ def cred = {
 	}
 }
 
+final MAVEN_PLUGIN_ARTIFACT_NAME = 'spotless-maven-plugin'
+
 model {
 	publishing {
 		publications {
@@ -97,8 +99,12 @@ model {
 								distribution 'repo'
 							}
 						}
+						if (project.ext.artifactId == MAVEN_PLUGIN_ARTIFACT_NAME) {
+							// Maven plugin required Maven 3.1.0+ to run
+							prerequisites { maven '3.1.0' }
+						}
 						developers {
-							if (project.ext.artifactId == 'spotless-plugin-maven') {
+							if (project.ext.artifactId == MAVEN_PLUGIN_ARTIFACT_NAME) {
 								developer {
 									id 'lutovich'
 									name 'Konstantin Lutovich'
