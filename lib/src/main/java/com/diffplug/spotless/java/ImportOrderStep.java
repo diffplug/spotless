@@ -37,11 +37,15 @@ import com.diffplug.spotless.FormatterStep;
 public final class ImportOrderStep {
 	private final String lineFormat;
 
-	public ImportOrderStep() {
-		this("import %s;");
+	public static ImportOrderStep forGroovy() {
+		return new ImportOrderStep("import %s");
 	}
 
-	public ImportOrderStep(String lineFormat) {
+	public static ImportOrderStep forJava() {
+		return new ImportOrderStep("import %s;");
+	}
+
+	private ImportOrderStep(String lineFormat) {
 		this.lineFormat = lineFormat;
 	}
 
@@ -68,21 +72,21 @@ public final class ImportOrderStep {
 	public static FormatterStep createFromOrder(List<String> importOrder) {
 		// defensive copying and null checking
 		importOrder = requireElementsNonNull(new ArrayList<>(importOrder));
-		return new ImportOrderStep().createFrom(importOrder);
+		return forJava().createFrom(importOrder);
 	}
 
 	/** Static method has been replaced by instance method
 	 * {@link ImportOrderStep#createFrom(String...)}.*/
 	@Deprecated
 	public static FormatterStep createFromOrder(String... importOrder) {
-		return new ImportOrderStep().createFrom(importOrder);
+		return forJava().createFrom(importOrder);
 	}
 
 	/** Static method has been replaced by instance method
 	 * {@link ImportOrderStep#createFrom(File)}.*/
 	@Deprecated
 	public static FormatterStep createFromFile(File importsFile) {
-		return new ImportOrderStep().createFrom(importsFile);
+		return forJava().createFrom(importsFile);
 	}
 
 	private static List<String> getImportOrder(File importsFile) {

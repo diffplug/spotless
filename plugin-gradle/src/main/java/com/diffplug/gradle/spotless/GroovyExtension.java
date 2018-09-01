@@ -37,11 +37,9 @@ import com.diffplug.spotless.java.ImportOrderStep;
 
 public class GroovyExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "groovy";
-	private final ImportOrderStep importOrderStepFactory;
 
 	public GroovyExtension(SpotlessExtension rootExtension) {
 		super(rootExtension);
-		importOrderStepFactory = new ImportOrderStep("import %s");
 	}
 
 	boolean excludeJava = false;
@@ -79,12 +77,12 @@ public class GroovyExtension extends FormatExtension implements HasBuiltinDelimi
 	}
 
 	public void importOrder(String... importOrder) {
-		addStep(importOrderStepFactory.createFrom(importOrder));
+		addStep(ImportOrderStep.forGroovy().createFrom(importOrder));
 	}
 
 	public void importOrderFile(Object importOrderFile) {
 		Objects.requireNonNull(importOrderFile);
-		addStep(importOrderStepFactory.createFrom(getProject().file(importOrderFile)));
+		addStep(ImportOrderStep.forGroovy().createFrom(getProject().file(importOrderFile)));
 	}
 
 	public GrEclipseConfig greclipse() {

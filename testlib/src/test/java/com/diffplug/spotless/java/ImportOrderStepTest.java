@@ -22,54 +22,52 @@ import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
 
 public class ImportOrderStepTest extends ResourceHarness {
-	private static final ImportOrderStep JAVA = new ImportOrderStep();
-	private static final ImportOrderStep GROOVY = new ImportOrderStep("import %s");
 
 	@Test
 	public void sortImportsFromArray() throws Throwable {
-		FormatterStep step = JAVA.createFrom("java", "javax", "org", "\\#com");
+		FormatterStep step = ImportOrderStep.forJava().createFrom("java", "javax", "org", "\\#com");
 		assertOnResources(step, "java/importsorter/JavaCodeUnsortedImports.test", "java/importsorter/JavaCodeSortedImports.test");
 	}
 
 	@Test
 	public void sortImportsFromFile() throws Throwable {
-		FormatterStep step = JAVA.createFrom(createTestFile("java/importsorter/import.properties"));
+		FormatterStep step = ImportOrderStep.forJava().createFrom(createTestFile("java/importsorter/import.properties"));
 		assertOnResources(step, "java/importsorter/JavaCodeUnsortedImports.test", "java/importsorter/JavaCodeSortedImports.test");
 	}
 
 	@Test
 	public void sortImportsUnmatched() throws Throwable {
-		FormatterStep step = JAVA.createFrom(createTestFile("java/importsorter/import_unmatched.properties"));
+		FormatterStep step = ImportOrderStep.forJava().createFrom(createTestFile("java/importsorter/import_unmatched.properties"));
 		assertOnResources(step, "java/importsorter/JavaCodeUnsortedImportsUnmatched.test", "java/importsorter/JavaCodeSortedImportsUnmatched.test");
 	}
 
 	@Test
 	public void removeDuplicates() throws Throwable {
-		FormatterStep step = JAVA.createFrom(createTestFile("java/importsorter/import_unmatched.properties"));
+		FormatterStep step = ImportOrderStep.forJava().createFrom(createTestFile("java/importsorter/import_unmatched.properties"));
 		assertOnResources(step, "java/importsorter/JavaCodeSortedDuplicateImportsUnmatched.test", "java/importsorter/JavaCodeSortedImportsUnmatched.test");
 	}
 
 	@Test
 	public void removeComments() throws Throwable {
-		FormatterStep step = JAVA.createFrom(createTestFile("java/importsorter/import.properties"));
+		FormatterStep step = ImportOrderStep.forJava().createFrom(createTestFile("java/importsorter/import.properties"));
 		assertOnResources(step, "java/importsorter/JavaCodeImportComments.test", "java/importsorter/JavaCodeSortedImports.test");
 	}
 
 	@Test
 	public void misplacedImports() throws Throwable {
-		FormatterStep step = JAVA.createFrom(createTestFile("java/importsorter/import.properties"));
+		FormatterStep step = ImportOrderStep.forJava().createFrom(createTestFile("java/importsorter/import.properties"));
 		assertOnResources(step, "java/importsorter/JavaCodeUnsortedMisplacedImports.test", "java/importsorter/JavaCodeSortedMisplacedImports.test");
 	}
 
 	@Test
 	public void groovyImports() throws Throwable {
-		FormatterStep step = GROOVY.createFrom(createTestFile("java/importsorter/import.properties"));
+		FormatterStep step = ImportOrderStep.forGroovy().createFrom(createTestFile("java/importsorter/import.properties"));
 		assertOnResources(step, "java/importsorter/GroovyCodeUnsortedMisplacedImports.test", "java/importsorter/GroovyCodeSortedMisplacedImports.test");
 	}
 
 	@Test
 	public void doesntThrowIfImportOrderIsntSerializable() {
-		JAVA.createFrom("java", "javax", "org", "\\#com");
+		ImportOrderStep.forJava().createFrom("java", "javax", "org", "\\#com");
 	}
 
 	@Test
@@ -94,7 +92,7 @@ public class ImportOrderStepTest extends ResourceHarness {
 
 			@Override
 			protected FormatterStep create() {
-				return JAVA.createFrom(imports);
+				return ImportOrderStep.forJava().createFrom(imports);
 			}
 		}.testEquals();
 	}
