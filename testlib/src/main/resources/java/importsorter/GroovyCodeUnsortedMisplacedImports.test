@@ -1,0 +1,16 @@
+import static java.lang.Exception.*
+import org.dooda.Didoo
+/*
+public class IgnoredAndRemoved {
+}
+*/
+import java.lang.Thread;
+// Will be removed {}
+import java.lang.Runnable;
+
+import static java.lang.Runnable.*;
+import static com.foo.Bar;
+public class NotDeletedByFormatter {
+}
+import will.not;
+import be.modified;
