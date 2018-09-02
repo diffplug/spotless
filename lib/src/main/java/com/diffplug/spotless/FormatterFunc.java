@@ -15,11 +15,26 @@
  */
 package com.diffplug.spotless;
 
+import java.io.File;
 import java.util.Objects;
 
-/** A `Function<String, String>` which can throw an exception. */
-public interface FormatterFunc extends ThrowingEx.Function<String, String> {
-	/** A `Function<String, String>` whose implementation requires a resource which should be released when the function is no longer needed. */
+/**
+ * A `Function<String, String>` which can throw an exception.
+ * Also the `BiFunction<String, File, String>` is supported, whereas the default
+ * implementation only requires the `Function<String, String>` implementation.
+ */
+public interface FormatterFunc
+		extends ThrowingEx.Function<String, String>, ThrowingEx.BiFunction<String, File, String> {
+
+	@Override
+	default String apply(String input, File source) throws Exception {
+		return apply(input);
+	}
+
+	/**
+	 * `Function<String, String>` and `BiFunction<String, File, String>` whose implementation
+	 * requires a resource which should be released when the function is no longer needed.
+	 */
 	interface Closeable extends FormatterFunc, AutoCloseable {
 		@Override
 		void close();
@@ -35,10 +50,16 @@ public interface FormatterFunc extends ThrowingEx.Function<String, String> {
 				}
 
 				@Override
+				public String apply(String input, File source) throws Exception {
+					return function.apply(Objects.requireNonNull(input), Objects.requireNonNull(source));
+				}
+
+				@Override
 				public String apply(String input) throws Exception {
 					return function.apply(Objects.requireNonNull(input));
 				}
 			};
 		}
 	}
+
 }

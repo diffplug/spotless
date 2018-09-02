@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.Properties;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -73,8 +72,7 @@ public class EclipseWtpFormatterStepTest extends EclipseCommonTests {
 
 	@Parameters(name = "{0}")
 	public static Iterable<WTP> data() {
-		//TODO: XML is excluded. How to provide base location will be addressed by separate PR.
-		return Arrays.asList(WTP.values()).stream().filter(e -> e != WTP.XML).collect(Collectors.toList());
+		return Arrays.asList(WTP.values());
 	}
 
 	@Parameter(0)
