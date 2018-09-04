@@ -42,7 +42,6 @@ public class Eclipse implements FormatterStepFactory {
 			File settingsFile = stepConfig.getFileLocator().locateFile(file);
 			eclipseConfig.setPreferences(Arrays.asList(settingsFile));
 		}
-		System.err.println("newFormatterStep");
 		return eclipseConfig.build();
 	}
 }
