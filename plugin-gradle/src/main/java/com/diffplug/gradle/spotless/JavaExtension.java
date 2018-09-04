@@ -71,12 +71,12 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 	}
 
 	public void importOrder(String... importOrder) {
-		addStep(ImportOrderStep.createFromOrder(importOrder));
+		addStep(ImportOrderStep.forJava().createFrom(importOrder));
 	}
 
 	public void importOrderFile(Object importOrderFile) {
 		Objects.requireNonNull(importOrderFile);
-		addStep(ImportOrderStep.createFromFile(getProject().file(importOrderFile)));
+		addStep(ImportOrderStep.forJava().createFrom(getProject().file(importOrderFile)));
 	}
 
 	/** Use {@link #eclipse()} instead */

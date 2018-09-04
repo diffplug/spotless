@@ -31,6 +31,12 @@ public final class ThrowingEx {
 		R apply(T input) throws Exception;
 	}
 
+	/** A bi-function that can throw any exception. */
+	@FunctionalInterface
+	public interface BiFunction<T1, T2, R> {
+		R apply(T1 input1, T2 input2) throws Exception;
+	}
+
 	/** A supplier that can throw any exception. */
 	@FunctionalInterface
 	public interface Supplier<T> {

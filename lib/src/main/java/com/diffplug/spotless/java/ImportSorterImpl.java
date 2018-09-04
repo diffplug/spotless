@@ -35,18 +35,18 @@ final class ImportSorterImpl {
 	private final List<String> notMatching = new ArrayList<>();
 	private final Set<String> allImportOrderItems = new HashSet<>();
 
-	static List<String> sort(List<String> imports, List<String> importsOrder) {
+	static List<String> sort(List<String> imports, List<String> importsOrder, String lineFormat) {
 		ImportSorterImpl importsSorter = new ImportSorterImpl(importsOrder);
-		return importsSorter.sort(imports);
+		return importsSorter.sort(imports, lineFormat);
 	}
 
-	private List<String> sort(List<String> imports) {
+	private List<String> sort(List<String> imports, String lineFormat) {
 		filterMatchingImports(imports);
 		mergeNotMatchingItems(false);
 		mergeNotMatchingItems(true);
 		mergeMatchingItems();
 
-		return getResult();
+		return getResult(lineFormat);
 	}
 
 	private ImportSorterImpl(List<String> importOrder) {
@@ -218,14 +218,14 @@ final class ImportSorterImpl {
 		}
 	}
 
-	private List<String> getResult() {
+	private List<String> getResult(String lineFormat) {
 		List<String> strings = new ArrayList<>();
 
 		for (String s : template) {
 			if (s.equals(ImportSorter.N)) {
 				strings.add(s);
 			} else {
-				strings.add("import " + s + ";" + ImportSorter.N);
+				strings.add(String.format(lineFormat, s) + ImportSorter.N);
 			}
 		}
 		return strings;
