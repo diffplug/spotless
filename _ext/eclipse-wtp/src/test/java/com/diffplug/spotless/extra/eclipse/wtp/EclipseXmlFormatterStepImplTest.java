@@ -41,43 +41,43 @@ public class EclipseXmlFormatterStepImplTest {
 
 	@Test
 	public void simpleDefaultFormat() throws Throwable {
-		String output = format(TEST_DATA.input("xml_space.xml"), config -> {});
+		String output = format(TEST_DATA.input("xml_space.test"), config -> {});
 		assertEquals("Unexpected formatting with default preferences.",
-				TEST_DATA.expected("xml_space.xml"), output);
+				TEST_DATA.expected("xml_space.test"), output);
 	}
 
 	@Test
 	public void invalidXmlFormat() throws Throwable {
-		String[] input = TEST_DATA.input("xml_space.xml");
+		String[] input = TEST_DATA.input("xml_space.test");
 		input[0] += INCOMPLETE;
 		String output = format(input, config -> {});
-		String expected = TEST_DATA.expected("xml_space.xml") + LINE_DELIMITER + INCOMPLETE;
+		String expected = TEST_DATA.expected("xml_space.test") + LINE_DELIMITER + INCOMPLETE;
 		assertEquals("Incomplete XML not formatted on best effort basis.",
 				expected, output);
 	}
 
 	@Test
 	public void illegalXmlCharater() throws Throwable {
-		String[] input = TEST_DATA.input("xml_space.xml");
+		String[] input = TEST_DATA.input("xml_space.test");
 		input[0] = ILLEGAL_CHAR + input[0];
 		String output = format(input, config -> {});
-		String expected = LINE_DELIMITER + LINE_DELIMITER + TEST_DATA.expected("xml_space.xml");
+		String expected = LINE_DELIMITER + LINE_DELIMITER + TEST_DATA.expected("xml_space.test");
 		assertEquals("Illegal character not replaced by line delimiter.", expected, output);
 	}
 
 	@Test
 	public void multipleConfigurations() throws Throwable {
-		String output = format(TEST_DATA.input("xml_space.xml"), config -> {
+		String output = format(TEST_DATA.input("xml_space.test"), config -> {
 			config.setProperty(INDENTATION_SIZE, "2");
 			config.setProperty(INDENTATION_CHAR, SPACE);
 		});
-		String expected = TEST_DATA.expected("xml_space.xml").replace("\t", "  ");
+		String expected = TEST_DATA.expected("xml_space.test").replace("\t", "  ");
 		assertEquals("Custom indentation configuration not applied.", expected, output);
 
-		output = format(TEST_DATA.input("xml_space.xml"), config -> {
+		output = format(TEST_DATA.input("xml_space.test"), config -> {
 			config.setProperty(SPLIT_MULTI_ATTRS, Boolean.toString(true));
 		});
-		expected = TEST_DATA.expected("xml_space.xml");
+		expected = TEST_DATA.expected("xml_space.test");
 		expected = expected.replace(" a=", LINE_DELIMITER + "\ta=");
 		expected = expected.replace(" b=", LINE_DELIMITER + "\tb=");
 		assertEquals("Custom indentation configuration not reverted or custom multiple argument configuration not applied.", expected, output);
@@ -85,44 +85,44 @@ public class EclipseXmlFormatterStepImplTest {
 
 	@Test
 	public void invalidConfiguration() throws Throwable {
-		String output = format(TEST_DATA.input("xml_space.xml"), config -> {
+		String output = format(TEST_DATA.input("xml_space.test"), config -> {
 			config.setProperty(INDENTATION_SIZE, "Not an integer");
 			config.setProperty(INDENTATION_CHAR, SPACE);
 		});
 		assertEquals("Invalid indentation configuration not replaced by default value (0 spaces)",
-				TEST_DATA.expected("xml_space.xml").replace("\t", ""), output);
+				TEST_DATA.expected("xml_space.test").replace("\t", ""), output);
 	}
 
 	@Test
 	public void dtdRelativePath() throws Throwable {
-		String output = format(TEST_DATA.input("dtd_relative.xml"), config -> {});
+		String output = format(TEST_DATA.input("dtd_relative.test"), config -> {});
 		assertEquals("Relative DTD not resolved. Restrictions are not applied by formatter.",
-				TEST_DATA.expected("dtd_relative.xml"), output);
+				TEST_DATA.expected("dtd_relative.test"), output);
 	}
 
 	@Test
 	public void xsdRelativePath() throws Throwable {
-		String output = format(TEST_DATA.input("xsd_relative.xml"), config -> {});
+		String output = format(TEST_DATA.input("xsd_relative.test"), config -> {});
 		assertEquals("Relative XSD not resolved. Restrictions are not applied by formatter.",
-				TEST_DATA.expected("xsd_relative.xml"), output);
+				TEST_DATA.expected("xsd_relative.test"), output);
 	}
 
 	@Test
 	public void xsdNotFound() throws Throwable {
-		String output = format(TEST_DATA.input("xsd_not_found.xml"), config -> {});
+		String output = format(TEST_DATA.input("xsd_not_found.test"), config -> {});
 		assertEquals("Unresolved XSD/DTD not silently ignored.",
-				TEST_DATA.expected("xsd_not_found.xml"), output);
+				TEST_DATA.expected("xsd_not_found.test"), output);
 	}
 
 	@Test
 	public void catalogLookup() throws Throwable {
-		String output = format(TEST_DATA.input("xsd_not_found.xml"), config -> {
+		String output = format(TEST_DATA.input("xsd_not_found.test"), config -> {
 			config.setProperty(
 					SpotlessPreferences.USER_CATALOG,
 					TEST_DATA.getRestrictionsPath("catalog.xml").toString());
 		});
 		assertEquals("XSD not resolved by catalog. Restrictions are not applied by formatter.",
-				TEST_DATA.expected("xsd_not_found.xml").replace(" remove spaces ", "remove spaces"), output);
+				TEST_DATA.expected("xsd_not_found.test").replace(" remove spaces ", "remove spaces"), output);
 	}
 
 	private static String format(final String[] input, final Consumer<Properties> config) throws Exception {
