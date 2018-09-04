@@ -9,6 +9,7 @@ You might be looking for:
 
 * Added C/C++ support ([#232](https://github.com/diffplug/spotless/issues/232)).
 * Integrated Eclipse CDT formatter ([#274](https://github.com/diffplug/spotless/pull/274))
+* Updated default groovy-eclipse from 4.8.0 to 4.8.1 ([#288](https://github.com/diffplug/spotless/pull/288)). New version is based on [Groovy-Eclipse 3.0.0](https://github.com/groovy/groovy-eclipse/wiki/3.0.0-Release-Notes).
 * Integrated Eclipse WTP formatter ([#290](https://github.com/diffplug/spotless/pull/290))
 * Updated JSR305 annotation from 3.0.0 to 3.0.2 ([#274](https://github.com/diffplug/spotless/pull/274))
 * Migrated from FindBugs annotations 3.0.0 to SpotBugs annotations 3.1.6 ([#274](https://github.com/diffplug/spotless/pull/274))
