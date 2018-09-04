@@ -40,7 +40,7 @@ public class StepHarness implements AutoCloseable {
 		return new StepHarness(FormatterFunc.Closeable.of(
 				() -> {
 					if (step instanceof FormatterStepImpl.Standard) {
-						((FormatterStepImpl.Standard) step).cleanupFormatterFunc();
+						((FormatterStepImpl.Standard<?>) step).cleanupFormatterFunc();
 					}
 				},
 				input -> LineEnding.toUnix(step.format(input, new File("")))));

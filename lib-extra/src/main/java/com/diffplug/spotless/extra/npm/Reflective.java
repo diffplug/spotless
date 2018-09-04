@@ -266,6 +266,8 @@ class Reflective {
 	}
 
 	public static class ReflectiveException extends RuntimeException {
+		private static final long serialVersionUID = -5764607170953013791L;
+
 		public ReflectiveException(String message, Throwable cause) {
 			super(message, cause);
 		}

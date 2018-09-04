@@ -16,6 +16,7 @@
 package com.diffplug.spotless.extra.npm;
 
 public class BlacklistedOptionException extends RuntimeException {
+	private static final long serialVersionUID = -5876348893394153811L;
 
 	public BlacklistedOptionException(String blacklistedOption) {
 		super("The config option '" + blacklistedOption + "' is not supported.");

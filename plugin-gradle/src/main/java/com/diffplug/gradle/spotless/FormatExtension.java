@@ -431,7 +431,7 @@ public class FormatExtension {
 		return config;
 	}
 
-	public abstract class NpmStepConfig<T extends NpmStepConfig> {
+	public abstract class NpmStepConfig<T extends NpmStepConfig<?>> {
 		@Nullable
 		protected Object npmFile;
 

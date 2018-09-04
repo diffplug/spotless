@@ -88,7 +88,7 @@ public class TsFmtFormatterStepTest {
 
 		@Test(expected = BlacklistedOptionException.class)
 		public void blacklistedOptionIsThrown() throws Exception {
-			final FormatterStep formatterStep = TsFmtFormatterStep.create(
+			TsFmtFormatterStep.create(
 					TestProvisioner.mavenCentral(),
 					buildDir(),
 					npmExecutable(),
@@ -97,6 +97,7 @@ public class TsFmtFormatterStepTest {
 							.build());
 
 			fail("should never be reached!");
+
 		}
 
 	}
