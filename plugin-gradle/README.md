@@ -333,6 +333,46 @@ spotless {
 }
 ```
 
+<a name="prettier"></a>
+
+## Applying [prettier](https://prettier.io/) to javascript | flow | typeScript | css | scss | less | jsx | etc.
+
+To use prettier, you first have to specify the files that you want it to apply to.  Then you specify prettier, and how you want to apply it.
+
+```gradle
+spotless {
+  format 'css', {
+    target 'src/main/resources/**/*.css'
+    prettier().prettierConfig([type: 'css'])
+  }
+}
+```
+
+To apply prettier to more kinds of files, just add more formats
+
+```gradle
+spotless {
+  format 'javascript', {
+    target 'src/main/resources/**/*.js'
+    prettier().prettierConfig([type: 'js'])
+  }
+}
+```
+
+<a name="tsfmt"></a>
+
+## Applying [tsfmt](https://github.com/vvakame/typescript-formatter) to typescript
+
+To use tsfmt, you first have to specify the files that you want it to apply to.  Then you specify `tsfmt()`, and optionally how you want to apply it.
+
+```gradle
+spotless {
+  typescript {
+    target 'src/main/resources/**/*.ts'
+    tsfmt().config([type: 'something'])
+  }
+}
+```
 
 <a name="custom"></a>
 
