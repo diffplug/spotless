@@ -53,7 +53,7 @@ public class PrettierFormatterStep {
 			super(stepName,
 					provisioner,
 					new NpmConfig(
-							readFileFromClasspath(PrettierFormatterStep.class, "prettier-package.json"),
+							readFileFromClasspath(PrettierFormatterStep.class, "/com/diffplug/spotless/extra/npm/prettier-package.json"),
 							"prettier"),
 					buildDir,
 					npm);

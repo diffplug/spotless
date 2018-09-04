@@ -18,19 +18,22 @@ package com.diffplug.spotless.extra.npm;
 import static com.diffplug.spotless.extra.npm.NpmExecutableResolver.tryFind;
 import static java.util.Objects.requireNonNull;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Optional;
 
 import javax.annotation.Nullable;
 
-import com.diffplug.spotless.*;
+import com.diffplug.common.base.Errors;
+import com.diffplug.spotless.FileSignature;
+import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.JarState;
+import com.diffplug.spotless.Provisioner;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -106,11 +109,16 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 	}
 
 	protected static String readFileFromClasspath(Class<?> clazz, String name) {
-		try {
-			Path path = Paths.get(clazz.getResource(name).toURI());
-			return new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
-		} catch (URISyntaxException | IOException e) {
-			throw ThrowingEx.asRuntime(e);
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		try (InputStream input = clazz.getResourceAsStream(name)) {
+			byte[] buffer = new byte[1024];
+			int numRead;
+			while ((numRead = input.read(buffer)) != -1) {
+				output.write(buffer, 0, numRead);
+			}
+			return output.toString(StandardCharsets.UTF_8.name());
+		} catch (IOException e) {
+			throw Errors.asRuntime(e);
 		}
 	}
 

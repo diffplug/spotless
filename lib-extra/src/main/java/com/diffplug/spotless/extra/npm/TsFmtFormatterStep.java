@@ -21,9 +21,13 @@ import static java.util.Objects.requireNonNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
@@ -34,10 +38,9 @@ public class TsFmtFormatterStep {
 
 	public static final String NAME = "tsfmt-format";
 
-	public static FormatterStep create(Provisioner provisioner, File buildDir, File npm, Map<String, Object> tsFmtOptions) {
+	public static FormatterStep create(Provisioner provisioner, File buildDir, @Nullable File npm, Map<String, Object> tsFmtOptions) {
 		requireNonNull(provisioner);
 		requireNonNull(buildDir);
-		requireNonNull(npm);
 		validateOptions(requireNonNull(tsFmtOptions));
 		return FormatterStep.createLazy(NAME,
 				() -> new State(NAME, provisioner, buildDir, npm, tsFmtOptions),
@@ -59,11 +62,11 @@ public class TsFmtFormatterStep {
 
 		private final TreeMap<String, Object> tsFmtOptions;
 
-		public State(String stepName, Provisioner provisioner, File buildDir, File npm, Map<String, Object> tsFmtOptions) throws IOException {
+		public State(String stepName, Provisioner provisioner, File buildDir, @Nullable File npm, Map<String, Object> tsFmtOptions) throws IOException {
 			super(stepName,
 					provisioner,
 					new NpmConfig(
-							readFileFromClasspath(TsFmtFormatterStep.class, "tsfmt-package.json"),
+							readFileFromClasspath(TsFmtFormatterStep.class, "/com/diffplug/spotless/extra/npm/tsfmt-package.json"),
 							"typescript-formatter"),
 					buildDir,
 					npm);
