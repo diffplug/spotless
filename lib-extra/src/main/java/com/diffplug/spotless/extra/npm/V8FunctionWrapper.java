@@ -17,7 +17,7 @@ package com.diffplug.spotless.extra.npm;
 
 import java.lang.reflect.Method;
 
-public class V8FunctionWrapper extends ReflectiveObjectWrapper {
+class V8FunctionWrapper extends ReflectiveObjectWrapper {
 
 	public static final String WRAPPED_CLASS = "com.eclipsesource.v8.V8Function";
 	public static final String CALLBACK_WRAPPED_CLASS = "com.eclipsesource.v8.JavaCallback";

@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.Objects;
 import java.util.function.Function;
 
-public abstract class ReflectiveObjectWrapper implements AutoCloseable {
+abstract class ReflectiveObjectWrapper implements AutoCloseable {
 
 	private final Object wrappedObj;
 	private final Reflective reflective;

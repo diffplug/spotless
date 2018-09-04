@@ -19,7 +19,7 @@ import java.io.File;
 import java.util.Map;
 import java.util.Objects;
 
-public class NodeJSWrapper extends ReflectiveObjectWrapper {
+class NodeJSWrapper extends ReflectiveObjectWrapper {
 
 	public static final String V8_RUNTIME_CLASS = "com.eclipsesource.v8.V8";
 	public static final String V8_VALUE_CLASS = "com.eclipsesource.v8.V8Value";

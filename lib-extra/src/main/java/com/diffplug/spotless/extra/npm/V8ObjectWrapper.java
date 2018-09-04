@@ -17,7 +17,7 @@ package com.diffplug.spotless.extra.npm;
 
 import java.util.Optional;
 
-public class V8ObjectWrapper extends ReflectiveObjectWrapper {
+class V8ObjectWrapper extends ReflectiveObjectWrapper {
 
 	public static final String WRAPPED_CLASS = "com.eclipsesource.v8.V8Object";
 

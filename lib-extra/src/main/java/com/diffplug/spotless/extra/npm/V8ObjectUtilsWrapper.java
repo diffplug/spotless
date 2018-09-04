@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Map;
 
-public class V8ObjectUtilsWrapper {
+class V8ObjectUtilsWrapper {
 
 	public static final String WRAPPED_CLASS = "com.eclipsesource.v8.utils.V8ObjectUtils";
 

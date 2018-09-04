@@ -17,7 +17,7 @@ package com.diffplug.spotless.extra.npm;
 
 import java.io.Serializable;
 
-public class NpmConfig implements Serializable {
+class NpmConfig implements Serializable {
 
 	private static final long serialVersionUID = -1866722789779160491L;
 

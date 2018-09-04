@@ -34,7 +34,7 @@ import com.diffplug.spotless.*;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-public abstract class NpmFormatterStepStateBase implements Serializable {
+abstract class NpmFormatterStepStateBase implements Serializable {
 
 	private static final long serialVersionUID = -5849375492831208496L;
 
