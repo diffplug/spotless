@@ -20,15 +20,11 @@ import java.io.File;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.SerializableFileFilter;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 
 public class LicenseHeader implements FormatterStepFactory {
-
-	private static final SerializableFileFilter UNSUPPORTED_FILES_FILTER = SerializableFileFilter.skipFilesNamed(
-			"package-info.java", "module-info.java");
 
 	@Parameter
 	private String file;
@@ -51,7 +47,7 @@ public class LicenseHeader implements FormatterStepFactory {
 					? createStepFromFile(config, delimiterString)
 					: createStepFromContent(delimiterString);
 
-			return step.filterByFile(UNSUPPORTED_FILES_FILTER);
+			return step.filterByFile(LicenseHeaderStep.unsupportedJvmFilesFilter());
 		} else {
 			throw new IllegalArgumentException("Must specify exactly one of 'file' or 'content'.");
 		}

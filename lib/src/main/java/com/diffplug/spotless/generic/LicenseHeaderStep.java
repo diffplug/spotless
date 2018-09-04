@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.SerializableFileFilter;
 
 /** Prefixes a license header before the package statement. */
 public final class LicenseHeaderStep implements Serializable {
@@ -34,6 +35,9 @@ public final class LicenseHeaderStep implements Serializable {
 
 	private static final String NAME = "licenseHeader";
 	private static final String DEFAULT_YEAR_DELIMITER = "-";
+
+	private static final SerializableFileFilter UNSUPPORTED_JVM_FILES_FILTER = SerializableFileFilter.skipFilesNamed(
+			"package-info.java", "package-info.groovy", "module-info.java");
 
 	private final String licenseHeader;
 	private final Pattern delimiterPattern;
@@ -85,6 +89,10 @@ public final class LicenseHeaderStep implements Serializable {
 
 	public static String defaultYearDelimiter() {
 		return DEFAULT_YEAR_DELIMITER;
+	}
+
+	public static SerializableFileFilter unsupportedJvmFilesFilter() {
+		return UNSUPPORTED_JVM_FILES_FILTER;
 	}
 
 	/** The license that we'd like enforced. */

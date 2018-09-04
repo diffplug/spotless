@@ -103,8 +103,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	private void execute(FormatterFactory formatterFactory) throws MojoExecutionException {
 		List<File> files = collectFiles(formatterFactory);
-		Formatter formatter = formatterFactory.newFormatter(files, getFormatterConfig());
-		process(files, formatter);
+		try (Formatter formatter = formatterFactory.newFormatter(files, getFormatterConfig())) {
+			process(files, formatter);
+		}
 	}
 
 	private List<File> collectFiles(FormatterFactory formatterFactory) throws MojoExecutionException {

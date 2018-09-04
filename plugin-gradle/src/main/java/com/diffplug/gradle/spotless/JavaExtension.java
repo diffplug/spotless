@@ -28,7 +28,6 @@ import org.gradle.api.tasks.SourceSet;
 
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.SerializableFileFilter;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.java.EclipseFormatterStep;
 import com.diffplug.spotless.extra.java.EclipseJdtFormatterStep;
@@ -72,12 +71,12 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 	}
 
 	public void importOrder(String... importOrder) {
-		addStep(ImportOrderStep.createFromOrder(importOrder));
+		addStep(ImportOrderStep.forJava().createFrom(importOrder));
 	}
 
 	public void importOrderFile(Object importOrderFile) {
 		Objects.requireNonNull(importOrderFile);
-		addStep(ImportOrderStep.createFromFile(getProject().file(importOrderFile)));
+		addStep(ImportOrderStep.forJava().createFrom(getProject().file(importOrderFile)));
 	}
 
 	/** Use {@link #eclipse()} instead */
@@ -187,17 +186,10 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 			}
 			target = union;
 		}
-		// LicenseHeaderStep completely blows apart package-info.java & module-info.java;
-		// this common-sense check ensures that it skips package-info.java & module-info.java.
-		//
-		// See:
-		//  - https://github.com/diffplug/spotless/issues/1
-		//  - https://github.com/diffplug/spotless/issues/270
+
 		steps.replaceAll(step -> {
 			if (LicenseHeaderStep.name().equals(step.getName())) {
-				return step.filterByFile(SerializableFileFilter.skipFilesNamed(
-						"package-info.java",
-						"module-info.java"));
+				return step.filterByFile(LicenseHeaderStep.unsupportedJvmFilesFilter());
 			} else {
 				return step;
 			}

@@ -36,9 +36,9 @@ public class ImportOrder implements FormatterStepFactory {
 		if (file != null ^ order != null) {
 			if (file != null) {
 				File importsFile = config.getFileLocator().locateFile(file);
-				return ImportOrderStep.createFromFile(importsFile);
+				return ImportOrderStep.forJava().createFrom(importsFile);
 			} else {
-				return ImportOrderStep.createFromOrder(order.split(","));
+				return ImportOrderStep.forJava().createFrom(order.split(","));
 			}
 		} else {
 			throw new IllegalArgumentException("Must specify exactly one of 'file' or 'order'.");

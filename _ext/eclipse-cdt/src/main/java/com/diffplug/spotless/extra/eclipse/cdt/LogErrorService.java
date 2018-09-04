@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.eclipse.groovy;
+package com.diffplug.spotless.extra.eclipse.cdt;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 import org.eclipse.core.internal.runtime.InternalPlatform;
 import org.eclipse.equinox.log.ExtendedLogReaderService;
@@ -38,13 +35,16 @@ import org.osgi.service.log.LogService;
 import org.osgi.service.log.LoggerConsumer;
 
 /**
- * Simple log service for errors and warnings.
- * Unsupported methods are marked as deprecated and throw an {@link UnsupportedOperationException}
+ * Simple log service for errors.
+ * The CDT formatter logs warnings for dedicated regional problems.
+ * For example the CDT formatter logs a warning for standard C function provider
+ * methods which do not use dedicated typedef for their return type.
+ * The warnings do not contain any information about the type or source of problem.
+ * Furthermore the other regions of the code(-line) are correctly formatted.
+ * Hence the useless warnings are eaten. Just errors are logged (though it seems
+ * that the formatter does not log any messages with an error level).
  */
-public class SpotlessLogService implements ExtendedLogService, ExtendedLogReaderService {
-
-	public final static Set<LogLevel> FATAL_SEVERITIES = Collections.unmodifiableSet(new HashSet<LogLevel>(Arrays.asList(LogLevel.ERROR, LogLevel.WARN)));
-	private final Set<LogListener> listener = new HashSet<LogListener>();
+public class LogErrorService implements ExtendedLogService, ExtendedLogReaderService {
 
 	@Override
 	@Deprecated
@@ -109,7 +109,7 @@ public class SpotlessLogService implements ExtendedLogService, ExtendedLogReader
 
 	@Override
 	public String getName() {
-		return SpotlessLogService.class.getSimpleName();
+		return LogErrorService.class.getSimpleName();
 	}
 
 	@Override
@@ -124,26 +124,17 @@ public class SpotlessLogService implements ExtendedLogService, ExtendedLogReader
 
 	@Override
 	public void addLogListener(LogListener listener) {
-		synchronized (this.listener) {
-			this.listener.add(listener);
-		}
+		//Nothing to do
 	}
 
 	@Override
 	public void removeLogListener(LogListener listener) {
-		synchronized (this.listener) {
-			this.listener.remove(listener);
-		}
+		//Nothing to do
 	}
 
 	public void log(LogEntry entry) {
-		if (FATAL_SEVERITIES.contains(entry.getLogLevel())) {
-			synchronized (listener) {
-				if (0 != listener.size()) {
-					System.err.println(entry.toString());
-					listener.stream().forEach(l -> l.logged(entry));
-				}
-			}
+		if (LogLevel.ERROR == entry.getLogLevel()) {
+			System.err.println(entry.toString());
 		}
 	}
 
@@ -278,7 +269,7 @@ public class SpotlessLogService implements ExtendedLogService, ExtendedLogReader
 
 	@Override
 	public boolean isWarnEnabled() {
-		return true;
+		return false;
 	}
 
 	@Override

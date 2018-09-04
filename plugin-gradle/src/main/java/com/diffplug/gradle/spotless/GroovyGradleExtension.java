@@ -29,12 +29,12 @@ public class GroovyGradleExtension extends FormatExtension {
 	}
 
 	public void importOrder(String... importOrder) {
-		addStep(ImportOrderStep.createFromOrder(importOrder));
+		addStep(ImportOrderStep.forGroovy().createFrom(importOrder));
 	}
 
 	public void importOrderFile(Object importOrderFile) {
 		Objects.requireNonNull(importOrderFile);
-		addStep(ImportOrderStep.createFromFile(getProject().file(importOrderFile)));
+		addStep(ImportOrderStep.forGroovy().createFrom(getProject().file(importOrderFile)));
 	}
 
 	public GroovyExtension.GrEclipseConfig greclipse() {

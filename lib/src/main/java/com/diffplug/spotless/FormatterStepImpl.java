@@ -75,7 +75,13 @@ abstract class FormatterStepImpl<State extends Serializable> extends Strict<Stat
 			if (formatter == null) {
 				formatter = stateToFormatter.apply(state());
 			}
-			return formatter.apply(rawUnix);
+			return formatter.apply(rawUnix, file);
+		}
+
+		void cleanupFormatterFunc() {
+			if (formatter instanceof FormatterFunc.Closeable) {
+				((FormatterFunc.Closeable) formatter).close();
+			}
 		}
 	}
 
@@ -97,8 +103,11 @@ abstract class FormatterStepImpl<State extends Serializable> extends Strict<Stat
 		protected String format(Integer state, String rawUnix, File file) throws Exception {
 			if (formatter == null) {
 				formatter = formatterSupplier.get();
+				if (formatter instanceof FormatterFunc.Closeable) {
+					throw new AssertionError("NeverUpToDate does not support FormatterFunc.Closeable.  See https://github.com/diffplug/spotless/pull/284");
+				}
 			}
-			return formatter.apply(rawUnix);
+			return formatter.apply(rawUnix, file);
 		}
 	}
 }

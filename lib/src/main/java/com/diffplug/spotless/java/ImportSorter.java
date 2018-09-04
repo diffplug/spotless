@@ -34,7 +34,7 @@ final class ImportSorter {
 		this.importsOrder = new ArrayList<>(importsOrder);
 	}
 
-	public String format(String raw) {
+	String format(String raw, String lineFormat) {
 		// parse file
 		Scanner scanner = new Scanner(raw);
 		int firstImportLine = 0;
@@ -79,7 +79,7 @@ final class ImportSorter {
 		}
 		scanner.close();
 
-		List<String> sortedImports = ImportSorterImpl.sort(imports, importsOrder);
+		List<String> sortedImports = ImportSorterImpl.sort(imports, importsOrder, lineFormat);
 		return applyImportsToDocument(raw, firstImportLine, lastImportLine, sortedImports);
 	}
 

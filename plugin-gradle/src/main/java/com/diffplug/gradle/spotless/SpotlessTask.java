@@ -161,48 +161,49 @@ public class SpotlessTask extends DefaultTask {
 		}
 
 		// create the formatter
-		Formatter formatter = Formatter.builder()
+		try (Formatter formatter = Formatter.builder()
 				.lineEndingsPolicy(lineEndingsPolicy)
 				.encoding(Charset.forName(encoding))
 				.rootDir(getProject().getRootDir().toPath())
 				.steps(steps)
 				.exceptionPolicy(exceptionPolicy)
-				.build();
-		// find the outOfDate files
-		List<File> outOfDate = new ArrayList<>();
-		inputs.outOfDate(inputDetails -> {
-			File file = inputDetails.getFile();
-			if (file.isFile() && !file.equals(getCacheFile())) {
-				outOfDate.add(file);
-			}
-		});
-		// load the files that were changed by the last run
-		// because it's possible the user changed them back to their
-		// unformatted form, so we need to treat them as dirty
-		// (see bug #144)
-		if (getCacheFile().exists()) {
-			LastApply lastApply = SerializableMisc.fromFile(LastApply.class, getCacheFile());
-			for (File file : lastApply.changedFiles) {
-				if (!outOfDate.contains(file) && file.exists() && Iterables.contains(target, file)) {
+				.build()) {
+			// find the outOfDate files
+			List<File> outOfDate = new ArrayList<>();
+			inputs.outOfDate(inputDetails -> {
+				File file = inputDetails.getFile();
+				if (file.isFile() && !file.equals(getCacheFile())) {
 					outOfDate.add(file);
 				}
+			});
+			// load the files that were changed by the last run
+			// because it's possible the user changed them back to their
+			// unformatted form, so we need to treat them as dirty
+			// (see bug #144)
+			if (getCacheFile().exists()) {
+				LastApply lastApply = SerializableMisc.fromFile(LastApply.class, getCacheFile());
+				for (File file : lastApply.changedFiles) {
+					if (!outOfDate.contains(file) && file.exists() && Iterables.contains(target, file)) {
+						outOfDate.add(file);
+					}
+				}
 			}
-		}
 
-		if (apply) {
-			List<File> changedFiles = applyAnyChanged(formatter, outOfDate);
-			if (!changedFiles.isEmpty()) {
-				// If any file changed, we need to mark the task as dirty
-				// next time to avoid bug #144.
-				LastApply lastApply = new LastApply();
-				lastApply.timestamp = System.currentTimeMillis();
-				lastApply.changedFiles = changedFiles;
+			if (apply) {
+				List<File> changedFiles = applyAnyChanged(formatter, outOfDate);
+				if (!changedFiles.isEmpty()) {
+					// If any file changed, we need to mark the task as dirty
+					// next time to avoid bug #144.
+					LastApply lastApply = new LastApply();
+					lastApply.timestamp = System.currentTimeMillis();
+					lastApply.changedFiles = changedFiles;
 
-				SerializableMisc.toFile(lastApply, getCacheFile());
+					SerializableMisc.toFile(lastApply, getCacheFile());
+				}
 			}
-		}
-		if (check) {
-			check(formatter, outOfDate);
+			if (check) {
+				check(formatter, outOfDate);
+			}
 		}
 	}
 
