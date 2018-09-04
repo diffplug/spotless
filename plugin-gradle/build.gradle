@@ -41,6 +41,10 @@ task spotlessApply(type: JavaExec) {
 }
 test { testLogging.showStandardStreams = true }
 
+test { useJUnit { excludeCategories 'com.diffplug.spotless.extra.npm.NpmTest' } }
+
+task npmTest(type: Test) { useJUnit { includeCategories 'com.diffplug.gradle.spotless.NpmTest' } }
+
 //////////////////////////
 // GRADLE PLUGIN PORTAL //
 //////////////////////////

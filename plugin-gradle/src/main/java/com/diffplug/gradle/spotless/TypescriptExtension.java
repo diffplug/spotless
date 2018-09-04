@@ -18,8 +18,6 @@ package com.diffplug.gradle.spotless;
 import java.util.Collections;
 import java.util.Map;
 
-import javax.annotation.Nullable;
-
 import org.gradle.api.Project;
 
 import com.diffplug.spotless.FormatterStep;
@@ -41,8 +39,7 @@ public class TypescriptExtension extends FormatExtension {
 
 	public class TypescriptFormatExtension extends NpmStepConfig<TypescriptFormatExtension> {
 
-		@Nullable
-		protected Map<String, Object> tsFmtConfig;
+		protected Map<String, Object> tsFmtConfig = Collections.emptyMap();
 
 		public TypescriptFormatExtension config(Map<String, Object> config) {
 			this.tsFmtConfig = config;
