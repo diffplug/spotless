@@ -98,6 +98,21 @@ public class LicenseHeaderTest extends MavenIntegrationTest {
 	}
 
 	@Test
+	public void fromContentXml() throws Exception {
+		String license = " Licensed under Apache-2.0 ";
+		writePomWithXmlSteps(
+				"<licenseHeader>",
+				"  <content>",
+				"&lt;!--" + license + "--&gt;",
+				"  </content>",
+				"</licenseHeader>");
+		String path = "src/test.xml";
+		setFile(path).toContent("<a/>");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile(path).hasContent("<!--" + license + "-->\n<a/>");
+	}
+
+	@Test
 	public void unsupportedPackageInfo() throws Exception {
 		testUnsupportedFile("package-info.java");
 	}

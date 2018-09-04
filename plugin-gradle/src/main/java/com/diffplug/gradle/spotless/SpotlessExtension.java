@@ -118,6 +118,11 @@ public class SpotlessExtension {
 		configure(SqlExtension.NAME, SqlExtension.class, closure);
 	}
 
+	/** Configures the special xml-specific extension for XML/XSL/... files (XHTML is excluded). */
+	public void xml(Action<XmlExtension> closure) {
+		configure(XmlExtension.NAME, XmlExtension.class, closure);
+	}
+
 	/** Configures a custom extension. */
 	public void format(String name, Action<FormatExtension> closure) {
 		requireNonNull(name, "name");

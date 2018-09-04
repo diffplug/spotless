@@ -45,18 +45,18 @@ public class EclipseWtpFormatterStepTest extends EclipseCommonTests {
 		// @formatter:off
 		CSS(	"body {\na: v;   b:   \nv;\n}  \n",
 				"body {\n\ta: v;\n\tb: v;\n}",
-				WtpEclipseFormatterStep::createCssBuilder),
+				EclipseWtpFormatterStep::createCssBuilder),
 		HTML(	"<!DOCTYPE html> <html>\t<head> <meta   charset=\"UTF-8\"></head>\n</html>  ",
 				"<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"UTF-8\">\n</head>\n</html>\n",
-				WtpEclipseFormatterStep::createHtmlBuilder),
+				EclipseWtpFormatterStep::createHtmlBuilder),
 		JS(		"function f(  )   {\na.b(1,\n2);}",
 				"function f() {\n    a.b(1, 2);\n}",
-				WtpEclipseFormatterStep::createJsBuilder),
+				EclipseWtpFormatterStep::createJsBuilder),
 		JSON(	"{\"a\": \"b\",	\"c\":   { \"d\": \"e\",\"f\": \"g\"}}",
 				"{\n\t\"a\": \"b\",\n\t\"c\": {\n\t\t\"d\": \"e\",\n\t\t\"f\": \"g\"\n\t}\n}",
-				WtpEclipseFormatterStep::createJsonBuilder),
+				EclipseWtpFormatterStep::createJsonBuilder),
 		XML(	"<a><b>   c</b></a>", "<a>\n\t<b> c</b>\n</a>",
-				WtpEclipseFormatterStep::createXmlBuilder);
+				EclipseWtpFormatterStep::createXmlBuilder);
 		// @formatter:on
 
 		public final String input;
@@ -132,7 +132,7 @@ public class EclipseWtpFormatterStepTest extends EclipseCommonTests {
 		OutputStream tempOut = new FileOutputStream(tempFile);
 		configProps.store(tempOut, "test properties");
 		EclipseBasedStepBuilder builder = wtp.builderMethod.apply(TestProvisioner.mavenCentral());
-		builder.setVersion(WtpEclipseFormatterStep.defaultVersion());
+		builder.setVersion(EclipseWtpFormatterStep.defaultVersion());
 		builder.setPreferences(Arrays.asList(tempFile));
 		return builder.build();
 	}
