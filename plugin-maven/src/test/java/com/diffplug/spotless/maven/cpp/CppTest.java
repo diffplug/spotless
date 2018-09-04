@@ -30,10 +30,11 @@ public class CppTest extends ResourceHarness {
 		cpp.defaultIncludes();
 
 		String includesString = String.join(",", cpp.defaultIncludes());
-		setFile("src/main/cpp/file1.c++").toContent("");
-		setFile("src/main/cpp/file1.dummy").toContent("");
-		setFile("src/test/cpp/file1.h").toContent("");
-		setFile("src/test/cpp/file1.dummy").toContent("");
+		setFile("src/main/cpp/file.c++").toContent("");
+		setFile("src/file.c++").toContent("");
+		setFile("src/main/cpp/file.dummy").toContent("");
+		setFile("src/test/cpp/file.h").toContent("");
+		setFile("src/test/cpp/file.dummy").toContent("");
 
 		assertEquals(2, FileUtils.getFiles(rootFolder(), includesString, "").size());
 

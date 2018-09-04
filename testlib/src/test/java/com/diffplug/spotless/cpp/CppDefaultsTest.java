@@ -45,9 +45,8 @@ public class CppDefaultsTest extends ResourceHarness {
 			String output = null;
 			try {
 				output = step.format(testSource, dummyFile);
-			}
-			catch(IllegalArgumentException e) {
-				throw new AssertionError(String.format("No delimiter found in '%s'", testSource), e); 
+			} catch (IllegalArgumentException e) {
+				throw new AssertionError(String.format("No delimiter found in '%s'", testSource), e);
 			}
 			String expected = testSource.replaceAll("(.*?)\\@", header + '\n');
 			assertThat(output).isEqualTo(expected).as("Unexpected header insertion for '$s'.", testSource);
