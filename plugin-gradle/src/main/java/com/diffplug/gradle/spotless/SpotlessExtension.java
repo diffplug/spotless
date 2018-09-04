@@ -118,6 +118,11 @@ public class SpotlessExtension {
 		configure(SqlExtension.NAME, SqlExtension.class, closure);
 	}
 
+	/** Configures the special typescript-specific extension for SQL files. */
+	public void typescript(Action<TypescriptExtension> closure) {
+		configure(TypescriptExtension.NAME, TypescriptExtension.class, closure);
+	}
+
 	/** Configures a custom extension. */
 	public void format(String name, Action<FormatExtension> closure) {
 		requireNonNull(name, "name");

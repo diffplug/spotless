@@ -25,11 +25,11 @@ import org.gradle.api.Project;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.extra.npm.TsFmtFormatterStep;
 
-public class TypescriptGradleExtension extends FormatExtension {
+public class TypescriptExtension extends FormatExtension {
 
 	static final String NAME = "typescript";
 
-	public TypescriptGradleExtension(SpotlessExtension root) {
+	public TypescriptExtension(SpotlessExtension root) {
 		super(root);
 	}
 
