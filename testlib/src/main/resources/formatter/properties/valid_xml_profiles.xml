@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <profiles version="12">
-	<profile kind="Single" name="Profile" version="whatsoever">
-		<setting id="valid_xml_profiles.xml.string" value="string" />
-		<setting id="valid_xml_profiles.xml.true" value="Gets overridden by next line" />
-		<setting id="valid_xml_profiles.xml.true" value="true" />
-		<setting id="valid_xml_profiles.xml.42" value="42" />
-		<setting id="valid_xml_profiles.xml.null"/>
-		<setting id="common" value="valid_xml_profiles.xml" />
-	</profile>
+  <profile kind="Single" name="Profile" version="whatsoever">
+    <setting id="valid_xml_profiles.xml.string" value="string" />
+    <setting id="valid_xml_profiles.xml.true" value="Gets overridden by next line" />
+    <setting id="valid_xml_profiles.xml.true" value="true" />
+    <setting id="valid_xml_profiles.xml.42" value="42" />
+    <setting id="valid_xml_profiles.xml.null" />
+    <setting id="common" value="valid_xml_profiles.xml" />
+  </profile>
 </profiles>
