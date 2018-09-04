@@ -56,7 +56,6 @@ public class XmlExtension extends FormatExtension implements HasBuiltinDelimiter
 
 	}
 
-	/** If the user hasn't specified the files yet, we'll assume he/she means all of the C/C++ files. */
 	@Override
 	protected void setupTask(SpotlessTask task) {
 		if (target == null) {
