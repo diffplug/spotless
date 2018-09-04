@@ -186,7 +186,7 @@ By default, all files matching `src/main/cpp/**/*.<ext>` and `src/test/cpp/**/*.
   </cpp>
 </configuration>
 ```
-Use the Eclipse code-style editor to [export](https://eclipsebook.in/c-cpp-development/editing-code/code-style/) your configuration as XML file.
+Use the Eclipse to define the *Code Style preferences* (see [Eclipse documentation](https://www.eclipse.org/documentation/)). Within the preferences *Edit...* dialog, you can export your configuration as XML file, which can be used as a `configFile`. If no `configFile` is provided, the CDT default configuration is used.
 
 <a name="format"></a>
 

@@ -290,21 +290,27 @@ spotless {
 }
 ```
 
-<a name="cpp-cdt"></a>
+<a name="cpp"></a>
 
-## Applying [CDT](https://www.eclipse.org/cdt/) to C/C++ sources
+## Applying to C/C++ sources
 
 ```gradle
 spotless {
   cpp {
+    target '**/*.CPP' // Change file filter. By default files with 'c', 'h', 'C', 'cpp', 'cxx', 'cc', 'c++', 'h', 'hpp', 'hh', 'hxx' and 'inc' extension are supported
     eclipse().configFile 'spotless.eclipseformat.xml'	// XML file dumped out by the Eclipse formatter
     // If you have Eclipse preference or property files, you can use them too.
     // eclipse('4.7.1') to specify a specific version of Eclipse,
     // available versions are: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/config/eclipse_cdt_formatter
+    licenseHeader '// Licensed under Apache'	// License header
+    licenseHeaderFile './license.txt'	// License header file
   }
 }
 ```
-Use the Eclipse code-style editor to [export](https://eclipsebook.in/c-cpp-development/editing-code/code-style/) your configuration as XML file.
+
+### Eclipse [CDT](https://www.eclipse.org/cdt/) formatter
+
+Use the Eclipse to define the *Code Style preferences* (see [Eclipse documentation](https://www.eclipse.org/documentation/)). Within the preferences *Edit...* dialog, you can export your configuration as XML file, which can be used as a `configFile`. If no `configFile` is provided, the CDT default configuration is used.
 
 <a name="license-header"></a>
 
