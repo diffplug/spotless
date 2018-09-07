@@ -27,7 +27,27 @@ import com.diffplug.common.collect.ImmutableMap;
 import com.diffplug.spotless.*;
 
 @Category(NpmTest.class)
-public class TsFmtFormatterStepTest {
+public class TsFmtFormatterStepTest extends NpmFormatterStepCommonTests {
+
+	@Test
+	public void formattingUsingTslint() throws Exception {
+		String filedir = "npm/tsfmt/tslint/";
+
+		File tsLintDir = createTestFile(filedir + "tslint.json").getParentFile();
+
+		final FormatterStep formatterStep = TsFmtFormatterStep.create(
+				TestProvisioner.mavenCentral(),
+				buildDir(),
+				npmExecutable(),
+				ImmutableMap.<String, Object> builder()
+						.put("basedir", tsLintDir.getPath())
+						.put("tslint", Boolean.TRUE)
+						.build());
+
+		try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
+			stepHarness.testResource(filedir + "tslint.dirty", filedir + "tslint.clean");
+		}
+	}
 
 	@Test
 	public void testTsFmt() throws IOException {

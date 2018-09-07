@@ -86,6 +86,15 @@ public class ResourceHarness {
 		return new File(rootFolder(), subpath);
 	}
 
+	/** Creates and returns a new child-folder of the root folder. */
+	protected File newFolder(String subpath) throws IOException {
+		File targetDir = newFile(subpath);
+		if (!targetDir.mkdir()) {
+			throw new IOException("Failed to create " + targetDir);
+		}
+		return targetDir;
+	}
+
 	protected String read(String path) throws IOException {
 		return read(newFile(path).toPath(), StandardCharsets.UTF_8);
 	}
