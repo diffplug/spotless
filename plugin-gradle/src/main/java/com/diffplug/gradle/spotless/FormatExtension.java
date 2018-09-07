@@ -20,12 +20,7 @@ import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElem
 import java.io.File;
 import java.io.Serializable;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
@@ -465,7 +460,7 @@ public class FormatExtension {
 		}
 
 		public PrettierConfig config(final Map<String, Object> prettierConfig) {
-			this.prettierConfig = prettierConfig;
+			this.prettierConfig = new TreeMap<>(prettierConfig);
 			replaceStep(createStep());
 			return this;
 		}

@@ -15,16 +15,23 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static java.util.Objects.requireNonNull;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.gradle.api.Project;
 
+import com.diffplug.common.base.Errors;
+import com.diffplug.common.base.Strings;
+import com.diffplug.common.io.Files;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.extra.npm.TsFmtFormatterStep;
-
-import static java.util.Objects.requireNonNull;
 
 public class TypescriptExtension extends FormatExtension {
 
@@ -42,26 +49,75 @@ public class TypescriptExtension extends FormatExtension {
 
 	public class TypescriptFormatExtension extends NpmStepConfig<TypescriptFormatExtension> {
 
-		protected Map<String, Object> tsFmtConfig = Collections.emptyMap();
+		protected Map<String, Object> config = Collections.emptyMap();
+
+		protected String configFileType = null;
+
+		protected String configFilePath = null;
 
 		public TypescriptFormatExtension config(Map<String, Object> config) {
-			this.tsFmtConfig = new TreeMap<>(requireNonNull(config));
+			this.config = new TreeMap<>(requireNonNull(config));
+			replaceStep(createStep());
+			return this;
+		}
+
+		public TypescriptFormatExtension configFile(String filetype, String path) {
+			this.configFileType = requireNonNull(filetype);
+			this.configFilePath = requireNonNull(path);
 			replaceStep(createStep());
 			return this;
 		}
 
 		public FormatterStep createStep() {
 			final Project project = getProject();
-			Map<String, Object> config = new TreeMap<>(this.tsFmtConfig);
-			if (!config.containsKey("basedir")) {
-				config.put("basedir", project.getRootDir().getAbsolutePath()); //by default we use our project dir
-			}
+
+			Map<String, Object> tsFmtConfig = createTsFmtConfig();
+
 			return TsFmtFormatterStep.create(
 					GradleProvisioner.fromProject(project),
 					project.getBuildDir(),
 					npmFileOrNull(),
 					tsFmtConfig);
 		}
+
+		private Map<String, Object> createTsFmtConfig() {
+			final Project project = getProject();
+			Map<String, Object> tsFmtConfig = new TreeMap<>();
+			if (!this.config.isEmpty()) {
+				// write it to temporary file
+				String formatConfig = toJsonString(this.config);
+				File targetFile = new File(project.getBuildDir(), "tsfmt.json");
+				try {
+					Files.write(formatConfig, targetFile, StandardCharsets.UTF_8);
+				} catch (IOException e) {
+					throw Errors.asRuntime(e);
+				}
+				tsFmtConfig.put("tsfmt", true);
+				tsFmtConfig.put("tsfmtFile", targetFile);
+			} else if (!Strings.isNullOrEmpty(this.configFileType) && !Strings.isNullOrEmpty(this.configFilePath)) {
+				tsFmtConfig.put(this.configFileType, Boolean.TRUE);
+				tsFmtConfig.put(this.configFileType + "File", this.configFilePath);
+			}
+			tsFmtConfig.put("basedir", getProject().getRootDir().getAbsolutePath()); //by default we use our project dir
+			return tsFmtConfig;
+		}
+	}
+
+	private String toJsonString(Map<String, Object> map) {
+		final String valueString = map.entrySet()
+				.stream()
+				.map(entry -> "    " + jsonEscape(entry.getKey()) + ": " + jsonEscape(entry.getValue()))
+				.collect(Collectors.joining(",\n"));
+
+		return "{\n" + valueString + "\n}";
+	}
+
+	private String jsonEscape(Object val) {
+		requireNonNull(val);
+		if (val instanceof String) {
+			return "\"" + val + "\"";
+		}
+		return val.toString(); // numbers, booleans - currently nothing else
 	}
 
 	@Override
