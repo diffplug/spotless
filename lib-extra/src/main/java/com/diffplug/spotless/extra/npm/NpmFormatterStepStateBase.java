@@ -92,12 +92,7 @@ public abstract class NpmFormatterStepStateBase implements Serializable {
 	}
 
 	private String j2v8MavenCoordinate() {
-		return "com.eclipsesource.j2v8:j2v8_" + arch() + ":4.6.0";
-	}
-
-	private String arch() {
-		// TODO (simschla, 10.08.18): implement
-		return "macosx_x86_64";
+		return "com.eclipsesource.j2v8:j2v8_" + PlatformInfo.normalizedOSName() + "_" + PlatformInfo.archName() + ":4.6.0";
 	}
 
 	protected static String readFileFromClasspath(Class<?> clazz, String name) {
