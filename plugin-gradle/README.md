@@ -84,6 +84,8 @@ Spotless can check and apply formatting to any plain-text file, using simple rul
 * [ktlint](https://github.com/shyiko/ktlint)
 * [scalafmt](https://github.com/olafurpg/scalafmt)
 * [DBeaver sql format](https://dbeaver.jkiss.org/)
+* [Prettier: An opinionated code formatter](https://prettier.io)
+* [TypeScript Formatter (tsfmt)](https://github.com/vvakame/typescript-formatter)
 * Any user-defined function which takes an unformatted string and outputs a formatted version.
 
 Contributions are welcome, see [the contributing guide](../CONTRIBUTING.md) for development info.
@@ -291,6 +293,139 @@ spotless {
 }
 ```
 
+<a name="typescript"></a>
+
+## Applying to Typescript source
+
+To use tsfmt, you first have to specify the files that you want it to apply to.
+Then you specify `tsfmt()`, and optionally how you want to apply it.
+
+By default, all typescript source sets will be formatted. To change this,
+set the `target` parameter as described in the [Custom rules](#custom) section.
+
+```gradle
+spotless {
+  typescript {
+    // using existing config files
+    tsfmt().configFile(['basedir': '/path/to/repo', 'tslint': true, 'tslintFile', '/path/to/repo/tslint.json'])
+  }
+}
+```
+*Please note:* The auto-discovery of config files (up the file tree) will not work when using prettier within spotless,
+  hence you are required to provide absolute file paths for config files.
+
+... or alternatively provide the configuration inline ...
+
+```gradle
+spotless {
+  typescript {
+    // custom file-set
+    target 'src/main/resources/**/*.ts'
+    // provide config inline
+    tsfmt().config(['indentSize': 1, 'convertTabsToSpaces': true])
+  }
+}
+```
+
+See [tsfmt's default config settings](https://github.com/vvakame/typescript-formatter/blob/7764258ad42ac65071399840d1b8701868510ca7/lib/utils.ts#L8) for what is available.
+
+*Please note:* If both `configFile` and `config` is provided, only `config` is used.
+
+
+
+### Prerequisite: tsfmt requires a working NodeJS version
+
+tsfmt is based on NodeJS, so to use it, a working NodeJS installation (especially npm) is required on the host running spotless.
+Spotless will try to auto-discover an npm installation. If that is not working for you, it is possible to directly configure the npm binary to use.
+
+```gradle
+spotless {
+  typescript {
+    tsfmt().npmExecutable('/usr/bin/npm').config(...)
+  }
+}
+```
+
+<a name="prettier"></a>
+
+## Applying [Prettier](https://prettier.io) to javascript | flow | typeScript | css | scss | less | jsx | graphQL | yaml | etc.
+
+Prettier is a formatter that can format [multiple file types](https://prettier.io/docs/en/language-support.html).
+
+To use prettier, you first have to specify the files that you want it to apply to.  Then you specify prettier, and how you want to apply it.
+
+```gradle
+spotless {
+  format 'styling', {
+    target '**/*.css', '**/*.scss'
+
+    // at least provide the parser to use
+    prettier().config(['parser': 'postcss'])
+
+    // or provide a typical filename
+    prettier().config(['filepath': 'style.scss'])
+  }
+}
+```
+
+Supported config options are documented on [prettier.io](https://prettier.io/docs/en/options.html).
+
+It is also possible to specify the config via file:
+
+```gradle
+spotless {
+  format 'styling', {
+    target '**/*.css', '**/*.scss'
+
+    // or provide both (config options will win over configFile options)
+    prettier().configFile('/path-to/.prettierrc.yml')
+
+    // or provide both (config options will win over configFile options)
+    prettier().config(['parser': 'postcss']).configFile('path-to/.prettierrc.yml')
+  }
+}
+```
+
+Supported config file variants are documented on [prettier.io](https://prettier.io/docs/en/configuration.html).
+Please note:
+- The auto-discovery of config files (up the file tree) will not work when using prettier within spotless.
+- Prettier's override syntax is not supported when using prettier within spotless.
+
+To apply prettier to more kinds of files, just add more formats
+
+```gradle
+spotless {
+  format 'javascript', {
+    target 'src/main/resources/**/*.js'
+    prettier().config(['filepath': 'file.js'])
+  }
+}
+```
+
+Prettier can also be applied from within the [typescript config block](#typescript-formatter):
+
+```gradle
+spotless {
+  typescript {
+    // no parser or filepath needed
+    // -> will default to 'typesript' parser when used in the typescript block
+    prettier()
+  }
+}
+```
+
+### Prerequisite: prettier requires a working NodeJS version
+
+prettier, like tsfmt, is based on NodeJS, so to use it, a working NodeJS installation (especially npm) is required on the host running spotless.
+Spotless will try to auto-discover an npm installation. If that is not working for you, it is possible to directly configure the npm binary to use.
+
+```gradle
+spotless {
+  format 'javascript', {
+    prettier().npmExecutable('/usr/bin/npm').config(...)
+  }
+}
+```
 <a name="license-header"></a>
 
 ## License header options
@@ -329,47 +464,6 @@ For instance, the following configuration treats `1990, 2003` as a valid year ra
 spotless {
   java {
     licenseHeader('Licensed under Apache-2.0 $YEAR').yearSeparator(', ')
-  }
-}
-```
-
-<a name="prettier"></a>
-
-## Applying [prettier](https://prettier.io/) to javascript | flow | typeScript | css | scss | less | jsx | etc.
-
-To use prettier, you first have to specify the files that you want it to apply to.  Then you specify prettier, and how you want to apply it.
-
-```gradle
-spotless {
-  format 'css', {
-    target 'src/main/resources/**/*.css'
-    prettier().prettierConfig([type: 'css'])
-  }
-}
-```
-
-To apply prettier to more kinds of files, just add more formats
-
-```gradle
-spotless {
-  format 'javascript', {
-    target 'src/main/resources/**/*.js'
-    prettier().prettierConfig([type: 'js'])
-  }
-}
-```
-
-<a name="tsfmt"></a>
-
-## Applying [tsfmt](https://github.com/vvakame/typescript-formatter) to typescript
-
-To use tsfmt, you first have to specify the files that you want it to apply to.  Then you specify `tsfmt()`, and optionally how you want to apply it.
-
-```gradle
-spotless {
-  typescript {
-    target 'src/main/resources/**/*.ts'
-    tsfmt().config([type: 'something'])
   }
 }
 ```
