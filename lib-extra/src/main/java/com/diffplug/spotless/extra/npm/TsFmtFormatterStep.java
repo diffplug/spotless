@@ -21,9 +21,11 @@ import static java.util.Objects.requireNonNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.*;
 
 import javax.annotation.Nonnull;
 
+import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.Provisioner;
@@ -32,7 +34,7 @@ public class TsFmtFormatterStep {
 
 	public static final String NAME = "tsfmt-format";
 
-	public static FormatterStep create(Provisioner provisioner, File buildDir, File npm, TsFmtOptions tsFmtOptions) {
+	public static FormatterStep create(Provisioner provisioner, File buildDir, File npm, Map<String, Object> tsFmtOptions) {
 		requireNonNull(provisioner);
 		requireNonNull(buildDir);
 		requireNonNull(npm);
@@ -46,9 +48,9 @@ public class TsFmtFormatterStep {
 
 		private static final long serialVersionUID = -3811104513825329168L;
 
-		private final TsFmtOptions tsFmtOptions;
+		private final TreeMap<String, Object> tsFmtOptions;
 
-		public State(String stepName, Provisioner provisioner, File buildDir, File npm, TsFmtOptions tsFmtOptions) throws IOException {
+		public State(String stepName, Provisioner provisioner, File buildDir, File npm, Map<String, Object> tsFmtOptions) throws IOException {
 			super(stepName,
 					provisioner,
 					new NpmConfig(
@@ -56,7 +58,7 @@ public class TsFmtFormatterStep {
 							"typescript-formatter"),
 					buildDir,
 					npm);
-			this.tsFmtOptions = tsFmtOptions;
+			this.tsFmtOptions = tsFmtOptions == null ? new TreeMap<>() : new TreeMap<>(tsFmtOptions);
 		}
 
 		@Override
@@ -65,8 +67,8 @@ public class TsFmtFormatterStep {
 
 			final NodeJSWrapper nodeJSWrapper = nodeJSWrapper();
 			final V8ObjectWrapper tsFmt = nodeJSWrapper.require(nodeModulePath());
-
-			final V8ObjectWrapper tsfmtOptions = tsFmtOptions.toV8Object(nodeJSWrapper);
+			validateOptions(tsFmtOptions);
+			final V8ObjectWrapper formatterOptions = nodeJSWrapper.createNewObject(tsFmtOptions);
 
 			final TsFmtResult[] tsFmtResult = new TsFmtResult[1];
 			V8FunctionWrapper formatResultCallback = nodeJSWrapper.createNewFunction((receiver, parameters) -> {
@@ -88,19 +90,18 @@ public class TsFmtFormatterStep {
 			return FormatterFunc.Closeable.of(() -> {
 				// TODO (simschla, 09.08.18): maybe release node stuff?
 				System.out.println("RELEASING FORMATTER FUNCTION");
-				asList(formatResultCallback, tsfmtOptions, tsFmt, nodeJSWrapper).forEach(ReflectiveObjectWrapper::release);
+				asList(formatResultCallback, formatterOptions, tsFmt, nodeJSWrapper).forEach(ReflectiveObjectWrapper::release);
 			}, input -> {
 				tsFmtResult[0] = null;
 
 				// function processString(fileName: string, content: string, opts: Options): Promise<Result> {
 
 				try (
-						V8ArrayWrapper processStringArgs = nodeJSWrapper.createNewArray("spotless-format-string.ts", input, tsfmtOptions);
+						V8ArrayWrapper processStringArgs = nodeJSWrapper.createNewArray("spotless-format-string.ts", input, formatterOptions);
 						V8ObjectWrapper promise = tsFmt.executeObjectFunction("processString", processStringArgs);
 						V8ArrayWrapper callbacks = nodeJSWrapper.createNewArray(formatResultCallback)) {
 
 					promise.executeVoidFunction("then", callbacks);
-					// TODO (simschla, 14.08.18): handle promise resolving without success
 
 					while (tsFmtResult[0] == null) {
 						nodeJSWrapper.handleMessage();
@@ -121,6 +122,15 @@ public class TsFmtFormatterStep {
 				//					promise.release();
 
 			});
+		}
+
+		private void validateOptions(Map<String, Object> options) {
+			final Set<String> optionNames = new TreeSet<>(options.keySet());
+			optionNames.retainAll(Arrays.asList("dryRun", "replace", "verify"));
+
+			if (!optionNames.isEmpty()) {
+				throw new RuntimeException("The following config options are specified but not supported by spotless: " + optionNames);
+			}
 		}
 	}
 }

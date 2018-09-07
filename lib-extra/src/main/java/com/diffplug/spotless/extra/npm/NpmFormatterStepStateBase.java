@@ -28,19 +28,23 @@ import java.nio.file.Paths;
 
 import com.diffplug.spotless.*;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 public abstract class NpmFormatterStepStateBase implements Serializable {
 
 	private static final long serialVersionUID = -5849375492831208496L;
 
-	public final JarState jarState;
+	private final JarState jarState;
 
-	public final FileSignature nodeModulesSignature;
+	@SuppressWarnings("unused")
+	private final FileSignature nodeModulesSignature;
 
+	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	public final transient File nodeModulesDir;
 
-	public final NpmConfig npmConfig;
+	private final NpmConfig npmConfig;
 
-	public final String stepName;
+	private final String stepName;
 
 	protected NpmFormatterStepStateBase(String stepName, Provisioner provisioner, NpmConfig npmConfig, File buildDir, File npm) throws IOException {
 		this.stepName = stepName;

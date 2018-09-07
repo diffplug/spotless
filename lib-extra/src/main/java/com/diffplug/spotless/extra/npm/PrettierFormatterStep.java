@@ -21,6 +21,8 @@ import static java.util.Objects.requireNonNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.annotation.Nonnull;
 
@@ -66,7 +68,8 @@ public class PrettierFormatterStep {
 				final NodeJSWrapper nodeJSWrapper = nodeJSWrapper();
 				final V8ObjectWrapper prettier = nodeJSWrapper.require(nodeModulePath());
 
-				final PrettierOptions[] resolvedPrettierOptions = new PrettierOptions[1];
+				@SuppressWarnings("unchecked")
+				final Map<String, Object>[] resolvedPrettierOptions = (Map<String, Object>[]) new Map[1];
 				if (this.prettierConfig.getPrettierConfigPath() != null) {
 					final Exception[] toThrow = new Exception[1];
 					try (
@@ -76,9 +79,12 @@ public class PrettierFormatterStep {
 									if (configOptions == null) {
 										toThrow[0] = new IllegalArgumentException("Cannot find or read config file " + this.prettierConfig.getPrettierConfigPath());
 									} else {
-										resolvedPrettierOptions[0] = PrettierOptions
-												.fromV8Object(configOptions)
-												.overrideWith(this.prettierConfig.getOptions());
+										Map<String, Object> resolvedOptions = new TreeMap<>(V8ObjectUtilsWrapper.toMap(configOptions));
+										resolvedOptions.putAll(this.prettierConfig.getOptions());
+										toThrow[0] = validateOptions(resolvedOptions);
+										if (toThrow[0] == null) {
+											resolvedPrettierOptions[0] = resolvedOptions;
+										}
 									}
 								} catch (Exception e) {
 									toThrow[0] = e;
@@ -107,10 +113,7 @@ public class PrettierFormatterStep {
 					resolvedPrettierOptions[0] = this.prettierConfig.getOptions();
 				}
 
-				//				final V8ObjectWrapper prettierConfig = nodeJSWrapper.createNewObject()
-				//					.add("parser", "typescript");
-
-				final V8ObjectWrapper prettierConfig = resolvedPrettierOptions[0].toV8Object(nodeJSWrapper);
+				final V8ObjectWrapper prettierConfig = nodeJSWrapper.createNewObject(resolvedPrettierOptions[0]);
 
 				return FormatterFunc.Closeable.of(() -> {
 					System.out.println("RELEASING PRETTIER FORMATTER FUNCTION");
@@ -125,6 +128,13 @@ public class PrettierFormatterStep {
 				throw ThrowingEx.asRuntime(e);
 			}
 
+		}
+
+		private Exception validateOptions(Map<String, Object> resolvedOptions) {
+			if (resolvedOptions.containsKey("filePath")) {
+				return new RuntimeException("option 'filePath' is not supported.)");
+			}
+			return null;
 		}
 	}
 }

@@ -23,6 +23,7 @@ import java.util.Arrays;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import com.diffplug.common.collect.ImmutableMap;
 import com.diffplug.spotless.FormatExceptionPolicy;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
@@ -39,8 +40,8 @@ public class PrettierFormatterStepTest {
 				new File("/Users/simschla/tmp/demo-main/"),
 				new File("/Users/simschla/.nvm/versions/node/v8.11.2/bin/npm"),
 				new PrettierConfig(new File("/Users/simschla/tmp/.prettierrc"),
-						PrettierOptions.newBuilder()
-								.withBracketSpacing(true)
+						ImmutableMap.<String, Object> builder()
+								.put("bracketSpacing", Boolean.TRUE)
 								.build()));
 
 		final Formatter formatter = Formatter.builder()
@@ -61,9 +62,9 @@ public class PrettierFormatterStepTest {
 				new File("/Users/simschla/tmp/demo-main/"),
 				new File("/Users/simschla/.nvm/versions/node/v8.11.2/bin/npm"),
 				new PrettierConfig(new File("/Users/simschla/tmp/.prettierrc"),
-						PrettierOptions.newBuilder()
-								.withBracketSpacing(true)
-								.withParser(PrettierParser.JSON)
+						ImmutableMap.<String, Object> builder()
+								.put("bracketSpacing", Boolean.TRUE)
+								.put("parser", "json")
 								.build()));
 
 		final Formatter formatter = Formatter.builder()

@@ -23,6 +23,7 @@ import java.util.Arrays;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import com.diffplug.common.collect.ImmutableMap;
 import com.diffplug.spotless.*;
 
 @Category(NpmTest.class)
@@ -34,9 +35,9 @@ public class TsFmtFormatterStepTest {
 				TestProvisioner.mavenCentral(),
 				new File("/Users/simschla/tmp/demo-main/"),
 				new File("/Users/simschla/.nvm/versions/node/v8.11.2/bin/npm"),
-				TsFmtOptions.newBuilder()
-						.withBasedir("/Users/simschla/tmp/demo-basedir")
-						.withTslint(true)
+				ImmutableMap.<String, Object> builder()
+						.put("basedir", "/Users/simschla/tmp/demo-basedir")
+						.put("tslint", Boolean.TRUE)
 						.build());
 
 		final Formatter formatter = Formatter.builder()

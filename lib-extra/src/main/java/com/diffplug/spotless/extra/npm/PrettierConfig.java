@@ -16,23 +16,43 @@
 package com.diffplug.spotless.extra.npm;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Map;
+import java.util.TreeMap;
 
-public class PrettierConfig {
+import com.diffplug.spotless.FileSignature;
+import com.diffplug.spotless.ThrowingEx;
 
-	private final File prettierConfigPath;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-	private final PrettierOptions options;
+public class PrettierConfig implements Serializable {
 
-	public PrettierConfig(File prettierConfigPath, PrettierOptions options) {
-		this.prettierConfigPath = prettierConfigPath;
-		this.options = options == null ? PrettierOptions.allDefaults() : options;
+	private static final long serialVersionUID = -8709340269833126583L;
+
+	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
+	private final transient File prettierConfigPath;
+
+	@SuppressWarnings("unused")
+	private final FileSignature prettierConfigPathSignature;
+
+	private final TreeMap<String, Object> options;
+
+	public PrettierConfig(File prettierConfigPath, Map<String, Object> options) {
+		try {
+			this.prettierConfigPath = prettierConfigPath;
+			this.prettierConfigPathSignature = FileSignature.signAsList(this.prettierConfigPath);
+			this.options = options == null ? new TreeMap<>() : new TreeMap<>(options);
+		} catch (IOException e) {
+			throw ThrowingEx.asRuntime(e);
+		}
 	}
 
 	public File getPrettierConfigPath() {
 		return prettierConfigPath;
 	}
 
-	public PrettierOptions getOptions() {
-		return options;
+	public Map<String, Object> getOptions() {
+		return new TreeMap<>(this.options);
 	}
 }

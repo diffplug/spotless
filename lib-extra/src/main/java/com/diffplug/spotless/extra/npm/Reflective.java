@@ -50,9 +50,9 @@ class Reflective {
 		}
 	}
 
-	Object invokeStaticMethod(String className, String factoryMethodName, Object... parameters) {
+	Object invokeStaticMethod(String className, String methodName, Object... parameters) {
 		try {
-			Method m = staticMethod(className, factoryMethodName, parameters);
+			Method m = staticMethod(className, methodName, parameters);
 			return m.invoke(m.getDeclaringClass(), parameters);
 		} catch (IllegalAccessException | InvocationTargetException e) {
 			throw new ReflectiveException(e);

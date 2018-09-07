@@ -16,6 +16,7 @@
 package com.diffplug.spotless.extra.npm;
 
 import java.io.File;
+import java.util.Map;
 import java.util.Objects;
 
 public class NodeJSWrapper extends ReflectiveObjectWrapper {
@@ -40,6 +41,13 @@ public class NodeJSWrapper extends ReflectiveObjectWrapper {
 		Object v8Object = reflective().invokeConstructor(V8ObjectWrapper.WRAPPED_CLASS, nodeJsRuntime());
 		V8ObjectWrapper objectWrapper = new V8ObjectWrapper(reflective(), v8Object);
 		return objectWrapper;
+	}
+
+	public V8ObjectWrapper createNewObject(Map<String, Object> values) {
+		Objects.requireNonNull(values);
+		V8ObjectWrapper obj = createNewObject();
+		values.forEach(obj::add);
+		return obj;
 	}
 
 	public V8ArrayWrapper createNewArray(Object... elements) {
