@@ -117,7 +117,6 @@ public class PrettierFormatterStep {
 				final V8ObjectWrapper prettierConfig = nodeJSWrapper.createNewObject(resolvedPrettierOptions[0]);
 
 				return FormatterFunc.Closeable.of(() -> {
-					System.out.println("RELEASING PRETTIER FORMATTER FUNCTION");
 					asList(prettierConfig, prettier, nodeJSWrapper).forEach(ReflectiveObjectWrapper::release);
 				}, input -> {
 					try (V8ArrayWrapper formatParams = nodeJSWrapper.createNewArray(input, prettierConfig)) {

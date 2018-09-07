@@ -92,8 +92,6 @@ public class TsFmtFormatterStep {
 			}
 			*/
 			return FormatterFunc.Closeable.of(() -> {
-				// TODO (simschla, 09.08.18): maybe release node stuff?
-				System.out.println("RELEASING FORMATTER FUNCTION");
 				asList(formatResultCallback, formatterOptions, tsFmt, nodeJSWrapper).forEach(ReflectiveObjectWrapper::release);
 			}, input -> {
 				tsFmtResult[0] = null;
@@ -128,7 +126,7 @@ public class TsFmtFormatterStep {
 
 		private void validateOptions(Map<String, Object> options) {
 			final Set<String> optionNames = new TreeSet<>(options.keySet());
-			optionNames.retainAll(Arrays.asList("dryRun", "replace", "verify"));
+			optionNames.retainAll(asList("dryRun", "replace", "verify"));
 
 			if (!optionNames.isEmpty()) {
 				throw new RuntimeException("The following config options are specified but not supported by spotless: " + optionNames);
