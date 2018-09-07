@@ -66,7 +66,6 @@ public class PrettierFormatterStep {
 				final NodeJSWrapper nodeJSWrapper = nodeJSWrapper();
 				final V8ObjectWrapper prettier = nodeJSWrapper.require(nodeModulePath());
 
-				// TODO (simschla, 14.08.18): use prettier options
 				final PrettierOptions[] resolvedPrettierOptions = new PrettierOptions[1];
 				if (this.prettierConfig.getPrettierConfigPath() != null) {
 					final Exception[] toThrow = new Exception[1];

@@ -49,13 +49,6 @@ public abstract class NpmFormatterStepStateBase implements Serializable {
 
 		this.nodeModulesDir = prepareNodeModules(buildDir, npm);
 		this.nodeModulesSignature = FileSignature.signAsList(this.nodeModulesDir);
-
-		/*
-		    <make random folder in build dir>
-		    <shell out to npm to use that folder as node_modules, and download its deps there>
-			<use FileSignature to verify that the node_modules doesn't change>
-			<create a j2v8 that uses the random folder as its node_modules>
-		 */
 	}
 
 	private File prepareNodeModules(File buildDir, File npm) throws IOException {
@@ -92,11 +85,6 @@ public abstract class NpmFormatterStepStateBase implements Serializable {
 
 	protected File nodeModulePath() {
 		return new File(new File(this.nodeModulesDir, "node_modules"), this.npmConfig.getNpmModule());
-	}
-
-	private File j2V8JarFile() {
-		//		return new File("/Users/simschla/Downloads", "j2v8_macos_x86_64-nodejs-8.2.1-SNAPSHOT.jar"); // TODO (simschla, 27.07.18): adapt
-		return new File("/Users/simschla/Downloads", "j2v8_macosx_x86_64-4.6.0.jar"); // TODO (simschla, 27.07.18): adapt
 	}
 
 	private String j2v8MavenCoordinate() {

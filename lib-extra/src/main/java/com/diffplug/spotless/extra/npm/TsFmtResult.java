@@ -15,27 +15,27 @@
  */
 package com.diffplug.spotless.extra.npm;
 
-public class TsFmtResult {
+class TsFmtResult {
 
 	private final String message;
 	private final Boolean error;
 	private final String formatted;
 
-	public TsFmtResult(String message, Boolean error, String formatted) {
+	TsFmtResult(String message, Boolean error, String formatted) {
 		this.message = message;
 		this.error = error;
 		this.formatted = formatted;
 	}
 
-	public String getMessage() {
+	String getMessage() {
 		return message;
 	}
 
-	public Boolean isError() {
+	Boolean isError() {
 		return error;
 	}
 
-	public String getFormatted() {
+	String getFormatted() {
 		return formatted;
 	}
 }

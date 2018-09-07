@@ -22,18 +22,18 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-public class Reflective {
+class Reflective {
 	private final ClassLoader classLoader;
 
-	public Reflective(ClassLoader classLoader) {
+	private Reflective(ClassLoader classLoader) {
 		this.classLoader = requireNonNull(classLoader);
 	}
 
-	public static Reflective withClassLoader(ClassLoader classLoader) {
+	static Reflective withClassLoader(ClassLoader classLoader) {
 		return new Reflective(classLoader);
 	}
 
-	public Class<?> clazz(String className) {
+	Class<?> clazz(String className) {
 		try {
 			return this.classLoader.loadClass(className);
 		} catch (ClassNotFoundException e) {
@@ -41,7 +41,7 @@ public class Reflective {
 		}
 	}
 
-	public Method staticMethod(String className, String methodName, Object... parameters) {
+	private Method staticMethod(String className, String methodName, Object... parameters) {
 		try {
 			final Class<?> clazz = clazz(className);
 			return clazz.getDeclaredMethod(methodName, types(parameters));
@@ -50,7 +50,7 @@ public class Reflective {
 		}
 	}
 
-	public Object invokeStaticMethod(String className, String factoryMethodName, Object... parameters) {
+	Object invokeStaticMethod(String className, String factoryMethodName, Object... parameters) {
 		try {
 			Method m = staticMethod(className, factoryMethodName, parameters);
 			return m.invoke(m.getDeclaringClass(), parameters);
@@ -59,19 +59,19 @@ public class Reflective {
 		}
 	}
 
-	public Class<?>[] types(TypedValue[] typedValues) {
+	private Class<?>[] types(TypedValue[] typedValues) {
 		return Arrays.stream(typedValues)
 				.map(TypedValue::getClazz)
 				.toArray(Class[]::new);
 	}
 
-	public Class<?>[] types(Object[] arguments) {
+	Class<?>[] types(Object[] arguments) {
 		return Arrays.stream(arguments)
 				.map(Object::getClass)
 				.toArray(Class[]::new);
 	}
 
-	public Object invokeMethod(Object target, String methodName, Object... parameters) {
+	Object invokeMethod(Object target, String methodName, Object... parameters) {
 		Method m = method(target, clazz(target), methodName, parameters);
 		try {
 			return m.invoke(target, parameters);
@@ -80,7 +80,7 @@ public class Reflective {
 		}
 	}
 
-	public Object invokeMethod(Object target, String methodName, TypedValue... parameters) {
+	Object invokeMethod(Object target, String methodName, TypedValue... parameters) {
 		Method m = method(target, clazz(target), methodName, parameters);
 		try {
 			return m.invoke(target, objects(parameters));
@@ -155,7 +155,7 @@ public class Reflective {
 		return target.getClass();
 	}
 
-	public Object invokeConstructor(String className, TypedValue... parameters) {
+	Object invokeConstructor(String className, TypedValue... parameters) {
 		try {
 			final Constructor<?> constructor = constructor(className, parameters);
 			return constructor.newInstance(objects(parameters));
@@ -170,7 +170,7 @@ public class Reflective {
 				.toArray();
 	}
 
-	public Object invokeConstructor(String className, Object... parameters) {
+	Object invokeConstructor(String className, Object... parameters) {
 		try {
 			final Constructor<?> constructor = constructor(className, parameters);
 			return constructor.newInstance(parameters);
@@ -199,19 +199,19 @@ public class Reflective {
 		}
 	}
 
-	public Object createDynamicProxy(InvocationHandler invocationHandler, String... interfaceNames) {
+	Object createDynamicProxy(InvocationHandler invocationHandler, String... interfaceNames) {
 		Class<?>[] clazzes = Arrays.stream(interfaceNames)
 				.map(this::clazz)
 				.toArray(Class[]::new);
 		return Proxy.newProxyInstance(this.classLoader, clazzes, invocationHandler);
 	}
 
-	public Object staticField(String className, String fieldName) {
+	Object staticField(String className, String fieldName) {
 		final Class<?> clazz = clazz(className);
 		return staticField(clazz, fieldName);
 	}
 
-	public Object staticField(Class<?> clazz, String fieldName) {
+	private Object staticField(Class<?> clazz, String fieldName) {
 		try {
 			return clazz.getDeclaredField(fieldName).get(clazz);
 		} catch (IllegalAccessException | NoSuchFieldException e) {
@@ -219,12 +219,8 @@ public class Reflective {
 		}
 	}
 
-	public TypedValue typed(String className, Object obj) {
+	TypedValue typed(String className, Object obj) {
 		return new TypedValue(clazz(className), obj);
-	}
-
-	public static TypedValue typed(Class<?> clazz, Object obj) {
-		return new TypedValue(clazz, obj);
 	}
 
 	public static class TypedValue {
@@ -270,10 +266,6 @@ public class Reflective {
 	}
 
 	public static class ReflectiveException extends RuntimeException {
-		public ReflectiveException(String message) {
-			super(message);
-		}
-
 		public ReflectiveException(String message, Throwable cause) {
 			super(message, cause);
 		}
