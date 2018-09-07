@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.npm.wrapper;
+package com.diffplug.spotless.extra.npm;
 
 import java.util.Optional;
 

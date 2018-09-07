@@ -13,29 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.npm.tsfmt;
+package com.diffplug.spotless.extra.npm;
 
-public class TsFmtResult {
+import java.io.File;
 
-	private final String message;
-	private final Boolean error;
-	private final String formatted;
+public class PrettierConfig {
 
-	public TsFmtResult(String message, Boolean error, String formatted) {
-		this.message = message;
-		this.error = error;
-		this.formatted = formatted;
+	private final File prettierConfigPath;
+
+	private final PrettierOptions options;
+
+	public PrettierConfig(File prettierConfigPath, PrettierOptions options) {
+		this.prettierConfigPath = prettierConfigPath;
+		this.options = options == null ? PrettierOptions.allDefaults() : options;
 	}
 
-	public String getMessage() {
-		return message;
+	public File getPrettierConfigPath() {
+		return prettierConfigPath;
 	}
 
-	public Boolean isError() {
-		return error;
-	}
-
-	public String getFormatted() {
-		return formatted;
+	public PrettierOptions getOptions() {
+		return options;
 	}
 }

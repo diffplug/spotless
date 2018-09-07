@@ -27,7 +27,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import com.diffplug.spotless.*;
-import com.diffplug.spotless.extra.npm.wrapper.NodeJSWrapper;
 
 public abstract class NpmFormatterStepStateBase implements Serializable {
 

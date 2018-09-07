@@ -13,22 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.npm.prettier.options;
+package com.diffplug.spotless.extra.npm;
 
-import java.util.Arrays;
+public class TsFmtResult {
 
-public enum PrettierParser {
+	private final String message;
+	private final Boolean error;
+	private final String formatted;
 
-	BABYLON, FLOW, TYPESCRIPT, POSTCSS, JSON, GRAPHQL, MARKDOWN;
-
-	public static PrettierParser getByParserName(String parserName) {
-		return Arrays.stream(PrettierParser.values())
-				.filter(parser -> parser.parserName().equals(parserName))
-				.findFirst()
-				.orElseThrow(() -> new IllegalArgumentException("Unknown parser " + parserName));
+	public TsFmtResult(String message, Boolean error, String formatted) {
+		this.message = message;
+		this.error = error;
+		this.formatted = formatted;
 	}
 
-	public String parserName() {
-		return name().toLowerCase();
+	public String getMessage() {
+		return message;
+	}
+
+	public Boolean isError() {
+		return error;
+	}
+
+	public String getFormatted() {
+		return formatted;
 	}
 }

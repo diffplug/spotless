@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.npm.tsfmt;
+package com.diffplug.spotless.extra.npm;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import com.diffplug.spotless.*;
-import com.diffplug.spotless.extra.npm.NpmTest;
 
 @Category(NpmTest.class)
 public class TsFmtFormatterStepTest {

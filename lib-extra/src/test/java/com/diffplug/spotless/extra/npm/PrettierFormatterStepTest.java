@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.npm.prettier;
+package com.diffplug.spotless.extra.npm;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,9 +28,6 @@ import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.TestProvisioner;
-import com.diffplug.spotless.extra.npm.NpmTest;
-import com.diffplug.spotless.extra.npm.prettier.options.PrettierOptions;
-import com.diffplug.spotless.extra.npm.prettier.options.PrettierParser;
 
 @Category(NpmTest.class)
 public class PrettierFormatterStepTest {
