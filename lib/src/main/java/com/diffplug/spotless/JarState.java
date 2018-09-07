@@ -73,18 +73,6 @@ public final class JarState implements Serializable {
 		return new JarState(mavenCoordinates, fileSignature, jars);
 	}
 
-	public static JarState fromFiles(Set<File> jars) throws IOException {
-		FileSignature fileSignature = FileSignature.signAsSet(jars);
-		Collection<String> identifier = identifier(jars);
-		return new JarState(identifier, fileSignature, jars);
-	}
-
-	private static Collection<String> identifier(Set<File> jars) {
-		return jars.stream()
-				.map(File::getName)
-				.collect(Collectors.toList());
-	}
-
 	URL[] jarUrls() {
 		return jars.stream().map(File::toURI).map(ThrowingEx.wrap(URI::toURL)).toArray(URL[]::new);
 	}
