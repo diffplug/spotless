@@ -16,7 +16,6 @@
 package com.diffplug.spotless.extra.npm;
 
 import java.util.Locale;
-import java.util.Optional;
 
 import com.diffplug.common.base.StandardSystemProperty;
 
@@ -43,8 +42,19 @@ class PlatformInfo {
 		throw new RuntimeException("Cannot handle os " + osNameProperty);
 	}
 
-	static String archName() {
-		return Optional.ofNullable(StandardSystemProperty.OS_ARCH.value())
-				.orElseThrow(() -> new RuntimeException("Arch not detectable."));
+	static String normalizedArchName() {
+		final String osArchProperty = StandardSystemProperty.OS_ARCH.value();
+		if (osArchProperty == null) {
+			throw new RuntimeException("No info about ARCH available, cannot decide which implementation of j2v8 to use");
+		}
+		final String normalizedOsArch = osArchProperty.toLowerCase(Locale.ENGLISH);
+
+		if (normalizedOsArch.contains("64")) {
+			return "x86_64";
+		}
+		if (normalizedOsArch.contains("x86") || normalizedOsArch.contains("32")) {
+			return "x86";
+		}
+		throw new RuntimeException("Cannot handle arch " + osArchProperty);
 	}
 }
