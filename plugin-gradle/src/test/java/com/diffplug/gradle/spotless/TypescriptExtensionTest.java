@@ -15,6 +15,7 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.junit.Test;
@@ -23,7 +24,7 @@ import org.junit.experimental.categories.Category;
 @Category(NpmTest.class)
 public class TypescriptExtensionTest extends GradleIntegrationTest {
 	@Test
-	public void integration() throws IOException {
+	public void useTsfmtInlineConfig() throws IOException {
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
@@ -39,7 +40,48 @@ public class TypescriptExtensionTest extends GradleIntegrationTest {
 				"    }",
 				"}");
 		setFile("test.ts").toResource("npm/tsfmt/tsfmt/tsfmt.dirty");
-		gradleRunner().withArguments("spotlessApply").build();
+		gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 		assertFile("test.ts").sameAsResource("npm/tsfmt/tsfmt/tsfmt.clean");
+	}
+
+	@Test
+	public void useTsfmtFileConfig() throws IOException {
+		File formattingFile = setFile("tsfmt.json").toLines(
+				"{",
+				"	\"indentSize\": 1,",
+				"	\"convertTabsToSpaces\": true",
+				"}");
+		setFile("build.gradle").toLines(
+				"buildscript { repositories { mavenCentral() } }",
+				"plugins {",
+				"    id 'com.diffplug.gradle.spotless'",
+				"}",
+				"spotless {",
+				"    typescript {",
+				"        target 'test.ts'",
+				"        tsfmt().configFile('tsfmt', '" + formattingFile.getAbsolutePath() + "')",
+				"    }",
+				"}");
+		setFile("test.ts").toResource("npm/tsfmt/tsfmt/tsfmt.dirty");
+		gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		assertFile("test.ts").sameAsResource("npm/tsfmt/tsfmt/tsfmt.clean");
+	}
+
+	@Test
+	public void usePrettier() throws IOException {
+		setFile("build.gradle").toLines(
+				"buildscript { repositories { mavenCentral() } }",
+				"plugins {",
+				"    id 'com.diffplug.gradle.spotless'",
+				"}",
+				"spotless {",
+				"    typescript {",
+				"        target 'test.ts'",
+				"        prettier()",
+				"    }",
+				"}");
+		setFile("test.ts").toResource("npm/prettier/filetypes/typescript/typescript.dirty");
+		gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		assertFile("test.ts").sameAsResource("npm/prettier/filetypes/typescript/typescript.clean");
 	}
 }
