@@ -1,0 +1,20 @@
+
+
+
+p,
+#content,.basic-text,.custom-long-class-name,.second-long-class-name,.third-long-class-name,.any-class{
+font-size:12 px;
+	padding: 0px 0px 0px 0px;
+}
+
+
+div.layout-element {
+padding-left:5px; padding-right:5px
+}
+
+
+
+
+.almost-fullwidth {
+width:calc(100%- 20px)
+}

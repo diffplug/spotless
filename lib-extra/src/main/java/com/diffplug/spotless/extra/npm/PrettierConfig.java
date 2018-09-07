@@ -41,7 +41,7 @@ public class PrettierConfig implements Serializable {
 	public PrettierConfig(File prettierConfigPath, Map<String, Object> options) {
 		try {
 			this.prettierConfigPath = prettierConfigPath;
-			this.prettierConfigPathSignature = FileSignature.signAsList(this.prettierConfigPath);
+			this.prettierConfigPathSignature = prettierConfigPath != null ? FileSignature.signAsList(this.prettierConfigPath) : FileSignature.signAsList();
 			this.options = options == null ? new TreeMap<>() : new TreeMap<>(options);
 		} catch (IOException e) {
 			throw ThrowingEx.asRuntime(e);

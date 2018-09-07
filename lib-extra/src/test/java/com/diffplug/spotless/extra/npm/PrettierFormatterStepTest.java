@@ -16,68 +16,74 @@
 package com.diffplug.spotless.extra.npm;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.experimental.runners.Enclosed;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import com.diffplug.common.collect.ImmutableMap;
-import com.diffplug.spotless.FormatExceptionPolicy;
-import com.diffplug.spotless.Formatter;
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.LineEnding;
-import com.diffplug.spotless.TestProvisioner;
+import com.diffplug.spotless.*;
 
 @Category(NpmTest.class)
+@RunWith(Enclosed.class)
 public class PrettierFormatterStepTest {
 
-	@Test
-	public void testPrettierTypescript() throws IOException {
-		final FormatterStep formatterStep = PrettierFormatterStep.create(
-				TestProvisioner.mavenCentral(),
-				new File("/Users/simschla/tmp/demo-main/"),
-				new File("/Users/simschla/.nvm/versions/node/v8.11.2/bin/npm"),
-				new PrettierConfig(new File("/Users/simschla/tmp/.prettierrc"),
-						ImmutableMap.<String, Object> builder()
-								.put("bracketSpacing", Boolean.TRUE)
-								.build()));
+	@Category(NpmTest.class)
+	@RunWith(Parameterized.class)
+	public static class PrettierFormattingOfFileTypesIsWorking extends NpmFormatterStepCommonTests {
 
-		try (final Formatter formatter = Formatter.builder()
-				.encoding(StandardCharsets.UTF_8)
-				.rootDir(new File("/Users/simschla/tmp/demo-basedir").toPath())
-				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
-				.steps(Arrays.asList(formatterStep))
-				.exceptionPolicy(FormatExceptionPolicy.failOnlyOnError())
-				.build()) {
+		@Parameterized.Parameter
+		public String fileType;
 
-			System.out.println("formatted: " + formatter.applyToAndReturnResultIfDirty(new File("/Users/simschla/tmp/demo-basedir", "example.ts")));
+		@Parameterized.Parameters(name = "{index}: prettier can be applied to {0}")
+		public static Iterable<String> formattingConfigFiles() {
+			return Arrays.asList("typescript", "json", "javascript-es5", "javascript-es6", "css", "scss", "markdown");
+		}
+
+		@Test
+		public void formattingUsingConfigFile() throws Exception {
+			String filedir = "npm/prettier/filetypes/" + fileType + "/";
+
+			final File prettierRc = createTestFile(filedir + ".prettierrc.yml");
+			final String dirtyFile = filedir + fileType + ".dirty";
+			final String cleanFile = filedir + fileType + ".clean";
+
+			final FormatterStep formatterStep = PrettierFormatterStep.create(
+					TestProvisioner.mavenCentral(),
+					buildDir(),
+					npmExecutable(),
+					new PrettierConfig(prettierRc, null));
+
+			try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
+				stepHarness.testResource(dirtyFile, cleanFile);
+			}
 		}
 	}
 
-	@Test
-	public void testPrettierJson() throws IOException {
-		final FormatterStep formatterStep = PrettierFormatterStep.create(
-				TestProvisioner.mavenCentral(),
-				new File("/Users/simschla/tmp/demo-main/"),
-				new File("/Users/simschla/.nvm/versions/node/v8.11.2/bin/npm"),
-				new PrettierConfig(new File("/Users/simschla/tmp/.prettierrc"),
-						ImmutableMap.<String, Object> builder()
-								.put("bracketSpacing", Boolean.TRUE)
-								.put("parser", "json")
-								.build()));
+	@Category(NpmTest.class)
+	public static class SpecificPrettierFormatterStepTests extends NpmFormatterStepCommonTests {
 
-		try (final Formatter formatter = Formatter.builder()
-				.encoding(StandardCharsets.UTF_8)
-				.rootDir(new File("/Users/simschla/tmp/demo-basedir").toPath())
-				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
-				.steps(Arrays.asList(formatterStep))
-				.exceptionPolicy(FormatExceptionPolicy.failOnlyOnError())
-				.build()) {
+		@Test
+		public void parserInferenceIsWorking() throws Exception {
+			String filedir = "npm/prettier/filetypes/json/";
 
-			System.out.println("formatted: " + formatter.applyToAndReturnResultIfDirty(new File("/Users/simschla/tmp/demo-basedir", "toformat.json")));
+			final String dirtyFile = filedir + "json.dirty";
+			final String cleanFile = filedir + "json.clean";
+
+			final FormatterStep formatterStep = PrettierFormatterStep.create(
+					TestProvisioner.mavenCentral(),
+					buildDir(),
+					npmExecutable(),
+					new PrettierConfig(null, ImmutableMap.of("filepath", "anyname.json"))); // should select parser based on this name
+
+			try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
+				stepHarness.testResource(dirtyFile, cleanFile);
+			}
 		}
+
 	}
 
 }

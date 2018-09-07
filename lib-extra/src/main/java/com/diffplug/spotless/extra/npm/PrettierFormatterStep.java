@@ -81,10 +81,7 @@ public class PrettierFormatterStep {
 										} else {
 											Map<String, Object> resolvedOptions = new TreeMap<>(V8ObjectUtilsWrapper.toMap(configOptions));
 											resolvedOptions.putAll(this.prettierConfig.getOptions());
-											toThrow[0] = validateOptions(resolvedOptions);
-											if (toThrow[0] == null) {
-												resolvedPrettierOptions[0] = resolvedOptions;
-											}
+											resolvedPrettierOptions[0] = resolvedOptions;
 										}
 									}
 								} catch (Exception e) {
@@ -130,11 +127,5 @@ public class PrettierFormatterStep {
 
 		}
 
-		private Exception validateOptions(Map<String, Object> resolvedOptions) {
-			if (resolvedOptions.containsKey("filePath")) {
-				return new RuntimeException("option 'filePath' is not supported.)");
-			}
-			return null;
-		}
 	}
 }
