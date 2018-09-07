@@ -458,13 +458,13 @@ public class FormatExtension {
 		@Nullable
 		protected Map<String, Object> prettierConfig;
 
-		public PrettierConfig prettierConfigFile(final Object prettierConfigFile) {
+		public PrettierConfig configFile(final Object prettierConfigFile) {
 			this.prettierConfigFile = prettierConfigFile;
 			replaceStep(createStep());
 			return this;
 		}
 
-		public PrettierConfig prettierConfig(final Map<String, Object> prettierConfig) {
+		public PrettierConfig config(final Map<String, Object> prettierConfig) {
 			this.prettierConfig = prettierConfig;
 			replaceStep(createStep());
 			return this;
