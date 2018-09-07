@@ -31,6 +31,7 @@ import org.junit.runners.Parameterized;
 
 import com.diffplug.common.collect.ImmutableMap;
 import com.diffplug.spotless.*;
+import com.diffplug.spotless.category.NpmTest;
 
 @Category(NpmTest.class)
 @RunWith(Enclosed.class)
