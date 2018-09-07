@@ -4,6 +4,7 @@ apply from: rootProject.file('gradle/java-setup.gradle')
 
 dependencies {
 	compile project(':lib')
+	testCompile project(':lib-extra') // TODO (simschla,10.8.2018): ok?
 	compile "com.diffplug.durian:durian-core:${VER_DURIAN}"
 	compile "com.diffplug.durian:durian-io:${VER_DURIAN}"
 	compile "com.diffplug.durian:durian-testlib:${VER_DURIAN}"

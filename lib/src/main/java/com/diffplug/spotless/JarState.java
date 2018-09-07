@@ -20,13 +20,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -35,7 +29,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * Grabs a jar and its dependencies from maven,
  * and makes it easy to access the collection in
  * a classloader.
- *
+ * <p>
  * Serializes the full state of the jar, so it can
  * catch changes in a SNAPSHOT version.
  */
@@ -79,13 +73,25 @@ public final class JarState implements Serializable {
 		return new JarState(mavenCoordinates, fileSignature, jars);
 	}
 
+	public static JarState fromFiles(Set<File> jars) throws IOException {
+		FileSignature fileSignature = FileSignature.signAsSet(jars);
+		Collection<String> identifier = identifier(jars);
+		return new JarState(identifier, fileSignature, jars);
+	}
+
+	private static Collection<String> identifier(Set<File> jars) {
+		return jars.stream()
+				.map(File::getName)
+				.collect(Collectors.toList());
+	}
+
 	URL[] jarUrls() {
 		return jars.stream().map(File::toURI).map(ThrowingEx.wrap(URI::toURL)).toArray(URL[]::new);
 	}
 
 	/**
 	 * Returns a classloader containing only the jars in this JarState.
-	 *
+	 * <p>
 	 * The lifetime of the underlying cacheloader is controlled by {@link SpotlessCache}.
 	 */
 	public ClassLoader getClassLoader() {
