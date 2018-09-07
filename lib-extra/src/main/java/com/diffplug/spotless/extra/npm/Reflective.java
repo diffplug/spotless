@@ -99,7 +99,7 @@ class Reflective {
 			} else {
 				// try with primitives
 
-				throw new ReflectiveException("Could not find method " + methodName + " with parameters " + parameters + " on object " + target, e);
+				throw new ReflectiveException("Could not find method " + methodName + " with parameters " + Arrays.toString(parameters) + " on object " + target, e);
 			}
 		}
 	}
@@ -114,7 +114,7 @@ class Reflective {
 			} else {
 				// try with primitives
 
-				throw new ReflectiveException("Could not find method " + methodName + " with parameters " + parameters + " on object " + target, e);
+				throw new ReflectiveException("Could not find method " + methodName + " with parameters " + Arrays.toString(parameters) + " on object " + target, e);
 			}
 		}
 	}
