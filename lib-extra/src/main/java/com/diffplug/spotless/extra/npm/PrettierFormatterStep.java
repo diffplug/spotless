@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
@@ -35,10 +36,9 @@ public class PrettierFormatterStep {
 
 	public static final String NAME = "prettier-format";
 
-	public static FormatterStep create(Provisioner provisioner, File buildDir, File npm, PrettierConfig prettierConfig) {
+	public static FormatterStep create(Provisioner provisioner, File buildDir, @Nullable File npm, PrettierConfig prettierConfig) {
 		requireNonNull(provisioner);
 		requireNonNull(buildDir);
-		requireNonNull(npm);
 		return FormatterStep.createLazy(NAME,
 				() -> new State(NAME, provisioner, buildDir, npm, prettierConfig),
 				State::createFormatterFunc);
@@ -49,7 +49,7 @@ public class PrettierFormatterStep {
 		private static final long serialVersionUID = -3811104513825329168L;
 		private final PrettierConfig prettierConfig;
 
-		public State(String stepName, Provisioner provisioner, File buildDir, File npm, PrettierConfig prettierConfig) throws IOException {
+		State(String stepName, Provisioner provisioner, File buildDir, @Nullable File npm, PrettierConfig prettierConfig) throws IOException {
 			super(stepName,
 					provisioner,
 					new NpmConfig(

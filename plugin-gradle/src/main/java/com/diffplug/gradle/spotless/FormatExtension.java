@@ -40,6 +40,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LazyForwardingEquality;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ThrowingEx;
+import com.diffplug.spotless.extra.npm.PrettierFormatterStep;
 import com.diffplug.spotless.generic.EndWithNewlineStep;
 import com.diffplug.spotless.generic.IndentStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
@@ -428,6 +429,52 @@ public class FormatExtension {
 		LicenseHeaderConfig config = new LicenseFileHeaderConfig(delimiter, licenseHeaderFile);
 		addStep(config.createStep());
 		return config;
+	}
+
+	public class PrettierConfig {
+		@Nullable
+		private Object npmFile;
+
+		@Nullable
+		private Object prettierConfigFile;
+
+		@Nullable
+		private Map<String, Object> prettierConfig;
+
+		public PrettierConfig npmExecutable(final Object npmFile) {
+			this.npmFile = npmFile;
+			replaceStep(createStep());
+			return this;
+		}
+
+		public PrettierConfig prettierConfigFile(final Object prettierConfigFile) {
+			this.prettierConfigFile = prettierConfigFile;
+			replaceStep(createStep());
+			return this;
+		}
+
+		public PrettierConfig prettierConfig(final Map<String, Object> prettierConfig) {
+			this.prettierConfig = prettierConfig;
+			replaceStep(createStep());
+			return this;
+		}
+
+		FormatterStep createStep() {
+			final Project project = getProject();
+			return PrettierFormatterStep.create(
+					GradleProvisioner.fromProject(project),
+					project.getBuildDir(),
+					this.npmFile != null ? project.file(this.npmFile) : null,
+					new com.diffplug.spotless.extra.npm.PrettierConfig(
+							this.prettierConfigFile != null ? project.file(this.prettierConfigFile) : null,
+							this.prettierConfig));
+		}
+	}
+
+	public PrettierConfig prettier() {
+		final PrettierConfig prettierConfig = new PrettierConfig();
+		addStep(prettierConfig.createStep());
+		return prettierConfig;
 	}
 
 	/** Sets up a format task according to the values in this extension. */

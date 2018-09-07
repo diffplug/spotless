@@ -21,6 +21,8 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.annotation.Nullable;
+
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.ThrowingEx;
 
@@ -31,6 +33,7 @@ public class PrettierConfig implements Serializable {
 	private static final long serialVersionUID = -8709340269833126583L;
 
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
+	@Nullable
 	private final transient File prettierConfigPath;
 
 	@SuppressWarnings("unused")
@@ -38,7 +41,7 @@ public class PrettierConfig implements Serializable {
 
 	private final TreeMap<String, Object> options;
 
-	public PrettierConfig(File prettierConfigPath, Map<String, Object> options) {
+	public PrettierConfig(@Nullable File prettierConfigPath, @Nullable Map<String, Object> options) {
 		try {
 			this.prettierConfigPath = prettierConfigPath;
 			this.prettierConfigPathSignature = prettierConfigPath != null ? FileSignature.signAsList(this.prettierConfigPath) : FileSignature.signAsList();
@@ -48,6 +51,7 @@ public class PrettierConfig implements Serializable {
 		}
 	}
 
+	@Nullable
 	public File getPrettierConfigPath() {
 		return prettierConfigPath;
 	}

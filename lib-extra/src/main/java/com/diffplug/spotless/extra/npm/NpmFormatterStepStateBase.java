@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.extra.npm;
 
+import static com.diffplug.spotless.extra.npm.NpmExecutableResolver.tryFind;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
@@ -25,6 +26,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
+
+import javax.annotation.Nullable;
 
 import com.diffplug.spotless.*;
 
@@ -46,16 +50,16 @@ public abstract class NpmFormatterStepStateBase implements Serializable {
 
 	private final String stepName;
 
-	protected NpmFormatterStepStateBase(String stepName, Provisioner provisioner, NpmConfig npmConfig, File buildDir, File npm) throws IOException {
-		this.stepName = stepName;
-		this.npmConfig = npmConfig;
+	protected NpmFormatterStepStateBase(String stepName, Provisioner provisioner, NpmConfig npmConfig, File buildDir, @Nullable File npm) throws IOException {
+		this.stepName = requireNonNull(stepName);
+		this.npmConfig = requireNonNull(npmConfig);
 		this.jarState = JarState.from(j2v8MavenCoordinate(), requireNonNull(provisioner));
 
 		this.nodeModulesDir = prepareNodeModules(buildDir, npm);
 		this.nodeModulesSignature = FileSignature.signAsList(this.nodeModulesDir);
 	}
 
-	private File prepareNodeModules(File buildDir, File npm) throws IOException {
+	private File prepareNodeModules(File buildDir, @Nullable File npm) throws IOException {
 		File targetDir = new File(buildDir, "spotless-node-modules-" + stepName);
 		if (!targetDir.exists()) {
 			if (!targetDir.mkdirs()) {
@@ -68,11 +72,11 @@ public abstract class NpmFormatterStepStateBase implements Serializable {
 		return targetDir;
 	}
 
-	private void runNpmInstall(File npm, File npmProjectDir) throws IOException {
+	private void runNpmInstall(@Nullable File npm, File npmProjectDir) throws IOException {
 		Process npmInstall = new ProcessBuilder()
 				.inheritIO()
 				.directory(npmProjectDir)
-				.command(npm.getAbsolutePath(), "install")
+				.command(resolveNpm(npm).getAbsolutePath(), "install")
 				.start();
 		try {
 			if (npmInstall.waitFor() != 0) {
@@ -81,6 +85,12 @@ public abstract class NpmFormatterStepStateBase implements Serializable {
 		} catch (InterruptedException e) {
 			throw new IOException("Running npm install was interrupted.", e);
 		}
+	}
+
+	private File resolveNpm(@Nullable File npm) {
+		return Optional.ofNullable(npm)
+				.orElseGet(() -> tryFind()
+						.orElseThrow(() -> new IllegalStateException("cannot automatically determine npm executable and none was specifically supplied!")));
 	}
 
 	protected NodeJSWrapper nodeJSWrapper() {
