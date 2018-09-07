@@ -17,9 +17,6 @@ package com.diffplug.gradle.spotless;
 
 import static java.util.Objects.requireNonNull;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
@@ -27,9 +24,7 @@ import java.util.stream.Collectors;
 
 import org.gradle.api.Project;
 
-import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.Strings;
-import com.diffplug.common.io.Files;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.extra.npm.TsFmtFormatterStep;
 
@@ -71,30 +66,19 @@ public class TypescriptExtension extends FormatExtension {
 		public FormatterStep createStep() {
 			final Project project = getProject();
 
-			Map<String, Object> tsFmtConfig = createTsFmtConfig();
+			Map<String, Object> tsFmtCliOptions = craeateTsFmtCliOptions();
 
 			return TsFmtFormatterStep.create(
 					GradleProvisioner.fromProject(project),
 					project.getBuildDir(),
 					npmFileOrNull(),
-					tsFmtConfig);
+					tsFmtCliOptions,
+					config);
 		}
 
-		private Map<String, Object> createTsFmtConfig() {
-			final Project project = getProject();
+		private Map<String, Object> craeateTsFmtCliOptions() {
 			Map<String, Object> tsFmtConfig = new TreeMap<>();
-			if (!this.config.isEmpty()) {
-				// write it to temporary file
-				String formatConfig = toJsonString(this.config);
-				File targetFile = new File(project.getBuildDir(), "tsfmt.json");
-				try {
-					Files.write(formatConfig, targetFile, StandardCharsets.UTF_8);
-				} catch (IOException e) {
-					throw Errors.asRuntime(e);
-				}
-				tsFmtConfig.put("tsfmt", true);
-				tsFmtConfig.put("tsfmtFile", targetFile);
-			} else if (!Strings.isNullOrEmpty(this.configFileType) && !Strings.isNullOrEmpty(this.configFilePath)) {
+			if (!Strings.isNullOrEmpty(this.configFileType) && !Strings.isNullOrEmpty(this.configFilePath)) {
 				tsFmtConfig.put(this.configFileType, Boolean.TRUE);
 				tsFmtConfig.put(this.configFileType + "File", this.configFilePath);
 			}

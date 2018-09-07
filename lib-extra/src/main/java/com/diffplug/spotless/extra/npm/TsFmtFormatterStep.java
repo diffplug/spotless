@@ -21,10 +21,7 @@ import static java.util.Objects.requireNonNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -38,12 +35,13 @@ public class TsFmtFormatterStep {
 
 	public static final String NAME = "tsfmt-format";
 
-	public static FormatterStep create(Provisioner provisioner, File buildDir, @Nullable File npm, Map<String, Object> tsFmtOptions) {
+	public static FormatterStep create(Provisioner provisioner, File buildDir, @Nullable File npm, Map<String, Object> tsFmtCliOptions, Map<String, Object> inlineTsFmtSettings) {
 		requireNonNull(provisioner);
 		requireNonNull(buildDir);
-		validateOptions(requireNonNull(tsFmtOptions));
+		validateOptions(requireNonNull(tsFmtCliOptions));
+		requireNonNull(inlineTsFmtSettings);
 		return FormatterStep.createLazy(NAME,
-				() -> new State(NAME, provisioner, buildDir, npm, tsFmtOptions),
+				() -> new State(NAME, provisioner, buildDir, npm, tsFmtCliOptions, inlineTsFmtSettings),
 				State::createFormatterFunc);
 	}
 
@@ -60,9 +58,13 @@ public class TsFmtFormatterStep {
 
 		private static final long serialVersionUID = -3811104513825329168L;
 
-		private final TreeMap<String, Object> tsFmtOptions;
+		private final TreeMap<String, Object> tsFmtCliOptions;
 
-		public State(String stepName, Provisioner provisioner, File buildDir, @Nullable File npm, Map<String, Object> tsFmtOptions) throws IOException {
+		private final TreeMap<String, Object> inlineTsFmtSettings;
+
+		private final File buildDir;
+
+		public State(String stepName, Provisioner provisioner, File buildDir, @Nullable File npm, Map<String, Object> tsFmtCliOptions, Map<String, Object> inlineTsFmtSettings) throws IOException {
 			super(stepName,
 					provisioner,
 					new NpmConfig(
@@ -70,12 +72,16 @@ public class TsFmtFormatterStep {
 							"typescript-formatter"),
 					buildDir,
 					npm);
-			this.tsFmtOptions = new TreeMap<>(tsFmtOptions);
+			this.buildDir = buildDir;
+			this.tsFmtCliOptions = new TreeMap<>(tsFmtCliOptions);
+			this.inlineTsFmtSettings = new TreeMap<>(inlineTsFmtSettings);
 		}
 
 		@Override
 		@Nonnull
 		public FormatterFunc createFormatterFunc() {
+
+			Map<String, Object> tsFmtOptions = unifyOptions();
 
 			final NodeJSWrapper nodeJSWrapper = nodeJSWrapper();
 			final V8ObjectWrapper tsFmt = nodeJSWrapper.require(nodeModulePath());
@@ -133,6 +139,27 @@ public class TsFmtFormatterStep {
 					return tsFmtResult[0].getFormatted();
 				}
 			});
+		}
+
+		private Map<String, Object> unifyOptions() {
+			Map<String, Object> unified = new HashMap<>(this.tsFmtCliOptions);
+
+			if (!this.inlineTsFmtSettings.isEmpty()) {
+				removeAllConfigFileSettings(unified);
+				File targetFile = new File(this.buildDir, "inline-tsfmt.json");
+				SimpleJsonWriter.of(this.inlineTsFmtSettings).toJsonFile(targetFile);
+				unified.put("tsfmt", true);
+				unified.put("tsfmtFile", targetFile.getAbsolutePath());
+			}
+			return unified;
+		}
+
+		private void removeAllConfigFileSettings(Map<String, Object> settings) {
+			Arrays.asList("tsconfig", "tslint", "editorconfig", "vscode", "tsfmt").forEach(
+					format -> {
+						settings.remove(format);
+						settings.remove(format + "File");
+					});
 		}
 
 	}

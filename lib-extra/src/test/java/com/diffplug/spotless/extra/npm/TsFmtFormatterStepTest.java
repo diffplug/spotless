@@ -21,6 +21,7 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -67,10 +68,33 @@ public class TsFmtFormatterStepTest {
 							.put("basedir", configFile.getParent())
 							.put(configFileNameWithoutExtension, Boolean.TRUE)
 							.put(configFileNameWithoutExtension + "File", configFile.getPath())
-							.build());
+							.build(),
+					Collections.emptyMap());
 
 			try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
 				stepHarness.testResource(dirtyFile, cleanFile);
+			}
+		}
+	}
+
+	@Category(NpmTest.class)
+	public static class TsFmtUsingInlineConfigTest extends NpmFormatterStepCommonTests {
+		@Test
+		public void formattingUsingInlineConfigWorks() throws Exception {
+
+			final ImmutableMap<String, Object> inlineConfig = ImmutableMap.of("indentSize", 1, "convertTabsToSpaces", true);
+
+			final FormatterStep formatterStep = TsFmtFormatterStep.create(
+					TestProvisioner.mavenCentral(),
+					buildDir(),
+					npmExecutable(),
+					ImmutableMap.<String, Object> builder()
+							.put("basedir", buildDir().getAbsolutePath())
+							.build(),
+					inlineConfig);
+
+			try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
+				stepHarness.testResource("npm/tsfmt/tsfmt/tsfmt.dirty", "npm/tsfmt/tsfmt/tsfmt.clean");
 			}
 		}
 	}
@@ -94,7 +118,8 @@ public class TsFmtFormatterStepTest {
 					npmExecutable(),
 					ImmutableMap.<String, Object> builder()
 							.put(blackListedOption, Boolean.TRUE)
-							.build());
+							.build(),
+					Collections.emptyMap());
 
 			fail("should never be reached!");
 

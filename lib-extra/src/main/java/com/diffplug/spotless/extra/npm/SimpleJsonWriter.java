@@ -32,6 +32,12 @@ public class SimpleJsonWriter {
 
 	private final LinkedHashMap<String, Object> valueMap = new LinkedHashMap<>();
 
+	public static SimpleJsonWriter of(Map<String, ?> values) {
+		SimpleJsonWriter writer = new SimpleJsonWriter();
+		writer.putAll(values);
+		return writer;
+	}
+
 	SimpleJsonWriter putAll(Map<String, ?> values) {
 		verifyValues(values);
 		this.valueMap.putAll(values);
