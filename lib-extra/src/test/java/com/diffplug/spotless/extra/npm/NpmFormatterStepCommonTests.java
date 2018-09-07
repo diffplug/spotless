@@ -23,8 +23,7 @@ import com.diffplug.spotless.ResourceHarness;
 public abstract class NpmFormatterStepCommonTests extends ResourceHarness {
 
 	protected File npmExecutable() {
-		// TODO (simschla, 24.08.18): read from System.property or the like?
-		return new File("/Users/simschla/.nvm/versions/node/v8.11.2/bin/npm");
+		return NpmExecutableResolver.tryFind().orElseThrow(() -> new IllegalStateException("cannot detect node binary"));
 	}
 
 	private File buildDir = null;

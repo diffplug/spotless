@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.extra.npm;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Locale;
 
 import com.diffplug.common.base.StandardSystemProperty;
@@ -24,22 +26,26 @@ class PlatformInfo {
 		// no instance
 	}
 
-	static String normalizedOSName() {
+	static OS normalizedOS() {
 		final String osNameProperty = StandardSystemProperty.OS_NAME.value();
 		if (osNameProperty == null) {
 			throw new RuntimeException("No info about OS available, cannot decide which implementation of j2v8 to use");
 		}
 		final String normalizedOsName = osNameProperty.toLowerCase(Locale.ENGLISH);
 		if (normalizedOsName.contains("win")) {
-			return "win32";
+			return OS.WINDOWS;
 		}
 		if (normalizedOsName.contains("mac")) {
-			return "macosx";
+			return OS.MACOS;
 		}
 		if (normalizedOsName.contains("nix") || normalizedOsName.contains("nux") || normalizedOsName.contains("aix")) {
-			return "linux";
+			return OS.LINUX;
 		}
 		throw new RuntimeException("Cannot handle os " + osNameProperty);
+	}
+
+	static String normalizedOSName() {
+		return normalizedOS().normalizedOsName();
 	}
 
 	static String normalizedArchName() {
@@ -56,5 +62,19 @@ class PlatformInfo {
 			return "x86";
 		}
 		throw new RuntimeException("Cannot handle arch " + osArchProperty);
+	}
+
+	enum OS {
+		WINDOWS("win32"), MACOS("macosx"), LINUX("linux");
+
+		private final String normalizedOsName;
+
+		OS(String normalizedOsName) {
+			this.normalizedOsName = requireNonNull(normalizedOsName);
+		}
+
+		public String normalizedOsName() {
+			return normalizedOsName;
+		}
 	}
 }
