@@ -25,10 +25,10 @@ import java.util.*;
 
 import javax.annotation.Nonnull;
 
-import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.ThrowingEx;
 
 public class TsFmtFormatterStep {
 
@@ -71,10 +71,14 @@ public class TsFmtFormatterStep {
 			final V8ObjectWrapper formatterOptions = nodeJSWrapper.createNewObject(tsFmtOptions);
 
 			final TsFmtResult[] tsFmtResult = new TsFmtResult[1];
+			final Exception[] toThrow = new Exception[1];
+
 			V8FunctionWrapper formatResultCallback = nodeJSWrapper.createNewFunction((receiver, parameters) -> {
-				final V8ObjectWrapper result = parameters.getObject(0);
-				tsFmtResult[0] = new TsFmtResult(result.getString("message"), result.getBoolean("error"), result.getString("dest"));
-				//result.release(); // TODO (simschla, 09.08.18): verify if release needed?
+				try (final V8ObjectWrapper result = parameters.getObject(0)) {
+					tsFmtResult[0] = new TsFmtResult(result.getString("message"), result.getBoolean("error"), result.getString("dest"));
+				} catch (Exception e) {
+					toThrow[0] = e;
+				}
 				return receiver;
 			});
 
@@ -103,8 +107,12 @@ public class TsFmtFormatterStep {
 
 					promise.executeVoidFunction("then", callbacks);
 
-					while (tsFmtResult[0] == null) {
+					while (tsFmtResult[0] == null && toThrow[0] == null) {
 						nodeJSWrapper.handleMessage();
+					}
+
+					if (toThrow[0] != null) {
+						throw ThrowingEx.asRuntime(toThrow[0]);
 					}
 
 					if (tsFmtResult[0] == null) {
@@ -115,12 +123,6 @@ public class TsFmtFormatterStep {
 					}
 					return tsFmtResult[0].getFormatted();
 				}
-
-				// TODO (simschla, 09.08.18): release
-				//					callbacks.release();
-				//					args.release();
-				//					promise.release();
-
 			});
 		}
 

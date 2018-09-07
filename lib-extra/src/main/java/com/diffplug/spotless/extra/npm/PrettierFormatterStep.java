@@ -75,15 +75,16 @@ public class PrettierFormatterStep {
 					try (
 							V8FunctionWrapper resolveConfigCallback = nodeJSWrapper.createNewFunction((receiver, parameters) -> {
 								try {
-									final V8ObjectWrapper configOptions = parameters.getObject(0); // why is this always null
-									if (configOptions == null) {
-										toThrow[0] = new IllegalArgumentException("Cannot find or read config file " + this.prettierConfig.getPrettierConfigPath());
-									} else {
-										Map<String, Object> resolvedOptions = new TreeMap<>(V8ObjectUtilsWrapper.toMap(configOptions));
-										resolvedOptions.putAll(this.prettierConfig.getOptions());
-										toThrow[0] = validateOptions(resolvedOptions);
-										if (toThrow[0] == null) {
-											resolvedPrettierOptions[0] = resolvedOptions;
+									try (final V8ObjectWrapper configOptions = parameters.getObject(0)) {
+										if (configOptions == null) {
+											toThrow[0] = new IllegalArgumentException("Cannot find or read config file " + this.prettierConfig.getPrettierConfigPath());
+										} else {
+											Map<String, Object> resolvedOptions = new TreeMap<>(V8ObjectUtilsWrapper.toMap(configOptions));
+											resolvedOptions.putAll(this.prettierConfig.getOptions());
+											toThrow[0] = validateOptions(resolvedOptions);
+											if (toThrow[0] == null) {
+												resolvedPrettierOptions[0] = resolvedOptions;
+											}
 										}
 									}
 								} catch (Exception e) {

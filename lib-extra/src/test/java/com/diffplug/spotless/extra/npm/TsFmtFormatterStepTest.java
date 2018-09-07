@@ -40,14 +40,15 @@ public class TsFmtFormatterStepTest {
 						.put("tslint", Boolean.TRUE)
 						.build());
 
-		final Formatter formatter = Formatter.builder()
+		try (final Formatter formatter = Formatter.builder()
 				.encoding(StandardCharsets.UTF_8)
 				.rootDir(new File("/Users/simschla/tmp/demo-basedir").toPath())
 				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
 				.steps(Arrays.asList(formatterStep))
 				.exceptionPolicy(FormatExceptionPolicy.failOnlyOnError())
-				.build();
+				.build()) {
 
-		System.out.println("formatted: " + formatter.applyToAndReturnResultIfDirty(new File("/Users/simschla/tmp/demo-basedir", "example.ts")));
+			System.out.println("formatted: " + formatter.applyToAndReturnResultIfDirty(new File("/Users/simschla/tmp/demo-basedir", "example.ts")));
+		}
 	}
 }
