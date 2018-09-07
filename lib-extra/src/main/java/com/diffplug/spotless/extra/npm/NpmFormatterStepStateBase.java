@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.nodebased;
+package com.diffplug.spotless.extra.npm;
 
 import static java.util.Objects.requireNonNull;
 
@@ -27,7 +27,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import com.diffplug.spotless.*;
-import com.diffplug.spotless.extra.nodebased.wrapper.NodeJSWrapper;
+import com.diffplug.spotless.extra.npm.wrapper.NodeJSWrapper;
 
 public abstract class NpmFormatterStepStateBase implements Serializable {
 

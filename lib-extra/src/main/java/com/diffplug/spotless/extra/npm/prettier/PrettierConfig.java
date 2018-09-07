@@ -13,22 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.nodebased.prettier.options;
+package com.diffplug.spotless.extra.npm.prettier;
 
-import java.util.Arrays;
+import java.io.File;
 
-public enum PrettierParser {
+import com.diffplug.spotless.extra.npm.prettier.options.PrettierOptions;
 
-	BABYLON, FLOW, TYPESCRIPT, POSTCSS, JSON, GRAPHQL, MARKDOWN;
+public class PrettierConfig {
 
-	public static PrettierParser getByParserName(String parserName) {
-		return Arrays.stream(PrettierParser.values())
-				.filter(parser -> parser.parserName().equals(parserName))
-				.findFirst()
-				.orElseThrow(() -> new IllegalArgumentException("Unknown parser " + parserName));
+	private final File prettierConfigPath;
+
+	private final PrettierOptions options;
+
+	public PrettierConfig(File prettierConfigPath, PrettierOptions options) {
+		this.prettierConfigPath = prettierConfigPath;
+		this.options = options == null ? PrettierOptions.allDefaults() : options;
 	}
 
-	public String parserName() {
-		return name().toLowerCase();
+	public File getPrettierConfigPath() {
+		return prettierConfigPath;
+	}
+
+	public PrettierOptions getOptions() {
+		return options;
 	}
 }

@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.nodebased.wrapper;
+package com.diffplug.spotless.extra.npm.wrapper;
 
-import static com.diffplug.spotless.extra.nodebased.wrapper.NodeJSWrapper.V8_VALUE_CLASS;
+import static com.diffplug.spotless.extra.npm.wrapper.NodeJSWrapper.V8_VALUE_CLASS;
 
 public class V8ArrayWrapper extends ReflectiveObjectWrapper {
 

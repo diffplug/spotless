@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.nodebased.prettier.options;
+package com.diffplug.spotless.extra.npm.prettier.options;
 
 import java.util.Optional;
 
-import com.diffplug.spotless.extra.nodebased.wrapper.NodeJSWrapper;
-import com.diffplug.spotless.extra.nodebased.wrapper.V8ObjectWrapper;
+import com.diffplug.spotless.extra.npm.wrapper.NodeJSWrapper;
+import com.diffplug.spotless.extra.npm.wrapper.V8ObjectWrapper;
 
 public class PrettierOptions {
 

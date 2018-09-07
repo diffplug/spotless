@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.nodebased.tsfmt;
+package com.diffplug.spotless.extra.npm.tsfmt;
 
 import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
@@ -27,9 +27,9 @@ import javax.annotation.Nonnull;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.extra.nodebased.NpmConfig;
-import com.diffplug.spotless.extra.nodebased.NpmFormatterStepStateBase;
-import com.diffplug.spotless.extra.nodebased.wrapper.*;
+import com.diffplug.spotless.extra.npm.NpmConfig;
+import com.diffplug.spotless.extra.npm.NpmFormatterStepStateBase;
+import com.diffplug.spotless.extra.npm.wrapper.*;
 
 public class TsFmtFormatterStep {
 
