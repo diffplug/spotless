@@ -17,11 +17,14 @@ package com.diffplug.gradle.spotless;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.gradle.api.Project;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.extra.npm.TsFmtFormatterStep;
+
+import static java.util.Objects.requireNonNull;
 
 public class TypescriptExtension extends FormatExtension {
 
@@ -42,13 +45,17 @@ public class TypescriptExtension extends FormatExtension {
 		protected Map<String, Object> tsFmtConfig = Collections.emptyMap();
 
 		public TypescriptFormatExtension config(Map<String, Object> config) {
-			this.tsFmtConfig = config;
+			this.tsFmtConfig = new TreeMap<>(requireNonNull(config));
 			replaceStep(createStep());
 			return this;
 		}
 
 		public FormatterStep createStep() {
 			final Project project = getProject();
+			Map<String, Object> config = new TreeMap<>(this.tsFmtConfig);
+			if (!config.containsKey("basedir")) {
+				config.put("basedir", project.getRootDir().getAbsolutePath()); //by default we use our project dir
+			}
 			return TsFmtFormatterStep.create(
 					GradleProvisioner.fromProject(project),
 					project.getBuildDir(),
