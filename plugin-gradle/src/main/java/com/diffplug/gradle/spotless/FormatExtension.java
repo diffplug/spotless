@@ -431,21 +431,32 @@ public class FormatExtension {
 		return config;
 	}
 
-	public class PrettierConfig {
+	public abstract class NpmStepConfig<T extends NpmStepConfig> {
 		@Nullable
-		private Object npmFile;
+		protected Object npmFile;
 
-		@Nullable
-		private Object prettierConfigFile;
-
-		@Nullable
-		private Map<String, Object> prettierConfig;
-
-		public PrettierConfig npmExecutable(final Object npmFile) {
+		@SuppressWarnings("unchecked")
+		public T npmExecutable(final Object npmFile) {
 			this.npmFile = npmFile;
 			replaceStep(createStep());
-			return this;
+			return (T) this;
 		}
+
+		File npmFileOrNull() {
+			return npmFile != null ? getProject().file(npmFile) : null;
+		}
+
+		abstract FormatterStep createStep();
+
+	}
+
+	public class PrettierConfig extends NpmStepConfig<PrettierConfig> {
+
+		@Nullable
+		protected Object prettierConfigFile;
+
+		@Nullable
+		protected Map<String, Object> prettierConfig;
 
 		public PrettierConfig prettierConfigFile(final Object prettierConfigFile) {
 			this.prettierConfigFile = prettierConfigFile;
@@ -464,7 +475,7 @@ public class FormatExtension {
 			return PrettierFormatterStep.create(
 					GradleProvisioner.fromProject(project),
 					project.getBuildDir(),
-					this.npmFile != null ? project.file(this.npmFile) : null,
+					npmFileOrNull(),
 					new com.diffplug.spotless.extra.npm.PrettierConfig(
 							this.prettierConfigFile != null ? project.file(this.prettierConfigFile) : null,
 							this.prettierConfig));
