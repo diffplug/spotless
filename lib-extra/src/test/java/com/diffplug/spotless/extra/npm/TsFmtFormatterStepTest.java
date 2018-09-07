@@ -15,60 +15,90 @@
  */
 package com.diffplug.spotless.extra.npm;
 
+import static org.assertj.core.api.Assertions.fail;
+
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Arrays;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.experimental.runners.Enclosed;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import com.diffplug.common.collect.ImmutableMap;
 import com.diffplug.spotless.*;
 
 @Category(NpmTest.class)
-public class TsFmtFormatterStepTest extends NpmFormatterStepCommonTests {
+@RunWith(Enclosed.class)
+public class TsFmtFormatterStepTest {
 
-	@Test
-	public void formattingUsingTslint() throws Exception {
-		String filedir = "npm/tsfmt/tslint/";
+	@Category(NpmTest.class)
+	@RunWith(Parameterized.class)
+	public static class TsFmtUsingVariousFormattingFilesTest extends NpmFormatterStepCommonTests {
+		@Parameterized.Parameter
+		public String formattingConfigFile;
 
-		File tsLintDir = createTestFile(filedir + "tslint.json").getParentFile();
+		@Parameterized.Parameters(name = "{index}: formatting using {0} is working")
+		public static Iterable<String> formattingConfigFiles() {
+			return Arrays.asList("vscode/vscode.json", "tslint/tslint.json", "tsfmt/tsfmt.json", "tsconfig/tsconfig.json");
+		}
 
-		final FormatterStep formatterStep = TsFmtFormatterStep.create(
-				TestProvisioner.mavenCentral(),
-				buildDir(),
-				npmExecutable(),
-				ImmutableMap.<String, Object> builder()
-						.put("basedir", tsLintDir.getPath())
-						.put("tslint", Boolean.TRUE)
-						.build());
+		@Test
+		public void formattingUsingConfigFile() throws Exception {
+			String configFileName = formattingConfigFile.substring(formattingConfigFile.lastIndexOf('/') >= 0 ? formattingConfigFile.lastIndexOf('/') + 1 : 0);
+			String configFileNameWithoutExtension = configFileName.substring(0, configFileName.lastIndexOf('.'));
+			String filedir = "npm/tsfmt/" + configFileNameWithoutExtension + "/";
 
-		try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
-			stepHarness.testResource(filedir + "tslint.dirty", filedir + "tslint.clean");
+			final File configFile = createTestFile(filedir + configFileName);
+			final String dirtyFile = filedir + configFileNameWithoutExtension + ".dirty";
+			final String cleanFile = filedir + configFileNameWithoutExtension + ".clean";
+
+			// some config options expect to see at least one file in the baseDir, so let's write one there
+			Files.write(new File(configFile.getParentFile(), configFileNameWithoutExtension + ".ts").toPath(), getTestResource(dirtyFile).getBytes(StandardCharsets.UTF_8));
+
+			final FormatterStep formatterStep = TsFmtFormatterStep.create(
+					TestProvisioner.mavenCentral(),
+					buildDir(),
+					npmExecutable(),
+					ImmutableMap.<String, Object> builder()
+							.put("basedir", configFile.getParent())
+							.put(configFileNameWithoutExtension, Boolean.TRUE)
+							.put(configFileNameWithoutExtension + "File", configFile.getPath())
+							.build());
+
+			try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
+				stepHarness.testResource(dirtyFile, cleanFile);
+			}
 		}
 	}
 
-	@Test
-	public void testTsFmt() throws IOException {
-		final FormatterStep formatterStep = TsFmtFormatterStep.create(
-				TestProvisioner.mavenCentral(),
-				new File("/Users/simschla/tmp/demo-main/"),
-				new File("/Users/simschla/.nvm/versions/node/v8.11.2/bin/npm"),
-				ImmutableMap.<String, Object> builder()
-						.put("basedir", "/Users/simschla/tmp/demo-basedir")
-						.put("tslint", Boolean.TRUE)
-						.build());
+	@Category(NpmTest.class)
+	@RunWith(Parameterized.class)
+	public static class TsFmtBlacklistedOptionsTest extends NpmFormatterStepCommonTests {
+		@Parameterized.Parameter
+		public String blackListedOption;
 
-		try (final Formatter formatter = Formatter.builder()
-				.encoding(StandardCharsets.UTF_8)
-				.rootDir(new File("/Users/simschla/tmp/demo-basedir").toPath())
-				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
-				.steps(Arrays.asList(formatterStep))
-				.exceptionPolicy(FormatExceptionPolicy.failOnlyOnError())
-				.build()) {
-
-			System.out.println("formatted: " + formatter.applyToAndReturnResultIfDirty(new File("/Users/simschla/tmp/demo-basedir", "example.ts")));
+		@Parameterized.Parameters(name = "{index}: config option '{0}' is blacklisted")
+		public static Iterable<String> blacklistedOption() {
+			return Arrays.asList("dryRun", "replace", "verify");
 		}
+
+		@Test(expected = BlacklistedOptionException.class)
+		public void blacklistedOptionIsThrown() throws Exception {
+			final FormatterStep formatterStep = TsFmtFormatterStep.create(
+					TestProvisioner.mavenCentral(),
+					buildDir(),
+					npmExecutable(),
+					ImmutableMap.<String, Object> builder()
+							.put(blackListedOption, Boolean.TRUE)
+							.build());
+
+			fail("should never be reached!");
+		}
+
 	}
+
 }

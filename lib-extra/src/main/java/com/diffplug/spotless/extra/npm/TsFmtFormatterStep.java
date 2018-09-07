@@ -38,10 +38,19 @@ public class TsFmtFormatterStep {
 		requireNonNull(provisioner);
 		requireNonNull(buildDir);
 		requireNonNull(npm);
-		requireNonNull(tsFmtOptions);
+		validateOptions(requireNonNull(tsFmtOptions));
 		return FormatterStep.createLazy(NAME,
 				() -> new State(NAME, provisioner, buildDir, npm, tsFmtOptions),
 				State::createFormatterFunc);
+	}
+
+	private static void validateOptions(Map<String, Object> options) {
+		final Set<String> optionNames = new TreeSet<>(options.keySet());
+		optionNames.retainAll(asList("dryRun", "replace", "verify"));
+
+		if (!optionNames.isEmpty()) {
+			throw new BlacklistedOptionException("The following config options are specified but not supported by spotless: " + optionNames);
+		}
 	}
 
 	public static class State extends NpmFormatterStepStateBase implements Serializable {
@@ -58,7 +67,7 @@ public class TsFmtFormatterStep {
 							"typescript-formatter"),
 					buildDir,
 					npm);
-			this.tsFmtOptions = tsFmtOptions == null ? new TreeMap<>() : new TreeMap<>(tsFmtOptions);
+			this.tsFmtOptions = new TreeMap<>(tsFmtOptions);
 		}
 
 		@Override
@@ -67,7 +76,6 @@ public class TsFmtFormatterStep {
 
 			final NodeJSWrapper nodeJSWrapper = nodeJSWrapper();
 			final V8ObjectWrapper tsFmt = nodeJSWrapper.require(nodeModulePath());
-			validateOptions(tsFmtOptions);
 			final V8ObjectWrapper formatterOptions = nodeJSWrapper.createNewObject(tsFmtOptions);
 
 			final TsFmtResult[] tsFmtResult = new TsFmtResult[1];
@@ -124,13 +132,5 @@ public class TsFmtFormatterStep {
 			});
 		}
 
-		private void validateOptions(Map<String, Object> options) {
-			final Set<String> optionNames = new TreeSet<>(options.keySet());
-			optionNames.retainAll(asList("dryRun", "replace", "verify"));
-
-			if (!optionNames.isEmpty()) {
-				throw new RuntimeException("The following config options are specified but not supported by spotless: " + optionNames);
-			}
-		}
 	}
 }
