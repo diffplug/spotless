@@ -15,8 +15,6 @@
  */
 package com.diffplug.spotless.maven;
 
-import static java.util.stream.Collectors.toSet;
-
 import java.util.Objects;
 
 import com.diffplug.spotless.Provisioner;
@@ -27,9 +25,7 @@ public class MavenProvisioner {
 
 	public static Provisioner create(ArtifactResolver artifactResolver) {
 		Objects.requireNonNull(artifactResolver);
-
-		return mavenCoords -> mavenCoords.stream()
-				.flatMap(coord -> artifactResolver.resolve(coord).stream())
-				.collect(toSet());
+		return mavenCoords -> artifactResolver.resolve(mavenCoords);
 	}
+
 }

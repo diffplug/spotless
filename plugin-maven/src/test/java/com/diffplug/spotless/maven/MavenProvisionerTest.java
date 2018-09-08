@@ -15,56 +15,32 @@
  */
 package com.diffplug.spotless.maven;
 
-import static com.diffplug.common.collect.Sets.newHashSet;
-import static java.util.Collections.emptySet;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.io.File;
-import java.util.Set;
-
 import org.junit.Test;
 
-import com.diffplug.spotless.Provisioner;
-
-public class MavenProvisionerTest {
+public class MavenProvisionerTest extends MavenIntegrationTest {
 
 	@Test
-	public void testProvisionWithDependenciesWhenNothingResolved() throws Exception {
-		ArtifactResolver resolver = mock(ArtifactResolver.class);
-		when(resolver.resolve(anyString())).thenReturn(emptySet());
-		Provisioner provisioner = MavenProvisioner.create(resolver);
-
-		Set<File> files = provisioner.provisionWithDependencies("foo", "bar", "baz");
-
-		assertThat(files).isEmpty();
+	public void testMultipleDependencies() throws Exception {
+		writePomWithJavaSteps(
+				"<eclipse>",
+				"  <version>4.8.0</version>",
+				"</eclipse>");
+		setFile("formatter.xml").toResource("java/eclipse/formatter.xml");
+		resolveDependencies();
 	}
 
 	@Test
-	public void testProvisionWithDependencies() throws Exception {
-		ArtifactResolver resolver = mock(ArtifactResolver.class);
-		when(resolver.resolve("foo")).thenReturn(newHashSet(new File("foo-1"), new File("foo-2")));
-		when(resolver.resolve("bar")).thenReturn(newHashSet(new File("bar-1")));
-		when(resolver.resolve("baz")).thenReturn(newHashSet(new File("baz-1"), new File("baz-2")));
-		Provisioner provisioner = MavenProvisioner.create(resolver);
-
-		Set<File> files = provisioner.provisionWithDependencies("foo", "bar", "baz");
-
-		assertThat(files).containsOnly(new File("foo-1"), new File("foo-2"), new File("bar-1"), new File("baz-1"), new File("baz-2"));
+	public void testSingleDependency() throws Exception {
+		writePomWithJavaSteps(
+				"<googleJavaFormat>",
+				"  <version>1.2</version>",
+				"</googleJavaFormat>");
+		resolveDependencies();
 	}
 
-	@Test
-	public void testProvisionWithDependenciesWithDuplicates() throws Exception {
-		ArtifactResolver resolver = mock(ArtifactResolver.class);
-		when(resolver.resolve("foo")).thenReturn(newHashSet(new File("foo-1"), new File("foo-2")));
-		when(resolver.resolve("bar")).thenReturn(newHashSet(new File("foo-2")));
-		when(resolver.resolve("baz")).thenReturn(newHashSet(new File("foo-1"), new File("baz-2")));
-		Provisioner provisioner = MavenProvisioner.create(resolver);
-
-		Set<File> files = provisioner.provisionWithDependencies("foo", "bar", "baz");
-
-		assertThat(files).containsOnly(new File("foo-1"), new File("foo-2"), new File("baz-2"));
+	private void resolveDependencies() throws Exception {
+		String path = "src/main/java/test.java";
+		setFile(path).toResource("java/eclipse/JavaCodeUnformatted.test");
+		mavenRunner().withArguments("spotless:apply").runNoError();
 	}
 }
