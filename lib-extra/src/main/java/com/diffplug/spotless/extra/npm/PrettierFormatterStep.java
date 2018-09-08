@@ -70,42 +70,19 @@ public class PrettierFormatterStep {
 
 				@SuppressWarnings("unchecked")
 				final Map<String, Object>[] resolvedPrettierOptions = (Map<String, Object>[]) new Map[1];
+
 				if (this.prettierConfig.getPrettierConfigPath() != null) {
 					final Exception[] toThrow = new Exception[1];
 					try (
-							V8FunctionWrapper resolveConfigCallback = nodeJSWrapper.createNewFunction((receiver, parameters) -> {
-								try {
-									try (final V8ObjectWrapper configOptions = parameters.getObject(0)) {
-										if (configOptions == null) {
-											toThrow[0] = new IllegalArgumentException("Cannot find or read config file " + this.prettierConfig.getPrettierConfigPath());
-										} else {
-											Map<String, Object> resolvedOptions = new TreeMap<>(V8ObjectUtilsWrapper.toMap(configOptions));
-											resolvedOptions.putAll(this.prettierConfig.getOptions());
-											resolvedPrettierOptions[0] = resolvedOptions;
-										}
-									}
-								} catch (Exception e) {
-									toThrow[0] = e;
-								}
-								return receiver;
-							});
-							V8ObjectWrapper resolveConfigOption = nodeJSWrapper.createNewObject()
-									.add("config", this.prettierConfig.getPrettierConfigPath().getAbsolutePath());
-							V8ArrayWrapper resolveConfigParams = nodeJSWrapper.createNewArray()
-									.pushNull()
-									.push(resolveConfigOption);
+							V8FunctionWrapper resolveConfigCallback = createResolveConfigFunction(nodeJSWrapper, resolvedPrettierOptions, toThrow);
+							V8ObjectWrapper resolveConfigOption = createResolveConfigOptionObj(nodeJSWrapper);
+							V8ArrayWrapper resolveConfigParams = createResolveConfigParamsArray(nodeJSWrapper, resolveConfigOption);
+
 							V8ObjectWrapper promise = prettier.executeObjectFunction("resolveConfig", resolveConfigParams);
 							V8ArrayWrapper callbacks = nodeJSWrapper.createNewArray(resolveConfigCallback);) {
 
 						promise.executeVoidFunction("then", callbacks);
-
-						while (resolvedPrettierOptions[0] == null && toThrow[0] == null) {
-							nodeJSWrapper.handleMessage();
-						}
-
-						if (toThrow[0] != null) {
-							throw ThrowingEx.asRuntime(toThrow[0]);
-						}
+						executeResolution(nodeJSWrapper, resolvedPrettierOptions, toThrow);
 					}
 				} else {
 					resolvedPrettierOptions[0] = this.prettierConfig.getOptions();
@@ -124,7 +101,46 @@ public class PrettierFormatterStep {
 			} catch (Exception e) {
 				throw ThrowingEx.asRuntime(e);
 			}
+		}
 
+		private V8FunctionWrapper createResolveConfigFunction(NodeJSWrapper nodeJSWrapper, Map<String, Object>[] outputOptions, Exception[] toThrow) {
+			return nodeJSWrapper.createNewFunction((receiver, parameters) -> {
+				try {
+					try (final V8ObjectWrapper configOptions = parameters.getObject(0)) {
+						if (configOptions == null) {
+							toThrow[0] = new IllegalArgumentException("Cannot find or read config file " + this.prettierConfig.getPrettierConfigPath());
+						} else {
+							Map<String, Object> resolvedOptions = new TreeMap<>(V8ObjectUtilsWrapper.toMap(configOptions));
+							resolvedOptions.putAll(this.prettierConfig.getOptions());
+							outputOptions[0] = resolvedOptions;
+						}
+					}
+				} catch (Exception e) {
+					toThrow[0] = e;
+				}
+				return receiver;
+			});
+		}
+
+		private V8ObjectWrapper createResolveConfigOptionObj(NodeJSWrapper nodeJSWrapper) {
+			return nodeJSWrapper.createNewObject()
+					.add("config", this.prettierConfig.getPrettierConfigPath().getAbsolutePath());
+		}
+
+		private V8ArrayWrapper createResolveConfigParamsArray(NodeJSWrapper nodeJSWrapper, V8ObjectWrapper resolveConfigOption) {
+			return nodeJSWrapper.createNewArray()
+					.pushNull()
+					.push(resolveConfigOption);
+		}
+
+		private void executeResolution(NodeJSWrapper nodeJSWrapper, Map<String, Object>[] resolvedPrettierOptions, Exception[] toThrow) {
+			while (resolvedPrettierOptions[0] == null && toThrow[0] == null) {
+				nodeJSWrapper.handleMessage();
+			}
+
+			if (toThrow[0] != null) {
+				throw ThrowingEx.asRuntime(toThrow[0]);
+			}
 		}
 
 	}

@@ -90,14 +90,7 @@ public class TsFmtFormatterStep {
 			final TsFmtResult[] tsFmtResult = new TsFmtResult[1];
 			final Exception[] toThrow = new Exception[1];
 
-			V8FunctionWrapper formatResultCallback = nodeJSWrapper.createNewFunction((receiver, parameters) -> {
-				try (final V8ObjectWrapper result = parameters.getObject(0)) {
-					tsFmtResult[0] = new TsFmtResult(result.getString("message"), result.getBoolean("error"), result.getString("dest"));
-				} catch (Exception e) {
-					toThrow[0] = e;
-				}
-				return receiver;
-			});
+			V8FunctionWrapper formatResultCallback = createFormatResultCallback(nodeJSWrapper, tsFmtResult, toThrow);
 
 			/* var result = {
 			fileName: fileName,
@@ -138,6 +131,17 @@ public class TsFmtFormatterStep {
 					}
 					return tsFmtResult[0].getFormatted();
 				}
+			});
+		}
+
+		private V8FunctionWrapper createFormatResultCallback(NodeJSWrapper nodeJSWrapper, TsFmtResult[] outputTsFmtResult, Exception[] toThrow) {
+			return nodeJSWrapper.createNewFunction((receiver, parameters) -> {
+				try (final V8ObjectWrapper result = parameters.getObject(0)) {
+					outputTsFmtResult[0] = new TsFmtResult(result.getString("message"), result.getBoolean("error"), result.getString("dest"));
+				} catch (Exception e) {
+					toThrow[0] = e;
+				}
+				return receiver;
 			});
 		}
 
