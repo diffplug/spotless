@@ -307,12 +307,18 @@ set the `target` parameter as described in the [Custom rules](#custom) section.
 spotless {
   typescript {
     // using existing config files
-    tsfmt().configFile(['basedir': '/path/to/repo', 'tslint': true, 'tslintFile', '/path/to/repo/tslint.json'])
+    tsfmt().configFile('tslint', '/path/to/repo/tslint.json')
   }
 }
 ```
-*Please note:* The auto-discovery of config files (up the file tree) will not work when using prettier within spotless,
+Supported config file types are the ones supported by [tsfmt config options](https://github.com/vvakame/typescript-formatter/blob/7764258ad42ac65071399840d1b8701868510ca7/lib/index.ts#L26).
+Use the option names of type boolean in the tsfmt config object: `tsconfig`, `tslint`, `editorconfig`, `vscode` or `tsfmt`. For the option `editorconfig`, no path is supported.
+
+*Please note:*
+- The auto-discovery of config files (up the file tree) will not work when using prettier within spotless,
   hence you are required to provide absolute file paths for config files.
+- The config file type `editorconfig` is only read from its default location (the user'home).
+  Any value you pass for the path will be ignored.
 
 ... or alternatively provide the configuration inline ...
 
@@ -387,7 +393,7 @@ spotless {
 ```
 
 Supported config file variants are documented on [prettier.io](https://prettier.io/docs/en/configuration.html).
-Please note:
+*Please note:*
 - The auto-discovery of config files (up the file tree) will not work when using prettier within spotless.
 - Prettier's override syntax is not supported when using prettier within spotless.
 

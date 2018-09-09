@@ -58,7 +58,7 @@ public class TypescriptExtension extends FormatExtension {
 
 		public TypescriptFormatExtension configFile(String filetype, String path) {
 			this.configFileType = requireNonNull(filetype);
-			this.configFilePath = requireNonNull(path);
+			this.configFilePath = path; // might be null for 'editorconfig'
 			replaceStep(createStep());
 			return this;
 		}
@@ -66,7 +66,7 @@ public class TypescriptExtension extends FormatExtension {
 		public FormatterStep createStep() {
 			final Project project = getProject();
 
-			Map<String, Object> tsFmtCliOptions = craeateTsFmtCliOptions();
+			Map<String, Object> tsFmtCliOptions = createTsFmtCliOptions();
 
 			return TsFmtFormatterStep.create(
 					GradleProvisioner.fromProject(project),
@@ -76,11 +76,13 @@ public class TypescriptExtension extends FormatExtension {
 					config);
 		}
 
-		private Map<String, Object> craeateTsFmtCliOptions() {
+		private Map<String, Object> createTsFmtCliOptions() {
 			Map<String, Object> tsFmtConfig = new TreeMap<>();
-			if (!Strings.isNullOrEmpty(this.configFileType) && !Strings.isNullOrEmpty(this.configFilePath)) {
+			if (!Strings.isNullOrEmpty(this.configFileType)) {
 				tsFmtConfig.put(this.configFileType, Boolean.TRUE);
-				tsFmtConfig.put(this.configFileType + "File", this.configFilePath);
+				if (!Strings.isNullOrEmpty(this.configFilePath) && !this.configFileType.equals("editorconfig")) {
+					tsFmtConfig.put(this.configFileType + "File", this.configFilePath);
+				}
 			}
 			tsFmtConfig.put("basedir", getProject().getRootDir().getAbsolutePath()); //by default we use our project dir
 			return tsFmtConfig;
