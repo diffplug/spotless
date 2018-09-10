@@ -26,7 +26,7 @@ public class MavenProvisionerTest extends MavenIntegrationTest {
 				"  <version>4.8.0</version>",
 				"</eclipse>");
 		setFile("formatter.xml").toResource("java/eclipse/formatter.xml");
-		resolveDependencies();
+		assertResolveDependenciesWorks();
 	}
 
 	@Test
@@ -35,12 +35,14 @@ public class MavenProvisionerTest extends MavenIntegrationTest {
 				"<googleJavaFormat>",
 				"  <version>1.2</version>",
 				"</googleJavaFormat>");
-		resolveDependencies();
+		assertResolveDependenciesWorks();
 	}
 
-	private void resolveDependencies() throws Exception {
+	private void assertResolveDependenciesWorks() throws Exception {
 		String path = "src/main/java/test.java";
-		setFile(path).toResource("java/eclipse/JavaCodeUnformatted.test");
+		String unformattedContent = "package  a;";
+		setFile(path).toContent(unformattedContent);
 		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile(path).hasContent(unformattedContent.replace("  ", " "));
 	}
 }
