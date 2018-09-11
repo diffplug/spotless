@@ -15,8 +15,6 @@
  */
 package com.diffplug.spotless.maven;
 
-import java.util.Objects;
-
 import com.diffplug.spotless.Provisioner;
 
 /** Maven integration for Provisioner. */
@@ -24,8 +22,7 @@ public class MavenProvisioner {
 	private MavenProvisioner() {}
 
 	public static Provisioner create(ArtifactResolver artifactResolver) {
-		Objects.requireNonNull(artifactResolver);
-		return mavenCoords -> artifactResolver.resolve(mavenCoords);
+		return artifactResolver::resolve;
 	}
 
 }
