@@ -15,9 +15,12 @@
  */
 package com.diffplug.spotless.maven;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -53,10 +56,18 @@ public class ArtifactResolver {
 		this.log = Objects.requireNonNull(log);
 	}
 
+	/** Use {@link ArtifactResolver#resolve(Collection) instead.} */
+	@Deprecated
 	public Set<File> resolve(String mavenCoordinate) {
-		Artifact artifact = new DefaultArtifact(mavenCoordinate);
-		Dependency dependency = new Dependency(artifact, null);
-		CollectRequest collectRequest = new CollectRequest(dependency, repositories);
+		return resolve(Arrays.asList(mavenCoordinate));
+	}
+
+	public Set<File> resolve(Collection<String> mavenCoordinate) {
+		List<Dependency> dependencies = mavenCoordinate.stream()
+				.map(coordinateString -> new DefaultArtifact(coordinateString))
+				.map(artifact -> new Dependency(artifact, null))
+				.collect(toList());
+		CollectRequest collectRequest = new CollectRequest((Dependency) null, dependencies, repositories);
 		DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, ACCEPT_ALL_FILTER);
 
 		DependencyResult dependencyResult = resolveDependencies(dependencyRequest);
