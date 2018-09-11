@@ -15,8 +15,6 @@
  */
 package com.diffplug.spotless.extra.npm;
 
-import static org.assertj.core.api.Assertions.fail;
-
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -65,11 +63,8 @@ public class TsFmtFormatterStepTest {
 					TestProvisioner.mavenCentral(),
 					buildDir(),
 					npmExecutable(),
-					ImmutableMap.<String, Object> builder()
-							.put("basedir", configFile.getParent())
-							.put(configFileNameWithoutExtension, Boolean.TRUE)
-							.put(configFileNameWithoutExtension + "File", configFile.getPath())
-							.build(),
+					configFile.getParentFile(),
+					TypedTsFmtConfigFile.named(configFileNameWithoutExtension, configFile),
 					Collections.emptyMap());
 
 			try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
@@ -89,9 +84,8 @@ public class TsFmtFormatterStepTest {
 					TestProvisioner.mavenCentral(),
 					buildDir(),
 					npmExecutable(),
-					ImmutableMap.<String, Object> builder()
-							.put("basedir", buildDir().getAbsolutePath())
-							.build(),
+					buildDir().getAbsoluteFile(),
+					null,
 					inlineConfig);
 
 			try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
@@ -99,33 +93,4 @@ public class TsFmtFormatterStepTest {
 			}
 		}
 	}
-
-	@Category(NpmTest.class)
-	@RunWith(Parameterized.class)
-	public static class TsFmtBlacklistedOptionsTest extends NpmFormatterStepCommonTests {
-		@Parameterized.Parameter
-		public String blackListedOption;
-
-		@Parameterized.Parameters(name = "{index}: config option '{0}' is blacklisted")
-		public static Iterable<String> blacklistedOption() {
-			return Arrays.asList("dryRun", "replace", "verify");
-		}
-
-		@Test(expected = BlacklistedOptionException.class)
-		public void blacklistedOptionIsThrown() throws Exception {
-			TsFmtFormatterStep.create(
-					TestProvisioner.mavenCentral(),
-					buildDir(),
-					npmExecutable(),
-					ImmutableMap.<String, Object> builder()
-							.put(blackListedOption, Boolean.TRUE)
-							.build(),
-					Collections.emptyMap());
-
-			fail("should never be reached!");
-
-		}
-
-	}
-
 }

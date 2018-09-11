@@ -35,36 +35,29 @@ public class TsFmtFormatterStep {
 
 	public static final String NAME = "tsfmt-format";
 
-	public static FormatterStep create(Provisioner provisioner, File buildDir, @Nullable File npm, Map<String, Object> tsFmtCliOptions, Map<String, Object> inlineTsFmtSettings) {
+	public static FormatterStep create(Provisioner provisioner, File buildDir, @Nullable File npm, File baseDir, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) {
 		requireNonNull(provisioner);
 		requireNonNull(buildDir);
-		validateOptions(requireNonNull(tsFmtCliOptions));
-		requireNonNull(inlineTsFmtSettings);
+		requireNonNull(baseDir);
 		return FormatterStep.createLazy(NAME,
-				() -> new State(NAME, provisioner, buildDir, npm, tsFmtCliOptions, inlineTsFmtSettings),
+				() -> new State(NAME, provisioner, buildDir, npm, baseDir, configFile, inlineTsFmtSettings),
 				State::createFormatterFunc);
-	}
-
-	private static void validateOptions(Map<String, Object> options) {
-		final Set<String> optionNames = new TreeSet<>(options.keySet());
-		optionNames.retainAll(asList("dryRun", "replace", "verify"));
-
-		if (!optionNames.isEmpty()) {
-			throw new BlacklistedOptionException("The following config options are specified but not supported by spotless: " + optionNames);
-		}
 	}
 
 	public static class State extends NpmFormatterStepStateBase implements Serializable {
 
 		private static final long serialVersionUID = -3811104513825329168L;
 
-		private final TreeMap<String, Object> tsFmtCliOptions;
-
 		private final TreeMap<String, Object> inlineTsFmtSettings;
 
 		private final File buildDir;
 
-		public State(String stepName, Provisioner provisioner, File buildDir, @Nullable File npm, Map<String, Object> tsFmtCliOptions, Map<String, Object> inlineTsFmtSettings) throws IOException {
+		@Nullable
+		private final TypedTsFmtConfigFile configFile;
+
+		private final File baseDir;
+
+		public State(String stepName, Provisioner provisioner, File buildDir, @Nullable File npm, File baseDir, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) throws IOException {
 			super(stepName,
 					provisioner,
 					new NpmConfig(
@@ -72,9 +65,10 @@ public class TsFmtFormatterStep {
 							"typescript-formatter"),
 					buildDir,
 					npm);
-			this.buildDir = buildDir;
-			this.tsFmtCliOptions = new TreeMap<>(tsFmtCliOptions);
-			this.inlineTsFmtSettings = new TreeMap<>(inlineTsFmtSettings);
+			this.buildDir = requireNonNull(buildDir);
+			this.baseDir = requireNonNull(baseDir);
+			this.configFile = configFile;
+			this.inlineTsFmtSettings = inlineTsFmtSettings == null ? new TreeMap<>() : new TreeMap<>(inlineTsFmtSettings);
 		}
 
 		@Override
@@ -146,25 +140,17 @@ public class TsFmtFormatterStep {
 		}
 
 		private Map<String, Object> unifyOptions() {
-			Map<String, Object> unified = new HashMap<>(this.tsFmtCliOptions);
-
+			Map<String, Object> unified = new HashMap<>();
 			if (!this.inlineTsFmtSettings.isEmpty()) {
-				removeAllConfigFileSettings(unified);
 				File targetFile = new File(this.buildDir, "inline-tsfmt.json");
 				SimpleJsonWriter.of(this.inlineTsFmtSettings).toJsonFile(targetFile);
 				unified.put("tsfmt", true);
 				unified.put("tsfmtFile", targetFile.getAbsolutePath());
+			} else if (this.configFile != null) {
+				unified.put(this.configFile.configFileEnabledOptionName(), Boolean.TRUE);
+				unified.put(this.configFile.configFileOptionName(), this.configFile.absolutePath());
 			}
 			return unified;
 		}
-
-		private void removeAllConfigFileSettings(Map<String, Object> settings) {
-			Arrays.asList("tsconfig", "tslint", "editorconfig", "vscode", "tsfmt").forEach(
-					format -> {
-						settings.remove(format);
-						settings.remove(format + "File");
-					});
-		}
-
 	}
 }

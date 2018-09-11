@@ -20,13 +20,15 @@ import static java.util.Objects.requireNonNull;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
 
 import org.gradle.api.Project;
 
-import com.diffplug.common.base.Strings;
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.extra.npm.TsConfigFileType;
 import com.diffplug.spotless.extra.npm.TsFmtFormatterStep;
+import com.diffplug.spotless.extra.npm.TypedTsFmtConfigFile;
 
 public class TypescriptExtension extends FormatExtension {
 
@@ -44,66 +46,59 @@ public class TypescriptExtension extends FormatExtension {
 
 	public class TypescriptFormatExtension extends NpmStepConfig<TypescriptFormatExtension> {
 
-		protected Map<String, Object> config = Collections.emptyMap();
+		private Map<String, Object> config = Collections.emptyMap();
 
-		protected String configFileType = null;
+		@Nullable
+		TsConfigFileType configFileType = null;
 
-		protected String configFilePath = null;
+		@Nullable
+		Object configFilePath = null;
 
-		public TypescriptFormatExtension config(Map<String, Object> config) {
+		public void config(final Map<String, Object> config) {
 			this.config = new TreeMap<>(requireNonNull(config));
 			replaceStep(createStep());
-			return this;
 		}
 
-		public TypescriptFormatExtension configFile(String filetype, String path) {
+		public void tsconfigFile(final Object path) {
+			configFile(TsConfigFileType.TSCONFIG, path);
+		}
+
+		public void tslintFile(final Object path) {
+			configFile(TsConfigFileType.TSLINT, path);
+		}
+
+		public void vscodeFile(final Object path) {
+			configFile(TsConfigFileType.VSCODE, path);
+		}
+
+		public void tsfmtFile(final Object path) {
+			configFile(TsConfigFileType.TSFMT, path);
+		}
+
+		private void configFile(TsConfigFileType filetype, Object path) {
 			this.configFileType = requireNonNull(filetype);
-			this.configFilePath = path; // might be null for 'editorconfig'
+			this.configFilePath = requireNonNull(path);
 			replaceStep(createStep());
-			return this;
 		}
 
 		public FormatterStep createStep() {
 			final Project project = getProject();
 
-			Map<String, Object> tsFmtCliOptions = createTsFmtCliOptions();
-
 			return TsFmtFormatterStep.create(
 					GradleProvisioner.fromProject(project),
 					project.getBuildDir(),
 					npmFileOrNull(),
-					tsFmtCliOptions,
+					project.getProjectDir(),
+					typedConfigFile(),
 					config);
 		}
 
-		private Map<String, Object> createTsFmtCliOptions() {
-			Map<String, Object> tsFmtConfig = new TreeMap<>();
-			if (!Strings.isNullOrEmpty(this.configFileType)) {
-				tsFmtConfig.put(this.configFileType, Boolean.TRUE);
-				if (!Strings.isNullOrEmpty(this.configFilePath) && !this.configFileType.equals("editorconfig")) {
-					tsFmtConfig.put(this.configFileType + "File", this.configFilePath);
-				}
+		private TypedTsFmtConfigFile typedConfigFile() {
+			if (this.configFileType != null && this.configFilePath != null) {
+				return new TypedTsFmtConfigFile(this.configFileType, getProject().file(this.configFilePath));
 			}
-			tsFmtConfig.put("basedir", getProject().getRootDir().getAbsolutePath()); //by default we use our project dir
-			return tsFmtConfig;
+			return null;
 		}
-	}
-
-	private String toJsonString(Map<String, Object> map) {
-		final String valueString = map.entrySet()
-				.stream()
-				.map(entry -> "    " + jsonEscape(entry.getKey()) + ": " + jsonEscape(entry.getValue()))
-				.collect(Collectors.joining(",\n"));
-
-		return "{\n" + valueString + "\n}";
-	}
-
-	private String jsonEscape(Object val) {
-		requireNonNull(val);
-		if (val instanceof String) {
-			return "\"" + val + "\"";
-		}
-		return val.toString(); // numbers, booleans - currently nothing else
 	}
 
 	@Override

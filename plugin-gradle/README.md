@@ -307,18 +307,16 @@ set the `target` parameter as described in the [Custom rules](#custom) section.
 spotless {
   typescript {
     // using existing config files
-    tsfmt().configFile('tslint', '/path/to/repo/tslint.json')
+    tsfmt().tslintFile('/path/to/repo/tslint.json')
   }
 }
 ```
-Supported config file types are the ones supported by [tsfmt config options](https://github.com/vvakame/typescript-formatter/blob/7764258ad42ac65071399840d1b8701868510ca7/lib/index.ts#L26).
-Use the option names of type boolean in the tsfmt config object: `tsconfig`, `tslint`, `editorconfig`, `vscode` or `tsfmt`. For the option `editorconfig`, no path is supported.
+Supported config file types are `tsconfigFile`, `tslintFile`, `vscodeFile` and `tsfmtFile`. They are corresponding to the respective
+[tsfmt-parameters](https://github.com/vvakame/typescript-formatter/blob/7764258ad42ac65071399840d1b8701868510ca7/lib/index.ts#L27L34).
 
 *Please note:*
-- The auto-discovery of config files (up the file tree) will not work when using prettier within spotless,
-  hence you are required to provide absolute file paths for config files.
-- The config file type `editorconfig` is only read from its default location (the user'home).
-  Any value you pass for the path will be ignored.
+The auto-discovery of config files (up the file tree) will not work when using tsfmt within spotless,
+  hence you are required to provide resolvable file paths for config files.
 
 ... or alternatively provide the configuration inline ...
 
@@ -333,11 +331,9 @@ spotless {
 }
 ```
 
-See [tsfmt's default config settings](https://github.com/vvakame/typescript-formatter/blob/7764258ad42ac65071399840d1b8701868510ca7/lib/utils.ts#L8) for what is available.
+See [tsfmt's default config settings](https://github.com/vvakame/typescript-formatter/blob/7764258ad42ac65071399840d1b8701868510ca7/lib/utils.ts#L11L32) for what is available.
 
-*Please note:* If both `configFile` and `config` is provided, only `config` is used.
-
-
+... and it is also possible to apply `prettier()` instead of `tsfmt()` as formatter. For details see the section about [prettier](#typescript-prettier).
 
 ### Prerequisite: tsfmt requires a working NodeJS version
 
@@ -408,6 +404,7 @@ spotless {
 }
 ```
 
+<a name="typescript-prettier"></a>
 Prettier can also be applied from within the [typescript config block](#typescript-formatter):
 
 ```gradle

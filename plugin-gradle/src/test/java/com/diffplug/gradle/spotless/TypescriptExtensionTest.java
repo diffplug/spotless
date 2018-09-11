@@ -50,8 +50,8 @@ public class TypescriptExtensionTest extends GradleIntegrationTest {
 	public void useTsfmtFileConfig() throws IOException {
 		File formattingFile = setFile("tsfmt.json").toLines(
 				"{",
-				"	\"indentSize\": 1,",
-				"	\"convertTabsToSpaces\": true",
+				"    \"indentSize\": 1,",
+				"    \"convertTabsToSpaces\": true",
 				"}");
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
@@ -61,7 +61,7 @@ public class TypescriptExtensionTest extends GradleIntegrationTest {
 				"spotless {",
 				"    typescript {",
 				"        target 'test.ts'",
-				"        tsfmt().configFile('tsfmt', '" + formattingFile.getAbsolutePath() + "')",
+				"        tsfmt().tsfmtFile('" + formattingFile.getAbsolutePath() + "')",
 				"    }",
 				"}");
 		setFile("test.ts").toResource("npm/tsfmt/tsfmt/tsfmt.dirty");
