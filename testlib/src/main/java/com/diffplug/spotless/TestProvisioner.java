@@ -19,8 +19,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -52,11 +54,12 @@ public class TestProvisioner {
 		return Suppliers.memoize(() -> {
 			Project project = ProjectBuilder.builder().build();
 			repoConfig.accept(project.getRepositories());
-			return mavenCoords -> {
+			return (CompatibleProvisioner) (resolveTransitives, mavenCoords) -> {
 				Dependency[] deps = mavenCoords.stream()
 						.map(project.getDependencies()::create)
 						.toArray(Dependency[]::new);
 				Configuration config = project.getConfigurations().detachedConfiguration(deps);
+				config.setTransitive(resolveTransitives);
 				config.setDescription(mavenCoords.toString());
 				try {
 					return config.resolve();
@@ -85,11 +88,11 @@ public class TestProvisioner {
 		} else {
 			cached = new HashMap<>();
 		}
-		return mavenCoords -> {
+		return (CompatibleProvisioner) (resolveTransitives, mavenCoords) -> {
 			Box<Boolean> wasChanged = Box.of(false);
 			ImmutableSet<File> result = cached.computeIfAbsent(ImmutableSet.copyOf(mavenCoords), coords -> {
 				wasChanged.set(true);
-				return ImmutableSet.copyOf(input.get().provisionWithDependencies(coords));
+				return ImmutableSet.copyOf(input.get().provide(resolveTransitives, coords));
 			});
 			if (wasChanged.get()) {
 				try (ObjectOutputStream outputStream = new ObjectOutputStream(Files.asByteSink(cacheFile).openBufferedStream())) {
@@ -137,4 +140,20 @@ public class TestProvisioner {
 			setup.setUrl("https://oss.sonatype.org/content/repositories/snapshots");
 		});
 	});
+
+	/**
+	 * Portable version of {@link Provisioner} interface. In next spotless-lib major version
+	 * deprecated methods can be removed together with this wrapper.
+	 */
+	private static interface CompatibleProvisioner extends Provisioner {
+
+		@Override
+		@Deprecated
+		default Set<File> provisionWithDependencies(Collection<String> mavenCoordinates) {
+			return provide(true, mavenCoordinates);
+		}
+
+		@Override
+		Set<File> provide(boolean resolveTransitives, Collection<String> mavenCoordinates);
+	}
 }

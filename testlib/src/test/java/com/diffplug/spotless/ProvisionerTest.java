@@ -24,13 +24,25 @@ import org.junit.Test;
 
 public class ProvisionerTest {
 	@Test
-	public void testManipulation() {
+	@Deprecated
+	public void testManipulationDeprecated() {
 		Provisioner provisioner = deps -> deps.stream().map(File::new).collect(Collectors.toSet());
 		Assertions.assertThat(provisioner.provisionWithDependencies("a"))
 				.containsExactlyInAnyOrder(new File("a"));
 		Assertions.assertThat(provisioner.provisionWithDependencies("a", "a"))
 				.containsExactlyInAnyOrder(new File("a"));
 		Assertions.assertThat(provisioner.provisionWithDependencies(Arrays.asList("a", "a")))
+				.containsExactlyInAnyOrder(new File("a"));
+	}
+
+	@Test
+	public void testManipulation() {
+		Provisioner provisioner = deps -> deps.stream().map(File::new).collect(Collectors.toSet());
+		Assertions.assertThat(provisioner.provide(true, "a"))
+				.containsExactlyInAnyOrder(new File("a"));
+		Assertions.assertThat(provisioner.provide(true, "a", "a"))
+				.containsExactlyInAnyOrder(new File("a"));
+		Assertions.assertThat(provisioner.provide(true, Arrays.asList("a", "a")))
 				.containsExactlyInAnyOrder(new File("a"));
 	}
 }

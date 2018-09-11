@@ -15,7 +15,10 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.io.File;
+import java.util.Collection;
 import java.util.Objects;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,13 +35,14 @@ public class GradleProvisioner {
 
 	public static Provisioner fromProject(Project project) {
 		Objects.requireNonNull(project);
-		return mavenCoords -> {
+		return (CompatibleProvisioner) (resolveTransitives, mavenCoords) -> {
 			try {
 				Dependency[] deps = mavenCoords.stream()
 						.map(project.getBuildscript().getDependencies()::create)
 						.toArray(Dependency[]::new);
 				Configuration config = project.getRootProject().getBuildscript().getConfigurations().detachedConfiguration(deps);
 				config.setDescription(mavenCoords.toString());
+				config.setTransitive(resolveTransitives);
 				return config.resolve();
 			} catch (Exception e) {
 				logger.log(Level.SEVERE,
@@ -53,4 +57,20 @@ public class GradleProvisioner {
 	}
 
 	private static final Logger logger = Logger.getLogger(GradleProvisioner.class.getName());
+
+	/**
+	 * Portable version of {@link Provisioner} interface. In next spotless-lib major version
+	 * deprecated methods can be removed together with this wrapper.
+	 */
+	private static interface CompatibleProvisioner extends Provisioner {
+
+		@Override
+		@Deprecated
+		default Set<File> provisionWithDependencies(Collection<String> mavenCoordinates) {
+			return provide(true, mavenCoordinates);
+		}
+
+		@Override
+		Set<File> provide(boolean resolveTransitives, Collection<String> mavenCoordinates);
+	}
 }

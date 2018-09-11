@@ -20,7 +20,7 @@ import org.junit.Test;
 public class MavenProvisionerTest extends MavenIntegrationTest {
 
 	@Test
-	public void testMultipleDependencies() throws Exception {
+	public void testMultipleDependenciesExcludingTransitives() throws Exception {
 		writePomWithJavaSteps(
 				"<eclipse>",
 				"  <version>4.8.0</version>",
@@ -30,7 +30,7 @@ public class MavenProvisionerTest extends MavenIntegrationTest {
 	}
 
 	@Test
-	public void testSingleDependency() throws Exception {
+	public void testSingleDependencyIncludingTransitives() throws Exception {
 		writePomWithJavaSteps(
 				"<googleJavaFormat>",
 				"  <version>1.2</version>",
