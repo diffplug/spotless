@@ -7,6 +7,7 @@ You might be looking for:
 
 ### Version 1.15.0-SNAPSHOT - TBD (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/snapshot/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/snapshot/), [snapshot repo](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/))
 
+* Extended dependency provisioner to exclude transitives on request ([#297](https://github.com/diffplug/spotless/pull/297)).This prevents unnecessary downloads of unused transitive dependencies for Eclipse based formatter steps.
 * Updated default groovy-eclipse from 4.8.0 to 4.8.1 ([#288](https://github.com/diffplug/spotless/pull/288)). New version is based on [Groovy-Eclipse 3.0.0](https://github.com/groovy/groovy-eclipse/wiki/3.0.0-Release-Notes).
 * Integrated Eclipse WTP formatter ([#290](https://github.com/diffplug/spotless/pull/290))
 * Updated JSR305 annotation from 3.0.0 to 3.0.2 ([#274](https://github.com/diffplug/spotless/pull/274))
