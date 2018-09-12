@@ -31,6 +31,7 @@ import java.util.stream.Stream;
  *     <li>from Environment-Properties in the following order:</li>
  *     	<ol>
  *     	    <li> from NVM_BIN environment variable, if available </li>
+ *     	    <li> from NVM_SYMLINK environment variable, if available </li>
  *     	    <li> from NODE_PATH environment variable, if available </li>
  *     	    <li>fallback: PATH environment variable</li>
  *     	</ol>
@@ -45,7 +46,7 @@ class NpmExecutableResolver {
 	static String npmExecutableName() {
 		String npmName = "npm";
 		if (PlatformInfo.normalizedOS() == WINDOWS) {
-			npmName += ".exe";
+			npmName += ".cmd";
 		}
 		return npmName;
 	}
@@ -55,12 +56,16 @@ class NpmExecutableResolver {
 				.map(File::new);
 	}
 
-	static Supplier<Optional<File>> environmentNvm() {
+	static Supplier<Optional<File>> environmentNvmBin() {
 		return () -> Optional.ofNullable(System.getenv("NVM_BIN"))
 				.map(File::new)
 				.map(binDir -> new File(binDir, npmExecutableName()))
 				.filter(File::exists)
 				.filter(File::canExecute);
+	}
+
+	static Supplier<Optional<File>> environmentNvmSymlink() {
+		return pathListFromEnvironment("NVM_SYMLINK");
 	}
 
 	static Supplier<Optional<File>> environmentNodepath() {
@@ -72,7 +77,11 @@ class NpmExecutableResolver {
 	}
 
 	static Optional<File> tryFind() {
-		return Stream.of(systemProperty(), environmentNvm(), environmentNodepath(), environmentPath())
+		return Stream.of(systemProperty(),
+				environmentNvmBin(),
+				environmentNvmSymlink(),
+				environmentNodepath(),
+				environmentPath())
 				.map(Supplier::get)
 				.filter(Optional::isPresent)
 				.map(Optional::get)

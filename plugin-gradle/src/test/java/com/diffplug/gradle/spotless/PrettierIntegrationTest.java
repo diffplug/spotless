@@ -15,7 +15,6 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.junit.Test;
@@ -48,7 +47,7 @@ public class PrettierIntegrationTest extends GradleIntegrationTest {
 
 	@Test
 	public void useFileConfig() throws IOException {
-		File formattingFile = setFile(".prettierrc.yml").toResource("npm/prettier/config/.prettierrc.yml");
+		setFile(".prettierrc.yml").toResource("npm/prettier/config/.prettierrc.yml");
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
@@ -57,7 +56,7 @@ public class PrettierIntegrationTest extends GradleIntegrationTest {
 				"spotless {",
 				"    format 'mytypescript', {",
 				"        target 'test.ts'",
-				"        prettier().configFile('" + formattingFile.getAbsolutePath() + "')",
+				"        prettier().configFile('.prettierrc.yml')",
 				"    }",
 				"}");
 		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");

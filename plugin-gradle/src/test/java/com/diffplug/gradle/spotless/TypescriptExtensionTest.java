@@ -15,7 +15,6 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.junit.Test;
@@ -48,7 +47,7 @@ public class TypescriptExtensionTest extends GradleIntegrationTest {
 
 	@Test
 	public void useTsfmtFileConfig() throws IOException {
-		File formattingFile = setFile("tsfmt.json").toLines(
+		setFile("tsfmt.json").toLines(
 				"{",
 				"    \"indentSize\": 1,",
 				"    \"convertTabsToSpaces\": true",
@@ -61,7 +60,7 @@ public class TypescriptExtensionTest extends GradleIntegrationTest {
 				"spotless {",
 				"    typescript {",
 				"        target 'test.ts'",
-				"        tsfmt().tsfmtFile('" + formattingFile.getAbsolutePath() + "')",
+				"        tsfmt().tsfmtFile('tsfmt.json')",
 				"    }",
 				"}");
 		setFile("test.ts").toResource("npm/tsfmt/tsfmt/tsfmt.dirty");

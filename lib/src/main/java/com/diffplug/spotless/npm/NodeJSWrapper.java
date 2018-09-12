@@ -18,6 +18,7 @@ package com.diffplug.spotless.npm;
 import java.io.File;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 class NodeJSWrapper extends ReflectiveObjectWrapper {
 
@@ -26,9 +27,17 @@ class NodeJSWrapper extends ReflectiveObjectWrapper {
 
 	public static final String WRAPPED_CLASS = "com.eclipsesource.v8.NodeJS";
 
+	private static final AtomicBoolean flagsSet = new AtomicBoolean(false);
+
 	public NodeJSWrapper(ClassLoader classLoader) {
 		super(Reflective.withClassLoader(classLoader),
-				reflective -> reflective.invokeStaticMethod(WRAPPED_CLASS, "createNodeJS"));
+				reflective -> {
+					final boolean firstRun = flagsSet.compareAndSet(false, true);
+					if (firstRun) {
+						reflective.invokeStaticMethod(V8_RUNTIME_CLASS, "setFlags", "-color=false"); // required to run prettier on windows
+					}
+					return reflective.invokeStaticMethod(WRAPPED_CLASS, "createNodeJS");
+				});
 	}
 
 	public V8ObjectWrapper require(File npmModulePath) {
