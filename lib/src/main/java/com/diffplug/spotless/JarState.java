@@ -54,28 +54,37 @@ public final class JarState implements Serializable {
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	private final transient Set<File> jars;
 
+	@Deprecated // internal
 	public JarState(String mavenCoordinate, FileSignature fileSignature, Set<File> jars) {
 		this(Arrays.asList(mavenCoordinate), fileSignature, jars);
 	}
 
+	@Deprecated // internal
 	public JarState(Collection<String> mavenCoordinates, FileSignature fileSignature, Set<File> jars) {
 		this.mavenCoordinates = new TreeSet<String>(mavenCoordinates);
 		this.fileSignature = fileSignature;
 		this.jars = jars;
 	}
 
+	/** Provisions the given maven coordinate and its transitive dependencies. */
 	public static JarState from(String mavenCoordinate, Provisioner provisioner) throws IOException {
 		return from(Collections.singletonList(mavenCoordinate), provisioner);
 	}
 
+	/** Provisions the given maven coordinates and their transitive dependencies. */
 	public static JarState from(Collection<String> mavenCoordinates, Provisioner provisioner) throws IOException {
-		return from(mavenCoordinates, true, provisioner);
+		return provisionWithTransitives(true, mavenCoordinates, provisioner);
 	}
 
-	public static JarState from(Collection<String> mavenCoordinates, boolean resolveTransitives, Provisioner provisioner) throws IOException {
-		Objects.requireNonNull(provisioner, "provisioner");
+	/** Provisions the given maven coordinates without their transitive dependencies. */
+	public static JarState withoutTransitives(Collection<String> mavenCoordinates, Provisioner provisioner) throws IOException {
+		return provisionWithTransitives(false, mavenCoordinates, provisioner);
+	}
+
+	private static JarState provisionWithTransitives(boolean withTransitives, Collection<String> mavenCoordinates, Provisioner provisioner) throws IOException {
 		Objects.requireNonNull(mavenCoordinates, "mavenCoordinates");
-		Set<File> jars = provisioner.provisionWithTransitives(resolveTransitives, mavenCoordinates);
+		Objects.requireNonNull(provisioner, "provisioner");
+		Set<File> jars = provisioner.provisionWithTransitives(withTransitives, mavenCoordinates);
 		if (jars.isEmpty()) {
 			throw new NoSuchElementException("Resolved to an empty result: " + mavenCoordinates.stream().collect(Collectors.joining(", ")));
 		}
