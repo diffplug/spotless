@@ -13,25 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.npm;
+package com.diffplug.spotless.npm;
 
-import java.io.File;
-import java.io.IOException;
+import static java.util.Objects.requireNonNull;
 
-import com.diffplug.spotless.ResourceHarness;
+import java.util.Map;
 
-public abstract class NpmFormatterStepCommonTests extends ResourceHarness {
+class V8ObjectUtilsWrapper {
 
-	protected File npmExecutable() {
-		return NpmExecutableResolver.tryFind().orElseThrow(() -> new IllegalStateException("cannot detect node binary"));
-	}
+	public static final String WRAPPED_CLASS = "com.eclipsesource.v8.utils.V8ObjectUtils";
 
-	private File buildDir = null;
+	public static Map<String, ? super Object> toMap(final V8ObjectWrapper object) {
+		requireNonNull(object);
 
-	protected File buildDir() throws IOException {
-		if (this.buildDir == null) {
-			this.buildDir = newFolder("build-dir");
-		}
-		return this.buildDir;
+		final Reflective reflective = object.reflective();
+
+		@SuppressWarnings("unchecked")
+		final Map<String, ? super Object> map = (Map<String, ? super Object>) reflective.invokeStaticMethod(WRAPPED_CLASS, "toMap", object.wrappedObj());
+		return map;
 	}
 }

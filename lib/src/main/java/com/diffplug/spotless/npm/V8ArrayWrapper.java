@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.npm;
-
-import static com.diffplug.spotless.extra.npm.NodeJSWrapper.V8_VALUE_CLASS;
+package com.diffplug.spotless.npm;
 
 public class V8ArrayWrapper extends ReflectiveObjectWrapper {
 
@@ -30,8 +28,8 @@ public class V8ArrayWrapper extends ReflectiveObjectWrapper {
 			ReflectiveObjectWrapper objectWrapper = (ReflectiveObjectWrapper) object;
 			object = objectWrapper.wrappedObj();
 		}
-		if (reflective().clazz(V8_VALUE_CLASS).isAssignableFrom(object.getClass())) {
-			invoke("push", reflective().typed(V8_VALUE_CLASS, object));
+		if (reflective().clazz(NodeJSWrapper.V8_VALUE_CLASS).isAssignableFrom(object.getClass())) {
+			invoke("push", reflective().typed(NodeJSWrapper.V8_VALUE_CLASS, object));
 		} else {
 			invoke("push", object);
 		}

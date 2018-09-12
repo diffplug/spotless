@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.npm;
+package com.diffplug.spotless.npm;
 
-import static com.diffplug.spotless.extra.npm.NpmExecutableResolver.tryFind;
 import static java.util.Objects.requireNonNull;
 
 import java.io.ByteArrayOutputStream;
@@ -29,11 +28,7 @@ import java.util.Optional;
 
 import javax.annotation.Nullable;
 
-import com.diffplug.common.base.Errors;
-import com.diffplug.spotless.FileSignature;
-import com.diffplug.spotless.FormatterFunc;
-import com.diffplug.spotless.JarState;
-import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.*;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -92,7 +87,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 
 	private File resolveNpm(@Nullable File npm) {
 		return Optional.ofNullable(npm)
-				.orElseGet(() -> tryFind()
+				.orElseGet(() -> NpmExecutableResolver.tryFind()
 						.orElseThrow(() -> new IllegalStateException("cannot automatically determine npm executable and none was specifically supplied!")));
 	}
 
@@ -118,7 +113,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 			}
 			return output.toString(StandardCharsets.UTF_8.name());
 		} catch (IOException e) {
-			throw Errors.asRuntime(e);
+			throw ThrowingEx.asRuntime(e);
 		}
 	}
 

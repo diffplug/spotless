@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.npm;
+package com.diffplug.spotless.npm;
 
 import static java.util.Objects.requireNonNull;
 
@@ -26,7 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.diffplug.common.base.Errors;
+import com.diffplug.spotless.ThrowingEx;
 
 public class SimpleJsonWriter {
 
@@ -83,7 +83,7 @@ public class SimpleJsonWriter {
 		try {
 			Files.write(file.toPath(), toJsonString().getBytes(StandardCharsets.UTF_8));
 		} catch (IOException e) {
-			throw Errors.asRuntime(e);
+			throw ThrowingEx.asRuntime(e);
 		}
 	}
 

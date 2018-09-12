@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.npm;
+package com.diffplug.spotless.npm;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.*;

@@ -13,29 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.npm;
+package com.diffplug.spotless.npm;
 
-class TsFmtResult {
+import java.io.File;
+import java.io.IOException;
 
-	private final String message;
-	private final Boolean error;
-	private final String formatted;
+import com.diffplug.spotless.ResourceHarness;
 
-	TsFmtResult(String message, Boolean error, String formatted) {
-		this.message = message;
-		this.error = error;
-		this.formatted = formatted;
+public abstract class NpmFormatterStepCommonTests extends ResourceHarness {
+
+	protected File npmExecutable() {
+		return NpmExecutableResolver.tryFind().orElseThrow(() -> new IllegalStateException("cannot detect node binary"));
 	}
 
-	String getMessage() {
-		return message;
-	}
+	private File buildDir = null;
 
-	Boolean isError() {
-		return error;
-	}
-
-	String getFormatted() {
-		return formatted;
+	protected File buildDir() throws IOException {
+		if (this.buildDir == null) {
+			this.buildDir = newFolder("build-dir");
+		}
+		return this.buildDir;
 	}
 }

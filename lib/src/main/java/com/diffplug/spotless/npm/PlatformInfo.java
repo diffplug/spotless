@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.npm;
+package com.diffplug.spotless.npm;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.Locale;
-
-import com.diffplug.common.base.StandardSystemProperty;
 
 class PlatformInfo {
 	private PlatformInfo() {
@@ -27,7 +25,7 @@ class PlatformInfo {
 	}
 
 	static OS normalizedOS() {
-		final String osNameProperty = StandardSystemProperty.OS_NAME.value();
+		final String osNameProperty = System.getProperty("os.name");
 		if (osNameProperty == null) {
 			throw new RuntimeException("No info about OS available, cannot decide which implementation of j2v8 to use");
 		}
@@ -49,7 +47,7 @@ class PlatformInfo {
 	}
 
 	static String normalizedArchName() {
-		final String osArchProperty = StandardSystemProperty.OS_ARCH.value();
+		final String osArchProperty = System.getProperty("os.arch");
 		if (osArchProperty == null) {
 			throw new RuntimeException("No info about ARCH available, cannot decide which implementation of j2v8 to use");
 		}

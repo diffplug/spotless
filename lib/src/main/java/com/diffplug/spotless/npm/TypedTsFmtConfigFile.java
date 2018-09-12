@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.npm;
+package com.diffplug.spotless.npm;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,8 +22,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Locale;
 
-import com.diffplug.common.base.Errors;
 import com.diffplug.spotless.FileSignature;
+import com.diffplug.spotless.ThrowingEx;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -45,7 +45,7 @@ public class TypedTsFmtConfigFile implements Serializable {
 		try {
 			this.configFileSignature = FileSignature.signAsList(configFile);
 		} catch (IOException e) {
-			throw Errors.asRuntime(e);
+			throw ThrowingEx.asRuntime(e);
 		}
 	}
 

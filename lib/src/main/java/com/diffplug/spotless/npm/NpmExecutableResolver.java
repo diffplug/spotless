@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.npm;
+package com.diffplug.spotless.npm;
 
-import static com.diffplug.spotless.extra.npm.PlatformInfo.OS.WINDOWS;
+import static com.diffplug.spotless.npm.PlatformInfo.OS.WINDOWS;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-
-import com.diffplug.common.base.Splitter;
 
 /**
  * Utility class to resolve an npm binary to be used by npm-based steps.
@@ -84,9 +83,7 @@ class NpmExecutableResolver {
 		return () -> {
 			String pathList = System.getenv(environmentPathListName);
 			if (pathList != null) {
-				return Splitter.on(System.getProperty("path.separator", ":"))
-						.splitToList(pathList)
-						.stream()
+				return Arrays.stream(pathList.split(System.getProperty("path.separator", ":")))
 						.map(File::new)
 						.map(dir -> dir.getName().equalsIgnoreCase("node_modules") ? dir.getParentFile() : dir)
 						.map(dir -> new File(dir, npmExecutableName()))

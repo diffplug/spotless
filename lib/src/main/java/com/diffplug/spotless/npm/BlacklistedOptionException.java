@@ -13,17 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.npm;
+package com.diffplug.spotless.npm;
 
-import java.util.Arrays;
+class BlacklistedOptionException extends RuntimeException {
+	private static final long serialVersionUID = -5876348893394153811L;
 
-public enum TsConfigFileType {
-	TSCONFIG, TSLINT, VSCODE, TSFMT;
-
-	public static TsConfigFileType forNameIgnoreCase(String name) {
-		return Arrays.stream(values())
-				.filter(type -> type.name().equalsIgnoreCase(name))
-				.findFirst()
-				.orElseThrow(() -> new IllegalArgumentException("Config file type " + name + " is not supported. Supported values (case is ignored): " + Arrays.toString(values())));
+	public BlacklistedOptionException(String blacklistedOption) {
+		super("The config option '" + blacklistedOption + "' is not supported.");
 	}
 }

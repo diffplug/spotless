@@ -13,23 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.npm;
+package com.diffplug.spotless.npm;
 
-import static java.util.Objects.requireNonNull;
+import java.util.Arrays;
 
-import java.util.Map;
+public enum TsConfigFileType {
+	TSCONFIG, TSLINT, VSCODE, TSFMT;
 
-class V8ObjectUtilsWrapper {
-
-	public static final String WRAPPED_CLASS = "com.eclipsesource.v8.utils.V8ObjectUtils";
-
-	public static Map<String, ? super Object> toMap(final V8ObjectWrapper object) {
-		requireNonNull(object);
-
-		final Reflective reflective = object.reflective();
-
-		@SuppressWarnings("unchecked")
-		final Map<String, ? super Object> map = (Map<String, ? super Object>) reflective.invokeStaticMethod(WRAPPED_CLASS, "toMap", object.wrappedObj());
-		return map;
+	public static TsConfigFileType forNameIgnoreCase(String name) {
+		return Arrays.stream(values())
+				.filter(type -> type.name().equalsIgnoreCase(name))
+				.findFirst()
+				.orElseThrow(() -> new IllegalArgumentException("Config file type " + name + " is not supported. Supported values (case is ignored): " + Arrays.toString(values())));
 	}
 }

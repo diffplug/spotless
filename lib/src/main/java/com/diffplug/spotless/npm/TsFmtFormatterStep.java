@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.npm;
+package com.diffplug.spotless.npm;
 
 import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
@@ -61,7 +61,7 @@ public class TsFmtFormatterStep {
 			super(stepName,
 					provisioner,
 					new NpmConfig(
-							readFileFromClasspath(TsFmtFormatterStep.class, "/com/diffplug/spotless/extra/npm/tsfmt-package.json"),
+							readFileFromClasspath(TsFmtFormatterStep.class, "/com/diffplug/spotless/npm/tsfmt-package.json"),
 							"typescript-formatter"),
 					buildDir,
 					npm);

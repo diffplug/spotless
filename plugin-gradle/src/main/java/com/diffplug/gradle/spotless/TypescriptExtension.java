@@ -26,9 +26,9 @@ import javax.annotation.Nullable;
 import org.gradle.api.Project;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.extra.npm.TsConfigFileType;
-import com.diffplug.spotless.extra.npm.TsFmtFormatterStep;
-import com.diffplug.spotless.extra.npm.TypedTsFmtConfigFile;
+import com.diffplug.spotless.npm.TsConfigFileType;
+import com.diffplug.spotless.npm.TsFmtFormatterStep;
+import com.diffplug.spotless.npm.TypedTsFmtConfigFile;
 
 public class TypescriptExtension extends FormatExtension {
 

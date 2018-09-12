@@ -13,12 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.npm;
+package com.diffplug.spotless.npm;
 
-class BlacklistedOptionException extends RuntimeException {
-	private static final long serialVersionUID = -5876348893394153811L;
+class TsFmtResult {
 
-	public BlacklistedOptionException(String blacklistedOption) {
-		super("The config option '" + blacklistedOption + "' is not supported.");
+	private final String message;
+	private final Boolean error;
+	private final String formatted;
+
+	TsFmtResult(String message, Boolean error, String formatted) {
+		this.message = message;
+		this.error = error;
+		this.formatted = formatted;
+	}
+
+	String getMessage() {
+		return message;
+	}
+
+	Boolean isError() {
+		return error;
+	}
+
+	String getFormatted() {
+		return formatted;
 	}
 }
