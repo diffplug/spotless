@@ -67,14 +67,14 @@ public class ArtifactResolver {
 	 * Given a set of maven coordinates, returns a set of jars which include all
 	 * of the specified coordinates and optionally their transitive dependencies.
 	 */
-	public Set<File> resolve(boolean resolveTransitives, Collection<String> mavenCoordinates) {
+	public Set<File> resolve(boolean withTransitives, Collection<String> mavenCoordinates) {
 		List<Dependency> dependencies = mavenCoordinates.stream()
 				.map(coordinateString -> new DefaultArtifact(coordinateString))
 				.map(artifact -> new Dependency(artifact, null))
 				.collect(toList());
 		CollectRequest collectRequest = new CollectRequest(dependencies, null, repositories);
 		DependencyRequest dependencyRequest;
-		if (resolveTransitives) {
+		if (withTransitives) {
 			dependencyRequest = new DependencyRequest(collectRequest, ACCEPT_ALL);
 		} else {
 			dependencyRequest = new DependencyRequest(collectRequest, FILTER_TRANSITIVES);

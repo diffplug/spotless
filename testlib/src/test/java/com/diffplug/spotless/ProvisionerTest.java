@@ -26,7 +26,7 @@ public class ProvisionerTest {
 	@Test
 	@Deprecated
 	public void testManipulationDeprecated() {
-		Provisioner provisioner = deps -> deps.stream().map(File::new).collect(Collectors.toSet());
+		Provisioner provisioner = (withTransitives, deps) -> deps.stream().map(File::new).collect(Collectors.toSet());
 		Assertions.assertThat(provisioner.provisionWithDependencies("a"))
 				.containsExactlyInAnyOrder(new File("a"));
 		Assertions.assertThat(provisioner.provisionWithDependencies("a", "a"))
@@ -37,12 +37,12 @@ public class ProvisionerTest {
 
 	@Test
 	public void testManipulation() {
-		Provisioner provisioner = deps -> deps.stream().map(File::new).collect(Collectors.toSet());
-		Assertions.assertThat(provisioner.provide(true, "a"))
+		Provisioner provisioner = (withTransitives, deps) -> deps.stream().map(File::new).collect(Collectors.toSet());
+		Assertions.assertThat(provisioner.provisionWithTransitives(true, "a"))
 				.containsExactlyInAnyOrder(new File("a"));
-		Assertions.assertThat(provisioner.provide(true, "a", "a"))
+		Assertions.assertThat(provisioner.provisionWithTransitives(true, "a", "a"))
 				.containsExactlyInAnyOrder(new File("a"));
-		Assertions.assertThat(provisioner.provide(true, Arrays.asList("a", "a")))
+		Assertions.assertThat(provisioner.provisionWithTransitives(true, Arrays.asList("a", "a")))
 				.containsExactlyInAnyOrder(new File("a"));
 	}
 }

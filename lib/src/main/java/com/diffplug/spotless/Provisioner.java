@@ -28,7 +28,9 @@ public interface Provisioner {
 
 	/** Method interface has been extended to {@link Provisioner#provide}. */
 	@Deprecated
-	public Set<File> provisionWithDependencies(Collection<String> mavenCoordinates);
+	public default Set<File> provisionWithDependencies(Collection<String> mavenCoordinates) {
+		return provisionWithTransitives(true, mavenCoordinates);
+	}
 
 	/** Method interface has been extended to {@link Provisioner#provide}. */
 	@Deprecated
@@ -40,20 +42,13 @@ public interface Provisioner {
 	 * Given a set of maven coordinates, returns a set of jars which include all
 	 * of the specified coordinates and optionally their transitive dependencies.
 	 */
-	public default Set<File> provide(boolean resolveTransitives, String... mavenCoordinates) {
-		return provide(resolveTransitives, Arrays.asList(mavenCoordinates));
+	public default Set<File> provisionWithTransitives(boolean withTransitives, String... mavenCoordinates) {
+		return provisionWithTransitives(withTransitives, Arrays.asList(mavenCoordinates));
 	}
 
 	/**
 	 * Given a set of maven coordinates, returns a set of jars which include all
 	 * of the specified coordinates and optionally their transitive dependencies.
 	 */
-	public default Set<File> provide(boolean resolveTransitives, Collection<String> mavenCoordinates) {
-		if (resolveTransitives) {
-			//Support of previous implementation
-			return provisionWithDependencies(mavenCoordinates);
-		}
-		throw new UnsupportedOperationException("Provisioner: provide without transitives");
-	}
-
+	public Set<File> provisionWithTransitives(boolean withTransitives, Collection<String> mavenCoordinates);
 }

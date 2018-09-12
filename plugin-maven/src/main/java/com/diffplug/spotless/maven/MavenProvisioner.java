@@ -15,10 +15,6 @@
  */
 package com.diffplug.spotless.maven;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.Set;
-
 import com.diffplug.spotless.Provisioner;
 
 /** Maven integration for Provisioner. */
@@ -26,21 +22,6 @@ public class MavenProvisioner {
 	private MavenProvisioner() {}
 
 	public static Provisioner create(ArtifactResolver artifactResolver) {
-		return (CompatibleProvisioner) artifactResolver::resolve;
-	}
-
-	/**
-	 * Portable version of {@link Provisioner} interface. In next spotless-lib major version
-	 * deprecated methods can be removed together with this wrapper.
-	 */
-	private static interface CompatibleProvisioner extends Provisioner {
-		@Override
-		@Deprecated
-		default Set<File> provisionWithDependencies(Collection<String> mavenCoordinates) {
-			return provide(true, mavenCoordinates);
-		}
-
-		@Override
-		Set<File> provide(boolean resolveTransitives, Collection<String> mavenCoordinates);
+		return artifactResolver::resolve;
 	}
 }
