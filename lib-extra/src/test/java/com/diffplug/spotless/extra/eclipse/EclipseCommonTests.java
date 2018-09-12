@@ -22,6 +22,7 @@ import java.io.File;
 import org.junit.Test;
 
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ResourceHarness;
 
 /**
@@ -78,7 +79,7 @@ public abstract class EclipseCommonTests extends ResourceHarness {
 			}
 			String output = null;
 			try {
-				output = step.format(input, inputFile);
+				output = LineEnding.toUnix(step.format(input, inputFile));
 			} catch (Exception e) {
 				fail("Exception occured when formatting input with version: " + version, e);
 			}
