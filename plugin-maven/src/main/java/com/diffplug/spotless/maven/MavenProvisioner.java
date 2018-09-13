@@ -24,5 +24,4 @@ public class MavenProvisioner {
 	public static Provisioner create(ArtifactResolver artifactResolver) {
 		return artifactResolver::resolve;
 	}
-
 }

@@ -41,7 +41,8 @@ import org.eclipse.aether.resolution.DependencyResult;
 
 public class ArtifactResolver {
 
-	private static final DependencyFilter ACCEPT_ALL_FILTER = (node, parents) -> true;
+	private static final DependencyFilter ACCEPT_ALL = (node, parents) -> true;
+	private static final DependencyFilter FILTER_TRANSITIVES = (node, parents) -> parents.size() <= 1;
 
 	private final RepositorySystem repositorySystem;
 	private final RepositorySystemSession session;
@@ -56,19 +57,28 @@ public class ArtifactResolver {
 		this.log = Objects.requireNonNull(log);
 	}
 
-	/** Use {@link ArtifactResolver#resolve(Collection) instead.} */
+	/** Use {@link ArtifactResolver#resolve(boolean, Collection)) instead.} */
 	@Deprecated
 	public Set<File> resolve(String mavenCoordinate) {
-		return resolve(Arrays.asList(mavenCoordinate));
+		return resolve(true, Arrays.asList(mavenCoordinate));
 	}
 
-	public Set<File> resolve(Collection<String> mavenCoordinate) {
-		List<Dependency> dependencies = mavenCoordinate.stream()
+	/**
+	 * Given a set of maven coordinates, returns a set of jars which include all
+	 * of the specified coordinates and optionally their transitive dependencies.
+	 */
+	public Set<File> resolve(boolean withTransitives, Collection<String> mavenCoordinates) {
+		List<Dependency> dependencies = mavenCoordinates.stream()
 				.map(coordinateString -> new DefaultArtifact(coordinateString))
 				.map(artifact -> new Dependency(artifact, null))
 				.collect(toList());
-		CollectRequest collectRequest = new CollectRequest((Dependency) null, dependencies, repositories);
-		DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, ACCEPT_ALL_FILTER);
+		CollectRequest collectRequest = new CollectRequest(dependencies, null, repositories);
+		DependencyRequest dependencyRequest;
+		if (withTransitives) {
+			dependencyRequest = new DependencyRequest(collectRequest, ACCEPT_ALL);
+		} else {
+			dependencyRequest = new DependencyRequest(collectRequest, FILTER_TRANSITIVES);
+		}
 
 		DependencyResult dependencyResult = resolveDependencies(dependencyRequest);
 

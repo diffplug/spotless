@@ -32,13 +32,14 @@ public class GradleProvisioner {
 
 	public static Provisioner fromProject(Project project) {
 		Objects.requireNonNull(project);
-		return mavenCoords -> {
+		return (withTransitives, mavenCoords) -> {
 			try {
 				Dependency[] deps = mavenCoords.stream()
 						.map(project.getBuildscript().getDependencies()::create)
 						.toArray(Dependency[]::new);
 				Configuration config = project.getRootProject().getBuildscript().getConfigurations().detachedConfiguration(deps);
 				config.setDescription(mavenCoords.toString());
+				config.setTransitive(withTransitives);
 				return config.resolve();
 			} catch (Exception e) {
 				logger.log(Level.SEVERE,
@@ -53,4 +54,5 @@ public class GradleProvisioner {
 	}
 
 	private static final Logger logger = Logger.getLogger(GradleProvisioner.class.getName());
+
 }
