@@ -97,8 +97,6 @@ class Reflective {
 			if (clazz.getSuperclass() != null) {
 				return method(target, clazz.getSuperclass(), methodName, parameters);
 			} else {
-				// try with primitives
-
 				throw new ReflectiveException("Could not find method " + methodName + " with parameters " + Arrays.toString(parameters) + " on object " + target, e);
 			}
 		}
@@ -112,8 +110,6 @@ class Reflective {
 			if (clazz.getSuperclass() != null) {
 				return method(target, clazz.getSuperclass(), methodName, parameters);
 			} else {
-				// try with primitives
-
 				throw new ReflectiveException("Could not find method " + methodName + " with parameters " + Arrays.toString(parameters) + " on object " + target, e);
 			}
 		}

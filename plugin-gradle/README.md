@@ -348,6 +348,8 @@ spotless {
 }
 ```
 
+Spotless uses npm to install necessary packages locally. It runs tsfmt using [J2V8](https://github.com/eclipsesource/J2V8) internally after that.
+
 <a name="prettier"></a>
 
 ## Applying [Prettier](https://prettier.io) to javascript | flow | typeScript | css | scss | less | jsx | graphQL | yaml | etc.
@@ -379,10 +381,9 @@ spotless {
   format 'styling', {
     target '**/*.css', '**/*.scss'
 
-    // or provide both (config options will win over configFile options)
     prettier().configFile('/path-to/.prettierrc.yml')
 
-    // or provide both (config options will win over configFile options)
+    // or provide both (config options take precedence over configFile options)
     prettier().config(['parser': 'postcss']).configFile('path-to/.prettierrc.yml')
   }
 }
@@ -411,7 +412,7 @@ Prettier can also be applied from within the [typescript config block](#typescri
 spotless {
   typescript {
     // no parser or filepath needed
-    // -> will default to 'typesript' parser when used in the typescript block
+    // -> will default to 'typescript' parser when used in the typescript block
     prettier()
   }
 }
@@ -419,7 +420,7 @@ spotless {
 
 ### Prerequisite: prettier requires a working NodeJS version
 
-prettier, like tsfmt, is based on NodeJS, so to use it, a working NodeJS installation (especially npm) is required on the host running spotless.
+Prettier, like tsfmt, is based on NodeJS, so to use it, a working NodeJS installation (especially npm) is required on the host running spotless.
 Spotless will try to auto-discover an npm installation. If that is not working for you, it is possible to directly configure the npm binary to use.
 
 ```gradle
@@ -429,6 +430,9 @@ spotless {
   }
 }
 ```
+
+Spotless uses npm to install necessary packages locally. It runs prettier using [J2V8](https://github.com/eclipsesource/J2V8) internally after that.
+
 <a name="license-header"></a>
 
 ## License header options

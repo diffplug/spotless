@@ -58,7 +58,7 @@ public class TypedTsFmtConfigFile implements Serializable {
 	}
 
 	String configFileEnabledOptionName() {
-		return this.configFileType.name().toLowerCase(Locale.ENGLISH);
+		return this.configFileType.name().toLowerCase(Locale.ROOT);
 	}
 
 	String configFileOptionName() {
