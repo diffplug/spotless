@@ -26,20 +26,20 @@ import java.util.Set;
  */
 public interface Provisioner {
 
-	/** Method interface has been extended to {@link Provisioner#provide}. */
+	/** Method interface has been extended to {@link Provisioner#provisionWithTransitives(boolean, Collection)}. */
 	@Deprecated
 	public default Set<File> provisionWithDependencies(Collection<String> mavenCoordinates) {
 		return provisionWithTransitives(true, mavenCoordinates);
 	}
 
-	/** Method interface has been extended to {@link Provisioner#provide}. */
+	/** Method interface has been extended to {@link Provisioner#provisionWithTransitives(boolean, String...)}. */
 	@Deprecated
 	public default Set<File> provisionWithDependencies(String... mavenCoordinates) {
 		return provisionWithDependencies(Arrays.asList(mavenCoordinates));
 	}
 
 	/**
-	 * Given a set of maven coordinates, returns a set of jars which include all
+	 * Given a set of Maven coordinates, returns a set of jars which include all
 	 * of the specified coordinates and optionally their transitive dependencies.
 	 */
 	public default Set<File> provisionWithTransitives(boolean withTransitives, String... mavenCoordinates) {
@@ -47,7 +47,7 @@ public interface Provisioner {
 	}
 
 	/**
-	 * Given a set of maven coordinates, returns a set of jars which include all
+	 * Given a set of Maven coordinates, returns a set of jars which include all
 	 * of the specified coordinates and optionally their transitive dependencies.
 	 */
 	public Set<File> provisionWithTransitives(boolean withTransitives, Collection<String> mavenCoordinates);
