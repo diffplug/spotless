@@ -25,9 +25,14 @@ public class XmlDefaults {
 	//Prevent instantiation
 	private XmlDefaults() {};
 
+	/**
+	 * Filter based on Eclipse-WTP <code>org.eclipse.core.contenttype.contentTypes</code>
+	 * extension <code>org.eclipse.wst.xml.core.xmlsource</code>
+	 */
 	public static final List<String> FILE_FILTER = Collections.unmodifiableList(
 			Arrays.asList("xml", "xsl", "xslt", "wsdl", "xsd", "exsd", "xmi")
 					.stream().map(s -> "**/*." + s).collect(Collectors.toList()));
 
+	/** Delimiter covers beginning of elements and processing instructions. */
 	public static final String DELIMITER_EXPR = "\\<[a-zA-Z\\?]";
 }

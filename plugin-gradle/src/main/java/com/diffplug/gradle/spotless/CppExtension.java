@@ -56,14 +56,13 @@ public class CppExtension extends FormatExtension implements HasBuiltinDelimiter
 
 	}
 
-	/** If the user hasn't specified the files yet, we'll assume he/she means all of the C/C++ files. */
 	@Override
 	protected void setupTask(SpotlessTask task) {
 		if (target == null) {
 			/*
 			 * The org.gradle.language.c and org.gradle.language.cpp source sets are seldom used.
 			 * Most Gradle C/C++ use external CMake builds (so the source location is unknown to Gradle).
-			 * Hence file extension based filtering is used in line with the org.eclipse.core.contenttype.contentTypes
+			 * Hence file extension based filtering is used in line with the org.eclipse.core.contenttype.contentTypes<
 			 * defined by the CDT plugin.
 			 */
 			target(CppDefaults.FILE_FILTER.toArray());

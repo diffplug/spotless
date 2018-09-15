@@ -187,7 +187,7 @@ By default, all files matching `src/main/cpp/**/*.<ext>` and `src/test/cpp/**/*.
   </cpp>
 </configuration>
 ```
-Use the Eclipse to define the *Code Style preferences* (see [Eclipse documentation](https://www.eclipse.org/documentation/)). Within the preferences *Edit...* dialog, you can export your configuration as XML file, which can be used as a configuration `file`. If no `file` is provided, the CDT default configuration is used.
+Use the Eclipse to define the *Code Style preferences* (see [Eclipse documentation](https://www.eclipse.org/documentation/)). Within the preferences *Edit...* dialog, you can export your configuration as XML file, which can be used as a configuration `<file>`. If no `<file>` is provided, the CDT default configuration is used.
 
 <a name="format"></a>
 
@@ -211,9 +211,9 @@ By default, all files matching `src/**/*.<ext>` Ant style pattern will be format
   </cpp>
 </configuration>
 ```
-Use Eclipse to define the *XML editor preferences* (see [Eclipse documentation](https://www.eclipse.org/documentation/)). The preferences are stored below your Eclipse workspace directory in `.metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.xml.core.prefs`. Note that only the differences to the default configuration are stored within the file. Omit the 'configFile' entirely to use the default Eclipse configuration.
+Use Eclipse to define the *XML editor preferences* (see [Eclipse documentation](https://www.eclipse.org/documentation/)). The preferences are stored below your Eclipse workspace directory in `.metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.xml.core.prefs`. Note that only the differences to the default configuration are stored within the file. If no `<file>` is provided, the WTP default configuration is used..
 
-The Eclipse WTP formatter supports DTD/XSD restrictions on white spaces. For XSD/DTD lookup, relative and absolute XSD/DTD URIs are supported. Furthermore a user catalog can be configured using the `userCatalog` property key. Add the property to the preference file or add an additional preference or properties files as an additional argument to the `configFile`.
+The Eclipse WTP formatter supports DTD/XSD restrictions on white spaces. For XSD/DTD lookup, relative and absolute XSD/DTD URIs are supported. Furthermore a user catalog can be configured using the `userCatalog` property key. Add the property to the preference `<file>`.
 
 ## Applying to custom sources
 
