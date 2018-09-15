@@ -73,6 +73,7 @@ To use it in your pom, just [add the Spotless dependency](http://search.maven.or
 Spotless supports the following powerful formatters:
 
 * Eclipse's java code formatter (including style and import ordering)
+* Eclipse's [CDT](https://www.eclipse.org/cdt/) C/C++ code formatter
 * Google's [google-java-format](https://github.com/google/google-java-format)
 * User-defined license enforcement, regex replacement, etc.
 
@@ -186,7 +187,7 @@ By default, all files matching `src/main/cpp/**/*.<ext>` and `src/test/cpp/**/*.
   </cpp>
 </configuration>
 ```
-Use the Eclipse to define the *Code Style preferences* (see [Eclipse documentation](https://www.eclipse.org/documentation/)). Within the preferences *Edit...* dialog, you can export your configuration as XML file, which can be used as a `configFile`. If no `configFile` is provided, the CDT default configuration is used.
+Use the Eclipse to define the *Code Style preferences* (see [Eclipse documentation](https://www.eclipse.org/documentation/)). Within the preferences *Edit...* dialog, you can export your configuration as XML file, which can be used as a configuration `file`. If no `file` is provided, the CDT default configuration is used.
 
 <a name="format"></a>
 

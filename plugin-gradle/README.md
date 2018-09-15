@@ -77,9 +77,10 @@ spotless {
 
 Spotless can check and apply formatting to any plain-text file, using simple rules ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.14.0/com/diffplug/gradle/spotless/FormatExtension.html)) like those above.  It also supports more powerful formatters:
 
+* Eclipse's [CDT](#eclipse-cdt) C/C++ code formatter
 * Eclipse's java code formatter (including style and import ordering)
 * Google's [google-java-format](https://github.com/google/google-java-format)
-* [Groovy Eclipse](https://github.com/groovy/groovy-eclipse/wiki)'s groovy code formatter
+* [Groovy Eclipse](#groovy-eclipse)'s groovy code formatter
 * [FreshMark](https://github.com/diffplug/freshmark) (markdown with variables)
 * [ktlint](https://github.com/shyiko/ktlint)
 * [scalafmt](https://github.com/olafurpg/scalafmt)
@@ -190,8 +191,9 @@ spotless {
   }
 }
 ```
+<a name="groovy-eclipse"></a>
 
-### [Groovy-Eclipse](https://github.com/groovy/groovy-eclipse) XML formatter
+### [Groovy-Eclipse](https://github.com/groovy/groovy-eclipse) formatter
 
 The formatter is based on the Eclipse Java formatter as used by `eclipseFormatFile`. It uses the same configuration parameters plus a few additional ones.
 These parameters can be configured within a single file, like the Java properties file [greclipse.properties](../lib-extra/src/test/resources/groovy/greclipse/format/greclipse.properties) in the previous example. The formatter step can also load the [exported Eclipse properties](../ECLIPSE_SCREENSHOTS.md) and augment it with the `org.codehaus.groovy.eclipse.ui.prefs` from the Eclipse workspace as shown below.
@@ -308,6 +310,8 @@ spotless {
   }
 }
 ```
+
+<a name="eclipse-cdt"></a>
 
 ### Eclipse [CDT](https://www.eclipse.org/cdt/) formatter
 
