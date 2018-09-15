@@ -25,6 +25,11 @@ public class CppDefaults {
 	//Prevent instantiation
 	private CppDefaults() {};
 
+	/** Filtering based on Eclipse-CDT <code>org.eclipse.core.contenttype.contentTypes</code> */
+	/**
+	 * Filter based on Eclipse-CDT <code>org.eclipse.core.contenttype.contentTypes</code>
+	 * extension <code>cSource</code>, <code>cHeader</code>, <code>cxxSource</code> and <code>cxxHeader</code>.
+	 */
 	public static final List<String> FILE_FILTER = Collections.unmodifiableList(
 			Arrays.asList("c", "h", "C", "cpp", "cxx", "cc", "c++", "h", "hpp", "hh", "hxx", "inc")
 					.stream().map(s -> {

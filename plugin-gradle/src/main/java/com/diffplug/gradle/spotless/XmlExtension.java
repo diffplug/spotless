@@ -19,19 +19,19 @@ import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElem
 
 import org.gradle.api.Project;
 
-import com.diffplug.spotless.cpp.CppDefaults;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
-import com.diffplug.spotless.extra.cpp.EclipseCdtFormatterStep;
+import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
+import com.diffplug.spotless.xml.XmlDefaults;
 
-public class CppExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
-	static final String NAME = "cpp";
+public class XmlExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
+	static final String NAME = "xml";
 
-	public CppExtension(SpotlessExtension rootExtension) {
+	public XmlExtension(SpotlessExtension rootExtension) {
 		super(rootExtension);
 	}
 
 	public EclipseConfig eclipse() {
-		return new EclipseConfig(EclipseCdtFormatterStep.defaultVersion());
+		return new EclipseConfig(EclipseWtpFormatterStep.defaultVersion());
 	}
 
 	public EclipseConfig eclipse(String version) {
@@ -42,7 +42,7 @@ public class CppExtension extends FormatExtension implements HasBuiltinDelimiter
 		private final EclipseBasedStepBuilder builder;
 
 		EclipseConfig(String version) {
-			builder = EclipseCdtFormatterStep.createBuilder(GradleProvisioner.fromProject(getProject()));
+			builder = EclipseWtpFormatterStep.createXmlBuilder(GradleProvisioner.fromProject(getProject()));
 			builder.setVersion(version);
 			addStep(builder.build());
 		}
@@ -59,24 +59,18 @@ public class CppExtension extends FormatExtension implements HasBuiltinDelimiter
 	@Override
 	protected void setupTask(SpotlessTask task) {
 		if (target == null) {
-			/*
-			 * The org.gradle.language.c and org.gradle.language.cpp source sets are seldom used.
-			 * Most Gradle C/C++ use external CMake builds (so the source location is unknown to Gradle).
-			 * Hence file extension based filtering is used in line with the org.eclipse.core.contenttype.contentTypes<
-			 * defined by the CDT plugin.
-			 */
-			target(CppDefaults.FILE_FILTER.toArray());
+			target(XmlDefaults.FILE_FILTER.toArray());
 		}
 		super.setupTask(task);
 	}
 
 	@Override
 	public LicenseHeaderConfig licenseHeader(String licenseHeader) {
-		return licenseHeader(licenseHeader, CppDefaults.DELIMITER_EXPR);
+		return licenseHeader(licenseHeader, XmlDefaults.DELIMITER_EXPR);
 	}
 
 	@Override
 	public LicenseHeaderConfig licenseHeaderFile(Object licenseHeaderFile) {
-		return licenseHeaderFile(licenseHeaderFile, CppDefaults.DELIMITER_EXPR);
+		return licenseHeaderFile(licenseHeaderFile, XmlDefaults.DELIMITER_EXPR);
 	}
 }

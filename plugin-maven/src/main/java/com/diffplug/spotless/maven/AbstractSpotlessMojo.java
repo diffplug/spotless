@@ -42,6 +42,7 @@ import com.diffplug.spotless.maven.generic.LicenseHeader;
 import com.diffplug.spotless.maven.java.Java;
 import com.diffplug.spotless.maven.kotlin.Kotlin;
 import com.diffplug.spotless.maven.scala.Scala;
+import com.diffplug.spotless.maven.xml.Xml;
 
 public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
@@ -86,6 +87,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	@Parameter
 	private Kotlin kotlin;
+
+	@Parameter
+	private Xml xml;
 
 	@Parameter
 	private Cpp cpp;
@@ -148,7 +152,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private List<FormatterFactory> getFormatterFactories() {
-		return Stream.concat(formats.stream(), Stream.of(java, scala, kotlin, cpp))
+		return Stream.concat(formats.stream(), Stream.of(java, scala, kotlin, cpp, xml))
 				.filter(Objects::nonNull)
 				.collect(toList());
 	}

@@ -25,9 +25,9 @@ import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 
 /** Formatter step which calls out to the Groovy-Eclipse formatter. */
-public final class WtpEclipseFormatterStep {
+public final class EclipseWtpFormatterStep {
 	// prevent direct instantiation
-	private WtpEclipseFormatterStep() {}
+	private EclipseWtpFormatterStep() {}
 
 	private static final String NAME = "eclipse wtp formatters";
 	private static final String FORMATTER_PACKAGE = "com.diffplug.spotless.extra.eclipse.wtp.";

@@ -13,29 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.maven.cpp;
+package com.diffplug.spotless.maven.xml;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.diffplug.spotless.cpp.CppDefaults;
 import com.diffplug.spotless.maven.FormatterFactory;
 import com.diffplug.spotless.maven.generic.LicenseHeader;
+import com.diffplug.spotless.xml.XmlDefaults;
 
 /**
- * A {@link FormatterFactory} implementation that corresponds to {@code <cpp>...</cpp>} configuration element.
+ * A {@link FormatterFactory} implementation that corresponds to {@code <xml>...</xml>} configuration element.
  * <p>
- * It defines a formatter for java source files that can execute both language agnostic (e.g. {@link LicenseHeader})
- * and cpp-specific (e.g. {@link Eclipse}) steps.
+ * It defines a formatter for XML/XSL/... source files that can execute both language agnostic (e.g. {@link LicenseHeader})
+ * and xml-specific (e.g. {@link Eclipse}) steps.
  */
-public class Cpp extends FormatterFactory {
+public class Xml extends FormatterFactory {
 
-	private static final Set<String> DEFAULT_INCLUDES = CppDefaults.FILE_FILTER
-			.stream().map(s -> {
-				return Arrays.asList("src/main/cpp/" + s, "src/test/cpp/" + s);
-			}).flatMap(Collection::stream).collect(Collectors.toSet());
+	private static final Set<String> DEFAULT_INCLUDES = XmlDefaults.FILE_FILTER
+			.stream().map(s -> "src/" + s).collect(Collectors.toSet());
 
 	@Override
 	public Set<String> defaultIncludes() {
@@ -48,7 +44,7 @@ public class Cpp extends FormatterFactory {
 
 	@Override
 	public String licenseHeaderDelimiter() {
-		return CppDefaults.DELIMITER_EXPR;
+		return XmlDefaults.DELIMITER_EXPR;
 	}
 
 }

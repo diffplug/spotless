@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <profiles version="12">
-	<profile version="Profile without name can be handled">
-		<setting value="Setting needs an ID" />
-	</profile>
+  <profile version="Profile without name can be handled">
+    <setting value="Setting needs an ID" />
+  </profile>
 </profiles>

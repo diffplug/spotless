@@ -79,6 +79,7 @@ Spotless can check and apply formatting to any plain-text file, using simple rul
 
 * Eclipse's [CDT](#eclipse-cdt) C/C++ code formatter
 * Eclipse's java code formatter (including style and import ordering)
+* Eclipse's [WTP-XML](#eclipse-wtp-xml) XML code formatter
 * Google's [google-java-format](https://github.com/google/google-java-format)
 * [Groovy Eclipse](#groovy-eclipse)'s groovy code formatter
 * [FreshMark](https://github.com/diffplug/freshmark) (markdown with variables)
@@ -316,6 +317,32 @@ spotless {
 ### Eclipse [CDT](https://www.eclipse.org/cdt/) formatter
 
 Use the Eclipse to define the *Code Style preferences* (see [Eclipse documentation](https://www.eclipse.org/documentation/)). Within the preferences *Edit...* dialog, you can export your configuration as XML file, which can be used as a `configFile`. If no `configFile` is provided, the CDT default configuration is used.
+
+<a name="xml-wtp"></a>
+
+## Applying to XML sources
+
+```gradle
+spotless {
+  xml {
+    target '**/*.xml' // Change file filter. By default files with 'xml', 'xsl', 'xslt', 'wsdl', 'xsd', 'exsd' and 'xmi' extension are supported
+    eclipse().configFile './xml-formatter.prefs' // Properties file of the Eclipse WTP formatter
+    // Use for example eclipse('4.7.3a') to specify a specific version of Eclipse,
+    // available versions are: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatters
+    // also supports license headers
+    licenseHeader '<!-- Licensed under Apache-2.0 -->'	// License header
+    licenseHeaderFile './license.txt'	// License header file
+  }
+}
+```
+
+<a name="eclipse-wtp-xml"></a>
+
+### Eclipse [WTP](https://www.eclipse.org/webtools/) XML formatter
+Use Eclipse to define the *XML editor preferences* (see [Eclipse documentation](https://www.eclipse.org/documentation/)). The preferences are stored below your Eclipse workspace directory in `.metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.xml.core.prefs`. Note that only the differences to the default configuration are stored within the file. Omit the 'configFile' entirely to use the default Eclipse configuration.
+
+The Eclipse WTP formatter supports DTD/XSD restrictions on white spaces. For XSD/DTD lookup, relative and absolute XSD/DTD URIs are supported. Furthermore a user catalog can be configured using the `userCatalog` property key. Add the property to the preference file or add an additional preference or properties files as an additional argument to the `configFile`.
+
 
 <a name="license-header"></a>
 
