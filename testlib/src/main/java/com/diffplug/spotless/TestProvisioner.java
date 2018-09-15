@@ -52,11 +52,12 @@ public class TestProvisioner {
 		return Suppliers.memoize(() -> {
 			Project project = ProjectBuilder.builder().build();
 			repoConfig.accept(project.getRepositories());
-			return mavenCoords -> {
+			return (withTransitives, mavenCoords) -> {
 				Dependency[] deps = mavenCoords.stream()
 						.map(project.getDependencies()::create)
 						.toArray(Dependency[]::new);
 				Configuration config = project.getConfigurations().detachedConfiguration(deps);
+				config.setTransitive(withTransitives);
 				config.setDescription(mavenCoords.toString());
 				try {
 					return config.resolve();
@@ -85,11 +86,11 @@ public class TestProvisioner {
 		} else {
 			cached = new HashMap<>();
 		}
-		return mavenCoords -> {
+		return (withTransitives, mavenCoords) -> {
 			Box<Boolean> wasChanged = Box.of(false);
 			ImmutableSet<File> result = cached.computeIfAbsent(ImmutableSet.copyOf(mavenCoords), coords -> {
 				wasChanged.set(true);
-				return ImmutableSet.copyOf(input.get().provisionWithDependencies(coords));
+				return ImmutableSet.copyOf(input.get().provisionWithTransitives(withTransitives, coords));
 			});
 			if (wasChanged.get()) {
 				try (ObjectOutputStream outputStream = new ObjectOutputStream(Files.asByteSink(cacheFile).openBufferedStream())) {
