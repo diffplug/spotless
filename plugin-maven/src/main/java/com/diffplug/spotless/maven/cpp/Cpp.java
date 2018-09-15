@@ -48,8 +48,7 @@ public class Cpp extends FormatterFactory {
 
 	@Override
 	public String licenseHeaderDelimiter() {
-		// License header currently not fully supported.
-		return "#";
+		return CppDefaults.DELIMITER_EXPR;
 	}
 
 }
