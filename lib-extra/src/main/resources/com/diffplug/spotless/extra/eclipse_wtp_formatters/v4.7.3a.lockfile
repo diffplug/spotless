@@ -17,10 +17,8 @@ org.eclipse.platform:org.eclipse.equinox.app:1.3.500
 org.eclipse.platform:org.eclipse.equinox.common:3.10.0
 org.eclipse.platform:org.eclipse.equinox.preferences:3.7.100
 org.eclipse.platform:org.eclipse.equinox.registry:3.8.0
-#Spotless currently loads all transitive dependencies.
-#jface requires platform specific JARs (not used by formatter), which are not hosted via M2.
-#org.eclipse.platform:org.eclipse.jface.text:3.13.0
-#org.eclipse.platform:org.eclipse.jface:3.14.0
+org.eclipse.platform:org.eclipse.jface.text:3.13.0
+org.eclipse.platform:org.eclipse.jface:3.14.0
 org.eclipse.platform:org.eclipse.osgi.services:3.7.0
 org.eclipse.platform:org.eclipse.osgi:3.13.0
 org.eclipse.platform:org.eclipse.text:3.6.300

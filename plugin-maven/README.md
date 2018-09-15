@@ -73,6 +73,7 @@ To use it in your pom, just [add the Spotless dependency](http://search.maven.or
 Spotless supports the following powerful formatters:
 
 * Eclipse's java code formatter (including style and import ordering)
+* Eclipse's [CDT](https://www.eclipse.org/cdt/) C/C++ code formatter
 * Google's [google-java-format](https://github.com/google/google-java-format)
 * User-defined license enforcement, regex replacement, etc.
 
@@ -163,6 +164,30 @@ By default, all files matching `src/main/kotlin/**/*.kt` and `src/test/kotlin/**
   </kotlin>
 </configuration>
 ```
+
+<a name="cpp"></a>
+
+## Applying to C/C++ source
+
+By default, all files matching `src/main/cpp/**/*.<ext>` and `src/test/cpp/**/*.<ext>` Ant style pattern will be formatted, whereas the file extensions `c`, `h`, `C`, `cpp`, `cxx`, `cc`, `c++`, `h`, `hpp`, `hh`, `hxx` and `inc` are supported.  Each element under `<cpp>` is a step, and they will be applied in the order specified.  Every step is optional, and they will be applied in the order specified.
+
+```xml
+<configuration>
+  <cpp>
+     <licenseHeader>
+       <!-- Specify either content or file, but not both -->
+       <content>/* Licensed under Apache-2.0 */</content>
+       <file>${basedir}/license-header</file>
+     </licenseHeader>
+     <eclipse>
+       <file>${basedir}/eclipse-fmt.xml</file>
+       <!-- Optional, available versions: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/config/eclipse_cdt_formatter -->
+       <version>4.7.3a</version>
+     </eclipse>
+  </cpp>
+</configuration>
+```
+Use the Eclipse to define the *Code Style preferences* (see [Eclipse documentation](https://www.eclipse.org/documentation/)). Within the preferences *Edit...* dialog, you can export your configuration as XML file, which can be used as a configuration `file`. If no `file` is provided, the CDT default configuration is used.
 
 <a name="format"></a>
 

@@ -123,6 +123,11 @@ public class SpotlessExtension {
 		configure(XmlExtension.NAME, XmlExtension.class, closure);
 	}
 
+	/** Configures the special C/C++-specific extension. */
+	public void cpp(Action<CppExtension> closure) {
+		configure(CppExtension.NAME, CppExtension.class, closure);
+	}
+
 	/** Configures a custom extension. */
 	public void format(String name, Action<FormatExtension> closure) {
 		requireNonNull(name, "name");
