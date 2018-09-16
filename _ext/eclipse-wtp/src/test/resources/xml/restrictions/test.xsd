@@ -6,14 +6,14 @@
         <xs:element name="x">
           <xs:simpleType>
             <xs:restriction base="xs:string">
-              <xs:whiteSpace value="collapse"/>
+              <xs:whiteSpace value="collapse" />
             </xs:restriction>
           </xs:simpleType>
-		</xs:element>        
+        </xs:element>
         <xs:element name="y">
           <xs:simpleType>
             <xs:restriction base="xs:string">
-              <xs:whiteSpace value="preserve"/>
+              <xs:whiteSpace value="preserve" />
             </xs:restriction>
           </xs:simpleType>
         </xs:element>

@@ -15,9 +15,12 @@
  */
 package com.diffplug.spotless.maven;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -38,7 +41,8 @@ import org.eclipse.aether.resolution.DependencyResult;
 
 public class ArtifactResolver {
 
-	private static final DependencyFilter ACCEPT_ALL_FILTER = (node, parents) -> true;
+	private static final DependencyFilter ACCEPT_ALL = (node, parents) -> true;
+	private static final DependencyFilter FILTER_TRANSITIVES = (node, parents) -> parents.size() <= 1;
 
 	private final RepositorySystem repositorySystem;
 	private final RepositorySystemSession session;
@@ -53,11 +57,28 @@ public class ArtifactResolver {
 		this.log = Objects.requireNonNull(log);
 	}
 
+	/** Use {@link ArtifactResolver#resolve(boolean, Collection)) instead.} */
+	@Deprecated
 	public Set<File> resolve(String mavenCoordinate) {
-		Artifact artifact = new DefaultArtifact(mavenCoordinate);
-		Dependency dependency = new Dependency(artifact, null);
-		CollectRequest collectRequest = new CollectRequest(dependency, repositories);
-		DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, ACCEPT_ALL_FILTER);
+		return resolve(true, Arrays.asList(mavenCoordinate));
+	}
+
+	/**
+	 * Given a set of maven coordinates, returns a set of jars which include all
+	 * of the specified coordinates and optionally their transitive dependencies.
+	 */
+	public Set<File> resolve(boolean withTransitives, Collection<String> mavenCoordinates) {
+		List<Dependency> dependencies = mavenCoordinates.stream()
+				.map(coordinateString -> new DefaultArtifact(coordinateString))
+				.map(artifact -> new Dependency(artifact, null))
+				.collect(toList());
+		CollectRequest collectRequest = new CollectRequest(dependencies, null, repositories);
+		DependencyRequest dependencyRequest;
+		if (withTransitives) {
+			dependencyRequest = new DependencyRequest(collectRequest, ACCEPT_ALL);
+		} else {
+			dependencyRequest = new DependencyRequest(collectRequest, FILTER_TRANSITIVES);
+		}
 
 		DependencyResult dependencyResult = resolveDependencies(dependencyRequest);
 

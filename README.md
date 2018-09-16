@@ -38,6 +38,7 @@ lib('generic.LicenseHeaderStep')                 +'{{yes}}       | {{yes}}      
 lib('generic.ReplaceRegexStep')                  +'{{yes}}       | {{yes}}       | {{no}}  |',
 lib('generic.ReplaceStep')                       +'{{yes}}       | {{yes}}       | {{no}}  |',
 lib('generic.TrimTrailingWhitespaceStep')        +'{{yes}}       | {{yes}}       | {{no}}  |',
+extra('cpp.EclipseFormatterStep')                +'{{yes}}       | {{yes}}       | {{no}}  |',
 extra('groovy.GrEclipseFormatterStep')           +'{{yes}}       | {{no}}       | {{no}}  |',
 lib('java.GoogleJavaFormatStep')                 +'{{yes}}       | {{yes}}      | {{no}}  |',
 lib('java.ImportOrderStep')                      +'{{yes}}       | {{yes}}      | {{no}}  |',
@@ -49,6 +50,7 @@ lib('npm.PrettierFormatterStep')                 +'{{yes}}       | {{no}}       
 lib('npm.TsFmtFormatterStep')                    +'{{yes}}       | {{no}}       | {{no}}  |',
 lib('scala.ScalaFmtStep')                        +'{{yes}}       | {{yes}}       | {{no}}  |',
 lib('sql.DBeaverSQLFormatterStep')               +'{{yes}}       | {{no}}       | {{no}}  |',
+extra('wtp.WtpEclipseFormatterStep')             +'{{yes}}       | {{yes}}      | {{no}}  |',
 '| [(Your FormatterStep here)](CONTRIBUTING.md#how-to-add-a-new-formatterstep) | {{no}}        | {{no}}       | {{no}}  |',
 '| Fast up-to-date checking                      | {{yes}}       | {{no}}       | {{no}}  |',
 '| Automatic idempotency safeguard               | {{yes}}       | {{no}}       | {{no}}  |',
@@ -63,6 +65,7 @@ lib('sql.DBeaverSQLFormatterStep')               +'{{yes}}       | {{no}}       
 | [`generic.ReplaceRegexStep`](lib/src/main/java/com/diffplug/spotless/generic/ReplaceRegexStep.java) | :+1:       | :+1:       | :white_large_square:  |
 | [`generic.ReplaceStep`](lib/src/main/java/com/diffplug/spotless/generic/ReplaceStep.java) | :+1:       | :+1:       | :white_large_square:  |
 | [`generic.TrimTrailingWhitespaceStep`](lib/src/main/java/com/diffplug/spotless/generic/TrimTrailingWhitespaceStep.java) | :+1:       | :+1:       | :white_large_square:  |
+| [`cpp.EclipseFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/cpp/EclipseFormatterStep.java) | :+1:       | :+1:       | :white_large_square:  |
 | [`groovy.GrEclipseFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/groovy/GrEclipseFormatterStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
 | [`java.GoogleJavaFormatStep`](lib/src/main/java/com/diffplug/spotless/java/GoogleJavaFormatStep.java) | :+1:       | :+1:      | :white_large_square:  |
 | [`java.ImportOrderStep`](lib/src/main/java/com/diffplug/spotless/java/ImportOrderStep.java) | :+1:       | :+1:      | :white_large_square:  |
@@ -74,6 +77,7 @@ lib('sql.DBeaverSQLFormatterStep')               +'{{yes}}       | {{no}}       
 | [`npm.TsFmtFormatterStep`](lib/src/main/java/com/diffplug/spotless/npm/TsFmtFormatterStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
 | [`scala.ScalaFmtStep`](lib/src/main/java/com/diffplug/spotless/scala/ScalaFmtStep.java) | :+1:       | :+1:       | :white_large_square:  |
 | [`sql.DBeaverSQLFormatterStep`](lib/src/main/java/com/diffplug/spotless/sql/DBeaverSQLFormatterStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
+| [`wtp.WtpEclipseFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/wtp/WtpEclipseFormatterStep.java) | :+1:       | :+1:      | :white_large_square:  |
 | [(Your FormatterStep here)](CONTRIBUTING.md#how-to-add-a-new-formatterstep) | :white_large_square:        | :white_large_square:       | :white_large_square:  |
 | Fast up-to-date checking                      | :+1:       | :white_large_square:       | :white_large_square:  |
 | Automatic idempotency safeguard               | :+1:       | :white_large_square:       | :white_large_square:  |

@@ -34,6 +34,23 @@ public class LicenseHeaderTest extends MavenIntegrationTest {
 	}
 
 	@Test
+	public void fromContentCpp() throws Exception {
+		String cppLicense = "//my license";
+		writePomWithCppSteps(
+				"<licenseHeader>",
+				"  <content>",
+				cppLicense,
+				"  </content>",
+				"</licenseHeader>");
+
+		String path = "src/test/cpp/file.c++";
+		String cppContent = "#include <whatsoever.h>";
+		setFile(path).toContent(cppContent);
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile(path).hasContent(cppLicense + '\n' + cppContent);
+	}
+
+	@Test
 	public void fromContentJava() throws Exception {
 		writePomWithJavaSteps(
 				"<licenseHeader>",
@@ -95,6 +112,21 @@ public class LicenseHeaderTest extends MavenIntegrationTest {
 		setFile(path).toContent(noLicenseHeader);
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).hasContent(KOTLIN_LICENSE_HEADER + '\n' + noLicenseHeader);
+	}
+
+	@Test
+	public void fromContentXml() throws Exception {
+		String license = " Licensed under Apache-2.0 ";
+		writePomWithXmlSteps(
+				"<licenseHeader>",
+				"  <content>",
+				"&lt;!--" + license + "--&gt;",
+				"  </content>",
+				"</licenseHeader>");
+		String path = "src/test.xml";
+		setFile(path).toContent("<a/>");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile(path).hasContent("<!--" + license + "-->\n<a/>");
 	}
 
 	@Test
