@@ -85,7 +85,8 @@ extra('wtp.WtpEclipseFormatterStep')             +'{{yes}}       | {{yes}}      
 
 ## Acknowledgements
 
-- Thanks to [Frank Vennemeyer](https://github.com/fvgh) for [Groovy support via greclipse](https://github.com/diffplug/spotless/issues/13), and a huge body of work with other eclipse-based formatters.
+- Thanks to [Simon Gamma](https://github.com/simschla) for [adding support for npm-based formatters](https://github.com/diffplug/spotless/pull/283), including `prettier` and `tsfmt`.
+- Thanks to [Frank Vennemeyer](https://github.com/fvgh) for [Groovy support via greclipse](https://github.com/diffplug/spotless/issues/13), [C++ support via CDT](https://github.com/diffplug/spotless/issues/232), [XML support via WTP](https://github.com/diffplug/spotless/pull/241) and a huge body of work with other eclipse-based formatters.
 - Thanks to [Konstantin Lutovich](https://github.com/lutovich) for [implementing the maven plugin](https://github.com/diffplug/spotless/pull/188).
 - Thanks to [Joan Goyeau](https://github.com/joan38) for [fixing scalafmt integration](https://github.com/diffplug/spotless/pull/260).
 - Thanks to [Baptiste Mesta](https://github.com/baptistemesta) for
