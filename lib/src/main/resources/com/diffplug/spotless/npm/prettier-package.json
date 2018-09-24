@@ -1,0 +1,11 @@
+{
+	"name": "spotless-prettier-formatter-step",
+	"version": "1.0.0",
+	"devDependencies": {
+		"prettier": "1.13.4"
+	},
+	"dependencies": {},
+	"engines": {
+		"node": ">=6"
+	}
+}
