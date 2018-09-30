@@ -6,6 +6,9 @@ apply from: rootProject.file('gradle/java-publish.gradle')
 dependencies {
 	// zero runtime reqs is a hard requirements for spotless-lib
 	// if you need a dep, put it in lib-extra
+	// TODO: Figure out a way of not having to import JOOR
+	compile "org.jooq:joor-java-8:0.9.9"
+
 	testCompile "junit:junit:${VER_JUNIT}"
 	testCompile "org.assertj:assertj-core:${VER_ASSERTJ}"
 	testCompile "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
