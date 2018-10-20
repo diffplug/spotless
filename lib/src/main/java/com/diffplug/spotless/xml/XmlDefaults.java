@@ -27,7 +27,7 @@ public class XmlDefaults {
 
 	/**
 	 * Filter based on Eclipse-WTP <code>org.eclipse.core.contenttype.contentTypes</code>
-	 * extension <code>org.eclipse.wst.xml.core.xmlsource</code>
+	 * extension <code>org.eclipse.wst.xml.core.xmlsource</code>.
 	 */
 	public static final List<String> FILE_FILTER = Collections.unmodifiableList(
 			Arrays.asList("xml", "xsl", "xslt", "wsdl", "xsd", "exsd", "xmi")
