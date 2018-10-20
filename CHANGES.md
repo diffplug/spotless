@@ -5,7 +5,9 @@ You might be looking for:
 - [plugin-gradle/CHANGES.md](plugin-gradle/CHANGES.md)
 - [plugin-maven/CHANGES.md](plugin-maven/CHANGES.md)
 
-### Version 1.15.0-SNAPSHOT - TBD (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/snapshot/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/snapshot/), [snapshot repo](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/))
+### Version 1.16.0-SNAPSHOT - TBD (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/snapshot/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/snapshot/), [snapshot repo](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/))
+
+### Version 1.15.0 - September 23rd 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.15.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.15.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
 * Added C/C++ support ([#232](https://github.com/diffplug/spotless/issues/232)).
 * Integrated Eclipse CDT formatter ([#274](https://github.com/diffplug/spotless/pull/274))
@@ -14,7 +16,7 @@ You might be looking for:
 * Integrated Eclipse WTP formatter ([#290](https://github.com/diffplug/spotless/pull/290))
 * Updated JSR305 annotation from 3.0.0 to 3.0.2 ([#274](https://github.com/diffplug/spotless/pull/274))
 * Migrated from FindBugs annotations 3.0.0 to SpotBugs annotations 3.1.6 ([#274](https://github.com/diffplug/spotless/pull/274))
-* `Formatter` now implements `AutoCloseable`.  This means that users of `Formatter` are expected to use the try-with-resources pattern.  The reason for this change is so that `FormatterFunc.Closeable` actually works. ([#284](https://github.com/diffplug/spotless/pull/284))
+* `Formatter` now implements `AutoCloseable`.  This means that users of `Formatter` are expected to use the try-with-resources pattern.  The reason for this change is so that `FormatterFunc.Closeable` actually works. ([#284](https://github.com/diffplug/spotless/pull/284))* Added [`prettier`](https://prettier.io/) and [`tsfmt`](https://github.com/vvakame/typescript-formatter) support, as well as general infrastructure for calling `nodeJS` code using `j2v8` ([#283](https://github.com/diffplug/spotless/pull/283)).
 
 ### Version 1.14.0 - July 24th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.14.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.14.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 

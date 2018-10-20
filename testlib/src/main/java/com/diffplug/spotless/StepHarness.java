@@ -24,7 +24,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 
 /** An api for adding test cases. */
-public class StepHarness {
+public class StepHarness implements AutoCloseable {
 	private final FormatterFunc formatter;
 
 	/** Creates a StepHarness around the given FormatterFunc. */
@@ -37,12 +37,20 @@ public class StepHarness {
 		// We don't care if an individual FormatterStep is misbehaving on line-endings, because
 		// Formatter fixes that.  No reason to care in tests either.  It's likely to pop up when
 		// running tests on Windows from time-to-time
-		return new StepHarness(input -> LineEnding.toUnix(step.format(input, new File(""))));
+		return new StepHarness(FormatterFunc.Closeable.of(
+				() -> {
+					if (step instanceof FormatterStepImpl.Standard) {
+						((FormatterStepImpl.Standard<?>) step).cleanupFormatterFunc();
+					}
+				},
+				input -> LineEnding.toUnix(step.format(input, new File("")))));
 	}
 
 	/** Creates a harness for testing a formatter whose steps don't depend on the file. */
 	public static StepHarness forFormatter(Formatter formatter) {
-		return new StepHarness(input -> formatter.compute(input, new File("")));
+		return new StepHarness(FormatterFunc.Closeable.of(
+				formatter::close,
+				input -> formatter.compute(input, new File(""))));
 	}
 
 	/** Asserts that the given element is transformed as expected, and that the result is idempotent. */
@@ -83,5 +91,12 @@ public class StepHarness {
 			exceptionAssertion.accept(abstractAssert);
 		}
 		return this;
+	}
+
+	@Override
+	public void close() {
+		if (formatter instanceof FormatterFunc.Closeable) {
+			((FormatterFunc.Closeable) formatter).close();
+		}
 	}
 }

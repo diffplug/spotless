@@ -20,12 +20,7 @@ import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElem
 import java.io.File;
 import java.io.Serializable;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
@@ -46,6 +41,7 @@ import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.generic.ReplaceRegexStep;
 import com.diffplug.spotless.generic.ReplaceStep;
 import com.diffplug.spotless.generic.TrimTrailingWhitespaceStep;
+import com.diffplug.spotless.npm.PrettierFormatterStep;
 
 import groovy.lang.Closure;
 
@@ -428,6 +424,63 @@ public class FormatExtension {
 		LicenseHeaderConfig config = new LicenseFileHeaderConfig(delimiter, licenseHeaderFile);
 		addStep(config.createStep());
 		return config;
+	}
+
+	public abstract class NpmStepConfig<T extends NpmStepConfig<?>> {
+		@Nullable
+		protected Object npmFile;
+
+		@SuppressWarnings("unchecked")
+		public T npmExecutable(final Object npmFile) {
+			this.npmFile = npmFile;
+			replaceStep(createStep());
+			return (T) this;
+		}
+
+		File npmFileOrNull() {
+			return npmFile != null ? getProject().file(npmFile) : null;
+		}
+
+		abstract FormatterStep createStep();
+
+	}
+
+	public class PrettierConfig extends NpmStepConfig<PrettierConfig> {
+
+		@Nullable
+		protected Object prettierConfigFile;
+
+		@Nullable
+		protected Map<String, Object> prettierConfig;
+
+		public PrettierConfig configFile(final Object prettierConfigFile) {
+			this.prettierConfigFile = prettierConfigFile;
+			replaceStep(createStep());
+			return this;
+		}
+
+		public PrettierConfig config(final Map<String, Object> prettierConfig) {
+			this.prettierConfig = new TreeMap<>(prettierConfig);
+			replaceStep(createStep());
+			return this;
+		}
+
+		FormatterStep createStep() {
+			final Project project = getProject();
+			return PrettierFormatterStep.create(
+					GradleProvisioner.fromProject(project),
+					project.getBuildDir(),
+					npmFileOrNull(),
+					new com.diffplug.spotless.npm.PrettierConfig(
+							this.prettierConfigFile != null ? project.file(this.prettierConfigFile) : null,
+							this.prettierConfig));
+		}
+	}
+
+	public PrettierConfig prettier() {
+		final PrettierConfig prettierConfig = new PrettierConfig();
+		addStep(prettierConfig.createStep());
+		return prettierConfig;
 	}
 
 	/** Sets up a format task according to the values in this extension. */

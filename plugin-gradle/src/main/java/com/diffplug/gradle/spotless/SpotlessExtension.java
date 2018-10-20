@@ -133,6 +133,11 @@ public class SpotlessExtension {
 		configure(CppExtension.NAME, CppExtension.class, closure);
 	}
 
+	/** Configures the special typescript-specific extension for typescript files. */
+	public void typescript(Action<TypescriptExtension> closure) {
+		configure(TypescriptExtension.NAME, TypescriptExtension.class, closure);
+	}
+
 	/** Configures a custom extension. */
 	public void format(String name, Action<FormatExtension> closure) {
 		requireNonNull(name, "name");
