@@ -51,6 +51,23 @@ public class LicenseHeaderTest extends MavenIntegrationTest {
 	}
 
 	@Test
+	public void fromContentCss() throws Exception {
+		String license = "/* my license */";
+		writePomWithCssSteps(
+				"<licenseHeader>",
+				"  <content>",
+				license,
+				"  </content>",
+				"</licenseHeader>");
+
+		String path = "src/file.css";
+		String content = "p {}";
+		setFile(path).toContent(content);
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile(path).hasContent(license + '\n' + content);
+	}
+
+	@Test
 	public void fromContentJava() throws Exception {
 		writePomWithJavaSteps(
 				"<licenseHeader>",
