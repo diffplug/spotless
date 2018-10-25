@@ -110,6 +110,10 @@ public class MavenIntegrationTest extends ResourceHarness {
 		writePom(groupWithSteps("cpp", steps));
 	}
 
+	protected void writePomWithCssSteps(String... steps) throws IOException {
+		writePom(groupWithSteps("css", steps));
+	}
+
 	protected void writePom(String... configuration) throws IOException {
 		writePom(null, configuration);
 	}

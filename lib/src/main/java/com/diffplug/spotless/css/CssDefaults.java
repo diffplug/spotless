@@ -13,26 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.xml;
+package com.diffplug.spotless.css;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
-/** Common utilities for XML */
-public class XmlDefaults {
+/** Common utilities for CSS */
+public class CssDefaults {
 	//Prevent instantiation
-	private XmlDefaults() {};
+	private CssDefaults() {};
 
 	/**
 	 * Filter based on Eclipse-WTP <code>org.eclipse.core.contenttype.contentTypes</code>
-	 * extension <code>org.eclipse.wst.xml.core.xmlsource</code>.
+	 * extension <code>org.eclipse.wst.css.core.csssource</code>.
 	 */
 	public static final List<String> FILE_FILTER = Collections.unmodifiableList(
-			Arrays.asList("xml", "xsl", "xslt", "wsdl", "xsd", "exsd", "xmi")
-					.stream().map(s -> "**/*." + s).collect(Collectors.toList()));
+			Arrays.asList("**/*.css"));
 
-	/** Delimiter covers beginning of elements and processing instructions. */
-	public static final String DELIMITER_EXPR = "\\<[a-zA-Z\\?]";
+	/**
+	 * Match line that starts with a selector. Selection is quite broad.
+	 * Assure that multiline licenses have a proper indentation.
+	 * Assure that your has been formatted before (no whitespace before first selector).
+	 */
+	public static final String DELIMITER_EXPR = "[A-Za-z\\.\\#]+";
 }

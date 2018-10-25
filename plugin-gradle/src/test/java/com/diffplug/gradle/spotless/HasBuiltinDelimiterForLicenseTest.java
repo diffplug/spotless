@@ -38,6 +38,15 @@ public class HasBuiltinDelimiterForLicenseTest extends GradleIntegrationTest {
 				"    java {",
 				"        assert (it instanceof HasBuiltinDelimiterForLicense) : \"Was `$it`\"",
 				"    }",
+				"    cpp {",
+				"        assert (it instanceof HasBuiltinDelimiterForLicense) : \"Was `$it`\"",
+				"    }",
+				"    css {",
+				"        assert (it instanceof HasBuiltinDelimiterForLicense) : \"Was `$it`\"",
+				"    }",
+				"    xml {",
+				"        assert (it instanceof HasBuiltinDelimiterForLicense) : \"Was `$it`\"",
+				"    }",
 				"}");
 		gradleRunner()
 				.withGradleVersion("4.6")

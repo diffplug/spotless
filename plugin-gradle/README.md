@@ -79,6 +79,7 @@ Spotless can check and apply formatting to any plain-text file, using simple rul
 
 * Eclipse's [CDT](#eclipse-cdt) C/C++ code formatter
 * Eclipse's java code formatter (including style and import ordering)
+* Eclipse's [WTP-CSS](#eclipse-wtp-css) CSS code formatter
 * Eclipse's [WTP-XML](#eclipse-wtp-xml) XML code formatter
 * Google's [google-java-format](https://github.com/google/google-java-format)
 * [Groovy Eclipse](#groovy-eclipse)'s groovy code formatter
@@ -319,6 +320,29 @@ spotless {
 ### Eclipse [CDT](https://www.eclipse.org/cdt/) formatter
 
 Use the Eclipse to define the *Code Style preferences* (see [Eclipse documentation](https://www.eclipse.org/documentation/)). Within the preferences *Edit...* dialog, you can export your configuration as XML file, which can be used as a `configFile`. If no `configFile` is provided, the CDT default configuration is used.
+
+<a name="css-wtp"></a>
+
+## Applying to CSS sources
+
+```gradle
+spotless {
+  css {
+    target '**/*.css' '**/*.css2'// Change file filter. By default files with 'css' extension are supported
+    eclipse().configFile './css-formatter.prefs' // Properties file of the Eclipse WTP formatter
+    // Use for example eclipse('4.7.3a') to specify a specific version of Eclipse,
+    // available versions are: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatters
+    // also supports license headers
+    licenseHeader '<!-- Licensed under Apache-2.0 -->'	// License header
+    licenseHeaderFile './license.txt'	// License header file
+  }
+}
+```
+
+<a name="eclipse-wtp-css"></a>
+
+### Eclipse [WTP](https://www.eclipse.org/webtools/) CSS formatter
+Use Eclipse to define the *CSS Files* editor preferences (see [Eclipse documentation](http://help.eclipse.org/photon/topic/org.eclipse.wst.sse.doc.user/topics/tsrcedt025.html)) and the *Cleanup* preferences available in the *Source* menu (when editing a CSS file). The preferences are stored below your Eclipse workspace directory in `.metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.css.core.prefs`. Note that only the differences to the default configuration are stored within the file. Omit the 'configFile' entirely to use the default Eclipse configuration.
 
 <a name="xml-wtp"></a>
 

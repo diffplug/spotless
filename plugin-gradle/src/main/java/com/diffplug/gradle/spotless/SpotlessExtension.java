@@ -118,6 +118,11 @@ public class SpotlessExtension {
 		configure(SqlExtension.NAME, SqlExtension.class, closure);
 	}
 
+	/** Configures the special css-specific extension for CSS files. */
+	public void css(Action<CssExtension> closure) {
+		configure(CssExtension.NAME, CssExtension.class, closure);
+	}
+
 	/** Configures the special xml-specific extension for XML/XSL/... files (XHTML is excluded). */
 	public void xml(Action<XmlExtension> closure) {
 		configure(XmlExtension.NAME, XmlExtension.class, closure);
