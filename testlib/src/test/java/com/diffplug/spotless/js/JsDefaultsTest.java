@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.xml;
+package com.diffplug.spotless.js;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,16 +26,18 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 
-public class XmlDefaultsTest extends ResourceHarness {
+public class JsDefaultsTest extends ResourceHarness {
 
 	@Test
 	public void testDelimiterExpr() throws Exception {
-		final String header = "<!--My tests header-->";
-		FormatterStep step = LicenseHeaderStep.createFromHeader(header, XmlDefaults.DELIMITER_EXPR);
-		final File dummyFile = setFile("src/main/file.dummy").toContent("");
+		final String header = "/*My tests header*/";
+		FormatterStep step = LicenseHeaderStep.createFromHeader(header, JsDefaults.DELIMITER_EXPR);
+		final File dummyFile = setFile("src/main/cpp/file1.dummy").toContent("");
 		for (String testSource : Arrays.asList(
-				"<!--XML starts with element-->@\n<a></a>",
-				"<!--XML starts with processing instruction -->@\n<?><a/>")) {
+				"/* Starts with function */@\nfunction a() {}",
+				"/* Starts with variable */@\np = 1",
+				"/* Starts with closure */@\n{}",
+				"/* Starts with no-op */@\n;")) {
 			String output = null;
 			try {
 				output = step.format(testSource, dummyFile);

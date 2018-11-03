@@ -68,6 +68,57 @@ public class LicenseHeaderTest extends MavenIntegrationTest {
 	}
 
 	@Test
+	public void fromContentHtml() throws Exception {
+		String license = "my license";
+		writePomWithHtmlSteps(
+				"<licenseHeader>",
+				"  <content>",
+				"&lt;!--" + license + "--&gt;",
+				"  </content>",
+				"</licenseHeader>");
+
+		String path = "src/file.html";
+		String content = "<html></html>";
+		setFile(path).toContent(content);
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile(path).hasContent("<!--" + license + "-->" + '\n' + content);
+	}
+
+	@Test
+	public void fromContentJs() throws Exception {
+		String license = "// my license";
+		writePomWithJsSteps(
+				"<licenseHeader>",
+				"  <content>",
+				license,
+				"  </content>",
+				"</licenseHeader>");
+
+		String path = "src/file.js";
+		String content = "p = 1";
+		setFile(path).toContent(content);
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile(path).hasContent(license + '\n' + content);
+	}
+
+	@Test
+	public void fromContentJson() throws Exception {
+		String license = "/* my license */";
+		writePomWithJsonSteps(
+				"<licenseHeader>",
+				"  <content>",
+				license,
+				"  </content>",
+				"</licenseHeader>");
+
+		String path = "src/file.json";
+		String content = "{ }";
+		setFile(path).toContent(content);
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile(path).hasContent(license + '\n' + content);
+	}
+
+	@Test
 	public void fromContentJava() throws Exception {
 		writePomWithJavaSteps(
 				"<licenseHeader>",

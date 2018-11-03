@@ -74,7 +74,7 @@ Spotless supports the following powerful formatters:
 
 * Eclipse's java code formatter (including style and import ordering)
 * Eclipse's [CDT](https://www.eclipse.org/cdt/) C/C++ code formatter
-* Eclipse's [WTP](https://www.eclipse.org/webtools/) CSS and XML code formatter
+* Eclipse's [WTP](https://www.eclipse.org/webtools/) CSS, HTML, JS, JSON and XML code formatter
 * Google's [google-java-format](https://github.com/google/google-java-format)
 * User-defined license enforcement, regex replacement, etc.
 
@@ -190,7 +190,7 @@ By default, all files matching `src/main/cpp/**/*.<ext>` and `src/test/cpp/**/*.
 ```
 Use the Eclipse to define the *Code Style preferences* (see [Eclipse documentation](https://www.eclipse.org/documentation/)). Within the preferences *Edit...* dialog, you can export your configuration as XML file, which can be used as a configuration `<file>`. If no `<file>` is provided, the CDT default configuration is used.
 
-<a name="xml"></a>
+<a name="css"></a>
 
 ## Applying to CSS source
 
@@ -213,6 +213,86 @@ By default, all files matching `src/**/*.css` Ant style pattern will be formatte
 </configuration>
 ```
 Use Eclipse to define the *CSS Files* editor preferences (see [Eclipse documentation](http://help.eclipse.org/photon/topic/org.eclipse.wst.sse.doc.user/topics/tsrcedt025.html)) and the *Cleanup* preferences available in the *Source* menu (when editing a CSS file). The preferences are stored below your Eclipse workspace directory in `.metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.css.core.prefs`. Note that only the differences to the default configuration are stored within the file. If no `<file>` is provided, the WTP default configuration is used.
+
+<a name="html"></a>
+
+## Applying to HTML source
+
+By default, all files matching in `src/**` with a 'html','htm','xhtml','htpl','wml','shtml' and 'shtm' prefix will be formatted.
+Each element under `<html>` is a step, and they will be applied in the order specified.  Every step is optional, and they will be applied in the order specified.
+
+```xml
+<configuration>
+  <html>
+     <licenseHeader>
+       <!-- Specify either content or file, but not both -->
+       <content>&lt;!-- Licensed under Apache-2.0 --&gt;</content>
+       <file>${basedir}/license-header</file>
+     </licenseHeader>
+     <eclipse>
+       <files>
+           <file>${basedir}/html.prefs</file>
+           <file>${basedir}/css.prefs</file>
+           <file>${basedir}/js.xml</file>
+       </files>
+       <!-- Optional, available versions: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatters -->
+       <version>4.7.3a</version>
+     </eclipse>
+  </html>
+</configuration>
+```
+Use Eclipse to define the *HTML file preferences* (see [Eclipse documentation](http://help.eclipse.org/photon/topic/org.eclipse.wst.sse.doc.user/topics/tsrcedt025.html)) and the *Cleanup* preferences available in the *Source* menu (when editing a HTML file). The preferences are stored below your Eclipse workspace directory in `.metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.html.core.prefs`. Note that only the differences to the default configuration are stored within the file. Omit the `<files>` entirely to use the default Eclipse configuration. Furthermore the HTML code formatter takes into account the configuration of the [WTP-CSS](#css) and [WTP-JS](#js) formatter. The configuration can be provided within one or within separate files.
+
+<a name="js"></a>
+
+## Applying to JavaScript source
+
+By default, all files matching `src/**/*.js` Ant style pattern will be formatted.  Each element under `<js>` is a step, and they will be applied in the order specified.  Every step is optional, and they will be applied in the order specified.
+
+```xml
+<configuration>
+  <js>
+     <licenseHeader>
+       <!-- Specify either content or file, but not both -->
+       <content>// Licensed under Apache-2.0</content>
+       <file>${basedir}/license-header</file>
+     </licenseHeader>
+     <eclipse>
+       <files>
+         <file>${basedir}/eclipse-fmt.xml</file>
+       </files>
+       <!-- Optional, available versions: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatters -->
+       <version>4.7.3a</version>
+     </eclipse>
+  </js>
+</configuration>
+```
+Use the Eclipse to define the *Code Style Formatter* (see [Eclipse documentation](https://www.eclipse.org/documentation/)). Within the preferences *Edit...* dialog, you can export your configuration as XML file, which can be used as a configuration `<file>`. If no `<files>` are provided, the default configuration is used.
+
+<a name="json"></a>
+
+## Applying to JSON source
+
+By default, all files matching `src/**/*.json` Ant style pattern will be formatted.  Each element under `<json>` is a step, and they will be applied in the order specified.  Every step is optional, and they will be applied in the order specified.
+
+```xml
+<configuration>
+  <json>
+     <licenseHeader>
+       <!-- Specify either content or file, but not both. -->
+       <!-- Only use in combination with a pre-processing tool. -->
+       <content>/* Licensed under Apache-2.0 */</content>
+       <file>${basedir}/license-header</file>
+     </licenseHeader>
+     <eclipse>
+       <file>${basedir}/eclipse-fmt.pref</file>
+       <!-- Optional, available versions: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatters -->
+       <version>4.7.3a</version>
+     </eclipse>
+  </json>
+</configuration>
+```
+Use Eclipse to define the *JSON editing preferences* see [Eclipse documentation](https://www.eclipse.org/documentation/)). The preferences are stored below your Eclipse workspace directory in `.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.json.core.prefs`. Note that only the differences to the default configuration are stored within the file. Omit the `<file>` entirely to use the default Eclipse configuration.
 
 <a name="xml"></a>
 

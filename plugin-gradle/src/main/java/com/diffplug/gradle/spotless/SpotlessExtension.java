@@ -118,19 +118,34 @@ public class SpotlessExtension {
 		configure(SqlExtension.NAME, SqlExtension.class, closure);
 	}
 
+	/** Configures the special C/C++-specific extension. */
+	public void cpp(Action<CppExtension> closure) {
+		configure(CppExtension.NAME, CppExtension.class, closure);
+	}
+
 	/** Configures the special css-specific extension for CSS files. */
 	public void css(Action<CssExtension> closure) {
 		configure(CssExtension.NAME, CssExtension.class, closure);
 	}
 
+	/** Configures the special html-specific extension for (X)HTML files. */
+	public void html(Action<HtmlExtension> closure) {
+		configure(HtmlExtension.NAME, HtmlExtension.class, closure);
+	}
+
+	/** Configures the special js-specific extension for JavaScript files. */
+	public void js(Action<JsExtension> closure) {
+		configure(JsExtension.NAME, JsExtension.class, closure);
+	}
+
+	/** Configures the special json-specific extension for JSON files. */
+	public void json(Action<JsonExtension> closure) {
+		configure(JsonExtension.NAME, JsonExtension.class, closure);
+	}
+
 	/** Configures the special xml-specific extension for XML/XSL/... files (XHTML is excluded). */
 	public void xml(Action<XmlExtension> closure) {
 		configure(XmlExtension.NAME, XmlExtension.class, closure);
-	}
-
-	/** Configures the special C/C++-specific extension. */
-	public void cpp(Action<CppExtension> closure) {
-		configure(CppExtension.NAME, CppExtension.class, closure);
 	}
 
 	/** Configures the special typescript-specific extension for typescript files. */

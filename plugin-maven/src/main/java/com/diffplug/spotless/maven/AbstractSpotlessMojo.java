@@ -40,7 +40,10 @@ import com.diffplug.spotless.maven.cpp.Cpp;
 import com.diffplug.spotless.maven.css.Css;
 import com.diffplug.spotless.maven.generic.Format;
 import com.diffplug.spotless.maven.generic.LicenseHeader;
+import com.diffplug.spotless.maven.html.Html;
 import com.diffplug.spotless.maven.java.Java;
+import com.diffplug.spotless.maven.js.Js;
+import com.diffplug.spotless.maven.json.Json;
 import com.diffplug.spotless.maven.kotlin.Kotlin;
 import com.diffplug.spotless.maven.scala.Scala;
 import com.diffplug.spotless.maven.xml.Xml;
@@ -97,6 +100,15 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	@Parameter
 	private Css css;
+
+	@Parameter
+	private Html html;
+
+	@Parameter
+	private Js js;
+
+	@Parameter
+	private Json json;
 
 	protected abstract void process(List<File> files, Formatter formatter) throws MojoExecutionException;
 
@@ -156,7 +168,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private List<FormatterFactory> getFormatterFactories() {
-		return Stream.concat(formats.stream(), Stream.of(java, scala, kotlin, cpp, css, xml))
+		return Stream.concat(formats.stream(), Stream.of(java, scala, kotlin, cpp, css, html, js, json, xml))
 				.filter(Objects::nonNull)
 				.collect(toList());
 	}

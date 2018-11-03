@@ -80,6 +80,9 @@ Spotless can check and apply formatting to any plain-text file, using simple rul
 * Eclipse's [CDT](#eclipse-cdt) C/C++ code formatter
 * Eclipse's java code formatter (including style and import ordering)
 * Eclipse's [WTP-CSS](#eclipse-wtp-css) CSS code formatter
+* Eclipse's [WTP-HTML](#eclipse-wtp-html) (X)HTML code formatter
+* Eclipse's [WTP-JS](#eclipse-wtp-js) JavaScript code formatter
+* Eclipse's [WTP-JSON](#eclipse-wtp-json) JSON data formatter
 * Eclipse's [WTP-XML](#eclipse-wtp-xml) XML code formatter
 * Google's [google-java-format](https://github.com/google/google-java-format)
 * [Groovy Eclipse](#groovy-eclipse)'s groovy code formatter
@@ -328,8 +331,31 @@ Use the Eclipse to define the *Code Style preferences* (see [Eclipse documentati
 ```gradle
 spotless {
   css {
-    target '**/*.css' '**/*.css2'// Change file filter. By default files with 'css' extension are supported
+    target '**/*.css', '**/*.css2'// Change file filter. By default files with 'css' extension are supported
     eclipse().configFile './css-formatter.prefs' // Properties file of the Eclipse WTP formatter
+    // Use for example eclipse('4.7.3a') to specify a specific version of Eclipse,
+    // available versions are: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatters
+    // also supports license headers
+    licenseHeader '/* Licensed under Apache-2.0 */'	// License header
+    licenseHeaderFile './license.txt'	// License header file
+  }
+}
+```
+
+<a name="eclipse-wtp-css"></a>
+
+### Eclipse [WTP](https://www.eclipse.org/webtools/) CSS formatter
+Use Eclipse to define the *CSS Files* editor preferences (see [Eclipse documentation](http://help.eclipse.org/photon/topic/org.eclipse.wst.sse.doc.user/topics/tsrcedt025.html)) and the *Cleanup* preferences available in the *Source* menu (when editing a CSS file). The preferences are stored below your Eclipse workspace directory in `.metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.css.core.prefs`. Note that only the differences to the default configuration are stored within the file. Omit the `configFile` entirely to use the default Eclipse configuration.
+
+<a name="html-wtp"></a>
+
+## Applying to HTML sources
+
+```gradle
+spotless {
+  html {
+    target '**/*.html', '**/*.xhtml'// Change file filter. By default files with 'html','htm','xhtml','htpl','wml','shtml' and 'shtm' extension are supported
+    eclipse().configFile './html.prefs', './css.prefs', './js.xml' // Properties files of the Eclipse WTP formatter
     // Use for example eclipse('4.7.3a') to specify a specific version of Eclipse,
     // available versions are: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatters
     // also supports license headers
@@ -339,10 +365,57 @@ spotless {
 }
 ```
 
-<a name="eclipse-wtp-css"></a>
+<a name="eclipse-wtp-html"></a>
 
-### Eclipse [WTP](https://www.eclipse.org/webtools/) CSS formatter
-Use Eclipse to define the *CSS Files* editor preferences (see [Eclipse documentation](http://help.eclipse.org/photon/topic/org.eclipse.wst.sse.doc.user/topics/tsrcedt025.html)) and the *Cleanup* preferences available in the *Source* menu (when editing a CSS file). The preferences are stored below your Eclipse workspace directory in `.metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.css.core.prefs`. Note that only the differences to the default configuration are stored within the file. Omit the 'configFile' entirely to use the default Eclipse configuration.
+### Eclipse [WTP](https://www.eclipse.org/webtools/) HTML formatter
+Use Eclipse to define the *HTML file preferences* (see [Eclipse documentation](http://help.eclipse.org/photon/topic/org.eclipse.wst.sse.doc.user/topics/tsrcedt025.html)) and the *Cleanup* preferences available in the *Source* menu (when editing a HTML file). The preferences are stored below your Eclipse workspace directory in `.metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.html.core.prefs`. Note that only the differences to the default configuration are stored within the file. Omit the `configFile` entirely to use the default Eclipse configuration. Furthermore the HTML code formatter takes into account the configuration of the [WTP-CSS](#eclipse-wtp-css) and [WTP-JS](#eclipse-wtp-js) formatter. The configuration can be provided within one or within separate files.
+
+<a name="js-wtp"></a>
+
+## Applying to JavaScript sources
+
+```gradle
+spotless {
+  js {
+    target '**/*js', '**/*.JS'// Change file filter. By default files with 'js' extension are supported
+    eclipse().configFile './js-formatter.xml' // Properties files of the Eclipse WTP formatter
+    // Use for example eclipse('4.7.3a') to specify a specific version of Eclipse,
+    // available versions are: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatters
+    // also supports license headers
+    licenseHeader '// Licensed under Apache-2.0'	// License header
+    licenseHeaderFile './license.txt'	// License header file
+  }
+}
+```
+
+<a name="eclipse-wtp-js"></a>
+
+### Eclipse [WTP](https://www.eclipse.org/webtools/) JavaScript formatter
+Use the Eclipse to define the *Code Style Formatter* (see [Eclipse documentation](https://www.eclipse.org/documentation/)). Within the preferences *Edit...* dialog, you can export your configuration as XML file, which can be used as a `configFile`. If no `configFile` is provided, the default configuration is used.
+
+<a name="json-wtp"></a>
+
+## Applying to JSON sources
+
+```gradle
+spotless {
+  js {
+    target '**/*json', '**/*.JSON'// Change file filter. By default files with 'json' extension are supported
+    eclipse().configFile './json-formatter.prefs' // Properties files of the Eclipse WTP formatter
+    // Use for example eclipse('4.7.3a') to specify a specific version of Eclipse,
+    // available versions are: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatters
+    // also supports license headers (for example in combination with JSON minify)
+    licenseHeader '// Licensed under Apache-2.0'	// License header
+    licenseHeaderFile './license.txt'	// License header file
+  }
+}
+```
+
+<a name="eclipse-wtp-json"></a>
+
+### Eclipse [WTP](https://www.eclipse.org/webtools/) JSON formatter
+Use Eclipse to define the *JSON editing preferences* see [Eclipse documentation](https://www.eclipse.org/documentation/)). The preferences are stored below your Eclipse workspace directory in `.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.json.core.prefs`. Note that only the differences to the default configuration are stored within the file. Omit the `configFile` entirely to use the default Eclipse configuration.
+
 
 <a name="xml-wtp"></a>
 
