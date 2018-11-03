@@ -7,6 +7,8 @@ You might be looking for:
 
 ### Version 1.17.0-SNAPSHOT - TBD (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/snapshot/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/snapshot/), [snapshot repo](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/))
 
+* Minor support for plugin-gradle and plugin-maven HTML, JS and JSON plugins ([#315](https://github.com/diffplug/spotless/pull/315)).
+
 ### Version 1.16.0 - October 30th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.16.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.16.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
 * Minor support for plugin-gradle and plugin-maven CSS plugins ([#311](https://github.com/diffplug/spotless/pull/311)).
