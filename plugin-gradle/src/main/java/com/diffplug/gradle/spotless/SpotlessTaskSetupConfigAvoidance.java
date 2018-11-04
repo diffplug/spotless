@@ -15,13 +15,13 @@
  */
 package com.diffplug.gradle.spotless;
 
-import static com.diffplug.gradle.spotless.Constants.APPLY;
-import static com.diffplug.gradle.spotless.Constants.APPLY_DESCRIPTION;
-import static com.diffplug.gradle.spotless.Constants.CHECK;
-import static com.diffplug.gradle.spotless.Constants.CHECK_DESCRIPTION;
-import static com.diffplug.gradle.spotless.Constants.EXTENSION;
-import static com.diffplug.gradle.spotless.Constants.TASK_GROUP;
-import static com.diffplug.gradle.spotless.MoreStrings.capitalize;
+import static com.diffplug.gradle.spotless.SpotlessTaskConstants.APPLY;
+import static com.diffplug.gradle.spotless.SpotlessTaskConstants.APPLY_DESCRIPTION;
+import static com.diffplug.gradle.spotless.SpotlessTaskConstants.CHECK;
+import static com.diffplug.gradle.spotless.SpotlessTaskConstants.CHECK_DESCRIPTION;
+import static com.diffplug.gradle.spotless.SpotlessTaskConstants.EXTENSION;
+import static com.diffplug.gradle.spotless.SpotlessTaskConstants.TASK_GROUP;
+import static com.diffplug.gradle.spotless.SpotlessTaskConstants.capitalize;
 
 import org.gradle.api.Project;
 import org.gradle.api.Task;

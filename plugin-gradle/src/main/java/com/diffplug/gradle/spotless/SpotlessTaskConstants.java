@@ -15,7 +15,9 @@
  */
 package com.diffplug.gradle.spotless;
 
-final class Constants {
+import java.util.Objects;
+
+final class SpotlessTaskConstants {
 	static final String EXTENSION = "spotless";
 	static final String CHECK = "Check";
 	static final String APPLY = "Apply";
@@ -24,6 +26,11 @@ final class Constants {
 	static final String CHECK_DESCRIPTION = "Checks that sourcecode satisfies formatting steps.";
 	static final String APPLY_DESCRIPTION = "Applies code formatting steps to sourcecode in-place.";
 
+	static String capitalize(String input) {
+		Objects.requireNonNull(input, "input");
+		return Character.toUpperCase(input.charAt(0)) + input.substring(1);
+	}
+
 	// prevent instantiation
-	private Constants() {}
+	private SpotlessTaskConstants() {}
 }

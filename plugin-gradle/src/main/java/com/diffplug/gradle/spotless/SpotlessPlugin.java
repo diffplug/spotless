@@ -15,7 +15,7 @@
  */
 package com.diffplug.gradle.spotless;
 
-import static com.diffplug.gradle.spotless.Constants.EXTENSION;
+import static com.diffplug.gradle.spotless.SpotlessTaskConstants.EXTENSION;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;

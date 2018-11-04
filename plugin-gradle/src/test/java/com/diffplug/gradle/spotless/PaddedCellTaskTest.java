@@ -57,7 +57,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 		}
 
 		private SpotlessTask createCheckTask(String name, FormatterStep step) {
-			SpotlessTask task = project.getTasks().create("spotless" + MoreStrings.capitalize(name), SpotlessTask.class);
+			SpotlessTask task = project.getTasks().create("spotless" + SpotlessTaskConstants.capitalize(name), SpotlessTask.class);
 			task.setCheck();
 			task.addStep(step);
 			task.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
@@ -66,7 +66,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 		}
 
 		private SpotlessTask createApplyTask(String name, FormatterStep step) {
-			SpotlessTask task = project.getTasks().create("spotless" + MoreStrings.capitalize(name) + Constants.APPLY, SpotlessTask.class);
+			SpotlessTask task = project.getTasks().create("spotless" + SpotlessTaskConstants.capitalize(name) + SpotlessTaskConstants.APPLY, SpotlessTask.class);
 			task.setApply();
 			task.addStep(step);
 			task.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
