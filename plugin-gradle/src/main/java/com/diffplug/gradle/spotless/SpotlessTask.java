@@ -23,13 +23,16 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
+import org.gradle.api.Project;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.TaskAction;
@@ -47,6 +50,8 @@ import com.diffplug.spotless.PaddedCellBulk;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
 public class SpotlessTask extends DefaultTask {
+	private static final String FILES_PROPERTY = "files";
+
 	// set by SpotlessExtension, but possibly overridden by FormatExtension
 	protected String encoding = "UTF-8";
 
@@ -168,11 +173,23 @@ public class SpotlessTask extends DefaultTask {
 				.steps(steps)
 				.exceptionPolicy(exceptionPolicy)
 				.build()) {
+			// determine if a list of files has been passed in
+			Predicate<File> shouldInclude;
+			Project project = getProject();
+			if (project.hasProperty(FILES_PROPERTY) && project.property(FILES_PROPERTY) instanceof String) {
+				Object rawIncludePatterns = project.property(FILES_PROPERTY);
+				assert rawIncludePatterns != null;
+				final String[] includePatterns = ((String) rawIncludePatterns).split(",");
+				shouldInclude = file -> Arrays.stream(includePatterns)
+						.anyMatch(filePattern -> file.getAbsolutePath().matches(filePattern));
+			} else {
+				shouldInclude = file -> true;
+			}
 			// find the outOfDate files
 			List<File> outOfDate = new ArrayList<>();
 			inputs.outOfDate(inputDetails -> {
 				File file = inputDetails.getFile();
-				if (file.isFile() && !file.equals(getCacheFile())) {
+				if (file.isFile() && !file.equals(getCacheFile()) && shouldInclude.test(file)) {
 					outOfDate.add(file);
 				}
 			});
@@ -183,7 +200,7 @@ public class SpotlessTask extends DefaultTask {
 			if (getCacheFile().exists()) {
 				LastApply lastApply = SerializableMisc.fromFile(LastApply.class, getCacheFile());
 				for (File file : lastApply.changedFiles) {
-					if (!outOfDate.contains(file) && file.exists() && Iterables.contains(target, file)) {
+					if (!outOfDate.contains(file) && file.exists() && Iterables.contains(target, file) && shouldInclude.test(file)) {
 						outOfDate.add(file);
 					}
 				}
