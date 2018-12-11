@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
@@ -178,10 +180,14 @@ public class SpotlessTask extends DefaultTask {
 			Project project = getProject();
 			if (project.hasProperty(FILES_PROPERTY) && project.property(FILES_PROPERTY) instanceof String) {
 				Object rawIncludePatterns = project.property(FILES_PROPERTY);
-				assert rawIncludePatterns != null;
 				final String[] includePatterns = ((String) rawIncludePatterns).split(",");
-				shouldInclude = file -> Arrays.stream(includePatterns)
-						.anyMatch(filePattern -> file.getAbsolutePath().matches(filePattern));
+				final List<Pattern> compiledIncludePatterns = Arrays.stream(includePatterns)
+						.map(Pattern::compile)
+						.collect(Collectors.toList());
+				shouldInclude = file -> compiledIncludePatterns
+						.stream()
+						.anyMatch(filePattern -> filePattern.matcher(file.getAbsolutePath())
+								.matches());
 			} else {
 				shouldInclude = file -> true;
 			}
