@@ -659,6 +659,16 @@ Note that `enforceCheck` is a global property which affects all formats (outside
 
 <a name="examples"></a>
 
+## Can I apply Spotless to specific files?
+
+You can target specific files by setting the `files` project property to a comma-separated list of file patterns:
+
+```
+cmd> gradlew spotlessApply -Pfiles=my/file/pattern.java,more/generic/.*-pattern.java
+```
+
+The patterns are matched using `String#matches(String)` against the absolute file path.
+
 ## Example configurations (from real-world projects)
 
 Spotless is hosted on jcenter and at plugins.gradle.org. [Go here](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless) if you're not sure how to import the plugin.
