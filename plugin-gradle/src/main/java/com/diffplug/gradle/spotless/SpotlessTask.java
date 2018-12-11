@@ -50,7 +50,7 @@ import com.diffplug.spotless.PaddedCellBulk;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
 public class SpotlessTask extends DefaultTask {
-	private static final String FILES_PROPERTY = "files";
+	private static final String FILES_PROPERTY = "spotlessFiles";
 
 	// set by SpotlessExtension, but possibly overridden by FormatExtension
 	protected String encoding = "UTF-8";

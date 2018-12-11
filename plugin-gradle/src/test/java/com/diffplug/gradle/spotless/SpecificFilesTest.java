@@ -57,7 +57,7 @@ public class SpecificFilesTest extends GradleIntegrationTest {
 		setFile(testFile(3)).toResource(fixture(false));
 
 		gradleRunner()
-				.withArguments("spotlessApply", "-Pfiles=" + patterns)
+				.withArguments("spotlessApply", "-PspotlessFiles=" + patterns)
 				.build();
 
 		assertFile(testFile(1)).sameAsResource(fixture(firstFormatted));
@@ -77,6 +77,6 @@ public class SpecificFilesTest extends GradleIntegrationTest {
 
 	@Test
 	public void regexp() throws IOException {
-		integration(".*/src/main/java/test\\d.java", true, true, true);
+		integration(".*/src/main/java/test(1|3).java", true, false, true);
 	}
 }

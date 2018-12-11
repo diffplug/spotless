@@ -661,10 +661,10 @@ Note that `enforceCheck` is a global property which affects all formats (outside
 
 ## Can I apply Spotless to specific files?
 
-You can target specific files by setting the `files` project property to a comma-separated list of file patterns:
+You can target specific files by setting the `spotlessFiles` project property to a comma-separated list of file patterns:
 
 ```
-cmd> gradlew spotlessApply -Pfiles=my/file/pattern.java,more/generic/.*-pattern.java
+cmd> gradlew spotlessApply -PspotlessFiles=my/file/pattern.java,more/generic/.*-pattern.java
 ```
 
 The patterns are matched using `String#matches(String)` against the absolute file path.
