@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
-import org.gradle.api.Project;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.TaskAction;
@@ -52,8 +51,6 @@ import com.diffplug.spotless.PaddedCellBulk;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
 public class SpotlessTask extends DefaultTask {
-	private static final String FILES_PROPERTY = "spotlessFiles";
-
 	// set by SpotlessExtension, but possibly overridden by FormatExtension
 	protected String encoding = "UTF-8";
 
@@ -87,6 +84,17 @@ public class SpotlessTask extends DefaultTask {
 
 	public void setPaddedCell(boolean paddedCell) {
 		this.paddedCell = paddedCell;
+	}
+
+	protected String filePatterns = "";
+
+	@Input
+	public String getFilePatterns() {
+		return filePatterns;
+	}
+
+	public void setFilePatterns(String filePatterns) {
+		this.filePatterns = Objects.requireNonNull(filePatterns);
 	}
 
 	protected FormatExceptionPolicy exceptionPolicy = new FormatExceptionPolicyStrict();
@@ -177,10 +185,8 @@ public class SpotlessTask extends DefaultTask {
 				.build()) {
 			// determine if a list of files has been passed in
 			Predicate<File> shouldInclude;
-			Project project = getProject();
-			if (project.hasProperty(FILES_PROPERTY) && project.property(FILES_PROPERTY) instanceof String) {
-				Object rawIncludePatterns = project.property(FILES_PROPERTY);
-				final String[] includePatterns = ((String) rawIncludePatterns).split(",");
+			if (this.filePatterns != null && !this.filePatterns.isEmpty()) {
+				final String[] includePatterns = this.filePatterns.split(",");
 				final List<Pattern> compiledIncludePatterns = Arrays.stream(includePatterns)
 						.map(Pattern::compile)
 						.collect(Collectors.toList());
@@ -195,7 +201,7 @@ public class SpotlessTask extends DefaultTask {
 			List<File> outOfDate = new ArrayList<>();
 			inputs.outOfDate(inputDetails -> {
 				File file = inputDetails.getFile();
-				if (file.isFile() && !file.equals(getCacheFile()) && shouldInclude.test(file)) {
+				if (shouldInclude.test(file) && file.isFile() && !file.equals(getCacheFile())) {
 					outOfDate.add(file);
 				}
 			});
@@ -206,10 +212,15 @@ public class SpotlessTask extends DefaultTask {
 			if (getCacheFile().exists()) {
 				LastApply lastApply = SerializableMisc.fromFile(LastApply.class, getCacheFile());
 				for (File file : lastApply.changedFiles) {
-					if (!outOfDate.contains(file) && file.exists() && Iterables.contains(target, file) && shouldInclude.test(file)) {
+					if (shouldInclude.test(file) && !outOfDate.contains(file) && file.exists() && Iterables.contains(target, file)) {
 						outOfDate.add(file);
 					}
 				}
+			}
+
+			if (outOfDate.isEmpty()) {
+				// no work to do
+				return;
 			}
 
 			if (apply) {
