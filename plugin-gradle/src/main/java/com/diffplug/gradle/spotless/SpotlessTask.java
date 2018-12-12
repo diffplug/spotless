@@ -175,6 +175,46 @@ public class SpotlessTask extends DefaultTask {
 			throw new GradleException("Don't call " + getName() + " directly, call " + getName() + SpotlessPlugin.CHECK + " or " + getName() + SpotlessPlugin.APPLY);
 		}
 
+		Predicate<File> shouldInclude;
+		if (this.filePatterns.isEmpty()) {
+			shouldInclude = file -> true;
+		} else {
+			// a list of files has been passed in via project property
+			final String[] includePatterns = this.filePatterns.split(",");
+			final List<Pattern> compiledIncludePatterns = Arrays.stream(includePatterns)
+					.map(Pattern::compile)
+					.collect(Collectors.toList());
+			shouldInclude = file -> compiledIncludePatterns
+					.stream()
+					.anyMatch(filePattern -> filePattern.matcher(file.getAbsolutePath())
+							.matches());
+		}
+		// find the outOfDate files
+		List<File> outOfDate = new ArrayList<>();
+		inputs.outOfDate(inputDetails -> {
+			File file = inputDetails.getFile();
+			if (shouldInclude.test(file) && file.isFile() && !file.equals(getCacheFile())) {
+				outOfDate.add(file);
+			}
+		});
+		// load the files that were changed by the last run
+		// because it's possible the user changed them back to their
+		// unformatted form, so we need to treat them as dirty
+		// (see bug #144)
+		if (getCacheFile().exists()) {
+			LastApply lastApply = SerializableMisc.fromFile(LastApply.class, getCacheFile());
+			for (File file : lastApply.changedFiles) {
+				if (shouldInclude.test(file) && !outOfDate.contains(file) && file.exists() && Iterables.contains(target, file)) {
+					outOfDate.add(file);
+				}
+			}
+		}
+
+		if (outOfDate.isEmpty()) {
+			// no work to do
+			return;
+		}
+
 		// create the formatter
 		try (Formatter formatter = Formatter.builder()
 				.lineEndingsPolicy(lineEndingsPolicy)
@@ -183,45 +223,6 @@ public class SpotlessTask extends DefaultTask {
 				.steps(steps)
 				.exceptionPolicy(exceptionPolicy)
 				.build()) {
-			// determine if a list of files has been passed in
-			Predicate<File> shouldInclude;
-			if (this.filePatterns != null && !this.filePatterns.isEmpty()) {
-				final String[] includePatterns = this.filePatterns.split(",");
-				final List<Pattern> compiledIncludePatterns = Arrays.stream(includePatterns)
-						.map(Pattern::compile)
-						.collect(Collectors.toList());
-				shouldInclude = file -> compiledIncludePatterns
-						.stream()
-						.anyMatch(filePattern -> filePattern.matcher(file.getAbsolutePath())
-								.matches());
-			} else {
-				shouldInclude = file -> true;
-			}
-			// find the outOfDate files
-			List<File> outOfDate = new ArrayList<>();
-			inputs.outOfDate(inputDetails -> {
-				File file = inputDetails.getFile();
-				if (shouldInclude.test(file) && file.isFile() && !file.equals(getCacheFile())) {
-					outOfDate.add(file);
-				}
-			});
-			// load the files that were changed by the last run
-			// because it's possible the user changed them back to their
-			// unformatted form, so we need to treat them as dirty
-			// (see bug #144)
-			if (getCacheFile().exists()) {
-				LastApply lastApply = SerializableMisc.fromFile(LastApply.class, getCacheFile());
-				for (File file : lastApply.changedFiles) {
-					if (shouldInclude.test(file) && !outOfDate.contains(file) && file.exists() && Iterables.contains(target, file)) {
-						outOfDate.add(file);
-					}
-				}
-			}
-
-			if (outOfDate.isEmpty()) {
-				// no work to do
-				return;
-			}
 
 			if (apply) {
 				List<File> changedFiles = applyAnyChanged(formatter, outOfDate);
