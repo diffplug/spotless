@@ -15,24 +15,61 @@
  */
 package com.diffplug.spotless.extra.wtp;
 
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.joining;
+
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.Properties;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 
 /** Formatter step which calls out to the Groovy-Eclipse formatter. */
-public final class EclipseWtpFormatterStep {
-	// prevent direct instantiation
-	private EclipseWtpFormatterStep() {}
+public enum EclipseWtpFormatterStep {
+	// @formatter:off
+	CSS ("EclipseCssFormatterStepImpl",  EclipseWtpFormatterStep::applyWithoutFile),
+	HTML("EclipseHtmlFormatterStepImpl", EclipseWtpFormatterStep::applyWithoutFile),
+	JS  ("EclipseJsFormatterStepImpl",   EclipseWtpFormatterStep::applyWithoutFile),
+	JSON("EclipseJsonFormatterStepImpl", EclipseWtpFormatterStep::applyWithoutFile),
+	XML ("EclipseXmlFormatterStepImpl",  EclipseWtpFormatterStep::applyWithFile);
+	// @formatter:on
 
 	private static final String NAME = "eclipse wtp formatters";
 	private static final String FORMATTER_PACKAGE = "com.diffplug.spotless.extra.eclipse.wtp.";
 	private static final String DEFAULT_VERSION = "4.7.3a";
 	private static final String FORMATTER_METHOD = "format";
+
+	private final String implementationClassName;
+	private final ThrowingEx.BiFunction<String, EclipseBasedStepBuilder.State, FormatterFunc> formatterCall;
+
+	EclipseWtpFormatterStep(String implementationClassName, ThrowingEx.BiFunction<String, EclipseBasedStepBuilder.State, FormatterFunc> formatterCall) {
+		this.implementationClassName = implementationClassName;
+		this.formatterCall = formatterCall;
+	}
+
+	/** Similar to {@link #valueOf(Class, String)}, ignores whitespace, case and adds helpful exception messages. */
+	public static EclipseWtpFormatterStep valueFrom(String name) {
+		Objects.requireNonNull(name);
+		name = name.trim().toUpperCase(Locale.ENGLISH);
+		try {
+			return valueOf(name);
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException(e.getMessage() +
+					" (allowed values: " +
+					stream(values()).map(enumType -> enumType.toString()).collect(joining("; ")) +
+					")");
+		}
+	}
+
+	public EclipseBasedStepBuilder createBuilder(Provisioner provisioner) {
+		return new EclipseBasedStepBuilder(NAME, " - " + toString(), provisioner, state -> formatterCall.apply(implementationClassName, state));
+	}
 
 	public static String defaultVersion() {
 		return DEFAULT_VERSION;
@@ -45,22 +82,22 @@ public final class EclipseWtpFormatterStep {
 
 	/** Provides default configuration for HTML formatter */
 	public static EclipseBasedStepBuilder createHtmlBuilder(Provisioner provisioner) {
-		return new EclipseBasedStepBuilder(NAME, " - html", provisioner, state -> applyWithoutFile("EclipseHtmlFormatterStepImpl", state));
+		return HTML.createBuilder(provisioner);
 	}
 
 	/** Provides default configuration for Java Script formatter */
 	public static EclipseBasedStepBuilder createJsBuilder(Provisioner provisioner) {
-		return new EclipseBasedStepBuilder(NAME, " - js", provisioner, state -> applyWithoutFile("EclipseJsFormatterStepImpl", state));
+		return JS.createBuilder(provisioner);
 	}
 
 	/** Provides default configuration for JSON formatter */
 	public static EclipseBasedStepBuilder createJsonBuilder(Provisioner provisioner) {
-		return new EclipseBasedStepBuilder(NAME, " - json", provisioner, state -> applyWithoutFile("EclipseJsonFormatterStepImpl", state));
+		return JSON.createBuilder(provisioner);
 	}
 
 	/** Provides default configuration for XML formatter */
 	public static EclipseBasedStepBuilder createXmlBuilder(Provisioner provisioner) {
-		return new EclipseBasedStepBuilder(NAME, " - xml", provisioner, state -> applyWithFile("EclipseXmlFormatterStepImpl", state));
+		return XML.createBuilder(provisioner);
 	}
 
 	private static FormatterFunc applyWithoutFile(String className, EclipseBasedStepBuilder.State state) throws Exception {

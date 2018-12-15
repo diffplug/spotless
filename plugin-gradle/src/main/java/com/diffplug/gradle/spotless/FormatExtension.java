@@ -35,6 +35,8 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LazyForwardingEquality;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ThrowingEx;
+import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
+import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
 import com.diffplug.spotless.generic.EndWithNewlineStep;
 import com.diffplug.spotless.generic.IndentStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
@@ -481,6 +483,38 @@ public class FormatExtension {
 		final PrettierConfig prettierConfig = new PrettierConfig();
 		addStep(prettierConfig.createStep());
 		return prettierConfig;
+	}
+
+	public class EclipseWtpConfig {
+		private final EclipseBasedStepBuilder builder;
+
+		EclipseWtpConfig(EclipseWtpFormatterStep type) {
+			this(type, EclipseWtpFormatterStep.defaultVersion());
+		}
+
+		EclipseWtpConfig(EclipseWtpFormatterStep type, String version) {
+			builder = type.createBuilder(GradleProvisioner.fromProject(getProject()));
+			builder.setVersion(EclipseWtpFormatterStep.defaultVersion());
+			addStep(builder.build());
+		}
+
+		public void configFile(Object... configFiles) {
+			requireElementsNonNull(configFiles);
+			Project project = getProject();
+			builder.setPreferences(project.files(configFiles).getFiles());
+			replaceStep(builder.build());
+		}
+
+	}
+
+	public EclipseWtpConfig eclipseWtp(String type) {
+		return new EclipseWtpConfig(EclipseWtpFormatterStep.valueFrom(type));
+	}
+
+	public EclipseWtpConfig eclipseWtp(String type, String version) {
+		return new EclipseWtpConfig(
+				EclipseWtpFormatterStep.valueFrom(type),
+				version);
 	}
 
 	/** Sets up a format task according to the values in this extension. */

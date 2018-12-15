@@ -107,6 +107,10 @@ public abstract class FormatterFactory {
 		addStepFactory(replaceRegex);
 	}
 
+	public final void addEclipseWtp(EclipseWtp eclipseWtp) {
+		addStepFactory(eclipseWtp);
+	}
+
 	protected final void addStepFactory(FormatterStepFactory stepFactory) {
 		Objects.requireNonNull(stepFactory);
 		stepFactories.add(stepFactory);

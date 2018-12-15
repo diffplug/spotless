@@ -31,18 +31,16 @@ import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.collection.CollectRequest;
+import org.eclipse.aether.graph.DefaultDependencyNode;
 import org.eclipse.aether.graph.Dependency;
-import org.eclipse.aether.graph.DependencyFilter;
 import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResult;
 import org.eclipse.aether.resolution.DependencyRequest;
 import org.eclipse.aether.resolution.DependencyResolutionException;
 import org.eclipse.aether.resolution.DependencyResult;
 
 public class ArtifactResolver {
-
-	private static final DependencyFilter ACCEPT_ALL = (node, parents) -> true;
-	private static final DependencyFilter FILTER_TRANSITIVES = (node, parents) -> parents.size() <= 1;
 
 	private final RepositorySystem repositorySystem;
 	private final RepositorySystemSession session;
@@ -73,27 +71,38 @@ public class ArtifactResolver {
 				.map(artifact -> new Dependency(artifact, null))
 				.collect(toList());
 		CollectRequest collectRequest = new CollectRequest(dependencies, null, repositories);
-		DependencyRequest dependencyRequest;
+		List<ArtifactResult> artifactResults;
 		if (withTransitives) {
-			dependencyRequest = new DependencyRequest(collectRequest, ACCEPT_ALL);
+			DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, null);
+			artifactResults = resolveArtifacts(dependencyRequest);
 		} else {
-			dependencyRequest = new DependencyRequest(collectRequest, FILTER_TRANSITIVES);
+			List<ArtifactRequest> artifactRequests = dependencies.stream()
+					.map(dependency -> new DefaultDependencyNode(dependency))
+					.map(dependencyNode -> new ArtifactRequest(dependencyNode))
+					.collect(toList());
+			artifactResults = resolveArtifacts(artifactRequests);
 		}
 
-		DependencyResult dependencyResult = resolveDependencies(dependencyRequest);
-
-		return dependencyResult.getArtifactResults()
-				.stream()
+		return artifactResults.stream()
 				.peek(this::logResolved)
 				.map(ArtifactResult::getArtifact)
 				.map(Artifact::getFile)
 				.collect(toSet());
 	}
 
-	private DependencyResult resolveDependencies(DependencyRequest dependencyRequest) {
+	private List<ArtifactResult> resolveArtifacts(DependencyRequest dependencyRequest) {
 		try {
-			return repositorySystem.resolveDependencies(session, dependencyRequest);
+			DependencyResult dependencyResult = repositorySystem.resolveDependencies(session, dependencyRequest);
+			return dependencyResult.getArtifactResults();
 		} catch (DependencyResolutionException e) {
+			throw new ArtifactResolutionException("Unable to resolve dependencies", e);
+		}
+	}
+
+	private List<ArtifactResult> resolveArtifacts(List<ArtifactRequest> artifactRequests) {
+		try {
+			return repositorySystem.resolveArtifacts(session, artifactRequests);
+		} catch (org.eclipse.aether.resolution.ArtifactResolutionException e) {
 			throw new ArtifactResolutionException("Unable to resolve dependencies", e);
 		}
 	}
