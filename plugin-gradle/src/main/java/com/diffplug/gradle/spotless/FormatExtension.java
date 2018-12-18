@@ -488,13 +488,9 @@ public class FormatExtension {
 	public class EclipseWtpConfig {
 		private final EclipseBasedStepBuilder builder;
 
-		EclipseWtpConfig(EclipseWtpFormatterStep type) {
-			this(type, EclipseWtpFormatterStep.defaultVersion());
-		}
-
 		EclipseWtpConfig(EclipseWtpFormatterStep type, String version) {
 			builder = type.createBuilder(GradleProvisioner.fromProject(getProject()));
-			builder.setVersion(EclipseWtpFormatterStep.defaultVersion());
+			builder.setVersion(version);
 			addStep(builder.build());
 		}
 
@@ -504,17 +500,14 @@ public class FormatExtension {
 			builder.setPreferences(project.files(configFiles).getFiles());
 			replaceStep(builder.build());
 		}
-
 	}
 
-	public EclipseWtpConfig eclipseWtp(String type) {
-		return new EclipseWtpConfig(EclipseWtpFormatterStep.valueFrom(type));
+	public EclipseWtpConfig eclipseWtp(EclipseWtpFormatterStep type) {
+		return eclipseWtp(type, EclipseWtpFormatterStep.defaultVersion());
 	}
 
-	public EclipseWtpConfig eclipseWtp(String type, String version) {
-		return new EclipseWtpConfig(
-				EclipseWtpFormatterStep.valueFrom(type),
-				version);
+	public EclipseWtpConfig eclipseWtp(EclipseWtpFormatterStep type, String version) {
+		return new EclipseWtpConfig(type, version);
 	}
 
 	/** Sets up a format task according to the values in this extension. */

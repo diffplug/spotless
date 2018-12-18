@@ -28,7 +28,7 @@ import com.diffplug.spotless.maven.FormatterStepFactory;
 
 public class EclipseWtp implements FormatterStepFactory {
 	@Parameter
-	private String type;
+	private EclipseWtpFormatterStep type;
 
 	@Parameter
 	private String version;
@@ -38,7 +38,7 @@ public class EclipseWtp implements FormatterStepFactory {
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
-		EclipseBasedStepBuilder eclipseConfig = EclipseWtpFormatterStep.valueFrom(type).createBuilder(stepConfig.getProvisioner());
+		EclipseBasedStepBuilder eclipseConfig = type.createBuilder(stepConfig.getProvisioner());
 		eclipseConfig.setVersion(version == null ? EclipseWtpFormatterStep.defaultVersion() : version);
 		if (null != files) {
 			eclipseConfig.setPreferences(

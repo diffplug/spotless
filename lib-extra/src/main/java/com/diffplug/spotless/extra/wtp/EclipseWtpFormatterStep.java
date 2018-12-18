@@ -15,14 +15,9 @@
  */
 package com.diffplug.spotless.extra.wtp;
 
-import static java.util.Arrays.stream;
-import static java.util.stream.Collectors.joining;
-
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Locale;
-import java.util.Objects;
 import java.util.Properties;
 
 import com.diffplug.spotless.FormatterFunc;
@@ -51,20 +46,6 @@ public enum EclipseWtpFormatterStep {
 	EclipseWtpFormatterStep(String implementationClassName, ThrowingEx.BiFunction<String, EclipseBasedStepBuilder.State, FormatterFunc> formatterCall) {
 		this.implementationClassName = implementationClassName;
 		this.formatterCall = formatterCall;
-	}
-
-	/** Similar to {@link #valueOf(Class, String)}, ignores whitespace, case and adds helpful exception messages. */
-	public static EclipseWtpFormatterStep valueFrom(String name) {
-		Objects.requireNonNull(name);
-		name = name.trim().toUpperCase(Locale.ENGLISH);
-		try {
-			return valueOf(name);
-		} catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException(e.getMessage() +
-					" (allowed values: " +
-					stream(values()).map(enumType -> enumType.toString()).collect(joining("; ")) +
-					")");
-		}
 	}
 
 	public EclipseBasedStepBuilder createBuilder(Provisioner provisioner) {
