@@ -25,7 +25,10 @@ import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
+import com.diffplug.spotless.maven.generic.EclipseWtp;
 
+/** CSS Eclipse is deprecated. Use {@link EclipseWtp} instead.*/
+@Deprecated
 public class Eclipse implements FormatterStepFactory {
 
 	@Parameter

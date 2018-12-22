@@ -50,7 +50,9 @@ public class LicenseHeaderTest extends MavenIntegrationTest {
 		assertFile(path).hasContent(cppLicense + '\n' + cppContent);
 	}
 
+	/** The CSS extension is discontinued. */
 	@Test
+	@Deprecated
 	public void fromContentCss() throws Exception {
 		String license = "/* my license */";
 		writePomWithCssSteps(
@@ -131,7 +133,9 @@ public class LicenseHeaderTest extends MavenIntegrationTest {
 		assertFile(path).hasContent(KOTLIN_LICENSE_HEADER + '\n' + noLicenseHeader);
 	}
 
+	/** XML extension is discontinued. */
 	@Test
+	@Deprecated
 	public void fromContentXml() throws Exception {
 		String license = " Licensed under Apache-2.0 ";
 		writePomWithXmlSteps(

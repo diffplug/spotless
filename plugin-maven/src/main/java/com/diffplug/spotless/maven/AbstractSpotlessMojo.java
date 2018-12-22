@@ -37,13 +37,11 @@ import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.maven.cpp.Cpp;
-import com.diffplug.spotless.maven.css.Css;
 import com.diffplug.spotless.maven.generic.Format;
 import com.diffplug.spotless.maven.generic.LicenseHeader;
 import com.diffplug.spotless.maven.java.Java;
 import com.diffplug.spotless.maven.kotlin.Kotlin;
 import com.diffplug.spotless.maven.scala.Scala;
-import com.diffplug.spotless.maven.xml.Xml;
 
 public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
@@ -89,14 +87,18 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Parameter
 	private Kotlin kotlin;
 
+	/** The XML extension is discontinued. */
 	@Parameter
-	private Xml xml;
+	@Deprecated
+	private com.diffplug.spotless.maven.xml.Xml xml;
 
 	@Parameter
 	private Cpp cpp;
 
+	/** The CSS extension is discontinued. */
 	@Parameter
-	private Css css;
+	@Deprecated
+	private com.diffplug.spotless.maven.css.Css css;
 
 	protected abstract void process(List<File> files, Formatter formatter) throws MojoExecutionException;
 

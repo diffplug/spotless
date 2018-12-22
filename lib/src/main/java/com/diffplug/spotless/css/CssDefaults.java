@@ -19,7 +19,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-/** Common utilities for CSS */
+/**
+ * Common utilities for CSS
+ * <br/>
+ * The CSS extension is discontinued.
+ */
+@Deprecated
 public class CssDefaults {
 	//Prevent instantiation
 	private CssDefaults() {};
