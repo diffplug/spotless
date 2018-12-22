@@ -19,6 +19,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -31,16 +32,17 @@ import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.collection.CollectRequest;
-import org.eclipse.aether.graph.DefaultDependencyNode;
 import org.eclipse.aether.graph.Dependency;
+import org.eclipse.aether.graph.Exclusion;
 import org.eclipse.aether.repository.RemoteRepository;
-import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResult;
 import org.eclipse.aether.resolution.DependencyRequest;
 import org.eclipse.aether.resolution.DependencyResolutionException;
 import org.eclipse.aether.resolution.DependencyResult;
 
 public class ArtifactResolver {
+
+	private final static Exclusion EXCLUDE_ALL_TRANSITIVES = new Exclusion("*", "*", "*", "*");
 
 	private final RepositorySystem repositorySystem;
 	private final RepositorySystemSession session;
@@ -66,43 +68,30 @@ public class ArtifactResolver {
 	 * of the specified coordinates and optionally their transitive dependencies.
 	 */
 	public Set<File> resolve(boolean withTransitives, Collection<String> mavenCoordinates) {
+		Collection<Exclusion> excludeTransitive = new ArrayList<Exclusion>(1);
+		if (!withTransitives) {
+			excludeTransitive.add(EXCLUDE_ALL_TRANSITIVES);
+		}
 		List<Dependency> dependencies = mavenCoordinates.stream()
 				.map(coordinateString -> new DefaultArtifact(coordinateString))
-				.map(artifact -> new Dependency(artifact, null))
+				.map(artifact -> new Dependency(artifact, null, null, excludeTransitive))
 				.collect(toList());
 		CollectRequest collectRequest = new CollectRequest(dependencies, null, repositories);
-		List<ArtifactResult> artifactResults;
-		if (withTransitives) {
-			DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, null);
-			artifactResults = resolveArtifacts(dependencyRequest);
-		} else {
-			List<ArtifactRequest> artifactRequests = dependencies.stream()
-					.map(dependency -> new DefaultDependencyNode(dependency))
-					.map(dependencyNode -> new ArtifactRequest(dependencyNode))
-					.collect(toList());
-			artifactResults = resolveArtifacts(artifactRequests);
-		}
+		DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, null);
+		DependencyResult dependencyResult = resolveDependencies(dependencyRequest);
 
-		return artifactResults.stream()
+		return dependencyResult.getArtifactResults()
+				.stream()
 				.peek(this::logResolved)
 				.map(ArtifactResult::getArtifact)
 				.map(Artifact::getFile)
 				.collect(toSet());
 	}
 
-	private List<ArtifactResult> resolveArtifacts(DependencyRequest dependencyRequest) {
+	private DependencyResult resolveDependencies(DependencyRequest dependencyRequest) {
 		try {
-			DependencyResult dependencyResult = repositorySystem.resolveDependencies(session, dependencyRequest);
-			return dependencyResult.getArtifactResults();
+			return repositorySystem.resolveDependencies(session, dependencyRequest);
 		} catch (DependencyResolutionException e) {
-			throw new ArtifactResolutionException("Unable to resolve dependencies", e);
-		}
-	}
-
-	private List<ArtifactResult> resolveArtifacts(List<ArtifactRequest> artifactRequests) {
-		try {
-			return repositorySystem.resolveArtifacts(session, artifactRequests);
-		} catch (org.eclipse.aether.resolution.ArtifactResolutionException e) {
 			throw new ArtifactResolutionException("Unable to resolve dependencies", e);
 		}
 	}
