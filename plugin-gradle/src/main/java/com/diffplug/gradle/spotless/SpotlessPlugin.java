@@ -37,6 +37,7 @@ public class SpotlessPlugin implements Plugin<Project> {
 	private static final String TASK_GROUP = "Verification";
 	private static final String CHECK_DESCRIPTION = "Checks that sourcecode satisfies formatting steps.";
 	private static final String APPLY_DESCRIPTION = "Applies code formatting steps to sourcecode in-place.";
+	private static final String FILES_PROPERTY = "spotlessFiles";
 
 	@Override
 	public void apply(Project project) {
@@ -63,12 +64,20 @@ public class SpotlessPlugin implements Plugin<Project> {
 		Task rootApplyTask = project.task(EXTENSION + APPLY);
 		rootApplyTask.setGroup(TASK_GROUP);
 		rootApplyTask.setDescription(APPLY_DESCRIPTION);
+		String filePatterns;
+		if (project.hasProperty(FILES_PROPERTY) && project.property(FILES_PROPERTY) instanceof String) {
+			filePatterns = (String) project.property(FILES_PROPERTY);
+		} else {
+			// needs to be non-null since it is an @Input property of the task
+			filePatterns = "";
+		}
 
 		spotlessExtension.formats.forEach((key, value) -> {
 			// create the task that does the work
 			String taskName = EXTENSION + capitalize(key);
 			SpotlessTask spotlessTask = project.getTasks().create(taskName, SpotlessTask.class);
 			value.setupTask(spotlessTask);
+			spotlessTask.setFilePatterns(filePatterns);
 
 			// create the check and apply control tasks
 			Task checkTask = project.getTasks().create(taskName + CHECK);
