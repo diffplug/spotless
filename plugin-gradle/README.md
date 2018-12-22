@@ -79,7 +79,7 @@ Spotless can check and apply formatting to any plain-text file, using simple rul
 
 * Eclipse's [CDT](#eclipse-cdt) C/C++ code formatter
 * Eclipse's java code formatter (including style and import ordering)
-* Eclipse's [WTP](#eclipse-wtp) WTP code formatters
+* Eclipse's [WTP](#eclipse-wtp) HTML, XML, ... code formatters
 * Google's [google-java-format](https://github.com/google/google-java-format)
 * [Groovy Eclipse](#groovy-eclipse)'s groovy code formatter
 * [FreshMark](https://github.com/diffplug/freshmark) (markdown with variables)
@@ -472,9 +472,9 @@ spotless {
     target fileTree('.') {
       include '**/*.xml', '**/*.xsd'
       exclude '**/build/**'
-	}
+    }
     // Use for example eclipseWtp('xml', '4.7.3a') to specify a specific version of Eclipse,
-    // available versions are: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatters	
+    // available versions are: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatters
     eclipseWtp('xml').configFile 'spotless.xml.prefs' 'spotless.common.properties'
   }
 }

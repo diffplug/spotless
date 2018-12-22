@@ -190,30 +190,6 @@ By default, all files matching `src/main/cpp/**/*.<ext>` and `src/test/cpp/**/*.
 ```
 Use the Eclipse to define the *Code Style preferences* (see [Eclipse documentation](https://www.eclipse.org/documentation/)). Within the preferences *Edit...* dialog, you can export your configuration as XML file, which can be used as a configuration `<file>`. If no `<file>` is provided, the CDT default configuration is used.
 
-<a name="xml"></a>
-
-## Applying to CSS source
-
-By default, all files matching `src/**/*.css` Ant style pattern will be formatted.  Each element under `<css>` is a step, and they will be applied in the order specified.  Every step is optional, and they will be applied in the order specified.
-
-```xml
-<configuration>
-  <css>
-     <licenseHeader>
-       <!-- Specify either content or file, but not both -->
-       <content>/* Licensed under Apache-2.0 */</content>
-       <file>${basedir}/license-header</file>
-     </licenseHeader>
-     <eclipse>
-       <file>${basedir}/eclipse-fmt.pref</file>
-       <!-- Optional, available versions: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatters -->
-       <version>4.7.3a</version>
-     </eclipse>
-  </css>
-</configuration>
-```
-Use Eclipse to define the *CSS Files* editor preferences (see [Eclipse documentation](http://help.eclipse.org/photon/topic/org.eclipse.wst.sse.doc.user/topics/tsrcedt025.html)) and the *Cleanup* preferences available in the *Source* menu (when editing a CSS file). The preferences are stored below your Eclipse workspace directory in `.metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.css.core.prefs`. Note that only the differences to the default configuration are stored within the file. If no `<file>` is provided, the WTP default configuration is used.
-
 <a name="format"></a>
 
 ## Applying to custom sources
