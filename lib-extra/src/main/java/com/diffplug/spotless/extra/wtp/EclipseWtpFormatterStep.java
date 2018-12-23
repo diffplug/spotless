@@ -65,22 +65,38 @@ public enum EclipseWtpFormatterStep {
 		return new EclipseBasedStepBuilder(NAME, " - css", provisioner, state -> applyWithoutFile("EclipseCssFormatterStepImpl", state));
 	}
 
-	/** Provides default configuration for HTML formatter */
+	/**
+	 * Provides default configuration for HTML formatter.
+	 * Method is deprecated. Use {@link EclipseWtpFormatterStep#createBuilder(Provisioner)} instead.
+	 */
+	@Deprecated
 	public static EclipseBasedStepBuilder createHtmlBuilder(Provisioner provisioner) {
 		return HTML.createBuilder(provisioner);
 	}
 
-	/** Provides default configuration for Java Script formatter */
+	/**
+	 * Provides default configuration for Java Script formatter.
+	 * Method is deprecated. Use {@link EclipseWtpFormatterStep#createBuilder(Provisioner)} instead.
+	 */
+	@Deprecated
 	public static EclipseBasedStepBuilder createJsBuilder(Provisioner provisioner) {
 		return JS.createBuilder(provisioner);
 	}
 
-	/** Provides default configuration for JSON formatter */
+	/**
+	 * Provides default configuration for JSON formatter.
+	 * Method is deprecated. Use {@link EclipseWtpFormatterStep#createBuilder(Provisioner)} instead.
+	 */
+	@Deprecated
 	public static EclipseBasedStepBuilder createJsonBuilder(Provisioner provisioner) {
 		return JSON.createBuilder(provisioner);
 	}
 
-	/** Provides default configuration for XML formatter */
+	/**
+	 * Provides default configuration for XML formatter.
+	 * Method is deprecated. Use {@link EclipseWtpFormatterStep#createBuilder(Provisioner)} instead.
+	 */
+	@Deprecated
 	public static EclipseBasedStepBuilder createXmlBuilder(Provisioner provisioner) {
 		return XML.createBuilder(provisioner);
 	}
