@@ -6,7 +6,10 @@ buildscript {
 //////////
 // JAVA //
 //////////
-repositories { jcenter() }
+repositories {
+	mavenLocal()
+	jcenter()
+}
 
 // setup java
 apply plugin: 'java'
