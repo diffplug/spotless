@@ -25,10 +25,15 @@ import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ResourceHarness;
+import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.extra.antlr4.Antlr4FormatterStep;
 
 public class Antlr4TaskTest extends ResourceHarness {
+
+	private Provisioner provisioner = TestProvisioner.mavenLocal();
+
 	private SpotlessTask checkTask;
 	private SpotlessTask applyTask;
 
@@ -45,7 +50,7 @@ public class Antlr4TaskTest extends ResourceHarness {
 	public void testFormatCheckFail() throws Exception {
 		String unformatted = getTestResource("antlr4/Hello.unformatted.g4");
 
-		checkTask.addStep(Antlr4FormatterStep.create());
+		checkTask.addStep(Antlr4FormatterStep.create(provisioner));
 		checkTask.setTarget(Collections.singleton(setFile("testFile.g4").toContent(unformatted)));
 		execute(checkTask);
 	}
@@ -54,7 +59,7 @@ public class Antlr4TaskTest extends ResourceHarness {
 	public void testFormatedCheckPass() throws Exception {
 		String formatted = getTestResource("antlr4/Hello.formatted.g4");
 
-		checkTask.addStep(Antlr4FormatterStep.create());
+		checkTask.addStep(Antlr4FormatterStep.create(provisioner));
 		checkTask.setTarget(Collections.singleton(setFile("testFile.g4").toContent(formatted)));
 		execute(checkTask);
 	}
@@ -65,7 +70,7 @@ public class Antlr4TaskTest extends ResourceHarness {
 		String formatted = getTestResource("antlr4/Hello.formatted.g4");
 		String testFile = "testFile.g4";
 
-		applyTask.addStep(Antlr4FormatterStep.create());
+		applyTask.addStep(Antlr4FormatterStep.create(provisioner));
 		applyTask.setTarget(Collections.singleton(setFile(testFile).toContent(unformatted)));
 		execute(applyTask);
 

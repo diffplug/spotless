@@ -25,15 +25,15 @@ public class Antlr4Extension extends FormatExtension {
 		super(rootExtension);
 
 		Antlr4FormatExtension antlr4 = new Antlr4FormatExtension();
-		addStep(antlr4.createStep());
+		addStep(antlr4.createStep(Antlr4FormatterStep.defaultVersion()));
 	}
 
 	public class Antlr4FormatExtension {
 
 		Antlr4FormatExtension() {}
 
-		private FormatterStep createStep() {
-			return Antlr4FormatterStep.create();
+		private FormatterStep createStep(String version) {
+			return Antlr4FormatterStep.create(version, GradleProvisioner.fromProject(getProject()));
 		}
 	}
 

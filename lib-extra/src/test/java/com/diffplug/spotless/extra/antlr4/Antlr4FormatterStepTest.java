@@ -19,12 +19,13 @@ import org.junit.Test;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
+import com.diffplug.spotless.TestProvisioner;
 
 public class Antlr4FormatterStepTest extends ResourceHarness {
 
 	@Test
-	public void sortImportsFromArray() throws Throwable {
-		FormatterStep step = Antlr4FormatterStep.create();
+	public void formatGrammar() throws Throwable {
+		FormatterStep step = Antlr4FormatterStep.create(TestProvisioner.mavenLocal());
 		assertOnResources(step, "antlr4/Hello.unformatted.g4", "antlr4/Hello.formatted.g4");
 	}
 
