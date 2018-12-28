@@ -16,7 +16,7 @@
 package com.diffplug.gradle.spotless;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.extra.antlr4.Antlr4FormatterStep;
+import com.diffplug.spotless.antlr4.Antlr4FormatterStep;
 
 public class Antlr4Extension extends FormatExtension {
 	static final String NAME = "antlr4";

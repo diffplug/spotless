@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.antlr4;
+package com.diffplug.spotless.antlr4;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -28,17 +28,15 @@ public class Antlr4FormatterStep {
 
 	private Antlr4FormatterStep() {}
 
-	private static final String MAVEN_COORDINATE = "com.khubla.antlr4formatter:antlr4formatter:";
-	private static final String DEFAULT_VERSION = "0.1.0-SNAPSHOT";
+	private static final String MAVEN_COORDINATE = "com.khubla.antlr4formatter:antlr4-formatter:";
+	private static final String DEFAULT_VERSION = "1.1.0";
 
 	public static FormatterStep create(Provisioner provisioner) {
-		return create(DEFAULT_VERSION, provisioner);
+		return create(defaultVersion(), provisioner);
 	}
 
 	public static FormatterStep create(String version, Provisioner provisioner) {
-		//		return FormatterStep.createNeverUpToDate(NAME, Antlr4Formatter::format);
-
-		return FormatterStep.createLazy(NAME, () -> new State(defaultVersion(), provisioner), State::createFormat);
+		return FormatterStep.createLazy(NAME, () -> new State(version, provisioner), State::createFormat);
 	}
 
 	public static String defaultVersion() {
@@ -57,19 +55,16 @@ public class Antlr4FormatterStep {
 			this.jarState = JarState.from(MAVEN_COORDINATE + version, provisioner);
 		}
 
-		FormatterFunc createFormat() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InstantiationException {
+		FormatterFunc createFormat() throws ClassNotFoundException, NoSuchMethodException {
 			ClassLoader classLoader = jarState.getClassLoader();
 
 			// String Antlr4Formatter::format(String input)
-
 			Class<?> formatter = classLoader.loadClass("com.khubla.antlr4formatter.Antlr4Formatter");
-			Object formatterInstance = formatter.newInstance();
-			// and its format method
 			Method formatterMethod = formatter.getMethod("format", String.class);
 
 			return input -> {
 				try {
-					return (String) formatterMethod.invoke(formatterInstance, input);
+					return (String) formatterMethod.invoke(null, input);
 				} catch (InvocationTargetException e) {
 					throw ThrowingEx.unwrapCause(e);
 				}

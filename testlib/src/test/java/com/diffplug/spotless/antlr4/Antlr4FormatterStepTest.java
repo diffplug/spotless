@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.antlr4;
+package com.diffplug.spotless.antlr4;
 
 import org.junit.Test;
 
@@ -25,7 +25,7 @@ public class Antlr4FormatterStepTest extends ResourceHarness {
 
 	@Test
 	public void formatGrammar() throws Throwable {
-		FormatterStep step = Antlr4FormatterStep.create(TestProvisioner.mavenLocal());
+		FormatterStep step = Antlr4FormatterStep.create(TestProvisioner.mavenCentral());
 		assertOnResources(step, "antlr4/Hello.unformatted.g4", "antlr4/Hello.formatted.g4");
 	}
 

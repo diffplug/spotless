@@ -28,11 +28,11 @@ import org.junit.Test;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.TestProvisioner;
-import com.diffplug.spotless.extra.antlr4.Antlr4FormatterStep;
+import com.diffplug.spotless.antlr4.Antlr4FormatterStep;
 
 public class Antlr4TaskTest extends ResourceHarness {
 
-	private Provisioner provisioner = TestProvisioner.mavenLocal();
+	private Provisioner provisioner = TestProvisioner.mavenCentral();
 
 	private SpotlessTask checkTask;
 	private SpotlessTask applyTask;

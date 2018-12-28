@@ -17,13 +17,12 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
-import org.gradle.api.GradleException;
 import org.junit.Test;
 
 public class Antlr4ExtensionTest extends GradleIntegrationTest {
 
 	@Test
-	public void formatSingleGrammar() throws IOException, InterruptedException {
+	public void formatSingleGrammar() throws IOException {
 		String testFile = "src/main/antlr4/Hello.g4";
 
 		setFile("build.gradle").toLines(
@@ -44,18 +43,4 @@ public class Antlr4ExtensionTest extends GradleIntegrationTest {
 
 		assertFile(testFile).sameAsResource(formatted);
 	}
-
-	@Test(expected = GradleException.class)
-	public void missingTargetArgumentFailsFormatting() throws IOException {
-		setFile("build.gradle").toLines(
-				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
-				"}",
-				"repositories { mavenCentral() }",
-				"spotless {",
-				"    antlr4 {",
-				"    }",
-				"}");
-	}
-
 }
