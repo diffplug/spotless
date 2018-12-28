@@ -20,7 +20,7 @@ import java.util.List;
 
 public class Antlr4Defaults {
 
-	private static final String LICENSE_HEADER_DELIMITER = "grammar ";
+	private static final String LICENSE_HEADER_DELIMITER = "(grammar|lexer grammar|parser grammar)";
 
 	private static final List<String> defaultIncludes = Arrays.asList("src/main/antlr4/**/*.g4", "src/test/antlr4/**/*.g4");
 
