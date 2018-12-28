@@ -89,6 +89,7 @@ Spotless can check and apply formatting to any plain-text file, using simple rul
 * [DBeaver sql format](https://dbeaver.jkiss.org/)
 * [Prettier: An opinionated code formatter](https://prettier.io)
 * [TypeScript Formatter (tsfmt)](https://github.com/vvakame/typescript-formatter)
+* [Antlr4Formatter](https://github.com/antlr/Antlr4Formatter)
 * Any user-defined function which takes an unformatted string and outputs a formatted version.
 
 Contributions are welcome, see [the contributing guide](../CONTRIBUTING.md) for development info.
@@ -509,6 +510,26 @@ spotless {
 ```
 
 Spotless uses npm to install necessary packages locally. It runs prettier using [J2V8](https://github.com/eclipsesource/J2V8) internally after that.
+
+
+<a name="antlr4"></a>
+
+## Applying to ANTLR4 source
+
+By default, all ANTLR4 sources matching `src/main/antlr4/**/*.g4` will be formatted. To change this,
+set the `target` parameter as described in the [Custom rules](#custom) section.
+
+```gradle
+spotless {
+  antlr4 {
+    // using default Antlr4Formatter version
+    antlr4Formatter()
+
+    // specifiy a custom Antlr4Formatter version
+    antlr4Formatter('1.1.0')
+  }
+}
+```
 
 <a name="license-header"></a>
 
