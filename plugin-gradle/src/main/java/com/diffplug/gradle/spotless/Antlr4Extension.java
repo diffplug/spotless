@@ -18,9 +18,10 @@ package com.diffplug.gradle.spotless;
 import java.util.Objects;
 
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.antlr4.Antlr4Defaults;
 import com.diffplug.spotless.antlr4.Antlr4FormatterStep;
 
-public class Antlr4Extension extends FormatExtension {
+public class Antlr4Extension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "antlr4";
 
 	public Antlr4Extension(SpotlessExtension rootExtension) {
@@ -51,11 +52,19 @@ public class Antlr4Extension extends FormatExtension {
 
 	@Override
 	protected void setupTask(SpotlessTask task) {
-		// defaults to all antlr4 files
 		if (target == null) {
-			target = parseTarget("src/main/antlr4/**/*.g4");
+			target = parseTarget(Antlr4Defaults.defaultIncludes());
 		}
 		super.setupTask(task);
 	}
 
+	@Override
+	public LicenseHeaderConfig licenseHeader(String licenseHeader) {
+		return licenseHeader(licenseHeader, Antlr4Defaults.licenseHeaderDelimiter());
+	}
+
+	@Override
+	public LicenseHeaderConfig licenseHeaderFile(Object licenseHeaderFile) {
+		return licenseHeaderFile(licenseHeaderFile, Antlr4Defaults.licenseHeaderDelimiter());
+	}
 }

@@ -522,10 +522,10 @@ set the `target` parameter as described in the [Custom rules](#custom) section.
 ```gradle
 spotless {
   antlr4 {
-    // using default Antlr4Formatter version
+    // use default Antlr4Formatter version
     antlr4Formatter()
 
-    // specifiy a custom Antlr4Formatter version
+    // specify a custom Antlr4Formatter version
     antlr4Formatter('1.1.0')
   }
 }

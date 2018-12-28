@@ -240,6 +240,27 @@ Use Eclipse to define the *XML editor preferences* (see [Eclipse documentation](
 
 The Eclipse WTP formatter supports DTD/XSD restrictions on white spaces. For XSD/DTD lookup, relative and absolute XSD/DTD URIs are supported. Furthermore a user catalog can be configured using the `userCatalog` property key. Add the property to the preference `<file>`.
 
+<a name="antlr4"></a>
+
+## Applying to ANTLR4 source
+
+By default, all ANTLR4 sources matching `src/main/antlr4/**/*.g4` will be formatted. To change this,
+set the `includes` parameter as described in the [File incudes and excludes](#includeExclude) section.
+
+```xml
+<configuration>
+  <antlr4>
+    <!-- use default Antlr4Formatter version -->
+    <antlr4Formatter />
+
+    <antlr4Formatter>
+      <!-- specify a custom Antlr4Formatter version -->
+      <version>1.1.0</version>
+    </antlr4Formatter>
+  </antlr4>
+</configuration>
+```
+
 <a name="format"></a>
 
 ## Applying to custom sources

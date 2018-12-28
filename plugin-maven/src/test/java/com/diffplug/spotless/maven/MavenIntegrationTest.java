@@ -90,6 +90,10 @@ public class MavenIntegrationTest extends ResourceHarness {
 		writePom(formats(groupWithSteps("format", including("<include>src/**/java/**/*.java</include>"), steps)));
 	}
 
+	protected void writePomWithAntlr4Steps(String... steps) throws IOException {
+		writePom(groupWithSteps("antlr4", steps));
+	}
+
 	protected void writePomWithJavaSteps(String... steps) throws IOException {
 		writePom(groupWithSteps("java", steps));
 	}

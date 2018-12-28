@@ -36,6 +36,7 @@ import org.eclipse.aether.repository.RemoteRepository;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.maven.antlr4.Antlr4;
 import com.diffplug.spotless.maven.cpp.Cpp;
 import com.diffplug.spotless.maven.css.Css;
 import com.diffplug.spotless.maven.generic.Format;
@@ -98,6 +99,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Parameter
 	private Css css;
 
+	@Parameter
+	private Antlr4 antlr4;
+
 	protected abstract void process(List<File> files, Formatter formatter) throws MojoExecutionException;
 
 	@Override
@@ -156,7 +160,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private List<FormatterFactory> getFormatterFactories() {
-		return Stream.concat(formats.stream(), Stream.of(java, scala, kotlin, cpp, css, xml))
+		return Stream.concat(formats.stream(), Stream.of(java, scala, kotlin, cpp, css, xml, antlr4))
 				.filter(Objects::nonNull)
 				.collect(toList());
 	}
