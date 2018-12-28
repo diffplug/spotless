@@ -24,7 +24,7 @@ import com.diffplug.spotless.*;
 
 public class Antlr4FormatterStep {
 
-	public static final String NAME = "antlr4";
+	public static final String NAME = "antlr4Formatter";
 
 	private Antlr4FormatterStep() {}
 
