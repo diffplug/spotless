@@ -76,6 +76,7 @@ Spotless supports the following powerful formatters:
 * Eclipse's [CDT](https://www.eclipse.org/cdt/) C/C++ code formatter
 * Eclipse's [WTP](https://www.eclipse.org/webtools/) CSS and XML code formatter
 * Google's [google-java-format](https://github.com/google/google-java-format)
+* [Antlr4Formatter](https://github.com/antlr/Antlr4Formatter)
 * User-defined license enforcement, regex replacement, etc.
 
 Contributions are welcome, see [the contributing guide](../CONTRIBUTING.md) for development info.
