@@ -15,6 +15,8 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.util.Objects;
+
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.antlr4.Antlr4FormatterStep;
 
@@ -23,17 +25,27 @@ public class Antlr4Extension extends FormatExtension {
 
 	public Antlr4Extension(SpotlessExtension rootExtension) {
 		super(rootExtension);
-
-		Antlr4FormatExtension antlr4 = new Antlr4FormatExtension();
-		addStep(antlr4.createStep(Antlr4FormatterStep.defaultVersion()));
 	}
 
-	public class Antlr4FormatExtension {
+	public Antlr4FormatterConfig antlr4Formatter() {
+		return antlr4Formatter(Antlr4FormatterStep.defaultVersion());
+	}
 
-		Antlr4FormatExtension() {}
+	public Antlr4FormatterConfig antlr4Formatter(String version) {
+		return new Antlr4FormatterConfig(version);
+	}
 
-		private FormatterStep createStep(String version) {
-			return Antlr4FormatterStep.create(version, GradleProvisioner.fromProject(getProject()));
+	public class Antlr4FormatterConfig {
+
+		private final String version;
+
+		Antlr4FormatterConfig(String version) {
+			this.version = Objects.requireNonNull(version);
+			addStep(createStep());
+		}
+
+		private FormatterStep createStep() {
+			return Antlr4FormatterStep.create(this.version, GradleProvisioner.fromProject(getProject()));
 		}
 	}
 

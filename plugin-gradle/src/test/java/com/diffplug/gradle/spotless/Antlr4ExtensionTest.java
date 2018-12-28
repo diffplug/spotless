@@ -22,18 +22,51 @@ import org.junit.Test;
 public class Antlr4ExtensionTest extends GradleIntegrationTest {
 
 	@Test
-	public void formatSingleGrammar() throws IOException {
-		String testFile = "src/main/antlr4/Hello.g4";
-
-		setFile("build.gradle").toLines(
+	public void applyUsingDefaultVersion() throws IOException {
+		String[] buildScript = {
+				"buildscript {",
+				"    repositories {",
+				"        mavenCentral()",
+				"    }",
+				"}",
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",
 				"}",
 				"spotless {",
 				"    antlr4 {",
 				"        target 'src/main/antlr4/**/*.g4'",
+				"        antlr4Formatter()",
 				"    }",
-				"}");
+				"}"};
+
+		assertAppliedFormat(buildScript);
+	}
+
+	@Test
+	public void applyUsingCustomVersion() throws IOException {
+		String[] buildScript = {
+				"buildscript {",
+				"    repositories {",
+				"        mavenCentral()",
+				"    }",
+				"}",
+				"plugins {",
+				"    id 'com.diffplug.gradle.spotless'",
+				"}",
+				"spotless {",
+				"    antlr4 {",
+				"        target 'src/main/antlr4/**/*.g4'",
+				"        antlr4Formatter('1.1.0')",
+				"    }",
+				"}"};
+
+		assertAppliedFormat(buildScript);
+	}
+
+	private void assertAppliedFormat(String... buildScript) throws IOException {
+		String testFile = "src/main/antlr4/Hello.g4";
+
+		setFile("build.gradle").toLines(buildScript);
 
 		String unformatted = "antlr4/Hello.unformatted.g4";
 		String formatted = "antlr4/Hello.formatted.g4";
