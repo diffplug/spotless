@@ -516,7 +516,7 @@ Spotless uses npm to install necessary packages locally. It runs prettier using 
 
 ## Applying to ANTLR4 source
 
-By default, all ANTLR4 sources matching `src/main/antlr4/**/*.g4` will be formatted. To change this,
+By default, all ANTLR4 sources matching `src/main/antlr4/**/*.g4` or `src/test/antlr4/**/*.g4` will be formatted. To change this,
 set the `target` parameter as described in the [Custom rules](#custom) section.
 
 ```gradle

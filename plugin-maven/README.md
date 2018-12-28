@@ -244,7 +244,7 @@ The Eclipse WTP formatter supports DTD/XSD restrictions on white spaces. For XSD
 
 ## Applying to ANTLR4 source
 
-By default, all ANTLR4 sources matching `src/main/antlr4/**/*.g4` will be formatted. To change this,
+By default, all ANTLR4 sources matching `src/main/antlr4/**/*.g4` or `src/test/antlr4/**/*.g4` will be formatted. To change this,
 set the `includes` parameter as described in the [File incudes and excludes](#includeExclude) section.
 
 ```xml
