@@ -24,10 +24,13 @@ import com.diffplug.spotless.maven.generic.LicenseHeader;
 
 /**
  * A {@link FormatterFactory} implementation that corresponds to {@code <css>...</css>} configuration element.
- * <p>
+ * <br/>
  * It defines a formatter for CSS source files that can execute both language agnostic (e.g. {@link LicenseHeader})
  * and css-specific (e.g. {@link Eclipse}) steps.
+ * <br/>
+ * The CSS extension is discontinued. CSS formatters are now part of the generic {@link FormatterFactory}.
  */
+@Deprecated
 public class Css extends FormatterFactory {
 
 	private static final Set<String> DEFAULT_INCLUDES = CssDefaults.FILE_FILTER

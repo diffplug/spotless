@@ -74,7 +74,7 @@ Spotless supports the following powerful formatters:
 
 * Eclipse's java code formatter (including style and import ordering)
 * Eclipse's [CDT](https://www.eclipse.org/cdt/) C/C++ code formatter
-* Eclipse's [WTP](https://www.eclipse.org/webtools/) CSS and XML code formatter
+* Eclipse's [WTP](https://www.eclipse.org/webtools/) Web-Tools code formatters
 * Google's [google-java-format](https://github.com/google/google-java-format)
 * User-defined license enforcement, regex replacement, etc.
 
@@ -190,56 +190,6 @@ By default, all files matching `src/main/cpp/**/*.<ext>` and `src/test/cpp/**/*.
 ```
 Use the Eclipse to define the *Code Style preferences* (see [Eclipse documentation](https://www.eclipse.org/documentation/)). Within the preferences *Edit...* dialog, you can export your configuration as XML file, which can be used as a configuration `<file>`. If no `<file>` is provided, the CDT default configuration is used.
 
-<a name="xml"></a>
-
-## Applying to CSS source
-
-By default, all files matching `src/**/*.css` Ant style pattern will be formatted.  Each element under `<css>` is a step, and they will be applied in the order specified.  Every step is optional, and they will be applied in the order specified.
-
-```xml
-<configuration>
-  <css>
-     <licenseHeader>
-       <!-- Specify either content or file, but not both -->
-       <content>/* Licensed under Apache-2.0 */</content>
-       <file>${basedir}/license-header</file>
-     </licenseHeader>
-     <eclipse>
-       <file>${basedir}/eclipse-fmt.pref</file>
-       <!-- Optional, available versions: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatters -->
-       <version>4.7.3a</version>
-     </eclipse>
-  </css>
-</configuration>
-```
-Use Eclipse to define the *CSS Files* editor preferences (see [Eclipse documentation](http://help.eclipse.org/photon/topic/org.eclipse.wst.sse.doc.user/topics/tsrcedt025.html)) and the *Cleanup* preferences available in the *Source* menu (when editing a CSS file). The preferences are stored below your Eclipse workspace directory in `.metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.css.core.prefs`. Note that only the differences to the default configuration are stored within the file. If no `<file>` is provided, the WTP default configuration is used.
-
-<a name="xml"></a>
-
-## Applying to XML source
-
-By default, all files matching `src/**/*.<ext>` Ant style pattern will be formatted, whereas the file extensions `xml`, `xsl`, `xslt`, `wsdl`, `xsd`, `exsd`, `xmi` are supported.  Each element under `<xml>` is a step, and they will be applied in the order specified.  Every step is optional, and they will be applied in the order specified.
-
-```xml
-<configuration>
-  <xml>
-     <licenseHeader>
-       <!-- Specify either content or file, but not both -->
-       <content>&lt;!-- Licensed under Apache-2.0 --&gt;</content>
-       <file>${basedir}/license-header</file>
-     </licenseHeader>
-     <eclipse>
-       <file>${basedir}/eclipse-fmt.pref</file>
-       <!-- Optional, available versions: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatters -->
-       <version>4.7.3a</version>
-     </eclipse>
-  </xml>
-</configuration>
-```
-Use Eclipse to define the *XML editor preferences* (see [Eclipse documentation](https://www.eclipse.org/documentation/)). The preferences are stored below your Eclipse workspace directory in `.metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.xml.core.prefs`. Note that only the differences to the default configuration are stored within the file. If no `<file>` is provided, the WTP default configuration is used.
-
-The Eclipse WTP formatter supports DTD/XSD restrictions on white spaces. For XSD/DTD lookup, relative and absolute XSD/DTD URIs are supported. Furthermore a user catalog can be configured using the `userCatalog` property key. Add the property to the preference `<file>`.
-
 <a name="format"></a>
 
 ## Applying to custom sources
@@ -300,6 +250,54 @@ By default, no Ant-Style include patterns are defined.  Each element under `<for
   </formats>
 </configuration>
 ```
+
+
+<a name="eclipse-wtp"></a>
+
+## Applying [Eclipse WTP](https://www.eclipse.org/webtools/) to css | html | etc.
+
+The Eclipse [WTP](https://www.eclipse.org/webtools/) formatter can be applied as follows:
+
+```xml
+<configuration>
+  <formats>
+
+    <format>
+      <includes>
+        <include>src/**/resources/**/*.xml</include>
+        <include>src/**/resources/**/*.xsd</include>
+      </includes>
+
+      <eclipseWtp>
+        <!-- Specify the WTP formatter type (XML, JS, ...) -->
+        <type>XML</type>
+        <!-- Specify the configuration for the selected type -->
+        <files>
+          <file>${basedir}/xml.prefs</file>
+          <file>${basedir}/additional.properties</file>
+        </files>
+        <!-- Optional, available versions: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatters -->
+        <version>4.7.3a</version>
+      </eclipseWtp>
+    </format>
+  </formats>
+</configuration>
+```
+The WTP formatter accept multiple configuration files. All Eclipse configuration file formats are accepted as well as simple Java property files. Omit the `<files>` entirely to use the default Eclipse configuration. The following formatters and configurations are supported:
+
+| Type | Configuration       | File location
+| ---- | ------------------- | -------------
+| CSS  | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.css.core.prefs
+|      | cleanup preferences | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.css.core.prefs
+| HTML | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.html.core.prefs
+|      | cleanup preferences | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.html.core.prefs
+|      | embedded CSS        | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.css.core.prefs
+|      | embedded JS         | Use the export in the Eclipse editor configuration dialog
+| JS   | editor preferences  | Use the export in the Eclipse editor configuration dialog
+| JSON | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.json.core.prefs
+| XML  | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.xml.core.prefs
+
+Note that `HTML` should be used for `X-HTML` sources instead of `XML`.
 
 <a name="invisible"></a>
 

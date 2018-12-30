@@ -24,10 +24,13 @@ import com.diffplug.spotless.xml.XmlDefaults;
 
 /**
  * A {@link FormatterFactory} implementation that corresponds to {@code <xml>...</xml>} configuration element.
- * <p>
+ * <br/>
  * It defines a formatter for XML/XSL/... source files that can execute both language agnostic (e.g. {@link LicenseHeader})
  * and xml-specific (e.g. {@link Eclipse}) steps.
- */
+ * <br/>
+ * The XML extension is discontinued. XML formatters are now part of the generic {@link FormatterFactory}.
+  */
+@Deprecated
 public class Xml extends FormatterFactory {
 
 	private static final Set<String> DEFAULT_INCLUDES = XmlDefaults.FILE_FILTER

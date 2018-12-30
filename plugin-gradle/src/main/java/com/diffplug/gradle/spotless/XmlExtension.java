@@ -23,6 +23,10 @@ import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
 import com.diffplug.spotless.xml.XmlDefaults;
 
+/**
+ * The XML extension is deprecated. Use the generic {@link FormatExtension} instead.
+ */
+@Deprecated
 public class XmlExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "xml";
 

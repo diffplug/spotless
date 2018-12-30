@@ -102,6 +102,8 @@ public class MavenIntegrationTest extends ResourceHarness {
 		writePom(groupWithSteps("kotlin", steps));
 	}
 
+	/** The XML extension is discontinued. */
+	@Deprecated
 	protected void writePomWithXmlSteps(String... steps) throws IOException {
 		writePom(groupWithSteps("xml", steps));
 	}
@@ -110,6 +112,8 @@ public class MavenIntegrationTest extends ResourceHarness {
 		writePom(groupWithSteps("cpp", steps));
 	}
 
+	/** The CSS extension is discontinued. */
+	@Deprecated
 	protected void writePomWithCssSteps(String... steps) throws IOException {
 		writePom(groupWithSteps("css", steps));
 	}

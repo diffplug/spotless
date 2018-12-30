@@ -26,6 +26,8 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 
+/** The XML extension is discontinued. */
+@Deprecated
 public class XmlDefaultsTest extends ResourceHarness {
 
 	@Test

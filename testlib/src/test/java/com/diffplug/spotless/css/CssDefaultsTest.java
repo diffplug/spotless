@@ -26,6 +26,8 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 
+/** The CSS extension is discontinued. */
+@Deprecated
 public class CssDefaultsTest extends ResourceHarness {
 
 	@Test

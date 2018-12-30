@@ -24,7 +24,6 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +32,6 @@ import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.eclipse.EclipseCommonTests;
@@ -44,29 +42,27 @@ public class EclipseWtpFormatterStepTest extends EclipseCommonTests {
 	private enum WTP {
 		// @formatter:off
 		CSS(	"body {\na: v;   b:   \nv;\n}  \n",
-				"body {\n\ta: v;\n\tb: v;\n}",
-				EclipseWtpFormatterStep::createCssBuilder),
+				"body {\n\ta: v;\n\tb: v;\n}"),
 		HTML(	"<!DOCTYPE html> <html>\t<head> <meta   charset=\"UTF-8\"></head>\n</html>  ",
-				"<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"UTF-8\">\n</head>\n</html>\n",
-				EclipseWtpFormatterStep::createHtmlBuilder),
+				"<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"UTF-8\">\n</head>\n</html>\n"),
 		JS(		"function f(  )   {\na.b(1,\n2);}",
-				"function f() {\n    a.b(1, 2);\n}",
-				EclipseWtpFormatterStep::createJsBuilder),
+				"function f() {\n    a.b(1, 2);\n}"),
 		JSON(	"{\"a\": \"b\",	\"c\":   { \"d\": \"e\",\"f\": \"g\"}}",
-				"{\n\t\"a\": \"b\",\n\t\"c\": {\n\t\t\"d\": \"e\",\n\t\t\"f\": \"g\"\n\t}\n}",
-				EclipseWtpFormatterStep::createJsonBuilder),
-		XML(	"<a><b>   c</b></a>", "<a>\n\t<b> c</b>\n</a>",
-				EclipseWtpFormatterStep::createXmlBuilder);
+				"{\n\t\"a\": \"b\",\n\t\"c\": {\n\t\t\"d\": \"e\",\n\t\t\"f\": \"g\"\n\t}\n}"),
+		XML(	"<a><b>   c</b></a>", "<a>\n\t<b> c</b>\n</a>");
 		// @formatter:on
 
 		public final String input;
 		public final String expectation;
-		public final Function<Provisioner, EclipseBasedStepBuilder> builderMethod;
 
-		private WTP(String input, final String expectation, Function<Provisioner, EclipseBasedStepBuilder> builderMethod) {
+		private WTP(String input, final String expectation) {
 			this.input = input;
 			this.expectation = expectation;
-			this.builderMethod = builderMethod;
+		}
+
+		public EclipseBasedStepBuilder createBuilder() {
+			EclipseWtpFormatterStep stepType = EclipseWtpFormatterStep.valueOf(this.toString());
+			return stepType.createBuilder(TestProvisioner.mavenCentral());
 		}
 	}
 
@@ -95,7 +91,7 @@ public class EclipseWtpFormatterStepTest extends EclipseCommonTests {
 
 	@Override
 	protected FormatterStep createStep(String version) {
-		EclipseBasedStepBuilder builder = wtp.builderMethod.apply(TestProvisioner.mavenCentral());
+		EclipseBasedStepBuilder builder = wtp.createBuilder();
 		builder.setVersion(version);
 		return builder.build();
 	}
@@ -131,7 +127,7 @@ public class EclipseWtpFormatterStepTest extends EclipseCommonTests {
 		File tempFile = File.createTempFile("EclipseWtpFormatterStepTest-", ".properties");
 		OutputStream tempOut = new FileOutputStream(tempFile);
 		configProps.store(tempOut, "test properties");
-		EclipseBasedStepBuilder builder = wtp.builderMethod.apply(TestProvisioner.mavenCentral());
+		EclipseBasedStepBuilder builder = wtp.createBuilder();
 		builder.setVersion(EclipseWtpFormatterStep.defaultVersion());
 		builder.setPreferences(Arrays.asList(tempFile));
 		return builder.build();

@@ -23,6 +23,10 @@ import com.diffplug.spotless.css.CssDefaults;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
 
+/**
+ * The CSS extension is deprecated. Use the generic {@link FormatExtension} instead.
+ */
+@Deprecated
 public class CssExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "css";
 
@@ -38,6 +42,10 @@ public class CssExtension extends FormatExtension implements HasBuiltinDelimiter
 		return new EclipseConfig(version);
 	}
 
+	/**
+	 * The CSS Eclipse configuration is deprecated. Use the {@link FormatExtension.EclipseWtpConfig} instead.
+	 */
+	@Deprecated
 	public class EclipseConfig {
 		private final EclipseBasedStepBuilder builder;
 

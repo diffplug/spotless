@@ -22,45 +22,83 @@ import java.util.Properties;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 
 /** Formatter step which calls out to the Groovy-Eclipse formatter. */
-public final class EclipseWtpFormatterStep {
-	// prevent direct instantiation
-	private EclipseWtpFormatterStep() {}
+public enum EclipseWtpFormatterStep {
+	// @formatter:off
+	CSS ("EclipseCssFormatterStepImpl",  EclipseWtpFormatterStep::applyWithoutFile),
+	HTML("EclipseHtmlFormatterStepImpl", EclipseWtpFormatterStep::applyWithoutFile),
+	JS  ("EclipseJsFormatterStepImpl",   EclipseWtpFormatterStep::applyWithoutFile),
+	JSON("EclipseJsonFormatterStepImpl", EclipseWtpFormatterStep::applyWithoutFile),
+	XML ("EclipseXmlFormatterStepImpl",  EclipseWtpFormatterStep::applyWithFile);
+	// @formatter:on
 
 	private static final String NAME = "eclipse wtp formatters";
 	private static final String FORMATTER_PACKAGE = "com.diffplug.spotless.extra.eclipse.wtp.";
 	private static final String DEFAULT_VERSION = "4.7.3a";
 	private static final String FORMATTER_METHOD = "format";
 
+	private final String implementationClassName;
+	private final ThrowingEx.BiFunction<String, EclipseBasedStepBuilder.State, FormatterFunc> formatterCall;
+
+	EclipseWtpFormatterStep(String implementationClassName, ThrowingEx.BiFunction<String, EclipseBasedStepBuilder.State, FormatterFunc> formatterCall) {
+		this.implementationClassName = implementationClassName;
+		this.formatterCall = formatterCall;
+	}
+
+	public EclipseBasedStepBuilder createBuilder(Provisioner provisioner) {
+		return new EclipseBasedStepBuilder(NAME, " - " + toString(), provisioner, state -> formatterCall.apply(implementationClassName, state));
+	}
+
 	public static String defaultVersion() {
 		return DEFAULT_VERSION;
 	}
 
-	/** Provides default configuration for CSSformatter */
+	/**
+	 * Provides default configuration for CSSformatter.
+	 * Method is deprecated. Use {@link EclipseWtpFormatterStep#createBuilder(Provisioner)} instead.
+	 */
+	@Deprecated
 	public static EclipseBasedStepBuilder createCssBuilder(Provisioner provisioner) {
 		return new EclipseBasedStepBuilder(NAME, " - css", provisioner, state -> applyWithoutFile("EclipseCssFormatterStepImpl", state));
 	}
 
-	/** Provides default configuration for HTML formatter */
+	/**
+	 * Provides default configuration for HTML formatter.
+	 * Method is deprecated. Use {@link EclipseWtpFormatterStep#createBuilder(Provisioner)} instead.
+	 */
+	@Deprecated
 	public static EclipseBasedStepBuilder createHtmlBuilder(Provisioner provisioner) {
-		return new EclipseBasedStepBuilder(NAME, " - html", provisioner, state -> applyWithoutFile("EclipseHtmlFormatterStepImpl", state));
+		return HTML.createBuilder(provisioner);
 	}
 
-	/** Provides default configuration for Java Script formatter */
+	/**
+	 * Provides default configuration for Java Script formatter.
+	 * Method is deprecated. Use {@link EclipseWtpFormatterStep#createBuilder(Provisioner)} instead.
+	 */
+	@Deprecated
 	public static EclipseBasedStepBuilder createJsBuilder(Provisioner provisioner) {
-		return new EclipseBasedStepBuilder(NAME, " - js", provisioner, state -> applyWithoutFile("EclipseJsFormatterStepImpl", state));
+		return JS.createBuilder(provisioner);
 	}
 
-	/** Provides default configuration for JSON formatter */
+	/**
+	 * Provides default configuration for JSON formatter.
+	 * Method is deprecated. Use {@link EclipseWtpFormatterStep#createBuilder(Provisioner)} instead.
+	 */
+	@Deprecated
 	public static EclipseBasedStepBuilder createJsonBuilder(Provisioner provisioner) {
-		return new EclipseBasedStepBuilder(NAME, " - json", provisioner, state -> applyWithoutFile("EclipseJsonFormatterStepImpl", state));
+		return JSON.createBuilder(provisioner);
 	}
 
-	/** Provides default configuration for XML formatter */
+	/**
+	 * Provides default configuration for XML formatter.
+	 * Method is deprecated. Use {@link EclipseWtpFormatterStep#createBuilder(Provisioner)} instead.
+	 */
+	@Deprecated
 	public static EclipseBasedStepBuilder createXmlBuilder(Provisioner provisioner) {
-		return new EclipseBasedStepBuilder(NAME, " - xml", provisioner, state -> applyWithFile("EclipseXmlFormatterStepImpl", state));
+		return XML.createBuilder(provisioner);
 	}
 
 	private static FormatterFunc applyWithoutFile(String className, EclipseBasedStepBuilder.State state) throws Exception {
