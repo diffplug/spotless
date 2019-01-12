@@ -20,7 +20,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/** Common utilities for XML */
+/**
+ * Common utilities for XML
+ * <br/>
+ * The XML extension is discontinued.
+ */
+@Deprecated
 public class XmlDefaults {
 	//Prevent instantiation
 	private XmlDefaults() {};

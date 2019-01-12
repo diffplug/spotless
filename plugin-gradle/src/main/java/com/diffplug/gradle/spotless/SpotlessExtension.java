@@ -118,12 +118,24 @@ public class SpotlessExtension {
 		configure(SqlExtension.NAME, SqlExtension.class, closure);
 	}
 
-	/** Configures the special css-specific extension for CSS files. */
+	/**
+	 * Configures the special css-specific extension for CSS files.
+	 * <br/>
+	 * The CSS extension is discontinued. CSS formatters are now part of
+	 * the generic {@link FormatExtension}.
+	 */
+	@Deprecated
 	public void css(Action<CssExtension> closure) {
 		configure(CssExtension.NAME, CssExtension.class, closure);
 	}
 
-	/** Configures the special xml-specific extension for XML/XSL/... files (XHTML is excluded). */
+	/**
+	 * Configures the special xml-specific extension for XML/XSL/... files (XHTML is excluded).
+	 * <br/>
+	 * The XML extension is discontinued. XML formatters are now part of
+	 * the generic {@link FormatExtension}.
+	 */
+	@Deprecated
 	public void xml(Action<XmlExtension> closure) {
 		configure(XmlExtension.NAME, XmlExtension.class, closure);
 	}

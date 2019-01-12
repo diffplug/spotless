@@ -2,7 +2,8 @@
 
 ### Version 1.18.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-maven-plugin/))
 
-* Added Antlr4 support ([#326](https://github.com/diffplug/spotless/issues/326))
+* Provided eclipse-wtp formatters as part of custom source format element. ([#325](https://github.com/diffplug/spotless/pull/325)). This change obsoletes the CSS and XML source elements.
+* Added Antlr4 support ([#326](https://github.com/diffplug/spotless/issues/326)).
 
 ### Version 1.17.0 - December 13th 2018 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/1.17.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-maven-plugin/1.17.0))
 

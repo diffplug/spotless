@@ -43,13 +43,6 @@ spotless {
 		bumpThisNumberIfACustomStepChanges(3)
 		greclipse().configFile('spotless.eclipseformat.xml', 'spotless.groovyformat.prefs')
 	}
-	xml {
-		target fileTree('.') {
-			include com.diffplug.spotless.xml.XmlDefaults.FILE_FILTER
-			exclude '**/build/**'
-		}
-		eclipse().configFile 'spotless.xmlformat.prefs'
-	}
 	freshmark {
 		target '**/*.md'
 		propertiesFile('gradle.properties')
@@ -63,5 +56,12 @@ spotless {
 		indentWithSpaces(2)
 		trimTrailingWhitespace()
 		endWithNewline()
+	}
+	format 'xml', {
+		target fileTree('.') {
+			include '**/*.xml', '**/*.xsd'
+			exclude '**/build/**'
+		}
+		eclipseWtp('xml').configFile 'spotless.xmlformat.prefs'
 	}
 }

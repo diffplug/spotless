@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.maven.css;
+package com.diffplug.spotless.maven.generic;
 
-import java.io.File;
-import java.util.Arrays;
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toList;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
@@ -25,25 +25,24 @@ import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
-import com.diffplug.spotless.maven.generic.EclipseWtp;
 
-/** CSS Eclipse is deprecated. Use {@link EclipseWtp} instead.*/
-@Deprecated
-public class Eclipse implements FormatterStepFactory {
-
+public class EclipseWtp implements FormatterStepFactory {
 	@Parameter
-	private String file;
+	private EclipseWtpFormatterStep type;
 
 	@Parameter
 	private String version;
 
+	@Parameter
+	private String[] files;
+
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
-		EclipseBasedStepBuilder eclipseConfig = EclipseWtpFormatterStep.createCssBuilder(stepConfig.getProvisioner());
+		EclipseBasedStepBuilder eclipseConfig = type.createBuilder(stepConfig.getProvisioner());
 		eclipseConfig.setVersion(version == null ? EclipseWtpFormatterStep.defaultVersion() : version);
-		if (null != file) {
-			File settingsFile = stepConfig.getFileLocator().locateFile(file);
-			eclipseConfig.setPreferences(Arrays.asList(settingsFile));
+		if (null != files) {
+			eclipseConfig.setPreferences(
+					stream(files).map(file -> stepConfig.getFileLocator().locateFile(file)).collect(toList()));
 		}
 		return eclipseConfig.build();
 	}
