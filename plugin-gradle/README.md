@@ -290,10 +290,22 @@ spotless {
   sql {
     // default value for target files
     target '**/*.sql'
-    // configFile is optional, arguments available here: https://github.com/diffplug/spotless/blob/master/lib/src/main/java/com/diffplug/spotless/sql/DBeaverSQLFormatterStep.java
+    // configFile is optional, arguments available here: https://github.com/diffplug/spotless/blob/master/lib/src/main/java/com/diffplug/spotless/sql/dbeaver/DBeaverSQLFormatterConfiguration.java
     dbeaver().configFile('dbeaver.props')
   }
 }
+```
+
+Default configuration file:
+```properties
+# case of the keywords (UPPER, LOWER or ORIGINAL)
+sql.formatter.keyword.case=UPPER
+# Statement delimiter
+sql.formatter.statement.delimiter=;
+# Indentation style (space or tab)
+sql.formatter.indent.type=space
+# Number of identation characters
+sql.formatter.indent.size=4
 ```
 
 <a name="cpp"></a>
