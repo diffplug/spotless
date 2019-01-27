@@ -45,6 +45,7 @@ public class TestBundle implements StaticBundle, TemporaryBundle {
 	}
 
 	@Override
+	@Deprecated
 	public Dictionary<String, String> getHeaders() {
 		return null;
 	}
@@ -70,6 +71,7 @@ public class TestBundle implements StaticBundle, TemporaryBundle {
 	}
 
 	@Override
+	@Deprecated
 	public Dictionary<String, String> getHeaders(String locale) {
 		return null;
 	}
@@ -100,6 +102,7 @@ public class TestBundle implements StaticBundle, TemporaryBundle {
 	}
 
 	@Override
+	@Deprecated
 	public Enumeration<URL> findEntries(String path, String filePattern, boolean recurse) {
 		return null;
 	}
