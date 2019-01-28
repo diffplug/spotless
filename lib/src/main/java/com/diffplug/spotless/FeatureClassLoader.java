@@ -40,7 +40,7 @@ public class FeatureClassLoader extends URLClassLoader {
 	}
 
 	/** Packages which must be provided by the build tool or the corresponding Spotless plugin. */
-	private static List<String> BUILD_TOOLS_PACKAGES = Arrays.asList("org.slf4j");
+	private static List<String> BUILD_TOOLS_PACKAGES = Arrays.asList("org.slf4j.");
 
 	private final ClassLoader buildToolClassLoader;
 
