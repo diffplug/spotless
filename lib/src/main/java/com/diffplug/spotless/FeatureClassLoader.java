@@ -18,6 +18,7 @@ package com.diffplug.spotless;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,17 +31,18 @@ import java.util.Objects;
  * the build tool and the provided URLs are ignored. This allows the feature to use
  * distinct functionality of the build tool.
  */
-public class FeatureClassLoader extends URLClassLoader {
+class FeatureClassLoader extends URLClassLoader {
 	static {
-		try {
-			ClassLoader.registerAsParallelCapable();
-		} catch (NoSuchMethodError ignore) {
-			// Not supported on Java 6
-		}
+		ClassLoader.registerAsParallelCapable();
 	}
 
-	/** Packages which must be provided by the build tool or the corresponding Spotless plugin. */
-	private static List<String> BUILD_TOOLS_PACKAGES = Arrays.asList("org.slf4j.");
+	/**
+	 * The following packages must be provided by the build tool or the corresponding Spotless plugin:
+	 * <ul>
+	 *   <li>org.slf4j - SLF4J API must be provided. If no SLF4J binding is provided, log messages are dropped.</li>
+	 * </ul>
+	 */
+	static final List<String> BUILD_TOOLS_PACKAGES = Collections.unmodifiableList(Arrays.asList("org.slf4j."));
 
 	private final ClassLoader buildToolClassLoader;
 
@@ -55,7 +57,7 @@ public class FeatureClassLoader extends URLClassLoader {
 	 * @exception  NullPointerException if {@code urls} is {@code null}.
 	 */
 
-	public FeatureClassLoader(URL[] urls, ClassLoader buildToolClassLoader) {
+	FeatureClassLoader(URL[] urls, ClassLoader buildToolClassLoader) {
 		super(urls, null);
 		Objects.requireNonNull(buildToolClassLoader);
 		this.buildToolClassLoader = buildToolClassLoader;

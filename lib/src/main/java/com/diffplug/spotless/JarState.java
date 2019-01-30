@@ -97,8 +97,10 @@ public final class JarState implements Serializable {
 	}
 
 	/**
-	 * Returns a classloader containing only the jars in this JarState.
-	 *
+	 * Returns a classloader containing the only jars in this JarState.
+	 * Look-up of classes in {@link FeatureClassLoader#BUILD_TOOLS_PACKAGES build tool packages}
+	 * are not taken from the JarState, but redirected to the class loader of this class.
+	 * <br/>
 	 * The lifetime of the underlying cacheloader is controlled by {@link SpotlessCache}.
 	 */
 	public ClassLoader getClassLoader() {
@@ -106,8 +108,10 @@ public final class JarState implements Serializable {
 	}
 
 	/**
-	 * Returns a classloader containing only the jars in this JarState.
-	 *
+	 * Returns a classloader containing the only jars in this JarState.
+	 * Look-up of classes in {@link FeatureClassLoader#BUILD_TOOLS_PACKAGES build tool packages}
+	 * are not taken from the JarState, but redirected to the class loader of this class.
+	 * <br/>
 	 * The lifetime of the underlying cacheloader is controlled by {@link SpotlessCache}.
 	 */
 	public ClassLoader getClassLoader(Serializable key) {

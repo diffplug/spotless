@@ -176,7 +176,7 @@ public class SingleSlf4JService implements ExtendedLogService, ExtendedLogReader
 		}
 	}
 
-	public void log(LogEntry entry) {
+	private void log(LogEntry entry) {
 		synchronized (listener) {
 			listener.stream().forEach(l -> l.logged(entry));
 		}
@@ -390,7 +390,8 @@ public class SingleSlf4JService implements ExtendedLogService, ExtendedLogReader
 		audit(String.format(format, arguments));
 	}
 
-	public static class SimpleLogEntry implements LogEntry {
+	/** Internal wrapper for Eclipse OSGI 3.12 based logs and new log services. */
+	private static class SimpleLogEntry implements LogEntry {
 
 		private final LogLevel level;
 		private final String message;
@@ -491,7 +492,7 @@ public class SingleSlf4JService implements ExtendedLogService, ExtendedLogReader
 
 		@Override
 		public StackTraceElement getLocation() {
-			return null;
+			return null; // Not used by SingleSlf4JService
 		}
 
 	}

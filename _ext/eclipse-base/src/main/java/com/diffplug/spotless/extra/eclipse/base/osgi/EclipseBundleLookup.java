@@ -16,9 +16,12 @@
 package com.diffplug.spotless.extra.eclipse.base.osgi;
 
 import org.osgi.framework.Bundle;
+import org.osgi.service.packageadmin.ExportedPackage;
+import org.osgi.service.packageadmin.PackageAdmin;
+import org.osgi.service.packageadmin.RequiredBundle;
 
 /**
- * {@link org.osgi.service.packageadmin.PackageAdmin} service for bundle look-up and bypassing wiring.
+ * {@link PackageAdmin} service for bundle look-up and bypassing wiring.
  * <p>
  * The wiring information will always claim that all required bundles are present.
  * Other functionality is not supported.
@@ -27,7 +30,7 @@ import org.osgi.framework.Bundle;
  * Interface is deprecated, but for example the InternalPlatform still uses PackageAdmin.
  */
 @SuppressWarnings("deprecation")
-class EclipseBundleLookup implements org.osgi.service.packageadmin.PackageAdmin {
+class EclipseBundleLookup implements PackageAdmin {
 
 	private final BundleSet bundles;
 
@@ -37,19 +40,19 @@ class EclipseBundleLookup implements org.osgi.service.packageadmin.PackageAdmin 
 
 	@Override
 	@Deprecated
-	public org.osgi.service.packageadmin.ExportedPackage[] getExportedPackages(Bundle bundle) {
+	public ExportedPackage[] getExportedPackages(Bundle bundle) {
 		return null;
 	}
 
 	@Override
 	@Deprecated
-	public org.osgi.service.packageadmin.ExportedPackage[] getExportedPackages(String name) {
+	public ExportedPackage[] getExportedPackages(String name) {
 		return null;
 	}
 
 	@Override
 	@Deprecated
-	public org.osgi.service.packageadmin.ExportedPackage getExportedPackage(String name) {
+	public ExportedPackage getExportedPackage(String name) {
 		return null;
 	}
 
@@ -63,7 +66,7 @@ class EclipseBundleLookup implements org.osgi.service.packageadmin.PackageAdmin 
 	}
 
 	@Override
-	public org.osgi.service.packageadmin.RequiredBundle[] getRequiredBundles(String symbolicName) {
+	public RequiredBundle[] getRequiredBundles(String symbolicName) {
 		return null; // No unresolved required bundles exist
 	}
 
