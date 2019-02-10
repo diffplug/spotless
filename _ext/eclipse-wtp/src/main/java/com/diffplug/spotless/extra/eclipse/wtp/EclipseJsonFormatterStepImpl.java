@@ -29,7 +29,7 @@ import com.diffplug.spotless.extra.eclipse.wtp.sse.CleanupStep;
 
 /**
  * Formatter step which calls out to the Eclipse JSON cleanup processor and formatter.
- * Note that the cleanup is escaped, since it has known bugs and is currently not used by Eclipse. 
+ * Note that the cleanup is escaped, since it has known bugs and is currently not used by Eclipse.
  */
 public class EclipseJsonFormatterStepImpl extends CleanupStep<EclipseJsonFormatterStepImpl.SpotlessJsonCleanup> {
 
