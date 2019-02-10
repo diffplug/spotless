@@ -66,7 +66,7 @@ public final class SpotlessCache {
 	synchronized ClassLoader classloader(Serializable key, JarState state) {
 		SerializedKey serializedKey = new SerializedKey(key);
 		return cache
-				.computeIfAbsent(serializedKey, k -> new URLClassLoader(state.jarUrls(), null));
+				.computeIfAbsent(serializedKey, k -> new FeatureClassLoader(state.jarUrls(), this.getClass().getClassLoader()));
 	}
 
 	static SpotlessCache instance() {
