@@ -8,7 +8,6 @@ You might be looking for:
 ### Version 1.18.0-SNAPSHOT - TBD (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/snapshot/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/snapshot/), [snapshot repo](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/))
 
 * CSS and XML extensions are discontinued ([#325](https://github.com/diffplug/spotless/pull/325)).
-* Improved configuration times for large projects ([#349](https://github.com/diffplug/spotless/pull/349), thanks to @oehme for finding [#348](https://github.com/diffplug/spotless/pull/348)).
 
 ### Version 1.17.0 - October 30th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.17.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.17.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
