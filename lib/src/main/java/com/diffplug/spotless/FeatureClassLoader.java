@@ -43,6 +43,7 @@ class FeatureClassLoader extends URLClassLoader {
 	 * </ul>
 	 */
 	static final List<String> BUILD_TOOLS_PACKAGES = Collections.unmodifiableList(Arrays.asList("org.slf4j."));
+	// NOTE: if this changes, you need to also update the `JarState.getClassLoader` methods.
 
 	private final ClassLoader buildToolClassLoader;
 
