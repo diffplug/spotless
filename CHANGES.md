@@ -9,6 +9,7 @@ You might be looking for:
 
 * CSS and XML extensions are discontinued ([#325](https://github.com/diffplug/spotless/pull/325)).
 * Updated default google-java-format from 1.5 to 1.7 ([#335](https://github.com/diffplug/spotless/issues/335)).
+* `ImportOrderStep.createFromFile` is now lazy ([#218](https://github.com/diffplug/spotless/issues/218)).
 
 ### Version 1.17.0 - October 30th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.17.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.17.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
