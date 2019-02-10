@@ -209,14 +209,15 @@ public class FormatExtension {
 	/** Adds a new step. */
 	public void addStep(FormatterStep newStep) {
 		Objects.requireNonNull(newStep);
-		FormatterStep existing = getExistingStep(newStep.getName());
-		if (existing != null) {
+		int existingIdx = getExistingStepIdx(newStep.getName());
+		if (existingIdx == -1) {
 			throw new GradleException("Multiple steps with name '" + newStep.getName() + "' for spotless format '" + formatName() + "'");
 		}
 		steps.add(newStep);
 	}
 
 	/** Returns the existing step with the given name, if any. */
+	@Deprecated
 	protected @Nullable FormatterStep getExistingStep(String stepName) {
 		return steps.stream() //
 				.filter(step -> stepName.equals(step.getName())) //
@@ -224,14 +225,23 @@ public class FormatExtension {
 				.orElse(null);
 	}
 
+	/** Returns the index of the existing step with the given name, or -1 if no such step exists. */
+	protected int getExistingStepIdx(String stepName) {
+		for (int i = 0; i < steps.size(); ++i) {
+			if (steps.get(i).getName().equals(stepName)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
 	/** Replaces the given step. */
 	protected void replaceStep(FormatterStep replacementStep) {
-		FormatterStep existing = getExistingStep(replacementStep.getName());
-		if (existing == null) {
+		int existingIdx = getExistingStepIdx(replacementStep.getName());
+		if (existingIdx == -1) {
 			throw new GradleException("Cannot replace step '" + replacementStep.getName() + "' for spotless format '" + formatName() + "' because it hasn't been added yet.");
 		}
-		int index = steps.indexOf(existing);
-		steps.set(index, replacementStep);
+		steps.set(existingIdx, replacementStep);
 	}
 
 	/** Clears all of the existing steps. */
