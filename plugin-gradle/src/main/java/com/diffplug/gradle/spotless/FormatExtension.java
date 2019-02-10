@@ -210,7 +210,7 @@ public class FormatExtension {
 	public void addStep(FormatterStep newStep) {
 		Objects.requireNonNull(newStep);
 		int existingIdx = getExistingStepIdx(newStep.getName());
-		if (existingIdx == -1) {
+		if (existingIdx != -1) {
 			throw new GradleException("Multiple steps with name '" + newStep.getName() + "' for spotless format '" + formatName() + "'");
 		}
 		steps.add(newStep);
