@@ -567,6 +567,11 @@ spotless {
     // - if you pass anything else, it will be sent to project.files(yourArg)
     target '**/*.gradle', '**/*.md', '**/.gitignore'
 
+    targetExclude 'src/main/codegen/**', 'src/test/codegen/**'
+    // the files to be formatted = (target - targetExclude)
+    // NOTE: if target or targetExclude is called multiple times, only the
+    // last call is effective
+
     // spotless has built-in rules for the most basic formatting tasks
     trimTrailingWhitespace()
     indentWithTabs() // or spaces. Takes an integer argument if you don't like 4
@@ -628,7 +633,12 @@ spotless {
 }
 ```
 
-If a formatter throws an exception, possibly because of malformed code or a bug in a formatter step, Spotless will report a build failure.  You can suppress these specific failures as such:
+When a misformatted file throws an exception, it will be for one of two reasons:
+
+1) Spotless calculated the properly formatted version, and it is different than the current contents.
+  + Fix this by excluding the file from formatted using the `targetExclude` method, see the [custom rules](#custom) section for details.
+2) One of the formatters threw an exception while attempting to calculate the properly formatted version.
+  + You can turn these exceptions into warnings like this:
 
 ```gradle
 spotless {
@@ -641,8 +651,6 @@ spotless {
   }
 }
 ```
-
-Note that `enforceCheck` is a global property which affects all formats (outside the java block), while `ignoreErrorForStep/Path` are local to a single format (inside the java block).
 
 <a name="preview"></a>
 
