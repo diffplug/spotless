@@ -636,9 +636,9 @@ spotless {
 When a misformatted file throws an exception, it will be for one of two reasons:
 
 1) Spotless calculated the properly formatted version, and it is different than the current contents.
-  + Fix this by excluding the file from formatted using the `targetExclude` method, see the [custom rules](#custom) section for details.
 2) One of the formatters threw an exception while attempting to calculate the properly formatted version.
-  + You can turn these exceptions into warnings like this:
+
+You can fix (1) by excluding the file from formatting using the `targetExclude` method, see the [custom rules](#custom) section for details.  You can fix (2) and turn these exceptions into warnings like this:
 
 ```gradle
 spotless {

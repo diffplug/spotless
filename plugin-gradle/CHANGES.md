@@ -7,7 +7,7 @@
 * Updated default google-java-format from 1.5 to 1.7 ([#335](https://github.com/diffplug/spotless/issues/335)).
 * Replacing a step no longer triggers early evaluation ([#219](https://github.com/diffplug/spotless/issues/219)).
 * `importOrderFile(Object file)` for java and groovy is now lazy ([#218](https://github.com/diffplug/spotless/issues/218)).
-* added `targetExclude(Object...)` which excludes the given files from processing.
+* added `targetExclude(Object...)` which excludes the given files from processing ([#353](https://github.com/diffplug/spotless/pull/353)).
   * This resolves several related issues:
     * [#153](https://github.com/diffplug/spotless/issues/153) using a `PatternFilterable` to determine source processed by `JavaExtension` and `KotlinExtension`
     * [#194](https://github.com/diffplug/spotless/issues/194) ignoreErrorForPath does not work
