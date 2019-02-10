@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -52,17 +53,17 @@ public final class ImportOrderStep {
 	public FormatterStep createFrom(String... importOrder) {
 		// defensive copying and null checking
 		List<String> importOrderList = requireElementsNonNull(Arrays.asList(importOrder));
-		return createFrom(importOrderList);
+		return createFrom(() -> importOrderList);
 	}
 
 	public FormatterStep createFrom(File importsFile) {
 		Objects.requireNonNull(importsFile);
-		return createFrom(getImportOrder(importsFile));
+		return createFrom(() -> getImportOrder(importsFile));
 	}
 
-	private FormatterStep createFrom(List<String> importOrder) {
+	private FormatterStep createFrom(Supplier<List<String>> importOrder) {
 		return FormatterStep.createLazy("importOrder",
-				() -> new State(importOrder, lineFormat),
+				() -> new State(importOrder.get(), lineFormat),
 				State::toFormatter);
 	}
 
@@ -71,8 +72,8 @@ public final class ImportOrderStep {
 	@Deprecated
 	public static FormatterStep createFromOrder(List<String> importOrder) {
 		// defensive copying and null checking
-		importOrder = requireElementsNonNull(new ArrayList<>(importOrder));
-		return forJava().createFrom(importOrder);
+		List<String> importOrderCopy = requireElementsNonNull(new ArrayList<>(importOrder));
+		return forJava().createFrom(() -> importOrderCopy);
 	}
 
 	/** Static method has been replaced by instance method
