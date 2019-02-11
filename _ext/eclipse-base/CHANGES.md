@@ -1,6 +1,8 @@
 # spotless-eclipse-base
 
-### Version 3.1.0 - TBD
+### Version 3.2.0 - TBD
+
+### Version 3.1.0 - February 10th 2019 ([artifact]([jcenter](https://bintray.com/diffplug/opensource/spotless-eclipse-base)))
 
 * Added logging service based on SLF4J. ([#236](https://github.com/diffplug/spotless/issues/236))
 * Updated internal interfaces to support `org.eclipse.osgi` version 3.13.
