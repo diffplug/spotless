@@ -122,8 +122,55 @@ public class FormatExtension {
 		setEncoding(charset);
 	}
 
-	/** The files that need to be formatted. */
-	protected FileCollection target;
+	/** The files to be formatted = (target - targetExclude). */
+	protected FileCollection target, targetExclude;
+
+	/**
+	 * Sets which files should be formatted.  Files to be formatted = (target - targetExclude).
+	 *
+	 * When this method is called multiple times, only the last call has any effect.
+	 *
+	 * FileCollections pass through raw.
+	 * Strings are treated as the 'include' arg to fileTree, with project.rootDir as the dir.
+	 * List<String> are treated as the 'includes' arg to fileTree, with project.rootDir as the dir.
+	 * Anything else gets passed to getProject().files().
+	 */
+	public void target(Object... targets) {
+		this.target = parseTargets(targets);
+	}
+
+	/**
+	 * Sets which files will be excluded from formatting.  Files to be formatted = (target - targetExclude).
+	 *
+	 * When this method is called multiple times, only the last call has any effect.
+	 *
+	 * FileCollections pass through raw.
+	 * Strings are treated as the 'include' arg to fileTree, with project.rootDir as the dir.
+	 * List<String> are treated as the 'includes' arg to fileTree, with project.rootDir as the dir.
+	 * Anything else gets passed to getProject().files().
+	 */
+	public void targetExclude(Object... targets) {
+		this.targetExclude = parseTargets(targets);
+	}
+
+	private FileCollection parseTargets(Object[] targets) {
+		requireElementsNonNull(targets);
+		if (targets.length == 0) {
+			return getProject().files();
+		} else if (targets.length == 1) {
+			return parseTarget(targets[0]);
+		} else {
+			if (Stream.of(targets).allMatch(o -> o instanceof String)) {
+				return parseTarget(Arrays.asList(targets));
+			} else {
+				FileCollection union = getProject().files();
+				for (Object target : targets) {
+					union = union.plus(parseTarget(target));
+				}
+				return union;
+			}
+		}
+	}
 
 	/**
 	 * FileCollections pass through raw.
@@ -131,25 +178,6 @@ public class FormatExtension {
 	 * List<String> are treated as the 'includes' arg to fileTree, with project.rootDir as the dir.
 	 * Anything else gets passed to getProject().files().
 	 */
-	public void target(Object... targets) {
-		requireElementsNonNull(targets);
-		if (targets.length == 0) {
-			this.target = getProject().files();
-		} else if (targets.length == 1) {
-			this.target = parseTarget(targets[0]);
-		} else {
-			if (Stream.of(targets).allMatch(o -> o instanceof String)) {
-				this.target = parseTarget(Arrays.asList(targets));
-			} else {
-				FileCollection union = getProject().files();
-				for (Object target : targets) {
-					union = union.plus(parseTarget(target));
-				}
-				this.target = union;
-			}
-		}
-	}
-
 	@SuppressWarnings("unchecked")
 	protected FileCollection parseTarget(Object target) {
 		if (target instanceof FileCollection) {
@@ -525,7 +553,11 @@ public class FormatExtension {
 		task.setPaddedCell(paddedCell);
 		task.setEncoding(getEncoding().name());
 		task.setExceptionPolicy(exceptionPolicy);
-		task.setTarget(target);
+		if (targetExclude == null) {
+			task.setTarget(target);
+		} else {
+			task.setTarget(target.minus(targetExclude));
+		}
 		task.setSteps(steps);
 		task.setLineEndingsPolicy(getLineEndings().createPolicy(getProject().getProjectDir(), () -> task.target));
 	}
