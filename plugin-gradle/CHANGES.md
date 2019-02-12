@@ -4,6 +4,8 @@
 
 **WARNING: xml formatter in this version may be vulnerable to XXE attacks (see [#358](https://github.com/diffplug/spotless/issues/358)).**
 
+* Configured `buìld-scan` plugin in build ([#356](https://github.com/diffplug/spotless/pull/356)).
+
 ### Version 3.18.0 - February 11th 2018 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.18.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.18.0))
 
 **WARNING: xml formatter in this version may be vulnerable to XXE attacks (see [#358](https://github.com/diffplug/spotless/issues/358)).**
