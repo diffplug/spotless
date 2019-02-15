@@ -3,7 +3,7 @@ ext {
 		fvgh: [ name: 'Frank Vennemeyer', email: 'frankgh@zoho.com' ],
 	]
 
-	p2Repository = "http://download.eclipse.org/tools/cdt/releases/${VER_ECLIPSE_CDT}"
+	p2Repository = "https://download.eclipse.org/tools/cdt/releases/${VER_ECLIPSE_CDT}"
 	
 	p2Dependencies = [
 		'org.eclipse.cdt.core':'+', // CodeFormatter and related

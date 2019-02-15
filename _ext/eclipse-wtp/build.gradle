@@ -3,7 +3,7 @@ ext {
 		fvgh: [ name: 'Frank Vennemeyer', email: 'frankgh@zoho.com' ],
 	]
 	
-	p2Repository = "http://download.eclipse.org/webtools/repository/${VER_ECLIPSE_WTP}"
+	p2Repository = "https://download.eclipse.org/webtools/repository/${VER_ECLIPSE_WTP}"
 	
 	p2Dependencies = [
 		// XML/HTML Formatter  - Dependencies
