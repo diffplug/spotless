@@ -7,7 +7,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "com.diffplug.gradle:goomph:3.15.0"
+        classpath "com.diffplug.gradle:goomph:3.17.4"
     }
 }
 apply plugin: com.diffplug.gradle.p2.AsMavenPlugin
@@ -73,7 +73,7 @@ p2AsMaven {
 		p2ant {
 			/*
 			Define p2ant proxy settings as a closure. Refer to the API documents for instructions:
-			https://diffplug.github.io/goomph/javadoc/3.3.0/com/diffplug/gradle/p2/AsMavenPlugin.html
+			https://diffplug.github.io/goomph/javadoc/3.17.4/com/diffplug/gradle/p2/AsMavenPlugin.html
 			*/
 			if (project.hasProperty('setP2AntProxy')) {
 				setP2AntProxy(it)
