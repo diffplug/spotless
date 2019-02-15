@@ -20,7 +20,7 @@ javadoc {
 // use markdown in javadoc
 def makeLink = { url, text -> "<a href=\"${url}\" style=\"text-transform: none;\">${text}</a>" }
 def javadocInfo = '<h2>' + makeLink("https://github.com/${org}/${name}", "${group}:${project.ext.artifactId}:${ext.version}") +
-		' by ' + makeLink('http://www.diffplug.com', 'DiffPlug') + '</h2>'
+		' by ' + makeLink('https://www.diffplug.com', 'DiffPlug') + '</h2>'
 
 String version_str = ext.version.endsWith('-SNAPSHOT') ? 'snapshot' : ext.version
 apply plugin: 'ch.raffael.pegdown-doclet'
@@ -95,7 +95,7 @@ model {
 						licenses {
 							license {
 								name 'The Apache Software License, Version 2.0'
-								url 'http://www.apache.org/license/LICENSE-2.0.txt'
+								url 'https://www.apache.org/license/LICENSE-2.0.txt'
 								distribution 'repo'
 							}
 						}
