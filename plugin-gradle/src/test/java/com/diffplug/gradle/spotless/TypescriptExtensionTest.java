@@ -25,6 +25,48 @@ import com.diffplug.spotless.category.NpmTest;
 @Category(NpmTest.class)
 public class TypescriptExtensionTest extends GradleIntegrationTest {
 	@Test
+	public void allowToSpecifyFormatterVersion() throws IOException {
+		setFile("build.gradle").toLines(
+				"buildscript { repositories { mavenCentral() } }",
+				"plugins {",
+				"    id 'com.diffplug.gradle.spotless'",
+				"}",
+				"def tsfmtconfig = [:]",
+				"tsfmtconfig['indentSize'] = 1",
+				"tsfmtconfig['convertTabsToSpaces'] = true",
+				"spotless {",
+				"    typescript {",
+				"        target 'test.ts'",
+				"        tsfmt('7.2.1').config(tsfmtconfig)",
+				"    }",
+				"}");
+		setFile("test.ts").toResource("npm/tsfmt/tsfmt/tsfmt.dirty");
+		gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		assertFile("test.ts").sameAsResource("npm/tsfmt/tsfmt/tsfmt.clean");
+	}
+
+	@Test
+	public void allowToSpecifyMultipleVersionStrings() throws IOException {
+		setFile("build.gradle").toLines(
+				"buildscript { repositories { mavenCentral() } }",
+				"plugins {",
+				"    id 'com.diffplug.gradle.spotless'",
+				"}",
+				"def tsfmtconfig = [:]",
+				"tsfmtconfig['indentSize'] = 1",
+				"tsfmtconfig['convertTabsToSpaces'] = true",
+				"spotless {",
+				"    typescript {",
+				"        target 'test.ts'",
+				"        tsfmt(tslintVersion: '5.1.0', typescriptVersion: '2.9.2').config(tsfmtconfig)",
+				"    }",
+				"}");
+		setFile("test.ts").toResource("npm/tsfmt/tsfmt/tsfmt.dirty");
+		gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		assertFile("test.ts").sameAsResource("npm/tsfmt/tsfmt/tsfmt.clean");
+	}
+
+	@Test
 	public void useTsfmtInlineConfig() throws IOException {
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
