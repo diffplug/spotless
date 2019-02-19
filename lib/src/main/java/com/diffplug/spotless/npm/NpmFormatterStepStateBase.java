@@ -24,6 +24,8 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import javax.annotation.Nullable;
@@ -115,6 +117,14 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 		} catch (IOException e) {
 			throw ThrowingEx.asRuntime(e);
 		}
+	}
+
+	protected static String replacePlaceholders(String template, Map<String, String> replacements) {
+		String result = template;
+		for (Entry<String, String> entry : replacements.entrySet()) {
+			result = result.replaceAll("\\Q${" + entry.getKey() + "}\\E", entry.getValue());
+		}
+		return result;
 	}
 
 	public abstract FormatterFunc createFormatterFunc();

@@ -21,6 +21,7 @@ import static java.util.Objects.requireNonNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -36,11 +37,18 @@ public class PrettierFormatterStep {
 
 	public static final String NAME = "prettier-format";
 
-	public static FormatterStep create(Provisioner provisioner, File buildDir, @Nullable File npm, PrettierConfig prettierConfig) {
+	static final String DEFAULT_PRETTIER_VERSION = "1.13.4";
+
+	public static final String defaultVersion() {
+		return DEFAULT_PRETTIER_VERSION;
+	}
+
+	public static FormatterStep create(String prettierVersion, Provisioner provisioner, File buildDir, @Nullable File npm, PrettierConfig prettierConfig) {
+		requireNonNull(prettierVersion);
 		requireNonNull(provisioner);
 		requireNonNull(buildDir);
 		return FormatterStep.createLazy(NAME,
-				() -> new State(NAME, provisioner, buildDir, npm, prettierConfig),
+				() -> new State(NAME, prettierVersion, provisioner, buildDir, npm, prettierConfig),
 				State::createFormatterFunc);
 	}
 
@@ -49,11 +57,13 @@ public class PrettierFormatterStep {
 		private static final long serialVersionUID = -3811104513825329168L;
 		private final PrettierConfig prettierConfig;
 
-		State(String stepName, Provisioner provisioner, File buildDir, @Nullable File npm, PrettierConfig prettierConfig) throws IOException {
+		State(String stepName, String prettierVersion, Provisioner provisioner, File buildDir, @Nullable File npm, PrettierConfig prettierConfig) throws IOException {
 			super(stepName,
 					provisioner,
 					new NpmConfig(
-							readFileFromClasspath(PrettierFormatterStep.class, "/com/diffplug/spotless/npm/prettier-package.json"),
+							replacePlaceholders(
+									readFileFromClasspath(PrettierFormatterStep.class, "/com/diffplug/spotless/npm/prettier-package.json"),
+									Collections.singletonMap("prettierVersion", prettierVersion)),
 							"prettier"),
 					buildDir,
 					npm);

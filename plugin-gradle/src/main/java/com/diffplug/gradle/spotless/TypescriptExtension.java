@@ -15,10 +15,14 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static com.diffplug.spotless.npm.TsFmtFormatterStep.DEFAULT_TYPESCRIPT_FORMATTER_TSLINT_VERSION;
+import static com.diffplug.spotless.npm.TsFmtFormatterStep.DEFAULT_TYPESCRIPT_FORMATTER_TYPESCRIPT_VERSION;
+import static com.diffplug.spotless.npm.TsFmtFormatterStep.DEFAULT_TYPESCRIPT_FORMATTER_VERSION;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 
 import javax.annotation.Nullable;
@@ -39,7 +43,21 @@ public class TypescriptExtension extends FormatExtension {
 	}
 
 	public TypescriptFormatExtension tsfmt() {
-		TypescriptFormatExtension tsfmt = new TypescriptFormatExtension();
+		return tsfmt(Collections.emptyMap());
+	}
+
+	public TypescriptFormatExtension tsfmt(String formatterVersion) {
+		return tsfmt(formatterVersion, null, null);
+	}
+
+	public TypescriptFormatExtension tsfmt(Map<String, String> versions) {
+		return tsfmt(versions.get("formatterVersion"), versions.get("typescriptVersion"), versions.get("tslintVersion"));
+	}
+
+	public TypescriptFormatExtension tsfmt(String formatterVersion, String typescriptVersion, String tslintVersion) {
+		TypescriptFormatExtension tsfmt = new TypescriptFormatExtension(Optional.ofNullable(formatterVersion).orElse(DEFAULT_TYPESCRIPT_FORMATTER_VERSION),
+				Optional.ofNullable(typescriptVersion).orElse(DEFAULT_TYPESCRIPT_FORMATTER_TYPESCRIPT_VERSION),
+				Optional.ofNullable(tslintVersion).orElse(DEFAULT_TYPESCRIPT_FORMATTER_TSLINT_VERSION));
 		addStep(tsfmt.createStep());
 		return tsfmt;
 	}
@@ -53,6 +71,18 @@ public class TypescriptExtension extends FormatExtension {
 
 		@Nullable
 		Object configFilePath = null;
+
+		private final Map<String, String> versions = new TreeMap<>();
+
+		public TypescriptFormatExtension() {
+			this(DEFAULT_TYPESCRIPT_FORMATTER_VERSION, DEFAULT_TYPESCRIPT_FORMATTER_TYPESCRIPT_VERSION, DEFAULT_TYPESCRIPT_FORMATTER_TSLINT_VERSION);
+		}
+
+		public TypescriptFormatExtension(String formatterVersion, String typescriptVersion, String tslintVersion) {
+			this.versions.put("formatterVersion", requireNonNull(formatterVersion));
+			this.versions.put("typescriptVersion", requireNonNull(typescriptVersion));
+			this.versions.put("tslintVersion", requireNonNull(tslintVersion));
+		}
 
 		public void config(final Map<String, Object> config) {
 			this.config = new TreeMap<>(requireNonNull(config));
@@ -85,6 +115,7 @@ public class TypescriptExtension extends FormatExtension {
 			final Project project = getProject();
 
 			return TsFmtFormatterStep.create(
+					versions,
 					GradleProvisioner.fromProject(project),
 					project.getBuildDir(),
 					npmFileOrNull(),
@@ -108,10 +139,26 @@ public class TypescriptExtension extends FormatExtension {
 		return prettierConfig;
 	}
 
+	@Override
+	public PrettierConfig prettier(String prettierVersion) {
+		PrettierConfig prettierConfig = new TypescriptPrettierConfig(prettierVersion);
+		addStep(prettierConfig.createStep());
+		return prettierConfig;
+	}
+
 	/**
 	 * Overrides the parser to be set to typescript, no matter what the user's config says.
 	 */
 	public class TypescriptPrettierConfig extends PrettierConfig {
+
+		TypescriptPrettierConfig() {
+			super();
+		}
+
+		TypescriptPrettierConfig(String prettierVersion) {
+			super(prettierVersion);
+		}
+
 		@Override
 		FormatterStep createStep() {
 			fixParserToTypescript();

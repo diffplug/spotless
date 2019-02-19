@@ -53,6 +53,7 @@ public class PrettierFormatterStepTest {
 			final String cleanFile = filedir + fileType + ".clean";
 
 			final FormatterStep formatterStep = PrettierFormatterStep.create(
+					PrettierFormatterStep.defaultVersion(),
 					TestProvisioner.mavenCentral(),
 					buildDir(),
 					npmExecutable(),
@@ -75,6 +76,7 @@ public class PrettierFormatterStepTest {
 			final String cleanFile = filedir + "json.clean";
 
 			final FormatterStep formatterStep = PrettierFormatterStep.create(
+					PrettierFormatterStep.defaultVersion(),
 					TestProvisioner.mavenCentral(),
 					buildDir(),
 					npmExecutable(),
@@ -97,6 +99,7 @@ public class PrettierFormatterStepTest {
 			final String cleanFile = FILEDIR + "typescript." + cleanFileNameSuffix + ".clean";
 
 			final FormatterStep formatterStep = PrettierFormatterStep.create(
+					PrettierFormatterStep.defaultVersion(),
 					TestProvisioner.mavenCentral(),
 					buildDir(),
 					npmExecutable(),

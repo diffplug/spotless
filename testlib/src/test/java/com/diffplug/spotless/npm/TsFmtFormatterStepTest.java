@@ -60,6 +60,7 @@ public class TsFmtFormatterStepTest {
 			Files.write(new File(configFile.getParentFile(), configFileNameWithoutExtension + ".ts").toPath(), getTestResource(dirtyFile).getBytes(StandardCharsets.UTF_8));
 
 			final FormatterStep formatterStep = TsFmtFormatterStep.create(
+					TsFmtFormatterStep.defaultVersions(),
 					TestProvisioner.mavenCentral(),
 					buildDir(),
 					npmExecutable(),
@@ -81,6 +82,7 @@ public class TsFmtFormatterStepTest {
 			final ImmutableMap<String, Object> inlineConfig = ImmutableMap.of("indentSize", 1, "convertTabsToSpaces", true);
 
 			final FormatterStep formatterStep = TsFmtFormatterStep.create(
+					TsFmtFormatterStep.defaultVersions(),
 					TestProvisioner.mavenCentral(),
 					buildDir(),
 					npmExecutable(),
