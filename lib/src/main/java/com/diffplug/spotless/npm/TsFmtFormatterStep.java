@@ -35,9 +35,9 @@ public class TsFmtFormatterStep {
 
 	public static final String DEFAULT_TYPESCRIPT_FORMATTER_VERSION = "7.2.2";
 
-	public static final String DEFAULT_TYPESCRIPT_FORMATTER_TYPESCRIPT_VERSION = "2.9.2";
+	public static final String DEFAULT_TYPESCRIPT_FORMATTER_TYPESCRIPT_VERSION = "3.3.3";
 
-	public static final String DEFAULT_TYPESCRIPT_FORMATTER_TSLINT_VERSION = "5.1.0";
+	public static final String DEFAULT_TYPESCRIPT_FORMATTER_TSLINT_VERSION = "5.12.1";
 
 	public static final String NAME = "tsfmt-format";
 
