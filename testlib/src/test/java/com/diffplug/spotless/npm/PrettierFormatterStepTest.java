@@ -41,7 +41,7 @@ public class PrettierFormatterStepTest {
 
 		@Parameterized.Parameters(name = "{index}: prettier can be applied to {0}")
 		public static Iterable<String> formattingConfigFiles() {
-			return Arrays.asList("typescript", "json", "javascript-es5", "javascript-es6", "css", "scss", "markdown");
+			return Arrays.asList("typescript", "json", "javascript-es5", "javascript-es6", "css", "scss", "markdown", "yaml");
 		}
 
 		@Test
