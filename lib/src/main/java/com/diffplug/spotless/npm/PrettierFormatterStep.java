@@ -37,7 +37,7 @@ public class PrettierFormatterStep {
 
 	public static final String NAME = "prettier-format";
 
-	static final String DEFAULT_PRETTIER_VERSION = "1.13.4";
+	static final String DEFAULT_PRETTIER_VERSION = "1.16.4";
 
 	public static final String defaultVersion() {
 		return DEFAULT_PRETTIER_VERSION;
