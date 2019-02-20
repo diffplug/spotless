@@ -37,10 +37,15 @@ public class PrettierFormatterStep {
 
 	public static final String NAME = "prettier-format";
 
-	static final String DEFAULT_PRETTIER_VERSION = "1.16.4";
+	static final String NPM_PKG_PRETTIER_DEFAULT_VERSION = "1.16.4";
 
 	public static final String defaultVersion() {
-		return DEFAULT_PRETTIER_VERSION;
+		return NPM_PKG_PRETTIER_DEFAULT_VERSION;
+	}
+
+	@Deprecated
+	public static FormatterStep create(Provisioner provisioner, File buildDir, @Nullable File npm, PrettierConfig prettierConfig) {
+		return create(defaultVersion(), provisioner, buildDir, npm, prettierConfig);
 	}
 
 	public static FormatterStep create(String prettierVersion, Provisioner provisioner, File buildDir, @Nullable File npm, PrettierConfig prettierConfig) {

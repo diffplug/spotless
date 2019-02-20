@@ -33,13 +33,24 @@ import com.diffplug.spotless.ThrowingEx;
 
 public class TsFmtFormatterStep {
 
-	public static final String DEFAULT_TYPESCRIPT_FORMATTER_VERSION = "7.2.2";
+	public static final String NPM_PKG_TSFMT = "formatterVersion";
 
-	public static final String DEFAULT_TYPESCRIPT_FORMATTER_TYPESCRIPT_VERSION = "3.3.3";
+	public static final String NPM_PKG_TS = "typescriptVersion";
 
-	public static final String DEFAULT_TYPESCRIPT_FORMATTER_TSLINT_VERSION = "5.12.1";
+	public static final String NPM_PKG_TSLINT = "tslintVersion";
+
+	public static final String NPM_PKG_TSFMT_DEFAULT_VERSION = "7.2.2";
+
+	public static final String NPM_PKG_TS_DEFAULT_VERSION = "3.3.3";
+
+	public static final String NPM_PKG_TSLINT_DEFAULT_VERSION = "5.12.1";
 
 	public static final String NAME = "tsfmt-format";
+
+	@Deprecated
+	public static FormatterStep create(Provisioner provisioner, File buildDir, @Nullable File npm, File baseDir, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) {
+		return create(defaultVersions(), provisioner, buildDir, npm, baseDir, configFile, inlineTsFmtSettings);
+	}
 
 	public static FormatterStep create(Map<String, String> versions, Provisioner provisioner, File buildDir, @Nullable File npm, File baseDir, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) {
 		requireNonNull(provisioner);
@@ -52,9 +63,9 @@ public class TsFmtFormatterStep {
 
 	public static Map<String, String> defaultVersions() {
 		Map<String, String> defaultVersions = new TreeMap<>();
-		defaultVersions.put("formatterVersion", DEFAULT_TYPESCRIPT_FORMATTER_VERSION);
-		defaultVersions.put("typescriptVersion", DEFAULT_TYPESCRIPT_FORMATTER_TYPESCRIPT_VERSION);
-		defaultVersions.put("tslintVersion", DEFAULT_TYPESCRIPT_FORMATTER_TSLINT_VERSION);
+		defaultVersions.put(NPM_PKG_TSFMT, NPM_PKG_TSFMT_DEFAULT_VERSION);
+		defaultVersions.put(NPM_PKG_TS, NPM_PKG_TS_DEFAULT_VERSION);
+		defaultVersions.put(NPM_PKG_TSLINT, NPM_PKG_TSLINT_DEFAULT_VERSION);
 		return Collections.unmodifiableMap(defaultVersions);
 	}
 
@@ -70,6 +81,11 @@ public class TsFmtFormatterStep {
 		private final TypedTsFmtConfigFile configFile;
 
 		private final File baseDir;
+
+		@Deprecated
+		public State(String stepName, Provisioner provisioner, File buildDir, @Nullable File npm, File baseDir, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) throws IOException {
+			this(stepName, defaultVersions(), provisioner, buildDir, npm, baseDir, configFile, inlineTsFmtSettings);
+		}
 
 		public State(String stepName, Map<String, String> versions, Provisioner provisioner, File buildDir, @Nullable File npm, File baseDir, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) throws IOException {
 			super(stepName,
