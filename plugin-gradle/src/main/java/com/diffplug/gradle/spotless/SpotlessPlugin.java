@@ -39,8 +39,17 @@ public class SpotlessPlugin implements Plugin<Project> {
 	private static final String APPLY_DESCRIPTION = "Applies code formatting steps to sourcecode in-place.";
 	private static final String FILES_PROPERTY = "spotlessFiles";
 
+	private Task rootCheckTask, rootApplyTask;
+
 	@Override
 	public void apply(Project project) {
+		rootCheckTask = project.task(EXTENSION + CHECK);
+		rootCheckTask.setGroup(TASK_GROUP);
+		rootCheckTask.setDescription(CHECK_DESCRIPTION);
+		rootApplyTask = project.task(EXTENSION + APPLY);
+		rootApplyTask.setGroup(TASK_GROUP);
+		rootApplyTask.setDescription(APPLY_DESCRIPTION);
+
 		// make sure there's a `clean` task
 		project.getPlugins().apply(BasePlugin.class);
 
@@ -58,12 +67,6 @@ public class SpotlessPlugin implements Plugin<Project> {
 
 	@SuppressWarnings("rawtypes")
 	void createTasks(Project project) {
-		Task rootCheckTask = project.task(EXTENSION + CHECK);
-		rootCheckTask.setGroup(TASK_GROUP);
-		rootCheckTask.setDescription(CHECK_DESCRIPTION);
-		Task rootApplyTask = project.task(EXTENSION + APPLY);
-		rootApplyTask.setGroup(TASK_GROUP);
-		rootApplyTask.setDescription(APPLY_DESCRIPTION);
 		String filePatterns;
 		if (project.hasProperty(FILES_PROPERTY) && project.property(FILES_PROPERTY) instanceof String) {
 			filePatterns = (String) project.property(FILES_PROPERTY);
