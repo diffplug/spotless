@@ -347,6 +347,8 @@ spotless {
   typescript {
     // using existing config files
     tsfmt().tslintFile('/path/to/repo/tslint.json')
+    // tsfmt('7.2.2') to specify specific version of tsfmt
+    // tsfmt(formatterVersion: '7.2.2', typescriptVersion: '3.3.3', tslintVersion: '5.12.1') to specify specific versions of tsfmt and internal packages
   }
 }
 ```
@@ -404,6 +406,7 @@ spotless {
 
     // at least provide the parser to use
     prettier().config(['parser': 'postcss'])
+    // prettier('1.16.4') to specify specific version of prettier
 
     // or provide a typical filename
     prettier().config(['filepath': 'style.scss'])
