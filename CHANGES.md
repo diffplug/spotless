@@ -10,6 +10,7 @@ You might be looking for:
 **WARNING: xml formatter in this version may be vulnerable to XXE attacks (see [#358](https://github.com/diffplug/spotless/issues/358)).**
 
 * Security fix: Updated groovy, c/c++, and eclipse WTP formatters so that they download their source jars securely using `https` rather than `http` ([#360](https://github.com/diffplug/spotless/issues/360)).
+* Updated default eclipse-jdt from 4.9.0 to 4.10.0 ([#368](https://github.com/diffplug/spotless/pull/368))
 
 ### Version 1.18.0 - February 11th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.18.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.18.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
