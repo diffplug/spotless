@@ -5,19 +5,36 @@ You might be looking for:
 - [plugin-gradle/CHANGES.md](plugin-gradle/CHANGES.md)
 - [plugin-maven/CHANGES.md](plugin-maven/CHANGES.md)
 
-### Version 1.18.0-SNAPSHOT - TBD (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/snapshot/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/snapshot/), [snapshot repo](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/))
+### Version 1.19.0-SNAPSHOT - TBD (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/snapshot/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/snapshot/), [snapshot repo](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/))
+
+**WARNING: xml formatter in this version may be vulnerable to XXE attacks (see [#358](https://github.com/diffplug/spotless/issues/358)).**
+
+* Security fix: Updated groovy, c/c++, and eclipse WTP formatters so that they download their source jars securely using `https` rather than `http` ([#360](https://github.com/diffplug/spotless/issues/360)).
+
+### Version 1.18.0 - February 11th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.18.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.18.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
+
+**WARNING: xml formatter in this version may be vulnerable to XXE attacks (see [#358](https://github.com/diffplug/spotless/issues/358)).**
 
 * CSS and XML extensions are discontinued ([#325](https://github.com/diffplug/spotless/pull/325)).
+* Provided features with access to SLF4J interface of build tools. ([#236](https://github.com/diffplug/spotless/issues/236))
+* Updated default google-java-format from 1.5 to 1.7 ([#335](https://github.com/diffplug/spotless/issues/335)).
+* `ImportOrderStep.createFromFile` is now lazy ([#218](https://github.com/diffplug/spotless/issues/218)).
 
 ### Version 1.17.0 - October 30th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.17.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.17.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
+
+**WARNING: xml formatter in this version may be vulnerable to XXE attacks (see [#358](https://github.com/diffplug/spotless/issues/358)).**
 
 * Updated default eclipse-jdt from 4.7.3a to 4.9.0 ([#316](https://github.com/diffplug/spotless/pull/316)). New version addresses enum-tab formatting bug in 4.8 ([#314](https://github.com/diffplug/spotless/issues/314)).
 
 ### Version 1.16.0 - October 30th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.16.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.16.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
+**WARNING: xml formatter in this version may be vulnerable to XXE attacks (see [#358](https://github.com/diffplug/spotless/issues/358)).**
+
 * Minor support for plugin-gradle and plugin-maven CSS plugins ([#311](https://github.com/diffplug/spotless/pull/311)).
 
 ### Version 1.15.0 - September 23rd 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.15.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.15.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
+
+**WARNING: xml formatter in this version may be vulnerable to XXE attacks (see [#358](https://github.com/diffplug/spotless/issues/358)).**
 
 * Added C/C++ support ([#232](https://github.com/diffplug/spotless/issues/232)).
 * Integrated Eclipse CDT formatter ([#274](https://github.com/diffplug/spotless/pull/274))

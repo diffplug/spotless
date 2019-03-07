@@ -5,7 +5,9 @@ Please make sure that your [PR allows edits from maintainers](https://help.githu
 After creating the PR, please add a commit that adds a bullet-point under the `-SNAPSHOT` section of [CHANGES.md](https://github.com/diffplug/spotless/blob/master/CHANGES.md) and [plugin-gradle/CHANGES.md](https://github.com/diffplug/spotless/blob/master/plugin-gradle/CHANGES.md) which includes:
 
 - [ ] a summary of the change
-- [ ] a link to the newly created PR
+- either
+    - [ ] a link to the issue you are resolving (for small changes)
+    - [ ] a link to the PR you just created (for big changes likely to have discussion)
 
 If your change only affects a build plugin, and not the lib, then you only need to update the `CHANGES.md` for that plugin.
 

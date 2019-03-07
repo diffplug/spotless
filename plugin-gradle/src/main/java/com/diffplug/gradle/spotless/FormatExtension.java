@@ -122,8 +122,55 @@ public class FormatExtension {
 		setEncoding(charset);
 	}
 
-	/** The files that need to be formatted. */
-	protected FileCollection target;
+	/** The files to be formatted = (target - targetExclude). */
+	protected FileCollection target, targetExclude;
+
+	/**
+	 * Sets which files should be formatted.  Files to be formatted = (target - targetExclude).
+	 *
+	 * When this method is called multiple times, only the last call has any effect.
+	 *
+	 * FileCollections pass through raw.
+	 * Strings are treated as the 'include' arg to fileTree, with project.rootDir as the dir.
+	 * List<String> are treated as the 'includes' arg to fileTree, with project.rootDir as the dir.
+	 * Anything else gets passed to getProject().files().
+	 */
+	public void target(Object... targets) {
+		this.target = parseTargets(targets);
+	}
+
+	/**
+	 * Sets which files will be excluded from formatting.  Files to be formatted = (target - targetExclude).
+	 *
+	 * When this method is called multiple times, only the last call has any effect.
+	 *
+	 * FileCollections pass through raw.
+	 * Strings are treated as the 'include' arg to fileTree, with project.rootDir as the dir.
+	 * List<String> are treated as the 'includes' arg to fileTree, with project.rootDir as the dir.
+	 * Anything else gets passed to getProject().files().
+	 */
+	public void targetExclude(Object... targets) {
+		this.targetExclude = parseTargets(targets);
+	}
+
+	private FileCollection parseTargets(Object[] targets) {
+		requireElementsNonNull(targets);
+		if (targets.length == 0) {
+			return getProject().files();
+		} else if (targets.length == 1) {
+			return parseTarget(targets[0]);
+		} else {
+			if (Stream.of(targets).allMatch(o -> o instanceof String)) {
+				return parseTarget(Arrays.asList(targets));
+			} else {
+				FileCollection union = getProject().files();
+				for (Object target : targets) {
+					union = union.plus(parseTarget(target));
+				}
+				return union;
+			}
+		}
+	}
 
 	/**
 	 * FileCollections pass through raw.
@@ -131,25 +178,6 @@ public class FormatExtension {
 	 * List<String> are treated as the 'includes' arg to fileTree, with project.rootDir as the dir.
 	 * Anything else gets passed to getProject().files().
 	 */
-	public void target(Object... targets) {
-		requireElementsNonNull(targets);
-		if (targets.length == 0) {
-			this.target = getProject().files();
-		} else if (targets.length == 1) {
-			this.target = parseTarget(targets[0]);
-		} else {
-			if (Stream.of(targets).allMatch(o -> o instanceof String)) {
-				this.target = parseTarget(Arrays.asList(targets));
-			} else {
-				FileCollection union = getProject().files();
-				for (Object target : targets) {
-					union = union.plus(parseTarget(target));
-				}
-				this.target = union;
-			}
-		}
-	}
-
 	@SuppressWarnings("unchecked")
 	protected FileCollection parseTarget(Object target) {
 		if (target instanceof FileCollection) {
@@ -209,14 +237,15 @@ public class FormatExtension {
 	/** Adds a new step. */
 	public void addStep(FormatterStep newStep) {
 		Objects.requireNonNull(newStep);
-		FormatterStep existing = getExistingStep(newStep.getName());
-		if (existing != null) {
+		int existingIdx = getExistingStepIdx(newStep.getName());
+		if (existingIdx != -1) {
 			throw new GradleException("Multiple steps with name '" + newStep.getName() + "' for spotless format '" + formatName() + "'");
 		}
 		steps.add(newStep);
 	}
 
 	/** Returns the existing step with the given name, if any. */
+	@Deprecated
 	protected @Nullable FormatterStep getExistingStep(String stepName) {
 		return steps.stream() //
 				.filter(step -> stepName.equals(step.getName())) //
@@ -224,14 +253,23 @@ public class FormatExtension {
 				.orElse(null);
 	}
 
+	/** Returns the index of the existing step with the given name, or -1 if no such step exists. */
+	protected int getExistingStepIdx(String stepName) {
+		for (int i = 0; i < steps.size(); ++i) {
+			if (steps.get(i).getName().equals(stepName)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
 	/** Replaces the given step. */
 	protected void replaceStep(FormatterStep replacementStep) {
-		FormatterStep existing = getExistingStep(replacementStep.getName());
-		if (existing == null) {
+		int existingIdx = getExistingStepIdx(replacementStep.getName());
+		if (existingIdx == -1) {
 			throw new GradleException("Cannot replace step '" + replacementStep.getName() + "' for spotless format '" + formatName() + "' because it hasn't been added yet.");
 		}
-		int index = steps.indexOf(existing);
-		steps.set(index, replacementStep);
+		steps.set(existingIdx, replacementStep);
 	}
 
 	/** Clears all of the existing steps. */
@@ -515,7 +553,11 @@ public class FormatExtension {
 		task.setPaddedCell(paddedCell);
 		task.setEncoding(getEncoding().name());
 		task.setExceptionPolicy(exceptionPolicy);
-		task.setTarget(target);
+		if (targetExclude == null) {
+			task.setTarget(target);
+		} else {
+			task.setTarget(target.minus(targetExclude));
+		}
 		task.setSteps(steps);
 		task.setLineEndingsPolicy(getLineEndings().createPolicy(getProject().getProjectDir(), () -> task.target));
 	}
