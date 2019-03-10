@@ -26,7 +26,7 @@ import org.osgi.framework.BundleContext;
  */
 public class PreventExternalURIResolverExtension implements URIResolverExtension, BundleActivator {
 
-	private final String REFUSE_EXTERNAL_URI = "file://refused.external.uri";
+	private static final String REFUSE_EXTERNAL_URI = "file://refused.external.uri";
 
 	/**
 	 * @param file the in-workspace base resource, if one exists
