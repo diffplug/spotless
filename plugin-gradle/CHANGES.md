@@ -5,8 +5,10 @@
 **WARNING: xml formatter in this version may be vulnerable to XXE attacks (see [#358](https://github.com/diffplug/spotless/issues/358)).**
 
 * Making npm package versions of [`prettier`](https://prettier.io/) and [`tsfmt`](https://github.com/vvakame/typescript-formatter) (and its internally used npm packages) configurable. ([#363](https://github.com/diffplug/spotless/pull/363))
-* Updated default npm package version of `prettier` from 1.13.4 to 1.16.4
-* Updated default npm package version of internally used typescript package from 2.9.2 to 3.3.3 and tslint package from 5.1.0 to 5.12.0 (both used by `tsfmt`)
+  * Updated default npm package version of `prettier` from 1.13.4 to 1.16.4
+  * Updated default npm package version of internally used typescript package from 2.9.2 to 3.3.3 and tslint package from 5.1.0 to 5.12.0 (both used by `tsfmt`)
+* Security fix: Updated groovy, c/c++, and eclipse WTP formatters so that they download their source jars securely using `https` rather than `http` ([#360](https://github.com/diffplug/spotless/issues/360)).
+* Updated default eclipse-jdt from 4.9.0 to 4.10.0 ([#368](https://github.com/diffplug/spotless/pull/368))
 
 ### Version 3.18.0 - February 11th 2018 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.18.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.18.0))
 
