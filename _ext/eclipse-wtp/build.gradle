@@ -74,6 +74,12 @@ dependencies {
 	compile "org.eclipse.xsd:org.eclipse.xsd:${VER_ECLISPE_XSD}"
 }
 
+jar {
+	manifest {
+		from 'src/main/resources/META-INF/MANIFEST.MF'
+	}
+}
+
 //////////
 // Test //
 //////////
