@@ -51,6 +51,17 @@ import com.diffplug.spotless.extra.eclipse.wtp.sse.SpotlessPreferences;
 
 /** Formatter step which calls out to the Eclipse XML formatter. */
 public class EclipseXmlFormatterStepImpl {
+	/**
+	 * Indicates if external URIs (location hints) should be resolved
+	 * and the referenced DTD/XSD shall be applied. Per default
+	 * external URIs are ignored.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 */
+	public static final String RESOLVE_EXTERNAL_URI = "resolveExternalURI";
+	
+	
 	private static XmlFormattingPreferencesFactory PREFERENCE_FACTORY = null;
 
 	private final DefaultXMLPartitionFormatter formatter;
@@ -58,14 +69,27 @@ public class EclipseXmlFormatterStepImpl {
 	private final INodeAdapterFactory xmlAdapterFactory;
 
 	public EclipseXmlFormatterStepImpl(Properties properties) throws Exception {
-		setupFramework();
+		setupFramework(doResolveExternalURI(properties));
 		preferences = PREFERENCE_FACTORY.create(properties);
 		formatter = new DefaultXMLPartitionFormatter();
 		//The adapter factory maintains the common CMDocumentCache
 		xmlAdapterFactory = new ModelQueryAdapterFactoryForXML();
 	}
+	
+	private static boolean doResolveExternalURI(Properties properties) {
+		Object obj = properties.get(RESOLVE_EXTERNAL_URI);
+		if(null != obj) {
+			if(obj instanceof Boolean) {
+				return (Boolean)obj;
+			}
+			if(obj instanceof String) {
+				return ((String)obj).equalsIgnoreCase("true");
+			}
+		}
+		return false;
+	} 
 
-	private static void setupFramework() throws BundleException {
+	private static void setupFramework(boolean resolveExternalURI) throws BundleException {
 		if (SpotlessEclipseFramework.setup(
 				plugins -> {
 					plugins.applyDefault();
@@ -77,6 +101,9 @@ public class EclipseXmlFormatterStepImpl {
 					plugins.add(new DTDCorePlugin());
 					//Support formatting based on XSD restrictions
 					plugins.add(new XSDCorePlugin());
+					if(!resolveExternalURI) {
+						plugins.add(new PreventExternalURIResolverExtension());
+					}
 				})) {
 			PREFERENCE_FACTORY = new XmlFormattingPreferencesFactory();
 			//Register required EMF factories
@@ -104,7 +131,6 @@ public class EclipseXmlFormatterStepImpl {
 	}
 
 	private static class XmlFormattingPreferencesFactory {
-
 		private final static Set<String> SUPPORTED_XML_FORMAT_PREFS = new HashSet<String>(Arrays.asList(
 				FORMAT_COMMENT_TEXT,
 				FORMAT_COMMENT_JOIN_LINES,

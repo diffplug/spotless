@@ -287,15 +287,15 @@ The WTP formatter accept multiple configuration files. All Eclipse configuration
 
 | Type | Configuration       | File location
 | ---- | ------------------- | -------------
-| CSS  | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.css.core.prefs
-|      | cleanup preferences | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.css.core.prefs
-| HTML | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.html.core.prefs
-|      | cleanup preferences | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.html.core.prefs
-|      | embedded CSS        | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.css.core.prefs
+| CSS  | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.css.core.prefs
+|      | cleanup preferences | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.css.core.prefs
+| HTML | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.html.core.prefs
+|      | cleanup preferences | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.html.core.prefs
+|      | embedded CSS        | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.css.core.prefs
 |      | embedded JS         | Use the export in the Eclipse editor configuration dialog
 | JS   | editor preferences  | Use the export in the Eclipse editor configuration dialog
 | JSON | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.json.core.prefs
-| XML  | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.xml.core.prefs
+| XML  | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.xml.core.prefs
 
 Note that `HTML` should be used for `X-HTML` sources instead of `XML`.
 
