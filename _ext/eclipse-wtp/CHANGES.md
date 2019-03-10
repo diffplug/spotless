@@ -1,6 +1,6 @@
 # spotless-eclipse-wtp
 
-### Version 3.9.8 - TBD
+### Version 3.9.8 - March 10th 2018 ([artifact]([jcenter](https://bintray.com/diffplug/opensource/spotless-eclipse-wtp)))
 
 * XML formatter ignores external URIs per default. ([#369](https://github.com/diffplug/spotless/issues/369)). Add `resolveExternalURI=true` property to switch to previous behavior.
 
