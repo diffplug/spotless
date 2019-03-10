@@ -3,7 +3,7 @@
 <!---freshmark shields
 output = [
   link(shield('Gradle plugin', 'plugins.gradle.org', 'com.diffplug.gradle.spotless', 'blue'), 'https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless'),
-  link(shield('Maven central', 'mavencentral', 'com.diffplug.gradle.spotless:spotless', 'blue'), 'http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-gradle%22'),
+  link(shield('Maven central', 'mavencentral', 'com.diffplug.gradle.spotless:spotless', 'blue'), 'https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-gradle%22'),
   link(shield('Javadoc', 'javadoc', '{{stableGradle}}', 'blue'), 'https://{{org}}.github.io/{{name}}/javadoc/spotless-plugin-gradle/{{stableGradle}}/'),
   '',
   link(shield('Changelog', 'changelog', '{{versionGradle}}', 'brightgreen'), 'CHANGES.md'),
@@ -13,10 +13,10 @@ output = [
   ].join('\n');
 -->
 [![Gradle plugin](https://img.shields.io/badge/plugins.gradle.org-com.diffplug.gradle.spotless-blue.svg)](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless)
-[![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.gradle.spotless%3Aspotless-blue.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-gradle%22)
-[![Javadoc](https://img.shields.io/badge/javadoc-3.17.0-blue.svg)](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.17.0/)
+[![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.gradle.spotless%3Aspotless-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-gradle%22)
+[![Javadoc](https://img.shields.io/badge/javadoc-3.18.0-blue.svg)](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.18.0/)
 
-[![Changelog](https://img.shields.io/badge/changelog-3.18.0--SNAPSHOT-brightgreen.svg)](CHANGES.md)
+[![Changelog](https://img.shields.io/badge/changelog-3.19.0--SNAPSHOT-brightgreen.svg)](CHANGES.md)
 [![Travis CI](https://travis-ci.org/diffplug/spotless.svg?branch=master)](https://travis-ci.org/diffplug/spotless)
 [![Live chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
 [![License Apache](https://img.shields.io/badge/license-apache-brightgreen.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
@@ -75,7 +75,7 @@ spotless {
 }
 ```
 
-Spotless can check and apply formatting to any plain-text file, using simple rules ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.17.0/com/diffplug/gradle/spotless/FormatExtension.html)) like those above.  It also supports more powerful formatters:
+Spotless can check and apply formatting to any plain-text file, using simple rules ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.18.0/com/diffplug/gradle/spotless/FormatExtension.html)) like those above.  It also supports more powerful formatters:
 
 * Eclipse's [CDT](#eclipse-cdt) C/C++ code formatter
 * Eclipse's java code formatter (including style and import ordering)
@@ -567,6 +567,11 @@ spotless {
     // - if you pass anything else, it will be sent to project.files(yourArg)
     target '**/*.gradle', '**/*.md', '**/.gitignore'
 
+    targetExclude 'src/main/codegen/**', 'src/test/codegen/**'
+    // the files to be formatted = (target - targetExclude)
+    // NOTE: if target or targetExclude is called multiple times, only the
+    // last call is effective
+
     // spotless has built-in rules for the most basic formatting tasks
     trimTrailingWhitespace()
     indentWithTabs() // or spaces. Takes an integer argument if you don't like 4
@@ -590,7 +595,7 @@ spotless {
 }
 ```
 
-If you use `custom` or `customLazy`, you might want to take a look at [this javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.17.0/com/diffplug/gradle/spotless/FormatExtension.html#bumpThisNumberIfACustomStepChanges-int-) for a big performance win.
+If you use `custom` or `customLazy`, you might want to take a look at [this javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.18.0/com/diffplug/gradle/spotless/FormatExtension.html#bumpThisNumberIfACustomStepChanges-int-) for a big performance win.
 
 See [`JavaExtension.java`](src/main/java/com/diffplug/gradle/spotless/JavaExtension.java) if you'd like to see how a language-specific set of custom rules is implemented.  We'd love PR's which add support for other languages.
 
@@ -628,7 +633,12 @@ spotless {
 }
 ```
 
-If a formatter throws an exception, possibly because of malformed code or a bug in a formatter step, Spotless will report a build failure.  You can suppress these specific failures as such:
+When a misformatted file throws an exception, it will be for one of two reasons:
+
+1) Spotless calculated the properly formatted version, and it is different than the current contents.
+2) One of the formatters threw an exception while attempting to calculate the properly formatted version.
+
+You can fix (1) by excluding the file from formatting using the `targetExclude` method, see the [custom rules](#custom) section for details.  You can fix (2) and turn these exceptions into warnings like this:
 
 ```gradle
 spotless {
@@ -641,8 +651,6 @@ spotless {
   }
 }
 ```
-
-Note that `enforceCheck` is a global property which affects all formats (outside the java block), while `ignoreErrorForStep/Path` are local to a single format (inside the java block).
 
 <a name="preview"></a>
 
