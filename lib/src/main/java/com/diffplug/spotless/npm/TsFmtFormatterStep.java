@@ -49,15 +49,14 @@ public class TsFmtFormatterStep {
 
 	@Deprecated
 	public static FormatterStep create(Provisioner provisioner, File buildDir, @Nullable File npm, File baseDir, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) {
-		return create(defaultVersions(), provisioner, buildDir, npm, baseDir, configFile, inlineTsFmtSettings);
+		return create(defaultVersions(), provisioner, buildDir, npm, configFile, inlineTsFmtSettings);
 	}
 
-	public static FormatterStep create(Map<String, String> versions, Provisioner provisioner, File buildDir, @Nullable File npm, File baseDir, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) {
+	public static FormatterStep create(Map<String, String> versions, Provisioner provisioner, File buildDir, @Nullable File npm, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) {
 		requireNonNull(provisioner);
 		requireNonNull(buildDir);
-		requireNonNull(baseDir);
 		return FormatterStep.createLazy(NAME,
-				() -> new State(NAME, versions, provisioner, buildDir, npm, baseDir, configFile, inlineTsFmtSettings),
+				() -> new State(NAME, versions, provisioner, buildDir, npm, configFile, inlineTsFmtSettings),
 				State::createFormatterFunc);
 	}
 
@@ -80,14 +79,12 @@ public class TsFmtFormatterStep {
 		@Nullable
 		private final TypedTsFmtConfigFile configFile;
 
-		private final File baseDir;
-
 		@Deprecated
-		public State(String stepName, Provisioner provisioner, File buildDir, @Nullable File npm, File baseDir, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) throws IOException {
-			this(stepName, defaultVersions(), provisioner, buildDir, npm, baseDir, configFile, inlineTsFmtSettings);
+		public State(String stepName, Provisioner provisioner, File buildDir, @Nullable File npm, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) throws IOException {
+			this(stepName, defaultVersions(), provisioner, buildDir, npm, configFile, inlineTsFmtSettings);
 		}
 
-		public State(String stepName, Map<String, String> versions, Provisioner provisioner, File buildDir, @Nullable File npm, File baseDir, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) throws IOException {
+		public State(String stepName, Map<String, String> versions, Provisioner provisioner, File buildDir, @Nullable File npm, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) throws IOException {
 			super(stepName,
 					provisioner,
 					new NpmConfig(
@@ -96,7 +93,6 @@ public class TsFmtFormatterStep {
 					buildDir,
 					npm);
 			this.buildDir = requireNonNull(buildDir);
-			this.baseDir = requireNonNull(baseDir);
 			this.configFile = configFile;
 			this.inlineTsFmtSettings = inlineTsFmtSettings == null ? new TreeMap<>() : new TreeMap<>(inlineTsFmtSettings);
 		}

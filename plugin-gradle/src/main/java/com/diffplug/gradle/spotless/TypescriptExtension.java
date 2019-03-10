@@ -144,7 +144,6 @@ public class TypescriptExtension extends FormatExtension {
 					GradleProvisioner.fromProject(project),
 					project.getBuildDir(),
 					npmFileOrNull(),
-					project.getProjectDir(),
 					typedConfigFile(),
 					config);
 		}
