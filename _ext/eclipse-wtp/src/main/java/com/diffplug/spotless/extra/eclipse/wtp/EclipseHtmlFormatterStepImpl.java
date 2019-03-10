@@ -67,7 +67,7 @@ public class EclipseHtmlFormatterStepImpl extends CleanupStep<EclipseHtmlFormatt
 			additionalPlugins.add(new org.eclipse.core.internal.filesystem.Activator());
 			additionalPlugins.add(new JavaScriptCore());
 			additionalPlugins.add(new HTMLCorePlugin());
-			//The HTML formatter only uses the DOCTYPE/SCHEMA for content model selection.  
+			//The HTML formatter only uses the DOCTYPE/SCHEMA for content model selection.
 			additionalPlugins.add(new PreventExternalURIResolverExtension());
 		});
 		/*

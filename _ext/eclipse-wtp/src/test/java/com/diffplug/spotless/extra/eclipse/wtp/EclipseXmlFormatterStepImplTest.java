@@ -106,7 +106,7 @@ public class EclipseXmlFormatterStepImplTest {
 		assertNotEquals("External DTD resolved by default. Restrictions are applied by formatter.",
 				TEST_DATA.expected("dtd_external.test"), output);
 	}
-	
+
 	@Test
 	public void xsdRelativePath() throws Throwable {
 		String output = format(TEST_DATA.input("xsd_relative.test"), config -> {});
