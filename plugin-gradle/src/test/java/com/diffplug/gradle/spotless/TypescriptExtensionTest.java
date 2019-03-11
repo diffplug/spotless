@@ -58,7 +58,7 @@ public class TypescriptExtensionTest extends GradleIntegrationTest {
 				"spotless {",
 				"    typescript {",
 				"        target 'test.ts'",
-				"        tsfmt(['tslint': '5.1.0', 'typescript': '2.9.2']).config(tsfmtconfig)",
+				"        tsfmt(['typescript-formatter': '7.2.1', 'tslint': '5.1.0', 'typescript': '2.9.2']).config(tsfmtconfig)",
 				"    }",
 				"}");
 		setFile("test.ts").toResource("npm/tsfmt/tsfmt/tsfmt.dirty");
