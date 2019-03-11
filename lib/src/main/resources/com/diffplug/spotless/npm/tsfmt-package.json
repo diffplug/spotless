@@ -2,9 +2,7 @@
 	"name": "spotless-tsfmt-formatter-step",
 	"version": "1.0.0",
 	"devDependencies": {
-		"typescript-formatter": "${formatterVersion}",
-		"typescript": "${typescriptVersion}",
-		"tslint": "${tslintVersion}"
+${devDependencies}
 	},
 	"dependencies": {},
 	"engines": {

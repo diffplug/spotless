@@ -15,17 +15,11 @@
  */
 package com.diffplug.gradle.spotless;
 
-import static com.diffplug.spotless.npm.TsFmtFormatterStep.NPM_PKG_TS;
-import static com.diffplug.spotless.npm.TsFmtFormatterStep.NPM_PKG_TSFMT;
-import static com.diffplug.spotless.npm.TsFmtFormatterStep.NPM_PKG_TSFMT_DEFAULT_VERSION;
-import static com.diffplug.spotless.npm.TsFmtFormatterStep.NPM_PKG_TSLINT;
-import static com.diffplug.spotless.npm.TsFmtFormatterStep.NPM_PKG_TSLINT_DEFAULT_VERSION;
-import static com.diffplug.spotless.npm.TsFmtFormatterStep.NPM_PKG_TS_DEFAULT_VERSION;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.TreeMap;
 
 import javax.annotation.Nullable;
@@ -46,45 +40,19 @@ public class TypescriptExtension extends FormatExtension {
 		super(root);
 	}
 
+	/** Uses the default version of typescript-format. */
 	public TypescriptFormatExtension tsfmt() {
-		return tsfmt(Collections.emptyMap());
+		return tsfmt(TsFmtFormatterStep.defaultDevDependencies());
 	}
 
-	/**
-	 * Creates a {@code TypescriptFormatExtension} using the {@code typescript-formatter} npm package with the
-	 * specified version.
-	 * @param formatterVersion The version of the {@code typescript-formatter} npm package to use.
-	 */
-	public TypescriptFormatExtension tsfmt(String formatterVersion) {
-		return tsfmt(formatterVersion, null, null);
+	/** Uses the specified version of typescript-format. */
+	public TypescriptFormatExtension tsfmt(String version) {
+		return tsfmt(TsFmtFormatterStep.defaultDevDependenciesWithTsFmt(version));
 	}
 
-	/**
-	 * Creates a {@code TypescriptFormatExtension} using the specified npm package versions.
-	 * Map of version numbers for the following npm packages may be supplied:
-	 * <ul>
-	 *     <li>{@code formatterVersion} - the version of the npm package {@code typescript-formatter}</li>
-	 *     <li>{@code typescriptVersion} - the version of the npm package {@code typescript}</li>
-	 *     <li>{@code tslintVersion} - the version of the npm package {@code tslint}</li>
-	 * </ul>
-	 * @param versions The specified versions for the respective npm packages.
-	 */
-	public TypescriptFormatExtension tsfmt(Map<String, String> versions) {
-		return tsfmt(versions.get(NPM_PKG_TSFMT), versions.get(NPM_PKG_TS), versions.get(NPM_PKG_TSLINT));
-	}
-
-	/**
-	 * Creates a {@code TypescriptFormatExtension} using the specified npm package versions.
-	 * @param formatterVersion the version of the npm package {@code typescript-formatter}
-	 * @param typescriptVersion the version of the npm package {@code typescript}
-	 * @param tslintVersion the version of the npm package {@code tslint}
-	 */
-	public TypescriptFormatExtension tsfmt(String formatterVersion, String typescriptVersion, String tslintVersion) {
-		TypescriptFormatExtension tsfmt = new TypescriptFormatExtension(Optional.ofNullable(formatterVersion).orElse(NPM_PKG_TSFMT_DEFAULT_VERSION),
-				Optional.ofNullable(typescriptVersion).orElse(NPM_PKG_TS_DEFAULT_VERSION),
-				Optional.ofNullable(tslintVersion).orElse(NPM_PKG_TSLINT_DEFAULT_VERSION));
-		addStep(tsfmt.createStep());
-		return tsfmt;
+	/** Creates a {@code TypescriptFormatExtension} using exactly the specified npm packages. */
+	public TypescriptFormatExtension tsfmt(Map<String, String> devDependencies) {
+		return new TypescriptFormatExtension(devDependencies);
 	}
 
 	public class TypescriptFormatExtension extends NpmStepConfig<TypescriptFormatExtension> {
@@ -97,16 +65,10 @@ public class TypescriptExtension extends FormatExtension {
 		@Nullable
 		Object configFilePath = null;
 
-		private final Map<String, String> versions = new TreeMap<>();
+		private final Map<String, String> devDependencies;
 
-		public TypescriptFormatExtension() {
-			this(NPM_PKG_TSFMT_DEFAULT_VERSION, NPM_PKG_TS_DEFAULT_VERSION, NPM_PKG_TSLINT_DEFAULT_VERSION);
-		}
-
-		public TypescriptFormatExtension(String formatterVersion, String typescriptVersion, String tslintVersion) {
-			this.versions.put(NPM_PKG_TSFMT, requireNonNull(formatterVersion));
-			this.versions.put(NPM_PKG_TS, requireNonNull(typescriptVersion));
-			this.versions.put(NPM_PKG_TSLINT, requireNonNull(tslintVersion));
+		TypescriptFormatExtension(Map<String, String> devDependencies) {
+			this.devDependencies = Objects.requireNonNull(devDependencies);
 		}
 
 		public void config(final Map<String, Object> config) {
@@ -140,7 +102,7 @@ public class TypescriptExtension extends FormatExtension {
 			final Project project = getProject();
 
 			return TsFmtFormatterStep.create(
-					versions,
+					devDependencies,
 					GradleProvisioner.fromProject(project),
 					project.getBuildDir(),
 					npmFileOrNull(),
@@ -156,16 +118,22 @@ public class TypescriptExtension extends FormatExtension {
 		}
 	}
 
+	/** Uses the default version of prettier. */
 	@Override
 	public PrettierConfig prettier() {
-		PrettierConfig prettierConfig = new TypescriptPrettierConfig();
-		addStep(prettierConfig.createStep());
-		return prettierConfig;
+		return prettier(PrettierFormatterStep.defaultDevDependencies());
 	}
 
+	/** Uses the specified version of prettier. */
 	@Override
-	public PrettierConfig prettier(String prettierVersion) {
-		PrettierConfig prettierConfig = new TypescriptPrettierConfig(prettierVersion);
+	public PrettierConfig prettier(String version) {
+		return prettier(PrettierFormatterStep.defaultDevDependenciesWithPrettier(version));
+	}
+
+	/** Uses exactly the npm packages specified in the map. */
+	@Override
+	public PrettierConfig prettier(Map<String, String> devDependencies) {
+		PrettierConfig prettierConfig = new TypescriptPrettierConfig(devDependencies);
 		addStep(prettierConfig.createStep());
 		return prettierConfig;
 	}
@@ -174,13 +142,8 @@ public class TypescriptExtension extends FormatExtension {
 	 * Overrides the parser to be set to typescript, no matter what the user's config says.
 	 */
 	public class TypescriptPrettierConfig extends PrettierConfig {
-
-		TypescriptPrettierConfig() {
-			this(PrettierFormatterStep.defaultVersion());
-		}
-
-		TypescriptPrettierConfig(String prettierVersion) {
-			super(prettierVersion);
+		TypescriptPrettierConfig(Map<String, String> devDependencies) {
+			super(devDependencies);
 		}
 
 		@Override

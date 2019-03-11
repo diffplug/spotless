@@ -32,24 +32,11 @@ import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx;
 
 public class TsFmtFormatterStep {
-
-	public static final String NPM_PKG_TSFMT = "formatterVersion";
-
-	public static final String NPM_PKG_TS = "typescriptVersion";
-
-	public static final String NPM_PKG_TSLINT = "tslintVersion";
-
-	public static final String NPM_PKG_TSFMT_DEFAULT_VERSION = "7.2.2";
-
-	public static final String NPM_PKG_TS_DEFAULT_VERSION = "3.3.3";
-
-	public static final String NPM_PKG_TSLINT_DEFAULT_VERSION = "5.12.1";
-
 	public static final String NAME = "tsfmt-format";
 
 	@Deprecated
 	public static FormatterStep create(Provisioner provisioner, File buildDir, @Nullable File npm, File baseDir, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) {
-		return create(defaultVersions(), provisioner, buildDir, npm, configFile, inlineTsFmtSettings);
+		return create(defaultDevDependencies(), provisioner, buildDir, npm, configFile, inlineTsFmtSettings);
 	}
 
 	public static FormatterStep create(Map<String, String> versions, Provisioner provisioner, File buildDir, @Nullable File npm, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) {
@@ -60,12 +47,16 @@ public class TsFmtFormatterStep {
 				State::createFormatterFunc);
 	}
 
-	public static Map<String, String> defaultVersions() {
-		Map<String, String> defaultVersions = new TreeMap<>();
-		defaultVersions.put(NPM_PKG_TSFMT, NPM_PKG_TSFMT_DEFAULT_VERSION);
-		defaultVersions.put(NPM_PKG_TS, NPM_PKG_TS_DEFAULT_VERSION);
-		defaultVersions.put(NPM_PKG_TSLINT, NPM_PKG_TSLINT_DEFAULT_VERSION);
-		return Collections.unmodifiableMap(defaultVersions);
+	public static Map<String, String> defaultDevDependencies() {
+		return defaultDevDependenciesWithTsFmt("7.2.2");
+	}
+
+	public static Map<String, String> defaultDevDependenciesWithTsFmt(String typescriptFormatter) {
+		TreeMap<String, String> defaults = new TreeMap<>();
+		defaults.put("typescript-formatter", typescriptFormatter);
+		defaults.put("typescript", "3.3.3");
+		defaults.put("tslint", "5.12.1");
+		return defaults;
 	}
 
 	public static class State extends NpmFormatterStepStateBase implements Serializable {
@@ -81,14 +72,14 @@ public class TsFmtFormatterStep {
 
 		@Deprecated
 		public State(String stepName, Provisioner provisioner, File buildDir, @Nullable File npm, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) throws IOException {
-			this(stepName, defaultVersions(), provisioner, buildDir, npm, configFile, inlineTsFmtSettings);
+			this(stepName, defaultDevDependencies(), provisioner, buildDir, npm, configFile, inlineTsFmtSettings);
 		}
 
 		public State(String stepName, Map<String, String> versions, Provisioner provisioner, File buildDir, @Nullable File npm, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) throws IOException {
 			super(stepName,
 					provisioner,
 					new NpmConfig(
-							replacePlaceholders(readFileFromClasspath(TsFmtFormatterStep.class, "/com/diffplug/spotless/npm/tsfmt-package.json"), versions),
+							replaceDevDependencies(readFileFromClasspath(TsFmtFormatterStep.class, "/com/diffplug/spotless/npm/tsfmt-package.json"), new TreeMap<>(versions)),
 							"typescript-formatter"),
 					buildDir,
 					npm);
