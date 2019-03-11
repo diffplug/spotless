@@ -1,6 +1,8 @@
 # spotless-plugin-maven releases
 
-### Version 1.19.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-maven-plugin/))
+### Version 1.20.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-maven-plugin/))
+
+### Version 1.19.0 - March 11th 2018 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/1.19.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-maven-plugin/1.19.0))
 
 **WARNING: xml formatter in this version may be vulnerable to XXE attacks (see [#358](https://github.com/diffplug/spotless/issues/358)).**
 
