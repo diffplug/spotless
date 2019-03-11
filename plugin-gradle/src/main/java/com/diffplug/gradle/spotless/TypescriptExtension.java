@@ -52,7 +52,9 @@ public class TypescriptExtension extends FormatExtension {
 
 	/** Creates a {@code TypescriptFormatExtension} using exactly the specified npm packages. */
 	public TypescriptFormatExtension tsfmt(Map<String, String> devDependencies) {
-		return new TypescriptFormatExtension(devDependencies);
+		TypescriptFormatExtension tsfmt = new TypescriptFormatExtension(devDependencies);
+		addStep(tsfmt.createStep());
+		return tsfmt;
 	}
 
 	public class TypescriptFormatExtension extends NpmStepConfig<TypescriptFormatExtension> {
