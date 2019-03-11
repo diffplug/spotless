@@ -407,8 +407,7 @@ spotless {
     // at least provide the parser to use
     prettier().config(['parser': 'postcss'])
     // prettier('1.16.4') to specify specific version of prettier
-    // prettier(['prettier': '1.16.4', '@prettier/plugin-php': '0.10.2']) to specify
-    // all npm packages, including plugins: https://prettier.io/docs/en/plugins.html
+    // prettier(['my-prettier-fork': '1.16.4']) to specify exactly which npm packages to use
 
     // or provide a typical filename
     prettier().config(['filepath': 'style.scss'])
