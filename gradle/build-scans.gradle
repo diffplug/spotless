@@ -1,8 +1,9 @@
-def acceptFile = new File(gradle.gradleUserHomeDir, "build-scans/spotless/gradle-scans-license-agree.txt")
+File acceptFile = new File(gradle.gradleUserHomeDir, "build-scans/spotless/gradle-scans-license-agree.txt")
+acceptFile.parentFile.mkdirs()
 def env = System.getenv()
 boolean isCI = env.CI || env.TRAVIS
-boolean hasAccepted = isCI || env.GRADLE_SCANS_ACCEPT=='yes' || acceptFile.exists() && acceptFile.text.trim() == 'yes'
-boolean hasRefused = env.GRADLE_SCANS_ACCEPT=='no' || acceptFile.exists() && acceptFile.text.trim() == 'no'
+boolean hasAccepted = isCI || env.SPOTLESS_GRADLE_SCANS_ACCEPT=='yes' || acceptFile.exists() && acceptFile.text.trim() == 'yes'
+boolean hasRefused = env.SPOTLESS_GRADLE_SCANS_ACCEPT=='no' || acceptFile.exists() && acceptFile.text.trim() == 'no'
 
 buildScan {
     if (hasAccepted) {
@@ -22,8 +23,14 @@ Please read
 
 and then:
 
-  - set the `GRADLE_SCANS_ACCEPT` to `yes`/`no` if you agree with/refuse the TOS
+  - set the `SPOTLESS_GRADLE_SCANS_ACCEPT` to `yes`/`no` if you agree with/refuse the TOS
   - or create the ${acceptFile} file with `yes`/`no` in it if you agree with/refuse
+
+    echo 'yes' >> ${acceptFile}
+
+    or
+
+    echo 'no' >> ${acceptFile}
 
 And we'll not bother you again. Note that build scans are only made public if 
 you share the URL at the end of the build.
