@@ -108,6 +108,6 @@ extra('wtp.EclipseWtpFormatterStep')             +'{{yes}}       | {{yes}}      
 - Thanks to Gábor Bernát for improvements to logging and multi-project support.
 - Thanks to Andrew Oberstar for improvements to formatting java source in non-java source sets. [PR #60](https://github.com/diffplug/spotless/pull/60).
 - Import ordering from [EclipseCodeFormatter](https://github.com/krasa/EclipseCodeFormatter).
-- Built by [gradle](http://gradle.org/).
-- Tested by [junit](http://junit.org/).
-- Maintained by [DiffPlug](http://www.diffplug.com/).
+- Built by [gradle](https://gradle.org/).
+- Tested by [junit](https://junit.org/).
+- Maintained by [DiffPlug](https://www.diffplug.com/).

@@ -3,7 +3,7 @@ ext {
 		fvgh: [ name: 'Frank Vennemeyer', email: 'frankgh@zoho.com' ],
 	]
 
-	p2Repository = "http://dist.springsource.org/release/GRECLIPSE/e${VER_ECLIPSE}"
+	p2Repository = "https://dist.springsource.org/release/GRECLIPSE/e${VER_ECLIPSE}"
 	
     p2Dependencies = [
 		'org.codehaus.groovy.eclipse.refactoring':'+', // GroovyFormatter and related

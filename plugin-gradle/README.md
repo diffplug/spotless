@@ -3,7 +3,7 @@
 <!---freshmark shields
 output = [
   link(shield('Gradle plugin', 'plugins.gradle.org', 'com.diffplug.gradle.spotless', 'blue'), 'https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless'),
-  link(shield('Maven central', 'mavencentral', 'com.diffplug.gradle.spotless:spotless', 'blue'), 'http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-gradle%22'),
+  link(shield('Maven central', 'mavencentral', 'com.diffplug.gradle.spotless:spotless', 'blue'), 'https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-gradle%22'),
   link(shield('Javadoc', 'javadoc', '{{stableGradle}}', 'blue'), 'https://{{org}}.github.io/{{name}}/javadoc/spotless-plugin-gradle/{{stableGradle}}/'),
   '',
   link(shield('Changelog', 'changelog', '{{versionGradle}}', 'brightgreen'), 'CHANGES.md'),
@@ -13,10 +13,10 @@ output = [
   ].join('\n');
 -->
 [![Gradle plugin](https://img.shields.io/badge/plugins.gradle.org-com.diffplug.gradle.spotless-blue.svg)](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless)
-[![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.gradle.spotless%3Aspotless-blue.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-gradle%22)
-[![Javadoc](https://img.shields.io/badge/javadoc-3.18.0-blue.svg)](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.18.0/)
+[![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.gradle.spotless%3Aspotless-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-gradle%22)
+[![Javadoc](https://img.shields.io/badge/javadoc-3.19.0-blue.svg)](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.19.0/)
 
-[![Changelog](https://img.shields.io/badge/changelog-3.19.0--SNAPSHOT-brightgreen.svg)](CHANGES.md)
+[![Changelog](https://img.shields.io/badge/changelog-3.20.0--SNAPSHOT-brightgreen.svg)](CHANGES.md)
 [![Travis CI](https://travis-ci.org/diffplug/spotless.svg?branch=master)](https://travis-ci.org/diffplug/spotless)
 [![Live chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
 [![License Apache](https://img.shields.io/badge/license-apache-brightgreen.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
@@ -75,7 +75,7 @@ spotless {
 }
 ```
 
-Spotless can check and apply formatting to any plain-text file, using simple rules ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.18.0/com/diffplug/gradle/spotless/FormatExtension.html)) like those above.  It also supports more powerful formatters:
+Spotless can check and apply formatting to any plain-text file, using simple rules ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.19.0/com/diffplug/gradle/spotless/FormatExtension.html)) like those above.  It also supports more powerful formatters:
 
 * Eclipse's [CDT](#eclipse-cdt) C/C++ code formatter
 * Eclipse's java code formatter (including style and import ordering)
@@ -347,6 +347,8 @@ spotless {
   typescript {
     // using existing config files
     tsfmt().tslintFile('/path/to/repo/tslint.json')
+    // tsfmt('7.2.2') to specify specific version of tsfmt
+    // tsfmt(['typescript-formatter': '7.2.2', 'typescript': '3.3.3', 'tslint': '5.12.1') to specify all of the npm dependencies that you want
   }
 }
 ```
@@ -404,6 +406,8 @@ spotless {
 
     // at least provide the parser to use
     prettier().config(['parser': 'postcss'])
+    // prettier('1.16.4') to specify specific version of prettier
+    // prettier(['my-prettier-fork': '1.16.4']) to specify exactly which npm packages to use
 
     // or provide a typical filename
     prettier().config(['filepath': 'style.scss'])
@@ -495,17 +499,25 @@ The WTP formatter accept multiple configuration files. All Eclipse configuration
 
 | Type | Configuration       | File location
 | ---- | ------------------- | -------------
-| CSS  | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.css.core.prefs
-|      | cleanup preferences | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.css.core.prefs
-| HTML | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.html.core.prefs
-|      | cleanup preferences | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.html.core.prefs
-|      | embedded CSS        | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.css.core.prefs
+| CSS  | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.css.core.prefs
+|      | cleanup preferences | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.css.core.prefs
+| HTML | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.html.core.prefs
+|      | cleanup preferences | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.html.core.prefs
+|      | embedded CSS        | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.css.core.prefs
 |      | embedded JS         | Use the export in the Eclipse editor configuration dialog
 | JS   | editor preferences  | Use the export in the Eclipse editor configuration dialog
 | JSON | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.json.core.prefs
-| XML  | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.xml.core.prefs
+| XML  | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.xml.core.prefs
 
 Note that `HTML` should be used for `X-HTML` sources instead of `XML`.
+
+The Eclipse XML catalog cannot be configured for the Spotless WTP formatter, instead a
+user defined catalog file can be specified using the property `userCatalog`. Catalog versions
+1.0 and 1.1 are supported by Spotless.
+
+Unlike Eclipse, Spotless WTP ignores per default external URIs in schema location hints and
+external entities. To allow the access of external URIs, set the property `resolveExternalURI`
+to true.
 
 <a name="license-header"></a>
 
@@ -595,7 +607,7 @@ spotless {
 }
 ```
 
-If you use `custom` or `customLazy`, you might want to take a look at [this javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.18.0/com/diffplug/gradle/spotless/FormatExtension.html#bumpThisNumberIfACustomStepChanges-int-) for a big performance win.
+If you use `custom` or `customLazy`, you might want to take a look at [this javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.19.0/com/diffplug/gradle/spotless/FormatExtension.html#bumpThisNumberIfACustomStepChanges-int-) for a big performance win.
 
 See [`JavaExtension.java`](src/main/java/com/diffplug/gradle/spotless/JavaExtension.java) if you'd like to see how a language-specific set of custom rules is implemented.  We'd love PR's which add support for other languages.
 

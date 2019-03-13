@@ -32,16 +32,31 @@ import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx;
 
 public class TsFmtFormatterStep {
-
 	public static final String NAME = "tsfmt-format";
 
+	@Deprecated
 	public static FormatterStep create(Provisioner provisioner, File buildDir, @Nullable File npm, File baseDir, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) {
+		return create(defaultDevDependencies(), provisioner, buildDir, npm, configFile, inlineTsFmtSettings);
+	}
+
+	public static FormatterStep create(Map<String, String> versions, Provisioner provisioner, File buildDir, @Nullable File npm, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) {
 		requireNonNull(provisioner);
 		requireNonNull(buildDir);
-		requireNonNull(baseDir);
 		return FormatterStep.createLazy(NAME,
-				() -> new State(NAME, provisioner, buildDir, npm, baseDir, configFile, inlineTsFmtSettings),
+				() -> new State(NAME, versions, provisioner, buildDir, npm, configFile, inlineTsFmtSettings),
 				State::createFormatterFunc);
+	}
+
+	public static Map<String, String> defaultDevDependencies() {
+		return defaultDevDependenciesWithTsFmt("7.2.2");
+	}
+
+	public static Map<String, String> defaultDevDependenciesWithTsFmt(String typescriptFormatter) {
+		TreeMap<String, String> defaults = new TreeMap<>();
+		defaults.put("typescript-formatter", typescriptFormatter);
+		defaults.put("typescript", "3.3.3");
+		defaults.put("tslint", "5.12.1");
+		return defaults;
 	}
 
 	public static class State extends NpmFormatterStepStateBase implements Serializable {
@@ -55,18 +70,20 @@ public class TsFmtFormatterStep {
 		@Nullable
 		private final TypedTsFmtConfigFile configFile;
 
-		private final File baseDir;
+		@Deprecated
+		public State(String stepName, Provisioner provisioner, File buildDir, @Nullable File npm, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) throws IOException {
+			this(stepName, defaultDevDependencies(), provisioner, buildDir, npm, configFile, inlineTsFmtSettings);
+		}
 
-		public State(String stepName, Provisioner provisioner, File buildDir, @Nullable File npm, File baseDir, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) throws IOException {
+		public State(String stepName, Map<String, String> versions, Provisioner provisioner, File buildDir, @Nullable File npm, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) throws IOException {
 			super(stepName,
 					provisioner,
 					new NpmConfig(
-							readFileFromClasspath(TsFmtFormatterStep.class, "/com/diffplug/spotless/npm/tsfmt-package.json"),
+							replaceDevDependencies(readFileFromClasspath(TsFmtFormatterStep.class, "/com/diffplug/spotless/npm/tsfmt-package.json"), new TreeMap<>(versions)),
 							"typescript-formatter"),
 					buildDir,
 					npm);
 			this.buildDir = requireNonNull(buildDir);
-			this.baseDir = requireNonNull(baseDir);
 			this.configFile = configFile;
 			this.inlineTsFmtSettings = inlineTsFmtSettings == null ? new TreeMap<>() : new TreeMap<>(inlineTsFmtSettings);
 		}

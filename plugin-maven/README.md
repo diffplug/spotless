@@ -2,7 +2,7 @@
 
 <!---freshmark shields
 output = [
-  link(shield('Maven central', 'mavencentral', '{{group}}:{{artifactIdMaven}}', 'blue'), 'http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22{{group}}%22%20AND%20a%3A%22{{artifactIdMaven}}%22'),
+  link(shield('Maven central', 'mavencentral', '{{group}}:{{artifactIdMaven}}', 'blue'), 'https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22{{group}}%22%20AND%20a%3A%22{{artifactIdMaven}}%22'),
   link(shield('Javadoc', 'javadoc', '{{stableMaven}}', 'blue'), 'https://{{org}}.github.io/{{name}}/javadoc/{{artifactIdMaven}}/{{stableMaven}}/'),
   '',
   link(shield('Changelog', 'changelog', '{{stableMaven}}', 'brightgreen'), 'CHANGES.md'),
@@ -11,10 +11,10 @@ output = [
   link(shield('License Apache', 'license', 'apache', 'brightgreen'), 'https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)')
   ].join('\n');
 -->
-[![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
-[![Javadoc](https://img.shields.io/badge/javadoc-1.18.0-blue.svg)](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/1.18.0/)
+[![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
+[![Javadoc](https://img.shields.io/badge/javadoc-1.19.0-blue.svg)](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/1.19.0/)
 
-[![Changelog](https://img.shields.io/badge/changelog-1.18.0-brightgreen.svg)](CHANGES.md)
+[![Changelog](https://img.shields.io/badge/changelog-1.19.0-brightgreen.svg)](CHANGES.md)
 [![Travis CI](https://travis-ci.org/diffplug/spotless.svg?branch=master)](https://travis-ci.org/diffplug/spotless)
 [![Live chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
 [![License Apache](https://img.shields.io/badge/license-apache-brightgreen.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
@@ -52,7 +52,7 @@ cmd> mvn spotless:check
 ...
 ```
 
-To use it in your pom, just [add the Spotless dependency](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22), and configure it like so:
+To use it in your pom, just [add the Spotless dependency](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22), and configure it like so:
 
 ```xml
 <plugin>
@@ -287,17 +287,25 @@ The WTP formatter accept multiple configuration files. All Eclipse configuration
 
 | Type | Configuration       | File location
 | ---- | ------------------- | -------------
-| CSS  | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.css.core.prefs
-|      | cleanup preferences | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.css.core.prefs
-| HTML | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.html.core.prefs
-|      | cleanup preferences | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.html.core.prefs
-|      | embedded CSS        | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.css.core.prefs
+| CSS  | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.css.core.prefs
+|      | cleanup preferences | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.css.core.prefs
+| HTML | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.html.core.prefs
+|      | cleanup preferences | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.html.core.prefs
+|      | embedded CSS        | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.css.core.prefs
 |      | embedded JS         | Use the export in the Eclipse editor configuration dialog
 | JS   | editor preferences  | Use the export in the Eclipse editor configuration dialog
 | JSON | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.json.core.prefs
-| XML  | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.xml.core.prefs
+| XML  | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.xml.core.prefs
 
 Note that `HTML` should be used for `X-HTML` sources instead of `XML`.
+
+The Eclipse XML catalog cannot be configured for the Spotless WTP formatter, instead a
+user defined catalog file can be specified using the property `userCatalog`. Catalog versions
+1.0 and 1.1 are supported by Spotless.
+
+Unlike Eclipse, Spotless WTP ignores per default external URIs in schema location hints and
+external entities. To allow the access of external URIs, set the property `resolveExternalURI`
+to true.
 
 <a name="invisible"></a>
 

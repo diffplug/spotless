@@ -488,10 +488,16 @@ public class FormatExtension {
 	public class PrettierConfig extends NpmStepConfig<PrettierConfig> {
 
 		@Nullable
-		protected Object prettierConfigFile;
+		Object prettierConfigFile;
 
 		@Nullable
-		protected Map<String, Object> prettierConfig;
+		Map<String, Object> prettierConfig;
+
+		final Map<String, String> devDependencies;
+
+		PrettierConfig(Map<String, String> devDependencies) {
+			this.devDependencies = Objects.requireNonNull(devDependencies);
+		}
 
 		public PrettierConfig configFile(final Object prettierConfigFile) {
 			this.prettierConfigFile = prettierConfigFile;
@@ -508,6 +514,7 @@ public class FormatExtension {
 		FormatterStep createStep() {
 			final Project project = getProject();
 			return PrettierFormatterStep.create(
+					devDependencies,
 					GradleProvisioner.fromProject(project),
 					project.getBuildDir(),
 					npmFileOrNull(),
@@ -517,8 +524,19 @@ public class FormatExtension {
 		}
 	}
 
+	/** Uses the default version of prettier. */
 	public PrettierConfig prettier() {
-		final PrettierConfig prettierConfig = new PrettierConfig();
+		return prettier(PrettierFormatterStep.defaultDevDependencies());
+	}
+
+	/** Uses the specified version of prettier. */
+	public PrettierConfig prettier(String version) {
+		return prettier(PrettierFormatterStep.defaultDevDependenciesWithPrettier(version));
+	}
+
+	/** Uses exactly the npm packages specified in the map. */
+	public PrettierConfig prettier(Map<String, String> devDependencies) {
+		PrettierConfig prettierConfig = new PrettierConfig(devDependencies);
 		addStep(prettierConfig.createStep());
 		return prettierConfig;
 	}
