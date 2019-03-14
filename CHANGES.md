@@ -5,24 +5,27 @@ You might be looking for:
 - [plugin-gradle/CHANGES.md](plugin-gradle/CHANGES.md)
 - [plugin-maven/CHANGES.md](plugin-maven/CHANGES.md)
 
-### Version 1.20.0-SNAPSHOT - TBD (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/snapshot/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/snapshot/), [snapshot repo](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/))
+### Version 1.21.0-SNAPSHOT - TBD (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/snapshot/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/snapshot/), [snapshot repo](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/))
+
+### Version 1.20.0 - March 11th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.20.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.20.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
 * Made npm package versions of [`prettier`](https://prettier.io/) and [`tsfmt`](https://github.com/vvakame/typescript-formatter) (and its internal packages) configurable. ([#363](https://github.com/diffplug/spotless/pull/363))
   * Updated default npm package version of `prettier` from 1.13.4 to 1.16.4
   * Updated default npm package version of internally used typescript package from 2.9.2 to 3.3.3 and tslint package from 5.1.0 to 5.12.0 (both used by `tsfmt`)
 * Updated default eclipse-wtp from 4.7.3a to 4.7.3b ([#371](https://github.com/diffplug/spotless/pull/371)).
 * Default behavior of XML formatter changed to ignore external URIs ([#369](https://github.com/diffplug/spotless/issues/369)).
+  * **WARNING RESOLVED: By default, xml formatter no longer downloads external entities. You can opt-in to resolve external entities by setting resolveExternalURI to true. However, if you do opt-in, be sure that all external entities are referenced over https and not http, or you may be vulnerable to XXE attacks.**
 
 ### Version 1.19.0 - March 11th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.19.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.19.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
-**WARNING: xml formatter in this version may be vulnerable to XXE attacks (see [#358](https://github.com/diffplug/spotless/issues/358)).**
+**WARNING: xml formatter in this version may be vulnerable to XXE attacks, fixed in 1.20.0 (see [#358](https://github.com/diffplug/spotless/issues/358)).**
 
 * Security fix: Updated groovy, c/c++, and eclipse WTP formatters so that they download their source jars securely using `https` rather than `http` ([#360](https://github.com/diffplug/spotless/issues/360)).
 * Updated default eclipse-jdt from 4.9.0 to 4.10.0 ([#368](https://github.com/diffplug/spotless/pull/368))
 
 ### Version 1.18.0 - February 11th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.18.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.18.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
-**WARNING: xml formatter in this version may be vulnerable to XXE attacks (see [#358](https://github.com/diffplug/spotless/issues/358)).**
+**WARNING: xml formatter in this version may be vulnerable to XXE attacks, fixed in 1.20.0 (see [#358](https://github.com/diffplug/spotless/issues/358)).**
 
 * CSS and XML extensions are discontinued ([#325](https://github.com/diffplug/spotless/pull/325)).
 * Provided features with access to SLF4J interface of build tools. ([#236](https://github.com/diffplug/spotless/issues/236))
@@ -31,19 +34,19 @@ You might be looking for:
 
 ### Version 1.17.0 - October 30th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.17.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.17.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
-**WARNING: xml formatter in this version may be vulnerable to XXE attacks (see [#358](https://github.com/diffplug/spotless/issues/358)).**
+**WARNING: xml formatter in this version may be vulnerable to XXE attacks, fixed in 1.20.0 (see [#358](https://github.com/diffplug/spotless/issues/358)).**
 
 * Updated default eclipse-jdt from 4.7.3a to 4.9.0 ([#316](https://github.com/diffplug/spotless/pull/316)). New version addresses enum-tab formatting bug in 4.8 ([#314](https://github.com/diffplug/spotless/issues/314)).
 
 ### Version 1.16.0 - October 30th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.16.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.16.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
-**WARNING: xml formatter in this version may be vulnerable to XXE attacks (see [#358](https://github.com/diffplug/spotless/issues/358)).**
+**WARNING: xml formatter in this version may be vulnerable to XXE attacks, fixed in 1.20.0 (see [#358](https://github.com/diffplug/spotless/issues/358)).**
 
 * Minor support for plugin-gradle and plugin-maven CSS plugins ([#311](https://github.com/diffplug/spotless/pull/311)).
 
 ### Version 1.15.0 - September 23rd 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.15.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.15.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
-**WARNING: xml formatter in this version may be vulnerable to XXE attacks (see [#358](https://github.com/diffplug/spotless/issues/358)).**
+**WARNING: xml formatter in this version may be vulnerable to XXE attacks, fixed in 1.20.0 (see [#358](https://github.com/diffplug/spotless/issues/358)).**
 
 * Added C/C++ support ([#232](https://github.com/diffplug/spotless/issues/232)).
 * Integrated Eclipse CDT formatter ([#274](https://github.com/diffplug/spotless/pull/274))
