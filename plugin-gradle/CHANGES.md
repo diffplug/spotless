@@ -7,6 +7,9 @@
   * Updated default npm package version of internally used typescript package from 2.9.2 to 3.3.3 and tslint package from 5.1.0 to 5.12.0 (both used by `tsfmt`)
 * Updated default eclipse-wtp from 4.7.3a to 4.7.3b ([#371](https://github.com/diffplug/spotless/pull/371)).
 * Default behavior of XML formatter changed to ignore external URIs ([#369](https://github.com/diffplug/spotless/issues/369)).
+* Configured `buìld-scan` plugin in build ([#356](https://github.com/diffplug/spotless/pull/356)).
+  * Runs on every CI build automatically.
+  * Users need to opt-in on their local machine.
 
 ### Version 3.19.0 - March 11th 2018 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.19.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.19.0))
 
