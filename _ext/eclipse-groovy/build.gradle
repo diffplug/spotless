@@ -2,8 +2,8 @@ ext {
 	developers = [
 		fvgh: [ name: 'Frank Vennemeyer', email: 'frankgh@zoho.com' ],
 	]
-
-	p2Repository = "https://dist.springsource.org/release/GRECLIPSE/e${VER_ECLIPSE}"
+	
+	p2Repository = "https://dist.springsource.org/release/GRECLIPSE/${VER_GRECLIPSE}/e${VER_ECLIPSE}"
 	
     p2Dependencies = [
 		'org.codehaus.groovy.eclipse.refactoring':'+', // GroovyFormatter and related
@@ -37,6 +37,7 @@ dependencies {
 	compile ("org.eclipse.platform:org.eclipse.jface.text:${VER_ECLISPE_JFACE}") {
 		exclude group: 'org.eclipse.platform', module: 'org.eclipse.swt'
 	}
+	testCompile("org.slf4j:slf4j-simple:${VER_SLF4J}")
 }
 
 //////////
