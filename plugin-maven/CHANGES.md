@@ -2,13 +2,13 @@
 
 ### Version 1.21.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-maven-plugin/))
 
-### Version 1.20.0 - March 14th 2018 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/1.20.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-maven-plugin/1.20.0))
+### Version 1.20.0 - March 14th 2019 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/1.20.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-maven-plugin/1.20.0))
 
 * Updated default eclipse-wtp from 4.7.3a to 4.7.3b ([#371](https://github.com/diffplug/spotless/pull/371)).
 * Default behavior of XML formatter changed to ignore  external URIs ([#369](https://github.com/diffplug/spotless/issues/369)).
   * **WARNING RESOLVED: By default, xml formatter no longer downloads external entities. You can opt-in to resolve external entities by setting resolveExternalURI to true. However, if you do opt-in, be sure that all external entities are referenced over https and not http, or you may be vulnerable to XXE attacks.**
 
-### Version 1.19.0 - March 11th 2018 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/1.19.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-maven-plugin/1.19.0))
+### Version 1.19.0 - March 11th 2019 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/1.19.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-maven-plugin/1.19.0))
 
 **WARNING: xml formatter in this version may be vulnerable to XXE attacks, fixed in 1.20.0 (see [#358](https://github.com/diffplug/spotless/issues/358)).**
 
@@ -16,7 +16,7 @@
 * Updated default eclipse-jdt from 4.9.0 to 4.10.0 ([#368](https://github.com/diffplug/spotless/pull/368))
 * Add a skip parameter to apply mojo to enable to bypass it if desired. ([#367](https://github.com/diffplug/spotless/pull/367)).
 
-### Version 1.18.0 - February 11th 2018 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/1.18.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-maven-plugin/1.18.0))
+### Version 1.18.0 - February 11th 2019 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/1.18.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-maven-plugin/1.18.0))
 
 **WARNING: xml formatter in this version may be vulnerable to XXE attacks, fixed in 1.20.0 (see [#358](https://github.com/diffplug/spotless/issues/358)).**
 
