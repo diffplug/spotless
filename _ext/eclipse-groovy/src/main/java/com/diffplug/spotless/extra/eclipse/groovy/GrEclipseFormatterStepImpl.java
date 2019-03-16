@@ -33,8 +33,6 @@ import org.codehaus.groovy.eclipse.refactoring.formatter.GroovyFormatter;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.equinox.log.ExtendedLogReaderService;
-import org.eclipse.equinox.log.ExtendedLogService;
 import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
@@ -57,12 +55,10 @@ public class GrEclipseFormatterStepImpl {
 	private final boolean ignoreFormatterProblems;
 
 	public GrEclipseFormatterStepImpl(final Properties properties) throws Exception {
-		SpotlessLogService logService = new SpotlessLogService();
 		if (SpotlessEclipseFramework.setup(
 				config -> {
 					config.applyDefault();
-					config.add(ExtendedLogService.class, logService);
-					config.add(ExtendedLogReaderService.class, logService);
+					config.useSlf4J(GrEclipseFormatterStepImpl.class.getPackage().getName());
 				},
 				plugins -> {
 					plugins.add(new GroovyCoreActivator());
