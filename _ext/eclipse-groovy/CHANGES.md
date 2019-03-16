@@ -2,8 +2,8 @@
 
 ### Version 3.2.0 - TBD ([artifact]([jcenter](https://bintray.com/diffplug/opensource/spotless-eclipse-groovy)))
 
-* Switch to Groovy-Eclipse release 3.2.0 for Elipse 4.10 ([#TBD](https://github.com/diffplug/spotless/issues/TBD)).
-* Included Eclipse logging support allowing formatter warnings/errors to be logged via SLF4J ([#236](https://github.com/diffplug/spotless/issues/236)).
+* Switch to Groovy-Eclipse release 3.2.0 for Eclipse 4.10 ([#375](https://github.com/diffplug/spotless/pull/375)).
+* Include Eclipse logging allowing formatter warnings/errors to be logged via SLF4J ([#236](https://github.com/diffplug/spotless/issues/236)).
 
 ### Version 3.0.1 - February 25th 2019 ([artifact]([jcenter](https://bintray.com/diffplug/opensource/spotless-eclipse-groovy)))
 
