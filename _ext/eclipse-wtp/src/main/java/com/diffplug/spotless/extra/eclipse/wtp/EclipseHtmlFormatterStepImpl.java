@@ -47,6 +47,7 @@ import org.eclipse.wst.xml.core.internal.preferences.XMLCorePreferenceInitialize
 import com.diffplug.spotless.extra.eclipse.wtp.html.JsRegionProcessor;
 import com.diffplug.spotless.extra.eclipse.wtp.html.StructuredDocumentProcessor;
 import com.diffplug.spotless.extra.eclipse.wtp.sse.CleanupStep;
+import com.diffplug.spotless.extra.eclipse.wtp.sse.PreventExternalURIResolverExtension;
 import com.diffplug.spotless.extra.eclipse.wtp.sse.SpotlessPreferences;
 
 /** Formatter step which calls out to the Eclipse HTML cleanup and formatter. */

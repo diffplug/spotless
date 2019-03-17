@@ -65,19 +65,6 @@ public class SpotlessPreferences {
 		return oldValues;
 	}
 
-	public static boolean doResolveExternalURI(Properties properties) {
-		Object obj = properties.get(RESOLVE_EXTERNAL_URI);
-		if (null != obj) {
-			if (obj instanceof Boolean) {
-				return (Boolean) obj;
-			}
-			if (obj instanceof String) {
-				return ((String) obj).equalsIgnoreCase("true");
-			}
-		}
-		return false;
-	}
-
 	public static void configureCatalog(final Properties config) {
 		Optional<File> catalog = getCatalogConfig(config);
 		Catalog defaultCatalog = getDefaultCatalog();
