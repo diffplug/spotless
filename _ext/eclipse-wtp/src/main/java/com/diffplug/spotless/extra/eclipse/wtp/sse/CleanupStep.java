@@ -92,6 +92,7 @@ public class CleanupStep<T extends AbstractStructuredCleanupProcessor & CleanupS
 					config.add(IContentTypeManager.class, new ContentTypeManager(processor));
 					//The preference lookup via the ContentTypeManager, requires a preference service
 					config.add(IPreferencesService.class, PreferencesService.getDefault());
+					config.useSlf4J(this.getClass().getPackage().getName());
 				},
 				plugins -> {
 					plugins.applyDefault();
