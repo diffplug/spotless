@@ -2,7 +2,7 @@
 
 ### Version 3.10.0 - TBD ([artifact]([jcenter](https://bintray.com/diffplug/opensource/spotless-eclipse-wtp)))
 
-* Switch to Eclipse WTP release 3.10.0 for Eclipse 4.8 ([#TBD](https://github.com/diffplug/spotless/pull/TBD)).
+* Switch to Eclipse WTP release 3.10.0 for Eclipse 4.8 ([#378](https://github.com/diffplug/spotless/pull/378)).
 * Include Eclipse logging allowing formatter warnings/errors to be logged via SLF4J ([#236](https://github.com/diffplug/spotless/issues/236)).
 
 ### Version 3.9.8 - March 10th 2019 ([artifact]([jcenter](https://bintray.com/diffplug/opensource/spotless-eclipse-wtp)))
