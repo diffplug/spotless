@@ -1,4 +1,5 @@
-if (System.env['CI'] != null) {
+if (true) {
+	System.out.println('CACHE')
 	// use the remote buildcache on all CI builds
 	buildCache {
 		def cred = {
@@ -13,6 +14,7 @@ if (System.env['CI'] != null) {
 			// but we only push if it's a trusted build (not PRs)
 			String user = cred('buildcacheuser')
 			String pass = cred('buildcachepass')
+			System.out.println('USER=' + user + ' PASS=' + pass)
 			if (user != null && pass != null) {
 				push = true
 				credentials {
