@@ -9,7 +9,7 @@ if (System.env['CI'] != null) {
 			}
 		}
 		remote(HttpBuildCache) {
-			url = 'https://buildcache.diffplug.com/'
+			url = 'https://buildcache.diffplug.com/cache/'
 			// but we only push if it's a trusted build (not PRs)
 			String user = cred('buildcacheuser')
 			String pass = cred('buildcachepass')
