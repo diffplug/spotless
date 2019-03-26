@@ -379,6 +379,7 @@ By default, `spotless:check` is bound to the `verify` phase.  You might want to 
 
 ## Example configurations (from real-world projects)
 
+- [Apache Avro](https://github.com/apache/avro/blob/8026c8ffe4ef67ab419dba73910636bf2c1a691c/lang/java/pom.xml#L307-L334)
 - [JUNG: Java Universal Network/Graph Framework](https://github.com/jrtom/jung/blob/b3a2461b97bb3ab40acc631e21feef74976489e4/pom.xml#L187-L208)
 
 <!---freshmark /javadoc -->
