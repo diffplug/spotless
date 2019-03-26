@@ -32,7 +32,7 @@ public final class EclipseJdtFormatterStep {
 	private static final String FORMATTER_CLASS_OLD = "com.diffplug.gradle.spotless.java.eclipse.EclipseFormatterStepImpl";
 	private static final String FORMATTER_CLASS = "com.diffplug.spotless.extra.eclipse.java.EclipseJdtFormatterStepImpl";
 	private static final String MAVEN_GROUP_ARTIFACT = "com.diffplug.spotless:spotless-eclipse-jdt";
-	private static final String DEFAULT_VERSION = "4.10.0";
+	private static final String DEFAULT_VERSION = "4.11.0";
 	private static final String FORMATTER_METHOD = "format";
 
 	public static String defaultVersion() {

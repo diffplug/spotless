@@ -20,9 +20,7 @@ if (System.env['CI'] != null) {
 					password = pass
 				}
 			} else {
-				credentials {
-					username = 'anonymous'
-				}
+				credentials { username = 'anonymous' }
 			}
 		}
 	}
