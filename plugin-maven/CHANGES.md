@@ -1,6 +1,8 @@
 # spotless-plugin-maven releases
 
 ### Version 1.21.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-maven-plugin/))
+* Updated default eclipse-wtp from 4.7.3b to 4.8.0 ([#371](https://github.com/diffplug/spotless/pull/371)).
+* Updated default eclipse-groovy from 4.8.1 to 4.10.0 ([#371](https://github.com/diffplug/spotless/pull/371)).
 
 ### Version 1.20.0 - March 14th 2019 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/1.20.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-maven-plugin/1.20.0))
 

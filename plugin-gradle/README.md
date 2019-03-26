@@ -491,7 +491,7 @@ spotless {
     }
     // Use for example eclipseWtp('xml', '4.7.3a') to specify a specific version of Eclipse,
     // available versions are: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatters
-    eclipseWtp('xml').configFile 'spotless.xml.prefs' 'spotless.common.properties'
+    eclipseWtp('xml').configFile 'spotless.xml.prefs', 'spotless.common.properties'
   }
 }
 ```
