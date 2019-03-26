@@ -1,3 +1,33 @@
+if (System.env['CI'] != null) {
+	// use the remote buildcache on all CI builds
+	buildCache {
+		def cred = {
+			if (System.env[it] != null) {
+				return System.env[it]
+			} else {
+				return System.getProperty(it)
+			}
+		}
+		remote(HttpBuildCache) {
+			url = 'https://buildcache.diffplug.com/cache/'
+			// but we only push if it's a trusted build (not PRs)
+			String user = cred('buildcacheuser')
+			String pass = cred('buildcachepass')
+			if (user != null && pass != null) {
+				push = true
+				credentials {
+					username = user
+					password = pass
+				}
+			} else {
+				credentials {
+					username = 'anonymous'
+				}
+			}
+		}
+	}
+}
+
 include 'ide'				// easy dev setup
 include 'javadoc-publish'	// publish javadoc for the various libs
 
