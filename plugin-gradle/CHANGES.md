@@ -3,8 +3,8 @@
 ### Version 3.21.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-plugin-gradle/))
 * Updated default eclipse-wtp from 4.7.3b to 4.8.0 ([#382](https://github.com/diffplug/spotless/pull/382)).
 * Updated default eclipse-groovy from 4.8.1 to 4.10.0 ([#382](https://github.com/diffplug/spotless/pull/382)).
-
 * Updated default eclipse-jdt from 4.10.0 to 4.11.0 ([#384](https://github.com/diffplug/spotless/pull/384))
+* Fix intermittent error in multi-project builds ([#372](https://github.com/diffplug/spotless/issues/372))
 
 ### Version 3.20.0 - March 11th 2019 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.20.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.20.0))
 
