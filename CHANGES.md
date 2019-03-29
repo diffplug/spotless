@@ -7,6 +7,10 @@ You might be looking for:
 
 ### Version 1.22.0-SNAPSHOT - TBD (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/snapshot/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/snapshot/), [snapshot repo](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/))
 
+### Version 1.21.1 - March 29th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.21.1/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.21.1/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
+
+* Fixes incorrect plugin and pom metadata in `1.21.0` ([#388](https://github.com/diffplug/spotless/issues/388)).
+
 ### Version 1.21.0 - March 28th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.21.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.21.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
 * We now use a remote build cache to speed up CI builds.  Reduced build time from ~13 minutes to as low as ~3 minutes, dependending on how deep the change is ([#380](https://github.com/diffplug/spotless/pull/380)).
