@@ -2,7 +2,7 @@
 
 ### Version 9.7.0 - TBD ([artifact]([jcenter](https://bintray.com/diffplug/opensource/spotless-eclipse-cdt)))
 
-* Switch to Eclipse CTD release 9.7 for Eclipse 4.11 ([#378](https://github.com/diffplug/spotless/pull/378)).
+* Switch to Eclipse CTD release 9.7 for Eclipse 4.11 ([#389](https://github.com/diffplug/spotless/pull/389)).
 * Include Eclipse logging allowing formatter warnings/errors to be logged via SLF4J ([#236](https://github.com/diffplug/spotless/issues/236)).
 
 ### Version 9.4.5 - February 25th 2019 ([artifact]([jcenter](https://bintray.com/diffplug/opensource/spotless-eclipse-cdt)))
