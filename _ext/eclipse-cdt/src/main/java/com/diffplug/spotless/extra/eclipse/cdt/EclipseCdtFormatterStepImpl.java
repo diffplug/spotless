@@ -24,8 +24,6 @@ import java.util.stream.Stream;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.formatter.CodeFormatter;
 import org.eclipse.core.internal.filebuffers.FileBuffersPlugin;
-import org.eclipse.equinox.log.ExtendedLogReaderService;
-import org.eclipse.equinox.log.ExtendedLogService;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.text.edits.TextEdit;
@@ -37,12 +35,10 @@ public class EclipseCdtFormatterStepImpl {
 	private final CodeFormatter codeFormatter;
 
 	public EclipseCdtFormatterStepImpl(Properties settings) throws Exception {
-		LogErrorService logService = new LogErrorService();
 		SpotlessEclipseFramework.setup(
 				config -> {
 					config.applyDefault();
-					config.add(ExtendedLogService.class, logService);
-					config.add(ExtendedLogReaderService.class, logService);
+					config.useSlf4J(EclipseCdtFormatterStepImpl.class.getPackage().getName());
 				},
 				plugins -> {
 					plugins.applyDefault();
@@ -68,5 +64,4 @@ public class EclipseCdtFormatterStepImpl {
 			return doc.get();
 		}
 	}
-
 }
