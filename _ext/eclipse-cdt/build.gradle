@@ -7,8 +7,6 @@ ext {
 	
 	p2Dependencies = [
 		'org.eclipse.cdt.core':'+', // CodeFormatter and related
-		'org.eclipse.cdt.ui':'+', // IncludeOrganizer and related
-		'org.eclipse.core.variables':'+', // CdtVariableManager required to create CProject (for IncludeOrganizer)
 		]
 
 }
