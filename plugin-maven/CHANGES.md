@@ -2,6 +2,8 @@
 
 ### Version 1.22.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-maven-plugin/))
 
+* Updated default eclipse-cdt from 4.7.3a to 4.11.0 ([#382](https://github.com/diffplug/spotless/pull/382)).
+
 ### Version 1.21.1 - March 29th 2019 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/1.21.1/), [jcenter](https://bintray.com/diffplug/opensource/spotless-maven-plugin/1.21.1))
 
 * Fixes incorrect plugin and pom metadata in `1.21.0` ([#388](https://github.com/diffplug/spotless/issues/388)).
