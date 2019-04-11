@@ -3,7 +3,7 @@
 ### Version 1.22.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-maven-plugin/))
 
 * Updated default eclipse-cdt from 4.7.3a to 4.11.0 ([#390](https://github.com/diffplug/spotless/pull/390)).
-* Added `-spotlessFiles` switch to allow targeting specific files ([#XXX](https://github.com/diffplug/spotless/pull/XXX))
+* Added `-DspotlessFiles` switch to allow targeting specific files ([#392](https://github.com/diffplug/spotless/pull/392))
 
 ### Version 1.21.1 - March 29th 2019 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/1.21.1/), [jcenter](https://bintray.com/diffplug/opensource/spotless-maven-plugin/1.21.1))
 
