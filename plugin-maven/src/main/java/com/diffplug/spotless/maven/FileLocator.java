@@ -46,7 +46,7 @@ public class FileLocator {
 		} catch (ResourceNotFoundException e) {
 			throw new RuntimeException("Unable to locate file with path: " + path, e);
 		} catch (FileResourceCreationException e) {
-			throw new RuntimeException("Unable to create temporaty file '" + outputFile + "' in the output directory", e);
+			throw new RuntimeException("Unable to create temporary file '" + outputFile + "' in the output directory", e);
 		}
 	}
 
