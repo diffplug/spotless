@@ -16,6 +16,7 @@
 package com.diffplug.spotless.maven;
 
 import java.io.IOException;
+
 import org.junit.Test;
 
 public class SpecificFilesTest extends MavenIntegrationTest {
@@ -37,15 +38,15 @@ public class SpecificFilesTest extends MavenIntegrationTest {
 	}
 
 	private void integration(String patterns, boolean firstFormatted, boolean secondFormatted, boolean thirdFormatted)
-		throws IOException, InterruptedException {
+			throws IOException, InterruptedException {
 
 		writePomWithJavaSteps(
-			"<includes>",
-			"  <include>src/**/java/**/*.java</include>",
-			"</includes>",
-			"<googleJavaFormat>",
-			"  <version>1.2</version>",
-			"</googleJavaFormat>");
+				"<includes>",
+				"  <include>src/**/java/**/*.java</include>",
+				"</includes>",
+				"<googleJavaFormat>",
+				"  <version>1.2</version>",
+				"</googleJavaFormat>");
 
 		setFile(testFile(1)).toResource(fixture(false));
 		setFile(testFile(2)).toResource(fixture(false));

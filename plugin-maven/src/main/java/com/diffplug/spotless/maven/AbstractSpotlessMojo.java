@@ -151,9 +151,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 					.anyMatch(filePattern -> filePattern.matcher(file.getAbsolutePath())
 							.matches());
 			return files
-				.stream()
-				.filter(shouldInclude)
-				.collect(toList());
+					.stream()
+					.filter(shouldInclude)
+					.collect(toList());
 		} catch (IOException e) {
 			throw new MojoExecutionException("Unable to scan file tree rooted at " + baseDir, e);
 		}
