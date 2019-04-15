@@ -377,6 +377,16 @@ By default, `spotless:check` is bound to the `verify` phase.  You might want to 
 
 <a name="examples"></a>
 
+## Can I apply Spotless to specific files?
+
+You can target specific files by setting the `spotlessFiles` project property to a comma-separated list of file patterns:
+
+```
+cmd> mvn spotless:apply -DspotlessFiles=my/file/pattern.java,more/generic/.*-pattern.java
+```
+
+The patterns are matched using `String#matches(String)` against the absolute file path.
+
 ## Example configurations (from real-world projects)
 
 - [Apache Avro](https://github.com/apache/avro/blob/8026c8ffe4ef67ab419dba73910636bf2c1a691c/lang/java/pom.xml#L307-L334)
