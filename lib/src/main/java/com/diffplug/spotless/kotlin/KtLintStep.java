@@ -24,6 +24,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
@@ -36,9 +38,13 @@ public class KtLintStep {
 	// prevent direct instantiation
 	private KtLintStep() {}
 
+	private static final Pattern VERSION_PRE_0_32 = Pattern.compile("0\\.(\\d+)\\.\\d+");
 	private static final String DEFAULT_VERSION = "0.32.0";
 	static final String NAME = "ktlint";
-	static final String MAVEN_COORDINATE = "com.pinterest:ktlint:";
+	static final String PACKAGE_PRE_0_32 = "com.github.shyiko";
+	static final String PACKAGE = "com.pinterest";
+	static final String MAVEN_COORDINATE_PRE_0_32 = PACKAGE_PRE_0_32 + ":ktlint:";
+	static final String MAVEN_COORDINATE = PACKAGE + ":ktlint:";
 
 	public static FormatterStep create(Provisioner provisioner) {
 		return create(defaultVersion(), provisioner);
@@ -77,13 +83,22 @@ public class KtLintStep {
 
 		/** Are the files being linted Kotlin script files. */
 		private final boolean isScript;
+		private final String pkg;
 		/** The jar that contains the eclipse formatter. */
 		final JarState jarState;
 		private final TreeMap<String, String> userData;
 
 		State(String version, Provisioner provisioner, boolean isScript, Map<String, String> userData) throws IOException {
 			this.userData = new TreeMap<>(userData);
-			this.jarState = JarState.from(MAVEN_COORDINATE + version, provisioner);
+			String coordinate = MAVEN_COORDINATE;
+			Matcher matcher = VERSION_PRE_0_32.matcher(version);
+			if (matcher.matches() && Integer.parseInt(matcher.group(1)) < 32) {
+				coordinate = MAVEN_COORDINATE_PRE_0_32;
+				this.pkg = PACKAGE_PRE_0_32;
+			} else {
+				this.pkg = PACKAGE;
+			}
+			this.jarState = JarState.from(coordinate + version, provisioner);
 			this.isScript = isScript;
 		}
 
@@ -93,19 +108,19 @@ public class KtLintStep {
 			// String KtLint::format(String input, Iterable<RuleSet> rules, Function2 errorCallback)
 
 			// first, we get the standard rules
-			Class<?> standardRuleSetProviderClass = classLoader.loadClass("com.github.shyiko.ktlint.ruleset.standard.StandardRuleSetProvider");
+			Class<?> standardRuleSetProviderClass = classLoader.loadClass(pkg + ".ktlint.ruleset.standard.StandardRuleSetProvider");
 			Object standardRuleSet = standardRuleSetProviderClass.getMethod("get").invoke(standardRuleSetProviderClass.newInstance());
 			Iterable<?> ruleSets = Collections.singletonList(standardRuleSet);
 
 			// next, we create an error callback which throws an assertion error when the format is bad
 			Class<?> function2Interface = classLoader.loadClass("kotlin.jvm.functions.Function2");
-			Class<?> lintErrorClass = classLoader.loadClass("com.github.shyiko.ktlint.core.LintError");
+			Class<?> lintErrorClass = classLoader.loadClass(pkg + ".ktlint.core.LintError");
 			Method detailGetter = lintErrorClass.getMethod("getDetail");
 			Method lineGetter = lintErrorClass.getMethod("getLine");
 			Method colGetter = lintErrorClass.getMethod("getCol");
 			Object formatterCallback = Proxy.newProxyInstance(classLoader, new Class[]{function2Interface},
 					(proxy, method, args) -> {
-						Object lintError = args[0]; // com.github.shyiko.ktlint.core.LintError
+						Object lintError = args[0]; //ktlint.core.LintError
 						boolean corrected = (Boolean) args[1];
 						if (!corrected) {
 							String detail = (String) detailGetter.invoke(lintError);
@@ -117,7 +132,7 @@ public class KtLintStep {
 					});
 
 			// grab the KtLint singleton
-			Class<?> ktlintClass = classLoader.loadClass("com.github.shyiko.ktlint.core.KtLint");
+			Class<?> ktlintClass = classLoader.loadClass(pkg + ".ktlint.core.KtLint");
 			Object ktlint = ktlintClass.getDeclaredField("INSTANCE").get(null);
 			// and its format method
 			String formatterMethodName = isScript ? "formatScript" : "format";
