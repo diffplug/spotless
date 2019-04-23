@@ -37,7 +37,7 @@ public class KtlintTest extends MavenIntegrationTest {
 	}
 
 	@Test
-	public void testOlderKtlint() throws Exception {
+	public void testKtlintShyiko() throws Exception {
 		writePomWithKotlinSteps("<ktlint><version>0.21.0</version></ktlint>");
 
 		String path1 = "src/main/kotlin/main1.kt";

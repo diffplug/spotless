@@ -90,12 +90,13 @@ public class KtLintStep {
 
 		State(String version, Provisioner provisioner, boolean isScript, Map<String, String> userData) throws IOException {
 			this.userData = new TreeMap<>(userData);
-			String coordinate = MAVEN_COORDINATE;
+			String coordinate;
 			Matcher matcher = VERSION_PRE_0_32.matcher(version);
 			if (matcher.matches() && Integer.parseInt(matcher.group(1)) < 32) {
 				coordinate = MAVEN_COORDINATE_PRE_0_32;
 				this.pkg = PACKAGE_PRE_0_32;
 			} else {
+				coordinate = MAVEN_COORDINATE;
 				this.pkg = PACKAGE;
 			}
 			this.jarState = JarState.from(coordinate + version, provisioner);
