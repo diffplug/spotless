@@ -20,10 +20,25 @@ import org.junit.Test;
 import com.diffplug.spotless.maven.MavenIntegrationTest;
 
 public class KtlintTest extends MavenIntegrationTest {
-
 	@Test
 	public void testKtlint() throws Exception {
 		writePomWithKotlinSteps("<ktlint/>");
+
+		String path1 = "src/main/kotlin/main1.kt";
+		String path2 = "src/main/kotlin/main2.kt";
+
+		setFile(path1).toResource("kotlin/ktlint/basic.dirty");
+		setFile(path2).toResource("kotlin/ktlint/basic.dirty");
+
+		mavenRunner().withArguments("spotless:apply").runNoError();
+
+		assertFile(path1).sameAsResource("kotlin/ktlint/basic.clean");
+		assertFile(path2).sameAsResource("kotlin/ktlint/basic.clean");
+	}
+
+	@Test
+	public void testOlderKtlint() throws Exception {
+		writePomWithKotlinSteps("<ktlint><version>0.21.0</version></ktlint>");
 
 		String path1 = "src/main/kotlin/main1.kt";
 		String path2 = "src/main/kotlin/main2.kt";
