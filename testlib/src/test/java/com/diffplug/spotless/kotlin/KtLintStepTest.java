@@ -39,6 +39,34 @@ public class KtLintStepTest extends ResourceHarness {
 	}
 
 	@Test
+	public void worksShyiko() throws Exception {
+		// Must use jcenter because `com.andreapivetta.kolor:kolor:0.0.2` isn't available on mavenCentral.
+		// It is a dependency of ktlint.
+		FormatterStep step = KtLintStep.create("0.31.0", TestProvisioner.jcenter());
+		StepHarness.forStep(step)
+				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
+				.testException("kotlin/ktlint/unsolvable.dirty", assertion -> {
+					assertion.isInstanceOf(AssertionError.class);
+					assertion.hasMessage("Error on line: 1, column: 1\n" +
+							"Wildcard import");
+				});
+	}
+
+	@Test
+	public void worksPinterest() throws Exception {
+		// Must use jcenter because `com.andreapivetta.kolor:kolor:0.0.2` isn't available on mavenCentral.
+		// It is a dependency of ktlint.
+		FormatterStep step = KtLintStep.create("0.32.0", TestProvisioner.jcenter());
+		StepHarness.forStep(step)
+				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
+				.testException("kotlin/ktlint/unsolvable.dirty", assertion -> {
+					assertion.isInstanceOf(AssertionError.class);
+					assertion.hasMessage("Error on line: 1, column: 1\n" +
+							"Wildcard import");
+				});
+	}
+
+	@Test
 	public void equality() throws Exception {
 		new SerializableEqualityTester() {
 			String version = "0.2.2";
