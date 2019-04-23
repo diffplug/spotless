@@ -1,6 +1,7 @@
 # spotless-plugin-gradle releases
 
 ### Version 3.23.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-plugin-gradle/))
+* Updated default ktlint from 0.21.0 to 0.32.0, and Maven coords to com.pinterest ([#394](https://github.com/diffplug/spotless/pull/394))
 
 ### Version 3.22.0 - April 15th 2019 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.22.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.22.0))
 
