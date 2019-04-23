@@ -38,7 +38,7 @@ public class KtLintStep {
 
 	private static final String DEFAULT_VERSION = "0.21.0";
 	static final String NAME = "ktlint";
-	static final String MAVEN_COORDINATE = "com.github.shyiko:ktlint:";
+	static final String MAVEN_COORDINATE = "com.pinterest:ktlint:";
 
 	public static FormatterStep create(Provisioner provisioner) {
 		return create(defaultVersion(), provisioner);
