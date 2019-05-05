@@ -97,6 +97,7 @@ By default, all files matching `src/main/java/**/*.java` and `src/test/java/**/*
        <file>${basedir}/license-header</file>
      </licenseHeader>
      <eclipse>
+       <!-- Optional, otherwise Eclipse defaults are used. Eclipse preference or property files are also supported. -->
        <file>${basedir}/eclipse-fmt.xml</file>
        <!-- Optional, available versions: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/config/eclipse_jdt_formatter -->
        <version>4.7.1</version>
@@ -116,6 +117,8 @@ By default, all files matching `src/main/java/**/*.java` and `src/test/java/**/*
   </java>
 </configuration>
 ```
+
+See [ECLIPSE_SCREENSHOTS](../ECLIPSE_SCREENSHOTS.md) for screenshots that demonstrate how to get and install the eclipseFormatFile and importOrderFile mentioned above.
 
 <a name="scala"></a>
 
