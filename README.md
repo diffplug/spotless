@@ -98,6 +98,7 @@ lib('antlr4.Antlr4FormatterStep')                +'{{yes}}       | {{yes}}      
   - implementing up-to-date checking [#31](https://github.com/diffplug/spotless/issues/31)
   - breaking spotless into libraries [#56](https://github.com/diffplug/spotless/issues/56)
   - lots of other things, but especially the diff support in `spotlessCheck`
+- Thanks to [vmdominguez](https://github.com/vmdominguez) and [Luis Fors](https://github.com/luis-fors-cb) for adding the ability to limit formatting to specific files in gradle ([#322](https://github.com/diffplug/spotless/pull/322)) and maven ([#392](https://github.com/diffplug/spotless/pull/392)), respectively.
 - Thanks to [Stefan Oehme](https://github.com/oehme) for tons of help on the internal mechanics of Gradle.
 - Thanks to [eyalkaspi](https://github.com/eyalkaspi) for adding configurable date ranges to the date-aware license headers.
 - Thanks to [Oliver Horn](https://github.com/ohorn) for adding AOSP support for Spotless' google-java-format integration.
@@ -107,9 +108,10 @@ lib('antlr4.Antlr4FormatterStep')                +'{{yes}}       | {{yes}}      
 - Thanks to [Stanley Shyiko](https://github.com/shyiko) for his help integrating [ktlint](https://github.com/shyiko/ktlint).
 - Thanks to [Jonathan Leitschuh](https://github.com/JLLeitschuh) for adding [ktlint](https://github.com/shyiko/ktlint) support for [Gradle Kotlin DSL](https://github.com/gradle/kotlin-dsl) files.
 - Originally forked from [gradle-format-plugin](https://github.com/youribonnaffe/gradle-format-plugin) by Youri Bonnaffé.
+- Thanks to Ismaël Mejía for bumping eclipse-jdt deps to 4.11. [PR #60](https://github.com/diffplug/spotless/issues/381).
 - Thanks to Gábor Bernát for improvements to logging and multi-project support.
 - Thanks to Andrew Oberstar for improvements to formatting java source in non-java source sets. [PR #60](https://github.com/diffplug/spotless/pull/60).
 - Import ordering from [EclipseCodeFormatter](https://github.com/krasa/EclipseCodeFormatter).
-- Built by [gradle](http://gradle.org/).
-- Tested by [junit](http://junit.org/).
-- Maintained by [DiffPlug](http://www.diffplug.com/).
+- Built by [gradle](https://gradle.org/).
+- Tested by [junit](https://junit.org/).
+- Maintained by [DiffPlug](https://www.diffplug.com/).

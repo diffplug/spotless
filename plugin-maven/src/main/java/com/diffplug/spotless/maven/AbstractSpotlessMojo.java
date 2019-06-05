@@ -20,6 +20,9 @@ import static java.util.stream.Collectors.toList;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -101,6 +104,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Deprecated
 	private com.diffplug.spotless.maven.css.Css css;
 
+	@Parameter(property = "spotlessFiles")
+	private String filePatterns;
+
 	@Parameter
 	private Antlr4 antlr4;
 
@@ -136,7 +142,22 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		String excludesString = String.join(",", excludes);
 
 		try {
-			return FileUtils.getFiles(baseDir, includesString, excludesString);
+			final List<File> files = FileUtils.getFiles(baseDir, includesString, excludesString);
+			if (filePatterns == null || filePatterns.isEmpty()) {
+				return files;
+			}
+			final String[] includePatterns = this.filePatterns.split(",");
+			final List<Pattern> compiledIncludePatterns = Arrays.stream(includePatterns)
+					.map(Pattern::compile)
+					.collect(Collectors.toList());
+			final Predicate<File> shouldInclude = file -> compiledIncludePatterns
+					.stream()
+					.anyMatch(filePattern -> filePattern.matcher(file.getAbsolutePath())
+							.matches());
+			return files
+					.stream()
+					.filter(shouldInclude)
+					.collect(toList());
 		} catch (IOException e) {
 			throw new MojoExecutionException("Unable to scan file tree rooted at " + baseDir, e);
 		}

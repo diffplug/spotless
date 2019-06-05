@@ -21,6 +21,7 @@ import static java.util.Objects.requireNonNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -36,11 +37,25 @@ public class PrettierFormatterStep {
 
 	public static final String NAME = "prettier-format";
 
+	public static final Map<String, String> defaultDevDependencies() {
+		return defaultDevDependenciesWithPrettier("1.16.4");
+	}
+
+	public static final Map<String, String> defaultDevDependenciesWithPrettier(String version) {
+		return Collections.singletonMap("prettier", version);
+	}
+
+	@Deprecated
 	public static FormatterStep create(Provisioner provisioner, File buildDir, @Nullable File npm, PrettierConfig prettierConfig) {
+		return create(defaultDevDependencies(), provisioner, buildDir, npm, prettierConfig);
+	}
+
+	public static FormatterStep create(Map<String, String> devDependencies, Provisioner provisioner, File buildDir, @Nullable File npm, PrettierConfig prettierConfig) {
+		requireNonNull(devDependencies);
 		requireNonNull(provisioner);
 		requireNonNull(buildDir);
 		return FormatterStep.createLazy(NAME,
-				() -> new State(NAME, provisioner, buildDir, npm, prettierConfig),
+				() -> new State(NAME, devDependencies, provisioner, buildDir, npm, prettierConfig),
 				State::createFormatterFunc);
 	}
 
@@ -49,11 +64,13 @@ public class PrettierFormatterStep {
 		private static final long serialVersionUID = -3811104513825329168L;
 		private final PrettierConfig prettierConfig;
 
-		State(String stepName, Provisioner provisioner, File buildDir, @Nullable File npm, PrettierConfig prettierConfig) throws IOException {
+		State(String stepName, Map<String, String> devDependencies, Provisioner provisioner, File buildDir, @Nullable File npm, PrettierConfig prettierConfig) throws IOException {
 			super(stepName,
 					provisioner,
 					new NpmConfig(
-							readFileFromClasspath(PrettierFormatterStep.class, "/com/diffplug/spotless/npm/prettier-package.json"),
+							replaceDevDependencies(
+									readFileFromClasspath(PrettierFormatterStep.class, "/com/diffplug/spotless/npm/prettier-package.json"),
+									new TreeMap<>(devDependencies)),
 							"prettier"),
 					buildDir,
 					npm);

@@ -15,8 +15,6 @@
  */
 package com.diffplug.gradle.spotless;
 
-import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
-
 import java.io.File;
 import java.io.Serializable;
 import java.nio.charset.Charset;
@@ -115,7 +113,7 @@ public class SpotlessTask extends DefaultTask {
 	}
 
 	public void setTarget(Iterable<File> target) {
-		this.target = requireElementsNonNull(target);
+		this.target = Objects.requireNonNull(target);
 	}
 
 	/** Internal use only. */
@@ -138,7 +136,7 @@ public class SpotlessTask extends DefaultTask {
 	}
 
 	public void setSteps(List<FormatterStep> steps) {
-		this.steps = requireElementsNonNull(steps);
+		this.steps = PluginGradlePreconditions.requireElementsNonNull(steps);
 	}
 
 	public boolean addStep(FormatterStep step) {

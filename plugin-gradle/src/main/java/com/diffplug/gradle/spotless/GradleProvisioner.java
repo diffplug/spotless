@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.artifacts.Dependency;
 
 import com.diffplug.common.base.StringPrinter;
@@ -37,7 +38,13 @@ public class GradleProvisioner {
 				Dependency[] deps = mavenCoords.stream()
 						.map(project.getBuildscript().getDependencies()::create)
 						.toArray(Dependency[]::new);
-				Configuration config = project.getRootProject().getBuildscript().getConfigurations().detachedConfiguration(deps);
+
+				// #372 workaround: Accessing rootProject.configurations from multiple projects is not thread-safe
+				ConfigurationContainer configContainer;
+				synchronized (project.getRootProject()) {
+					configContainer = project.getRootProject().getBuildscript().getConfigurations();
+				}
+				Configuration config = configContainer.detachedConfiguration(deps);
 				config.setDescription(mavenCoords.toString());
 				config.setTransitive(withTransitives);
 				return config.resolve();

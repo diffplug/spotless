@@ -1,4 +1,5 @@
 # Spotless formatter based on JDT version 4.8.0 (see https://projects.eclipse.org/projects/eclipse.jdt)
+# Compare tag in M2 pom with https://git.eclipse.org/c/jdt/eclipse.jdt.core.git/tag/?h=R4_8 to determine core version.
 com.diffplug.spotless:spotless-eclipse-jdt:4.8.0
 com.diffplug.spotless:spotless-eclipse-base:3.0.0
 com.google.code.findbugs:annotations:3.0.0

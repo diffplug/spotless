@@ -47,6 +47,7 @@ import org.eclipse.xsd.util.XSDSchemaBuildingTools;
 import org.osgi.framework.BundleException;
 
 import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework;
+import com.diffplug.spotless.extra.eclipse.wtp.sse.PreventExternalURIResolverExtension;
 import com.diffplug.spotless.extra.eclipse.wtp.sse.SpotlessPreferences;
 
 /** Formatter step which calls out to the Eclipse XML formatter. */
@@ -58,15 +59,20 @@ public class EclipseXmlFormatterStepImpl {
 	private final INodeAdapterFactory xmlAdapterFactory;
 
 	public EclipseXmlFormatterStepImpl(Properties properties) throws Exception {
-		setupFramework();
+		boolean resolveExternalURI = Boolean.parseBoolean(properties.getProperty(SpotlessPreferences.RESOLVE_EXTERNAL_URI, "false"));
+		setupFramework(resolveExternalURI);
 		preferences = PREFERENCE_FACTORY.create(properties);
 		formatter = new DefaultXMLPartitionFormatter();
 		//The adapter factory maintains the common CMDocumentCache
 		xmlAdapterFactory = new ModelQueryAdapterFactoryForXML();
 	}
 
-	private static void setupFramework() throws BundleException {
+	private static void setupFramework(boolean resolveExternalURI) throws BundleException {
 		if (SpotlessEclipseFramework.setup(
+				config -> {
+					config.applyDefault();
+					config.useSlf4J(EclipseXmlFormatterStepImpl.class.getPackage().getName());
+				},
 				plugins -> {
 					plugins.applyDefault();
 					//The WST XML formatter
@@ -77,6 +83,9 @@ public class EclipseXmlFormatterStepImpl {
 					plugins.add(new DTDCorePlugin());
 					//Support formatting based on XSD restrictions
 					plugins.add(new XSDCorePlugin());
+					if (!resolveExternalURI) {
+						plugins.add(new PreventExternalURIResolverExtension());
+					}
 				})) {
 			PREFERENCE_FACTORY = new XmlFormattingPreferencesFactory();
 			//Register required EMF factories
@@ -104,7 +113,6 @@ public class EclipseXmlFormatterStepImpl {
 	}
 
 	private static class XmlFormattingPreferencesFactory {
-
 		private final static Set<String> SUPPORTED_XML_FORMAT_PREFS = new HashSet<String>(Arrays.asList(
 				FORMAT_COMMENT_TEXT,
 				FORMAT_COMMENT_JOIN_LINES,

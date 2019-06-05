@@ -24,7 +24,7 @@ public class EclipseCdtFormatterStepTest extends EclipseCommonTests {
 
 	@Override
 	protected String[] getSupportedVersions() {
-		return new String[]{"4.7.3a"};
+		return new String[]{"4.7.3a", "4.11.0"};
 	}
 
 	@Override

@@ -2,7 +2,7 @@
 
 <!---freshmark shields
 output = [
-  link(shield('Maven central', 'mavencentral', '{{group}}:{{artifactIdMaven}}', 'blue'), 'http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22{{group}}%22%20AND%20a%3A%22{{artifactIdMaven}}%22'),
+  link(shield('Maven central', 'mavencentral', '{{group}}:{{artifactIdMaven}}', 'blue'), 'https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22{{group}}%22%20AND%20a%3A%22{{artifactIdMaven}}%22'),
   link(shield('Javadoc', 'javadoc', '{{stableMaven}}', 'blue'), 'https://{{org}}.github.io/{{name}}/javadoc/{{artifactIdMaven}}/{{stableMaven}}/'),
   '',
   link(shield('Changelog', 'changelog', '{{stableMaven}}', 'brightgreen'), 'CHANGES.md'),
@@ -11,10 +11,10 @@ output = [
   link(shield('License Apache', 'license', 'apache', 'brightgreen'), 'https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)')
   ].join('\n');
 -->
-[![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
-[![Javadoc](https://img.shields.io/badge/javadoc-1.17.0-blue.svg)](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/1.17.0/)
+[![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
+[![Javadoc](https://img.shields.io/badge/javadoc-1.23.0-blue.svg)](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/1.23.0/)
 
-[![Changelog](https://img.shields.io/badge/changelog-1.17.0-brightgreen.svg)](CHANGES.md)
+[![Changelog](https://img.shields.io/badge/changelog-1.23.0-brightgreen.svg)](CHANGES.md)
 [![Travis CI](https://travis-ci.org/diffplug/spotless.svg?branch=master)](https://travis-ci.org/diffplug/spotless)
 [![Live chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
 [![License Apache](https://img.shields.io/badge/license-apache-brightgreen.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
@@ -52,7 +52,7 @@ cmd> mvn spotless:check
 ...
 ```
 
-To use it in your pom, just [add the Spotless dependency](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22), and configure it like so:
+To use it in your pom, just [add the Spotless dependency](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22), and configure it like so:
 
 ```xml
 <plugin>
@@ -98,7 +98,8 @@ By default, all files matching `src/main/java/**/*.java` and `src/test/java/**/*
        <file>${basedir}/license-header</file>
      </licenseHeader>
      <eclipse>
-       <file>${basedir}/eclipse-fmt.xml</file>
+       <!-- Optional, otherwise Eclipse defaults are used. Eclipse preference or property files are also supported. -->
+       <file>${basedir}/eclipse-format.xml</file>
        <!-- Optional, available versions: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/config/eclipse_jdt_formatter -->
        <version>4.7.1</version>
      </eclipse>
@@ -112,11 +113,13 @@ By default, all files matching `src/main/java/**/*.java` and `src/test/java/**/*
      <importOrder>
        <!-- Specify either order or file, but not both -->
        <order>java,javax,org,com,com.diffplug,</order>
-       <file>${basedir}/importOrder</file>
+       <file>${basedir}/eclipse.importorder</file>
      </importOrder>
   </java>
 </configuration>
 ```
+
+See [ECLIPSE_SCREENSHOTS](../ECLIPSE_SCREENSHOTS.md) for screenshots that demonstrate how to get and install the Eclipse format configuration file and Eclipse import order file mentioned above.
 
 <a name="scala"></a>
 
@@ -309,17 +312,25 @@ The WTP formatter accept multiple configuration files. All Eclipse configuration
 
 | Type | Configuration       | File location
 | ---- | ------------------- | -------------
-| CSS  | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.css.core.prefs
-|      | cleanup preferences | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.css.core.prefs
-| HTML | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.html.core.prefs
-|      | cleanup preferences | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.html.core.prefs
-|      | embedded CSS        | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.css.core.prefs
+| CSS  | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.css.core.prefs
+|      | cleanup preferences | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.css.core.prefs
+| HTML | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.html.core.prefs
+|      | cleanup preferences | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.html.core.prefs
+|      | embedded CSS        | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.css.core.prefs
 |      | embedded JS         | Use the export in the Eclipse editor configuration dialog
 | JS   | editor preferences  | Use the export in the Eclipse editor configuration dialog
 | JSON | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.json.core.prefs
-| XML  | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.xml.core.prefs
+| XML  | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.xml.core.prefs
 
 Note that `HTML` should be used for `X-HTML` sources instead of `XML`.
+
+The Eclipse XML catalog cannot be configured for the Spotless WTP formatter, instead a
+user defined catalog file can be specified using the property `userCatalog`. Catalog versions
+1.0 and 1.1 are supported by Spotless.
+
+Unlike Eclipse, Spotless WTP ignores per default external URIs in schema location hints and
+external entities. To allow the access of external URIs, set the property `resolveExternalURI`
+to true.
 
 <a name="invisible"></a>
 
@@ -345,7 +356,7 @@ You can easily set the line endings of different files using [a `.gitattributes`
 
 <a name="includeExclude"></a>
 
-## File incudes and excludes
+## File includes and excludes
 
 Spotless uses [Ant style patterns](https://ant.apache.org/manual/dirtasks.html) to define included and excluded files.
 By default, most common compile and test source roots for the supported languages are included. They are `scr/main/java/**/*.java`, `scr/test/java/**/*.java` for Java and `scr/main/scala/**/*.scala`, `scr/main/scala/**/*.sc`, `scr/test/scala/**/*.scala`, `scr/test/scala/**/*.sc` for Scala.
@@ -391,8 +402,19 @@ By default, `spotless:check` is bound to the `verify` phase.  You might want to 
 
 <a name="examples"></a>
 
+## Can I apply Spotless to specific files?
+
+You can target specific files by setting the `spotlessFiles` project property to a comma-separated list of file patterns:
+
+```
+cmd> mvn spotless:apply -DspotlessFiles=my/file/pattern.java,more/generic/.*-pattern.java
+```
+
+The patterns are matched using `String#matches(String)` against the absolute file path.
+
 ## Example configurations (from real-world projects)
 
+- [Apache Avro](https://github.com/apache/avro/blob/8026c8ffe4ef67ab419dba73910636bf2c1a691c/lang/java/pom.xml#L307-L334)
 - [JUNG: Java Universal Network/Graph Framework](https://github.com/jrtom/jung/blob/b3a2461b97bb3ab40acc631e21feef74976489e4/pom.xml#L187-L208)
 
 <!---freshmark /javadoc -->

@@ -24,6 +24,10 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import javax.annotation.Nullable;
@@ -115,6 +119,31 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 		} catch (IOException e) {
 			throw ThrowingEx.asRuntime(e);
 		}
+	}
+
+	protected static String replaceDevDependencies(String template, Map<String, String> devDependencies) {
+		StringBuilder builder = new StringBuilder();
+		Iterator<Map.Entry<String, String>> entryIter = devDependencies.entrySet().iterator();
+		while (entryIter.hasNext()) {
+			Map.Entry<String, String> entry = entryIter.next();
+			builder.append("\t\t\"");
+			builder.append(entry.getKey());
+			builder.append("\": \"");
+			builder.append(entry.getValue());
+			builder.append("\"");
+			if (entryIter.hasNext()) {
+				builder.append(",\n");
+			}
+		}
+		return replacePlaceholders(template, Collections.singletonMap("devDependencies", builder.toString()));
+	}
+
+	private static String replacePlaceholders(String template, Map<String, String> replacements) {
+		String result = template;
+		for (Entry<String, String> entry : replacements.entrySet()) {
+			result = result.replaceAll("\\Q${" + entry.getKey() + "}\\E", entry.getValue());
+		}
+		return result;
 	}
 
 	public abstract FormatterFunc createFormatterFunc();

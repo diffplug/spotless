@@ -97,8 +97,11 @@ public final class JarState implements Serializable {
 	}
 
 	/**
-	 * Returns a classloader containing only the jars in this JarState.
-	 *
+	 * Returns a classloader containing the only jars in this JarState.
+	 * Look-up of classes in the `org.slf4j` package
+	 * are not taken from the JarState, but instead redirected to the class loader of this class to enable
+	 * passthrough logging.
+	 * <br/>
 	 * The lifetime of the underlying cacheloader is controlled by {@link SpotlessCache}.
 	 */
 	public ClassLoader getClassLoader() {
@@ -106,8 +109,11 @@ public final class JarState implements Serializable {
 	}
 
 	/**
-	 * Returns a classloader containing only the jars in this JarState.
-	 *
+	 * Returns a classloader containing the only jars in this JarState.
+	 * Look-up of classes in the `org.slf4j` package
+	 * are not taken from the JarState, but instead redirected to the class loader of this class to enable
+	 * passthrough logging.
+	 * <br/>
 	 * The lifetime of the underlying cacheloader is controlled by {@link SpotlessCache}.
 	 */
 	public ClassLoader getClassLoader(Serializable key) {

@@ -3,7 +3,7 @@ ext {
 		fvgh: [ name: 'Frank Vennemeyer', email: 'frankgh@zoho.com' ],
 	]
 	
-	p2Repository = "http://download.eclipse.org/webtools/repository/${VER_ECLIPSE_WTP}"
+	p2Repository = "https://download.eclipse.org/webtools/repository/${VER_ECLIPSE_WTP}"
 	
 	p2Dependencies = [
 		// XML/HTML Formatter  - Dependencies
@@ -72,6 +72,14 @@ dependencies {
 	compile "org.eclipse.platform:org.eclipse.core.filesystem:${VER_ECLISPE_EFS}"
 	// Required by org.eclipse.wst.xsd.core
 	compile "org.eclipse.xsd:org.eclipse.xsd:${VER_ECLISPE_XSD}"
+
+	testCompile("org.slf4j:slf4j-simple:${VER_SLF4J}")
+}
+
+jar {
+	manifest {
+		from 'src/main/resources/META-INF/MANIFEST.MF'
+	}
 }
 
 //////////

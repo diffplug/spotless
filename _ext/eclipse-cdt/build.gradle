@@ -3,7 +3,7 @@ ext {
 		fvgh: [ name: 'Frank Vennemeyer', email: 'frankgh@zoho.com' ],
 	]
 
-	p2Repository = "http://download.eclipse.org/tools/cdt/releases/${VER_ECLIPSE_CDT}"
+	p2Repository = "https://download.eclipse.org/tools/cdt/releases/${VER_ECLIPSE_CDT}"
 	
 	p2Dependencies = [
 		'org.eclipse.cdt.core':'+', // CodeFormatter and related
@@ -25,6 +25,8 @@ dependencies {
 	compile "com.ibm.icu:icu4j:${VER_IBM_ICU}"
 	// Required to by CCorePlugin calling PositionTrackerManager
 	compile "org.eclipse.platform:org.eclipse.core.filebuffers:${VER_ECLISPE_PLATFORM}"
+	
+	testCompile("org.slf4j:slf4j-simple:${VER_SLF4J}")
 }
 
 
@@ -32,6 +34,6 @@ dependencies {
 // Test //
 //////////
 sourceSets {
-	// Use JAR file with all resources for Eclipse-XML integration-tests
+	// Use JAR file with all resources for Eclipse-CDT integration-tests
 	test.runtimeClasspath = jar.outputs.files + sourceSets.test.output + sourceSets.test.compileClasspath
 }

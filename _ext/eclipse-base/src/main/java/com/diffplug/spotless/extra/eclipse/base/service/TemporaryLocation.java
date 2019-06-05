@@ -81,6 +81,7 @@ public class TemporaryLocation implements Location {
 	}
 
 	@Override
+	@Deprecated
 	public boolean setURL(URL value, boolean lock) throws IllegalStateException {
 		throw new IllegalStateException("URL not modifyable.");
 	}
