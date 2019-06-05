@@ -1,6 +1,6 @@
 # Spotless formatter based on Eclipse-WTP version 3.9.5 (see https://www.eclipse.org/webtools/)
 com.diffplug.spotless:spotless-eclipse-wtp:3.10.0
-com.diffplug.spotless:spotless-eclipse-base:3.1.0
+com.diffplug.spotless:spotless-eclipse-base:3.1.1
 com.google.code.findbugs:annotations:3.0.0
 com.google.code.findbugs:jsr305:3.0.0
 com.ibm.icu:icu4j:61.1
