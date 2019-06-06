@@ -1,6 +1,8 @@
 # spotless-eclipse-base
 
-### Version 3.2.0 - TBD
+### Version 3.1.1 - June 4th 2019 ([artifact]([jcenter](https://bintray.com/diffplug/opensource/spotless-eclipse-base)))
+
+* Fixed problem handling URL escaped characters in JAR file location. ([#401](https://github.com/diffplug/spotless/issues/401))
 
 ### Version 3.1.0 - February 10th 2019 ([artifact]([jcenter](https://bintray.com/diffplug/opensource/spotless-eclipse-base)))
 
