@@ -25,7 +25,7 @@ public class Antlr4FormatterTest extends MavenIntegrationTest {
 	public void applyUsingCustomVersion() throws Exception {
 		writePomWithAntlr4Steps(
 				"<antlr4Formatter>",
-				"  <version>1.1.0</version>",
+				"  <version>1.2.1</version>",
 				"</antlr4Formatter>");
 		runTest();
 	}

@@ -56,7 +56,7 @@ public class Antlr4ExtensionTest extends GradleIntegrationTest {
 				"spotless {",
 				"    antlr4 {",
 				"        target 'src/main/antlr4/**/*.g4'",
-				"        antlr4Formatter('1.1.0')",
+				"        antlr4Formatter('1.2.1')",
 				"    }",
 				"}"};
 
