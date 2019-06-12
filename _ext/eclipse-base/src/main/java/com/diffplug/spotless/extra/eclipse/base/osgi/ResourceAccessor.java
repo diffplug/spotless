@@ -17,6 +17,8 @@ package com.diffplug.spotless.extra.eclipse.base.osgi;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.jar.JarFile;
@@ -69,15 +71,24 @@ class ResourceAccessor {
 	}
 
 	private static BundleFile getBundlFile(Class<?> clazz) throws BundleException {
-		URL objUrl = clazz.getProtectionDomain().getCodeSource().getLocation();
-		File jarOrDirectory = new File(objUrl.getPath());
+		URI objUri = getBundleUri(clazz);
+		File jarOrDirectory = new File(objUri.getPath());
 		if (!(jarOrDirectory.exists() && jarOrDirectory.canRead())) {
-			throw new BundleException(String.format("Path '%s' for '%s' is not accessible exist on local file system.", objUrl, clazz.getName()), BundleException.READ_ERROR);
+			throw new BundleException(String.format("Path '%s' for '%s' is not accessible exist on local file system.", objUri, clazz.getName()), BundleException.READ_ERROR);
 		}
 		try {
 			return jarOrDirectory.isDirectory() ? new DirBundleFile(jarOrDirectory, false) : new ZipBundleFile(jarOrDirectory, null, null, null);
 		} catch (IOException e) {
 			throw new BundleException(String.format("Cannot access bundle at '%s'.", jarOrDirectory), BundleException.READ_ERROR, e);
+		}
+	}
+
+	private static URI getBundleUri(Class<?> clazz) throws BundleException {
+		URL objUrl = clazz.getProtectionDomain().getCodeSource().getLocation();
+		try {
+			return objUrl.toURI();
+		} catch (URISyntaxException e) {
+			throw new BundleException(String.format("Path '%s' for '%s' is invalid.", objUrl, clazz.getName()), BundleException.READ_ERROR, e);
 		}
 	}
 

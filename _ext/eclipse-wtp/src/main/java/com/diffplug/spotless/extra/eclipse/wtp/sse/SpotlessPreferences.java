@@ -41,6 +41,16 @@ public class SpotlessPreferences {
 	 */
 	public static final String USER_CATALOG = "userCatalog";
 
+	/**
+	 * Indicates if external URIs (location hints) should be resolved
+	 * and the referenced DTD/XSD shall be applied. Per default
+	 * external URIs are ignored.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 */
+	public static final String RESOLVE_EXTERNAL_URI = "resolveExternalURI";
+
 	/** Configures the Eclipse properties for a Plugin and returns its previous values. */
 	public static Properties configurePluginPreferences(Plugin plugin, Properties newValues) {
 		IEclipsePreferences globalPreferences = DefaultScope.INSTANCE.getNode(plugin.getBundle().getSymbolicName());

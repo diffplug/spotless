@@ -41,7 +41,7 @@ public class PrettierFormatterStepTest {
 
 		@Parameterized.Parameters(name = "{index}: prettier can be applied to {0}")
 		public static Iterable<String> formattingConfigFiles() {
-			return Arrays.asList("typescript", "json", "javascript-es5", "javascript-es6", "css", "scss", "markdown");
+			return Arrays.asList("typescript", "json", "javascript-es5", "javascript-es6", "css", "scss", "markdown", "yaml");
 		}
 
 		@Test
@@ -53,6 +53,7 @@ public class PrettierFormatterStepTest {
 			final String cleanFile = filedir + fileType + ".clean";
 
 			final FormatterStep formatterStep = PrettierFormatterStep.create(
+					PrettierFormatterStep.defaultDevDependencies(),
 					TestProvisioner.mavenCentral(),
 					buildDir(),
 					npmExecutable(),
@@ -75,6 +76,7 @@ public class PrettierFormatterStepTest {
 			final String cleanFile = filedir + "json.clean";
 
 			final FormatterStep formatterStep = PrettierFormatterStep.create(
+					PrettierFormatterStep.defaultDevDependencies(),
 					TestProvisioner.mavenCentral(),
 					buildDir(),
 					npmExecutable(),
@@ -97,6 +99,7 @@ public class PrettierFormatterStepTest {
 			final String cleanFile = FILEDIR + "typescript." + cleanFileNameSuffix + ".clean";
 
 			final FormatterStep formatterStep = PrettierFormatterStep.create(
+					PrettierFormatterStep.defaultDevDependencies(),
 					TestProvisioner.mavenCentral(),
 					buildDir(),
 					npmExecutable(),

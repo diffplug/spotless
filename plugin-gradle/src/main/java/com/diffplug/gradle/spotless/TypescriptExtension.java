@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 import javax.annotation.Nullable;
@@ -26,6 +27,7 @@ import javax.annotation.Nullable;
 import org.gradle.api.Project;
 
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.npm.PrettierFormatterStep;
 import com.diffplug.spotless.npm.TsConfigFileType;
 import com.diffplug.spotless.npm.TsFmtFormatterStep;
 import com.diffplug.spotless.npm.TypedTsFmtConfigFile;
@@ -38,8 +40,19 @@ public class TypescriptExtension extends FormatExtension {
 		super(root);
 	}
 
+	/** Uses the default version of typescript-format. */
 	public TypescriptFormatExtension tsfmt() {
-		TypescriptFormatExtension tsfmt = new TypescriptFormatExtension();
+		return tsfmt(TsFmtFormatterStep.defaultDevDependencies());
+	}
+
+	/** Uses the specified version of typescript-format. */
+	public TypescriptFormatExtension tsfmt(String version) {
+		return tsfmt(TsFmtFormatterStep.defaultDevDependenciesWithTsFmt(version));
+	}
+
+	/** Creates a {@code TypescriptFormatExtension} using exactly the specified npm packages. */
+	public TypescriptFormatExtension tsfmt(Map<String, String> devDependencies) {
+		TypescriptFormatExtension tsfmt = new TypescriptFormatExtension(devDependencies);
 		addStep(tsfmt.createStep());
 		return tsfmt;
 	}
@@ -53,6 +66,12 @@ public class TypescriptExtension extends FormatExtension {
 
 		@Nullable
 		Object configFilePath = null;
+
+		private final Map<String, String> devDependencies;
+
+		TypescriptFormatExtension(Map<String, String> devDependencies) {
+			this.devDependencies = Objects.requireNonNull(devDependencies);
+		}
 
 		public void config(final Map<String, Object> config) {
 			this.config = new TreeMap<>(requireNonNull(config));
@@ -85,10 +104,10 @@ public class TypescriptExtension extends FormatExtension {
 			final Project project = getProject();
 
 			return TsFmtFormatterStep.create(
+					devDependencies,
 					GradleProvisioner.fromProject(project),
 					project.getBuildDir(),
 					npmFileOrNull(),
-					project.getProjectDir(),
 					typedConfigFile(),
 					config);
 		}
@@ -101,9 +120,22 @@ public class TypescriptExtension extends FormatExtension {
 		}
 	}
 
+	/** Uses the default version of prettier. */
 	@Override
 	public PrettierConfig prettier() {
-		PrettierConfig prettierConfig = new TypescriptPrettierConfig();
+		return prettier(PrettierFormatterStep.defaultDevDependencies());
+	}
+
+	/** Uses the specified version of prettier. */
+	@Override
+	public PrettierConfig prettier(String version) {
+		return prettier(PrettierFormatterStep.defaultDevDependenciesWithPrettier(version));
+	}
+
+	/** Uses exactly the npm packages specified in the map. */
+	@Override
+	public PrettierConfig prettier(Map<String, String> devDependencies) {
+		PrettierConfig prettierConfig = new TypescriptPrettierConfig(devDependencies);
 		addStep(prettierConfig.createStep());
 		return prettierConfig;
 	}
@@ -112,6 +144,10 @@ public class TypescriptExtension extends FormatExtension {
 	 * Overrides the parser to be set to typescript, no matter what the user's config says.
 	 */
 	public class TypescriptPrettierConfig extends PrettierConfig {
+		TypescriptPrettierConfig(Map<String, String> devDependencies) {
+			super(devDependencies);
+		}
+
 		@Override
 		FormatterStep createStep() {
 			fixParserToTypescript();

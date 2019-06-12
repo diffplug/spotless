@@ -33,6 +33,10 @@ public class EclipseJdtFormatterStepImpl {
 
 	public EclipseJdtFormatterStepImpl(Properties settings) throws Exception {
 		SpotlessEclipseFramework.setup(
+				config -> {
+					config.applyDefault();
+					config.useSlf4J(EclipseJdtFormatterStepImpl.class.getPackage().getName());
+				},
 				plugins -> {
 					plugins.applyDefault();
 					plugins.add(new JavaCore());

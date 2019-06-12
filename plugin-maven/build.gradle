@@ -15,7 +15,7 @@ visteg {
 	nodeShape = 'box'
 	startNodeShape = 'box'
 	endNodeShape = 'box'
-	colorscheme = 'pastel24' // http://www.graphviz.org/doc/info/colors.html
+	colorscheme = 'pastel24' // https://www.graphviz.org/doc/info/colors.html
 }
 
 import com.github.mustachejava.DefaultMustacheFactory

@@ -3,7 +3,7 @@
 <!---freshmark shields
 output = [
   link(shield('Gradle plugin', 'plugins.gradle.org', 'com.diffplug.gradle.spotless', 'blue'), 'https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless'),
-  link(shield('Maven central', 'mavencentral', 'com.diffplug.gradle.spotless:spotless', 'blue'), 'http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-gradle%22'),
+  link(shield('Maven central', 'mavencentral', 'com.diffplug.gradle.spotless:spotless', 'blue'), 'https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-gradle%22'),
   link(shield('Javadoc', 'javadoc', '{{stableGradle}}', 'blue'), 'https://{{org}}.github.io/{{name}}/javadoc/spotless-plugin-gradle/{{stableGradle}}/'),
   '',
   link(shield('Changelog', 'changelog', '{{versionGradle}}', 'brightgreen'), 'CHANGES.md'),
@@ -13,10 +13,10 @@ output = [
   ].join('\n');
 -->
 [![Gradle plugin](https://img.shields.io/badge/plugins.gradle.org-com.diffplug.gradle.spotless-blue.svg)](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless)
-[![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.gradle.spotless%3Aspotless-blue.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-gradle%22)
-[![Javadoc](https://img.shields.io/badge/javadoc-3.17.0-blue.svg)](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.17.0/)
+[![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.gradle.spotless%3Aspotless-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-gradle%22)
+[![Javadoc](https://img.shields.io/badge/javadoc-3.23.0-blue.svg)](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.23.0/)
 
-[![Changelog](https://img.shields.io/badge/changelog-3.18.0--SNAPSHOT-brightgreen.svg)](CHANGES.md)
+[![Changelog](https://img.shields.io/badge/changelog-3.24.0--SNAPSHOT-brightgreen.svg)](CHANGES.md)
 [![Travis CI](https://travis-ci.org/diffplug/spotless.svg?branch=master)](https://travis-ci.org/diffplug/spotless)
 [![Live chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
 [![License Apache](https://img.shields.io/badge/license-apache-brightgreen.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
@@ -75,7 +75,7 @@ spotless {
 }
 ```
 
-Spotless can check and apply formatting to any plain-text file, using simple rules ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.17.0/com/diffplug/gradle/spotless/FormatExtension.html)) like those above.  It also supports more powerful formatters:
+Spotless can check and apply formatting to any plain-text file, using simple rules ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.23.0/com/diffplug/gradle/spotless/FormatExtension.html)) like those above.  It also supports more powerful formatters:
 
 * Eclipse's [CDT](#eclipse-cdt) C/C++ code formatter
 * Eclipse's java code formatter (including style and import ordering)
@@ -348,6 +348,8 @@ spotless {
   typescript {
     // using existing config files
     tsfmt().tslintFile('/path/to/repo/tslint.json')
+    // tsfmt('7.2.2') to specify specific version of tsfmt
+    // tsfmt(['typescript-formatter': '7.2.2', 'typescript': '3.3.3', 'tslint': '5.12.1') to specify all of the npm dependencies that you want
   }
 }
 ```
@@ -405,6 +407,8 @@ spotless {
 
     // at least provide the parser to use
     prettier().config(['parser': 'postcss'])
+    // prettier('1.16.4') to specify specific version of prettier
+    // prettier(['my-prettier-fork': '1.16.4']) to specify exactly which npm packages to use
 
     // or provide a typical filename
     prettier().config(['filepath': 'style.scss'])
@@ -488,7 +492,7 @@ spotless {
     }
     // Use for example eclipseWtp('xml', '4.7.3a') to specify a specific version of Eclipse,
     // available versions are: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatters
-    eclipseWtp('xml').configFile 'spotless.xml.prefs' 'spotless.common.properties'
+    eclipseWtp('xml').configFile 'spotless.xml.prefs', 'spotless.common.properties'
   }
 }
 ```
@@ -496,17 +500,25 @@ The WTP formatter accept multiple configuration files. All Eclipse configuration
 
 | Type | Configuration       | File location
 | ---- | ------------------- | -------------
-| CSS  | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.css.core.prefs
-|      | cleanup preferences | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.css.core.prefs
-| HTML | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.html.core.prefs
-|      | cleanup preferences | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.html.core.prefs
-|      | embedded CSS        | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.css.core.prefs
+| CSS  | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.css.core.prefs
+|      | cleanup preferences | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.css.core.prefs
+| HTML | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.html.core.prefs
+|      | cleanup preferences | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.html.core.prefs
+|      | embedded CSS        | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.css.core.prefs
 |      | embedded JS         | Use the export in the Eclipse editor configuration dialog
 | JS   | editor preferences  | Use the export in the Eclipse editor configuration dialog
 | JSON | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.json.core.prefs
-| XML  | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/org.eclipse.wst.xml.core.prefs
+| XML  | editor preferences  | .metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.wst.xml.core.prefs
 
 Note that `HTML` should be used for `X-HTML` sources instead of `XML`.
+
+The Eclipse XML catalog cannot be configured for the Spotless WTP formatter, instead a
+user defined catalog file can be specified using the property `userCatalog`. Catalog versions
+1.0 and 1.1 are supported by Spotless.
+
+Unlike Eclipse, Spotless WTP ignores per default external URIs in schema location hints and
+external entities. To allow the access of external URIs, set the property `resolveExternalURI`
+to true.
 
 <a name="antlr4"></a>
 
@@ -587,6 +599,11 @@ spotless {
     // - if you pass anything else, it will be sent to project.files(yourArg)
     target '**/*.gradle', '**/*.md', '**/.gitignore'
 
+    targetExclude 'src/main/codegen/**', 'src/test/codegen/**'
+    // the files to be formatted = (target - targetExclude)
+    // NOTE: if target or targetExclude is called multiple times, only the
+    // last call is effective
+
     // spotless has built-in rules for the most basic formatting tasks
     trimTrailingWhitespace()
     indentWithTabs() // or spaces. Takes an integer argument if you don't like 4
@@ -610,7 +627,7 @@ spotless {
 }
 ```
 
-If you use `custom` or `customLazy`, you might want to take a look at [this javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.17.0/com/diffplug/gradle/spotless/FormatExtension.html#bumpThisNumberIfACustomStepChanges-int-) for a big performance win.
+If you use `custom` or `customLazy`, you might want to take a look at [this javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.23.0/com/diffplug/gradle/spotless/FormatExtension.html#bumpThisNumberIfACustomStepChanges-int-) for a big performance win.
 
 See [`JavaExtension.java`](src/main/java/com/diffplug/gradle/spotless/JavaExtension.java) if you'd like to see how a language-specific set of custom rules is implemented.  We'd love PR's which add support for other languages.
 
@@ -648,7 +665,12 @@ spotless {
 }
 ```
 
-If a formatter throws an exception, possibly because of malformed code or a bug in a formatter step, Spotless will report a build failure.  You can suppress these specific failures as such:
+When a misformatted file throws an exception, it will be for one of two reasons:
+
+1) Spotless calculated the properly formatted version, and it is different than the current contents.
+2) One of the formatters threw an exception while attempting to calculate the properly formatted version.
+
+You can fix (1) by excluding the file from formatting using the `targetExclude` method, see the [custom rules](#custom) section for details.  You can fix (2) and turn these exceptions into warnings like this:
 
 ```gradle
 spotless {
@@ -661,8 +683,6 @@ spotless {
   }
 }
 ```
-
-Note that `enforceCheck` is a global property which affects all formats (outside the java block), while `ignoreErrorForStep/Path` are local to a single format (inside the java block).
 
 <a name="preview"></a>
 
@@ -692,6 +712,7 @@ Spotless is hosted on jcenter and at plugins.gradle.org. [Go here](https://plugi
 
 * [One thousand github projects](https://github.com/search?l=gradle&q=spotless&type=Code)
 * [JUnit 5](https://github.com/junit-team/junit-lambda/blob/151d52ffab07881de71a8396a9620f18072c65ec/build.gradle#L86-L101) (aka JUnit Lambda)
+* [Apache Beam](https://beam.apache.org/) ([direct link to spotless section in its build.gradle](https://github.com/apache/beam/blob/1d9daf1aca101fa5a194cbbba969886734e08902/buildSrc/src/main/groovy/org/apache/beam/gradle/BeamModulePlugin.groovy#L776-L789))
 * [opentest4j](https://github.com/ota4j-team/opentest4j/blob/aab8c204be05609e9f76c2c964c3d6845cd0de14/build.gradle#L63-L80)
 * [Durian](https://github.com/diffplug/durian) ([direct link to spotless section in its build.gradle](https://github.com/diffplug/durian/blob/v3.2.0/build.gradle#L65-L85))
 * [DurianRx](https://github.com/diffplug/durian-rx) ([direct link to spotless section in its build.gradle](https://github.com/diffplug/durian-rx/blob/v1.1.0/build.gradle#L92-L113))

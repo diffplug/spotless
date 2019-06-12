@@ -84,7 +84,10 @@ public class EclipseJsFormatterStepImpl {
 	public EclipseJsFormatterStepImpl(Properties properties) throws Exception {
 		SpotlessEclipseFramework.setup(
 				JS_CORE_CONFIG,
-				config -> config.applyDefault(),
+				config -> {
+					config.applyDefault();
+					config.useSlf4J(this.getClass().getPackage().getName());
+				},
 				plugins -> {
 					plugins.applyDefault();
 					// The JS core uses EFS for determination of temporary storage location
