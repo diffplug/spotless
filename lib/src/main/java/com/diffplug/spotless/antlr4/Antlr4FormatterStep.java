@@ -29,7 +29,7 @@ public class Antlr4FormatterStep {
 	private Antlr4FormatterStep() {}
 
 	private static final String MAVEN_COORDINATE = "com.khubla.antlr4formatter:antlr4-formatter:";
-	private static final String DEFAULT_VERSION = "1.2.1";
+	private static final String DEFAULT_VERSION = "1.1.0";
 
 	public static FormatterStep create(Provisioner provisioner) {
 		return create(defaultVersion(), provisioner);

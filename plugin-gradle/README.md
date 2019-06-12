@@ -534,7 +534,7 @@ spotless {
     antlr4Formatter()
 
     // specify a custom Antlr4Formatter version
-    antlr4Formatter('1.2.1')
+    antlr4Formatter('1.1.0')
   }
 }
 ```
