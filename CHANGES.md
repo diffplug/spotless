@@ -7,6 +7,8 @@ You might be looking for:
 
 ### Version 1.24.0-SNAPSHOT - TBD (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/snapshot/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/snapshot/), [snapshot repo](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/))
 
+* Update jgit from `4.9.0.201710071750-r` to `5.3.2.201906051522-r` ([#407](https://github.com/diffplug/spotless/pull/407))
+
 ### Version 1.23.0 - April 24th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.23.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.23.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
 * Updated default ktlint from 0.21.0 to 0.32.0, and Maven coords to com.pinterest ([#394](https://github.com/diffplug/spotless/pull/394))
