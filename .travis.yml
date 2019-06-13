@@ -1,6 +1,6 @@
 language: java
 jdk:
-  - oraclejdk8
+  - openjdk8
 env:
   - NODE_VERSION="6.10.2"
 before_install:
