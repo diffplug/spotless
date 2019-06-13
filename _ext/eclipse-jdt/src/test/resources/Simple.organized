@@ -1,0 +1,22 @@
+package bar.foo;
+
+import java.io.IOException;
+import java.net.Socket; //Wrong within group
+
+import javax.net.SocketFactory; //Wrong order in Other group
+
+import foo.bar.B; //Cannot be found but is used
+
+
+class A {
+	private static final SocketFactory FACTORY;
+	static {
+		FACTORY = SocketFactory.getDefault();
+	}
+	public static Socket open() throws IOException {
+		return FACTORY.createSocket();
+	}
+	public static B create() {
+		return new B();
+	}
+}

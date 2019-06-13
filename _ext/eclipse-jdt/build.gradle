@@ -10,9 +10,9 @@ ext {
 
 dependencies {
 	compile "com.diffplug.spotless:spotless-eclipse-base:${VER_SPOTLESS_ECLISPE_BASE}"
-	compile("org.eclipse.jdt:org.eclipse.jdt.core:${VER_ECLIPSE_JDT_CORE}") {
+	compile("org.eclipse.jdt:org.eclipse.jdt.core.manipulation:${VER_ECLIPSE_JDT_CORE_MANIPULATION}") {
+		exclude group: 'org.eclipse.jdt', module: 'org.eclipse.jdt.launching'
 		exclude group: 'org.eclipse.platform', module: 'org.eclipse.ant.core'
 		exclude group: 'org.eclipse.platform', module: 'org.eclipse.core.expressions'
-		exclude group: 'org.eclipse.platform', module: 'org.eclipse.core.filesystem'
 	}
 }
