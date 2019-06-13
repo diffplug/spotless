@@ -52,7 +52,7 @@ public final class SpotlessEclipseFramework {
 		 * </p>
 		 * <p>
 		 * Per default, the platform is not activated. Some plugins use this information
-		 * to determine whether they are running in a headless modes (without IDE).
+		 * to determine whether they are running in a headless mode (without IDE).
 		 * </p>
 		 */
 		PLATFORM(org.eclipse.core.internal.runtime.PlatformActivator.class, Bundle.RESOLVED),
