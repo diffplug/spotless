@@ -20,6 +20,9 @@ import static org.junit.Assert.*;
 import java.util.Properties;
 import java.util.function.Consumer;
 
+import org.assertj.core.util.Arrays;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.manipulation.CodeStyleConfiguration;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -38,8 +41,42 @@ public class EclipseJdtCleanUpStepImplTest {
 	}
 
 	@Test
-	public void nominal() throws Throwable {
-		organizeImportTest("Simple", config -> {});
+	public void defaultConfiguration() throws Throwable {
+		for(String testFile:Arrays.array("Simple", "Statics", "Wildcards")) {
+			organizeImportTest(testFile, config -> {});
+		}
+	}
+	
+	@Test
+	public void defaultPackage() throws Throwable {
+		String input = TEST_DATA.input("Simple").replaceFirst("package .+", "");
+		String expected = TEST_DATA.afterOrganizedImports("Simple").replaceFirst("package .+", "");
+		organizeImportTest(input, expected, config -> {});
+	}
+	
+	@Test
+	public void invalidConfiguration() throws Throwable {
+		//Smoke test, no exceptions expected
+		organizeImportTest("", "", config -> {
+			config.put("invalid.key", "some.value");
+		});
+		organizeImportTest("", "", config -> {
+			config.put(JavaCore.COMPILER_SOURCE, "-42");
+		});
+		organizeImportTest("", "", config -> {
+			config.put(JavaCore.COMPILER_SOURCE, "Not an integer");
+		});
+	}
+	
+	@Test
+	public void customConfiguration() throws Throwable {
+		String defaultOrganizedInput = TEST_DATA.input("Configuration");
+		organizeImportTest(defaultOrganizedInput, defaultOrganizedInput, config -> {});
+		
+		String customOrganizedOutput = TEST_DATA.afterOrganizedImports("Configuration");
+		organizeImportTest(defaultOrganizedInput, customOrganizedOutput, config -> {
+			config.put(CodeStyleConfiguration.ORGIMPORTS_IMPORTORDER, "foo;#foo;");
+		});
 	}
 
 	private static void organizeImportTest(final String fileName, final Consumer<Properties> config) throws Exception {

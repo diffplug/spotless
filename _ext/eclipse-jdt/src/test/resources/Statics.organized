@@ -1,0 +1,13 @@
+package bar.foo;
+
+import static foo.bar.B.someMethod; // Is used
+
+import foo.bar.B;
+
+class A {
+	static {
+		someMethod();
+		B.someOtherMethod();
+		new B();
+	}
+}

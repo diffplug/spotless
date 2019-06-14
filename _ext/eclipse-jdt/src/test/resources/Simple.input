@@ -5,10 +5,10 @@ import javax.net.SocketFactory; //Wrong order in Other group
 import java.net.Socket; //Wrong within group
 import java.lang.System; //Can be removed since implicitly imported
 import java.io.IOException;
-import java.io.PrintStream; //Can be found and is not used
+import java.io.PrintStream; //Class can be found but is not used
 
-import foo.bar.C; //Cannot be found and is not used
-import foo.bar.B; //Cannot be found but is used
+import foo.bar.C; //Class cannot be found and is not used
+import foo.bar.B; //Class cannot be found but is used
 
 
 class A {

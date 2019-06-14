@@ -1,0 +1,18 @@
+package bar.foo;
+
+import static foo.bar.C.*; //Might be used
+import static foo.bar.B.someMethod; //Is used
+import static foo.bar.B.someOtherMethod; //Is not used
+import foo.bar.B; //Is used
+import foo.bar.E; //Not used
+import hello.world.*; //Might be used
+
+class A {
+	public static B create() {
+		someMethodOfC();
+		new ClassInHelloWorld();
+		
+		someMethod();
+		return new B();
+	}
+}

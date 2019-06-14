@@ -5,7 +5,7 @@ import java.net.Socket; //Wrong within group
 
 import javax.net.SocketFactory; //Wrong order in Other group
 
-import foo.bar.B; //Cannot be found but is used
+import foo.bar.B; //Class cannot be found but is used
 
 
 class A {

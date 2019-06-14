@@ -31,7 +31,6 @@ import org.eclipse.jdt.core.manipulation.CodeStyleConfiguration;
 import org.eclipse.jdt.core.manipulation.JavaManipulation;
 import org.eclipse.jdt.core.manipulation.OrganizeImportsOperation;
 import org.eclipse.jdt.core.manipulation.SharedASTProviderCore;
-import org.eclipse.jdt.internal.core.JavaCorePreferenceInitializer;
 import org.eclipse.jdt.internal.corext.codemanipulation.CodeGenerationSettingsConstants;
 
 import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework;
@@ -39,21 +38,21 @@ import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework;
 /** Clean-up step which calls out to the Eclipse JDT clean-up / import sorter. */
 public class EclipseJdtCleanUpStepImpl {
 
-	/* The JDT UI shall be used for creating the settings. */
+	// The JDT UI shall be used for creating the settings.
 	private final static String JDT_UI_PLUGIN_ID = "org.eclipse.jdt.ui";
-
-	private final IJavaProject jdtConfiguration;
+	private final IJavaProject jdtConfiguration; //The project stores the JDT clean-up configuration
+	private final EclipseJdtHelper jdtHelper;
 
 	public EclipseJdtCleanUpStepImpl(Properties settings) throws Exception {
 		if (SpotlessEclipseFramework.setup(
 				core -> {
 					/*
-					 * For the Clean-Up, the indexer needs to exists (but is not used).
-					 * The indexer is not created in headless mode by the JDT.
-					 * To signal a non-headless mode, the platform state needs to by active
-					 * (it is only resolved by default).
+					 * Indexer needs to exist (but is not used) for JDT clean-up.
+					 * The indexer is not created in headless mode by JDT.
+					 * 'Active' platform state signals non-headless mode ('Resolved' is default state)..
 					 */
 					core.add(new org.eclipse.core.internal.registry.osgi.Activator());
+					
 					core.add(new org.eclipse.core.internal.runtime.PlatformActivator());
 					core.add(new org.eclipse.core.internal.preferences.Activator());
 					core.add(new org.eclipse.core.internal.runtime.Activator());
@@ -66,13 +65,12 @@ public class EclipseJdtCleanUpStepImpl {
 					config.changeSystemLineSeparator();
 
 					/*
-					 * The default no content type specific handling is insufficient.
+					 * The default 'no content type specific handling' is insufficient.
 					 * The Java source type needs to be recognized by file extension.
 					 */
 					config.add(IContentTypeManager.class, new JavaContentTypeManager());
-					config.useSlf4J(EclipseJdtCleanUpStepImpl.class.getPackage().getName());
 
-					//Initialization of jdtConfiguration requires OS set
+					config.useSlf4J(EclipseJdtCleanUpStepImpl.class.getPackage().getName());
 					config.set(InternalPlatform.PROP_OS, "");
 				},
 				plugins -> {
@@ -82,13 +80,14 @@ public class EclipseJdtCleanUpStepImpl {
 					plugins.add(new org.eclipse.core.internal.filesystem.Activator());
 					plugins.add(new JavaCore());
 				})) {
-			new JavaCorePreferenceInitializer().initializeDefaultPreferences();
 			initializeJdtUiDefaultSettings();
 		}
-		jdtConfiguration = EclipseJdtFactory.createProject(settings);
+		jdtHelper = EclipseJdtHelper.getInstance();
+		jdtConfiguration = jdtHelper.createProject(settings);
 	}
 
 	private static void initializeJdtUiDefaultSettings() {
+		//Following values correspond org.eclipse.jdt.ui.PreferenceConstants
 		JavaManipulation.setPreferenceNodeId(JDT_UI_PLUGIN_ID);
 		IEclipsePreferences prefs = DefaultScope.INSTANCE.getNode(JDT_UI_PLUGIN_ID);
 
@@ -103,12 +102,12 @@ public class EclipseJdtCleanUpStepImpl {
 	}
 
 	public String organizeImport(String raw) throws Exception {
-		ICompilationUnit sourceContainer = EclipseJdtFactory.createJavaSource(raw, jdtConfiguration);
-		CompilationUnit ast = SharedASTProviderCore.getAST(sourceContainer, SharedASTProviderCore.WAIT_YES, null);
-		OrganizeImportsOperation formatOperation = new OrganizeImportsOperation(sourceContainer, ast, true, false, true, null);
+		ICompilationUnit compilationUnit = jdtHelper.createCompilationUnit(raw, jdtConfiguration);
+		CompilationUnit ast = SharedASTProviderCore.getAST(compilationUnit, SharedASTProviderCore.WAIT_YES, null);
+		OrganizeImportsOperation formatOperation = new OrganizeImportsOperation(compilationUnit, ast, true, false, true, null);
 		try {
 			formatOperation.run(null);
-			return sourceContainer.getSource();
+			return compilationUnit.getSource();
 		} catch (OperationCanceledException | CoreException e) {
 			throw new IllegalArgumentException("Invalid java syntax for formatting.", e);
 		}

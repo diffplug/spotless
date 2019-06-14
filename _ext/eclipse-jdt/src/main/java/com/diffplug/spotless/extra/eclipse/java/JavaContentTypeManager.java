@@ -18,12 +18,15 @@ package com.diffplug.spotless.extra.eclipse.java;
 import org.eclipse.core.internal.content.ContentType;
 import org.eclipse.core.internal.content.ContentTypeCatalog;
 import org.eclipse.core.runtime.content.IContentType;
+import org.eclipse.core.runtime.content.IContentTypeMatcher;
+import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.jdt.internal.compiler.util.SuffixConstants;
 
 import com.diffplug.spotless.extra.eclipse.base.service.NoContentTypeSpecificHandling;
 
 /**
  * Java compilation unit validation requires Java content type to be recognized.
+ * All source is assumed to be Java. A content description is not required/provided.
  * <p>
  * See {@code org.eclipse.jdt.internal.core.util.Util} for details.
  * </p>
@@ -57,4 +60,8 @@ public class JavaContentTypeManager extends NoContentTypeSpecificHandling {
 		return new IContentType[]{contentType};
 	}
 
+	@Override
+	public IContentTypeMatcher getMatcher(ISelectionPolicy customPolicy, IScopeContext context) {
+		return this;
+	}
 }
