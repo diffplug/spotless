@@ -72,11 +72,11 @@ class SimpleBundle implements StaticBundle, TemporaryBundle {
 	@Override
 	public <A> A adapt(Class<A> type) {
 		/*
-         * The adaptation is currently used by the InternalPlugin to get the framework wiring
-         * implementation from the system bundle.
-         * The original purpose to provide more specialized access to the Bundle object,
-         * seems not be used by Eclipse at all.
-         * Hence the call is mapped to old-style Eclipse services.
+		 * The adaptation is currently used by the InternalPlugin to get the framework wiring
+		 * implementation from the system bundle.
+		 * The original purpose to provide more specialized access to the Bundle object,
+		 * seems not be used by Eclipse at all.
+		 * Hence the call is mapped to old-style Eclipse services.
 		 */
 		try {
 
