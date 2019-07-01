@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import javax.xml.parsers.SAXParserFactory;
 
+import org.eclipse.core.internal.runtime.InternalPlatform;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -226,6 +227,13 @@ public final class SpotlessEclipseFramework {
 		if (!coreConfigStarted) {
 			//The SAXParserFactory.class is required for parsing the plugin XML files
 			addMandatoryServiceIfMissing(SAXParserFactory.class, SAXParserFactory.newInstance());
+			/*
+			 * Since org.eclipse.core.runtime version 3.15.300, the Eclipse bundle look-up is accomplished
+			 * via the wiring framework, which requires a stat of the InternalPlatform.
+			 * The internal platform initialization is customized by the services
+			 * registered to the controller.
+			 */
+			InternalPlatform.getDefault().start(controller);
 			startFrameworkBundles();
 			coreConfigStarted = true;
 		}

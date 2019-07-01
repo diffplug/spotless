@@ -70,6 +70,35 @@ class SimpleBundle implements StaticBundle, TemporaryBundle {
 	}
 
 	@Override
+	public <A> A adapt(Class<A> type) {
+		/*
+		 * The adaptation is currently used by the InternalPlugin to get the framework wiring
+		 * implementation from the system bundle.
+		 * The original purpose to provide more specialized access to the Bundle object,
+		 * seems not be used by Eclipse at all.
+		 * Hence the call is mapped to old-style Eclipse services.
+		 */
+		try {
+
+			ServiceReference<?>[] references = context.getAllServiceReferences(type.getName(), "");
+			if ((null != references) && (0 != references.length)) {
+				if (1 != references.length) {
+					throw new IllegalArgumentException("Multiple services found for " + type.getName()); //In Spotless services should always be unique
+				}
+				Object obj = context.getService(references[0]);
+				try {
+					return type.cast(obj);
+				} catch (ClassCastException e) {
+					throw new IllegalArgumentException("Received unexpected class for reference filter " + type.getName(), e);
+				}
+			}
+			return null;
+		} catch (InvalidSyntaxException e) {
+			throw new IllegalArgumentException("Unexpected syntax exception", e); //Should never be thrown by Spotless bundle controller
+		}
+	}
+
+	@Override
 	public int getState() {
 		return state;
 	}

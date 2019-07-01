@@ -28,6 +28,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.wiring.FrameworkWiring;
 
 /**
  * OSGi bundle controller allowing a minimal Eclipse platform setup
@@ -63,8 +64,11 @@ public final class BundleController implements StaticBundleContext {
 		bundles.add(systemBundle);
 
 		services = new ServiceCollection(systemBundle, properties);
+
 		//Eclipse core (InternalPlatform) still uses PackageAdmin for looking up bundles
-		services.add(org.osgi.service.packageadmin.PackageAdmin.class, new EclipseBundleLookup(bundles));
+		EclipseBundleLookup bundleLookup = new EclipseBundleLookup(systemBundle, bundles);
+		services.add(org.osgi.service.packageadmin.PackageAdmin.class, bundleLookup);
+		services.add(FrameworkWiring.class, bundleLookup);
 
 		//Redirect framework activator requests to the the org.eclipse.osgi bundle to this instance.
 		bundles.add(new SimpleBundle(systemBundle, ECLIPSE_LAUNCHER_SYMBOLIC_NAME, Bundle.ACTIVE));
