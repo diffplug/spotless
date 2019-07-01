@@ -1,6 +1,6 @@
 # spotless-eclipse-base
 
-### Version 3.2.0 - TBD ([artifact]([jcenter](https://bintray.com/diffplug/opensource/spotless-eclipse-base)))
+### Version 3.2.0 - June 30th 2019 ([artifact]([jcenter](https://bintray.com/diffplug/opensource/spotless-eclipse-base)))
 
 * Added support of Eclipse 4.12 framework wiring. ([#413](https://github.com/diffplug/spotless/issues/413))
 
