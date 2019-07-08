@@ -39,7 +39,8 @@ public class ScalaFmtStep {
 
 	private static final String DEFAULT_VERSION = "1.1.0";
 	static final String NAME = "scalafmt";
-	static final String MAVEN_COORDINATE = "com.geirsson:scalafmt-core_2.11:";
+	static final String MAVEN_COORDINATE_PRE_2 = "com.geirsson:scalafmt-core_2.11:";
+	static final String MAVEN_COORDINATE = "org.scalameta:scalafmt-core_2.11:";
 
 	public static FormatterStep create(Provisioner provisioner) {
 		return create(defaultVersion(), provisioner, null);
@@ -64,7 +65,11 @@ public class ScalaFmtStep {
 		final FileSignature configSignature;
 
 		State(String version, Provisioner provisioner, @Nullable File configFile) throws IOException {
-			this.jarState = JarState.from(MAVEN_COORDINATE + version, provisioner);
+			String MAVEN_COORDINATE_FOR_VERSION;
+			if (Integer.parseInt(version.substring(0,1)) < 2) MAVEN_COORDINATE_FOR_VERSION = MAVEN_COORDINATE_PRE_2;
+			else MAVEN_COORDINATE_FOR_VERSION = MAVEN_COORDINATE;
+
+			this.jarState = JarState.from(MAVEN_COORDINATE_FOR_VERSION + version, provisioner);
 			this.configSignature = FileSignature.signAsList(configFile == null ? Collections.emptySet() : Collections.singleton(configFile));
 		}
 
