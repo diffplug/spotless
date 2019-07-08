@@ -23,6 +23,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Collections;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
@@ -37,9 +39,10 @@ public class ScalaFmtStep {
 	// prevent direct instantiation
 	private ScalaFmtStep() {}
 
+	private static final Pattern VERSION_PRE_2_0 = Pattern.compile("[10]\\.(\\d+)\\.\\d+");
 	private static final String DEFAULT_VERSION = "1.1.0";
 	static final String NAME = "scalafmt";
-	static final String MAVEN_COORDINATE_PRE_2 = "com.geirsson:scalafmt-core_2.11:";
+	static final String MAVEN_COORDINATE_PRE_2_0 = "com.geirsson:scalafmt-core_2.11:";
 	static final String MAVEN_COORDINATE = "org.scalameta:scalafmt-core_2.11:";
 
 	public static FormatterStep create(Provisioner provisioner) {
@@ -65,11 +68,15 @@ public class ScalaFmtStep {
 		final FileSignature configSignature;
 
 		State(String version, Provisioner provisioner, @Nullable File configFile) throws IOException {
-			String MAVEN_COORDINATE_FOR_VERSION;
-			if (Integer.parseInt(version.substring(0,1)) < 2) MAVEN_COORDINATE_FOR_VERSION = MAVEN_COORDINATE_PRE_2;
-			else MAVEN_COORDINATE_FOR_VERSION = MAVEN_COORDINATE;
+			String mavenCoordinate;
+			Matcher versionMatcher = VERSION_PRE_2_0.matcher(version);
+			if (versionMatcher.matches()) {
+				mavenCoordinate = MAVEN_COORDINATE_PRE_2_0;
+			} else {
+				mavenCoordinate = MAVEN_COORDINATE;
+			}
 
-			this.jarState = JarState.from(MAVEN_COORDINATE_FOR_VERSION + version, provisioner);
+			this.jarState = JarState.from(mavenCoordinate + version, provisioner);
 			this.configSignature = FileSignature.signAsList(configFile == null ? Collections.emptySet() : Collections.singleton(configFile));
 		}
 
