@@ -45,14 +45,14 @@ public class ScalaFmtStepTest extends ResourceHarness {
 	public void behaviorDefaultConfigVersion_2_0_0() throws Exception {
 		FormatterStep step = ScalaFmtStep.create("2.0.0", TestProvisioner.mavenCentral(), null);
 		StepHarness.forStep(step)
-				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basic.clean");
+				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basicPost2.0.0.clean");
 	}
 
 	@Test
 	public void behaviorCustomConfigVersion_2_0_0() throws Exception {
 		FormatterStep step = ScalaFmtStep.create("2.0.0", TestProvisioner.mavenCentral(), createTestFile("scala/scalafmt/scalafmt.conf"));
 		StepHarness.forStep(step)
-				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basic.cleanWithCustomConf");
+				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basicPost2.0.0.cleanWithCustomConf");
 	}
 
 	@Test
