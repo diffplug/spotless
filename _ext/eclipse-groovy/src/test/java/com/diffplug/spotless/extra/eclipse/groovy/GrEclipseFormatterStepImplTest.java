@@ -31,7 +31,8 @@ public class GrEclipseFormatterStepImplTest {
 	private final static TestData TEST_DATA = TestData.getTestDataOnFileSystem();
 	private final static String PARSER_EXCEPTION = "class Test { void method() {} ";
 	private final static String SCANNER_EXCEPTION = "{";
-	private final static String BOUNDED_WILDCARDS = "foo(Map<String, ? extends  Object> e)\n{\ne.clear();\n}";
+	private final static String BOUNDED_WILDCARDS_UNFORMATTED = "foo(Map<String, ? extends  Object> e)\n{\ne.clear();\n}";
+	private final static String BOUNDED_WILDCARDS_FORMATTED = "foo(Map<String, ? extends  Object> e) {\n\te.clear();\n}";
 
 	@Test
 	public void defaultFormat() throws Throwable {
@@ -45,7 +46,7 @@ public class GrEclipseFormatterStepImplTest {
 		String output = format(TEST_DATA.input("nominal.test"), config -> {
 			config.put(GROOVY_FORMATTER_REMOVE_UNNECESSARY_SEMICOLONS, "true");
 		});
-		assertEquals("Unexpected formatting fro custom configuration.",
+		assertEquals("Unexpected formatting for custom configuration.",
 				TEST_DATA.expected("nominal.test").replace(";", ""), output);
 	}
 
@@ -74,12 +75,13 @@ public class GrEclipseFormatterStepImplTest {
 	/**
 	 * Test the handling bounded wildcards templates
 	 * No exception since Groovy-Eclipse 3.0.0.
+	 * Formatting fixed with Groovy-Eclipse 3.14 (org.codehaus.groovy:groovy[3.+]).
 	 */
 	@Test
 	public void boundedWildCards() throws Throwable {
-		String output = format(BOUNDED_WILDCARDS, config -> {});
-		assertEquals("Groovy formatter does  notformat after bounded wildcards correctly.",
-				BOUNDED_WILDCARDS.replace("\n", " "), output);
+		String output = format(BOUNDED_WILDCARDS_UNFORMATTED, config -> {});
+		assertEquals("Unexpected formatting after bounded wildcards.",
+				BOUNDED_WILDCARDS_FORMATTED, output);
 	}
 
 	@Test
@@ -89,7 +91,6 @@ public class GrEclipseFormatterStepImplTest {
 		};
 		format(PARSER_EXCEPTION, ignoreCompilerProblems);
 		format(SCANNER_EXCEPTION, ignoreCompilerProblems);
-		format(BOUNDED_WILDCARDS, ignoreCompilerProblems);
 		//Test is passed if it does not throw an exception. See issue 237.
 	}
 
