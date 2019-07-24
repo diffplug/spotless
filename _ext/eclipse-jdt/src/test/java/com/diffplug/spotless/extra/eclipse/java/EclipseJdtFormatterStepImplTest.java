@@ -53,13 +53,13 @@ public class EclipseJdtFormatterStepImplTest {
 				FORMATTED, output);
 	}
 
-	/** 
-     * The exception handling has changed sine about JDT 4.10.
-     * Before that version, JDT caught very internal parser error.
-     * The latest behavior is in line with Eclipse-Groovy.
-     * CDT however (still) catches parser exceptions in the formatter step.
-     * Spotless anyhow provides possibilities to change exception behavior.
-     * Furthermore it is assumed that Spotless runs on compile-able code. 
+	/**
+	 * The exception handling has changed sine about JDT 4.10.
+	 * Before that version, JDT caught very internal parser error.
+	 * The latest behavior is in line with Eclipse-Groovy.
+	 * CDT however (still) catches parser exceptions in the formatter step.
+	 * Spotless anyhow provides possibilities to change exception behavior.
+	 * Furthermore it is assumed that Spotless runs on compile-able code.
 	 */
 	@Test(expected = IndexOutOfBoundsException.class)
 	public void invalidFormat() throws Throwable {
