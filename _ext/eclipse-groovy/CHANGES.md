@@ -1,6 +1,6 @@
 # spotless-eclipse-groovy
 
-### Version 3.4.0 - TBD ([artifact]([jcenter](https://bintray.com/diffplug/opensource/spotless-eclipse-groovy)))
+### Version 3.4.0 - July 24th 2019 ([artifact]([jcenter](https://bintray.com/diffplug/opensource/spotless-eclipse-groovy)))
 
 * Switch to Groovy-Eclipse release 3.4.0 for Eclipse 4.12 using Groovy-Indy 3.0.0  ([#TBD](https://github.com/diffplug/spotless/pull/TBD)).
 
