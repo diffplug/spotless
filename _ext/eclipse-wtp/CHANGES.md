@@ -1,6 +1,6 @@
 # spotless-eclipse-wtp
 
-### Version 3.14.0 - TBD ([artifact]([jcenter](https://bintray.com/diffplug/opensource/spotless-eclipse-wtp)))
+### Version 3.14.0 - July 24th 2019 ([artifact]([jcenter](https://bintray.com/diffplug/opensource/spotless-eclipse-wtp)))
 
 * Switch to Eclipse WTP release 3.14.0 for Eclipse 4.12 ([#TBD](https://github.com/diffplug/spotless/pull/TBD)).
 
