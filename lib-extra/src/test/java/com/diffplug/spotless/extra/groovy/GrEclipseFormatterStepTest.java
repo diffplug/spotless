@@ -23,7 +23,7 @@ import com.diffplug.spotless.extra.eclipse.EclipseCommonTests;
 public class GrEclipseFormatterStepTest extends EclipseCommonTests {
 	@Override
 	protected String[] getSupportedVersions() {
-		return new String[]{"2.3.0", "4.6.3", "4.8.0", "4.8.1", "4.10.0"};
+		return new String[]{"2.3.0", "4.6.3", "4.8.0", "4.8.1", "4.10.0", "4.12.0"};
 	}
 
 	@Override
