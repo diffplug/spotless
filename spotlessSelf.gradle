@@ -1,4 +1,8 @@
-buildscript { repositories { jcenter() } }
+buildscript {
+	repositories {
+		jcenter()
+	}
+}
 
 // applied by SelfTest
 plugins {

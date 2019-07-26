@@ -1,5 +1,9 @@
 # spotless-eclipse-cdt
 
+### Version 9.8.0 - July 24th 2019 ([artifact]([jcenter](https://bintray.com/diffplug/opensource/spotless-eclipse-cdt)))
+
+* Switch to Eclipse CDT release 9.8 for Eclipse 4.12 ([#423](https://github.com/diffplug/spotless/pull/423)).
+
 ### Version 9.7.0 - March 31st 2019 ([artifact]([jcenter](https://bintray.com/diffplug/opensource/spotless-eclipse-cdt)))
 
 * Switch to Eclipse CTD release 9.7 for Eclipse 4.11 ([#389](https://github.com/diffplug/spotless/pull/389)).

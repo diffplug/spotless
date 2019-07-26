@@ -76,7 +76,7 @@ public class EclipseWtpFormatterStepTest extends EclipseCommonTests {
 
 	@Override
 	protected String[] getSupportedVersions() {
-		return new String[]{"4.7.3a", "4.7.3b", "4.8.0"};
+		return new String[]{"4.7.3a", "4.7.3b", "4.8.0", "4.12.0"};
 	}
 
 	@Override

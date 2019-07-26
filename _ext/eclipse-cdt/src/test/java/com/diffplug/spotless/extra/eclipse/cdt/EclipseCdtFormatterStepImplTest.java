@@ -46,7 +46,7 @@ public class EclipseCdtFormatterStepImplTest {
 	private final static String ILLEGAL_CHAR = Character.toString((char) 254);
 
 	private final static String FUNCT_PTR_UNFORMATTED = "void  (*getFunc(void))  (int);";
-	private final static String FUNCT_PTR_FORMATTED = "void (*getFunc(void)) (int);";
+	private final static String FUNCT_PTR_FORMATTED = "void (* getFunc(void)) (int);";
 
 	@Test
 	public void defaultFormat() throws Throwable {
