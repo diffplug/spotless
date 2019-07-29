@@ -15,11 +15,11 @@
 ```
 
 - [ ] Test latest spotless on:
-    - Gradle: https://github.com/junit-team/junit-lambda/blob/151d52ffab07881de71a8396a9620f18072c65ec/build.gradle#L86-L101
-        - `../beam/buildSrc/build.gradle`
-        - `./gradlew spotlessApply`
-    - Maven: https://github.com/jrtom/jung/blob/b3a2461b97bb3ab40acc631e21feef74976489e4/pom.xml#L187-L208
-        - `../jung/pom.xml`
+    - Gradle via Apache beam at `v2.13.0`: https://github.com/apache/beam
+        - bump the spotless version in [`buildSrc/build.gradle`](https://github.com/apache/beam/blob/28fad69d43de08e8419d421bd8bfd823a327abb7/buildSrc/build.gradle#L23)
+        - `./gradlew spotlessApply -PdisableSpotlessCheck=true`
+    - Maven via JUNG at `bf7e5b9`: https://github.com/jrtom/jung
+        - bump the spotless version in [`pom.xml`](https://github.com/jrtom/jung/blob/bf7e5b91340e3f703ad1bc5ffe4abc922bd712a4/pom.xml#L82)
         - `mvn spotless:apply`
         - (might take a while for mavencentral to update)
 - [ ] Tag the releases
