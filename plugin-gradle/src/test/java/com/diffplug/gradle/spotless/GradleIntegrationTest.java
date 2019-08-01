@@ -56,7 +56,7 @@ public class GradleIntegrationTest extends ResourceHarness {
 		setFile(".gitattributes").toContent("* text eol=lf");
 	}
 
-	protected final GradleRunner gradleRunner() throws IOException {
+	protected GradleRunner gradleRunner() throws IOException {
 		return GradleRunner.create()
 				// Test against Gradle 2.14.1 in order to maintain backwards compatibility.
 				// https://github.com/diffplug/spotless/issues/161
