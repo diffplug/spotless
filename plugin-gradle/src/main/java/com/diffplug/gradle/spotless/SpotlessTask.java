@@ -157,8 +157,8 @@ public class SpotlessTask extends DefaultTask {
 	/** Returns the name of this format. */
 	String formatName() {
 		String name = getName();
-		if (name.startsWith(SpotlessPlugin.EXTENSION)) {
-			return name.substring(SpotlessPlugin.EXTENSION.length()).toLowerCase(Locale.ROOT);
+		if (name.startsWith(SpotlessTaskConstants.EXTENSION)) {
+			return name.substring(SpotlessTaskConstants.EXTENSION.length()).toLowerCase(Locale.ROOT);
 		} else {
 			return name;
 		}
@@ -170,7 +170,7 @@ public class SpotlessTask extends DefaultTask {
 			throw new GradleException("You must specify 'Iterable<File> toFormat'");
 		}
 		if (!check && !apply) {
-			throw new GradleException("Don't call " + getName() + " directly, call " + getName() + SpotlessPlugin.CHECK + " or " + getName() + SpotlessPlugin.APPLY);
+			throw new GradleException("Don't call " + getName() + " directly, call " + getName() + SpotlessTaskConstants.CHECK + " or " + getName() + SpotlessTaskConstants.APPLY);
 		}
 
 		Predicate<File> shouldInclude;
