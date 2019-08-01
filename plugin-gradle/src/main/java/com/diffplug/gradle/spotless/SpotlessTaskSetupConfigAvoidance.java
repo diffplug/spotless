@@ -24,7 +24,6 @@ import org.gradle.api.tasks.TaskProvider;
 import com.diffplug.spotless.SpotlessCache;
 
 import static com.diffplug.gradle.spotless.SpotlessTaskConstants.*;
-import static com.diffplug.gradle.spotless.SpotlessTaskConstants.FILES_PROPERTY;
 
 final class SpotlessTaskSetupConfigAvoidance implements SpotlessTaskSetup {
 	@Override
@@ -65,17 +64,24 @@ final class SpotlessTaskSetupConfigAvoidance implements SpotlessTaskSetup {
 			rootCheckTaskProvider.configure(rootCheckTask -> rootCheckTask.dependsOn(checkTaskProvider));
 			rootApplyTaskProvider.configure(rootApplyTask -> rootApplyTask.dependsOn(applyTaskProvider));
 			// and they depend on the work task
-			checkTaskProvider.configure(checkTask -> checkTask.dependsOn(spotlessTaskProvider));
-			applyTaskProvider.configure(applyTask -> applyTask.dependsOn(spotlessTaskProvider));
+			checkTaskProvider.configure(checkTask -> {
+				checkTask.dependsOn(spotlessTaskProvider);
+			});
+			applyTaskProvider.configure(applyTask -> {
+				applyTask.dependsOn(spotlessTaskProvider);
+			});
 
-			// when the task graph is ready, we'll configure the spotlessTask appropriately
 			project.getGradle().getTaskGraph().whenReady(graph -> {
-				if (checkTaskProvider.isPresent() && graph.hasTask(checkTaskProvider.get())) {
-					spotlessTaskProvider.configure(SpotlessTask::setCheck);
-				}
-				if (applyTaskProvider.isPresent() && graph.hasTask(applyTaskProvider.get())) {
-					spotlessTaskProvider.configure(SpotlessTask::setApply);
-				}
+				spotlessTaskProvider.configure(spotlessTask -> {
+					for(Task t : graph.getAllTasks()) {
+						if(t.getName().equals(checkTaskProvider.getName())) {
+							spotlessTask.setCheck();
+						}
+						if(t.getName().equals(applyTaskProvider.getName())) {
+							spotlessTask.setApply();
+						}
+  					}
+				});
 			});
 		});
 

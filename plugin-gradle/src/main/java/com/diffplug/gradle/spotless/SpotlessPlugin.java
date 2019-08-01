@@ -19,15 +19,7 @@ import static com.diffplug.gradle.spotless.SpotlessTaskConstants.*;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
-import org.gradle.api.execution.TaskExecutionGraph;
 import org.gradle.api.plugins.BasePlugin;
-import org.gradle.api.plugins.JavaBasePlugin;
-
-import com.diffplug.spotless.SpotlessCache;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import groovy.lang.Closure;
 
 public class SpotlessPlugin implements Plugin<Project> {
 	SpotlessExtension spotlessExtension;
