@@ -15,12 +15,15 @@
  */
 package com.diffplug.spotless;
 
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+
+import javax.annotation.Nullable;
 
 /**
  * This class loader is used to load classes of Spotless features from a search
@@ -82,10 +85,11 @@ class FeatureClassLoader extends URLClassLoader {
 	 *
 	 * @return <code>null</code> on Java 8 (and minor), otherwise <code>PlatformClassLoader</code>
 	 */
-	private static final ClassLoader getParentClassLoader() {
+	@Nullable
+	private static ClassLoader getParentClassLoader() {
 		try {
 			return (ClassLoader) ClassLoader.class.getMethod("getPlatformClassLoader").invoke(null);
-		} catch (final Exception e) {
+		} catch (final NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | SecurityException e) {
 			return null;
 		}
 	}
