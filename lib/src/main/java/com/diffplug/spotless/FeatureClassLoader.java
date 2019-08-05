@@ -15,7 +15,6 @@
  */
 package com.diffplug.spotless;
 
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
@@ -87,9 +86,15 @@ class FeatureClassLoader extends URLClassLoader {
 	 */
 	@Nullable
 	private static ClassLoader getParentClassLoader() {
-		try {
-			return (ClassLoader) ClassLoader.class.getMethod("getPlatformClassLoader").invoke(null);
-		} catch (final NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | SecurityException e) {
+		if (JavaVersion.getMajorVersion() >= 9) {
+			try {
+				return (ClassLoader) ClassLoader.class.getMethod("getPlatformClassLoader").invoke(null);
+			} catch (RuntimeException e) {
+				throw e;
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		} else {
 			return null;
 		}
 	}
