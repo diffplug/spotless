@@ -86,13 +86,12 @@ class FeatureClassLoader extends URLClassLoader {
 	 */
 	@Nullable
 	private static ClassLoader getParentClassLoader() {
-		if (JavaVersion.getMajorVersion() >= 9) {
+		double version = Double.parseDouble(System.getProperty("java.specification.version"));
+		if (version > 1.8) {
 			try {
 				return (ClassLoader) ClassLoader.class.getMethod("getPlatformClassLoader").invoke(null);
-			} catch (RuntimeException e) {
-				throw e;
 			} catch (Exception e) {
-				throw new RuntimeException(e);
+				throw ThrowingEx.asRuntime(e);
 			}
 		} else {
 			return null;
