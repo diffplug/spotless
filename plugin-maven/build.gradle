@@ -72,15 +72,15 @@ dependencies {
 	compileOnly "org.eclipse.aether:aether-api:${VER_ECLIPSE_AETHER}"
 	compileOnly "org.eclipse.aether:aether-util:${VER_ECLIPSE_AETHER}"
 
-	testCompile project(":testlib")
-	testCompile "junit:junit:${VER_JUNIT}"
-	testCompile "org.assertj:assertj-core:${VER_ASSERTJ}"
-	testCompile "org.mockito:mockito-core:${VER_MOCKITO}"
-	testCompile "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
-	testCompile "com.github.spullara.mustache.java:compiler:${VER_MUSTACHE}"
-	testCompile "org.apache.maven:maven-plugin-api:${VER_MAVEN_API}"
-	testCompile "org.eclipse.aether:aether-api:${VER_ECLIPSE_AETHER}"
-	testCompile "org.codehaus.plexus:plexus-resources:${VER_PLEXUS_RESOURCES}"
+	testImplementation project(":testlib")
+	testImplementation "junit:junit:${VER_JUNIT}"
+	testImplementation "org.assertj:assertj-core:${VER_ASSERTJ}"
+	testImplementation "org.mockito:mockito-core:${VER_MOCKITO}"
+	testImplementation "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
+	testImplementation "com.github.spullara.mustache.java:compiler:${VER_MUSTACHE}"
+	testImplementation "org.apache.maven:maven-plugin-api:${VER_MAVEN_API}"
+	testImplementation "org.eclipse.aether:aether-api:${VER_ECLIPSE_AETHER}"
+	testImplementation "org.codehaus.plexus:plexus-resources:${VER_PLEXUS_RESOURCES}"
 }
 
 task cleanMavenProjectDir(type: Delete) { delete MAVEN_PROJECT_DIR }

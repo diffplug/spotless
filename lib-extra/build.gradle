@@ -15,10 +15,10 @@ dependencies {
 	compile "org.codehaus.groovy:groovy-xml:2.4.7"
 
 	// testing
-	testCompile project(':testlib')
-	testCompile "junit:junit:${VER_JUNIT}"
-	testCompile "org.assertj:assertj-core:${VER_ASSERTJ}"
-	testCompile "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
+	testImplementation project(':testlib')
+	testImplementation "junit:junit:${VER_JUNIT}"
+	testImplementation "org.assertj:assertj-core:${VER_ASSERTJ}"
+	testImplementation "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
 }
 
 // we'll hold the core lib to a high standard

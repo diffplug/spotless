@@ -18,10 +18,10 @@ dependencies {
 	compile "com.diffplug.durian:durian-core:${VER_DURIAN}"
 	compile "com.diffplug.durian:durian-io:${VER_DURIAN}"
 
-	testCompile project(':testlib')
-	testCompile "junit:junit:${VER_JUNIT}"
-	testCompile "org.assertj:assertj-core:${VER_ASSERTJ}"
-	testCompile "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
+	testImplementation project(':testlib')
+	testImplementation "junit:junit:${VER_JUNIT}"
+	testImplementation "org.assertj:assertj-core:${VER_ASSERTJ}"
+	testImplementation "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
 }
 
 tasks.eclipse.dependsOn(pluginUnderTestMetadata)
