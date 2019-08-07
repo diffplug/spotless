@@ -1,27 +1,18 @@
-def cred = {
-	if (System.env[it] != null) {
-		return System.env[it]
-	} else if (project.hasProperty(it)) {
-		return project[it]
-	} else {
-		return 'unknown_' + it
-	}
-}
-
-apply plugin: 'org.ajoberstar.github-pages'
-githubPages {
+// https://github.com/ajoberstar/gradle-git-publish
+apply plugin: 'org.ajoberstar.git-publish'
+gitPublish {
 	repoUri = 'https://github.com/diffplug/spotless'
-	deleteExistingFiles = false
-	pages {
+	branch = 'gh-pages'
+	preserve { include '**/*' }
+	contents {
 		from 'build/javadoc/'
 		into 'javadoc/'
 	}
-	credentials {
-		username = cred('gh_token')
-		password = ''
-	}
+
+	// Credentials
+	// GRGIT_USER environment variable or org.ajoberstar.grgit.auth.username system property.
 }
-tasks.prepareGhPages.dependsOn(":lib:javadoc")
-tasks.prepareGhPages.dependsOn(":lib-extra:javadoc")
-tasks.prepareGhPages.dependsOn(":plugin-gradle:javadoc")
-tasks.prepareGhPages.dependsOn(":plugin-maven:javadoc")
+tasks.gitPublishCopy.dependsOn(":lib:javadoc")
+tasks.gitPublishCopy.dependsOn(":lib-extra:javadoc")
+tasks.gitPublishCopy.dependsOn(":plugin-gradle:javadoc")
+tasks.gitPublishCopy.dependsOn(":plugin-maven:javadoc")
