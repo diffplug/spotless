@@ -173,7 +173,7 @@ task runMavenBuild(type: Exec, dependsOn: [
 	commandLine mvnw("clean install -B -Dmaven.repo.local=${LOCAL_MAVEN_REPO_DIR}")
 }
 
-jar.deleteAllActions()
+jar.setActions Arrays.asList()
 jar.dependsOn(runMavenBuild)
 jar.doLast {
 	Files.copy(
