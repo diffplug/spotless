@@ -3,7 +3,7 @@ buildscript {
 	dependencies { classpath "com.github.spullara.mustache.java:compiler:${VER_MUSTACHE}" }
 }
 plugins {
-	id 'cz.malohlava' version '1.0.3' // https://github.com/mmalohlava/gradle-visteg
+	id 'cz.malohlava.visteg' version '1.0.5' // https://github.com/mmalohlava/gradle-visteg
 }
 
 // to generate taskGraph.pdf
