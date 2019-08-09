@@ -10,5 +10,5 @@ if [ "$TRAVIS_REPO_SLUG" == "diffplug/spotless" ] && [ "$TRAVIS_PULL_REQUEST" ==
 	# Publish the artifacts
 	./gradlew publish publishPlugins -Dgradle.publish.key=$gradle_key -Dgradle.publish.secret=$gradle_secret --build-cache || exit 1
 	# Push the javadoc
-	./gradlew publishGhPages --build-cache || exit 1
+	./gradlew gitPublishPush --build-cache || exit 1
 fi

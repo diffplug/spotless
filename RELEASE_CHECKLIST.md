@@ -11,7 +11,7 @@
 ```
   ./gradlew generatePomFileForPluginMavenPublication
   ./gradlew publish publishPlugins
-  ./gradlew publishGhPages
+  ./gradlew gitPublishPush
 ```
 
 - [ ] Test latest spotless on:
