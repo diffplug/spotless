@@ -23,7 +23,7 @@ def javadocInfo = '<h2>' + makeLink("https://github.com/${org}/${name}", "${grou
 		' by ' + makeLink('https://www.diffplug.com', 'DiffPlug') + '</h2>'
 
 String version_str = ext.version.endsWith('-SNAPSHOT') ? 'snapshot' : ext.version
-apply plugin: 'ch.raffael.pegdown-doclet'
+apply plugin: 'org.jdrupes.mdoclet'
 javadoc {
 	// Where it's possible to name parameters and methods clearly enough
 	// that javadoc is not necessary, why make the code bigger?

@@ -9,7 +9,7 @@ buildscript {
 		classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:${VER_BINTRAY}"
 		classpath "com.gradle.publish:plugin-publish-plugin:${VER_PLUGIN_PUBLISH}"
 		classpath "org.ajoberstar:gradle-git-publish:${VER_GRADLE_GIT}"
-		classpath "ch.raffael.pegdown-doclet:pegdown-doclet:${VER_PEGDOWN_DOCLET}"
+		classpath "gradle.plugin.org.jdrupes.mdoclet:gradle-plugin:${VER_MDOCLET}"
 		classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:${VER_SPOTBUGS_PLUGIN}"
 		classpath "com.google.guava:guava:27.1-jre" // Force newer version for spotbugs
 		classpath "com.gradle:build-scan-plugin:${VER_BUILDSCAN_PLUGIN}"
