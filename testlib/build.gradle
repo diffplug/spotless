@@ -7,6 +7,7 @@ dependencies {
 	compile "com.diffplug.durian:durian-core:${VER_DURIAN}"
 	compile "com.diffplug.durian:durian-io:${VER_DURIAN}"
 	compile "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
+	compile "com.diffplug.durian:durian-collect:${VER_DURIAN}"
 	compile "junit:junit:${VER_JUNIT}"
 	compile "org.assertj:assertj-core:${VER_ASSERTJ}"
 	compile gradleTestKit()

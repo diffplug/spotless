@@ -15,7 +15,7 @@ dependencies {
 	}
 	compile("org.slf4j:slf4j-api:${VER_SLF4J}")
 
-	testCompile("org.slf4j:slf4j-simple:${VER_SLF4J}")
+	testImplementation("org.slf4j:slf4j-simple:${VER_SLF4J}")
 }
 
 jar {

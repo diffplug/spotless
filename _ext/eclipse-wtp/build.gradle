@@ -73,7 +73,7 @@ dependencies {
 	// Required by org.eclipse.wst.xsd.core
 	compile "org.eclipse.xsd:org.eclipse.xsd:${VER_ECLISPE_XSD}"
 
-	testCompile("org.slf4j:slf4j-simple:${VER_SLF4J}")
+	testImplementation("org.slf4j:slf4j-simple:${VER_SLF4J}")
 }
 
 jar {

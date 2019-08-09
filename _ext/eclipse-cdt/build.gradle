@@ -26,7 +26,7 @@ dependencies {
 	// Required to by CCorePlugin calling PositionTrackerManager
 	compile "org.eclipse.platform:org.eclipse.core.filebuffers:${VER_ECLISPE_PLATFORM}"
 	
-	testCompile("org.slf4j:slf4j-simple:${VER_SLF4J}")
+	testImplementation("org.slf4j:slf4j-simple:${VER_SLF4J}")
 }
 
 
