@@ -46,7 +46,7 @@ public class ResourceHarness {
 	 * On OS X, the temp folder is a symlink,
 	 * and some of gradle's stuff breaks symlinks.
 	 * By only accessing it through the {@link #rootFolder()}
-	 * and {@link #newFile()} apis, we can guarantee there
+	 * and {@link #newFile(String)} apis, we can guarantee there
 	 * will be no symlink problems.
 	 */
 	@Rule
