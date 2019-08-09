@@ -1,18 +1,22 @@
+plugins {
+	id 'java-library'
+}
+
 ext.artifactId = project.artifactIdLibExtra
 ext.version = project.versionLib
 apply from: rootProject.file('gradle/java-setup.gradle')
 apply from: rootProject.file('gradle/java-publish.gradle')
 
 dependencies {
-	compile project(':lib')
+	api project(':lib')
 	// misc useful utilities
-	compile "com.diffplug.durian:durian-core:${VER_DURIAN}"
-	compile "com.diffplug.durian:durian-collect:${VER_DURIAN}"
+	implementation "com.diffplug.durian:durian-core:${VER_DURIAN}"
+	implementation "com.diffplug.durian:durian-collect:${VER_DURIAN}"
 	// needed by GitAttributesLineEndings
-	compile "org.eclipse.jgit:org.eclipse.jgit:5.3.2.201906051522-r"
-	compile "com.googlecode.concurrent-trees:concurrent-trees:2.6.1"
+	implementation "org.eclipse.jgit:org.eclipse.jgit:5.3.2.201906051522-r"
+	implementation "com.googlecode.concurrent-trees:concurrent-trees:2.6.1"
 	// used for xml parsing in EclipseFormatter
-	compile "org.codehaus.groovy:groovy-xml:2.4.7"
+	implementation "org.codehaus.groovy:groovy-xml:2.4.7"
 
 	// testing
 	testImplementation project(':testlib')
