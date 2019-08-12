@@ -6,7 +6,6 @@ buildscript {
 	}
 	dependencies {
 		classpath "org.ajoberstar:gradle-git-publish:${VER_GRADLE_GIT}"
-		classpath "gradle.plugin.org.jdrupes.mdoclet:gradle-plugin:${VER_MDOCLET}"
 		classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:${VER_SPOTBUGS_PLUGIN}"
 		classpath "com.google.guava:guava:27.1-jre" // Force newer version for spotbugs
 		classpath "com.gradle:build-scan-plugin:${VER_BUILDSCAN_PLUGIN}"
@@ -21,7 +20,9 @@ plugins {
 	// https://plugins.gradle.org/plugin/com.gradle.plugin-publish
 	id 'com.gradle.plugin-publish' version '0.10.1' apply false
 	// https://github.com/bintray/gradle-bintray-plugin/releases
-	id "com.jfrog.bintray" version '1.8.4' apply false
+	id 'com.jfrog.bintray' version '1.8.4' apply false
+	// https://github.com/mnlipp/jdrupes-mdoclet/releases
+	id 'org.jdrupes.mdoclet' version '1.0.5' apply false
 }
 
 apply plugin: 'com.gradle.build-scan'
