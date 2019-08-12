@@ -5,7 +5,6 @@ buildscript {
 		}
 	}
 	dependencies {
-		classpath "org.ajoberstar:gradle-git-publish:${VER_GRADLE_GIT}"
 		classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:${VER_SPOTBUGS_PLUGIN}"
 		classpath "com.google.guava:guava:27.1-jre" // Force newer version for spotbugs
 	}
@@ -24,6 +23,8 @@ plugins {
 	id 'com.jfrog.bintray' version '1.8.4' apply false
 	// https://github.com/mnlipp/jdrupes-mdoclet/releases
 	id 'org.jdrupes.mdoclet' version '1.0.5' apply false
+	// https://github.com/ajoberstar/gradle-git-publish/releases
+	id 'org.ajoberstar.git-publish' version '2.1.1' apply false
 }
 
 buildScan {
