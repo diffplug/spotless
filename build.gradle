@@ -16,6 +16,11 @@ buildscript {
 	}
 }
 
+plugins {
+	// dependencyUpdates https://github.com/ben-manes/gradle-versions-plugin/releases
+	id 'com.github.ben-manes.versions' version '0.22.0'
+}
+
 apply plugin: 'com.gradle.build-scan'
 buildScan {
 	termsOfServiceUrl = 'https://gradle.com/terms-of-service'
