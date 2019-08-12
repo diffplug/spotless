@@ -1,3 +1,6 @@
+plugins {
+	id 'java-library'
+}
 ext.artifactId = project.artifactIdLib
 ext.version = project.versionLib
 apply from: rootProject.file('gradle/java-setup.gradle')

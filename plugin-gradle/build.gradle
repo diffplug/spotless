@@ -3,20 +3,22 @@ ext.version = project.versionGradle
 apply from: rootProject.file('gradle/java-setup.gradle')
 apply from: rootProject.file('gradle/java-publish.gradle')
 
+apply plugin: 'java-library'
 apply plugin: 'com.gradle.plugin-publish'
 apply plugin: 'java-gradle-plugin'
 
 dependencies {
 	if (!project.versionGradle.endsWith('-SNAPSHOT') && project.versionLib.endsWith('-SNAPSHOT')) {
 		// gradle = release, lib = snapshot, therefore gradle should depend on the last stable lib
-		compile "com.diffplug.spotless:spotless-lib:${project.stableLib}"
-		compile "com.diffplug.spotless:spotless-lib-extra:${project.stableLib}"
+		api "com.diffplug.spotless:spotless-lib:${project.stableLib}"
+		api "com.diffplug.spotless:spotless-lib-extra:${project.stableLib}"
 	} else {
-		compile project(':lib')
-		compile project(':lib-extra')
+		api project(':lib')
+		api project(':lib-extra')
 	}
-	compile "com.diffplug.durian:durian-core:${VER_DURIAN}"
-	compile "com.diffplug.durian:durian-io:${VER_DURIAN}"
+	implementation "com.diffplug.durian:durian-core:${VER_DURIAN}"
+	implementation "com.diffplug.durian:durian-io:${VER_DURIAN}"
+	implementation "com.diffplug.durian:durian-collect:${VER_DURIAN}"
 
 	testImplementation project(':testlib')
 	testImplementation "junit:junit:${VER_JUNIT}"
