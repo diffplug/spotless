@@ -5,7 +5,6 @@ buildscript {
 		}
 	}
 	dependencies {
-		classpath "com.diffplug.gradle:goomph:${VER_GOOMPH}"
 		classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:${VER_BINTRAY}"
 		classpath "com.gradle.publish:plugin-publish-plugin:${VER_PLUGIN_PUBLISH}"
 		classpath "org.ajoberstar:gradle-git-publish:${VER_GRADLE_GIT}"
@@ -19,6 +18,8 @@ buildscript {
 plugins {
 	// dependencyUpdates https://github.com/ben-manes/gradle-versions-plugin/releases
 	id 'com.github.ben-manes.versions' version '0.22.0'
+	// https://github.com/diffplug/goomph/blob/master/CHANGES.md
+	id 'com.diffplug.gradle.eclipse.resourcefilters' version '3.18.0'
 }
 
 apply plugin: 'com.gradle.build-scan'
