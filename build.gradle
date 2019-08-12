@@ -6,7 +6,6 @@ buildscript {
 	}
 	dependencies {
 		classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:${VER_BINTRAY}"
-		classpath "com.gradle.publish:plugin-publish-plugin:${VER_PLUGIN_PUBLISH}"
 		classpath "org.ajoberstar:gradle-git-publish:${VER_GRADLE_GIT}"
 		classpath "gradle.plugin.org.jdrupes.mdoclet:gradle-plugin:${VER_MDOCLET}"
 		classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:${VER_SPOTBUGS_PLUGIN}"
@@ -20,6 +19,8 @@ plugins {
 	id 'com.github.ben-manes.versions' version '0.22.0'
 	// https://github.com/diffplug/goomph/blob/master/CHANGES.md
 	id 'com.diffplug.gradle.eclipse.resourcefilters' version '3.18.0'
+	// https://plugins.gradle.org/plugin/com.gradle.plugin-publish
+	id 'com.gradle.plugin-publish' version '0.10.1' apply false
 }
 
 apply plugin: 'com.gradle.build-scan'
