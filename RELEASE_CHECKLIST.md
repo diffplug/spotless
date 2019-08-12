@@ -20,8 +20,8 @@
         - `./gradlew spotlessApply -PdisableSpotlessCheck=true`
     - Maven via JUNG at `bf7e5b9`: https://github.com/jrtom/jung
         - bump the spotless version in [`pom.xml`](https://github.com/jrtom/jung/blob/bf7e5b91340e3f703ad1bc5ffe4abc922bd712a4/pom.xml#L82)
-        - `mvn spotless:apply`
-        - (might take a while for mavencentral to update)
+        - `mvn spotless:apply -U`
+        - might take a while for mavencentral to update, the `-U` flag above ensures that it tries again rather than caching a failure
 - [ ] Tag the releases
 - [ ] Bump `gradle.properties` to next snapshot, run `spotlessApply`, commit any changees
 - [ ] Comment on all released PRs / issues
