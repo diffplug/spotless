@@ -319,7 +319,7 @@ spotless {
     eclipse().configFile 'spotless.eclipseformat.xml'	// XML file dumped out by the Eclipse formatter
     // If you have Eclipse preference or property files, you can use them too.
     // eclipse('4.7.1') to specify a specific version of Eclipse,
-    // available versions are: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/config/eclipse_cdt_formatter
+    // available versions are: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_cdt_formatter
     licenseHeader '// Licensed under Apache'	// License header
     licenseHeaderFile './license.txt'	// License header file
   }
