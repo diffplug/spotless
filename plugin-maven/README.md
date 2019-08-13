@@ -185,7 +185,7 @@ By default, all files matching `src/main/cpp/**/*.<ext>` and `src/test/cpp/**/*.
      </licenseHeader>
      <eclipse>
        <file>${basedir}/eclipse-fmt.xml</file>
-       <!-- Optional, available versions: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/config/eclipse_cdt_formatter -->
+       <!-- Optional, available versions: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_cdt_formatter -->
        <version>4.7.3a</version>
      </eclipse>
   </cpp>
