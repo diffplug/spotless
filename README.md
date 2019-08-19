@@ -83,6 +83,10 @@ extra('wtp.EclipseWtpFormatterStep')             +'{{yes}}       | {{yes}}      
 | Automatic idempotency safeguard               | :+1:       | :white_large_square:       | :white_large_square:  |
 <!---freshmark /matrix -->
 
+*Why are there empty squares?* Many projects get harder to work on as they get bigger. Spotless is easier to work on than ever, and one of the reasons why is that we don't require contributors to "fill the matrix". If you want to [add Bazel support](https://github.com/diffplug/spotless/issues/76), we'd happily accept the PR even if it only supported one formatter. And if you want to add FooFormatter support, we'll happily accept the PR even if it only supports one build system.
+
+Once someone has filled in one square of the formatter/build system matrix, it's easy for interested parties to fill in any empty squares, since you'll now have a working example for every piece needed.
+
 ## Acknowledgements
 
 - Thanks to [Simon Gamma](https://github.com/simschla) for [adding support for npm-based formatters](https://github.com/diffplug/spotless/pull/283), including `prettier` and `tsfmt`.
