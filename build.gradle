@@ -34,3 +34,7 @@ eclipseResourceFilters {
 	exclude().folders().name('plugin-maven')
 	exclude().folders().name('testlib')
 }
+
+static Class<?> spotBugsTaskType() {
+	return com.github.spotbugs.SpotBugsTask
+}

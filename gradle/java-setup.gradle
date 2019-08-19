@@ -45,7 +45,7 @@ spotbugs {
 	omitVisitors = []		// bugs that we want to ignore
 }
 // HTML instead of XML
-tasks.withType(com.github.spotbugs.SpotBugsTask) {
+tasks.withType(spotBugsTaskType()) {
 	reports {
 		xml.enabled = false
 		html.enabled = true
