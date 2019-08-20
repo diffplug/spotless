@@ -119,9 +119,19 @@ public class SpotlessTask extends DefaultTask {
 
 	/** Internal use only. */
 	@InputFiles
+	@Deprecated
+	public Iterable<File> getInternalTargetInput() {
+		return getInternalTarget();
+	}
+
+	/** Internal use only. */
 	@OutputFiles
 	@Deprecated
-	public Iterable<File> getInternalTarget() {
+	public Iterable<File> getInternalTargetOutput() {
+		return getInternalTarget();
+	}
+
+	private Iterable<File> getInternalTarget() {
 		// used to combine the special cache file and the real target
 		return Iterables.concat(ImmutableList.of(getCacheFile()), target);
 	}
