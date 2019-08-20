@@ -5,6 +5,7 @@ env:
   - NODE_VERSION="6.10.2"
 before_install:
   - nvm install $NODE_VERSION
+  - ./.ci/checkGradleChecksum.sh
 install: true
 script:
   - ./.ci/ci.sh
