@@ -34,6 +34,7 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.OutputFiles;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 
@@ -119,7 +120,18 @@ public class SpotlessTask extends DefaultTask {
 	/** Internal use only. */
 	@InputFiles
 	@Deprecated
-	public Iterable<File> getInternalTarget() {
+	public Iterable<File> getInternalTargetInput() {
+		return getInternalTarget();
+	}
+
+	/** Internal use only. */
+	@OutputFiles
+	@Deprecated
+	public Iterable<File> getInternalTargetOutput() {
+		return getInternalTarget();
+	}
+
+	private Iterable<File> getInternalTarget() {
 		// used to combine the special cache file and the real target
 		return Iterables.concat(ImmutableList.of(getCacheFile()), target);
 	}
