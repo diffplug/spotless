@@ -2,6 +2,10 @@
 
 ### Version 3.25.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-plugin-gradle/))
 
+### Version 3.24.2 - August 19th 2019 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.24.1/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.24.1))
+
+* Fixed `Warning deprecated usage found: Using the incremental task API without declaring any outputs has been deprecated.` that started appearing in Gradle 5.5 ([#434](https://github.com/diffplug/spotless/pull/434)).
+
 ### Version 3.24.1 - August 12th 2019 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.24.1/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.24.1))
 
 * Fixes class loading issue with Java 9+ ([#426](https://github.com/diffplug/spotless/pull/426)).
