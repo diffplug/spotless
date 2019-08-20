@@ -337,7 +337,7 @@ You can easily set the line endings of different files using [a `.gitattributes`
 ## File includes and excludes
 
 Spotless uses [Ant style patterns](https://ant.apache.org/manual/dirtasks.html) to define included and excluded files.
-By default, most common compile and test source roots for the supported languages are included. They are `scr/main/java/**/*.java`, `scr/test/java/**/*.java` for Java and `scr/main/scala/**/*.scala`, `scr/main/scala/**/*.sc`, `scr/test/scala/**/*.scala`, `scr/test/scala/**/*.sc` for Scala.
+By default, most common compile and test source roots for the supported languages are included. They are `src/main/java/**/*.java`, `src/test/java/**/*.java` for Java and `src/main/scala/**/*.scala`, `src/main/scala/**/*.sc`, `src/test/scala/**/*.scala`, `src/test/scala/**/*.sc` for Scala.
 Includes can be completely overriden using `<includes>...</includes>` configuration section.
 
 Default excludes only contain output directory (usually `target/`) and various temporary and VCS-related files. Additional excludes can also be configured.
