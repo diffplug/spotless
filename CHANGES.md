@@ -7,6 +7,10 @@ You might be looking for:
 
 ### Version 1.25.0-SNAPSHOT - TBD (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/snapshot/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/snapshot/), [snapshot repo](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/))
 
+* Update jgit from `5.3.2.201906051522-r` to `5.4.2.201908231537-r`. ([#445](https://github.com/diffplug/spotless/pull/445))
+  * Fixes [#410](https://github.com/diffplug/spotless/issues/410) AccessDeniedException in MinGW/ GitBash.
+  * Also fixes occasional [hang on NFS due to filesystem timers](https://github.com/diffplug/spotless/pull/407#issuecomment-514824364).
+
 ### Version 1.24.1 - August 12th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.24.1/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.24.1/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
 * Fixes class loading issue with Java 9+ ([#426](https://github.com/diffplug/spotless/pull/426)).

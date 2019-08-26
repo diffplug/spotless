@@ -2,6 +2,10 @@
 
 ### Version 3.25.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-plugin-gradle/))
 
+* Update jgit from `5.3.2.201906051522-r` to `5.4.2.201908231537-r`. ([#445](https://github.com/diffplug/spotless/pull/445))
+  * Fixes [#410](https://github.com/diffplug/spotless/issues/410) AccessDeniedException in MinGW/GitBash.
+  * Also fixes occasional [hang on NFS due to filesystem timers](https://github.com/diffplug/spotless/pull/407#issuecomment-514824364).
+
 ### Version 3.24.2 - August 19th 2019 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.24.1/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.24.1))
 
 * Fixed `Warning deprecated usage found: Using the incremental task API without declaring any outputs has been deprecated.` that started appearing in Gradle 5.5 ([#434](https://github.com/diffplug/spotless/pull/434)).
