@@ -28,8 +28,7 @@ import org.junit.ComparisonFailure;
 import org.junit.Test;
 
 /** Eclipse JDT wrapper integration tests */
-public class EclipseJdtCleanUpStepImplTest {
-	private static String SOURCE_FILE_PATH = "some .. / \\ ill&formatted/$path";
+public class EclipseJdtOrganizeImportStepImplTest {
 	private static TestData TEST_DATA = null;
 
 	@BeforeClass
@@ -39,14 +38,14 @@ public class EclipseJdtCleanUpStepImplTest {
 
 	@Test
 	public void emptyInput() throws Throwable {
-		cleanUpTest("", "", config -> {});
+		organizeImportTest("", "", config -> {});
 	}
 
 	@Test
 	public void defaultConfiguration() throws Throwable {
 		for (String testFile : Arrays.array("Simple", "Statics", "Wildcards")) {
 			try {
-				cleanUpTest(testFile, config -> {});
+				organizeImportTest(testFile, config -> {});
 			} catch (ComparisonFailure e) {
 				throw new ComparisonFailure(testFile + " - " + e.getMessage(), e.getExpected(), e.getActual());
 			}
@@ -54,40 +53,47 @@ public class EclipseJdtCleanUpStepImplTest {
 	}
 
 	@Test
+	public void defaultPackage() throws Throwable {
+		String input = TEST_DATA.input("Simple").replaceFirst("package .+", "");
+		String expected = TEST_DATA.afterOrganizedImports("Simple").replaceFirst("package .+", "");
+		organizeImportTest(input, expected, config -> {});
+	}
+
+	@Test
 	public void invalidConfiguration() throws Throwable {
 		//Smoke test, no exceptions expected
-		cleanUpTest("", "", config -> {
+		organizeImportTest("", "", config -> {
 			config.put("invalid.key", "some.value");
 		});
-		cleanUpTest("", "", config -> {
+		organizeImportTest("", "", config -> {
 			config.put(JavaCore.COMPILER_SOURCE, "-42");
 		});
-		cleanUpTest("", "", config -> {
+		organizeImportTest("", "", config -> {
 			config.put(JavaCore.COMPILER_SOURCE, "Not an integer");
 		});
 	}
 
 	@Test
-	public void importConfiguration() throws Throwable {
+	public void customConfiguration() throws Throwable {
 		String defaultOrganizedInput = TEST_DATA.input("ImportConfiguration");
-		cleanUpTest(defaultOrganizedInput, defaultOrganizedInput, config -> {});
+		organizeImportTest(defaultOrganizedInput, defaultOrganizedInput, config -> {});
 
 		String customOrganizedOutput = TEST_DATA.afterOrganizedImports("ImportConfiguration");
-		cleanUpTest(defaultOrganizedInput, customOrganizedOutput, config -> {
+		organizeImportTest(defaultOrganizedInput, customOrganizedOutput, config -> {
 			config.put(CodeStyleConfiguration.ORGIMPORTS_IMPORTORDER, "foo;#foo;");
 		});
 	}
 
-	private static void cleanUpTest(final String fileName, final Consumer<Properties> config) throws Exception {
-		cleanUpTest(TEST_DATA.input(fileName), TEST_DATA.afterCleanUp(fileName), config);
+	private static void organizeImportTest(final String fileName, final Consumer<Properties> config) throws Exception {
+		organizeImportTest(TEST_DATA.input(fileName), TEST_DATA.afterOrganizedImports(fileName), config);
 	}
 
-	private static void cleanUpTest(final String input, final String expected, final Consumer<Properties> config) throws Exception {
+	private static void organizeImportTest(final String input, final String expected, final Consumer<Properties> config) throws Exception {
 		Properties properties = new Properties();
 		config.accept(properties);
-		EclipseJdtCleanUpStepImpl formatter = new EclipseJdtCleanUpStepImpl(properties);
-		String output = formatter.format(input, SOURCE_FILE_PATH);
-		assertEquals("Unexpected clean-up result " + TestData.toString(properties),
+		EclipseJdtOrganizeImportStepImpl formatter = new EclipseJdtOrganizeImportStepImpl(properties);
+		String output = formatter.format(input);
+		assertEquals("Unexpected import organization " + TestData.toString(properties),
 				expected, output);
 	}
 }

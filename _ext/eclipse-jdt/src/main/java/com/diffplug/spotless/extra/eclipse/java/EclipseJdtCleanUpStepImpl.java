@@ -15,102 +15,206 @@
  */
 package com.diffplug.spotless.extra.eclipse.java;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
-import org.eclipse.core.internal.runtime.InternalPlatform;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.content.IContentTypeManager;
-import org.eclipse.core.runtime.preferences.DefaultScope;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.manipulation.CodeStyleConfiguration;
-import org.eclipse.jdt.core.manipulation.JavaManipulation;
-import org.eclipse.jdt.core.manipulation.OrganizeImportsOperation;
 import org.eclipse.jdt.core.manipulation.SharedASTProviderCore;
-import org.eclipse.jdt.internal.corext.codemanipulation.CodeGenerationSettingsConstants;
-
-import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework;
+import org.eclipse.jdt.core.refactoring.CompilationUnitChange;
+import org.eclipse.jdt.ui.cleanup.CleanUpContext;
+import org.eclipse.jdt.ui.cleanup.CleanUpRequirements;
+import org.eclipse.jdt.ui.cleanup.ICleanUp;
+import org.eclipse.jdt.ui.cleanup.ICleanUpFix;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
+import org.eclipse.ltk.core.refactoring.RefactoringStatusEntry;
+import org.eclipse.text.edits.TextEdit;
+import org.eclipse.text.edits.UndoEdit;
 
 /** Clean-up step which calls out to the Eclipse JDT clean-up / import sorter. */
-public class EclipseJdtCleanUpStepImpl {
+public class EclipseJdtCleanUpStepImpl extends EclipseJdtCoreManipulation {
 
-	// The JDT UI shall be used for creating the settings.
-	private final static String JDT_UI_PLUGIN_ID = "org.eclipse.jdt.ui";
-	private final IJavaProject jdtConfiguration; //The project stores the JDT clean-up configuration
-	private final EclipseJdtHelper jdtHelper;
+	/**
+	 * In case of Eclipse JDT clean-up problems (warnings + errors)
+	 * the clean-up step is skipped if not problems shall not be ignored.
+	 * <p>
+	 * Value is either 'true' or 'false' ('false' per default)
+	 * </p>
+	 */
+	public static final String IGNORE_CLEAN_UP_PROBLEMS = "ignoreCleanUpProblems";
+
+	private final boolean ignoreCleanUpProblems;
+	private final IJavaProject jdtConfiguration;
+	private final CleanUpFactory cleanUpFactory;
 
 	public EclipseJdtCleanUpStepImpl(Properties settings) throws Exception {
-		if (SpotlessEclipseFramework.setup(
-				core -> {
-					/*
-					 * Indexer needs to exist (but is not used) for JDT clean-up.
-					 * The indexer is not created in headless mode by JDT.
-					 * 'Active' platform state signals non-headless mode ('Resolved' is default state)..
-					 */
-					core.add(new org.eclipse.core.internal.registry.osgi.Activator());
-					
-					core.add(new org.eclipse.core.internal.runtime.PlatformActivator());
-					core.add(new org.eclipse.core.internal.preferences.Activator());
-					core.add(new org.eclipse.core.internal.runtime.Activator());
-				},
-				config -> {
-					config.hideEnvironment();
-					config.disableDebugging();
-					config.ignoreUnsupportedPreferences();
-					config.useTemporaryLocations();
-					config.changeSystemLineSeparator();
+		jdtConfiguration = createProject(settings);
+		cleanUpFactory = new CleanUpFactory(settings);
+		ignoreCleanUpProblems = Boolean.parseBoolean(settings.getProperty(IGNORE_CLEAN_UP_PROBLEMS, "false"));
+	}
 
-					/*
-					 * The default 'no content type specific handling' is insufficient.
-					 * The Java source type needs to be recognized by file extension.
-					 */
-					config.add(IContentTypeManager.class, new JavaContentTypeManager());
+	/** Formats Java raw text. The file-location is used in log messages. */
+	public String format(String raw, String fileLocation) throws Exception {
+		ICompilationUnit compilationUnit = createCompilationUnit(raw, jdtConfiguration);
+		SpotlessRefactoring refactoring = new SpotlessRefactoring(compilationUnit, ignoreCleanUpProblems);
+		RefactoringStatus report = refactoring.apply(cleanUpFactory.create());
+		Arrays.stream(report.getEntries()).map(entry -> new SpotlessStatus(entry, fileLocation)).forEach(status -> logger.log(status));
+		return compilationUnit.getBuffer().getContents();
+	}
 
-					config.useSlf4J(EclipseJdtCleanUpStepImpl.class.getPackage().getName());
-					config.set(InternalPlatform.PROP_OS, "");
-				},
-				plugins -> {
-					plugins.applyDefault();
+	/**
+	 * Spotless version of {@code org.eclipse.jdt.internal.corext.fix.CleanUpRefactoring}.
+	 * <p/>
+	 * Spotless does not request (graphical) user feedback neither does it provide undo-information.
+	 * Since Spotless re-factoring / formatting is applied without any further explanation of the changes (preview, warnings, ...),
+	 * it skips per default steps reporting problems (non-fatal errors or warnings) to ensure that the result is as expected by the user.
+	 * Spotless applies the JDT re-factoring without providing a project scope (dependencies, ...).
+	 * Hence steps can cause (fatal) errors which would pass within an Eclipse project.
+	 * Unlike the Eclipse re-factoring process, Spotless does not abort in case a step
+	 * fails, but just reports and skips the step.
+	 */
+	private static class SpotlessRefactoring {
 
-					//JDT configuration requires an existing project source folder.
-					plugins.add(new org.eclipse.core.internal.filesystem.Activator());
-					plugins.add(new JavaCore());
-				})) {
-			initializeJdtUiDefaultSettings();
+		private final ICompilationUnit source;
+		private final ICompilationUnit[] sources;
+		private final boolean ignoreProblems;
+		private final IProgressMonitor doNotMonitor;
+		private CompilationUnit lazyAst;
+		private boolean astIsFresh;
+
+		SpotlessRefactoring(ICompilationUnit sourceToRefactor, boolean ignoreCleanUpProblems) {
+			source = sourceToRefactor;
+			sources = new ICompilationUnit[]{sourceToRefactor};
+			ignoreProblems = ignoreCleanUpProblems;
+			doNotMonitor = new NullProgressMonitor();
+			lazyAst = null;
+			astIsFresh = false;
 		}
-		jdtHelper = EclipseJdtHelper.getInstance();
-		jdtConfiguration = jdtHelper.createProject(settings);
-	}
 
-	private static void initializeJdtUiDefaultSettings() {
-		//Following values correspond org.eclipse.jdt.ui.PreferenceConstants
-		JavaManipulation.setPreferenceNodeId(JDT_UI_PLUGIN_ID);
-		IEclipsePreferences prefs = DefaultScope.INSTANCE.getNode(JDT_UI_PLUGIN_ID);
-
-		prefs.put(CodeStyleConfiguration.ORGIMPORTS_IMPORTORDER, "java;javax;org;com");
-		prefs.put(CodeStyleConfiguration.ORGIMPORTS_ONDEMANDTHRESHOLD, "99");
-		prefs.put(CodeStyleConfiguration.ORGIMPORTS_STATIC_ONDEMANDTHRESHOLD, "99");
-
-		prefs.put(CodeGenerationSettingsConstants.CODEGEN_KEYWORD_THIS, "false");
-		prefs.put(CodeGenerationSettingsConstants.CODEGEN_USE_OVERRIDE_ANNOTATION, "false");
-		prefs.put(CodeGenerationSettingsConstants.CODEGEN_ADD_COMMENTS, "true");
-		prefs.put(CodeGenerationSettingsConstants.ORGIMPORTS_IGNORELOWERCASE, "true");
-	}
-
-	public String organizeImport(String raw) throws Exception {
-		ICompilationUnit compilationUnit = jdtHelper.createCompilationUnit(raw, jdtConfiguration);
-		CompilationUnit ast = SharedASTProviderCore.getAST(compilationUnit, SharedASTProviderCore.WAIT_YES, null);
-		OrganizeImportsOperation formatOperation = new OrganizeImportsOperation(compilationUnit, ast, true, false, true, null);
-		try {
-			formatOperation.run(null);
-			return compilationUnit.getSource();
-		} catch (OperationCanceledException | CoreException e) {
-			throw new IllegalArgumentException("Invalid java syntax for formatting.", e);
+		RefactoringStatus apply(List<ICleanUp> steps) throws CoreException {
+			RefactoringStatus overallStatus = new RefactoringStatus();
+			for (ICleanUp step : steps) {
+				apply(step, overallStatus);
+			}
+			return overallStatus;
 		}
-	}
 
+		private void apply(ICleanUp step, RefactoringStatus overallStatus) throws CoreException {
+			RefactoringStatus preCheckStatus = step.checkPreConditions(source.getJavaProject(), sources, doNotMonitor);
+			overallStatus.merge(preCheckStatus);
+			if (isStepOk(preCheckStatus)) {
+				CleanUpContext context = createContext(step.getRequirements());
+				ICleanUpFix fix = step.createFix(context);
+				RefactoringStatus postCheckStatus = apply(step, Optional.ofNullable(fix));
+				overallStatus.merge(postCheckStatus);
+			}
+		}
+
+		private RefactoringStatus apply(ICleanUp step, Optional<ICleanUpFix> fix) throws CoreException {
+			RefactoringStatus postCheckStatus = new RefactoringStatus();
+			if (fix.isPresent()) {
+				CompilationUnitChange change = fix.get().createChange(doNotMonitor);
+				TextEdit edit = change.getEdit();
+				if (null != edit) {
+					UndoEdit undo = source.applyTextEdit(edit, doNotMonitor);
+					postCheckStatus = step.checkPostConditions(doNotMonitor);
+					if (isStepOk(postCheckStatus)) {
+						astIsFresh = false;
+					} else {
+						postCheckStatus.addInfo("Undo step " + step.getClass().getSimpleName());
+						if (null != undo) {
+							source.applyTextEdit(undo, doNotMonitor);
+						}
+					}
+				}
+			}
+			return postCheckStatus;
+		}
+
+		private boolean isStepOk(RefactoringStatus stepStatus) {
+			if (ignoreProblems) {
+				return stepStatus.getSeverity() < RefactoringStatus.FATAL;
+			}
+			return stepStatus.getSeverity() < RefactoringStatus.WARNING;
+		}
+
+		private CleanUpContext createContext(CleanUpRequirements requirements) {
+			if ((requirements.requiresAST() && null == lazyAst) ||
+					(requirements.requiresFreshAST() && false == astIsFresh)) {
+				lazyAst = SharedASTProviderCore.getAST(source, SharedASTProviderCore.WAIT_YES, null);
+				astIsFresh = true;
+			}
+			return new CleanUpContext(source, lazyAst);
+		}
+
+	};
+
+	private static class SpotlessStatus implements IStatus {
+		private final IStatus cleanUpStatus;
+		private final String fileLocationAsPluginId;
+
+		SpotlessStatus(RefactoringStatusEntry entry, String fileLocation) {
+			cleanUpStatus = entry.toStatus();
+			fileLocationAsPluginId = fileLocation;
+		}
+
+		@Override
+		public IStatus[] getChildren() {
+			return cleanUpStatus.getChildren();
+		}
+
+		@Override
+		public int getCode() {
+			return cleanUpStatus.getCode();
+		}
+
+		@Override
+		public Throwable getException() {
+			return cleanUpStatus.getException();
+		}
+
+		@Override
+		public String getMessage() {
+			return cleanUpStatus.getMessage();
+		}
+
+		@Override
+		public String getPlugin() {
+			/*
+			 * The plugin ID of the JDT Clean-Up is always a common string.
+			 * Hence it does not add any valuable information for the Spotless user.
+			 * It is replaced by the file location which is hidden from the JDT re-factoring
+			 * process.
+			 */
+			return fileLocationAsPluginId;
+		}
+
+		@Override
+		public int getSeverity() {
+			return cleanUpStatus.getSeverity();
+		}
+
+		@Override
+		public boolean isMultiStatus() {
+			return cleanUpStatus.isMultiStatus();
+		}
+
+		@Override
+		public boolean isOK() {
+			return cleanUpStatus.isOK();
+		}
+
+		@Override
+		public boolean matches(int severityMask) {
+			return cleanUpStatus.matches(severityMask);
+		}
+
+	};
 }

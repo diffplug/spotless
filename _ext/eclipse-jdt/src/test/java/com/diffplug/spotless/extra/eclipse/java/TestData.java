@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Properties;
 
 public class TestData {
 	private static final String EXTENSION_INPUT = ".input";
@@ -83,5 +84,18 @@ public class TestData {
 		} catch (IOException e) {
 			throw new IllegalArgumentException(String.format("Failed to read '%1$s'.", filePath), e);
 		}
+	}
+
+	public static String toString(Properties properties) {
+		StringBuilder result = new StringBuilder();
+		result.append('[');
+		properties.forEach((k, v) -> {
+			result.append(k.toString());
+			result.append('=');
+			result.append(v.toString());
+			result.append(';');
+		});
+		result.append(']');
+		return result.toString();
 	}
 }
