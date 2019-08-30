@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -50,7 +51,8 @@ public class PrettierFormatterStep {
 		return create(defaultDevDependencies(), provisioner, buildDir, npm, prettierConfig);
 	}
 
-	public static FormatterStep create(Map<String, String> devDependencies, Provisioner provisioner, File buildDir, @Nullable File npm, PrettierConfig prettierConfig) {
+	public static FormatterStep create(Map<String, String> devDependencies, Provisioner provisioner, File buildDir, @Nullable File npm,
+			PrettierConfig prettierConfig) {
 		requireNonNull(devDependencies);
 		requireNonNull(provisioner);
 		requireNonNull(buildDir);
@@ -61,10 +63,44 @@ public class PrettierFormatterStep {
 
 	public static class State extends NpmFormatterStepStateBase implements Serializable {
 
+		private static final class FormatterFuncWithFilename implements FormatterFunc {
+			private final NodeJSWrapper nodeJSWrapper;
+			private final V8ObjectWrapper prettier;
+			private final Map<String, Object> optionsToPass;
+
+			private FormatterFuncWithFilename(NodeJSWrapper nodeJSWrapper, V8ObjectWrapper prettier, Map<String, Object> optionsToPass) {
+				this.nodeJSWrapper = nodeJSWrapper;
+				this.prettier = prettier;
+				this.optionsToPass = optionsToPass;
+			}
+
+			@Override
+			public String apply(String input, @Nullable File source) throws Exception {
+
+				HashMap<String, Object> actualOptions = new HashMap<>(optionsToPass);
+
+				if (source != null) {
+					actualOptions.put("filepath", source.getCanonicalPath());
+				}
+
+				try (V8ObjectWrapper prettierConfig = nodeJSWrapper.createNewObject(actualOptions);
+						V8ArrayWrapper formatParams = nodeJSWrapper.createNewArray(input, prettierConfig);) {
+					String result = prettier.executeStringFunction("format", formatParams);
+					return result;
+				}
+			}
+
+			@Override
+			public String apply(String input) throws Exception {
+				return apply(input, null);
+			}
+		}
+
 		private static final long serialVersionUID = -3811104513825329168L;
 		private final PrettierConfig prettierConfig;
 
-		State(String stepName, Map<String, String> devDependencies, Provisioner provisioner, File buildDir, @Nullable File npm, PrettierConfig prettierConfig) throws IOException {
+		State(String stepName, Map<String, String> devDependencies, Provisioner provisioner, File buildDir, @Nullable File npm, PrettierConfig prettierConfig)
+				throws IOException {
 			super(stepName,
 					provisioner,
 					new NpmConfig(
@@ -86,7 +122,7 @@ public class PrettierFormatterStep {
 				final V8ObjectWrapper prettier = nodeJSWrapper.require(nodeModulePath());
 
 				@SuppressWarnings("unchecked")
-				final Map<String, Object>[] resolvedPrettierOptions = (Map<String, Object>[]) new Map[1];
+				final Map<String, Object>[] resolvedPrettierOptions = new Map[1];
 
 				if (this.prettierConfig.getPrettierConfigPath() != null) {
 					final Exception[] toThrow = new Exception[1];
@@ -104,18 +140,17 @@ public class PrettierFormatterStep {
 				} else {
 					resolvedPrettierOptions[0] = this.prettierConfig.getOptions();
 				}
+				Map<String, Object> optionsToPass = resolvedPrettierOptions[0];
 
-				final V8ObjectWrapper prettierConfig = nodeJSWrapper.createNewObject(resolvedPrettierOptions[0]);
+				AutoCloseable closeable = () -> {
+					asList(prettier, nodeJSWrapper).forEach(ReflectiveObjectWrapper::release);
+				};
 
-				return FormatterFunc.Closeable.of(() -> {
-					asList(prettierConfig, prettier, nodeJSWrapper).forEach(ReflectiveObjectWrapper::release);
-				}, input -> {
-					try (V8ArrayWrapper formatParams = nodeJSWrapper.createNewArray(input, prettierConfig)) {
-						String result = prettier.executeStringFunction("format", formatParams);
-						return result;
-					}
-				});
-			} catch (Exception e) {
+				FormatterFunc func = new FormatterFuncWithFilename(nodeJSWrapper, prettier, optionsToPass);
+				return FormatterFunc.Closeable.of(closeable, func);
+			} catch (
+
+			Exception e) {
 				throw ThrowingEx.asRuntime(e);
 			}
 		}
