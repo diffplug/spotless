@@ -188,7 +188,7 @@ spotless {
     greclipse().configFile('greclipse.properties')
   }
   groovyGradle {
-    // same as groovy, but for .gradle (defaults to '*.gradle')
+    // same as groovy, but for .gradle (defaults to '**/*.gradle')
     target '*.gradle', 'additionalScripts/*.gradle'
     greclipse().configFile('greclipse.properties')
   }
@@ -198,8 +198,8 @@ spotless {
 
 ### [Groovy-Eclipse](https://github.com/groovy/groovy-eclipse) formatter
 
-The formatter is based on the Eclipse Java formatter as used by `eclipseFormatFile`. It uses the same configuration parameters plus a few additional ones.
-These parameters can be configured within a single file, like the Java properties file [greclipse.properties](../lib-extra/src/test/resources/groovy/greclipse/format/greclipse.properties) in the previous example. The formatter step can also load the [exported Eclipse properties](../ECLIPSE_SCREENSHOTS.md) and augment it with the `org.codehaus.groovy.eclipse.ui.prefs` from the Eclipse workspace as shown below.
+The Groovy formatter uses some of the Eclipse [Java formatter](#java) configuration parameters in addition to Groovy-Eclipse specific once. All parameters can be configured within a single file, like the Java properties file [greclipse.properties](../lib-extra/src/test/resources/groovy/greclipse/format/greclipse.properties) in the previous example. The formatter step can also load the [exported Eclipse properties](../ECLIPSE_SCREENSHOTS.md) and augment it with the `.metadata/.plugins/org.eclipse.core.runtime/.settings/org.codehaus.groovy.eclipse.ui.prefs` from your Eclipse workspace as shown below.
+
 
 ```gradle
 spotless {
