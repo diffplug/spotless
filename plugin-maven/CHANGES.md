@@ -2,7 +2,7 @@
 
 ### Version 1.25.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-maven-plugin/))
 
-* Fixed deletion of Eclipse based formatters temporary workspaces. ([#447](https://github.com/diffplug/spotless/issues/447))
+* Fixed deletion of Eclipse 4.12 based formatters temporary workspaces. No back-port to older Eclipse formatter versions is planed. ([#447](https://github.com/diffplug/spotless/issues/447))
 
 ### Version 1.24.1 - August 12th 2019 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/1.24.1/), [jcenter](https://bintray.com/diffplug/opensource/spotless-maven-plugin/1.24.1))
 
