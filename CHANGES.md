@@ -7,6 +7,8 @@ You might be looking for:
 
 ### Version 1.25.0-SNAPSHOT - TBD (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/snapshot/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/snapshot/), [snapshot repo](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/))
 
+* Eclipse-based formatters used to leave temporary files around ([#447](https://github.com/diffplug/spotless/issues/447)). This is now fixed, but only for eclipse 4.12+, no back-port to older Eclipse formatter versions is planned. ([#451](https://github.com/diffplug/spotless/issues/451))
+
 ### Version 1.24.1 - August 12th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.24.1/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.24.1/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
 * Fixes class loading issue with Java 9+ ([#426](https://github.com/diffplug/spotless/pull/426)).

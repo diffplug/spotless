@@ -2,6 +2,8 @@
 
 ### Version 1.25.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-maven-plugin/))
 
+* Eclipse-based formatters used to leave temporary files around ([#447](https://github.com/diffplug/spotless/issues/447)). This is now fixed, but only for eclipse 4.12+, no back-port to older Eclipse formatter versions is planned. ([#451](https://github.com/diffplug/spotless/issues/451))
+
 ### Version 1.24.1 - August 12th 2019 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/1.24.1/), [jcenter](https://bintray.com/diffplug/opensource/spotless-maven-plugin/1.24.1))
 
 * Fixes class loading issue with Java 9+ ([#426](https://github.com/diffplug/spotless/pull/426)).
