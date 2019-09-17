@@ -5,6 +5,7 @@
 * Update jgit from `5.3.2.201906051522-r` to `5.4.2.201908231537-r`. ([#445](https://github.com/diffplug/spotless/pull/445))
   * Fixes [#410](https://github.com/diffplug/spotless/issues/410) AccessDeniedException in MinGW/ GitBash.
   * Also fixes occasional [hang on NFS due to filesystem timers](https://github.com/diffplug/spotless/pull/407#issuecomment-514824364).
+* Eclipse-based formatters used to leave temporary files around ([#447](https://github.com/diffplug/spotless/issues/447)). This is now fixed, but only for eclipse 4.12+, no back-port to older Eclipse formatter versions is planned. ([#451](https://github.com/diffplug/spotless/issues/451))
 
 ### Version 1.24.1 - August 12th 2019 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/1.24.1/), [jcenter](https://bintray.com/diffplug/opensource/spotless-maven-plugin/1.24.1))
 
