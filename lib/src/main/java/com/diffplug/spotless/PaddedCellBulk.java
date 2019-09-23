@@ -143,18 +143,18 @@ public final class PaddedCellBulk {
 						Files.write(path, version.getBytes(formatter.getEncoding()));
 					}
 					// dump the type of the misbehavior to console
-					logger.finer("    " + relative + " " + padded.userMessage());
+					logger.fine("    " + relative + " " + padded.userMessage());
+				}
 
-					if (!padded.isResolvable()) {
-						// if it's not resolvable, then there's
-						// no point killing the build over it
-					} else {
-						// if the input is resolvable, we'll use that to try again at
-						// determining if it's clean
-						paddedCellStep.set(problemFile, padded.canonical());
-						if (!paddedFormatter.isClean(problemFile)) {
-							stillFailing.add(problemFile);
-						}
+				if (!padded.isResolvable()) {
+					// if it's not resolvable, then there's
+					// no point killing the build over it
+				} else {
+					// if the input is resolvable, we'll use that to try again at
+					// determining if it's clean
+					paddedCellStep.set(problemFile, padded.canonical());
+					if (!paddedFormatter.isClean(problemFile)) {
+						stillFailing.add(problemFile);
 					}
 				}
 			}

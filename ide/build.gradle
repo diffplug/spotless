@@ -12,6 +12,6 @@ oomphIde {
 
 	thirdParty {
 		minimalistGradleEditor {}
-		tmTerminal {}
+		//tmTerminal {}
 	}
 }

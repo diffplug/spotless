@@ -11,6 +11,12 @@ You might be looking for:
   * Fixes [#410](https://github.com/diffplug/spotless/issues/410) AccessDeniedException in MinGW/ GitBash.
   * Also fixes occasional [hang on NFS due to filesystem timers](https://github.com/diffplug/spotless/pull/407#issuecomment-514824364).
 * Eclipse-based formatters used to leave temporary files around ([#447](https://github.com/diffplug/spotless/issues/447)). This is now fixed, but only for eclipse 4.12+, no back-port to older Eclipse formatter versions is planned. ([#451](https://github.com/diffplug/spotless/issues/451))
+* `PaddedCellBulk` had a bug where badly-formatted files with well-behaving formatters were being:
+    - correctly formatted by "apply"
+    - but incorrectly marked as good by "check"
+    - this led to "check" says all good, but then "apply" still causes format (https://github.com/diffplug/spotless/issues/453)
+    - combined with up-to-date checking, could lead to even more confusing results (https://github.com/diffplug/spotless/issues/338)
+    - only affects the gradle plugin, since that was the only plugin to use this feature
 * Minor change to `TestProvisioner`, which should fix the cache-breaking issues, allowing us to speed-up the CI builds a bit.
 
 ### Version 1.24.1 - August 12th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.24.1/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.24.1/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
