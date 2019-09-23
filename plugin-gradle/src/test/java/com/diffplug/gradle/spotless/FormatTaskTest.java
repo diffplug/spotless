@@ -24,21 +24,21 @@ import java.util.Collections;
 import org.assertj.core.api.Assertions;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
-import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ResourceHarness;
+import com.diffplug.spotless.TestProvisioner;
 
 public class FormatTaskTest extends ResourceHarness {
 	private SpotlessTask checkTask;
 	private SpotlessTask applyTask;
 
 	@Before
-	public void createTask() {
-		Project project = ProjectBuilder.builder().build();
+	public void createTask() throws IOException {
+		Project project = TestProvisioner.gradleProject(rootFolder());
 		checkTask = project.getTasks().create("checkTaskUnderTest", SpotlessTask.class);
 		checkTask.setCheck();
 		applyTask = project.getTasks().create("applyTaskUnderTest", SpotlessTask.class);
