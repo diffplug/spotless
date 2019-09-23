@@ -105,20 +105,23 @@ public class TestProvisioner {
 		} else {
 			cached = new HashMap<>();
 		}
-		return (withTransitives, mavenCoords) -> {
-			Box<Boolean> wasChanged = Box.of(false);
-			ImmutableSet<File> result = cached.computeIfAbsent(ImmutableSet.copyOf(mavenCoords), coords -> {
-				wasChanged.set(true);
-				return ImmutableSet.copyOf(input.get().provisionWithTransitives(withTransitives, coords));
-			});
-			if (wasChanged.get()) {
-				try (ObjectOutputStream outputStream = new ObjectOutputStream(Files.asByteSink(cacheFile).openBufferedStream())) {
-					outputStream.writeObject(cached);
-				} catch (IOException e) {
-					throw Errors.asRuntime(e);
+		return (withTransitives, mavenCoordsRaw) -> {
+			ImmutableSet<String> mavenCoords = ImmutableSet.copyOf(mavenCoordsRaw);
+			synchronized (TestProvisioner.class) {
+				ImmutableSet<File> result = cached.get(mavenCoords);
+				// double-check that depcache pruning hasn't removed them since our cache cached them
+				boolean needsToBeSet = result == null || !result.stream().allMatch(file -> file.exists() && file.isFile() && file.length() > 0);
+				if (needsToBeSet) {
+					result = ImmutableSet.copyOf(input.get().provisionWithTransitives(withTransitives, mavenCoords));
+					cached.put(mavenCoords, result);
+					try (ObjectOutputStream outputStream = new ObjectOutputStream(Files.asByteSink(cacheFile).openBufferedStream())) {
+						outputStream.writeObject(cached);
+					} catch (IOException e) {
+						throw Errors.asRuntime(e);
+					}
 				}
+				return result;
 			}
-			return result;
 		};
 	}
 
