@@ -28,6 +28,7 @@ import javax.annotation.Nullable;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.tasks.util.PatternFilterable;
 
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.FormatterFunc;
@@ -187,9 +188,18 @@ public class FormatExtension {
 			return (FileCollection) target;
 		} else if (target instanceof String ||
 				(target instanceof List && ((List<?>) target).stream().allMatch(o -> o instanceof String))) {
+			File dir = getProject().getProjectDir();
+			PatternFilterable userExact; // exactly the collection that the user specified
+			if (target instanceof String) {
+				userExact = getProject().fileTree(dir).include((String) target);
+			} else {
+				// target can only be a List<String> at this point
+				@SuppressWarnings("unchecked")
+				List<String> targetList = (List<String>) target;
+				userExact = getProject().fileTree(dir).include(targetList);
+			}
 			// since people are likely to do '**/*.md', we want to make sure to exclude folders
 			// they don't want to format which will slow down the operation greatly
-			File dir = getProject().getProjectDir();
 			List<String> excludes = new ArrayList<>();
 			// no git
 			excludes.add(".git");
@@ -202,14 +212,8 @@ public class FormatExtension {
 			for (Project subproject : getProject().getSubprojects()) {
 				relativizeIfSubdir(excludes, dir, subproject.getBuildDir());
 			}
-			if (target instanceof String) {
-				return (FileCollection) getProject().fileTree(dir).include((String) target).exclude(excludes);
-			} else {
-				// target can only be a List<String> at this point
-				@SuppressWarnings("unchecked")
-				List<String> targetList = (List<String>) target;
-				return (FileCollection) getProject().fileTree(dir).include(targetList).exclude(excludes);
-			}
+			userExact = userExact.exclude(excludes);
+			return (FileCollection) userExact;
 		} else {
 			return getProject().files(target);
 		}
