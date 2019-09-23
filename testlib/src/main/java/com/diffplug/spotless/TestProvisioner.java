@@ -40,8 +40,9 @@ import com.diffplug.common.io.Files;
 
 public class TestProvisioner {
 	public static Project gradleProject(File dir) {
+		File userHome = new File(StandardSystemProperty.USER_HOME.value());
 		return ProjectBuilder.builder()
-				.withGradleUserHomeDir(new File(StandardSystemProperty.USER_HOME.value()))
+				.withGradleUserHomeDir(new File(userHome, ".gradle"))
 				.withProjectDir(dir)
 				.build();
 	}
