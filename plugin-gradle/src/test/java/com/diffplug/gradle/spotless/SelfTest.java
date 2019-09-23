@@ -20,13 +20,13 @@ import java.util.function.Consumer;
 
 import org.gradle.api.Project;
 import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
-import org.gradle.testfixtures.ProjectBuilder;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StandardSystemProperty;
+import com.diffplug.spotless.TestProvisioner;
 
 /**
  * If you'd like to step through the full spotless plugin,
@@ -117,7 +117,7 @@ public class SelfTest {
 
 	/** Creates a Project which has had the SpotlessExtension setup. */
 	private static Project createProject(Consumer<SpotlessExtension> test) throws Exception {
-		Project project = ProjectBuilder.builder().withProjectDir(new File("").getAbsoluteFile()).build();
+		Project project = TestProvisioner.gradleProject().withProjectDir(new File("").getAbsoluteFile()).build();
 		// create the spotless plugin
 		SpotlessPlugin plugin = project.getPlugins().apply(SpotlessPlugin.class);
 		// setup the plugin

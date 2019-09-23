@@ -27,13 +27,13 @@ import java.util.regex.Pattern;
 import org.assertj.core.api.Assertions;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
-import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Test;
 
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ResourceHarness;
+import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
 public class DiffMessageFormatterTest extends ResourceHarness {
@@ -42,7 +42,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 	}
 
 	private SpotlessTask create(List<File> files) throws IOException {
-		Project project = ProjectBuilder.builder().withProjectDir(rootFolder()).build();
+		Project project = TestProvisioner.gradleProject().withProjectDir(rootFolder()).build();
 		SpotlessTask task = project.getTasks().create("underTest", SpotlessTask.class);
 		task.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
 		task.setTarget(files);

@@ -23,18 +23,18 @@ import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.gradle.api.Project;
 import org.gradle.api.file.ConfigurableFileTree;
-import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.diffplug.spotless.ResourceHarness;
+import com.diffplug.spotless.TestProvisioner;
 
 public class FileTreeTest extends ResourceHarness {
 	private ConfigurableFileTree fileTree;
 
 	@Before
 	public void fileTree() throws IOException {
-		Project project = ProjectBuilder.builder()
+		Project project = TestProvisioner.gradleProject()
 				.withProjectDir(rootFolder())
 				.build();
 		fileTree = project.fileTree(rootFolder());
