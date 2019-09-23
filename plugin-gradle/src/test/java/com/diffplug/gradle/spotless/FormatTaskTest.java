@@ -37,8 +37,8 @@ public class FormatTaskTest extends ResourceHarness {
 	private SpotlessTask applyTask;
 
 	@Before
-	public void createTask() {
-		Project project = TestProvisioner.gradleProject().build();
+	public void createTask() throws IOException {
+		Project project = TestProvisioner.gradleProject(rootFolder());
 		checkTask = project.getTasks().create("checkTaskUnderTest", SpotlessTask.class);
 		checkTask.setCheck();
 		applyTask = project.getTasks().create("applyTaskUnderTest", SpotlessTask.class);

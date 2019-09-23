@@ -117,7 +117,7 @@ public class SelfTest {
 
 	/** Creates a Project which has had the SpotlessExtension setup. */
 	private static Project createProject(Consumer<SpotlessExtension> test) throws Exception {
-		Project project = TestProvisioner.gradleProject().withProjectDir(new File("").getAbsoluteFile()).build();
+		Project project = TestProvisioner.gradleProject(new File("").getAbsoluteFile());
 		// create the spotless plugin
 		SpotlessPlugin plugin = project.getPlugins().apply(SpotlessPlugin.class);
 		// setup the plugin

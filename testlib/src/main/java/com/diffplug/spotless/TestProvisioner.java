@@ -39,9 +39,11 @@ import com.diffplug.common.collect.ImmutableSet;
 import com.diffplug.common.io.Files;
 
 public class TestProvisioner {
-	public static ProjectBuilder gradleProject() {
+	public static Project gradleProject(File dir) {
 		return ProjectBuilder.builder()
-				.withGradleUserHomeDir(new File(StandardSystemProperty.USER_HOME.value()));
+				.withGradleUserHomeDir(new File(StandardSystemProperty.USER_HOME.value()))
+				.withProjectDir(dir)
+				.build();
 	}
 
 	/**
@@ -55,7 +57,8 @@ public class TestProvisioner {
 	private static Supplier<Provisioner> createLazyWithRepositories(Consumer<RepositoryHandler> repoConfig) {
 		// Running this takes ~3 seconds the first time it is called. Probably because of classloading.
 		return Suppliers.memoize(() -> {
-			Project project = TestProvisioner.gradleProject().build();
+			File tempDir = Files.createTempDir();
+			Project project = TestProvisioner.gradleProject(tempDir);
 			repoConfig.accept(project.getRepositories());
 			return (withTransitives, mavenCoords) -> {
 				Dependency[] deps = mavenCoords.stream()

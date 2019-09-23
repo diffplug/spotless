@@ -34,9 +34,7 @@ public class FileTreeTest extends ResourceHarness {
 
 	@Before
 	public void fileTree() throws IOException {
-		Project project = TestProvisioner.gradleProject()
-				.withProjectDir(rootFolder())
-				.build();
+		Project project = TestProvisioner.gradleProject(rootFolder());
 		fileTree = project.fileTree(rootFolder());
 		fileTree.exclude("userHome"); // somehow we're getting userHome\native\19\windows-amd64\native-platform.dll
 	}

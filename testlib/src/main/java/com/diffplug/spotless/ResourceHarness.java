@@ -39,6 +39,7 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 
+import com.diffplug.common.base.Errors;
 import com.diffplug.common.io.Resources;
 
 public class ResourceHarness {
@@ -77,8 +78,8 @@ public class ResourceHarness {
 	};
 
 	/** Returns the root folder (canonicalized to fix OS X issue) */
-	protected File rootFolder() throws IOException {
-		return folderDontUseDirectly.getRoot().getCanonicalFile();
+	protected File rootFolder() {
+		return Errors.rethrow().get(() -> folderDontUseDirectly.getRoot().getCanonicalFile());
 	}
 
 	/** Returns a new child of the root folder. */

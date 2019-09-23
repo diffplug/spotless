@@ -42,7 +42,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 	}
 
 	private SpotlessTask create(List<File> files) throws IOException {
-		Project project = TestProvisioner.gradleProject().withProjectDir(rootFolder()).build();
+		Project project = TestProvisioner.gradleProject(rootFolder());
 		SpotlessTask task = project.getTasks().create("underTest", SpotlessTask.class);
 		task.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
 		task.setTarget(files);

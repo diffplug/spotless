@@ -44,7 +44,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 	}
 
 	private class Bundle {
-		Project project = TestProvisioner.gradleProject().withProjectDir(rootFolder()).build();
+		Project project = TestProvisioner.gradleProject(rootFolder());
 		File file;
 		SpotlessTask check;
 		SpotlessTask apply;
