@@ -136,7 +136,7 @@ public class FormatExtension {
 	 * Anything else gets passed to getProject().files().
 	 */
 	public void target(Object... targets) {
-		this.target = parseTargets(targets);
+		this.target = parseTargetsIsExclude(targets, false);
 	}
 
 	/**
@@ -150,22 +150,22 @@ public class FormatExtension {
 	 * Anything else gets passed to getProject().files().
 	 */
 	public void targetExclude(Object... targets) {
-		this.targetExclude = parseTargets(targets);
+		this.targetExclude = parseTargetsIsExclude(targets, true);
 	}
 
-	private FileCollection parseTargets(Object[] targets) {
+	private FileCollection parseTargetsIsExclude(Object[] targets, boolean isExclude) {
 		requireElementsNonNull(targets);
 		if (targets.length == 0) {
 			return getProject().files();
 		} else if (targets.length == 1) {
-			return parseTarget(targets[0]);
+			return parseTargetIsExclude(targets[0], isExclude);
 		} else {
 			if (Stream.of(targets).allMatch(o -> o instanceof String)) {
-				return parseTarget(Arrays.asList(targets));
+				return parseTargetIsExclude(Arrays.asList(targets), isExclude);
 			} else {
 				FileCollection union = getProject().files();
 				for (Object target : targets) {
-					union = union.plus(parseTarget(target));
+					union = union.plus(parseTargetIsExclude(target, isExclude));
 				}
 				return union;
 			}
@@ -178,8 +178,11 @@ public class FormatExtension {
 	 * List<String> are treated as the 'includes' arg to fileTree, with project.rootDir as the dir.
 	 * Anything else gets passed to getProject().files().
 	 */
-	@SuppressWarnings("unchecked")
-	protected FileCollection parseTarget(Object target) {
+	protected final FileCollection parseTarget(Object target) {
+		return parseTargetIsExclude(target, false);
+	}
+
+	private final FileCollection parseTargetIsExclude(Object target, boolean isExclude) {
 		if (target instanceof FileCollection) {
 			return (FileCollection) target;
 		} else if (target instanceof String ||
@@ -203,7 +206,9 @@ public class FormatExtension {
 				return (FileCollection) getProject().fileTree(dir).include((String) target).exclude(excludes);
 			} else {
 				// target can only be a List<String> at this point
-				return (FileCollection) getProject().fileTree(dir).include((List<String>) target).exclude(excludes);
+				@SuppressWarnings("unchecked")
+				List<String> targetList = (List<String>) target;
+				return (FileCollection) getProject().fileTree(dir).include(targetList).exclude(excludes);
 			}
 		} else {
 			return getProject().files(target);
