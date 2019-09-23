@@ -33,7 +33,6 @@ import org.gradle.api.artifacts.ResolveException;
 import org.gradle.api.artifacts.dsl.RepositoryHandler;
 import org.gradle.testfixtures.ProjectBuilder;
 
-import com.diffplug.common.base.Box;
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StandardSystemProperty;
 import com.diffplug.common.base.Suppliers;
