@@ -9,14 +9,13 @@ before_install:
 install: true
 script:
   - ./.ci/ci.sh
-# lines commented out below are a temporary workaround for https://github.com/diffplug/spotless/issues/429
 before_cache:
-#  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-#  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
   - rm -fr plugin-maven/build/localMavenRepository/com/diffplug/spotless/
 cache:
   directories:
-#  - $HOME/.gradle/caches/
-#  - $HOME/.gradle/wrapper/
+  - $HOME/.gradle/caches/
+  - $HOME/.gradle/wrapper/
   - $HOME/.m2/
   - plugin-maven/build/localMavenRepository/

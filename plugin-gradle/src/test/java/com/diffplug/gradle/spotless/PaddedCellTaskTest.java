@@ -25,7 +25,6 @@ import java.util.Locale;
 
 import org.assertj.core.api.Assertions;
 import org.gradle.api.Project;
-import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -35,6 +34,7 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ResourceHarness;
+import com.diffplug.spotless.TestProvisioner;
 
 public class PaddedCellTaskTest extends ResourceHarness {
 	private static final boolean IS_WIN = StandardSystemProperty.OS_NAME.value().toLowerCase(Locale.US).contains("win");
@@ -44,7 +44,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 	}
 
 	private class Bundle {
-		Project project = ProjectBuilder.builder().withProjectDir(rootFolder()).build();
+		Project project = TestProvisioner.gradleProject(rootFolder());
 		File file;
 		SpotlessTask check;
 		SpotlessTask apply;

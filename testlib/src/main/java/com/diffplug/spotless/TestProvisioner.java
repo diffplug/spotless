@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -31,7 +33,6 @@ import org.gradle.api.artifacts.ResolveException;
 import org.gradle.api.artifacts.dsl.RepositoryHandler;
 import org.gradle.testfixtures.ProjectBuilder;
 
-import com.diffplug.common.base.Box;
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StandardSystemProperty;
 import com.diffplug.common.base.Suppliers;
@@ -39,6 +40,14 @@ import com.diffplug.common.collect.ImmutableSet;
 import com.diffplug.common.io.Files;
 
 public class TestProvisioner {
+	public static Project gradleProject(File dir) {
+		File userHome = new File(StandardSystemProperty.USER_HOME.value());
+		return ProjectBuilder.builder()
+				.withGradleUserHomeDir(new File(userHome, ".gradle"))
+				.withProjectDir(dir)
+				.build();
+	}
+
 	/**
 	 * Creates a Provisioner for the given repositories.
 	 *
@@ -47,26 +56,35 @@ public class TestProvisioner {
 	 *
 	 * Every call to resolve will take about 1 second, even when all artifacts are resolved.
 	 */
-	private static Supplier<Provisioner> createLazyWithRepositories(Consumer<RepositoryHandler> repoConfig) {
+	private static Provisioner createWithRepositories(Consumer<RepositoryHandler> repoConfig) {
 		// Running this takes ~3 seconds the first time it is called. Probably because of classloading.
-		return Suppliers.memoize(() -> {
-			Project project = ProjectBuilder.builder().build();
-			repoConfig.accept(project.getRepositories());
-			return (withTransitives, mavenCoords) -> {
-				Dependency[] deps = mavenCoords.stream()
-						.map(project.getDependencies()::create)
-						.toArray(Dependency[]::new);
-				Configuration config = project.getConfigurations().detachedConfiguration(deps);
-				config.setTransitive(withTransitives);
-				config.setDescription(mavenCoords.toString());
+		File tempDir = Files.createTempDir();
+		Project project = TestProvisioner.gradleProject(tempDir);
+		repoConfig.accept(project.getRepositories());
+		return (withTransitives, mavenCoords) -> {
+			Dependency[] deps = mavenCoords.stream()
+					.map(project.getDependencies()::create)
+					.toArray(Dependency[]::new);
+			Configuration config = project.getConfigurations().detachedConfiguration(deps);
+			config.setTransitive(withTransitives);
+			config.setDescription(mavenCoords.toString());
+			try {
+				return config.resolve();
+			} catch (ResolveException e) {
+				/* Provide Maven coordinates in exception message instead of static string 'detachedConfiguration' */
+				throw new ResolveException(config.getDescription(), e);
+			} finally {
+				// delete the temp dir
 				try {
-					return config.resolve();
-				} catch (ResolveException e) {
-					/* Provide Maven coordinates in exception message instead of static string 'detachedConfiguration' */
-					throw new ResolveException(config.getDescription(), e);
+					java.nio.file.Files.walk(tempDir.toPath())
+							.sorted(Comparator.reverseOrder())
+							.map(Path::toFile)
+							.forEach(File::delete);
+				} catch (IOException e) {
+					throw Errors.asRuntime(e);
 				}
-			};
-		});
+			}
+		};
 	}
 
 	/** Creates a Provisioner which will cache the result of previous calls. */
@@ -86,20 +104,23 @@ public class TestProvisioner {
 		} else {
 			cached = new HashMap<>();
 		}
-		return (withTransitives, mavenCoords) -> {
-			Box<Boolean> wasChanged = Box.of(false);
-			ImmutableSet<File> result = cached.computeIfAbsent(ImmutableSet.copyOf(mavenCoords), coords -> {
-				wasChanged.set(true);
-				return ImmutableSet.copyOf(input.get().provisionWithTransitives(withTransitives, coords));
-			});
-			if (wasChanged.get()) {
-				try (ObjectOutputStream outputStream = new ObjectOutputStream(Files.asByteSink(cacheFile).openBufferedStream())) {
-					outputStream.writeObject(cached);
-				} catch (IOException e) {
-					throw Errors.asRuntime(e);
+		return (withTransitives, mavenCoordsRaw) -> {
+			ImmutableSet<String> mavenCoords = ImmutableSet.copyOf(mavenCoordsRaw);
+			synchronized (TestProvisioner.class) {
+				ImmutableSet<File> result = cached.get(mavenCoords);
+				// double-check that depcache pruning hasn't removed them since our cache cached them
+				boolean needsToBeSet = result == null || !result.stream().allMatch(file -> file.exists() && file.isFile() && file.length() > 0);
+				if (needsToBeSet) {
+					result = ImmutableSet.copyOf(input.get().provisionWithTransitives(withTransitives, mavenCoords));
+					cached.put(mavenCoords, result);
+					try (ObjectOutputStream outputStream = new ObjectOutputStream(Files.asByteSink(cacheFile).openBufferedStream())) {
+						outputStream.writeObject(cached);
+					} catch (IOException e) {
+						throw Errors.asRuntime(e);
+					}
 				}
+				return result;
 			}
-			return result;
 		};
 	}
 
@@ -109,7 +130,7 @@ public class TestProvisioner {
 	}
 
 	private static final Supplier<Provisioner> jcenter = Suppliers.memoize(() -> {
-		return caching("jcenter", createLazyWithRepositories(repo -> repo.jcenter()));
+		return caching("jcenter", () -> createWithRepositories(repo -> repo.jcenter()));
 	});
 
 	/** Creates a Provisioner for the mavenCentral repo. */
@@ -118,7 +139,7 @@ public class TestProvisioner {
 	}
 
 	private static final Supplier<Provisioner> mavenCentral = Suppliers.memoize(() -> {
-		return caching("mavenCentral", createLazyWithRepositories(repo -> repo.mavenCentral()));
+		return caching("mavenCentral", () -> createWithRepositories(repo -> repo.mavenCentral()));
 	});
 
 	/** Creates a Provisioner for the local maven repo for development purpose. */
@@ -126,14 +147,14 @@ public class TestProvisioner {
 		return mavenLocal.get();
 	}
 
-	private static final Supplier<Provisioner> mavenLocal = createLazyWithRepositories(repo -> repo.mavenLocal());
+	private static final Supplier<Provisioner> mavenLocal = () -> createWithRepositories(repo -> repo.mavenLocal());
 
 	/** Creates a Provisioner for the Sonatype snapshots maven repo for development purpose. */
 	public static Provisioner snapshots() {
 		return snapshots.get();
 	}
 
-	private static final Supplier<Provisioner> snapshots = createLazyWithRepositories(repo -> {
+	private static final Supplier<Provisioner> snapshots = () -> createWithRepositories(repo -> {
 		repo.maven(setup -> {
 			setup.setUrl("https://oss.sonatype.org/content/repositories/snapshots");
 		});
