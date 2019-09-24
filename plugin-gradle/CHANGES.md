@@ -6,13 +6,14 @@
   * Fixes [#410](https://github.com/diffplug/spotless/issues/410) AccessDeniedException in MinGW/GitBash.
   * Also fixes occasional [hang on NFS due to filesystem timers](https://github.com/diffplug/spotless/pull/407#issuecomment-514824364).
 * Eclipse-based formatters used to leave temporary files around ([#447](https://github.com/diffplug/spotless/issues/447)). This is now fixed, but only for eclipse 4.12+, no back-port to older Eclipse formatter versions is planned. ([#451](https://github.com/diffplug/spotless/issues/451))
-* Fixed a bad but simple bug in `paddedCell()` (https://github.com/diffplug/spotless/pull/455)
+* Fixed a bad but simple bug in `paddedCell()` ([#455](https://github.com/diffplug/spotless/pull/455))
     - if a formatter was behaving correctly on a given file (was idempotent)
     - but the file was not properly formatted
     - `spotlessCheck` would improperly say "all good" even though `spotlessApply` would properly change them
     - combined with up-to-date checking, could lead to even more confusing results,
-     (https://github.com/diffplug/spotless/issues/338)
+     ([#338](https://github.com/diffplug/spotless/issues/338))
     - Fixed now!
+* When you specify `targetExclude()`, spotless no longer silently removes `build` directories from the exclusion ([#457](https://github.com/diffplug/spotless/pull/457)).
 
 ### Version 3.24.2 - August 19th 2019 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.24.1/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.24.1))
 

@@ -28,6 +28,7 @@ import javax.annotation.Nullable;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.tasks.util.PatternFilterable;
 
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.FormatterFunc;
@@ -134,9 +135,12 @@ public class FormatExtension {
 	 * Strings are treated as the 'include' arg to fileTree, with project.rootDir as the dir.
 	 * List<String> are treated as the 'includes' arg to fileTree, with project.rootDir as the dir.
 	 * Anything else gets passed to getProject().files().
+	 *
+	 * If you pass any strings that start with "**\/*", this method will automatically filter out
+	 * "build", ".gradle", and ".git" folders.
 	 */
 	public void target(Object... targets) {
-		this.target = parseTargets(targets);
+		this.target = parseTargetsIsExclude(targets, false);
 	}
 
 	/**
@@ -150,22 +154,22 @@ public class FormatExtension {
 	 * Anything else gets passed to getProject().files().
 	 */
 	public void targetExclude(Object... targets) {
-		this.targetExclude = parseTargets(targets);
+		this.targetExclude = parseTargetsIsExclude(targets, true);
 	}
 
-	private FileCollection parseTargets(Object[] targets) {
+	private FileCollection parseTargetsIsExclude(Object[] targets, boolean isExclude) {
 		requireElementsNonNull(targets);
 		if (targets.length == 0) {
 			return getProject().files();
 		} else if (targets.length == 1) {
-			return parseTarget(targets[0]);
+			return parseTargetIsExclude(targets[0], isExclude);
 		} else {
 			if (Stream.of(targets).allMatch(o -> o instanceof String)) {
-				return parseTarget(Arrays.asList(targets));
+				return parseTargetIsExclude(Arrays.asList(targets), isExclude);
 			} else {
 				FileCollection union = getProject().files();
 				for (Object target : targets) {
-					union = union.plus(parseTarget(target));
+					union = union.plus(parseTargetIsExclude(target, isExclude));
 				}
 				return union;
 			}
@@ -178,33 +182,52 @@ public class FormatExtension {
 	 * List<String> are treated as the 'includes' arg to fileTree, with project.rootDir as the dir.
 	 * Anything else gets passed to getProject().files().
 	 */
-	@SuppressWarnings("unchecked")
-	protected FileCollection parseTarget(Object target) {
+	protected final FileCollection parseTarget(Object target) {
+		return parseTargetIsExclude(target, false);
+	}
+
+	private final FileCollection parseTargetIsExclude(Object target, boolean isExclude) {
 		if (target instanceof FileCollection) {
 			return (FileCollection) target;
 		} else if (target instanceof String ||
 				(target instanceof List && ((List<?>) target).stream().allMatch(o -> o instanceof String))) {
-			// since people are likely to do '**/*.md', we want to make sure to exclude folders
-			// they don't want to format which will slow down the operation greatly
 			File dir = getProject().getProjectDir();
-			List<String> excludes = new ArrayList<>();
-			// no git
-			excludes.add(".git");
-			// no .gradle
-			if (getProject() == getProject().getRootProject()) {
-				excludes.add(".gradle");
-			}
-			// no build folders (flatInclude means that subproject might not be subfolders, see https://github.com/diffplug/spotless/issues/121)
-			relativizeIfSubdir(excludes, dir, getProject().getBuildDir());
-			for (Project subproject : getProject().getSubprojects()) {
-				relativizeIfSubdir(excludes, dir, subproject.getBuildDir());
-			}
+			PatternFilterable userExact; // exactly the collection that the user specified
 			if (target instanceof String) {
-				return (FileCollection) getProject().fileTree(dir).include((String) target).exclude(excludes);
+				userExact = getProject().fileTree(dir).include((String) target);
 			} else {
 				// target can only be a List<String> at this point
-				return (FileCollection) getProject().fileTree(dir).include((List<String>) target).exclude(excludes);
+				@SuppressWarnings("unchecked")
+				List<String> targetList = (List<String>) target;
+				userExact = getProject().fileTree(dir).include(targetList);
 			}
+			boolean filterOutGitAndGradle;
+			// since people are likely to do '**/*.md', we want to make sure to exclude folders
+			// they don't want to format which will slow down the operation greatly
+			// but we only want to do that if they are *including* - if they are specifying
+			// what they want to exclude, we shouldn't filter at all
+			if (target instanceof String && !isExclude) {
+				String str = (String) target;
+				filterOutGitAndGradle = str.startsWith("**/*") || str.startsWith("**\\*");
+			} else {
+				filterOutGitAndGradle = false;
+			}
+			if (filterOutGitAndGradle) {
+				List<String> excludes = new ArrayList<>();
+				// no git
+				excludes.add(".git");
+				// no .gradle
+				if (getProject() == getProject().getRootProject()) {
+					excludes.add(".gradle");
+				}
+				// no build folders (flatInclude means that subproject might not be subfolders, see https://github.com/diffplug/spotless/issues/121)
+				relativizeIfSubdir(excludes, dir, getProject().getBuildDir());
+				for (Project subproject : getProject().getSubprojects()) {
+					relativizeIfSubdir(excludes, dir, subproject.getBuildDir());
+				}
+				userExact = userExact.exclude(excludes);
+			}
+			return (FileCollection) userExact;
 		} else {
 			return getProject().files(target);
 		}
