@@ -135,6 +135,9 @@ public class FormatExtension {
 	 * Strings are treated as the 'include' arg to fileTree, with project.rootDir as the dir.
 	 * List<String> are treated as the 'includes' arg to fileTree, with project.rootDir as the dir.
 	 * Anything else gets passed to getProject().files().
+	 *
+	 * If you pass any strings that start with "**\/*", this method will automatically filter out
+	 * "build", ".gradle", and ".git" folders.
 	 */
 	public void target(Object... targets) {
 		this.target = parseTargetsIsExclude(targets, false);
@@ -198,21 +201,32 @@ public class FormatExtension {
 				List<String> targetList = (List<String>) target;
 				userExact = getProject().fileTree(dir).include(targetList);
 			}
+			boolean filterOutGitAndGradle;
 			// since people are likely to do '**/*.md', we want to make sure to exclude folders
 			// they don't want to format which will slow down the operation greatly
-			List<String> excludes = new ArrayList<>();
-			// no git
-			excludes.add(".git");
-			// no .gradle
-			if (getProject() == getProject().getRootProject()) {
-				excludes.add(".gradle");
+			// but we only want to do that if they are *including* - if they are specifying
+			// what they want to exclude, we shouldn't filter at all
+			if (target instanceof String && !isExclude) {
+				String str = (String) target;
+				filterOutGitAndGradle = str.startsWith("**/*") || str.startsWith("**\\*");
+			} else {
+				filterOutGitAndGradle = false;
 			}
-			// no build folders (flatInclude means that subproject might not be subfolders, see https://github.com/diffplug/spotless/issues/121)
-			relativizeIfSubdir(excludes, dir, getProject().getBuildDir());
-			for (Project subproject : getProject().getSubprojects()) {
-				relativizeIfSubdir(excludes, dir, subproject.getBuildDir());
+			if (filterOutGitAndGradle) {
+				List<String> excludes = new ArrayList<>();
+				// no git
+				excludes.add(".git");
+				// no .gradle
+				if (getProject() == getProject().getRootProject()) {
+					excludes.add(".gradle");
+				}
+				// no build folders (flatInclude means that subproject might not be subfolders, see https://github.com/diffplug/spotless/issues/121)
+				relativizeIfSubdir(excludes, dir, getProject().getBuildDir());
+				for (Project subproject : getProject().getSubprojects()) {
+					relativizeIfSubdir(excludes, dir, subproject.getBuildDir());
+				}
+				userExact = userExact.exclude(excludes);
 			}
-			userExact = userExact.exclude(excludes);
 			return (FileCollection) userExact;
 		} else {
 			return getProject().files(target);
