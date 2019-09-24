@@ -31,12 +31,16 @@ public class ScalaFmtStepTest extends ResourceHarness {
 	public void behaviorDefaultConfig() throws Exception {
 		StepHarness.forStep(ScalaFmtStep.create("1.1.0", TestProvisioner.mavenCentral(), null))
 				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basic.clean_1.1.0");
+		StepHarness.forStep(ScalaFmtStep.create("2.0.1", TestProvisioner.mavenCentral(), null))
+				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basic.clean_2.0.1");
 	}
 
 	@Test
 	public void behaviorCustomConfig() throws Exception {
 		StepHarness.forStep(ScalaFmtStep.create("1.1.0", TestProvisioner.mavenCentral(), createTestFile("scala/scalafmt/scalafmt.conf")))
 				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basic.cleanWithCustomConf_1.1.0");
+		StepHarness.forStep(ScalaFmtStep.create("2.0.1", TestProvisioner.mavenCentral(), createTestFile("scala/scalafmt/scalafmt.conf")))
+				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basic.cleanWithCustomConf_2.0.1");
 	}
 
 	@Test
