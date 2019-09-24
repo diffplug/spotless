@@ -7,6 +7,8 @@ You might be looking for:
 
 ### Version 1.25.0-SNAPSHOT - TBD (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/snapshot/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/snapshot/), [snapshot repo](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/))
 
+### Version 1.24.3 - September 23rd 2019 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.24.3/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.24.3/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
+
 * Update jgit from `5.3.2.201906051522-r` to `5.5.0.201909110433-r`. ([#445](https://github.com/diffplug/spotless/pull/445))
   * Fixes [#410](https://github.com/diffplug/spotless/issues/410) AccessDeniedException in MinGW/ GitBash.
   * Also fixes occasional [hang on NFS due to filesystem timers](https://github.com/diffplug/spotless/pull/407#issuecomment-514824364).
@@ -20,11 +22,11 @@ You might be looking for:
 * Minor change to `TestProvisioner`, which should fix the cache-breaking issues, allowing us to speed-up the CI builds a bit.
 * Bumped `scalafmt` default version from `1.1.0` to `2.0.1`, since there are [bugs](https://github.com/diffplug/spotless/issues/454) in the old default ([#458](https://github.com/diffplug/spotless/pull/458)).
 
-### Version 1.24.1 - August 12th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.24.1/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.24.1/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
+### Version 1.24.1 - August 12th 2019 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.24.1/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.24.1/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
 * Fixes class loading issue with Java 9+ ([#426](https://github.com/diffplug/spotless/pull/426)).
 
-### Version 1.24.0 - July 29th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.24.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.24.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
+### Version 1.24.0 - July 29th 2019 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.24.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.24.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
 * Updated default eclipse-wtp from 4.8.0 to 4.12.0 ([#423](https://github.com/diffplug/spotless/pull/423)).
 * Updated default eclipse-groovy from 4.10 to 4.12.0 ([#423](https://github.com/diffplug/spotless/pull/423)).
@@ -32,31 +34,31 @@ You might be looking for:
 * Updated default eclipse-cdt from 4.11.0 to 4.12.0 ([#423](https://github.com/diffplug/spotless/pull/423)).
 * Added new maven coordinates for scalafmt 2.0.0+, maintains backwards compatability ([#415](https://github.com/diffplug/spotless/issues/415))
 
-### Version 1.23.1 - June 17th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.23.1/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.23.1/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
+### Version 1.23.1 - June 17th 2019 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.23.1/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.23.1/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
 * Fixes incorrect M2 cache directory path handling of Eclipse based formatters ([#401](https://github.com/diffplug/spotless/issues/401))
 * Update jgit from `4.9.0.201710071750-r` to `5.3.2.201906051522-r` because gradle project is sometimes broken by `apache httpcomponents` in transitive dependency. ([#407](https://github.com/diffplug/spotless/pull/407))
 
-### Version 1.23.0 - April 24th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.23.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.23.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
+### Version 1.23.0 - April 24th 2019 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.23.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.23.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
 * Updated default ktlint from 0.21.0 to 0.32.0, and Maven coords to com.pinterest ([#394](https://github.com/diffplug/spotless/pull/394))
 
-### Version 1.22.0 - April 15th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.22.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.22.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
+### Version 1.22.0 - April 15th 2019 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.22.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.22.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
 * Updated default eclipse-cdt from 4.7.3a to 4.11.0 ([#390](https://github.com/diffplug/spotless/pull/390)).
 
-### Version 1.21.1 - March 29th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.21.1/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.21.1/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
+### Version 1.21.1 - March 29th 2019 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.21.1/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.21.1/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
 * Fixes incorrect plugin and pom metadata in `1.21.0` ([#388](https://github.com/diffplug/spotless/issues/388)).
 
-### Version 1.21.0 - March 28th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.21.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.21.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
+### Version 1.21.0 - March 28th 2019 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.21.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.21.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
 * We now use a remote build cache to speed up CI builds.  Reduced build time from ~13 minutes to as low as ~3 minutes, dependending on how deep the change is ([#380](https://github.com/diffplug/spotless/pull/380)).
 * Updated default eclipse-wtp from 4.7.3b to 4.8.0 ([#382](https://github.com/diffplug/spotless/pull/382)).
 * Updated default eclipse-groovy from 4.8.1 to 4.10.0 ([#382](https://github.com/diffplug/spotless/pull/382)).
 * Updated default eclipse-jdt from 4.10.0 to 4.11.0 ([#384](https://github.com/diffplug/spotless/pull/384)).
 
-### Version 1.20.0 - March 11th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.20.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.20.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
+### Version 1.20.0 - March 11th 2019 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.20.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.20.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
 * Made npm package versions of [`prettier`](https://prettier.io/) and [`tsfmt`](https://github.com/vvakame/typescript-formatter) (and its internal packages) configurable. ([#363](https://github.com/diffplug/spotless/pull/363))
   * Updated default npm package version of `prettier` from 1.13.4 to 1.16.4
@@ -68,14 +70,14 @@ You might be looking for:
 * Default behavior of XML formatter changed to ignore external URIs ([#369](https://github.com/diffplug/spotless/issues/369)).
   * **WARNING RESOLVED: By default, xml formatter no longer downloads external entities. You can opt-in to resolve external entities by setting resolveExternalURI to true. However, if you do opt-in, be sure that all external entities are referenced over https and not http, or you may be vulnerable to XXE attacks.**
 
-### Version 1.19.0 - March 11th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.19.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.19.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
+### Version 1.19.0 - March 11th 2019 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.19.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.19.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
 **WARNING: xml formatter in this version may be vulnerable to XXE attacks, fixed in 1.20.0 (see [#358](https://github.com/diffplug/spotless/issues/358)).**
 
 * Security fix: Updated groovy, c/c++, and eclipse WTP formatters so that they download their source jars securely using `https` rather than `http` ([#360](https://github.com/diffplug/spotless/issues/360)).
 * Updated default eclipse-jdt from 4.9.0 to 4.10.0 ([#368](https://github.com/diffplug/spotless/pull/368))
 
-### Version 1.18.0 - February 11th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.18.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.18.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
+### Version 1.18.0 - February 11th 2019 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.18.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.18.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
 **WARNING: xml formatter in this version may be vulnerable to XXE attacks, fixed in 1.20.0 (see [#358](https://github.com/diffplug/spotless/issues/358)).**
 
