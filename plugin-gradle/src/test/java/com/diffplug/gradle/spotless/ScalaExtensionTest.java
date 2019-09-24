@@ -36,6 +36,6 @@ public class ScalaExtensionTest extends GradleIntegrationTest {
 		setFile("scalafmt.conf").toResource("scala/scalafmt/scalafmt.conf");
 		setFile("src/main/scala/basic.scala").toResource("scala/scalafmt/basic.dirty");
 		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("src/main/scala/basic.scala").sameAsResource("scala/scalafmt/basic.cleanWithCustomConf");
+		assertFile("src/main/scala/basic.scala").sameAsResource("scala/scalafmt/basic.cleanWithCustomConf_2.0.1");
 	}
 }
