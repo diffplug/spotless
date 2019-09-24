@@ -24,7 +24,7 @@ public class IncludesExcludesTest extends MavenIntegrationTest {
 	private static final String JAVA_FORMATTED = "java/eclipse/JavaCodeFormatted.test";
 	private static final String JAVA_UNFORMATTED = "java/eclipse/JavaCodeUnformatted.test";
 	private static final String SCALA_UNFORMATTED = "scala/scalafmt/basic.dirty";
-	private static final String SCALA_FORMATTED = "scala/scalafmt/basic.clean";
+	private static final String SCALA_FORMATTED = "scala/scalafmt/basic.clean_2.0.1";
 
 	@Test
 	public void testDefaultIncludesJava() throws Exception {

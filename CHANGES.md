@@ -18,6 +18,7 @@ You might be looking for:
     - combined with up-to-date checking, could lead to even more confusing results (https://github.com/diffplug/spotless/issues/338)
     - only affects the gradle plugin, since that was the only plugin to use this feature
 * Minor change to `TestProvisioner`, which should fix the cache-breaking issues, allowing us to speed-up the CI builds a bit.
+* Bumped `scalafmt` default version from `1.1.0` to `2.0.1`, since there are [bugs](https://github.com/diffplug/spotless/issues/454) in the old default ([#458](https://github.com/diffplug/spotless/pull/458)).
 
 ### Version 1.24.1 - August 12th 2018 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.24.1/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.24.1/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 

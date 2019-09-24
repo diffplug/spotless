@@ -14,6 +14,7 @@
      ([#338](https://github.com/diffplug/spotless/issues/338))
     - Fixed now!
 * When you specify `targetExclude()`, spotless no longer silently removes `build` directories from the exclusion ([#457](https://github.com/diffplug/spotless/pull/457)).
+* Bumped `scalafmt` default version from `1.1.0` to `2.0.1`, since there are [bugs](https://github.com/diffplug/spotless/issues/454) in the old default ([#458](https://github.com/diffplug/spotless/pull/458)).
 
 ### Version 3.24.2 - August 19th 2019 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.24.1/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.24.1))
 
