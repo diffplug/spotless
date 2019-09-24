@@ -93,7 +93,7 @@ public class MultiModuleProjectTest extends MavenIntegrationTest {
 		assertFile("two/src/main/java/test1.java").sameAsResource("java/eclipse/JavaCodeFormatted.test");
 		assertFile("two/src/test/java/test2.java").sameAsResource("java/eclipse/JavaCodeFormatted.test");
 
-		assertFile("three/src/main/scala/test1.scala").sameAsResource("scala/scalafmt/basic.cleanWithCustomConf");
-		assertFile("three/src/test/scala/test2.scala").sameAsResource("scala/scalafmt/basic.cleanWithCustomConf");
+		assertFile("three/src/main/scala/test1.scala").sameAsResource("scala/scalafmt/basic.cleanWithCustomConf_2.0.1");
+		assertFile("three/src/test/scala/test2.scala").sameAsResource("scala/scalafmt/basic.cleanWithCustomConf_2.0.1");
 	}
 }
