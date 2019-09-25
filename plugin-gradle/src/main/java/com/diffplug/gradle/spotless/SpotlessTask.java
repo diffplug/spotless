@@ -30,6 +30,7 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import com.diffplug.spotless.annotations.Internal;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Input;
@@ -109,7 +110,7 @@ public class SpotlessTask extends DefaultTask {
 
 	protected Iterable<File> target;
 
-	@Input
+	@Internal
 	public Iterable<File> getTarget() {
 		return target;
 	}
