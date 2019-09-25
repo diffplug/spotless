@@ -109,6 +109,7 @@ public class SpotlessTask extends DefaultTask {
 
 	protected Iterable<File> target;
 
+	@Input
 	public Iterable<File> getTarget() {
 		return target;
 	}
