@@ -19,7 +19,7 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.plugins.BasePlugin;
-import org.gradle.api.plugins.JavaBasePlugin;
+import org.gradle.util.GradleVersion;
 
 import com.diffplug.spotless.SpotlessCache;
 
@@ -55,9 +55,11 @@ public class SpotlessPlugin implements Plugin<Project> {
 			// getTasks() returns a "live" collection, so this works even if the
 			// task doesn't exist at the time this call is made
 			if (spotlessExtension.enforceCheck) {
-				project.getTasks()
-						.matching(task -> task.getName().equals(JavaBasePlugin.CHECK_TASK_NAME))
-						.all(task -> task.dependsOn(spotlessExtension.rootCheckTask));
+				if (GradleVersion.current().compareTo(SpotlessPluginLegacy.CONFIG_AVOIDANCE_INTRODUCED) >= 0) {
+					SpotlessPluginConfigAvoidance.enforceCheck(spotlessExtension, project);
+				} else {
+					SpotlessPluginLegacy.enforceCheck(spotlessExtension, project);
+				}
 			}
 		});
 	}
