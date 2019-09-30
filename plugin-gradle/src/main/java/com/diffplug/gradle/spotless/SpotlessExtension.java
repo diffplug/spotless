@@ -48,6 +48,8 @@ public class SpotlessExtension {
 	private static final String CHECK_DESCRIPTION = "Checks that sourcecode satisfies formatting steps.";
 	private static final String APPLY_DESCRIPTION = "Applies code formatting steps to sourcecode in-place.";
 
+	private static final String FILES_PROPERTY = "spotlessFiles";
+
 	public SpotlessExtension(Project project) {
 		this.project = requireNonNull(project);
 		rootCheckTask = project.task(EXTENSION + CHECK);
@@ -266,6 +268,18 @@ public class SpotlessExtension {
 				}
 				return Closure.DONE;
 			}
+		});
+
+		// set the filePatterns property
+		project.afterEvaluate(unused -> {
+			String filePatterns;
+			if (project.hasProperty(FILES_PROPERTY) && project.property(FILES_PROPERTY) instanceof String) {
+				filePatterns = (String) project.property(FILES_PROPERTY);
+			} else {
+				// needs to be non-null since it is an @Input property of the task
+				filePatterns = "";
+			}
+			spotlessTask.setFilePatterns(filePatterns);
 		});
 
 		// the root tasks depend on the control tasks

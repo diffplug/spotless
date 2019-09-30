@@ -26,8 +26,6 @@ import com.diffplug.spotless.SpotlessCache;
 public class SpotlessPlugin implements Plugin<Project> {
 	SpotlessExtension spotlessExtension;
 
-	private static final String FILES_PROPERTY = "spotlessFiles";
-
 	@Override
 	public void apply(Project project) {
 		// make sure there's a `clean` task
@@ -41,16 +39,6 @@ public class SpotlessPlugin implements Plugin<Project> {
 		clean.doLast(unused -> SpotlessCache.clear());
 
 		project.afterEvaluate(unused -> {
-			// set the filePatterns property
-			String filePatterns;
-			if (project.hasProperty(FILES_PROPERTY) && project.property(FILES_PROPERTY) instanceof String) {
-				filePatterns = (String) project.property(FILES_PROPERTY);
-			} else {
-				// needs to be non-null since it is an @Input property of the task
-				filePatterns = "";
-			}
-			project.getTasks().withType(SpotlessTask.class, task -> task.setFilePatterns(filePatterns));
-
 			// Add our check task as a dependency on the global check task
 			// getTasks() returns a "live" collection, so this works even if the
 			// task doesn't exist at the time this call is made
