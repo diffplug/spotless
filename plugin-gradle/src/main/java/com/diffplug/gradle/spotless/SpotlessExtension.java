@@ -209,7 +209,7 @@ public class SpotlessExtension {
 		configure.execute(value);
 	}
 
-	@SuppressWarnings({"unchecked"})
+	@SuppressWarnings("unchecked")
 	private <T extends FormatExtension> T maybeCreate(String name, Class<T> clazz) {
 		FormatExtension existing = formats.get(name);
 		if (existing != null) {
