@@ -47,6 +47,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.PaddedCell;
 import com.diffplug.spotless.PaddedCellBulk;
+import com.diffplug.spotless.annotations.Internal;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
 public class SpotlessTask extends DefaultTask {
@@ -109,6 +110,7 @@ public class SpotlessTask extends DefaultTask {
 
 	protected Iterable<File> target;
 
+	@Internal
 	public Iterable<File> getTarget() {
 		return target;
 	}
