@@ -34,6 +34,7 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputFiles;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
@@ -47,7 +48,6 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.PaddedCell;
 import com.diffplug.spotless.PaddedCellBulk;
-import com.diffplug.spotless.annotations.Internal;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
 public class SpotlessTask extends DefaultTask {
