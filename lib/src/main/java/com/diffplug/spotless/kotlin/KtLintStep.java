@@ -146,7 +146,7 @@ public class KtLintStep {
 				//
 
 				// grab the Params class
-				Class<?> paramsClass = classLoader.loadClass(pkg + ".ktlint.core.KtLint.Params");
+				Class<?> paramsClass = classLoader.loadClass(pkg + ".ktlint.core.KtLint$Params");
 				// and its format method
 				Constructor<?> constructor = paramsClass.getConstructor(
 					/* fileName, nullable */ String.class,
