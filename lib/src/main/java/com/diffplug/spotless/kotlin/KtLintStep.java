@@ -15,11 +15,6 @@
  */
 package com.diffplug.spotless.kotlin;
 
-import com.diffplug.spotless.FormatterFunc;
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.JarState;
-import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.ThrowingEx;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
@@ -32,6 +27,12 @@ import java.util.Objects;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.JarState;
+import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.ThrowingEx;
 
 /** Wraps up [ktlint](https://github.com/pinterest/ktlint) as a FormatterStep. */
 public class KtLintStep {
@@ -149,28 +150,26 @@ public class KtLintStep {
 				Class<?> paramsClass = classLoader.loadClass(pkg + ".ktlint.core.KtLint$Params");
 				// and its format method
 				Constructor<?> constructor = paramsClass.getConstructor(
-					/* fileName, nullable */ String.class,
-					/* text */ String.class,
-					/* ruleSets */ Iterable.class,
-					/* userData */ Map.class,
-					/* callback */ function2Interface,
-					/* script */ boolean.class,
-					/* editorConfigPath, nullable */ String.class,
-					/* debug */ boolean.class
-				);
+						/* fileName, nullable */ String.class,
+						/* text */ String.class,
+						/* ruleSets */ Iterable.class,
+						/* userData */ Map.class,
+						/* callback */ function2Interface,
+						/* script */ boolean.class,
+						/* editorConfigPath, nullable */ String.class,
+						/* debug */ boolean.class);
 				Method formatterMethod = ktlintClass.getMethod("format", paramsClass);
 				formatterFunc = input -> {
 					try {
 						Object params = constructor.newInstance(
-							/* fileName, nullable */ null,
-							/* text */ input,
-							/* ruleSets */ ruleSets,
-							/* userData */ userData,
-							/* callback */ formatterCallback,
-							/* script */ isScript,
-							/* editorConfigPath, nullable */ null,
-							/* debug */ false
-						);
+								/* fileName, nullable */ null,
+								/* text */ input,
+								/* ruleSets */ ruleSets,
+								/* userData */ userData,
+								/* callback */ formatterCallback,
+								/* script */ isScript,
+								/* editorConfigPath, nullable */ null,
+								/* debug */ false);
 						return (String) formatterMethod.invoke(ktlint, params);
 					} catch (InvocationTargetException e) {
 						throw ThrowingEx.unwrapCause(e);
