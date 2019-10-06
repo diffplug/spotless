@@ -162,7 +162,7 @@ By default, all files matching `src/main/kotlin/**/*.kt` and `src/test/kotlin/**
      <endWithNewLine/>
      <trimTrailingWhitespace/>
      <ktlint>
-       <!-- Optional, available versions: https://github.com/shyiko/ktlint/releases -->
+       <!-- Optional, available versions: https://github.com/pinterest/ktlint/releases -->
        <version>0.14.0</version>
      </ktlint>
   </kotlin>

@@ -215,7 +215,7 @@
 ### Version 3.1.0 - February 27th 2017 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.1.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.1.0))
 
 * Added support for Scala via [scalafmt](https://github.com/olafurpg/scalafmt).
-* Added support for Kotlin via [ktlint](https://github.com/shyiko/ktlint).
+* Added support for Kotlin via [ktlint](https://github.com/pinterest/ktlint).
 * Added `FormatExtension::replaceStep`.
 * `paddedCell()` is no longer required if a misbehaving rule converges.
 * Any errors in a step will now fail the build - previously they were only warned.

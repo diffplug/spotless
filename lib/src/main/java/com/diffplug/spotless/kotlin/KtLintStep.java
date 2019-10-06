@@ -33,7 +33,7 @@ import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx;
 
-/** Wraps up [ktlint](https://github.com/shyiko/ktlint) as a FormatterStep. */
+/** Wraps up [ktlint](https://github.com/pinterest/ktlint) as a FormatterStep. */
 public class KtLintStep {
 	// prevent direct instantiation
 	private KtLintStep() {}

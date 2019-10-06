@@ -83,7 +83,7 @@ Spotless can check and apply formatting to any plain-text file, using simple rul
 * Google's [google-java-format](https://github.com/google/google-java-format)
 * [Groovy Eclipse](#groovy-eclipse)'s groovy code formatter
 * [FreshMark](https://github.com/diffplug/freshmark) (markdown with variables)
-* [ktlint](https://github.com/shyiko/ktlint)
+* [ktlint](https://github.com/pinterest/ktlint)
 * [scalafmt](https://github.com/olafurpg/scalafmt)
 * [DBeaver sql format](https://dbeaver.jkiss.org/)
 * [Prettier: An opinionated code formatter](https://prettier.io)
@@ -252,7 +252,7 @@ spotless {
 
 <a name="ktlint"></a>
 
-## Applying [ktlint](https://github.com/shyiko/ktlint) to Kotlin files
+## Applying [ktlint](https://github.com/pinterest/ktlint) to Kotlin files
 
 ```gradle
 spotless {

@@ -39,7 +39,7 @@ public class KtLintStepTest extends ResourceHarness {
 	}
 
 	@Test
-	public void worksShyiko() throws Exception {
+	public void worksPinterest() throws Exception {
 		// Must use jcenter because `com.andreapivetta.kolor:kolor:0.0.2` isn't available on mavenCentral.
 		// It is a dependency of ktlint.
 		FormatterStep step = KtLintStep.create("0.31.0", TestProvisioner.jcenter());

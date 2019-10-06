@@ -15,19 +15,17 @@
  */
 package com.diffplug.gradle.spotless;
 
-import static com.diffplug.spotless.kotlin.KotlinConstants.LICENSE_HEADER_DELIMITER;
-
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.kotlin.KtLintStep;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
-
 import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.kotlin.KtLintStep;
+import static com.diffplug.spotless.kotlin.KotlinConstants.LICENSE_HEADER_DELIMITER;
 
 public class KotlinExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "kotlin";
@@ -46,7 +44,7 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 		return licenseHeaderFile(licenseHeaderFile, LICENSE_HEADER_DELIMITER);
 	}
 
-	/** Adds the specified version of [ktlint](https://github.com/shyiko/ktlint). */
+	/** Adds the specified version of [ktlint](https://github.com/pinterest/ktlint). */
 	public KotlinFormatExtension ktlint(String version) {
 		Objects.requireNonNull(version);
 		return new KotlinFormatExtension(version, Collections.emptyMap());

@@ -200,7 +200,7 @@ You might be looking for:
 ### Version 1.1.0 - February 27th 2017 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.1.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.1.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
 * Added support for Scala via [scalafmt](https://github.com/olafurpg/scalafmt).
-* Added support for Kotlin via [ktlint](https://github.com/shyiko/ktlint).
+* Added support for Kotlin via [ktlint](https://github.com/pinterest/ktlint).
 * Better error messages for JarState.
 * Improved test harnessing.
 * Formatter now has pluggable exception policies,
