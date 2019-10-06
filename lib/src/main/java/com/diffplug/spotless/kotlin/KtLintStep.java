@@ -143,12 +143,12 @@ public class KtLintStep {
 			if (useParams) {
 				//
 				// In KtLint 0.34+ there is a new "format(params: Params)" function. We create an
-				// instance of the Params class with our configuration and call it here.
+				// instance of the Params class with our configuration and invoke it here.
 				//
 
 				// grab the Params class
 				Class<?> paramsClass = classLoader.loadClass(pkg + ".ktlint.core.KtLint$Params");
-				// and its format method
+				// and its constructor
 				Constructor<?> constructor = paramsClass.getConstructor(
 						/* fileName, nullable */ String.class,
 						/* text */ String.class,
