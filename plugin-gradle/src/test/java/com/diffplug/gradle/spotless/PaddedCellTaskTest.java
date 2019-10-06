@@ -57,6 +57,8 @@ public class PaddedCellTaskTest extends ResourceHarness {
 		}
 
 		private SpotlessTask createCheckTask(String name, FormatterStep step) {
+			// we don't add Check to the end because SpotlessTask normally doesn't have
+			// "Check" or "Apply", and it matters for generating the failure files
 			SpotlessTask task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name), SpotlessTask.class);
 			task.setCheck();
 			task.addStep(step);
@@ -66,7 +68,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 		}
 
 		private SpotlessTask createApplyTask(String name, FormatterStep step) {
-			SpotlessTask task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + SpotlessPlugin.APPLY, SpotlessTask.class);
+			SpotlessTask task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + "Apply", SpotlessTask.class);
 			task.setApply();
 			task.addStep(step);
 			task.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
