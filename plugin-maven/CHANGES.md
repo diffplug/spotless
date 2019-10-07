@@ -2,8 +2,13 @@
 
 ### Version 1.26.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-maven-plugin/))
 
+### Version 1.25.1 - October 7th 2019 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/1.25.1/), [jcenter](https://bintray.com/diffplug/opensource/spotless-maven-plugin/1.25.1))
+
+* Fixed problem which could cause a stale `.jar` to be published. ([#471](https://github.com/diffplug/spotless/pull/471))
+
 ### Version 1.25.0 - October 6th 2019 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/1.25.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-maven-plugin/1.25.0))
 
+* **KNOWN ISSUE:** published jar is the same as `1.24.3`, causes `Invalid plugin descriptor`. ([#470](https://github.com/diffplug/spotless/issues/470))
 * Add support for ktlint `0.34+`, and bump default version from `0.32.0` to `0.34.2`. ([#469](https://github.com/diffplug/spotless/pull/469))
 
 ### Version 1.24.3 - September 23rd 2019 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/1.24.3/), [jcenter](https://bintray.com/diffplug/opensource/spotless-maven-plugin/1.24.3))
