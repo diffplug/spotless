@@ -89,12 +89,12 @@ dependencies {
 
 task cleanMavenProjectDir(type: Delete) { delete MAVEN_PROJECT_DIR }
 
-task copySourceFiles(type: Sync) {
+task copySourceFiles(type: Sync, dependsOn: cleanMavenProjectDir) {
 	from "src/main/java"
 	into "${MAVEN_PROJECT_DIR}/src/main/java"
 }
 
-task copyMvnw(type: Copy) {
+task copyMvnw(type: Copy, dependsOn: copySourceFiles) {
 	from 'src/test/resources'
 	include 'mvnw'
 	include 'mvnw.cmd'
@@ -178,11 +178,12 @@ task runMavenBuild(type: Exec, dependsOn: [
 
 jar.setActions Arrays.asList()
 jar.dependsOn(runMavenBuild)
+File jarIn = file("${MAVEN_PROJECT_DIR}/target/spotless-maven-plugin-${project.versionMaven}.jar")
+File jarOut = jar.archivePath
+jar.inputs.file(jarIn)
+jar.outputs.file(jarOut)
 jar.doLast {
-	Files.copy(
-			file("${MAVEN_PROJECT_DIR}/target/spotless-maven-plugin-${project.versionMaven}.jar").toPath(),
-			jar.archivePath.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING
-			)
+	Files.copy(jarIn.toPath(), jarOut.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING)
 }
 
 // usually test only depends on testClasses, which doesn't run the maven build that we need
