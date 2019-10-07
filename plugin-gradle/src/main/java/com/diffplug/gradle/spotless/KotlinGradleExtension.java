@@ -32,7 +32,7 @@ public class KotlinGradleExtension extends FormatExtension {
 		super(rootExtension);
 	}
 
-	/** Adds the specified version of [ktlint](https://github.com/shyiko/ktlint). */
+	/** Adds the specified version of [ktlint](https://github.com/pinterest/ktlint). */
 	public KotlinFormatExtension ktlint(String version) {
 		Objects.requireNonNull(version, "version");
 		return new KotlinFormatExtension(version, Collections.emptyMap());

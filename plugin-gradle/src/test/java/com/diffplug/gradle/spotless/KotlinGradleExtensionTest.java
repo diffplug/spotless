@@ -74,7 +74,7 @@ public class KotlinGradleExtensionTest extends GradleIntegrationTest {
 	}
 
 	@Test
-	public void integration_shyiko() throws IOException {
+	public void integration_pinterest() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'nebula.kotlin' version '1.0.6'",

@@ -52,8 +52,11 @@ public class KtLintStepTest extends ResourceHarness {
 				});
 	}
 
+	// Regression test to ensure it works on the version it switched to Pinterest (version 0.32.0)
+	// but before 0.34.
+	// https://github.com/diffplug/spotless/issues/419
 	@Test
-	public void worksPinterest() throws Exception {
+	public void worksPinterestAndPre034() throws Exception {
 		// Must use jcenter because `com.andreapivetta.kolor:kolor:0.0.2` isn't available on mavenCentral.
 		// It is a dependency of ktlint.
 		FormatterStep step = KtLintStep.create("0.32.0", TestProvisioner.jcenter());

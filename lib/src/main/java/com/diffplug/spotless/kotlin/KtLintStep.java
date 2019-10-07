@@ -17,6 +17,7 @@ package com.diffplug.spotless.kotlin;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -33,13 +34,13 @@ import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx;
 
-/** Wraps up [ktlint](https://github.com/shyiko/ktlint) as a FormatterStep. */
+/** Wraps up [ktlint](https://github.com/pinterest/ktlint) as a FormatterStep. */
 public class KtLintStep {
 	// prevent direct instantiation
 	private KtLintStep() {}
 
-	private static final Pattern VERSION_PRE_0_32 = Pattern.compile("0\\.(\\d+)\\.\\d+");
-	private static final String DEFAULT_VERSION = "0.32.0";
+	private static final Pattern VERSION_MATCHER = Pattern.compile("0\\.(\\d+)\\.\\d+");
+	private static final String DEFAULT_VERSION = "0.34.2";
 	static final String NAME = "ktlint";
 	static final String PACKAGE_PRE_0_32 = "com.github.shyiko";
 	static final String PACKAGE = "com.pinterest";
@@ -87,18 +88,21 @@ public class KtLintStep {
 		/** The jar that contains the eclipse formatter. */
 		final JarState jarState;
 		private final TreeMap<String, String> userData;
+		private final boolean useParams;
 
 		State(String version, Provisioner provisioner, boolean isScript, Map<String, String> userData) throws IOException {
 			this.userData = new TreeMap<>(userData);
 			String coordinate;
-			Matcher matcher = VERSION_PRE_0_32.matcher(version);
-			if (matcher.matches() && Integer.parseInt(matcher.group(1)) < 32) {
+			Matcher matcher = VERSION_MATCHER.matcher(version);
+			boolean matches = matcher.matches();
+			if (matches && Integer.parseInt(matcher.group(1)) < 32) {
 				coordinate = MAVEN_COORDINATE_PRE_0_32;
 				this.pkg = PACKAGE_PRE_0_32;
 			} else {
 				coordinate = MAVEN_COORDINATE;
 				this.pkg = PACKAGE;
 			}
+			this.useParams = matches && Integer.parseInt(matcher.group(1)) >= 34;
 			this.jarState = JarState.from(coordinate + version, provisioner);
 			this.isScript = isScript;
 		}
@@ -135,18 +139,56 @@ public class KtLintStep {
 			// grab the KtLint singleton
 			Class<?> ktlintClass = classLoader.loadClass(pkg + ".ktlint.core.KtLint");
 			Object ktlint = ktlintClass.getDeclaredField("INSTANCE").get(null);
-			// and its format method
-			String formatterMethodName = isScript ? "formatScript" : "format";
-			Method formatterMethod = ktlintClass.getMethod(formatterMethodName, String.class, Iterable.class, Map.class, function2Interface);
+			FormatterFunc formatterFunc;
+			if (useParams) {
+				//
+				// In KtLint 0.34+ there is a new "format(params: Params)" function. We create an
+				// instance of the Params class with our configuration and invoke it here.
+				//
 
-			return input -> {
-				try {
-					String formatted = (String) formatterMethod.invoke(ktlint, input, ruleSets, userData, formatterCallback);
-					return formatted;
-				} catch (InvocationTargetException e) {
-					throw ThrowingEx.unwrapCause(e);
-				}
-			};
+				// grab the Params class
+				Class<?> paramsClass = classLoader.loadClass(pkg + ".ktlint.core.KtLint$Params");
+				// and its constructor
+				Constructor<?> constructor = paramsClass.getConstructor(
+						/* fileName, nullable */ String.class,
+						/* text */ String.class,
+						/* ruleSets */ Iterable.class,
+						/* userData */ Map.class,
+						/* callback */ function2Interface,
+						/* script */ boolean.class,
+						/* editorConfigPath, nullable */ String.class,
+						/* debug */ boolean.class);
+				Method formatterMethod = ktlintClass.getMethod("format", paramsClass);
+				formatterFunc = input -> {
+					try {
+						Object params = constructor.newInstance(
+								/* fileName, nullable */ null,
+								/* text */ input,
+								/* ruleSets */ ruleSets,
+								/* userData */ userData,
+								/* callback */ formatterCallback,
+								/* script */ isScript,
+								/* editorConfigPath, nullable */ null,
+								/* debug */ false);
+						return (String) formatterMethod.invoke(ktlint, params);
+					} catch (InvocationTargetException e) {
+						throw ThrowingEx.unwrapCause(e);
+					}
+				};
+			} else {
+				// and its format method
+				String formatterMethodName = isScript ? "formatScript" : "format";
+				Method formatterMethod = ktlintClass.getMethod(formatterMethodName, String.class, Iterable.class, Map.class, function2Interface);
+				formatterFunc = input -> {
+					try {
+						return (String) formatterMethod.invoke(ktlint, input, ruleSets, userData, formatterCallback);
+					} catch (InvocationTargetException e) {
+						throw ThrowingEx.unwrapCause(e);
+					}
+				};
+			}
+
+			return formatterFunc;
 		}
 	}
 }
