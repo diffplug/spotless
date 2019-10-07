@@ -1,6 +1,8 @@
 # spotless-plugin-gradle releases
 
-### Version 3.25.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-plugin-gradle/))
+### Version 3.26.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-plugin-gradle/))
+
+### Version 3.25.0 - October 6th 2019 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.25.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.25.0))
 
 * Spotless no longer breaks configuration avoidance for other tasks (specifically the `check` task and all of its dependees) ([#463](https://github.com/diffplug/spotless/pull/463)).
   * Important change: **Formerly, Spotless did not create its tasks until the `afterEvaluate` phase.  Spotless now creates them as soon as the plugin is applied**, and it creates the format-specific tasks as soon as the formats are defined.  There is no performance degradation associated with this change, and it makes configuring Spotless easier.
