@@ -7,6 +7,8 @@ You might be looking for:
 
 ### Version 1.26.0-SNAPSHOT - TBD (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/snapshot/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/snapshot/), [snapshot repo](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/))
 
+* bump default version of KtLint from `0.34.2` to `0.35.0`
+
 ### Version 1.25.0 - October 6th 2019 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.25.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.25.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
 * Add support for ktlint `0.34+`, and bump default version from `0.32.0` to `0.34.2`. ([#469](https://github.com/diffplug/spotless/pull/469))
