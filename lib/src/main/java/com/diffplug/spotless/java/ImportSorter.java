@@ -92,6 +92,9 @@ final class ImportSorter {
 	}
 
 	private static String applyImportsToDocument(final String document, int firstImportLine, int lastImportLine, List<String> strings) {
+		if (document.isEmpty()) {
+			return document;
+		}
 		boolean importsAlreadyAppended = false;
 		Scanner scanner = new Scanner(document);
 		int curentLine = 0;
@@ -114,7 +117,7 @@ final class ImportSorter {
 			}
 		}
 		scanner.close();
-		if (!document.endsWith("\n") && sb.length() > 0) {
+		if (!document.endsWith("\n")) {
 			sb.setLength(sb.length() - 1);
 		}
 		return sb.toString();
