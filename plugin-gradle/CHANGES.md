@@ -1,6 +1,7 @@
 # spotless-plugin-gradle releases
 
 ### Version 3.26.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-plugin-gradle/))
+* Fix project URLs in poms. ([#478](https://github.com/diffplug/spotless/pull/478))
 
 ### Version 3.25.0 - October 6th 2019 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.25.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.25.0))
 
