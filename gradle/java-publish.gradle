@@ -86,11 +86,11 @@ model {
 						resolveStrategy = Closure.DELEGATE_FIRST
 						name project.ext.artifactId
 						description project.description
-						url "https://github.com/${project.org}/${project.name}"
+						url "https://github.com/${project.org}/${rootProject.name}"
 						scm {
-							url "https://github.com/${project.org}/${project.name}"
-							connection "scm:git:git://github.com/${project.org}/${project.name}"
-							developerConnection "scm:git:ssh:git@github.com/${project.org}/${project.name}"
+							url "https://github.com/${project.org}/${rootProject.name}"
+							connection "scm:git:https://github.com/${project.org}/${rootProject.name}.git"
+							developerConnection "scm:git:ssh:git@github.com/${project.org}/${rootProject.name}.git"
 						}
 						licenses {
 							license {

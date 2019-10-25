@@ -6,6 +6,7 @@ You might be looking for:
 - [plugin-maven/CHANGES.md](plugin-maven/CHANGES.md)
 
 ### Version 1.26.0-SNAPSHOT - TBD (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/snapshot/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/snapshot/), [snapshot repo](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/))
+* Fix project URLs in poms. ([#478](https://github.com/diffplug/spotless/pull/478))
 
 * Fix `ImportSorter` crashing with empty files. ([#474](https://github.com/diffplug/spotless/pull/474))
   * Fixes [#305](https://github.com/diffplug/spotless/issues/305) StringIndexOutOfBoundsException for empty Groovy file when performing importOrder
