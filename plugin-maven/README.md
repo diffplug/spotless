@@ -99,7 +99,7 @@ By default, all files matching `src/main/java/**/*.java` and `src/test/java/**/*
      <eclipse>
        <!-- Optional, otherwise Eclipse defaults are used. Eclipse preference or property files are also supported. -->
        <file>${basedir}/eclipse-format.xml</file>
-       <!-- Optional, available versions: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/config/eclipse_jdt_formatter -->
+       <!-- Optional, available versions: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_jdt_formatter -->
        <version>4.7.1</version>
      </eclipse>
      <googleJavaFormat>
