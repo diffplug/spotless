@@ -1,9 +1,5 @@
 # spotless-eclipse-base
 
-### Version 3.3.0 - October 31st 2019 ([artifact]([jcenter](https://bintray.com/diffplug/opensource/spotless-eclipse-base)))
-
-* Added support of Eclipse 4.13 framework. ([#480](https://github.com/diffplug/spotless/issues/480))
-
 ### Version 3.2.1 - September 3rd 2019 ([artifact]([jcenter](https://bintray.com/diffplug/opensource/spotless-eclipse-base)))
 
 * Fixed deletion of temporary workspace. ([#447](https://github.com/diffplug/spotless/issues/447))
