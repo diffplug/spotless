@@ -1,10 +1,11 @@
 # spotless-plugin-maven releases
 
 ### Version 1.26.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-maven-plugin/))
-* Fix project URLs in poms. ([#478](https://github.com/diffplug/spotless/pull/478))
 
+* Fix project URLs in poms. ([#478](https://github.com/diffplug/spotless/pull/478))
 * Fix `ImportSorter` crashing with empty files. ([#474](https://github.com/diffplug/spotless/pull/474))
   * Fixes [#305](https://github.com/diffplug/spotless/issues/305) StringIndexOutOfBoundsException for empty Groovy file when performing importOrder
+* Bugfix: CDT version `4.12.0` now properly uses `9.8`, whereas before it used `9.7`. ([#482](https://github.com/diffplug/spotless/pull/482#discussion_r341380884))
 
 ### Version 1.25.1 - October 7th 2019 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/1.25.1/), [jcenter](https://bintray.com/diffplug/opensource/spotless-maven-plugin/1.25.1))
 
@@ -33,6 +34,7 @@
 * Updated default eclipse-groovy from 4.10 to 4.12.0 ([#423](https://github.com/diffplug/spotless/pull/423)).
 * Updated default eclipse-jdt from 4.11.0 to 4.12.0 ([#423](https://github.com/diffplug/spotless/pull/423)).
 * Updated default eclipse-cdt from 4.11.0 to 4.12.0 ([#423](https://github.com/diffplug/spotless/pull/423)).
+    * **KNOWN BUG - accidentally published CDT 9.7 rather than 9.8 - fixed in 1.26.0**
 * Added new maven coordinates for scalafmt 2.0.0+, maintains backwards compatability ([#415](https://github.com/diffplug/spotless/issues/415))
 
 ### Version 1.23.1 - June 17th 2019 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/1.23.1/), [jcenter](https://bintray.com/diffplug/opensource/spotless-maven-plugin/1.23.1))
