@@ -61,9 +61,9 @@ dependencies {
 	compile "org.eclipse.emf:org.eclipse.emf.common:${VER_ECLISPE_EMF}"
 	compile "org.eclipse.emf:org.eclipse.emf.ecore:${VER_ECLISPE_EMF}"
 	// Some WPT plugins requires OSGI bundle interfaces (but not effectively used)
-	compile "org.eclipse.platform:org.eclipse.osgi.services:${VER_ECLISPE_PLATFORM}"
+	compile "org.eclipse.platform:org.eclipse.osgi.services:${VER_ECLIPSE_OSGI_SERVICES}"
 	// Provides document data structure and file buffers for formatters
-	compile "org.eclipse.platform:org.eclipse.core.filebuffers:${VER_ECLISPE_PLATFORM}"
+	compile "org.eclipse.platform:org.eclipse.core.filebuffers:${VER_ECLIPSE_FILE_BUFFERS}"
 	// Provides text partitioners for formatters
 	compile ("org.eclipse.platform:org.eclipse.jface.text:${VER_ECLISPE_JFACE}") {
 		exclude group: 'org.eclipse.platform', module: 'org.eclipse.swt'
