@@ -1,6 +1,6 @@
 # Spotless formatter based on CDT version 9.9.0 (see https://www.eclipse.org/cdt/)
 com.diffplug.spotless:spotless-eclipse-cdt:9.9.0
-com.diffplug.spotless:spotless-eclipse-base:3.2.0
+com.diffplug.spotless:spotless-eclipse-base:3.2.1
 com.google.code.findbugs:annotations:3.0.0
 com.google.code.findbugs:jsr305:3.0.0
 com.ibm.icu:icu4j:61.2
