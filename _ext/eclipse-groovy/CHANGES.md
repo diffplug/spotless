@@ -1,6 +1,6 @@
 # spotless-eclipse-groovy
 
-### Version 3.5.0 - October 31st 2019 ([artifact]([jcenter](https://bintray.com/diffplug/opensource/spotless-eclipse-groovy)))
+### Version 3.5.0 - November 1st 2019 ([artifact]([jcenter](https://bintray.com/diffplug/opensource/spotless-eclipse-groovy)))
 
 * Switch to Groovy-Eclipse release 3.5.0 for Eclipse 4.13 ([#480](https://github.com/diffplug/spotless/issues/480)).
 
