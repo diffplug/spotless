@@ -18,5 +18,4 @@ org.eclipse.platform:org.eclipse.equinox.registry:3.8.500
 org.eclipse.platform:org.eclipse.jface.text:3.15.300
 org.eclipse.platform:org.eclipse.jface:3.17.0
 org.eclipse.platform:org.eclipse.osgi:3.15.0
-org.eclipse.platform:org.eclipse.swt:3.112.0
 org.eclipse.platform:org.eclipse.text:3.9.0
