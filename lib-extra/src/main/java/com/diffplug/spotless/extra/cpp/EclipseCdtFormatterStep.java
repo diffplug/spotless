@@ -30,7 +30,7 @@ public final class EclipseCdtFormatterStep {
 
 	private static final String NAME = "eclipse cdt formatter";
 	private static final String FORMATTER_CLASS = "com.diffplug.spotless.extra.eclipse.cdt.EclipseCdtFormatterStepImpl";
-	private static final String DEFAULT_VERSION = "4.12.0";
+	private static final String DEFAULT_VERSION = "4.13.0";
 	private static final String FORMATTER_METHOD = "format";
 
 	public static String defaultVersion() {
