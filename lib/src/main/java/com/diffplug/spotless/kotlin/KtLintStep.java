@@ -40,7 +40,7 @@ public class KtLintStep {
 	private KtLintStep() {}
 
 	private static final Pattern VERSION_MATCHER = Pattern.compile("0\\.(\\d+)\\.\\d+");
-	private static final String DEFAULT_VERSION = "0.34.2";
+	private static final String DEFAULT_VERSION = "0.35.0";
 	static final String NAME = "ktlint";
 	static final String PACKAGE_PRE_0_32 = "com.github.shyiko";
 	static final String PACKAGE = "com.pinterest";
