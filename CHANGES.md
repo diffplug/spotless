@@ -22,6 +22,7 @@ You might be looking for:
 * bump default version of KtLint from `0.34.2` to `0.35.0`
 * Visualize \r and \n as ␍ and ␊ when possible ([#465](https://github.com/diffplug/spotless/pull/465))
 * Make end-of-lines visible when file contains whitespace and end-of-line issues at the same time ([#465](https://github.com/diffplug/spotless/pull/465))
+* Print actual diff line instead of "1 more lines that didn't fit" ([#467](https://github.com/diffplug/spotless/issues/467))
 
 ### Version 1.25.0 - October 6th 2019 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.25.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.25.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 

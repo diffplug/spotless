@@ -138,7 +138,10 @@ public final class DiffMessageFormatter {
 
 		// then we'll print the rest that can fit
 		ListIterator<String> iter = lines.listIterator(Math.min(MIN_LINES_PER_FILE, lines.size()));
-		while (iter.hasNext() && numLines < MAX_CHECK_MESSAGE_LINES) {
+		// lines.size() - iter.nextIndex() == 1 means "just one line left", and we just print the line
+		// instead of "1 more lines that didn't fit"
+		while (iter.hasNext() &&
+				(numLines < MAX_CHECK_MESSAGE_LINES || lines.size() - iter.nextIndex() == 1)) {
 			addIntendedLine(DIFF_INDENT, iter.next());
 		}
 
