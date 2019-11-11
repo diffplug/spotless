@@ -10,8 +10,7 @@
 * Updated default eclipse-groovy from 4.12.0 to 4.13.0 ([#482](https://github.com/diffplug/spotless/pull/482)).
 * Updated default eclipse-jdt from 4.12.0 to 4.13.0 ([#482](https://github.com/diffplug/spotless/pull/482)).
 * Updated default eclipse-cdt from 4.12.0 to 4.13.0 ([#482](https://github.com/diffplug/spotless/pull/482)).
-
-* bump default version of KtLint from `0.34.2` to `0.35.0`
+* Bump default version of KtLint from `0.34.2` to `0.35.0`. ([#473](https://github.com/diffplug/spotless/issues/473))
 
 ### Version 1.25.1 - October 7th 2019 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/1.25.1/), [jcenter](https://bintray.com/diffplug/opensource/spotless-maven-plugin/1.25.1))
 

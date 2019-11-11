@@ -11,10 +11,8 @@ You might be looking for:
 * Fix `ImportSorter` crashing with empty files. ([#474](https://github.com/diffplug/spotless/pull/474))
   * Fixes [#305](https://github.com/diffplug/spotless/issues/305) StringIndexOutOfBoundsException for empty Groovy file when performing importOrder
 * Bugfix: CDT version `4.12.0` now properly uses `9.8`, whereas before it used `9.7`. ([#482](https://github.com/diffplug/spotless/pull/482#discussion_r341380884))
-
 * Add support for Eclipse 4.13 and all related formatters (JDT, CDT, WTP, and Groovy). ([#480](https://github.com/diffplug/spotless/issues/480))
-
-* bump default version of KtLint from `0.34.2` to `0.35.0`
+* Bump default version of KtLint from `0.34.2` to `0.35.0`. ([#473](https://github.com/diffplug/spotless/issues/473))
 
 ### Version 1.25.0 - October 6th 2019 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.25.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.25.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
