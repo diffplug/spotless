@@ -5,7 +5,7 @@ env:
   - NODE_VERSION="6.10.2"
 before_install:
   - nvm install $NODE_VERSION
-  - bash -c "$(curl -fsSL https://raw.githubusercontent.com/ZacSweers/check-gradle-checksums/master/check-gradle-checksums.sh)"
+  - bash -c "$(curl -fsSL https://github.com/ZacSweers/check-gradle-checksums/blob/c8dc2ae0756a8041e240cdc6fa6c38c256dfeab0/check-gradle-checksums.sh)"
 install: true
 script:
   - ./.ci/ci.sh
