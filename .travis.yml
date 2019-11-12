@@ -8,7 +8,7 @@ before_install:
   - ./.ci/checkGradleChecksum.sh
 install: true
 script:
-  - ./.ci/ci.sh
+  - sh -c "$(curl -fsSL https://raw.githubusercontent.com/ZacSweers/check-gradle-checksums/master/check-gradle-checksums.sh)"
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
