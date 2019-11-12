@@ -5,10 +5,10 @@ env:
   - NODE_VERSION="6.10.2"
 before_install:
   - nvm install $NODE_VERSION
-  - ./.ci/checkGradleChecksum.sh
+  - sh -c "$(curl -fsSL https://raw.githubusercontent.com/ZacSweers/check-gradle-checksums/master/check-gradle-checksums.sh)"
 install: true
 script:
-  - sh -c "$(curl -fsSL https://raw.githubusercontent.com/ZacSweers/check-gradle-checksums/master/check-gradle-checksums.sh)"
+  - ./.ci/ci.sh
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
