@@ -1,4 +1,3 @@
 * text eol=lf
 *.png binary
 *.jar binary
-CHANGES.md merge=union
