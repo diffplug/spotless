@@ -9,9 +9,10 @@
 - [ ] Run :
 
 ```
-  ./gradlew generatePomFileForPluginMavenPublication
-  ./gradlew publish publishPlugins
-  ./gradlew gitPublishPush
+./gradlew generatePomFileForPluginMavenPublication
+./gradlew publish publishPlugins
+# export GRGIT_USER=blahblahblah
+./gradlew gitPublishPush
 ```
 
 - [ ] Test latest spotless on:
