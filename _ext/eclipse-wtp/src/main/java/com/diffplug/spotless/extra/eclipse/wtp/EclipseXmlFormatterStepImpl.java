@@ -67,7 +67,7 @@ public class EclipseXmlFormatterStepImpl {
 		xmlAdapterFactory = new ModelQueryAdapterFactoryForXML();
 	}
 
-	private static void setupFramework(boolean resolveExternalURI) throws BundleException {
+	private synchronized static void setupFramework(boolean resolveExternalURI) throws BundleException {
 		if (SpotlessEclipseFramework.setup(
 				config -> {
 					config.applyDefault();
