@@ -3,6 +3,7 @@
 ### Version 3.27.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-plugin-gradle/))
 
 * Revert the change in console display of errors from 3.26.0 ([#485](https://github.com/diffplug/spotless/pull/485)) because [of these problems](https://github.com/diffplug/spotless/pull/485#issuecomment-552925932).
+* Bugfix: Fix NPE in EclipseXmlFormatterStepImpl ([#489](https://github.com/diffplug/spotless/pull/489))
 
 ### Version 3.26.0 - November 11th 2019 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.26.0/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.26.0))
 
