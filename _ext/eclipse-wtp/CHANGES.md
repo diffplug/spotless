@@ -1,5 +1,9 @@
 # spotless-eclipse-wtp
 
+### Version 3.15.1 - November 27th 2019 ([artifact]([jcenter](https://bintray.com/diffplug/opensource/spotless-eclipse-wtp)))
+
+* Bugfix: Fix NPE in EclipseXmlFormatterStepImpl ([#490](https://github.com/diffplug/spotless/pull/490)).
+
 ### Version 3.15.0 - November 6th 2019 ([artifact]([jcenter](https://bintray.com/diffplug/opensource/spotless-eclipse-wtp)))
 
 * Switch to Eclipse WTP release 3.15.0 for Eclipse 4.13 ([#480](https://github.com/diffplug/spotless/issues/480)).
