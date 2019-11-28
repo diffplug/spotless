@@ -55,14 +55,14 @@ public class GrEclipseFormatterStepImpl {
 	private final boolean ignoreFormatterProblems;
 
 	public GrEclipseFormatterStepImpl(final Properties properties) throws Exception {
-		if (SpotlessEclipseFramework.setup(
+		SpotlessEclipseFramework.setup(
 				config -> {
 					config.applyDefault();
 					config.useSlf4J(GrEclipseFormatterStepImpl.class.getPackage().getName());
 				},
 				plugins -> {
 					plugins.add(new GroovyCoreActivator());
-				})) {}
+				});
 		PreferenceStore preferences = createPreferences(properties);
 		preferencesStore = new FormatterPreferencesOnStore(preferences);
 		ignoreFormatterProblems = Boolean.parseBoolean(properties.getProperty(IGNORE_FORMATTER_PROBLEMS, "false"));
