@@ -1,0 +1,11 @@
+import static com.foo.Bar
+import static java.lang.Exception.*
+import static java.lang.Runnable.*
+
+import java.lang.Runnable
+import java.lang.Thread
+import org.dooda.Didoo
+public class NotDeletedByFormatter {
+}
+import will.not;
+import be.modified;

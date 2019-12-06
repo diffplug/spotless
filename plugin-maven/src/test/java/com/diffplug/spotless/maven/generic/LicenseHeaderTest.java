@@ -52,6 +52,18 @@ public class LicenseHeaderTest extends MavenIntegrationHarness {
 	}
 
 	@Test
+	public void fromContentGroovy() throws Exception {
+		writePomWithGroovySteps(
+				"<licenseHeader>",
+				"  <content>",
+				"// If you can't trust a man's word",
+				"// Does it help to have it in writing?",
+				"  </content>",
+				"</licenseHeader>");
+		runTest();
+	}
+
+	@Test
 	public void fromContentJava() throws Exception {
 		writePomWithJavaSteps(
 				"<licenseHeader>",
