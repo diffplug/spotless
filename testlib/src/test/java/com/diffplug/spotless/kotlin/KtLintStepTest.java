@@ -24,6 +24,12 @@ import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
+/**
+ * This class is the only one that uses jcenter, and it seems to be the only one that
+ * causes these problems. The root is still a gradle bug, but in the meantime we don't
+ * need to hold up *every* PR with this: https://github.com/gradle/gradle/issues/11752
+ */
+@Ignore
 public class KtLintStepTest extends ResourceHarness {
 	@Test
 	public void behavior() throws Exception {
@@ -39,12 +45,7 @@ public class KtLintStepTest extends ResourceHarness {
 				});
 	}
 
-	/**
-	 * This one test has been killing our CI builds reliably, although it seems to be a
-	 * Gradle bug: https://github.com/gradle/gradle/issues/11752
-	 */
 	@Test
-	@Ignore
 	public void worksShyiko() throws Exception {
 		// Must use jcenter because `com.andreapivetta.kolor:kolor:0.0.2` isn't available on mavenCentral.
 		// It is a dependency of ktlint.
