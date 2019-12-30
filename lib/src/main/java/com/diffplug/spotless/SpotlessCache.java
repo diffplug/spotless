@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.annotation.Nullable;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -73,7 +75,12 @@ public final class SpotlessCache {
 		return instance;
 	}
 
-	/** Closes all cached classloaders. */
+	/**
+	 * Closes all cached classloaders.
+	 *
+	 * @deprecated because it is [dangerous](https://github.com/diffplug/spotless/issues/243#issuecomment-564323856), replacement is {@link #clearOnce(Object)}.
+	 */
+	@Deprecated
 	public static void clear() {
 		List<URLClassLoader> toDelete;
 		synchronized (instance) {
@@ -87,6 +94,26 @@ public final class SpotlessCache {
 				throw ThrowingEx.asRuntime(e);
 			}
 		}
+	}
+
+	private static volatile Object lastClear;
+
+	/**
+	 * Closes all cached classloaders iff `key` is not `.equals()` to the last call to `clearOnce()`.
+	 * If `key` is null, the clear will always happen (as though null != null).
+	 */
+	public static boolean clearOnce(@Nullable Object key) {
+		synchronized (instance) {
+			if (key == null) {
+				lastClear = null;
+			} else if (key.equals(lastClear)) {
+				// only clear once
+				return false;
+			}
+			lastClear = key;
+		}
+		clear();
+		return true;
 	}
 
 	private static final SpotlessCache instance = new SpotlessCache();

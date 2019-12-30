@@ -36,7 +36,17 @@ public class SpotlessPlugin implements Plugin<Project> {
 
 		// clear spotless' cache when the user does a clean
 		Task clean = project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME);
-		clean.doLast(unused -> SpotlessCache.clear());
+		clean.doLast(unused -> {
+			// resolution for: https://github.com/diffplug/spotless/issues/243#issuecomment-564323856
+			// project.getRootProject() is consistent across every project, so only of one the clears will
+			// actually happen (as desired)
+			SpotlessCache.clearOnce(project.getRootProject());
+			// if we hang onto the rootProject forever, that's a decent-size memory leak
+			// by setting to null, we force a second clear, but we prevent
+			project.getGradle().buildFinished(result -> {
+				SpotlessCache.clearOnce(null);
+			});
+		});
 
 		project.afterEvaluate(unused -> {
 			// Add our check task as a dependency on the global check task
