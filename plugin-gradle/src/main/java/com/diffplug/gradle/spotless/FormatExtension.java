@@ -27,7 +27,9 @@ import javax.annotation.Nullable;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.tasks.util.PatternFilterable;
 
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
@@ -606,5 +608,33 @@ public class FormatExtension {
 	/** Returns the project that this extension is attached to. */
 	protected Project getProject() {
 		return root.project;
+	}
+
+	/**
+	 * Creates an independent {@link SpotlessTask} for (very) unusual circumstances.
+	 *
+	 * Most users will not want this method.  In the rare case that you want to create
+	 * a SpotlessTask which is independent of the normal Spotless machinery, this will
+	 * let you do that.
+	 *
+	 * The returned task will have no dependencies on any other task.
+	 * You need to call {@link SpotlessTask#setApply()} and/or {@link SpotlessTask#setCheck()}
+	 * on the return value, otherwise you will get a runtime error when the task tries to run.
+	 *
+	 * NOTE: does not respect the rarely-used [`spotlessFiles` property](https://github.com/diffplug/spotless/blob/b7f8c551a97dcb92cc4b0ee665448da5013b30a3/plugin-gradle/README.md#can-i-apply-spotless-to-specific-files).
+	 */
+	public SpotlessTask createIndependentTask(String taskName) {
+		// create and setup the task
+		SpotlessTask spotlessTask = root.project.getTasks().create(taskName, SpotlessTask.class);
+		setupTask(spotlessTask);
+
+		// enforce the clean ordering
+		Task clean = root.project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME);
+		spotlessTask.mustRunAfter(clean);
+
+		// ignore the filePatterns
+		spotlessTask.setFilePatterns("");
+
+		return spotlessTask;
 	}
 }
