@@ -103,6 +103,11 @@ public class TestProvisioner {
 			}
 		} else {
 			cached = new HashMap<>();
+			try {
+				Files.createParentDirs(cacheFile);
+			} catch (IOException e) {
+				throw Errors.asRuntime(e);
+			}
 		}
 		return (withTransitives, mavenCoordsRaw) -> {
 			ImmutableSet<String> mavenCoords = ImmutableSet.copyOf(mavenCoordsRaw);
