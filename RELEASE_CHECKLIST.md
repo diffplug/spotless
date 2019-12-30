@@ -2,6 +2,7 @@
 
 - [ ] Update [`CHANGES.md`](CHANGES.md), [`plugin-gradle/CHANGES.md`](plugin-gradle/CHANGES.md), and [`plugin-maven/CHANGES.md`](plugin-maven/CHANGES.md)
 - [ ] Upgrade [`gradle.properties`](gradle.properties).
+- [ ] In an IDE, unignore `KtLintStepTest` and run
 - [ ] Run `./gradlew spotlessApply`
 - [ ] Make sure all files are committed
 - [ ] Run `./gradlew check`
