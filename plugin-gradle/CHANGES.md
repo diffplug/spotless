@@ -2,6 +2,8 @@
 
 ### Version 3.27.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-plugin-gradle/))
 
+* Added method `FormatExtension.createIndependentTask(String taskName)` which allows creating a Spotless task outside of the `check`/`apply` lifecycle.  See javadoc (TODO: link) for details.
+
 ### Version 3.26.1 - November 27th 2019 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.26.1/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.26.1))
 
 * Revert the change in console display of errors from 3.26.0 ([#485](https://github.com/diffplug/spotless/pull/485)) because [of these problems](https://github.com/diffplug/spotless/pull/485#issuecomment-552925932).
