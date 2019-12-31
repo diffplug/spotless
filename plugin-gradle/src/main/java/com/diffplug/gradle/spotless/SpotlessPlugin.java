@@ -40,12 +40,9 @@ public class SpotlessPlugin implements Plugin<Project> {
 			// resolution for: https://github.com/diffplug/spotless/issues/243#issuecomment-564323856
 			// project.getRootProject() is consistent across every project, so only of one the clears will
 			// actually happen (as desired)
-			SpotlessCache.clearOnce(project.getRootProject());
-			// if we hang onto the rootProject forever, that's a decent-size memory leak
-			// by setting to null, we force a second clear, but we prevent
-			project.getGradle().buildFinished(result -> {
-				SpotlessCache.clearOnce(null);
-			});
+			//
+			// we use System.identityHashCode() to avoid a memory leak by hanging on to the reference directly
+			SpotlessCache.clearOnce(System.identityHashCode(project.getRootProject()));
 		});
 
 		project.afterEvaluate(unused -> {
