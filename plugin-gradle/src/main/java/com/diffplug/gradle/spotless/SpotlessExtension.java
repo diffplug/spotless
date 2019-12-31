@@ -23,6 +23,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
@@ -58,6 +60,18 @@ public class SpotlessExtension {
 		rootApplyTask = project.task(EXTENSION + APPLY);
 		rootApplyTask.setGroup(TASK_GROUP);
 		rootApplyTask.setDescription(APPLY_DESCRIPTION);
+	}
+
+	/** Repository mode. */
+	GradleProvisioner.ResolveDependenciesIn resolveDependenciesIn = null;
+
+	@Nullable
+	public GradleProvisioner.ResolveDependenciesIn getResolveDependenciesIn() {
+		return resolveDependenciesIn;
+	}
+
+	public void setResolveDependenciesIn(GradleProvisioner.ResolveDependenciesIn repositoryMode) {
+		this.resolveDependenciesIn = requireNonNull(repositoryMode);
 	}
 
 	/** Line endings (if any). */
