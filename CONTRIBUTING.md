@@ -115,6 +115,57 @@ The gist of it is that you will have to:
 
 If you get something running, we'd love to host your plugin within this repo as a peer to `plugin-gradle` and `plugin-maven`.
 
+## Integration testing
+
+### Locally
+
+First, run `./gradlew publishToMavenLocal` in your local checkout of Spotless.  Now, in any other project on your machine, you can use the following snippet in your `settings.gradle` (for Gradle 6.0+).
+
+```
+pluginManagement {
+  repositories {
+    mavenLocal {
+      content {
+        includeGroup 'com.diffplug.spotless'
+      }
+    }
+    gradlePluginPortal()
+  }
+  resolutionStrategy {
+    eachPlugin {
+      if (requested.id.id == 'com.diffplug.gradle.spotless') {
+        useModule('com.diffplug.spotless:spotless-plugin-gradle:{latest-SNAPSHOT}')
+      }
+    }
+  }
+}
+```
+
+### Any commit in a public GitHub repo (this one, or any fork)
+
+In Gradle 6.0+, you can use the following snippet in your `settings.gradle`.  TODO: broken until [jitpack/jitpack.io#4112](https://github.com/jitpack/jitpack.io/issues/4112) is resolved.
+
+```gradle
+pluginManagement {
+  repositories {
+    maven {
+      url 'https://jitpack.io'
+      content {
+        includeGroup 'com.github.{{user-or-org}}.spotless'
+      }
+    }
+    gradlePluginPortal()
+  }
+  resolutionStrategy {
+    eachPlugin {
+      if (requested.id.id == 'com.diffplug.gradle.spotless') {
+        useModule('com.github.{{user-or-org}}.spotless:spotless-plugin-gradle:SHA_OF_COMMIT_YOU_WANT')
+      }
+    }
+  }
+}
+```
+
 ## License
 
 By contributing your code, you agree to license your contribution under the terms of the APLv2: https://github.com/diffplug/spotless/blob/master/LICENSE.txt
