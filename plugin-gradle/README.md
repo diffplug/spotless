@@ -611,6 +611,8 @@ If you use `custom` or `customLazy`, you might want to take a look at [this java
 
 See [`JavaExtension.java`](src/main/java/com/diffplug/gradle/spotless/JavaExtension.java) if you'd like to see how a language-specific set of custom rules is implemented.  We'd love PR's which add support for other languages.
 
+If you'd like to create a one-off Spotless task outside of the `check`/`apply` framework, see [`FormatExtension.createIndependentTask`](https://github.com/diffplug/spotless/blob/91ed7203994e52058ea6c2e0f88d023ed290e433/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/FormatExtension.java#L613-L639).
+
 <a name="invisible"></a>
 
 ## Line endings and encodings (invisible stuff)
