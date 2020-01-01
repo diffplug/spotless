@@ -34,4 +34,8 @@ include 'testlib'	// library for sharing test infrastructure between the project
 
 include 'lib-extra'	// reusable library with lots of dependencies
 include 'plugin-gradle'	// gradle-specific glue code
-include 'plugin-maven'	// maven-specific glue code
+
+// excludes maven from JitCI builds,
+if (System.env['SPOTLESS_EXCLUDE_MAVEN'] != 'true') {
+	include 'plugin-maven'	// maven-specific glue code
+}
