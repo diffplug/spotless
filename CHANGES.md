@@ -9,6 +9,8 @@ You might be looking for:
 
 * Ignored `KtLintStepTest`, because [gradle/gradle#11752](https://github.com/gradle/gradle/issues/11752) is causing too many CI failures. ([#499](https://github.com/diffplug/spotless/pull/499))
     * Also fixed a minor problem in TestProvisioner.
+* If you set the environment variable `SPOTLESS_EXCLUDE_MAVEN=true` then the maven plugin will be excluded from the build. ([#502](https://github.com/diffplug/spotless/pull/502))
+    * We have set this in JitPack, as a workaround for [jitpack/jitpack.io#4112](https://github.com/jitpack/jitpack.io/issues/4112)
 
 ### Version 1.26.1 - November 27th 2019 (javadoc [lib](https://diffplug.github.io/spotless/javadoc/spotless-lib/1.26.0/) [lib-extra](https://diffplug.github.io/spotless/javadoc/spotless-lib-extra/1.26.0/), artifact [lib]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib), [lib-extra]([jcenter](https://bintray.com/diffplug/opensource/spotless-lib-extra)))
 
