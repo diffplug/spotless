@@ -55,18 +55,17 @@ def mvnw(String args) {
 	}
 }
 
-apply plugin: 'java-library'
 dependencies {
 	if (!project.versionMaven.endsWith('-SNAPSHOT') && project.versionLib.endsWith('-SNAPSHOT')) {
 		// gradle = release, lib = snapshot, therefore gradle should depend on the last stable lib
-		api "com.diffplug.spotless:spotless-lib:${project.stableLib}"
-		api "com.diffplug.spotless:spotless-lib-extra:${project.stableLib}"
+		implementation "com.diffplug.spotless:spotless-lib:${project.stableLib}"
+		implementation "com.diffplug.spotless:spotless-lib-extra:${project.stableLib}"
 	} else {
-		api project(':lib')
-		api project(':lib-extra')
+		implementation project(':lib')
+		implementation project(':lib-extra')
 	}
 
-	api "org.codehaus.plexus:plexus-resources:${VER_PLEXUS_RESOURCES}"
+	implementation "org.codehaus.plexus:plexus-resources:${VER_PLEXUS_RESOURCES}"
 
 	compileOnly "org.apache.maven:maven-plugin-api:${VER_MAVEN_API}"
 	compileOnly "org.apache.maven.plugin-tools:maven-plugin-annotations:${VER_MAVEN_API}"
@@ -136,7 +135,7 @@ libs.each {
 
 task createPomXml(dependsOn: installLocalDependencies) {
 	doLast {
-		def additionalDependencies = project.configurations.compileClasspath.resolvedConfiguration.resolvedArtifacts.findAll {
+		def additionalDependencies = project.configurations.runtimeClasspath.resolvedConfiguration.resolvedArtifacts.findAll {
 			return !libs.contains(it.moduleVersion.id.name)
 		}.collect {
 			return  "    <dependency>\n" +
