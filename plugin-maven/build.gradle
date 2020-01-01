@@ -6,10 +6,6 @@ plugins {
 	id 'cz.malohlava.visteg' version '1.0.5' // https://github.com/mmalohlava/gradle-visteg
 }
 
-if (System.env['SPOTLESS_EXCLUDE_MAVEN'] == 'true') {
-	return
-}
-
 // to generate taskGraph.pdf
 // - set enabled (below) to true
 // - run: ./gradlew :plugin-maven:test

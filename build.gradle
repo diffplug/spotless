@@ -38,13 +38,3 @@ eclipseResourceFilters {
 static Class<?> spotBugsTaskType() {
 	return com.github.spotbugs.SpotBugsTask
 }
-
-subprojects {
-	afterEvaluate {
-		if (tasks.names.contains('jar')) {
-			tasks.jar.doLast {
-				println('SPOTLESS_EXCLUDE_MAVEN=' + System.getenv('SPOTLESS_EXCLUDE_MAVEN'))
-			}
-		}
-	}
-}
