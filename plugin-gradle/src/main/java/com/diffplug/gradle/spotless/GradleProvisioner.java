@@ -32,6 +32,19 @@ public class GradleProvisioner {
 	private GradleProvisioner() {}
 
 	public static Provisioner fromProject(Project project) {
+		RegisterDependenciesTask task = project.getPlugins().apply(SpotlessPlugin.class).getExtension().registerDependenciesTask;
+		if (task == null) {
+			return fromRootBuildscript(project);
+		} else {
+			if (project.getRootProject() == project) {
+				return task.rootProvisioner;
+			} else {
+				return new RegisterDependenciesInRoot.SubProvisioner(task.rootProvisioner, project);
+			}
+		}
+	}
+
+	static Provisioner fromRootBuildscript(Project project) {
 		Objects.requireNonNull(project);
 		return (withTransitives, mavenCoords) -> {
 			try {
@@ -60,6 +73,5 @@ public class GradleProvisioner {
 		};
 	}
 
-	private static final Logger logger = Logger.getLogger(GradleProvisioner.class.getName());
-
+	static final Logger logger = Logger.getLogger(GradleProvisioner.class.getName());
 }

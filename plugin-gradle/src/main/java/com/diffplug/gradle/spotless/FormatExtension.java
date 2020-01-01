@@ -145,6 +145,11 @@ public class FormatExtension {
 		this.target = parseTargetsIsExclude(targets, false);
 	}
 
+	/** Sets the target to be empty without a warning. */
+	public void targetEmptyForDeclaration() {
+		this.target = getProject().files();
+	}
+
 	/**
 	 * Sets which files will be excluded from formatting.  Files to be formatted = (target - targetExclude).
 	 *
@@ -603,6 +608,16 @@ public class FormatExtension {
 		}
 		task.setSteps(steps);
 		task.setLineEndingsPolicy(getLineEndings().createPolicy(getProject().getProjectDir(), () -> task.target));
+		if (root.registerDependenciesTask != null) {
+			// if we have a register dependencies task
+			if (root.project == root.project.getRootProject()) {
+				// :spotlessRegisterDependencies depends on every SpotlessTask in the root
+				root.registerDependenciesTask.dependsOn(task);
+			} else {
+				// and every SpotlessTask in a subproject depends on :spotlessRegisterDependencies
+				task.dependsOn(root.registerDependenciesTask);
+			}
+		}
 	}
 
 	/** Returns the project that this extension is attached to. */
