@@ -23,8 +23,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.annotation.Nullable;
-
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
@@ -41,7 +39,7 @@ import groovy.lang.Closure;
 public class SpotlessExtension {
 	final Project project;
 	final Task rootCheckTask, rootApplyTask;
-	final @Nullable RegisterDependenciesTask registerDependenciesTask;
+	final RegisterDependenciesTask registerDependenciesTask;
 
 	static final String EXTENSION = "spotless";
 	static final String CHECK = "Check";
@@ -62,7 +60,7 @@ public class SpotlessExtension {
 		rootApplyTask.setGroup(TASK_GROUP);
 		rootApplyTask.setDescription(APPLY_DESCRIPTION);
 		if (project.getRootProject() == project) {
-			registerDependenciesTask = project.getTasks().create(RegisterDependenciesInRoot.TASK_NAME, RegisterDependenciesTask.class);
+			registerDependenciesTask = project.getTasks().create(RegisterDependenciesTask.TASK_NAME, RegisterDependenciesTask.class);
 			registerDependenciesTask.setup();
 		} else {
 			registerDependenciesTask = project.getRootProject().getPlugins().apply(SpotlessPlugin.class).spotlessExtension.registerDependenciesTask;

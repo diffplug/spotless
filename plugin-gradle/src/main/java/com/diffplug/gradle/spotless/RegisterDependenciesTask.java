@@ -34,12 +34,16 @@ import com.diffplug.spotless.FormatterStep;
 /**
  * NOT AN END-USER TASK, DO NOT USE FOR ANYTHING!
  *
- * The minimal task required to force all SpotlessTasks in the root
- * project to trigger their dependency resolution, so that they will
- * be cached for subproject tasks to slurp from.  See {@link RegisterDependenciesInRoot}
- * for the bigger picture.
+ * - When a user asks for a formatter, we need to download the jars for that formatter
+ * - Gradle wants us to resolve all our dependencies in the root project - no new dependencies in subprojects
+ * - So, whenever a SpotlessTask in a subproject gets configured, we call {@link #hookSubprojectTask(SpotlessTask)},
+ *   which makes this task a dependency of the SpotlessTask
+ * - When this "registerDependencies" task does its up-to-date check, it queries the task execution graph to see which
+ *   SpotlessTasks are at risk of being executed, and causes them all to be evaluated safely in the root buildscript.
  */
 public class RegisterDependenciesTask extends DefaultTask {
+	static final String TASK_NAME = "spotlessInternalRegisterDependencies";
+
 	@Input
 	public List<FormatterStep> getSteps() {
 		List<FormatterStep> allSteps = new ArrayList<>();
@@ -71,16 +75,16 @@ public class RegisterDependenciesTask extends DefaultTask {
 		return unitOutput;
 	}
 
-	RegisterDependenciesInRoot.RootProvisioner rootProvisioner;
+	GradleProvisioner.RootProvisioner rootProvisioner;
 
 	@Internal
-	public RegisterDependenciesInRoot.RootProvisioner getRootProvisioner() {
+	public GradleProvisioner.RootProvisioner getRootProvisioner() {
 		return rootProvisioner;
 	}
 
 	void setup() {
 		unitOutput = new File(getProject().getBuildDir(), "tmp/spotless-register-dependencies");
-		rootProvisioner = new RegisterDependenciesInRoot.RootProvisioner(getProject());
+		rootProvisioner = new GradleProvisioner.RootProvisioner(getProject());
 	}
 
 	@TaskAction

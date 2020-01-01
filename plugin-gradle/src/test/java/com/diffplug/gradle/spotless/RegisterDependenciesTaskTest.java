@@ -20,7 +20,7 @@ import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
-public class RegisterDependenciesInRootTest extends GradleIntegrationTest {
+public class RegisterDependenciesTaskTest extends GradleIntegrationTest {
 	@Test
 	public void registerDependencies() throws IOException {
 		setFile("settings.gradle")

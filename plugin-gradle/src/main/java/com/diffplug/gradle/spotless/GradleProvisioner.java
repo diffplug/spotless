@@ -15,7 +15,12 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.io.File;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,7 +29,9 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.artifacts.Dependency;
 
+import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.base.StringPrinter;
+import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.spotless.Provisioner;
 
 /** Gradle integration for Provisioner. */
@@ -33,6 +40,30 @@ public class GradleProvisioner {
 
 	public static Provisioner fromProject(Project project) {
 		return project.getPlugins().apply(SpotlessPlugin.class).getExtension().registerDependenciesTask.rootProvisioner;
+	}
+
+	/** The provisioner used for the root project. */
+	static class RootProvisioner implements Provisioner {
+		private final Project rootProject;
+		private final Map<Request, Set<File>> cache = new HashMap<>();
+
+		RootProvisioner(Project rootProject) {
+			Preconditions.checkArgument(rootProject == rootProject.getRootProject());
+			this.rootProject = rootProject;
+		}
+
+		@Override
+		public Set<File> provisionWithTransitives(boolean withTransitives, Collection<String> mavenCoordinates) {
+			Request req = new Request(withTransitives, mavenCoordinates);
+			Set<File> result = cache.get(req);
+			if (result != null) {
+				return result;
+			} else {
+				result = GradleProvisioner.fromRootBuildscript(rootProject).provisionWithTransitives(req.withTransitives, req.mavenCoords);
+				cache.put(req, result);
+				return result;
+			}
+		}
 	}
 
 	static Provisioner fromRootBuildscript(Project project) {
@@ -64,5 +95,46 @@ public class GradleProvisioner {
 		};
 	}
 
-	static final Logger logger = Logger.getLogger(GradleProvisioner.class.getName());
+	private static final Logger logger = Logger.getLogger(GradleProvisioner.class.getName());
+
+	/** Models a request to the provisioner. */
+	private static class Request {
+		final boolean withTransitives;
+		final ImmutableList<String> mavenCoords;
+
+		public Request(boolean withTransitives, Collection<String> mavenCoords) {
+			this.withTransitives = withTransitives;
+			this.mavenCoords = ImmutableList.copyOf(mavenCoords);
+		}
+
+		@Override
+		public int hashCode() {
+			return withTransitives ? mavenCoords.hashCode() : ~mavenCoords.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			} else if (obj instanceof Request) {
+				Request o = (Request) obj;
+				return o.withTransitives == withTransitives && o.mavenCoords.equals(mavenCoords);
+			} else {
+				return false;
+			}
+		}
+
+		@Override
+		public String toString() {
+			String coords = mavenCoords.toString();
+			StringBuilder builder = new StringBuilder();
+			builder.append(coords.substring(1, coords.length() - 1)); // strip off []
+			if (withTransitives) {
+				builder.append(" with transitives");
+			} else {
+				builder.append(" no transitives");
+			}
+			return builder.toString();
+		}
+	}
 }
