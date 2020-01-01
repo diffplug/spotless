@@ -43,7 +43,7 @@ subprojects {
 	afterEvaluate {
 		if (tasks.names.contains('jar')) {
 			tasks.jar.doLast {
-				println('SPOTLESS_EXCLUDE_MAVEN=' + System.env['SPOTLESS_EXCLUDE_MAVEN'])
+				println('SPOTLESS_EXCLUDE_MAVEN=' + System.getenv('SPOTLESS_EXCLUDE_MAVEN'))
 			}
 		}
 	}
