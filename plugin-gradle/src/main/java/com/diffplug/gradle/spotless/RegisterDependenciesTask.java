@@ -33,9 +33,12 @@ import com.diffplug.common.io.Files;
 import com.diffplug.spotless.FormatterStep;
 
 /**
+ * NOT AN END-USER TASK, DO NOT USE FOR ANYTHING!
+ * 
  * The minimal task required to force all SpotlessTasks in the root
  * project to trigger their dependency resolution, so that they will
- * be cached for subproject tasks to slurp from.
+ * be cached for subproject tasks to slurp from.  See {@link RegisterDependenciesInRoot}
+ * for the bigger picture.
  */
 public class RegisterDependenciesTask extends DefaultTask {
 	@Input
