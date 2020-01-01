@@ -145,6 +145,7 @@ pluginManagement {
 
 In Gradle 6.0+, you can use the following snippet in your `settings.gradle`.
 
+
 ```gradle
 pluginManagement {
   repositories {
@@ -159,12 +160,15 @@ pluginManagement {
   resolutionStrategy {
     eachPlugin {
       if (requested.id.id == 'com.diffplug.gradle.spotless') {
-        useModule('com.github.{{user-or-org}}.spotless:spotless-plugin-gradle:SHA_OF_COMMIT_YOU_WANT')
+        useModule('com.github.{{USER_OR_ORG}}.spotless:spotless-plugin-gradle:{{SHA_OF_COMMIT_YOU_WANT}}')
       }
     }
   }
 }
 ```
+
+If it doesn't work, you can check the JitPack log at `https://jitpack.io/com/github/{{USER_OR_ORG}}/spotless/{{SHA_OF_COMMIT_YOU_WANT}}/build.log`.
+
 ### Maven
 
 Run `./gradlew publishToMavenLocal` to publish this to your local repository. The maven plugin is not published to JitPack due to [jitpack/jitpack.io#4112](https://github.com/jitpack/jitpack.io/issues/4112).
