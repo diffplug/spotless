@@ -142,4 +142,13 @@ public interface FormatterStep extends Serializable {
 		Objects.requireNonNull(function, "function");
 		return createNeverUpToDateLazy(name, () -> function);
 	}
+
+	/**
+	 * If we are currently inside the `Supplier` of a lazy FormatterStep,
+	 * this method will return the FormatterStep whose state is being calculated.
+	 * Returns null if we are not.
+	 */
+	public static @Nullable FormatterStep lazyStepBeingResolvedInThisThread() {
+		return FormatterStepImpl.lazyStepBeingResolvedInThisThread.get();
+	}
 }
