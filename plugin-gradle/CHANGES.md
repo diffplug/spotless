@@ -3,7 +3,9 @@
 ### Version 3.27.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-plugin-gradle/))
 
 * Added method `FormatExtension.createIndependentTask(String taskName)` which allows creating a Spotless task outside of the `check`/`apply` lifecycle.  See [javadoc](https://github.com/diffplug/spotless/blob/91ed7203994e52058ea6c2e0f88d023ed290e433/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/FormatExtension.java#L613-L639) for details. ([#500](https://github.com/diffplug/spotless/pull/500))
-* Running clean and spotlessCheck during a parallel build could cause exceptions, fixed by ([#501](https://github.com/diffplug/spotless/pull/501)).
+* Running `clean` and `spotlessCheck` during a parallel build could cause exceptions, fixed by ([#501](https://github.com/diffplug/spotless/pull/501)).
+* Fixed Gradle 7 deprecation warnings that started being emitted in Gradle 6. ([#503](https://github.com/diffplug/spotless/pull/503))
+  * Even if you're using a pre-6.0 version of Gradle, you will probably see small performance and stability improvements. The PR above finally fixed the root problems of ([#372](https://github.com/diffplug/spotless/issues/372)).
 
 ### Version 3.26.1 - November 27th 2019 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-plugin-gradle/3.26.1/), [jcenter](https://bintray.com/diffplug/opensource/spotless-plugin-gradle/3.26.1))
 
