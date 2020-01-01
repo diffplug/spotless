@@ -53,16 +53,8 @@ abstract class FormatterStepImpl<State extends Serializable> extends Strict<Stat
 
 	@Override
 	protected State calculateState() throws Exception {
-		try {
-			lazyStepBeingResolvedInThisThread.set(this);
-			return stateSupplier.get();
-		} finally {
-			lazyStepBeingResolvedInThisThread.set(null);
-		}
+		return stateSupplier.get();
 	}
-
-	/** Stores the step name in a ThreadLocal for the purpose of debugging errors triggered in calculateState. */
-	static final ThreadLocal<FormatterStep> lazyStepBeingResolvedInThisThread = new ThreadLocal<>();
 
 	static final class Standard<State extends Serializable> extends FormatterStepImpl<State> {
 		private static final long serialVersionUID = 1L;
