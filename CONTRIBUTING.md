@@ -117,7 +117,7 @@ If you get something running, we'd love to host your plugin within this repo as 
 
 ## Integration testing
 
-### Locally
+### Gradle - locally
 
 First, run `./gradlew publishToMavenLocal` in your local checkout of Spotless.  Now, in any other project on your machine, you can use the following snippet in your `settings.gradle` (for Gradle 6.0+).
 
@@ -141,9 +141,9 @@ pluginManagement {
 }
 ```
 
-### Any commit in a public GitHub repo (this one, or any fork)
+### Gradle - any commit in a public GitHub repo (this one, or any fork)
 
-In Gradle 6.0+, you can use the following snippet in your `settings.gradle`.  TODO: broken until [jitpack/jitpack.io#4112](https://github.com/jitpack/jitpack.io/issues/4112) is resolved.
+In Gradle 6.0+, you can use the following snippet in your `settings.gradle`.
 
 ```gradle
 pluginManagement {
@@ -165,6 +165,9 @@ pluginManagement {
   }
 }
 ```
+### Maven
+
+Run `./gradlew publishToMavenLocal` to publish this to your local repository. The maven plugin is not published to JitPack due to [jitpack/jitpack.io#4112](https://github.com/jitpack/jitpack.io/issues/4112).
 
 ## License
 
@@ -173,7 +176,7 @@ By contributing your code, you agree to license your contribution under the term
 All files are released with the Apache 2.0 license as such:
 
 ```
-Copyright 2016 DiffPlug
+Copyright 2020 DiffPlug
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
