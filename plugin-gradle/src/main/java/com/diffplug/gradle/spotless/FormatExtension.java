@@ -603,6 +603,9 @@ public class FormatExtension {
 		}
 		task.setSteps(steps);
 		task.setLineEndingsPolicy(getLineEndings().createPolicy(getProject().getProjectDir(), () -> task.target));
+		if (root.project != root.project.getRootProject()) {
+			root.registerDependenciesTask.hookSubprojectTask(task);
+		}
 	}
 
 	/** Returns the project that this extension is attached to. */

@@ -39,6 +39,7 @@ import groovy.lang.Closure;
 public class SpotlessExtension {
 	final Project project;
 	final Task rootCheckTask, rootApplyTask;
+	final RegisterDependenciesTask registerDependenciesTask;
 
 	static final String EXTENSION = "spotless";
 	static final String CHECK = "Check";
@@ -58,6 +59,12 @@ public class SpotlessExtension {
 		rootApplyTask = project.task(EXTENSION + APPLY);
 		rootApplyTask.setGroup(TASK_GROUP);
 		rootApplyTask.setDescription(APPLY_DESCRIPTION);
+		if (project.getRootProject() == project) {
+			registerDependenciesTask = project.getTasks().create(RegisterDependenciesTask.TASK_NAME, RegisterDependenciesTask.class);
+			registerDependenciesTask.setup();
+		} else {
+			registerDependenciesTask = project.getRootProject().getPlugins().apply(SpotlessPlugin.class).spotlessExtension.registerDependenciesTask;
+		}
 	}
 
 	/** Line endings (if any). */

@@ -5,8 +5,6 @@ plugins {
 	id 'com.diffplug.gradle.eclipse.resourcefilters' version '3.18.1'
 	// https://plugins.gradle.org/plugin/com.gradle.plugin-publish
 	id 'com.gradle.plugin-publish' version '0.10.1' apply false
-	// https://plugins.gradle.org/plugin/com.gradle.build-scan
-	id 'com.gradle.build-scan' version '2.4'
 	// https://github.com/bintray/gradle-bintray-plugin/releases
 	id 'com.jfrog.bintray' version '1.8.4' apply false
 	// https://github.com/mnlipp/jdrupes-mdoclet/releases
@@ -15,11 +13,6 @@ plugins {
 	id 'org.ajoberstar.git-publish' version '2.1.1' apply false
 	// https://github.com/spotbugs/spotbugs/releases
 	id "com.github.spotbugs" version "2.0.0" apply false
-}
-
-buildScan {
-	termsOfServiceUrl = 'https://gradle.com/terms-of-service'
-	apply from: 'gradle/build-scans.gradle'
 }
 
 // root eclipse project
