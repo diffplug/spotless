@@ -1,6 +1,10 @@
 # spotless-plugin-maven releases
 
-### Version 1.27.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-maven-plugin/))
+### Version 1.28.0-SNAPSHOT - TBD ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/snapshot/), [snapshot](https://oss.sonatype.org/content/repositories/snapshots/com/diffplug/spotless/spotless-maven-plugin/))
+
+### Version 1.27.0 - January 1st 2020 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/1.26.1/), [jcenter](https://bintray.com/diffplug/opensource/spotless-maven-plugin/1.26.1))
+
+* Should be no changes whatsoever!  Released only for consistency with lib and plugin-gradle.
 
 ### Version 1.26.1 - November 27th 2019 ([javadoc](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/1.26.1/), [jcenter](https://bintray.com/diffplug/opensource/spotless-maven-plugin/1.26.1))
 
