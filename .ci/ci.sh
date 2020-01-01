@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Do the Gradle build
-./gradlew --scan build --build-cache || exit 1
+./gradlew build --build-cache || exit 1
 ./gradlew npmTest --build-cache || exit 1
 
 if [ "$TRAVIS_REPO_SLUG" == "diffplug/spotless" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "master" ]; then
