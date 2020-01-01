@@ -18,13 +18,9 @@ package com.diffplug.gradle.spotless;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
-import org.gradle.api.artifacts.dsl.RepositoryHandler;
-import org.gradle.api.artifacts.repositories.ArtifactRepository;
-import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.util.GradleVersion;
 
-import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.SpotlessCache;
 
 public class SpotlessPlugin implements Plugin<Project> {
@@ -60,59 +56,7 @@ public class SpotlessPlugin implements Plugin<Project> {
 					SpotlessPluginLegacy.enforceCheck(spotlessExtension, project);
 				}
 			}
-
-			// the user hasn't specified where to resolve deps and they're going to get a deprecation warning
-			if (spotlessExtension.resolveDependenciesIn == null
-					&& project != project.getRootProject()
-					&& GradleVersion.current().compareTo(GradleProvisioner.STRICT_CONFIG_ACCESS) >= 0) {
-				boolean safeToForceProjectLocal = isMavenCentralSuperset(project.getRootProject().getBuildscript().getRepositories()) &&
-						isMavenCentralSuperset(project.getRepositories());
-				if (safeToForceProjectLocal) {
-					// if the root buildscript is just `gradlePluginPortal()` (a superset of mavenCental)
-					// and the project repositories are either empty or some superset of mavenCentral
-					// then there's no harm in defaulting them to project-local resolution
-					spotlessExtension.resolveDependenciesIn = GradleProvisioner.ResolveDependenciesIn.PROJECT;
-				} else {
-					GradleProvisioner.logger.severe(StringPrinter.buildStringFromLines(
-							"The way that Spotless resolves formatter dependencies was deprecated in Gradle 6.0.",
-							"To silence this warning, you need to set X: `spotless { resolveDependenciesIn 'X' }`",
-							"  'ROOT_BUILDSCRIPT' - current behavior, causes gradle to emit deprecation warnings.",
-							"  'PROJECT' *recommended* - uses this project's repositories to resolve dependencies.",
-							"                            Only drawback is for the uncommon case that you want your",
-							"                            build tools to draw from a different set of respositories than ",
-							"                            than your build artifacts.",
-							"  'PROJECT_BUILDSCRIPT' - uses this project's buildscript to resolve dependencies.",
-							"                          You will probably need to add this:",
-							"                            `buildscript { repositories { mavenCentral() } }`",
-							"                          to the top of the `build.gradle` in this subproject.",
-							"We're hoping to find a better resolution in the future, see issue below for more info",
-							"  https://github.com/diffplug/spotless/issues/502"));
-				}
-			}
 		});
-	}
-
-	private boolean isMavenCentralSuperset(RepositoryHandler repositories) {
-		return repositories.stream().allMatch(SpotlessPlugin::isMavenCentralSuperset);
-	}
-
-	private static boolean isMavenCentralSuperset(ArtifactRepository repository) {
-		if (!(repository instanceof MavenArtifactRepository)) {
-			return false;
-		}
-		MavenArtifactRepository maven = (MavenArtifactRepository) repository;
-		if ("MavenRepo".equals(maven.getName())
-				&& "https://repo.maven.apache.org/maven2/".equals(maven.getUrl().toString())) {
-			return true;
-		} else if ("BintrayJCenter".equals(maven.getName())
-				&& "https://jcenter.bintray.com/".equals(maven.getUrl().toString())) {
-			return true;
-		} else if ("Gradle Central Plugin Repository".equals(maven.getName())
-				&& "https://plugins.gradle.org/m2".equals(maven.getUrl().toString())) {
-			return true;
-		} else {
-			return false;
-		}
 	}
 
 	/** The extension for this plugin. */
