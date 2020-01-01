@@ -36,6 +36,6 @@ include 'lib-extra'	// reusable library with lots of dependencies
 include 'plugin-gradle'	// gradle-specific glue code
 
 // excludes maven from JitCI builds,
-if (System.getenv('SPOTLESS_EXCLUDE_MAVEN') != 'true') {
+if (System.getenv('SPOTLESS_EXCLUDE_MAVEN') != 'true' && System.getenv('JITPACK') != 'true') {
 	include 'plugin-maven'	// maven-specific glue code
 }
