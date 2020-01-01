@@ -20,21 +20,20 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.execution.TaskExecutionGraph;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
-import com.diffplug.common.collect.Sets;
 import com.diffplug.common.io.Files;
 import com.diffplug.spotless.FormatterStep;
 
 /**
  * NOT AN END-USER TASK, DO NOT USE FOR ANYTHING!
- * 
+ *
  * The minimal task required to force all SpotlessTasks in the root
  * project to trigger their dependency resolution, so that they will
  * be cached for subproject tasks to slurp from.  See {@link RegisterDependenciesInRoot}
@@ -44,18 +43,25 @@ public class RegisterDependenciesTask extends DefaultTask {
 	@Input
 	public List<FormatterStep> getSteps() {
 		List<FormatterStep> allSteps = new ArrayList<>();
-		Set<SpotlessTask> alreadyAdded = Sets.newIdentityHashSet();
-		for (Object dependsOn : getDependsOn()) {
-			// in Gradle 2.14, we can have a single task listed as a dep twice,
-			// and we can also have non-tasks listed as a dep
-			if (dependsOn instanceof SpotlessTask) {
-				SpotlessTask task = (SpotlessTask) dependsOn;
-				if (alreadyAdded.add(task)) {
-					allSteps.addAll(task.getSteps());
-				}
+		TaskExecutionGraph taskGraph = getProject().getGradle().getTaskGraph();
+		for (SpotlessTask task : tasks) {
+			if (taskGraph.hasTask(task)) {
+				allSteps.addAll(task.getSteps());
 			}
 		}
 		return allSteps;
+	}
+
+	private List<SpotlessTask> tasks = new ArrayList<>();
+
+	@Internal
+	public List<SpotlessTask> getTasks() {
+		return tasks;
+	}
+
+	void hookSubprojectTask(SpotlessTask task) {
+		tasks.add(task);
+		task.dependsOn(this);
 	}
 
 	File unitOutput;
@@ -80,6 +86,6 @@ public class RegisterDependenciesTask extends DefaultTask {
 	@TaskAction
 	public void trivialFunction() throws IOException {
 		Files.createParentDirs(unitOutput);
-		Files.write("unit", unitOutput, StandardCharsets.UTF_8);
+		Files.write(Integer.toString(getSteps().size()), unitOutput, StandardCharsets.UTF_8);
 	}
 }

@@ -32,16 +32,7 @@ public class GradleProvisioner {
 	private GradleProvisioner() {}
 
 	public static Provisioner fromProject(Project project) {
-		RegisterDependenciesTask task = project.getPlugins().apply(SpotlessPlugin.class).getExtension().registerDependenciesTask;
-		if (task == null) {
-			return fromRootBuildscript(project);
-		} else {
-			if (project.getRootProject() == project) {
-				return task.rootProvisioner;
-			} else {
-				return new RegisterDependenciesInRoot.SubProvisioner(task.rootProvisioner, project);
-			}
-		}
+		return project.getPlugins().apply(SpotlessPlugin.class).getExtension().registerDependenciesTask.rootProvisioner;
 	}
 
 	static Provisioner fromRootBuildscript(Project project) {

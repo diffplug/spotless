@@ -38,76 +38,27 @@ public class RegisterDependenciesInRootTest extends GradleIntegrationTest {
 				"  }",
 				"}");
 
-		// works fine on old versions
 		String oldestSupported = gradleRunner()
 				.withArguments("spotlessCheck").build().getOutput();
 		Assertions.assertThat(oldestSupported.replace("\r", "")).startsWith(
 				":spotlessCheck UP-TO-DATE\n" +
+						":spotlessInternalRegisterDependencies\n" +
 						":sub:spotlessJava\n" +
 						":sub:spotlessJavaCheck\n" +
 						":sub:spotlessCheck\n" +
 						"\n" +
 						"BUILD SUCCESSFUL");
 
-		// generates a warning in 6.0
 		setFile("gradle.properties").toLines();
-		String warningStarts = gradleRunner().withGradleVersion("6.0")
+		String newestSupported = gradleRunner().withGradleVersion("6.0")
 				.withArguments("spotlessCheck").build().getOutput();
-		assertWarning(warningStarts, true);
-
-		// we can make the old version generate the warning with spotless_register_dependencies_in_root
-		setFile("gradle.properties").toLines(
-				"spotless_register_dependencies_in_root=true");
-		String oldestSupportedWithRegisterDependencies = gradleRunner()
-				.withArguments("spotlessCheck").build().getOutput();
-		assertWarning(oldestSupportedWithRegisterDependencies, true);
-
-		// fix the root project
-		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
-				"plugins { id 'com.diffplug.gradle.spotless' }",
-				"spotless {",
-				"  java {",
-				"    targetEmptyForDeclaration()",
-				"    googleJavaFormat('1.2')",
-				"  }",
-				"}");
-		assertWarning(warningStarts, true);
-
-		setFile("gradle.properties").toLines(
-				"spotless_register_dependencies_in_root=true");
-		String oldestSupportedWithRegisterDependenciesFixed = gradleRunner()
-				.withArguments("spotlessCheck").build().getOutput();
-		assertWarning(oldestSupportedWithRegisterDependenciesFixed, false);
-
-		setFile("gradle.properties").toLines();
-		String warningStartsFixed = gradleRunner().withGradleVersion("6.0")
-				.withArguments("spotlessCheck").build().getOutput();
-		assertWarning(warningStartsFixed, false);
-	}
-
-	private void assertWarning(String input, boolean isThere) {
-		String warning = "This subproject is using a formatter that was not used in the root project.  To enable\n" +
-				"performance optimzations (and avoid Gradle 7 deprecation warnings), you must declare\n" +
-				"all of your formatters within the root project.  For example, if your subproject has\n" +
-				"a `java {}` block but your root project does not, just add a matching `java {}` block to\n" +
-				"your root project.  If you want to make it clear that it is intentional that the target\n" +
-				"is empty, you can do this in your root build.gradle:\n" +
-				"\n" +
-				"  spotless {\n" +
-				"    java {\n" +
-				"      targetEmptyForDeclaration()\n" +
-				"      [...same steps as subproject...]\n" +
-				"    }\n" +
-				"  }\n" +
-				"\n" +
-				"To help you figure out which block is missing, the step you are missing is\n" +
-				"  step name: google-java-format\n" +
-				"  requested: com.google.googlejavaformat:google-java-format:1.2 with transitives\n";
-		if (isThere) {
-			Assertions.assertThat(input.replace("\r", "")).contains(warning);
-		} else {
-			Assertions.assertThat(input.replace("\r", "")).doesNotContain(warning);
-		}
+		Assertions.assertThat(newestSupported.replace("\r", "")).startsWith(
+				"> Task :spotlessCheck UP-TO-DATE\n" +
+						"> Task :spotlessInternalRegisterDependencies\n" +
+						"> Task :sub:spotlessJava\n" +
+						"> Task :sub:spotlessJavaCheck\n" +
+						"> Task :sub:spotlessCheck\n" +
+						"\n" +
+						"BUILD SUCCESSFUL");
 	}
 }
