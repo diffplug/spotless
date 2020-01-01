@@ -28,6 +28,7 @@ import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
+import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.io.Files;
 import com.diffplug.spotless.FormatterStep;
 
@@ -83,6 +84,7 @@ public class RegisterDependenciesTask extends DefaultTask {
 	}
 
 	void setup() {
+		Preconditions.checkArgument(getProject().getRootProject() == getProject(), "Can only be used on the root project");
 		unitOutput = new File(getProject().getBuildDir(), "tmp/spotless-register-dependencies");
 		rootProvisioner = new GradleProvisioner.RootProvisioner(getProject());
 	}
