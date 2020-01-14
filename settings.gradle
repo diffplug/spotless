@@ -27,7 +27,6 @@ if (System.env['CI'] != null) {
 }
 
 include 'ide'				// easy dev setup
-include 'javadoc-publish'	// publish javadoc for the various libs
 
 include 'lib'		// reusable library with no dependencies
 include 'testlib'	// library for sharing test infrastructure between the projects below

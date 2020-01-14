@@ -9,8 +9,6 @@ plugins {
 	id 'com.jfrog.bintray' version '1.8.4' apply false
 	// https://github.com/mnlipp/jdrupes-mdoclet/releases
 	id 'org.jdrupes.mdoclet' version '1.0.5' apply false
-	// https://github.com/ajoberstar/gradle-git-publish/releases
-	id 'org.ajoberstar.git-publish' version '2.1.1' apply false
 	// https://github.com/spotbugs/spotbugs/releases
 	id "com.github.spotbugs" version "2.0.0" apply false
 }
