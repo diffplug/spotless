@@ -1,3 +1,12 @@
+String kind;
+if (project.name == 'plugin-gradle') {
+	kind = 'gradle'
+} else if (project.name == 'plugin-maven') {
+	kind = 'maven'
+} else {
+	assert project == rootProject
+	kind = 'lib'
+}
 
 // the root project and plugins have their own changelogs
 apply plugin: 'com.diffplug.spotless-changelog'
@@ -5,8 +14,12 @@ spotlessChangelog {
 	changelogFile 'CHANGES.md'
 	// need -Prelease=true in order to do a publish
 	appendDashSnapshotUnless_dashPrelease=true
+
+	tagPrefix     "${kind}/"
+	commitMessage "Published ${kind}/{{version}}" // {{version}} will be replaced
 }
 
+// make sure only one plugin gets published per 
 if (project == rootProject) {
 	gradle.taskGraph.whenReady { taskGraph ->
 		def changelogPushTasks = taskGraph.allTasks.stream()
