@@ -1,16 +1,4 @@
-buildscript {
-	repositories {
-		jcenter()
-	}
-}
-
-// applied by SelfTest
-plugins {
-	id 'com.diffplug.gradle.spotless'
-	id 'java'
-}
-
-repositories { jcenter() }
+apply plugin: 'com.diffplug.gradle.spotless'
 spotless {
 	def noInternalDepsClosure = {
 		String text = it

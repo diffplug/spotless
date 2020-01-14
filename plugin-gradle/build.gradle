@@ -28,24 +28,19 @@ dependencies {
 
 tasks.eclipse.dependsOn(pluginUnderTestMetadata)
 
-/////////////////////
-// SPOTLESS (fake) //
-/////////////////////
-task spotlessCheck(type: JavaExec) {
-	classpath sourceSets.test.runtimeClasspath
-	main = 'com.diffplug.gradle.spotless.SelfTestCheck'
-}
-check.dependsOn(spotlessCheck)
-
-task spotlessApply(type: JavaExec) {
-	classpath sourceSets.test.runtimeClasspath
-	main = 'com.diffplug.gradle.spotless.SelfTestApply'
-}
 test { testLogging.showStandardStreams = true }
 
-test { useJUnit { excludeCategories 'com.diffplug.spotless.category.NpmTest' } }
+test {
+	useJUnit {
+		excludeCategories 'com.diffplug.spotless.category.NpmTest'
+	}
+}
 
-task npmTest(type: Test) { useJUnit { includeCategories 'com.diffplug.spotless.category.NpmTest' } }
+task npmTest(type: Test) {
+	useJUnit {
+		includeCategories 'com.diffplug.spotless.category.NpmTest'
+	}
+}
 
 //////////////////////////
 // GRADLE PLUGIN PORTAL //

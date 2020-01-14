@@ -11,7 +11,12 @@ plugins {
 	id 'org.jdrupes.mdoclet' version '1.0.5' apply false
 	// https://github.com/spotbugs/spotbugs/releases
 	id "com.github.spotbugs" version "2.0.0" apply false
+	// here
+	id 'com.diffplug.gradle.spotless' version '3.27.0'
 }
+
+// this is... not the canonical way to do spotless :)
+apply from: 'spotlessSelf.gradle'
 
 // root eclipse project
 apply plugin: 'com.diffplug.gradle.eclipse.resourcefilters'
