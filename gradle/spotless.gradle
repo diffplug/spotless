@@ -27,25 +27,6 @@ spotless {
 	groovyGradle {
 		target '*.gradle'
 		paddedCell()
-		custom 'noInternalDeps', noInternalDepsClosure
-		bumpThisNumberIfACustomStepChanges(3)
 		greclipse().configFile rootProject.files('gradle/spotless/spotless.eclipseformat.xml', 'gradle/spotless/spotless.groovyformat.prefs')
-	}
-	freshmark {
-		target '*.md'
-		propertiesFile(rootProject.file('gradle.properties'))
-		properties {
-			it.put('yes', ':+1:')
-			it.put('no', ':white_large_square:')
-		}
-		indentWithSpaces(2)
-		trimTrailingWhitespace()
-		endWithNewline()
-	}
-	format 'misc', {
-		target '*.gitignore'
-		indentWithSpaces(2)
-		trimTrailingWhitespace()
-		endWithNewline()
 	}
 }

@@ -17,7 +17,17 @@ plugins {
 
 // this is... not the canonical way to do spotless :)
 allprojects {
-	apply from: rootProject.file('spotlessSelf.gradle')
+	apply from: rootProject.file('gradle/spotless.gradle')
+}
+apply from: rootProject.file('gradle/spotless-freshmark.gradle')
+
+spotless {
+	format 'dotfiles', {
+		target '.gitignore', '.gitattributes', '.editorconfig'
+		indentWithSpaces(2)
+		trimTrailingWhitespace()
+		endWithNewline()
+	}
 }
 
 // root eclipse project

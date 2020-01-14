@@ -2,6 +2,7 @@ ext.artifactId = project.artifactIdGradle
 ext.version = project.versionGradle
 apply from: rootProject.file('gradle/java-setup.gradle')
 apply from: rootProject.file('gradle/java-publish.gradle')
+apply from: rootProject.file('gradle/spotless-freshmark.gradle')
 
 apply plugin: 'java-library'
 apply plugin: 'com.gradle.plugin-publish'

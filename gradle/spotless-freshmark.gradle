@@ -1,0 +1,14 @@
+apply plugin: 'com.diffplug.gradle.spotless'
+spotless {
+	freshmark {
+		target '*.md'
+		propertiesFile(rootProject.file('gradle.properties'))
+		properties {
+			it.put('yes', ':+1:')
+			it.put('no', ':white_large_square:')
+		}
+		indentWithSpaces(2)
+		trimTrailingWhitespace()
+		endWithNewline()
+	}
+}
