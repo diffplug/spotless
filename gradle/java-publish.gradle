@@ -50,18 +50,6 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 ////////////////
 // PUBLISHING //
 ////////////////
-ext.isSnapshot = ext.version.endsWith('-SNAPSHOT')
-// pulls the credentials from either the environment variable or gradle.properties
-def cred = {
-	if (System.env[it] != null) {
-		return System.env[it]
-	} else if (project.hasProperty(it)) {
-		return project[it]
-	} else {
-		return 'unknown_' + it
-	}
-}
-
 final MAVEN_PLUGIN_ARTIFACT_NAME = 'spotless-maven-plugin'
 
 model {
@@ -119,26 +107,14 @@ model {
 				}
 			}
 		}
-		if (project.ext.isSnapshot) {
-			// upload snapshots to oss.sonatype.org
-			repositories {
-				maven {
-					url = 'https://oss.sonatype.org/content/repositories/snapshots'
-					credentials {
-						username = cred('nexus_user')
-						password = cred('nexus_pass')
-					}
-				}
-			}
-		}
 	}
 }
 
-if (!ext.isSnapshot) {
+if (!version.endsWith('-SNAPSHOT')) {
 	// upload releases to bintray and then mavenCentral
 	bintray {
-		user = cred('bintray_user')
-		key = cred('bintray_pass')
+		user = System.env['bintray_user']
+		key = System.env['bintray_pass']
 		publications = [
 			'pluginMaven'
 		]
@@ -150,8 +126,8 @@ if (!ext.isSnapshot) {
 			version {
 				name = project.ext.version
 				mavenCentralSync {
-					user = cred('nexus_user')
-					password = cred('nexus_pass')
+					user = System.env['nexus_user']
+					password = System.env['nexus_pass']
 				}
 			}
 		}
