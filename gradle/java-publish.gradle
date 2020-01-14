@@ -140,4 +140,23 @@ if (!version.endsWith('-SNAPSHOT')) {
 		sourcesJar,
 		javadocJar
 	])
+
+	// find the project with the changelog (this project for plugins, root project for libs)
+	def changelogTasks = (tasks.names.contains('changelogBump') ? project : rootProject).tasks
+
+	// ensures that nothing will be built if changelogPush will end up failing
+	tasks.named('jar').configure {
+		dependsOn changelogTasks.named('changelogCheck')
+	}
+	// ensures that changelog bump and push only happens if the publish was successful
+	changelogTasks.named('changelogBump').configure {
+		dependsOn tasks.named('bintrayUpload')
+		// only the root project has bintrayPublish, and it finalizes all bintrayUpload tasks
+		// https://github.com/bintray/gradle-bintray-plugin/blob/3fe02dfdae3e807afba57e0140a0d4c2424674e1/src/main/groovy/com/jfrog/bintray/gradle/ProjectsEvaluatedBuildListener.groovy#L37-L41
+		dependsOn rootProject.tasks.named('bintrayPublish')
+		// if we have a gradle plugin, we need to push it up to the plugin portal too
+		if (tasks.names.contains('publishPlugins')) {
+			dependsOn tasks.named('publishPlugins')
+		}
+	}
 }

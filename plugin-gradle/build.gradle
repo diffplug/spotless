@@ -2,7 +2,6 @@ apply from: rootProject.file('gradle/changelog.gradle')
 ext.artifactId = project.artifactIdGradle
 version = spotlessChangelog.versionNext
 apply from: rootProject.file('gradle/java-setup.gradle')
-apply from: rootProject.file('gradle/java-publish.gradle')
 apply from: rootProject.file('gradle/spotless-freshmark.gradle')
 
 apply plugin: 'java-library'
@@ -75,3 +74,6 @@ if (version.endsWith('-SNAPSHOT')) {
 		}
 	}
 }
+
+// have to apply java-publish after setting up the pluginBundle
+apply from: rootProject.file('gradle/java-publish.gradle')
