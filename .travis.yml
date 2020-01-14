@@ -11,11 +11,10 @@ script:
   - ./gradlew build --build-cache && ./gradlew npmTest --build-cache
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
   - rm -fr plugin-maven/build/localMavenRepository/com/diffplug/spotless/
 cache:
   directories:
-  - $HOME/.gradle/caches/
+  - $HOME/.gradle/caches/modules-2/
   - $HOME/.gradle/wrapper/
   - $HOME/.m2/
   - plugin-maven/build/localMavenRepository/
