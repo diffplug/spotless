@@ -1,0 +1,20 @@
+
+// the root project and plugins have their own changelogs
+apply plugin: 'com.diffplug.spotless-changelog'
+spotlessChangelog {
+	changelogFile 'CHANGES.md'
+	// need -Prelease=true in order to do a publish
+	appendDashSnapshotUnless_dashPrelease=true
+}
+
+if (project == rootProject) {
+	gradle.taskGraph.whenReady { taskGraph ->
+		def changelogPushTasks = taskGraph.allTasks.stream()
+				.filter { t -> t.name == 'changelogPush' }
+				.map { t -> t.path }
+				.toList()
+		if (changelogPushTasks.size() > 1) {
+			throw new IllegalArgumentException("Run changelogPush one at a time:\n" + changelogPushTasks.join('\n'))
+		}
+	}
+}
