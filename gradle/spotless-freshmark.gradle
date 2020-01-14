@@ -7,7 +7,6 @@ Action<FreshMarkExtension> freshmarkSetup = {
 	it.target '*.md'
 	it.propertiesFile(rootProject.file('gradle.properties'))
 	it.properties {
-		it.put('versionLast', spotlessChangelog.versionLast)
 		it.put('yes', ':+1:')
 		it.put('no', ':white_large_square:')
 	}
@@ -19,5 +18,41 @@ Action<FreshMarkExtension> freshmarkSetup = {
 spotless {
 	freshmark {
 		freshmarkSetup.execute(it)
+	}
+}
+
+// if this freshmark has a changelog file, then it has version-sensitive content
+if (tasks.names.contains('changelogCheck')) {
+	// normally we use versionLast for our freshmark
+	spotless {
+		freshmark {
+			properties {
+				it.put('versionLast', spotlessChangelog.versionLast)
+			}
+		}
+	}
+
+	// create a freshmark apply task manually
+	FreshMarkExtension freshmark = new FreshMarkExtension(spotless);
+	freshmarkSetup.execute(freshmark)
+	freshmark.properties {
+		// that uses versionNext as versionLast
+		it.put('versionLast', spotlessChangelog.versionNext)
+	}
+	def changelogBumpFreshmark = freshmark.createIndependentTask('changelogBumpFreshmark')
+	changelogBumpFreshmark.setApply()
+	// freshmark should run after the changelog bump
+	changelogBumpFreshmark.dependsOn tasks.named('changelogBump')
+
+	def changelogBumpFreshmarkGitAdd = tasks.register('changelogBumpFreshmarkGitAdd') {
+		// this git add add should run after the freshmark
+		dependsOn(changelogBumpFreshmark)
+		// do the git add
+		doLast {
+			exec { commandLine 'git', 'add' , '*.md' }
+		}
+	}
+	tasks.named('changelogPush').configure {
+		dependsOn changelogBumpFreshmarkGitAdd
 	}
 }
