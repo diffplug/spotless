@@ -4,6 +4,7 @@ spotless {
 		target '*.md'
 		propertiesFile(rootProject.file('gradle.properties'))
 		properties {
+			it.put('versionLast', spotlessChangelog.versionLast)
 			it.put('yes', ':+1:')
 			it.put('no', ':white_large_square:')
 		}
