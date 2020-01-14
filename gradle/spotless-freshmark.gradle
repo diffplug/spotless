@@ -1,15 +1,23 @@
+
 apply plugin: 'com.diffplug.gradle.spotless'
+
+import com.diffplug.gradle.spotless.FreshMarkExtension
+
+Action<FreshMarkExtension> freshmarkSetup = {
+	it.target '*.md'
+	it.propertiesFile(rootProject.file('gradle.properties'))
+	it.properties {
+		it.put('versionLast', spotlessChangelog.versionLast)
+		it.put('yes', ':+1:')
+		it.put('no', ':white_large_square:')
+	}
+	it.indentWithSpaces(2)
+	it.trimTrailingWhitespace()
+	it.endWithNewline()
+}
+
 spotless {
 	freshmark {
-		target '*.md'
-		propertiesFile(rootProject.file('gradle.properties'))
-		properties {
-			it.put('versionLast', spotlessChangelog.versionLast)
-			it.put('yes', ':+1:')
-			it.put('no', ':white_large_square:')
-		}
-		indentWithSpaces(2)
-		trimTrailingWhitespace()
-		endWithNewline()
+		freshmarkSetup.execute(it)
 	}
 }
