@@ -33,7 +33,7 @@ if (tasks.names.contains('changelogCheck')) {
 	}
 
 	// create a freshmark apply task manually
-	FreshMarkExtension freshmark = new FreshMarkExtension(spotless);
+	FreshMarkExtension freshmark = new FreshMarkExtension(spotless)
 	freshmarkSetup.execute(freshmark)
 	freshmark.properties {
 		// that uses versionNext as versionLast
