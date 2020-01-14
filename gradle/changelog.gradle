@@ -1,4 +1,4 @@
-String kind;
+String kind
 if (project.name == 'plugin-gradle') {
 	kind = 'gradle'
 } else if (project.name == 'plugin-maven') {
@@ -19,7 +19,6 @@ spotlessChangelog {
 	commitMessage "Published ${kind}/{{version}}" // {{version}} will be replaced
 }
 
-// make sure only one plugin gets published per 
 if (project == rootProject) {
 	gradle.taskGraph.whenReady { taskGraph ->
 		def changelogPushTasks = taskGraph.allTasks.stream()
@@ -27,7 +26,20 @@ if (project == rootProject) {
 				.map { t -> t.path }
 				.toList()
 		if (changelogPushTasks.size() > 1) {
+			// make sure only one changelog gets published per tag/commit
 			throw new IllegalArgumentException("Run changelogPush one at a time:\n" + changelogPushTasks.join('\n'))
+		} else if (changelogPushTasks.size() == 1) {
+			boolean isLib = changelogPushTasks[0] == ':changelogPush'
+			// if the one thing being published is a plugin
+			if (!isLib) {
+				// make sure there aren't any unreleased changes in lib
+				if (!rootProject.spotlessChangelog.parsedChangelog.noUnreleasedChanges()) {
+					throw new IllegalArgumentException(
+					"You're going to publish ${changelogPushTasks[0]}, but there are unreleased features in lib!\n" +
+					"You should run :changelogPush first!  Else you'll be missing out on:\n" +
+					libUnreleasedChanges)
+				}
+			}
 		}
 	}
 }
