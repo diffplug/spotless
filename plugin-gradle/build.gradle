@@ -71,7 +71,7 @@ if (version.endsWith('-SNAPSHOT')) {
 		mavenCoordinates {
 			groupId = project.group
 			artifactId = project.artifactIdGradle
-			version = project.ext.version
+			version = project.version
 		}
 	}
 }
