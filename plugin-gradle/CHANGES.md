@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [3.27.1] - 2020-01-14
 ### Fixed
 * `licenseHeader` and `licenseHeaderFile` accidentally returned a package-private config object, which is now public, fixes ([#505](https://github.com/diffplug/spotless/issues/505)).
 
