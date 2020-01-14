@@ -19,9 +19,9 @@ spotless {
 		}
 		custom 'noInternalDeps', noInternalDepsClosure
 		bumpThisNumberIfACustomStepChanges(1)
-		licenseHeaderFile 'spotless.license'
-		importOrderFile   'spotless.importorder'
-		eclipse().configFile 'spotless.eclipseformat.xml'
+		licenseHeaderFile rootProject.file('gradle/spotless/spotless.license')
+		importOrderFile   rootProject.file('gradle/spotless/spotless.importorder')
+		eclipse().configFile rootProject.file('gradle/spotless/spotless.eclipseformat.xml')
 		trimTrailingWhitespace()
 		removeUnusedImports()
 	}
@@ -33,7 +33,7 @@ spotless {
 		paddedCell()
 		custom 'noInternalDeps', noInternalDepsClosure
 		bumpThisNumberIfACustomStepChanges(3)
-		greclipse().configFile('spotless.eclipseformat.xml', 'spotless.groovyformat.prefs')
+		greclipse().configFile rootProject.files('gradle/spotless/spotless.eclipseformat.xml', 'gradle/spotless/spotless.groovyformat.prefs')
 	}
 	freshmark {
 		target '**/*.md'
@@ -54,6 +54,6 @@ spotless {
 			include '**/*.xml', '**/*.xsd'
 			exclude '**/build/**'
 		}
-		eclipseWtp('xml').configFile 'spotless.xmlformat.prefs'
+		eclipseWtp('xml').configFile rootProject.file('gradle/spotless/spotless.xmlformat.prefs')
 	}
 }
