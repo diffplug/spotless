@@ -11,17 +11,20 @@ plugins {
 	id 'org.jdrupes.mdoclet' version '1.0.5' apply false
 	// https://github.com/spotbugs/spotbugs/releases
 	id "com.github.spotbugs" version "2.0.0" apply false
-	// here
-	id 'com.diffplug.gradle.spotless' version '3.27.0'
+	// https://github.com/diffplug/spotless-changelog
+	id "com.diffplug.spotless-changelog" version "1.1.0" apply false
 }
 
-// this is... not the canonical way to do spotless :)
+apply from: rootProject.file('gradle/changelog.gradle')
 allprojects {
 	apply from: rootProject.file('gradle/spotless.gradle')
 }
 apply from: rootProject.file('gradle/spotless-freshmark.gradle')
 
 spotless {
+	groovyGradle {
+		target '*.gradle', 'gradle/*.gradle'
+	}
 	format 'dotfiles', {
 		target '.gitignore', '.gitattributes', '.editorconfig'
 		indentWithSpaces(2)

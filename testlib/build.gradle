@@ -2,7 +2,7 @@ plugins {
 	id 'java-library'
 }
 ext.artifactId = project.artifactIdTestLib
-ext.version = project.versionLib
+version = rootProject.spotlessChangelog.versionNext
 apply from: rootProject.file('gradle/java-setup.gradle')
 
 dependencies {
