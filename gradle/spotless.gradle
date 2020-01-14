@@ -17,9 +17,9 @@ spotless {
 		java {
 			custom 'noInternalDeps', noInternalDepsClosure
 			bumpThisNumberIfACustomStepChanges(1)
-			licenseHeaderFile rootProject.file('gradle/spotless/spotless.license')
-			importOrderFile   rootProject.file('gradle/spotless/spotless.importorder')
-			eclipse().configFile rootProject.file('gradle/spotless/spotless.eclipseformat.xml')
+			licenseHeaderFile rootProject.file('gradle/spotless.license')
+			importOrderFile   rootProject.file('gradle/spotless.importorder')
+			eclipse().configFile rootProject.file('gradle/spotless.eclipseformat.xml')
 			trimTrailingWhitespace()
 			removeUnusedImports()
 		}
@@ -27,6 +27,6 @@ spotless {
 	groovyGradle {
 		target '*.gradle'
 		paddedCell()
-		greclipse().configFile rootProject.files('gradle/spotless/spotless.eclipseformat.xml', 'gradle/spotless/spotless.groovyformat.prefs')
+		greclipse().configFile rootProject.files('gradle/spotless.eclipseformat.xml', 'gradle/spotless.groovyformat.prefs')
 	}
 }
