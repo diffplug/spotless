@@ -406,7 +406,7 @@ public class FormatExtension {
 		addStep(IndentStep.Type.TAB.create());
 	}
 
-	abstract class LicenseHeaderConfig {
+	public abstract class LicenseHeaderConfig {
 		String delimiter;
 		String yearSeparator = LicenseHeaderStep.defaultYearDelimiter();
 
@@ -437,7 +437,7 @@ public class FormatExtension {
 		abstract FormatterStep createStep();
 	}
 
-	class LicenseStringHeaderConfig extends LicenseHeaderConfig {
+	public class LicenseStringHeaderConfig extends LicenseHeaderConfig {
 
 		private String header;
 
@@ -451,7 +451,7 @@ public class FormatExtension {
 		}
 	}
 
-	class LicenseFileHeaderConfig extends LicenseHeaderConfig {
+	public class LicenseFileHeaderConfig extends LicenseHeaderConfig {
 
 		private Object headerFile;
 

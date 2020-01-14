@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Fixed
+* `licenseHeader` and `licenseHeaderFile` accidentally returned a package-private config object, which is now public, fixes ([#505](https://github.com/diffplug/spotless/issues/505)).
 
 ## [3.27.0] - 2020-01-01
 * Added method `FormatExtension.createIndependentTask(String taskName)` which allows creating a Spotless task outside of the `check`/`apply` lifecycle.  See [javadoc](https://github.com/diffplug/spotless/blob/91ed7203994e52058ea6c2e0f88d023ed290e433/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/FormatExtension.java#L613-L639) for details. ([#500](https://github.com/diffplug/spotless/pull/500))
