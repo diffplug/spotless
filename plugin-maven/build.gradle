@@ -31,7 +31,7 @@ import static java.nio.file.StandardOpenOption.CREATE_NEW
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING
 
 ext.artifactId = project.artifactIdMaven
-ext.version = project.versionMaven
+version = spotlessChangelog.versionNext
 apply from: rootProject.file("gradle/java-setup.gradle")
 apply from: rootProject.file("gradle/java-publish.gradle")
 
@@ -57,14 +57,16 @@ def mvnw(String args) {
 	}
 }
 
+String libVersion = version.endsWith('-SNAPSHOT') ?
+		rootProject.spotlessChangelog.versionNext :
+		rootProject.spotlessChangelog.versionLast
 dependencies {
-	if (!project.versionMaven.endsWith('-SNAPSHOT') && project.versionLib.endsWith('-SNAPSHOT')) {
-		// gradle = release, lib = snapshot, therefore gradle should depend on the last stable lib
-		implementation "com.diffplug.spotless:spotless-lib:${project.stableLib}"
-		implementation "com.diffplug.spotless:spotless-lib-extra:${project.stableLib}"
-	} else {
+	if (version.endsWith('-SNAPSHOT')) {
 		implementation project(':lib')
 		implementation project(':lib-extra')
+	} else {
+		implementation "com.diffplug.spotless:spotless-lib:${libVersion}"
+		implementation "com.diffplug.spotless:spotless-lib-extra:${libVersion}"
 	}
 
 	implementation "org.codehaus.plexus:plexus-resources:${VER_PLEXUS_RESOURCES}"
@@ -113,7 +115,6 @@ def libs = [
 libs.each {
 	def groupId = 'com.diffplug.spotless'
 	def artifactId = "spotless-${it}"
-	def version = project.versionLib
 	def jarTask = tasks.getByPath(":${it}:jar")
 	def file = jarTask.archivePath
 
@@ -126,7 +127,7 @@ libs.each {
 				"-Dfile=${file} " +
 				"-DgroupId=${groupId} " +
 				"-DartifactId=${artifactId} " +
-				"-Dversion=${version} " +
+				"-Dversion=${libVersion} " +
 				"-Dpackaging=jar " +
 				"-DlocalRepositoryPath=${LOCAL_MAVEN_REPO_DIR}")
 	}
@@ -148,10 +149,10 @@ task createPomXml(dependsOn: installLocalDependencies) {
 		}.join()
 
 		def versions = [
-			spotlessMavenPluginVersion: project.versionMaven,
+			spotlessMavenPluginVersion: version,
 			mavenApiVersion           : VER_MAVEN_API,
 			eclipseAetherVersion      : VER_ECLIPSE_AETHER,
-			spotlessLibVersion        : project.versionLib,
+			spotlessLibVersion        : libVersion,
 			additionalDependencies    : additionalDependencies
 		]
 
@@ -180,7 +181,7 @@ task runMavenBuild(type: Exec, dependsOn: [
 
 jar.setActions Arrays.asList()
 jar.dependsOn(runMavenBuild)
-File jarIn = file("${MAVEN_PROJECT_DIR}/target/spotless-maven-plugin-${project.versionMaven}.jar")
+File jarIn = file("${MAVEN_PROJECT_DIR}/target/spotless-maven-plugin-${version}.jar")
 File jarOut = jar.archivePath
 jar.inputs.file(jarIn)
 jar.outputs.file(jarOut)
@@ -195,5 +196,5 @@ test {
 	testLogging { exceptionFormat = 'full' }
 	// pass location of the local maven repository and plugin version to junit tests
 	systemProperty "localMavenRepositoryDir", LOCAL_MAVEN_REPO_DIR
-	systemProperty "spotlessMavenPluginVersion", project.versionMaven
+	systemProperty "spotlessMavenPluginVersion", project.version
 }

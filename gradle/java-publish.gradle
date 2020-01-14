@@ -19,10 +19,10 @@ javadoc {
 
 // use markdown in javadoc
 def makeLink = { url, text -> "<a href=\"${url}\" style=\"text-transform: none;\">${text}</a>" }
-def javadocInfo = '<h2>' + makeLink("https://github.com/${org}/${name}", "${group}:${project.ext.artifactId}:${ext.version}") +
+def javadocInfo = '<h2>' + makeLink("https://github.com/${org}/${name}", "${group}:${project.ext.artifactId}:${version}") +
 		' by ' + makeLink('https://www.diffplug.com', 'DiffPlug') + '</h2>'
 
-String version_str = ext.version.endsWith('-SNAPSHOT') ? 'snapshot' : ext.version
+String version_str = version.endsWith('-SNAPSHOT') ? 'snapshot' : version
 apply plugin: 'org.jdrupes.mdoclet'
 javadoc {
 	// Where it's possible to name parameters and methods clearly enough
@@ -64,7 +64,7 @@ model {
 
 				groupId project.group
 				artifactId project.ext.artifactId
-				version project.ext.version
+				version project.version
 
 				pom.withXml {
 					// add MavenCentral requirements to the POM
@@ -124,7 +124,7 @@ if (!version.endsWith('-SNAPSHOT')) {
 			name = project.ext.artifactId
 			userOrg = project.org
 			version {
-				name = project.ext.version
+				name = project.version
 				mavenCentralSync {
 					user = System.env['nexus_user']
 					password = System.env['nexus_pass']

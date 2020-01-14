@@ -1,6 +1,6 @@
 apply from: rootProject.file('gradle/changelog.gradle')
 ext.artifactId = project.artifactIdGradle
-ext.version = project.versionGradle
+version = spotlessChangelog.versionNext
 apply from: rootProject.file('gradle/java-setup.gradle')
 apply from: rootProject.file('gradle/java-publish.gradle')
 apply from: rootProject.file('gradle/spotless-freshmark.gradle')
@@ -10,13 +10,12 @@ apply plugin: 'com.gradle.plugin-publish'
 apply plugin: 'java-gradle-plugin'
 
 dependencies {
-	if (!project.versionGradle.endsWith('-SNAPSHOT') && project.versionLib.endsWith('-SNAPSHOT')) {
-		// gradle = release, lib = snapshot, therefore gradle should depend on the last stable lib
-		api "com.diffplug.spotless:spotless-lib:${project.stableLib}"
-		api "com.diffplug.spotless:spotless-lib-extra:${project.stableLib}"
-	} else {
+	if (version.endsWith('-SNAPSHOT')) {
 		api project(':lib')
 		api project(':lib-extra')
+	} else {
+		api "com.diffplug.spotless:spotless-lib:${rootProject.spotlessChangelog.versionLast}"
+		api "com.diffplug.spotless:spotless-lib-extra:${rootProject.spotlessChangelog.versionLast}"
 	}
 	implementation "com.diffplug.durian:durian-core:${VER_DURIAN}"
 	implementation "com.diffplug.durian:durian-io:${VER_DURIAN}"
@@ -47,7 +46,6 @@ task npmTest(type: Test) {
 //////////////////////////
 // GRADLE PLUGIN PORTAL //
 //////////////////////////
-version = project.ext.version
 if (version.endsWith('-SNAPSHOT')) {
 	publishPlugins.enabled = false
 } else {
