@@ -1,0 +1,6 @@
+com.diffplug.spotless.extra
+com.diffplug.spotless.extra.cpp
+com.diffplug.spotless.extra.groovy
+com.diffplug.spotless.extra.integration
+com.diffplug.spotless.extra.java
+com.diffplug.spotless.extra.wtp

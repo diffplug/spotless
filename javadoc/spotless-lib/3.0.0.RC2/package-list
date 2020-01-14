@@ -1,0 +1,5 @@
+com.diffplug.spotless
+com.diffplug.spotless.annotations
+com.diffplug.spotless.generic
+com.diffplug.spotless.java
+com.diffplug.spotless.markdown

@@ -1,0 +1,7 @@
+com.diffplug.spotless.maven
+com.diffplug.spotless.maven.cpp
+com.diffplug.spotless.maven.generic
+com.diffplug.spotless.maven.java
+com.diffplug.spotless.maven.kotlin
+com.diffplug.spotless.maven.scala
+com.diffplug.spotless.maven.xml

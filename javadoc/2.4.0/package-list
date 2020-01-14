@@ -1,0 +1,3 @@
+com.diffplug.gradle.spotless
+com.diffplug.gradle.spotless.freshmark
+com.diffplug.gradle.spotless.java

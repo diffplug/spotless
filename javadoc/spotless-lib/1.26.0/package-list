@@ -1,0 +1,13 @@
+com.diffplug.spotless
+com.diffplug.spotless.annotations
+com.diffplug.spotless.cpp
+com.diffplug.spotless.css
+com.diffplug.spotless.generic
+com.diffplug.spotless.java
+com.diffplug.spotless.kotlin
+com.diffplug.spotless.markdown
+com.diffplug.spotless.npm
+com.diffplug.spotless.scala
+com.diffplug.spotless.sql
+com.diffplug.spotless.sql.dbeaver
+com.diffplug.spotless.xml
