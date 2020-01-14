@@ -34,13 +34,13 @@ if (project == rootProject) {
 			if (!isLib) {
 				// make sure there aren't any unreleased changes in lib
 				if (!rootProject.spotlessChangelog.parsedChangelog.noUnreleasedChanges()) {
-					if (!("true".equals(rootProject.findProperty('ignoreUnreleaseLib')))) {
+					if (!("true".equals(rootProject.findProperty('ignoreUnreleasedLib')))) {
 						throw new IllegalArgumentException(
 						"You're going to publish ${changelogPushTasks[0]}, but there are unreleased features in lib!\n" +
 						"You should run :changelogPush first!  Else you'll be missing out on:\n" +
-						"${libUnreleasedChanges}\n\n" +
+						"${rootProject.spotlessChangelog.parsedChangelog.unreleasedChanges()}\n" +
 						"If it's okay to miss those and link against the old ${rootProject.spotlessChangelog.versionLast} then " +
-						"add -PignoreUnreleaseLib=true")
+						"add -ignoreUnreleasedLib=true")
 					}
 				}
 			}
