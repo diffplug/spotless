@@ -11,6 +11,23 @@ plugins {
 	id 'org.jdrupes.mdoclet' version '1.0.5' apply false
 	// https://github.com/spotbugs/spotbugs/releases
 	id "com.github.spotbugs" version "2.0.0" apply false
+	// here
+	id 'com.diffplug.gradle.spotless' version '3.27.0'
+}
+
+// this is... not the canonical way to do spotless :)
+allprojects {
+	apply from: rootProject.file('gradle/spotless.gradle')
+}
+apply from: rootProject.file('gradle/spotless-freshmark.gradle')
+
+spotless {
+	format 'dotfiles', {
+		target '.gitignore', '.gitattributes', '.editorconfig'
+		indentWithSpaces(2)
+		trimTrailingWhitespace()
+		endWithNewline()
+	}
 }
 
 // root eclipse project

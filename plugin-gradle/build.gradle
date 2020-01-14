@@ -2,6 +2,7 @@ ext.artifactId = project.artifactIdGradle
 ext.version = project.versionGradle
 apply from: rootProject.file('gradle/java-setup.gradle')
 apply from: rootProject.file('gradle/java-publish.gradle')
+apply from: rootProject.file('gradle/spotless-freshmark.gradle')
 
 apply plugin: 'java-library'
 apply plugin: 'com.gradle.plugin-publish'
@@ -28,24 +29,19 @@ dependencies {
 
 tasks.eclipse.dependsOn(pluginUnderTestMetadata)
 
-/////////////////////
-// SPOTLESS (fake) //
-/////////////////////
-task spotlessCheck(type: JavaExec) {
-	classpath sourceSets.test.runtimeClasspath
-	main = 'com.diffplug.gradle.spotless.SelfTestCheck'
-}
-check.dependsOn(spotlessCheck)
-
-task spotlessApply(type: JavaExec) {
-	classpath sourceSets.test.runtimeClasspath
-	main = 'com.diffplug.gradle.spotless.SelfTestApply'
-}
 test { testLogging.showStandardStreams = true }
 
-test { useJUnit { excludeCategories 'com.diffplug.spotless.category.NpmTest' } }
+test {
+	useJUnit {
+		excludeCategories 'com.diffplug.spotless.category.NpmTest'
+	}
+}
 
-task npmTest(type: Test) { useJUnit { includeCategories 'com.diffplug.spotless.category.NpmTest' } }
+task npmTest(type: Test) {
+	useJUnit {
+		includeCategories 'com.diffplug.spotless.category.NpmTest'
+	}
+}
 
 //////////////////////////
 // GRADLE PLUGIN PORTAL //

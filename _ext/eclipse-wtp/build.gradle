@@ -1,3 +1,6 @@
+plugins {
+	id 'com.diffplug.gradle.spotless' version '3.27.0'
+}
 ext {
 	developers = [
 		fvgh: [ name: 'Frank Vennemeyer', email: 'frankgh@zoho.com' ],
@@ -117,4 +120,11 @@ fileTree(dir: testLocation).include('**/*Test.java').each { file ->
 		mustRunAfter tasks.jar
 	}
 	test.dependsOn "${testFile}"
+}
+
+spotless {
+	format 'xml', {
+		target 'src/main/resources/**/*.xml'
+		eclipseWtp('xml').configFile 'spotless.xmlformat.prefs'
+	}
 }
