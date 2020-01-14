@@ -12,48 +12,40 @@ spotless {
 			throw new AssertionError("Accidental internal import")
 		}
 	}
-	java {
-		target fileTree('.') {
-			include '**/*.java'
-			exclude '_ext/*/build/**'
+	if (project.name != 'ide' && project != rootProject) {
+		// the rootProject and ide projects don't have any java
+		java {
+			custom 'noInternalDeps', noInternalDepsClosure
+			bumpThisNumberIfACustomStepChanges(1)
+			licenseHeaderFile rootProject.file('gradle/spotless/spotless.license')
+			importOrderFile   rootProject.file('gradle/spotless/spotless.importorder')
+			eclipse().configFile rootProject.file('gradle/spotless/spotless.eclipseformat.xml')
+			trimTrailingWhitespace()
+			removeUnusedImports()
 		}
-		custom 'noInternalDeps', noInternalDepsClosure
-		bumpThisNumberIfACustomStepChanges(1)
-		licenseHeaderFile rootProject.file('gradle/spotless/spotless.license')
-		importOrderFile   rootProject.file('gradle/spotless/spotless.importorder')
-		eclipse().configFile rootProject.file('gradle/spotless/spotless.eclipseformat.xml')
-		trimTrailingWhitespace()
-		removeUnusedImports()
 	}
 	groovyGradle {
-		target fileTree('.') {
-			include '**/*.gradle'
-			exclude '_ext/**'
-		}
+		target '*.gradle'
 		paddedCell()
 		custom 'noInternalDeps', noInternalDepsClosure
 		bumpThisNumberIfACustomStepChanges(3)
 		greclipse().configFile rootProject.files('gradle/spotless/spotless.eclipseformat.xml', 'gradle/spotless/spotless.groovyformat.prefs')
 	}
 	freshmark {
-		target '**/*.md'
-		propertiesFile('gradle.properties')
+		target '*.md'
+		propertiesFile(rootProject.file('gradle.properties'))
 		properties {
 			it.put('yes', ':+1:')
 			it.put('no', ':white_large_square:')
 		}
-	}
-	format 'misc', {
-		target '**/*.md', '**/*.gitignore'
 		indentWithSpaces(2)
 		trimTrailingWhitespace()
 		endWithNewline()
 	}
-	format 'xml', {
-		target fileTree('.') {
-			include '**/*.xml', '**/*.xsd'
-			exclude '**/build/**'
-		}
-		eclipseWtp('xml').configFile rootProject.file('gradle/spotless/spotless.xmlformat.prefs')
+	format 'misc', {
+		target '*.gitignore'
+		indentWithSpaces(2)
+		trimTrailingWhitespace()
+		endWithNewline()
 	}
 }

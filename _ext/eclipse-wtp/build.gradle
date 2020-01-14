@@ -118,3 +118,10 @@ fileTree(dir: testLocation).include('**/*Test.java').each { file ->
 	}
 	test.dependsOn "${testFile}"
 }
+
+spotless {
+	format 'xml', {
+		target 'src/main/resources/**/*.xml'
+		eclipseWtp('xml').configFile rootProject.file('gradle/spotless/spotless.xmlformat.prefs')
+	}
+}

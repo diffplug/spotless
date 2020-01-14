@@ -16,7 +16,9 @@ plugins {
 }
 
 // this is... not the canonical way to do spotless :)
-apply from: 'spotlessSelf.gradle'
+allprojects {
+	apply from: rootProject.file('spotlessSelf.gradle')
+}
 
 // root eclipse project
 apply plugin: 'com.diffplug.gradle.eclipse.resourcefilters'
