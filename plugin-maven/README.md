@@ -134,7 +134,7 @@ By default, all files matching `src/main/scala/**/*.scala`, `src/test/scala/**/*
        <content>/* Licensed under Apache-2.0 */</content>
        <file>${basedir}/license-header</file>
      </licenseHeader>
-     <endWithNewLine/>
+     <endWithNewline/>
      <trimTrailingWhitespace/>
      <scalafmt>
        <file>${basedir}/scalafmt.conf</file>
@@ -159,7 +159,7 @@ By default, all files matching `src/main/kotlin/**/*.kt` and `src/test/kotlin/**
        <content>/* Licensed under Apache-2.0 */</content>
        <file>${basedir}/license-header</file>
      </licenseHeader>
-     <endWithNewLine/>
+     <endWithNewline/>
      <trimTrailingWhitespace/>
      <ktlint>
        <!-- Optional, available versions: https://github.com/pinterest/ktlint/releases -->
