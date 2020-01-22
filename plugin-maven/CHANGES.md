@@ -3,6 +3,7 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+* Fix scala and kotlin maven config documentation.
 
 ## [1.27.0] - 2020-01-01
 * Should be no changes whatsoever!  Released only for consistency with lib and plugin-gradle.
