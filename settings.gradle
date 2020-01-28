@@ -46,3 +46,11 @@ include 'plugin-gradle'	// gradle-specific glue code
 if (System.getenv('SPOTLESS_EXCLUDE_MAVEN') != 'true' && System.getenv('JITPACK') != 'true') {
 	include 'plugin-maven'	// maven-specific glue code
 }
+
+// excludes external (_ext) projects from development builds,
+if (System.getenv('SPOTLESS_EXT') != 'true') {
+	file('_ext').eachDirMatch(~/^(?!(\.|gradle)).*/) { dir ->
+		include dir.name
+		project(":${dir.name}").projectDir = dir
+	}
+}

@@ -1,14 +1,5 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
-    }
-}
-
-apply plugin: com.jfrog.bintray.gradle.BintrayPlugin
 apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
 
 task sourcesJar(type: Jar) {
 	classifier = 'sources'
@@ -20,7 +11,7 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 	from javadoc.destinationDir
 }
 
-def isSnapshot = ext_version.endsWith('-SNAPSHOT')
+def isSnapshot = version.endsWith('-SNAPSHOT')
 // pulls the credentials from either the environment variable or gradle.properties
 def lookup = { key, defaultVal ->
 	if (System.env[key] != null) {
@@ -36,9 +27,9 @@ publishing {
 	publications {
 		mavenJava(MavenPublication) {
 
-			groupId project.ext_group
-			artifactId project.ext_artifactId
-			version project.ext_version
+			groupId project.group
+			artifactId project.artifactId
+			version project.version
 			from components.java
 			artifact sourcesJar
 			artifact javadocJar
@@ -48,13 +39,13 @@ publishing {
 				// add MavenCentral requirements to the POM
 				asNode().children().last() + {
 					resolveStrategy = Closure.DELEGATE_FIRST
-					name project.ext_artifactId
-					description project.ext_description
-					url "https://github.com/${project.ext_org}/${rootProject.name}"
+					name project.artifactId
+					description project.description
+					url "https://github.com/${project.org}/${rootProject.name}"
 					scm {
-						url "https://github.com/${project.ext_org}/${rootProject.name}"
-						connection "scm:git:https://github.com/${project.ext_org}/${rootProject.name}.git"
-						developerConnection "scm:git:ssh:git@github.com/${project.ext_org}/${rootProject.name}.git"
+						url "https://github.com/${project.org}/${rootProject.name}"
+						connection "scm:git:https://github.com/${project.org}/${rootProject.name}.git"
+						developerConnection "scm:git:ssh:git@github.com/${project.org}/${rootProject.name}.git"
 					}
 					licenses {
 						license {
@@ -101,10 +92,10 @@ if (!isSnapshot) {
 		publish = true
 		pkg {
 			repo = 'opensource'
-			name = project.ext_artifactId
-			userOrg = project.ext_org
+			name = project.artifactId
+			userOrg = project.org
 			version {
-				name = project.ext_version
+				name = project.version
 				mavenCentralSync {
 					user = lookup('nexus_user', 'unknown_nexus_user')
 					password = lookup('nexus_pass', 'unknown_nexus_user')

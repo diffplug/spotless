@@ -1,4 +1,4 @@
-apply from: rootProject.file('../gradle/java-setup.gradle')
+apply from: rootProject.file('_ext/gradle/java-setup.gradle')
 
 buildscript {
     repositories {
