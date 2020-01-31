@@ -47,8 +47,22 @@ if (System.getenv('SPOTLESS_EXCLUDE_MAVEN') != 'true' && System.getenv('JITPACK'
 	include 'plugin-maven'	// maven-specific glue code
 }
 
-// excludes external (_ext) projects from development builds,
-if (System.getenv('SPOTLESS_EXT') != 'true') {
+def getStartProperty(java.lang.String name) {
+	def value = startParameter.getProjectProperties().get('com.diffplug.spotless.include.ext')
+	if(null != value) {
+		return value
+	}
+	// user properties are not available in the startParameter
+	def userPropertiesFile = new java.io.File(startParameter.getGradleUserHomeDir(), 'gradle.properties')
+	def userProperties = new java.util.Properties()
+	if (userPropertiesFile.exists()) {
+		userProperties.load(userPropertiesFile.newReader())
+	}
+	return userProperties.get(name)
+}
+
+// include external (_ext) projects from development builds
+if (getStartProperty('com.diffplug.spotless.include_ext') == 'true') {
 	file('_ext').eachDirMatch(~/^(?!(\.|gradle)).*/) { dir ->
 		include dir.name
 		project(":${dir.name}").projectDir = dir

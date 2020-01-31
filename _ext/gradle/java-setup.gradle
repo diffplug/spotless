@@ -3,33 +3,17 @@
 //////////
 apply from: rootProject.file('gradle/java-setup.gradle')
 
-repositories {
-	mavenCentral()
-	jcenter()
-	/* Allow access of local SNAPSHOT builds. Sanity of dependencies
-	   is guranteed by the lib-extra build. */
-	mavenLocal()
-}
-
 // setup java
 apply plugin: 'java'
 
-// Not all external code is not under control of Spotless developers.
-// Don't warn about things that cannot be changed. 
+// Show warning locations
 tasks.withType(JavaCompile) { 
 	options.compilerArgs << "-Xlint:unchecked"
 	options.compilerArgs << "-Xlint:deprecation" 
 }
 
-// Use file locking
-configurations.all {
-	resolutionStrategy {
-		activateDependencyLocking()
-	}
-}
-
 //Currently testlib is not used by _ext. Hence the external dependencies are added here.
 dependencies {
         testImplementation "junit:junit:${VER_JUNIT}"
-        testImplementation 'org.assertj:assertj-core:${VER_ASSERTJ}'
+	testImplementation "org.assertj:assertj-core:${VER_ASSERTJ}"
 }

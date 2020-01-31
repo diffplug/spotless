@@ -5,7 +5,8 @@ To fix this, we publish Groovy-Eclipse's formatter and all its dependencies, alo
 
 ## Build
 
-To publish a new version, update the `_ext/eclipse-groovy/gradle.properties` appropriately and and see [BUILD_INSTRUCTIONS.md](../BUILD_INSTRUCTIONS).
+To publish a new version, update the `_ext/eclipse-groovy/gradle.properties` appropriately and and see [CONTRIBUTING.md](../../CONTRIBUTING.md) how to enable
+`_ext` projects.
 
 ## License
 

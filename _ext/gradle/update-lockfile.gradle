@@ -1,0 +1,6 @@
+// Use file locking
+configurations.all {
+	resolutionStrategy {
+		activateDependencyLocking()
+	}
+}

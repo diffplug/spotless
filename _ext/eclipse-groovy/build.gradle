@@ -2,12 +2,12 @@ ext {
 	developers = [
 		fvgh: [ name: 'Frank Vennemeyer', email: 'frankgh@zoho.com' ],
 	]
-	
+
 	p2Repository = "https://dist.springsource.org/release/GRECLIPSE/${VER_GRECLIPSE}/e${VER_ECLIPSE}"
 	
-    p2Dependencies = [
+	p2Dependencies = [
 		'org.codehaus.groovy.eclipse.refactoring':'+', // GroovyFormatter and related
-	
+
 		// The following lists does not reflect the complete transitive required packages, but
 		// the once used during code formatting
 		'org.codehaus.groovy':'+', // Groovy compiler patches supporting use within GrEclipse and Groovy itself
@@ -18,16 +18,22 @@ ext {
 
 	internalJars = [
 		//Jars included by org.codehaus.groovy
-		"**/groovy-${VER_GROOVY}-indy", // Use Groovy compiler compatible with GrEclipse instead of localGroovy
-		'**/groovy-eclipse', // Patches/Overrides some of the Groovy compiler classes
-		'**/eclipse-trace', // Provides logging capabilities for groovy-eclipse
-
+		//////////////////////////////////////////////////////////////////////////
+		// Use Groovy compiler compatible with GrEclipse instead of localGroovy
+		"**/groovy-${VER_GROOVY}-indy",
+		// Patches/Overrides some of the Groovy compiler classes
+		'**/groovy-eclipse',
+		// Provides logging capabilities for groovy-eclipse
+		'**/eclipse-trace',
 		//Jars included by org.eclipse.jdt.groovy.core
-		'**/nlcl' //Non locking class loader used by groovy compiler
+		//////////////////////////////////////////////////////////////////////////
+		//Non locking class loader used by groovy compiler
+		'**/nlcl'
 	]
 
 }
 
+apply from: rootProject.file('_ext/gradle/update-lockfile.gradle')
 apply from: rootProject.file('_ext/gradle/p2-fat-jar-setup.gradle')
 apply from: rootProject.file('_ext/gradle/java-publish.gradle')
 

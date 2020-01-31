@@ -7,10 +7,11 @@ ext {
 
 	p2Dependencies = [
 		'org.eclipse.cdt.core':'+', // CodeFormatter and related
-		]
+	]
 
 }
 
+apply from: rootProject.file('_ext/gradle/update-lockfile.gradle')
 apply from: rootProject.file('_ext/gradle/p2-fat-jar-setup.gradle')
 apply from: rootProject.file('_ext/gradle/java-publish.gradle')
 
@@ -25,7 +26,7 @@ dependencies {
 	compile "com.ibm.icu:icu4j:${VER_IBM_ICU}"
 	// Required to by CCorePlugin calling PositionTrackerManager
 	compile "org.eclipse.platform:org.eclipse.core.filebuffers:${VER_ECLISPE_PLATFORM}"
-	
+
 	testImplementation("org.slf4j:slf4j-simple:${VER_SLF4J}")
 }
 
