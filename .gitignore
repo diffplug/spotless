@@ -20,7 +20,7 @@ gradle-app.setting
 !gradle-wrapper.jar
 
 #Gradle-Lock files in _ext just serving as an input for lib-extra
-_ext/*/gradle/dependency-locks/compileClasspath.lockfile
+_ext/*/gradle/dependency-locks/*.lockfile
 
 ### Eclipse ###
 *.pydevproject
