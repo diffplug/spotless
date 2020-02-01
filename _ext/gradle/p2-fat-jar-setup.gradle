@@ -1,6 +1,6 @@
 apply from: rootProject.file('_ext/gradle/java-setup.gradle')
 
-apply plugin: 'com.diffplug.gradle.p2.asmaven'
+apply plugin: 'com.diffplug.p2.asmaven'
 
 ext {
 	// P2 Repository URL
