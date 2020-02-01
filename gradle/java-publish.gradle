@@ -19,11 +19,11 @@ javadoc {
 
 // use markdown in javadoc
 def makeLink = { url, text -> "<a href=\"${url}\" style=\"text-transform: none;\">${text}</a>" }
-def javadocInfo = '<h2>' + makeLink("https://github.com/${org}/${name}", "${group}:${project.ext.artifactId}:${ext.version}") +
+def javadocInfo = '<h2>' + makeLink("https://github.com/${org}/${name}", "${group}:${project.ext.artifactId}:${version}") +
 		' by ' + makeLink('https://www.diffplug.com', 'DiffPlug') + '</h2>'
 
-String version_str = ext.version.endsWith('-SNAPSHOT') ? 'snapshot' : ext.version
-apply plugin: 'ch.raffael.pegdown-doclet'
+String version_str = version.endsWith('-SNAPSHOT') ? 'snapshot' : version
+apply plugin: 'org.jdrupes.mdoclet'
 javadoc {
 	// Where it's possible to name parameters and methods clearly enough
 	// that javadoc is not necessary, why make the code bigger?
@@ -37,11 +37,9 @@ javadoc {
 	options.linksOffline('https://docs.oracle.com/javase/8/docs/api/', '../gradle/javadoc/java8')
 	options.linksOffline('https://docs.gradle.org/2.14/javadoc/', '../gradle/javadoc/gradle')
 
-	// put the javadoc into a central location
-	destinationDir rootProject.file("javadoc-publish/build/javadoc/${project.ext.artifactId}/${version_str}")
 	// links to javadoc from the other versions
-	options.linksOffline("https://diffplug.github.io/spotles/javadoc/${project.artifactIdLib}/${version_str}/", "../gradle/javadoc/${project.artifactIdLib}")
-	options.linksOffline("https://diffplug.github.io/spotles/javadoc/${project.artifactIdLibExtra}/${version_str}/", "../gradle/javadoc/${project.artifactIdLibExtra}")
+	options.linksOffline("https://diffplug.github.io/spotless/javadoc/${project.artifactIdLib}/${version_str}/", "../gradle/javadoc/${project.artifactIdLib}")
+	options.linksOffline("https://diffplug.github.io/spotless/javadoc/${project.artifactIdLibExtra}/${version_str}/", "../gradle/javadoc/${project.artifactIdLibExtra}")
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
@@ -52,18 +50,6 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 ////////////////
 // PUBLISHING //
 ////////////////
-ext.isSnapshot = ext.version.endsWith('-SNAPSHOT')
-// pulls the credentials from either the environment variable or gradle.properties
-def cred = {
-	if (System.env[it] != null) {
-		return System.env[it]
-	} else if (project.hasProperty(it)) {
-		return project[it]
-	} else {
-		return 'unknown_' + it
-	}
-}
-
 final MAVEN_PLUGIN_ARTIFACT_NAME = 'spotless-maven-plugin'
 
 model {
@@ -78,7 +64,7 @@ model {
 
 				groupId project.group
 				artifactId project.ext.artifactId
-				version project.ext.version
+				version project.version
 
 				pom.withXml {
 					// add MavenCentral requirements to the POM
@@ -86,11 +72,11 @@ model {
 						resolveStrategy = Closure.DELEGATE_FIRST
 						name project.ext.artifactId
 						description project.description
-						url "https://github.com/${project.org}/${project.name}"
+						url "https://github.com/${project.org}/${rootProject.name}"
 						scm {
-							url "https://github.com/${project.org}/${project.name}"
-							connection "scm:git:git://github.com/${project.org}/${project.name}"
-							developerConnection "scm:git:ssh:git@github.com/${project.org}/${project.name}"
+							url "https://github.com/${project.org}/${rootProject.name}"
+							connection "scm:git:https://github.com/${project.org}/${rootProject.name}.git"
+							developerConnection "scm:git:ssh:git@github.com/${project.org}/${rootProject.name}.git"
 						}
 						licenses {
 							license {
@@ -121,26 +107,14 @@ model {
 				}
 			}
 		}
-		if (project.ext.isSnapshot) {
-			// upload snapshots to oss.sonatype.org
-			repositories {
-				maven {
-					url = 'https://oss.sonatype.org/content/repositories/snapshots'
-					credentials {
-						username = cred('nexus_user')
-						password = cred('nexus_pass')
-					}
-				}
-			}
-		}
 	}
 }
 
-if (!ext.isSnapshot) {
+if (!version.endsWith('-SNAPSHOT')) {
 	// upload releases to bintray and then mavenCentral
 	bintray {
-		user = cred('bintray_user')
-		key = cred('bintray_pass')
+		user = System.env['bintray_user']
+		key = System.env['bintray_pass']
 		publications = [
 			'pluginMaven'
 		]
@@ -150,10 +124,10 @@ if (!ext.isSnapshot) {
 			name = project.ext.artifactId
 			userOrg = project.org
 			version {
-				name = project.ext.version
+				name = project.version
 				mavenCentralSync {
-					user = cred('nexus_user')
-					password = cred('nexus_pass')
+					user = System.env['nexus_user']
+					password = System.env['nexus_pass']
 				}
 			}
 		}
@@ -166,4 +140,23 @@ if (!ext.isSnapshot) {
 		sourcesJar,
 		javadocJar
 	])
+
+	// find the project with the changelog (this project for plugins, root project for libs)
+	def changelogTasks = (tasks.names.contains('changelogBump') ? project : rootProject).tasks
+
+	// ensures that nothing will be built if changelogPush will end up failing
+	tasks.named('jar').configure {
+		dependsOn changelogTasks.named('changelogCheck')
+	}
+	// ensures that changelog bump and push only happens if the publish was successful
+	changelogTasks.named('changelogBump').configure {
+		dependsOn tasks.named('bintrayUpload')
+		// only the root project has bintrayPublish, and it finalizes all bintrayUpload tasks
+		// https://github.com/bintray/gradle-bintray-plugin/blob/3fe02dfdae3e807afba57e0140a0d4c2424674e1/src/main/groovy/com/jfrog/bintray/gradle/ProjectsEvaluatedBuildListener.groovy#L37-L41
+		dependsOn rootProject.tasks.named('bintrayPublish')
+		// if we have a gradle plugin, we need to push it up to the plugin portal too
+		if (tasks.names.contains('publishPlugins')) {
+			dependsOn tasks.named('publishPlugins')
+		}
+	}
 }

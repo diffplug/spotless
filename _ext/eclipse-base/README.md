@@ -53,13 +53,9 @@ is included in your formatter fat JAR, the directory structure should be:
 
 ```
 
-
 ## Build
 
-```
-gradlew -b _ext/eclipse-base/build.gradle publish
-```
-
+To publish a new version, update the `_ext/eclipse-base/gradle.properties` appropriately and see [BUILD_INSTRUCTIONS.md](../BUILD_INSTRUCTIONS).
 
 ## License
 

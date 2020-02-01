@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.extra.eclipse.base.service;
 
+import java.io.File;
 import java.io.IOError;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -22,6 +23,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Comparator;
 
 import org.eclipse.osgi.service.datalocation.Location;
 
@@ -42,12 +44,26 @@ public class TemporaryLocation implements Location {
 
 	private static URL createTemporaryDirectory() {
 		try {
-			Path locationPath = Files.createTempDirectory(TEMP_PREFIX);
-			locationPath.toFile().deleteOnExit();
-			return locationPath.toUri().toURL();
+			Path location = Files.createTempDirectory(TEMP_PREFIX);
+			deleteDirectoryRecursivelyOnExit(location);
+			location.toFile().deleteOnExit();
+			return location.toUri().toURL();
 		} catch (IOException e) {
 			throw new IOError(e);
 		}
+	}
+
+	private static void deleteDirectoryRecursivelyOnExit(Path location) {
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			try {
+				Files.walk(location)
+						.sorted(Comparator.reverseOrder())
+						.map(Path::toFile)
+						.forEach(File::delete);
+			} catch (IOException e) {
+				//At shutdown everything is just done on best-efforts basis
+			}
+		}));
 	}
 
 	@Override

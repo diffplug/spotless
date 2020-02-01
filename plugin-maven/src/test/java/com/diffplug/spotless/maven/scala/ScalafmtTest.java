@@ -24,7 +24,7 @@ public class ScalafmtTest extends MavenIntegrationTest {
 	public void testScalafmtWithDefaultConfig() throws Exception {
 		writePomWithScalaSteps("<scalafmt/>");
 
-		runTest("scala/scalafmt/basic.clean");
+		runTest("scala/scalafmt/basic.clean_2.0.1");
 	}
 
 	@Test
@@ -36,7 +36,7 @@ public class ScalafmtTest extends MavenIntegrationTest {
 				"  <file>${project.basedir}/scalafmt.conf</file>",
 				"</scalafmt>");
 
-		runTest("scala/scalafmt/basic.cleanWithCustomConf");
+		runTest("scala/scalafmt/basic.cleanWithCustomConf_2.0.1");
 	}
 
 	private void runTest(String s) throws Exception {

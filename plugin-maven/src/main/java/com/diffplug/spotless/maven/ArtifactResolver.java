@@ -57,7 +57,7 @@ public class ArtifactResolver {
 		this.log = Objects.requireNonNull(log);
 	}
 
-	/** Use {@link ArtifactResolver#resolve(boolean, Collection)) instead.} */
+	/** Use {@link ArtifactResolver#resolve(boolean, Collection)} instead. */
 	@Deprecated
 	public Set<File> resolve(String mavenCoordinate) {
 		return resolve(true, Arrays.asList(mavenCoordinate));

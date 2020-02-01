@@ -50,11 +50,11 @@ publishing {
 					resolveStrategy = Closure.DELEGATE_FIRST
 					name project.ext_artifactId
 					description project.ext_description
-					url "https://github.com/${project.ext_org}/${project.name}"
+					url "https://github.com/${project.ext_org}/${rootProject.name}"
 					scm {
-						url "https://github.com/${project.ext_org}/${project.name}"
-						connection "scm:git:git://github.com/${project.ext_org}/${project.name}"
-						developerConnection "scm:git:ssh:git@github.com/${project.ext_org}/${project.name}"
+						url "https://github.com/${project.ext_org}/${rootProject.name}"
+						connection "scm:git:https://github.com/${project.ext_org}/${rootProject.name}.git"
+						developerConnection "scm:git:ssh:git@github.com/${project.ext_org}/${rootProject.name}.git"
 					}
 					licenses {
 						license {

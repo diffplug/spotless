@@ -25,7 +25,6 @@ import java.util.Locale;
 
 import org.assertj.core.api.Assertions;
 import org.gradle.api.Project;
-import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -35,6 +34,7 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ResourceHarness;
+import com.diffplug.spotless.TestProvisioner;
 
 public class PaddedCellTaskTest extends ResourceHarness {
 	private static final boolean IS_WIN = StandardSystemProperty.OS_NAME.value().toLowerCase(Locale.US).contains("win");
@@ -44,7 +44,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 	}
 
 	private class Bundle {
-		Project project = ProjectBuilder.builder().withProjectDir(rootFolder()).build();
+		Project project = TestProvisioner.gradleProject(rootFolder());
 		File file;
 		SpotlessTask check;
 		SpotlessTask apply;
@@ -57,6 +57,8 @@ public class PaddedCellTaskTest extends ResourceHarness {
 		}
 
 		private SpotlessTask createCheckTask(String name, FormatterStep step) {
+			// we don't add Check to the end because SpotlessTask normally doesn't have
+			// "Check" or "Apply", and it matters for generating the failure files
 			SpotlessTask task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name), SpotlessTask.class);
 			task.setCheck();
 			task.addStep(step);
@@ -66,7 +68,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 		}
 
 		private SpotlessTask createApplyTask(String name, FormatterStep step) {
-			SpotlessTask task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + SpotlessPlugin.APPLY, SpotlessTask.class);
+			SpotlessTask task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + "Apply", SpotlessTask.class);
 			task.setApply();
 			task.addStep(step);
 			task.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
@@ -90,6 +92,10 @@ public class PaddedCellTaskTest extends ResourceHarness {
 		}
 	}
 
+	private Bundle wellbehaved() throws IOException {
+		return new Bundle("wellbehaved", x -> "42");
+	}
+
 	private Bundle cycle() throws IOException {
 		return new Bundle("cycle", x -> x.equals("A") ? "B" : "A");
 	}
@@ -104,6 +110,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 
 	@Test
 	public void failsWithoutPaddedCell() throws IOException {
+		Assertions.assertThat(wellbehaved().checkFailureMsg()).startsWith("The following files had format violations");
 		Assertions.assertThat(cycle().checkFailureMsg()).startsWith("You have a misbehaving rule");
 		Assertions.assertThat(converge().checkFailureMsg()).startsWith("You have a misbehaving rule");
 		Assertions.assertThat(diverge().checkFailureMsg()).startsWith("You have a misbehaving rule");
@@ -111,18 +118,22 @@ public class PaddedCellTaskTest extends ResourceHarness {
 
 	@Test
 	public void paddedCellApply() throws Exception {
+		Bundle wellbehaved = wellbehaved().paddedCell();
 		Bundle cycle = cycle().paddedCell();
 		Bundle converge = converge().paddedCell();
 		Bundle diverge = diverge().paddedCell();
 
+		execute(wellbehaved.apply);
 		execute(cycle.apply);
 		execute(converge.apply);
 		execute(diverge.apply);
 
+		assertFile(wellbehaved.file).hasContent("42");	// cycle -> first element in cycle
 		assertFile(cycle.file).hasContent("A");		// cycle -> first element in cycle
 		assertFile(converge.file).hasContent("");	// converge -> converges
 		assertFile(diverge.file).hasContent("CCC");	// diverge -> no change
 
+		execute(wellbehaved.check);
 		execute(cycle.check);
 		execute(converge.check);
 		execute(diverge.check);
@@ -130,6 +141,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 
 	@Test
 	public void paddedCellCheckFailureFiles() throws Exception {
+		wellbehaved().paddedCell().checkFailureMsg();
 		cycle().paddedCell().checkFailureMsg();
 		converge().paddedCell().checkFailureMsg();
 		execute(diverge().paddedCell().check);

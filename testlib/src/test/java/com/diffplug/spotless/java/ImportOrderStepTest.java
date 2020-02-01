@@ -60,6 +60,12 @@ public class ImportOrderStepTest extends ResourceHarness {
 	}
 
 	@Test
+	public void empty() throws Throwable {
+		FormatterStep step = ImportOrderStep.forJava().createFrom(createTestFile("java/importsorter/import.properties"));
+		assertOnResources(step, "java/importsorter/JavaCodeEmptyFile.test", "java/importsorter/JavaCodeEmptyFile.test");
+	}
+
+	@Test
 	public void groovyImports() throws Throwable {
 		FormatterStep step = ImportOrderStep.forGroovy().createFrom(createTestFile("java/importsorter/import.properties"));
 		assertOnResources(step, "java/importsorter/GroovyCodeUnsortedMisplacedImports.test", "java/importsorter/GroovyCodeSortedMisplacedImports.test");

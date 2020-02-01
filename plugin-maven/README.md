@@ -3,25 +3,25 @@
 <!---freshmark shields
 output = [
   link(shield('Maven central', 'mavencentral', '{{group}}:{{artifactIdMaven}}', 'blue'), 'https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22{{group}}%22%20AND%20a%3A%22{{artifactIdMaven}}%22'),
-  link(shield('Javadoc', 'javadoc', '{{stableMaven}}', 'blue'), 'https://{{org}}.github.io/{{name}}/javadoc/{{artifactIdMaven}}/{{stableMaven}}/'),
+  link(shield('Javadoc', 'javadoc', '{{versionLast}}', 'blue'), 'https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/{{versionLast}}/index.html'),
   '',
-  link(shield('Changelog', 'changelog', '{{stableMaven}}', 'brightgreen'), 'CHANGES.md'),
+  link(shield('Changelog', 'changelog', '{{versionLast}}', 'brightgreen'), 'CHANGES.md'),
   link(image('Travis CI', 'https://travis-ci.org/{{org}}/{{name}}.svg?branch=master'), 'https://travis-ci.org/{{org}}/{{name}}'),
   link(shield('Live chat', 'gitter', 'chat', 'brightgreen'), 'https://gitter.im/{{org}}/{{name}}'),
   link(shield('License Apache', 'license', 'apache', 'brightgreen'), 'https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)')
   ].join('\n');
 -->
 [![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
-[![Javadoc](https://img.shields.io/badge/javadoc-1.23.0-blue.svg)](https://diffplug.github.io/spotless/javadoc/spotless-maven-plugin/1.23.0/)
+[![Javadoc](https://img.shields.io/badge/javadoc-1.27.0-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/1.27.0/index.html)
 
-[![Changelog](https://img.shields.io/badge/changelog-1.23.0-brightgreen.svg)](CHANGES.md)
+[![Changelog](https://img.shields.io/badge/changelog-1.27.0-brightgreen.svg)](CHANGES.md)
 [![Travis CI](https://travis-ci.org/diffplug/spotless.svg?branch=master)](https://travis-ci.org/diffplug/spotless)
 [![Live chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
 [![License Apache](https://img.shields.io/badge/license-apache-brightgreen.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
 <!---freshmark /shields -->
 
 <!---freshmark javadoc
-output = prefixDelimiterReplace(input, 'https://{{org}}.github.io/{{name}}/javadoc/spotless-plugin-maven/', '/', stableMaven)
+output = prefixDelimiterReplace(input, 'https://{{org}}.github.io/{{name}}/javadoc/spotless-plugin-maven/', '/', versionLast)
 -->
 
 Spotless is a general-purpose formatting plugin.  It is completely à la carte, but also includes powerful "batteries-included" if you opt-in. Plugin requires a version of Maven higher or equal to 3.1.0.
@@ -100,7 +100,7 @@ By default, all files matching `src/main/java/**/*.java` and `src/test/java/**/*
      <eclipse>
        <!-- Optional, otherwise Eclipse defaults are used. Eclipse preference or property files are also supported. -->
        <file>${basedir}/eclipse-format.xml</file>
-       <!-- Optional, available versions: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/config/eclipse_jdt_formatter -->
+       <!-- Optional, available versions: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_jdt_formatter -->
        <version>4.7.1</version>
      </eclipse>
      <googleJavaFormat>
@@ -135,7 +135,7 @@ By default, all files matching `src/main/scala/**/*.scala`, `src/test/scala/**/*
        <content>/* Licensed under Apache-2.0 */</content>
        <file>${basedir}/license-header</file>
      </licenseHeader>
-     <endWithNewLine/>
+     <endWithNewline/>
      <trimTrailingWhitespace/>
      <scalafmt>
        <file>${basedir}/scalafmt.conf</file>
@@ -160,10 +160,10 @@ By default, all files matching `src/main/kotlin/**/*.kt` and `src/test/kotlin/**
        <content>/* Licensed under Apache-2.0 */</content>
        <file>${basedir}/license-header</file>
      </licenseHeader>
-     <endWithNewLine/>
+     <endWithNewline/>
      <trimTrailingWhitespace/>
      <ktlint>
-       <!-- Optional, available versions: https://github.com/shyiko/ktlint/releases -->
+       <!-- Optional, available versions: https://github.com/pinterest/ktlint/releases -->
        <version>0.14.0</version>
      </ktlint>
   </kotlin>
@@ -186,7 +186,7 @@ By default, all files matching `src/main/cpp/**/*.<ext>` and `src/test/cpp/**/*.
      </licenseHeader>
      <eclipse>
        <file>${basedir}/eclipse-fmt.xml</file>
-       <!-- Optional, available versions: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/config/eclipse_cdt_formatter -->
+       <!-- Optional, available versions: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_cdt_formatter -->
        <version>4.7.3a</version>
      </eclipse>
   </cpp>
@@ -359,7 +359,7 @@ You can easily set the line endings of different files using [a `.gitattributes`
 ## File includes and excludes
 
 Spotless uses [Ant style patterns](https://ant.apache.org/manual/dirtasks.html) to define included and excluded files.
-By default, most common compile and test source roots for the supported languages are included. They are `scr/main/java/**/*.java`, `scr/test/java/**/*.java` for Java and `scr/main/scala/**/*.scala`, `scr/main/scala/**/*.sc`, `scr/test/scala/**/*.scala`, `scr/test/scala/**/*.sc` for Scala.
+By default, most common compile and test source roots for the supported languages are included. They are `src/main/java/**/*.java`, `src/test/java/**/*.java` for Java and `src/main/scala/**/*.scala`, `src/main/scala/**/*.sc`, `src/test/scala/**/*.scala`, `src/test/scala/**/*.sc` for Scala.
 Includes can be completely overriden using `<includes>...</includes>` configuration section.
 
 Default excludes only contain output directory (usually `target/`) and various temporary and VCS-related files. Additional excludes can also be configured.

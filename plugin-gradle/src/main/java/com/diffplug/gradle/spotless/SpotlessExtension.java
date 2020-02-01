@@ -26,15 +26,45 @@ import java.util.Map;
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
+import org.gradle.api.execution.TaskExecutionGraph;
+import org.gradle.api.plugins.BasePlugin;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.spotless.LineEnding;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import groovy.lang.Closure;
+
 public class SpotlessExtension {
 	final Project project;
+	final Task rootCheckTask, rootApplyTask;
+	final RegisterDependenciesTask registerDependenciesTask;
+
+	static final String EXTENSION = "spotless";
+	static final String CHECK = "Check";
+	static final String APPLY = "Apply";
+
+	private static final String TASK_GROUP = "Verification";
+	private static final String CHECK_DESCRIPTION = "Checks that sourcecode satisfies formatting steps.";
+	private static final String APPLY_DESCRIPTION = "Applies code formatting steps to sourcecode in-place.";
+
+	private static final String FILES_PROPERTY = "spotlessFiles";
 
 	public SpotlessExtension(Project project) {
 		this.project = requireNonNull(project);
+		rootCheckTask = project.task(EXTENSION + CHECK);
+		rootCheckTask.setGroup(TASK_GROUP);
+		rootCheckTask.setDescription(CHECK_DESCRIPTION);
+		rootApplyTask = project.task(EXTENSION + APPLY);
+		rootApplyTask.setGroup(TASK_GROUP);
+		rootApplyTask.setDescription(APPLY_DESCRIPTION);
+		if (project.getRootProject() == project) {
+			registerDependenciesTask = project.getTasks().create(RegisterDependenciesTask.TASK_NAME, RegisterDependenciesTask.class);
+			registerDependenciesTask.setup();
+		} else {
+			registerDependenciesTask = project.getRootProject().getPlugins().apply(SpotlessPlugin.class).spotlessExtension.registerDependenciesTask;
+		}
 	}
 
 	/** Line endings (if any). */
@@ -206,14 +236,66 @@ public class SpotlessExtension {
 		} else {
 			try {
 				Constructor<T> constructor = clazz.getConstructor(SpotlessExtension.class);
-				T newlyCreated = constructor.newInstance(this);
-				formats.put(name, newlyCreated);
-				return newlyCreated;
+				T formatExtension = constructor.newInstance(this);
+				formats.put(name, formatExtension);
+				createFormatTask(name, formatExtension);
+				return formatExtension;
 			} catch (NoSuchMethodException e) {
 				throw new GradleException("Must have a constructor " + clazz.getSimpleName() + "(SpotlessExtension root)", e);
 			} catch (Exception e) {
 				throw Errors.asRuntime(e);
 			}
 		}
+	}
+
+	@SuppressWarnings("rawtypes")
+	private void createFormatTask(String name, FormatExtension formatExtension) {
+		// create the SpotlessTask
+		String taskName = EXTENSION + SpotlessPlugin.capitalize(name);
+		SpotlessTask spotlessTask = project.getTasks().create(taskName, SpotlessTask.class);
+		project.afterEvaluate(unused -> formatExtension.setupTask(spotlessTask));
+
+		// clean removes the SpotlessCache, so we have to run after clean
+		Task clean = project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME);
+		spotlessTask.mustRunAfter(clean);
+
+		// create the check and apply control tasks
+		Task checkTask = project.getTasks().create(taskName + CHECK);
+		Task applyTask = project.getTasks().create(taskName + APPLY);
+
+		checkTask.dependsOn(spotlessTask);
+		applyTask.dependsOn(spotlessTask);
+		// when the task graph is ready, we'll configure the spotlessTask appropriately
+		project.getGradle().getTaskGraph().whenReady(new Closure(null) {
+			private static final long serialVersionUID = 1L;
+
+			// called by gradle
+			@SuppressFBWarnings("UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS")
+			public Object doCall(TaskExecutionGraph graph) {
+				if (graph.hasTask(checkTask)) {
+					spotlessTask.setCheck();
+				}
+				if (graph.hasTask(applyTask)) {
+					spotlessTask.setApply();
+				}
+				return Closure.DONE;
+			}
+		});
+
+		// set the filePatterns property
+		project.afterEvaluate(unused -> {
+			String filePatterns;
+			if (project.hasProperty(FILES_PROPERTY) && project.property(FILES_PROPERTY) instanceof String) {
+				filePatterns = (String) project.property(FILES_PROPERTY);
+			} else {
+				// needs to be non-null since it is an @Input property of the task
+				filePatterns = "";
+			}
+			spotlessTask.setFilePatterns(filePatterns);
+		});
+
+		// the root tasks depend on the control tasks
+		rootCheckTask.dependsOn(checkTask);
+		rootApplyTask.dependsOn(applyTask);
 	}
 }

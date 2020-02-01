@@ -46,7 +46,7 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 		return licenseHeaderFile(licenseHeaderFile, LICENSE_HEADER_DELIMITER);
 	}
 
-	/** Adds the specified version of [ktlint](https://github.com/shyiko/ktlint). */
+	/** Adds the specified version of [ktlint](https://github.com/pinterest/ktlint). */
 	public KotlinFormatExtension ktlint(String version) {
 		Objects.requireNonNull(version);
 		return new KotlinFormatExtension(version, Collections.emptyMap());

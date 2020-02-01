@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.eclipse.osgi.internal.location.LocationHelper;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -28,6 +29,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.wiring.FrameworkWiring;
 
 /**
  * OSGi bundle controller allowing a minimal Eclipse platform setup
@@ -47,9 +49,13 @@ public final class BundleController implements StaticBundleContext {
 
 	@SuppressWarnings("deprecation")
 	public BundleController() throws BundleException {
+		//OSGI locks are not required, since this framework does not allow changes after initialization.
+		System.setProperty(LocationHelper.PROP_OSGI_LOCKING, LocationHelper.LOCKING_NONE);
+
 		this.properties = new HashMap<String, String>();
 		//Don't activate all plugin bundles. Activation is triggered by this controller where needed.
 		properties.put(org.eclipse.core.internal.runtime.InternalPlatform.PROP_ACTIVATE_PLUGINS, Boolean.toString(false));
+
 		/*
 		 * Used to set-up an internal member of the Eclipse runtime FindSupport,
 		 * which is used during resources look-up from different version of bundles.
@@ -63,8 +69,11 @@ public final class BundleController implements StaticBundleContext {
 		bundles.add(systemBundle);
 
 		services = new ServiceCollection(systemBundle, properties);
+
 		//Eclipse core (InternalPlatform) still uses PackageAdmin for looking up bundles
-		services.add(org.osgi.service.packageadmin.PackageAdmin.class, new EclipseBundleLookup(bundles));
+		EclipseBundleLookup bundleLookup = new EclipseBundleLookup(systemBundle, bundles);
+		services.add(org.osgi.service.packageadmin.PackageAdmin.class, bundleLookup);
+		services.add(FrameworkWiring.class, bundleLookup);
 
 		//Redirect framework activator requests to the the org.eclipse.osgi bundle to this instance.
 		bundles.add(new SimpleBundle(systemBundle, ECLIPSE_LAUNCHER_SYMBOLIC_NAME, Bundle.ACTIVE));
