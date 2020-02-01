@@ -2,7 +2,7 @@ plugins {
 	// dependencyUpdates https://github.com/ben-manes/gradle-versions-plugin/releases
 	id 'com.github.ben-manes.versions' version '0.22.0'
 	// https://github.com/diffplug/goomph/blob/master/CHANGES.md
-	id 'com.diffplug.gradle.eclipse.resourcefilters' version '3.18.1'
+	id 'com.diffplug.gradle.eclipse.resourcefilters' version '3.21.0'
 	// https://plugins.gradle.org/plugin/com.gradle.plugin-publish
 	id 'com.gradle.plugin-publish' version '0.10.1' apply false
 	// https://github.com/bintray/gradle-bintray-plugin/releases
