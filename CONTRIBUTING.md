@@ -101,6 +101,26 @@ Here's a checklist for creating a new step for Spotless:
 - [ ] Test class has test methods to verify behavior.
 - [ ] Test class has a test method `equality()` which tests equality using `StepEqualityTester` (see existing methods for examples).
 
+## How to enable the _ext projects
+
+The `_ext` projects are disabled per default, since:
+
+* some of the projects perform vasts downloads at configuration time
+
+* the downloaded content may change on server side and break CI builds
+
+
+The `_ext` can be activated via the root project property `com.diffplug.spotless.include_ext`.
+
+Activate the the property via command line, like for example:
+
+```
+gradlew -Pcom.diffplug.spotless.include.ext=true build
+
+```
+
+Or set the property in your user `gradle.properties` file, which is especially recommended if you like to work with the `_ext` projects using IDEs.
+
 ## How to add a new plugin for a build system
 
 The gist of it is that you will have to:

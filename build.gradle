@@ -2,7 +2,7 @@ plugins {
 	// dependencyUpdates https://github.com/ben-manes/gradle-versions-plugin/releases
 	id 'com.github.ben-manes.versions' version '0.22.0'
 	// https://github.com/diffplug/goomph/blob/master/CHANGES.md
-	id 'com.diffplug.gradle.eclipse.resourcefilters' version '3.18.1'
+	id 'com.diffplug.eclipse.resourcefilters' version '3.21.0'
 	// https://plugins.gradle.org/plugin/com.gradle.plugin-publish
 	id 'com.gradle.plugin-publish' version '0.10.1' apply false
 	// https://github.com/bintray/gradle-bintray-plugin/releases
@@ -11,6 +11,8 @@ plugins {
 	id 'org.jdrupes.mdoclet' version '1.0.5' apply false
 	// https://github.com/spotbugs/spotbugs/releases
 	id "com.github.spotbugs" version "2.0.0" apply false
+	//https://github.com/diffplug/goomph
+	id "com.diffplug.p2.asmaven" version "3.21.0" apply false
 	// https://github.com/diffplug/spotless-changelog
 	id "com.diffplug.spotless-changelog" version "1.1.0" apply false
 }
@@ -34,7 +36,7 @@ spotless {
 }
 
 // root eclipse project
-apply plugin: 'com.diffplug.gradle.eclipse.resourcefilters'
+apply plugin: 'com.diffplug.eclipse.resourcefilters'
 eclipseResourceFilters {
 	exclude().folders().name('.git')
 	exclude().folders().name('build').recursive()
