@@ -57,10 +57,14 @@ public class GradleIntegrationTest extends ResourceHarness {
 	}
 
 	protected final GradleRunner gradleRunner() throws IOException {
+		return gradleRunner(false);
+	}
+
+	protected final GradleRunner gradleRunner(boolean isKotlin) throws IOException {
 		return GradleRunner.create()
 				// Test against Gradle 2.14.1 in order to maintain backwards compatibility.
 				// https://github.com/diffplug/spotless/issues/161
-				.withGradleVersion("2.14.1")
+				.withGradleVersion(isKotlin ? "4.0" : "2.14.1")
 				.withProjectDir(rootFolder())
 				.withPluginClasspath();
 	}
