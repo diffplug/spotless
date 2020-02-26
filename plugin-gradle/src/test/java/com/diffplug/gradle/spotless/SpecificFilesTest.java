@@ -17,28 +17,59 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
+import org.gradle.testkit.runner.*;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class SpecificFilesTest extends GradleIntegrationTest {
-	private String testFile(int number, boolean absolute) throws IOException {
-		String rel = "src/main/java/test" + number + ".java";
+	private String testFilePath(int number) {
+		return testFilePath(number, true);
+	}
+
+	private String testFilePath(int number, boolean absolute) {
+		String relPath = "src/main/java/test" + number + ".java";
 		if (absolute) {
-			return rootFolder() + "/" + rel;
+			return rootFolder() + "/" + relPath;
 		} else {
-			return rel;
+			return relPath;
 		}
 	}
 
-	private String testFile(int number) throws IOException {
-		return testFile(number, false);
+	private String fixture() {
+		return fixture(false);
 	}
 
 	private String fixture(boolean formatted) {
 		return "java/googlejavaformat/JavaCode" + (formatted ? "F" : "Unf") + "ormatted.test";
 	}
 
-	private void integration(String patterns, boolean firstFormatted, boolean secondFormatted, boolean thirdFormatted)
-			throws IOException {
+	private void createBuildScript() throws IOException {
+		createBuildScript(false);
+	}
+
+	private void createBuildScript(boolean isKotlin) throws IOException {
+		if (isKotlin) {
+			setFile("build.gradle.kts").toLines(
+					"import com.diffplug.gradle.spotless.SpotlessExtension",
+					"buildscript {",
+					"    repositories {",
+					"        mavenCentral()",
+					"    }",
+					"    dependencies {",
+					"        classpath(\"com.diffplug.spotless:spotless-plugin-gradle:3.27.1\")",
+					"    }",
+					"}",
+					"plugins {",
+					"    java",
+					"    id(\"com.diffplug.gradle.spotless\")",
+					"}",
+					"configure<SpotlessExtension> {",
+					"    java {",
+					"        googleJavaFormat(\"1.2\")",
+					"    }",
+					"}");
+			return;
+		}
 
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
@@ -51,32 +82,77 @@ public class SpecificFilesTest extends GradleIntegrationTest {
 				"        googleJavaFormat('1.2')",
 				"    }",
 				"}");
+	}
 
-		setFile(testFile(1)).toResource(fixture(false));
-		setFile(testFile(2)).toResource(fixture(false));
-		setFile(testFile(3)).toResource(fixture(false));
+	private void integration(String patterns,
+			boolean firstFormatted, boolean secondFormatted, boolean thirdFormatted) throws IOException {
+		integration(patterns, firstFormatted, secondFormatted, thirdFormatted, false);
+	}
 
-		gradleRunner()
-				.withArguments("spotlessApply", "-PspotlessFiles=" + patterns)
-				.build();
+	private void integration(String patterns,
+			boolean firstFormatted, boolean secondFormatted, boolean thirdFormatted,
+			boolean isKotlin) throws IOException {
+		String testFileOne = testFilePath(1, false);
+		String testFileTwo = testFilePath(2, false);
+		String testFileThree = testFilePath(3, false);
 
-		assertFile(testFile(1)).sameAsResource(fixture(firstFormatted));
-		assertFile(testFile(2)).sameAsResource(fixture(secondFormatted));
-		assertFile(testFile(3)).sameAsResource(fixture(thirdFormatted));
+		setFile(testFileOne).toResource(fixture());
+		setFile(testFileTwo).toResource(fixture());
+		setFile(testFileThree).toResource(fixture());
+
+		GradleRunner runner = gradleRunner()
+				.withArguments("spotlessApply", "-PspotlessFiles=" + patterns);
+		if (isKotlin) {
+			runner.withGradleVersion("4.0");
+		}
+		runner.build();
+
+		assertFile(testFileOne).sameAsResource(fixture(firstFormatted));
+		assertFile(testFileTwo).sameAsResource(fixture(secondFormatted));
+		assertFile(testFileThree).sameAsResource(fixture(thirdFormatted));
 	}
 
 	@Test
 	public void singleFile() throws IOException {
-		integration(testFile(2, true), false, true, false);
+		createBuildScript(false);
+		integration(testFilePath(2), false, true, false);
 	}
 
 	@Test
 	public void multiFile() throws IOException {
-		integration(testFile(1, true) + "," + testFile(3, true), true, false, true);
+		createBuildScript();
+		integration(testFilePath(1) + "," + testFilePath(3),
+				true, false, true);
+	}
+
+	@Test
+	@Ignore("When spotlessFiles is specified without a value, Spotless runs on all files. It should run on none.")
+	public void emptyPattern_formatsNoFiles() throws IOException {
+		createBuildScript();
+		integration("", false, false, false);
+	}
+
+	@Test
+	public void matchesNoFiles_formatsNoFilesButDoesNotExitInError() throws IOException {
+		createBuildScript();
+		integration(testFilePath(4), false, false, false);
 	}
 
 	@Test
 	public void regexp() throws IOException {
+		createBuildScript();
 		integration(".*/src/main/java/test(1|3).java", true, false, true);
+	}
+
+	@Test(expected = UnexpectedBuildFailure.class)
+	public void invalidRegexp_exitsInError() throws IOException {
+		createBuildScript(false);
+		integration("./[?)!\\", false, false, false);
+	}
+
+	@Test
+	public void kotlinBuildScript() throws IOException {
+		createBuildScript(true);
+		integration(testFilePath(2), false, true, false, true);
 	}
 }
