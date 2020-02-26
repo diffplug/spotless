@@ -17,7 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
-import org.gradle.testkit.runner.UnexpectedBuildFailure;
+import org.gradle.testkit.runner.*;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -100,9 +100,12 @@ public class SpecificFilesTest extends GradleIntegrationTest {
 		setFile(testFileTwo).toResource(fixture());
 		setFile(testFileThree).toResource(fixture());
 
-		gradleRunner(isKotlin)
-				.withArguments("spotlessApply", "-PspotlessFiles=" + patterns)
-				.build();
+		GradleRunner runner = gradleRunner()
+				.withArguments("spotlessApply", "-PspotlessFiles=" + patterns);
+		if (isKotlin) {
+			runner.withGradleVersion("4.0");
+		}
+		runner.build();
 
 		assertFile(testFileOne).sameAsResource(fixture(firstFormatted));
 		assertFile(testFileTwo).sameAsResource(fixture(secondFormatted));

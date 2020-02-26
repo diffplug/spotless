@@ -3,6 +3,7 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+* Add tests to `SpecificFilesTest` to fix [#529](https://github.com/diffplug/spotless/issues/529)
 
 ## [3.27.1] - 2020-01-14
 ### Fixed
