@@ -73,19 +73,18 @@ public class SpotlessEclipseFrameworkTest {
 		System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "warn");
 
 		//Instantiate default framework + SLF4J logger
-		SpotlessEclipseFramework.setup(
-				config -> {
-					config.applyDefault();
-					config.useSlf4J(TEST_LOGGER_NAME, (s, l) -> {
-						if (TREAT_ERROR_AS_EXCEPTION && (LogLevel.ERROR == l)) {
-							throw new IllegalArgumentException(TEST_EXCEPTION_MESSAGE);
-						}
-						return CUSTOM_PREFIX + s + CUSTOM_POSTFIX;
-					});
-				},
-				plugins -> {
-					plugins.applyDefault();
+		SpotlessEclipseFramework.setup(new SpotlessEclipseConfig() {
+			@Override
+			public void registerServices(SpotlessEclipseServiceConfig config) {
+				config.applyDefault();
+				config.useSlf4J(TEST_LOGGER_NAME, (s, l) -> {
+					if (TREAT_ERROR_AS_EXCEPTION && (LogLevel.ERROR == l)) {
+						throw new IllegalArgumentException(TEST_EXCEPTION_MESSAGE);
+					}
+					return CUSTOM_PREFIX + s + CUSTOM_POSTFIX;
 				});
+			}
+		});
 	}
 
 	@AfterClass

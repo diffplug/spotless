@@ -1,5 +1,11 @@
 # spotless-eclipse-base
 
+### Version 3.2.2 - TBD ([artifact]([jcenter](https://bintray.com/diffplug/opensource/spotless-eclipse-base)))
+
+* Added support of plugin extensions without activator ([#TBD](https://github.com/diffplug/spotless/issues/TBD)). Required since `org.eclipse.core.filesystem` version `1.7.600` (see
+[Bug 550548](https://bugs.eclipse.org/bugs/show_bug.cgi?id=550548))
+* Updated configuration via single interface implementation. Functional based configuration still supported.
+
 ### Version 3.2.1 - September 3rd 2019 ([artifact]([jcenter](https://bintray.com/diffplug/opensource/spotless-eclipse-base)))
 
 * Fixed deletion of temporary workspace. ([#447](https://github.com/diffplug/spotless/issues/447))

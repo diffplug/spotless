@@ -27,6 +27,7 @@ import org.eclipse.equinox.log.ExtendedLogService;
 import org.eclipse.osgi.service.datalocation.Location;
 import org.eclipse.osgi.service.debug.DebugOptions;
 import org.eclipse.osgi.service.environment.EnvironmentInfo;
+import org.osgi.framework.ServiceException;
 import org.osgi.service.log.LogLevel;
 
 import com.diffplug.spotless.extra.eclipse.base.service.*;
@@ -59,32 +60,41 @@ public interface SpotlessEclipseServiceConfig {
 	 *
 	 * @param interfaceClass Service interface
 	 * @param service Service instance
+	 * @throws ServiceException in case service has already been configured
 	 */
-	public <S> void add(Class<S> interfaceClass, S service);
+	public <S> void add(Class<S> interfaceClass, S service) throws ServiceException;
 
 	/**
 	 * Spotless formatters should not be configured by environment variables, and
 	 * they shall be OS independent.
+	 * @throws ServiceException in case service has already been configured
 	 */
-	default public void hideEnvironment() {
+	default public void hideEnvironment() throws ServiceException {
 		add(EnvironmentInfo.class, new HiddenEnvironment());
 	}
 
 	/**
 	 * Eclipse provides means to lookup the file content type, e.g. by file name extensions.
 	 * This possibility is not required by most Spotless formatters.
+	 * @throws ServiceException in case service has already been configured
 	 */
-	default public void ignoreContentType() {
+	default public void ignoreContentType() throws ServiceException {
 		add(IContentTypeManager.class, new NoContentTypeSpecificHandling());
 	}
 
-	/** Disable Eclipse internal debugging. */
-	default public void disableDebugging() {
+	/**
+	 * Disable Eclipse internal debugging.
+	 * @throws ServiceException in case service has already been configured
+	 */
+	default public void disableDebugging() throws ServiceException {
 		add(DebugOptions.class, new NoDebugging());
 	}
 
-	/** Ignore accesses of unsupported preference. */
-	default public void ignoreUnsupportedPreferences() {
+	/**
+	 * Ignore accesses of unsupported preference.
+	 * @throws ServiceException in case service has already been configured
+	 */
+	default public void ignoreUnsupportedPreferences() throws ServiceException {
 		add(IPreferencesService.class, new NoEclipsePreferences());
 	}
 
@@ -92,8 +102,9 @@ public interface SpotlessEclipseServiceConfig {
 	 * Use temporary locations in case plugins require to store file.
 	 * These files (for example workspace preferences) will be deleted
 	 * as soon as the application terminates.
+	 * @throws ServiceException in case service has already been configured
 	 */
-	default public void useTemporaryLocations() {
+	default public void useTemporaryLocations() throws ServiceException {
 		add(Location.class, new TemporaryLocation());
 	}
 
@@ -103,26 +114,36 @@ public interface SpotlessEclipseServiceConfig {
 	 * system property.
 	 * Change the system default to the UNIX line separator as required
 	 * by Spotless.
+	 * @throws ServiceException in case service has already been configured
 	 */
-	default public void changeSystemLineSeparator() {
+	default public void changeSystemLineSeparator() throws ServiceException {
 		System.setProperty("line.separator", LINE_DELIMITER);
 	}
 
-	/** Adds Eclipse logging service Slf4J binding. */
+	/**
+	 * Adds Eclipse logging service Slf4J binding.
+	 * @throws ServiceException in case service has already been configured
+	 */
 	default public void useSlf4J(String loggerName) {
 		useSlf4J(loggerName, (s, l) -> s);
 	}
 
-	/** Adds Eclipse logging service Slf4J binding with a message customizer function. */
-	default public void useSlf4J(String loggerName, BiFunction<String, LogLevel, String> messageCustomizer) {
+	/**
+	 * Adds Eclipse logging service Slf4J binding with a message customizer function.
+	 * @throws ServiceException in case service has already been configured
+	 */
+	default public void useSlf4J(String loggerName, BiFunction<String, LogLevel, String> messageCustomizer) throws ServiceException {
 		SingleSlf4JService slf4jServce = new SingleSlf4JService(loggerName, messageCustomizer);
 		add(ExtendedLogService.class, slf4jServce);
 		add(ExtendedLogReaderService.class, slf4jServce);
 		slf4jServce.debug("Initialized Eclipse logging service.");
 	}
 
-	/** Applies the default configurations. */
-	default public void applyDefault() {
+	/**
+	 * Applies the default configurations.
+	 * @throws ServiceException in case a service has already been configured
+	 */
+	default public void applyDefault() throws ServiceException {
 		hideEnvironment();
 		ignoreContentType();
 		disableDebugging();

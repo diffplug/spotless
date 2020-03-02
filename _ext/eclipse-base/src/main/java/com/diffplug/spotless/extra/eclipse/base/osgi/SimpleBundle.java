@@ -18,6 +18,7 @@ package com.diffplug.spotless.extra.eclipse.base.osgi;
 import java.net.URL;
 import java.util.Enumeration;
 
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -40,6 +41,12 @@ class SimpleBundle implements StaticBundle, TemporaryBundle {
 	/** System bundle for a dedicated bundle activator */
 	SimpleBundle(BundleContext context, int state, BundleActivator activator) throws BundleException {
 		this(context, state, new ResourceAccessor(activator.getClass()));
+	}
+
+	/** System bundle providing only extensions and therefore does not require an activator */
+	SimpleBundle(BundleContext context, Class<?> clazzInBundleJar) throws BundleException {
+		//These bundles are always active (means that resources have been resolved)
+		this(context, Bundle.ACTIVE, new ResourceAccessor(clazzInBundleJar));
 	}
 
 	/** Internal constructor  */

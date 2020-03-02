@@ -15,24 +15,15 @@
  */
 package com.diffplug.spotless.extra.eclipse.wtp.sse;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
-import java.util.function.Consumer;
-
 import org.eclipse.core.internal.preferences.PreferencesService;
-import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.content.IContentTypeManager;
-import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.eclipse.wst.sse.core.internal.cleanup.AbstractStructuredCleanupProcessor;
-import org.eclipse.wst.sse.core.internal.format.AbstractStructuredFormatProcessor;
-import org.eclipse.wst.sse.core.internal.format.IStructuredFormatProcessor;
-import org.osgi.framework.BundleActivator;
 
-import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseCoreConfig;
+import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseConfig;
 import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework;
+import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipsePluginConfig;
+import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseServiceConfig;
 
 /**
  * Common base class for step implementations based on an SSE cleanup processor.
@@ -54,91 +45,74 @@ import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework;
  * </p>
  * @see org.eclipse.wst.sse.core.internal.cleanup.AbstractStructuredCleanupProcessor
  */
-public class CleanupStep<T extends AbstractStructuredCleanupProcessor & CleanupStep.ProcessorAccessor> {
+public class CleanupStep {
 
-	/**
-	 * Some of the SEE AbstractStructuredCleanupProcessor interface shall be
-	 * made public to provide cleaner interfaces. */
+	/** Make some of the protected SEE AbstractStructuredCleanupProcessor methods public. */
 	public interface ProcessorAccessor {
-		/** Returns this.getContentType() */
-		String getThisContentType();
 
-		/** Returns this.getFormatProcessor() */
-		IStructuredFormatProcessor getThisFormatProcessor();
+		/** Configure from Eclipse framework preferences */
+		void refreshPreferences();
 
-		/** Calls this.refreshCleanupPreferences() */
-		void refreshThisCleanupPreferences();
+		/** Get underlying processor */
+		AbstractStructuredCleanupProcessor get();
+
+		/** Get processor content type */
+		String getTypeId();
 	}
 
-	// The formatter cannot per configured per instance
-	private final static Properties CONFIG = new Properties();
-	private static boolean FIRST_CONFIG = true;
+	/** Framework configuration public to all formatters using the Cleanup step */
+	public static abstract class FrameworkConfig implements SpotlessEclipseConfig {
 
-	protected final T processor;
+		private String processorContentTypeID;
 
-	protected CleanupStep(T processor, Consumer<Collection<BundleActivator>> addptionalPlugins) throws Exception {
-		this(processor, core -> core.applyDefault(), addptionalPlugins);
+		protected FrameworkConfig() {
+			processorContentTypeID = "none";
+		}
+
+		void setProcessorTypeID(String contentTypeID) {
+			processorContentTypeID = contentTypeID;
+		}
+
+		@Override
+		public void registerServices(SpotlessEclipseServiceConfig config) {
+			config.disableDebugging();
+			config.hideEnvironment();
+			config.useTemporaryLocations();
+			config.changeSystemLineSeparator();
+			config.useSlf4J(this.getClass().getPackage().getName() + "-" + processorContentTypeID);
+
+			//Assure that all file content processed by this formatter step are associated to this cleanup-step
+			config.add(IContentTypeManager.class, new ContentTypeManager(processorContentTypeID));
+
+			//The preference lookup via the ContentTypeManager, requires a preference service
+			config.add(IPreferencesService.class, PreferencesService.getDefault());
+		}
+
+		@Override
+		public void activatePlugins(SpotlessEclipsePluginConfig config) {
+			config.applyDefault();
+			/*
+			 * The core preferences require do lookup the resources "config/override.properties"
+			 * from the plugin ID.
+			 * The values are never used, nor do we require the complete SSE core plugin to be started.
+			 * Hence we just provide the internal plugin.
+			 */
+			config.add(new org.eclipse.wst.sse.core.internal.encoding.util.CodedResourcePlugin());
+		}
 	}
 
-	protected CleanupStep(T processor, Consumer<SpotlessEclipseCoreConfig> core, Consumer<Collection<BundleActivator>> addptionalPlugins) throws Exception {
-		SpotlessEclipseFramework.setup(
-				core,
-				config -> {
-					config.disableDebugging();
-					config.hideEnvironment();
-					config.useTemporaryLocations();
-					config.changeSystemLineSeparator();
-					//Allow association of string passed in the CleanupStep.format to its type/plugin
-					config.add(IContentTypeManager.class, new ContentTypeManager(processor));
-					//The preference lookup via the ContentTypeManager, requires a preference service
-					config.add(IPreferencesService.class, PreferencesService.getDefault());
-					config.useSlf4J(this.getClass().getPackage().getName());
-				},
-				plugins -> {
-					plugins.applyDefault();
-					List<BundleActivator> additional = new LinkedList<BundleActivator>();
-					addptionalPlugins.accept(additional);
-					plugins.add(additional);
-					/*
-					 * The core preferences require do lookup the resources "config/override.properties"
-					 * from the plugin ID.
-					 * The values are never used, nor do we require the complete SSE core plugin to be started.
-					 * Hence we just provide the internal plugin.
-					 */
-					plugins.add(new org.eclipse.wst.sse.core.internal.encoding.util.CodedResourcePlugin());
-				});
-		this.processor = processor;
+	protected final ProcessorAccessor processorAccessor;
+
+	protected CleanupStep(ProcessorAccessor processorAccessor, FrameworkConfig config) throws Exception {
+		config.setProcessorTypeID(processorAccessor.getTypeId());
+		SpotlessEclipseFramework.setup(config);
+		this.processorAccessor = processorAccessor;
+		this.processorAccessor.refreshPreferences();
 		/*
 		 *  Don't refresh the preferences every time a clone of the processor is created.
 		 *  All processors shall use the preferences of its parent.
 		 */
-		this.processor.refreshCleanupPreferences = false;
-	}
-
-	protected final void configure(Properties properties, boolean usesPreferenceService, Plugin plugin, AbstractPreferenceInitializer preferencesInit) {
-		synchronized (CONFIG) {
-			if (usesPreferenceService) {
-				assertConfigHasNotChanged(properties);
-			}
-			preferencesInit.initializeDefaultPreferences();
-			SpotlessPreferences.configurePluginPreferences(plugin, properties);
-			processor.refreshThisCleanupPreferences(); // Initialize cleanup processor preferences (if there are any)
-			IStructuredFormatProcessor formatter = processor.getThisFormatProcessor(); // Initialize processor preferences by creating the formatter for the first time
-			if (formatter instanceof AbstractStructuredFormatProcessor) {
-				((AbstractStructuredFormatProcessor) formatter).refreshFormatPreferences = false;
-			}
-		}
-	}
-
-	private static void assertConfigHasNotChanged(final Properties properties) {
-		synchronized (CONFIG) {
-			if (FIRST_CONFIG) {
-				FIRST_CONFIG = false;
-				CONFIG.putAll(properties);
-			} else if (!CONFIG.equals(properties)) {
-				throw new IllegalArgumentException("The Eclipse formatter does not support multiple configurations.");
-			}
-		}
+		processorAccessor.get().refreshCleanupPreferences = false;
 	}
 
 	/**
@@ -148,7 +122,7 @@ public class CleanupStep<T extends AbstractStructuredCleanupProcessor & CleanupS
 	 * @throws Exception All exceptions are considered fatal to the build process (Gradle, Maven, ...) and should not be caught.
 	 */
 	public String format(String raw) throws Exception {
-		return processor.cleanupContent(raw);
+		return processorAccessor.get().cleanupContent(raw);
 	}
 
 }

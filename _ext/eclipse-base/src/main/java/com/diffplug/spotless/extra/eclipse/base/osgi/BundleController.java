@@ -77,6 +77,7 @@ public final class BundleController implements StaticBundleContext {
 
 		//Redirect framework activator requests to the the org.eclipse.osgi bundle to this instance.
 		bundles.add(new SimpleBundle(systemBundle, ECLIPSE_LAUNCHER_SYMBOLIC_NAME, Bundle.ACTIVE));
+		FrameworkBundleRegistry.initialize(this);
 	}
 
 	public ServiceCollection getServices() {
@@ -95,6 +96,15 @@ public final class BundleController implements StaticBundleContext {
 		} catch (Exception e) {
 			throw new BundleException(String.format("Failed do start %s.", activator.getClass().getName()), BundleException.ACTIVATOR_ERROR, e);
 		}
+	}
+
+	/** Adds new bundel whithout activator (e.g. used for ony for extensions) */
+	public void addBundle(Class<?> clazzInBundleJar, Function<Bundle, BundleException> register) throws BundleException {
+		BundleContext contextFacade = new BundleControllerContextFacade(this, clazzInBundleJar);
+		bundles.add(contextFacade.getBundle());
+		BundleException exception = register.apply(contextFacade.getBundle());
+		if (null != exception)
+			throw exception;
 	}
 
 	/** Creates a context with an individual state if required. */
@@ -167,6 +177,11 @@ public final class BundleController implements StaticBundleContext {
 		private BundleControllerContextFacade(BundleContext context, int bundleState, BundleActivator activator) throws BundleException {
 			this.context = context;
 			bundle = new SimpleBundle(this, bundleState, activator);
+		}
+
+		private BundleControllerContextFacade(BundleContext context, Class<?> clazzInBundleJar) throws BundleException {
+			this.context = context;
+			bundle = new SimpleBundle(this, clazzInBundleJar);
 		}
 
 		/** Fakes an individual bundle state */

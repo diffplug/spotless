@@ -32,6 +32,11 @@ import com.diffplug.spotless.extra.eclipse.base.osgi.BundleConfig;
  */
 public class SpotlessEclipseCoreConfig extends BundleConfig<SpotlessEclipseFramework.DefaultBundles> {
 
+	/**
+	 * Don't instantiate and call {@link SpotlessEclipseConfig} directly.
+	 * Registered bundles should only be instantiated once, since
+	 * older bundles still abusing singletons for access.
+	 */
 	SpotlessEclipseCoreConfig() {}
 
 	@Override

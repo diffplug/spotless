@@ -40,10 +40,9 @@ public class EclipseCssFormatterStepImplTest {
 		 * The instantiation can be repeated for each step, but only with the same configuration
 		 * All formatter configuration is stored in
 		 * org.eclipse.core.runtime/.settings/org.eclipse.wst.css.core.prefs.
-		 * So a simple test of one configuration item change is considered sufficient.
 		 */
 		Properties properties = new Properties();
-		properties.put(INDENTATION_SIZE, "3"); //Default is 1
+		properties.put(INDENTATION_SIZE, "3");
 		properties.put(INDENTATION_CHAR, SPACE); //Default is TAB
 		properties.put(CLEANUP_CASE_SELECTOR, Integer.toString(UPPER)); //Done by cleanup
 		formatter = new EclipseCssFormatterStepImpl(properties);
@@ -74,6 +73,11 @@ public class EclipseCssFormatterStepImplTest {
 		String output = formatter.format(PRE_CODE_UNFORMATTED + UNFORMATTED);
 		assertEquals("Unexpected formatting of cpomments.",
 				PRE_CODE_UNFORMATTED + FORMATTED, output);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void configurationChange() throws Exception {
+		new EclipseCssFormatterStepImpl(new Properties());
 	}
 
 }

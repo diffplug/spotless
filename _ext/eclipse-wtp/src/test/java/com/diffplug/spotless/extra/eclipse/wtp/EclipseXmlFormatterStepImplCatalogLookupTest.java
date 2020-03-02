@@ -28,7 +28,7 @@ import org.junit.Test;
 import com.diffplug.spotless.extra.eclipse.wtp.sse.PluginPreferences;
 
 /** Test configuration allowExternalURI=false */
-public class EclipseXmlFormatterStepImplAllowExternalURIsTest {
+public class EclipseXmlFormatterStepImplCatalogLookupTest {
 	private TestData testData = null;
 	private EclipseXmlFormatterStepImpl formatter;
 
@@ -42,25 +42,17 @@ public class EclipseXmlFormatterStepImplAllowExternalURIsTest {
 		 * So a simple test of one configuration item change is considered sufficient.
 		 */
 		Properties properties = new Properties();
-		properties.put(PluginPreferences.RESOLVE_EXTERNAL_URI, "TRUE");
 		properties.put(INDENTATION_SIZE, "2");
 		properties.put(INDENTATION_CHAR, SPACE); //Default is TAB
+		properties.put(PluginPreferences.USER_CATALOG, testData.getRestrictionsPath("catalog.xml").toString());
 		formatter = new EclipseXmlFormatterStepImpl(properties);
 	}
 
 	@Test
-	public void dtdExternalPath() throws Throwable {
-		String[] input = testData.input("dtd_external.test");
+	public void catalogLookup() throws Throwable {
+		String[] input = testData.input("xsd_not_found.test");
 		String output = formatter.format(input[0], input[1]);
-		assertEquals("External DTD not resolved. Restrictions are not applied by formatter.",
-				testData.expected("dtd_external.test"), output);
-	}
-
-	@Test
-	public void xsdExternalPath() throws Throwable {
-		String[] input = testData.input("xsd_external.test");
-		String output = formatter.format(input[0], input[1]);
-		assertEquals("External XSD not resolved. Restrictions are not applied by formatter.",
-				testData.expected("xsd_external.test"), output);
+		assertEquals("XSD not resolved by catalog. Restrictions are not applied by formatter.",
+				testData.expected("xsd_not_found.test").replace(" remove spaces ", "remove spaces"), output);
 	}
 }
