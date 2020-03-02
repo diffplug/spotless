@@ -1,5 +1,9 @@
 # spotless-eclipse-wtp
 
+### Version 3.15.2 - TBD ([artifact]([jcenter](https://bintray.com/diffplug/opensource/spotless-eclipse-wtp)))
+
+* Bugfix: Fix racing conditions in WTP formatter configurations. Multiple configurations within the same project are no longer supported. ([#492](https://github.com/diffplug/spotless/pull/492)).
+
 ### Version 3.15.1 - November 27th 2019 ([artifact]([jcenter](https://bintray.com/diffplug/opensource/spotless-eclipse-wtp)))
 
 * Bugfix: Fix NPE in EclipseXmlFormatterStepImpl ([#490](https://github.com/diffplug/spotless/pull/490)).
