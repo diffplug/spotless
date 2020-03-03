@@ -3,6 +3,8 @@ if (project.name == 'plugin-gradle') {
 	kind = 'gradle'
 } else if (project.name == 'plugin-maven') {
 	kind = 'maven'
+} else if (project.name.startsWith('eclipse')) {
+	kind = 'ext-' + project.name
 } else {
 	assert project == rootProject
 	kind = 'lib'

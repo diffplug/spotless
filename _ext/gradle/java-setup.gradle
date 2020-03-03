@@ -2,6 +2,7 @@
 // JAVA //
 //////////
 apply from: rootProject.file('gradle/java-setup.gradle')
+apply from: rootProject.file('gradle/changelog.gradle')
 
 // setup java
 apply plugin: 'java'
@@ -14,6 +15,6 @@ tasks.withType(JavaCompile) {
 
 //Currently testlib is not used by _ext. Hence the external dependencies are added here.
 dependencies {
-        testImplementation "junit:junit:${VER_JUNIT}"
+	testImplementation "junit:junit:${VER_JUNIT}"
 	testImplementation "org.assertj:assertj-core:${VER_ASSERTJ}"
 }
