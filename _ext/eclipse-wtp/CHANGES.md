@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.15.1`).
 
 ## [Unreleased]
+
+## [3.15.2] - 2020-03-04
 ### Fixed
 * Racing conditions in WTP formatter configurations. Multiple configurations within the same project are no longer supported. ([#492](https://github.com/diffplug/spotless/pull/492)).
 
