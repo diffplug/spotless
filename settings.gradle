@@ -62,9 +62,9 @@ def getStartProperty(java.lang.String name) {
 }
 
 // include external (_ext) projects from development builds
-if (getStartProperty('com.diffplug.spotless.include_ext') == 'true') {
-	file('_ext').eachDirMatch(~/^(?!(\.|gradle)).*/) { dir ->
-		include dir.name
-		project(":${dir.name}").projectDir = dir
-	}
+//if (getStartProperty('com.diffplug.spotless.include_ext') == 'true') {
+file('_ext').eachDirMatch(~/^(?!(\.|gradle)).*/) { dir ->
+	include dir.name
+	project(":${dir.name}").projectDir = dir
 }
+//}
