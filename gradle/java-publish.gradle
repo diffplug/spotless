@@ -51,6 +51,8 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 // PUBLISHING //
 ////////////////
 final MAVEN_PLUGIN_ARTIFACT_NAME = 'spotless-maven-plugin'
+boolean isExt = project.name.startsWith('eclipse-')
+boolean isPluginMaven = project.ext.artifactId == 'spotless-maven-plugin'
 
 model {
 	publishing {
@@ -79,28 +81,46 @@ model {
 							developerConnection "scm:git:ssh:git@github.com/${project.org}/${rootProject.name}.git"
 						}
 						licenses {
-							license {
-								name 'The Apache Software License, Version 2.0'
-								url 'https://www.apache.org/licenses/LICENSE-2.0.txt'
-								distribution 'repo'
+							if (isExt) {
+								license {
+									name 'Eclipse Public License - v 1.0'
+									url 'https://www.eclipse.org/legal/epl-v10.html'
+									distribution 'repo'
+								}
+							} else {
+								license {
+									name 'The Apache Software License, Version 2.0'
+									url 'https://www.apache.org/licenses/LICENSE-2.0.txt'
+									distribution 'repo'
+								}
 							}
 						}
-						if (project.ext.artifactId == MAVEN_PLUGIN_ARTIFACT_NAME) {
+						if (isPluginMaven) {
 							// Maven plugin required Maven 3.1.0+ to run
 							prerequisites { maven '3.1.0' }
 						}
 						developers {
-							if (project.ext.artifactId == MAVEN_PLUGIN_ARTIFACT_NAME) {
-								developer {
-									id 'lutovich'
-									name 'Konstantin Lutovich'
-									email 'konstantin.lutovich@neotechnology.com'
+							if (isExt) {
+								project.ext.developers.each { extId, extValues -> 
+									developer {
+										id extId
+										name extValues['name']
+										email extValues['email']
+									}
 								}
-							}
-							developer {
-								id 'nedtwigg'
-								name 'Ned Twigg'
-								email 'ned.twigg@diffplug.com'
+							} else {
+								if (isPluginMaven) {
+									developer {
+										id 'lutovich'
+										name 'Konstantin Lutovich'
+										email 'konstantin.lutovich@neotechnology.com'
+									}
+								}
+								developer {
+									id 'nedtwigg'
+									name 'Ned Twigg'
+									email 'ned.twigg@diffplug.com'
+								}
 							}
 						}
 					}

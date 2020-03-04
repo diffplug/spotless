@@ -1,6 +1,6 @@
 apply from: rootProject.file('_ext/gradle/update-lockfile.gradle')
 apply from: rootProject.file('_ext/gradle/java-setup.gradle')
-apply from: rootProject.file('_ext/gradle/java-publish.gradle')
+apply from: rootProject.file('gradle/java-publish.gradle')
 
 ext {
 	developers = [

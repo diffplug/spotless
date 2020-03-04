@@ -57,7 +57,7 @@ ext {
 
 apply from: rootProject.file('_ext/gradle/update-lockfile.gradle')
 apply from: rootProject.file('_ext/gradle/p2-fat-jar-setup.gradle')
-apply from: rootProject.file('_ext/gradle/java-publish.gradle')
+apply from: rootProject.file('gradle/java-publish.gradle')
 
 dependencies {
 	compile "com.diffplug.spotless:spotless-eclipse-base:${VER_SPOTLESS_ECLISPE_BASE}"
