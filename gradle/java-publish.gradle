@@ -101,7 +101,7 @@ model {
 						}
 						developers {
 							if (isExt) {
-								project.ext.developers.each { extId, extValues -> 
+								project.ext.developers.each { extId, extValues ->
 									developer {
 										id extId
 										name extValues['name']
