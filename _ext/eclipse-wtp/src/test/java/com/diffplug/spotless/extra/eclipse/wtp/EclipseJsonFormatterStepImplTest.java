@@ -31,7 +31,7 @@ public class EclipseJsonFormatterStepImplTest {
 	private final static String UNFORMATTED_ARRAY = "[\n { \"a\" : \"v\",\"properties\" : \"v\" }]".replaceAll("\n", LINE_DELIMITER);
 	private final static String FORMATTED_ARRAY = "[\n   {\n      \"a\": \"v\",\n      \"properties\": \"v\"\n   }\n]".replaceAll("\n", LINE_DELIMITER);
 
-	private static EclipseJsonFormatterStepImpl formatter;
+	private EclipseJsonFormatterStepImpl formatter;
 
 	@Before
 	public void initialize() throws Exception {
@@ -74,5 +74,10 @@ public class EclipseJsonFormatterStepImplTest {
 		String output = formatter.format("{" + UNFORMATTED_OBJECT);
 		assertEquals("Illeagl syntax is not handled on best effort basis.",
 				FORMATTED_OBJECT, output);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void configurationChange() throws Exception {
+		new EclipseJsonFormatterStepImpl(new Properties());
 	}
 }

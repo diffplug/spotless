@@ -1,10 +1,9 @@
 //////////
 // JAVA //
 //////////
+apply from: rootProject.file('gradle/changelog.gradle')
+version = spotlessChangelog.versionNext
 apply from: rootProject.file('gradle/java-setup.gradle')
-
-// setup java
-apply plugin: 'java'
 
 // Show warning locations
 tasks.withType(JavaCompile) { 
@@ -14,6 +13,6 @@ tasks.withType(JavaCompile) {
 
 //Currently testlib is not used by _ext. Hence the external dependencies are added here.
 dependencies {
-        testImplementation "junit:junit:${VER_JUNIT}"
+	testImplementation "junit:junit:${VER_JUNIT}"
 	testImplementation "org.assertj:assertj-core:${VER_ASSERTJ}"
 }

@@ -24,7 +24,10 @@ import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.text.edits.TextEdit;
 
+import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseConfig;
 import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework;
+import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipsePluginConfig;
+import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseServiceConfig;
 
 /** Formatter step which calls out to the Eclipse JDT formatter. */
 public class EclipseJdtFormatterStepImpl {
@@ -32,16 +35,22 @@ public class EclipseJdtFormatterStepImpl {
 	private final CodeFormatter codeFormatter;
 
 	public EclipseJdtFormatterStepImpl(Properties settings) throws Exception {
-		SpotlessEclipseFramework.setup(
-				config -> {
-					config.applyDefault();
-					config.useSlf4J(EclipseJdtFormatterStepImpl.class.getPackage().getName());
-				},
-				plugins -> {
-					plugins.applyDefault();
-					plugins.add(new JavaCore());
-				});
+		SpotlessEclipseFramework.setup(new FrameworkConfig());
 		this.codeFormatter = ToolFactory.createCodeFormatter(settings, ToolFactory.M_FORMAT_EXISTING);
+	}
+
+	private static class FrameworkConfig implements SpotlessEclipseConfig {
+		@Override
+		public void registerServices(SpotlessEclipseServiceConfig config) {
+			config.applyDefault();
+			config.useSlf4J(EclipseJdtFormatterStepImpl.class.getPackage().getName());
+		}
+
+		@Override
+		public void activatePlugins(SpotlessEclipsePluginConfig config) {
+			config.applyDefault();
+			config.add(new JavaCore());
+		}
 	}
 
 	public String format(String raw) throws Exception {

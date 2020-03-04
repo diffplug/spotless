@@ -54,7 +54,7 @@ class ContentTypeManager extends NoContentTypeSpecificHandling {
 	 * Content type manager as required for cleanup steps.
 	 * @param formatterContentTypeID The content type of the formatter step
 	 */
-	ContentTypeManager(CleanupStep.ProcessorAccessor processor) {
+	ContentTypeManager(String formatterContentTypeID) {
 		id2Object = new HashMap<String, IContentType>();
 		Arrays.asList(
 				ContentTypeIdForCSS.ContentTypeID_CSS,
@@ -62,12 +62,9 @@ class ContentTypeManager extends NoContentTypeSpecificHandling {
 				ContentTypeIdForHTML.ContentTypeID_HTML,
 				ContentTypeIdForJSON.ContentTypeID_JSON)
 				.stream().forEach(id -> id2Object.put(id, new ContentTypeId(id)));
-		processorStepType = id2Object.get(processor.getThisContentType());
+		processorStepType = id2Object.get(formatterContentTypeID);
 		if (null == processorStepType) {
-			throw new IllegalArgumentException(
-					String.format(
-							"The manager does not support content type '%s' of processor '%s'.",
-							processor.getThisContentType(), processor.getClass().getName()));
+			throw new IllegalArgumentException("The manager does not support content type " + formatterContentTypeID);
 		}
 	}
 

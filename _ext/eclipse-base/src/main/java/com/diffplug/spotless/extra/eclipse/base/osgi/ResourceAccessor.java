@@ -66,7 +66,7 @@ class ResourceAccessor {
 		try {
 			bundleFile = getBundlFile(clazz);
 		} catch (BundleException e) {
-			throw new BundleException(String.format("Failed to locate resources for bunlde '%s'.", clazz.getName()), e);
+			throw new BundleException(String.format("Failed to locate resources for bundle '%s'.", clazz.getName()), e);
 		}
 	}
 
@@ -84,11 +84,16 @@ class ResourceAccessor {
 	}
 
 	private static URI getBundleUri(Class<?> clazz) throws BundleException {
-		URL objUrl = clazz.getProtectionDomain().getCodeSource().getLocation();
 		try {
+			URL objUrl = clazz.getProtectionDomain().getCodeSource().getLocation();
 			return objUrl.toURI();
+		} catch (NullPointerException e) {
+			//No bunlde should be used for RT classes lookup. See also org.eclipse.core.runtime.PerformanceStats.
+			throw new BundleException(String.format("No code source can be located for class '%s'. Class is probably not within a bundle, but part of the RT.", clazz.getName()), BundleException.READ_ERROR, e);
+		} catch (SecurityException e) {
+			throw new BundleException(String.format("Access to class '%s' is denied.", clazz.getName()), BundleException.READ_ERROR, e);
 		} catch (URISyntaxException e) {
-			throw new BundleException(String.format("Path '%s' for '%s' is invalid.", objUrl, clazz.getName()), BundleException.READ_ERROR, e);
+			throw new BundleException(String.format("Path for '%s' is invalid.", clazz.getName()), BundleException.READ_ERROR, e);
 		}
 	}
 
