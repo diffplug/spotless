@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.2.1`).
 
 ## [Unreleased]
+
+## [3.3.0] - 2020-03-04
 ### Added
 * Added support of plugin extensions without activator ([#533](https://github.com/diffplug/spotless/issues/533)). Required since `org.eclipse.core.filesystem` version `1.7.600` (see
 [Bug 550548](https://bugs.eclipse.org/bugs/show_bug.cgi?id=550548))
