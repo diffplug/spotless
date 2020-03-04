@@ -31,8 +31,7 @@ if (project == rootProject) {
 			// make sure only one changelog gets published per tag/commit
 			throw new IllegalArgumentException("Run changelogPush one at a time:\n" + changelogPushTasks.join('\n'))
 		} else if (changelogPushTasks.size() == 1) {
-			boolean isPlugin = (changelogPushTasks[0] == ':plugin-gradle:changelogPush')
-							|| (changelogPushTasks[1] == ':plugin-maven:changelogPush')
+			boolean isPlugin = (changelogPushTasks[0] == ':plugin-gradle:changelogPush') || (changelogPushTasks[1] == ':plugin-maven:changelogPush')
 			// if the one thing being published is a plugin
 			if (isPlugin) {
 				// make sure there aren't any unreleased changes in lib
