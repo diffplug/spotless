@@ -4,6 +4,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 * Add tests to `SpecificFilesTest` to fix [#529](https://github.com/diffplug/spotless/issues/529)
+* If you applied spotless to a subproject, but not to the root project, then on Gradle 6+ you would get the deprecation warning `Using method Project#afterEvaluate(Action) when the project is already evaluated has been deprecated.`  This has now been fixed. ([#506](https://github.com/diffplug/spotless/issues/506))
 
 ## [3.27.1] - 2020-01-14
 ### Fixed
