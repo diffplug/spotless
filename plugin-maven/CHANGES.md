@@ -3,7 +3,10 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
 * Fix scala and kotlin maven config documentation.
+* WTP based formatter do not apply configuration in parallel builds [#492](https://github.com/diffplug/spotless/issues/492). Fixed with WTP version 4.13.1. Note that this version no longer supports multiple configurations as explained in the [documentation](https://github.com/diffplug/spotless/blob/master/plugin-maven/README.md).
+
 
 ## [1.27.0] - 2020-01-01
 * Should be no changes whatsoever!  Released only for consistency with lib and plugin-gradle.

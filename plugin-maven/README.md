@@ -310,6 +310,9 @@ Unlike Eclipse, Spotless WTP ignores per default external URIs in schema locatio
 external entities. To allow the access of external URIs, set the property `resolveExternalURI`
 to true.
 
+Unlike other Eclipse based formatters, Spotless WTP does not support multiple configurations
+per formatter type. For example running `<eclipseWtp><type>XML` in the same module (or submodule) with different configurations will raise an error.
+
 <a name="invisible"></a>
 
 ## Line endings and encodings (invisible stuff)
