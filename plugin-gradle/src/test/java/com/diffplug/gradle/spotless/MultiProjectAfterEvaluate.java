@@ -35,7 +35,7 @@ public class MultiProjectAfterEvaluate extends GradleIntegrationTest {
 						"}",
 						"spotless { java { googleJavaFormat() } }");
 		String output = gradleRunner6().withArguments("spotlessApply", "--warning-mode", "all").build().getOutput().replace("\r\n", "\n");
-		Assertions.assertThat(output).contains("Using method Project#afterEvaluate(Action) when the project is already evaluated has been deprecated.");
+		Assertions.assertThat(output).doesNotContain("Using method Project#afterEvaluate(Action) when the project is already evaluated has been deprecated.");
 	}
 
 	private final GradleRunner gradleRunner6() throws IOException {

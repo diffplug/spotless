@@ -59,12 +59,13 @@ public class SpotlessExtension {
 		rootApplyTask = project.task(EXTENSION + APPLY);
 		rootApplyTask.setGroup(TASK_GROUP);
 		rootApplyTask.setDescription(APPLY_DESCRIPTION);
-		if (project.getRootProject() == project) {
-			registerDependenciesTask = project.getTasks().create(RegisterDependenciesTask.TASK_NAME, RegisterDependenciesTask.class);
+
+		RegisterDependenciesTask registerDependenciesTask = (RegisterDependenciesTask) project.getRootProject().getTasks().findByName(RegisterDependenciesTask.TASK_NAME);
+		if (registerDependenciesTask == null) {
+			registerDependenciesTask = project.getRootProject().getTasks().create(RegisterDependenciesTask.TASK_NAME, RegisterDependenciesTask.class);
 			registerDependenciesTask.setup();
-		} else {
-			registerDependenciesTask = project.getRootProject().getPlugins().apply(SpotlessPlugin.class).spotlessExtension.registerDependenciesTask;
 		}
+		this.registerDependenciesTask = registerDependenciesTask;
 	}
 
 	/** Line endings (if any). */
