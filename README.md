@@ -117,6 +117,7 @@ Once someone has filled in one square of the formatter/build system matrix, it's
 - Thanks to Ismaël Mejía for bumping eclipse-jdt deps to 4.11. [PR #60](https://github.com/diffplug/spotless/issues/381).
 - Thanks to Gábor Bernát for improvements to logging and multi-project support.
 - Thanks to Andrew Oberstar for improvements to formatting java source in non-java source sets. [PR #60](https://github.com/diffplug/spotless/pull/60).
+- Thanks to [Adib Saikali](https://github.com/asaikali) and [Paul Merlin](https://github.com/eskatos) for tracking down the tricky cause of [#506](https://github.com/diffplug/spotless/issues/506).
 - Import ordering from [EclipseCodeFormatter](https://github.com/krasa/EclipseCodeFormatter).
 - Built by [gradle](https://gradle.org/).
 - Tested by [junit](https://junit.org/).
