@@ -22,7 +22,7 @@ def makeLink = { url, text -> "<a href=\"${url}\" style=\"text-transform: none;\
 def javadocInfo = '<h2>' + makeLink("https://github.com/${org}/${name}", "${group}:${project.ext.artifactId}:${version}") +
 		' by ' + makeLink('https://www.diffplug.com', 'DiffPlug') + '</h2>'
 
-apply from: rootProject.file('gradle/javadoc-markdown.gradle')
+apply plugin: 'org.jdrupes.mdoclet'
 javadoc {
 	// Where it's possible to name parameters and methods clearly enough
 	// that javadoc is not necessary, why make the code bigger?
