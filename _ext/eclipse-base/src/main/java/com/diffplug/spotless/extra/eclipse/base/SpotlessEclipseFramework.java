@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import javax.xml.parsers.SAXParserFactory;
 
+import org.eclipse.core.internal.runtime.InternalPlatform;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -143,6 +144,7 @@ public final class SpotlessEclipseFramework {
 	 * If there is already a an instance, the call is ignored.
 	 * @return False if the {@link SpotlessEclipseFramework} instance already exists, true otherwise.
 	 * @throws BundleException Throws exception in case the setup failed.
+	 * @deprecated  Use {@link #setup(SpotlessEclipseConfig)} instead.
 	 */
 	public synchronized static boolean setup() throws BundleException {
 		return setup(plugins -> plugins.applyDefault());
@@ -155,6 +157,7 @@ public final class SpotlessEclipseFramework {
 	 * @param plugins Eclipse plugins (which are also OSGi bundles) to start
 	 * @return False if the {@link SpotlessEclipseFramework} instance already exists, true otherwise.
 	 * @throws BundleException Throws exception in case the setup failed.
+	 * @deprecated  Use {@link #setup(SpotlessEclipseConfig)} instead.
 	 */
 	public synchronized static boolean setup(Consumer<SpotlessEclipsePluginConfig> plugins) throws BundleException {
 		return setup(config -> config.applyDefault(), plugins);
@@ -167,6 +170,7 @@ public final class SpotlessEclipseFramework {
 	 * @param plugins Eclipse plugins (which are also OSGi bundles) to start
 	 * @return False if the {@link SpotlessEclipseFramework} instance already exists, true otherwise.
 	 * @throws BundleException Throws exception in case the setup failed.
+	 * @deprecated  Use {@link #setup(SpotlessEclipseConfig)} instead.
 	 */
 	public synchronized static boolean setup(Consumer<SpotlessEclipseServiceConfig> config, Consumer<SpotlessEclipsePluginConfig> plugins) throws BundleException {
 		return setup(core -> core.applyDefault(), config, plugins);
@@ -176,69 +180,98 @@ public final class SpotlessEclipseFramework {
 	 * Creates and configures a new {@link SpotlessEclipseFramework} if there is none.
 	 * If there is already a an instance, the call is ignored.
 	 * @param core Activators of core bundles
-	 * @param config Framework service configuration
+	 * @param services Framework service configuration
 	 * @param plugins Eclipse plugins to start
 	 * @return False if the {@link SpotlessEclipseFramework} instance already exists, true otherwise.
 	 * @throws BundleException Throws exception in case the setup failed.
+	 * @deprecated  Use {@link #setup(SpotlessEclipseConfig)} instead.
 	 */
-	public synchronized static boolean setup(Consumer<SpotlessEclipseCoreConfig> core, Consumer<SpotlessEclipseServiceConfig> config, Consumer<SpotlessEclipsePluginConfig> plugins) throws BundleException {
+	public synchronized static boolean setup(Consumer<SpotlessEclipseCoreConfig> core, Consumer<SpotlessEclipseServiceConfig> services, Consumer<SpotlessEclipsePluginConfig> plugins) throws BundleException {
 		if (null != INSTANCE) {
 			return false;
 		}
+		setup(new SpotlessEclipseConfig() {
+			@Override
+			public void registerBundles(SpotlessEclipseCoreConfig config) {
+				core.accept(config);
+			}
 
-		SpotlessEclipseCoreConfig coreConfig = new SpotlessEclipseCoreConfig();
-		core.accept(coreConfig);
+			@Override
+			public void registerServices(SpotlessEclipseServiceConfig config) {
+				services.accept(config);
+			}
 
-		INSTANCE = new SpotlessEclipseFramework(coreConfig);
-		config.accept(INSTANCE.getServiceConfig());
-
-		SpotlessEclipsePluginConfig pluginConfig = new SpotlessEclipsePluginConfig();
-		plugins.accept(pluginConfig);
-		for (BundleConfig.Entry plugin : pluginConfig.get()) {
-			INSTANCE.addPlugin(plugin.state, plugin.activator);
-		}
+			@Override
+			public void activatePlugins(SpotlessEclipsePluginConfig config) {
+				plugins.accept(config);
+			}
+		});
 		return true;
+	}
+
+	/**
+	 * Creates and configures a new {@link SpotlessEclipseFramework} if there is none.
+	 * If there is already a an instance, the call is ignored.
+	 * @param config Configuration
+	 * @throws BundleException Throws exception in case the setup failed.
+	 */
+	public synchronized static void setup(SpotlessEclipseConfig config) throws BundleException {
+		if (null == INSTANCE) {
+			INSTANCE = new SpotlessEclipseFramework();
+			config.registerServices(INSTANCE.getServiceConfig());
+
+			SpotlessEclipseCoreConfig coreConfig = new SpotlessEclipseCoreConfig();
+			config.registerBundles(coreConfig);
+			INSTANCE.startCoreBundles(coreConfig);
+
+			SpotlessEclipsePluginConfig pluginConfig = new SpotlessEclipsePluginConfig();
+			config.activatePlugins(pluginConfig);
+			for (Class<?> extension : pluginConfig.getExtensions()) {
+				INSTANCE.addExtension(extension);
+			}
+			for (BundleConfig.Entry plugin : pluginConfig.get()) {
+				INSTANCE.addPlugin(plugin.state, plugin.activator);
+			}
+
+			config.customize();
+		}
 	}
 
 	private final Function<Bundle, BundleException> registry;
 	private final BundleController controller;
-	private final SpotlessEclipseCoreConfig coreConfig;
-	private boolean coreConfigStarted;
 
-	private SpotlessEclipseFramework(SpotlessEclipseCoreConfig coreConfig) throws BundleException {
+	private SpotlessEclipseFramework() throws BundleException {
 
 		controller = new BundleController();
 		registry = (pluginBundle) -> {
 			return PluginRegistrar.register(pluginBundle);
 		};
-
-		this.coreConfig = coreConfig;
-		coreConfigStarted = false;
 	}
 
-	/** Get framework service configuration */
 	private SpotlessEclipseServiceConfig getServiceConfig() {
 		return controller.getServices();
 	}
 
-	/** Add a plugin to the framework. */
+	private void addExtension(Class<?> clazzInBundleJar) throws BundleException {
+		controller.addBundle(clazzInBundleJar, registry);
+	}
+
 	private void addPlugin(int state, BundleActivator plugin) throws BundleException {
-		if (!coreConfigStarted) {
-			//The SAXParserFactory.class is required for parsing the plugin XML files
-			addMandatoryServiceIfMissing(SAXParserFactory.class, SAXParserFactory.newInstance());
-			startFrameworkBundles();
-			coreConfigStarted = true;
-		}
 		controller.addBundle(state, plugin, registry);
 	}
 
-	private <S> void addMandatoryServiceIfMissing(Class<S> interfaceClass, S service) {
-		if (null == controller.getServiceReference(interfaceClass)) {
-			controller.getServices().add(interfaceClass, service);
-		}
-	}
+	private void startCoreBundles(SpotlessEclipseCoreConfig coreConfig) throws BundleException {
+		//The SAXParserFactory.class is required for parsing the plugin XML files
+		addMandatoryServiceIfMissing(SAXParserFactory.class, SAXParserFactory.newInstance());
 
-	private void startFrameworkBundles() throws BundleException {
+		/*
+		 * Since org.eclipse.core.runtime version 3.15.300, the Eclipse bundle look-up is accomplished
+		 * via the wiring framework, which requires starting the InternalPlatform.
+		 * The internal platform initialization is customized by the services
+		 * registered to the controller.
+		 */
+		InternalPlatform.getDefault().start(controller);
+
 		for (BundleConfig.Entry coreBundle : coreConfig.get()) {
 			try {
 				BundleContext context = controller.createContext(coreBundle.state);
@@ -249,4 +282,9 @@ public final class SpotlessEclipseFramework {
 		}
 	}
 
+	private <S> void addMandatoryServiceIfMissing(Class<S> interfaceClass, S service) {
+		if (null == controller.getServiceReference(interfaceClass)) {
+			controller.getServices().add(interfaceClass, service);
+		}
+	}
 }

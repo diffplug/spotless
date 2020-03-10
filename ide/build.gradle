@@ -1,4 +1,4 @@
-apply plugin: 'com.diffplug.gradle.oomph.ide'
+apply plugin: 'com.diffplug.oomph.ide'
 oomphIde {
 	repoEclipseLatest()
 	jdt {}
@@ -12,6 +12,6 @@ oomphIde {
 
 	thirdParty {
 		minimalistGradleEditor {}
-		tmTerminal {}
+		//tmTerminal {}
 	}
 }

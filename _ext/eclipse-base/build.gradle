@@ -1,5 +1,5 @@
-apply from: rootProject.file('../gradle/java-setup.gradle')
-apply from: rootProject.file('../gradle/java-publish.gradle')
+apply from: rootProject.file('_ext/gradle/java-setup.gradle')
+apply from: rootProject.file('gradle/java-publish.gradle')
 
 ext {
 	developers = [
@@ -15,7 +15,7 @@ dependencies {
 	}
 	compile("org.slf4j:slf4j-api:${VER_SLF4J}")
 
-	testCompile("org.slf4j:slf4j-simple:${VER_SLF4J}")
+	testImplementation("org.slf4j:slf4j-simple:${VER_SLF4J}")
 }
 
 jar {

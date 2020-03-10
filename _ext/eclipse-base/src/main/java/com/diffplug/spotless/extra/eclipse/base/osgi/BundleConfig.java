@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
@@ -30,6 +31,7 @@ public abstract class BundleConfig<T extends Enum<T>> {
 		public final int state;
 
 		public Entry(BundleActivator activator, int state) {
+			Objects.requireNonNull(activator, "activator");
 			this.activator = activator;
 			this.state = state;
 		}
@@ -42,7 +44,7 @@ public abstract class BundleConfig<T extends Enum<T>> {
 	}
 
 	/**
-	 * Activates a bundle with a certain state. A non-active state is used by
+	 * Activate a bundle with a certain state. A non-active state is used by
 	 * some bundles to allow a slim instantiation (for example in a headless
 	 * Eclipse).
 	 */
@@ -55,33 +57,33 @@ public abstract class BundleConfig<T extends Enum<T>> {
 		return config;
 	}
 
-	/** Activates a set of bundles with certain states */
+	/** Activate a set of bundles with certain states */
 	public void add(List<Entry> config) {
 		this.config.addAll(config);
 	}
 
-	/** Add a bundle in active state, which is the nominal choice */
+	/** Activate a bundle in active state, which is the nominal choice */
 	public void add(BundleActivator activator) {
 		add(activator, Bundle.ACTIVE);
 	}
 
-	/** Activates a set of bundles with in active state */
+	/** Activate a set of bundles with in active state */
 	public void add(Collection<BundleActivator> config) {
 		config.stream().forEach(entry -> add(entry));
 	}
 
-	/** Add a default bundle with its default state */
+	/** Activate a default bundle with its default state */
 	public void add(T bundle) {
 		add(create(bundle), getDefaultState(bundle));
 	}
 
-	/** Add a set of default bundles with their default states */
+	/** Activate a set of default bundles with their default states */
 	@SuppressWarnings("unchecked")
 	public void add(T... bundles) {
 		Arrays.asList(bundles).forEach(bundle -> add(bundle));
 	}
 
-	/** Add a default bundle with a custom state */
+	/** Activate a default bundle with a custom state */
 	public void add(T bundle, int state) {
 		add(create(bundle), state);
 	}

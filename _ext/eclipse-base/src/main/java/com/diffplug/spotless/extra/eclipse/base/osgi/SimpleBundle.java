@@ -18,6 +18,7 @@ package com.diffplug.spotless.extra.eclipse.base.osgi;
 import java.net.URL;
 import java.util.Enumeration;
 
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -40,6 +41,12 @@ class SimpleBundle implements StaticBundle, TemporaryBundle {
 	/** System bundle for a dedicated bundle activator */
 	SimpleBundle(BundleContext context, int state, BundleActivator activator) throws BundleException {
 		this(context, state, new ResourceAccessor(activator.getClass()));
+	}
+
+	/** System bundle providing only extensions and therefore does not require an activator */
+	SimpleBundle(BundleContext context, Class<?> clazzInBundleJar) throws BundleException {
+		//These bundles are always active (means that resources have been resolved)
+		this(context, Bundle.ACTIVE, new ResourceAccessor(clazzInBundleJar));
 	}
 
 	/** Internal constructor  */
@@ -67,6 +74,35 @@ class SimpleBundle implements StaticBundle, TemporaryBundle {
 		resources = master.resources;
 		id = master.id;
 		name = master.name;
+	}
+
+	@Override
+	public <A> A adapt(Class<A> type) {
+		/*
+		 * The adaptation is currently used by the InternalPlugin to get the framework wiring
+		 * implementation from the system bundle.
+		 * The original purpose to provide more specialized access to the Bundle object,
+		 * seems not be used by Eclipse at all.
+		 * Hence the call is mapped to old-style Eclipse services.
+		 */
+		try {
+
+			ServiceReference<?>[] references = context.getAllServiceReferences(type.getName(), "");
+			if ((null != references) && (0 != references.length)) {
+				if (1 != references.length) {
+					throw new IllegalArgumentException("Multiple services found for " + type.getName()); //In Spotless services should always be unique
+				}
+				Object obj = context.getService(references[0]);
+				try {
+					return type.cast(obj);
+				} catch (ClassCastException e) {
+					throw new IllegalArgumentException("Received unexpected class for reference filter " + type.getName(), e);
+				}
+			}
+			return null;
+		} catch (InvalidSyntaxException e) {
+			throw new IllegalArgumentException("Unexpected syntax exception", e); //Should never be thrown by Spotless bundle controller
+		}
 	}
 
 	@Override

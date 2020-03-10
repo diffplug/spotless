@@ -1,4 +1,4 @@
 <r a="1" b="2">
-	<x> foo bar </x>
-	<y xml:space="preserve"> preserve   space </y>
+  <x> foo bar </x>
+  <y xml:space="preserve"> preserve   space </y>
 </r>

@@ -178,7 +178,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 		if (target == null) {
 			JavaPluginConvention javaPlugin = getProject().getConvention().findPlugin(JavaPluginConvention.class);
 			if (javaPlugin == null) {
-				throw new GradleException("You must apply the java plugin before the spotless plugin if you are using the java extension.");
+				throw new GradleException("You must either specify 'target' manually or apply the 'java' plugin.");
 			}
 			FileCollection union = getProject().files();
 			for (SourceSet sourceSet : javaPlugin.getSourceSets()) {

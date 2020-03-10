@@ -18,26 +18,13 @@ package com.diffplug.gradle.spotless;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
-import org.gradle.api.execution.TaskExecutionGraph;
 import org.gradle.api.plugins.BasePlugin;
-import org.gradle.api.plugins.JavaBasePlugin;
+import org.gradle.util.GradleVersion;
 
 import com.diffplug.spotless.SpotlessCache;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import groovy.lang.Closure;
-
 public class SpotlessPlugin implements Plugin<Project> {
 	SpotlessExtension spotlessExtension;
-
-	static final String EXTENSION = "spotless";
-	static final String CHECK = "Check";
-	static final String APPLY = "Apply";
-
-	private static final String TASK_GROUP = "Verification";
-	private static final String CHECK_DESCRIPTION = "Checks that sourcecode satisfies formatting steps.";
-	private static final String APPLY_DESCRIPTION = "Applies code formatting steps to sourcecode in-place.";
-	private static final String FILES_PROPERTY = "spotlessFiles";
 
 	@Override
 	public void apply(Project project) {
@@ -45,83 +32,36 @@ public class SpotlessPlugin implements Plugin<Project> {
 		project.getPlugins().apply(BasePlugin.class);
 
 		// setup the extension
-		spotlessExtension = project.getExtensions().create(EXTENSION, SpotlessExtension.class, project);
+		spotlessExtension = project.getExtensions().create(SpotlessExtension.EXTENSION, SpotlessExtension.class, project);
 
-		// after the project has been evaluated, configure the check and format tasks per source set
-		project.afterEvaluate(this::createTasks);
+		// clear spotless' cache when the user does a clean
+		Task clean = project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME);
+		clean.doLast(unused -> {
+			// resolution for: https://github.com/diffplug/spotless/issues/243#issuecomment-564323856
+			// project.getRootProject() is consistent across every project, so only of one the clears will
+			// actually happen (as desired)
+			//
+			// we use System.identityHashCode() to avoid a memory leak by hanging on to the reference directly
+			SpotlessCache.clearOnce(System.identityHashCode(project.getRootProject()));
+		});
+
+		project.afterEvaluate(unused -> {
+			// Add our check task as a dependency on the global check task
+			// getTasks() returns a "live" collection, so this works even if the
+			// task doesn't exist at the time this call is made
+			if (spotlessExtension.enforceCheck) {
+				if (GradleVersion.current().compareTo(SpotlessPluginLegacy.CONFIG_AVOIDANCE_INTRODUCED) >= 0) {
+					SpotlessPluginConfigAvoidance.enforceCheck(spotlessExtension, project);
+				} else {
+					SpotlessPluginLegacy.enforceCheck(spotlessExtension, project);
+				}
+			}
+		});
 	}
 
 	/** The extension for this plugin. */
 	public SpotlessExtension getExtension() {
 		return spotlessExtension;
-	}
-
-	@SuppressWarnings("rawtypes")
-	void createTasks(Project project) {
-		Task rootCheckTask = project.task(EXTENSION + CHECK);
-		rootCheckTask.setGroup(TASK_GROUP);
-		rootCheckTask.setDescription(CHECK_DESCRIPTION);
-		Task rootApplyTask = project.task(EXTENSION + APPLY);
-		rootApplyTask.setGroup(TASK_GROUP);
-		rootApplyTask.setDescription(APPLY_DESCRIPTION);
-		String filePatterns;
-		if (project.hasProperty(FILES_PROPERTY) && project.property(FILES_PROPERTY) instanceof String) {
-			filePatterns = (String) project.property(FILES_PROPERTY);
-		} else {
-			// needs to be non-null since it is an @Input property of the task
-			filePatterns = "";
-		}
-
-		spotlessExtension.formats.forEach((key, value) -> {
-			// create the task that does the work
-			String taskName = EXTENSION + capitalize(key);
-			SpotlessTask spotlessTask = project.getTasks().create(taskName, SpotlessTask.class);
-			value.setupTask(spotlessTask);
-			spotlessTask.setFilePatterns(filePatterns);
-
-			// create the check and apply control tasks
-			Task checkTask = project.getTasks().create(taskName + CHECK);
-			Task applyTask = project.getTasks().create(taskName + APPLY);
-			// the root tasks depend on them
-			rootCheckTask.dependsOn(checkTask);
-			rootApplyTask.dependsOn(applyTask);
-			// and they depend on the work task
-			checkTask.dependsOn(spotlessTask);
-			applyTask.dependsOn(spotlessTask);
-
-			// when the task graph is ready, we'll configure the spotlessTask appropriately
-			project.getGradle().getTaskGraph().whenReady(new Closure(null) {
-				private static final long serialVersionUID = 1L;
-
-				// called by gradle
-				@SuppressFBWarnings("UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS")
-				public Object doCall(TaskExecutionGraph graph) {
-					if (graph.hasTask(checkTask)) {
-						spotlessTask.setCheck();
-					}
-					if (graph.hasTask(applyTask)) {
-						spotlessTask.setApply();
-					}
-					return Closure.DONE;
-				}
-			});
-		});
-
-		// Add our check task as a dependency on the global check task
-		// getTasks() returns a "live" collection, so this works even if the
-		// task doesn't exist at the time this call is made
-		if (spotlessExtension.enforceCheck) {
-			project.getTasks()
-					.matching(task -> task.getName().equals(JavaBasePlugin.CHECK_TASK_NAME))
-					.all(task -> task.dependsOn(rootCheckTask));
-		}
-
-		// clear spotless' cache when the user does a clean, but only after any spotless tasks
-		Task clean = project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME);
-		clean.doLast(unused -> SpotlessCache.clear());
-		project.getTasks()
-				.withType(SpotlessTask.class)
-				.all(task -> task.mustRunAfter(clean));
 	}
 
 	static String capitalize(String input) {

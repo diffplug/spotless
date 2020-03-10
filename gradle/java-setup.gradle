@@ -1,8 +1,3 @@
-buildscript {
-	repositories { maven { url 'https://plugins.gradle.org/m2/' } }
-	dependencies { classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:${VER_SPOTBUGS_PLUGIN}" }
-}
-
 //////////
 // JAVA //
 //////////
@@ -28,7 +23,7 @@ eclipse {
 // always create fresh projects
 tasks.eclipse.dependsOn(cleanEclipse)
 
-apply plugin: 'com.diffplug.gradle.eclipse.resourcefilters'
+apply plugin: 'com.diffplug.eclipse.resourcefilters'
 eclipseResourceFilters {
 	exclude().folders().name('build')
 }
@@ -50,7 +45,7 @@ spotbugs {
 	omitVisitors = []		// bugs that we want to ignore
 }
 // HTML instead of XML
-tasks.withType(com.github.spotbugs.SpotBugsTask) {
+tasks.withType(spotBugsTaskType()) {
 	reports {
 		xml.enabled = false
 		html.enabled = true

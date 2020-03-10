@@ -34,6 +34,8 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.Internal;
+import org.gradle.api.tasks.OutputFiles;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 
@@ -108,6 +110,7 @@ public class SpotlessTask extends DefaultTask {
 
 	protected Iterable<File> target;
 
+	@Internal
 	public Iterable<File> getTarget() {
 		return target;
 	}
@@ -119,7 +122,18 @@ public class SpotlessTask extends DefaultTask {
 	/** Internal use only. */
 	@InputFiles
 	@Deprecated
-	public Iterable<File> getInternalTarget() {
+	public Iterable<File> getInternalTargetInput() {
+		return getInternalTarget();
+	}
+
+	/** Internal use only. */
+	@OutputFiles
+	@Deprecated
+	public Iterable<File> getInternalTargetOutput() {
+		return getInternalTarget();
+	}
+
+	private Iterable<File> getInternalTarget() {
 		// used to combine the special cache file and the real target
 		return Iterables.concat(ImmutableList.of(getCacheFile()), target);
 	}
@@ -157,8 +171,8 @@ public class SpotlessTask extends DefaultTask {
 	/** Returns the name of this format. */
 	String formatName() {
 		String name = getName();
-		if (name.startsWith(SpotlessPlugin.EXTENSION)) {
-			return name.substring(SpotlessPlugin.EXTENSION.length()).toLowerCase(Locale.ROOT);
+		if (name.startsWith(SpotlessExtension.EXTENSION)) {
+			return name.substring(SpotlessExtension.EXTENSION.length()).toLowerCase(Locale.ROOT);
 		} else {
 			return name;
 		}
@@ -167,10 +181,10 @@ public class SpotlessTask extends DefaultTask {
 	@TaskAction
 	public void performAction(IncrementalTaskInputs inputs) throws Exception {
 		if (target == null) {
-			throw new GradleException("You must specify 'Iterable<File> toFormat'");
+			throw new GradleException("You must specify 'Iterable<File> target'");
 		}
 		if (!check && !apply) {
-			throw new GradleException("Don't call " + getName() + " directly, call " + getName() + SpotlessPlugin.CHECK + " or " + getName() + SpotlessPlugin.APPLY);
+			throw new GradleException("Don't call " + getName() + " directly, call " + getName() + SpotlessExtension.CHECK + " or " + getName() + SpotlessExtension.APPLY);
 		}
 
 		Predicate<File> shouldInclude;

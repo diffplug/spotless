@@ -9,7 +9,8 @@ buildScan {
 	if (hasAccepted) {
 		termsOfServiceAgree = 'yes'
 	} else if (!hasRefused) {
-		gradle.buildFinished { println """
+		gradle.buildFinished {
+			println """
 This build uses Gradle Build Scans to gather statistics, share information about 
 failures, environmental issues, dependencies resolved during the build and more.
 Build scans will be published after each build, if you accept the terms of 
@@ -33,6 +34,7 @@ and then:
 
 And we'll not bother you again. Note that build scans are only made public if 
 you share the URL at the end of the build.
-""" }
+"""
+		}
 	}
 }

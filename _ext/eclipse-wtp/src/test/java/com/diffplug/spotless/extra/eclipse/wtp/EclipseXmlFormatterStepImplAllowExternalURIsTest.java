@@ -15,46 +15,52 @@
  */
 package com.diffplug.spotless.extra.eclipse.wtp;
 
+import static org.eclipse.wst.xml.core.internal.preferences.XMLCorePreferenceNames.INDENTATION_CHAR;
+import static org.eclipse.wst.xml.core.internal.preferences.XMLCorePreferenceNames.INDENTATION_SIZE;
+import static org.eclipse.wst.xml.core.internal.preferences.XMLCorePreferenceNames.SPACE;
 import static org.junit.Assert.*;
 
 import java.util.Properties;
 
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
-import com.diffplug.spotless.extra.eclipse.wtp.sse.SpotlessPreferences;
+import com.diffplug.spotless.extra.eclipse.wtp.sse.PluginPreferences;
 
 /** Test configuration allowExternalURI=false */
 public class EclipseXmlFormatterStepImplAllowExternalURIsTest {
-	private static TestData TEST_DATA = null;
+	private TestData testData = null;
+	private EclipseXmlFormatterStepImpl formatter;
 
-	@BeforeClass
-	public static void initializeStatic() throws Exception {
-		TEST_DATA = TestData.getTestDataOnFileSystem("xml");
+	@Before
+	public void initializeStatic() throws Exception {
+		testData = TestData.getTestDataOnFileSystem("xml");
+		/*
+		 * The instantiation can be repeated for each step, but only with the same configuration
+		 * All formatter configuration is stored in
+		 * org.eclipse.core.runtime/.settings/org.eclipse.wst.xml.core.prefs.
+		 * So a simple test of one configuration item change is considered sufficient.
+		 */
+		Properties properties = new Properties();
+		properties.put(PluginPreferences.RESOLVE_EXTERNAL_URI, "TRUE");
+		properties.put(INDENTATION_SIZE, "2");
+		properties.put(INDENTATION_CHAR, SPACE); //Default is TAB
+		formatter = new EclipseXmlFormatterStepImpl(properties);
 	}
 
 	@Test
 	public void dtdExternalPath() throws Throwable {
-		String output = format(TEST_DATA.input("dtd_external.test"));
+		String[] input = testData.input("dtd_external.test");
+		String output = formatter.format(input[0], input[1]);
 		assertEquals("External DTD not resolved. Restrictions are not applied by formatter.",
-				TEST_DATA.expected("dtd_external.test"), output);
+				testData.expected("dtd_external.test"), output);
 	}
 
 	@Test
 	public void xsdExternalPath() throws Throwable {
-		String output = format(TEST_DATA.input("xsd_external.test"));
+		String[] input = testData.input("xsd_external.test");
+		String output = formatter.format(input[0], input[1]);
 		assertEquals("External XSD not resolved. Restrictions are not applied by formatter.",
-				TEST_DATA.expected("xsd_external.test"), output);
-	}
-
-	private static String format(final String[] input) throws Exception {
-		return format(input[0], input[1]);
-	}
-
-	private static String format(final String input, final String location) throws Exception {
-		Properties properties = new Properties();
-		properties.put(SpotlessPreferences.RESOLVE_EXTERNAL_URI, "TRUE");
-		EclipseXmlFormatterStepImpl formatter = new EclipseXmlFormatterStepImpl(properties);
-		return formatter.format(input, location);
+				testData.expected("xsd_external.test"), output);
 	}
 }

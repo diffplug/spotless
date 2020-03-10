@@ -56,7 +56,7 @@ public class ServiceCollection implements SpotlessEclipseServiceConfig {
 	}
 
 	@Override
-	public <S> void add(Class<S> interfaceClass, S service) {
+	public <S> void add(Class<S> interfaceClass, S service) throws ServiceException {
 		String className = interfaceClass.getName();
 		if (null != className2Service.put(interfaceClass.getName(), new FrameworkServiceReference<S>(className, service))) {
 			throw new ServiceException(
