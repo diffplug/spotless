@@ -10,7 +10,7 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
-* Added Antlr4 support ([#326](https://github.com/diffplug/spotless/issues/326)).
+* Added ANTLR4 support ([#326](https://github.com/diffplug/spotless/issues/326)).
 
 ### Build
 * All `CHANGES.md` are now in keepachangelog format. ([#507](https://github.com/diffplug/spotless/pull/507))

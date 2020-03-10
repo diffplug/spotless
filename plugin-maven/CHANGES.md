@@ -4,7 +4,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 * Fix scala and kotlin maven config documentation.
-* Added Antlr4 support ([#326](https://github.com/diffplug/spotless/issues/326)).
+* Added ANTLR4 support ([#326](https://github.com/diffplug/spotless/issues/326)).
 
 ## [1.27.0] - 2020-01-01
 * Should be no changes whatsoever!  Released only for consistency with lib and plugin-gradle.
