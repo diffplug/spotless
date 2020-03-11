@@ -3,8 +3,11 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
-* Fix scala and kotlin maven config documentation.
 * Added ANTLR4 support ([#326](https://github.com/diffplug/spotless/issues/326)).
+
+### Fixed
+* Fix scala and kotlin maven config documentation.
+* Eclipse-WTP formatter (web tools platform, not java) could encounter errors in parallel multiproject builds [#492](https://github.com/diffplug/spotless/issues/492). Fixed for Eclipse-WTP formatter Eclipse version 4.13.0 (default version).
 
 ## [1.27.0] - 2020-01-01
 * Should be no changes whatsoever!  Released only for consistency with lib and plugin-gradle.

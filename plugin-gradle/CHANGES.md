@@ -3,7 +3,11 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
 * Added ANTLR4 support ([#326](https://github.com/diffplug/spotless/issues/326)).
+
+### Fixed
+* Eclipse-WTP formatter (web tools platform, not java) could encounter errors in parallel multiproject builds [#492](https://github.com/diffplug/spotless/issues/492). Fixed for Eclipse-WTP formatter Eclipse version 4.13.0 (default version).
 
 ## [3.27.2] - 2020-03-05
 * Add tests to `SpecificFilesTest` to fix [#529](https://github.com/diffplug/spotless/issues/529)
