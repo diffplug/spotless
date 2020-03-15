@@ -22,7 +22,6 @@ def makeLink = { url, text -> "<a href=\"${url}\" style=\"text-transform: none;\
 def javadocInfo = '<h2>' + makeLink("https://github.com/${org}/${name}", "${group}:${project.ext.artifactId}:${version}") +
 		' by ' + makeLink('https://www.diffplug.com', 'DiffPlug') + '</h2>'
 
-String version_str = version.endsWith('-SNAPSHOT') ? 'snapshot' : version
 apply plugin: 'org.jdrupes.mdoclet'
 javadoc {
 	// Where it's possible to name parameters and methods clearly enough
@@ -38,8 +37,8 @@ javadoc {
 	options.linksOffline('https://docs.gradle.org/2.14/javadoc/', '../gradle/javadoc/gradle')
 
 	// links to javadoc from the other versions
-	options.linksOffline("https://diffplug.github.io/spotless/javadoc/${project.artifactIdLib}/${version_str}/", "../gradle/javadoc/${project.artifactIdLib}")
-	options.linksOffline("https://diffplug.github.io/spotless/javadoc/${project.artifactIdLibExtra}/${version_str}/", "../gradle/javadoc/${project.artifactIdLibExtra}")
+	options.linksOffline("https://javadoc.io/static/com.diffplug.spotless/spotless-lib/${rootProject.spotlessChangelog.versionLast}", "../gradle/javadoc/spotless-lib")
+	options.linksOffline("https://javadoc.io/static/com.diffplug.spotless/spotless-lib-extra/${rootProject.spotlessChangelog.versionLast}", "../gradle/javadoc/spotless-lib-extra")
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
