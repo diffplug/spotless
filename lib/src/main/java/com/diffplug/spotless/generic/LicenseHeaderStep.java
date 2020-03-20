@@ -44,12 +44,12 @@ public final class LicenseHeaderStep implements Serializable {
 			"package-info.java", "package-info.groovy", "module-info.java");
 
 	private final String licenseHeader;
+	private final boolean hasYearToken;
 	private final Pattern delimiterPattern;
-	private Pattern yearMatcherPattern;
-	private boolean hasYearToken;
-	private String licenseHeaderBeforeYearToken;
-	private String licenseHeaderAfterYearToken;
-	private String licenseHeaderWithYearTokenReplaced;
+	private final Pattern yearMatcherPattern;
+	private final String licenseHeaderBeforeYearToken;
+	private final String licenseHeaderAfterYearToken;
+	private final String licenseHeaderWithYearTokenReplaced;
 
 	/** Creates a FormatterStep which forces the start of each file to match a license header. */
 	public static FormatterStep createFromHeader(String licenseHeader, String delimiter) {
@@ -112,14 +112,19 @@ public final class LicenseHeaderStep implements Serializable {
 		this.licenseHeader = licenseHeader;
 		this.delimiterPattern = Pattern.compile('^' + delimiter, Pattern.UNIX_LINES | Pattern.MULTILINE);
 
-		if (getToken(licenseHeader).isPresent()) {
-			String token = getToken(licenseHeader).get();
-			this.hasYearToken = true;
-			int yearTokenIndex = licenseHeader.indexOf(token);
-			this.licenseHeaderBeforeYearToken = licenseHeader.substring(0, yearTokenIndex);
-			this.licenseHeaderAfterYearToken = licenseHeader.substring(yearTokenIndex + 5);
-			this.licenseHeaderWithYearTokenReplaced = licenseHeader.replace(token, String.valueOf(YearMonth.now().getYear()));
-			this.yearMatcherPattern = Pattern.compile("[0-9]{4}(" + Pattern.quote(yearSeparator) + "[0-9]{4})?");
+		Optional<String> yearToken = getYearToken(licenseHeader);
+		this.hasYearToken = yearToken.isPresent();
+		if (hasYearToken) {
+			int yearTokenIndex = licenseHeader.indexOf(yearToken.get());
+			licenseHeaderBeforeYearToken = licenseHeader.substring(0, yearTokenIndex);
+			licenseHeaderAfterYearToken = licenseHeader.substring(yearTokenIndex + 5);
+			licenseHeaderWithYearTokenReplaced = licenseHeader.replace(yearToken.get(), String.valueOf(YearMonth.now().getYear()));
+			yearMatcherPattern = Pattern.compile("[0-9]{4}(" + Pattern.quote(yearSeparator) + "[0-9]{4})?");
+		} else {
+			licenseHeaderBeforeYearToken = null;
+			licenseHeaderAfterYearToken = null;
+			licenseHeaderWithYearTokenReplaced = null;
+			yearMatcherPattern = null;
 		}
 	}
 
@@ -130,7 +135,7 @@ public final class LicenseHeaderStep implements Serializable {
 	 * @param licenseHeader String representation of the license header
 	 * @return Matching value from YEAR_TOKENS or null if none exist
 	 */
-	private Optional<String> getToken(String licenseHeader) {
+	private static Optional<String> getYearToken(String licenseHeader) {
 		return YEAR_TOKENS.stream().filter(licenseHeader::contains).findFirst();
 	}
 
