@@ -3,10 +3,13 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+* Enable IntelliJ-compatible token `$today.year` for specifying the year in license header files. ([#542](https://github.com/diffplug/spotless/pull/542))
 ### Fixed
 * Eclipse-WTP formatter (web tools platform, not java) could encounter errors in parallel multiproject builds [#492](https://github.com/diffplug/spotless/issues/492). Fixed for Eclipse-WTP formatter Eclipse version 4.13.0 (default version).
 
 ## [3.27.2] - 2020-03-05
+### Fixed
 * Add tests to `SpecificFilesTest` to fix [#529](https://github.com/diffplug/spotless/issues/529)
 * If you applied spotless to a subproject, but not to the root project, then on Gradle 6+ you would get the deprecation warning `Using method Project#afterEvaluate(Action) when the project is already evaluated has been deprecated.`  This has now been fixed. ([#506](https://github.com/diffplug/spotless/issues/506))
 
