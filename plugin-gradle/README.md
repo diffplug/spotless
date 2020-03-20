@@ -523,8 +523,8 @@ to true.
 
 ## License header options
 
-If the string contents of a licenseHeader step or the file contents of a licenseHeaderFile step contains a $YEAR token,
-then in the end-result generated license headers which use this license header as a template, $YEAR will be replaced with the current year.
+If the string contents of a licenseHeader step or the file contents of a licenseHeaderFile step contains a $YEAR OR $today.year token,
+then in the end-result generated license headers which use this license header as a template, $YEAR or $today.year will be replaced with the current year.
 
 
 For example:
