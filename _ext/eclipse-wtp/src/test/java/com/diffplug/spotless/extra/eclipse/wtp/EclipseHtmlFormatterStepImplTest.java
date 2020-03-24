@@ -89,6 +89,28 @@ public class EclipseHtmlFormatterStepImplTest {
 				testData.expected("css.html"), output);
 	}
 
+	@Test
+	public void checkNoDoubleEndoding() throws Exception {
+		String osEncoding = System.getProperty("file.encoding");
+		//Assure that file.encoding is not used during the clean-up.
+		System.setProperty("file.encoding", "ISO-8859-1");
+		//Check that WTP does not try to do UTF-8 conversion again (since done by Spotless framework)
+		String[] input = testData.input("utf-8.html");
+		String output = formatter.format(input[0]);
+		System.setProperty("file.encoding", osEncoding);
+		assertEquals("Unexpected formatting of UTF-8", testData.expected("utf-8.html"), output);
+	}
+
+	@Test
+	public void checkBOMisStripped() throws Exception {
+		String[] input = testData.input("bom.html");
+		String[] inputWithoutBom = testData.input("utf-8.html");
+		//The UTF-8 BOM is interpreted as on UTF-16 character.
+		assertEquals("BOM input invalid", input[0].length() - 1, inputWithoutBom[0].length());
+		String output = formatter.format(input[0]);
+		assertEquals("BOM is not stripped", testData.expected("utf-8.html"), output);
+	}
+
 	@Test(expected = IllegalArgumentException.class)
 	public void configurationChange() throws Exception {
 		new EclipseHtmlFormatterStepImpl(new Properties());

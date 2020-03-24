@@ -3,6 +3,10 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.15.1`).
 
 ## [Unreleased]
+### Fixed
+* Handling of character encodings which require more than 1 byte. Previously the WTP
+decoded input twice, once using the encoding configured by the user, and
+once again using the default platform character set ([#545](https://github.com/diffplug/spotless/issues/545)).
 
 ## [3.15.2] - 2020-03-04
 ### Fixed

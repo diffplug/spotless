@@ -18,6 +18,7 @@ package com.diffplug.spotless.extra.eclipse.wtp.sse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,6 +50,7 @@ import com.diffplug.spotless.extra.eclipse.base.service.NoContentTypeSpecificHan
 class ContentTypeManager extends NoContentTypeSpecificHandling {
 	private final Map<String, IContentType> id2Object;
 	private final IContentType processorStepType;
+	private final IContentDescription processorStepDescription;
 
 	/**
 	 * Content type manager as required for cleanup steps.
@@ -66,6 +68,7 @@ class ContentTypeManager extends NoContentTypeSpecificHandling {
 		if (null == processorStepType) {
 			throw new IllegalArgumentException("The manager does not support content type " + formatterContentTypeID);
 		}
+		processorStepDescription = new StringDescription(processorStepType);
 	}
 
 	@Override
@@ -81,6 +84,45 @@ class ContentTypeManager extends NoContentTypeSpecificHandling {
 	public IContentType findContentTypeFor(InputStream contents, String fileName) throws IOException {
 		//We only format things here with the given processor, so this answer is always correct.
 		return processorStepType;
+	}
+
+	@Override
+	public IContentDescription getDescriptionFor(InputStream contents, String fileName, QualifiedName[] options) throws IOException {
+		return processorStepDescription;
+	}
+
+	private static class StringDescription implements IContentDescription {
+
+		private final IContentType type;
+
+		public StringDescription(IContentType type) {
+			this.type = type;
+		}
+
+		@Override
+		public boolean isRequested(QualifiedName key) {
+			return false; //Don't use set Property
+		}
+
+		@Override
+		public String getCharset() {
+			return Charset.defaultCharset().name(); //Spotless operates on an decoded string, meaning the input has always the "internal" encoding
+		}
+
+		@Override
+		public IContentType getContentType() {
+			return type;
+		}
+
+		@Override
+		public Object getProperty(QualifiedName key) {
+			return null; //Assume that the property map is empty
+		}
+
+		@Override
+		public void setProperty(QualifiedName key, Object value) {
+			throw new IllegalArgumentException("Content description key cannot be set: " + key);
+		}
 	}
 
 	/**
