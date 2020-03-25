@@ -209,7 +209,7 @@ set the `includes` parameter as described in the [File incudes and excludes](#in
 
     <antlr4Formatter>
       <!-- specify a custom Antlr4Formatter version -->
-      <version>1.1.0</version>
+      <version>1.2.1</version>
     </antlr4Formatter>
   </antlr4>
 </configuration>
