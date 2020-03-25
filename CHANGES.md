@@ -10,13 +10,19 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
-* Added ANTLR4 support ([#326](https://github.com/diffplug/spotless/issues/326)).
 
+## [1.28.0] - 2020-03-20
+### Added
+* Added ANTLR4 support ([#326](https://github.com/diffplug/spotless/issues/326)).
+* Enable IntelliJ-compatible token `$today.year` for specifying the year in license header files. ([#542](https://github.com/diffplug/spotless/pull/542))
+### Fixed
+* Eclipse-WTP formatter (web tools platform, not java) could encounter errors in parallel multiproject builds [#492](https://github.com/diffplug/spotless/issues/492). Fixed for Eclipse-WTP formatter Eclipse version 4.13.0 (default version).
 ### Build
 * All `CHANGES.md` are now in keepachangelog format. ([#507](https://github.com/diffplug/spotless/pull/507))
 * We now use [javadoc.io](https://javadoc.io/) instead of github pages. ([#508](https://github.com/diffplug/spotless/pull/508))
 * We no longer publish `-SNAPSHOT` for every build to `master`, since we have good [JitPack integration](https://github.com/diffplug/spotless/blob/master/CONTRIBUTING.md#gradle---any-commit-in-a-public-github-repo-this-one-or-any-fork). ([#508](https://github.com/diffplug/spotless/pull/508))
 * Improved how we use Spotless on itself. ([#509](https://github.com/diffplug/spotless/pull/509))
+* Fix build warnings when building on Gradle 6+, bump build gradle to 6.2.2, and fix javadoc links. ([#536](https://github.com/diffplug/spotless/pull/536))
 
 ## [1.27.0] - 2020-01-01
 * Ignored `KtLintStepTest`, because [gradle/gradle#11752](https://github.com/gradle/gradle/issues/11752) is causing too many CI failures. ([#499](https://github.com/diffplug/spotless/pull/499))

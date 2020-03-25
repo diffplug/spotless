@@ -39,6 +39,8 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 	private static final String KEY_FILE_WITH_LICENSE_AND_PLACEHOLDER = "license/FileWithLicenseHeaderAndPlaceholder.test";
 	// Licenses to test $YEAR token replacement
 	private static final String LICENSE_HEADER_YEAR = "This is a fake license, $YEAR. ACME corp.";
+	// License to test $today.year token replacement
+	private static final String LICENSE_HEADER_YEAR_INTELLIJ_TOKEN = "This is a fake license, $today.year. ACME corp.";
 	// Special case where the characters immediately before and after the year token are the same,
 	// start position of the second part might overlap the end position of the first part.
 	private static final String LICENSE_HEADER_YEAR_VARIANT = "This is a fake license. Copyright $YEAR ACME corp.";
@@ -82,6 +84,12 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 				.test(fileWithLicenseContaining(" ACME corp."), fileWithLicenseContaining(LICENSE_HEADER_YEAR_VARIANT, currentYear()))
 				.test(fileWithLicenseContaining("This is a fake license. Copyright ACME corp."), fileWithLicenseContaining(LICENSE_HEADER_YEAR_VARIANT, currentYear()))
 				.test(fileWithLicenseContaining("This is a fake license. CopyrightACME corp."), fileWithLicenseContaining(LICENSE_HEADER_YEAR_VARIANT, currentYear()));
+
+		//Check when token is of the format $today.year
+		step = LicenseHeaderStep.createFromFile(createLicenseWith(LICENSE_HEADER_YEAR_INTELLIJ_TOKEN), StandardCharsets.UTF_8, LICENSE_HEADER_DELIMITER);
+
+		StepHarness.forStep(step)
+				.test(fileWithLicenseContaining(LICENSE_HEADER_YEAR_INTELLIJ_TOKEN), fileWithLicenseContaining(LICENSE_HEADER_YEAR_INTELLIJ_TOKEN, currentYear(), "$today.year"));
 	}
 
 	@Test
@@ -124,6 +132,10 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 
 	private String fileWithLicenseContaining(String license, String yearContent) throws IOException {
 		return getTestResource(KEY_FILE_WITH_LICENSE_AND_PLACEHOLDER).replace("__LICENSE_PLACEHOLDER__", license).replace("$YEAR", yearContent);
+	}
+
+	private String fileWithLicenseContaining(String license, String yearContent, String token) throws IOException {
+		return getTestResource(KEY_FILE_WITH_LICENSE_AND_PLACEHOLDER).replace("__LICENSE_PLACEHOLDER__", license).replace(token, yearContent);
 	}
 
 	private String currentYear() {
