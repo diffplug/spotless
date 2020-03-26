@@ -4,9 +4,10 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Fixed
-* Handling of character encodings which require more than 1 byte. Previously the WTP
-decoded input twice, once using the encoding configured by the user, and
-once again using the default platform character set ([#545](https://github.com/diffplug/spotless/issues/545)).
+* Handling of character encodings on OS with non UTF-8 default file encoding format. 
+CSS, HTML and JSON formatter steps encoded intermediately the input
+to UTF-8 and used the default file encoding format for decoding. This process failed
+if the input contained characters not bit-equivalent in UTF-8 and OS default file encoding format ([#545](https://github.com/diffplug/spotless/issues/545)).
 
 ## [3.15.2] - 2020-03-04
 ### Fixed

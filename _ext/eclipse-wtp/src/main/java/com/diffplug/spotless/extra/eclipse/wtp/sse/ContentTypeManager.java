@@ -18,7 +18,6 @@ package com.diffplug.spotless.extra.eclipse.wtp.sse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,14 +36,28 @@ import org.eclipse.wst.xml.core.internal.provisional.contenttype.ContentTypeIdFo
 import com.diffplug.spotless.extra.eclipse.base.service.NoContentTypeSpecificHandling;
 
 /**
- * For some embedded formatters, the WTP uses the content type ID for
- * preferences lookup.
+
+ * WTP ModelHandlerRegistry uses the content type mamanger clean-up formatters
+ * to provide association of content to content type related functionality.
  * <p>
- * The preference lookup is accomplished via the Eclipse preference service,
- * which must be provided in combination with this service.
- * For cleanup tasks, the ID mapping is also used by the model handler
- * to determine the model which a string stream requires.
+ * Preference lookup per content type is accomplished via the
+ * Eclipse PreferencesService, which must be provided in combination with
+ * this service.
  * </p>
+ * The input byte steam encoding detection is accomplished by the
+ * content type manager. Normally the encoding is bount do a document/file.
+ * Spotless applies the formatting on strings already decoded.
+ * The WTP AbstractStructuredCleanupProcessor provides for non-documents
+ * a clean-up function converting the decoded string into an UTF-8 encoded byte stream.
+ * WTP AbstractDocumentLoader uses content type mamanger to determine the encoding
+ * of the input stream.
+ * Only the steps are affected that are using the
+ * AbstractStructuredCleanupProcessor. All other steps creating an empty document
+ * (e.g. via WTP AbstractDocumentLoader) and setting the textual content of the new document.
+ *
+ * @see org.eclipse.core.internal.preferences.PreferencesService
+ * @see org.eclipse.wst.sse.core.internal.cleanup.AbstractStructuredCleanupProcessor
+ * @see org.eclipse.wst.sse.core.internal.document.AbstractDocumentLoader
  * @see org.eclipse.wst.sse.core.internal.modelhandler.ModelHandlerRegistry
  */
 class ContentTypeManager extends NoContentTypeSpecificHandling {
@@ -106,7 +119,8 @@ class ContentTypeManager extends NoContentTypeSpecificHandling {
 
 		@Override
 		public String getCharset() {
-			return Charset.defaultCharset().name(); //Spotless operates on an decoded string, meaning the input has always the "internal" encoding
+			//Called by AbstractDocumentLoader.readInputStream
+			return "UTF-8"; //UTF-8 encoded by AbstractStructuredCleanupProcessor.cleanupContent
 		}
 
 		@Override
@@ -126,7 +140,7 @@ class ContentTypeManager extends NoContentTypeSpecificHandling {
 	}
 
 	/**
-	 * The WTP uses the manager only for ID mapping, so most of the methods are not used.
+	 * The WTP uses the manager mainly for ID mapping, so most of the methods are not used.
 	 * Actually it has a hand stitched way for transforming the content type ID
 	 * {@code org.eclipse.wst...source} to the plugin ID {@code org.eclipse.wst...core}.
 	 * @see org.eclipse.wst.sse.core.internal.encoding.ContentBasedPreferenceGateway

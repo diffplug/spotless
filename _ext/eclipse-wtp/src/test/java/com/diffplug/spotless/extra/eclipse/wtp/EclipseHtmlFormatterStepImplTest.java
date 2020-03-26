@@ -90,11 +90,9 @@ public class EclipseHtmlFormatterStepImplTest {
 	}
 
 	@Test
-	public void checkNoDoubleEndoding() throws Exception {
+	public void checkCleanupForNonUtf8() throws Exception {
 		String osEncoding = System.getProperty("file.encoding");
-		//Assure that file.encoding is not used during the clean-up.
-		System.setProperty("file.encoding", "ISO-8859-1");
-		//Check that WTP does not try to do UTF-8 conversion again (since done by Spotless framework)
+		System.setProperty("file.encoding", "ISO-8859-1"); //Simulate a non UTF-8 OS
 		String[] input = testData.input("utf-8.html");
 		String output = formatter.format(input[0]);
 		System.setProperty("file.encoding", osEncoding);
