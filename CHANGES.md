@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+* Javadoc for the `ext/eclipse-*` projects.
 
 ## [1.28.0] - 2020-03-20
 ### Added
