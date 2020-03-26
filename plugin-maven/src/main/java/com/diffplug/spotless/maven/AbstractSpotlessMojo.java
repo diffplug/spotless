@@ -45,6 +45,7 @@ import com.diffplug.spotless.maven.generic.LicenseHeader;
 import com.diffplug.spotless.maven.java.Java;
 import com.diffplug.spotless.maven.kotlin.Kotlin;
 import com.diffplug.spotless.maven.scala.Scala;
+import com.diffplug.spotless.maven.typescript.Typescript;
 
 public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
@@ -97,6 +98,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	@Parameter
 	private Cpp cpp;
+	
+	@Parameter
+	private Typescript typescript;
 
 	/** The CSS extension is discontinued. */
 	@Parameter
@@ -179,7 +183,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private List<FormatterFactory> getFormatterFactories() {
-		return Stream.concat(formats.stream(), Stream.of(java, scala, kotlin, cpp, css, xml))
+		return Stream.concat(formats.stream(), Stream.of(java, scala, kotlin, cpp, typescript, css, xml))
 				.filter(Objects::nonNull)
 				.collect(toList());
 	}
