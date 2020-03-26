@@ -193,6 +193,80 @@ By default, all files matching `src/main/cpp/**/*.<ext>` and `src/test/cpp/**/*.
 ```
 Use the Eclipse to define the *Code Style preferences* (see [Eclipse documentation](https://www.eclipse.org/documentation/)). Within the preferences *Edit...* dialog, you can export your configuration as XML file, which can be used as a configuration `<file>`. If no `<file>` is provided, the CDT default configuration is used.
 
+<a name="typescript"></a>
+
+## Applying to Typescript source
+
+To use tsfmt, you first have to specify the files that you want it to apply to.
+Then you specify `tsfmt`, and optionally how you want to apply it.
+
+By default, all typescript source sets will be formatted. To change this,
+set the `target` parameter as described in the [Custom rules](#custom) section.
+
+```xml
+<configuration>
+  <typescript>
+     <tsfmt>
+       <!-- use (only) one of the following ...File elements to define a config file -->
+       <tslintFile>${basedir}/path/to/repo/tslint.json</tslintFile>
+       <tsfmtFile>${basedir}/path/to/repo/tsfmt.json</tsfmtFile>
+       <tsconfigFile>${basedir}/path/to/repo/tsconfig.json</tsconfigFile>
+       <vscodeFile>${basedir}/path/to/repo/vscode.json</vscodeFile>
+       <!-- optionally configure following versions to use, shown values are defaults-->
+       <typescriptFormatterVersion>7.2.2</typescriptFormatterVersion>
+       <typescriptVersion>3.3.3</typescriptVersion>
+       <tslintVersion>5.12.1</tslintVersion>
+     </tsfmt>
+  </typescript>
+</configuration>
+```
+Supported config file types are `tsconfigFile`, `tslintFile`, `vscodeFile` and `tsfmtFile`. They are corresponding to the respective
+[tsfmt-parameters](https://github.com/vvakame/typescript-formatter/blob/7764258ad42ac65071399840d1b8701868510ca7/lib/index.ts#L27L34).
+
+*Please note:*
+The auto-discovery of config files (up the file tree) will not work when using tsfmt within spotless,
+  hence you are required to provide resolvable file paths for config files.
+
+... or alternatively provide the configuration inline ...
+
+```xml
+<configuration>
+  <typescript>
+     <tsfmt>
+       <!-- use (only) one of the following ...File elements to define a config file -->
+       <config>
+         <indentSize>1</indentSize>
+         <convertTabsToSpaces>true</convertTabsToSpaces>
+       </config>
+       <!-- optionally configure following versions to use, shown values are defaults-->
+       <typescriptFormatterVersion>7.2.2</typescriptFormatterVersion>
+       <typescriptVersion>3.3.3</typescriptVersion>
+       <tslintVersion>5.12.1</tslintVersion>
+     </tsfmt>
+  </typescript>
+</configuration>
+```
+
+See [tsfmt's default config settings](https://github.com/vvakame/typescript-formatter/blob/7764258ad42ac65071399840d1b8701868510ca7/lib/utils.ts#L11L32) for what is available.
+
+### Prerequisite: tsfmt requires a working NodeJS version
+
+tsfmt is based on NodeJS, so to use it, a working NodeJS installation (especially npm) is required on the host running spotless.
+Spotless will try to auto-discover an npm installation. If that is not working for you, it is possible to directly configure the npm binary to use.
+
+```xml
+<configuration>
+  <typescript>
+     <tsfmt>
+       <tslintFile>${basedir}/path/to/repo/tslint.json</tslintFile>
+       <npmExecutable>/usr/bin/npm</npmExecutable>
+     </tsfmt>
+  </typescript>
+</configuration>
+```
+
+Spotless uses npm to install necessary packages locally. It runs tsfmt using [J2V8](https://github.com/eclipsesource/J2V8) internally after that.
+
 <a name="format"></a>
 
 ## Applying to custom sources
