@@ -94,7 +94,7 @@ public class TypescriptFormatStepTest extends MavenIntegrationTest {
 				"<tsfmt>",
 				"  <config>",
 				"    <indentSize>1</indentSize>",
-				"    <convertTabsToSpaces>true</indentSize>",
+				"    <convertTabsToSpaces>true</convertTabsToSpaces>",
 				"  </config>", 
 				"  <typescriptFormatterVersion>7.2.2</typescriptFormatterVersion>",
 				"</tsfmt>");
