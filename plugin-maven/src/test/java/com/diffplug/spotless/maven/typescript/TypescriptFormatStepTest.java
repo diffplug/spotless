@@ -39,7 +39,7 @@ public class TypescriptFormatStepTest extends MavenIntegrationTest {
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).sameAsResource("typescript/tsfmt/TypescriptCodeFormatted.test");
 	}
-	
+
 	@Test
 	@Ignore
 	public void testTypescriptTsfmtTsConfigFile() throws Exception {
@@ -57,7 +57,7 @@ public class TypescriptFormatStepTest extends MavenIntegrationTest {
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).sameAsResource("typescript/tsfmt/TypescriptCodeFormatted.test");
 	}
-	
+
 	@Test
 	public void testTypescriptTsfmtTsFmtFile() throws Exception {
 		writePomWithTypescriptSteps(
@@ -72,12 +72,12 @@ public class TypescriptFormatStepTest extends MavenIntegrationTest {
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).sameAsResource("typescript/tsfmt/TypescriptCodeFormatted.test");
 	}
-	
+
 	@Test
 	public void testTypescriptTsfmtVsCodeFile() throws Exception {
 		writePomWithTypescriptSteps(
 				"<tsfmt>",
-				"  <vscodeFile>${basedir}/vscode.json</vscodeFile>", 
+				"  <vscodeFile>${basedir}/vscode.json</vscodeFile>",
 				"  <typescriptFormatterVersion>7.2.2</typescriptFormatterVersion>",
 				"</tsfmt>");
 		setFile("vscode.json").toResource("typescript/tsfmt/vscode.json");
@@ -87,7 +87,7 @@ public class TypescriptFormatStepTest extends MavenIntegrationTest {
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).sameAsResource("typescript/tsfmt/TypescriptCodeFormatted.test");
 	}
-	
+
 	@Test
 	public void testTypescriptTsfmtInlineConfig() throws Exception {
 		writePomWithTypescriptSteps(
@@ -95,7 +95,7 @@ public class TypescriptFormatStepTest extends MavenIntegrationTest {
 				"  <config>",
 				"    <indentSize>1</indentSize>",
 				"    <convertTabsToSpaces>true</convertTabsToSpaces>",
-				"  </config>", 
+				"  </config>",
 				"  <typescriptFormatterVersion>7.2.2</typescriptFormatterVersion>",
 				"</tsfmt>");
 		setFile("vscode.json").toResource("typescript/tsfmt/vscode.json");
@@ -105,7 +105,7 @@ public class TypescriptFormatStepTest extends MavenIntegrationTest {
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).sameAsResource("typescript/tsfmt/TypescriptCodeFormatted.test");
 	}
-	
+
 	@Test
 	public void testTypescript_2_Configs() throws Exception {
 		writePomWithTypescriptSteps(

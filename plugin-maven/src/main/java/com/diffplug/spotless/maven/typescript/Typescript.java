@@ -19,7 +19,6 @@ import java.util.Set;
 
 import com.diffplug.common.collect.ImmutableSet;
 import com.diffplug.spotless.maven.FormatterFactory;
-import com.diffplug.spotless.maven.generic.LicenseHeader;
 
 /**
  * A {@link FormatterFactory} implementation that corresponds to {@code <typescript>...</typescript>} configuration element.
@@ -31,7 +30,7 @@ public class Typescript extends FormatterFactory {
 	private static final Set<String> DEFAULT_INCLUDES = ImmutableSet.of("**/*.ts");
 
 	private static final String LICENSE_HEADER_DELIMITER = null;
-	
+
 	@Override
 	public Set<String> defaultIncludes() {
 		return DEFAULT_INCLUDES;
@@ -41,7 +40,7 @@ public class Typescript extends FormatterFactory {
 	public String licenseHeaderDelimiter() {
 		return LICENSE_HEADER_DELIMITER;
 	}
-	
+
 	public void addTsfmt(Tsfmt tsfmt) {
 		addStepFactory(tsfmt);
 	}

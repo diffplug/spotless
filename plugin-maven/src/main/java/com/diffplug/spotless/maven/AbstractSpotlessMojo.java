@@ -98,7 +98,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	@Parameter
 	private Cpp cpp;
-	
+
 	@Parameter
 	private Typescript typescript;
 

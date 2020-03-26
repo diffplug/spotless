@@ -19,6 +19,7 @@ import java.io.File;
 import java.util.Map;
 
 import org.apache.maven.plugins.annotations.Parameter;
+
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
@@ -39,7 +40,7 @@ public class Tsfmt implements FormatterStepFactory {
 
 	@Parameter
 	private String tsfmtFile;
-	
+
 	@Parameter
 	private String typescriptFormatterVersion;
 
@@ -51,7 +52,7 @@ public class Tsfmt implements FormatterStepFactory {
 
 	@Parameter
 	private String npmExecutable;
-	
+
 	@Parameter
 	private Map<String, Object> config;
 
@@ -60,36 +61,42 @@ public class Tsfmt implements FormatterStepFactory {
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
-		
+
 		Map<String, String> devDependencies = TsFmtFormatterStep.defaultDevDependencies();
-		if (typescriptFormatterVersion != null) { devDependencies.put("typescript-formatter", typescriptFormatterVersion); }
-		if (typescriptVersion != null) { devDependencies.put("typescript", typescriptVersion); }
-		if (tslintVersion != null) { devDependencies.put("tslint", tslintVersion); }
-								
+		if (typescriptFormatterVersion != null) {
+			devDependencies.put("typescript-formatter", typescriptFormatterVersion);
+		}
+		if (typescriptVersion != null) {
+			devDependencies.put("typescript", typescriptVersion);
+		}
+		if (tslintVersion != null) {
+			devDependencies.put("tslint", tslintVersion);
+		}
+
 		File npm = npmExecutable != null ? stepConfig.getFileLocator().locateFile(npmExecutable) : null;
-		
+
 		TypedTsFmtConfigFile configFile = null;
-		
+
 		// check that there is only 1 config file or inline config
-		if (this.tsconfigFile != null 
+		if (this.tsconfigFile != null
 				^ this.tsfmtFile != null
 				^ this.tslintFile != null
 				^ this.vscodeFile != null) {
 			if (this.tsconfigFile != null) {
-				configFile = new TypedTsFmtConfigFile(TsConfigFileType.TSCONFIG, stepConfig.getFileLocator().locateFile(tsconfigFile));			
+				configFile = new TypedTsFmtConfigFile(TsConfigFileType.TSCONFIG, stepConfig.getFileLocator().locateFile(tsconfigFile));
 			} else if (this.tsfmtFile != null) {
-				configFile = new TypedTsFmtConfigFile(TsConfigFileType.TSFMT, stepConfig.getFileLocator().locateFile(tsfmtFile));			
+				configFile = new TypedTsFmtConfigFile(TsConfigFileType.TSFMT, stepConfig.getFileLocator().locateFile(tsfmtFile));
 			} else if (this.tslintFile != null) {
-				configFile = new TypedTsFmtConfigFile(TsConfigFileType.TSLINT, stepConfig.getFileLocator().locateFile(tslintFile));			
+				configFile = new TypedTsFmtConfigFile(TsConfigFileType.TSLINT, stepConfig.getFileLocator().locateFile(tslintFile));
 			} else if (this.vscodeFile != null) {
-				configFile = new TypedTsFmtConfigFile(TsConfigFileType.VSCODE, stepConfig.getFileLocator().locateFile(vscodeFile));			
-			} 
+				configFile = new TypedTsFmtConfigFile(TsConfigFileType.VSCODE, stepConfig.getFileLocator().locateFile(vscodeFile));
+			}
 		} else {
 			if (config == null) {
 				throw new IllegalArgumentException("must specify exactly one configFile or config");
 			}
 		}
-		
+
 		if (buildDir == null) {
 			buildDir = new File(".");
 		}

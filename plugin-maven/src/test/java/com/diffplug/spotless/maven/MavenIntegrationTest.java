@@ -121,7 +121,7 @@ public class MavenIntegrationTest extends ResourceHarness {
 	protected void writePomWithTypescriptSteps(String... steps) throws IOException {
 		writePom(groupWithSteps("typescript", steps));
 	}
-	
+
 	protected void writePom(String... configuration) throws IOException {
 		writePom(null, configuration);
 	}
