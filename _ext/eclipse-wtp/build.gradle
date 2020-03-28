@@ -4,7 +4,7 @@ ext {
 	]
 
 	p2Repository = "https://download.eclipse.org/webtools/repository/${VER_ECLIPSE_WTP}"
-	
+
 	p2Dependencies = [
 		// XML/HTML Formatter  - Dependencies
 		'org.eclipse.wst.xml.core':'+', // DefaultXMLPartitionFormatter and XMLAssociationProvider
@@ -60,24 +60,24 @@ apply from: rootProject.file('_ext/gradle/p2-fat-jar-setup.gradle')
 apply from: rootProject.file('gradle/java-publish.gradle')
 
 dependencies {
-	compile "com.diffplug.spotless:spotless-eclipse-base:${VER_SPOTLESS_ECLISPE_BASE}"
+	implementation "com.diffplug.spotless:spotless-eclipse-base:${VER_SPOTLESS_ECLISPE_BASE}"
 	// Required by most WPT formatters
-	compile "com.ibm.icu:icu4j:${VER_IBM_ICU}"
+	implementation "com.ibm.icu:icu4j:${VER_IBM_ICU}"
 	// The XSD/DTD and other models are defined with EMF.
-	compile "org.eclipse.emf:org.eclipse.emf.common:${VER_ECLISPE_EMF}"
-	compile "org.eclipse.emf:org.eclipse.emf.ecore:${VER_ECLISPE_EMF}"
+	implementation "org.eclipse.emf:org.eclipse.emf.common:${VER_ECLISPE_EMF}"
+	implementation "org.eclipse.emf:org.eclipse.emf.ecore:${VER_ECLISPE_EMF}"
 	// Some WPT plugins requires OSGI bundle interfaces (but not effectively used)
-	compile "org.eclipse.platform:org.eclipse.osgi.services:${VER_ECLIPSE_OSGI_SERVICES}"
+	implementation "org.eclipse.platform:org.eclipse.osgi.services:${VER_ECLIPSE_OSGI_SERVICES}"
 	// Provides document data structure and file buffers for formatters
-	compile "org.eclipse.platform:org.eclipse.core.filebuffers:${VER_ECLIPSE_FILE_BUFFERS}"
+	implementation "org.eclipse.platform:org.eclipse.core.filebuffers:${VER_ECLIPSE_FILE_BUFFERS}"
 	// Provides text partitioners for formatters
-	compile ("org.eclipse.platform:org.eclipse.jface.text:${VER_ECLISPE_JFACE}") {
+	implementation ("org.eclipse.platform:org.eclipse.jface.text:${VER_ECLISPE_JFACE}") {
 		exclude group: 'org.eclipse.platform', module: 'org.eclipse.swt'
 	}
 	// Some WPT plugins use the EFS for storing temporary worspace data
-	compile "org.eclipse.platform:org.eclipse.core.filesystem:${VER_ECLISPE_EFS}"
+	implementation "org.eclipse.platform:org.eclipse.core.filesystem:${VER_ECLISPE_EFS}"
 	// Required by org.eclipse.wst.xsd.core
-	compile "org.eclipse.xsd:org.eclipse.xsd:${VER_ECLISPE_XSD}"
+	implementation "org.eclipse.xsd:org.eclipse.xsd:${VER_ECLISPE_XSD}"
 
 	testImplementation("org.slf4j:slf4j-simple:${VER_SLF4J}")
 }

@@ -12,6 +12,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * Tsfmt Maven Plugin ([#548](https://github.com/diffplug/spotless/pull/548))
+### Fixed
+* Javadoc for the `ext/eclipse-*` projects.
+* Replace the deprecated `compile` with `implementation` for the `ext/eclipse-*` projects.
 
 ## [1.28.0] - 2020-03-20
 ### Added
