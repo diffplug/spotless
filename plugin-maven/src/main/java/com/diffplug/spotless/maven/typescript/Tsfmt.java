@@ -98,7 +98,7 @@ public class Tsfmt implements FormatterStepFactory {
 		}
 
 		if (buildDir == null) {
-			buildDir = stepConfig.getBaseDir();
+			buildDir = new File(stepConfig.getBaseDir(), "build-dir");
 		}
 		return TsFmtFormatterStep.create(devDependencies, stepConfig.getProvisioner(), buildDir, npm, configFile, config);
 	}
