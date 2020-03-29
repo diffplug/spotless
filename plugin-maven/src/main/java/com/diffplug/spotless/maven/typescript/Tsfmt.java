@@ -16,6 +16,7 @@
 package com.diffplug.spotless.maven.typescript;
 
 import java.io.File;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.maven.plugins.annotations.Parameter;
@@ -54,7 +55,7 @@ public class Tsfmt implements FormatterStepFactory {
 	private String npmExecutable;
 
 	@Parameter
-	private Map<String, Object> config;
+	private Map<String, String> config;
 
 	@Parameter(defaultValue = "${project.build.directory}", required = true, readonly = true)
 	private File buildDir;
@@ -75,13 +76,17 @@ public class Tsfmt implements FormatterStepFactory {
 
 		File npm = npmExecutable != null ? stepConfig.getFileLocator().locateFile(npmExecutable) : null;
 
-		TypedTsFmtConfigFile configFile = null;
-
+		TypedTsFmtConfigFile configFile;
+		Map<String, Object> configInline;
 		// check that there is only 1 config file or inline config
 		if (this.tsconfigFile != null
 				^ this.tsfmtFile != null
 				^ this.tslintFile != null
 				^ this.vscodeFile != null) {
+			if (this.config != null) {
+				throw onlyOneConfig();
+			}
+			configInline = null;
 			if (this.tsconfigFile != null) {
 				configFile = new TypedTsFmtConfigFile(TsConfigFileType.TSCONFIG, stepConfig.getFileLocator().locateFile(tsconfigFile));
 			} else if (this.tsfmtFile != null) {
@@ -90,16 +95,35 @@ public class Tsfmt implements FormatterStepFactory {
 				configFile = new TypedTsFmtConfigFile(TsConfigFileType.TSLINT, stepConfig.getFileLocator().locateFile(tslintFile));
 			} else if (this.vscodeFile != null) {
 				configFile = new TypedTsFmtConfigFile(TsConfigFileType.VSCODE, stepConfig.getFileLocator().locateFile(vscodeFile));
+			} else {
+				throw new Error("Programming error: the xors did not match the cases");
+			}
+		} else if (config != null) {
+			configFile = null;
+			configInline = new LinkedHashMap<>();
+			// try to parse string values as integers or booleans
+			for (Map.Entry<String, String> e : config.entrySet()) {
+				try {
+					configInline.put(e.getKey(), Integer.parseInt(e.getValue()));
+				} catch (NumberFormatException ignore) {
+					try {
+						configInline.put(e.getKey(), Boolean.parseBoolean(e.getValue()));
+					} catch (IllegalArgumentException ignore2) {
+						configInline.put(e.getKey(), e.getValue());
+					}
+				}
 			}
 		} else {
-			if (config == null) {
-				throw new IllegalArgumentException("must specify exactly one configFile or config");
-			}
+			throw onlyOneConfig();
 		}
 
 		if (buildDir == null) {
 			buildDir = new File(".");
 		}
-		return TsFmtFormatterStep.create(devDependencies, stepConfig.getProvisioner(), buildDir, npm, configFile, config);
+		return TsFmtFormatterStep.create(devDependencies, stepConfig.getProvisioner(), buildDir, npm, configFile, configInline);
+	}
+
+	private static IllegalArgumentException onlyOneConfig() {
+		return new IllegalArgumentException("must specify exactly one configFile or config");
 	}
 }
