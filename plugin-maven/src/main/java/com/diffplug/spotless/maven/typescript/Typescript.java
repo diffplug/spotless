@@ -27,7 +27,7 @@ import com.diffplug.spotless.maven.FormatterFactory;
  */
 public class Typescript extends FormatterFactory {
 
-	private static final Set<String> DEFAULT_INCLUDES = ImmutableSet.of("**/*.ts");
+	private static final Set<String> DEFAULT_INCLUDES = ImmutableSet.of("src/**/*.ts");
 
 	private static final String LICENSE_HEADER_DELIMITER = null;
 
