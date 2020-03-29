@@ -39,10 +39,18 @@ import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
 
+import com.diffplug.common.base.Unhandled;
 import com.diffplug.common.io.Resources;
 import com.diffplug.spotless.ResourceHarness;
 
 public class MavenIntegrationTest extends ResourceHarness {
+	/**
+	 * To run tests in the IDE, run `gradlew :plugin-maven:changelogPrint`, then
+	 * put the last version it prints into `SPOTLESS_MAVEN_VERSION_IDE`.  From now
+	 * on, if you run `gradlew :plugin-maven:runMavenBuild`, then you can run tests
+	 * in the IDE and they will run against the results of the last `runMavenBuild`
+	 */
+	private static final String SPOTLESS_MAVEN_VERSION_IDE = null;
 
 	private static final String LOCAL_MAVEN_REPOSITORY_DIR = "localMavenRepositoryDir";
 	private static final String SPOTLESS_MAVEN_PLUGIN_VERSION = "spotlessMavenPluginVersion";
@@ -177,6 +185,15 @@ public class MavenIntegrationTest extends ResourceHarness {
 	}
 
 	private static String getSystemProperty(String name) {
+		if (SPOTLESS_MAVEN_VERSION_IDE != null) {
+			if (name.equals("spotlessMavenPluginVersion")) {
+				return SPOTLESS_MAVEN_VERSION_IDE;
+			} else if (name.equals("localMavenRepositoryDir")) {
+				return new File("build/localMavenRepository").getAbsolutePath();
+			} else {
+				throw Unhandled.stringException(name);
+			}
+		}
 		String value = System.getProperty(name);
 		if (isNullOrEmpty(value)) {
 			fail("System property '" + name + "' is not defined");
