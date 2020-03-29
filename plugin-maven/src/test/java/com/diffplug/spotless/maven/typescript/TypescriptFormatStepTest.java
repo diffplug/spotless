@@ -17,93 +17,71 @@ package com.diffplug.spotless.maven.typescript;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Ignore;
+import java.io.IOException;
+
 import org.junit.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationTest;
 import com.diffplug.spotless.maven.MavenRunner;
 
 public class TypescriptFormatStepTest extends MavenIntegrationTest {
+	private void run(String kind) throws IOException, InterruptedException {
+		String path = "src/main/typescript/test.ts";
+		setFile(path).toResource("npm/tsfmt/" + kind + "/" + kind + ".dirty");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile(path).sameAsResource("npm/tsfmt/" + kind + "/" + kind + ".clean");
+	}
 
 	@Test
-	public void testTypescriptTsfmtTslintFile() throws Exception {
+	public void tslint() throws Exception {
 		writePomWithTypescriptSteps(
 				"<tsfmt>",
 				"  <tslintFile>${basedir}/tslint.json</tslintFile>",
-				"  <typescriptFormatterVersion>7.2.2</typescriptFormatterVersion>",
 				"</tsfmt>");
-		setFile("tslint.json").toResource("typescript/tsfmt/tslint.json");
-
-		String path = "src/main/typescript/test.ts";
-		setFile(path).toResource("typescript/tsfmt/TypescriptCodeUnformatted.test");
-		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("typescript/tsfmt/TypescriptCodeFormatted.test");
+		setFile("tslint.json").toResource("npm/tsfmt/tslint/tslint.json");
+		run("tslint");
 	}
 
 	@Test
-	@Ignore
-	public void testTypescriptTsfmtTsConfigFile() throws Exception {
-		writePomWithTypescriptSteps(
-				"<tsfmt>",
-				"  <buildDir>${basedir}/</buildDir>",
-				"  <tsconfigFile>${basedir}/tsconfig.json</tsconfigFile>",
-				"  <tsfmtFile>${basedir}/tsfmt.json</tsfmtFile>",
-				"  <typescriptFormatterVersion>7.2.2</typescriptFormatterVersion>",
-				"</tsfmt>");
-		setFile("tsconfig.json").toResource("typescript/tsfmt/tsconfig.json");
-
-		String path = "src/main/typescript/test.ts";
-		setFile(path).toResource("typescript/tsfmt/TypescriptCodeUnformatted.test");
-		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("typescript/tsfmt/TypescriptCodeFormatted.test");
-	}
-
-	@Test
-	public void testTypescriptTsfmtTsFmtFile() throws Exception {
-		writePomWithTypescriptSteps(
-				"<tsfmt>",
-				"  <tsfmtFile>${basedir}/tsfmt.json</tsfmtFile>",
-				"  <typescriptFormatterVersion>7.2.2</typescriptFormatterVersion>",
-				"</tsfmt>");
-		setFile("tsfmt.json").toResource("typescript/tsfmt/tsfmt.json");
-
-		String path = "src/main/typescript/test.ts";
-		setFile(path).toResource("typescript/tsfmt/TypescriptCodeUnformatted.test");
-		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("typescript/tsfmt/TypescriptCodeFormatted.test");
-	}
-
-	@Test
-	public void testTypescriptTsfmtVsCodeFile() throws Exception {
+	public void vscode() throws Exception {
 		writePomWithTypescriptSteps(
 				"<tsfmt>",
 				"  <vscodeFile>${basedir}/vscode.json</vscodeFile>",
-				"  <typescriptFormatterVersion>7.2.2</typescriptFormatterVersion>",
 				"</tsfmt>");
-		setFile("vscode.json").toResource("typescript/tsfmt/vscode.json");
-
-		String path = "src/main/typescript/test.ts";
-		setFile(path).toResource("typescript/tsfmt/TypescriptCodeUnformatted.test");
-		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("typescript/tsfmt/TypescriptCodeFormatted.test");
+		setFile("vscode.json").toResource("npm/tsfmt/vscode/vscode.json");
+		run("vscode");
 	}
 
 	@Test
-	public void testTypescriptTsfmtInlineConfig() throws Exception {
+	public void tsfmt() throws Exception {
+		writePomWithTypescriptSteps(
+				"<tsfmt>",
+				"  <tsfmtFile>${basedir}/tsfmt.json</tsfmtFile>",
+				"</tsfmt>");
+		setFile("tsfmt.json").toResource("npm/tsfmt/tsfmt/tsfmt.json");
+		run("tsfmt");
+	}
+
+	@Test
+	public void tsfmtInline() throws Exception {
 		writePomWithTypescriptSteps(
 				"<tsfmt>",
 				"  <config>",
 				"    <indentSize>1</indentSize>",
 				"    <convertTabsToSpaces>true</convertTabsToSpaces>",
 				"  </config>",
-				"  <typescriptFormatterVersion>7.2.2</typescriptFormatterVersion>",
 				"</tsfmt>");
-		setFile("vscode.json").toResource("typescript/tsfmt/vscode.json");
+		run("tsfmt");
+	}
 
-		String path = "src/main/typescript/test.ts";
-		setFile(path).toResource("typescript/tsfmt/TypescriptCodeUnformatted.test");
-		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("typescript/tsfmt/TypescriptCodeFormatted.test");
+	@Test
+	public void tsconfig() throws Exception {
+		writePomWithTypescriptSteps(
+				"<tsfmt>",
+				"  <tsconfigFile>${basedir}/tsconfig.json</tsconfigFile>",
+				"</tsfmt>");
+		setFile("tsconfig.json").toResource("npm/tsfmt/tsconfig/tsconfig.json");
+		run("tsconfig");
 	}
 
 	@Test
@@ -112,13 +90,12 @@ public class TypescriptFormatStepTest extends MavenIntegrationTest {
 				"<tsfmt>",
 				"  <vscodeFile>${basedir}/tslint.json</vscodeFile>",
 				"  <tsfmtFile>${basedir}/tslint.json</tsfmtFile>",
-				"  <typescriptFormatterVersion>7.2.2</typescriptFormatterVersion>",
 				"</tsfmt>");
-		setFile("vscode.json").toResource("typescript/tsfmt/vscode.json");
-		setFile("tsfmt.json").toResource("typescript/tsfmt/tsfmt.json");
+		setFile("vscode.json").toResource("npm/tsfmt/vscode/vscode.json");
+		setFile("tsfmt.json").toResource("npm/tsfmt/tsfmt/tsfmt.json");
 
 		String path = "src/main/typescript/test.ts";
-		setFile(path).toResource("typescript/tsfmt/TypescriptCodeUnformatted.test");
+		setFile(path).toResource("npm/tsfmt/tsfmt/tsfmt.dirty");
 		MavenRunner.Result result = mavenRunner().withArguments("spotless:apply").runHasError();
 		assertThat(result.output()).contains("must specify exactly one configFile or config");
 	}
