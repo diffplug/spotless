@@ -125,7 +125,7 @@ public abstract class FormatterFactory {
 	}
 
 	private FormatterStepConfig stepConfig(Charset encoding, FormatterConfig config) {
-		return new FormatterStepConfig(encoding, licenseHeaderDelimiter(), config.getProvisioner(), config.getFileLocator());
+		return new FormatterStepConfig(encoding, licenseHeaderDelimiter(), config.getProvisioner(), config.getFileLocator(), config.getBaseDir());
 	}
 
 	private static List<FormatterStepFactory> gatherStepFactories(List<FormatterStepFactory> allGlobal, List<FormatterStepFactory> allConfigured) {

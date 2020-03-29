@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.maven;
 
+import java.io.File;
 import java.nio.charset.Charset;
 
 import com.diffplug.spotless.Provisioner;
@@ -25,12 +26,14 @@ public class FormatterStepConfig {
 	private final String licenseHeaderDelimiter;
 	private final Provisioner provisioner;
 	private final FileLocator fileLocator;
+	private final File baseDir;
 
-	public FormatterStepConfig(Charset encoding, String licenseHeaderDelimiter, Provisioner provisioner, FileLocator fileLocator) {
+	public FormatterStepConfig(Charset encoding, String licenseHeaderDelimiter, Provisioner provisioner, FileLocator fileLocator, File baseDir) {
 		this.encoding = encoding;
 		this.licenseHeaderDelimiter = licenseHeaderDelimiter;
 		this.provisioner = provisioner;
 		this.fileLocator = fileLocator;
+		this.baseDir = baseDir;
 	}
 
 	public Charset getEncoding() {
@@ -47,5 +50,9 @@ public class FormatterStepConfig {
 
 	public FileLocator getFileLocator() {
 		return fileLocator;
+	}
+
+	public File getBaseDir() {
+		return baseDir;
 	}
 }
