@@ -35,7 +35,7 @@ public class FileLocator {
 	public FileLocator(ResourceManager resourceManager) {
 		this(resourceManager, null);
 	}
-	
+
 	public FileLocator(ResourceManager resourceManager, File buildDir) {
 		this.resourceManager = resourceManager;
 		this.buildDir = buildDir;
@@ -60,7 +60,7 @@ public class FileLocator {
 		String extension = FileUtils.extension(path);
 		return TMP_RESOURCE_FILE_PREFIX + UUID.randomUUID() + '.' + extension;
 	}
-	
+
 	public File getBuildDir() {
 		return this.buildDir;
 	}
