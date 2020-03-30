@@ -78,7 +78,7 @@ public class TypescriptFormatStepTest extends MavenIntegrationTest {
 	public void tsconfig() throws Exception {
 		writePomWithTypescriptSteps(
 				"<tsfmt>",
-				"  <tsconfigFile>${basedir}/tsconfig.json</tsconfigFile>",
+				"  <tsconfigFile>${project.basedir}/tsconfig.json</tsconfigFile>",
 				"</tsfmt>");
 		setFile("tsconfig.json").toResource("npm/tsfmt/tsconfig/tsconfig.json");
 		run("tsconfig");

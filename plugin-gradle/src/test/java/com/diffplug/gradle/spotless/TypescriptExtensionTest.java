@@ -111,6 +111,27 @@ public class TypescriptExtensionTest extends GradleIntegrationTest {
 	}
 
 	@Test
+	public void useTsConfigFileConfig() throws IOException {
+		setFile("tsconfig.json").toLines(
+				"{",
+				"    \"include\": [\"*.ts\"]",
+				"}");
+		setFile("build.gradle").toLines(
+				"buildscript { repositories { mavenCentral() } }",
+				"plugins {",
+				"    id 'com.diffplug.gradle.spotless'",
+				"}",
+				"spotless {",
+				"    typescript {",
+				"        tsfmt().tsconfigFile('tsconfig.json')",
+				"    }",
+				"}");
+		setFile("src/main/typescript/test.ts").toResource("npm/tsfmt/tsfmt/tsfmt.dirty");
+		gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		assertFile("src/main/typescript/test.ts").sameAsResource("npm/tsfmt/tsfmt/tsfmt.clean");
+	}
+	
+	@Test
 	public void usePrettier() throws IOException {
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",

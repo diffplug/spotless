@@ -1,7 +1,4 @@
 {
-	"files": [
-   "src/main/typescript/test.ts"
-  ],
   "include": [
 	 "src/main/typescript/*.ts"
 	],
