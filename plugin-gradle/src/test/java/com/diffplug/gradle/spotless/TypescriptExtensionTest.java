@@ -130,7 +130,7 @@ public class TypescriptExtensionTest extends GradleIntegrationTest {
 		gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 		assertFile("src/main/typescript/test.ts").sameAsResource("npm/tsfmt/tsfmt/tsfmt.clean");
 	}
-	
+
 	@Test
 	public void usePrettier() throws IOException {
 		setFile("build.gradle").toLines(
