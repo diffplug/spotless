@@ -63,15 +63,15 @@ public class Tsfmt implements FormatterStepFactory {
 		if (isNullOrEmpty(path)) {
 			return null;
 		}
-		
+
 		File exists = new File(path);
 		if (exists.exists()) {
 			return exists;
 		}
-		
+
 		throw new RuntimeException("Unable to locate file with path: " + path);
 	}
-	
+
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
 
