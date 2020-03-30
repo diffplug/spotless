@@ -179,7 +179,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		resourceManager.addSearchPath(FileResourceLoader.ID, baseDir.getAbsolutePath());
 		resourceManager.addSearchPath("url", "");
 		resourceManager.setOutputDirectory(targetDir);
-		return new FileLocator(resourceManager);
+		return new FileLocator(resourceManager, targetDir);
 	}
 
 	private List<FormatterFactory> getFormatterFactories() {

@@ -30,9 +30,15 @@ public class FileLocator {
 	static final String TMP_RESOURCE_FILE_PREFIX = "spotless-resource-";
 
 	private final ResourceManager resourceManager;
+	private final File buildDir;
 
 	public FileLocator(ResourceManager resourceManager) {
+		this(resourceManager, null);
+	}
+	
+	public FileLocator(ResourceManager resourceManager, File buildDir) {
 		this.resourceManager = resourceManager;
+		this.buildDir = buildDir;
 	}
 
 	public File locateFile(String path) {
@@ -53,5 +59,9 @@ public class FileLocator {
 	private static String tmpOutputFileName(String path) {
 		String extension = FileUtils.extension(path);
 		return TMP_RESOURCE_FILE_PREFIX + UUID.randomUUID() + '.' + extension;
+	}
+	
+	public File getBuildDir() {
+		return this.buildDir;
 	}
 }

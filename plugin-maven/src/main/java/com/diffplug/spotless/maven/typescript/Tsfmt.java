@@ -57,9 +57,6 @@ public class Tsfmt implements FormatterStepFactory {
 	@Parameter
 	private Map<String, String> config;
 
-	@Parameter(defaultValue = "${project.build.directory}", required = true, readonly = true)
-	private File buildDir;
-
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
 
@@ -117,9 +114,7 @@ public class Tsfmt implements FormatterStepFactory {
 			throw onlyOneConfig();
 		}
 
-		if (buildDir == null) {
-			buildDir = new File(".");
-		}
+		File buildDir = stepConfig.getFileLocator().getBuildDir();
 		return TsFmtFormatterStep.create(devDependencies, stepConfig.getProvisioner(), buildDir, npm, configFile, configInline);
 	}
 
