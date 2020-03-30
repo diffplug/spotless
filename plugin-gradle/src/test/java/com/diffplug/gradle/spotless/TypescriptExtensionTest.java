@@ -126,9 +126,9 @@ public class TypescriptExtensionTest extends GradleIntegrationTest {
 				"        tsfmt().tsconfigFile('tsconfig.json')",
 				"    }",
 				"}");
-		setFile("src/main/typescript/test.ts").toResource("npm/tsfmt/tsfmt/tsfmt.dirty");
+		setFile("test.ts").toResource("npm/tsfmt/tsconfig/tsconfig.dirty");
 		gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
-		assertFile("src/main/typescript/test.ts").sameAsResource("npm/tsfmt/tsfmt/tsfmt.clean");
+		assertFile("test.ts").sameAsResource("npm/tsfmt/tsconfig/tsconfig.clean");
 	}
 
 	@Test
