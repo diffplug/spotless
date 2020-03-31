@@ -18,6 +18,7 @@ package com.diffplug.spotless.maven;
 import static com.diffplug.common.base.Strings.isNullOrEmpty;
 
 import java.io.File;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.codehaus.plexus.resource.ResourceManager;
@@ -32,13 +33,9 @@ public class FileLocator {
 	private final ResourceManager resourceManager;
 	private final File buildDir;
 
-	public FileLocator(ResourceManager resourceManager) {
-		this(resourceManager, null);
-	}
-
 	public FileLocator(ResourceManager resourceManager, File buildDir) {
-		this.resourceManager = resourceManager;
-		this.buildDir = buildDir;
+		this.resourceManager = Objects.requireNonNull(resourceManager);
+		this.buildDir = Objects.requireNonNull(buildDir);
 	}
 
 	public File locateFile(String path) {
