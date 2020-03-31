@@ -89,11 +89,7 @@ public class TypescriptExtensionTest extends GradleIntegrationTest {
 
 	@Test
 	public void useTsfmtFileConfig() throws IOException {
-		setFile("tsfmt.json").toLines(
-				"{",
-				"    \"indentSize\": 1,",
-				"    \"convertTabsToSpaces\": true",
-				"}");
+		setFile("tsfmt.json").toResource("npm/tsfmt/tsfmt/tsfmt.json");
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
@@ -112,10 +108,7 @@ public class TypescriptExtensionTest extends GradleIntegrationTest {
 
 	@Test
 	public void useTsConfigFileConfig() throws IOException {
-		setFile("tsconfig.json").toLines(
-				"{",
-				"    \"include\": [\"*.ts\"]",
-				"}");
+		setFile("tsconfig.json").toResource("npm/tsfmt/tsconfig/tsconfig.json");
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
@@ -126,9 +119,9 @@ public class TypescriptExtensionTest extends GradleIntegrationTest {
 				"        tsfmt().tsconfigFile('tsconfig.json')",
 				"    }",
 				"}");
-		setFile("test.ts").toResource("npm/tsfmt/tsconfig/tsconfig.dirty");
+		setFile("src/main/typescript/test.ts").toResource("npm/tsfmt/tsconfig/tsconfig.dirty");
 		gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
-		assertFile("test.ts").sameAsResource("npm/tsfmt/tsconfig/tsconfig.clean");
+		assertFile("src/main/typescript/test.ts").sameAsResource("npm/tsfmt/tsconfig/tsconfig.clean");
 	}
 
 	@Test
