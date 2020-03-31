@@ -21,6 +21,8 @@ import java.io.File;
 import java.util.Objects;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import org.codehaus.plexus.resource.ResourceManager;
 import org.codehaus.plexus.resource.loader.FileResourceCreationException;
 import org.codehaus.plexus.resource.loader.ResourceNotFoundException;
@@ -38,7 +40,11 @@ public class FileLocator {
 		this.buildDir = Objects.requireNonNull(buildDir);
 	}
 
-	public File locateFile(String path) {
+	/**
+	 * Resolves the given file (not folder) from the project directory, but does so by copying it to a random
+	 * filename with the same extension in the build directory.
+	 */
+	public @Nullable File locateFile(@Nullable String path) {
 		if (isNullOrEmpty(path)) {
 			return null;
 		}
@@ -58,7 +64,14 @@ public class FileLocator {
 		return TMP_RESOURCE_FILE_PREFIX + UUID.randomUUID() + '.' + extension;
 	}
 
-	public File getBuildDir() {
-		return this.buildDir;
+	/**
+	 * Resolves the given file or folder from the project directory, doesn't have to exist.
+	 */
+	public File resolve(String path) {
+		if (path.isEmpty() || path.equals(".")) {
+			return buildDir;
+		} else {
+			return new File(buildDir, path);
+		}
 	}
 }
