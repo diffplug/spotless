@@ -39,6 +39,7 @@ public class FileLocator {
 		this.buildDir = Objects.requireNonNull(buildDir);
 	}
 
+	/** Asserts that the given path is a file, then copies it with a new random name into the build folder. */
 	public File locateFile(String path) {
 		if (isNullOrEmpty(path)) {
 			return null;
@@ -57,6 +58,20 @@ public class FileLocator {
 	private static String tmpOutputFileName(String path) {
 		String extension = FileUtils.extension(path);
 		return TMP_RESOURCE_FILE_PREFIX + UUID.randomUUID() + '.' + extension;
+	}
+
+	/** Asserts that the given path exists as a file or folder. */
+	public File locateLocal(String path) {
+		if (isNullOrEmpty(path)) {
+			return null;
+		}
+
+		File exists = new File(path);
+		if (exists.exists()) {
+			return exists;
+		}
+
+		throw new RuntimeException("Unable to locate file with path: " + path);
 	}
 
 	public File getBaseDir() {
