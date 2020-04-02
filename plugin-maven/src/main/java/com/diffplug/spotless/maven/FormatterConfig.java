@@ -25,7 +25,6 @@ import com.diffplug.spotless.Provisioner;
 
 public class FormatterConfig {
 
-	private final File baseDir;
 	private final String encoding;
 	private final LineEnding lineEndings;
 	private final Provisioner provisioner;
@@ -34,16 +33,11 @@ public class FormatterConfig {
 
 	public FormatterConfig(File baseDir, String encoding, LineEnding lineEndings, Provisioner provisioner,
 			FileLocator fileLocator, List<FormatterStepFactory> globalStepFactories) {
-		this.baseDir = baseDir;
 		this.encoding = encoding;
 		this.lineEndings = lineEndings;
 		this.provisioner = provisioner;
 		this.fileLocator = fileLocator;
 		this.globalStepFactories = globalStepFactories;
-	}
-
-	public File getBaseDir() {
-		return baseDir;
 	}
 
 	public String getEncoding() {

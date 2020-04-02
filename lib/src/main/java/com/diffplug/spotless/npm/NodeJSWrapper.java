@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.diffplug.spotless.LineEnding;
+
 class NodeJSWrapper extends ReflectiveObjectWrapper {
 
 	public static final String V8_RUNTIME_CLASS = "com.eclipsesource.v8.V8";
@@ -33,7 +35,7 @@ class NodeJSWrapper extends ReflectiveObjectWrapper {
 		super(Reflective.withClassLoader(classLoader),
 				reflective -> {
 					final boolean firstRun = flagsSet.compareAndSet(false, true);
-					if (firstRun) {
+					if (firstRun && LineEnding.PLATFORM_NATIVE.str().equals("\r\n")) {
 						reflective.invokeStaticMethod(V8_RUNTIME_CLASS, "setFlags", "-color=false"); // required to run prettier on windows
 					}
 					return reflective.invokeStaticMethod(WRAPPED_CLASS, "createNodeJS");
