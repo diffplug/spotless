@@ -27,13 +27,22 @@ import java.io.File;
 import java.nio.file.Paths;
 
 import org.codehaus.plexus.resource.ResourceManager;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-public class FileLocatorTest {
+import com.diffplug.spotless.ResourceHarness;
 
-	private final ResourceManager resourceManager = mock(ResourceManager.class);
-	private final FileLocator fileLocator = new FileLocator(resourceManager);
+public class FileLocatorTest extends ResourceHarness {
+
+	private ResourceManager resourceManager;
+	private FileLocator fileLocator;
+
+	@Before
+	public void setup() {
+		resourceManager = mock(ResourceManager.class);
+		fileLocator = new FileLocator(resourceManager, rootFolder(), rootFolder());
+	}
 
 	@Test
 	public void locateEmptyString() {

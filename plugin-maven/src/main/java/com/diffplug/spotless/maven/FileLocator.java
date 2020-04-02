@@ -18,6 +18,7 @@ package com.diffplug.spotless.maven;
 import static com.diffplug.common.base.Strings.isNullOrEmpty;
 
 import java.io.File;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.codehaus.plexus.resource.ResourceManager;
@@ -30,15 +31,12 @@ public class FileLocator {
 	static final String TMP_RESOURCE_FILE_PREFIX = "spotless-resource-";
 
 	private final ResourceManager resourceManager;
-	private final File buildDir;
+	private final File baseDir, buildDir;
 
-	public FileLocator(ResourceManager resourceManager) {
-		this(resourceManager, null);
-	}
-
-	public FileLocator(ResourceManager resourceManager, File buildDir) {
-		this.resourceManager = resourceManager;
-		this.buildDir = buildDir;
+	public FileLocator(ResourceManager resourceManager, File baseDir, File buildDir) {
+		this.resourceManager = Objects.requireNonNull(resourceManager);
+		this.baseDir = Objects.requireNonNull(baseDir);
+		this.buildDir = Objects.requireNonNull(buildDir);
 	}
 
 	public File locateFile(String path) {
@@ -61,7 +59,11 @@ public class FileLocator {
 		return TMP_RESOURCE_FILE_PREFIX + UUID.randomUUID() + '.' + extension;
 	}
 
+	public File getBaseDir() {
+		return baseDir;
+	}
+
 	public File getBuildDir() {
-		return this.buildDir;
+		return buildDir;
 	}
 }

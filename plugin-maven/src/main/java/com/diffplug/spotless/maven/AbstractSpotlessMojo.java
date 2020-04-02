@@ -68,7 +68,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	private File baseDir;
 
 	@Parameter(defaultValue = "${project.build.directory}", required = true, readonly = true)
-	private File targetDir;
+	private File buildDir;
 
 	@Parameter(defaultValue = DEFAULT_ENCODING)
 	private String encoding;
@@ -135,7 +135,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		Set<String> includes = configuredIncludes.isEmpty() ? formatterFactory.defaultIncludes() : configuredIncludes;
 
 		Set<String> excludes = new HashSet<>(FileUtils.getDefaultExcludesAsList());
-		excludes.add(withTrailingSeparator(targetDir.toString()));
+		excludes.add(withTrailingSeparator(buildDir.toString()));
 		excludes.addAll(configuredExcludes);
 
 		String includesString = String.join(",", includes);
@@ -178,8 +178,8 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	private FileLocator getFileLocator() {
 		resourceManager.addSearchPath(FileResourceLoader.ID, baseDir.getAbsolutePath());
 		resourceManager.addSearchPath("url", "");
-		resourceManager.setOutputDirectory(targetDir);
-		return new FileLocator(resourceManager, targetDir);
+		resourceManager.setOutputDirectory(buildDir);
+		return new FileLocator(resourceManager, baseDir, buildDir);
 	}
 
 	private List<FormatterFactory> getFormatterFactories() {
