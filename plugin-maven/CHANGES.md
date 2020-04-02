@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [1.29.0] - 2020-04-02
 ### Added
 * Tsfmt Maven Plugin ([#548](https://github.com/diffplug/spotless/pull/548))
 ### Fixed
