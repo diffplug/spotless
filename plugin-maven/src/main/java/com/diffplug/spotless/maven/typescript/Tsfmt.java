@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.maven.typescript;
 
+import static com.diffplug.common.base.Strings.isNullOrEmpty;
+
 import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -57,8 +59,22 @@ public class Tsfmt implements FormatterStepFactory {
 	@Parameter
 	private Map<String, String> config;
 
+	private File locateFile(String path) {
+		if (isNullOrEmpty(path)) {
+			return null;
+		}
+
+		File exists = new File(path);
+		if (exists.exists()) {
+			return exists;
+		}
+
+		throw new RuntimeException("Unable to locate file with path: " + path);
+	}
+
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
+
 		Map<String, String> devDependencies = TsFmtFormatterStep.defaultDevDependencies();
 		if (typescriptFormatterVersion != null) {
 			devDependencies.put("typescript-formatter", typescriptFormatterVersion);
@@ -84,13 +100,13 @@ public class Tsfmt implements FormatterStepFactory {
 			}
 			configInline = null;
 			if (this.tsconfigFile != null) {
-				configFile = new TypedTsFmtConfigFile(TsConfigFileType.TSCONFIG, stepConfig.getFileLocator().resolve(tsconfigFile));
+				configFile = new TypedTsFmtConfigFile(TsConfigFileType.TSCONFIG, locateFile(tsconfigFile));
 			} else if (this.tsfmtFile != null) {
-				configFile = new TypedTsFmtConfigFile(TsConfigFileType.TSFMT, stepConfig.getFileLocator().resolve(tsfmtFile));
+				configFile = new TypedTsFmtConfigFile(TsConfigFileType.TSFMT, locateFile(tsfmtFile));
 			} else if (this.tslintFile != null) {
-				configFile = new TypedTsFmtConfigFile(TsConfigFileType.TSLINT, stepConfig.getFileLocator().resolve(tslintFile));
+				configFile = new TypedTsFmtConfigFile(TsConfigFileType.TSLINT, locateFile(tslintFile));
 			} else if (this.vscodeFile != null) {
-				configFile = new TypedTsFmtConfigFile(TsConfigFileType.VSCODE, stepConfig.getFileLocator().resolve(vscodeFile));
+				configFile = new TypedTsFmtConfigFile(TsConfigFileType.VSCODE, locateFile(vscodeFile));
 			} else {
 				throw new Error("Programming error: the xors did not match the cases");
 			}
@@ -113,7 +129,7 @@ public class Tsfmt implements FormatterStepFactory {
 			throw onlyOneConfig();
 		}
 
-		File buildDir = stepConfig.getFileLocator().resolve(".");
+		File buildDir = stepConfig.getFileLocator().getBuildDir();
 		return TsFmtFormatterStep.create(devDependencies, stepConfig.getProvisioner(), buildDir, npm, configFile, configInline);
 	}
 

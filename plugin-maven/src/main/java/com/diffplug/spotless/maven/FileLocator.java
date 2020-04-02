@@ -18,7 +18,6 @@ package com.diffplug.spotless.maven;
 import static com.diffplug.common.base.Strings.isNullOrEmpty;
 
 import java.io.File;
-import java.util.Objects;
 import java.util.UUID;
 
 import org.codehaus.plexus.resource.ResourceManager;
@@ -33,15 +32,15 @@ public class FileLocator {
 	private final ResourceManager resourceManager;
 	private final File buildDir;
 
-	public FileLocator(ResourceManager resourceManager, File buildDir) {
-		this.resourceManager = Objects.requireNonNull(resourceManager);
-		this.buildDir = Objects.requireNonNull(buildDir);
+	public FileLocator(ResourceManager resourceManager) {
+		this(resourceManager, null);
 	}
 
-	/**
-	 * Resolves the given file (not folder) from the project directory, but does so by copying it to a random
-	 * filename with the same extension in the build directory.
-	 */
+	public FileLocator(ResourceManager resourceManager, File buildDir) {
+		this.resourceManager = resourceManager;
+		this.buildDir = buildDir;
+	}
+
 	public File locateFile(String path) {
 		if (isNullOrEmpty(path)) {
 			return null;
@@ -62,14 +61,7 @@ public class FileLocator {
 		return TMP_RESOURCE_FILE_PREFIX + UUID.randomUUID() + '.' + extension;
 	}
 
-	/**
-	 * Resolves the given file or folder from the project directory, doesn't have to exist.
-	 */
-	public File resolve(String path) {
-		if (path.isEmpty() || path.equals(".")) {
-			return buildDir;
-		} else {
-			return new File(buildDir, path);
-		}
+	public File getBuildDir() {
+		return this.buildDir;
 	}
 }

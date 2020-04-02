@@ -21,30 +21,19 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.nio.file.Paths;
 
 import org.codehaus.plexus.resource.ResourceManager;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-import com.diffplug.spotless.ResourceHarness;
+public class FileLocatorTest {
 
-public class FileLocatorTest extends ResourceHarness {
-
-	private ResourceManager resourceManager;
-	private FileLocator fileLocator;
-
-	@Before
-	public void setup() {
-		resourceManager = mock(ResourceManager.class);
-		fileLocator = new FileLocator(resourceManager, rootFolder());
-	}
+	private final ResourceManager resourceManager = mock(ResourceManager.class);
+	private final FileLocator fileLocator = new FileLocator(resourceManager);
 
 	@Test
 	public void locateEmptyString() {
@@ -75,7 +64,7 @@ public class FileLocatorTest extends ResourceHarness {
 	}
 
 	private void testFileLocator(String path, String extension) throws Exception {
-		File tmpOutputFile = newFile("tmp-file");
+		File tmpOutputFile = new File("tmp-file");
 		when(resourceManager.getResourceAsFile(any(), any())).thenReturn(tmpOutputFile);
 
 		File locatedFile = fileLocator.locateFile(path);
