@@ -4,7 +4,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ###
-* Prettier Maven Plugin ([#548](https://github.com/diffplug/spotless/pull/TODO))
+* Prettier Maven Plugin ([#555](https://github.com/diffplug/spotless/pull/555))
 
 ## [1.29.0] - 2020-04-02
 ### Added
