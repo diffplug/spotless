@@ -265,7 +265,7 @@ To use prettier, you first have to specify the files that you want it to apply t
       </includes>
 
       <prettier>
-        <!-- Specify either simple prettier version (1.19.0 are max supported,
+        <!-- Specify either simple prettier version (1.19.0 is max supported,
              which is also default) or whole devDependencies -->
         <prettierVersion>1.19.0</prettierVersion>
         <devDependencies>
@@ -300,8 +300,8 @@ Spotless will try to auto-discover an npm installation. If that is not working f
 
 ```xml
 <formats><format><prettier>
-  ...
   <npmExecutable>/usr/bin/npm</npmExecutable>
+  ...
 ```
 
 Spotless uses npm to install necessary packages locally. It runs prettier using [J2V8](https://github.com/eclipsesource/J2V8) internally after that.

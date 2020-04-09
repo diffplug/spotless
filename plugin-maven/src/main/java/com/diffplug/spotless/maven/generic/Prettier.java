@@ -65,14 +65,13 @@ public class Prettier implements FormatterStepFactory {
 
 		// process config file or inline config
 		File configFileHandler;
-		Map<String, Object> configInline;
 		if (this.configFile != null) {
-			configInline = null;
 			configFileHandler = stepConfig.getFileLocator().locateLocal(this.configFile);
 		} else {
 			configFileHandler = null;
 		}
 
+		Map<String, Object> configInline;
 		if (config != null) {
 			configInline = new LinkedHashMap<>();
 			// try to parse string values as integers or booleans
