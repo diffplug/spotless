@@ -222,7 +222,6 @@ Use the Eclipse to define the *Code Style preferences* (see [Eclipse documentati
        <typescriptFormatterVersion>7.2.2</typescriptFormatterVersion>
        <typescriptVersion>3.3.3</typescriptVersion>
        <tslintVersion>5.12.1</tslintVersion>
-       <tslintVersion>5.12.1</tslintVersion>
      </tsfmt>
   </typescript>
 </configuration>
