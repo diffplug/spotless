@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2016 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,17 @@
  */
 package com.diffplug.spotless.maven.generic;
 
-import com.diffplug.spotless.npm.PrettierConfig;
-import com.diffplug.spotless.npm.PrettierFormatterStep;
+import java.io.File;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
-
-import java.io.File;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import com.diffplug.spotless.npm.PrettierConfig;
+import com.diffplug.spotless.npm.PrettierFormatterStep;
 
 public class Prettier implements FormatterStepFactory {
 
