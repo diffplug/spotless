@@ -95,7 +95,7 @@ public class PrettierFormatterStepTest {
 
 		public void runFormatTest(PrettierConfig config, String cleanFileNameSuffix) throws Exception {
 
-			final String dirtyFile = FILEDIR + "typescript.dirty";
+			final String dirtyFile = FILEDIR + "tsx.dirty";
 			final String cleanFile = FILEDIR + "typescript." + cleanFileNameSuffix + ".clean";
 
 			final FormatterStep formatterStep = PrettierFormatterStep.create(

@@ -111,6 +111,10 @@ public abstract class FormatterFactory {
 		addStepFactory(eclipseWtp);
 	}
 
+	public final void addPrettier(Prettier prettier) {
+		addStepFactory(prettier);
+	}
+
 	protected final void addStepFactory(FormatterStepFactory stepFactory) {
 		Objects.requireNonNull(stepFactory);
 		stepFactories.add(stepFactory);
