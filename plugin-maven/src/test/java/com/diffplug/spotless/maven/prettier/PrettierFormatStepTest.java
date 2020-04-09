@@ -40,7 +40,7 @@ public class PrettierFormatStepTest extends MavenIntegrationTest {
 		String suffix = "ts";
 		writePomWithPrettierSteps("**/*." + suffix,
 				"<prettier>",
-				"  <devDependencies><prettier>1.16.4</prettier><node>10</node></devDependencies>",
+			"  <prettierVersion>1.16.4</prettierVersion>",
 				"  <configFile>.prettierrc.yml</configFile>",
 				"</prettier>");
 		run("typescript", suffix);
