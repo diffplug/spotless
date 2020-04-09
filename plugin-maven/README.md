@@ -308,6 +308,8 @@ Spotless uses npm to install necessary packages locally. It runs prettier using 
 Development for J2V8 for non android envs is stopped (for Windows since J2V8 4.6.0 and Unix 4.8.0), therefore Prettier is limited to <= v1.19.0 as newer versions
 use ES6 feature and that needs a newer J2V8 version.
 
+<a name="format"></a>
+
 ## Applying to custom sources
 
 By default, no Ant-Style include patterns are defined.  Each element under `<format>` is a step, and they will be applied in the order specified.  Every step is optional, and they will be applied in the order specified. It is possible to define multiple custom formats.
