@@ -40,7 +40,7 @@ public class PrettierFormatStepTest extends MavenIntegrationTest {
 		String suffix = "ts";
 		writePomWithPrettierSteps("**/*." + suffix,
 				"<prettier>",
-				"  <devDependencies><prettier>1.16.0</prettier><node>10</node></devDependencies>",
+				"  <devDependencies><prettier>1.16.4</prettier><node>10</node></devDependencies>",
 				"  <configFile>.prettierrc.yml</configFile>",
 				"</prettier>");
 		run("typescript", suffix);
@@ -51,7 +51,7 @@ public class PrettierFormatStepTest extends MavenIntegrationTest {
 		String suffix = "html";
 		writePomWithPrettierSteps("**/*." + suffix,
 				"<prettier>",
-				"  <prettierVersion>1.16.0</prettierVersion>",
+				"  <prettierVersion>1.16.4</prettierVersion>",
 				"  <configFile>.prettierrc.yml</configFile>",
 				"</prettier>");
 		run("html", suffix);
@@ -63,7 +63,7 @@ public class PrettierFormatStepTest extends MavenIntegrationTest {
 		writePomWithPrettierSteps("src/main/**/*." + suffix,
 				"<includes><include>src/**/*.tsx</include></includes>",
 				"<prettier>",
-				"  <prettierVersion>1.16.0</prettierVersion>",
+				"  <prettierVersion>1.16.4</prettierVersion>",
 				"  <configFile>.prettierrc.yml</configFile>",
 				"</prettier>");
 		run("tsx", suffix);
@@ -74,7 +74,7 @@ public class PrettierFormatStepTest extends MavenIntegrationTest {
 		String suffix = "tsx";
 		writePomWithPrettierSteps("src/main/**/*." + suffix,
 				"<prettier>",
-				"  <prettierVersion>1.16.0</prettierVersion>",
+				"  <prettierVersion>1.16.4</prettierVersion>",
 				"  <config><parser>typescript</parser></config>",
 				"</prettier>");
 		run("tsx", suffix);
@@ -85,8 +85,8 @@ public class PrettierFormatStepTest extends MavenIntegrationTest {
 		writePomWithFormatSteps(
 				"<includes><include>**/*.ts</include></includes>",
 				"<prettier>",
-				"  <prettierVersion>1.16.0</prettierVersion>",
-				"  <devDependencies><prettier>1.16.0</prettier></devDependencies>",
+				"  <prettierVersion>1.16.4</prettierVersion>",
+				"  <devDependencies><prettier>1.16.4</prettier></devDependencies>",
 				"</prettier>");
 
 		MavenRunner.Result result = mavenRunner().withArguments("spotless:apply").runHasError();
