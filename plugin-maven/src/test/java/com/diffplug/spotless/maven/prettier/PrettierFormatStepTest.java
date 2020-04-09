@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2016 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ public class PrettierFormatStepTest extends MavenIntegrationTest {
 		String suffix = "ts";
 		writePomWithPrettierSteps("**/*." + suffix,
 				"<prettier>",
-			"  <prettierVersion>1.16.4</prettierVersion>",
+				"  <prettierVersion>1.16.4</prettierVersion>",
 				"  <configFile>.prettierrc.yml</configFile>",
 				"</prettier>");
 		run("typescript", suffix);
