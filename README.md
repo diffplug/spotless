@@ -46,7 +46,7 @@ lib('java.RemoveUnusedImportsStep')              +'{{yes}}       | {{yes}}      
 extra('java.EclipseFormatterStep')               +'{{yes}}       | {{yes}}      | {{no}}  |',
 lib('kotlin.KtLintStep')                         +'{{yes}}       | {{yes}}      | {{no}}  |',
 lib('markdown.FreshMarkStep')                    +'{{yes}}       | {{no}}       | {{no}}  |',
-lib('npm.PrettierFormatterStep')                 +'{{yes}}       | {{no}}       | {{no}}  |',
+lib('npm.PrettierFormatterStep')                 +'{{yes}}       | {{yes}}       | {{no}}  |',
 lib('npm.TsFmtFormatterStep')                    +'{{yes}}       | {{yes}}       | {{no}}  |',
 lib('scala.ScalaFmtStep')                        +'{{yes}}       | {{yes}}       | {{no}}  |',
 lib('sql.DBeaverSQLFormatterStep')               +'{{yes}}       | {{no}}       | {{no}}  |',
