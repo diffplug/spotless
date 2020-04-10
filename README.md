@@ -116,7 +116,7 @@ Once someone has filled in one square of the formatter/build system matrix, it's
 - Originally forked from [gradle-format-plugin](https://github.com/youribonnaffe/gradle-format-plugin) by Youri Bonnaffé.
 - Thanks to Ismaël Mejía for bumping eclipse-jdt deps to 4.11. [PR #60](https://github.com/diffplug/spotless/issues/381).
 - Thanks to Gábor Bernát for improvements to logging and multi-project support.
-- Thanks to [Oliver Szymanski](https://github.com/source-knights) for porting [tsfmt to maven](https://github.com/diffplug/spotless/pull/553).
+- Thanks to [Oliver Szymanski](https://github.com/source-knights) for porting [tsfmt](https://github.com/diffplug/spotless/pull/553) and [prettier](https://github.com/diffplug/spotless/pull/555) to maven.
 - Thanks to Andrew Oberstar for improvements to formatting java source in non-java source sets. [PR #60](https://github.com/diffplug/spotless/pull/60).
 - Thanks to [Sameer Balasubrahmanyam](https://github.com/sameer-b) for [adding support for IntelliJ-style year placeholders](https://github.com/diffplug/spotless/pull/542).
 - Thanks to [Adib Saikali](https://github.com/asaikali) and [Paul Merlin](https://github.com/eskatos) for tracking down the tricky cause of [#506](https://github.com/diffplug/spotless/issues/506).
