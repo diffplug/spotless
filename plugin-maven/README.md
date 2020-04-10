@@ -76,6 +76,8 @@ Spotless supports the following powerful formatters:
 * Eclipse's [CDT](https://www.eclipse.org/cdt/) C/C++ code formatter
 * Eclipse's [WTP](https://www.eclipse.org/webtools/) Web-Tools code formatters
 * Google's [google-java-format](https://github.com/google/google-java-format)
+* [Typescript Tsfmt formatter](https://github.com/vvakame/typescript-formatter)
+* [Prettier formatter](https://prettier.io)
 * User-defined license enforcement, regex replacement, etc.
 
 Contributions are welcome, see [the contributing guide](../CONTRIBUTING.md) for development info.
@@ -200,11 +202,13 @@ Use the Eclipse to define the *Code Style preferences* (see [Eclipse documentati
 ```xml
 <configuration>
   <typescript>
-     <tsfmt>
+
        <!-- optionally define which files will be formatted. -->
        <includes>
          <include>src/**/*.ts</include> <!-- default value if nothing is specified -->
        </includes>
+
+     <tsfmt>
        <!-- must specify exactly one of the following "{foo}File" or "config" elements -->
        <tslintFile>${basedir}/path/to/repo/tslint.json</tslintFile>
        <tsfmtFile>${basedir}/path/to/repo/tsfmt.json</tsfmtFile>
@@ -242,6 +246,67 @@ Spotless will try to auto-discover an npm installation. If that is not working f
 ```
 
 Spotless uses npm to install necessary packages locally. It runs tsfmt using [J2V8](https://github.com/eclipsesource/J2V8) internally after that.
+
+<a name="prettier"></a>
+
+## Applying [Prettier](https://prettier.io) to javascript | flow | typeScript | css | scss | less | jsx | graphQL | yaml | etc.
+
+Prettier is a formatter that can format [multiple file types](https://prettier.io/docs/en/language-support.html).
+
+To use prettier, you first have to specify the files that you want it to apply to.  Then you specify prettier, and how you want to apply it.
+
+```xml
+<configuration>
+  <formats>
+
+    <format>
+      <includes>
+        <include>src/**/typescript/**/*.ts</include>
+      </includes>
+
+      <prettier>
+        <!-- Specify either simple prettier version (1.19.0 is max supported,
+             which is also default) or whole devDependencies -->
+        <prettierVersion>1.19.0</prettierVersion>
+        <devDependencies>
+            <prettier>1.19.0</prettier>
+        </devDependencies>
+
+        <!-- Specify config file and/or inline config -->
+        <configFile>${basedir}/path/to/configfile</configFile>
+        <config>
+            <useTabs>true</useTabs>
+        </config>
+      </prettier>
+    </format>
+
+  </formats>
+</configuration>
+```
+
+Supported config options are documented on [prettier.io](https://prettier.io/docs/en/options.html).
+Supported config file variants are documented on [prettier.io](https://prettier.io/docs/en/configuration.html).
+
+*Please note:*
+- The auto-discovery of config files (up the file tree) will not work when using prettier within spotless.
+- Prettier's override syntax is not supported when using prettier within spotless.
+
+To apply prettier to more kinds of files, just add more formats.
+
+### Prerequisite: prettier requires a working NodeJS version
+
+Prettier, like tsfmt, is based on NodeJS, so to use it, a working NodeJS installation (especially npm) is required on the host running spotless.
+Spotless will try to auto-discover an npm installation. If that is not working for you, it is possible to directly configure the npm binary to use.
+
+```xml
+<formats><format><prettier>
+  <npmExecutable>/usr/bin/npm</npmExecutable>
+  ...
+```
+
+Spotless uses npm to install necessary packages locally. It runs prettier using [J2V8](https://github.com/eclipsesource/J2V8) internally after that.
+Development for J2V8 for non android envs is stopped (for Windows since J2V8 4.6.0 and Unix 4.8.0), therefore Prettier is limited to <= v1.19.0 as newer versions
+use ES6 feature and that needs a newer J2V8 version.
 
 <a name="format"></a>
 
