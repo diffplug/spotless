@@ -16,10 +16,9 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.File;
-import java.io.Serializable;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,20 +33,15 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
-import org.gradle.api.tasks.Internal;
-import org.gradle.api.tasks.OutputFiles;
+import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 
-import com.diffplug.common.collect.ImmutableList;
-import com.diffplug.common.collect.Iterables;
 import com.diffplug.spotless.FormatExceptionPolicy;
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
-import com.diffplug.spotless.PaddedCell;
-import com.diffplug.spotless.PaddedCellBulk;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
 public class SpotlessTask extends DefaultTask {
@@ -110,7 +104,7 @@ public class SpotlessTask extends DefaultTask {
 
 	protected Iterable<File> target;
 
-	@Internal
+	@InputFiles
 	public Iterable<File> getTarget() {
 		return target;
 	}
@@ -119,27 +113,10 @@ public class SpotlessTask extends DefaultTask {
 		this.target = Objects.requireNonNull(target);
 	}
 
-	/** Internal use only. */
-	@InputFiles
-	@Deprecated
-	public Iterable<File> getInternalTargetInput() {
-		return getInternalTarget();
-	}
-
-	/** Internal use only. */
-	@OutputFiles
-	@Deprecated
-	public Iterable<File> getInternalTargetOutput() {
-		return getInternalTarget();
-	}
-
-	private Iterable<File> getInternalTarget() {
-		// used to combine the special cache file and the real target
-		return Iterables.concat(ImmutableList.of(getCacheFile()), target);
-	}
-
-	private File getCacheFile() {
-		return new File(getProject().getBuildDir(), getName());
+	private File outputDirectory = new File(getProject().getBuildDir(), "spotless/" + getName());
+	@OutputDirectory
+	public File getOutputDirectory() {
+		return outputDirectory;
 	}
 
 	protected List<FormatterStep> steps = new ArrayList<>();
@@ -157,17 +134,6 @@ public class SpotlessTask extends DefaultTask {
 		return this.steps.add(Objects.requireNonNull(step));
 	}
 
-	private boolean check = false;
-	private boolean apply = false;
-
-	public void setCheck() {
-		this.check = true;
-	}
-
-	public void setApply() {
-		this.apply = true;
-	}
-
 	/** Returns the name of this format. */
 	String formatName() {
 		String name = getName();
@@ -183,8 +149,10 @@ public class SpotlessTask extends DefaultTask {
 		if (target == null) {
 			throw new GradleException("You must specify 'Iterable<File> target'");
 		}
-		if (!check && !apply) {
-			throw new GradleException("Don't call " + getName() + " directly, call " + getName() + SpotlessExtension.CHECK + " or " + getName() + SpotlessExtension.APPLY);
+
+		if (!inputs.isIncremental()) {
+			getLogger().info("Not incremental: removing prior outputs");
+			getProject().delete(outputDirectory);
 		}
 
 		Predicate<File> shouldInclude;
@@ -201,129 +169,66 @@ public class SpotlessTask extends DefaultTask {
 					.anyMatch(filePattern -> filePattern.matcher(file.getAbsolutePath())
 							.matches());
 		}
-		// find the outOfDate files
-		List<File> outOfDate = new ArrayList<>();
-		inputs.outOfDate(inputDetails -> {
-			File file = inputDetails.getFile();
-			if (shouldInclude.test(file) && file.isFile() && !file.equals(getCacheFile())) {
-				outOfDate.add(file);
-			}
-		});
-		// load the files that were changed by the last run
-		// because it's possible the user changed them back to their
-		// unformatted form, so we need to treat them as dirty
-		// (see bug #144)
-		if (getCacheFile().exists()) {
-			LastApply lastApply = SerializableMisc.fromFile(LastApply.class, getCacheFile());
-			for (File file : lastApply.changedFiles) {
-				if (shouldInclude.test(file) && !outOfDate.contains(file) && file.exists() && Iterables.contains(target, file)) {
-					outOfDate.add(file);
-				}
-			}
-		}
-
-		if (outOfDate.isEmpty()) {
-			// no work to do
-			return;
-		}
 
 		// create the formatter
-		try (Formatter formatter = Formatter.builder()
+		try (Formatter formatter = buildFormatter()) {
+			inputs.outOfDate(inputDetails -> {
+				File input = inputDetails.getFile();
+				if (shouldInclude.test(input) && input.isFile()) {
+					formatAndWriteResult(formatter, input);
+				}
+			});
+			inputs.removed(removedDetails -> {
+				File input = removedDetails.getFile();
+				if (shouldInclude.test(input)) {
+					deletePreviousResult(input);
+				}
+			});
+		}
+	}
+
+	private void formatAndWriteResult(Formatter formatter, File input) {
+		File output = getOutputFile(input);
+		getLogger().info("Applying format to " + input + " and writing to " + output);
+		try {
+			formatter.applyToAndWriteResultIfDirty(input, output);
+		} catch (IOException e) {
+			throw new GradleException("Failed to apply format for " + input, e);
+		}
+	}
+
+	private void deletePreviousResult(File input) {
+		File output = getOutputFile(input);
+		getLogger().info("Removing previous result for removed file: " + input);
+
+		try {
+			Files.deleteIfExists(output.toPath());
+		} catch (IOException e) {
+			throw new GradleException("Failed to remove previous result " + output, e);
+		}
+	}
+
+	private Formatter buildFormatter() {
+		return Formatter.builder()
 				.lineEndingsPolicy(lineEndingsPolicy)
 				.encoding(Charset.forName(encoding))
 				.rootDir(getProject().getRootDir().toPath())
 				.steps(steps)
 				.exceptionPolicy(exceptionPolicy)
-				.build()) {
-
-			if (apply) {
-				List<File> changedFiles = applyAnyChanged(formatter, outOfDate);
-				if (!changedFiles.isEmpty()) {
-					// If any file changed, we need to mark the task as dirty
-					// next time to avoid bug #144.
-					LastApply lastApply = new LastApply();
-					lastApply.timestamp = System.currentTimeMillis();
-					lastApply.changedFiles = changedFiles;
-
-					SerializableMisc.toFile(lastApply, getCacheFile());
-				}
-			}
-			if (check) {
-				check(formatter, outOfDate);
-			}
-		}
+				.build();
 	}
 
-	static class LastApply implements Serializable {
-		private static final long serialVersionUID = 6245070824310295090L;
-
-		long timestamp;
-		List<File> changedFiles;
+	private File getOutputFile(File input) {
+		String outputFileName = FormatExtension.relativize(getProject().getProjectDir(), input);
+		if (outputFileName == null) {
+			outputFileName = input.getAbsolutePath();
+		}
+		return new File(outputDirectory, outputFileName);
 	}
 
-	private List<File> applyAnyChanged(Formatter formatter, List<File> outOfDate) throws Exception {
-		List<File> changed = new ArrayList<>(outOfDate.size());
-		if (isPaddedCell()) {
-			for (File file : outOfDate) {
-				getLogger().debug("Applying format to " + file);
-				if (PaddedCellBulk.applyAnyChanged(formatter, file)) {
-					changed.add(file);
-				}
-			}
-		} else {
-			boolean anyMisbehave = false;
-			for (File file : outOfDate) {
-				getLogger().debug("Applying format to " + file);
-				String unixResultIfDirty = formatter.applyToAndReturnResultIfDirty(file);
-				if (unixResultIfDirty != null) {
-					changed.add(file);
-				}
-				// because apply will count as up-to-date, it's important
-				// that every call to apply will get a PaddedCell check
-				if (!anyMisbehave && unixResultIfDirty != null) {
-					String onceMore = formatter.compute(unixResultIfDirty, file);
-					//  f(f(input) == f(input) for an idempotent function
-					if (!onceMore.equals(unixResultIfDirty)) {
-						// it's not idempotent.  but, if it converges, then it's likely a glitch that won't reoccur,
-						// so there's no need to make a bunch of noise for the user
-						PaddedCell result = PaddedCell.check(formatter, file, onceMore);
-						if (result.type() == PaddedCell.Type.CONVERGE) {
-							String finalResult = formatter.computeLineEndings(result.canonical(), file);
-							Files.write(file.toPath(), finalResult.getBytes(formatter.getEncoding()), StandardOpenOption.TRUNCATE_EXISTING);
-						} else {
-							// it didn't converge, so the user is going to need padded cell mode
-							anyMisbehave = true;
-						}
-					}
-				}
-			}
-			if (anyMisbehave) {
-				throw PaddedCellGradle.youShouldTurnOnPaddedCell(this);
-			}
-		}
-		return changed;
-	}
-
-	private void check(Formatter formatter, List<File> outOfDate) throws Exception {
-		List<File> problemFiles = new ArrayList<>();
-		for (File file : outOfDate) {
-			getLogger().debug("Checking format on " + file);
-			if (!formatter.isClean(file)) {
-				problemFiles.add(file);
-			}
-		}
-		if (paddedCell) {
-			PaddedCellGradle.check(this, formatter, problemFiles);
-		} else {
-			if (!problemFiles.isEmpty()) {
-				// if we're not in paddedCell mode, we'll check if maybe we should be
-				if (PaddedCellBulk.anyMisbehave(formatter, problemFiles)) {
-					throw PaddedCellGradle.youShouldTurnOnPaddedCell(this);
-				} else {
-					throw formatViolationsFor(formatter, problemFiles);
-				}
-			}
-		}
+	GradleException formatViolationsFor(List<File> problemFiles) {
+		Formatter formatter = buildFormatter();
+		return formatViolationsFor(formatter, problemFiles);
 	}
 
 	/** Returns an exception which indicates problem files nicely. */
