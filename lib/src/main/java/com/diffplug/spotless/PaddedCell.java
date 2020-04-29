@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -258,7 +257,7 @@ public final class PaddedCell {
 		}
 
 		public void writeCanonicalTo(File file) throws IOException {
-			Files.write(file.toPath(), canonicalBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+			Files.write(file.toPath(), canonicalBytes());
 		}
 
 		public void writeCanonicalTo(OutputStream out) throws IOException {

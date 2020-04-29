@@ -27,14 +27,10 @@ import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
-import org.gradle.api.execution.TaskExecutionGraph;
 import org.gradle.api.plugins.BasePlugin;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.spotless.LineEnding;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import groovy.lang.Closure;
 
 public class SpotlessExtension {
 	final Project project;
@@ -237,7 +233,7 @@ public class SpotlessExtension {
 				Constructor<T> constructor = clazz.getConstructor(SpotlessExtension.class);
 				T formatExtension = constructor.newInstance(this);
 				formats.put(name, formatExtension);
-				createFormatTask(name, formatExtension);
+				createFormatTasks(name, formatExtension);
 				return formatExtension;
 			} catch (NoSuchMethodException e) {
 				throw new GradleException("Must have a constructor " + clazz.getSimpleName() + "(SpotlessExtension root)", e);
@@ -247,8 +243,14 @@ public class SpotlessExtension {
 		}
 	}
 
+	/**
+	 * Creates 3 tasks for the supplied format:
+	 * - "spotless{FormatName}" is the main `SpotlessTask` that does the work for this format
+	 * - "spotless{FormatName}Check" will depend on the main spotless task in `check` mode
+	 * - "spotless{FormatName}Apply" will depend on the main spotless task in `apply` mode
+	 */
 	@SuppressWarnings("rawtypes")
-	private void createFormatTask(String name, FormatExtension formatExtension) {
+	private void createFormatTasks(String name, FormatExtension formatExtension) {
 		// create the SpotlessTask
 		String taskName = EXTENSION + SpotlessPlugin.capitalize(name);
 		SpotlessTask spotlessTask = project.getTasks().create(taskName, SpotlessTask.class);
@@ -259,27 +261,13 @@ public class SpotlessExtension {
 		spotlessTask.mustRunAfter(clean);
 
 		// create the check and apply control tasks
-		Task checkTask = project.getTasks().create(taskName + CHECK);
-		Task applyTask = project.getTasks().create(taskName + APPLY);
-
+		SpotlessCheck checkTask = project.getTasks().create(taskName + CHECK, SpotlessCheck.class);
+		checkTask.setSpotlessOutDirectory(spotlessTask.getOutputDirectory());
 		checkTask.dependsOn(spotlessTask);
-		applyTask.dependsOn(spotlessTask);
-		// when the task graph is ready, we'll configure the spotlessTask appropriately
-		project.getGradle().getTaskGraph().whenReady(new Closure(null) {
-			private static final long serialVersionUID = 1L;
 
-			// called by gradle
-			@SuppressFBWarnings("UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS")
-			public Object doCall(TaskExecutionGraph graph) {
-				if (graph.hasTask(checkTask)) {
-					spotlessTask.setCheck();
-				}
-				if (graph.hasTask(applyTask)) {
-					spotlessTask.setApply();
-				}
-				return Closure.DONE;
-			}
-		});
+		SpotlessApply applyTask = project.getTasks().create(taskName + APPLY, SpotlessApply.class);
+		applyTask.setSpotlessOutDirectory(spotlessTask.getOutputDirectory());
+		applyTask.dependsOn(spotlessTask);
 
 		// set the filePatterns property
 		project.afterEvaluate(unused -> {
