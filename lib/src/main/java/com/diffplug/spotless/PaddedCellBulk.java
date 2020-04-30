@@ -25,7 +25,6 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -197,38 +196,9 @@ public final class PaddedCellBulk {
 
 	/** Performs the typical spotlessApply, but with PaddedCell handling of misbehaving FormatterSteps. */
 	public static boolean applyAnyChanged(Formatter formatter, File file) throws IOException {
-		Objects.requireNonNull(formatter, "formatter");
-		Objects.requireNonNull(file, "file");
-
-		byte[] rawBytes = Files.readAllBytes(file.toPath());
-		String raw = new String(rawBytes, formatter.getEncoding());
-		String rawUnix = LineEnding.toUnix(raw);
-
-		// enforce the format
-		String formattedUnix = formatter.compute(rawUnix, file);
-		// convert the line endings if necessary
-		String formatted = formatter.computeLineEndings(formattedUnix, file);
-
-		// if F(input) == input, then the formatter is well-behaving and the input is clean
-		byte[] formattedBytes = formatted.getBytes(formatter.getEncoding());
-		if (Arrays.equals(rawBytes, formattedBytes)) {
-			return false;
-		}
-
-		// F(input) != input, so we'll do a padded check
-		PaddedCell cell = PaddedCell.check(formatter, file, rawUnix);
-		if (!cell.isResolvable()) {
-			// nothing we can do, but check will warn and dump out the divergence path
-			return false;
-		}
-
-		// get the canonical bytes
-		String canonicalUnix = cell.canonical();
-		String canonical = formatter.computeLineEndings(canonicalUnix, file);
-		byte[] canonicalBytes = canonical.getBytes(formatter.getEncoding());
-		if (!Arrays.equals(rawBytes, canonicalBytes)) {
-			// and write them to disk if needed
-			Files.write(file.toPath(), canonicalBytes, StandardOpenOption.TRUNCATE_EXISTING);
+		byte[] canonical = PaddedCell.canonicalIfDirty(formatter, file);
+		if (canonical != null) {
+			Files.write(file.toPath(), canonical, StandardOpenOption.TRUNCATE_EXISTING);
 			return true;
 		} else {
 			return false;

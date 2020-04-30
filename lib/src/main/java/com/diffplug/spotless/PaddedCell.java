@@ -18,13 +18,17 @@ package com.diffplug.spotless;
 import static com.diffplug.spotless.LibPreconditions.requireElementsNonNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+
+import javax.annotation.Nullable;
 
 /**
  * Models the result of applying a {@link Formatter} on a given {@link File}
@@ -170,5 +174,44 @@ public final class PaddedCell {
 		default:	throw new IllegalArgumentException("Unknown type: " + type);
 		}
 		// @formatter:on
+	}
+
+	/** Returns the canonical content of this file if it is dirty, or null if it is clean or the formatter is non-idempotent. */
+	public static @Nullable byte[] canonicalIfDirty(Formatter formatter, File file) throws IOException {
+		Objects.requireNonNull(formatter, "formatter");
+		Objects.requireNonNull(file, "file");
+
+		byte[] rawBytes = Files.readAllBytes(file.toPath());
+		String raw = new String(rawBytes, formatter.getEncoding());
+		String rawUnix = LineEnding.toUnix(raw);
+
+		// enforce the format
+		String formattedUnix = formatter.compute(rawUnix, file);
+		// convert the line endings if necessary
+		String formatted = formatter.computeLineEndings(formattedUnix, file);
+
+		// if F(input) == input, then the formatter is well-behaving and the input is clean
+		byte[] formattedBytes = formatted.getBytes(formatter.getEncoding());
+		if (Arrays.equals(rawBytes, formattedBytes)) {
+			return null;
+		}
+
+		// F(input) != input, so we'll do a padded check
+		PaddedCell cell = PaddedCell.check(formatter, file, rawUnix);
+		if (!cell.isResolvable()) {
+			// nothing we can do, but check will warn and dump out the divergence path
+			return null;
+		}
+
+		// get the canonical bytes
+		String canonicalUnix = cell.canonical();
+		String canonical = formatter.computeLineEndings(canonicalUnix, file);
+		byte[] canonicalBytes = canonical.getBytes(formatter.getEncoding());
+		if (!Arrays.equals(rawBytes, canonicalBytes)) {
+			// and write them to disk if needed
+			return canonicalBytes;
+		} else {
+			return null;
+		}
 	}
 }
