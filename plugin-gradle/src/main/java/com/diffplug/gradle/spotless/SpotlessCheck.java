@@ -15,14 +15,15 @@
  */
 package com.diffplug.gradle.spotless;
 
-import com.diffplug.common.collect.Lists;
+import java.io.File;
+
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.SkipWhenEmpty;
 import org.gradle.api.tasks.TaskAction;
 
-import java.io.File;
+import com.diffplug.common.collect.Lists;
 
 public class SpotlessCheck extends DefaultTask {
 	public SpotlessTask formatTask;

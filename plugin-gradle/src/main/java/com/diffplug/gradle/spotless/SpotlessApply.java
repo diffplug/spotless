@@ -15,6 +15,11 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileVisitDetails;
@@ -22,11 +27,6 @@ import org.gradle.api.file.FileVisitor;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.SkipWhenEmpty;
 import org.gradle.api.tasks.TaskAction;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 
 public class SpotlessApply extends DefaultTask {
 	private File spotlessOutDirectory;

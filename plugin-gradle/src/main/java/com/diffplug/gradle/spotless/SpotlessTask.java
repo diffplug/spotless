@@ -114,6 +114,7 @@ public class SpotlessTask extends DefaultTask {
 	}
 
 	private File outputDirectory = new File(getProject().getBuildDir(), "spotless/" + getName());
+
 	@OutputDirectory
 	public File getOutputDirectory() {
 		return outputDirectory;

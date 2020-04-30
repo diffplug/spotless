@@ -27,14 +27,10 @@ import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
-import org.gradle.api.execution.TaskExecutionGraph;
 import org.gradle.api.plugins.BasePlugin;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.spotless.LineEnding;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import groovy.lang.Closure;
 
 public class SpotlessExtension {
 	final Project project;
