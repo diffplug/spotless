@@ -18,8 +18,6 @@ package com.diffplug.gradle.spotless;
 import java.io.File;
 import java.io.Serializable;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,7 +44,6 @@ import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
-import com.diffplug.spotless.PaddedCell;
 import com.diffplug.spotless.PaddedCellBulk;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
@@ -262,42 +259,10 @@ public class SpotlessTask extends DefaultTask {
 
 	private List<File> applyAnyChanged(Formatter formatter, List<File> outOfDate) throws Exception {
 		List<File> changed = new ArrayList<>(outOfDate.size());
-		if (isPaddedCell()) {
-			for (File file : outOfDate) {
-				getLogger().debug("Applying format to " + file);
-				if (PaddedCellBulk.applyAnyChanged(formatter, file)) {
-					changed.add(file);
-				}
-			}
-		} else {
-			boolean anyMisbehave = false;
-			for (File file : outOfDate) {
-				getLogger().debug("Applying format to " + file);
-				String unixResultIfDirty = formatter.applyToAndReturnResultIfDirty(file);
-				if (unixResultIfDirty != null) {
-					changed.add(file);
-				}
-				// because apply will count as up-to-date, it's important
-				// that every call to apply will get a PaddedCell check
-				if (!anyMisbehave && unixResultIfDirty != null) {
-					String onceMore = formatter.compute(unixResultIfDirty, file);
-					//  f(f(input) == f(input) for an idempotent function
-					if (!onceMore.equals(unixResultIfDirty)) {
-						// it's not idempotent.  but, if it converges, then it's likely a glitch that won't reoccur,
-						// so there's no need to make a bunch of noise for the user
-						PaddedCell result = PaddedCell.check(formatter, file, onceMore);
-						if (result.type() == PaddedCell.Type.CONVERGE) {
-							String finalResult = formatter.computeLineEndings(result.canonical(), file);
-							Files.write(file.toPath(), finalResult.getBytes(formatter.getEncoding()), StandardOpenOption.TRUNCATE_EXISTING);
-						} else {
-							// it didn't converge, so the user is going to need padded cell mode
-							anyMisbehave = true;
-						}
-					}
-				}
-			}
-			if (anyMisbehave) {
-				throw PaddedCellGradle.youShouldTurnOnPaddedCell(this);
+		for (File file : outOfDate) {
+			getLogger().debug("Applying format to " + file);
+			if (PaddedCellBulk.applyAnyChanged(formatter, file)) {
+				changed.add(file);
 			}
 		}
 		return changed;
@@ -311,18 +276,7 @@ public class SpotlessTask extends DefaultTask {
 				problemFiles.add(file);
 			}
 		}
-		if (paddedCell) {
-			PaddedCellGradle.check(this, formatter, problemFiles);
-		} else {
-			if (!problemFiles.isEmpty()) {
-				// if we're not in paddedCell mode, we'll check if maybe we should be
-				if (PaddedCellBulk.anyMisbehave(formatter, problemFiles)) {
-					throw PaddedCellGradle.youShouldTurnOnPaddedCell(this);
-				} else {
-					throw formatViolationsFor(formatter, problemFiles);
-				}
-			}
-		}
+		PaddedCellGradle.check(this, formatter, problemFiles);
 	}
 
 	/** Returns an exception which indicates problem files nicely. */

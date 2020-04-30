@@ -17,10 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
-
-import org.gradle.api.GradleException;
 
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.Formatter;
@@ -54,30 +51,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 class PaddedCellGradle {
 	/** URL to a page which describes the padded cell thing. */
 	private static final String URL = "https://github.com/diffplug/spotless/blob/master/PADDEDCELL.md";
-
-	static GradleException youShouldTurnOnPaddedCell(SpotlessTask task) {
-		Path rootPath = task.getProject().getRootDir().toPath();
-		return new GradleException(StringPrinter.buildStringFromLines(
-				"You have a misbehaving rule which can't make up its mind.",
-				"This means that spotlessCheck will fail even after spotlessApply has run.",
-				"",
-				"This is a bug in a formatting rule, not Spotless itself, but Spotless can",
-				"work around this bug and generate helpful bug reports for the broken rule",
-				"if you add 'paddedCell()' to your build.gradle as such: ",
-				"",
-				"    spotless {",
-				"        format 'someFormat', {",
-				"            ...",
-				"            paddedCell()",
-				"        }",
-				"    }",
-				"",
-				"The next time you run spotlessCheck, it will put helpful bug reports into",
-				"'" + rootPath.relativize(diagnoseDir(task).toPath()) + "', and spotlessApply",
-				"and spotlessCheck will be self-consistent from here on out.",
-				"",
-				"For details see " + URL));
-	}
 
 	private static File diagnoseDir(SpotlessTask task) {
 		return new File(task.getProject().getBuildDir(), "spotless-diagnose-" + task.formatName());
