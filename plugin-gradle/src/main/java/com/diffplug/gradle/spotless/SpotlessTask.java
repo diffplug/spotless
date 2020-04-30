@@ -74,16 +74,15 @@ public class SpotlessTask extends DefaultTask {
 		this.lineEndingsPolicy = Objects.requireNonNull(lineEndingsPolicy);
 	}
 
-	// set by FormatExtension
-	protected boolean paddedCell = false;
-
-	@Input
+	@Deprecated
+	@Internal
 	public boolean isPaddedCell() {
-		return paddedCell;
+		return true;
 	}
 
+	@Deprecated
 	public void setPaddedCell(boolean paddedCell) {
-		this.paddedCell = paddedCell;
+		getLogger().warn("PaddedCell is now always on, and cannot be turned off.");
 	}
 
 	protected String filePatterns = "";
@@ -330,7 +329,6 @@ public class SpotlessTask extends DefaultTask {
 	GradleException formatViolationsFor(Formatter formatter, List<File> problemFiles) {
 		return new GradleException(DiffMessageFormatter.builder()
 				.runToFix("Run 'gradlew spotlessApply' to fix these violations.")
-				.isPaddedCell(paddedCell)
 				.formatter(formatter)
 				.problemFiles(problemFiles)
 				.getMessage());
