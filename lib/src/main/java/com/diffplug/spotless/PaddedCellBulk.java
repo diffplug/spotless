@@ -34,27 +34,8 @@ import java.util.logging.Logger;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-/**
- * Incorporates the PaddedCell machinery into broader apply / check usage.
- *
- * Here's the general workflow:
- *
- * ### Identify that paddedCell is needed
- *
- * Initially, paddedCell is off.  That's the default, and there's no need for users to know about it.
- *
- * If they encounter a scenario where `spotlessCheck` fails after calling `spotlessApply`, then they would
- * justifiably be frustrated.  Luckily, every time `spotlessCheck` fails, it passes the failed files to
- * {@link #anyMisbehave(Formatter, List)}, which checks to see if any of the rules are causing a cycle
- * or some other kind of mischief.  If they are, it can give the user a special error message instructing
- * them to turn on paddedCell.
- *
- * ### spotlessCheck with paddedCell on
- *
- * Spotless check behaves as normal, finding a list of problem files, but then passes that list
- * to {@link #check(File, File, Formatter, List)}.  If there were no problem files, then `paddedCell`
- * is no longer necessary, so users might as well turn it off, so we give that info as a warning.
- */
+/** COMPLETELY DEPRECATED, use {@link PaddedCell#canonicalIfDirty(Formatter, File)} instead. */
+@Deprecated
 public final class PaddedCellBulk {
 	private static final Logger logger = Logger.getLogger(PaddedCellBulk.class.getName());
 
@@ -71,11 +52,13 @@ public final class PaddedCellBulk {
 	 * tell the user about a misbehaving rule and alert her to how to enable
 	 * paddedCell mode, with minimal effort.
 	 */
+	@Deprecated
 	public static boolean anyMisbehave(Formatter formatter, List<File> problemFiles) {
 		return anyMisbehave(formatter, problemFiles, 500);
 	}
 
 	/** Same as {@link #anyMisbehave(Formatter, List)} but with a customizable timeout. */
+	@Deprecated
 	public static boolean anyMisbehave(Formatter formatter, List<File> problemFiles, long timeoutMs) {
 		Objects.requireNonNull(formatter, "formatter");
 		Objects.requireNonNull(problemFiles, "problemFiles");
@@ -104,6 +87,7 @@ public final class PaddedCellBulk {
 	 * @return	A list of files which are failing because of paddedCell problems, but could be fixed. (specifically, the files for which spotlessApply would be effective)
 	 */
 	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
+	@Deprecated
 	public static List<File> check(File rootDir, File diagnoseDir, Formatter formatter, List<File> problemFiles) throws IOException {
 		Objects.requireNonNull(rootDir, "rootDir");
 		Objects.requireNonNull(diagnoseDir, "diagnoseDir");
@@ -190,11 +174,13 @@ public final class PaddedCellBulk {
 	}
 
 	/** Performs the typical spotlessApply, but with PaddedCell handling of misbehaving FormatterSteps. */
+	@Deprecated
 	public static void apply(Formatter formatter, File file) throws IOException {
 		applyAnyChanged(formatter, file);
 	}
 
 	/** Performs the typical spotlessApply, but with PaddedCell handling of misbehaving FormatterSteps. */
+	@Deprecated
 	public static boolean applyAnyChanged(Formatter formatter, File file) throws IOException {
 		byte[] canonical = PaddedCell.canonicalIfDirty(formatter, file);
 		if (canonical != null) {

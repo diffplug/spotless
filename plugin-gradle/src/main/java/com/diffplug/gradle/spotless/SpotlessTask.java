@@ -18,6 +18,8 @@ package com.diffplug.gradle.spotless;
 import java.io.File;
 import java.io.Serializable;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,7 +46,7 @@ import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
-import com.diffplug.spotless.PaddedCellBulk;
+import com.diffplug.spotless.PaddedCell;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
 public class SpotlessTask extends DefaultTask {
@@ -261,7 +263,9 @@ public class SpotlessTask extends DefaultTask {
 		List<File> changed = new ArrayList<>(outOfDate.size());
 		for (File file : outOfDate) {
 			getLogger().debug("Applying format to " + file);
-			if (PaddedCellBulk.applyAnyChanged(formatter, file)) {
+			byte[] canonical = PaddedCell.canonicalIfDirty(formatter, file);
+			if (canonical != null) {
+				Files.write(file.toPath(), canonical, StandardOpenOption.TRUNCATE_EXISTING);
 				changed.add(file);
 			}
 		}
@@ -272,11 +276,19 @@ public class SpotlessTask extends DefaultTask {
 		List<File> problemFiles = new ArrayList<>();
 		for (File file : outOfDate) {
 			getLogger().debug("Checking format on " + file);
-			if (!formatter.isClean(file)) {
+			byte[] canonical = PaddedCell.canonicalIfDirty(formatter, file);
+			if (canonical != null) {
 				problemFiles.add(file);
 			}
 		}
-		PaddedCellGradle.check(this, formatter, problemFiles);
+		if (!problemFiles.isEmpty()) {
+			throw formatViolationsFor(formatter, problemFiles);
+		}
+	}
+
+	// TODO: store paddedcell diagnosis files somewhere
+	private static File diagnoseDir(SpotlessTask task) {
+		return new File(task.getProject().getBuildDir(), "spotless-diagnose-" + task.formatName());
 	}
 
 	/** Returns an exception which indicates problem files nicely. */
