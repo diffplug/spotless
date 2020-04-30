@@ -228,6 +228,12 @@ public final class PaddedCellBulk {
 		}
 
 		// F(input) != input, so we'll do a padded check
+		String doubleFormattedUnix = formatter.compute(formattedUnix, file);
+		if (doubleFormattedUnix.equals(formattedUnix)) {
+			// most dirty files are idempotent-dirty, so this is a quick-short circuit for that common case
+			return formattedBytes;
+		}
+
 		PaddedCell cell = PaddedCell.check(formatter, file, rawUnix);
 		if (!cell.isResolvable()) {
 			// nothing we can do, but check will warn and dump out the divergence path
