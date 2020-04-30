@@ -1,19 +1,4 @@
-# You have a misbehaving rule that needs a `paddedCell()`
-
-`spotlessCheck` has detected that one of your rules is misbehaving.  This will cause `spotlessCheck` to fail even after you have called `spotlessApply`.  To bandaid over this problem, add `paddedCell()` to your `build.gradle`, as such:
-
-```gradle
-spotless {
-  java {
-    ...
-    paddedCell()
-  }
-}
-```
-
-This is not a bug in Spotless itself, but in one of the third-party formatters, such as the [eclipse formatter](https://bugs.eclipse.org/bugs/show_bug.cgi?id=310642), [google-java-format](https://github.com/google/google-java-format/issues), or some custom rule.
-
-`paddedCell()` will ensure that your code continues to be formatted, although it will be a little slower.  Now when you run `spotlessCheck`, it will generate helpful bug report files in the `build/spotless-diagnose-<FORMAT_NAME>` folder which will contain the states that your rules are fighting over.  These files are very helpful to the developers of the code formatter you are using.
+# PaddedCell
 
 ## How spotless works
 
