@@ -16,7 +16,6 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -24,9 +23,6 @@ import org.gradle.api.GradleException;
 
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.Formatter;
-import com.diffplug.spotless.PaddedCellBulk;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Incorporates the PaddedCell machinery into SpotlessTask.apply() and SpotlessTask.check().
@@ -81,23 +77,5 @@ class PaddedCellGradle {
 
 	private static File diagnoseDir(SpotlessTask task) {
 		return new File(task.getProject().getBuildDir(), "spotless-diagnose-" + task.formatName());
-	}
-
-	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
-	static void check(SpotlessTask task, Formatter formatter, List<File> problemFiles) throws IOException {
-		if (problemFiles.isEmpty()) {
-			// if the first pass was successful, then paddedCell() mode is unnecessary
-			task.getLogger().info(StringPrinter.buildStringFromLines(
-					task.getName() + " is in paddedCell() mode, but it doesn't need to be.",
-					"If you remove that option, spotless will run ~2x faster.",
-					"For details see " + URL));
-		}
-
-		File diagnoseDir = diagnoseDir(task);
-		File rootDir = task.getProject().getRootDir();
-		List<File> stillFailing = PaddedCellBulk.check(rootDir, diagnoseDir, formatter, problemFiles);
-		if (!stillFailing.isEmpty()) {
-			throw task.formatViolationsFor(formatter, problemFiles);
-		}
 	}
 }

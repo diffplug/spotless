@@ -18,12 +18,11 @@ package com.diffplug.gradle.spotless;
 import java.io.File;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.GradleException;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.SkipWhenEmpty;
 import org.gradle.api.tasks.TaskAction;
-
-import com.diffplug.common.collect.Lists;
 
 public class SpotlessCheck extends DefaultTask {
 	public SpotlessTask formatTask;
@@ -44,7 +43,18 @@ public class SpotlessCheck extends DefaultTask {
 	public void performAction() throws Exception {
 		ConfigurableFileTree files = getProject().fileTree(spotlessOutDirectory);
 		if (!files.isEmpty()) {
-			throw formatTask.formatViolationsFor(Lists.newArrayList(files.getFiles()));
+			throw new GradleException("Run 'gradlew spotlessApply' to fix these violations.");
+			/*
+			 * TODO: problemFiles is expected to be the "real files"
+			 * This error message should now take the "real files" and "error files" as the inputs, rather than
+			 * the "real files" and the formatter.
+			DiffMessageFormatter.builder()
+					.runToFix("Run 'gradlew spotlessApply' to fix these violations.")
+					.isPaddedCell(paddedCell)
+					.formatter(formatter)
+					.problemFiles(problemFiles)
+					.getMessage());
+					*/
 		}
 	}
 }

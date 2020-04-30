@@ -43,7 +43,6 @@ import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
-import com.diffplug.spotless.PaddedCell;
 import com.diffplug.spotless.PaddedCellBulk;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
@@ -185,61 +184,23 @@ public class SpotlessTask extends DefaultTask {
 			}
 		});
 		// accumulate the outOfDate files
-		List<File> outOfDate = new ArrayList<>();
-		inputs.outOfDate(inputDetails -> {
-			File input = inputDetails.getFile();
-			if (shouldInclude.test(input) && input.isFile()) {
-				outOfDate.add(input);
-			}
-		});
 		try (Formatter formatter = buildFormatter()) {
-			if (isPaddedCell()) {
-				for (File file : outOfDate) {
-					getLogger().debug("Applying format to " + file);
-					byte[] canonical = PaddedCellBulk.getCanonicalOrNullIfClean(formatter, file);
-					if (canonical == null) {
-						deletePreviousResult(file);
-					} else {
-						writeResult(file, canonical);
-					}
-				}
-			} else {
-				for (File file : outOfDate) {
-					getLogger().debug("Applying format to " + file);
-					String unixResultIfDirty = formatter.applyToAndReturnResultIfDirty(file);
-					if (unixResultIfDirty == null) {
-						// Users expect apply to be idempotent, but formatter functions are frequently not.
-						// If you find that `f(file) = file`, then you already have a guarantee that your formatter
-						// is idempotent (at least for your input).
-						deletePreviousResult(file);
-					} else {
-						// If `f(file) != file`, that means your file is definitely dirty, but you don't know
-						// anything yet about whether the formatter is idempotent or not.
-						String onceMore = formatter.compute(unixResultIfDirty, file);
-						if (onceMore.equals(unixResultIfDirty)) {
-							// f(f(input) == f(input), so it's idempotent, and this is plain-old dirty file
-							writeResult(file, formatter.computeLineEndings(unixResultIfDirty, file).getBytes(formatter.getEncoding()));
+			inputs.outOfDate(inputDetails -> {
+				File input = inputDetails.getFile();
+				if (shouldInclude.test(input) && input.isFile()) {
+					try {
+						getLogger().debug("Applying format to " + input);
+						byte[] canonical = PaddedCellBulk.getCanonicalOrNullIfClean(formatter, input);
+						if (canonical == null) {
+							deletePreviousResult(input);
 						} else {
-							// It's not idempotent.  But, if it converges, then it's likely a glitch that won't reoccur
-							// so there's no need to make a bunch of noise for the user.  We only need to make noise for
-							// cycles and divergence.
-							PaddedCell result = PaddedCell.check(formatter, file, onceMore);
-							if (result.type() == PaddedCell.Type.CONVERGE) {
-								byte[] canonical = formatter.computeLineEndings(result.canonical(), file).getBytes(formatter.getEncoding());
-								byte[] current = Files.readAllBytes(file.toPath());
-								if (Arrays.equals(canonical, current)) {
-									deletePreviousResult(file);
-								} else {
-									writeResult(file, canonical);
-								}
-							} else {
-								// it didn't converge, so the user is going to need padded cell mode
-								throw PaddedCellGradle.youShouldTurnOnPaddedCell(this);
-							}
+							writeResult(input, canonical);
 						}
+					} catch (IOException e) {
+						throw Errors.asRuntime(e);
 					}
 				}
-			}
+			});
 		}
 	}
 
@@ -273,14 +234,12 @@ public class SpotlessTask extends DefaultTask {
 	}
 
 	/** Returns an exception which indicates problem files nicely. */
-	GradleException formatViolationsFor(List<File> problemFiles) {
-		try (Formatter formatter = buildFormatter()) {
-			return new GradleException(DiffMessageFormatter.builder()
-					.runToFix("Run 'gradlew spotlessApply' to fix these violations.")
-					.isPaddedCell(paddedCell)
-					.formatter(formatter)
-					.problemFiles(problemFiles)
-					.getMessage());
-		}
+	GradleException formatViolationsFor(List<File> problemFiles, Formatter formatter) {
+		return new GradleException(DiffMessageFormatter.builder()
+				.runToFix("Run 'gradlew spotlessApply' to fix these violations.")
+				.isPaddedCell(paddedCell)
+				.formatter(formatter)
+				.problemFiles(problemFiles)
+				.getMessage());
 	}
 }
