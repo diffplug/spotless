@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
 
-import org.assertj.core.api.Assertions;
 import org.gradle.api.Project;
 import org.junit.Assert;
 import org.junit.Test;
@@ -76,12 +75,6 @@ public class PaddedCellTaskTest extends ResourceHarness {
 			return task;
 		}
 
-		private Bundle paddedCell() {
-			check.setPaddedCell(true);
-			apply.setPaddedCell(true);
-			return this;
-		}
-
 		private String checkFailureMsg() {
 			try {
 				execute(check);
@@ -109,19 +102,11 @@ public class PaddedCellTaskTest extends ResourceHarness {
 	}
 
 	@Test
-	public void failsWithoutPaddedCell() throws IOException {
-		Assertions.assertThat(wellbehaved().checkFailureMsg()).startsWith("The following files had format violations");
-		Assertions.assertThat(cycle().checkFailureMsg()).startsWith("You have a misbehaving rule");
-		Assertions.assertThat(converge().checkFailureMsg()).startsWith("You have a misbehaving rule");
-		Assertions.assertThat(diverge().checkFailureMsg()).startsWith("You have a misbehaving rule");
-	}
-
-	@Test
 	public void paddedCellApply() throws Exception {
-		Bundle wellbehaved = wellbehaved().paddedCell();
-		Bundle cycle = cycle().paddedCell();
-		Bundle converge = converge().paddedCell();
-		Bundle diverge = diverge().paddedCell();
+		Bundle wellbehaved = wellbehaved();
+		Bundle cycle = cycle();
+		Bundle converge = converge();
+		Bundle diverge = diverge();
 
 		execute(wellbehaved.apply);
 		execute(cycle.apply);
@@ -141,10 +126,10 @@ public class PaddedCellTaskTest extends ResourceHarness {
 
 	@Test
 	public void paddedCellCheckFailureFiles() throws Exception {
-		wellbehaved().paddedCell().checkFailureMsg();
-		cycle().paddedCell().checkFailureMsg();
-		converge().paddedCell().checkFailureMsg();
-		execute(diverge().paddedCell().check);
+		wellbehaved().checkFailureMsg();
+		cycle().checkFailureMsg();
+		converge().checkFailureMsg();
+		execute(diverge().check);
 
 		assertFolderContents("build",
 				"spotless-diagnose-converge",
@@ -179,7 +164,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 
 	@Test
 	public void paddedCellCheckCycleFailureMsg() throws IOException {
-		assertFailureMessage(cycle().paddedCell(),
+		assertFailureMessage(cycle(),
 				"The following files had format violations:",
 				slashify("    src/test.cycle"),
 				"        @@ -1 +1 @@",
@@ -190,7 +175,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 
 	@Test
 	public void paddedCellCheckConvergeFailureMsg() throws IOException {
-		assertFailureMessage(converge().paddedCell(),
+		assertFailureMessage(converge(),
 				"The following files had format violations:",
 				slashify("    src/test.converge"),
 				"        @@ -1 +0,0 @@",
