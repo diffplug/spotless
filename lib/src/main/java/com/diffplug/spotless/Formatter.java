@@ -203,33 +203,6 @@ public final class Formatter implements Serializable, AutoCloseable {
 		}
 	}
 
-	/**
-	 * Applies formatting to the given file, writing to the output file if the result is different.
-	 * If the result of formatting is the same as the input, the output file is deleted.
-	 */
-	public void applyToAndWriteResultIfDirty(File input, File output) throws IOException {
-		Objects.requireNonNull(input);
-		Objects.requireNonNull(output);
-
-		byte[] rawBytes = Files.readAllBytes(input.toPath());
-		String raw = new String(rawBytes, encoding);
-		String rawUnix = LineEnding.toUnix(raw);
-
-		// enforce the format
-		String formattedUnix = compute(rawUnix, input);
-		// enforce the line endings
-		String formatted = computeLineEndings(formattedUnix, input);
-
-		// write out the file iff it has changed
-		byte[] formattedBytes = formatted.getBytes(encoding);
-		if (!Arrays.equals(rawBytes, formattedBytes)) {
-			Files.createDirectories(output.getParentFile().toPath());
-			Files.write(output.toPath(), formattedBytes);
-		} else {
-			Files.deleteIfExists(output.toPath());
-		}
-	}
-
 	/** Applies the appropriate line endings to the given unix content. */
 	public String computeLineEndings(String unix, File file) {
 		Objects.requireNonNull(unix, "unix");

@@ -197,6 +197,18 @@ public final class PaddedCellBulk {
 
 	/** Performs the typical spotlessApply, but with PaddedCell handling of misbehaving FormatterSteps. */
 	public static boolean applyAnyChanged(Formatter formatter, File file) throws IOException {
+		byte[] bytes = getCanonicalOrNullIfClean(formatter, file);
+		if (bytes != null) {
+			// and write them to disk if needed
+			Files.write(file.toPath(), bytes, StandardOpenOption.TRUNCATE_EXISTING);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/** Returns the canonical form of the given file if it is dirty, or null if its clean. */
+	public static byte[] getCanonicalOrNullIfClean(Formatter formatter, File file) throws IOException {
 		Objects.requireNonNull(formatter, "formatter");
 		Objects.requireNonNull(file, "file");
 
@@ -212,14 +224,15 @@ public final class PaddedCellBulk {
 		// if F(input) == input, then the formatter is well-behaving and the input is clean
 		byte[] formattedBytes = formatted.getBytes(formatter.getEncoding());
 		if (Arrays.equals(rawBytes, formattedBytes)) {
-			return false;
+			return null;
 		}
 
 		// F(input) != input, so we'll do a padded check
 		PaddedCell cell = PaddedCell.check(formatter, file, rawUnix);
 		if (!cell.isResolvable()) {
 			// nothing we can do, but check will warn and dump out the divergence path
-			return false;
+			// TODO: where to put warnings?
+			return null;
 		}
 
 		// get the canonical bytes
@@ -228,10 +241,9 @@ public final class PaddedCellBulk {
 		byte[] canonicalBytes = canonical.getBytes(formatter.getEncoding());
 		if (!Arrays.equals(rawBytes, canonicalBytes)) {
 			// and write them to disk if needed
-			Files.write(file.toPath(), canonicalBytes, StandardOpenOption.TRUNCATE_EXISTING);
-			return true;
+			return canonicalBytes;
 		} else {
-			return false;
+			return null;
 		}
 	}
 
