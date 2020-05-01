@@ -10,6 +10,7 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+* Improved PaddedCell such that it is as performant as non-padded cell - no reason not to have it always enabled.  Deprecated all of `PaddedCellBulk`. ([#561](https://github.com/diffplug/spotless/pull/561))
 
 ## [1.28.1] - 2020-04-02
 ### Fixed
