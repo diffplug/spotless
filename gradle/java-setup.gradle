@@ -43,6 +43,13 @@ spotbugs {
 tasks.named('spotbugsTest') {
 	enabled = false
 }
+spotbugsMain {
+	reports {
+		html {
+			enabled = true
+		}
+	}
+}
 
 dependencies {
 	compileOnly 'net.jcip:jcip-annotations:1.0'

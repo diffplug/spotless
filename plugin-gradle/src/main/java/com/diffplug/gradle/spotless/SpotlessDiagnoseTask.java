@@ -29,6 +29,8 @@ import org.gradle.api.tasks.TaskAction;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.PaddedCell;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 public class SpotlessDiagnoseTask extends DefaultTask {
 	SpotlessTask source;
 
@@ -38,6 +40,7 @@ public class SpotlessDiagnoseTask extends DefaultTask {
 	}
 
 	@TaskAction
+	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 	public void performAction() throws IOException {
 		Path srcRoot = getProject().getProjectDir().toPath();
 		Path diagnoseRoot = getProject().getBuildDir().toPath().resolve("spotless-diagnose-" + source.formatName());
