@@ -207,7 +207,7 @@ public final class PaddedCell {
 
 		PaddedCell cell = PaddedCell.check(formatter, file, rawUnix);
 		if (!cell.isResolvable()) {
-			return formatterDoesntConverge;
+			return didNotConverge;
 		}
 
 		// get the canonical bytes
@@ -225,7 +225,7 @@ public final class PaddedCell {
 	/**
 	 * The clean/dirty state of a single file.  Intended use:
 	 * - {@link #isClean()} means that the file is is clean, and there's nothing else to say
-	 * - {@link #isConverged()} means that we can't tell what the clean state of the file would be
+	 * - {@link #isConverged()} means that we were able to determine a clean state
 	 * - once you've tested the above conditions and you know that it's a dirty file with a converged state,
 	 *   then you can call {@link #canonicalBytes()} to get the canonical form of the given file.
 	 */
@@ -240,15 +240,15 @@ public final class PaddedCell {
 			return this == isClean;
 		}
 
-		public boolean isConverged() {
-			return this != formatterDoesntConverge;
+		public boolean didNotConverge() {
+			return this == didNotConverge;
 		}
 
 		public byte[] canonicalBytes() {
-			return Objects.requireNonNull(canonicalBytes, "First make sure that `!isClean()` and that `formatterConverges()`.");
+			return Objects.requireNonNull(canonicalBytes, "First make sure that `!isClean()` and `!didNotConverge()`");
 		}
 	}
 
-	private static final DirtyState formatterDoesntConverge = new DirtyState(null);
+	private static final DirtyState didNotConverge = new DirtyState(null);
 	private static final DirtyState isClean = new DirtyState(null);
 }

@@ -183,11 +183,11 @@ public final class PaddedCellBulk {
 	@Deprecated
 	public static boolean applyAnyChanged(Formatter formatter, File file) throws IOException {
 		PaddedCell.DirtyState dirtyState = PaddedCell.calculateDirtyState(formatter, file);
-		if (!dirtyState.isClean() && dirtyState.isConverged()) {
+		if (dirtyState.isClean() || dirtyState.didNotConverge()) {
+			return false;
+		} else {
 			Files.write(file.toPath(), dirtyState.canonicalBytes(), StandardOpenOption.TRUNCATE_EXISTING);
 			return true;
-		} else {
-			return false;
 		}
 	}
 

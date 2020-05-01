@@ -269,7 +269,7 @@ public class SpotlessTask extends DefaultTask {
 			PaddedCell.DirtyState dirtyState = PaddedCell.calculateDirtyState(formatter, file);
 			if (dirtyState.isClean()) {
 				// do nothing
-			} else if (!dirtyState.isConverged()) {
+			} else if (dirtyState.didNotConverge()) {
 				getLogger().warn("Skipping '" + file + "' because it does not converge.  Run `spotlessDiagnose` to understand why");
 			} else {
 				Files.write(file.toPath(), dirtyState.canonicalBytes(), StandardOpenOption.TRUNCATE_EXISTING);
@@ -286,7 +286,7 @@ public class SpotlessTask extends DefaultTask {
 			PaddedCell.DirtyState dirtyState = PaddedCell.calculateDirtyState(formatter, file);
 			if (dirtyState.isClean()) {
 				// do nothing
-			} else if (!dirtyState.isConverged()) {
+			} else if (dirtyState.didNotConverge()) {
 				getLogger().warn("Skipping '" + file + "' because it does not converge.  Run `spotlessDiagnose` to understand why");
 			} else {
 				problemFiles.add(file);
