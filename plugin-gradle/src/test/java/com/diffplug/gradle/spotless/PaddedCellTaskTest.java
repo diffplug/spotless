@@ -43,12 +43,14 @@ public class PaddedCellTaskTest extends ResourceHarness {
 	}
 
 	private class Bundle {
+		String name;
 		Project project = TestProvisioner.gradleProject(rootFolder());
 		File file;
 		SpotlessTask check;
 		SpotlessTask apply;
 
 		Bundle(String name, FormatterFunc function) throws IOException {
+			this.name = name;
 			file = setFile("src/test." + name).toContent("CCC");
 			FormatterStep step = FormatterStep.createNeverUpToDate(name, function);
 			check = createCheckTask(name, step);
@@ -82,6 +84,12 @@ public class PaddedCellTaskTest extends ResourceHarness {
 			} catch (Exception e) {
 				return e.getMessage();
 			}
+		}
+
+		private void diagnose() throws IOException {
+			SpotlessDiagnoseTask diagnose = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + "Diagnose", SpotlessDiagnoseTask.class);
+			diagnose.source = check;
+			diagnose.performAction();
 		}
 	}
 
@@ -125,11 +133,11 @@ public class PaddedCellTaskTest extends ResourceHarness {
 	}
 
 	@Test
-	public void paddedCellCheckFailureFiles() throws Exception {
-		wellbehaved().checkFailureMsg();
-		cycle().checkFailureMsg();
-		converge().checkFailureMsg();
-		execute(diverge().check);
+	public void diagnose() throws Exception {
+		wellbehaved().diagnose();
+		cycle().diagnose();
+		converge().diagnose();
+		diverge().diagnose();
 
 		assertFolderContents("build",
 				"spotless-diagnose-converge",
