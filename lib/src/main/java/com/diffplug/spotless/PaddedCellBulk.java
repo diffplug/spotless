@@ -182,9 +182,9 @@ public final class PaddedCellBulk {
 	/** Performs the typical spotlessApply, but with PaddedCell handling of misbehaving FormatterSteps. */
 	@Deprecated
 	public static boolean applyAnyChanged(Formatter formatter, File file) throws IOException {
-		byte[] canonical = PaddedCell.canonicalIfDirty(formatter, file);
-		if (canonical != null) {
-			Files.write(file.toPath(), canonical, StandardOpenOption.TRUNCATE_EXISTING);
+		PaddedCell.DirtyState dirtyState = PaddedCell.calculateDirtyState(formatter, file);
+		if (!dirtyState.isClean() && dirtyState.isConverged()) {
+			Files.write(file.toPath(), dirtyState.canonicalBytes(), StandardOpenOption.TRUNCATE_EXISTING);
 			return true;
 		} else {
 			return false;

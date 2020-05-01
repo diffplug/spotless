@@ -226,14 +226,7 @@ public class SpotlessTask extends DefaultTask {
 		}
 
 		// create the formatter
-		try (Formatter formatter = Formatter.builder()
-				.lineEndingsPolicy(lineEndingsPolicy)
-				.encoding(Charset.forName(encoding))
-				.rootDir(getProject().getRootDir().toPath())
-				.steps(steps)
-				.exceptionPolicy(exceptionPolicy)
-				.build()) {
-
+		try (Formatter formatter = buildFormatter()) {
 			if (apply) {
 				List<File> changedFiles = applyAnyChanged(formatter, outOfDate);
 				if (!changedFiles.isEmpty()) {
@@ -252,6 +245,16 @@ public class SpotlessTask extends DefaultTask {
 		}
 	}
 
+	Formatter buildFormatter() {
+		return Formatter.builder()
+				.lineEndingsPolicy(lineEndingsPolicy)
+				.encoding(Charset.forName(encoding))
+				.rootDir(getProject().getRootDir().toPath())
+				.steps(steps)
+				.exceptionPolicy(exceptionPolicy)
+				.build();
+	}
+
 	static class LastApply implements Serializable {
 		private static final long serialVersionUID = 6245070824310295090L;
 
@@ -263,9 +266,13 @@ public class SpotlessTask extends DefaultTask {
 		List<File> changed = new ArrayList<>(outOfDate.size());
 		for (File file : outOfDate) {
 			getLogger().debug("Applying format to " + file);
-			byte[] canonical = PaddedCell.canonicalIfDirty(formatter, file);
-			if (canonical != null) {
-				Files.write(file.toPath(), canonical, StandardOpenOption.TRUNCATE_EXISTING);
+			PaddedCell.DirtyState dirtyState = PaddedCell.calculateDirtyState(formatter, file);
+			if (dirtyState.isClean()) {
+				// do nothing
+			} else if (!dirtyState.isConverged()) {
+				getLogger().warn("Skipping '" + file + "' because it does not converge.  Run `spotlessDiagnose` to understand why");
+			} else {
+				Files.write(file.toPath(), dirtyState.canonicalBytes(), StandardOpenOption.TRUNCATE_EXISTING);
 				changed.add(file);
 			}
 		}
@@ -276,19 +283,18 @@ public class SpotlessTask extends DefaultTask {
 		List<File> problemFiles = new ArrayList<>();
 		for (File file : outOfDate) {
 			getLogger().debug("Checking format on " + file);
-			byte[] canonical = PaddedCell.canonicalIfDirty(formatter, file);
-			if (canonical != null) {
+			PaddedCell.DirtyState dirtyState = PaddedCell.calculateDirtyState(formatter, file);
+			if (dirtyState.isClean()) {
+				// do nothing
+			} else if (!dirtyState.isConverged()) {
+				getLogger().warn("Skipping '" + file + "' because it does not converge.  Run `spotlessDiagnose` to understand why");
+			} else {
 				problemFiles.add(file);
 			}
 		}
 		if (!problemFiles.isEmpty()) {
 			throw formatViolationsFor(formatter, problemFiles);
 		}
-	}
-
-	// TODO: store paddedcell diagnosis files somewhere
-	private static File diagnoseDir(SpotlessTask task) {
-		return new File(task.getProject().getBuildDir(), "spotless-diagnose-" + task.formatName());
 	}
 
 	/** Returns an exception which indicates problem files nicely. */

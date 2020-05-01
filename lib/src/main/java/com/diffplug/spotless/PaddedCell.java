@@ -28,8 +28,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-import javax.annotation.Nullable;
-
 /**
  * Models the result of applying a {@link Formatter} on a given {@link File}
  * while characterizing various failure modes (slow convergence, cycles, and divergence).
@@ -176,8 +174,12 @@ public final class PaddedCell {
 		// @formatter:on
 	}
 
-	/** Returns the canonical content of this file if it is dirty, or null if it is clean or the formatter is non-idempotent. */
-	public static @Nullable byte[] canonicalIfDirty(Formatter formatter, File file) throws IOException {
+	/**
+	 * Calculates whether the given file is dirty according to a PaddedCell invocation of the given formatter.
+	 * DirtyState includes the clean state of the file, as well as a warning if we were not able to apply the formatter
+	 * due to diverging idempotence.
+	 */
+	public static DirtyState calculateDirtyState(Formatter formatter, File file) throws IOException {
 		Objects.requireNonNull(formatter, "formatter");
 		Objects.requireNonNull(file, "file");
 
@@ -193,21 +195,19 @@ public final class PaddedCell {
 		// if F(input) == input, then the formatter is well-behaving and the input is clean
 		byte[] formattedBytes = formatted.getBytes(formatter.getEncoding());
 		if (Arrays.equals(rawBytes, formattedBytes)) {
-			return null;
+			return isClean;
 		}
 
 		// F(input) != input, so we'll do a padded check
 		String doubleFormattedUnix = formatter.compute(formattedUnix, file);
 		if (doubleFormattedUnix.equals(formattedUnix)) {
 			// most dirty files are idempotent-dirty, so this is a quick-short circuit for that common case
-			return formattedBytes;
+			return new DirtyState(formattedBytes);
 		}
 
 		PaddedCell cell = PaddedCell.check(formatter, file, rawUnix);
 		if (!cell.isResolvable()) {
-			// nothing we can do, but check will warn and dump out the divergence path
-			// TODO: where to put warnings?
-			return null;
+			return formatterDoesntConverge;
 		}
 
 		// get the canonical bytes
@@ -216,9 +216,39 @@ public final class PaddedCell {
 		byte[] canonicalBytes = canonical.getBytes(formatter.getEncoding());
 		if (!Arrays.equals(rawBytes, canonicalBytes)) {
 			// and write them to disk if needed
-			return canonicalBytes;
+			return new DirtyState(canonicalBytes);
 		} else {
-			return null;
+			return isClean;
 		}
 	}
+
+	/**
+	 * The clean/dirty state of a single file.  Intended use:
+	 * - {@link #isClean()} means that the file is is clean, and there's nothing else to say
+	 * - {@link #isConverged()} means that we can't tell what the clean state of the file would be
+	 * - once you've tested the above conditions and you know that it's a dirty file with a converged state,
+	 *   then you can call {@link #canonicalBytes()} to get the canonical form of the given file.
+	 */
+	public static class DirtyState {
+		private final byte[] canonicalBytes;
+
+		private DirtyState(byte[] canonicalBytes) {
+			this.canonicalBytes = canonicalBytes;
+		}
+
+		public boolean isClean() {
+			return this == isClean;
+		}
+
+		public boolean isConverged() {
+			return this != formatterDoesntConverge;
+		}
+
+		public byte[] canonicalBytes() {
+			return Objects.requireNonNull(canonicalBytes, "First make sure that `!isClean()` and that `formatterConverges()`.");
+		}
+	}
+
+	private static final DirtyState formatterDoesntConverge = new DirtyState(null);
+	private static final DirtyState isClean = new DirtyState(null);
 }
