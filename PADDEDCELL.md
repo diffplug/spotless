@@ -31,26 +31,7 @@ The rule we wrote above is obviously a bad idea.  But complex code formatters ca
 
 Formally, a correct formatter `F` must satisfy `F(F(input)) == F(input)` for all values of input.  Any formatter which doesn't meet this rule is misbehaving.
 
-## How does `paddedCell()` work?
-
-Spotless now has a special `paddedCell()` mode.  If you add it to your format as such:
-
-```gradle
-spotless {
-  format 'cpp', {
-    ...
-    paddedCell()
-  }
-}
-```
-
-then it will run in the following way:
-
-- When you call `spotlessApply`, it will automatically check for a ping-pong condition.
-- If there is a ping-pong condition, it will resolve the ambiguity arbitrarily, but consistently
-- It will also warn that `filename such-and-such cycles between 2 steps`.
-
-## How is the ambiguity resolved?
+## How spotless fixes this automatically
 
 This is easiest to show in an example:
 
