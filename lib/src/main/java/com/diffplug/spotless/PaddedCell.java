@@ -20,6 +20,7 @@ import static com.diffplug.spotless.LibPreconditions.requireElementsNonNull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,6 +28,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+
+import org.omg.CORBA.portable.OutputStream;
 
 /**
  * Models the result of applying a {@link Formatter} on a given {@link File}
@@ -227,7 +230,7 @@ public final class PaddedCell {
 	 * - {@link #isClean()} means that the file is is clean, and there's nothing else to say
 	 * - {@link #isConverged()} means that we were able to determine a clean state
 	 * - once you've tested the above conditions and you know that it's a dirty file with a converged state,
-	 *   then you can call {@link #canonicalBytes()} to get the canonical form of the given file.
+	 *   then you can call {@link #writeCanonicalTo()} to get the canonical form of the given file.
 	 */
 	public static class DirtyState {
 		private final byte[] canonicalBytes;
@@ -244,8 +247,19 @@ public final class PaddedCell {
 			return this == didNotConverge;
 		}
 
-		public byte[] canonicalBytes() {
-			return Objects.requireNonNull(canonicalBytes, "First make sure that `!isClean()` and `!didNotConverge()`");
+		private byte[] canonicalBytes() {
+			if (canonicalBytes == null) {
+				throw new IllegalStateException("First make sure that `!isClean()` and `!didNotConverge()`");
+			}
+			return canonicalBytes;
+		}
+
+		public void writeCanonicalTo(File file) throws IOException {
+			Files.write(file.toPath(), canonicalBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+		}
+
+		public void writeCanonicalTo(OutputStream out) throws IOException {
+			out.write(canonicalBytes());
 		}
 	}
 

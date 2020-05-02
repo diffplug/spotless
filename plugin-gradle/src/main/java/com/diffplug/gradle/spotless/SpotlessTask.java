@@ -18,8 +18,6 @@ package com.diffplug.gradle.spotless;
 import java.io.File;
 import java.io.Serializable;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -272,7 +270,7 @@ public class SpotlessTask extends DefaultTask {
 			} else if (dirtyState.didNotConverge()) {
 				getLogger().warn("Skipping '" + file + "' because it does not converge.  Run `spotlessDiagnose` to understand why");
 			} else {
-				Files.write(file.toPath(), dirtyState.canonicalBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+				dirtyState.writeCanonicalTo(file);
 				changed.add(file);
 			}
 		}

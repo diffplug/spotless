@@ -22,7 +22,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
-import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -186,7 +185,7 @@ public final class PaddedCellBulk {
 		if (dirtyState.isClean() || dirtyState.didNotConverge()) {
 			return false;
 		} else {
-			Files.write(file.toPath(), dirtyState.canonicalBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+			dirtyState.writeCanonicalTo(file);
 			return true;
 		}
 	}
