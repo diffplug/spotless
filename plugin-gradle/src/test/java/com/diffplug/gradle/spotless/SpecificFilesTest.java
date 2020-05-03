@@ -103,7 +103,7 @@ public class SpecificFilesTest extends GradleIntegrationTest {
 		GradleRunner runner = gradleRunner()
 				.withArguments("spotlessApply", "-PspotlessFiles=" + patterns);
 		if (isKotlin) {
-			runner.withGradleVersion("4.0");
+			runner.withGradleVersion(requestGradleForJre8and11("4.0"));
 		}
 		runner.build();
 
