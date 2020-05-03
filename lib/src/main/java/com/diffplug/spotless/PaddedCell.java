@@ -19,6 +19,7 @@ import static com.diffplug.spotless.LibPreconditions.requireElementsNonNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
@@ -28,8 +29,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
-
-import org.omg.CORBA.portable.OutputStream;
 
 /**
  * Models the result of applying a {@link Formatter} on a given {@link File}
