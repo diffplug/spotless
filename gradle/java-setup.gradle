@@ -34,6 +34,10 @@ eclipseResourceFilters {
 apply plugin: 'com.github.spotbugs'
 spotbugs {
 	toolVersion = VER_SPOTBUGS
+	sourceSets = [
+		// don't check the test code
+		sourceSets.main
+	]
 	ignoreFailures = false 	// bug free or it doesn't ship!
 	reportsDir = file('build/spotbugs')
 	effort = 'max'			// min|default|max
@@ -45,12 +49,10 @@ tasks.withType(spotBugsTaskType()) {
 	// only run on Java 8 (no benefit to running twice)
 	enabled = org.gradle.api.JavaVersion.current() == org.gradle.api.JavaVersion.VERSION_1_8
 	reports {
-		html {
-			enabled = true
-		}
+		xml.enabled = false
+		html.enabled = true
 	}
 }
-
 dependencies {
 	compileOnly 'net.jcip:jcip-annotations:1.0'
 	compileOnly 'com.github.spotbugs:spotbugs-annotations:3.1.6'

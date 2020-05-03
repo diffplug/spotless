@@ -8,7 +8,7 @@ plugins {
 	// https://github.com/mnlipp/jdrupes-mdoclet/releases
 	id 'org.jdrupes.mdoclet' version '1.0.9' apply false
 	// https://github.com/spotbugs/spotbugs/releases
-	id "com.github.spotbugs" version "4.0.8" apply false
+	id "com.github.spotbugs" version "2.0.0" apply false
 	//https://github.com/diffplug/goomph
 	id "com.diffplug.p2.asmaven" version "3.21.0" apply false
 	// https://github.com/diffplug/spotless-changelog
@@ -47,5 +47,5 @@ eclipseResourceFilters {
 }
 
 static Class<?> spotBugsTaskType() {
-	return com.github.spotbugs.snom.SpotBugsTask
+	return com.github.spotbugs.SpotBugsTask
 }
