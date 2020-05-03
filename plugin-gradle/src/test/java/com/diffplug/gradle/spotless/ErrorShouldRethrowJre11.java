@@ -140,7 +140,6 @@ public class ErrorShouldRethrowJre11 extends GradleIntegrationTest {
 		String expectedToStartWith = StringPrinter.buildStringFromLines(messages).trim();
 		int numNewlines = CharMatcher.is('\n').countIn(expectedToStartWith);
 		List<String> actualLines = Splitter.on('\n').splitToList(LineEnding.toUnix(result.getOutput().trim()));
-		System.out.println("out=" + result.getOutput());
 		String actualStart = String.join("\n", actualLines.subList(0, numNewlines + 1));
 		Assertions.assertThat(actualStart).isEqualTo(expectedToStartWith);
 		Assertions.assertThat(result.tasks(outcome).size() + result.tasks(TaskOutcome.UP_TO_DATE).size() + result.tasks(TaskOutcome.NO_SOURCE).size())

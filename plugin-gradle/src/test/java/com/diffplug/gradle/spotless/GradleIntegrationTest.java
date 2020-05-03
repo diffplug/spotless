@@ -75,8 +75,7 @@ public class GradleIntegrationTest extends ResourceHarness {
 
 	protected final GradleRunner gradleRunner() throws IOException {
 		return GradleRunner.create()
-				//.withGradleVersion(requestGradleForJre8and11("2.14"))
-				.withGradleVersion(requestGradleForJre8and11("5.0"))
+				.withGradleVersion(requestGradleForJre8and11("2.14"))
 				.withProjectDir(rootFolder())
 				.withPluginClasspath();
 	}
