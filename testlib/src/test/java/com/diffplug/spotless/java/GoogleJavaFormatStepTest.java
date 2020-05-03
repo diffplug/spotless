@@ -20,12 +20,27 @@ import org.junit.Test;
 
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.JreVersion;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
 public class GoogleJavaFormatStepTest extends ResourceHarness {
+	@Test
+	public void behavior18() throws Exception {
+		if (JreVersion.thisVm() == JreVersion._8) {
+			// google-java-format requires JRE 11+
+			return;
+		}
+		FormatterStep step = GoogleJavaFormatStep.create("1.8", TestProvisioner.mavenCentral());
+		StepHarness.forStep(step)
+				.testResource("java/googlejavaformat/JavaCodeUnformatted.test", "java/googlejavaformat/JavaCodeFormatted.test")
+				.testResource("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test", "java/googlejavaformat/JavaCodeWithLicenseFormatted.test")
+				.testResource("java/googlejavaformat/JavaCodeWithLicensePackageUnformatted.test", "java/googlejavaformat/JavaCodeWithLicensePackageFormatted.test")
+				.testResource("java/googlejavaformat/JavaCodeWithPackageUnformatted.test", "java/googlejavaformat/JavaCodeWithPackageFormatted.test");
+	}
+
 	@Test
 	public void behavior() throws Exception {
 		FormatterStep step = GoogleJavaFormatStep.create("1.2", TestProvisioner.mavenCentral());
