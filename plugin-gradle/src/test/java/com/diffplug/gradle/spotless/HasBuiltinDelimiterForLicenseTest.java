@@ -49,7 +49,7 @@ public class HasBuiltinDelimiterForLicenseTest extends GradleIntegrationTest {
 				"    }",
 				"}");
 		gradleRunner()
-				.withGradleVersion("4.6")
+				.withGradleVersion(requestGradleForJre8and11("4.6")) // 4.6 is the min
 				.withArguments("spotlessApply")
 				.forwardOutput()
 				.build();

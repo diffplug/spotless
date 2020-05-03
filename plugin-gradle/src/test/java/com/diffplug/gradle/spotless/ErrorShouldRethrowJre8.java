@@ -28,10 +28,11 @@ import org.junit.Test;
 import com.diffplug.common.base.CharMatcher;
 import com.diffplug.common.base.Splitter;
 import com.diffplug.common.base.StringPrinter;
+import com.diffplug.spotless.JreVersion;
 import com.diffplug.spotless.LineEnding;
 
 /** Tests the desired behavior from https://github.com/diffplug/spotless/issues/46. */
-public class ErrorShouldRethrow extends GradleIntegrationTest {
+public class ErrorShouldRethrowJre8 extends GradleIntegrationTest {
 	private void writeBuild(String... toInsert) throws IOException {
 		List<String> lines = new ArrayList<>();
 		lines.add("plugins {");
@@ -119,11 +120,17 @@ public class ErrorShouldRethrow extends GradleIntegrationTest {
 	}
 
 	private void runWithSuccess(String... messages) throws Exception {
+		if (JreVersion.thisVm() != JreVersion._8) {
+			return;
+		}
 		BuildResult result = gradleRunner().withArguments("check").build();
 		assertResultAndMessages(result, TaskOutcome.SUCCESS, messages);
 	}
 
 	private void runWithFailure(String... messages) throws Exception {
+		if (JreVersion.thisVm() != JreVersion._8) {
+			return;
+		}
 		BuildResult result = gradleRunner().withArguments("check").buildAndFail();
 		assertResultAndMessages(result, TaskOutcome.FAILED, messages);
 	}

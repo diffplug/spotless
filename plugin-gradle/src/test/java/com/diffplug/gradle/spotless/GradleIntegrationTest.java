@@ -33,6 +33,7 @@ import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.common.tree.TreeDef;
 import com.diffplug.common.tree.TreeStream;
+import com.diffplug.spotless.JreVersion;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ResourceHarness;
 
@@ -56,11 +57,26 @@ public class GradleIntegrationTest extends ResourceHarness {
 		setFile(".gitattributes").toContent("* text eol=lf");
 	}
 
+	/**
+	 * For Java 11+, Gradle 5 is the minimum.
+	 * So if you ask for less than Gradle 5, you get it on Java 8, but on Java 11 you get promoted to Gradle 5.
+	 * If you ask for more than Gradle 5, you'll definitely get it.
+	 */
+	protected static String requestGradleForJre8and11(String ver) {
+		JreVersion jre = JreVersion.thisVm();
+		// @formatter:off
+		switch (jre) {
+		case _8:  return ver;
+		case _11: return Double.parseDouble(ver) < 5.0 ? "5.0" : ver;
+		default:  throw new IllegalStateException("Spotless build is only supported on Java 8 and Java 11");
+		}
+		// @formatter:on
+	}
+
 	protected final GradleRunner gradleRunner() throws IOException {
 		return GradleRunner.create()
-				// Test against Gradle 2.14.1 in order to maintain backwards compatibility.
-				// https://github.com/diffplug/spotless/issues/161
-				.withGradleVersion("2.14.1")
+				//.withGradleVersion(requestGradleForJre8and11("2.14"))
+				.withGradleVersion(requestGradleForJre8and11("5.0"))
 				.withProjectDir(rootFolder())
 				.withPluginClasspath();
 	}
