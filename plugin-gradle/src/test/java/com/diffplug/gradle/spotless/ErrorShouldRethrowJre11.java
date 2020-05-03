@@ -58,7 +58,7 @@ public class ErrorShouldRethrowJre11 extends GradleIntegrationTest {
 				"    } // format",
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fun.");
-		runWithSuccess(":spotlessMisc");
+		runWithSuccess("> Task :spotlessMisc");
 	}
 
 	@Test
@@ -68,9 +68,10 @@ public class ErrorShouldRethrowJre11 extends GradleIntegrationTest {
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
 		runWithFailure(
-				":spotlessMiscStep 'no swearing' found problem in 'README.md':",
-				"No swearing!",
-				"java.lang.RuntimeException: No swearing!");
+				"> Task :spotlessMisc FAILED\n" +
+						"Step 'no swearing' found problem in 'README.md':\n" +
+						"No swearing!\n" +
+						"java.lang.RuntimeException: No swearing!\n");
 	}
 
 	@Test
@@ -80,7 +81,7 @@ public class ErrorShouldRethrowJre11 extends GradleIntegrationTest {
 				"    enforceCheck false",
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
-		runWithSuccess(":compileJava UP-TO-DATE");
+		runWithSuccess("> Task :compileJava NO-SOURCE");
 	}
 
 	@Test
@@ -90,7 +91,7 @@ public class ErrorShouldRethrowJre11 extends GradleIntegrationTest {
 				"    } // format",
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
-		runWithSuccess(":spotlessMisc",
+		runWithSuccess("> Task :spotlessMisc\n" +
 				"Unable to apply step 'no swearing' to 'README.md'");
 	}
 
@@ -101,7 +102,7 @@ public class ErrorShouldRethrowJre11 extends GradleIntegrationTest {
 				"    } // format",
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
-		runWithSuccess(":spotlessMisc",
+		runWithSuccess("> Task :spotlessMisc",
 				"Unable to apply step 'no swearing' to 'README.md'");
 	}
 
@@ -113,17 +114,17 @@ public class ErrorShouldRethrowJre11 extends GradleIntegrationTest {
 				"    } // format",
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
-		runWithFailure(
-				":spotlessMiscStep 'no swearing' found problem in 'README.md':",
-				"No swearing!",
-				"java.lang.RuntimeException: No swearing!");
+		runWithFailure("> Task :spotlessMisc FAILED\n" +
+				"Step 'no swearing' found problem in 'README.md':\n" +
+				"No swearing!\n" +
+				"java.lang.RuntimeException: No swearing!\n");
 	}
 
 	private void runWithSuccess(String... messages) throws Exception {
 		if (JreVersion.thisVm() != JreVersion._11) {
 			return;
 		}
-		BuildResult result = gradleRunner().withGradleVersion("5.0").withArguments("check").build();
+		BuildResult result = gradleRunner().withArguments("check").build();
 		assertResultAndMessages(result, TaskOutcome.SUCCESS, messages);
 	}
 
@@ -131,17 +132,18 @@ public class ErrorShouldRethrowJre11 extends GradleIntegrationTest {
 		if (JreVersion.thisVm() != JreVersion._11) {
 			return;
 		}
-		BuildResult result = gradleRunner().withGradleVersion("5.0").withArguments("check").buildAndFail();
+		BuildResult result = gradleRunner().withArguments("check").buildAndFail();
 		assertResultAndMessages(result, TaskOutcome.FAILED, messages);
 	}
 
 	private void assertResultAndMessages(BuildResult result, TaskOutcome outcome, String... messages) {
 		String expectedToStartWith = StringPrinter.buildStringFromLines(messages).trim();
 		int numNewlines = CharMatcher.is('\n').countIn(expectedToStartWith);
-		List<String> actualLines = Splitter.on('\n').splitToList(LineEnding.toUnix(result.getOutput()));
+		List<String> actualLines = Splitter.on('\n').splitToList(LineEnding.toUnix(result.getOutput().trim()));
+		System.out.println("out=" + result.getOutput());
 		String actualStart = String.join("\n", actualLines.subList(0, numNewlines + 1));
 		Assertions.assertThat(actualStart).isEqualTo(expectedToStartWith);
-		Assertions.assertThat(result.tasks(outcome).size() + result.tasks(TaskOutcome.UP_TO_DATE).size())
+		Assertions.assertThat(result.tasks(outcome).size() + result.tasks(TaskOutcome.UP_TO_DATE).size() + result.tasks(TaskOutcome.NO_SOURCE).size())
 				.isEqualTo(result.getTasks().size());
 	}
 }
