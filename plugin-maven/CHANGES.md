@@ -7,7 +7,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [1.30.0] - 2020-04-10
 ### Added
 * Support for prettier ([#555](https://github.com/diffplug/spotless/pull/555)).
-* Support for google-java-format 1.8. ([#562](https://github.com/diffplug/spotless/issues/562))
+* Support for google-java-format 1.8 (requires you to run build on Java 11) ([#562](https://github.com/diffplug/spotless/issues/562))
 
 ## [1.29.0] - 2020-04-02
 ### Added
