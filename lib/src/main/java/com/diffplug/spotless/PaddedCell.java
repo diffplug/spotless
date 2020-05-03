@@ -18,8 +18,12 @@ package com.diffplug.spotless;
 import static com.diffplug.spotless.LibPreconditions.requireElementsNonNull;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -171,4 +175,93 @@ public final class PaddedCell {
 		}
 		// @formatter:on
 	}
+
+	/**
+	 * Calculates whether the given file is dirty according to a PaddedCell invocation of the given formatter.
+	 * DirtyState includes the clean state of the file, as well as a warning if we were not able to apply the formatter
+	 * due to diverging idempotence.
+	 */
+	public static DirtyState calculateDirtyState(Formatter formatter, File file) throws IOException {
+		Objects.requireNonNull(formatter, "formatter");
+		Objects.requireNonNull(file, "file");
+
+		byte[] rawBytes = Files.readAllBytes(file.toPath());
+		String raw = new String(rawBytes, formatter.getEncoding());
+		String rawUnix = LineEnding.toUnix(raw);
+
+		// enforce the format
+		String formattedUnix = formatter.compute(rawUnix, file);
+		// convert the line endings if necessary
+		String formatted = formatter.computeLineEndings(formattedUnix, file);
+
+		// if F(input) == input, then the formatter is well-behaving and the input is clean
+		byte[] formattedBytes = formatted.getBytes(formatter.getEncoding());
+		if (Arrays.equals(rawBytes, formattedBytes)) {
+			return isClean;
+		}
+
+		// F(input) != input, so we'll do a padded check
+		String doubleFormattedUnix = formatter.compute(formattedUnix, file);
+		if (doubleFormattedUnix.equals(formattedUnix)) {
+			// most dirty files are idempotent-dirty, so this is a quick-short circuit for that common case
+			return new DirtyState(formattedBytes);
+		}
+
+		PaddedCell cell = PaddedCell.check(formatter, file, rawUnix);
+		if (!cell.isResolvable()) {
+			return didNotConverge;
+		}
+
+		// get the canonical bytes
+		String canonicalUnix = cell.canonical();
+		String canonical = formatter.computeLineEndings(canonicalUnix, file);
+		byte[] canonicalBytes = canonical.getBytes(formatter.getEncoding());
+		if (!Arrays.equals(rawBytes, canonicalBytes)) {
+			// and write them to disk if needed
+			return new DirtyState(canonicalBytes);
+		} else {
+			return isClean;
+		}
+	}
+
+	/**
+	 * The clean/dirty state of a single file.  Intended use:
+	 * - {@link #isClean()} means that the file is is clean, and there's nothing else to say
+	 * - {@link #isConverged()} means that we were able to determine a clean state
+	 * - once you've tested the above conditions and you know that it's a dirty file with a converged state,
+	 *   then you can call {@link #writeCanonicalTo()} to get the canonical form of the given file.
+	 */
+	public static class DirtyState {
+		private final byte[] canonicalBytes;
+
+		private DirtyState(byte[] canonicalBytes) {
+			this.canonicalBytes = canonicalBytes;
+		}
+
+		public boolean isClean() {
+			return this == isClean;
+		}
+
+		public boolean didNotConverge() {
+			return this == didNotConverge;
+		}
+
+		private byte[] canonicalBytes() {
+			if (canonicalBytes == null) {
+				throw new IllegalStateException("First make sure that `!isClean()` and `!didNotConverge()`");
+			}
+			return canonicalBytes;
+		}
+
+		public void writeCanonicalTo(File file) throws IOException {
+			Files.write(file.toPath(), canonicalBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+		}
+
+		public void writeCanonicalTo(OutputStream out) throws IOException {
+			out.write(canonicalBytes());
+		}
+	}
+
+	private static final DirtyState didNotConverge = new DirtyState(null);
+	private static final DirtyState isClean = new DirtyState(null);
 }

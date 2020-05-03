@@ -38,12 +38,13 @@ import groovy.lang.Closure;
 
 public class SpotlessExtension {
 	final Project project;
-	final Task rootCheckTask, rootApplyTask;
+	final Task rootCheckTask, rootApplyTask, rootDiagnoseTask;
 	final RegisterDependenciesTask registerDependenciesTask;
 
 	static final String EXTENSION = "spotless";
 	static final String CHECK = "Check";
 	static final String APPLY = "Apply";
+	static final String DIAGNOSE = "Diagnose";
 
 	private static final String TASK_GROUP = "Verification";
 	private static final String CHECK_DESCRIPTION = "Checks that sourcecode satisfies formatting steps.";
@@ -59,6 +60,8 @@ public class SpotlessExtension {
 		rootApplyTask = project.task(EXTENSION + APPLY);
 		rootApplyTask.setGroup(TASK_GROUP);
 		rootApplyTask.setDescription(APPLY_DESCRIPTION);
+		rootDiagnoseTask = project.task(EXTENSION + DIAGNOSE);
+		rootDiagnoseTask.setGroup(TASK_GROUP);	// no description on purpose
 
 		RegisterDependenciesTask registerDependenciesTask = (RegisterDependenciesTask) project.getRootProject().getTasks().findByName(RegisterDependenciesTask.TASK_NAME);
 		if (registerDependenciesTask == null) {
@@ -293,5 +296,11 @@ public class SpotlessExtension {
 		// the root tasks depend on the control tasks
 		rootCheckTask.dependsOn(checkTask);
 		rootApplyTask.dependsOn(applyTask);
+
+		// create the diagnose task
+		SpotlessDiagnoseTask diagnoseTask = project.getTasks().create(taskName + DIAGNOSE, SpotlessDiagnoseTask.class);
+		diagnoseTask.source = spotlessTask;
+		rootDiagnoseTask.dependsOn(diagnoseTask);
+		diagnoseTask.mustRunAfter(clean);
 	}
 }

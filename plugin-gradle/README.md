@@ -168,8 +168,6 @@ Configuration for Groovy is similar to [Java](#java).  Most java steps, like `li
 
 The groovy formatter's default behavior is to format all `.groovy` and `.java` files found in the Groovy source directories.  If you would like to exclude the `.java` files, set the parameter `excludeJava`, or you can set the `target` parameter as described in the [Custom rules](#custom) section.
 
-Due to cyclic ambiguities of groovy formatter results, e.g. for nested closures, the use of [paddedCell()](../PADDEDCELL.md) and/or [Custom rules](#custom) is recommended to bandaid over this third-party formatter problem.
-
 ```gradle
 apply plugin: 'groovy'
 ...
@@ -182,7 +180,6 @@ spotless {
   groovy {
     licenseHeaderFile 'spotless.license.java'
     excludeJava() // excludes all Java sources within the Groovy source dirs from formatting
-    paddedCell() // Avoid cyclic ambiguities
     // the Groovy Eclipse formatter extends the Java Eclipse formatter,
     // so it formats Java files by default (unless `excludeJava` is used).
     greclipse().configFile('greclipse.properties')

@@ -67,16 +67,16 @@ public class FormatExtension {
 		throw new IllegalStateException("This format is not contained by any SpotlessExtension.");
 	}
 
-	boolean paddedCell = false;
-
 	/** Enables paddedCell mode. @see <a href="https://github.com/diffplug/spotless/blob/master/PADDEDCELL.md">Padded cell</a> */
+	@Deprecated
 	public void paddedCell() {
 		paddedCell(true);
 	}
 
 	/** Enables paddedCell mode. @see <a href="https://github.com/diffplug/spotless/blob/master/PADDEDCELL.md">Padded cell</a> */
+	@Deprecated
 	public void paddedCell(boolean paddedCell) {
-		this.paddedCell = paddedCell;
+		root.project.getLogger().warn("PaddedCell is now always on, and cannot be turned off.");
 	}
 
 	LineEnding lineEndings;
@@ -593,7 +593,6 @@ public class FormatExtension {
 
 	/** Sets up a format task according to the values in this extension. */
 	protected void setupTask(SpotlessTask task) {
-		task.setPaddedCell(paddedCell);
 		task.setEncoding(getEncoding().name());
 		task.setExceptionPolicy(exceptionPolicy);
 		if (targetExclude == null) {
