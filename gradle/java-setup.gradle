@@ -40,10 +40,10 @@ spotbugs {
 	reportLevel = 'medium'	// low|medium|high (low = sensitive to even minor mistakes)
 	omitVisitors = []		// bugs that we want to ignore
 }
-tasks.named('spotbugsTest') {
-	enabled = false
-}
-spotbugsMain {
+// HTML instead of XML
+tasks.withType(spotBugsTaskType()) {
+	// only run on Java 8 (no benefit to running twice)
+	enabled = org.gradle.api.JavaVersion.current() == org.gradle.api.JavaVersion.VERSION_1_8
 	reports {
 		html {
 			enabled = true

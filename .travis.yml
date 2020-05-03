@@ -1,6 +1,7 @@
 language: java
 jdk:
   - openjdk8
+  - openjdk11
 env:
   - NODE_VERSION="6.10.2"
 before_install:
