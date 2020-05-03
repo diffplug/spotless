@@ -3,12 +3,13 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
-### Changed
-* PaddedCell is now always enabled.  It is strictly better than non-padded cell, and there is no performance penalty.  [See here](https://github.com/diffplug/spotless/pull/560#issuecomment-621752798) for detailed explanation. ([#561](https://github.com/diffplug/spotless/pull/561))
-
-## [3.28.1] - 2020-04-02
 ### Added
 * Support for google-java-format 1.8 (requires you to run build on Java 11) ([#562](https://github.com/diffplug/spotless/issues/562))
+### Changed
+* PaddedCell is now always enabled.  It is strictly better than non-padded cell, and there is no performance penalty.  [See here](https://github.com/diffplug/spotless/pull/560#issuecomment-621752798) for detailed explanation. ([#561](https://github.com/diffplug/spotless/pull/561))
+* Updated a bunch of dependencies, most notably jgit `5.5.0.201909110433-r` -> `5.7.0.202003110725-r`. ([#564](https://github.com/diffplug/spotless/pull/564))
+
+## [3.28.1] - 2020-04-02
 ### Fixed
 * Eclipse-WTP formatter (web tools platform, not java) handles some character encodings incorrectly on OS with non-unicode default file encoding [#545](https://github.com/diffplug/spotless/issues/545). Fixed for Eclipse-WTP formatter Eclipse version 4.13.0 (default version).
 
