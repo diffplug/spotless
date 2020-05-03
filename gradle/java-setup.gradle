@@ -47,7 +47,7 @@ spotbugs {
 // HTML instead of XML
 tasks.withType(spotBugsTaskType()) {
 	// only run on Java 8 (no benefit to running twice)
-	enabled = System.getProperty("java.version").startsWith('1.8.')
+	enabled = org.gradle.api.JavaVersion.current() == org.gradle.api.JavaVersion.VERSION_1_8
 	reports {
 		xml.enabled = false
 		html.enabled = true

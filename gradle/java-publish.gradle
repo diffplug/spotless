@@ -15,10 +15,7 @@ task sourcesJar(type: Jar) {
 // Thus, no javadoc warnings.
 javadoc {
 	options.addStringOption('Xdoclint:none', '-quiet')
-	// disable javadoc on 11
-	if (org.gradle.api.JavaVersion.current().compareTo(org.gradle.api.JavaVersion.VERSION_1_9) >= 0) {
-		enabled = false
-	}
+	enabled = org.gradle.api.JavaVersion.current() == org.gradle.api.JavaVersion.VERSION_1_8
 }
 
 // use markdown in javadoc
