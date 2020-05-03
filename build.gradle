@@ -1,16 +1,16 @@
 plugins {
 	// https://github.com/diffplug/goomph/blob/master/CHANGES.md
-	id 'com.diffplug.eclipse.resourcefilters' version '3.21.0'
+	id 'com.diffplug.eclipse.resourcefilters' version '3.22.0'
 	// https://plugins.gradle.org/plugin/com.gradle.plugin-publish
 	id 'com.gradle.plugin-publish' version '0.11.0' apply false
 	// https://github.com/bintray/gradle-bintray-plugin/releases
-	id 'com.jfrog.bintray' version '1.8.4' apply false
+	id 'com.jfrog.bintray' version '1.8.5' apply false
 	// https://github.com/mnlipp/jdrupes-mdoclet/releases
 	id 'org.jdrupes.mdoclet' version '1.0.9' apply false
 	// https://github.com/spotbugs/spotbugs/releases
-	id "com.github.spotbugs" version "2.0.0" apply false
+	id "com.github.spotbugs" version "4.0.8" apply false
 	//https://github.com/diffplug/goomph
-	id "com.diffplug.p2.asmaven" version "3.21.0" apply false
+	id "com.diffplug.p2.asmaven" version "3.22.0" apply false
 	// https://github.com/diffplug/spotless-changelog
 	id "com.diffplug.spotless-changelog" version "1.1.0" apply false
 }
@@ -47,5 +47,5 @@ eclipseResourceFilters {
 }
 
 static Class<?> spotBugsTaskType() {
-	return com.github.spotbugs.SpotBugsTask
+	return com.github.spotbugs.snom.SpotBugsTask
 }
