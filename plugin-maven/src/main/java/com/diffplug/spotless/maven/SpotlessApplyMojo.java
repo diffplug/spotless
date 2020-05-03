@@ -24,6 +24,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.Formatter;
+import com.diffplug.spotless.PaddedCell;
 
 /**
  * Performs formatting of all source files according to configured formatters.
@@ -42,7 +43,10 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 
 		for (File file : files) {
 			try {
-				formatter.applyTo(file);
+				PaddedCell.DirtyState dirtyState = PaddedCell.calculateDirtyState(formatter, file);
+				if (!dirtyState.isClean() && !dirtyState.didNotConverge()) {
+					dirtyState.writeCanonicalTo(file);
+				}
 			} catch (IOException e) {
 				throw new MojoExecutionException("Unable to format file " + file, e);
 			}
