@@ -675,13 +675,25 @@ spotless {
 
 ## Can I apply Spotless to specific files?
 
-You can target specific files by setting the `spotlessFiles` project property to a comma-separated list of file patterns:
+### By absolute paths using `-PspotlessApplyOnlyTo` (fast!)
+
+You can target specific files by setting the `spotlessApplyOnlyTo` project property to a comma-separated list of file paths (absolute paths recommended).
+
+```
+cmd> gradlew spotlessApply "-PspotlessApplyOnlyTo=C:\Path\To\File.java,README.md"
+```
+
+The paths are resolved using [`Project.file`](https://docs.gradle.org/current/javadoc/org/gradle/api/Project.html#file-java.lang.Object-), so for multi-project builds it is important to use absolute paths.
+
+### By regex using `-PspotlessFiles` (slow and deprecated)
+
+You can also target specific files by passing a comma-delimited list of regexes:
 
 ```
 cmd> gradlew spotlessApply -PspotlessFiles=my/file/pattern.java,more/generic/.*-pattern.java
 ```
 
-The patterns are matched using `String#matches(String)` against the absolute file path.
+The patterns are matched using `String#matches(String)` against the absolute file path.  It is tricky to get this right, and executes far slower than `-PspotlessApplyOnlyTo`.
 
 ## Example configurations (from real-world projects)
 

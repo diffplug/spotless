@@ -17,11 +17,16 @@ package com.diffplug.gradle.spotless;
 
 import static java.util.Objects.requireNonNull;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
@@ -31,7 +36,9 @@ import org.gradle.api.execution.TaskExecutionGraph;
 import org.gradle.api.plugins.BasePlugin;
 
 import com.diffplug.common.base.Errors;
+import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.PaddedCell;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import groovy.lang.Closure;
@@ -51,6 +58,7 @@ public class SpotlessExtension {
 	private static final String APPLY_DESCRIPTION = "Applies code formatting steps to sourcecode in-place.";
 
 	private static final String FILES_PROPERTY = "spotlessFiles";
+	private static final String APPLY_ONLY_TO_PROPERTY = "spotlessApplyOnlyTo";
 
 	public SpotlessExtension(Project project) {
 		this.project = requireNonNull(project);
@@ -302,5 +310,32 @@ public class SpotlessExtension {
 		diagnoseTask.source = spotlessTask;
 		rootDiagnoseTask.dependsOn(diagnoseTask);
 		diagnoseTask.mustRunAfter(clean);
+
+		if (project.hasProperty(APPLY_ONLY_TO_PROPERTY)) {
+			// disable the normal tasks, to disable their up-to-date checking
+			spotlessTask.setEnabled(false);
+			checkTask.setEnabled(false);
+			applyTask.setEnabled(false);
+			// the rootApplyTask is no longer just a marker task, now it does a bit of work itself
+			rootApplyTask.doLast(APPLY_ONLY_TO_PROPERTY + " " + name, unused -> {
+				String[] paths = ((String) project.property(APPLY_ONLY_TO_PROPERTY)).split(",");
+				Collection<File> filtered = Arrays.stream(paths)
+						.map(project::file)
+						.filter(spotlessTask.getTarget()::contains)
+						.collect(Collectors.toList());
+				if (!filtered.isEmpty()) {
+					try (Formatter formatter = spotlessTask.buildFormatter()) {
+						for (File file : filtered) {
+							PaddedCell.DirtyState dirty = PaddedCell.calculateDirtyState(formatter, file);
+							if (!dirty.isClean() && !dirty.didNotConverge()) {
+								dirty.writeCanonicalTo(file);
+							}
+						}
+					} catch (IOException e) {
+						throw Errors.asRuntime(e);
+					}
+				}
+			});
+		}
 	}
 }

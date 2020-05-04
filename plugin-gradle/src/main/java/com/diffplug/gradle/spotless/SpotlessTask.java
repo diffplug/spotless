@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Internal;
@@ -104,15 +105,19 @@ public class SpotlessTask extends DefaultTask {
 		return exceptionPolicy;
 	}
 
-	protected Iterable<File> target;
+	protected FileCollection target;
 
 	@Internal
-	public Iterable<File> getTarget() {
+	public FileCollection getTarget() {
 		return target;
 	}
 
 	public void setTarget(Iterable<File> target) {
-		this.target = Objects.requireNonNull(target);
+		if (target instanceof FileCollection) {
+			this.target = (FileCollection) target;
+		} else {
+			this.target = getProject().files(target);
+		}
 	}
 
 	/** Internal use only. */
