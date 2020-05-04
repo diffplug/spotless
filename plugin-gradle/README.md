@@ -84,6 +84,7 @@ Spotless can check and apply formatting to any plain-text file, using simple rul
 * [Groovy Eclipse](#groovy-eclipse)'s groovy code formatter
 * [FreshMark](https://github.com/diffplug/freshmark) (markdown with variables)
 * [ktlint](https://github.com/pinterest/ktlint)
+* [ktfmt](https://github.com/facebookincubator/ktfmt)
 * [scalafmt](https://github.com/olafurpg/scalafmt)
 * [DBeaver sql format](https://dbeaver.jkiss.org/)
 * [Prettier: An opinionated code formatter](https://prettier.io)
@@ -274,6 +275,23 @@ spotless {
 
     // doesn't support licenseHeader, because scripts don't have a package statement
     // to clearly mark where the license should go
+  }
+}
+```
+
+<a name="ktfmt"></a>
+
+## Applying [ktfmt](https://github.com/facebookincubator/ktfmt) to Kotlin files
+
+```gradle
+spotless {
+  kotlin {
+    // optionally takes a version
+    ktfmt()
+
+    // also supports license headers
+    licenseHeader '/* Licensed under Apache-2.0 */'	// License header
+    licenseHeaderFile 'path-to-license-file'		// License header file
   }
 }
 ```

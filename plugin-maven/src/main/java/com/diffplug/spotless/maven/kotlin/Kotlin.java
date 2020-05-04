@@ -39,4 +39,8 @@ public class Kotlin extends FormatterFactory {
 	public void addKtlint(Ktlint ktlint) {
 		addStepFactory(ktlint);
 	}
+
+	public void addKtfmt(Ktfmt ktfmt) {
+		addStepFactory(ktfmt);
+	}
 }

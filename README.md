@@ -45,6 +45,7 @@ lib('java.ImportOrderStep')                      +'{{yes}}       | {{yes}}      
 lib('java.RemoveUnusedImportsStep')              +'{{yes}}       | {{yes}}      | {{no}}  |',
 extra('java.EclipseFormatterStep')               +'{{yes}}       | {{yes}}      | {{no}}  |',
 lib('kotlin.KtLintStep')                         +'{{yes}}       | {{yes}}      | {{no}}  |',
+lib('kotlin.KtfmtStep')                          +'{{yes}}       | {{yes}}      | {{no}}  |',
 lib('markdown.FreshMarkStep')                    +'{{yes}}       | {{no}}       | {{no}}  |',
 lib('npm.PrettierFormatterStep')                 +'{{yes}}       | {{yes}}       | {{no}}  |',
 lib('npm.TsFmtFormatterStep')                    +'{{yes}}       | {{yes}}       | {{no}}  |',
@@ -72,6 +73,7 @@ extra('wtp.EclipseWtpFormatterStep')             +'{{yes}}       | {{yes}}      
 | [`java.RemoveUnusedImportsStep`](lib/src/main/java/com/diffplug/spotless/java/RemoveUnusedImportsStep.java) | :+1:       | :+1:      | :white_large_square:  |
 | [`java.EclipseFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/java/EclipseFormatterStep.java) | :+1:       | :+1:      | :white_large_square:  |
 | [`kotlin.KtLintStep`](lib/src/main/java/com/diffplug/spotless/kotlin/KtLintStep.java) | :+1:       | :+1:      | :white_large_square:  |
+| [`kotlin.KtfmtStep`](lib/src/main/java/com/diffplug/spotless/kotlin/KtfmtStep.java) | :+1:       | :+1:      | :white_large_square:  |
 | [`markdown.FreshMarkStep`](lib/src/main/java/com/diffplug/spotless/markdown/FreshMarkStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
 | [`npm.PrettierFormatterStep`](lib/src/main/java/com/diffplug/spotless/npm/PrettierFormatterStep.java) | :+1:       | :+1:       | :white_large_square:  |
 | [`npm.TsFmtFormatterStep`](lib/src/main/java/com/diffplug/spotless/npm/TsFmtFormatterStep.java) | :+1:       | :+1:       | :white_large_square:  |

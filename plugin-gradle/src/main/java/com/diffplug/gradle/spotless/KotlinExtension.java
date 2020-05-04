@@ -28,6 +28,7 @@ import org.gradle.api.tasks.SourceSet;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.kotlin.KtLintStep;
+import com.diffplug.spotless.kotlin.KtfmtStep;
 
 public class KotlinExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "kotlin";
@@ -68,7 +69,8 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 		}
 
 		public void userData(Map<String, String> userData) {
-			// Copy the map to a sorted map because up-to-date checking is based on binary-equals of the serialized
+			// Copy the map to a sorted map because up-to-date checking is based on binary-equals of the
+			// serialized
 			// representation.
 			this.userData = userData;
 			replaceStep(createStep());
@@ -79,13 +81,43 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 		}
 	}
 
-	/** If the user hasn't specified the files yet, we'll assume he/she means all of the kotlin files. */
+	/** Uses the [ktfmt](https://github.com/facebookincubator/ktfmt) jar to format source code. */
+	public KtfmtConfig ktfmt() {
+		return ktfmt(KtfmtStep.defaultVersion());
+	}
+
+	/**
+	 * Uses the given version of [ktfmt](https://github.com/facebookincubator/ktfmt) to format source
+	 * code.
+	 */
+	public KtfmtConfig ktfmt(String version) {
+		Objects.requireNonNull(version);
+		return new KtfmtConfig(version);
+	}
+
+	public class KtfmtConfig {
+		final String version;
+
+		KtfmtConfig(String version) {
+			this.version = Objects.requireNonNull(version);
+			addStep(createStep());
+		}
+
+		private FormatterStep createStep() {
+			return KtfmtStep.create(version, GradleProvisioner.fromProject(getProject()));
+		}
+	}
+
+	/**
+	 * If the user hasn't specified the files yet, we'll assume he/she means all of the kotlin files.
+	 */
 	@Override
 	protected void setupTask(SpotlessTask task) {
 		if (target == null) {
 			JavaPluginConvention javaPlugin = getProject().getConvention().findPlugin(JavaPluginConvention.class);
 			if (javaPlugin == null) {
-				throw new GradleException("You must either specify 'target' manually or apply a kotlin plugin.");
+				throw new GradleException(
+						"You must either specify 'target' manually or apply a kotlin plugin.");
 			}
 			FileCollection union = getProject().files();
 			for (SourceSet sourceSet : javaPlugin.getSourceSets()) {
