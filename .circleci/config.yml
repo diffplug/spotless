@@ -121,7 +121,7 @@ jobs:
           name: gradlew :plugin-maven:check
           command: ./gradlew :plugin-maven:check --build-cache
       - store_test_results:
-        paths:
+          paths:
             - plugin-maven/build/spotbugs
             - plugin-maven/build/test-results-test
       - store_artifacts:
