@@ -87,11 +87,11 @@ jobs:
           name: gradlew npmTest
           command: ./gradlew npmTest --build-cache
       - store_test_results:
-          path: testlib/build/test-results/test
+          path: testlib/build/test-results/npm
       - store_test_results:
-          path: plugin-maven/build/test-results/test
+          path: plugin-maven/build/test-results/npm
       - store_test_results:
-          path: plugin-gradle/build/test-results/test
+          path: plugin-gradle/build/test-results/npm
   changelog_print:
     << : *env_gradle
     steps:

@@ -189,21 +189,20 @@ jar.doLast {
 	Files.copy(jarIn.toPath(), jarOut.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING)
 }
 
-// usually test only depends on testClasses, which doesn't run the maven build that we need
-test.dependsOn(jar)
-
 test {
-	testLogging { exceptionFormat = 'full' }
-	// pass location of the local maven repository and plugin version to junit tests
-	systemProperty "localMavenRepositoryDir", LOCAL_MAVEN_REPO_DIR
-	systemProperty "spotlessMavenPluginVersion", project.version
 	useJUnit {
 		excludeCategories 'com.diffplug.spotless.category.NpmTest'
 	}
 }
-
 task npmTest(type: Test) {
 	useJUnit {
 		includeCategories 'com.diffplug.spotless.category.NpmTest'
 	}
 }
+tasks.withType(Test) {
+	systemProperty "localMavenRepositoryDir", LOCAL_MAVEN_REPO_DIR
+	systemProperty "spotlessMavenPluginVersion", project.version
+}
+// usually test only depends on testClasses, which doesn't run the maven build that we need
+test.dependsOn(jar)
+npmTest.dependsOn(jar)
