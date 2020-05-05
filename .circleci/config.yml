@@ -16,7 +16,7 @@ jobs:
             - gradle-deps-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
             - gradle-deps-
       - run:
-          name: Assemble and compile tests
+          name: gradlew spotlessCheck assemble testClasses
           command: ./gradlew spotlessCheck assemble testClasses --build-cache
       - save_cache:
           paths:
@@ -42,10 +42,10 @@ jobs:
             - gradle-deps-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
             - gradle-deps-
       - run:
-          name: Assemble and compile tests
-          command: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew check
+          name: gradlew check
+          command: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew check --build-cache
       - store_test_results:
-        paths:
+          paths:
             - testlib/build/spotbugs
             - lib/build/spotbugs
             - lib-extra/build/spotbugs
@@ -78,26 +78,52 @@ jobs:
               - gradle-deps-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
               - gradle-deps-
           - run:
-              name: Assemble and compile tests
-              command: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew check
+              name: gradlew check
+              command: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew check --build-cache
           - store_test_results:
+            paths:
+              - testlib/build/spotbugs
+              - lib/build/spotbugs
+              - lib-extra/build/spotbugs
+              - plugin-gradle/build/spotbugs
+              - testlib/build/test-results/test
+              - lib-extra/build/test-results/test
+              - plugin-gradle/build/test-results-test
+        - store_artifacts:
+            paths:
+              - testlib/build/spotbugs
+              - lib/build/spotbugs
+              - lib-extra/build/spotbugs
+              - plugin-gradle/build/spotbugs
+              - testlib/build/test-results/test
+              - lib-extra/build/test-results/test
+              - plugin-gradle/build/test-results-test
+  test_maven_8:
+    parallelism: 2
+    environment:
+      _JAVA_OPTIONS: "-Xmx3g"
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2"
+    docker:
+      - image: circleci/openjdk:8
+    steps:
+      - checkout
+      - restore_cache:
+          key: gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+      - restore_cache:
+          keys:
+            - gradle-deps-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
+            - gradle-deps-
+      - run:
+          name: gradlew :plugin-maven:check
+          command: ./gradlew :plugin-maven:check --build-cache
+      - store_test_results:
+        paths:
+            - plugin-maven/build/spotbugs
+            - plugin-maven/build/test-results-test
+      - store_artifacts:
           paths:
-              - testlib/build/spotbugs
-              - lib/build/spotbugs
-              - lib-extra/build/spotbugs
-              - plugin-gradle/build/spotbugs
-              - testlib/build/test-results/test
-              - lib-extra/build/test-results/test
-              - plugin-gradle/build/test-results-test
-          - store_artifacts:
-              paths:
-              - testlib/build/spotbugs
-              - lib/build/spotbugs
-              - lib-extra/build/spotbugs
-              - plugin-gradle/build/spotbugs
-              - testlib/build/test-results/test
-              - lib-extra/build/test-results/test
-              - plugin-gradle/build/test-results-test
+            - plugin-maven/build/spotbugs
+            - plugin-maven/build/test-results-test
 workflows:
   version: 2
   assemble_and_test:
