@@ -154,7 +154,7 @@ workflows:
             - assemble_testClasses
   deploy:
     jobs:
-      - changelog_print:
+      - changelog_print
       - release_all:
           type: approval
           requires:
