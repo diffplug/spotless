@@ -115,7 +115,7 @@ jobs:
       - *set_git_origin_to_https
       - run:
           name: gradlew :changelogPush
-          command: ./gradlew :changelogPush -Prelease=true --build-cache
+          command: ./gradlew :changelogPush -Prelease=true --stacktrace
       - run:
           name: gradlew :plugin-gradle:changelogPush
           command: ./gradlew :plugin-gradle:changelogPush -Prelease=true --build-cache -Pgradle.publish.key=${gradle_key} -Pgradle.publish.secret=${gradle_secret}
@@ -147,7 +147,8 @@ workflows:
   version: 2
   assemble_and_test:
     jobs:
-      - assemble_testClasses
+      - assemble_testClasses:
+          type: approval
       - test_justmaven_8:
           requires:
             - assemble_testClasses
