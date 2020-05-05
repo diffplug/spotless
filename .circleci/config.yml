@@ -146,7 +146,7 @@ workflows:
   version: 2
   assemble_and_test:
     jobs:
-      - assemble_testClasses:
+      - assemble_testClasses
       - test_justmaven_8:
           requires:
             - assemble_testClasses
