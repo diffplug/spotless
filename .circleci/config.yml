@@ -1,6 +1,5 @@
 anchors:
   env_gradle: &env_gradle
-    parallelism: 2
     environment:
       _JAVA_OPTIONS: "-Xmx3g"
       GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2"
@@ -18,7 +17,7 @@ anchors:
   set_git_origin_to_https: &set_git_origin_to_https
     run:
       name: set git origin to https
-      command: git remote set-url origin https://github.com/diffplug/spotless
+      command: git remote set-url --push origin https://github.com/diffplug/spotless
 
   test_nomaven: &test_nomaven
     steps:
@@ -118,10 +117,10 @@ jobs:
           command: ./gradlew :changelogPush -Prelease=true --stacktrace
       - run:
           name: gradlew :plugin-gradle:changelogPush
-          command: ./gradlew :plugin-gradle:changelogPush -Prelease=true --build-cache -Pgradle.publish.key=${gradle_key} -Pgradle.publish.secret=${gradle_secret}
+          command: ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${gradle_key} -Pgradle.publish.secret=${gradle_secret} --stacktrace
       - run:
           name: gradlew :plugin-maven:changelogPush
-          command: ./gradlew :plugin-maven:changelogPush -Prelease=true --build-cache
+          command: ./gradlew :plugin-maven:changelogPush -Prelease=true --stacktrace
   do_release_plugin_gradle:
     << : *env_gradle
     steps:
@@ -131,7 +130,7 @@ jobs:
       - *set_git_origin_to_https
       - run:
           name: gradlew :plugin-gradle:changelogPush
-          command: ./gradlew :plugin-gradle:changelogPush -Prelease=true --build-cache -Pgradle.publish.key=${gradle_key} -Pgradle.publish.secret=${gradle_secret}
+          command: ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${gradle_key} -Pgradle.publish.secret=${gradle_secret} --stacktrace
   do_release_plugin_maven:
     << : *env_gradle
     steps:
@@ -141,14 +140,13 @@ jobs:
       - *set_git_origin_to_https
       - run:
           name: gradlew :plugin-maven:changelogPush
-          command: ./gradlew :plugin-maven:changelogPush -Prelease=true --build-cache
+          command: ./gradlew :plugin-maven:changelogPush -Prelease=true --stacktrace
 
 workflows:
   version: 2
   assemble_and_test:
     jobs:
       - assemble_testClasses:
-          type: approval
       - test_justmaven_8:
           requires:
             - assemble_testClasses
