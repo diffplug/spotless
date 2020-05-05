@@ -153,9 +153,6 @@ workflows:
   deploy:
     jobs:
       - changelog_print:
-          filters:
-            branches:
-              only: master
       - release_all:
           type: approval
           requires:
