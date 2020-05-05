@@ -1,11 +1,15 @@
-version: 2
-jobs:
-  # gradlew spotlessCheck assemble testClasses
-  assemble_testClasses: 
+anchors:
+  env_gradle: &env_gradle
     parallelism: 2
     environment:
       _JAVA_OPTIONS: "-Xmx3g"
       GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2"
+
+version: 2
+jobs:
+  # gradlew spotlessCheck assemble testClasses
+  assemble_testClasses: 
+    <<: *env_gradle
     docker:
       - image: circleci/openjdk:8
     steps:
@@ -29,10 +33,7 @@ jobs:
           key: gradle-deps-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
   # JRE8: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew check
   test_nomaven_8:
-    parallelism: 2
-    environment:
-      _JAVA_OPTIONS: "-Xmx3g"
-      GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2"
+    <<: *env_gradle
     docker:
       - image: circleci/openjdk:8
     steps:
@@ -61,10 +62,7 @@ jobs:
   # TODO
   # JRE8: gradlew :plugin-maven:check
   test_maven_8:
-    parallelism: 2
-    environment:
-      _JAVA_OPTIONS: "-Xmx3g"
-      GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2"
+    << : *env_gradle
     docker:
       - image: circleci/openjdk:8
     steps:
