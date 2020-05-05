@@ -69,8 +69,7 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 		}
 
 		public void userData(Map<String, String> userData) {
-			// Copy the map to a sorted map because up-to-date checking is based on binary-equals of the
-			// serialized
+			// Copy the map to a sorted map because up-to-date checking is based on binary-equals of the serialized
 			// representation.
 			this.userData = userData;
 			replaceStep(createStep());
@@ -108,16 +107,13 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 		}
 	}
 
-	/**
-	 * If the user hasn't specified the files yet, we'll assume he/she means all of the kotlin files.
-	 */
+	/** If the user hasn't specified the files yet, we'll assume he/she means all of the kotlin files. */
 	@Override
 	protected void setupTask(SpotlessTask task) {
 		if (target == null) {
 			JavaPluginConvention javaPlugin = getProject().getConvention().findPlugin(JavaPluginConvention.class);
 			if (javaPlugin == null) {
-				throw new GradleException(
-						"You must either specify 'target' manually or apply a kotlin plugin.");
+				throw new GradleException("You must either specify 'target' manually or apply a kotlin plugin.");
 			}
 			FileCollection union = getProject().files();
 			for (SourceSet sourceSet : javaPlugin.getSourceSets()) {
