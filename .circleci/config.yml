@@ -90,6 +90,15 @@ jobs:
           path: plugin-gradle/build/test-results/test
       - store_test_results:
           path: plugin-gradle/build/test-results/test
+  changelogPrint:
+    << : *env_gradle
+    steps:
+      - checkout
+      - *restore_cache_wrapper
+      - *restore_cache_deps
+      - run:
+          name: gradlew changelogPrint
+          command: ./gradlew changelogPrint
 workflows:
   version: 2
   assemble_and_test:
@@ -107,3 +116,7 @@ workflows:
       - test_npm_8:
           requires:
             - assemble_testClasses
+  deploy:
+    jobs:
+      - changelogPrint
+
