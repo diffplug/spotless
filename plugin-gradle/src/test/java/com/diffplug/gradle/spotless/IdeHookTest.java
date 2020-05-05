@@ -80,7 +80,7 @@ public class IdeHookTest extends GradleIntegrationTest {
 	public void dirty() throws IOException {
 		runWith("spotlessApply", "--quiet", "-PspotlessIdeHook=" + dirty.getAbsolutePath(), "--stacktrace");
 		Assertions.assertThat(output).isEqualTo("abc");
-		Assertions.assertThat(error).isEmpty();
+		Assertions.assertThat(error).startsWith("IS DIRTY");
 	}
 
 	@Test
@@ -102,5 +102,12 @@ public class IdeHookTest extends GradleIntegrationTest {
 		runWith("spotlessApply", "--quiet", "-PspotlessIdeHook=" + outofbounds.getAbsolutePath());
 		Assertions.assertThat(output).isEmpty();
 		Assertions.assertThat(error).isEmpty();
+	}
+
+	@Test
+	public void notAbsolute() throws IOException {
+		runWith("spotlessApply", "--quiet", "-PspotlessIdeHook=build.gradle");
+		Assertions.assertThat(output).isEmpty();
+		Assertions.assertThat(error).contains("Argument passed to spotlessIdeHook must be an absolute path");
 	}
 }

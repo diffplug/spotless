@@ -317,6 +317,10 @@ public class SpotlessExtension {
 			rootApplyTask.doLast(unused -> {
 				String path = (String) project.property(IDE_HOOK_PROPERTY);
 				File file = new File(path);
+				if (!file.isAbsolute()) {
+					System.err.println("Argument passed to " + IDE_HOOK_PROPERTY + " must be an absolute path");
+					return;
+				}
 				if (spotlessTask.getTarget().contains(file)) {
 					try (Formatter formatter = spotlessTask.buildFormatter()) {
 						PaddedCell.DirtyState dirty = PaddedCell.calculateDirtyState(formatter, file);
@@ -326,6 +330,7 @@ public class SpotlessExtension {
 							System.err.println("DID NOT CONVERGE");
 							System.err.println("Run 'spotlessDiagnose' for details https://github.com/diffplug/spotless/blob/master/PADDEDCELL.md");
 						} else {
+							System.err.println("IS DIRTY");
 							dirty.writeCanonicalTo(System.out);
 						}
 					} catch (IOException e) {
