@@ -11,8 +11,8 @@ anchors:
   restore_cache_deps: &restore_cache_deps
     restore_cache:
       keys:
-        - gradle-deps-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
-        - gradle-deps-
+        - gradle-deps2-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
+        - gradle-deps2-
   test_nomaven: &test_nomaven
     steps:
       - checkout
@@ -42,6 +42,9 @@ jobs:
       - run:
           name: gradlew spotlessCheck assemble testClasses
           command: ./gradlew spotlessCheck assemble testClasses --build-cache
+      - run:
+          name: prepare to cache
+          command: rm -rf ~/project/plugin-maven/build/localMavenRepository/com/diffplug/spotless/
       - save_cache:
           paths:
             - ~/.gradle/wrapper
@@ -49,7 +52,9 @@ jobs:
       - save_cache:
           paths:
             - ~/.gradle/caches
-          key: gradle-deps-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
+            - ~/.m2
+            - ~/project/plugin-maven/build/localMavenRepository
+          key: gradle-deps2-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
   # JRE8: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew check
   test_nomaven_8:
     docker:
