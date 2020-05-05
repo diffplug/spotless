@@ -15,6 +15,11 @@ anchors:
       keys:
         - gradle-deps2-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
         - gradle-deps2-
+  set_git_origin_to_https: &set_git_origin_to_https
+    run:
+      name: set git origin to https
+      command: git remote set-url origin https://github.com/diffplug/spotless
+
   test_nomaven: &test_nomaven
     steps:
       - checkout
@@ -107,6 +112,7 @@ jobs:
       - checkout
       - *restore_cache_wrapper
       - *restore_cache_deps
+      - *set_git_origin_to_https
       - run:
           name: gradlew :changelogPush
           command: ./gradlew :changelogPush -Prelease=true --build-cache
@@ -122,6 +128,7 @@ jobs:
       - checkout
       - *restore_cache_wrapper
       - *restore_cache_deps
+      - *set_git_origin_to_https
       - run:
           name: gradlew :plugin-gradle:changelogPush
           command: ./gradlew :plugin-gradle:changelogPush -Prelease=true --build-cache -Pgradle.publish.key=${gradle_key} -Pgradle.publish.secret=${gradle_secret}
@@ -131,6 +138,7 @@ jobs:
       - checkout
       - *restore_cache_wrapper
       - *restore_cache_deps
+      - *set_git_origin_to_https
       - run:
           name: gradlew :plugin-maven:changelogPush
           command: ./gradlew :plugin-maven:changelogPush -Prelease=true --build-cache
