@@ -4,6 +4,8 @@ anchors:
     environment:
       _JAVA_OPTIONS: "-Xmx3g"
       GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2"
+    docker:
+      - image: circleci/openjdk:8
 
   restore_cache_wrapper: &restore_cache_wrapper
     restore_cache:
@@ -33,8 +35,6 @@ jobs:
   # gradlew spotlessCheck assemble testClasses
   assemble_testClasses: 
     <<: *env_gradle
-    docker:
-      - image: circleci/openjdk:8
     steps:
       - checkout
       - *restore_cache_wrapper
@@ -57,19 +57,15 @@ jobs:
           key: gradle-deps2-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
   # JRE8: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew check
   test_nomaven_8:
-    docker:
-      - image: circleci/openjdk:8
     <<: *env_gradle
     <<: *test_nomaven
   test_nomaven_11:
+    <<: *env_gradle
     docker:
       - image: circleci/openjdk:11
-    <<: *env_gradle
     <<: *test_nomaven
   test_justmaven_8:
     << : *env_gradle
-    docker:
-      - image: circleci/openjdk:8
     steps:
       - checkout
       - *restore_cache_wrapper
