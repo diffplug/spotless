@@ -1,0 +1,36 @@
+version: 2
+jobs:
+  assemble_testClasses: 
+    parallelism: 2
+    environment:
+      _JAVA_OPTIONS: "-Xmx3g"
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2"
+    docker:
+      - image: circleci/openjdk:8
+    steps:
+      - checkout
+      - restore_cache:
+          key: gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+      - restore_cache:
+          key: gradle-deps-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
+      - run:
+          name: Assemble and compile tests
+          command: ./gradlew assemble testClasses --build-cache
+      - save_cache:
+          paths:
+            - ~/.gradle/wrapper
+          key: gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+      - save_cache:
+          paths:
+            - ~/.gradle/caches
+          key: gradle-deps-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
+      - store_test_results:
+          path: */build/test-results/test
+      - store_artifacts:
+          path: */build/test-results/test
+          when: always
+workflows:
+  version: 2
+  assemble_and_test:
+    jobs:
+    - assemble_testClasses
