@@ -12,9 +12,9 @@ output = [
   ].join('\n');
 -->
 [![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
-[![Javadoc](https://img.shields.io/badge/javadoc-1.30.0-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/1.30.0/index.html)
+[![Javadoc](https://img.shields.io/badge/javadoc-1.31.0-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/1.31.0/index.html)
 
-[![Changelog](https://img.shields.io/badge/changelog-1.30.0-brightgreen.svg)](CHANGES.md)
+[![Changelog](https://img.shields.io/badge/changelog-1.31.0-brightgreen.svg)](CHANGES.md)
 [![Travis CI](https://travis-ci.org/diffplug/spotless.svg?branch=master)](https://travis-ci.org/diffplug/spotless)
 [![Live chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
 [![License Apache](https://img.shields.io/badge/license-apache-brightgreen.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
@@ -153,6 +153,8 @@ By default, all files matching `src/main/scala/**/*.scala`, `src/test/scala/**/*
 
 By default, all files matching `src/main/kotlin/**/*.kt` and `src/test/kotlin/**/*.kt` Ant style pattern will be formatted.  Each element under `<kotlin>` is a step, and they will be applied in the order specified.  Every step is optional.
 
+### Applying [ktlint](https://github.com/pinterest/ktlint) to Kotlin files
+
 ```xml
 <configuration>
   <kotlin>
@@ -167,6 +169,26 @@ By default, all files matching `src/main/kotlin/**/*.kt` and `src/test/kotlin/**
        <!-- Optional, available versions: https://github.com/pinterest/ktlint/releases -->
        <version>0.14.0</version>
      </ktlint>
+  </kotlin>
+</configuration>
+```
+
+### Applying [ktfmt](https://github.com/facebookincubator/ktfmt) to Kotlin files
+
+```xml
+<configuration>
+  <kotlin>
+     <licenseHeader>
+       <!-- Specify either content or file, but not both -->
+       <content>/* Licensed under Apache-2.0 */</content>
+       <file>${basedir}/license-header</file>
+     </licenseHeader>
+     <endWithNewline/>
+     <trimTrailingWhitespace/>
+     <ktfmt>
+       <!-- Optional, available versions: https://github.com/facebookincubator/ktfmt/releases -->
+       <version>0.11</version>
+     </ktfmt>
   </kotlin>
 </configuration>
 ```

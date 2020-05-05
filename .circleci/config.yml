@@ -1,0 +1,188 @@
+anchors:
+  env_gradle: &env_gradle
+    environment:
+      _JAVA_OPTIONS: "-Xmx3g"
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2"
+    docker:
+      - image: cimg/openjdk:8.0
+
+  restore_cache_wrapper: &restore_cache_wrapper
+    restore_cache:
+      key: gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+  restore_cache_deps: &restore_cache_deps
+    restore_cache:
+      keys:
+        - gradle-deps2-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
+        - gradle-deps2-
+  set_git_origin_to_https: &set_git_origin_to_https
+    run:
+      name: set git origin to https
+      command: git remote set-url --push origin https://github.com/diffplug/spotless
+
+  test_nomaven: &test_nomaven
+    steps:
+      - checkout
+      - *restore_cache_wrapper
+      - *restore_cache_deps
+      - run:
+          name: gradlew check
+          command: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew check --build-cache
+      - store_test_results:
+          path: testlib/build/test-results/test
+      - store_test_results:
+          path: lib-extra/build/test-results/test
+      - store_test_results:
+          path: plugin-gradle/build/test-results/test
+
+version: 2
+jobs:
+  # gradlew spotlessCheck assemble testClasses
+  assemble_testClasses: 
+    <<: *env_gradle
+    steps:
+      - checkout
+      - *restore_cache_wrapper
+      - *restore_cache_deps
+      - run:
+          name: gradlew spotlessCheck assemble testClasses
+          command: ./gradlew spotlessCheck assemble testClasses --build-cache
+      - run:
+          name: prepare to cache
+          command: rm -rf ~/project/plugin-maven/build/localMavenRepository/com/diffplug/spotless/
+      - save_cache:
+          paths:
+            - ~/.gradle/wrapper
+          key: gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+      - save_cache:
+          paths:
+            - ~/.gradle/caches
+            - ~/.m2
+            - ~/project/plugin-maven/build/localMavenRepository
+          key: gradle-deps2-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
+  # JRE8: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew check
+  test_nomaven_8:
+    <<: *env_gradle
+    <<: *test_nomaven
+  test_nomaven_11:
+    <<: *env_gradle
+    docker:
+      - image: cimg/openjdk:11.0
+    <<: *test_nomaven
+  test_justmaven_8:
+    << : *env_gradle
+    steps:
+      - checkout
+      - *restore_cache_wrapper
+      - *restore_cache_deps
+      - run:
+          name: gradlew :plugin-maven:check
+          command: ./gradlew :plugin-maven:check --build-cache
+      - store_test_results:
+          path: plugin-maven/build/test-results/test
+  test_npm_8:
+    << : *env_gradle
+    docker:
+      - image: cimg/openjdk:8.0-node
+    steps:
+      - checkout
+      - *restore_cache_wrapper
+      - *restore_cache_deps
+      - run:
+          name: gradlew npmTest
+          command: ./gradlew npmTest --build-cache
+      - store_test_results:
+          path: testlib/build/test-results/npm
+      - store_test_results:
+          path: plugin-maven/build/test-results/npm
+      - store_test_results:
+          path: plugin-gradle/build/test-results/npm
+  changelog_print:
+    << : *env_gradle
+    steps:
+      - checkout
+      - *restore_cache_wrapper
+      - *restore_cache_deps
+      - run:
+          name: gradlew changelogPrint
+          command: ./gradlew changelogPrint
+  do_release_all:
+    << : *env_gradle
+    steps:
+      - checkout
+      - *restore_cache_wrapper
+      - *restore_cache_deps
+      - *set_git_origin_to_https
+      - run:
+          name: gradlew :changelogPush
+          command: ./gradlew :changelogPush -Prelease=true --stacktrace
+      - run:
+          name: gradlew :plugin-gradle:changelogPush
+          command: ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${gradle_key} -Pgradle.publish.secret=${gradle_secret} --stacktrace
+      - run:
+          name: gradlew :plugin-maven:changelogPush
+          command: ./gradlew :plugin-maven:changelogPush -Prelease=true --stacktrace
+  do_release_plugin_gradle:
+    << : *env_gradle
+    steps:
+      - checkout
+      - *restore_cache_wrapper
+      - *restore_cache_deps
+      - *set_git_origin_to_https
+      - run:
+          name: gradlew :plugin-gradle:changelogPush
+          command: ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${gradle_key} -Pgradle.publish.secret=${gradle_secret} --stacktrace
+  do_release_plugin_maven:
+    << : *env_gradle
+    steps:
+      - checkout
+      - *restore_cache_wrapper
+      - *restore_cache_deps
+      - *set_git_origin_to_https
+      - run:
+          name: gradlew :plugin-maven:changelogPush
+          command: ./gradlew :plugin-maven:changelogPush -Prelease=true --stacktrace
+
+workflows:
+  version: 2
+  assemble_and_test:
+    jobs:
+      - assemble_testClasses
+      - test_justmaven_8:
+          requires:
+            - assemble_testClasses
+      - test_nomaven_8:
+          requires:
+            - assemble_testClasses
+      - test_nomaven_11:
+          requires:
+            - assemble_testClasses
+      - test_npm_8:
+          requires:
+            - assemble_testClasses
+  deploy:
+    jobs:
+      - changelog_print:
+          filters:
+            branches:
+              only: master
+      - release_all:
+          type: approval
+          requires:
+            - changelog_print
+      - do_release_all:
+          requires:
+            - release_all
+      - release_plugin_gradle:
+          type: approval
+          requires:
+            - changelog_print
+      - do_release_plugin_gradle:
+          requires:
+            - release_plugin_gradle
+      - release_plugin_maven:
+          type: approval
+          requires:
+            - changelog_print
+      - do_release_plugin_maven:
+          requires:
+            - release_plugin_maven
