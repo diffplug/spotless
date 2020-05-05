@@ -5,7 +5,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * [**VS Code Extension**](https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle) thanks to [@badsyntax](https://github.com/badsyntax)
-* Support for google-java-format 1.8 (requires you to run build on Java 11) ([#562](https://github.com/diffplug/spotless/issues/562))
+* Support for google-java-format 1.8 (requires build to run on Java 11+) ([#562](https://github.com/diffplug/spotless/issues/562))
+* Support for ktfmt 0.13 (requires build to run on Java 11+) ([#569](https://github.com/diffplug/spotless/pull/569))
 ### Changed
 * PaddedCell is now always enabled.  It is strictly better than non-padded cell, and there is no performance penalty.  [See here](https://github.com/diffplug/spotless/pull/560#issuecomment-621752798) for detailed explanation. ([#561](https://github.com/diffplug/spotless/pull/561))
 * Updated a bunch of dependencies, most notably jgit `5.5.0.201909110433-r` -> `5.7.0.202003110725-r`. ([#564](https://github.com/diffplug/spotless/pull/564))

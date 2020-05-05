@@ -153,6 +153,8 @@ By default, all files matching `src/main/scala/**/*.scala`, `src/test/scala/**/*
 
 By default, all files matching `src/main/kotlin/**/*.kt` and `src/test/kotlin/**/*.kt` Ant style pattern will be formatted.  Each element under `<kotlin>` is a step, and they will be applied in the order specified.  Every step is optional.
 
+### Applying [ktlint](https://github.com/pinterest/ktlint) to Kotlin files
+
 ```xml
 <configuration>
   <kotlin>
@@ -167,6 +169,26 @@ By default, all files matching `src/main/kotlin/**/*.kt` and `src/test/kotlin/**
        <!-- Optional, available versions: https://github.com/pinterest/ktlint/releases -->
        <version>0.14.0</version>
      </ktlint>
+  </kotlin>
+</configuration>
+```
+
+### Applying [ktfmt](https://github.com/facebookincubator/ktfmt) to Kotlin files
+
+```xml
+<configuration>
+  <kotlin>
+     <licenseHeader>
+       <!-- Specify either content or file, but not both -->
+       <content>/* Licensed under Apache-2.0 */</content>
+       <file>${basedir}/license-header</file>
+     </licenseHeader>
+     <endWithNewline/>
+     <trimTrailingWhitespace/>
+     <ktfmt>
+       <!-- Optional, available versions: https://github.com/facebookincubator/ktfmt/releases -->
+       <version>0.11</version>
+     </ktfmt>
   </kotlin>
 </configuration>
 ```
