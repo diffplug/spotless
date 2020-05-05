@@ -47,60 +47,18 @@ jobs:
           name: gradlew check
           command: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew check --build-cache
       - store_test_results:
-          paths:
-            - testlib/build/spotbugs
-            - lib/build/spotbugs
-            - lib-extra/build/spotbugs
-            - plugin-gradle/build/spotbugs
-            - testlib/build/test-results/test
-            - lib-extra/build/test-results/test
-            - plugin-gradle/build/test-results-test
-      - store_artifacts:
-          paths:
-            - testlib/build/spotbugs
-            - lib/build/spotbugs
-            - lib-extra/build/spotbugs
-            - plugin-gradle/build/spotbugs
-            - testlib/build/test-results/test
-            - lib-extra/build/test-results/test
-            - plugin-gradle/build/test-results-test
+          path: plugin-gradle/build/test-results/test
+#      - store_artifacts:
+#          paths:
+#            - testlib/build/spotbugs
+#            - lib/build/spotbugs
+#            - lib-extra/build/spotbugs
+#            - plugin-gradle/build/spotbugs
+#            - testlib/build/test-results/test
+#            - lib-extra/build/test-results/test
+#            - plugin-gradle/build/test-results-test
   # JRE11: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew check
-  test_nomaven_11:
-    parallelism: 2
-    environment:
-        _JAVA_OPTIONS: "-Xmx3g"
-        GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2"
-    docker:
-        - image: circleci/openjdk:11
-    steps:
-      - checkout
-      - restore_cache:
-          key: gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
-      - restore_cache:
-          keys:
-            - gradle-deps-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
-            - gradle-deps-
-      - run:
-          name: gradlew check
-          command: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew check --build-cache
-      - store_test_results:
-          paths:
-            - testlib/build/spotbugs
-            - lib/build/spotbugs
-            - lib-extra/build/spotbugs
-            - plugin-gradle/build/spotbugs
-            - testlib/build/test-results/test
-            - lib-extra/build/test-results/test
-            - plugin-gradle/build/test-results-test
-      - store_artifacts:
-          paths:
-            - testlib/build/spotbugs
-            - lib/build/spotbugs
-            - lib-extra/build/spotbugs
-            - plugin-gradle/build/spotbugs
-            - testlib/build/test-results/test
-            - lib-extra/build/test-results/test
-            - plugin-gradle/build/test-results-test
+  # TODO
   # JRE8: gradlew :plugin-maven:check
   test_maven_8:
     parallelism: 2
@@ -121,13 +79,13 @@ jobs:
           name: gradlew :plugin-maven:check
           command: ./gradlew :plugin-maven:check --build-cache
       - store_test_results:
-          paths:
-            - plugin-maven/build/spotbugs
-            - plugin-maven/build/test-results-test
+          path: plugin-maven/build/test-results/test
+      - store_test_results:
+          path: plugin-maven/build/spotbugs
       - store_artifacts:
-          paths:
-            - plugin-maven/build/spotbugs
-            - plugin-maven/build/test-results-test
+          path: plugin-maven/build/test-results/test
+      - store_artifacts:
+          path: plugin-maven/build/spotbugs
 workflows:
   version: 2
   assemble_and_test:
