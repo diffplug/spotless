@@ -90,7 +90,7 @@ jobs:
           path: plugin-gradle/build/test-results/test
       - store_test_results:
           path: plugin-gradle/build/test-results/test
-  changelogPrint:
+  changelog_print:
     << : *env_gradle
     steps:
       - checkout
@@ -99,6 +99,40 @@ jobs:
       - run:
           name: gradlew changelogPrint
           command: ./gradlew changelogPrint
+  release_all:
+    << : *env_gradle
+    steps:
+      - checkout
+      - *restore_cache_wrapper
+      - *restore_cache_deps
+      - run:
+          name: gradlew :changelogPush
+          command: ./gradlew :changelogPush --build-cache
+      - run:
+          name: gradlew :plugin-gradle:changelogPush
+          command: ./gradlew :plugin-gradle:changelogPush --build-cache
+      - run:
+          name: gradlew :plugin-maven:changelogPush
+          command: ./gradlew :plugin-maven:changelogPush --build-cache
+  release_plugin_gradle:
+    << : *env_gradle
+    steps:
+      - checkout
+      - *restore_cache_wrapper
+      - *restore_cache_deps
+      - run:
+          name: gradlew :plugin-gradle:changelogPush
+          command: ./gradlew :plugin-gradle:changelogPush --build-cache
+  release_plugin_maven:
+    << : *env_gradle
+    steps:
+      - checkout
+      - *restore_cache_wrapper
+      - *restore_cache_deps
+      - run:
+          name: gradlew :plugin-maven:changelogPush
+          command: ./gradlew :plugin-maven:changelogPush --build-cache
+
 workflows:
   version: 2
   assemble_and_test:
@@ -118,5 +152,19 @@ workflows:
             - assemble_testClasses
   deploy:
     jobs:
-      - changelogPrint
-
+      - changelog_print:
+          filters:
+            branches:
+              only: master
+      - release_all:
+          type: approval
+          requires:
+            - changelog_print
+      - release_plugin_gradle:
+          type: approval
+          requires:
+            - changelog_print
+      - release_plugin_maven:
+          type: approval
+          requires:
+            - changelog_print
