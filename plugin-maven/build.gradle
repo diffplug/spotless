@@ -197,4 +197,13 @@ test {
 	// pass location of the local maven repository and plugin version to junit tests
 	systemProperty "localMavenRepositoryDir", LOCAL_MAVEN_REPO_DIR
 	systemProperty "spotlessMavenPluginVersion", project.version
+	useJUnit {
+		excludeCategories 'com.diffplug.spotless.category.NpmTest'
+	}
+}
+
+task npmTest(type: Test) {
+	useJUnit {
+		includeCategories 'com.diffplug.spotless.category.NpmTest'
+	}
 }
