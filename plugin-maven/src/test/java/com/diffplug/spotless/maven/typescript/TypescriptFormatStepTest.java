@@ -20,10 +20,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+import com.diffplug.spotless.category.NpmTest;
 import com.diffplug.spotless.maven.MavenIntegrationTest;
 import com.diffplug.spotless.maven.MavenRunner;
 
+@Category(NpmTest.class)
 public class TypescriptFormatStepTest extends MavenIntegrationTest {
 	private void run(String kind) throws IOException, InterruptedException {
 		String path = "src/main/typescript/test.ts";
