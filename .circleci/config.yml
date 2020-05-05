@@ -76,8 +76,8 @@ workflows:
     jobs:
       - assemble_testClasses
       - test_justmaven_8:
-        requires:
-          - assemble_testClasses
+          requires:
+            - assemble_testClasses
       - test_nomaven_8:
           requires:
             - assemble_testClasses
