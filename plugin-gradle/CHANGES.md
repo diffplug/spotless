@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [3.29.0] - 2020-05-05
 ### Added
 * 🎉🎉🎉 [**VS Code Extension**](https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle) thanks to [@badsyntax](https://github.com/badsyntax) 🎉🎉🎉
 * Support for google-java-format 1.8 (requires build to run on Java 11+) ([#562](https://github.com/diffplug/spotless/issues/562))
