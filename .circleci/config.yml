@@ -87,7 +87,7 @@ jobs:
       - store_test_results:
           path: testlib/build/test-results/test
       - store_test_results:
-          path: plugin-gradle/build/test-results/test
+          path: plugin-maven/build/test-results/test
       - store_test_results:
           path: plugin-gradle/build/test-results/test
   changelog_print:
