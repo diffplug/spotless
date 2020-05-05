@@ -12,10 +12,12 @@ jobs:
       - restore_cache:
           key: gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
       - restore_cache:
-          key: gradle-deps-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
+          keys:
+            - gradle-deps-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
+            - gradle-deps-
       - run:
           name: Assemble and compile tests
-          command: ./gradlew assemble testClasses --build-cache
+          command: ./gradlew spotlessCheck assemble testClasses --build-cache
       - save_cache:
           paths:
             - ~/.gradle/wrapper
