@@ -33,7 +33,6 @@ import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
 public class SpotlessCheck extends DefaultTask {
 	SpotlessTask source;
-
 	private File spotlessOutDirectory;
 
 	@InputDirectory
@@ -48,7 +47,9 @@ public class SpotlessCheck extends DefaultTask {
 	@TaskAction
 	public void performAction() throws Exception {
 		ConfigurableFileTree files = getProject().fileTree(spotlessOutDirectory);
-		if (!files.isEmpty()) {
+		if (files.isEmpty()) {
+			getState().setDidWork(source.getDidWork());
+		} else {
 			List<File> problemFiles = new ArrayList<>();
 			files.visit(new FileVisitor() {
 				@Override

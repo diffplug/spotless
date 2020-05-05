@@ -28,6 +28,7 @@ import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.TaskAction;
 
 public class SpotlessApply extends DefaultTask {
+	SpotlessTask source;
 	private File spotlessOutDirectory;
 
 	@InputDirectory
@@ -43,7 +44,7 @@ public class SpotlessApply extends DefaultTask {
 	public void performAction() {
 		ConfigurableFileTree files = getProject().fileTree(spotlessOutDirectory);
 		if (files.isEmpty()) {
-			getState().setDidWork(false);
+			getState().setDidWork(source.getDidWork());
 		} else {
 			files.visit(new FileVisitor() {
 				@Override

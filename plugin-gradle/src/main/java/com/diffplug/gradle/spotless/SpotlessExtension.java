@@ -268,6 +268,7 @@ public class SpotlessExtension {
 
 		SpotlessApply applyTask = project.getTasks().create(taskName + APPLY, SpotlessApply.class);
 		applyTask.setSpotlessOutDirectory(spotlessTask.getOutputDirectory());
+		applyTask.source = spotlessTask;
 		applyTask.dependsOn(spotlessTask);
 
 		// set the filePatterns property
