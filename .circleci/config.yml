@@ -26,11 +26,6 @@ jobs:
           paths:
             - ~/.gradle/caches
           key: gradle-deps-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
-      - store_test_results:
-          path: */build/test-results/test
-      - store_artifacts:
-          path: */build/test-results/test
-          when: always
 workflows:
   version: 2
   assemble_and_test:
