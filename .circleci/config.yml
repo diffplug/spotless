@@ -109,13 +109,13 @@ jobs:
       - *restore_cache_deps
       - run:
           name: gradlew :changelogPush
-          command: ./gradlew :changelogPush --build-cache
+          command: ./gradlew :changelogPush -Prelease=true --build-cache
       - run:
           name: gradlew :plugin-gradle:changelogPush
-          command: ./gradlew :plugin-gradle:changelogPush --build-cache
+          command: ./gradlew :plugin-gradle:changelogPush -Prelease=true --build-cache -Pgradle.publish.key=${gradle_key} -Pgradle.publish.secret=${gradle_secret}
       - run:
           name: gradlew :plugin-maven:changelogPush
-          command: ./gradlew :plugin-maven:changelogPush --build-cache
+          command: ./gradlew :plugin-maven:changelogPush -Prelease=true --build-cache
   do_release_plugin_gradle:
     << : *env_gradle
     steps:
@@ -124,7 +124,7 @@ jobs:
       - *restore_cache_deps
       - run:
           name: gradlew :plugin-gradle:changelogPush
-          command: ./gradlew :plugin-gradle:changelogPush --build-cache
+          command: ./gradlew :plugin-gradle:changelogPush -Prelease=true --build-cache -Pgradle.publish.key=${gradle_key} -Pgradle.publish.secret=${gradle_secret}
   do_release_plugin_maven:
     << : *env_gradle
     steps:
@@ -133,7 +133,7 @@ jobs:
       - *restore_cache_deps
       - run:
           name: gradlew :plugin-maven:changelogPush
-          command: ./gradlew :plugin-maven:changelogPush --build-cache
+          command: ./gradlew :plugin-maven:changelogPush -Prelease=true --build-cache
 
 workflows:
   version: 2
@@ -155,6 +155,9 @@ workflows:
   deploy:
     jobs:
       - changelog_print
+          filters:
+            branches:
+              only: master
       - release_all:
           type: approval
           requires:
