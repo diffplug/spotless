@@ -5,7 +5,7 @@ anchors:
       _JAVA_OPTIONS: "-Xmx3g"
       GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2"
     docker:
-      - image: circleci/openjdk:8.0
+      - image: cimg/openjdk:8.0
 
   restore_cache_wrapper: &restore_cache_wrapper
     restore_cache:
@@ -62,7 +62,7 @@ jobs:
   test_nomaven_11:
     <<: *env_gradle
     docker:
-      - image: circleci/openjdk:11.0
+      - image: cimg/openjdk:11.0
     <<: *test_nomaven
   test_justmaven_8:
     << : *env_gradle
@@ -78,7 +78,7 @@ jobs:
   test_npm_8:
     << : *env_gradle
     docker:
-      - image: circleci/openjdk:8.0-node
+      - image: cimg/openjdk:8.0-node
     steps:
       - checkout
       - *restore_cache_wrapper
