@@ -101,7 +101,7 @@ jobs:
       - run:
           name: gradlew changelogPrint
           command: ./gradlew changelogPrint
-  release_all:
+  do_release_all:
     << : *env_gradle
     steps:
       - checkout
@@ -116,7 +116,7 @@ jobs:
       - run:
           name: gradlew :plugin-maven:changelogPush
           command: ./gradlew :plugin-maven:changelogPush --build-cache
-  release_plugin_gradle:
+  do_release_plugin_gradle:
     << : *env_gradle
     steps:
       - checkout
@@ -125,7 +125,7 @@ jobs:
       - run:
           name: gradlew :plugin-gradle:changelogPush
           command: ./gradlew :plugin-gradle:changelogPush --build-cache
-  release_plugin_maven:
+  do_release_plugin_maven:
     << : *env_gradle
     steps:
       - checkout
@@ -159,11 +159,20 @@ workflows:
           type: approval
           requires:
             - changelog_print
+      - do_release_all:
+          requires:
+            - release_all
       - release_plugin_gradle:
           type: approval
           requires:
             - changelog_print
+      - do_release_plugin_gradle:
+          requires:
+            - release_plugin_gradle
       - release_plugin_maven:
           type: approval
           requires:
             - changelog_print
+      - do_release_plugin_maven:
+          requires:
+            - release_plugin_maven
