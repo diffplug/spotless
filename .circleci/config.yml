@@ -13,6 +13,20 @@ anchors:
       keys:
         - gradle-deps-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
         - gradle-deps-
+  test_nomaven: &test_nomaven
+    steps:
+      - checkout
+      - *restore_cache_wrapper
+      - *restore_cache_deps
+      - run:
+          name: gradlew check
+          command: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew check --build-cache
+      - store_test_results:
+          path: testlib/build/test-results/test
+      - store_test_results:
+          path: lib-extra/build/test-results/test
+      - store_test_results:
+          path: plugin-gradle/build/test-results/test
 
 version: 2
 jobs:
@@ -38,19 +52,15 @@ jobs:
           key: gradle-deps-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
   # JRE8: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew check
   test_nomaven_8:
-    <<: *env_gradle
     docker:
       - image: circleci/openjdk:8
-    steps:
-      - checkout
-      - *restore_cache_wrapper
-      - *restore_cache_deps
-      - run:
-          name: gradlew check
-          command: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew check --build-cache
-      - store_test_results:
-          path: plugin-gradle/build/test-results/test
-  # JRE8: gradlew :plugin-maven:check
+    <<: *env_gradle
+    <<: *test_nomaven
+  test_nomaven_11:
+    docker:
+      - image: circleci/openjdk:11
+    <<: *env_gradle
+    <<: *test_nomaven
   test_justmaven_8:
     << : *env_gradle
     docker:
@@ -64,12 +74,6 @@ jobs:
           command: ./gradlew :plugin-maven:check --build-cache
       - store_test_results:
           path: plugin-maven/build/test-results/test
-      - store_test_results:
-          path: plugin-maven/build/spotbugs
-      - store_artifacts:
-          path: plugin-maven/build/test-results/test
-      - store_artifacts:
-          path: plugin-maven/build/spotbugs
 workflows:
   version: 2
   assemble_and_test:
@@ -79,5 +83,8 @@ workflows:
           requires:
             - assemble_testClasses
       - test_nomaven_8:
+          requires:
+            - assemble_testClasses
+      - test_nomaven_11:
           requires:
             - assemble_testClasses
