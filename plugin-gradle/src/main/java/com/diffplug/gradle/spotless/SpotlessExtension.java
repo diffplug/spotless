@@ -33,6 +33,7 @@ import org.gradle.api.execution.TaskExecutionGraph;
 import org.gradle.api.plugins.BasePlugin;
 
 import com.diffplug.common.base.Errors;
+import com.diffplug.common.io.ByteStreams;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.PaddedCell;
@@ -323,7 +324,8 @@ public class SpotlessExtension {
 				}
 				if (spotlessTask.getTarget().contains(file)) {
 					try (Formatter formatter = spotlessTask.buildFormatter()) {
-						PaddedCell.DirtyState dirty = PaddedCell.calculateDirtyState(formatter, file);
+						byte[] bytes = ByteStreams.toByteArray(System.in);
+						PaddedCell.DirtyState dirty = PaddedCell.calculateDirtyState(formatter, file, bytes);
 						if (dirty.isClean()) {
 							System.err.println("IS CLEAN");
 						} else if (dirty.didNotConverge()) {

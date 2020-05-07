@@ -186,6 +186,10 @@ public final class PaddedCell {
 		Objects.requireNonNull(file, "file");
 
 		byte[] rawBytes = Files.readAllBytes(file.toPath());
+		return calculateDirtyState(formatter, file, rawBytes);
+	}
+
+	public static DirtyState calculateDirtyState(Formatter formatter, File file, byte[] rawBytes) throws IOException {
 		String raw = new String(rawBytes, formatter.getEncoding());
 		String rawUnix = LineEnding.toUnix(raw);
 
