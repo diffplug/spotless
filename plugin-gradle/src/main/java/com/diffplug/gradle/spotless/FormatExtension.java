@@ -620,8 +620,6 @@ public class FormatExtension {
 	 * let you do that.
 	 *
 	 * The returned task will have no dependencies on any other task.
-	 * You need to call {@link SpotlessTask#setApply()} and/or {@link SpotlessTask#setCheck()}
-	 * on the return value, otherwise you will get a runtime error when the task tries to run.
 	 *
 	 * NOTE: does not respect the rarely-used [`spotlessFiles` property](https://github.com/diffplug/spotless/blob/b7f8c551a97dcb92cc4b0ee665448da5013b30a3/plugin-gradle/README.md#can-i-apply-spotless-to-specific-files).
 	 */
