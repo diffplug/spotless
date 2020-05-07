@@ -58,6 +58,8 @@ class IdeHook {
 						dirty.writeCanonicalTo(file);
 					}
 				}
+				System.err.close();
+				System.out.close();
 			} catch (IOException e) {
 				e.printStackTrace(System.err);
 				throw Errors.asRuntime(e);
