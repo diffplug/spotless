@@ -84,35 +84,35 @@ public class IdeHookTest extends GradleIntegrationTest {
 
 	@Test
 	public void dirty() throws IOException {
-		runWith("spotlessApply", "--quiet", "-PspotlessIdeHook=" + dirty.getAbsolutePath(), "--stacktrace");
+		runWith("spotlessApply", "--quiet", "-PspotlessIdeHook=" + dirty.getAbsolutePath(), "-PspotlessIdeHookUseStdOut");
 		Assertions.assertThat(output).isEqualTo("abc");
 		Assertions.assertThat(error).startsWith("IS DIRTY");
 	}
 
 	@Test
 	public void clean() throws IOException {
-		runWith("spotlessApply", "--quiet", "-PspotlessIdeHook=" + clean.getAbsolutePath());
+		runWith("spotlessApply", "--quiet", "-PspotlessIdeHook=" + clean.getAbsolutePath(), "-PspotlessIdeHookUseStdOut");
 		Assertions.assertThat(output).isEmpty();
 		Assertions.assertThat(error).startsWith("IS CLEAN");
 	}
 
 	@Test
 	public void diverge() throws IOException {
-		runWith("spotlessApply", "--quiet", "-PspotlessIdeHook=" + diverge.getAbsolutePath());
+		runWith("spotlessApply", "--quiet", "-PspotlessIdeHook=" + diverge.getAbsolutePath(), "-PspotlessIdeHookUseStdOut");
 		Assertions.assertThat(output).isEmpty();
 		Assertions.assertThat(error).startsWith("DID NOT CONVERGE");
 	}
 
 	@Test
 	public void outofbounds() throws IOException {
-		runWith("spotlessApply", "--quiet", "-PspotlessIdeHook=" + outofbounds.getAbsolutePath());
+		runWith("spotlessApply", "--quiet", "-PspotlessIdeHook=" + outofbounds.getAbsolutePath(), "-PspotlessIdeHookUseStdOut");
 		Assertions.assertThat(output).isEmpty();
 		Assertions.assertThat(error).isEmpty();
 	}
 
 	@Test
 	public void notAbsolute() throws IOException {
-		runWith("spotlessApply", "--quiet", "-PspotlessIdeHook=build.gradle");
+		runWith("spotlessApply", "--quiet", "-PspotlessIdeHook=build.gradle", "-PspotlessIdeHookUseStdOut");
 		Assertions.assertThat(output).isEmpty();
 		Assertions.assertThat(error).contains("Argument passed to spotlessIdeHook must be an absolute path");
 	}

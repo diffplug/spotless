@@ -17,6 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.io.ByteStreams;
@@ -25,6 +26,8 @@ import com.diffplug.spotless.PaddedCell;
 
 class IdeHook {
 	final static String PROPERTY = "spotlessIdeHook";
+	final static String USE_STD_IN = "spotlessIdeHookUseStdIn";
+	final static String USE_STD_OUT = "spotlessIdeHookUseStdOut";
 
 	static void performHook(SpotlessTask spotlessTask) {
 		String path = (String) spotlessTask.getProject().property(PROPERTY);
@@ -35,7 +38,12 @@ class IdeHook {
 		}
 		if (spotlessTask.getTarget().contains(file)) {
 			try (Formatter formatter = spotlessTask.buildFormatter()) {
-				byte[] bytes = ByteStreams.toByteArray(System.in);
+				byte[] bytes;
+				if (spotlessTask.getProject().hasProperty(USE_STD_IN)) {
+					bytes = ByteStreams.toByteArray(System.in);
+				} else {
+					bytes = Files.readAllBytes(file.toPath());
+				}
 				PaddedCell.DirtyState dirty = PaddedCell.calculateDirtyState(formatter, file, bytes);
 				if (dirty.isClean()) {
 					System.err.println("IS CLEAN");
@@ -44,7 +52,11 @@ class IdeHook {
 					System.err.println("Run 'spotlessDiagnose' for details https://github.com/diffplug/spotless/blob/master/PADDEDCELL.md");
 				} else {
 					System.err.println("IS DIRTY");
-					dirty.writeCanonicalTo(System.out);
+					if (spotlessTask.getProject().hasProperty(USE_STD_OUT)) {
+						dirty.writeCanonicalTo(System.out);
+					} else {
+						dirty.writeCanonicalTo(file);
+					}
 				}
 			} catch (IOException e) {
 				e.printStackTrace(System.err);
