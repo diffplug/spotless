@@ -263,6 +263,7 @@ public class SpotlessExtension {
 		// create the check and apply control tasks
 		SpotlessCheck checkTask = project.getTasks().create(taskName + CHECK, SpotlessCheck.class);
 		checkTask.setSpotlessOutDirectory(spotlessTask.getOutputDirectory());
+		checkTask.source = spotlessTask;
 		checkTask.dependsOn(spotlessTask);
 
 		SpotlessApply applyTask = project.getTasks().create(taskName + APPLY, SpotlessApply.class);
