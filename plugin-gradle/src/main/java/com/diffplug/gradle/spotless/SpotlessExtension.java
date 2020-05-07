@@ -17,8 +17,6 @@ package com.diffplug.gradle.spotless;
 
 import static java.util.Objects.requireNonNull;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -33,10 +31,7 @@ import org.gradle.api.execution.TaskExecutionGraph;
 import org.gradle.api.plugins.BasePlugin;
 
 import com.diffplug.common.base.Errors;
-import com.diffplug.common.io.ByteStreams;
-import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.LineEnding;
-import com.diffplug.spotless.PaddedCell;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import groovy.lang.Closure;
@@ -56,7 +51,6 @@ public class SpotlessExtension {
 	private static final String APPLY_DESCRIPTION = "Applies code formatting steps to sourcecode in-place.";
 
 	private static final String FILES_PROPERTY = "spotlessFiles";
-	private static final String IDE_HOOK_PROPERTY = "spotlessIdeHook";
 
 	public SpotlessExtension(Project project) {
 		this.project = requireNonNull(project);
@@ -309,38 +303,13 @@ public class SpotlessExtension {
 		rootDiagnoseTask.dependsOn(diagnoseTask);
 		diagnoseTask.mustRunAfter(clean);
 
-		if (project.hasProperty(IDE_HOOK_PROPERTY)) {
+		if (project.hasProperty(IdeHook.PROPERTY)) {
 			// disable the normal tasks, to disable their up-to-date checking
 			spotlessTask.setEnabled(false);
 			checkTask.setEnabled(false);
 			applyTask.setEnabled(false);
 			// the rootApplyTask is no longer just a marker task, now it does a bit of work itself
-			rootApplyTask.doLast(unused -> {
-				String path = (String) project.property(IDE_HOOK_PROPERTY);
-				File file = new File(path);
-				if (!file.isAbsolute()) {
-					System.err.println("Argument passed to " + IDE_HOOK_PROPERTY + " must be an absolute path");
-					return;
-				}
-				if (spotlessTask.getTarget().contains(file)) {
-					try (Formatter formatter = spotlessTask.buildFormatter()) {
-						byte[] bytes = ByteStreams.toByteArray(System.in);
-						PaddedCell.DirtyState dirty = PaddedCell.calculateDirtyState(formatter, file, bytes);
-						if (dirty.isClean()) {
-							System.err.println("IS CLEAN");
-						} else if (dirty.didNotConverge()) {
-							System.err.println("DID NOT CONVERGE");
-							System.err.println("Run 'spotlessDiagnose' for details https://github.com/diffplug/spotless/blob/master/PADDEDCELL.md");
-						} else {
-							System.err.println("IS DIRTY");
-							dirty.writeCanonicalTo(System.out);
-						}
-					} catch (IOException e) {
-						e.printStackTrace(System.err);
-						throw Errors.asRuntime(e);
-					}
-				}
-			});
+			rootApplyTask.doLast(unused -> IdeHook.performHook(spotlessTask));
 		}
 	}
 }
