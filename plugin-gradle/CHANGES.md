@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+* `-PspotlessIdeHook` which makes the VS Code extension faster and more reliable.  See [`IDE_INTEGRATION.md`](IDE_INTEGRATION.md) for more details. ([#568](https://github.com/diffplug/spotless/pull/568))
 
 ## [3.29.0] - 2020-05-05
 ### Added
