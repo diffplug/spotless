@@ -36,6 +36,8 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputDirectory;
+import org.gradle.api.tasks.PathSensitive;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 
@@ -106,6 +108,7 @@ public class SpotlessTask extends DefaultTask {
 
 	protected FileCollection target;
 
+	@PathSensitive(PathSensitivity.RELATIVE)
 	@InputFiles
 	public FileCollection getTarget() {
 		return target;

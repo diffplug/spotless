@@ -26,6 +26,8 @@ import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileVisitDetails;
 import org.gradle.api.file.FileVisitor;
 import org.gradle.api.tasks.InputDirectory;
+import org.gradle.api.tasks.PathSensitive;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 
 import com.diffplug.spotless.Formatter;
@@ -35,6 +37,7 @@ public class SpotlessCheck extends DefaultTask {
 	SpotlessTask source;
 	private File spotlessOutDirectory;
 
+	@PathSensitive(PathSensitivity.RELATIVE)
 	@InputDirectory
 	public File getSpotlessOutDirectory() {
 		return spotlessOutDirectory;
