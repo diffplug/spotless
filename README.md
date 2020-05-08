@@ -92,20 +92,21 @@ Once someone has filled in one square of the formatter/build system matrix, it's
 
 ## Acknowledgements
 
-- Thanks to [Simon Gamma](https://github.com/simschla) for [adding support for npm-based formatters](https://github.com/diffplug/spotless/pull/283), including `prettier` and `tsfmt`.
 - Thanks to [Frank Vennemeyer](https://github.com/fvgh) for [Groovy support via greclipse](https://github.com/diffplug/spotless/issues/13), [C++ support via CDT](https://github.com/diffplug/spotless/issues/232), [XML support via WTP](https://github.com/diffplug/spotless/pull/241) and a huge body of work with other eclipse-based formatters.
 - Thanks to [Konstantin Lutovich](https://github.com/lutovich) for [implementing the maven plugin](https://github.com/diffplug/spotless/pull/188).
-- Thanks to [Kevin Brooks](https://github.com/k-brooks) for [updating all eclipse-based formatters to 4.13](https://github.com/diffplug/spotless/pull/482).
+- Thanks to [Jonathan Bluett-Duncan](https://github.com/jbduncan) for
+  - implementing up-to-date checking [#31](https://github.com/diffplug/spotless/issues/31)
+  - breaking spotless into libraries [#56](https://github.com/diffplug/spotless/issues/56)
+  - lots of other things, but especially the diff support in `spotlessCheck`
+  - constant improvements on a variety of topics with high-quality code reviews
 - Thanks to [Richard Willis](https://github.com/badsyntax) for creating the [VS Code extension for Spotless Gradle](https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle).
+- Thanks to [Simon Gamma](https://github.com/simschla) for [adding support for npm-based formatters](https://github.com/diffplug/spotless/pull/283), including `prettier` and `tsfmt`.
+- Thanks to [Kevin Brooks](https://github.com/k-brooks) for [updating all eclipse-based formatters to 4.13](https://github.com/diffplug/spotless/pull/482).
 - Thanks to [Joan Goyeau](https://github.com/joan38) for [fixing scalafmt integration](https://github.com/diffplug/spotless/pull/260).
 - Thanks to [Nick Sutcliffe](https://github.com/nsutcliffe) for [fixing scalafmt post-2.0](https://github.com/diffplug/spotless/pull/416).
 - Thanks to [Baptiste Mesta](https://github.com/baptistemesta) for
   - porting the DBeaver formatter to Spotless, and thanks to [DBeaver](https://dbeaver.jkiss.org/) and [its authors](https://github.com/serge-rider/dbeaver/graphs/contributors) for their excellent SQL formatter.
   - making license headers date-aware [#179](https://github.com/diffplug/spotless/pull/179)
-- Thanks to [Jonathan Bluett-Duncan](https://github.com/jbduncan) for
-  - implementing up-to-date checking [#31](https://github.com/diffplug/spotless/issues/31)
-  - breaking spotless into libraries [#56](https://github.com/diffplug/spotless/issues/56)
-  - lots of other things, but especially the diff support in `spotlessCheck`
 - Thanks to [vmdominguez](https://github.com/vmdominguez) and [Luis Fors](https://github.com/luis-fors-cb) for adding the ability to limit formatting to specific files in gradle ([#322](https://github.com/diffplug/spotless/pull/322)) and maven ([#392](https://github.com/diffplug/spotless/pull/392)), respectively.
 - Thanks to [bender316](https://github.com/bender316) for fixing classloading on Java 9 ([#426](https://github.com/diffplug/spotless/pull/426)).
 - Thanks to [Stefan Oehme](https://github.com/oehme) for tons of help on the internal mechanics of Gradle.
