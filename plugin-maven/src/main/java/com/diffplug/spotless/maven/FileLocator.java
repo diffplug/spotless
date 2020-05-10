@@ -45,6 +45,11 @@ public class FileLocator {
 			return null;
 		}
 
+		File testExists = new File(path);
+		if (testExists.exists() && testExists.isFile()) {
+			return testExists;
+		}
+
 		String outputFile = tmpOutputFileName(path);
 		try {
 			return resourceManager.getResourceAsFile(path, outputFile);
