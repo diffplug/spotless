@@ -16,6 +16,7 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -69,7 +70,7 @@ public class SpotlessTask extends DefaultTask {
 	}
 
 	@Input
-	public Object getLineEndingsPolicyRelocatable() {
+	public Object getLineEndingsPolicyRelocatable() throws IOException {
 		// allows gradle buildcache to relocate between machines
 		return new FileSignatureRelocatable(getProject().getRootProject().getRootDir(), getLineEndingsPolicy());
 	}
@@ -153,7 +154,7 @@ public class SpotlessTask extends DefaultTask {
 	}
 
 	@Input
-	public Object getStepsRelocatable() {
+	public Object getStepsRelocatable() throws IOException {
 		// allows gradle buildcache to relocate between machines
 		return new FileSignatureRelocatable(getProject().getRootProject().getRootDir(), getSteps());
 	}
