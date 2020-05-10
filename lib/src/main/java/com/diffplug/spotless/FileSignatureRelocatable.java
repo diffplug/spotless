@@ -25,6 +25,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 
+import javax.annotation.Nullable;
+
 /**
  * You give it a root directory and an object which contains FileSignatures - this class will now implement `Serializable`
  * and `equalsTo` in terms of content hashes and relative path names, which makes it possible to relocate up-to-date checks
@@ -56,7 +58,7 @@ public class FileSignatureRelocatable extends LazyForwardingEquality<byte[]> imp
 
 	private static final ThreadLocal<FileSignatureRelocatableApi> api = new ThreadLocal<FileSignatureRelocatableApi>();
 
-	static FileSignatureRelocatableApi api() {
+	static @Nullable FileSignatureRelocatableApi api() {
 		return api.get();
 	}
 
