@@ -20,6 +20,8 @@ import static com.diffplug.spotless.MoreIterables.toSortedSet;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,9 +42,8 @@ public final class FileSignature implements Serializable {
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	private final transient List<File> files;
 
-	private final String[] filenames;
-	private final long[] filesizes;
-	private final long[] lastModified;
+	private final String[] unixPaths;
+	private final long[] lastModifieds;
 
 	/** Method has been renamed to {@link FileSignature#signAsSet}.
 	 * In case no sorting and removal of duplicates is required,
@@ -83,16 +84,30 @@ public final class FileSignature implements Serializable {
 	private FileSignature(final List<File> files) throws IOException {
 		this.files = files;
 
-		filenames = new String[this.files.size()];
-		filesizes = new long[this.files.size()];
-		lastModified = new long[this.files.size()];
+		unixPaths = new String[this.files.size()];
+		lastModifieds = new long[this.files.size()];
 
 		int i = 0;
 		for (File file : this.files) {
-			filenames[i] = file.getCanonicalPath();
-			filesizes[i] = file.length();
-			lastModified[i] = file.lastModified();
+			unixPaths[i] = file.getCanonicalPath().replace('\\', '/');
+			lastModifieds[i] = file.lastModified();
 			++i;
+		}
+	}
+
+	private void readObject(ObjectInputStream inputStream) throws ClassNotFoundException, IOException {
+		throw new UnsupportedOperationException();
+	}
+
+	private void writeObject(ObjectOutputStream outputStream) throws IOException {
+		FileSignatureRelocatableApi api = FileSignatureRelocatable.api();
+		if (api == null) {
+			for (int i = 0; i < files.size(); ++i) {
+				outputStream.writeLong(lastModifieds[i]);
+				outputStream.writeBytes(unixPaths[i]);
+			}
+		} else {
+			api.writeRelocatable(outputStream, unixPaths);
 		}
 	}
 

@@ -39,6 +39,7 @@ import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 
 import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.common.collect.Iterables;
+import com.diffplug.spotless.FileSignatureRelocatable;
 import com.diffplug.spotless.FormatExceptionPolicy;
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
@@ -62,9 +63,15 @@ public class SpotlessTask extends DefaultTask {
 
 	protected LineEnding.Policy lineEndingsPolicy = LineEnding.UNIX.createPolicy();
 
-	@Input
+	@Internal
 	public LineEnding.Policy getLineEndingsPolicy() {
 		return lineEndingsPolicy;
+	}
+
+	@Input
+	public Object getLineEndingsPolicyRelocatable() {
+		// allows gradle buildcache to relocate between machines
+		return new FileSignatureRelocatable(getProject().getRootProject().getRootDir(), getLineEndingsPolicy());
 	}
 
 	public void setLineEndingsPolicy(LineEnding.Policy lineEndingsPolicy) {
@@ -140,9 +147,15 @@ public class SpotlessTask extends DefaultTask {
 
 	protected List<FormatterStep> steps = new ArrayList<>();
 
-	@Input
+	@Internal
 	public List<FormatterStep> getSteps() {
 		return Collections.unmodifiableList(steps);
+	}
+
+	@Input
+	public Object getStepsRelocatable() {
+		// allows gradle buildcache to relocate between machines
+		return new FileSignatureRelocatable(getProject().getRootProject().getRootDir(), getSteps());
 	}
 
 	public void setSteps(List<FormatterStep> steps) {
