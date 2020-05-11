@@ -302,5 +302,14 @@ public class SpotlessExtension {
 		diagnoseTask.source = spotlessTask;
 		rootDiagnoseTask.dependsOn(diagnoseTask);
 		diagnoseTask.mustRunAfter(clean);
+
+		if (project.hasProperty(IdeHook.PROPERTY)) {
+			// disable the normal tasks, to disable their up-to-date checking
+			spotlessTask.setEnabled(false);
+			checkTask.setEnabled(false);
+			applyTask.setEnabled(false);
+			// the rootApplyTask is no longer just a marker task, now it does a bit of work itself
+			rootApplyTask.doLast(unused -> IdeHook.performHook(spotlessTask));
+		}
 	}
 }
