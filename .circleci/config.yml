@@ -134,6 +134,9 @@ jobs:
       - *restore_cache_deps
       - *set_git_origin_to_https
       - run:
+          name: gradlew :changelogPush
+          command: ./gradlew :changelogPush -Prelease=true --stacktrace
+      - run:
           name: gradlew :plugin-gradle:changelogPush
           command: ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${gradle_key} -Pgradle.publish.secret=${gradle_secret} --stacktrace
   do_release_plugin_maven:
