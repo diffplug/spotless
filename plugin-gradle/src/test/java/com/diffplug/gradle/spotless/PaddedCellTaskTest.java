@@ -16,6 +16,7 @@
 package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.Tasks.execute;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,50 +47,70 @@ public class PaddedCellTaskTest extends ResourceHarness {
 		String name;
 		Project project = TestProvisioner.gradleProject(rootFolder());
 		File file;
-		SpotlessTask check;
-		SpotlessTask apply;
+		File outputFile;
+		SpotlessTask task;
+		SpotlessCheck check;
+		SpotlessApply apply;
 
 		Bundle(String name, FormatterFunc function) throws IOException {
 			this.name = name;
 			file = setFile("src/test." + name).toContent("CCC");
 			FormatterStep step = FormatterStep.createNeverUpToDate(name, function);
-			check = createCheckTask(name, step);
-			apply = createApplyTask(name, step);
+			task = createFormatTask(name, step);
+			check = createCheckTask(name, task);
+			apply = createApplyTask(name, task);
+			outputFile = new File(task.getOutputDirectory() + "/src", file.getName());
 		}
 
-		private SpotlessTask createCheckTask(String name, FormatterStep step) {
-			// we don't add Check to the end because SpotlessTask normally doesn't have
-			// "Check" or "Apply", and it matters for generating the failure files
+		private SpotlessTask createFormatTask(String name, FormatterStep step) {
 			SpotlessTask task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name), SpotlessTask.class);
-			task.setCheck();
 			task.addStep(step);
 			task.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
 			task.setTarget(Collections.singletonList(file));
 			return task;
 		}
 
-		private SpotlessTask createApplyTask(String name, FormatterStep step) {
-			SpotlessTask task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + "Apply", SpotlessTask.class);
-			task.setApply();
-			task.addStep(step);
-			task.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
-			task.setTarget(Collections.singletonList(file));
+		private SpotlessCheck createCheckTask(String name, SpotlessTask source) {
+			SpotlessCheck task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + "Check", SpotlessCheck.class);
+			task.source = source;
+			task.setSpotlessOutDirectory(source.getOutputDirectory());
 			return task;
 		}
 
-		private String checkFailureMsg() {
+		private SpotlessApply createApplyTask(String name, SpotlessTask source) {
+			SpotlessApply task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + "Apply", SpotlessApply.class);
+			task.source = source;
+			task.setSpotlessOutDirectory(source.getOutputDirectory());
+			return task;
+		}
+
+		String checkFailureMsg() {
 			try {
-				execute(check);
+				check();
 				throw new AssertionError();
 			} catch (Exception e) {
 				return e.getMessage();
 			}
 		}
 
-		private void diagnose() throws IOException {
+		void diagnose() throws IOException {
 			SpotlessDiagnoseTask diagnose = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + "Diagnose", SpotlessDiagnoseTask.class);
-			diagnose.source = check;
+			diagnose.source = task;
 			diagnose.performAction();
+		}
+
+		void format() throws Exception {
+			execute(task);
+		}
+
+		void apply() throws Exception {
+			execute(task);
+			apply.performAction();
+		}
+
+		void check() throws Exception {
+			execute(task);
+			check.performAction();
 		}
 	}
 
@@ -110,26 +131,45 @@ public class PaddedCellTaskTest extends ResourceHarness {
 	}
 
 	@Test
-	public void paddedCellApply() throws Exception {
+	public void paddedCellFormat() throws Exception {
 		Bundle wellbehaved = wellbehaved();
 		Bundle cycle = cycle();
 		Bundle converge = converge();
 		Bundle diverge = diverge();
 
-		execute(wellbehaved.apply);
-		execute(cycle.apply);
-		execute(converge.apply);
-		execute(diverge.apply);
+		wellbehaved.format();
+		cycle.format();
+		converge.format();
+		diverge.format();
+
+		assertFile(wellbehaved.outputFile).hasContent("42");	// cycle -> first element in cycle
+		assertFile(cycle.outputFile).hasContent("A");		// cycle -> first element in cycle
+		assertFile(converge.outputFile).hasContent("");	// converge -> converges
+		assertThat(diverge.outputFile).doesNotExist();	// diverge -> no change
+	}
+
+	@Test
+	public void paddedCellApplyCheck() throws Exception {
+		Bundle wellbehaved = wellbehaved();
+		Bundle cycle = cycle();
+		Bundle converge = converge();
+		Bundle diverge = diverge();
+
+		wellbehaved.apply();
+		cycle.apply();
+		converge.apply();
+		diverge.apply();
 
 		assertFile(wellbehaved.file).hasContent("42");	// cycle -> first element in cycle
 		assertFile(cycle.file).hasContent("A");		// cycle -> first element in cycle
 		assertFile(converge.file).hasContent("");	// converge -> converges
 		assertFile(diverge.file).hasContent("CCC");	// diverge -> no change
 
-		execute(wellbehaved.check);
-		execute(cycle.check);
-		execute(converge.check);
-		execute(diverge.check);
+		// After apply, check should pass
+		wellbehaved.check();
+		cycle.check();
+		converge.check();
+		diverge.check();
 	}
 
 	@Test
