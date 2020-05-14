@@ -6,6 +6,7 @@ anchors:
       # try the experimental JVM option
       _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
       GRADLE_OPTS: "-Dorg.gradle.workers.max=2" # and we're only allowed to use 2 vCPUs
+      JAVA_OPTS: "-Xms512m -Xmx1024m" # this shouldn't be necessary, but we're having problems
     docker:
       - image: cimg/openjdk:8.0
 
