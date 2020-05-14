@@ -59,6 +59,6 @@ public class ConfigAvoidanceTest extends GradleIntegrationTest {
 		String help_4_9 = gradleRunnerConfigAvoidance().withArguments("help").build().getOutput();
 		Assertions.assertThat(help_4_9).doesNotContain("Canary was configured");
 		String check_4_9 = gradleRunnerConfigAvoidance().withArguments("check").buildAndFail().getOutput();
-		Assertions.assertThat(check_4_9).contains("Canary was configured", "Canary ran", "Execution failed for task ':spotlessJava'");
+		Assertions.assertThat(check_4_9).contains("Canary was configured", "Canary ran", "Execution failed for task ':spotlessJavaCheck'");
 	}
 }

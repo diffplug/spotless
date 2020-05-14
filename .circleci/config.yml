@@ -8,6 +8,10 @@ anchors:
       GRADLE_OPTS: "-Dorg.gradle.workers.max=2" # and we're only allowed to use 2 vCPUs
     docker:
       - image: cimg/openjdk:8.0
+  env_gradle_large: &env_gradle_large
+    << : *env_gradle
+    resource_class: large # https://circleci.com/docs/2.0/configuration-reference/#resource_class
+    GRADLE_OPTS: "-Dorg.gradle.workers.max=4"
 
   restore_cache_wrapper: &restore_cache_wrapper
     restore_cache:
@@ -41,7 +45,7 @@ version: 2
 jobs:
   # gradlew spotlessCheck assemble testClasses
   assemble_testClasses: 
-    <<: *env_gradle
+    <<: *env_gradle_large
     steps:
       - checkout
       - *restore_cache_wrapper
@@ -64,10 +68,10 @@ jobs:
           key: gradle-deps2-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
   # JRE8: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew check
   test_nomaven_8:
-    <<: *env_gradle
+    <<: *env_gradle_large
     <<: *test_nomaven
   test_nomaven_11:
-    <<: *env_gradle
+    <<: *env_gradle_large
     docker:
       - image: cimg/openjdk:11.0
     environment: # java 11 does play nice with containers, doesn't need special settings
