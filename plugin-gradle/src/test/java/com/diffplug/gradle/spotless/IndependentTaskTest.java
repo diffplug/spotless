@@ -34,9 +34,9 @@ public class IndependentTaskTest extends GradleIntegrationTest {
 				"underTest.target file('test.java')",
 				"underTest.googleJavaFormat('1.2')",
 				"",
-				"def independent = underTest.createIndependentTask('independent')");
+				"def independent = underTest.createIndependentApplyTask('independent')");
 		setFile("test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
 		gradleRunner().withArguments("independent").build();
-		assertFile("build/spotless/independent/test.java").sameAsResource("java/googlejavaformat/JavaCodeFormatted.test");
+		assertFile("test.java").sameAsResource("java/googlejavaformat/JavaCodeFormatted.test");
 	}
 }
