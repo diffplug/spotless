@@ -46,6 +46,9 @@ tasks.named('spotbugsTest') {
 tasks.named('spotbugsMain') {
 	// only run on Java 8 (no benefit to running twice)
 	enabled = org.gradle.api.JavaVersion.current() == org.gradle.api.JavaVersion.VERSION_1_8
+	reports {
+		html.enabled = true
+	}
 }
 dependencies {
 	compileOnly 'net.jcip:jcip-annotations:1.0'

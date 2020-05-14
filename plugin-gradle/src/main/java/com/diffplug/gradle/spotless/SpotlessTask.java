@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -216,7 +217,11 @@ public class SpotlessTask extends DefaultTask {
 		} else if (dirtyState.didNotConverge()) {
 			getLogger().warn("Skipping '" + input + "' because it does not converge.  Run `spotlessDiagnose` to understand why");
 		} else {
-			Files.createDirectories(output.toPath().getParent());
+			Path parentDir = output.toPath().getParent();
+			if (parentDir == null) {
+				throw new IllegalStateException("Every file has a parent folder.");
+			}
+			Files.createDirectories(parentDir);
 			dirtyState.writeCanonicalTo(output);
 		}
 	}
