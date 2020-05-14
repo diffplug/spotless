@@ -17,6 +17,9 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
+import org.assertj.core.api.Assertions;
+import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.Test;
 
 public class UpToDateTest extends GradleIntegrationTest {
@@ -77,17 +80,21 @@ public class UpToDateTest extends GradleIntegrationTest {
 	public void testPathologicalCase() throws IOException {
 		writeBuildFile();
 		setFile("README.md").toContent("ABC");
-		// first time, up-to-date is false
+		// first time running apply, no tasks are UP-TO-DATE
 		applyIsUpToDate(false);
 		assertFile("README.md").hasContent("abc");
 
 		// now we'll change the file back to EXACTLY its original content
 		setFile("README.md").toContent("ABC");
-		// the task should run again, but instead the next line will
-		// fail an assertion, because the task is actually reported as up-to-date
-		applyIsUpToDate(false);
+
+		// the format task is UP-TO-DATE (same inputs), but the apply tasks will run again
+		pauseForFilesystem();
+		BuildResult buildResult = gradleRunner().withArguments("spotlessApply").build();
+		Assertions.assertThat(buildResult.taskPaths(TaskOutcome.UP_TO_DATE)).containsExactly(":spotlessMisc");
+		Assertions.assertThat(buildResult.taskPaths(TaskOutcome.SUCCESS)).containsExactly(":spotlessMiscApply", ":spotlessApply");
 		assertFile("README.md").hasContent("abc");
-		// and it'll take two more runs to get to up-to-date
+
+		// and it'll take two more runs to get to fully UP-TO-DATE
 		applyIsUpToDate(false);
 		applyIsUpToDate(true);
 	}

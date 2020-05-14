@@ -613,30 +613,31 @@ public class FormatExtension {
 	}
 
 	/**
-	 * Creates an independent {@link SpotlessTask} for (very) unusual circumstances.
+	 * Creates an independent {@link SpotlessApply} for (very) unusual circumstances.
 	 *
 	 * Most users will not want this method.  In the rare case that you want to create
-	 * a SpotlessTask which is independent of the normal Spotless machinery, this will
+	 * a `SpotlessApply` which is independent of the normal Spotless machinery, this will
 	 * let you do that.
 	 *
-	 * The returned task will have no dependencies on any other task.
-	 * You need to call {@link SpotlessTask#setApply()} and/or {@link SpotlessTask#setCheck()}
-	 * on the return value, otherwise you will get a runtime error when the task tries to run.
+	 * The returned task will not be hooked up to the global `spotlessApply`, and there will be no corresponding `check` task.
 	 *
 	 * NOTE: does not respect the rarely-used [`spotlessFiles` property](https://github.com/diffplug/spotless/blob/b7f8c551a97dcb92cc4b0ee665448da5013b30a3/plugin-gradle/README.md#can-i-apply-spotless-to-specific-files).
 	 */
-	public SpotlessTask createIndependentTask(String taskName) {
+	public SpotlessApply createIndependentApplyTask(String taskName) {
 		// create and setup the task
-		SpotlessTask spotlessTask = root.project.getTasks().create(taskName, SpotlessTask.class);
+		SpotlessTask spotlessTask = root.project.getTasks().create(taskName + "Helper", SpotlessTask.class);
 		setupTask(spotlessTask);
-
 		// enforce the clean ordering
 		Task clean = root.project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME);
 		spotlessTask.mustRunAfter(clean);
-
 		// ignore the filePatterns
 		spotlessTask.setFilePatterns("");
+		// create the apply task
+		SpotlessApply applyTask = root.project.getTasks().create(taskName, SpotlessApply.class);
+		applyTask.setSpotlessOutDirectory(spotlessTask.getOutputDirectory());
+		applyTask.source = spotlessTask;
+		applyTask.dependsOn(spotlessTask);
 
-		return spotlessTask;
+		return applyTask;
 	}
 }

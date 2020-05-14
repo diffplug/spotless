@@ -3,6 +3,16 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+**TLDR: This version improves performance and adds support for the local Gradle Build Cache.  You will not need to make any changes in your buildscript.**  It is a breaking change only for a few users who have built *other* plugins on top of this one.
+
+### Added
+* Support for the gradle build cache. ([#576](https://github.com/diffplug/spotless/pull/576))
+  * The local cache will work great, but the remote cache will always miss until [#566](https://github.com/diffplug/spotless/issues/566) is resolved.
+### Removed
+* (Power users only) `void SpotlessTask::setCheck()` and `setApply()` have been removed. ([#576](https://github.com/diffplug/spotless/pull/576))
+  * Previously, the `check` and `apply` tasks were just marker tasks, and they called `setCheck` and `setApply` on the "worker" task.  Now `check` and `apply` are real tasks in their own right, so the marker-task kludge is no longer necessary.
+### Changed
+* (Power users only) `SpotlessTask FormatExtension::createIndependentTask` has been removed, and replaced with `SpotlessApply::createIndependentApplyTask`. ([#576](https://github.com/diffplug/spotless/pull/576))
 
 ## [3.30.0] - 2020-05-11
 ### Added
