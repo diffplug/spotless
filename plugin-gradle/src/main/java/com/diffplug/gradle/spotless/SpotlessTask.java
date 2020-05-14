@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.tasks.CacheableTask;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Internal;
@@ -50,6 +51,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.PaddedCell;
 
+@CacheableTask
 public class SpotlessTask extends DefaultTask {
 	// set by SpotlessExtension, but possibly overridden by FormatExtension
 	protected String encoding = "UTF-8";
