@@ -22,13 +22,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Locale;
 
 import org.gradle.api.Project;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.diffplug.common.base.StandardSystemProperty;
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
@@ -37,10 +35,9 @@ import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.TestProvisioner;
 
 public class PaddedCellTaskTest extends ResourceHarness {
-	private static final boolean IS_WIN = StandardSystemProperty.OS_NAME.value().toLowerCase(Locale.US).contains("win");
 
 	private static String slashify(String input) {
-		return IS_WIN ? input.replace('/', '\\') : input;
+		return TestFixtures.IS_WIN ? input.replace('/', '\\') : input;
 	}
 
 	private class Bundle {
@@ -218,7 +215,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 				"        @@ -1 +1 @@",
 				"        -CCC",
 				"        +A",
-				"Run 'gradlew spotlessApply' to fix these violations.");
+				TestFixtures.EXPECTED_RUN_SPOTLESS_APPLY_SUGGESTION);
 	}
 
 	@Test
@@ -228,7 +225,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 				slashify("    src/test.converge"),
 				"        @@ -1 +0,0 @@",
 				"        -CCC",
-				"Run 'gradlew spotlessApply' to fix these violations.");
+				TestFixtures.EXPECTED_RUN_SPOTLESS_APPLY_SUGGESTION);
 	}
 
 	private void assertFailureMessage(Bundle bundle, String... expectedOutput) {

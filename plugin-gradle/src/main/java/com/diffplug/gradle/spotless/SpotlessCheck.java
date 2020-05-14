@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.tools.ant.taskdefs.condition.Os;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.ConfigurableFileTree;
@@ -77,12 +78,23 @@ public class SpotlessCheck extends DefaultTask {
 	}
 
 	/** Returns an exception which indicates problem files nicely. */
-	private static GradleException formatViolationsFor(Formatter formatter, List<File> problemFiles) {
+	private GradleException formatViolationsFor(Formatter formatter, List<File> problemFiles) {
 		return new GradleException(DiffMessageFormatter.builder()
-				.runToFix("Run 'gradlew spotlessApply' to fix these violations.")
+				.runToFix("Run '" + calculateGradleCommand() + " " + getTaskPathPrefix() + "spotlessApply' to fix these violations.")
 				.formatter(formatter)
 				.problemFiles(problemFiles)
 				.getMessage());
 	}
 
+	private String getTaskPathPrefix() {
+		return getProject().getPath().equals(":")
+			? ":"
+			: getProject().getPath() + ":";
+	}
+
+	private static String calculateGradleCommand() {
+		return Os.isFamily(Os.FAMILY_WINDOWS)
+			? "gradlew.bat"
+			: "./gradlew";
+	}
 }
