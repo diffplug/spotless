@@ -19,6 +19,7 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
+import java.nio.charset.CoderResult;
 import java.util.Locale;
 
 import javax.annotation.Nullable;
@@ -33,30 +34,39 @@ class EncodingErrorMsg {
 		int line = 1;
 		int col = 0;
 		while (cIdx < chars.length()) {
-			charBuf.rewind();
-			byteBuf.rewind();
+			charBuf.clear();
+			byteBuf.clear();
 			++col;
 			char c = chars.charAt(cIdx++);
 			charBuf.put(c);
-			if (c == '\n') {
-				++line;
-				col = 0;
-			} else if (!Character.isBmpCodePoint(c)) {
+			int codePoint;
+			if (Character.isBmpCodePoint(c)) {
+				codePoint = c;
+				if (c == '\n') {
+					++line;
+					col = 0;
+				} else if (c < ' ' && c != '\t' && c != '\r') {
+					return lineColCodepointMsg(line, col, codePoint, encoding, ByteBuffer.wrap(bytes, bIdx, 1), "is a control character");
+				}
+			} else {
 				// since we just decoded String, we can assume that all of its UTF-16 are correctly paired
-				charBuf.put(chars.charAt(cIdx++));
+				char c2 = chars.charAt(cIdx++);
+				codePoint = Character.toCodePoint(c, c2);
+				charBuf.put(c2);
 			}
-			charBuf.limit(charBuf.position());
-			charBuf.position(0);
+			charBuf.flip();
 			boolean endOfInput = true;
-			encoder.encode(charBuf, byteBuf, endOfInput);
+			CoderResult result = encoder.encode(charBuf, byteBuf, endOfInput);
+			if (result.isUnmappable()) {
+				return lineColMsg(line, col, "unmappable character for " + encoding);
+			} else if (result.isMalformed()) {
+				return lineColMsg(line, col, "malformed character for " + encoding);
+			}
 			for (int i = 0; i < byteBuf.position(); ++i) {
 				if (byteBuf.get(i) != bytes[bIdx + i]) {
-					byteBuf.limit(byteBuf.position());
-					byteBuf.position(0);
-					charBuf.position(0);
-					return "Line " + line + " col " + col + ": the codepoint '" + charBuf.toString() + "' (U+" + Integer.toHexString(charBuf.toString().codePointAt(0)).toUpperCase(Locale.ROOT) +
-							") encoded via " + encoding +
-							" to 0x" + hex(byteBuf) + " but was decoded from 0x" + hex(ByteBuffer.wrap(bytes, bIdx, 1));
+					byteBuf.flip();
+					return lineColCodepointMsg(line, col, codePoint, encoding, ByteBuffer.wrap(bytes, bIdx, i + 1),
+							"should have been 0x" + hex(byteBuf));
 				}
 			}
 			bIdx += byteBuf.position();
@@ -64,11 +74,22 @@ class EncodingErrorMsg {
 		return null;
 	}
 
+	private static String lineColMsg(int line, int col, String msg) {
+		return "Line " + line + " col " + col + ": " + msg;
+	}
+
+	private static String lineColCodepointMsg(int line, int col, int codepoint, Charset charset, ByteBuffer decodedFrom, String msg) {
+		return lineColMsg(line, col, "the codepoint '" + new String(Character.toChars(codepoint)) + "' (U+" + Integer.toHexString(codepoint).toUpperCase(Locale.ROOT) + ") " +
+				"decoded via " + charset + " from 0x" + hex(decodedFrom) + " " +
+				msg);
+	}
+
 	private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
 
 	private static String hex(ByteBuffer bytes) {
-		char[] hexChars = new char[bytes.remaining() * 2];
-		for (int j = 0; j < bytes.limit(); j++) {
+		int len = bytes.limit() - bytes.position();
+		char[] hexChars = new char[2 * len];
+		for (int j = 0; j < len; j++) {
 			int v = bytes.get() & 0xFF;
 			hexChars[j * 2] = HEX_ARRAY[v >>> 4];
 			hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
