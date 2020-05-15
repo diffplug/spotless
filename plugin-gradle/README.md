@@ -46,7 +46,7 @@ cmd> gradlew build
     -\t\t····if·(targets.length·==·0)·{
     +\t\tif·(targets.length·==·0)·{
     ...
-  Run './gradlew :spotlessApply' to fix these violations.
+  Run 'gradlew spotlessApply' to fix these violations.
 
 cmd> gradlew spotlessApply
 :spotlessApply
