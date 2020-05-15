@@ -31,12 +31,18 @@ public class EncodingErrorMsgTest {
 		cp1252asUtf8("", null);
 		// single char
 		cp1252asUtf8("a", null);
-		cp1252asUtf8("\u00B0",
-				"Line 1 col 1: the codepoint '�' (U+FFFD) decoded via UTF-8 from 0xB0 should have been 0xEFBFBD");
+		cp1252asUtf8("°", "Encoding error! Spotless uses UTF-8 by default.  At line 1 col 1:\n" +
+				"� <- UTF-8\n" +
+				"° <- windows-1252\n" +
+				"° <- ISO-8859-1\n" +
+				"ｰ <- Shift_JIS");
 		// multiline
 		cp1252asUtf8("\n123\nabc\n", null);
-		cp1252asUtf8("\n123\nabc\u00B0\nABC",
-				"Line 3 col 4: the codepoint '�' (U+FFFD) decoded via UTF-8 from 0xB0 should have been 0xEFBFBD");
+		cp1252asUtf8("\n123\nabc°\nABC", "Encoding error! Spotless uses UTF-8 by default.  At line 3 col 4:\n" +
+				"abc�␤AB <- UTF-8\n" +
+				"abc°␤AB <- windows-1252\n" +
+				"abc°␤AB <- ISO-8859-1\n" +
+				"abcｰ␤AB <- Shift_JIS");
 	}
 
 	private void cp1252asUtf8(String test, @Nullable String expectedMessage) throws UnsupportedEncodingException {
@@ -55,16 +61,24 @@ public class EncodingErrorMsgTest {
 		utf8asCP1252("", null);
 		// single char
 		utf8asCP1252("a", null);
-		utf8asCP1252("\u00B0", null);
+		utf8asCP1252("°", null);
 		// multibyte UTF-8 can hide too
-		utf8asCP1252("\u1F602", null);
+		utf8asCP1252("😂", null);
 		// but some will trigger problems we can detect
-		utf8asCP1252("\u237B", "Line 1 col 2: unmappable character for windows-1252"); // there are some codepoints where it doesn't
+		utf8asCP1252("⍻", "Encoding error! You configured Spotless to use windows-1252.  At line 1 col 2:\n" +
+				"â�» <- windows-1252\n" +
+				"⍻ <- UTF-8\n" +
+				"â» <- ISO-8859-1\n" +
+				"竝ｻ <- Shift_JIS"); // there are some codepoints where it doesn't
 		// multiline
 		utf8asCP1252("\n123\nabc\n", null);
-		utf8asCP1252("\n123\nabc\u00B0\nABC", null);
-		utf8asCP1252("\n123\nabc\u1F602\nABC", null);
-		utf8asCP1252("\n123\nabc\u237B\nABC", "Line 3 col 5: unmappable character for windows-1252");
+		utf8asCP1252("\n123\nabc°\nABC", null);
+		utf8asCP1252("\n123\nabc😂\nABC", null);
+		utf8asCP1252("\n123\nabc⍻\nABC", "Encoding error! You configured Spotless to use windows-1252.  At line 3 col 5:\n" +
+				"bcâ�»␤A <- windows-1252\n" +
+				"bc⍻␤ABC <- UTF-8\n" +
+				"bcâ»␤A <- ISO-8859-1\n" +
+				"bc竝ｻ␤AB <- Shift_JIS");
 	}
 
 	private void utf8asCP1252(String test, @Nullable String expectedMessage) throws UnsupportedEncodingException {
