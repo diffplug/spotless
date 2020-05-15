@@ -40,7 +40,7 @@ class EncodingErrorMsg {
 		}
 
 		// sometimes the '�' is really in a file, such as for *this* file
-		// so we have to handle that pathologic case
+		// so we have to handle that corner case
 		ByteBuffer byteBuf = ByteBuffer.wrap(bytes);
 		CharBuffer charBuf = CharBuffer.allocate(chars.length());
 		CoderResult result = charset.newDecoder()
@@ -49,12 +49,24 @@ class EncodingErrorMsg {
 				.decode(byteBuf, charBuf, true);
 		if (!result.isError()) {
 			return null;
+		} else {
+			// there really is an encoding error, so we'll send a message
+			return new EncodingErrorMsg(chars, byteBuf, charset, unrepresentable).message.toString();
 		}
+	}
 
+	private final ByteBuffer byteBuf;
+	private final CharBuffer charBuf;
+	private final int unrepresentable;
+	private final StringBuilder message;
+
+	private EncodingErrorMsg(String chars, ByteBuffer byteBuf, Charset charset, int unrepresentable) {
+		this.byteBuf = byteBuf;
+		this.unrepresentable = unrepresentable;
 		// make a new, smaller charBuf better suited to our request
 		charBuf = CharBuffer.allocate(Math.min(unrepresentable + 2 * CONTEXT, chars.length()));
 
-		StringBuilder message = new StringBuilder("Encoding error! ");
+		message = new StringBuilder("Encoding error! ");
 		if (charset.equals(StandardCharsets.UTF_8)) {
 			message.append("Spotless uses UTF-8 by default.");
 		} else {
@@ -86,13 +98,12 @@ class EncodingErrorMsg {
 		addIfAvailable(encodings, "GBK");
 		addIfAvailable(encodings, "GB2312");
 		addIfAvailable(encodings, "GB18030");
-		Iterator<Charset> iterator = encodings.iterator();
 
-		appendExample(message, iterator.next(), byteBuf, charBuf, unrepresentable, true);
+		Iterator<Charset> iterator = encodings.iterator();
+		appendExample(iterator.next(), true);
 		while (iterator.hasNext()) {
-			appendExample(message, iterator.next(), byteBuf, charBuf, unrepresentable, false);
+			appendExample(iterator.next(), false);
 		}
-		return message.toString();
 	}
 
 	private static void addIfAvailable(Collection<Charset> charsets, String name) {
@@ -103,7 +114,7 @@ class EncodingErrorMsg {
 		}
 	}
 
-	private static void appendExample(StringBuilder message, Charset charset, ByteBuffer byteBuf, CharBuffer charBuf, int startPoint, boolean must) {
+	private void appendExample(Charset charset, boolean must) {
 		byteBuf.clear();
 		charBuf.clear();
 
@@ -125,8 +136,8 @@ class EncodingErrorMsg {
 		}
 		charBuf.flip();
 
-		int start = Math.max(startPoint - CONTEXT, 0);
-		int end = Math.min(charBuf.limit(), startPoint + CONTEXT + 1);
+		int start = Math.max(unrepresentable - CONTEXT, 0);
+		int end = Math.min(charBuf.limit(), unrepresentable + CONTEXT + 1);
 		message.append('\n');
 		message.append(charBuf.subSequence(start, end).toString()
 				.replace('\n', '␤')
