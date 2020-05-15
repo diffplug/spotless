@@ -122,7 +122,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 		String msg = spotless.checkFailureMsg();
 
 		String firstLine = "The following files had format violations:\n";
-		String lastLine = "\nRun 'gradlew spotlessApply' to fix these violations.";
+		String lastLine = "\n" + TestFixtures.EXPECTED_RUN_SPOTLESS_APPLY_SUGGESTION;
 		Assertions.assertThat(msg).startsWith(firstLine).endsWith(lastLine);
 
 		String middle = msg.substring(firstLine.length(), msg.length() - lastLine.length());

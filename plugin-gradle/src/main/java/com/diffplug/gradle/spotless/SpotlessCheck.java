@@ -19,6 +19,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
@@ -30,6 +31,7 @@ import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 
+import com.diffplug.common.base.StandardSystemProperty;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
@@ -77,12 +79,23 @@ public class SpotlessCheck extends DefaultTask {
 	}
 
 	/** Returns an exception which indicates problem files nicely. */
-	private static GradleException formatViolationsFor(Formatter formatter, List<File> problemFiles) {
+	private GradleException formatViolationsFor(Formatter formatter, List<File> problemFiles) {
 		return new GradleException(DiffMessageFormatter.builder()
-				.runToFix("Run 'gradlew spotlessApply' to fix these violations.")
+				.runToFix("Run '" + calculateGradleCommand() + " " + getTaskPathPrefix() + "spotlessApply' to fix these violations.")
 				.formatter(formatter)
 				.problemFiles(problemFiles)
 				.getMessage());
 	}
 
+	private String getTaskPathPrefix() {
+		return getProject().getPath().equals(":")
+				? ":"
+				: getProject().getPath() + ":";
+	}
+
+	private static String calculateGradleCommand() {
+		return StandardSystemProperty.OS_NAME.value().toLowerCase(Locale.US).contains("win")
+				? "gradlew.bat"
+				: "./gradlew";
+	}
 }
