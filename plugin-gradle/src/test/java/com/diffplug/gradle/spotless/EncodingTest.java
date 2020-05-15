@@ -51,8 +51,8 @@ public class EncodingTest extends GradleIntegrationTest {
 				"    encoding 'US-ASCII'",
 				"}");
 		setFile("test.java").toContent("µ");
-		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("test.java").hasContent("??");
+		gradleRunner().withArguments("spotlessApply").buildAndFail().getOutput().contains("Encoding error!");
+		assertFile("test.java").hasContent("µ");
 	}
 
 	@Test
@@ -75,8 +75,8 @@ public class EncodingTest extends GradleIntegrationTest {
 				"}");
 		setFile("test.java").toContent("µ");
 		setFile("utf32.encoded").toContent("µ", Charset.forName("UTF-32"));
-		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("test.java").hasContent("??");
-		assertFile("utf32.encoded").hasContent("A", Charset.forName("UTF-32"));
+		gradleRunner().withArguments("spotlessApply").buildAndFail().getOutput().contains("Encoding error!");
+		assertFile("test.java").hasContent("µ");
+		assertFile("utf32.encoded").hasContent("µ", Charset.forName("UTF-32"));
 	}
 }
