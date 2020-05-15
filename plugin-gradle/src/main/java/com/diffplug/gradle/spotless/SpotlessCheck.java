@@ -88,13 +88,13 @@ public class SpotlessCheck extends DefaultTask {
 
 	private String getTaskPathPrefix() {
 		return getProject().getPath().equals(":")
-			? ":"
-			: getProject().getPath() + ":";
+				? ":"
+				: getProject().getPath() + ":";
 	}
 
 	private static String calculateGradleCommand() {
 		return Os.isFamily(Os.FAMILY_WINDOWS)
-			? "gradlew.bat"
-			: "./gradlew";
+				? "gradlew.bat"
+				: "./gradlew";
 	}
 }
