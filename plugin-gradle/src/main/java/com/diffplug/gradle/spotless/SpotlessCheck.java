@@ -19,8 +19,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
-import org.apache.tools.ant.taskdefs.condition.Os;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.ConfigurableFileTree;
@@ -31,6 +31,7 @@ import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 
+import com.diffplug.common.base.StandardSystemProperty;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
@@ -93,7 +94,7 @@ public class SpotlessCheck extends DefaultTask {
 	}
 
 	private static String calculateGradleCommand() {
-		return Os.isFamily(Os.FAMILY_WINDOWS)
+		return StandardSystemProperty.OS_NAME.value().toLowerCase(Locale.US).contains("win")
 				? "gradlew.bat"
 				: "./gradlew";
 	}
