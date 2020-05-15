@@ -30,13 +30,29 @@ import java.util.LinkedHashSet;
 import javax.annotation.Nullable;
 
 class EncodingErrorMsg {
-	private static final char UNREPRESENTABLE = '�';
+	static final char UNREPRESENTABLE = '�';
+	private static int CONTEXT = 3;
 
 	static @Nullable String msg(String chars, byte[] bytes, Charset charset) {
 		int unrepresentable = chars.indexOf(UNREPRESENTABLE);
 		if (unrepresentable == -1) {
 			return null;
 		}
+
+		// sometimes the '�' is really in a file, such as for *this* file
+		// so we have to handle that pathologic case
+		ByteBuffer byteBuf = ByteBuffer.wrap(bytes);
+		CharBuffer charBuf = CharBuffer.allocate(chars.length());
+		CoderResult result = charset.newDecoder()
+				.onMalformedInput(CodingErrorAction.REPORT)
+				.onUnmappableCharacter(CodingErrorAction.REPORT)
+				.decode(byteBuf, charBuf, true);
+		if (!result.isError()) {
+			return null;
+		}
+
+		// make a new, smaller charBuf better suited to our request
+		charBuf = CharBuffer.allocate(Math.min(unrepresentable + 2 * CONTEXT, chars.length()));
 
 		StringBuilder message = new StringBuilder("Encoding error! ");
 		if (charset.equals(StandardCharsets.UTF_8)) {
@@ -72,12 +88,9 @@ class EncodingErrorMsg {
 		addIfAvailable(encodings, "GB18030");
 		Iterator<Charset> iterator = encodings.iterator();
 
-		ByteBuffer byteByf = ByteBuffer.wrap(bytes);
-		CharBuffer charBuf = CharBuffer.allocate(Math.min(unrepresentable + 6, chars.length()));
-
-		appendExample(message, iterator.next(), byteByf, charBuf, unrepresentable, true);
+		appendExample(message, iterator.next(), byteBuf, charBuf, unrepresentable, true);
 		while (iterator.hasNext()) {
-			appendExample(message, iterator.next(), byteByf, charBuf, unrepresentable, false);
+			appendExample(message, iterator.next(), byteBuf, charBuf, unrepresentable, false);
 		}
 		return message.toString();
 	}
@@ -112,8 +125,8 @@ class EncodingErrorMsg {
 		}
 		charBuf.flip();
 
-		int start = Math.max(startPoint - 3, 0);
-		int end = Math.min(charBuf.limit(), startPoint + 4);
+		int start = Math.max(startPoint - CONTEXT, 0);
+		int end = Math.min(charBuf.limit(), startPoint + CONTEXT + 1);
 		message.append('\n');
 		message.append(charBuf.subSequence(start, end).toString()
 				.replace('\n', '␤')

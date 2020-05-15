@@ -87,4 +87,12 @@ public class EncodingErrorMsgTest {
 		String actualMessage = EncodingErrorMsg.msg(asCp1252, utf8, Charset.forName("cp1252"));
 		Assertions.assertThat(actualMessage).isEqualTo(expectedMessage);
 	}
+
+	@Test
+	public void canUseUnrepresentableOnPurpose() throws UnsupportedEncodingException {
+		String pathologic = new String(new char[]{EncodingErrorMsg.UNREPRESENTABLE});
+		byte[] pathologicBytes = pathologic.getBytes(StandardCharsets.UTF_8);
+		String pathologicMsg = EncodingErrorMsg.msg(pathologic, pathologicBytes, StandardCharsets.UTF_8);
+		Assertions.assertThat(pathologicMsg).isNull();
+	}
 }
