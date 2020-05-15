@@ -13,7 +13,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   * Previously, the `check` and `apply` tasks were just marker tasks, and they called `setCheck` and `setApply` on the "worker" task.  Now `check` and `apply` are real tasks in their own right, so the marker-task kludge is no longer necessary.
 ### Changed
 * (Power users only) **BREAKING** `SpotlessTask FormatExtension::createIndependentTask` has been removed, and replaced with `SpotlessApply::createIndependentApplyTask`. ([#576](https://github.com/diffplug/spotless/pull/576))
-
+* Improve suggested gradle invocation for running `spotlessApply`. ([#578](https://github.com/diffplug/spotless/pull/578))
 
 ## [3.30.0] - 2020-05-11
 ### Added
