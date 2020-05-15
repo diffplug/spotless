@@ -25,7 +25,14 @@ import java.util.Locale;
 import javax.annotation.Nullable;
 
 class EncodingErrorMsg {
+	private static final char UNREPRESENTABLE = '�';
+
 	static @Nullable String msg(String chars, byte[] bytes, Charset encoding) {
+		int unrepresentable = chars.indexOf(UNREPRESENTABLE);
+		if (unrepresentable == -1) {
+			return null;
+		}
+
 		CharsetEncoder encoder = encoding.newEncoder();
 		CharBuffer charBuf = CharBuffer.allocate(2);
 		ByteBuffer byteBuf = ByteBuffer.allocate(4);
@@ -71,7 +78,7 @@ class EncodingErrorMsg {
 			}
 			bIdx += byteBuf.position();
 		}
-		return null;
+		throw new IllegalArgumentException();
 	}
 
 	private static String lineColMsg(int line, int col, String msg) {
