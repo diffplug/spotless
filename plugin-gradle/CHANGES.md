@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [4.0.0] - 2020-05-17
 **TLDR: This version improves performance and adds support for the local Gradle Build Cache.  You will not need to make any changes in your buildscript.**  It is a breaking change only for a few users who have built *other* plugins on top of this one.
 
 ### Added
