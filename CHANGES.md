@@ -13,6 +13,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Added
 * `PaddedCell.calculateDirtyState` is now defensive about misconfigured character encoding. ([#575](https://github.com/diffplug/spotless/pull/575))
 
+## [1.30.1] - 2020-05-17
 ### Fixed
 * `PaddedCell.DirtyState::writeCanonicalTo(File)` can now create a new file if necessary (previously required to overwrite an existing file) ([#576](https://github.com/diffplug/spotless/pull/576)).
 
