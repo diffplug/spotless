@@ -64,7 +64,7 @@ public class ScalaExtension extends FormatExtension {
 		}
 	}
 
-	/** If the user hasn't specified the files yet, we'll assume he/she means all of the kotlin files. */
+	/** If the user hasn't specified the files yet, we'll assume he/she means all of the scala files. */
 	@Override
 	protected void setupTask(SpotlessTask task) {
 		if (target == null) {
