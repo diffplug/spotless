@@ -190,6 +190,11 @@ public final class PaddedCell {
 
 	public static DirtyState calculateDirtyState(Formatter formatter, File file, byte[] rawBytes) throws IOException {
 		String raw = new String(rawBytes, formatter.getEncoding());
+		// check that all characters were encodable
+		String encodingError = EncodingErrorMsg.msg(raw, rawBytes, formatter.getEncoding());
+		if (encodingError != null) {
+			throw new IllegalArgumentException(encodingError);
+		}
 		String rawUnix = LineEnding.toUnix(raw);
 
 		// enforce the format
