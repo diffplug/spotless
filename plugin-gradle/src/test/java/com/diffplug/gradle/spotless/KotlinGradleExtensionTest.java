@@ -110,6 +110,24 @@ public class KotlinGradleExtensionTest extends GradleIntegrationTest {
 	}
 
 	@Test
+	public void integration_ktfmt() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'nebula.kotlin' version '1.0.6'",
+				"    id 'com.diffplug.gradle.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlinGradle {",
+				"        ktfmt()",
+				"    }",
+				"}");
+		setFile("configuration.gradle.kts").toResource("kotlin/ktfmt/basic.dirty");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("configuration.gradle.kts").sameAsResource("kotlin/ktfmt/basic.clean");
+	}
+
+	@Test
 	public void integration_lint_script_files_without_top_level_declaration() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
