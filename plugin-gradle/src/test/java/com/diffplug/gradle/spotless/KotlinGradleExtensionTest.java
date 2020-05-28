@@ -22,6 +22,8 @@ import java.io.IOException;
 import org.gradle.testkit.runner.BuildResult;
 import org.junit.Test;
 
+import com.diffplug.spotless.JreVersion;
+
 public class KotlinGradleExtensionTest extends GradleIntegrationTest {
 	@Test
 	public void integration() throws IOException {
@@ -107,6 +109,28 @@ public class KotlinGradleExtensionTest extends GradleIntegrationTest {
 		setFile("configuration.gradle.kts").toResource("kotlin/ktlint/basic.dirty");
 		BuildResult result = gradleRunner().withArguments("spotlessApply").buildAndFail();
 		assertThat(result.getOutput()).contains("Unexpected indentation (4) (it should be 6)");
+	}
+
+	@Test
+	public void integration_ktfmt() throws IOException {
+		if (JreVersion.thisVm() == JreVersion._8) {
+			// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
+			return;
+		}
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'nebula.kotlin' version '1.0.6'",
+				"    id 'com.diffplug.gradle.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlinGradle {",
+				"        ktfmt()",
+				"    }",
+				"}");
+		setFile("configuration.gradle.kts").toResource("kotlin/ktfmt/basic.dirty");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("configuration.gradle.kts").sameAsResource("kotlin/ktfmt/basic.clean");
 	}
 
 	@Test
