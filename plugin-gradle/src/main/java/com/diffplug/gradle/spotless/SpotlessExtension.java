@@ -249,7 +249,6 @@ public class SpotlessExtension {
 	 * - "spotless{FormatName}Check" will depend on the main spotless task in `check` mode
 	 * - "spotless{FormatName}Apply" will depend on the main spotless task in `apply` mode
 	 */
-	@SuppressWarnings("rawtypes")
 	private void createFormatTasks(String name, FormatExtension formatExtension) {
 		// create the SpotlessTask
 		String taskName = EXTENSION + SpotlessPlugin.capitalize(name);
@@ -268,8 +267,11 @@ public class SpotlessExtension {
 
 		SpotlessApply applyTask = project.getTasks().create(taskName + APPLY, SpotlessApply.class);
 		applyTask.setSpotlessOutDirectory(spotlessTask.getOutputDirectory());
-		applyTask.source = spotlessTask;
+		applyTask.linkSource(spotlessTask);
 		applyTask.dependsOn(spotlessTask);
+
+		// if the user runs both, make sure that apply happens first,
+		checkTask.mustRunAfter(applyTask);
 
 		// set the filePatterns property
 		project.afterEvaluate(unused -> {

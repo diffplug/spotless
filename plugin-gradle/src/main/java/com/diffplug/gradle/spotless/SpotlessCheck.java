@@ -54,6 +54,9 @@ public class SpotlessCheck extends DefaultTask {
 		ConfigurableFileTree files = getProject().fileTree(spotlessOutDirectory);
 		if (files.isEmpty()) {
 			getState().setDidWork(source.getDidWork());
+		} else if (getProject().getGradle().getTaskGraph().hasTask(source.applyTask)) {
+			// if our matching apply has already run, then we don't need to do anything
+			getState().setDidWork(false);
 		} else {
 			List<File> problemFiles = new ArrayList<>();
 			files.visit(new FileVisitor() {
