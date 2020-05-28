@@ -98,4 +98,11 @@ public class UpToDateTest extends GradleIntegrationTest {
 		applyIsUpToDate(false);
 		applyIsUpToDate(true);
 	}
+
+	@Test
+	public void checkAndApply() throws IOException {
+		writeBuildFile();
+		setFile("README.md").toContent("ABC");
+		gradleRunner().withArguments("spotlessCheck", "spotlessApply").build();
+	}
 }
