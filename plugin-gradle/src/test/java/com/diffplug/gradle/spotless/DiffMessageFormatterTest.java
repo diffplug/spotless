@@ -48,6 +48,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 			file = setFile("src/test." + name).toContent("CCC");
 			task = createFormatTask(name);
 			check = createCheckTask(name, task);
+			createApplyTask(name, task);
 		}
 
 		private SpotlessTask createFormatTask(String name) {
@@ -64,6 +65,13 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 			return task;
 		}
 
+		private SpotlessApply createApplyTask(String name, SpotlessTask source) {
+			SpotlessApply task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + "Apply", SpotlessApply.class);
+			task.linkSource(this.task);
+			task.setSpotlessOutDirectory(source.getOutputDirectory());
+			return task;
+		}
+
 		String checkFailureMsg() {
 			try {
 				check();
@@ -75,7 +83,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 
 		void check() throws Exception {
 			execute(task);
-			check.performAction();
+			check.performActionTest();
 		}
 	}
 
