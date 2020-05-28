@@ -107,7 +107,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 
 		void check() throws Exception {
 			execute(task);
-			check.performAction();
+			check.performActionTest();
 		}
 	}
 
