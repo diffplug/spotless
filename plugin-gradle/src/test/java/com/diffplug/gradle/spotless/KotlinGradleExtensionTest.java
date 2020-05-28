@@ -22,6 +22,8 @@ import java.io.IOException;
 import org.gradle.testkit.runner.BuildResult;
 import org.junit.Test;
 
+import com.diffplug.spotless.JreVersion;
+
 public class KotlinGradleExtensionTest extends GradleIntegrationTest {
 	@Test
 	public void integration() throws IOException {
@@ -111,6 +113,10 @@ public class KotlinGradleExtensionTest extends GradleIntegrationTest {
 
 	@Test
 	public void integration_ktfmt() throws IOException {
+		if (JreVersion.thisVm() == JreVersion._8) {
+			// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
+			return;
+		}
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'nebula.kotlin' version '1.0.6'",
