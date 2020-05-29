@@ -103,7 +103,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 		return new File(new File(this.nodeModulesDir, "node_modules"), this.npmConfig.getNpmModule());
 	}
 
-	private String j2v8MavenCoordinate() {
+	static String j2v8MavenCoordinate() {
 		return "com.eclipsesource.j2v8:j2v8_" + PlatformInfo.normalizedOSName() + "_" + PlatformInfo.normalizedArchName() + ":4.6.0";
 	}
 
