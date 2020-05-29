@@ -39,21 +39,16 @@ import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 public class DiffMessageFormatterTest extends ResourceHarness {
 
 	private class Bundle {
-		String name;
 		Project project = TestProvisioner.gradleProject(rootFolder());
 		File file;
-		File outputFile;
 		SpotlessTask task;
 		SpotlessCheck check;
-		SpotlessApply apply;
 
 		Bundle(String name) throws IOException {
-			this.name = name;
 			file = setFile("src/test." + name).toContent("CCC");
 			task = createFormatTask(name);
 			check = createCheckTask(name, task);
-			apply = createApplyTask(name, task);
-			outputFile = new File(task.getOutputDirectory() + "/src", file.getName());
+			createApplyTask(name, task);
 		}
 
 		private SpotlessTask createFormatTask(String name) {
@@ -72,7 +67,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 
 		private SpotlessApply createApplyTask(String name, SpotlessTask source) {
 			SpotlessApply task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + "Apply", SpotlessApply.class);
-			task.source = source;
+			task.linkSource(this.task);
 			task.setSpotlessOutDirectory(source.getOutputDirectory());
 			return task;
 		}
@@ -86,24 +81,9 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 			}
 		}
 
-		void diagnose() throws IOException {
-			SpotlessDiagnoseTask diagnose = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + "Diagnose", SpotlessDiagnoseTask.class);
-			diagnose.source = task;
-			diagnose.performAction();
-		}
-
-		void format() throws Exception {
-			execute(task);
-		}
-
-		void apply() throws Exception {
-			execute(task);
-			apply.performAction();
-		}
-
 		void check() throws Exception {
 			execute(task);
-			check.performAction();
+			check.performActionTest();
 		}
 	}
 

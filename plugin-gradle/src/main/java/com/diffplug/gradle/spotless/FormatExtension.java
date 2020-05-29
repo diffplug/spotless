@@ -635,7 +635,7 @@ public class FormatExtension {
 		// create the apply task
 		SpotlessApply applyTask = root.project.getTasks().create(taskName, SpotlessApply.class);
 		applyTask.setSpotlessOutDirectory(spotlessTask.getOutputDirectory());
-		applyTask.source = spotlessTask;
+		applyTask.linkSource(spotlessTask);
 		applyTask.dependsOn(spotlessTask);
 
 		return applyTask;

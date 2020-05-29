@@ -53,6 +53,15 @@ import com.diffplug.spotless.PaddedCell;
 
 @CacheableTask
 public class SpotlessTask extends DefaultTask {
+	SpotlessApply applyTask;
+
+	/** @deprecated internal use only, allows coordination between check and apply when they are in the same build */
+	@Internal
+	@Deprecated
+	public SpotlessApply getApplyTask() {
+		return applyTask;
+	}
+
 	// set by SpotlessExtension, but possibly overridden by FormatExtension
 	protected String encoding = "UTF-8";
 

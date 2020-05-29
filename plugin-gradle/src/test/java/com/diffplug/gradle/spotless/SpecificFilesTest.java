@@ -16,23 +16,38 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
+import java.util.Locale;
 
-import org.gradle.testkit.runner.*;
+import org.gradle.testkit.runner.GradleRunner;
+import org.gradle.testkit.runner.UnexpectedBuildFailure;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.diffplug.common.base.StandardSystemProperty;
+
 public class SpecificFilesTest extends GradleIntegrationTest {
+	private static boolean isWindows() {
+		return StandardSystemProperty.OS_NAME.value().toLowerCase(Locale.US).contains("win");
+	}
+
+	private static String regexWinSafe(String input) {
+		return isWindows() ? input.replace("/", "\\\\") : input;
+	}
+
 	private String testFilePath(int number) {
 		return testFilePath(number, true);
 	}
 
 	private String testFilePath(int number, boolean absolute) {
 		String relPath = "src/main/java/test" + number + ".java";
+		String returnValue;
 		if (absolute) {
-			return rootFolder() + "/" + relPath;
+			returnValue = rootFolder().getAbsolutePath().replace('\\', '/') + "/" + relPath;
 		} else {
-			return relPath;
+			returnValue = relPath;
 		}
+		// regex-escape on windows;
+		return regexWinSafe(returnValue);
 	}
 
 	private String fixture() {
@@ -141,7 +156,7 @@ public class SpecificFilesTest extends GradleIntegrationTest {
 	@Test
 	public void regexp() throws IOException {
 		createBuildScript();
-		integration(".*/src/main/java/test(1|3).java", true, false, true);
+		integration(regexWinSafe(".*/src/main/java/test(1|3).java"), true, false, true);
 	}
 
 	@Test(expected = UnexpectedBuildFailure.class)
