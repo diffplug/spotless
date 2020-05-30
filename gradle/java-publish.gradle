@@ -26,6 +26,7 @@ def javadocInfo = '<h2>' + makeLink("https://github.com/${org}/${name}", "${grou
 String dotdotGradle = project.name.startsWith('eclipse-') ? '../../gradle' : '../gradle'
 apply plugin: 'org.jdrupes.mdoclet'
 javadoc {
+	options.encoding = 'UTF-8'
 	// Where it's possible to name parameters and methods clearly enough
 	// that javadoc is not necessary, why make the code bigger?
 	//

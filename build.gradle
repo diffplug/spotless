@@ -6,7 +6,7 @@ plugins {
 	// https://github.com/bintray/gradle-bintray-plugin/releases
 	id 'com.jfrog.bintray' version '1.8.5' apply false
 	// https://github.com/mnlipp/jdrupes-mdoclet/releases
-	id 'org.jdrupes.mdoclet' version '1.0.9' apply false
+	id 'org.jdrupes.mdoclet' version '1.0.10' apply false
 	// https://github.com/spotbugs/spotbugs/releases
 	id "com.github.spotbugs" version "4.0.8" apply false
 	//https://github.com/diffplug/goomph
