@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -186,7 +185,16 @@ public final class PaddedCell {
 		Objects.requireNonNull(file, "file");
 
 		byte[] rawBytes = Files.readAllBytes(file.toPath());
+		return calculateDirtyState(formatter, file, rawBytes);
+	}
+
+	public static DirtyState calculateDirtyState(Formatter formatter, File file, byte[] rawBytes) throws IOException {
 		String raw = new String(rawBytes, formatter.getEncoding());
+		// check that all characters were encodable
+		String encodingError = EncodingErrorMsg.msg(raw, rawBytes, formatter.getEncoding());
+		if (encodingError != null) {
+			throw new IllegalArgumentException(encodingError);
+		}
 		String rawUnix = LineEnding.toUnix(raw);
 
 		// enforce the format
@@ -254,7 +262,7 @@ public final class PaddedCell {
 		}
 
 		public void writeCanonicalTo(File file) throws IOException {
-			Files.write(file.toPath(), canonicalBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+			Files.write(file.toPath(), canonicalBytes());
 		}
 
 		public void writeCanonicalTo(OutputStream out) throws IOException {

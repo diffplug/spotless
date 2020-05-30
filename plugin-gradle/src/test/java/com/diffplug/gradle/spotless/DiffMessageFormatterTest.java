@@ -21,11 +21,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import org.assertj.core.api.Assertions;
-import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.junit.Test;
 
@@ -37,24 +37,72 @@ import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
 public class DiffMessageFormatterTest extends ResourceHarness {
-	private SpotlessTask create(File... files) throws IOException {
+
+	private class Bundle {
+		Project project = TestProvisioner.gradleProject(rootFolder());
+		File file;
+		SpotlessTask task;
+		SpotlessCheck check;
+
+		Bundle(String name) throws IOException {
+			file = setFile("src/test." + name).toContent("CCC");
+			task = createFormatTask(name);
+			check = createCheckTask(name, task);
+			createApplyTask(name, task);
+		}
+
+		private SpotlessTask createFormatTask(String name) {
+			SpotlessTask task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name), SpotlessTask.class);
+			task.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
+			task.setTarget(Collections.singletonList(file));
+			return task;
+		}
+
+		private SpotlessCheck createCheckTask(String name, SpotlessTask source) {
+			SpotlessCheck task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + "Check", SpotlessCheck.class);
+			task.source = source;
+			task.setSpotlessOutDirectory(source.getOutputDirectory());
+			return task;
+		}
+
+		private SpotlessApply createApplyTask(String name, SpotlessTask source) {
+			SpotlessApply task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + "Apply", SpotlessApply.class);
+			task.linkSource(this.task);
+			task.setSpotlessOutDirectory(source.getOutputDirectory());
+			return task;
+		}
+
+		String checkFailureMsg() {
+			try {
+				check();
+				throw new AssertionError();
+			} catch (Exception e) {
+				return e.getMessage();
+			}
+		}
+
+		void check() throws Exception {
+			execute(task);
+			check.performActionTest();
+		}
+	}
+
+	private Bundle create(File... files) throws IOException {
 		return create(Arrays.asList(files));
 	}
 
-	private SpotlessTask create(List<File> files) throws IOException {
-		Project project = TestProvisioner.gradleProject(rootFolder());
-		SpotlessTask task = project.getTasks().create("underTest", SpotlessTask.class);
-		task.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
-		task.setTarget(files);
-		task.setCheck();
-		return task;
+	private Bundle create(List<File> files) throws IOException {
+		Bundle bundle = new Bundle("underTest");
+		bundle.task.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
+		bundle.task.setTarget(files);
+		return bundle;
 	}
 
-	private void assertTaskFailure(SpotlessTask task, String... expectedLines) throws Exception {
-		String msg = getTaskErrorMessage(task);
+	private void assertCheckFailure(Bundle spotless, String... expectedLines) throws Exception {
+		String msg = spotless.checkFailureMsg();
 
 		String firstLine = "The following files had format violations:\n";
-		String lastLine = "\nRun 'gradlew spotlessApply' to fix these violations.";
+		String lastLine = "\n" + TestFixtures.EXPECTED_RUN_SPOTLESS_APPLY_SUGGESTION;
 		Assertions.assertThat(msg).startsWith(firstLine).endsWith(lastLine);
 
 		String middle = msg.substring(firstLine.length(), msg.length() - lastLine.length());
@@ -62,19 +110,10 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 		Assertions.assertThat(middle).isEqualTo(expectedMessage.substring(0, expectedMessage.length() - 1));
 	}
 
-	protected String getTaskErrorMessage(SpotlessTask task) throws Exception {
-		try {
-			execute(task);
-			throw new AssertionError("Expected a GradleException");
-		} catch (GradleException e) {
-			return e.getMessage();
-		}
-	}
-
 	@Test
 	public void lineEndingProblem() throws Exception {
-		SpotlessTask task = create(setFile("testFile").toContent("A\r\nB\r\nC\r\n"));
-		assertTaskFailure(task,
+		Bundle task = create(setFile("testFile").toContent("A\r\nB\r\nC\r\n"));
+		assertCheckFailure(task,
 				"    testFile",
 				"        @@ -1,3 +1,3 @@",
 				"        -A\\r\\n",
@@ -87,12 +126,12 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 
 	@Test
 	public void whitespaceProblem() throws Exception {
-		SpotlessTask task = create(setFile("testFile").toContent("A \nB\t\nC  \n"));
-		task.addStep(FormatterStep.createNeverUpToDate("trimTrailing", input -> {
+		Bundle spotless = create(setFile("testFile").toContent("A \nB\t\nC  \n"));
+		spotless.task.addStep(FormatterStep.createNeverUpToDate("trimTrailing", input -> {
 			Pattern pattern = Pattern.compile("[ \t]+$", Pattern.UNIX_LINES | Pattern.MULTILINE);
 			return pattern.matcher(input).replaceAll("");
 		}));
-		assertTaskFailure(task,
+		assertCheckFailure(spotless,
 				"    testFile",
 				"        @@ -1,3 +1,3 @@",
 				"        -A·",
@@ -105,10 +144,10 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 
 	@Test
 	public void multipleFiles() throws Exception {
-		SpotlessTask task = create(
+		Bundle spotless = create(
 				setFile("A").toContent("1\r\n2\r\n"),
 				setFile("B").toContent("3\n4\r\n"));
-		assertTaskFailure(task,
+		assertCheckFailure(spotless,
 				"    A",
 				"        @@ -1,2 +1,2 @@",
 				"        -1\\r\\n",
@@ -126,65 +165,66 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 	public void manyFiles() throws Exception {
 		List<File> testFiles = new ArrayList<>();
 		for (int i = 0; i < 9 + DiffMessageFormatter.MAX_FILES_TO_LIST - 1; ++i) {
-			testFiles.add(setFile(Integer.toString(i) + ".txt").toContent("1\r\n2\r\n"));
+			String fileName = String.format("%02d", i) + ".txt";
+			testFiles.add(setFile(fileName).toContent("1\r\n2\r\n"));
 		}
-		SpotlessTask task = create(testFiles);
-		assertTaskFailure(task,
-				"    0.txt",
+		Bundle spotless = create(testFiles);
+		assertCheckFailure(spotless,
+				"    00.txt",
 				"        @@ -1,2 +1,2 @@",
 				"        -1\\r\\n",
 				"        -2\\r\\n",
 				"        +1\\n",
 				"        +2\\n",
-				"    1.txt",
+				"    01.txt",
 				"        @@ -1,2 +1,2 @@",
 				"        -1\\r\\n",
 				"        -2\\r\\n",
 				"        +1\\n",
 				"        +2\\n",
-				"    2.txt",
+				"    02.txt",
 				"        @@ -1,2 +1,2 @@",
 				"        -1\\r\\n",
 				"        -2\\r\\n",
 				"        +1\\n",
 				"        +2\\n",
-				"    3.txt",
+				"    03.txt",
 				"        @@ -1,2 +1,2 @@",
 				"        -1\\r\\n",
 				"        -2\\r\\n",
 				"        +1\\n",
 				"        +2\\n",
-				"    4.txt",
+				"    04.txt",
 				"        @@ -1,2 +1,2 @@",
 				"        -1\\r\\n",
 				"        -2\\r\\n",
 				"        +1\\n",
 				"        +2\\n",
-				"    5.txt",
+				"    05.txt",
 				"        @@ -1,2 +1,2 @@",
 				"        -1\\r\\n",
 				"        -2\\r\\n",
 				"        +1\\n",
 				"        +2\\n",
-				"    6.txt",
+				"    06.txt",
 				"        @@ -1,2 +1,2 @@",
 				"        -1\\r\\n",
 				"        -2\\r\\n",
 				"        +1\\n",
 				"        +2\\n",
-				"    7.txt",
+				"    07.txt",
 				"        @@ -1,2 +1,2 @@",
 				"        -1\\r\\n",
 				"        -2\\r\\n",
 				"        +1\\n",
 				"        +2\\n",
-				"    8.txt",
+				"    08.txt",
 				"        @@ -1,2 +1,2 @@",
 				"        -1\\r\\n",
 				"        -2\\r\\n",
 				"    ... (2 more lines that didn't fit)",
 				"Violations also present in:",
-				"    9.txt",
+				"    09.txt",
 				"    10.txt",
 				"    11.txt",
 				"    12.txt",
@@ -199,59 +239,60 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 	public void manyManyFiles() throws Exception {
 		List<File> testFiles = new ArrayList<>();
 		for (int i = 0; i < 9 + DiffMessageFormatter.MAX_FILES_TO_LIST; ++i) {
-			testFiles.add(setFile(Integer.toString(i) + ".txt").toContent("1\r\n2\r\n"));
+			String fileName = String.format("%02d", i) + ".txt";
+			testFiles.add(setFile(fileName).toContent("1\r\n2\r\n"));
 		}
-		SpotlessTask task = create(testFiles);
-		assertTaskFailure(task,
-				"    0.txt",
+		Bundle spotless = create(testFiles);
+		assertCheckFailure(spotless,
+				"    00.txt",
 				"        @@ -1,2 +1,2 @@",
 				"        -1\\r\\n",
 				"        -2\\r\\n",
 				"        +1\\n",
 				"        +2\\n",
-				"    1.txt",
+				"    01.txt",
 				"        @@ -1,2 +1,2 @@",
 				"        -1\\r\\n",
 				"        -2\\r\\n",
 				"        +1\\n",
 				"        +2\\n",
-				"    2.txt",
+				"    02.txt",
 				"        @@ -1,2 +1,2 @@",
 				"        -1\\r\\n",
 				"        -2\\r\\n",
 				"        +1\\n",
 				"        +2\\n",
-				"    3.txt",
+				"    03.txt",
 				"        @@ -1,2 +1,2 @@",
 				"        -1\\r\\n",
 				"        -2\\r\\n",
 				"        +1\\n",
 				"        +2\\n",
-				"    4.txt",
+				"    04.txt",
 				"        @@ -1,2 +1,2 @@",
 				"        -1\\r\\n",
 				"        -2\\r\\n",
 				"        +1\\n",
 				"        +2\\n",
-				"    5.txt",
+				"    05.txt",
 				"        @@ -1,2 +1,2 @@",
 				"        -1\\r\\n",
 				"        -2\\r\\n",
 				"        +1\\n",
 				"        +2\\n",
-				"    6.txt",
+				"    06.txt",
 				"        @@ -1,2 +1,2 @@",
 				"        -1\\r\\n",
 				"        -2\\r\\n",
 				"        +1\\n",
 				"        +2\\n",
-				"    7.txt",
+				"    07.txt",
 				"        @@ -1,2 +1,2 @@",
 				"        -1\\r\\n",
 				"        -2\\r\\n",
 				"        +1\\n",
 				"        +2\\n",
-				"    8.txt",
+				"    08.txt",
 				"        @@ -1,2 +1,2 @@",
 				"        -1\\r\\n",
 				"        -2\\r\\n",
@@ -266,8 +307,8 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 			builder.append(i);
 			builder.append("\r\n");
 		}
-		SpotlessTask task = create(setFile("testFile").toContent(builder.toString()));
-		assertTaskFailure(task,
+		Bundle spotless = create(setFile("testFile").toContent(builder.toString()));
+		assertCheckFailure(spotless,
 				"    testFile",
 				"        @@ -1,1000 +1,1000 @@",
 				"        -0\\r\\n",

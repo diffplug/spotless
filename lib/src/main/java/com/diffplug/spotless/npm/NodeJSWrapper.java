@@ -16,11 +16,12 @@
 package com.diffplug.spotless.npm;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Set;
 
-import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.ThrowingEx;
 
 class NodeJSWrapper extends ReflectiveObjectWrapper {
 
@@ -29,14 +30,37 @@ class NodeJSWrapper extends ReflectiveObjectWrapper {
 
 	public static final String WRAPPED_CLASS = "com.eclipsesource.v8.NodeJS";
 
-	private static final AtomicBoolean flagsSet = new AtomicBoolean(false);
+	private static final Set<ClassLoader> alreadySetup = new HashSet<>();
 
 	public NodeJSWrapper(ClassLoader classLoader) {
 		super(Reflective.withClassLoader(classLoader),
 				reflective -> {
-					final boolean firstRun = flagsSet.compareAndSet(false, true);
-					if (firstRun && LineEnding.PLATFORM_NATIVE.str().equals("\r\n")) {
-						reflective.invokeStaticMethod(V8_RUNTIME_CLASS, "setFlags", "-color=false"); // required to run prettier on windows
+					if (alreadySetup.add(classLoader)) {
+						// the bridge to node.js needs a .dll/.so/.dylib which gets loaded through System.load
+						// the problem is that when the JVM loads that DLL, it is bound to the specific classloader that called System.load
+						// no other classloaders have access to it, and if any other classloader tries to load it, you get an error
+						//
+						// ...but, you can copy that DLL as many times as you want, and each classloader can load its own copy of the DLL, and
+						// that is fine
+						//
+						// ...but the in order to do that, we have to manually load the DLL per classloader ourselves, which involves some
+						// especially hacky reflection into J2V8 *and* JVM internal
+						//
+						// so this is bad code, but it fixes our problem, and so far we don't have a better way...
+
+						// here we get the name of the DLL within the jar, and we get our own copy of it on disk
+						String resource = (String) reflective.invokeStaticMethodPrivate("com.eclipsesource.v8.LibraryLoader", "computeLibraryFullName");
+						File file = NodeJsGlobal.sharedLibs.nextDynamicLib(classLoader, resource);
+
+						// ideally, we would call System.load, but the JVM does some tricky stuff to
+						// figure out who actually called this, and it realizes it was Reflective, which lives
+						// outside the J2V8 classloader, so System.load doesn't work.  Soooo, we have to dig
+						// into JVM internals and manually tell it "this class from J2V8 called you"
+						Class<?> libraryLoaderClass = ThrowingEx.get(() -> classLoader.loadClass("com.eclipsesource.v8.LibraryLoader"));
+						reflective.invokeStaticMethodPrivate("java.lang.ClassLoader", "loadLibrary0", libraryLoaderClass, file);
+
+						// and now we set the flag in J2V8 which says "the DLL is loaded, don't load it again"
+						reflective.staticFieldPrivate("com.eclipsesource.v8.V8", "nativeLibraryLoaded", true);
 					}
 					return reflective.invokeStaticMethod(WRAPPED_CLASS, "createNodeJS");
 				});

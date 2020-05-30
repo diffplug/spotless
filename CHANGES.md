@@ -10,6 +10,22 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* `NodeJsGlobal.setSharedLibFolder` allows to set the location of nodejs shared libs. ([#586](https://github.com/diffplug/spotless/pull/586))
+### Fixed
+* Previously, the nodejs-based steps would throw `UnsatisfiedLinkError` if they were ever used from more than one classloader.  Now they can be used from any number of classloaders (important for gradle build daemon). ([#586](https://github.com/diffplug/spotless/pull/586))
+
+## [1.31.0] - 2020-05-21
+### Added
+* `PaddedCell.calculateDirtyState` is now defensive about misconfigured character encoding. ([#575](https://github.com/diffplug/spotless/pull/575))
+
+## [1.30.1] - 2020-05-17
+### Fixed
+* `PaddedCell.DirtyState::writeCanonicalTo(File)` can now create a new file if necessary (previously required to overwrite an existing file) ([#576](https://github.com/diffplug/spotless/pull/576)).
+
+## [1.30.0] - 2020-05-11
+### Added
+* `PaddedCell.calculateDirtyState(Formatter, File, byte[])` to allow IDE integrations to send dirty editor buffers.
 
 ## [1.29.0] - 2020-05-05
 ### Added

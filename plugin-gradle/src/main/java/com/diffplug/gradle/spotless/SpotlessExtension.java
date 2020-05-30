@@ -17,6 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import static java.util.Objects.requireNonNull;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -27,14 +28,11 @@ import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
-import org.gradle.api.execution.TaskExecutionGraph;
 import org.gradle.api.plugins.BasePlugin;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.spotless.LineEnding;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import groovy.lang.Closure;
+import com.diffplug.spotless.npm.NodeJsGlobal;
 
 public class SpotlessExtension {
 	final Project project;
@@ -67,6 +65,8 @@ public class SpotlessExtension {
 		if (registerDependenciesTask == null) {
 			registerDependenciesTask = project.getRootProject().getTasks().create(RegisterDependenciesTask.TASK_NAME, RegisterDependenciesTask.class);
 			registerDependenciesTask.setup();
+			// set where the nodejs runtime will put its temp dlls
+			NodeJsGlobal.setSharedLibFolder(new File(project.getBuildDir(), "spotless-nodejs-cache"));
 		}
 		this.registerDependenciesTask = registerDependenciesTask;
 	}
@@ -237,7 +237,7 @@ public class SpotlessExtension {
 				Constructor<T> constructor = clazz.getConstructor(SpotlessExtension.class);
 				T formatExtension = constructor.newInstance(this);
 				formats.put(name, formatExtension);
-				createFormatTask(name, formatExtension);
+				createFormatTasks(name, formatExtension);
 				return formatExtension;
 			} catch (NoSuchMethodException e) {
 				throw new GradleException("Must have a constructor " + clazz.getSimpleName() + "(SpotlessExtension root)", e);
@@ -247,8 +247,13 @@ public class SpotlessExtension {
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
-	private void createFormatTask(String name, FormatExtension formatExtension) {
+	/**
+	 * Creates 3 tasks for the supplied format:
+	 * - "spotless{FormatName}" is the main `SpotlessTask` that does the work for this format
+	 * - "spotless{FormatName}Check" will depend on the main spotless task in `check` mode
+	 * - "spotless{FormatName}Apply" will depend on the main spotless task in `apply` mode
+	 */
+	private void createFormatTasks(String name, FormatExtension formatExtension) {
 		// create the SpotlessTask
 		String taskName = EXTENSION + SpotlessPlugin.capitalize(name);
 		SpotlessTask spotlessTask = project.getTasks().create(taskName, SpotlessTask.class);
@@ -259,27 +264,18 @@ public class SpotlessExtension {
 		spotlessTask.mustRunAfter(clean);
 
 		// create the check and apply control tasks
-		Task checkTask = project.getTasks().create(taskName + CHECK);
-		Task applyTask = project.getTasks().create(taskName + APPLY);
-
+		SpotlessCheck checkTask = project.getTasks().create(taskName + CHECK, SpotlessCheck.class);
+		checkTask.setSpotlessOutDirectory(spotlessTask.getOutputDirectory());
+		checkTask.source = spotlessTask;
 		checkTask.dependsOn(spotlessTask);
-		applyTask.dependsOn(spotlessTask);
-		// when the task graph is ready, we'll configure the spotlessTask appropriately
-		project.getGradle().getTaskGraph().whenReady(new Closure(null) {
-			private static final long serialVersionUID = 1L;
 
-			// called by gradle
-			@SuppressFBWarnings("UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS")
-			public Object doCall(TaskExecutionGraph graph) {
-				if (graph.hasTask(checkTask)) {
-					spotlessTask.setCheck();
-				}
-				if (graph.hasTask(applyTask)) {
-					spotlessTask.setApply();
-				}
-				return Closure.DONE;
-			}
-		});
+		SpotlessApply applyTask = project.getTasks().create(taskName + APPLY, SpotlessApply.class);
+		applyTask.setSpotlessOutDirectory(spotlessTask.getOutputDirectory());
+		applyTask.linkSource(spotlessTask);
+		applyTask.dependsOn(spotlessTask);
+
+		// if the user runs both, make sure that apply happens first,
+		checkTask.mustRunAfter(applyTask);
 
 		// set the filePatterns property
 		project.afterEvaluate(unused -> {
@@ -302,5 +298,14 @@ public class SpotlessExtension {
 		diagnoseTask.source = spotlessTask;
 		rootDiagnoseTask.dependsOn(diagnoseTask);
 		diagnoseTask.mustRunAfter(clean);
+
+		if (project.hasProperty(IdeHook.PROPERTY)) {
+			// disable the normal tasks, to disable their up-to-date checking
+			spotlessTask.setEnabled(false);
+			checkTask.setEnabled(false);
+			applyTask.setEnabled(false);
+			// the rootApplyTask is no longer just a marker task, now it does a bit of work itself
+			rootApplyTask.doLast(unused -> IdeHook.performHook(spotlessTask));
+		}
 	}
 }

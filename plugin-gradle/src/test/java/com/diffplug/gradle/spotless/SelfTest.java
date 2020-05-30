@@ -43,7 +43,6 @@ public class SelfTest {
 						.map(task -> (SpotlessTask) task)
 						.forEach(task -> Errors.rethrow().run(() -> {
 							IncrementalTaskInputs inputs = Mocks.mockIncrementalTaskInputs(task.getTarget());
-							task.setCheck();
 							task.performAction(inputs);
 						}));
 			}
@@ -61,7 +60,6 @@ public class SelfTest {
 						.map(task -> (SpotlessTask) task)
 						.forEach(task -> Errors.rethrow().run(() -> {
 							IncrementalTaskInputs inputs = Mocks.mockIncrementalTaskInputs(task.getTarget());
-							task.setApply();
 							task.performAction(inputs);
 						}));
 			}
