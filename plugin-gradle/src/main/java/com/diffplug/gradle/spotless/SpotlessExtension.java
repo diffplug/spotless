@@ -17,6 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import static java.util.Objects.requireNonNull;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -31,6 +32,7 @@ import org.gradle.api.plugins.BasePlugin;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.npm.NodeJsGlobal;
 
 public class SpotlessExtension {
 	final Project project;
@@ -63,6 +65,8 @@ public class SpotlessExtension {
 		if (registerDependenciesTask == null) {
 			registerDependenciesTask = project.getRootProject().getTasks().create(RegisterDependenciesTask.TASK_NAME, RegisterDependenciesTask.class);
 			registerDependenciesTask.setup();
+			// set where the nodejs runtime will put its temp dlls
+			NodeJsGlobal.setSharedLibFolder(new File(project.getBuildDir(), "spotless-nodejs-cache"));
 		}
 		this.registerDependenciesTask = registerDependenciesTask;
 	}
