@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ThrowingEx;
 
 class NodeJSWrapper extends ReflectiveObjectWrapper {
@@ -36,9 +35,6 @@ class NodeJSWrapper extends ReflectiveObjectWrapper {
 	public NodeJSWrapper(ClassLoader classLoader) {
 		super(Reflective.withClassLoader(classLoader),
 				reflective -> {
-					if (LineEnding.PLATFORM_NATIVE.str().equals("\r\n")) {
-						reflective.invokeStaticMethod(V8_RUNTIME_CLASS, "setFlags", "-color=false"); // required to run prettier on windows
-					}
 					if (alreadySetup.add(classLoader)) {
 						// the bridge to node.js needs a .dll/.so/.dylib which gets loaded through System.load
 						// the problem is that when the JVM loads that DLL, it is bound to the specific classloader that called System.load
