@@ -96,7 +96,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 	}
 
 	protected NodeJSWrapper nodeJSWrapper() {
-		return new NodeJSWrapper(this.jarState.getClassLoader()); // TODO (simschla, 02.08.18): cache this instance
+		return new NodeJSWrapper(this.jarState.getClassLoader());
 	}
 
 	protected File nodeModulePath() {
