@@ -84,13 +84,13 @@ public class Tsfmt implements FormatterStepFactory {
 			}
 			configInline = null;
 			if (this.tsconfigFile != null) {
-				configFile = new TypedTsFmtConfigFile(TsConfigFileType.TSCONFIG, stepConfig.getFileLocator().locateLocal(tsconfigFile));
+				configFile = new TypedTsFmtConfigFile(TsConfigFileType.TSCONFIG, stepConfig.getFileLocator().locateFile(tsconfigFile));
 			} else if (this.tsfmtFile != null) {
-				configFile = new TypedTsFmtConfigFile(TsConfigFileType.TSFMT, stepConfig.getFileLocator().locateLocal(tsfmtFile));
+				configFile = new TypedTsFmtConfigFile(TsConfigFileType.TSFMT, stepConfig.getFileLocator().locateFile(tsfmtFile));
 			} else if (this.tslintFile != null) {
-				configFile = new TypedTsFmtConfigFile(TsConfigFileType.TSLINT, stepConfig.getFileLocator().locateLocal(tslintFile));
+				configFile = new TypedTsFmtConfigFile(TsConfigFileType.TSLINT, stepConfig.getFileLocator().locateFile(tslintFile));
 			} else if (this.vscodeFile != null) {
-				configFile = new TypedTsFmtConfigFile(TsConfigFileType.VSCODE, stepConfig.getFileLocator().locateLocal(vscodeFile));
+				configFile = new TypedTsFmtConfigFile(TsConfigFileType.VSCODE, stepConfig.getFileLocator().locateFile(vscodeFile));
 			} else {
 				throw new Error("Programming error: the xors did not match the cases");
 			}
