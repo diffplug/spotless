@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+* If you specified a config file for a formatter, it used to be needlessly copied to a randomly-named file in the build folder.  This could cause performance to suffer, especially for [large multi-project builds that use eclipse](https://github.com/diffplug/spotless/issues/559). ([#572](https://github.com/diffplug/spotless/pull/572))
 
 ## [1.31.0] - 2020-05-05
 ### Added
