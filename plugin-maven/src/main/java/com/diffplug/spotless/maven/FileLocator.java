@@ -39,15 +39,18 @@ public class FileLocator {
 		this.buildDir = Objects.requireNonNull(buildDir);
 	}
 
-	/** Asserts that the given path is a file, then copies it with a new random name into the build folder. */
+	/**
+	 * If the given path is a local file returns it as such unchanged,
+	 * otherwise extracts the given resource to a randomly-named file in the build folder.
+	 */
 	public File locateFile(String path) {
 		if (isNullOrEmpty(path)) {
 			return null;
 		}
 
-		File testExists = new File(path);
-		if (testExists.exists() && testExists.isFile()) {
-			return testExists;
+		File localFile = new File(path);
+		if (localFile.exists() && localFile.isFile()) {
+			return localFile;
 		}
 
 		String outputFile = tmpOutputFileName(path);
