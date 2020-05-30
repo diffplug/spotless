@@ -68,20 +68,6 @@ public class FileLocator {
 		return TMP_RESOURCE_FILE_PREFIX + UUID.randomUUID() + '.' + extension;
 	}
 
-	/** Asserts that the given path exists as a file or folder. */
-	public File locateLocal(String path) {
-		if (isNullOrEmpty(path)) {
-			return null;
-		}
-
-		File exists = new File(path);
-		if (exists.exists()) {
-			return exists;
-		}
-
-		throw new RuntimeException("Unable to locate file with path: " + path);
-	}
-
 	public File getBaseDir() {
 		return baseDir;
 	}

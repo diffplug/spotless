@@ -70,7 +70,7 @@ public class Tsfmt implements FormatterStepFactory {
 			devDependencies.put("tslint", tslintVersion);
 		}
 
-		File npm = npmExecutable != null ? stepConfig.getFileLocator().locateLocal(npmExecutable) : null;
+		File npm = npmExecutable != null ? stepConfig.getFileLocator().locateFile(npmExecutable) : null;
 
 		TypedTsFmtConfigFile configFile;
 		Map<String, Object> configInline;

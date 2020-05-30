@@ -61,12 +61,12 @@ public class Prettier implements FormatterStepFactory {
 			}
 		}
 
-		File npm = npmExecutable != null ? stepConfig.getFileLocator().locateLocal(npmExecutable) : null;
+		File npm = npmExecutable != null ? stepConfig.getFileLocator().locateFile(npmExecutable) : null;
 
 		// process config file or inline config
 		File configFileHandler;
 		if (this.configFile != null) {
-			configFileHandler = stepConfig.getFileLocator().locateLocal(this.configFile);
+			configFileHandler = stepConfig.getFileLocator().locateFile(this.configFile);
 		} else {
 			configFileHandler = null;
 		}
