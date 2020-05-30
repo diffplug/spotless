@@ -22,6 +22,10 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+import com.diffplug.spotless.ThrowingEx;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 class Reflective {
 	private final ClassLoader classLoader;
 
@@ -53,6 +57,17 @@ class Reflective {
 	Object invokeStaticMethod(String className, String methodName, Object... parameters) {
 		try {
 			Method m = staticMethod(className, methodName, parameters);
+			return m.invoke(m.getDeclaringClass(), parameters);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			throw new ReflectiveException(e);
+		}
+	}
+
+	@SuppressFBWarnings("DP_DO_INSIDE_DO_PRIVILEGED")
+	Object invokeStaticMethodPrivate(String className, String methodName, Object... parameters) {
+		try {
+			Method m = staticMethod(className, methodName, parameters);
+			m.setAccessible(true);
 			return m.invoke(m.getDeclaringClass(), parameters);
 		} catch (IllegalAccessException | InvocationTargetException e) {
 			throw new ReflectiveException(e);
@@ -212,6 +227,18 @@ class Reflective {
 			return clazz.getDeclaredField(fieldName).get(clazz);
 		} catch (IllegalAccessException | NoSuchFieldException e) {
 			throw new ReflectiveException(e);
+		}
+	}
+
+	@SuppressFBWarnings("DP_DO_INSIDE_DO_PRIVILEGED")
+	void staticFieldPrivate(String className, String fieldName, boolean newValue) {
+		Class<?> clazz = clazz(className);
+		try {
+			Field field = clazz.getDeclaredField(fieldName);
+			field.setAccessible(true);
+			field.setBoolean(null, newValue);
+		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+			throw ThrowingEx.asRuntime(e);
 		}
 	}
 
