@@ -62,7 +62,6 @@ class GitRatchet implements AutoCloseable {
 		Repository repo = instance.repositoryFor(project);
 		String path = repo.getWorkTree().toPath().relativize(file.toPath()).toString();
 
-		System.out.print("isClean " + path + " ");
 		// TODO: should be cached-per-repo if it is thread-safe, or per-repo-per-thread if it is not
 		DirCache dirCache = repo.readDirCache();
 
@@ -75,7 +74,6 @@ class GitRatchet implements AutoCloseable {
 					new IndexDiffFilter(INDEX, WORKDIR)));
 
 			if (!treeWalk.next()) {
-				System.out.println("A yes");
 				// the file we care about is git clean
 				return true;
 			} else {
@@ -88,7 +86,6 @@ class GitRatchet implements AutoCloseable {
 
 				if (!hasTree) {
 					// it's not in the tree, so it was added
-					System.out.println("B no");
 					return false;
 				} else {
 					if (hasDirCache) {
@@ -96,21 +93,17 @@ class GitRatchet implements AutoCloseable {
 						boolean indexEqualsWC = !workingTreeIterator.isModified(dirCacheIterator.getDirCacheEntry(), true, treeWalk.getObjectReader());
 						if (treeEqualsIndex != indexEqualsWC) {
 							// if one is equal and the other isn't, then it has definitely changed
-							System.out.println("C no");
 							return false;
 						} else if (treeEqualsIndex) {
-							System.out.println("D yes"); // NEED
 							// this means they are all equal to each other, which should never happen
 							// the IndexDiffFilter should keep those out of the TreeWalk entirely
 							throw new IllegalStateException("Index status for " + file + " against treeSha " + treeSha + " is invalid.");
 						} else {
 							// they are all unique
-							System.out.print("E ");
 							// we have to check manually
 							return worktreeIsCleanCheckout(treeWalk);
 						}
 					} else {
-						System.out.print("F ");
 						// no dirCache, so we will compare the tree to the workdir manually
 						return worktreeIsCleanCheckout(treeWalk);
 					}
@@ -121,9 +114,7 @@ class GitRatchet implements AutoCloseable {
 
 	/** Returns true if the worktree file is a clean checkout of head (possibly smudged). */
 	private static boolean worktreeIsCleanCheckout(TreeWalk treeWalk) {
-		boolean result = treeWalk.idEqual(TREE, WORKDIR);
-		System.out.println(result ? "yes" : "no");
-		return result;
+		return treeWalk.idEqual(TREE, WORKDIR);
 	}
 
 	private final static int TREE = 0;
@@ -202,7 +193,6 @@ class GitRatchet implements AutoCloseable {
 					}
 					instance.shaCache.put(repo, reference, treeSha);
 				}
-				System.out.println("treeSha of " + reference + " is " + treeSha);
 				return treeSha;
 			} catch (Exception e) {
 				throw Errors.asRuntime(e);

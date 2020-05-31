@@ -222,7 +222,6 @@ public class ResourceHarness {
 		}
 
 		public File toContent(String content) throws IOException {
-			System.out.print("toContent(" + content + ") ");
 			return toContent(content, StandardCharsets.UTF_8);
 		}
 
