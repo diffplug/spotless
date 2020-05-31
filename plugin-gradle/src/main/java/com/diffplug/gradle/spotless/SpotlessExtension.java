@@ -24,6 +24,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
@@ -103,6 +105,24 @@ public class SpotlessExtension {
 	/** Sets encoding to use (defaults to UTF_8). */
 	public void encoding(String charset) {
 		setEncoding(charset);
+	}
+
+	private @Nullable String ratchetFrom;
+
+	/**
+	 * Limits the target to only the files which have changed since the given git reference,
+	 * which is resolved according to [this](https://javadoc.io/static/org.eclipse.jgit/org.eclipse.jgit/5.6.1.202002131546-r/org/eclipse/jgit/lib/Repository.html#resolve-java.lang.String-)
+	 */
+	public void setRatchetFrom(String ratchetFrom) {
+		this.ratchetFrom = ratchetFrom;
+	}
+
+	public @Nullable String getRatchetFrom() {
+		return ratchetFrom;
+	}
+
+	public void ratchetFrom(String ratchetFrom) {
+		setRatchetFrom(ratchetFrom);
 	}
 
 	final Map<String, FormatExtension> formats = new LinkedHashMap<>();

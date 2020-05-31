@@ -605,6 +605,9 @@ public class FormatExtension {
 		if (root.project != root.project.getRootProject()) {
 			root.registerDependenciesTask.hookSubprojectTask(task);
 		}
+		if (root.getRatchetFrom() != null) {
+			task.treeSha = GitRatchet.treeShaOf(root.project, root.getRatchetFrom());
+		}
 	}
 
 	/** Returns the project that this extension is attached to. */
