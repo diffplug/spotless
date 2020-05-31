@@ -222,6 +222,7 @@ public class ResourceHarness {
 		}
 
 		public File toContent(String content) throws IOException {
+			System.out.print("toContent(" + content + ") ");
 			return toContent(content, StandardCharsets.UTF_8);
 		}
 
@@ -232,6 +233,11 @@ public class ResourceHarness {
 
 		public File toResource(String path) throws IOException {
 			Files.write(file.toPath(), getTestResource(path).getBytes(StandardCharsets.UTF_8));
+			return file;
+		}
+
+		public File deleted() throws IOException {
+			Files.delete(file.toPath());
 			return file;
 		}
 	}
