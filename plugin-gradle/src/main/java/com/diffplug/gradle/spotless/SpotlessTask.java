@@ -26,10 +26,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.eclipse.jgit.lib.ObjectId;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCollection;
@@ -44,7 +44,9 @@ import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 
 import com.diffplug.common.base.Errors;
+import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.base.StringPrinter;
+import com.diffplug.common.base.Throwing;
 import com.diffplug.spotless.FormatExceptionPolicy;
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
@@ -84,6 +86,13 @@ public class SpotlessTask extends DefaultTask {
 
 	public void setLineEndingsPolicy(LineEnding.Policy lineEndingsPolicy) {
 		this.lineEndingsPolicy = Objects.requireNonNull(lineEndingsPolicy);
+	}
+
+	ObjectId treeSha = ObjectId.zeroId();
+
+	@Input
+	public ObjectId getRatchetSha() {
+		return treeSha;
 	}
 
 	@Deprecated
@@ -179,10 +188,13 @@ public class SpotlessTask extends DefaultTask {
 			Files.createDirectories(outputDirectory.toPath());
 		}
 
-		Predicate<File> shouldInclude;
+		Throwing.Specific.Predicate<File, IOException> shouldInclude;
 		if (this.filePatterns.isEmpty()) {
 			shouldInclude = file -> true;
 		} else {
+			Preconditions.checkArgument(treeSha == ObjectId.zeroId(),
+					"Cannot use 'ratchetFrom' and '-PspotlessFiles' at the same time");
+
 			// a list of files has been passed in via project property
 			final String[] includePatterns = this.filePatterns.split(",");
 			final List<Pattern> compiledIncludePatterns = Arrays.stream(includePatterns)
@@ -197,24 +209,24 @@ public class SpotlessTask extends DefaultTask {
 		try (Formatter formatter = buildFormatter()) {
 			inputs.outOfDate(inputDetails -> {
 				File input = inputDetails.getFile();
-				if (shouldInclude.test(input) && input.isFile()) {
-					try {
+				try {
+					if (shouldInclude.test(input) && input.isFile()) {
 						processInputFile(formatter, input);
-					} catch (IOException e) {
-						throw Errors.asRuntime(e);
 					}
+				} catch (IOException e) {
+					throw Errors.asRuntime(e);
 				}
 			});
 		}
 
 		inputs.removed(removedDetails -> {
 			File input = removedDetails.getFile();
-			if (shouldInclude.test(input)) {
-				try {
+			try {
+				if (shouldInclude.test(input)) {
 					deletePreviousResult(input);
-				} catch (IOException e) {
-					throw Errors.asRuntime(e);
 				}
+			} catch (IOException e) {
+				throw Errors.asRuntime(e);
 			}
 		});
 	}
@@ -222,7 +234,12 @@ public class SpotlessTask extends DefaultTask {
 	private void processInputFile(Formatter formatter, File input) throws IOException {
 		File output = getOutputFile(input);
 		getLogger().debug("Applying format to " + input + " and writing to " + output);
-		PaddedCell.DirtyState dirtyState = PaddedCell.calculateDirtyState(formatter, input);
+		PaddedCell.DirtyState dirtyState;
+		if (treeSha != ObjectId.zeroId() && GitRatchet.isClean(getProject(), treeSha, input)) {
+			dirtyState = PaddedCell.isClean();
+		} else {
+			dirtyState = PaddedCell.calculateDirtyState(formatter, input);
+		}
 		if (dirtyState.isClean()) {
 			// Remove previous output if it exists
 			Files.deleteIfExists(output.toPath());
