@@ -44,6 +44,7 @@ import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 
 import com.diffplug.common.base.Errors;
+import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FormatExceptionPolicy;
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
@@ -245,7 +246,11 @@ public class SpotlessTask extends DefaultTask {
 	private File getOutputFile(File input) {
 		String outputFileName = FormatExtension.relativize(getProject().getProjectDir(), input);
 		if (outputFileName == null) {
-			outputFileName = input.getAbsolutePath();
+			throw new IllegalArgumentException(StringPrinter.buildString(printer -> {
+				printer.println("Spotless error! All target files must be within the project root. In project " + getProject().getPath());
+				printer.println("  root dir: " + getProject().getProjectDir().getAbsolutePath());
+				printer.println("    target: " + input.getAbsolutePath());
+			}));
 		}
 		return new File(outputDirectory, outputFileName);
 	}
