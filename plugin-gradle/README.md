@@ -543,20 +543,9 @@ to true.
 
 ## License header options
 
-If the license header (specified with `licenseHeader` or `licenseHeaderFile`) contains `$YEAR` or `$today.year`, then that token will be replaced with the current 4-digit year.
+If the license header (specified with `licenseHeader` or `licenseHeaderFile`) contains `$YEAR` or `$today.year`, then that token will be replaced with the current 4-digit year.  For example, if Spotless is launched in 2017, then `/* Licensed under Apache-2.0 $YEAR. */` will produce `/* Licensed under Apache-2.0 2017. */`
 
-For example:
-```
-/* Licensed under Apache-2.0 $YEAR. */
-```
-will produce
-```
-/* Licensed under Apache-2.0 2017. */
-```
-if Spotless is launched in 2017
-
-
-The `licenseHeader` and `licenseHeaderFile` steps will generate license headers with automatic years from the base license header according to the following rules:
+The `licenseHeader` and `licenseHeaderFile` steps will generate license headers with automatic years according to the following rules:
 * A generated license header will be updated with the current year when
   * the generated license header is missing
   * the generated license header is not formatted correctly
@@ -578,6 +567,8 @@ spotless {
   }
 }
 ```
+
+To update the copyright notice only for changed files, use the [`ratchetFrom` functionality](#ratchet).
 
 <a name="custom"></a>
 
@@ -694,9 +685,28 @@ spotless {
 - If you don't like what spotless did, `git reset --hard`
 - If you'd like to remove the "checkpoint" commit, `git reset --soft head~1` will make the checkpoint commit "disappear" from history, but keeps the changes in your working directory.
 
-<a name="examples"></a>
+<a name="ratchet"></a>
+
+## How can I enforce formatting gradually?
+
+If your project is not currently enforcing formatting, then it can be a noisy transition.  Having a giant commit where every single file gets changed makes the history harder to read.  To address this, you can use the `ratchet` feature:
+
+```gradle
+spotless {
+  ratchetFrom 'origin/master'
+  ...
+}
+```
+
+In this mode, Spotless will apply only to files which have changed since `origin/master`.  You can ratchet from [any point you want](https://javadoc.io/static/org.eclipse.jgit/org.eclipse.jgit/5.6.1.202002131546-r/org/eclipse/jgit/lib/Repository.html#resolve-java.lang.String-), even `HEAD`.
+
+However, we strongly recommend that you use a non-local branch, such as a tag or `origin/master`.  The problem with `HEAD` or any local branch is that as soon as you commit a file, that is now the canonical formatting, even if it was formatted incorrectly.  By instead specifying `origin/master` or a tag, your CI server will fail unless every changed file is at least as good or better than it was before the change.
+
+This is especially helpful for injecting accurate copyright dates using the [license step](#license-header).
 
 ## Can I apply Spotless to specific files?
+
+
 
 You can target specific files by setting the `spotlessFiles` project property to a comma-separated list of file patterns:
 
@@ -705,6 +715,8 @@ cmd> gradlew spotlessApply -PspotlessFiles=my/file/pattern.java,more/generic/.*-
 ```
 
 The patterns are matched using `String#matches(String)` against the absolute file path.
+
+<a name="examples"></a>
 
 ## Example configurations (from real-world projects)
 
