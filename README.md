@@ -113,6 +113,7 @@ Once someone has filled in one square of the formatter/build system matrix, it's
 - Thanks to [bender316](https://github.com/bender316) for fixing classloading on Java 9 ([#426](https://github.com/diffplug/spotless/pull/426)).
 - Thanks to [Stefan Oehme](https://github.com/oehme) for tons of help on the internal mechanics of Gradle.
 - Thanks to [eyalkaspi](https://github.com/eyalkaspi) for adding configurable date ranges to the date-aware license headers.
+- Thanks to [Andrew Parmet](https://github.com/andrewparmet) for adding [ktfmt support for kotlin gradle](https://github.com/diffplug/spotless/pull/583).
 - Thanks to [Oliver Horn](https://github.com/ohorn) for adding AOSP support for Spotless' google-java-format integration.
 - Formatting by Eclipse
   - Special thanks to [Mateusz Matela](https://waynebeaton.wordpress.com/2015/03/15/great-fixes-for-mars-winners-part-i/) for huge improvements to the eclipse code formatter!
