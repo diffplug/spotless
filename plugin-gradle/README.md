@@ -91,6 +91,7 @@ Spotless can check and apply formatting to any plain-text file, using simple rul
 * [ktlint](https://github.com/pinterest/ktlint)
 * [ktfmt](https://github.com/facebookincubator/ktfmt)
 * [scalafmt](https://github.com/olafurpg/scalafmt)
+* [scalafix](https://scalacenter.github.io/scalafix/)
 * [DBeaver sql format](https://dbeaver.jkiss.org/)
 * [Prettier: An opinionated code formatter](https://prettier.io)
 * [TypeScript Formatter (tsfmt)](https://github.com/vvakame/typescript-formatter)
@@ -239,7 +240,7 @@ spotless {
 }
 ```
 
-<a name="scala"></a>
+<a name="scalafmt"></a>
 
 ## Applying [scalafmt](https://olafurpg.github.io/scalafmt/#Scalafmt-codeformatterforScala) to Scala files
 
@@ -249,6 +250,21 @@ spotless {
     scalafmt()
     // optional: you can specify a specific version or config file
     scalafmt('0.5.1').configFile('scalafmt.conf')
+  }
+}
+```
+
+<a name="scalafix"></a>
+
+## Applying [scalafix](https://scalacenter.github.io/scalafix/) to Scala files
+
+```gradle
+spotless {
+  scala {
+    scalafix()
+    // optional: you can specify a specific version of scalafix-cli >= 0.9.1 or Scala version suffix depended by it, or config file
+    // default: 0.9.16 (scalafix-cli), 2.12.11 (Scala), .scalafix.conf (config file)
+    scalafix('0.9.1', '2.11.12').configFile('scalafix.conf')
   }
 }
 ```

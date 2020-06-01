@@ -21,13 +21,16 @@ import org.junit.Test;
 
 public class ScalaExtensionTest extends GradleIntegrationTest {
 	@Test
-	public void integration() throws IOException {
+	public void integrationScalafmt() throws IOException {
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'scala'",
 				"}",
-				"apply plugin: 'scala'",
+				"repositories { mavenCentral() }",
+				"dependencies {",
+				"    implementation 'org.scala-lang:scala-library:2.13.2'",
+				"}",
 				"spotless {",
 				"    scala {",
 				"        scalafmt().configFile('scalafmt.conf')",
@@ -37,5 +40,83 @@ public class ScalaExtensionTest extends GradleIntegrationTest {
 		setFile("src/main/scala/basic.scala").toResource("scala/scalafmt/basic.dirty");
 		gradleRunner().withArguments("spotlessApply").build();
 		assertFile("src/main/scala/basic.scala").sameAsResource("scala/scalafmt/basic.cleanWithCustomConf_2.0.1");
+	}
+
+	@Test
+	public void integrationScalafix() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'scala'",
+				"}",
+				"repositories { mavenCentral() }",
+				"dependencies {",
+				"    implementation 'org.scala-lang:scala-library:2.12.11'",
+				"}",
+				"spotless {",
+				"    scala {",
+				"        scalafix()",
+				"    }",
+				"}");
+		setFile(".scalafix.conf").toResource("scala/scalafix/integration/.scalafix.conf");
+		setFile("src/main/scala/basic.scala").toResource("scala/scalafix/integration/basic.dirty");
+		// Scalafix uses "user.dir" as the working directory
+		final String originalDir = System.getProperty("user.dir");
+		System.setProperty("user.dir", rootFolder().toString());
+		gradleRunner().withArguments("spotlessApply").build();
+		System.setProperty("user.dir", originalDir);
+		assertFile("src/main/scala/basic.scala").sameAsResource("scala/scalafix/integration/basic.clean");
+	}
+
+	@Test
+	public void integrationScalafix_0_9_1() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'scala'",
+				"}",
+				"repositories { mavenCentral() }",
+				"dependencies {",
+				"    implementation 'org.scala-lang:scala-library:2.12.11'",
+				"}",
+				"spotless {",
+				"    scala {",
+				"        scalafix('0.9.1', '2.11.12')",
+				"    }",
+				"}");
+		setFile(".scalafix.conf").toResource("scala/scalafix/integration/.scalafix.conf");
+		setFile("src/main/scala/basic.scala").toResource("scala/scalafix/integration/basic.dirty");
+		final String originalDir = System.getProperty("user.dir");
+		// Scalafix uses "user.dir" as the working directory
+		System.setProperty("user.dir", rootFolder().toString());
+		gradleRunner().withArguments("spotlessApply").build();
+		System.setProperty("user.dir", originalDir);
+		assertFile("src/main/scala/basic.scala").sameAsResource("scala/scalafix/integration/basic.clean");
+	}
+
+	@Test
+	public void integrationScalafixTestdir() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'scala'",
+				"}",
+				"repositories { mavenCentral() }",
+				"dependencies {",
+				"    implementation 'org.scala-lang:scala-library:2.12.11'",
+				"}",
+				"spotless {",
+				"    scala {",
+				"        scalafix()",
+				"    }",
+				"}");
+		setFile(".scalafix.conf").toResource("scala/scalafix/integration/.scalafix.conf");
+		setFile("src/test/scala/basic.scala").toResource("scala/scalafix/integration/basic.dirty");
+		// Scalafix uses "user.dir" as the working directory
+		final String originalDir = System.getProperty("user.dir");
+		System.setProperty("user.dir", rootFolder().toString());
+		gradleRunner().withArguments("spotlessApply").build();
+		System.setProperty("user.dir", originalDir);
+		assertFile("src/test/scala/basic.scala").sameAsResource("scala/scalafix/integration/basic.clean");
 	}
 }

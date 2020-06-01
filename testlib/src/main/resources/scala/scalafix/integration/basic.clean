@@ -1,0 +1,12 @@
+import scala.util.Random
+
+object a {
+  def b: List[Int] = {
+    val c = List(1, 2, Random.nextInt())
+    c.map(_ * 2)
+  }
+
+  def d: Unit = {
+    Console.println(b)
+  }
+}

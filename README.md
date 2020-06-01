@@ -51,6 +51,7 @@ lib('markdown.FreshMarkStep')                    +'{{yes}}       | {{no}}       
 lib('npm.PrettierFormatterStep')                 +'{{yes}}       | {{yes}}       | {{no}}  |',
 lib('npm.TsFmtFormatterStep')                    +'{{yes}}       | {{yes}}       | {{no}}  |',
 lib('scala.ScalaFmtStep')                        +'{{yes}}       | {{yes}}       | {{no}}  |',
+lib('scala.ScalaFixStep')                        +'{{yes}}       | {{no}}       | {{no}}  |',
 lib('sql.DBeaverSQLFormatterStep')               +'{{yes}}       | {{no}}       | {{no}}  |',
 extra('wtp.EclipseWtpFormatterStep')             +'{{yes}}       | {{yes}}      | {{no}}  |',
 '| [(Your FormatterStep here)](CONTRIBUTING.md#how-to-add-a-new-formatterstep) | {{no}}        | {{no}}       | {{no}}  |',
@@ -79,6 +80,7 @@ extra('wtp.EclipseWtpFormatterStep')             +'{{yes}}       | {{yes}}      
 | [`npm.PrettierFormatterStep`](lib/src/main/java/com/diffplug/spotless/npm/PrettierFormatterStep.java) | :+1:       | :+1:       | :white_large_square:  |
 | [`npm.TsFmtFormatterStep`](lib/src/main/java/com/diffplug/spotless/npm/TsFmtFormatterStep.java) | :+1:       | :+1:       | :white_large_square:  |
 | [`scala.ScalaFmtStep`](lib/src/main/java/com/diffplug/spotless/scala/ScalaFmtStep.java) | :+1:       | :+1:       | :white_large_square:  |
+| [`scala.ScalaFixStep`](lib/src/main/java/com/diffplug/spotless/scala/ScalaFixStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
 | [`sql.DBeaverSQLFormatterStep`](lib/src/main/java/com/diffplug/spotless/sql/DBeaverSQLFormatterStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
 | [`wtp.EclipseWtpFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/wtp/EclipseWtpFormatterStep.java) | :+1:       | :+1:      | :white_large_square:  |
 | [(Your FormatterStep here)](CONTRIBUTING.md#how-to-add-a-new-formatterstep) | :white_large_square:        | :white_large_square:       | :white_large_square:  |

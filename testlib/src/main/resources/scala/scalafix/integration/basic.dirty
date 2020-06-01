@@ -1,0 +1,13 @@
+import scala.util.Random
+import scala.util.Try
+
+object a {
+  def b: List[Int] = {
+    val c = List(1, 2, Random.nextInt())
+    c.map(_ * 2)
+  }
+
+  def d {
+    Console.println(b)
+  }
+}

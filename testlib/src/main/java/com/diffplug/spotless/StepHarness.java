@@ -16,6 +16,8 @@
 package com.diffplug.spotless;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -32,7 +34,7 @@ public class StepHarness implements AutoCloseable {
 		this.formatter = Objects.requireNonNull(formatter);
 	}
 
-	/** Creates a harness for testing steps which don't depend on the file. */
+	/** Creates a harness for testing steps. */
 	public static StepHarness forStep(FormatterStep step) {
 		// We don't care if an individual FormatterStep is misbehaving on line-endings, because
 		// Formatter fixes that.  No reason to care in tests either.  It's likely to pop up when
@@ -43,7 +45,17 @@ public class StepHarness implements AutoCloseable {
 						((FormatterStepImpl.Standard<?>) step).cleanupFormatterFunc();
 					}
 				},
-				input -> LineEnding.toUnix(step.format(input, new File("")))));
+				new FormatterFunc() {
+					@Override
+					public String apply(String input) throws Exception {
+						return LineEnding.toUnix(step.format(input, new File("")));
+					}
+
+					@Override
+					public String apply(String input, File source) throws Exception {
+						return LineEnding.toUnix(step.format(input, source));
+					}
+				}));
 	}
 
 	/** Creates a harness for testing a formatter whose steps don't depend on the file. */
@@ -60,10 +72,27 @@ public class StepHarness implements AutoCloseable {
 		return testUnaffected(after);
 	}
 
+	/** Asserts that the given element is transformed as expected, and that the result is idempotent. */
+	public StepHarness test(File before, File after) throws Exception {
+		String unixBefore = LineEnding.toUnix(new String(Files.readAllBytes(before.toPath()), StandardCharsets.UTF_8));
+		String unixAfter = LineEnding.toUnix(new String(Files.readAllBytes(after.toPath()), StandardCharsets.UTF_8));
+		String actual = formatter.apply(unixBefore, before);
+		Assert.assertEquals("Step application failed", unixAfter, actual);
+		return testUnaffected(after);
+	}
+
 	/** Asserts that the given element is idempotent w.r.t the step under test. */
 	public StepHarness testUnaffected(String idempotentElement) throws Exception {
 		String actual = formatter.apply(idempotentElement);
 		Assert.assertEquals("Step is not idempotent", idempotentElement, actual);
+		return this;
+	}
+
+	/** Asserts that the given element is idempotent w.r.t the step under test. */
+	public StepHarness testUnaffected(File idempotentElement) throws Exception {
+		String unix = LineEnding.toUnix(new String(Files.readAllBytes(idempotentElement.toPath()), StandardCharsets.UTF_8));
+		String actual = formatter.apply(unix, idempotentElement);
+		Assert.assertEquals("Step is not idempotent", unix, actual);
 		return this;
 	}
 

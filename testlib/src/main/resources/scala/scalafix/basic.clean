@@ -1,0 +1,8 @@
+object a {
+  implicit class b(var xs: List[Int]) extends AnyVal {
+    def c: List[Int] = for {
+      x <- xs
+      y = x + 1
+    } yield y
+  }
+}
