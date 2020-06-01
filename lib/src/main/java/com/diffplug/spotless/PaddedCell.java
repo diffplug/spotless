@@ -270,6 +270,11 @@ public final class PaddedCell {
 		}
 	}
 
+	/** Returns the DirtyState which corresponds to `isClean()`. */
+	public static DirtyState isClean() {
+		return isClean;
+	}
+
 	private static final DirtyState didNotConverge = new DirtyState(null);
 	private static final DirtyState isClean = new DirtyState(null);
 }
