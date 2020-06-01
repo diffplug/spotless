@@ -12,9 +12,9 @@ output = [
   ].join('\n');
 -->
 [![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
-[![Javadoc](https://img.shields.io/badge/javadoc-1.31.1-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/1.31.1/index.html)
+[![Javadoc](https://img.shields.io/badge/javadoc-1.31.2-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/1.31.2/index.html)
 
-[![Changelog](https://img.shields.io/badge/changelog-1.31.1-brightgreen.svg)](CHANGES.md)
+[![Changelog](https://img.shields.io/badge/changelog-1.31.2-brightgreen.svg)](CHANGES.md)
 [![Travis CI](https://travis-ci.org/diffplug/spotless.svg?branch=master)](https://travis-ci.org/diffplug/spotless)
 [![Live chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
 [![License Apache](https://img.shields.io/badge/license-apache-brightgreen.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
