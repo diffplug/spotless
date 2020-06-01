@@ -706,7 +706,7 @@ This is especially helpful for injecting accurate copyright dates using the [lic
 
 ## Can I apply Spotless to specific files?
 
-
+**DEPRECATED: use [`ratchetFrom`]($ratchet) instead.  The regex API below is difficult to use correctly, especially for cross-platform (win/unix) builds.**
 
 You can target specific files by setting the `spotlessFiles` project property to a comma-separated list of file patterns:
 
