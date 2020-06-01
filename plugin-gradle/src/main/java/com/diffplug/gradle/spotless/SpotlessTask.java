@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -257,7 +258,14 @@ public class SpotlessTask extends DefaultTask {
 
 	private void deletePreviousResult(File input) throws IOException {
 		File output = getOutputFile(input);
-		Files.deleteIfExists(output.toPath());
+		if (output.isDirectory()) {
+			Files.walk(output.toPath())
+					.sorted(Comparator.reverseOrder())
+					.map(Path::toFile)
+					.forEach(File::delete);
+		} else {
+			Files.deleteIfExists(output.toPath());
+		}
 	}
 
 	private File getOutputFile(File input) {

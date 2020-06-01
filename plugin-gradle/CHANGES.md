@@ -9,6 +9,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Users can now run `spotlessCheck` and `spotlessApply` in the same build. ([#584](https://github.com/diffplug/spotless/pull/584))
 * Fixed intermittent `UnsatisfiedLinkError` in nodejs-based steps. ([#586](https://github.com/diffplug/spotless/pull/586))
   * Also, a shared library used by the nodejs steps used to be extracted into the user home directory, but now it is extracted into `{rootProject}/build/spotless-nodejs-cache`.
+* Fixed intermittent `java.nio.file.DirectoryNotEmptyException` on incremental builds where folders had been removed. ([#589](https://github.com/diffplug/spotless/pull/589))
 * Starting in `4.0`, it is no longer possible for a project to format files which are not within its project folder (for example, `:a` can no longer format files in `:b`).  We did not explicitly note this in the changelog entry for `4.0`, and we gave a very confusing error message if users tried.  We now give a more helpful error message, and this breaking change has been retroactively noted in the changelog for `4.0.0`. ([#588](https://github.com/diffplug/spotless/pull/588))
 
 ## [4.0.1] - 2020-05-21
