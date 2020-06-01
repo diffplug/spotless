@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [1.32.0] - 2020-06-01
 ### Added
 * `NodeJsGlobal.setSharedLibFolder` allows to set the location of nodejs shared libs. ([#586](https://github.com/diffplug/spotless/pull/586))
 * `PaddedCell.isClean()` returns the instance of `PaddedCell.DirtyState` which represents clean. ([#590](https://github.com/diffplug/spotless/pull/590))
