@@ -55,16 +55,25 @@ if (version.endsWith('-SNAPSHOT')) {
 		vcsUrl = "https://github.com/diffplug/spotless"
 		description = project.description
 
+		def tagSeo = [
+			'format',
+			'style',
+			'license',
+			'header',
+			'google-java-format',
+			'eclipse',
+			'ktlint',
+			'ktfmt',
+			'tsfmt',
+			'prettier',
+			'scalafmt',
+			'scalafix'
+		]
 		plugins {
 			spotlessPlugin {
 				id = 'com.diffplug.gradle.spotless'
 				displayName = 'Spotless formatting plugin'
-				tags = [
-					'format',
-					'style',
-					'license',
-					'header'
-				]
+				tags = tagSeo
 			}
 		}
 
