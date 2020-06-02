@@ -18,8 +18,10 @@ package com.diffplug.gradle.spotless;
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -409,7 +411,7 @@ public class FormatExtension {
 	public abstract class LicenseHeaderConfig {
 		String delimiter;
 		String yearSeparator = LicenseHeaderStep.defaultYearDelimiter();
-		boolean overwriteYearLatest = LicenseHeaderStep.defaultOverwriteYearWithLatest();
+		Boolean updateYearWithLatest = null;
 
 		public LicenseHeaderConfig(String delimiter) {
 			this.delimiter = Objects.requireNonNull(delimiter, "delimiter");
@@ -436,20 +438,28 @@ public class FormatExtension {
 		}
 
 		/**
-		 * @param overwriteYearLatest
+		 * @param updateYearWithLatest
 		 *           Will turn `2004` into `2004-2020`, and `2004-2019` into `2004-2020`
+		 *           Default value is false, unless {@link SpotlessExtension#ratchetFrom(String)} is used, in which case default value is true.
 		 */
-		public LicenseHeaderConfig overwriteYearLatest(boolean overwriteYearLatest) {
-			this.overwriteYearLatest = overwriteYearLatest;
+		public LicenseHeaderConfig updateYearWithLatest(boolean overwriteYearLatest) {
+			this.updateYearWithLatest = overwriteYearLatest;
 			replaceStep(createStep());
 			return this;
 		}
 
-		abstract FormatterStep createStep();
+		protected abstract String licenseHeader() throws IOException;
+
+		FormatterStep createStep() {
+			return FormatterStep.createLazy(LicenseHeaderStep.name(), () -> {
+				// by default, we should update the year if the user is using ratchetFrom
+				boolean updateYear = updateYearWithLatest == null ? FormatExtension.this.root.getRatchetFrom() != null : updateYearWithLatest;
+				return new LicenseHeaderStep(licenseHeader(), delimiter, yearSeparator, updateYear);
+			}, step -> step::format);
+		}
 	}
 
 	public class LicenseStringHeaderConfig extends LicenseHeaderConfig {
-
 		private String header;
 
 		LicenseStringHeaderConfig(String delimiter, String header) {
@@ -457,13 +467,13 @@ public class FormatExtension {
 			this.header = Objects.requireNonNull(header, "header");
 		}
 
-		FormatterStep createStep() {
-			return LicenseHeaderStep.createFromHeader(header, delimiter, yearSeparator);
+		@Override
+		protected String licenseHeader() {
+			return header;
 		}
 	}
 
 	public class LicenseFileHeaderConfig extends LicenseHeaderConfig {
-
 		private Object headerFile;
 
 		LicenseFileHeaderConfig(String delimiter, Object headerFile) {
@@ -471,10 +481,10 @@ public class FormatExtension {
 			this.headerFile = Objects.requireNonNull(headerFile, "headerFile");
 		}
 
-		FormatterStep createStep() {
-			return LicenseHeaderStep
-					.createFromFile(getProject().file(headerFile), getEncoding(), delimiter,
-							yearSeparator);
+		@Override
+		protected String licenseHeader() throws IOException {
+			byte[] content = Files.readAllBytes(getProject().file(headerFile).toPath());
+			return new String(content, getEncoding());
 		}
 	}
 

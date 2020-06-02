@@ -57,12 +57,12 @@ public final class LicenseHeaderStep implements Serializable {
 	}
 
 	/** Creates a FormatterStep which forces the start of each file to match a license header. */
-	public static FormatterStep createFromHeader(String licenseHeader, String delimiter, String yearSeparator, boolean overwriteYearWithLatest) {
+	public static FormatterStep createFromHeader(String licenseHeader, String delimiter, String yearSeparator, boolean updateYearWithLatest) {
 		Objects.requireNonNull(licenseHeader, "licenseHeader");
 		Objects.requireNonNull(delimiter, "delimiter");
 		Objects.requireNonNull(yearSeparator, "yearSeparator");
 		return FormatterStep.create(LicenseHeaderStep.NAME,
-				new LicenseHeaderStep(licenseHeader, delimiter, yearSeparator, overwriteYearWithLatest),
+				new LicenseHeaderStep(licenseHeader, delimiter, yearSeparator, updateYearWithLatest),
 				step -> step::format);
 	}
 
@@ -77,13 +77,13 @@ public final class LicenseHeaderStep implements Serializable {
 	}
 
 	/** Creates a FormatterStep which forces the start of each file to match a license header. */
-	public static FormatterStep createFromFile(File licenseHeaderFile, Charset encoding, String delimiter, String yearSeparator, boolean overwriteYearWithLatest) {
+	public static FormatterStep createFromFile(File licenseHeaderFile, Charset encoding, String delimiter, String yearSeparator, boolean updateYearWithLatest) {
 		Objects.requireNonNull(licenseHeaderFile, "licenseHeaderFile");
 		Objects.requireNonNull(encoding, "encoding");
 		Objects.requireNonNull(delimiter, "delimiter");
 		Objects.requireNonNull(yearSeparator, "yearSeparator");
 		return FormatterStep.createLazy(LicenseHeaderStep.NAME,
-				() -> new LicenseHeaderStep(licenseHeaderFile, encoding, delimiter, yearSeparator, overwriteYearWithLatest),
+				() -> new LicenseHeaderStep(licenseHeaderFile, encoding, delimiter, yearSeparator, updateYearWithLatest),
 				step -> step::format);
 	}
 
@@ -108,10 +108,10 @@ public final class LicenseHeaderStep implements Serializable {
 	private final @Nullable String yearToday;
 	private final @Nullable String beforeYear;
 	private final @Nullable String afterYear;
-	private final boolean overwriteYearWithLatest;
+	private final boolean updateYearWithLatest;
 
 	/** The license that we'd like enforced. */
-	private LicenseHeaderStep(String licenseHeader, String delimiter, String yearSeparator, boolean overwriteYearWithLatest) {
+	public LicenseHeaderStep(String licenseHeader, String delimiter, String yearSeparator, boolean updateYearWithLatest) {
 		if (delimiter.contains("\n")) {
 			throw new IllegalArgumentException("The delimiter must not contain any newlines.");
 		}
@@ -129,13 +129,13 @@ public final class LicenseHeaderStep implements Serializable {
 			beforeYear = licenseHeader.substring(0, yearTokenIndex);
 			afterYear = licenseHeader.substring(yearTokenIndex + yearToken.get().length());
 			yearSepOrFull = yearSeparator;
-			this.overwriteYearWithLatest = overwriteYearWithLatest;
+			this.updateYearWithLatest = updateYearWithLatest;
 		} else {
 			yearToday = null;
 			beforeYear = null;
 			afterYear = null;
 			this.yearSepOrFull = licenseHeader;
-			this.overwriteYearWithLatest = false;
+			this.updateYearWithLatest = false;
 		}
 	}
 
@@ -153,8 +153,8 @@ public final class LicenseHeaderStep implements Serializable {
 	}
 
 	/** Reads the license file from the given file. */
-	private LicenseHeaderStep(File licenseFile, Charset encoding, String delimiter, String yearSeparator, boolean overwriteYearWithLatest) throws IOException {
-		this(new String(Files.readAllBytes(licenseFile.toPath()), encoding), delimiter, yearSeparator, overwriteYearWithLatest);
+	public LicenseHeaderStep(File licenseFile, Charset encoding, String delimiter, String yearSeparator, boolean updateYearWithLatest) throws IOException {
+		this(new String(Files.readAllBytes(licenseFile.toPath()), encoding), delimiter, yearSeparator, updateYearWithLatest);
 	}
 
 	/** Formats the given string. */
@@ -185,7 +185,7 @@ public final class LicenseHeaderStep implements Serializable {
 						// it's good as is!
 						return noPadding ? raw : beforeYear + yearToday + afterYear + raw.substring(contentMatcher.start());
 					} else if (patternYearSingle.matcher(parsedYear).matches()) {
-						if (overwriteYearWithLatest) {
+						if (updateYearWithLatest) {
 							// expand from `2004` to `2004-2020`
 							return beforeYear + parsedYear + yearSepOrFull + yearToday + afterYear + raw.substring(contentMatcher.start());
 						} else {
@@ -198,7 +198,7 @@ public final class LicenseHeaderStep implements Serializable {
 							String firstYear = yearMatcher.group();
 							String newYear;
 							String secondYear;
-							if (overwriteYearWithLatest) {
+							if (updateYearWithLatest) {
 								secondYear = firstYear.equals(yearToday) ? null : yearToday;
 							} else if (yearMatcher.find(yearMatcher.end() + 1)) {
 								secondYear = yearMatcher.group();

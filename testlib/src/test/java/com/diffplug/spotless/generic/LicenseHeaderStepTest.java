@@ -93,7 +93,7 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 	}
 
 	@Test
-	public void overwriteYearWithLatest() throws Throwable {
+	public void updateYearWithLatest() throws Throwable {
 		FormatterStep step = LicenseHeaderStep.createFromFile(createLicenseWith(LICENSE_HEADER_YEAR), StandardCharsets.UTF_8, LICENSE_HEADER_DELIMITER, "-", true);
 		StepHarness.forStep(step)
 				.testUnaffected(fileWithLicenseContaining(LICENSE_HEADER_YEAR, currentYear()))
