@@ -409,6 +409,7 @@ public class FormatExtension {
 	public abstract class LicenseHeaderConfig {
 		String delimiter;
 		String yearSeparator = LicenseHeaderStep.defaultYearDelimiter();
+		boolean overwriteYearLatest = LicenseHeaderStep.defaultOverwriteYearWithLatest();
 
 		public LicenseHeaderConfig(String delimiter) {
 			this.delimiter = Objects.requireNonNull(delimiter, "delimiter");
@@ -430,6 +431,16 @@ public class FormatExtension {
 		 */
 		public LicenseHeaderConfig yearSeparator(String yearSeparator) {
 			this.yearSeparator = Objects.requireNonNull(yearSeparator, "yearSeparator");
+			replaceStep(createStep());
+			return this;
+		}
+
+		/**
+		 * @param overwriteYearLatest
+		 *           Will turn `2004` into `2004-2020`, and `2004-2019` into `2004-2020`
+		 */
+		public LicenseHeaderConfig overwriteYearLatest(boolean overwriteYearLatest) {
+			this.overwriteYearLatest = overwriteYearLatest;
 			replaceStep(createStep());
 			return this;
 		}

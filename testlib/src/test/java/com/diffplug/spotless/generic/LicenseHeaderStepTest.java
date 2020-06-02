@@ -71,7 +71,7 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 				.testUnaffected(fileWithLicenseContaining(LICENSE_HEADER_YEAR, "2003"))
 				.testUnaffected(fileWithLicenseContaining(LICENSE_HEADER_YEAR, "1990-2015"))
 				.test(fileWithLicenseContaining("Something before license.*/\n/* \n * " + LICENSE_HEADER_YEAR, "2003"), fileWithLicenseContaining(LICENSE_HEADER_YEAR, currentYear()))
-				.test(fileWithLicenseContaining(LICENSE_HEADER_YEAR + "\n **/\n/* Something after license.", "2003"), fileWithLicenseContaining(LICENSE_HEADER_YEAR, currentYear()))
+				.test(fileWithLicenseContaining(LICENSE_HEADER_YEAR + "\n **/\n/* Something after license.", "2003"), fileWithLicenseContaining(LICENSE_HEADER_YEAR, "2003"))
 				.test(fileWithLicenseContaining(LICENSE_HEADER_YEAR, "not a year"), fileWithLicenseContaining(LICENSE_HEADER_YEAR, currentYear()));
 
 		// Check with variant
@@ -98,7 +98,7 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 
 		StepHarness.forStep(step)
 				.testUnaffected(fileWithLicenseContaining(LICENSE_HEADER_YEAR, "1990, 2015"))
-				.test(fileWithLicenseContaining(LICENSE_HEADER_YEAR, "1990-2015"), fileWithLicenseContaining(LICENSE_HEADER_YEAR, currentYear()));
+				.test(fileWithLicenseContaining(LICENSE_HEADER_YEAR, "1990-2015"), fileWithLicenseContaining(LICENSE_HEADER_YEAR, "1990, 2015"));
 	}
 
 	@Test
@@ -107,7 +107,7 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 
 		StepHarness.forStep(step)
 				.testUnaffected(fileWithLicenseContaining(LICENSE_HEADER_YEAR, "1990(2015"))
-				.test(fileWithLicenseContaining(LICENSE_HEADER_YEAR, "1990-2015"), fileWithLicenseContaining(LICENSE_HEADER_YEAR, currentYear()));
+				.test(fileWithLicenseContaining(LICENSE_HEADER_YEAR, "1990-2015"), fileWithLicenseContaining(LICENSE_HEADER_YEAR, "1990(2015"));
 	}
 
 	@Test
