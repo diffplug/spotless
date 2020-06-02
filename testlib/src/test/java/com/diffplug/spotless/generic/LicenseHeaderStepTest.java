@@ -93,6 +93,15 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 	}
 
 	@Test
+	public void overwriteYearWithLatest() throws Throwable {
+		FormatterStep step = LicenseHeaderStep.createFromFile(createLicenseWith(LICENSE_HEADER_YEAR), StandardCharsets.UTF_8, LICENSE_HEADER_DELIMITER, "-", true);
+		StepHarness.forStep(step)
+				.testUnaffected(fileWithLicenseContaining(LICENSE_HEADER_YEAR, currentYear()))
+				.test(fileWithLicenseContaining(LICENSE_HEADER_YEAR, "2003"), fileWithLicenseContaining(LICENSE_HEADER_YEAR, "2003-" + currentYear()))
+				.test(fileWithLicenseContaining(LICENSE_HEADER_YEAR, "1990-2015"), fileWithLicenseContaining(LICENSE_HEADER_YEAR, "1990-" + currentYear()));
+	}
+
+	@Test
 	public void should_apply_license_containing_YEAR_token_with_non_default_year_separator() throws Throwable {
 		FormatterStep step = LicenseHeaderStep.createFromFile(createLicenseWith(LICENSE_HEADER_YEAR), StandardCharsets.UTF_8, LICENSE_HEADER_DELIMITER, ", ");
 
