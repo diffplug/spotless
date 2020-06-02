@@ -40,50 +40,44 @@ public final class LicenseHeaderStep implements Serializable {
 
 	private static final String NAME = "licenseHeader";
 	private static final String DEFAULT_YEAR_DELIMITER = "-";
-	private static final boolean DEFAULT_OVERWRITE_YEAR_WITH_LATEST = false;
 	private static final List<String> YEAR_TOKENS = Arrays.asList("$YEAR", "$today.year");
 
 	private static final SerializableFileFilter UNSUPPORTED_JVM_FILES_FILTER = SerializableFileFilter.skipFilesNamed(
 			"package-info.java", "package-info.groovy", "module-info.java");
 
-	/** @see #createFromHeader(String, String, String, boolean) */
+	/** Creates a FormatterStep which forces the start of each file to match a license header. */
 	public static FormatterStep createFromHeader(String licenseHeader, String delimiter) {
 		return createFromHeader(licenseHeader, delimiter, DEFAULT_YEAR_DELIMITER);
 	}
 
-	/** @see #createFromHeader(String, String, String, boolean) */
 	public static FormatterStep createFromHeader(String licenseHeader, String delimiter, String yearSeparator) {
-		return createFromHeader(licenseHeader, delimiter, yearSeparator, DEFAULT_OVERWRITE_YEAR_WITH_LATEST);
-	}
-
-	/** Creates a FormatterStep which forces the start of each file to match a license header. */
-	public static FormatterStep createFromHeader(String licenseHeader, String delimiter, String yearSeparator, boolean updateYearWithLatest) {
 		Objects.requireNonNull(licenseHeader, "licenseHeader");
 		Objects.requireNonNull(delimiter, "delimiter");
 		Objects.requireNonNull(yearSeparator, "yearSeparator");
 		return FormatterStep.create(LicenseHeaderStep.NAME,
-				new LicenseHeaderStep(licenseHeader, delimiter, yearSeparator, updateYearWithLatest),
+				new LicenseHeaderStep(licenseHeader, delimiter, yearSeparator),
 				step -> step::format);
 	}
 
-	/** @see #createFromFile(File, Charset, String, String, boolean) */
+	/**
+	 * Creates a FormatterStep which forces the start of each file to match the license header
+	 * contained in the given file.
+	 */
 	public static FormatterStep createFromFile(File licenseHeaderFile, Charset encoding, String delimiter) {
 		return createFromFile(licenseHeaderFile, encoding, delimiter, DEFAULT_YEAR_DELIMITER);
 	}
 
-	/** @see #createFromFile(File, Charset, String, String, boolean) */
+	/**
+	 * Creates a FormatterStep which forces the start of each file to match the license header
+	 * contained in the given file.
+	 */
 	public static FormatterStep createFromFile(File licenseHeaderFile, Charset encoding, String delimiter, String yearSeparator) {
-		return createFromFile(licenseHeaderFile, encoding, delimiter, yearSeparator, DEFAULT_OVERWRITE_YEAR_WITH_LATEST);
-	}
-
-	/** Creates a FormatterStep which forces the start of each file to match a license header. */
-	public static FormatterStep createFromFile(File licenseHeaderFile, Charset encoding, String delimiter, String yearSeparator, boolean updateYearWithLatest) {
 		Objects.requireNonNull(licenseHeaderFile, "licenseHeaderFile");
 		Objects.requireNonNull(encoding, "encoding");
 		Objects.requireNonNull(delimiter, "delimiter");
 		Objects.requireNonNull(yearSeparator, "yearSeparator");
 		return FormatterStep.createLazy(LicenseHeaderStep.NAME,
-				() -> new LicenseHeaderStep(licenseHeaderFile, encoding, delimiter, yearSeparator, updateYearWithLatest),
+				() -> new LicenseHeaderStep(new String(Files.readAllBytes(licenseHeaderFile.toPath()), encoding), delimiter, yearSeparator),
 				step -> step::format);
 	}
 
@@ -93,10 +87,6 @@ public final class LicenseHeaderStep implements Serializable {
 
 	public static String defaultYearDelimiter() {
 		return DEFAULT_YEAR_DELIMITER;
-	}
-
-	public static boolean defaultOverwriteYearWithLatest() {
-		return DEFAULT_OVERWRITE_YEAR_WITH_LATEST;
 	}
 
 	public static SerializableFileFilter unsupportedJvmFilesFilter() {
@@ -109,6 +99,10 @@ public final class LicenseHeaderStep implements Serializable {
 	private final @Nullable String beforeYear;
 	private final @Nullable String afterYear;
 	private final boolean updateYearWithLatest;
+
+	private LicenseHeaderStep(String licenseHeader, String delimiter, String yearSeparator) {
+		this(licenseHeader, delimiter, yearSeparator, false);
+	}
 
 	/** The license that we'd like enforced. */
 	public LicenseHeaderStep(String licenseHeader, String delimiter, String yearSeparator, boolean updateYearWithLatest) {
