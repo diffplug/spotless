@@ -26,7 +26,6 @@ spotless {
 	}
 	groovyGradle {
 		target '*.gradle'
-		paddedCell()
 		greclipse().configFile rootProject.files('gradle/spotless.eclipseformat.xml', 'gradle/spotless.groovyformat.prefs')
 	}
 }
