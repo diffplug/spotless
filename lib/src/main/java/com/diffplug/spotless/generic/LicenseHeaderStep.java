@@ -16,7 +16,6 @@
 package com.diffplug.spotless.generic;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -146,11 +145,6 @@ public final class LicenseHeaderStep implements Serializable {
 		return YEAR_TOKENS.stream().filter(licenseHeader::contains).findFirst();
 	}
 
-	/** Reads the license file from the given file. */
-	public LicenseHeaderStep(File licenseFile, Charset encoding, String delimiter, String yearSeparator, boolean updateYearWithLatest) throws IOException {
-		this(new String(Files.readAllBytes(licenseFile.toPath()), encoding), delimiter, yearSeparator, updateYearWithLatest);
-	}
-
 	/** Formats the given string. */
 	public String format(String raw) {
 		Matcher contentMatcher = delimiterPattern.matcher(raw);
@@ -213,5 +207,4 @@ public final class LicenseHeaderStep implements Serializable {
 			}
 		}
 	}
-
 }
