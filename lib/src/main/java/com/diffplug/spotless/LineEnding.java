@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,6 +98,19 @@ public enum LineEnding {
 	private static final Policy UNIX_POLICY = new ConstantLineEndingPolicy(UNIX.str());
 	private static final String _platformNative = System.getProperty("line.separator");
 	private static final Policy _platformNativePolicy = new ConstantLineEndingPolicy(_platformNative);
+	private static final boolean nativeIsWin = _platformNative.equals(WINDOWS.str());
+
+	public static boolean nativeIsWin() {
+		return nativeIsWin;
+	}
+
+	public static String pathUnixToNative(String path) {
+		return nativeIsWin() ? path.replace('/', '\\') : path;
+	}
+
+	public static String pathNativeToUnix(String path) {
+		return nativeIsWin() ? path : path.replace('/', '\\');
+	}
 
 	/** Returns the standard line ending for this policy. */
 	public String str() {

@@ -91,7 +91,8 @@ public class SpotlessTask extends DefaultTask {
 		this.lineEndingsPolicy = Objects.requireNonNull(lineEndingsPolicy);
 	}
 
-	@Nullable GitRatchet ratchet;
+	@Nullable
+	GitRatchet ratchet;
 	ObjectId treeSha = ObjectId.zeroId();
 
 	@Internal

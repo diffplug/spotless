@@ -29,6 +29,7 @@ import java.util.Objects;
 
 import com.diffplug.common.base.Throwables;
 import com.diffplug.common.io.ByteStreams;
+import com.diffplug.spotless.LineEnding;
 
 /**
  * Harness for running a maven build, same idea as the
@@ -128,16 +129,11 @@ public class MavenRunner {
 
 	/** Prepends any arguments necessary to run a console command. */
 	private static List<String> getPlatformCmds(String cmd) {
-		if (isWin()) {
+		if (LineEnding.nativeIsWin()) {
 			return Arrays.asList("cmd", "/c", "mvnw " + cmd);
 		} else {
 			return Arrays.asList("/bin/sh", "-c", "./mvnw " + cmd);
 		}
-	}
-
-	private static boolean isWin() {
-		String os_name = System.getProperty("os.name").toLowerCase(Locale.getDefault());
-		return os_name.contains("win");
 	}
 
 	private static class Slurper extends Thread {

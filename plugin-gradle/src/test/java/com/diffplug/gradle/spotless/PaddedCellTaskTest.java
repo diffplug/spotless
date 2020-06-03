@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,11 +35,6 @@ import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.TestProvisioner;
 
 public class PaddedCellTaskTest extends ResourceHarness {
-
-	private static String slashify(String input) {
-		return TestFixtures.IS_WIN ? input.replace('/', '\\') : input;
-	}
-
 	private class Bundle {
 		String name;
 		Project project = TestProvisioner.gradleProject(rootFolder());
@@ -211,21 +206,21 @@ public class PaddedCellTaskTest extends ResourceHarness {
 	public void paddedCellCheckCycleFailureMsg() throws IOException {
 		assertFailureMessage(cycle(),
 				"The following files had format violations:",
-				slashify("    src/test.cycle"),
+				LineEnding.pathUnixToNative("    src/test.cycle"),
 				"        @@ -1 +1 @@",
 				"        -CCC",
 				"        +A",
-				TestFixtures.EXPECTED_RUN_SPOTLESS_APPLY_SUGGESTION);
+				DiffMessageFormatterTest.EXPECTED_RUN_SPOTLESS_APPLY_SUGGESTION);
 	}
 
 	@Test
 	public void paddedCellCheckConvergeFailureMsg() throws IOException {
 		assertFailureMessage(converge(),
 				"The following files had format violations:",
-				slashify("    src/test.converge"),
+				LineEnding.pathUnixToNative("    src/test.converge"),
 				"        @@ -1 +0,0 @@",
 				"        -CCC",
-				TestFixtures.EXPECTED_RUN_SPOTLESS_APPLY_SUGGESTION);
+				DiffMessageFormatterTest.EXPECTED_RUN_SPOTLESS_APPLY_SUGGESTION);
 	}
 
 	private void assertFailureMessage(Bundle bundle, String... expectedOutput) {
