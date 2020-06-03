@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [1.33.0] - 2020-06-03
 ### Added
 * `LicenseHeaderStep` now has an `updateYearWithLatest` parameter which can update copyright headers to today's date. ([#593](https://github.com/diffplug/spotless/pull/593))
   * Parsing of existing years from headers is now more lenient.
