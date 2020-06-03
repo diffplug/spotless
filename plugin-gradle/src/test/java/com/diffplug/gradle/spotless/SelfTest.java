@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,123 +16,77 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
+import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 import org.gradle.testkit.runner.GradleRunner;
-import org.junit.Ignore;
-import org.junit.Test;
 
-import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StandardSystemProperty;
+import com.diffplug.common.collect.MoreCollectors;
 import com.diffplug.spotless.TestProvisioner;
 
 /**
  * If you'd like to step through the full spotless plugin,
  * these tests make that easier. Uncomment ignore to do it.
  */
-@Ignore
 public class SelfTest {
-	enum Type {
-		CHECK {
-			@Override
-			public void runAllTasks(Project project) {
-				project.getTasks().stream()
-						.filter(task -> task instanceof SpotlessTask)
-						.map(task -> (SpotlessTask) task)
-						.forEach(task -> Errors.rethrow().run(() -> {
-							IncrementalTaskInputs inputs = Mocks.mockIncrementalTaskInputs(task.getTarget());
-							task.performAction(inputs);
-						}));
-			}
-
-			@Override
-			public <T> T checkApply(T check, T apply) {
-				return check;
-			}
-		},
-		APPLY {
-			@Override
-			public void runAllTasks(Project project) {
-				project.getTasks().stream()
-						.filter(task -> task instanceof SpotlessTask)
-						.map(task -> (SpotlessTask) task)
-						.forEach(task -> Errors.rethrow().run(() -> {
-							IncrementalTaskInputs inputs = Mocks.mockIncrementalTaskInputs(task.getTarget());
-							task.performAction(inputs);
-						}));
-			}
-
-			@Override
-			public <T> T checkApply(T check, T apply) {
-				return apply;
-			}
-		};
-
-		public abstract void runAllTasks(Project project);
-
-		public abstract <T> T checkApply(T check, T apply);
-	}
-
-	@Test
-	public void spotlessApply() throws Exception {
-		runTasksManually(Type.APPLY);
-	}
-
-	@Test
-	public void spotlessCheck() throws Exception {
-		runTasksManually(Type.CHECK);
+	public static void main(String[] args) throws Exception {
+		//runTaskManually();
+		runWithTestKit("spotlessApply");
 	}
 
 	/** Runs a full task manually, so you can step through all the logic. */
-	private static void runTasksManually(Type type) throws Exception {
+	private static void runTaskManually() throws Exception {
 		Project project = createProject(extension -> {
+			extension.ratchetFrom("origin/master");
 			extension.java(java -> {
-				java.target("**/*.java");
-				java.licenseHeaderFile("spotless.license.java");
-				java.importOrderFile("spotless.importorder");
-				java.eclipse().configFile("spotless.eclipseformat.xml");
+				java.target("src/*/java/**/*.java");
+				java.licenseHeaderFile("../gradle/spotless.license");
+				java.importOrderFile("../gradle/spotless.importorder");
+				java.eclipse().configFile("../gradle/spotless.eclipseformat.xml");
 				java.trimTrailingWhitespace();
-				java.customLazy("Lambda fix", () -> raw -> {
-					if (!raw.contains("public class SelfTest ")) {
-						// don't format this line away, lol
-						return raw.replace("} )", "})").replace("} ,", "},");
-					} else {
-						return raw;
-					}
-				});
-			});
-			extension.format("misc", misc -> {
-				misc.target("**/*.gradle", "**/*.md", "**/*.gitignore");
-				misc.indentWithTabs();
-				misc.trimTrailingWhitespace();
-				misc.endWithNewline();
+				java.removeUnusedImports();
 			});
 		});
-		type.runAllTasks(project);
+		project.getBuildscript().getRepositories().mavenCentral();
+		SpotlessTask onlyTask = project.getTasks().stream()
+				.filter(task -> task instanceof SpotlessTask)
+				.map(task -> (SpotlessTask) task)
+				.collect(MoreCollectors.singleOrEmpty()).get();
+
+		IncrementalTaskInputs inputs = Mocks.mockIncrementalTaskInputs(onlyTask.getTarget());
+		onlyTask.performAction(inputs);
+		// it will run forever with empty threads, so we have to kill it
+		System.exit(0);
 	}
 
 	/** Creates a Project which has had the SpotlessExtension setup. */
 	private static Project createProject(Consumer<SpotlessExtension> test) throws Exception {
+		List<Action<Project>> afterEvaluate = new ArrayList<>();
+		//Project project = Mocks.mockProject(TestProvisioner.gradleProject(new File("").getAbsoluteFile()), afterEvaluate);
 		Project project = TestProvisioner.gradleProject(new File("").getAbsoluteFile());
 		// create the spotless plugin
 		SpotlessPlugin plugin = project.getPlugins().apply(SpotlessPlugin.class);
 		// setup the plugin
 		test.accept(plugin.getExtension());
+		// run the afterEvaluate section
+		((ProjectInternal) project).getProjectEvaluationBroadcaster().afterEvaluate(project, project.getState());
 		// return the configured plugin
 		return project;
 	}
 
 	/** Runs against the `spotlessSelfApply.gradle` file. */
-	static void runWithTestKit(Type type) throws Exception {
+	static void runWithTestKit(String taskType) throws Exception {
 		GradleRunner.create()
 				.withPluginClasspath()
 				.withProjectDir(new File(StandardSystemProperty.USER_DIR.value()).getParentFile())
 				.withArguments(
-						"--build-file", "spotlessSelf.gradle",
 						"--project-cache-dir", ".gradle-selfapply",
-						"spotless" + type.checkApply("Check", "Apply"),
+						taskType,
 						"--stacktrace")
 				.forwardOutput()
 				.build();
