@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ import com.diffplug.common.base.Unhandled;
 import com.diffplug.common.io.Resources;
 import com.diffplug.spotless.ResourceHarness;
 
-public class MavenIntegrationTest extends ResourceHarness {
+public class MavenIntegrationHarness extends ResourceHarness {
 	/**
 	 * To run tests in the IDE, run `gradlew :plugin-maven:changelogPrint`, then
 	 * put the last version it prints into `SPOTLESS_MAVEN_VERSION_IDE`.  From now
@@ -159,7 +159,7 @@ public class MavenIntegrationTest extends ResourceHarness {
 	}
 
 	private String createPomXmlContent(String pomTemplate, Map<String, Object> params) throws IOException {
-		URL url = MavenIntegrationTest.class.getResource(pomTemplate);
+		URL url = MavenIntegrationHarness.class.getResource(pomTemplate);
 		try (BufferedReader reader = Resources.asCharSource(url, StandardCharsets.UTF_8).openBufferedStream()) {
 			Mustache mustache = mustacheFactory.compile(reader, "pom");
 			StringWriter writer = new StringWriter();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@ package com.diffplug.spotless.maven.java;
 
 import org.junit.Test;
 
-import com.diffplug.spotless.maven.MavenIntegrationTest;
+import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
-public class RemoveUnusedImportsStepTest extends MavenIntegrationTest {
+public class RemoveUnusedImportsStepTest extends MavenIntegrationHarness {
 
 	@Test
 	public void testRemoveUnusedInports() throws Exception {
