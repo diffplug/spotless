@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-/** COMPLETELY DEPRECATED, use {@link PaddedCell#canonicalIfDirty(Formatter, File)} instead. */
+/** COMPLETELY DEPRECATED, use {@link PaddedCell#calculateDirtyState(Formatter, File)} instead. */
 @Deprecated
 public final class PaddedCellBulk {
 	private static final Logger logger = Logger.getLogger(PaddedCellBulk.class.getName());
