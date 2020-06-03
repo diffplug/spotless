@@ -193,7 +193,7 @@ public class KotlinExtensionTest extends GradleIntegrationTest {
 			matcher.startsWith("// License Header 2012, 2014");
 		});
 		assertFile("src/main/kotlin/test2.kt").matches(matcher -> {
-			matcher.startsWith(HEADER_WITH_YEAR.replace("$YEAR", String.valueOf(YearMonth.now().getYear())));
+			matcher.startsWith("// License Header 2012, 2014");
 		});
 	}
 
