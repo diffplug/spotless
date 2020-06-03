@@ -66,6 +66,7 @@ class GitRatchet implements AutoCloseable {
 		DirCache dirCache = repo.readDirCache();
 
 		try (TreeWalk treeWalk = new TreeWalk(repo)) {
+			treeWalk.setRecursive(true);
 			treeWalk.addTree(treeSha);
 			treeWalk.addTree(new DirCacheIterator(dirCache));
 			treeWalk.addTree(new FileTreeIterator(repo));
