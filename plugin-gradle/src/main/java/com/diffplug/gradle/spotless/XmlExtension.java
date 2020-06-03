@@ -30,7 +30,7 @@ import com.diffplug.spotless.xml.XmlDefaults;
 public class XmlExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "xml";
 
-	public XmlExtension(SpotlessExtension spotless) {
+	public XmlExtension(SpotlessExtensionBase spotless) {
 		super(spotless);
 	}
 

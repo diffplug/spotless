@@ -40,7 +40,7 @@ import com.diffplug.spotless.java.RemoveUnusedImportsStep;
 public class JavaExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "java";
 
-	public JavaExtension(SpotlessExtension spotless) {
+	public JavaExtension(SpotlessExtensionBase spotless) {
 		super(spotless);
 	}
 

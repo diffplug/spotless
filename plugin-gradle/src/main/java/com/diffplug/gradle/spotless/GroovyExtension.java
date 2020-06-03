@@ -38,7 +38,7 @@ import com.diffplug.spotless.java.ImportOrderStep;
 public class GroovyExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "groovy";
 
-	public GroovyExtension(SpotlessExtension spotless) {
+	public GroovyExtension(SpotlessExtensionBase spotless) {
 		super(spotless);
 	}
 

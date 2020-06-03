@@ -30,7 +30,7 @@ import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
 public class CssExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "css";
 
-	public CssExtension(SpotlessExtension spotless) {
+	public CssExtension(SpotlessExtensionBase spotless) {
 		super(spotless);
 	}
 
