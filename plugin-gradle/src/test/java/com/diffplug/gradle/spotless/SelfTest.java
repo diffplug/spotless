@@ -16,11 +16,8 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 
-import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.internal.project.ProjectInternal;
 import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
@@ -36,8 +33,8 @@ import com.diffplug.spotless.TestProvisioner;
  */
 public class SelfTest {
 	public static void main(String[] args) throws Exception {
-		//runTaskManually();
-		runWithTestKit("spotlessApply");
+		runTaskManually();
+		//runWithTestKit("spotlessApply");
 	}
 
 	/** Runs a full task manually, so you can step through all the logic. */
@@ -67,7 +64,6 @@ public class SelfTest {
 
 	/** Creates a Project which has had the SpotlessExtension setup. */
 	private static Project createProject(Consumer<SpotlessExtension> test) throws Exception {
-		List<Action<Project>> afterEvaluate = new ArrayList<>();
 		//Project project = Mocks.mockProject(TestProvisioner.gradleProject(new File("").getAbsoluteFile()), afterEvaluate);
 		Project project = TestProvisioner.gradleProject(new File("").getAbsoluteFile());
 		// create the spotless plugin
