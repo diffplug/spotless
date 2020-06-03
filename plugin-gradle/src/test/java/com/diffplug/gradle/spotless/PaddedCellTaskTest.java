@@ -28,6 +28,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.diffplug.common.base.StringPrinter;
+import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
@@ -206,7 +207,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 	public void paddedCellCheckCycleFailureMsg() throws IOException {
 		assertFailureMessage(cycle(),
 				"The following files had format violations:",
-				LineEnding.pathUnixToNative("    src/test.cycle"),
+				FileSignature.pathUnixToNative("    src/test.cycle"),
 				"        @@ -1 +1 @@",
 				"        -CCC",
 				"        +A",
@@ -217,7 +218,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 	public void paddedCellCheckConvergeFailureMsg() throws IOException {
 		assertFailureMessage(converge(),
 				"The following files had format violations:",
-				LineEnding.pathUnixToNative("    src/test.converge"),
+				FileSignature.pathUnixToNative("    src/test.converge"),
 				"        @@ -1 +0,0 @@",
 				"        -CCC",
 				DiffMessageFormatterTest.EXPECTED_RUN_SPOTLESS_APPLY_SUGGESTION);

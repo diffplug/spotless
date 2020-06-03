@@ -104,14 +104,6 @@ public enum LineEnding {
 		return nativeIsWin;
 	}
 
-	public static String pathUnixToNative(String path) {
-		return nativeIsWin() ? path.replace('/', '\\') : path;
-	}
-
-	public static String pathNativeToUnix(String path) {
-		return nativeIsWin() ? path : path.replace('/', '\\');
-	}
-
 	/** Returns the standard line ending for this policy. */
 	public String str() {
 		switch (this) {

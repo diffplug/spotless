@@ -98,7 +98,7 @@ public class FormatterPropertiesTest extends ResourceHarness {
 
 	@Test
 	public void nonExistingFile() throws IOException {
-		String filePath = LineEnding.pathUnixToNative("does/not/exist.properties");
+		String filePath = FileSignature.pathUnixToNative("does/not/exist.properties");
 		try {
 			FormatterProperties.from(new File(filePath));
 			Assertions.fail("Should have thrown");
