@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,18 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
-import java.util.Locale;
 
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.UnexpectedBuildFailure;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.diffplug.common.base.StandardSystemProperty;
+import com.diffplug.spotless.LineEnding;
 
-public class SpecificFilesTest extends GradleIntegrationTest {
-	private static boolean isWindows() {
-		return StandardSystemProperty.OS_NAME.value().toLowerCase(Locale.US).contains("win");
-	}
+public class SpecificFilesTest extends GradleIntegrationHarness {
 
 	private static String regexWinSafe(String input) {
-		return isWindows() ? input.replace("/", "\\\\") : input;
+		return LineEnding.nativeIsWin() ? input.replace("/", "\\\\") : input;
 	}
 
 	private String testFilePath(int number) {

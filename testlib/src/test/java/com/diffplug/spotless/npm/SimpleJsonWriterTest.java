@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
  */
 package com.diffplug.spotless.npm;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,25 +32,25 @@ public class SimpleJsonWriterTest extends ResourceHarness {
 
 	@Test
 	public void itWritesAValidEmptyObject() {
-		assertThat(jsonWriter.toJsonString().replaceAll("\\s", ""), equalTo("{}"));
+		assertThat(jsonWriter.toJsonString().replaceAll("\\s", "")).isEqualTo("{}");
 	}
 
 	@Test
 	public void itWritesABooleanProperty() {
 		jsonWriter.put("mybool", true);
-		assertThat(jsonWriter.toJsonString(), equalTo("{\n    \"mybool\": true\n}"));
+		assertThat(jsonWriter.toJsonString()).isEqualTo("{\n    \"mybool\": true\n}");
 	}
 
 	@Test
 	public void itWritesAStringProperty() {
 		jsonWriter.put("mystring", "stringvalue");
-		assertThat(jsonWriter.toJsonString(), equalTo("{\n    \"mystring\": \"stringvalue\"\n}"));
+		assertThat(jsonWriter.toJsonString()).isEqualTo("{\n    \"mystring\": \"stringvalue\"\n}");
 	}
 
 	@Test
 	public void itWritesAnInteger() {
 		jsonWriter.put("myint", 7);
-		assertThat(jsonWriter.toJsonString(), equalTo("{\n    \"myint\": 7\n}"));
+		assertThat(jsonWriter.toJsonString()).isEqualTo("{\n    \"myint\": 7\n}");
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -62,7 +62,7 @@ public class SimpleJsonWriterTest extends ResourceHarness {
 	@Test
 	public void itHandlesSeveralOptionsSimultaneously() {
 		jsonWriter.putAll(ImmutableMap.of("mystring", "stringvalue", "intvalue", 1));
-		assertThat(jsonWriter.toJsonString(), equalTo("{\n    \"mystring\": \"stringvalue\",\n    \"intvalue\": 1\n}"));
+		assertThat(jsonWriter.toJsonString()).isEqualTo("{\n    \"mystring\": \"stringvalue\",\n    \"intvalue\": 1\n}");
 	}
 
 	@Test

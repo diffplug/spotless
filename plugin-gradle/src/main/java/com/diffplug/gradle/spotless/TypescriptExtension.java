@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,8 @@ public class TypescriptExtension extends FormatExtension {
 
 	static final String NAME = "typescript";
 
-	public TypescriptExtension(SpotlessExtension root) {
-		super(root);
+	public TypescriptExtension(SpotlessExtension spotless) {
+		super(spotless);
 	}
 
 	/** Uses the default version of typescript-format. */
@@ -105,7 +105,7 @@ public class TypescriptExtension extends FormatExtension {
 
 			return TsFmtFormatterStep.create(
 					devDependencies,
-					GradleProvisioner.fromProject(project),
+					provisioner(),
 					project.getBuildDir(),
 					npmFileOrNull(),
 					typedConfigFile(),

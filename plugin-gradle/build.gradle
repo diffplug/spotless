@@ -27,8 +27,6 @@ dependencies {
 	testImplementation "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
 }
 
-tasks.eclipse.dependsOn(pluginUnderTestMetadata)
-
 test { testLogging.showStandardStreams = true }
 
 test {
@@ -46,6 +44,16 @@ task npmTest(type: Test) {
 //////////////////////////
 // GRADLE PLUGIN PORTAL //
 //////////////////////////
+gradlePlugin {
+	plugins {
+		spotlessPlugin {
+			id = 'com.diffplug.gradle.spotless'
+			implementationClass = 'com.diffplug.gradle.spotless.SpotlessPlugin'
+			displayName = 'Spotless formatting plugin'
+			description = project.description
+		}
+	}
+}
 if (version.endsWith('-SNAPSHOT')) {
 	publishPlugins.enabled = false
 } else {
@@ -53,21 +61,25 @@ if (version.endsWith('-SNAPSHOT')) {
 		// These settings are set for the whole plugin bundle
 		website = "https://github.com/diffplug/spotless"
 		vcsUrl = "https://github.com/diffplug/spotless"
-		description = project.description
-
+		tags = [
+			'format',
+			'style',
+			'license',
+			'header',
+			'google-java-format',
+			'eclipse',
+			'ktlint',
+			'ktfmt',
+			'tsfmt',
+			'prettier',
+			'scalafmt',
+			'scalafix'
+		]
 		plugins {
 			spotlessPlugin {
 				id = 'com.diffplug.gradle.spotless'
-				displayName = 'Spotless formatting plugin'
-				tags = [
-					'format',
-					'style',
-					'license',
-					'header'
-				]
 			}
 		}
-
 		mavenCoordinates {
 			groupId = project.group
 			artifactId = project.artifactIdGradle

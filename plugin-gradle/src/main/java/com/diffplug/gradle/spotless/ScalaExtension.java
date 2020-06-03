@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,8 @@ import com.diffplug.spotless.scala.ScalaFmtStep;
 public class ScalaExtension extends FormatExtension {
 	static final String NAME = "scala";
 
-	public ScalaExtension(SpotlessExtension rootExtension) {
-		super(rootExtension);
+	public ScalaExtension(SpotlessExtension spotless) {
+		super(spotless);
 	}
 
 	public ScalaFmtConfig scalafmt() {
@@ -60,7 +60,7 @@ public class ScalaExtension extends FormatExtension {
 
 		private FormatterStep createStep() {
 			File resolvedConfigFile = configFile == null ? null : getProject().file(configFile);
-			return ScalaFmtStep.create(version, GradleProvisioner.fromProject(getProject()), resolvedConfigFile);
+			return ScalaFmtStep.create(version, provisioner(), resolvedConfigFile);
 		}
 	}
 

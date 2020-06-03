@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import com.diffplug.spotless.JreVersion;
 import com.diffplug.spotless.LineEnding;
 
 /** Tests the desired behavior from https://github.com/diffplug/spotless/issues/46. */
-public class ErrorShouldRethrowJre11 extends GradleIntegrationTest {
+public class ErrorShouldRethrowJre8Test extends GradleIntegrationHarness {
 	private void writeBuild(String... toInsert) throws IOException {
 		List<String> lines = new ArrayList<>();
 		lines.add("plugins {");
@@ -58,7 +58,7 @@ public class ErrorShouldRethrowJre11 extends GradleIntegrationTest {
 				"    } // format",
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fun.");
-		runWithSuccess("> Task :spotlessMisc");
+		runWithSuccess(":spotlessMisc");
 	}
 
 	@Test
@@ -68,10 +68,9 @@ public class ErrorShouldRethrowJre11 extends GradleIntegrationTest {
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
 		runWithFailure(
-				"> Task :spotlessMisc FAILED\n" +
-						"Step 'no swearing' found problem in 'README.md':\n" +
-						"No swearing!\n" +
-						"java.lang.RuntimeException: No swearing!\n");
+				":spotlessMiscStep 'no swearing' found problem in 'README.md':",
+				"No swearing!",
+				"java.lang.RuntimeException: No swearing!");
 	}
 
 	@Test
@@ -81,7 +80,7 @@ public class ErrorShouldRethrowJre11 extends GradleIntegrationTest {
 				"    enforceCheck false",
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
-		runWithSuccess("> Task :compileJava NO-SOURCE");
+		runWithSuccess(":compileJava UP-TO-DATE");
 	}
 
 	@Test
@@ -91,7 +90,7 @@ public class ErrorShouldRethrowJre11 extends GradleIntegrationTest {
 				"    } // format",
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
-		runWithSuccess("> Task :spotlessMisc\n" +
+		runWithSuccess(":spotlessMisc",
 				"Unable to apply step 'no swearing' to 'README.md'");
 	}
 
@@ -102,7 +101,7 @@ public class ErrorShouldRethrowJre11 extends GradleIntegrationTest {
 				"    } // format",
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
-		runWithSuccess("> Task :spotlessMisc",
+		runWithSuccess(":spotlessMisc",
 				"Unable to apply step 'no swearing' to 'README.md'");
 	}
 
@@ -114,14 +113,14 @@ public class ErrorShouldRethrowJre11 extends GradleIntegrationTest {
 				"    } // format",
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
-		runWithFailure("> Task :spotlessMisc FAILED\n" +
-				"Step 'no swearing' found problem in 'README.md':\n" +
-				"No swearing!\n" +
-				"java.lang.RuntimeException: No swearing!\n");
+		runWithFailure(
+				":spotlessMiscStep 'no swearing' found problem in 'README.md':",
+				"No swearing!",
+				"java.lang.RuntimeException: No swearing!");
 	}
 
 	private void runWithSuccess(String... messages) throws Exception {
-		if (JreVersion.thisVm() != JreVersion._11) {
+		if (JreVersion.thisVm() != JreVersion._8) {
 			return;
 		}
 		BuildResult result = gradleRunner().withArguments("check").build();
@@ -129,7 +128,7 @@ public class ErrorShouldRethrowJre11 extends GradleIntegrationTest {
 	}
 
 	private void runWithFailure(String... messages) throws Exception {
-		if (JreVersion.thisVm() != JreVersion._11) {
+		if (JreVersion.thisVm() != JreVersion._8) {
 			return;
 		}
 		BuildResult result = gradleRunner().withArguments("check").buildAndFail();
@@ -139,10 +138,10 @@ public class ErrorShouldRethrowJre11 extends GradleIntegrationTest {
 	private void assertResultAndMessages(BuildResult result, TaskOutcome outcome, String... messages) {
 		String expectedToStartWith = StringPrinter.buildStringFromLines(messages).trim();
 		int numNewlines = CharMatcher.is('\n').countIn(expectedToStartWith);
-		List<String> actualLines = Splitter.on('\n').splitToList(LineEnding.toUnix(result.getOutput().trim()));
+		List<String> actualLines = Splitter.on('\n').splitToList(LineEnding.toUnix(result.getOutput()));
 		String actualStart = String.join("\n", actualLines.subList(0, numNewlines + 1));
 		Assertions.assertThat(actualStart).isEqualTo(expectedToStartWith);
-		Assertions.assertThat(result.tasks(outcome).size() + result.tasks(TaskOutcome.UP_TO_DATE).size() + result.tasks(TaskOutcome.NO_SOURCE).size())
+		Assertions.assertThat(result.tasks(outcome).size() + result.tasks(TaskOutcome.UP_TO_DATE).size())
 				.isEqualTo(result.getTasks().size());
 	}
 }

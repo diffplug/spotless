@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import com.diffplug.spotless.JreVersion;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ResourceHarness;
 
-public class GradleIntegrationTest extends ResourceHarness {
+public class GradleIntegrationHarness extends ResourceHarness {
 	/**
 	 * Each test gets its own temp folder, and we create a gradle
 	 * build there and run it.

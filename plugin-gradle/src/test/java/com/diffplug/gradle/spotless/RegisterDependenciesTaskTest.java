@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import org.junit.Test;
 
 import com.diffplug.spotless.JreVersion;
 
-public class RegisterDependenciesTaskTest extends GradleIntegrationTest {
+public class RegisterDependenciesTaskTest extends GradleIntegrationHarness {
 	@Test
 	public void registerDependencies() throws IOException {
 		setFile("settings.gradle")

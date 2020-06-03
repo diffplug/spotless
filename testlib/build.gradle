@@ -23,3 +23,8 @@ spotbugs { reportLevel = 'high' } // low|medium|high (low = sensitive to even mi
 test { useJUnit { excludeCategories 'com.diffplug.spotless.category.NpmTest' } }
 
 task npmTest(type: Test) { useJUnit { includeCategories 'com.diffplug.spotless.category.NpmTest' } }
+
+javadoc {
+	options.addStringOption('Xdoclint:none', '-quiet')
+	options.addStringOption('Xwerror', '-quiet')
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,11 @@ package com.diffplug.gradle.spotless;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaBasePlugin;
-import org.gradle.util.GradleVersion;
+import org.gradle.api.tasks.TaskProvider;
 
-class SpotlessPluginLegacy {
-	static final GradleVersion CONFIG_AVOIDANCE_INTRODUCED = GradleVersion.version("4.9");
-
+class SpotlessPluginPostConfigAvoidance {
 	static void enforceCheck(SpotlessExtension extension, Project project) {
-		Task check = project.getTasks().getByName(JavaBasePlugin.CHECK_TASK_NAME);
-		check.dependsOn(extension.rootCheckTask);
+		TaskProvider<Task> check = project.getTasks().named(JavaBasePlugin.CHECK_TASK_NAME);
+		check.configure(task -> task.dependsOn(extension.rootCheckTask));
 	}
 }

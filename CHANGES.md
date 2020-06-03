@@ -11,6 +11,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 * We are now dogfooding `ratchetFrom` and `licenseHeader` with a `$YEAR` token to ensure that Spotless copyright headers stay up-to-date without adding noise to file history. ([#595](https://github.com/diffplug/spotless/pull/595))
+* Added `LineEnding.nativeIsWin()`, `FileSignature.pathNativeToUnix()`, and `FileSignature.pathUnixToNative()`, along with many API-invisible fixes and cleanup. ([#592](https://github.com/diffplug/spotless/pull/592))
 
 ## [1.33.0] - 2020-06-03
 ### Added

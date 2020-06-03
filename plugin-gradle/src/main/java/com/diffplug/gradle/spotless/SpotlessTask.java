@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,8 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
 
 import org.eclipse.jgit.lib.ObjectId;
 import org.gradle.api.DefaultTask;
@@ -89,7 +91,14 @@ public class SpotlessTask extends DefaultTask {
 		this.lineEndingsPolicy = Objects.requireNonNull(lineEndingsPolicy);
 	}
 
+	@Nullable
+	GitRatchet ratchet;
 	ObjectId treeSha = ObjectId.zeroId();
+
+	@Internal
+	public GitRatchet getRatchet() {
+		return ratchet;
+	}
 
 	@Input
 	public ObjectId getRatchetSha() {
@@ -104,7 +113,7 @@ public class SpotlessTask extends DefaultTask {
 
 	@Deprecated
 	public void setPaddedCell(boolean paddedCell) {
-		getLogger().warn("PaddedCell is now always on, and cannot be turned off.");
+		getLogger().warn("Spotless warning: Padded Cell is now always on, and cannot be turned off.  Find `paddedCell(` and remove all invocations.");
 	}
 
 	protected String filePatterns = "";
@@ -236,7 +245,7 @@ public class SpotlessTask extends DefaultTask {
 		File output = getOutputFile(input);
 		getLogger().debug("Applying format to " + input + " and writing to " + output);
 		PaddedCell.DirtyState dirtyState;
-		if (treeSha != ObjectId.zeroId() && GitRatchet.isClean(getProject(), treeSha, input)) {
+		if (ratchet != null && ratchet.isClean(getProject(), treeSha, input)) {
 			dirtyState = PaddedCell.isClean();
 		} else {
 			dirtyState = PaddedCell.calculateDirtyState(formatter, input);

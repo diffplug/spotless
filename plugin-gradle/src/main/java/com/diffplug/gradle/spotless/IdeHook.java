@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,6 @@ package com.diffplug.gradle.spotless;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-
-import org.eclipse.jgit.lib.ObjectId;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.io.ByteStreams;
@@ -44,8 +42,8 @@ class IdeHook {
 		}
 		if (spotlessTask.getTarget().contains(file)) {
 			try (Formatter formatter = spotlessTask.buildFormatter()) {
-				if (!spotlessTask.getRatchetSha().equals(ObjectId.zeroId())) {
-					if (GitRatchet.isClean(spotlessTask.getProject(), spotlessTask.treeSha, file)) {
+				if (spotlessTask.ratchet != null) {
+					if (spotlessTask.ratchet.isClean(spotlessTask.getProject(), spotlessTask.treeSha, file)) {
 						dumpIsClean();
 						return;
 					}
