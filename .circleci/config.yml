@@ -202,19 +202,19 @@ workflows:
   assemble_and_test:
     jobs:
       - test_windows
-      # - assemble_testClasses
-      # - test_justmaven_8:
-      #     requires:
-      #       - assemble_testClasses
-      # - test_nomaven_8:
-      #     requires:
-      #       - assemble_testClasses
-      # - test_nomaven_11:
-      #     requires:
-      #       - assemble_testClasses
-      # - test_npm_8:
-      #     requires:
-      #       - assemble_testClasses
+      - assemble_testClasses
+      - test_justmaven_8:
+          requires:
+            - assemble_testClasses
+      - test_nomaven_8:
+          requires:
+            - assemble_testClasses
+      - test_nomaven_11:
+          requires:
+            - assemble_testClasses
+      - test_npm_8:
+          requires:
+            - assemble_testClasses
   deploy:
     jobs:
       - changelog_print:
