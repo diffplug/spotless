@@ -23,7 +23,7 @@ import org.junit.Test;
 
 public class ConfigAvoidanceTest extends GradleIntegrationHarness {
 	protected final GradleRunner gradleRunnerConfigAvoidance() throws IOException {
-		return gradleRunner().withGradleVersion(SpotlessPluginLegacy.CONFIG_AVOIDANCE_INTRODUCED.getVersion());
+		return gradleRunner().withGradleVersion(SpotlessPluginPreConfigAvoidance.CONFIG_AVOIDANCE_INTRODUCED.getVersion());
 	}
 
 	@Test
