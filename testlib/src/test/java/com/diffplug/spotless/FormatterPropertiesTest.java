@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,14 +24,9 @@ import java.util.LinkedList;
 import java.util.Properties;
 
 import org.assertj.core.api.AbstractAssert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class FormatterPropertiesTest extends ResourceHarness {
-
-	@Rule
-	public ExpectedException expectedEx = ExpectedException.none();
 
 	private static final String RESOURCES_ROOT_DIR = "formatter/properties/";
 
@@ -168,11 +163,9 @@ public class FormatterPropertiesTest extends ResourceHarness {
 
 			return this;
 		}
-
 	}
 
 	private static FormatterSettingsAssert assertFor(FormatterProperties actual) {
 		return new FormatterSettingsAssert(actual);
 	}
-
 }
