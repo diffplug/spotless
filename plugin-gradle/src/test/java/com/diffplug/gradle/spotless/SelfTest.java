@@ -22,6 +22,7 @@ import java.util.function.Consumer;
 
 import org.gradle.api.Action;
 import org.gradle.api.Project;
+import org.gradle.api.internal.project.ProjectInternal;
 import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 import org.gradle.testkit.runner.GradleRunner;
 
