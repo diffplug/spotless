@@ -6,7 +6,7 @@ spotless {
 		 * No good way to get around using this import:
 		 * https://github.com/gradle/gradle/issues/3191
 		 */
-		String regex = "import org\\.gradle\\.api\\.internal\\.(?!plugins\\.DslObject)"
+		String regex = "import org\\.gradle\\.api\\.internal\\.(?!plugins\\.DslObject)(?!project\\.ProjectInternal)"
 		if ((text.contains('import org.gradle.internal.') || text.find(regex)) &&
 		!text.contains('def noInternalDepsClosure')) {
 			throw new AssertionError("Accidental internal import")
@@ -15,6 +15,7 @@ spotless {
 	if (project.name != 'ide' && project != rootProject) {
 		// the rootProject and ide projects don't have any java
 		java {
+			ratchetFrom 'origin/master'
 			custom 'noInternalDeps', noInternalDepsClosure
 			bumpThisNumberIfACustomStepChanges(1)
 			licenseHeaderFile rootProject.file('gradle/spotless.license')
@@ -26,7 +27,6 @@ spotless {
 	}
 	groovyGradle {
 		target '*.gradle'
-		paddedCell()
 		greclipse().configFile rootProject.files('gradle/spotless.eclipseformat.xml', 'gradle/spotless.groovyformat.prefs')
 	}
 }
