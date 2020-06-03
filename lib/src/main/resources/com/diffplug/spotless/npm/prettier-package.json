@@ -2,7 +2,8 @@
 	"name": "spotless-prettier-formatter-step",
 	"version": "1.0.0",
 	"devDependencies": {
-${devDependencies}
+${devDependencies},
+		"express": "4.17.1"
 	},
 	"dependencies": {},
 	"engines": {
