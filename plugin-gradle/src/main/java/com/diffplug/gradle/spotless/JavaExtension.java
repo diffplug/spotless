@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,8 @@ import com.diffplug.spotless.java.RemoveUnusedImportsStep;
 public class JavaExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "java";
 
-	public JavaExtension(SpotlessExtension rootExtension) {
-		super(rootExtension);
+	public JavaExtension(SpotlessExtension spotless) {
+		super(spotless);
 	}
 
 	// If this constant changes, don't forget to change the similarly-named one in

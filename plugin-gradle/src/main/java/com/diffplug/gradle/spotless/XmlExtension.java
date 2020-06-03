@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,8 @@ import com.diffplug.spotless.xml.XmlDefaults;
 public class XmlExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "xml";
 
-	public XmlExtension(SpotlessExtension rootExtension) {
-		super(rootExtension);
+	public XmlExtension(SpotlessExtension spotless) {
+		super(spotless);
 	}
 
 	public EclipseConfig eclipse() {

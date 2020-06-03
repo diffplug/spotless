@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ import com.diffplug.spotless.extra.cpp.EclipseCdtFormatterStep;
 public class CppExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "cpp";
 
-	public CppExtension(SpotlessExtension rootExtension) {
-		super(rootExtension);
+	public CppExtension(SpotlessExtension spotless) {
+		super(spotless);
 	}
 
 	public EclipseConfig eclipse() {
