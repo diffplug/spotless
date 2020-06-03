@@ -62,7 +62,7 @@ public class KotlinGradleExtension extends FormatExtension {
 		}
 
 		private FormatterStep createStep() {
-			return KtLintStep.createForScript(version, GradleProvisioner.fromProject(getProject()), userData);
+			return KtLintStep.createForScript(version, provisioner(), userData);
 		}
 	}
 
@@ -89,7 +89,7 @@ public class KotlinGradleExtension extends FormatExtension {
 		}
 
 		private FormatterStep createStep() {
-			return KtfmtStep.create(version, GradleProvisioner.fromProject(getProject()));
+			return KtfmtStep.create(version, provisioner());
 		}
 	}
 

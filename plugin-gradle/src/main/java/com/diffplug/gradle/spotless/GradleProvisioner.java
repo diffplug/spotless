@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,10 +36,10 @@ import com.diffplug.spotless.Provisioner;
 public class GradleProvisioner {
 	private GradleProvisioner() {}
 
-	public static Provisioner fromProject(Project project) {
-		// TODO: this method is not necessary - we could remove it entirely for a small speedup
-		return project.getPlugins().apply(SpotlessPlugin.class).getExtension().registerDependenciesTask.rootProvisioner;
-	}
+	//	@Deprecated
+	//	public static Provisioner fromProject(Project project) {
+	//		return project.getPlugins().apply(SpotlessPlugin.class).getExtension().registerDependenciesTask.rootProvisioner;
+	//	}
 
 	/** The provisioner used for the root project. */
 	static class RootProvisioner implements Provisioner {

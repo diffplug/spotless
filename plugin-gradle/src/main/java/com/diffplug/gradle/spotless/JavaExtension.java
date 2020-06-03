@@ -100,7 +100,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 
 	/** Removes any unused imports. */
 	public void removeUnusedImports() {
-		addStep(RemoveUnusedImportsStep.create(GradleProvisioner.fromProject(getProject())));
+		addStep(RemoveUnusedImportsStep.create(provisioner()));
 	}
 
 	/** Uses the [google-java-format](https://github.com/google/google-java-format) jar to format source code. */
@@ -139,10 +139,9 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 		}
 
 		private FormatterStep createStep() {
-			Project project = getProject();
 			return GoogleJavaFormatStep.create(version,
 					style,
-					GradleProvisioner.fromProject(project));
+					provisioner());
 		}
 	}
 
@@ -158,7 +157,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 		private final EclipseBasedStepBuilder builder;
 
 		EclipseConfig(String version) {
-			builder = EclipseJdtFormatterStep.createBuilder(GradleProvisioner.fromProject(getProject()));
+			builder = EclipseJdtFormatterStep.createBuilder(provisioner());
 			builder.setVersion(version);
 			addStep(builder.build());
 		}

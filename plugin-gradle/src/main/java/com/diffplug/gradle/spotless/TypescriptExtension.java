@@ -105,7 +105,7 @@ public class TypescriptExtension extends FormatExtension {
 
 			return TsFmtFormatterStep.create(
 					devDependencies,
-					GradleProvisioner.fromProject(project),
+					provisioner(),
 					project.getBuildDir(),
 					npmFileOrNull(),
 					typedConfigFile(),

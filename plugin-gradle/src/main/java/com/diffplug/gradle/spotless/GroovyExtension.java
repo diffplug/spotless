@@ -99,7 +99,7 @@ public class GroovyExtension extends FormatExtension implements HasBuiltinDelimi
 
 		GrEclipseConfig(String version, FormatExtension extension) {
 			this.extension = extension;
-			builder = GrEclipseFormatterStep.createBuilder(GradleProvisioner.fromProject(extension.getProject()));
+			builder = GrEclipseFormatterStep.createBuilder(extension.provisioner());
 			builder.setVersion(version);
 			extension.addStep(builder.build());
 		}

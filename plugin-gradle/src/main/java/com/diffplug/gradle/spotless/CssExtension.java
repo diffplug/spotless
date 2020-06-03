@@ -50,7 +50,7 @@ public class CssExtension extends FormatExtension implements HasBuiltinDelimiter
 		private final EclipseBasedStepBuilder builder;
 
 		EclipseConfig(String version) {
-			builder = EclipseWtpFormatterStep.createCssBuilder(GradleProvisioner.fromProject(getProject()));
+			builder = EclipseWtpFormatterStep.createCssBuilder(provisioner());
 			builder.setVersion(version);
 			addStep(builder.build());
 		}

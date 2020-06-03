@@ -39,6 +39,7 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LazyForwardingEquality;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
@@ -58,6 +59,10 @@ public class FormatExtension {
 
 	public FormatExtension(SpotlessExtension spotless) {
 		this.spotless = Objects.requireNonNull(spotless);
+	}
+
+	protected final Provisioner provisioner() {
+		return spotless.registerDependenciesTask.rootProvisioner;
 	}
 
 	private String formatName() {
@@ -566,7 +571,7 @@ public class FormatExtension {
 			final Project project = getProject();
 			return PrettierFormatterStep.create(
 					devDependencies,
-					GradleProvisioner.fromProject(project),
+					provisioner(),
 					project.getBuildDir(),
 					npmFileOrNull(),
 					new com.diffplug.spotless.npm.PrettierConfig(
@@ -596,7 +601,7 @@ public class FormatExtension {
 		private final EclipseBasedStepBuilder builder;
 
 		EclipseWtpConfig(EclipseWtpFormatterStep type, String version) {
-			builder = type.createBuilder(GradleProvisioner.fromProject(getProject()));
+			builder = type.createBuilder(provisioner());
 			builder.setVersion(version);
 			addStep(builder.build());
 		}

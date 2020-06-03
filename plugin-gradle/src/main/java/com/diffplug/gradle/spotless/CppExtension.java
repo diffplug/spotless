@@ -42,7 +42,7 @@ public class CppExtension extends FormatExtension implements HasBuiltinDelimiter
 		private final EclipseBasedStepBuilder builder;
 
 		EclipseConfig(String version) {
-			builder = EclipseCdtFormatterStep.createBuilder(GradleProvisioner.fromProject(getProject()));
+			builder = EclipseCdtFormatterStep.createBuilder(provisioner());
 			builder.setVersion(version);
 			addStep(builder.build());
 		}

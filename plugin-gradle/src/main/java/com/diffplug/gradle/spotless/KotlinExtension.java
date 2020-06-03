@@ -76,7 +76,7 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 		}
 
 		private FormatterStep createStep() {
-			return KtLintStep.create(version, GradleProvisioner.fromProject(getProject()), userData);
+			return KtLintStep.create(version, provisioner(), userData);
 		}
 	}
 
@@ -103,7 +103,7 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 		}
 
 		private FormatterStep createStep() {
-			return KtfmtStep.create(version, GradleProvisioner.fromProject(getProject()));
+			return KtfmtStep.create(version, provisioner());
 		}
 	}
 

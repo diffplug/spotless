@@ -60,7 +60,7 @@ public class ScalaExtension extends FormatExtension {
 
 		private FormatterStep createStep() {
 			File resolvedConfigFile = configFile == null ? null : getProject().file(configFile);
-			return ScalaFmtStep.create(version, GradleProvisioner.fromProject(getProject()), resolvedConfigFile);
+			return ScalaFmtStep.create(version, provisioner(), resolvedConfigFile);
 		}
 	}
 

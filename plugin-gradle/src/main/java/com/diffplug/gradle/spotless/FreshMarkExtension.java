@@ -41,7 +41,7 @@ public class FreshMarkExtension extends FormatExtension {
 				action.execute(map);
 			}
 			return map;
-		}, GradleProvisioner.fromProject(getProject())));
+		}, provisioner()));
 	}
 
 	public void properties(Action<Map<String, Object>> action) {
