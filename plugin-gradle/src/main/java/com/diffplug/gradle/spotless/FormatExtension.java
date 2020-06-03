@@ -408,6 +408,11 @@ public class FormatExtension {
 		addStep(IndentStep.Type.TAB.create());
 	}
 
+	/**
+	 * Created by {@link FormatExtension#licenseHeader(String, String)} or {@link FormatExtension#licenseHeaderFile(Object, String)}.
+	 * For most language-specific formats (e.g. java, scala, etc.) you can omit the second `delimiter` argument, because it is supplied
+	 * automatically ({@link HasBuiltinDelimiterForLicense}).
+	 */
 	public abstract class LicenseHeaderConfig {
 		String delimiter;
 		String yearSeparator = LicenseHeaderStep.defaultYearDelimiter();
@@ -459,7 +464,7 @@ public class FormatExtension {
 		}
 	}
 
-	public class LicenseStringHeaderConfig extends LicenseHeaderConfig {
+	private class LicenseStringHeaderConfig extends LicenseHeaderConfig {
 		private String header;
 
 		LicenseStringHeaderConfig(String delimiter, String header) {
@@ -473,7 +478,7 @@ public class FormatExtension {
 		}
 	}
 
-	public class LicenseFileHeaderConfig extends LicenseHeaderConfig {
+	private class LicenseFileHeaderConfig extends LicenseHeaderConfig {
 		private Object headerFile;
 
 		LicenseFileHeaderConfig(String delimiter, Object headerFile) {
