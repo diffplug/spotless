@@ -123,13 +123,13 @@ jobs:
       - *set_git_origin_to_https
       - run:
           name: gradlew :changelogPush
-          command: ./gradlew :changelogPush -Prelease=true --stacktrace
+          command: ./gradlew :changelogPush -Prelease=true --stacktrace --warning-mode all
       - run:
           name: gradlew :plugin-gradle:changelogPush
-          command: ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${gradle_key} -Pgradle.publish.secret=${gradle_secret} --stacktrace
+          command: ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${gradle_key} -Pgradle.publish.secret=${gradle_secret} --stacktrace --warning-mode all
       - run:
           name: gradlew :plugin-maven:changelogPush
-          command: ./gradlew :plugin-maven:changelogPush -Prelease=true --stacktrace
+          command: ./gradlew :plugin-maven:changelogPush -Prelease=true --stacktrace --warning-mode all
   do_release_plugin_gradle:
     << : *env_gradle
     steps:
