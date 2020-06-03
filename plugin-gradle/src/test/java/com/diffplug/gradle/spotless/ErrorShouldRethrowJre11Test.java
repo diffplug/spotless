@@ -32,7 +32,7 @@ import com.diffplug.spotless.JreVersion;
 import com.diffplug.spotless.LineEnding;
 
 /** Tests the desired behavior from https://github.com/diffplug/spotless/issues/46. */
-public class ErrorShouldRethrowJre11 extends GradleIntegrationHarness {
+public class ErrorShouldRethrowJre11Test extends GradleIntegrationHarness {
 	private void writeBuild(String... toInsert) throws IOException {
 		List<String> lines = new ArrayList<>();
 		lines.add("plugins {");
