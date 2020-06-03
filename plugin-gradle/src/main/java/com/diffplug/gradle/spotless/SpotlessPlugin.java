@@ -24,7 +24,7 @@ import org.gradle.util.GradleVersion;
 import com.diffplug.spotless.SpotlessCache;
 
 public class SpotlessPlugin implements Plugin<Project> {
-	SpotlessExtension spotlessExtension;
+	SpotlessExtension spotless;
 
 	@Override
 	public void apply(Project project) {
@@ -32,7 +32,7 @@ public class SpotlessPlugin implements Plugin<Project> {
 		project.getPlugins().apply(BasePlugin.class);
 
 		// setup the extension
-		spotlessExtension = project.getExtensions().create(SpotlessExtension.EXTENSION, SpotlessExtension.class, project);
+		spotless = project.getExtensions().create(SpotlessExtension.EXTENSION, SpotlessExtension.class, project);
 
 		// clear spotless' cache when the user does a clean
 		Task clean = project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME);
@@ -49,19 +49,20 @@ public class SpotlessPlugin implements Plugin<Project> {
 			// Add our check task as a dependency on the global check task
 			// getTasks() returns a "live" collection, so this works even if the
 			// task doesn't exist at the time this call is made
-			if (spotlessExtension.enforceCheck) {
+			if (spotless.enforceCheck) {
 				if (GradleVersion.current().compareTo(SpotlessPluginPreConfigAvoidance.CONFIG_AVOIDANCE_INTRODUCED) >= 0) {
-					SpotlessPluginPostConfigAvoidance.enforceCheck(spotlessExtension, project);
+					SpotlessPluginPostConfigAvoidance.enforceCheck(spotless, project);
 				} else {
-					SpotlessPluginPreConfigAvoidance.enforceCheck(spotlessExtension, project);
+					SpotlessPluginPreConfigAvoidance.enforceCheck(spotless, project);
 				}
 			}
 		});
 	}
 
 	/** The extension for this plugin. */
+	@Deprecated
 	public SpotlessExtension getExtension() {
-		return spotlessExtension;
+		return spotless;
 	}
 
 	static String capitalize(String input) {

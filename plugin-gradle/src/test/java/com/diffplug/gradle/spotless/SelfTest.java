@@ -67,9 +67,9 @@ public class SelfTest {
 		//Project project = Mocks.mockProject(TestProvisioner.gradleProject(new File("").getAbsoluteFile()), afterEvaluate);
 		Project project = TestProvisioner.gradleProject(new File("").getAbsoluteFile());
 		// create the spotless plugin
-		SpotlessPlugin plugin = project.getPlugins().apply(SpotlessPlugin.class);
+		project.getPlugins().apply(SpotlessPlugin.class);
 		// setup the plugin
-		test.accept(plugin.getExtension());
+		test.accept(project.getExtensions().getByType(SpotlessExtension.class));
 		// run the afterEvaluate section
 		((ProjectInternal) project).getProjectEvaluationBroadcaster().afterEvaluate(project, project.getState());
 		// return the configured plugin

@@ -30,6 +30,8 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.jgit.lib.ObjectId;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
@@ -89,7 +91,13 @@ public class SpotlessTask extends DefaultTask {
 		this.lineEndingsPolicy = Objects.requireNonNull(lineEndingsPolicy);
 	}
 
+	@Nullable GitRatchet ratchet;
 	ObjectId treeSha = ObjectId.zeroId();
+
+	@Internal
+	public GitRatchet getRatchet() {
+		return ratchet;
+	}
 
 	@Input
 	public ObjectId getRatchetSha() {
@@ -236,7 +244,7 @@ public class SpotlessTask extends DefaultTask {
 		File output = getOutputFile(input);
 		getLogger().debug("Applying format to " + input + " and writing to " + output);
 		PaddedCell.DirtyState dirtyState;
-		if (treeSha != ObjectId.zeroId() && GitRatchet.isClean(getProject(), treeSha, input)) {
+		if (ratchet != null && ratchet.isClean(getProject(), treeSha, input)) {
 			dirtyState = PaddedCell.isClean();
 		} else {
 			dirtyState = PaddedCell.calculateDirtyState(formatter, input);

@@ -637,7 +637,8 @@ public class FormatExtension {
 			spotless.registerDependenciesTask.hookSubprojectTask(task);
 		}
 		if (spotless.getRatchetFrom() != null) {
-			task.treeSha = GitRatchet.treeShaOf(spotless.project, spotless.getRatchetFrom());
+			task.ratchet = spotless.registerDependenciesTask.gitRatchet;
+			task.treeSha = task.ratchet.treeShaOf(spotless.project, spotless.getRatchetFrom());
 		}
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,20 +46,14 @@ import com.diffplug.common.collect.HashBasedTable;
 import com.diffplug.common.collect.Table;
 
 class GitRatchet implements AutoCloseable {
-	/** There is a single GitRatchet instance shared across the entire Gradle build, this method helps you get it. */
-	private static GitRatchet instance(Project project) {
-		return project.getPlugins().getPlugin(SpotlessPlugin.class).spotlessExtension.registerDependenciesTask.gitRatchet;
-	}
-
 	/**
 	 * This is the highest-level method, which all the others serve.  Given the sha
 	 * of a git tree (not a commit!), and the file in question, this method returns
 	 * true if that file is clean relative to that tree.  A naive implementation of this
 	 * could be verrrry slow, so the rest of this is about speeding this up.
 	 */
-	public static boolean isClean(Project project, ObjectId treeSha, File file) throws IOException {
-		GitRatchet instance = instance(project);
-		Repository repo = instance.repositoryFor(project);
+	public boolean isClean(Project project, ObjectId treeSha, File file) throws IOException {
+		Repository repo = repositoryFor(project);
 		String path = repo.getWorkTree().toPath().relativize(file.toPath()).toString();
 
 		// TODO: should be cached-per-repo if it is thread-safe, or per-repo-per-thread if it is not
@@ -180,24 +174,21 @@ class GitRatchet implements AutoCloseable {
 	 * is the only method which can trigger any changes, and it is only called during project evaluation.  That means our state
 	 * is final/read-only during task execution, so we don't need any locks during the heavy lifting.
 	 */
-	public static ObjectId treeShaOf(Project project, String reference) {
-		GitRatchet instance = instance(project);
-		synchronized (instance) {
-			try {
-				Repository repo = instance.repositoryFor(project);
-				ObjectId treeSha = instance.shaCache.get(repo, reference);
-				if (treeSha == null) {
-					ObjectId commitSha = repo.resolve(reference);
-					try (RevWalk revWalk = new RevWalk(repo)) {
-						RevCommit revCommit = revWalk.parseCommit(commitSha);
-						treeSha = revCommit.getTree();
-					}
-					instance.shaCache.put(repo, reference, treeSha);
+	public synchronized ObjectId treeShaOf(Project project, String reference) {
+		try {
+			Repository repo = repositoryFor(project);
+			ObjectId treeSha = shaCache.get(repo, reference);
+			if (treeSha == null) {
+				ObjectId commitSha = repo.resolve(reference);
+				try (RevWalk revWalk = new RevWalk(repo)) {
+					RevCommit revCommit = revWalk.parseCommit(commitSha);
+					treeSha = revCommit.getTree();
 				}
-				return treeSha;
-			} catch (Exception e) {
-				throw Errors.asRuntime(e);
+				shaCache.put(repo, reference, treeSha);
 			}
+			return treeSha;
+		} catch (Exception e) {
+			throw Errors.asRuntime(e);
 		}
 	}
 
