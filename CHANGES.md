@@ -10,6 +10,10 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* `LicenseHeaderStep` now has an `updateYearWithLatest` parameter which can update copyright headers to today's date. ([#593](https://github.com/diffplug/spotless/pull/593))
+  * Parsing of existing years from headers is now more lenient.
+  * The `LicenseHeaderStep` constructor is now public, which allows capturing its state lazily, which is helpful for setting defaults based on `ratchetFrom`.
 
 ## [1.32.0] - 2020-06-01
 ### Added

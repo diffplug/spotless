@@ -38,12 +38,12 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 	private static final String KEY_LICENSE_WITH_PLACEHOLDER = "license/LicenseHeaderWithPlaceholder";
 	private static final String KEY_FILE_WITH_LICENSE_AND_PLACEHOLDER = "license/FileWithLicenseHeaderAndPlaceholder.test";
 	// Licenses to test $YEAR token replacement
-	private static final String LICENSE_HEADER_YEAR = "This is a fake license, $YEAR. ACME corp.";
+	private static final String HEADER_WITH_YEAR = "This is a fake license, $YEAR. ACME corp.";
 	// License to test $today.year token replacement
-	private static final String LICENSE_HEADER_YEAR_INTELLIJ_TOKEN = "This is a fake license, $today.year. ACME corp.";
+	private static final String HEADER_WITH_YEAR_INTELLIJ = "This is a fake license, $today.year. ACME corp.";
 	// Special case where the characters immediately before and after the year token are the same,
 	// start position of the second part might overlap the end position of the first part.
-	private static final String LICENSE_HEADER_YEAR_VARIANT = "This is a fake license. Copyright $YEAR ACME corp.";
+	private static final String HEADER_WITH_YEAR_VARIANT = "This is a fake license. Copyright $YEAR ACME corp.";
 
 	// If this constant changes, don't forget to change the similarly-named one in
 	// plugin-gradle/src/main/java/com/diffplug/gradle/spotless/JavaExtension.java as well
@@ -63,79 +63,76 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 
 	@Test
 	public void should_apply_license_containing_YEAR_token() throws Throwable {
-		FormatterStep step = LicenseHeaderStep.createFromFile(createLicenseWith(LICENSE_HEADER_YEAR), StandardCharsets.UTF_8, LICENSE_HEADER_DELIMITER);
-
-		StepHarness.forStep(step)
-				.test(getTestResource(KEY_FILE_WITHOUT_LICENSE), fileWithLicenseContaining(LICENSE_HEADER_YEAR, currentYear()))
-				.testUnaffected(fileWithLicenseContaining(LICENSE_HEADER_YEAR, currentYear()))
-				.testUnaffected(fileWithLicenseContaining(LICENSE_HEADER_YEAR, "2003"))
-				.testUnaffected(fileWithLicenseContaining(LICENSE_HEADER_YEAR, "1990-2015"))
-				.test(fileWithLicenseContaining("Something before license.*/\n/* \n * " + LICENSE_HEADER_YEAR, "2003"), fileWithLicenseContaining(LICENSE_HEADER_YEAR, currentYear()))
-				.test(fileWithLicenseContaining(LICENSE_HEADER_YEAR + "\n **/\n/* Something after license.", "2003"), fileWithLicenseContaining(LICENSE_HEADER_YEAR, currentYear()))
-				.test(fileWithLicenseContaining(LICENSE_HEADER_YEAR, "not a year"), fileWithLicenseContaining(LICENSE_HEADER_YEAR, currentYear()));
-
+		StepHarness.forStep(LicenseHeaderStep.createFromHeader(licenseWith(HEADER_WITH_YEAR), LICENSE_HEADER_DELIMITER))
+				.test(getTestResource(KEY_FILE_WITHOUT_LICENSE), fileContainingYear(HEADER_WITH_YEAR, currentYear()))
+				.testUnaffected(fileContainingYear(HEADER_WITH_YEAR, currentYear()))
+				.testUnaffected(fileContainingYear(HEADER_WITH_YEAR, "2003"))
+				.testUnaffected(fileContainingYear(HEADER_WITH_YEAR, "1990-2015"))
+				.test(fileContainingYear("Something before license.*/\n/* \n * " + HEADER_WITH_YEAR, "2003"), fileContainingYear(HEADER_WITH_YEAR, currentYear()))
+				.test(fileContainingYear(HEADER_WITH_YEAR + "\n **/\n/* Something after license.", "2003"), fileContainingYear(HEADER_WITH_YEAR, "2003"))
+				.test(fileContainingYear(HEADER_WITH_YEAR, "not a year"), fileContainingYear(HEADER_WITH_YEAR, currentYear()));
 		// Check with variant
-		step = LicenseHeaderStep.createFromFile(createLicenseWith(LICENSE_HEADER_YEAR_VARIANT), StandardCharsets.UTF_8, LICENSE_HEADER_DELIMITER);
-
-		StepHarness.forStep(step)
-				.test(getTestResource(KEY_FILE_WITHOUT_LICENSE), fileWithLicenseContaining(LICENSE_HEADER_YEAR_VARIANT, currentYear()))
-				.testUnaffected(fileWithLicenseContaining(LICENSE_HEADER_YEAR_VARIANT, currentYear()))
-				.test(fileWithLicenseContaining("This is a fake license. Copyright "), fileWithLicenseContaining(LICENSE_HEADER_YEAR_VARIANT, currentYear()))
-				.test(fileWithLicenseContaining(" ACME corp."), fileWithLicenseContaining(LICENSE_HEADER_YEAR_VARIANT, currentYear()))
-				.test(fileWithLicenseContaining("This is a fake license. Copyright ACME corp."), fileWithLicenseContaining(LICENSE_HEADER_YEAR_VARIANT, currentYear()))
-				.test(fileWithLicenseContaining("This is a fake license. CopyrightACME corp."), fileWithLicenseContaining(LICENSE_HEADER_YEAR_VARIANT, currentYear()));
+		StepHarness.forStep(LicenseHeaderStep.createFromHeader(licenseWith(HEADER_WITH_YEAR_VARIANT), LICENSE_HEADER_DELIMITER))
+				.test(getTestResource(KEY_FILE_WITHOUT_LICENSE), fileContainingYear(HEADER_WITH_YEAR_VARIANT, currentYear()))
+				.testUnaffected(fileContainingYear(HEADER_WITH_YEAR_VARIANT, currentYear()))
+				.test(fileContaining("This is a fake license. Copyright "), fileContainingYear(HEADER_WITH_YEAR_VARIANT, currentYear()))
+				.test(fileContaining(" ACME corp."), fileContainingYear(HEADER_WITH_YEAR_VARIANT, currentYear()))
+				.test(fileContaining("This is a fake license. Copyright ACME corp."), fileContainingYear(HEADER_WITH_YEAR_VARIANT, currentYear()))
+				.test(fileContaining("This is a fake license. CopyrightACME corp."), fileContainingYear(HEADER_WITH_YEAR_VARIANT, currentYear()));
 
 		//Check when token is of the format $today.year
-		step = LicenseHeaderStep.createFromFile(createLicenseWith(LICENSE_HEADER_YEAR_INTELLIJ_TOKEN), StandardCharsets.UTF_8, LICENSE_HEADER_DELIMITER);
-
-		StepHarness.forStep(step)
-				.test(fileWithLicenseContaining(LICENSE_HEADER_YEAR_INTELLIJ_TOKEN), fileWithLicenseContaining(LICENSE_HEADER_YEAR_INTELLIJ_TOKEN, currentYear(), "$today.year"));
-	}
-
-	@Test
-	public void should_apply_license_containing_YEAR_token_with_non_default_year_separator() throws Throwable {
-		FormatterStep step = LicenseHeaderStep.createFromFile(createLicenseWith(LICENSE_HEADER_YEAR), StandardCharsets.UTF_8, LICENSE_HEADER_DELIMITER, ", ");
-
-		StepHarness.forStep(step)
-				.testUnaffected(fileWithLicenseContaining(LICENSE_HEADER_YEAR, "1990, 2015"))
-				.test(fileWithLicenseContaining(LICENSE_HEADER_YEAR, "1990-2015"), fileWithLicenseContaining(LICENSE_HEADER_YEAR, currentYear()));
-	}
-
-	@Test
-	public void should_apply_license_containing_YEAR_token_with_special_character_in_year_separator() throws Throwable {
-		FormatterStep step = LicenseHeaderStep.createFromFile(createLicenseWith(LICENSE_HEADER_YEAR), StandardCharsets.UTF_8, LICENSE_HEADER_DELIMITER, "(");
-
-		StepHarness.forStep(step)
-				.testUnaffected(fileWithLicenseContaining(LICENSE_HEADER_YEAR, "1990(2015"))
-				.test(fileWithLicenseContaining(LICENSE_HEADER_YEAR, "1990-2015"), fileWithLicenseContaining(LICENSE_HEADER_YEAR, currentYear()));
-	}
-
-	@Test
-	public void should_apply_license_containing_YEAR_token_with_custom_separator() throws Throwable {
-		FormatterStep step = LicenseHeaderStep.createFromFile(createLicenseWith(LICENSE_HEADER_YEAR), StandardCharsets.UTF_8, LICENSE_HEADER_DELIMITER);
-
-		StepHarness.forStep(step)
-				.test(getTestResource(KEY_FILE_WITHOUT_LICENSE), fileWithLicenseContaining(LICENSE_HEADER_YEAR, currentYear()))
-				.testUnaffected(fileWithLicenseContaining(LICENSE_HEADER_YEAR, currentYear()))
-				.testUnaffected(fileWithLicenseContaining(LICENSE_HEADER_YEAR, "2003"))
-				.testUnaffected(fileWithLicenseContaining(LICENSE_HEADER_YEAR, "1990-2015"))
-				.test(fileWithLicenseContaining(LICENSE_HEADER_YEAR, "not a year"), fileWithLicenseContaining(LICENSE_HEADER_YEAR, currentYear()));
-	}
-
-	private File createLicenseWith(String contents) throws IOException {
-		return createTestFile(KEY_LICENSE_WITH_PLACEHOLDER, c -> c.replace("__LICENSE_PLACEHOLDER__", contents));
-	}
-
-	private String fileWithLicenseContaining(String license) throws IOException {
-		return fileWithLicenseContaining(license, "");
-	}
-
-	private String fileWithLicenseContaining(String license, String yearContent) throws IOException {
-		return getTestResource(KEY_FILE_WITH_LICENSE_AND_PLACEHOLDER).replace("__LICENSE_PLACEHOLDER__", license).replace("$YEAR", yearContent);
+		StepHarness.forStep(LicenseHeaderStep.createFromHeader(licenseWith(HEADER_WITH_YEAR_INTELLIJ), LICENSE_HEADER_DELIMITER))
+				.test(fileContaining(HEADER_WITH_YEAR_INTELLIJ), fileWithLicenseContaining(HEADER_WITH_YEAR_INTELLIJ, currentYear(), "$today.year"));
 	}
 
 	private String fileWithLicenseContaining(String license, String yearContent, String token) throws IOException {
 		return getTestResource(KEY_FILE_WITH_LICENSE_AND_PLACEHOLDER).replace("__LICENSE_PLACEHOLDER__", license).replace(token, yearContent);
+	}
+
+	@Test
+	public void updateYearWithLatest() throws Throwable {
+		LicenseHeaderStep stepState = new LicenseHeaderStep(licenseWith(HEADER_WITH_YEAR), LICENSE_HEADER_DELIMITER, "-", true);
+		FormatterStep step = FormatterStep.create(LicenseHeaderStep.name(), stepState, s -> s::format);
+		StepHarness.forStep(step)
+				.testUnaffected(fileContainingYear(HEADER_WITH_YEAR, currentYear()))
+				.test(fileContainingYear(HEADER_WITH_YEAR, "2003"), fileContainingYear(HEADER_WITH_YEAR, "2003-" + currentYear()))
+				.test(fileContainingYear(HEADER_WITH_YEAR, "1990-2015"), fileContainingYear(HEADER_WITH_YEAR, "1990-" + currentYear()));
+	}
+
+	@Test
+	public void should_apply_license_containing_YEAR_token_with_non_default_year_separator() throws Throwable {
+		StepHarness.forStep(LicenseHeaderStep.createFromHeader(licenseWith(HEADER_WITH_YEAR), LICENSE_HEADER_DELIMITER, ", "))
+				.testUnaffected(fileContainingYear(HEADER_WITH_YEAR, "1990, 2015"))
+				.test(fileContainingYear(HEADER_WITH_YEAR, "1990-2015"), fileContainingYear(HEADER_WITH_YEAR, "1990, 2015"));
+	}
+
+	@Test
+	public void should_apply_license_containing_YEAR_token_with_special_character_in_year_separator() throws Throwable {
+		StepHarness.forStep(LicenseHeaderStep.createFromHeader(licenseWith(HEADER_WITH_YEAR), LICENSE_HEADER_DELIMITER, "("))
+				.testUnaffected(fileContainingYear(HEADER_WITH_YEAR, "1990(2015"))
+				.test(fileContainingYear(HEADER_WITH_YEAR, "1990-2015"), fileContainingYear(HEADER_WITH_YEAR, "1990(2015"));
+	}
+
+	@Test
+	public void should_apply_license_containing_YEAR_token_with_custom_separator() throws Throwable {
+		StepHarness.forStep(LicenseHeaderStep.createFromHeader(licenseWith(HEADER_WITH_YEAR), LICENSE_HEADER_DELIMITER))
+				.test(getTestResource(KEY_FILE_WITHOUT_LICENSE), fileContainingYear(HEADER_WITH_YEAR, currentYear()))
+				.testUnaffected(fileContainingYear(HEADER_WITH_YEAR, currentYear()))
+				.testUnaffected(fileContainingYear(HEADER_WITH_YEAR, "2003"))
+				.testUnaffected(fileContainingYear(HEADER_WITH_YEAR, "1990-2015"))
+				.test(fileContainingYear(HEADER_WITH_YEAR, "not a year"), fileContainingYear(HEADER_WITH_YEAR, currentYear()));
+	}
+
+	private String licenseWith(String contents) throws IOException {
+		return getTestResource(KEY_LICENSE_WITH_PLACEHOLDER).replace("__LICENSE_PLACEHOLDER__", contents);
+	}
+
+	private String fileContaining(String license) throws IOException {
+		return fileContainingYear(license, "");
+	}
+
+	private String fileContainingYear(String license, String yearContent) throws IOException {
+		return getTestResource(KEY_FILE_WITH_LICENSE_AND_PLACEHOLDER).replace("__LICENSE_PLACEHOLDER__", license).replace("$YEAR", yearContent);
 	}
 
 	private String currentYear() {
@@ -174,6 +171,8 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 		new SerializableEqualityTester() {
 			String header = "LICENSE";
 			String delimiter = "package";
+			String yearSep = "-";
+			boolean updateYearWithLatest = false;
 
 			@Override
 			protected void setupTest(API api) {
@@ -182,16 +181,23 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 				delimiter = "crate";
 				api.areDifferentThan();
 
-				header = "APACHE";
+				header = "APACHE $YEAR";
 				api.areDifferentThan();
 
 				delimiter = "package";
+				api.areDifferentThan();
+
+				yearSep = " - ";
+				api.areDifferentThan();
+
+				updateYearWithLatest = true;
 				api.areDifferentThan();
 			}
 
 			@Override
 			protected FormatterStep create() {
-				return LicenseHeaderStep.createFromHeader(header, delimiter);
+				LicenseHeaderStep stepState = new LicenseHeaderStep(header, delimiter, yearSep, updateYearWithLatest);
+				return FormatterStep.create(LicenseHeaderStep.name(), stepState, s -> s::format);
 			}
 		}.testEquals();
 	}

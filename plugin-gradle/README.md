@@ -543,32 +543,15 @@ to true.
 
 ## License header options
 
-If the license header (specified with `licenseHeader` or `licenseHeaderFile`) contains `$YEAR` or `$today.year`, then that token will be replaced with the current 4-digit year.  For example, if Spotless is launched in 2017, then `/* Licensed under Apache-2.0 $YEAR. */` will produce `/* Licensed under Apache-2.0 2017. */`
+If the license header (specified with `licenseHeader` or `licenseHeaderFile`) contains `$YEAR` or `$today.year`, then that token will be replaced with the current 4-digit year.  For example, if Spotless is launched in 2020, then `/* Licensed under Apache-2.0 $YEAR. */` will produce `/* Licensed under Apache-2.0 2020. */`
 
-The `licenseHeader` and `licenseHeaderFile` steps will generate license headers with automatic years according to the following rules:
-* A generated license header will be updated with the current year when
-  * the generated license header is missing
-  * the generated license header is not formatted correctly
-* A generated license header will _not_ be updated when
-  * a single year is already present, e.g.
-  `/* Licensed under Apache-2.0 1990. */`
-  * a year range is already present, e.g.
-  `/* Licensed under Apache-2.0 1990-2003. */`
-  * the `$YEAR` token is otherwise missing
+Once a file's license header has a valid year, whether it is a year (`2020`) or a year range (`2017-2020`), it will not be changed.  If you want the date to be updated when it changes, enable the [`ratchetFrom` functionality](#ratchet), and the year will be automatically set to today's year according to the following table (assuming the current year is 2020):
 
-The separator for the year range defaults to the hyphen character, e.g `1990-2003`, but can be customized with the `yearSeparator` property.
+* No license header -> `2020`
+* `2017` -> `2017-2020`
+* `2017-2019` -> `2017-2020`
 
-For instance, the following configuration treats `1990, 2003` as a valid year range.
-
-```gradle
-spotless {
-  java {
-    licenseHeader('Licensed under Apache-2.0 $YEAR').yearSeparator(', ')
-  }
-}
-```
-
-To update the copyright notice only for changed files, use the [`ratchetFrom` functionality](#ratchet).
+See the [javadoc](https://javadoc.io/static/com.diffplug.spotless/spotless-plugin-gradle/4.1.0/com/diffplug/gradle/spotless/FormatExtension.LicenseHeaderConfig.html) for a complete listing of options.
 
 <a name="custom"></a>
 

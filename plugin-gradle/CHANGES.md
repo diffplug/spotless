@@ -3,6 +3,12 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+* If you use `ratchetFrom` and `licenseHeader`, the year in your license header will now be automatically kept up-to-date for changed files. For example, if the current year is 2020: ([#593](https://github.com/diffplug/spotless/pull/593))
+  * `/** Copyright 2020 */` -> unchanged
+  * `/** Copyright 1990 */` -> `/** Copyright 1990-2020 */`
+  * `/** Copyright 1990-1993 */` -> `/** Copyright 1990-2020 */`
+  * You can disable this behavior with `licenseHeader(...).updateYearWithLatest(false)`, or you can enable it without using `ratchetFrom` by using `updateYearWithLatest(true)` (not recommended).
 ### Fixed
 * `ratchetFrom` had a bug (now fixed) such that it reported all files outside the root directory as changed. ([#594](https://github.com/diffplug/spotless/pull/594))
 

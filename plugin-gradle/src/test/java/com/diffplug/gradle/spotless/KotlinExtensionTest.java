@@ -18,7 +18,6 @@ package com.diffplug.gradle.spotless;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
-import java.time.YearMonth;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.junit.Test;
@@ -193,7 +192,7 @@ public class KotlinExtensionTest extends GradleIntegrationTest {
 			matcher.startsWith("// License Header 2012, 2014");
 		});
 		assertFile("src/main/kotlin/test2.kt").matches(matcher -> {
-			matcher.startsWith(HEADER_WITH_YEAR.replace("$YEAR", String.valueOf(YearMonth.now().getYear())));
+			matcher.startsWith("// License Header 2012, 2014");
 		});
 	}
 
@@ -223,7 +222,7 @@ public class KotlinExtensionTest extends GradleIntegrationTest {
 			matcher.startsWith("// License Header 2012, 2014");
 		});
 		assertFile("src/main/kotlin/test2.kt").matches(matcher -> {
-			matcher.startsWith(HEADER_WITH_YEAR.replace("$YEAR", String.valueOf(YearMonth.now().getYear())));
+			matcher.startsWith("// License Header 2012, 2014");
 		});
 	}
 }
