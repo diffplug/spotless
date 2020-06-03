@@ -452,8 +452,8 @@ public class FormatExtension {
 		 *           Will turn `2004` into `2004-2020`, and `2004-2019` into `2004-2020`
 		 *           Default value is false, unless {@link SpotlessExtension#ratchetFrom(String)} is used, in which case default value is true.
 		 */
-		public LicenseHeaderConfig updateYearWithLatest(boolean overwriteYearLatest) {
-			this.updateYearWithLatest = overwriteYearLatest;
+		public LicenseHeaderConfig updateYearWithLatest(boolean updateYearWithLatest) {
+			this.updateYearWithLatest = updateYearWithLatest;
 			replaceStep(createStep());
 			return this;
 		}

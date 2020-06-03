@@ -26,4 +26,5 @@ task npmTest(type: Test) { useJUnit { includeCategories 'com.diffplug.spotless.c
 
 javadoc {
 	options.addStringOption('Xdoclint:none', '-quiet')
+	options.addStringOption('Xwerror', '-quiet')
 }

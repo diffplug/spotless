@@ -15,6 +15,7 @@ task sourcesJar(type: Jar) {
 // Thus, no javadoc warnings.
 javadoc {
 	options.addStringOption('Xdoclint:none', '-quiet')
+	options.addStringOption('Xwerror', '-quiet')
 	enabled = org.gradle.api.JavaVersion.current() == org.gradle.api.JavaVersion.VERSION_1_8
 }
 
