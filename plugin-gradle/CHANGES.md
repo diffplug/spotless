@@ -9,6 +9,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   * `/** Copyright 1990 */` -> `/** Copyright 1990-2020 */`
   * `/** Copyright 1990-1993 */` -> `/** Copyright 1990-2020 */`
   * You can disable this behavior with `licenseHeader(...).updateYearWithLatest(false)`, or you can enable it without using `ratchetFrom` by using `updateYearWithLatest(true)` (not recommended).
+### Fixed
+* `ratchetFrom` had a bug (now fixed) such that it reported all files outside the root directory as changed. ([#594](https://github.com/diffplug/spotless/pull/594))
 
 ## [4.1.0] - 2020-06-01
 ### Added

@@ -19,6 +19,8 @@ import org.eclipse.jgit.api.Git;
 import org.junit.Test;
 
 public class RatchetFromTest extends GradleIntegrationTest {
+	private static final String TEST_PATH = "src/markdown/test.md";
+
 	@Test
 	public void singleProjectExhaustive() throws Exception {
 		Git git = Git.init().setDirectory(rootFolder()).call();
@@ -29,13 +31,13 @@ public class RatchetFromTest extends GradleIntegrationTest {
 				"spotless {",
 				"  ratchetFrom 'baseline'",
 				"  format 'misc', {",
-				"    target '*.md'",
+				"    target 'src/markdown/*.md'",
 				"    custom 'lowercase', { str -> str.toLowerCase() }",
 				"    bumpThisNumberIfACustomStepChanges(1)",
 				"  }",
 				"}");
-		setFile("test.md").toContent("HELLO");
-		git.add().addFilepattern("test.md").call();
+		setFile(TEST_PATH).toContent("HELLO");
+		git.add().addFilepattern(TEST_PATH).call();
 		git.commit().setMessage("Initial state").call();
 		// tag this initial state as the baseline for spotless to ratchet from
 		git.tag().setName("baseline").call();
@@ -45,41 +47,41 @@ public class RatchetFromTest extends GradleIntegrationTest {
 		assertClean();
 
 		// but if we change it so that it is not clean, spotless will now say it is dirty
-		setFile("test.md").toContent("HELLO WORLD");
+		setFile(TEST_PATH).toContent("HELLO WORLD");
 		assertDirty();
 		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("test.md").hasContent("hello world");
+		assertFile(TEST_PATH).hasContent("hello world");
 
 		// but if we make it unchanged again, it goes back to being clean
-		setFile("test.md").toContent("HELLO");
+		setFile(TEST_PATH).toContent("HELLO");
 		assertClean();
 
 		// and if we make the index dirty
-		setFile("test.md").toContent("HELLO WORLD");
-		git.add().addFilepattern("test.md").call();
+		setFile(TEST_PATH).toContent("HELLO WORLD");
+		git.add().addFilepattern(TEST_PATH).call();
 		{
 			// and the content dirty in the same way, then it's dirty
 			assertDirty();
 			// if we make the content something else dirty, then it's dirty
-			setFile("test.md").toContent("HELLO MOM");
+			setFile(TEST_PATH).toContent("HELLO MOM");
 			assertDirty();
 			// if we make the content unchanged, even though index it and index are dirty, then it's clean
-			setFile("test.md").toContent("HELLO");
+			setFile(TEST_PATH).toContent("HELLO");
 			assertClean();
 			// if we delete the file, but it's still in the index, then it's clean
-			setFile("test.md").deleted();
+			setFile(TEST_PATH).deleted();
 			assertClean();
 		}
 		// if we remove the file from the index
-		git.rm().addFilepattern("test.md").setCached(true).call();
+		git.rm().addFilepattern(TEST_PATH).setCached(true).call();
 		{
 			// and it's gone in real life too, then it's clean
 			assertClean();
 			// if the content is there and unchanged, then it's clean
-			setFile("test.md").toContent("HELLO");
+			setFile(TEST_PATH).toContent("HELLO");
 			assertClean();
 			// if the content is dirty, then it's dirty
-			setFile("test.md").toContent("HELLO WORLD");
+			setFile(TEST_PATH).toContent("HELLO WORLD");
 			assertDirty();
 		}
 

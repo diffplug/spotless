@@ -43,10 +43,10 @@ public class RegisterDependenciesTaskTest extends GradleIntegrationTest {
 		if (JreVersion.thisVm() == JreVersion._8) {
 			String oldestSupported = gradleRunner()
 					.withArguments("spotlessCheck").build().getOutput();
-			Assertions.assertThat(oldestSupported.replace("\r", "")).startsWith(
-					":spotlessCheck UP-TO-DATE\n" +
-							":spotlessInternalRegisterDependencies\n" +
-							":sub:spotlessJava\n" +
+			Assertions.assertThat(oldestSupported.replace("\r", ""))
+					.startsWith(":spotlessCheck UP-TO-DATE\n" +
+							":spotlessInternalRegisterDependencies\n")
+					.contains(":sub:spotlessJava\n" +
 							":sub:spotlessJavaCheck\n" +
 							":sub:spotlessCheck\n" +
 							"\n" +
@@ -56,10 +56,10 @@ public class RegisterDependenciesTaskTest extends GradleIntegrationTest {
 		setFile("gradle.properties").toLines();
 		String newestSupported = gradleRunner().withGradleVersion("6.0")
 				.withArguments("spotlessCheck").build().getOutput();
-		Assertions.assertThat(newestSupported.replace("\r", "")).startsWith(
-				"> Task :spotlessCheck UP-TO-DATE\n" +
-						"> Task :spotlessInternalRegisterDependencies\n" +
-						"> Task :sub:spotlessJava\n" +
+		Assertions.assertThat(newestSupported.replace("\r", ""))
+				.startsWith("> Task :spotlessCheck UP-TO-DATE\n" +
+						"> Task :spotlessInternalRegisterDependencies\n")
+				.contains("> Task :sub:spotlessJava\n" +
 						"> Task :sub:spotlessJavaCheck\n" +
 						"> Task :sub:spotlessCheck\n" +
 						"\n" +
