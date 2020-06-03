@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import org.junit.experimental.categories.Category;
 import com.diffplug.spotless.category.NpmTest;
 
 @Category(NpmTest.class)
-public class PrettierIntegrationTest extends GradleIntegrationTest {
+public class PrettierIntegrationTest extends GradleIntegrationHarness {
 	@Test
 	public void useInlineConfig() throws IOException {
 		setFile("build.gradle").toLines(
