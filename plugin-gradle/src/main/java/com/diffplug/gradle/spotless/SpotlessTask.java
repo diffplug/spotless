@@ -17,32 +17,19 @@ package com.diffplug.gradle.spotless;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
-
-import org.eclipse.jgit.lib.ObjectId;
-import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
-import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.CacheableTask;
 import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Internal;
-import org.gradle.api.tasks.OutputDirectory;
-import org.gradle.api.tasks.PathSensitive;
-import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 
@@ -50,80 +37,11 @@ import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.common.base.Throwing;
-import com.diffplug.spotless.FormatExceptionPolicy;
-import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.PaddedCell;
 
 @CacheableTask
-public class SpotlessTask extends DefaultTask {
-	SpotlessApply applyTask;
-
-	/** @deprecated internal use only, allows coordination between check and apply when they are in the same build */
-	@Internal
-	@Deprecated
-	public SpotlessApply getApplyTask() {
-		return applyTask;
-	}
-
-	// set by SpotlessExtension, but possibly overridden by FormatExtension
-	protected String encoding = "UTF-8";
-
-	@Input
-	public String getEncoding() {
-		return encoding;
-	}
-
-	public void setEncoding(String encoding) {
-		this.encoding = Objects.requireNonNull(encoding);
-	}
-
-	protected LineEnding.Policy lineEndingsPolicy = LineEnding.UNIX.createPolicy();
-
-	@Input
-	public LineEnding.Policy getLineEndingsPolicy() {
-		return lineEndingsPolicy;
-	}
-
-	public void setLineEndingsPolicy(LineEnding.Policy lineEndingsPolicy) {
-		this.lineEndingsPolicy = Objects.requireNonNull(lineEndingsPolicy);
-	}
-
-	/*** API which performs git up-to-date tasks. */
-	@Nullable
-	GitRatchet ratchet;
-	/** The sha of the tree at repository root, used for determining if an individual *file* is clean according to git. */
-	ObjectId rootTreeSha;
-	/**
-	 * The sha of the tree at the root of *this project*, used to determine if the git baseline has changed within this folder.
-	 * Using a more fine-grained tree (rather than the project root) allows Gradle to mark more subprojects as up-to-date
-	 * compared to using the project root.
-	 */
-	private ObjectId subtreeSha = ObjectId.zeroId();
-
-	public void setupRatchet(GitRatchet gitRatchet, String ratchetFrom) {
-		ratchet = gitRatchet;
-		rootTreeSha = gitRatchet.rootTreeShaOf(getProject(), ratchetFrom);
-		subtreeSha = gitRatchet.subtreeShaOf(getProject(), rootTreeSha);
-	}
-
-	@Internal
-	GitRatchet getRatchet() {
-		return ratchet;
-	}
-
-	@Internal
-	ObjectId getRootTreeSha() {
-		return rootTreeSha;
-	}
-
-	@Input
-	public ObjectId getRatchetSha() {
-		return subtreeSha;
-	}
-
+public class SpotlessTask extends SpotlessTaskBase {
 	@Deprecated
 	@Internal
 	public boolean isPaddedCell() {
@@ -144,65 +62,6 @@ public class SpotlessTask extends DefaultTask {
 
 	public void setFilePatterns(String filePatterns) {
 		this.filePatterns = Objects.requireNonNull(filePatterns);
-	}
-
-	protected FormatExceptionPolicy exceptionPolicy = new FormatExceptionPolicyStrict();
-
-	public void setExceptionPolicy(FormatExceptionPolicy exceptionPolicy) {
-		this.exceptionPolicy = Objects.requireNonNull(exceptionPolicy);
-	}
-
-	@Input
-	public FormatExceptionPolicy getExceptionPolicy() {
-		return exceptionPolicy;
-	}
-
-	protected FileCollection target;
-
-	@PathSensitive(PathSensitivity.RELATIVE)
-	@InputFiles
-	public FileCollection getTarget() {
-		return target;
-	}
-
-	public void setTarget(Iterable<File> target) {
-		if (target instanceof FileCollection) {
-			this.target = (FileCollection) target;
-		} else {
-			this.target = getProject().files(target);
-		}
-	}
-
-	private File outputDirectory = new File(getProject().getBuildDir(), "spotless/" + getName());
-
-	@OutputDirectory
-	public File getOutputDirectory() {
-		return outputDirectory;
-	}
-
-	protected List<FormatterStep> steps = new ArrayList<>();
-
-	@Input
-	public List<FormatterStep> getSteps() {
-		return Collections.unmodifiableList(steps);
-	}
-
-	public void setSteps(List<FormatterStep> steps) {
-		this.steps = PluginGradlePreconditions.requireElementsNonNull(steps);
-	}
-
-	public boolean addStep(FormatterStep step) {
-		return this.steps.add(Objects.requireNonNull(step));
-	}
-
-	/** Returns the name of this format. */
-	String formatName() {
-		String name = getName();
-		if (name.startsWith(SpotlessExtension.EXTENSION)) {
-			return name.substring(SpotlessExtension.EXTENSION.length()).toLowerCase(Locale.ROOT);
-		} else {
-			return name;
-		}
 	}
 
 	@TaskAction
@@ -260,7 +119,7 @@ public class SpotlessTask extends DefaultTask {
 		});
 	}
 
-	private void processInputFile(Formatter formatter, File input) throws IOException {
+	protected void processInputFile(Formatter formatter, File input) throws IOException {
 		File output = getOutputFile(input);
 		getLogger().debug("Applying format to " + input + " and writing to " + output);
 		PaddedCell.DirtyState dirtyState;
@@ -284,7 +143,7 @@ public class SpotlessTask extends DefaultTask {
 		}
 	}
 
-	private void deletePreviousResult(File input) throws IOException {
+	protected void deletePreviousResult(File input) throws IOException {
 		File output = getOutputFile(input);
 		if (output.isDirectory()) {
 			Files.walk(output.toPath())
@@ -306,15 +165,5 @@ public class SpotlessTask extends DefaultTask {
 			}));
 		}
 		return new File(outputDirectory, outputFileName);
-	}
-
-	Formatter buildFormatter() {
-		return Formatter.builder()
-				.lineEndingsPolicy(lineEndingsPolicy)
-				.encoding(Charset.forName(encoding))
-				.rootDir(getProject().getRootDir().toPath())
-				.steps(steps)
-				.exceptionPolicy(exceptionPolicy)
-				.build();
 	}
 }
