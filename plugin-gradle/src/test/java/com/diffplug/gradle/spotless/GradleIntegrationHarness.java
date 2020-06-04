@@ -31,6 +31,7 @@ import org.junit.Before;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StringPrinter;
+import com.diffplug.common.collect.ImmutableMap;
 import com.diffplug.common.tree.TreeDef;
 import com.diffplug.common.tree.TreeStream;
 import com.diffplug.spotless.JreVersion;
@@ -74,10 +75,15 @@ public class GradleIntegrationHarness extends ResourceHarness {
 	}
 
 	protected final GradleRunner gradleRunner() throws IOException {
-		return GradleRunner.create()
+		GradleRunner runner = GradleRunner.create()
 				.withGradleVersion(requestGradleForJre8and11("2.14"))
 				.withProjectDir(rootFolder())
 				.withPluginClasspath();
+		if ("true".equals(System.getProperty(SpotlessPluginModern.SPOTLESS_MODERN))) {
+			runner.withEnvironment(ImmutableMap.of("ORG_GRADLE_PROJECT_" + SpotlessPluginModern.SPOTLESS_MODERN, "true"));
+			runner.withGradleVersion(SpotlessPluginModern.MINIMUM_GRADLE);
+		}
+		return runner;
 	}
 
 	/** Dumps the complete file contents of the folder to the console. */

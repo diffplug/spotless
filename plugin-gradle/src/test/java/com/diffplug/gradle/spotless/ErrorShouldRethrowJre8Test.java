@@ -58,7 +58,7 @@ public class ErrorShouldRethrowJre8Test extends GradleIntegrationHarness {
 				"    } // format",
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fun.");
-		runWithSuccess(":spotlessMisc");
+		runWithSuccess("> Task :spotlessMisc");
 	}
 
 	@Test
@@ -68,9 +68,9 @@ public class ErrorShouldRethrowJre8Test extends GradleIntegrationHarness {
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
 		runWithFailure(
-				":spotlessMiscStep 'no swearing' found problem in 'README.md':",
-				"No swearing!",
-				"java.lang.RuntimeException: No swearing!");
+				"> Task :spotlessMisc FAILED",
+				"Step 'no swearing' found problem in 'README.md':",
+				"No swearing!");
 	}
 
 	@Test
@@ -80,7 +80,7 @@ public class ErrorShouldRethrowJre8Test extends GradleIntegrationHarness {
 				"    enforceCheck false",
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
-		runWithSuccess(":compileJava UP-TO-DATE");
+		runWithSuccess("> Task :compileJava NO-SOURCE");
 	}
 
 	@Test
@@ -90,7 +90,7 @@ public class ErrorShouldRethrowJre8Test extends GradleIntegrationHarness {
 				"    } // format",
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
-		runWithSuccess(":spotlessMisc",
+		runWithSuccess("> Task :spotlessMisc",
 				"Unable to apply step 'no swearing' to 'README.md'");
 	}
 
@@ -101,7 +101,7 @@ public class ErrorShouldRethrowJre8Test extends GradleIntegrationHarness {
 				"    } // format",
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
-		runWithSuccess(":spotlessMisc",
+		runWithSuccess("> Task :spotlessMisc",
 				"Unable to apply step 'no swearing' to 'README.md'");
 	}
 
@@ -114,16 +114,16 @@ public class ErrorShouldRethrowJre8Test extends GradleIntegrationHarness {
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
 		runWithFailure(
-				":spotlessMiscStep 'no swearing' found problem in 'README.md':",
-				"No swearing!",
-				"java.lang.RuntimeException: No swearing!");
+				"> Task :spotlessMisc FAILED",
+				"Step 'no swearing' found problem in 'README.md':",
+				"No swearing!");
 	}
 
 	private void runWithSuccess(String... messages) throws Exception {
 		if (JreVersion.thisVm() != JreVersion._8) {
 			return;
 		}
-		BuildResult result = gradleRunner().withArguments("check").build();
+		BuildResult result = gradleRunner().withGradleVersion(SpotlessPluginModern.MINIMUM_GRADLE).withArguments("check").build();
 		assertResultAndMessages(result, TaskOutcome.SUCCESS, messages);
 	}
 
@@ -131,17 +131,20 @@ public class ErrorShouldRethrowJre8Test extends GradleIntegrationHarness {
 		if (JreVersion.thisVm() != JreVersion._8) {
 			return;
 		}
-		BuildResult result = gradleRunner().withArguments("check").buildAndFail();
+		BuildResult result = gradleRunner().withGradleVersion(SpotlessPluginModern.MINIMUM_GRADLE).withArguments("check").buildAndFail();
 		assertResultAndMessages(result, TaskOutcome.FAILED, messages);
 	}
 
 	private void assertResultAndMessages(BuildResult result, TaskOutcome outcome, String... messages) {
 		String expectedToStartWith = StringPrinter.buildStringFromLines(messages).trim();
 		int numNewlines = CharMatcher.is('\n').countIn(expectedToStartWith);
-		List<String> actualLines = Splitter.on('\n').splitToList(LineEnding.toUnix(result.getOutput()));
+		List<String> actualLines = Splitter.on('\n').splitToList(LineEnding.toUnix(result.getOutput().trim()));
 		String actualStart = String.join("\n", actualLines.subList(0, numNewlines + 1));
 		Assertions.assertThat(actualStart).isEqualTo(expectedToStartWith);
-		Assertions.assertThat(result.tasks(outcome).size() + result.tasks(TaskOutcome.UP_TO_DATE).size())
+		//		result.getTasks()
+		//		.stream()
+		//		.forEach(task -> System.out.println("task " + task.getPath() + " " + task.getOutcome()));
+		Assertions.assertThat(result.tasks(outcome).size() + result.tasks(TaskOutcome.UP_TO_DATE).size() + result.tasks(TaskOutcome.NO_SOURCE).size())
 				.isEqualTo(result.getTasks().size());
 	}
 }

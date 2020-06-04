@@ -23,6 +23,9 @@ import org.gradle.api.plugins.BasePlugin;
 import com.diffplug.spotless.SpotlessCache;
 
 public class SpotlessPluginModern implements Plugin<Project> {
+	static final String SPOTLESS_MODERN = "spotlessModern";
+	static final String MINIMUM_GRADLE = "5.4";
+
 	@Override
 	public void apply(Project project) {
 		// make sure there's a `clean` task

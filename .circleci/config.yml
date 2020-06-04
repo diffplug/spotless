@@ -92,6 +92,17 @@ jobs:
           command: ./gradlew :plugin-maven:check --build-cache
       - store_test_results:
           path: plugin-maven/build/test-results/test
+  test_gradle_modern_8:
+    << : *env_gradle
+    steps:
+      - checkout
+      - *restore_cache_wrapper
+      - *restore_cache_deps
+      - run:
+          name: gradlew :plugin-gradle:modernTest
+          command: ./gradlew :plugin-gradle:modernTest --build-cache
+      - store_test_results:
+          path: plugin-gradle/build/test-results/modernTest
   test_npm_8:
     << : *env_gradle
     docker:

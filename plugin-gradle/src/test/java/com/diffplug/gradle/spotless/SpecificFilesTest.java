@@ -21,9 +21,11 @@ import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.UnexpectedBuildFailure;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import com.diffplug.spotless.LineEnding;
 
+@Category(ExcludeFromPluginGradleModern.class)
 public class SpecificFilesTest extends GradleIntegrationHarness {
 
 	private static String regexWinSafe(String input) {
