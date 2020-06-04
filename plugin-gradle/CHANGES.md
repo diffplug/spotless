@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [4.2.1] - 2020-06-04
 ### Fixed
 * `ratchetFrom` incorrectly marked every file as though it were clean on Windows. ([#596](https://github.com/diffplug/spotless/pull/596))
   * Also large [performance improvement (win and unix) for multiproject builds](https://github.com/diffplug/spotless/pull/597/commits/f66dc8de137a34d14768e83ab3cbff5344539b56). ([#597](https://github.com/diffplug/spotless/pull/597))
