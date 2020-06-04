@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* Added `addXmlDeclaration` step that will add an xml declaration if it is missing in an xml file.
 
 ## [1.30.1] - 2020-05-17
 ### Fixed
