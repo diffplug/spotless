@@ -4,7 +4,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Fixed
-* `ratchetFrom` incorrectly marked every file as though it were clean on Windows.
+* `ratchetFrom` incorrectly marked every file as though it were clean on Windows. ([#596](https://github.com/diffplug/spotless/pull/596))
+  * Also large [performance improvement (win and unix) for multiproject builds](https://github.com/diffplug/spotless/pull/597/commits/f66dc8de137a34d14768e83ab3cbff5344539b56). ([#597](https://github.com/diffplug/spotless/pull/597))
 * Improved the warning message for `paddedCell` deprecation, along with many API-invisible fixes and cleanup. ([#592](https://github.com/diffplug/spotless/pull/592))
 
 ## [4.2.0] - 2020-06-03
