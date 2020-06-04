@@ -203,17 +203,17 @@ public class RatchetFromTest extends GradleIntegrationHarness {
 			// TO REPEAAT:
 			// - everything was up-to-date
 			// - we pressed "commit", which didn't change the files, just the baseline
-			// - and that causes spotless to be out-of-date on all tasks
+			// - and that causes spotless to be out-of-date
 
 			ObjectId nextCleanFolder = TreeWalk.forPath(git.getRepository(), "clean", next.getTree()).getObjectId(0);
 			ObjectId nextDirtyFolder = TreeWalk.forPath(git.getRepository(), "dirty", next.getTree()).getObjectId(0);
-			Assertions.assertThat(nextCleanFolder).isEqualTo(cleanFolder);    // which is too bad, becuase the baseline for clean didn't change
+			Assertions.assertThat(nextCleanFolder).isEqualTo(cleanFolder);    // the baseline for 'clean' didn't change
 			Assertions.assertThat(nextDirtyFolder).isNotEqualTo(dirtyFolder); // only the baseline for dirty
 
 			// check will still pass, but the tasks are all out of date
 			assertPass("spotlessCheck")
 					.outcome(":spotlessMisc", TaskOutcome.SUCCESS)
-					.outcome(":clean:spotlessMisc", TaskOutcome.SUCCESS)	// with up-to-dateness based on subtree, this could be UP-TO-DATE
+					.outcome(":clean:spotlessMisc", TaskOutcome.UP_TO_DATE)	// with up-to-dateness based on subtree, this is UP-TO-DATE
 					.outcome(":dirty:spotlessMisc", TaskOutcome.SUCCESS)
 					.outcome(":added:spotlessMisc", TaskOutcome.SUCCESS);
 		}
