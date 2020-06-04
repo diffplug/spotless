@@ -41,6 +41,9 @@ task npmTest(type: Test) {
 	}
 }
 
+// make it easy for eclipse to run against latest build
+tasks.eclipse.dependsOn(pluginUnderTestMetadata)
+
 //////////////////////////
 // GRADLE PLUGIN PORTAL //
 //////////////////////////

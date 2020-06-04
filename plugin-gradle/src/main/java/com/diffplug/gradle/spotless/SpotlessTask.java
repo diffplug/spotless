@@ -91,18 +91,37 @@ public class SpotlessTask extends DefaultTask {
 		this.lineEndingsPolicy = Objects.requireNonNull(lineEndingsPolicy);
 	}
 
+	/*** API which performs git up-to-date tasks. */
 	@Nullable
 	GitRatchet ratchet;
-	ObjectId treeSha = ObjectId.zeroId();
+	/** The sha of the tree at repository root, used for determining if an individual *file* is clean according to git. */
+	ObjectId rootTreeSha;
+	/**
+	 * The sha of the tree at the root of *this project*, used to determine if the git baseline has changed within this folder.
+	 * Using a more fine-grained tree (rather than the project root) allows Gradle to mark more subprojects as up-to-date
+	 * compared to using the project root.
+	 */
+	private ObjectId subtreeSha = ObjectId.zeroId();
+
+	public void setupRatchet(GitRatchet gitRatchet, String ratchetFrom) {
+		ratchet = gitRatchet;
+		rootTreeSha = gitRatchet.rootTreeShaOf(getProject(), ratchetFrom);
+		subtreeSha = gitRatchet.subtreeShaOf(getProject(), rootTreeSha);
+	}
 
 	@Internal
-	public GitRatchet getRatchet() {
+	GitRatchet getRatchet() {
 		return ratchet;
+	}
+
+	@Internal
+	ObjectId getRootTreeSha() {
+		return rootTreeSha;
 	}
 
 	@Input
 	public ObjectId getRatchetSha() {
-		return treeSha;
+		return subtreeSha;
 	}
 
 	@Deprecated
@@ -202,7 +221,7 @@ public class SpotlessTask extends DefaultTask {
 		if (this.filePatterns.isEmpty()) {
 			shouldInclude = file -> true;
 		} else {
-			Preconditions.checkArgument(treeSha == ObjectId.zeroId(),
+			Preconditions.checkArgument(ratchet == null,
 					"Cannot use 'ratchetFrom' and '-PspotlessFiles' at the same time");
 
 			// a list of files has been passed in via project property
@@ -245,7 +264,7 @@ public class SpotlessTask extends DefaultTask {
 		File output = getOutputFile(input);
 		getLogger().debug("Applying format to " + input + " and writing to " + output);
 		PaddedCell.DirtyState dirtyState;
-		if (ratchet != null && ratchet.isClean(getProject(), treeSha, input)) {
+		if (ratchet != null && ratchet.isClean(getProject(), rootTreeSha, input)) {
 			dirtyState = PaddedCell.isClean();
 		} else {
 			dirtyState = PaddedCell.calculateDirtyState(formatter, input);

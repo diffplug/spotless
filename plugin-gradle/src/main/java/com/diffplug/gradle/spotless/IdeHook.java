@@ -43,7 +43,7 @@ class IdeHook {
 		if (spotlessTask.getTarget().contains(file)) {
 			try (Formatter formatter = spotlessTask.buildFormatter()) {
 				if (spotlessTask.ratchet != null) {
-					if (spotlessTask.ratchet.isClean(spotlessTask.getProject(), spotlessTask.treeSha, file)) {
+					if (spotlessTask.ratchet.isClean(spotlessTask.getProject(), spotlessTask.rootTreeSha, file)) {
 						dumpIsClean();
 						return;
 					}

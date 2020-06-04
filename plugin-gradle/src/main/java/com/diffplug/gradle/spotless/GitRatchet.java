@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,9 @@ package com.diffplug.gradle.spotless;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
-import java.util.TreeMap;
 
 import javax.annotation.Nullable;
 
@@ -117,8 +118,9 @@ class GitRatchet implements AutoCloseable {
 	private final static int INDEX = 1;
 	private final static int WORKDIR = 2;
 
-	TreeMap<Project, Repository> gitRoots = new TreeMap<>();
-	Table<Repository, String, ObjectId> shaCache = HashBasedTable.create();
+	Map<Project, Repository> gitRoots = new HashMap<>();
+	Table<Repository, String, ObjectId> rootTreeShaCache = HashBasedTable.create();
+	Map<Project, ObjectId> subtreeShaCache = new HashMap<>();
 
 	/**
 	 * The first part of making this fast is finding the appropriate git repository quickly.  Because of composite
@@ -175,19 +177,44 @@ class GitRatchet implements AutoCloseable {
 	 * is the only method which can trigger any changes, and it is only called during project evaluation.  That means our state
 	 * is final/read-only during task execution, so we don't need any locks during the heavy lifting.
 	 */
-	public synchronized ObjectId treeShaOf(Project project, String reference) {
+	public synchronized ObjectId rootTreeShaOf(Project project, String reference) {
 		try {
 			Repository repo = repositoryFor(project);
-			ObjectId treeSha = shaCache.get(repo, reference);
+			ObjectId treeSha = rootTreeShaCache.get(repo, reference);
 			if (treeSha == null) {
 				ObjectId commitSha = repo.resolve(reference);
 				try (RevWalk revWalk = new RevWalk(repo)) {
 					RevCommit revCommit = revWalk.parseCommit(commitSha);
 					treeSha = revCommit.getTree();
 				}
-				shaCache.put(repo, reference, treeSha);
+				rootTreeShaCache.put(repo, reference, treeSha);
 			}
 			return treeSha;
+		} catch (Exception e) {
+			throw Errors.asRuntime(e);
+		}
+	}
+
+	/**
+	 * Returns the sha of the git subtree which represents the root of the given project, or {@link ObjectId#zeroId()}
+	 * if there is no git subtree at the project root.
+	 */
+	public synchronized ObjectId subtreeShaOf(Project project, ObjectId rootTreeSha) {
+		try {
+			ObjectId subtreeSha = subtreeShaCache.get(project);
+			if (subtreeSha == null) {
+				Repository repo = repositoryFor(project);
+				File directory = project.getProjectDir();
+				if (repo.getWorkTree().equals(directory)) {
+					subtreeSha = rootTreeSha;
+				} else {
+					String subpath = FileSignature.pathNativeToUnix(repo.getWorkTree().toPath().relativize(directory.toPath()).toString());
+					TreeWalk treeWalk = TreeWalk.forPath(repo, subpath, rootTreeSha);
+					subtreeSha = treeWalk == null ? ObjectId.zeroId() : treeWalk.getObjectId(0);
+				}
+				subtreeShaCache.put(project, subtreeSha);
+			}
+			return subtreeSha;
 		} catch (Exception e) {
 			throw Errors.asRuntime(e);
 		}
