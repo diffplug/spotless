@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,10 @@ public enum JreVersion {
 		} else if (jvmVersion.startsWith("11.")) {
 			return _11;
 		} else {
-			throw new IllegalStateException("Spotless build is only supported on Java 8 and Java 11");
+			int version = Integer.parseInt(jvmVersion.substring(0, jvmVersion.indexOf('.')));
+			JreVersion result = version > 11 ? _11 : _8;
+			System.err.println("WARNING: Only JRE 8 and 11 are officially supported, pretending unsupported version " + jvmVersion + " is JDK" + result.name());
+			return result;
 		}
 	}
 }

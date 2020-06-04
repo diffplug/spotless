@@ -10,6 +10,7 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+* We are now running CI on windows. ([#596](https://github.com/diffplug/spotless/pull/596))
 * We are now dogfooding `ratchetFrom` and `licenseHeader` with a `$YEAR` token to ensure that Spotless copyright headers stay up-to-date without adding noise to file history. ([#595](https://github.com/diffplug/spotless/pull/595))
 * Added `LineEnding.nativeIsWin()`, `FileSignature.pathNativeToUnix()`, and `FileSignature.pathUnixToNative()`, along with many API-invisible fixes and cleanup. ([#592](https://github.com/diffplug/spotless/pull/592))
 

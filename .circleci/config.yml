@@ -1,3 +1,7 @@
+version: 2.1
+orbs:
+  win: circleci/windows@2.4.0
+
 anchors:
   env_gradle: &env_gradle
     environment:
@@ -5,13 +9,15 @@ anchors:
       # https://circleci.com/blog/how-to-handle-java-oom-errors/
       # try the experimental JVM option
       _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
-      GRADLE_OPTS: "-Dorg.gradle.workers.max=2" # and we're only allowed to use 2 vCPUs
+       # and we're only allowed to use 2 vCPUs
+      GRADLE_OPTS: "-Dorg.gradle.workers.max=2"
     docker:
       - image: cimg/openjdk:8.0
   env_gradle_large: &env_gradle_large
     << : *env_gradle
     resource_class: large # https://circleci.com/docs/2.0/configuration-reference/#resource_class
-    GRADLE_OPTS: "-Dorg.gradle.workers.max=4"
+    environment:
+      GRADLE_OPTS: "-Dorg.gradle.workers.max=4"
 
   restore_cache_wrapper: &restore_cache_wrapper
     restore_cache:
@@ -40,8 +46,6 @@ anchors:
           path: lib-extra/build/test-results/test
       - store_test_results:
           path: plugin-gradle/build/test-results/test
-
-version: 2
 jobs:
   # gradlew spotlessCheck assemble testClasses
   assemble_testClasses: 
@@ -105,6 +109,45 @@ jobs:
           path: plugin-maven/build/test-results/npm
       - store_test_results:
           path: plugin-gradle/build/test-results/npm
+  test_windows:
+    executor:
+      name: win/default
+      shell: cmd.exe
+    steps:
+      - checkout
+      # install openjdk8
+      - restore_cache:
+          key: choco2-ojdkbuild8
+      - run:
+          name: install 
+          command: choco install ojdkbuild8
+      - save_cache:
+          key: choco2-ojdkbuild8
+          paths:
+            - ~\AppData\Local\Temp\chocolatey\ojdkbuild8
+      # do the test
+      - restore_cache:
+          keys:
+          - gradle-deps-win-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
+          - gradle-deps-win-
+      - run:
+          name: gradlew check
+          command: gradlew check --build-cache
+      - store_test_results:
+          path: testlib/build/test-results/test
+      - store_test_results:
+          path: lib-extra/build/test-results/test
+      - store_test_results:
+          path: plugin-gradle/build/test-results/test
+      - store_test_results:
+          path: plugin-maven/build/test-results/test
+      - save_cache:
+          paths:
+            - ~/.gradle/caches
+            - ~/.gradle/wrapper
+            - ~/.m2
+            - ~/project/plugin-maven/build/localMavenRepository
+          key: gradle-deps-win-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
   changelog_print:
     << : *env_gradle
     steps:
@@ -158,6 +201,7 @@ workflows:
   version: 2
   assemble_and_test:
     jobs:
+      - test_windows
       - assemble_testClasses
       - test_justmaven_8:
           requires:

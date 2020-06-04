@@ -44,6 +44,7 @@ import org.gradle.api.Project;
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.collect.HashBasedTable;
 import com.diffplug.common.collect.Table;
+import com.diffplug.spotless.FileSignature;
 
 class GitRatchet implements AutoCloseable {
 	/**
@@ -54,7 +55,7 @@ class GitRatchet implements AutoCloseable {
 	 */
 	public boolean isClean(Project project, ObjectId treeSha, File file) throws IOException {
 		Repository repo = repositoryFor(project);
-		String path = repo.getWorkTree().toPath().relativize(file.toPath()).toString();
+		String path = FileSignature.pathNativeToUnix(repo.getWorkTree().toPath().relativize(file.toPath()).toString());
 
 		// TODO: should be cached-per-repo if it is thread-safe, or per-repo-per-thread if it is not
 		DirCache dirCache = repo.readDirCache();
