@@ -115,7 +115,7 @@ public class FormatExtension {
 
 	private String ratchetFrom = RATCHETFROM_NOT_SET_AT_FORMAT_LEVEL;
 
-	/** @See {@link #setRatchetFrom(String)} */
+	/** @see #setRatchetFrom(String) */
 	public String getRatchetFrom() {
 		return ratchetFrom == RATCHETFROM_NOT_SET_AT_FORMAT_LEVEL ? spotless.getRatchetFrom() : ratchetFrom;
 	}
@@ -128,7 +128,7 @@ public class FormatExtension {
 		this.ratchetFrom = ratchetFrom;
 	}
 
-	/** @See {@link #setRatchetFrom(String)} */
+	/** @see #setRatchetFrom(String) */
 	public void ratchetFrom(String ratchetFrom) {
 		setRatchetFrom(ratchetFrom);
 	}
