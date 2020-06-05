@@ -19,6 +19,7 @@ import org.junit.Test;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
+import com.diffplug.spotless.SerializableEqualityTester;
 
 public class AddXmlDeclarationStepTest extends ResourceHarness {
 
@@ -32,6 +33,21 @@ public class AddXmlDeclarationStepTest extends ResourceHarness {
 	public void filesAreTheSame() throws Throwable {
 		FormatterStep xmldeclaration = AddXmlDeclarationStep.create();
 		assertOnResources(xmldeclaration, "xmldeclaration/xmlwithdeclaration.test", "xmldeclaration/xmlwithdeclaration.test");
+	}
+
+	@Test
+	public void equality() throws Exception {
+		new SerializableEqualityTester() {
+			@Override
+			protected void setupTest(API api) {
+				api.areDifferentThan();
+			}
+
+			@Override
+			protected FormatterStep create() {
+				return AddXmlDeclarationStep.create();
+			}
+		}.testEquals();
 	}
 
 }
