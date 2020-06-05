@@ -461,11 +461,29 @@ public class FormatExtension {
 		protected abstract String licenseHeader() throws IOException;
 
 		FormatterStep createStep() {
-			return FormatterStep.createLazy(LicenseHeaderStep.name(), () -> {
-				// by default, we should update the year if the user is using ratchetFrom
-				boolean updateYear = updateYearWithLatest == null ? FormatExtension.this.spotless.getRatchetFrom() != null : updateYearWithLatest;
-				return new LicenseHeaderStep(licenseHeader(), delimiter, yearSeparator, updateYear);
-			}, step -> step::format);
+			if ("true".equals(spotless.project.findProperty(LicenseHeaderStep.FLAG_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY()))) {
+				return FormatterStep.createNeverUpToDateLazy(LicenseHeaderStep.name(), () -> {
+					boolean updateYear = false; // doesn't matter
+					LicenseHeaderStep step = new LicenseHeaderStep(licenseHeader(), delimiter, yearSeparator, updateYear);
+					return new FormatterFunc() {
+						@Override
+						public String apply(String input, File source) throws Exception {
+							return step.setLicenseHeaderYearsFromGitHistory(input, source);
+						}
+
+						@Override
+						public String apply(String input) throws Exception {
+							throw new UnsupportedOperationException();
+						}
+					};
+				});
+			} else {
+				return FormatterStep.createLazy(LicenseHeaderStep.name(), () -> {
+					// by default, we should update the year if the user is using ratchetFrom
+					boolean updateYear = updateYearWithLatest == null ? FormatExtension.this.spotless.getRatchetFrom() != null : updateYearWithLatest;
+					return new LicenseHeaderStep(licenseHeader(), delimiter, yearSeparator, updateYear);
+				}, step -> step::format);
+			}
 		}
 	}
 
