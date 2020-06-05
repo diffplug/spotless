@@ -171,10 +171,6 @@ pluginManagement {
   repositories {
     maven {
       url 'https://jitpack.io'
-      metadataSources {
-        ignoreGradleMetadataRedirection() // not available until Gradle 5.6+, delete if you're on an older version
-        mavenPom()
-      }
       content {
         includeGroup 'com.github.{{user-or-org}}.spotless'
       }
