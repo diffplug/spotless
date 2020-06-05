@@ -9,7 +9,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   * If you are integrating with git, try the much easier (and faster) [`ratchetFrom 'origin/master'`](https://github.com/diffplug/spotless/tree/master/plugin-gradle#ratchet)
   * If neither of these work for you, let us know in [this PR](https://github.com/diffplug/spotless/pull/602).
 ### Added
-* If you specify `-PspotlessSetLicenseHeaderYearsFromGitHistory=true`, Spotless will perform an expensive search through git history to determine the oldest and newest commits for each file, and uses that to determine license header years. (#TODO)
+* If you specify `-PspotlessSetLicenseHeaderYearsFromGitHistory=true`, Spotless will perform an expensive search through git history to determine the oldest and newest commits for each file, and uses that to determine license header years. ([#604](https://github.com/diffplug/spotless/pull/604))
 * (spotless devs only) if you specify `-PspotlessModern=true` Spotless will run the in-progress Gradle `5.4+` code.  The `modernTest` build task runs our test suite in this way.  It will be weeks/months before this is recommended for end-users. ([#598](https://github.com/diffplug/spotless/pull/598))
 
 ## [4.2.1] - 2020-06-04
