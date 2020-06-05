@@ -3,6 +3,11 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Deprecated
+* `-PspotlessFiles` has been deprecated and will be removed.  It is slow and error-prone, especially for win/unix cross-platform, and we have better options available now:
+  * If you are formatting just one file, try the much faster [IDE hook](https://github.com/diffplug/spotless/blob/master/plugin-gradle/IDE_HOOK.md)
+  * If you are integrating with git, try the much easier (and faster) [`ratchetFrom 'origin/master'`](https://github.com/diffplug/spotless/tree/master/plugin-gradle#ratchet)
+  * If neither of these work for you, let us know in [this PR](https://github.com/diffplug/spotless/pull/602).
 ### Added
 * (spotless devs only) if you specify `-PspotlessModern=true` Spotless will run the in-progress Gradle `5.4+` code.  The `modernTest` build task runs our test suite in this way.  It will be weeks/months before this is recommended for end-users. ([#598](https://github.com/diffplug/spotless/pull/598))
 

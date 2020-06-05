@@ -92,6 +92,10 @@ public class SpotlessExtension extends SpotlessExtensionBase {
 		project.afterEvaluate(unused -> {
 			String filePatterns;
 			if (project.hasProperty(FILES_PROPERTY) && project.property(FILES_PROPERTY) instanceof String) {
+				System.err.println("Spotless with -P" + FILES_PROPERTY + " has been deprecated and will be removed. It is slow and error-prone, especially for win/unix cross-platform, and we have better options available now:");
+				System.err.println("  If you are formatting just one file, try the much faster IDE hook: https://github.com/diffplug/spotless/blob/master/plugin-gradle/IDE_HOOK.md");
+				System.err.println("  If you are integrating with git, try `ratchetFrom 'origin/master'`: https://github.com/diffplug/spotless/tree/master/plugin-gradle#ratchet");
+				System.err.println("  If neither of these work for you, please let us know in this PR: https://github.com/diffplug/spotless/pull/602");
 				filePatterns = (String) project.property(FILES_PROPERTY);
 			} else {
 				// needs to be non-null since it is an @Input property of the task
