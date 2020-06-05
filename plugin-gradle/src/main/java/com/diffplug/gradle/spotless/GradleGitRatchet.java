@@ -21,6 +21,8 @@ import javax.annotation.Nullable;
 
 import org.gradle.api.Project;
 
+import com.diffplug.spotless.extra.GitRatchet;
+
 /** Gradle implementation of GitRatchet. */
 class GradleGitRatchet extends GitRatchet<Project> {
 	@Override
