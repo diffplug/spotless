@@ -33,8 +33,8 @@ import com.diffplug.spotless.TestProvisioner;
  */
 public class SelfTest {
 	public static void main(String[] args) throws Exception {
-		runTaskManually();
-		//runWithTestKit("spotlessApply");
+		//runTaskManually();
+		runWithTestKit("spotlessApply", "-PspotlessSetLicenseHeaderYearsFromGitHistory=true");
 	}
 
 	/** Runs a full task manually, so you can step through all the logic. */
@@ -77,14 +77,11 @@ public class SelfTest {
 	}
 
 	/** Runs against the `spotlessSelfApply.gradle` file. */
-	static void runWithTestKit(String taskType) throws Exception {
+	static void runWithTestKit(String... arguments) throws Exception {
 		GradleRunner.create()
 				.withPluginClasspath()
 				.withProjectDir(new File(StandardSystemProperty.USER_DIR.value()).getParentFile())
-				.withArguments(
-						"--project-cache-dir", ".gradle-selfapply",
-						taskType,
-						"--stacktrace")
+				.withArguments(arguments)
 				.forwardOutput()
 				.build();
 	}
