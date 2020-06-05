@@ -80,7 +80,7 @@ public class PrettierFormatterStep {
         public FormatterFunc createFormatterFunc() {
 
             try {
-                PrettierRestService restService = new PrettierRestService();
+                PrettierRestService restService = new PrettierRestService("http://localhost:52429");
 
 
 //				final NodeJSWrapper nodeJSWrapper = nodeJSWrapper();
