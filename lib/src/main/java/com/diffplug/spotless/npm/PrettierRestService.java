@@ -17,22 +17,26 @@ import java.util.regex.Pattern;
 
 public class PrettierRestService {
 
-    private static final Pattern ESCAPED_LINE_TERMINATOR_PATTERN = Pattern.compile("\\r\\n");
-
     PrettierRestService() {
     }
 
 
     // /prettier/config-options
-    public String resolveConfig(File prettierConfigPath) {
+    public String resolveConfig(File prettierConfigPath, Map<String, Object> prettierConfigOptions) {
         try {
-            URL url = new URL("http://localhost:3000/prettier/config-options");
+            URL url = new URL("http://localhost:52429/prettier/config-options");
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("POST");
             con.setRequestProperty("Content-Type", "application/json");
 
             Map<String, Object> jsonProperties = new LinkedHashMap<>();
-            jsonProperties.put("config_file_path", prettierConfigPath.getAbsolutePath());
+            if (prettierConfigPath != null) {
+                jsonProperties.put("prettier_config_path", prettierConfigPath.getAbsolutePath());
+            }
+            if (prettierConfigOptions != null) {
+                jsonProperties.put("prettier_config_options", SimpleJsonWriter.RawJsonValue.asRawJson(SimpleJsonWriter.of(prettierConfigOptions).toJsonString()));
+
+            }
 
             final SimpleJsonWriter jsonWriter = SimpleJsonWriter.of(jsonProperties);
             final String jsonString = jsonWriter.toJsonString();
@@ -62,9 +66,9 @@ public class PrettierRestService {
         }
     }
 
-    public String format(String fileContent, String optionsJsonString, String optionsOverrideJsonString) {
+    public String format(String fileContent, String configOptionsJsonString) {
         try {
-            URL url = new URL("http://localhost:3000/prettier/format");
+            URL url = new URL("http://localhost:52429/prettier/format");
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("POST");
             con.setRequestProperty("Content-Type", "application/json");
@@ -72,12 +76,10 @@ public class PrettierRestService {
 
             Map<String, Object> jsonProperties = new LinkedHashMap<>();
             jsonProperties.put("file_content", fileContent);
-            if (optionsJsonString != null) {
-                jsonProperties.put("resolved_config_options", SimpleJsonWriter.RawJsonValue.asRawJson(optionsJsonString));
+            if (configOptionsJsonString != null) {
+                jsonProperties.put("config_options", SimpleJsonWriter.RawJsonValue.asRawJson(configOptionsJsonString));
             }
-            if (optionsOverrideJsonString != null) {
-                jsonProperties.put("config_options", SimpleJsonWriter.RawJsonValue.asRawJson(optionsOverrideJsonString));
-            }
+
             final SimpleJsonWriter jsonWriter = SimpleJsonWriter.of(jsonProperties);
             final String jsonString = jsonWriter.toJsonString();
             con.setDoOutput(true);

@@ -89,9 +89,9 @@ public class PrettierFormatterStep {
 //				@SuppressWarnings("unchecked")
 //				final Map<String, Object>[] resolvedPrettierOptions = (Map<String, Object>[]) new Map[1];
 
-                final String prettierOptionsJson;
-                final String prettierOverrideOptionsJson;
-                if (this.prettierConfig.getPrettierConfigPath() != null) {
+//                final String prettierOptionsJson;
+//                final String prettierOverrideOptionsJson;
+//                if (this.prettierConfig.getPrettierConfigPath() != null) {
 
 //					final Exception[] toThrow = new Exception[1];
 //					try (
@@ -105,16 +105,12 @@ public class PrettierFormatterStep {
 //						promise.executeVoidFunction("then", callbacks);
 //						executeResolution(nodeJSWrapper, resolvedPrettierOptions, toThrow);
 //					}
-                    prettierOptionsJson = restService.resolveConfig(this.prettierConfig.getPrettierConfigPath());
-                    prettierOverrideOptionsJson = SimpleJsonWriter.of(this.prettierConfig.getOptions()).toJsonString();
-                } else {
-                    prettierOptionsJson = null;
-                    prettierOverrideOptionsJson = SimpleJsonWriter.of(this.prettierConfig.getOptions()).toJsonString();
+                    String prettierConfigOptions = restService.resolveConfig(this.prettierConfig.getPrettierConfigPath(), this.prettierConfig.getOptions());
 //					resolvedPrettierOptions[0] = this.prettierConfig.getOptions();
-                }
+//                }
 
 //				final V8ObjectWrapper prettierConfig = nodeJSWrapper.createNewObject(resolvedPrettierOptions[0]);
-                return input -> restService.format(input, prettierOptionsJson, prettierOverrideOptionsJson);
+                return input -> restService.format(input, prettierConfigOptions);
 //				return FormatterFunc.Closeable.of(() -> {
 //					asList(prettierConfig, prettier, nodeJSWrapper).forEach(ReflectiveObjectWrapper::release);
 //				}, input -> {
