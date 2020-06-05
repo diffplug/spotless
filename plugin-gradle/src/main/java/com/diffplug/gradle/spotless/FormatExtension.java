@@ -110,6 +110,29 @@ public class FormatExtension {
 		setEncoding(Charset.forName(Objects.requireNonNull(name)));
 	}
 
+	/** Sentinel to distinguish between "don't ratchet this format" and "use spotless parent format". */
+	private static final String RATCHETFROM_NOT_SET_AT_FORMAT_LEVEL = " not set at format level ";
+
+	private String ratchetFrom = RATCHETFROM_NOT_SET_AT_FORMAT_LEVEL;
+
+	/** @see #setRatchetFrom(String) */
+	public String getRatchetFrom() {
+		return ratchetFrom == RATCHETFROM_NOT_SET_AT_FORMAT_LEVEL ? spotless.getRatchetFrom() : ratchetFrom;
+	}
+
+	/**
+	 * Allows you to override the value from the parent {@link SpotlessExtensionBase#setRatchetFrom(String)}
+	 * for this specific format.
+	 */
+	public void setRatchetFrom(String ratchetFrom) {
+		this.ratchetFrom = ratchetFrom;
+	}
+
+	/** @see #setRatchetFrom(String) */
+	public void ratchetFrom(String ratchetFrom) {
+		setRatchetFrom(ratchetFrom);
+	}
+
 	/** Sets the encoding to use (defaults to {@link SpotlessExtension#getEncoding()}. */
 	public void setEncoding(Charset charset) {
 		encoding = Objects.requireNonNull(charset);
@@ -480,7 +503,7 @@ public class FormatExtension {
 			} else {
 				return FormatterStep.createLazy(LicenseHeaderStep.name(), () -> {
 					// by default, we should update the year if the user is using ratchetFrom
-					boolean updateYear = updateYearWithLatest == null ? FormatExtension.this.spotless.getRatchetFrom() != null : updateYearWithLatest;
+					boolean updateYear = updateYearWithLatest == null ? getRatchetFrom() != null : updateYearWithLatest;
 					return new LicenseHeaderStep(licenseHeader(), delimiter, yearSeparator, updateYear);
 				}, step -> step::format);
 			}
@@ -654,8 +677,8 @@ public class FormatExtension {
 		if (spotless.project != spotless.project.getRootProject()) {
 			spotless.registerDependenciesTask.hookSubprojectTask(task);
 		}
-		if (spotless.getRatchetFrom() != null) {
-			task.setupRatchet(spotless.registerDependenciesTask.gitRatchet, spotless.getRatchetFrom());
+		if (getRatchetFrom() != null) {
+			task.setupRatchet(spotless.registerDependenciesTask.gitRatchet, getRatchetFrom());
 		}
 	}
 

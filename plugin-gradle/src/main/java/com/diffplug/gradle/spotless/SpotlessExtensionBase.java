@@ -104,10 +104,12 @@ public abstract class SpotlessExtensionBase {
 		this.ratchetFrom = ratchetFrom;
 	}
 
+	/** @see #setRatchetFrom(String) */
 	public @Nullable String getRatchetFrom() {
 		return ratchetFrom;
 	}
 
+	/** @see #setRatchetFrom(String) */
 	public void ratchetFrom(String ratchetFrom) {
 		setRatchetFrom(ratchetFrom);
 	}
