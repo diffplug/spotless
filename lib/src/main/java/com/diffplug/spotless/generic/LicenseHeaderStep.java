@@ -36,6 +36,8 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.SerializableFileFilter;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /** Prefixes a license header before the package statement. */
 public final class LicenseHeaderStep implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -262,6 +264,7 @@ public final class LicenseHeaderStep implements Serializable {
 
 	private static final Pattern FIND_YEAR = Pattern.compile("Date:   .* ([0-9]{4}) ");
 
+	@SuppressFBWarnings("DM_DEFAULT_ENCODING")
 	private static String drain(InputStream stream) throws IOException {
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		byte[] buf = new byte[1024];
