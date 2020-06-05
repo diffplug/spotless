@@ -229,7 +229,15 @@ public final class LicenseHeaderStep implements Serializable {
 			throw new IllegalArgumentException("Unable to find delimiter regex " + delimiterPattern);
 		}
 
-		String oldYear = parseYear("git log --follow --diff-filter=A --find-renames=40%", file);
+		String oldYear;
+		try {
+			oldYear = parseYear("git log --follow --find-renames=40% --diff-filter=A", file);
+		} catch (IllegalArgumentException e) {
+			// Ideally, git log would always find the commit where it was added.
+			// For some reason, that is sometimes not possible - in that case,
+			// we'll settle for just the most recent, even if it was just a modification.
+			oldYear = parseYear("git log --follow --find-renames=40% --reverse", file);
+		}
 		String newYear = parseYear("git log --max-count=1", file);
 		String yearRange;
 		if (oldYear.equals(newYear)) {
