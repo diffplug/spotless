@@ -200,7 +200,7 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 				rootTreeShaCache.put(repo, reference, treeSha);
 			}
 			return treeSha;
-		} catch (Exception e) {
+		} catch (IOException e) {
 			throw Errors.asRuntime(e);
 		}
 	}
@@ -225,7 +225,7 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 				subtreeShaCache.put(project, subtreeSha);
 			}
 			return subtreeSha;
-		} catch (Exception e) {
+		} catch (IOException e) {
 			throw Errors.asRuntime(e);
 		}
 	}
