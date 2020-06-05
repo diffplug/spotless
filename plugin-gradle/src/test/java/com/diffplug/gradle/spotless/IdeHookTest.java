@@ -21,7 +21,6 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 
 import org.assertj.core.api.Assertions;
-import org.gradle.testkit.runner.GradleRunner;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -70,7 +69,8 @@ public class IdeHookTest extends GradleIntegrationHarness {
 			// gradle 2.14 -> 4.6 confirmed to work
 			// gradle 4.7 -> 5.1 don't work in tooling API because of https://github.com/gradle/gradle/issues/7617
 			// gradle 5.1 -> current confirmed to work
-			GradleRunner.create()
+			gradleRunner()
+					.withGradleVersion(SpotlessPluginModern.MINIMUM_GRADLE)
 					.withProjectDir(rootFolder())
 					.withPluginClasspath()
 					.withArguments(arguments)

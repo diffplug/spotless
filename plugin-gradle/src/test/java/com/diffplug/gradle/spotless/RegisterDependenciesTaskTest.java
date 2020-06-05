@@ -20,8 +20,6 @@ import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
-import com.diffplug.spotless.JreVersion;
-
 public class RegisterDependenciesTaskTest extends GradleIntegrationHarness {
 	@Test
 	public void registerDependencies() throws IOException {
@@ -40,21 +38,8 @@ public class RegisterDependenciesTaskTest extends GradleIntegrationHarness {
 				"  }",
 				"}");
 
-		if (JreVersion.thisVm() == JreVersion._8) {
-			String oldestSupported = gradleRunner()
-					.withArguments("spotlessCheck").build().getOutput();
-			Assertions.assertThat(oldestSupported.replace("\r", ""))
-					.startsWith(":spotlessCheck UP-TO-DATE\n" +
-							":spotlessInternalRegisterDependencies\n")
-					.contains(":sub:spotlessJava\n" +
-							":sub:spotlessJavaCheck\n" +
-							":sub:spotlessCheck\n" +
-							"\n" +
-							"BUILD SUCCESSFUL");
-		}
-
 		setFile("gradle.properties").toLines();
-		String newestSupported = gradleRunner().withGradleVersion("6.0")
+		String newestSupported = gradleRunner().withGradleVersion(SpotlessPluginModern.MINIMUM_GRADLE)
 				.withArguments("spotlessCheck").build().getOutput();
 		Assertions.assertThat(newestSupported.replace("\r", ""))
 				.startsWith("> Task :spotlessCheck UP-TO-DATE\n" +

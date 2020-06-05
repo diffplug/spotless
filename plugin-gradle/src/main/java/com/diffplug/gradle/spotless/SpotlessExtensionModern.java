@@ -15,16 +15,13 @@
  */
 package com.diffplug.gradle.spotless;
 
-import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.plugins.BasePlugin;
+import org.gradle.api.plugins.JavaBasePlugin;
 
-public class SpotlessExtension extends SpotlessExtensionBase {
-	final Task rootCheckTask, rootApplyTask, rootDiagnoseTask;
-	private static final String FILES_PROPERTY = "spotlessFiles";
-
-	public SpotlessExtension(Project project) {
+public class SpotlessExtensionModern extends SpotlessExtensionBase {
+	public SpotlessExtensionModern(Project project) {
 		super(project);
 		rootCheckTask = project.task(EXTENSION + CHECK);
 		rootCheckTask.setGroup(TASK_GROUP);
@@ -34,40 +31,25 @@ public class SpotlessExtension extends SpotlessExtensionBase {
 		rootApplyTask.setDescription(APPLY_DESCRIPTION);
 		rootDiagnoseTask = project.task(EXTENSION + DIAGNOSE);
 		rootDiagnoseTask.setGroup(TASK_GROUP);	// no description on purpose
+
+		project.afterEvaluate(unused -> {
+			if (enforceCheck) {
+				project.getTasks().named(JavaBasePlugin.CHECK_TASK_NAME)
+						.configure(task -> task.dependsOn(rootCheckTask));
+			}
+		});
 	}
 
-	/**
-	 * Configures the special css-specific extension for CSS files.
-	 * <br/>
-	 * The CSS extension is discontinued. CSS formatters are now part of
-	 * the generic {@link FormatExtension}.
-	 */
-	@Deprecated
-	public void css(Action<CssExtension> closure) {
-		configure(CssExtension.NAME, CssExtension.class, closure);
-	}
+	final Task rootCheckTask, rootApplyTask, rootDiagnoseTask;
 
-	/**
-	 * Configures the special xml-specific extension for XML/XSL/... files (XHTML is excluded).
-	 * <br/>
-	 * The XML extension is discontinued. XML formatters are now part of
-	 * the generic {@link FormatExtension}.
-	 */
-	@Deprecated
-	public void xml(Action<XmlExtension> closure) {
-		configure(XmlExtension.NAME, XmlExtension.class, closure);
-	}
-
-	/**
-	 * Creates 3 tasks for the supplied format:
-	 * - "spotless{FormatName}" is the main `SpotlessTask` that does the work for this format
-	 * - "spotless{FormatName}Check" will depend on the main spotless task in `check` mode
-	 * - "spotless{FormatName}Apply" will depend on the main spotless task in `apply` mode
-	 */
+	@Override
 	protected void createFormatTasks(String name, FormatExtension formatExtension) {
+		// TODO level 1: implement SpotlessExtension::createFormatTasks, but using config avoidance
+		// TODO level 2: override configure(String name, Class<T> clazz, Action<T> configure) so that it is lazy
+
 		// create the SpotlessTask
 		String taskName = EXTENSION + SpotlessPlugin.capitalize(name);
-		SpotlessTask spotlessTask = project.getTasks().create(taskName, SpotlessTask.class);
+		SpotlessTaskModern spotlessTask = project.getTasks().create(taskName, SpotlessTaskModern.class);
 		project.afterEvaluate(unused -> formatExtension.setupTask(spotlessTask));
 
 		// clean removes the SpotlessCache, so we have to run after clean
@@ -87,18 +69,6 @@ public class SpotlessExtension extends SpotlessExtensionBase {
 
 		// if the user runs both, make sure that apply happens first,
 		checkTask.mustRunAfter(applyTask);
-
-		// set the filePatterns property
-		project.afterEvaluate(unused -> {
-			String filePatterns;
-			if (project.hasProperty(FILES_PROPERTY) && project.property(FILES_PROPERTY) instanceof String) {
-				filePatterns = (String) project.property(FILES_PROPERTY);
-			} else {
-				// needs to be non-null since it is an @Input property of the task
-				filePatterns = "";
-			}
-			spotlessTask.setFilePatterns(filePatterns);
-		});
 
 		// the root tasks depend on the control tasks
 		rootCheckTask.dependsOn(checkTask);

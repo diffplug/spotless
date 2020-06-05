@@ -92,6 +92,17 @@ jobs:
           command: ./gradlew :plugin-maven:check --build-cache
       - store_test_results:
           path: plugin-maven/build/test-results/test
+  test_gradle_modern_8:
+    << : *env_gradle
+    steps:
+      - checkout
+      - *restore_cache_wrapper
+      - *restore_cache_deps
+      - run:
+          name: gradlew :plugin-gradle:modernTest
+          command: ./gradlew :plugin-gradle:modernTest --build-cache
+      - store_test_results:
+          path: plugin-gradle/build/test-results/modernTest
   test_npm_8:
     << : *env_gradle
     docker:
@@ -128,8 +139,8 @@ jobs:
       # do the test
       - restore_cache:
           keys:
-          - gradle-deps-win-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
-          - gradle-deps-win-
+          - gradle-deps-win2-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
+          - gradle-deps-win2-
       - run:
           name: gradlew check
           command: gradlew check --build-cache
@@ -142,12 +153,12 @@ jobs:
       - store_test_results:
           path: plugin-maven/build/test-results/test
       - save_cache:
+          key: gradle-deps-win2-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
           paths:
             - ~/.gradle/caches
             - ~/.gradle/wrapper
             - ~/.m2
             - ~/project/plugin-maven/build/localMavenRepository
-          key: gradle-deps-win-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
   changelog_print:
     << : *env_gradle
     steps:
@@ -215,7 +226,10 @@ workflows:
       - test_npm_8:
           requires:
             - assemble_testClasses
-  deploy:
+      - test_gradle_modern_8:
+          requires:
+            - assemble_testClasses
+deploy:
     jobs:
       - changelog_print:
           filters:

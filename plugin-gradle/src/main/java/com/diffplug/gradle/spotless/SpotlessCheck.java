@@ -35,7 +35,7 @@ import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
 public class SpotlessCheck extends DefaultTask {
-	SpotlessTask source;
+	SpotlessTaskBase source;
 	private File spotlessOutDirectory;
 
 	@PathSensitive(PathSensitivity.RELATIVE)
@@ -81,9 +81,10 @@ public class SpotlessCheck extends DefaultTask {
 			});
 
 			if (!problemFiles.isEmpty()) {
-				Formatter formatter = source.buildFormatter();
-				Collections.sort(problemFiles);
-				throw formatViolationsFor(formatter, problemFiles);
+				try (Formatter formatter = source.buildFormatter()) {
+					Collections.sort(problemFiles);
+					throw formatViolationsFor(formatter, problemFiles);
+				}
 			}
 		}
 	}

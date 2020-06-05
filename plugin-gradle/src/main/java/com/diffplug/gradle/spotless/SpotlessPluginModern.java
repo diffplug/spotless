@@ -19,25 +19,20 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.plugins.BasePlugin;
-import org.gradle.util.GradleVersion;
 
 import com.diffplug.spotless.SpotlessCache;
 
-public class SpotlessPlugin implements Plugin<Project> {
-	SpotlessExtension spotless;
+public class SpotlessPluginModern implements Plugin<Project> {
+	static final String SPOTLESS_MODERN = "spotlessModern";
+	static final String MINIMUM_GRADLE = "5.4";
 
 	@Override
 	public void apply(Project project) {
-		// if -PspotlessModern=true, then use the modern stuff instead of the legacy stuff
-		if (project.hasProperty(SpotlessPluginModern.SPOTLESS_MODERN) && project.findProperty(SpotlessPluginModern.SPOTLESS_MODERN).equals("true")) {
-			new SpotlessPluginModern().apply(project);
-			return;
-		}
 		// make sure there's a `clean` task
 		project.getPlugins().apply(BasePlugin.class);
 
 		// setup the extension
-		spotless = project.getExtensions().create(SpotlessExtension.EXTENSION, SpotlessExtension.class, project);
+		project.getExtensions().create(SpotlessExtension.EXTENSION, SpotlessExtensionModern.class, project);
 
 		// clear spotless' cache when the user does a clean
 		Task clean = project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME);
@@ -49,28 +44,5 @@ public class SpotlessPlugin implements Plugin<Project> {
 			// we use System.identityHashCode() to avoid a memory leak by hanging on to the reference directly
 			SpotlessCache.clearOnce(System.identityHashCode(project.getRootProject()));
 		});
-
-		project.afterEvaluate(unused -> {
-			// Add our check task as a dependency on the global check task
-			// getTasks() returns a "live" collection, so this works even if the
-			// task doesn't exist at the time this call is made
-			if (spotless.enforceCheck) {
-				if (GradleVersion.current().compareTo(SpotlessPluginPreConfigAvoidance.CONFIG_AVOIDANCE_INTRODUCED) >= 0) {
-					SpotlessPluginPostConfigAvoidance.enforceCheck(spotless, project);
-				} else {
-					SpotlessPluginPreConfigAvoidance.enforceCheck(spotless, project);
-				}
-			}
-		});
-	}
-
-	/** The extension for this plugin. */
-	@Deprecated
-	public SpotlessExtension getExtension() {
-		return spotless;
-	}
-
-	static String capitalize(String input) {
-		return Character.toUpperCase(input.charAt(0)) + input.substring(1);
 	}
 }

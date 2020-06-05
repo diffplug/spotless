@@ -18,54 +18,27 @@ package com.diffplug.gradle.spotless;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.CacheableTask;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.Preconditions;
-import com.diffplug.common.base.StringPrinter;
 import com.diffplug.common.base.Throwing;
 import com.diffplug.spotless.Formatter;
-import com.diffplug.spotless.PaddedCell;
 
 @CacheableTask
-public class SpotlessTask extends SpotlessTaskBase {
-	@Deprecated
-	@Internal
-	public boolean isPaddedCell() {
-		return true;
-	}
-
-	@Deprecated
-	public void setPaddedCell(boolean paddedCell) {
-		getLogger().warn("Spotless warning: Padded Cell is now always on, and cannot be turned off.  Find `paddedCell(` and remove all invocations.");
-	}
-
-	protected String filePatterns = "";
-
-	@Input
-	public String getFilePatterns() {
-		return filePatterns;
-	}
-
-	public void setFilePatterns(String filePatterns) {
-		this.filePatterns = Objects.requireNonNull(filePatterns);
-	}
-
+public class SpotlessTaskModern extends SpotlessTask {
 	@TaskAction
 	public void performAction(IncrementalTaskInputs inputs) throws Exception {
+		// TODO: implement using the InputChanges api
+
 		if (target == null) {
 			throw new GradleException("You must specify 'Iterable<File> target'");
 		}
@@ -117,53 +90,5 @@ public class SpotlessTask extends SpotlessTaskBase {
 				throw Errors.asRuntime(e);
 			}
 		});
-	}
-
-	protected void processInputFile(Formatter formatter, File input) throws IOException {
-		File output = getOutputFile(input);
-		getLogger().debug("Applying format to " + input + " and writing to " + output);
-		PaddedCell.DirtyState dirtyState;
-		if (ratchet != null && ratchet.isClean(getProject(), rootTreeSha, input)) {
-			dirtyState = PaddedCell.isClean();
-		} else {
-			dirtyState = PaddedCell.calculateDirtyState(formatter, input);
-		}
-		if (dirtyState.isClean()) {
-			// Remove previous output if it exists
-			Files.deleteIfExists(output.toPath());
-		} else if (dirtyState.didNotConverge()) {
-			getLogger().warn("Skipping '" + input + "' because it does not converge.  Run `spotlessDiagnose` to understand why");
-		} else {
-			Path parentDir = output.toPath().getParent();
-			if (parentDir == null) {
-				throw new IllegalStateException("Every file has a parent folder.");
-			}
-			Files.createDirectories(parentDir);
-			dirtyState.writeCanonicalTo(output);
-		}
-	}
-
-	protected void deletePreviousResult(File input) throws IOException {
-		File output = getOutputFile(input);
-		if (output.isDirectory()) {
-			Files.walk(output.toPath())
-					.sorted(Comparator.reverseOrder())
-					.map(Path::toFile)
-					.forEach(File::delete);
-		} else {
-			Files.deleteIfExists(output.toPath());
-		}
-	}
-
-	private File getOutputFile(File input) {
-		String outputFileName = FormatExtension.relativize(getProject().getProjectDir(), input);
-		if (outputFileName == null) {
-			throw new IllegalArgumentException(StringPrinter.buildString(printer -> {
-				printer.println("Spotless error! All target files must be within the project root. In project " + getProject().getPath());
-				printer.println("  root dir: " + getProject().getProjectDir().getAbsolutePath());
-				printer.println("    target: " + input.getAbsolutePath());
-			}));
-		}
-		return new File(outputDirectory, outputFileName);
 	}
 }
