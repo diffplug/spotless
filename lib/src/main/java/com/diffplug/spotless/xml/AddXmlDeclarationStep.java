@@ -31,7 +31,7 @@ public class AddXmlDeclarationStep {
 	private static String format(String rawString) {
 		String replacement = rawString;
 		if (!(rawString.startsWith(XML_DECLARATION))) {
-			replacement = XML_DECLARATION + LineEnding.PLATFORM_NATIVE.str() + replacement;
+			replacement = XML_DECLARATION + LineEnding.UNIX.str() + replacement;
 		}
 		return replacement;
 	}
