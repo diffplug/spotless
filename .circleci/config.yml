@@ -229,7 +229,7 @@ workflows:
       - test_gradle_modern_8:
           requires:
             - assemble_testClasses
-deploy:
+  deploy:
     jobs:
       - changelog_print:
           filters:
