@@ -40,14 +40,20 @@ import org.eclipse.jgit.treewalk.filter.AndTreeFilter;
 import org.eclipse.jgit.treewalk.filter.IndexDiffFilter;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.util.FS;
-import org.gradle.api.Project;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.collect.HashBasedTable;
 import com.diffplug.common.collect.Table;
 import com.diffplug.spotless.FileSignature;
 
-class GitRatchet implements AutoCloseable {
+/**
+ * How to use:
+ * - For best performance, you should have one instance of GitRatchet, shared by all projects.
+ * - Use {@link #rootTreeShaOf(Object, String)} to turn `origin/master` into the SHA of the tree object at that reference
+ * - Use {@link #isClean(Object, ObjectId, File)} to see if the given file is "git clean" relative to that tree
+ * - If you have up-to-date checking and want the best possible performance, use {@link #subtreeShaOf(Object, ObjectId)} to optimize up-to-date checks on a per-project basis.
+ */
+public abstract class GitRatchet<Project> implements AutoCloseable {
 	/**
 	 * This is the highest-level method, which all the others serve.  Given the sha
 	 * of a git tree (not a commit!), and the file in question, this method returns
@@ -130,17 +136,17 @@ class GitRatchet implements AutoCloseable {
 	private Repository repositoryFor(Project project) throws IOException {
 		Repository repo = gitRoots.get(project);
 		if (repo == null) {
-			if (isGitRoot(project.getProjectDir())) {
-				repo = createRepo(project.getProjectDir());
+			if (isGitRoot(getDir(project))) {
+				repo = createRepo(getDir(project));
 			} else {
-				Project parentProj = project.getParent();
+				Project parentProj = getParent(project);
 				if (parentProj == null) {
-					repo = traverseParentsUntil(project.getProjectDir().getParentFile(), null);
+					repo = traverseParentsUntil(getDir(project).getParentFile(), null);
 					if (repo == null) {
 						throw new IllegalArgumentException("Cannot find git repository in any parent directory");
 					}
 				} else {
-					repo = traverseParentsUntil(project.getProjectDir().getParentFile(), parentProj.getProjectDir());
+					repo = traverseParentsUntil(getDir(project).getParentFile(), getDir(parentProj));
 					if (repo == null) {
 						repo = repositoryFor(parentProj);
 					}
@@ -150,6 +156,10 @@ class GitRatchet implements AutoCloseable {
 		}
 		return repo;
 	}
+
+	protected abstract File getDir(Project project);
+
+	protected abstract @Nullable Project getParent(Project project);
 
 	private static @Nullable Repository traverseParentsUntil(File startWith, File file) throws IOException {
 		do {
@@ -204,7 +214,7 @@ class GitRatchet implements AutoCloseable {
 			ObjectId subtreeSha = subtreeShaCache.get(project);
 			if (subtreeSha == null) {
 				Repository repo = repositoryFor(project);
-				File directory = project.getProjectDir();
+				File directory = getDir(project);
 				if (repo.getWorkTree().equals(directory)) {
 					subtreeSha = rootTreeSha;
 				} else {

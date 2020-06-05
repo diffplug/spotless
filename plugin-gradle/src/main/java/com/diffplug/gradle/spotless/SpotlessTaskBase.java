@@ -76,7 +76,7 @@ public class SpotlessTaskBase extends DefaultTask {
 
 	/*** API which performs git up-to-date tasks. */
 	@Nullable
-	GitRatchet ratchet;
+	GradleGitRatchet ratchet;
 	/** The sha of the tree at repository root, used for determining if an individual *file* is clean according to git. */
 	ObjectId rootTreeSha;
 	/**
@@ -86,14 +86,14 @@ public class SpotlessTaskBase extends DefaultTask {
 	 */
 	private ObjectId subtreeSha = ObjectId.zeroId();
 
-	public void setupRatchet(GitRatchet gitRatchet, String ratchetFrom) {
+	public void setupRatchet(GradleGitRatchet gitRatchet, String ratchetFrom) {
 		ratchet = gitRatchet;
 		rootTreeSha = gitRatchet.rootTreeShaOf(getProject(), ratchetFrom);
 		subtreeSha = gitRatchet.subtreeShaOf(getProject(), rootTreeSha);
 	}
 
 	@Internal
-	GitRatchet getRatchet() {
+	GradleGitRatchet getRatchet() {
 		return ratchet;
 	}
 
