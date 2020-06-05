@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* `LicenseHeaderStep.setLicenseHeaderYearsFromGitHistory`, which does an expensive search through git history to determine the oldest and newest commits for each file, and uses that to determine license header years. ([#604](https://github.com/diffplug/spotless/pull/604))
 
 ## [1.33.1] - 2020-06-04
 * We are now running CI on windows. ([#596](https://github.com/diffplug/spotless/pull/596))
