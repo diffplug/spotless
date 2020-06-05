@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [4.3.0] - 2020-06-05
 ### Deprecated
 * `-PspotlessFiles` has been deprecated and will be removed.  It is slow and error-prone, especially for win/unix cross-platform, and we have better options available now:
   * If you are formatting just one file, try the much faster [IDE hook](https://github.com/diffplug/spotless/blob/master/plugin-gradle/IDE_HOOK.md)
