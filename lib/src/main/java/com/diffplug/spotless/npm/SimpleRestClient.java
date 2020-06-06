@@ -7,12 +7,11 @@
 package com.diffplug.spotless.npm;
 
 import javax.annotation.Nonnull;
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
@@ -53,16 +52,23 @@ class SimpleRestClient {
                 throw new SimpleRestResponseException(status, con.getResponseMessage(), "Unexpected response status code.");
             }
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            String inputLine;
-            StringBuilder content = new StringBuilder();
-            while ((inputLine = in.readLine()) != null) {
-                content.append(inputLine);
-            }
-            in.close();
-            return content.toString();
+            String response = readResponse(con, StandardCharsets.UTF_8);
+            return response;
         } catch (IOException e) {
             throw new SimpleRestIOException(e);
+        }
+    }
+
+    private String readResponse(HttpURLConnection con, Charset charset) throws IOException {
+        String encoding = con.getContentEncoding();
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int numRead;
+        try(BufferedInputStream input = new BufferedInputStream(con.getInputStream())) {
+            while ((numRead = input.read(buffer)) != -1) {
+                output.write(buffer, 0, numRead);
+            }
+            return output.toString(charset.name());
         }
     }
 

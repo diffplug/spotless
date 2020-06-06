@@ -1,6 +1,9 @@
 {
 	"name": "spotless-prettier-formatter-step",
-	"version": "1.0.0",
+	"version": "2.0.0",
+	"scripts": {
+		"start": "node serve.js"
+	},
 	"devDependencies": {
 ${devDependencies},
 		"express": "4.17.1"

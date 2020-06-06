@@ -15,19 +15,23 @@
  */
 package com.diffplug.spotless.npm;
 
+import javax.annotation.Nonnull;
 import java.io.Serializable;
 
 class NpmConfig implements Serializable {
 
-	private static final long serialVersionUID = -1866722789779160491L;
+	private static final long serialVersionUID = -7660089232952131272L;
 
 	private final String packageJsonContent;
 
 	private final String npmModule;
 
-	public NpmConfig(String packageJsonContent, String npmModule) {
+	private final String serveScriptContent;
+
+	public NpmConfig(String packageJsonContent, String npmModule, String serveScriptContent) {
 		this.packageJsonContent = packageJsonContent;
 		this.npmModule = npmModule;
+		this.serveScriptContent = serveScriptContent;
 	}
 
 	public String getPackageJsonContent() {
@@ -36,5 +40,10 @@ class NpmConfig implements Serializable {
 
 	public String getNpmModule() {
 		return npmModule;
+	}
+
+	@Nonnull
+	public String getServeScriptContent() {
+		return serveScriptContent;
 	}
 }

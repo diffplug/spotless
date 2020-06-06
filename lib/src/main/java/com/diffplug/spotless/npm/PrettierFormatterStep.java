@@ -69,7 +69,8 @@ public class PrettierFormatterStep {
                             replaceDevDependencies(
                                     readFileFromClasspath(PrettierFormatterStep.class, "/com/diffplug/spotless/npm/prettier-package.json"),
                                     new TreeMap<>(devDependencies)),
-                            "prettier"),
+                            "prettier",
+                            readFileFromClasspath(PrettierFormatterStep.class, "/com/diffplug/spotless/npm/prettier-serve.js")),
                     buildDir,
                     npm);
             this.prettierConfig = requireNonNull(prettierConfig);
@@ -80,87 +81,14 @@ public class PrettierFormatterStep {
         public FormatterFunc createFormatterFunc() {
 
             try {
-                PrettierRestService restService = new PrettierRestService("http://localhost:52429");
 
+                ServerProcessInfo prettierRestServer = npmRunServer();
+                PrettierRestService restService = new PrettierRestService(prettierRestServer.getBaseUrl());
 
-//				final NodeJSWrapper nodeJSWrapper = nodeJSWrapper();
-//				final V8ObjectWrapper prettier = nodeJSWrapper.require(nodeModulePath());
-//
-//				@SuppressWarnings("unchecked")
-//				final Map<String, Object>[] resolvedPrettierOptions = (Map<String, Object>[]) new Map[1];
-
-//                final String prettierOptionsJson;
-//                final String prettierOverrideOptionsJson;
-//                if (this.prettierConfig.getPrettierConfigPath() != null) {
-
-//					final Exception[] toThrow = new Exception[1];
-//					try (
-//							V8FunctionWrapper resolveConfigCallback = createResolveConfigFunction(nodeJSWrapper, resolvedPrettierOptions, toThrow);
-//							V8ObjectWrapper resolveConfigOption = createResolveConfigOptionObj(nodeJSWrapper);
-//							V8ArrayWrapper resolveConfigParams = createResolveConfigParamsArray(nodeJSWrapper, resolveConfigOption);
-//
-//							V8ObjectWrapper promise = prettier.executeObjectFunction("resolveConfig", resolveConfigParams);
-//							V8ArrayWrapper callbacks = nodeJSWrapper.createNewArray(resolveConfigCallback);) {
-//
-//						promise.executeVoidFunction("then", callbacks);
-//						executeResolution(nodeJSWrapper, resolvedPrettierOptions, toThrow);
-//					}
-                    String prettierConfigOptions = restService.resolveConfig(this.prettierConfig.getPrettierConfigPath(), this.prettierConfig.getOptions());
-//					resolvedPrettierOptions[0] = this.prettierConfig.getOptions();
-//                }
-
-//				final V8ObjectWrapper prettierConfig = nodeJSWrapper.createNewObject(resolvedPrettierOptions[0]);
-                return input -> restService.format(input, prettierConfigOptions);
-//				return FormatterFunc.Closeable.of(() -> {
-//					asList(prettierConfig, prettier, nodeJSWrapper).forEach(ReflectiveObjectWrapper::release);
-//				}, input -> {
-//					try (V8ArrayWrapper formatParams = nodeJSWrapper.createNewArray(input, prettierConfig)) {
-//						String result = prettier.executeStringFunction("format", formatParams);
-//						return result;
-//					}
-//				});
+                String prettierConfigOptions = restService.resolveConfig(this.prettierConfig.getPrettierConfigPath(), this.prettierConfig.getOptions());
+                return FormatterFunc.Closeable.of(prettierRestServer, input -> restService.format(input, prettierConfigOptions));
             } catch (Exception e) {
                 throw ThrowingEx.asRuntime(e);
-            }
-        }
-
-        private V8FunctionWrapper createResolveConfigFunction(NodeJSWrapper nodeJSWrapper, Map<String, Object>[] outputOptions, Exception[] toThrow) {
-            return nodeJSWrapper.createNewFunction((receiver, parameters) -> {
-                try {
-                    try (final V8ObjectWrapper configOptions = parameters.getObject(0)) {
-                        if (configOptions == null) {
-                            toThrow[0] = new IllegalArgumentException("Cannot find or read config file " + this.prettierConfig.getPrettierConfigPath());
-                        } else {
-                            Map<String, Object> resolvedOptions = new TreeMap<>(V8ObjectUtilsWrapper.toMap(configOptions));
-                            resolvedOptions.putAll(this.prettierConfig.getOptions());
-                            outputOptions[0] = resolvedOptions;
-                        }
-                    }
-                } catch (Exception e) {
-                    toThrow[0] = e;
-                }
-                return receiver;
-            });
-        }
-
-        private V8ObjectWrapper createResolveConfigOptionObj(NodeJSWrapper nodeJSWrapper) {
-            return nodeJSWrapper.createNewObject()
-                    .add("config", this.prettierConfig.getPrettierConfigPath().getAbsolutePath());
-        }
-
-        private V8ArrayWrapper createResolveConfigParamsArray(NodeJSWrapper nodeJSWrapper, V8ObjectWrapper resolveConfigOption) {
-            return nodeJSWrapper.createNewArray()
-                    .pushNull()
-                    .push(resolveConfigOption);
-        }
-
-        private void executeResolution(NodeJSWrapper nodeJSWrapper, Map<String, Object>[] resolvedPrettierOptions, Exception[] toThrow) {
-            while (resolvedPrettierOptions[0] == null && toThrow[0] == null) {
-                nodeJSWrapper.handleMessage();
-            }
-
-            if (toThrow[0] != null) {
-                throw ThrowingEx.asRuntime(toThrow[0]);
             }
         }
 
