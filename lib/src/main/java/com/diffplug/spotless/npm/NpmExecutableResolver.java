@@ -105,4 +105,15 @@ class NpmExecutableResolver {
 		};
 	}
 
+	static String explainMessage() {
+		return "Spotless tries to find your npm executable automatically. It looks for npm in the following places:\n" +
+				"- An executable referenced by the java system property 'npm.exec' - if such a system property exists.\n" +
+				"- The environment variable 'NVM_BIN' - if such an environment variable exists.\n" +
+				"- The environment variable 'NVM_SYMLINK' - if such an environment variable exists.\n" +
+				"- The environment variable 'NODE_PATH' - if such an environment variable exists.\n" +
+				"- In your 'PATH' environment variable\n" +
+				"\n" +
+				"If autodiscovery fails for your system, try to set one of the environment variables correctly or\n" +
+				"try setting the system property 'npm.exec' in the build process to override autodiscovery.";
+	}
 }

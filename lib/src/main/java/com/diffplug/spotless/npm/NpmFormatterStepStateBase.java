@@ -128,7 +128,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 	private static File resolveNpm(@Nullable File npm) {
 		return Optional.ofNullable(npm)
 				.orElseGet(() -> NpmExecutableResolver.tryFind()
-						.orElseThrow(() -> new IllegalStateException("cannot automatically determine npm executable and none was specifically supplied!")));
+						.orElseThrow(() -> new IllegalStateException("Can't automatically determine npm executable and none was specifically supplied!\n\n" + NpmExecutableResolver.explainMessage())));
 	}
 
 	protected static String readFileFromClasspath(Class<?> clazz, String name) {
