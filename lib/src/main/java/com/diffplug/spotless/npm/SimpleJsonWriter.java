@@ -15,7 +15,7 @@
  */
 package com.diffplug.spotless.npm;
 
-import static java.util.Objects.requireNonNull;
+import static com.diffplug.spotless.npm.JsonEscaper.jsonEscape;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,8 +53,8 @@ public class SimpleJsonWriter {
 	private void verifyValues(Map<String, ?> values) {
 		if (values.values()
 				.stream()
-				.anyMatch(val -> !(val instanceof String || val instanceof RawJsonValue || val instanceof Number || val instanceof Boolean))) {
-			throw new IllegalArgumentException("Only values of type 'String', 'RawJsonValue', 'Number' and 'Boolean' are supported. You provided: " + values.values());
+				.anyMatch(val -> !(val instanceof String || val instanceof JsonRawValue || val instanceof Number || val instanceof Boolean))) {
+			throw new IllegalArgumentException("Only values of type 'String', 'JsonRawValue', 'Number' and 'Boolean' are supported. You provided: " + values.values());
 		}
 	}
 
@@ -66,78 +66,8 @@ public class SimpleJsonWriter {
 		return "{\n" + valueString + "\n}";
 	}
 
-	RawJsonValue toRawJsonValue() {
-		return RawJsonValue.wrap(toJsonString());
-	}
-
-	private String jsonEscape(Object val) {
-		requireNonNull(val);
-		if (val instanceof RawJsonValue) {
-			return ((RawJsonValue) val).getRawJson();
-		}
-		if (val instanceof String) {
-			/**
-			 * the following characters are reserved in JSON and must be properly escaped to be used in strings:
-			 *
-			 * Backspace is replaced with \b
-			 * Form feed is replaced with \f
-			 * Newline is replaced with \n
-			 * Carriage return is replaced with \r
-			 * Tab is replaced with \t
-			 * Double quote is replaced with \"
-			 * Backslash is replaced with \\
-			 */
-			StringBuilder escaped = new StringBuilder();
-			escaped.append('"');
-			char b;
-			char c = 0;
-			for (int i = 0; i < ((String) val).length(); i++) {
-				b = c;
-				c = ((String) val).charAt(i);
-				switch (c) {
-				case '\"':
-					escaped.append('\\').append('"');
-					break;
-				case '\n':
-					escaped.append('\\').append('n');
-					break;
-				case '\r':
-					escaped.append('\\').append('r');
-					break;
-				case '\t':
-					escaped.append('\\').append('t');
-					break;
-				case '\b':
-					escaped.append('\\').append('b');
-					break;
-				case '\f':
-					escaped.append('\\').append('f');
-					break;
-				case '\\':
-					escaped.append('\\').append('\\');
-					break;
-				case '/':
-					if (b == '<') {
-						escaped.append('\\');
-					}
-					escaped.append(c);
-					break;
-				default:
-					if (c < ' ' || (c >= '\u0080' && c < '\u00a0')
-							|| (c >= '\u2000' && c < '\u2100')) {
-						escaped.append('\\').append('u');
-						String hexString = Integer.toHexString(c);
-						escaped.append("0000", 0, 4 - hexString.length());
-						escaped.append(hexString);
-					} else {
-						escaped.append(c);
-					}
-				}
-			}
-			escaped.append('"');
-			return escaped.toString();
-		}
-		return val.toString();
+	JsonRawValue toJsonRawValue() {
+		return JsonRawValue.wrap(toJsonString());
 	}
 
 	void toJsonFile(File file) {
@@ -158,19 +88,4 @@ public class SimpleJsonWriter {
 		return this.toJsonString();
 	}
 
-	static class RawJsonValue {
-		private final String rawJson;
-
-		private RawJsonValue(String rawJson) {
-			this.rawJson = requireNonNull(rawJson);
-		}
-
-		static RawJsonValue wrap(String rawJson) {
-			return new RawJsonValue(rawJson);
-		}
-
-		public String getRawJson() {
-			return rawJson;
-		}
-	}
 }

@@ -62,9 +62,9 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 
 	private File prepareNodeServer(File buildDir) throws IOException {
 		File targetDir = new File(buildDir, "spotless-node-modules-" + stepName);
-		SimpleResourceHelper.assertDirectoryExists(targetDir);
-		SimpleResourceHelper.writeUtf8StringToFile(targetDir, "package.json", this.npmConfig.getPackageJsonContent());
-		SimpleResourceHelper.writeUtf8StringToFile(targetDir, "serve.js", this.npmConfig.getServeScriptContent());
+		NpmResourceHelper.assertDirectoryExists(targetDir);
+		NpmResourceHelper.writeUtf8StringToFile(targetDir, "package.json", this.npmConfig.getPackageJsonContent());
+		NpmResourceHelper.writeUtf8StringToFile(targetDir, "serve.js", this.npmConfig.getServeScriptContent());
 		runNpmInstall(targetDir);
 		return targetDir;
 	}
@@ -78,13 +78,13 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 			// The npm process will output the randomly selected port of the http server process to 'server.port' file
 			// so in order to be safe, remove such a file if it exists before starting.
 			final File serverPortFile = new File(this.nodeModulesDir, "server.port");
-			SimpleResourceHelper.deleteFileIfExists(serverPortFile);
+			NpmResourceHelper.deleteFileIfExists(serverPortFile);
 			// start the http server in node
 			Process server = new NpmProcess(this.nodeModulesDir, this.npmExecutable).start();
 
 			// await the readiness of the http server - wait for at most 60 seconds
 			try {
-				SimpleResourceHelper.awaitReadableFile(serverPortFile, Duration.ofSeconds(60));
+				NpmResourceHelper.awaitReadableFile(serverPortFile, Duration.ofSeconds(60));
 			} catch (TimeoutException timeoutException) {
 				// forcibly end the server process
 				try {
@@ -98,7 +98,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 				throw timeoutException;
 			}
 			// read the server.port file for resulting port and remember the port for later formatting calls
-			String serverPort = SimpleResourceHelper.readUtf8StringFromFile(serverPortFile).trim();
+			String serverPort = NpmResourceHelper.readUtf8StringFromFile(serverPortFile).trim();
 			return new ServerProcessInfo(server, serverPort, serverPortFile);
 		} catch (IOException | TimeoutException e) {
 			throw new ServerStartException(e);
@@ -155,7 +155,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 
 		@Override
 		public void close() throws Exception {
-			SimpleResourceHelper.deleteFileIfExists(serverPortFile);
+			NpmResourceHelper.deleteFileIfExists(serverPortFile);
 			if (this.server.isAlive()) {
 				this.server.destroy();
 			}

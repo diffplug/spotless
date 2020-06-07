@@ -15,10 +15,7 @@
  */
 package com.diffplug.spotless.npm;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Duration;
@@ -26,14 +23,19 @@ import java.util.concurrent.TimeoutException;
 
 import com.diffplug.spotless.ThrowingEx;
 
-final class SimpleResourceHelper {
-	private SimpleResourceHelper() {
+final class NpmResourceHelper {
+	private NpmResourceHelper() {
 		// no instance required
 	}
 
-	static void writeUtf8StringToFile(File targetDir, String fileName, String packageJsonContent) throws IOException {
+	static void writeUtf8StringToFile(File targetDir, String fileName, String stringToWrite) throws IOException {
 		File packageJsonFile = new File(targetDir, fileName);
-		Files.write(packageJsonFile.toPath(), packageJsonContent.getBytes(StandardCharsets.UTF_8));
+		Files.write(packageJsonFile.toPath(), stringToWrite.getBytes(StandardCharsets.UTF_8));
+	}
+
+	static void writeUtf8StringToOutputStream(String stringToWrite, OutputStream outputStream) throws IOException {
+		final byte[] bytes = stringToWrite.getBytes(StandardCharsets.UTF_8);
+		outputStream.write(bytes);
 	}
 
 	static void deleteFileIfExists(File file) throws IOException {
@@ -45,14 +47,8 @@ final class SimpleResourceHelper {
 	}
 
 	static String readUtf8StringFromClasspath(Class<?> clazz, String resourceName) {
-		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		try (InputStream input = clazz.getResourceAsStream(resourceName)) {
-			byte[] buffer = new byte[1024];
-			int numRead;
-			while ((numRead = input.read(buffer)) != -1) {
-				output.write(buffer, 0, numRead);
-			}
-			return output.toString(StandardCharsets.UTF_8.name());
+			return readUtf8StringFromInputStream(input);
 		} catch (IOException e) {
 			throw ThrowingEx.asRuntime(e);
 		}
@@ -61,6 +57,20 @@ final class SimpleResourceHelper {
 	static String readUtf8StringFromFile(File file) {
 		try {
 			return String.join("\n", Files.readAllLines(file.toPath()));
+		} catch (IOException e) {
+			throw ThrowingEx.asRuntime(e);
+		}
+	}
+
+	static String readUtf8StringFromInputStream(InputStream input) {
+		try {
+			ByteArrayOutputStream output = new ByteArrayOutputStream();
+			byte[] buffer = new byte[1024];
+			int numRead;
+			while ((numRead = input.read(buffer)) != -1) {
+				output.write(buffer, 0, numRead);
+			}
+			return output.toString(StandardCharsets.UTF_8.name());
 		} catch (IOException e) {
 			throw ThrowingEx.asRuntime(e);
 		}

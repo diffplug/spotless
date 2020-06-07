@@ -17,11 +17,11 @@ package com.diffplug.spotless.npm;
 
 import static java.util.Objects.requireNonNull;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -48,13 +48,15 @@ class SimpleRestClient {
 		try {
 			URL url = new URL(this.baseUrl + endpoint);
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+			con.setConnectTimeout(60 * 1000); // one minute
+			con.setReadTimeout(2 * 60 * 1000); // two minutes - who knows how large those files can actually get
 			con.setRequestMethod("POST");
 			con.setRequestProperty("Content-Type", "application/json");
 			con.setDoOutput(true);
-			DataOutputStream out = new DataOutputStream(con.getOutputStream());
-			out.writeBytes(rawJson);
-			out.flush();
-			out.close();
+			try (OutputStream out = con.getOutputStream()) {
+				NpmResourceHelper.writeUtf8StringToOutputStream(rawJson, out);
+				out.flush();
+			}
 
 			int status = con.getResponseCode();
 
@@ -62,23 +64,16 @@ class SimpleRestClient {
 				throw new SimpleRestResponseException(status, con.getResponseMessage(), "Unexpected response status code.");
 			}
 
-			String response = readResponse(con, StandardCharsets.UTF_8);
+			String response = readResponse(con);
 			return response;
 		} catch (IOException e) {
 			throw new SimpleRestIOException(e);
 		}
 	}
 
-	private String readResponse(HttpURLConnection con, Charset charset) throws IOException {
-		String encoding = con.getContentEncoding();
-		ByteArrayOutputStream output = new ByteArrayOutputStream();
-		byte[] buffer = new byte[1024];
-		int numRead;
+	private String readResponse(HttpURLConnection con) throws IOException {
 		try (BufferedInputStream input = new BufferedInputStream(con.getInputStream())) {
-			while ((numRead = input.read(buffer)) != -1) {
-				output.write(buffer, 0, numRead);
-			}
-			return output.toString(charset.name());
+			return NpmResourceHelper.readUtf8StringFromInputStream(input);
 		}
 	}
 

@@ -30,7 +30,7 @@ public class TsFmtRestService {
 		Map<String, Object> jsonProperties = new LinkedHashMap<>();
 		jsonProperties.put("file_content", fileContent);
 		if (configOptions != null && !configOptions.isEmpty()) {
-			jsonProperties.put("config_options", SimpleJsonWriter.of(configOptions).toRawJsonValue());
+			jsonProperties.put("config_options", SimpleJsonWriter.of(configOptions).toJsonRawValue());
 		}
 
 		return restClient.postJson("/tsfmt/format", jsonProperties);

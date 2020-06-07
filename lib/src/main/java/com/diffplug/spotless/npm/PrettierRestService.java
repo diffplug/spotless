@@ -19,8 +19,6 @@ import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.diffplug.spotless.npm.SimpleJsonWriter.RawJsonValue;
-
 public class PrettierRestService {
 
 	private final SimpleRestClient restClient;
@@ -35,7 +33,7 @@ public class PrettierRestService {
 			jsonProperties.put("prettier_config_path", prettierConfigPath.getAbsolutePath());
 		}
 		if (prettierConfigOptions != null) {
-			jsonProperties.put("prettier_config_options", SimpleJsonWriter.of(prettierConfigOptions).toRawJsonValue());
+			jsonProperties.put("prettier_config_options", SimpleJsonWriter.of(prettierConfigOptions).toJsonRawValue());
 
 		}
 		return restClient.postJson("/prettier/config-options", jsonProperties);
@@ -45,7 +43,7 @@ public class PrettierRestService {
 		Map<String, Object> jsonProperties = new LinkedHashMap<>();
 		jsonProperties.put("file_content", fileContent);
 		if (configOptionsJsonString != null) {
-			jsonProperties.put("config_options", RawJsonValue.wrap(configOptionsJsonString));
+			jsonProperties.put("config_options", JsonRawValue.wrap(configOptionsJsonString));
 		}
 
 		return restClient.postJson("/prettier/format", jsonProperties);

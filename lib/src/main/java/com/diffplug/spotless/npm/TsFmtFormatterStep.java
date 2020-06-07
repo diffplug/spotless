@@ -77,9 +77,9 @@ public class TsFmtFormatterStep {
 		public State(String stepName, Map<String, String> versions, File buildDir, @Nullable File npm, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) throws IOException {
 			super(stepName,
 					new NpmConfig(
-							replaceDevDependencies(SimpleResourceHelper.readUtf8StringFromClasspath(TsFmtFormatterStep.class, "/com/diffplug/spotless/npm/tsfmt-package.json"), new TreeMap<>(versions)),
+							replaceDevDependencies(NpmResourceHelper.readUtf8StringFromClasspath(TsFmtFormatterStep.class, "/com/diffplug/spotless/npm/tsfmt-package.json"), new TreeMap<>(versions)),
 							"typescript-formatter",
-							SimpleResourceHelper.readUtf8StringFromClasspath(PrettierFormatterStep.class, "/com/diffplug/spotless/npm/tsfmt-serve.js")),
+							NpmResourceHelper.readUtf8StringFromClasspath(PrettierFormatterStep.class, "/com/diffplug/spotless/npm/tsfmt-serve.js")),
 					buildDir,
 					npm);
 			this.buildDir = requireNonNull(buildDir);
