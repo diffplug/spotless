@@ -25,6 +25,10 @@ spotless {
 			removeUnusedImports()
 		}
 	}
+	format 'javascript', {
+		target 'src/main/resources/**/*.js'
+		prettier().configFile(rootProject.file('gradle/spotless.javascript.prettierrc.yml'))
+	}
 	groovyGradle {
 		target '*.gradle'
 		greclipse().configFile rootProject.files('gradle/spotless.eclipseformat.xml', 'gradle/spotless.groovyformat.prefs')
