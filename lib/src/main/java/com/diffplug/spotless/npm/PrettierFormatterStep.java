@@ -53,18 +53,17 @@ public class PrettierFormatterStep {
         requireNonNull(provisioner);
         requireNonNull(buildDir);
         return FormatterStep.createLazy(NAME,
-                () -> new State(NAME, devDependencies, provisioner, buildDir, npm, prettierConfig),
+                () -> new State(NAME, devDependencies, buildDir, npm, prettierConfig),
                 State::createFormatterFunc);
     }
 
     public static class State extends NpmFormatterStepStateBase implements Serializable {
 
-        private static final long serialVersionUID = -3811104513825329168L;
+        private static final long serialVersionUID = -539537027004745812L;
         private final PrettierConfig prettierConfig;
 
-        State(String stepName, Map<String, String> devDependencies, Provisioner provisioner, File buildDir, @Nullable File npm, PrettierConfig prettierConfig) throws IOException {
+        State(String stepName, Map<String, String> devDependencies, File buildDir, @Nullable File npm, PrettierConfig prettierConfig) throws IOException {
             super(stepName,
-                    provisioner,
                     new NpmConfig(
                             replaceDevDependencies(
                                     readFileFromClasspath(PrettierFormatterStep.class, "/com/diffplug/spotless/npm/prettier-package.json"),

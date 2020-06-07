@@ -33,9 +33,7 @@ import static java.util.Objects.requireNonNull;
 
 abstract class NpmFormatterStepStateBase implements Serializable {
 
-    private static final long serialVersionUID = -5849375492831208496L;
-
-    private final JarState jarState;
+    private static final long serialVersionUID = 1460749955865959948L;
 
     @SuppressWarnings("unused")
     private final FileSignature nodeModulesSignature;
@@ -49,10 +47,9 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 
     private final String stepName;
 
-    protected NpmFormatterStepStateBase(String stepName, Provisioner provisioner, NpmConfig npmConfig, File buildDir, @Nullable File npm) throws IOException {
+    protected NpmFormatterStepStateBase(String stepName, NpmConfig npmConfig, File buildDir, @Nullable File npm) throws IOException {
         this.stepName = requireNonNull(stepName);
         this.npmConfig = requireNonNull(npmConfig);
-        this.jarState = JarState.from(j2v8MavenCoordinate(), requireNonNull(provisioner));
         this.npmExecutable = resolveNpm(npm);
 
         this.nodeModulesDir = prepareNodeServer(buildDir);
@@ -130,18 +127,6 @@ abstract class NpmFormatterStepStateBase implements Serializable {
         return Optional.ofNullable(npm)
                 .orElseGet(() -> NpmExecutableResolver.tryFind()
                         .orElseThrow(() -> new IllegalStateException("cannot automatically determine npm executable and none was specifically supplied!")));
-    }
-
-    protected NodeJSWrapper nodeJSWrapper() {
-        return new NodeJSWrapper(this.jarState.getClassLoader());
-    }
-
-    protected File nodeModulePath() {
-        return new File(new File(this.nodeModulesDir, "node_modules"), this.npmConfig.getNpmModule());
-    }
-
-    static String j2v8MavenCoordinate() {
-        return "com.eclipsesource.j2v8:j2v8_" + PlatformInfo.normalizedOSName() + "_" + PlatformInfo.normalizedArchName() + ":4.6.0";
     }
 
     protected static String readFileFromClasspath(Class<?> clazz, String name) {

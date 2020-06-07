@@ -15,7 +15,6 @@
  */
 package com.diffplug.spotless.npm;
 
-import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
@@ -43,7 +42,7 @@ public class TsFmtFormatterStep {
 		requireNonNull(provisioner);
 		requireNonNull(buildDir);
 		return FormatterStep.createLazy(NAME,
-				() -> new State(NAME, versions, provisioner, buildDir, npm, configFile, inlineTsFmtSettings),
+				() -> new State(NAME, versions, buildDir, npm, configFile, inlineTsFmtSettings),
 				State::createFormatterFunc);
 	}
 
@@ -61,7 +60,7 @@ public class TsFmtFormatterStep {
 
 	public static class State extends NpmFormatterStepStateBase implements Serializable {
 
-		private static final long serialVersionUID = -3811104513825329168L;
+		private static final long serialVersionUID = -3789035117345809383L;
 
 		private final TreeMap<String, Object> inlineTsFmtSettings;
 
@@ -71,13 +70,12 @@ public class TsFmtFormatterStep {
 		private final TypedTsFmtConfigFile configFile;
 
 		@Deprecated
-		public State(String stepName, Provisioner provisioner, File buildDir, @Nullable File npm, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) throws IOException {
-			this(stepName, defaultDevDependencies(), provisioner, buildDir, npm, configFile, inlineTsFmtSettings);
+		public State(String stepName, File buildDir, @Nullable File npm, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) throws IOException {
+			this(stepName, defaultDevDependencies(), buildDir, npm, configFile, inlineTsFmtSettings);
 		}
 
-		public State(String stepName, Map<String, String> versions, Provisioner provisioner, File buildDir, @Nullable File npm, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) throws IOException {
+		public State(String stepName, Map<String, String> versions, File buildDir, @Nullable File npm, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) throws IOException {
 			super(stepName,
-					provisioner,
 					new NpmConfig(
 							replaceDevDependencies(readFileFromClasspath(TsFmtFormatterStep.class, "/com/diffplug/spotless/npm/tsfmt-package.json"), new TreeMap<>(versions)),
 							"typescript-formatter",

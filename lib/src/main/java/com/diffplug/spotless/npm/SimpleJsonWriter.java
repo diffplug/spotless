@@ -67,7 +67,7 @@ public class SimpleJsonWriter {
 	}
 
 	RawJsonValue toRawJsonValue() {
-		return RawJsonValue.asRawJson(toJsonString());
+		return RawJsonValue.wrap(toJsonString());
 	}
 
 	private String jsonEscape(Object val) {
@@ -165,7 +165,7 @@ public class SimpleJsonWriter {
 			this.rawJson = requireNonNull(rawJson);
 		}
 
-		static RawJsonValue asRawJson(String rawJson) {
+		static RawJsonValue wrap(String rawJson) {
 			return new RawJsonValue(rawJson);
 		}
 
