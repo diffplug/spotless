@@ -93,31 +93,34 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 
 	protected ServerProcessInfo npmRunServer() throws ServerStartException {
 		try {
+			// The npm process will output the randomly selected port of the http server process to 'server.port' file
+			// so in order to be safe, remove such a file if it exists before starting.
+			final File serverPortFile = new File(this.nodeModulesDir, "server.port");
+			if (serverPortFile.exists()) {
+				serverPortFile.delete();
+			}
+			// start the http server in node
 			Process server = new ProcessBuilder()
 					.inheritIO()
-					//                    .redirectError(new File("/Users/simschla/tmp/npmerror.log"))
-					//                    .redirectOutput(new File("/Users/simschla/tmp/npmout.log"))
 					.directory(this.nodeModulesDir)
 					.command(this.npmExecutable.getAbsolutePath(), "start")
 					.start();
 
-			File serverPortFile = new File(this.nodeModulesDir, "server.port");
+			// await the readiness of the http server
 			final long startedAt = System.currentTimeMillis();
 			while (!serverPortFile.exists() || !serverPortFile.canRead()) {
-				// wait for at most 10 seconds
-				if ((System.currentTimeMillis() - startedAt) > (10 * 1000L)) {
+				// wait for at most 60 seconds - if it is not ready by then, something is terribly wrong
+				if ((System.currentTimeMillis() - startedAt) > (60 * 1000L)) {
 					// forcibly end the server process
 					try {
 						server.destroyForcibly();
 					} catch (Throwable t) {
-						// log this?
+						// ignore
 					}
-					throw new TimeoutException("The server did not startup in the requested time frame of 10 seconds.");
+					throw new TimeoutException("The server did not startup in the requested time frame of 60 seconds.");
 				}
 			}
-			// readPort from file
-
-			// read the server.port file for resulting port
+			// read the server.port file for resulting port and remember the port for later formatting calls
 			String serverPort = readFile(serverPortFile).trim();
 			return new ServerProcessInfo(server, serverPort, serverPortFile);
 		} catch (IOException | TimeoutException e) {
@@ -180,7 +183,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 
 	public abstract FormatterFunc createFormatterFunc();
 
-	protected class ServerProcessInfo implements AutoCloseable {
+	protected static class ServerProcessInfo implements AutoCloseable {
 		private final Process server;
 		private final String serverPort;
 		private final File serverPortFile;
@@ -206,7 +209,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 		}
 	}
 
-	protected class ServerStartException extends RuntimeException {
+	protected static class ServerStartException extends RuntimeException {
 		public ServerStartException(Throwable cause) {
 			super(cause);
 		}
