@@ -1,6 +1,9 @@
 {
 	"name": "spotless-tsfmt-formatter-step",
 	"version": "2.0.0",
+	"description": "Spotless formatter step for running tsfmt as a rest service.",
+	"repository": "https://github.com/diffplug/spotless",
+	"license": "Apache-2.0",
 	"scripts": {
 		"start": "node serve.js"
 	},
