@@ -409,7 +409,7 @@ spotless {
 }
 ```
 
-Spotless uses npm to install necessary packages locally. It runs tsfmt using [J2V8](https://github.com/eclipsesource/J2V8) internally after that.
+Spotless uses npm to install necessary packages and run the `typescript-formatter` (`tsfmt`) package.
 
 <a name="prettier"></a>
 
@@ -494,7 +494,7 @@ spotless {
 }
 ```
 
-Spotless uses npm to install necessary packages locally. It runs prettier using [J2V8](https://github.com/eclipsesource/J2V8) internally after that.
+Spotless uses npm to install necessary packages and run the `prettier` (`tsfmt`) package.
 
 <a name="eclipse-wtp"></a>
 
