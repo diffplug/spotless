@@ -18,8 +18,6 @@ package com.diffplug.spotless.npm;
 import static java.util.Objects.requireNonNull;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
@@ -60,20 +58,11 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 
 	private File prepareNodeServer(File buildDir) throws IOException {
 		File targetDir = new File(buildDir, "spotless-node-modules-" + stepName);
-		if (!targetDir.exists()) {
-			if (!targetDir.mkdirs()) {
-				throw new IOException("cannot create temp dir for node modules at " + targetDir);
-			}
-		}
-		writeContentToFile(targetDir, "package.json", this.npmConfig.getPackageJsonContent());
-		writeContentToFile(targetDir, "serve.js", this.npmConfig.getServeScriptContent());
+		SimpleResourceHelper.assertDirectoryExists(targetDir);
+		SimpleResourceHelper.writeUtf8StringToFile(targetDir, "package.json", this.npmConfig.getPackageJsonContent());
+		SimpleResourceHelper.writeUtf8StringToFile(targetDir, "serve.js", this.npmConfig.getServeScriptContent());
 		runNpmInstall(targetDir);
 		return targetDir;
-	}
-
-	private void writeContentToFile(File targetDir, String s, String packageJsonContent) throws IOException {
-		File packageJsonFile = new File(targetDir, s);
-		Files.write(packageJsonFile.toPath(), packageJsonContent.getBytes(StandardCharsets.UTF_8));
 	}
 
 	private void runNpmInstall(File npmProjectDir) throws IOException {
@@ -96,9 +85,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 			// The npm process will output the randomly selected port of the http server process to 'server.port' file
 			// so in order to be safe, remove such a file if it exists before starting.
 			final File serverPortFile = new File(this.nodeModulesDir, "server.port");
-			if (serverPortFile.exists()) {
-				serverPortFile.delete();
-			}
+			SimpleResourceHelper.deleteFileIfExists(serverPortFile);
 			// start the http server in node
 			Process server = new ProcessBuilder()
 					.inheritIO()
@@ -121,7 +108,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 				}
 			}
 			// read the server.port file for resulting port and remember the port for later formatting calls
-			String serverPort = readFile(serverPortFile).trim();
+			String serverPort = SimpleResourceHelper.readUtf8StringFromFile(serverPortFile).trim();
 			return new ServerProcessInfo(server, serverPort, serverPortFile);
 		} catch (IOException | TimeoutException e) {
 			throw new ServerStartException(e);
@@ -132,28 +119,6 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 		return Optional.ofNullable(npm)
 				.orElseGet(() -> NpmExecutableResolver.tryFind()
 						.orElseThrow(() -> new IllegalStateException("Can't automatically determine npm executable and none was specifically supplied!\n\n" + NpmExecutableResolver.explainMessage())));
-	}
-
-	protected static String readFileFromClasspath(Class<?> clazz, String name) {
-		ByteArrayOutputStream output = new ByteArrayOutputStream();
-		try (InputStream input = clazz.getResourceAsStream(name)) {
-			byte[] buffer = new byte[1024];
-			int numRead;
-			while ((numRead = input.read(buffer)) != -1) {
-				output.write(buffer, 0, numRead);
-			}
-			return output.toString(StandardCharsets.UTF_8.name());
-		} catch (IOException e) {
-			throw ThrowingEx.asRuntime(e);
-		}
-	}
-
-	protected static String readFile(File file) {
-		try {
-			return String.join("\n", Files.readAllLines(file.toPath()));
-		} catch (IOException e) {
-			throw ThrowingEx.asRuntime(e);
-		}
 	}
 
 	protected static String replaceDevDependencies(String template, Map<String, String> devDependencies) {
@@ -200,9 +165,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 
 		@Override
 		public void close() throws Exception {
-			if (serverPortFile.exists()) {
-				serverPortFile.delete();
-			}
+			SimpleResourceHelper.deleteFileIfExists(serverPortFile);
 			if (this.server.isAlive()) {
 				this.server.destroy();
 			}

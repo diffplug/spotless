@@ -67,10 +67,10 @@ public class PrettierFormatterStep {
 			super(stepName,
 					new NpmConfig(
 							replaceDevDependencies(
-									readFileFromClasspath(PrettierFormatterStep.class, "/com/diffplug/spotless/npm/prettier-package.json"),
+									SimpleResourceHelper.readUtf8StringFromClasspath(PrettierFormatterStep.class, "/com/diffplug/spotless/npm/prettier-package.json"),
 									new TreeMap<>(devDependencies)),
 							"prettier",
-							readFileFromClasspath(PrettierFormatterStep.class, "/com/diffplug/spotless/npm/prettier-serve.js")),
+							SimpleResourceHelper.readUtf8StringFromClasspath(PrettierFormatterStep.class, "/com/diffplug/spotless/npm/prettier-serve.js")),
 					buildDir,
 					npm);
 			this.prettierConfig = requireNonNull(prettierConfig);
