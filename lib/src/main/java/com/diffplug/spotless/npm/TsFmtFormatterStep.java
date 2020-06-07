@@ -80,7 +80,8 @@ public class TsFmtFormatterStep {
 					provisioner,
 					new NpmConfig(
 							replaceDevDependencies(readFileFromClasspath(TsFmtFormatterStep.class, "/com/diffplug/spotless/npm/tsfmt-package.json"), new TreeMap<>(versions)),
-							"typescript-formatter"),
+							"typescript-formatter",
+							readFileFromClasspath(PrettierFormatterStep.class, "/com/diffplug/spotless/npm/tsfmt-serve.js")),
 					buildDir,
 					npm);
 			this.buildDir = requireNonNull(buildDir);
@@ -91,69 +92,16 @@ public class TsFmtFormatterStep {
 		@Override
 		@Nonnull
 		public FormatterFunc createFormatterFunc() {
+			try {
+				Map<String, Object> tsFmtOptions = unifyOptions();
 
-			Map<String, Object> tsFmtOptions = unifyOptions();
+				ServerProcessInfo tsfmtRestServer = npmRunServer();
+				TsFmtRestService restService = new TsFmtRestService(tsfmtRestServer.getBaseUrl());
 
-			final NodeJSWrapper nodeJSWrapper = nodeJSWrapper();
-			final V8ObjectWrapper tsFmt = nodeJSWrapper.require(nodeModulePath());
-			final V8ObjectWrapper formatterOptions = nodeJSWrapper.createNewObject(tsFmtOptions);
-
-			final TsFmtResult[] tsFmtResult = new TsFmtResult[1];
-			final Exception[] toThrow = new Exception[1];
-
-			V8FunctionWrapper formatResultCallback = createFormatResultCallback(nodeJSWrapper, tsFmtResult, toThrow);
-
-			/* var result = {
-			fileName: fileName,
-			settings: formatSettings,
-			message: message, <-- string
-			error: error, <-- boolean
-			src: content,
-			dest: formattedCode, <-- result
+				return FormatterFunc.Closeable.of(tsfmtRestServer, input -> restService.format(input, tsFmtOptions));
+			} catch (Exception e) {
+				throw ThrowingEx.asRuntime(e);
 			}
-			*/
-			return FormatterFunc.Closeable.of(() -> {
-				asList(formatResultCallback, formatterOptions, tsFmt, nodeJSWrapper).forEach(ReflectiveObjectWrapper::release);
-			}, input -> {
-				tsFmtResult[0] = null;
-
-				// function processString(fileName: string, content: string, opts: Options): Promise<Result> {
-
-				try (
-						V8ArrayWrapper processStringArgs = nodeJSWrapper.createNewArray("spotless-format-string.ts", input, formatterOptions);
-						V8ObjectWrapper promise = tsFmt.executeObjectFunction("processString", processStringArgs);
-						V8ArrayWrapper callbacks = nodeJSWrapper.createNewArray(formatResultCallback)) {
-
-					promise.executeVoidFunction("then", callbacks);
-
-					while (tsFmtResult[0] == null && toThrow[0] == null) {
-						nodeJSWrapper.handleMessage();
-					}
-
-					if (toThrow[0] != null) {
-						throw ThrowingEx.asRuntime(toThrow[0]);
-					}
-
-					if (tsFmtResult[0] == null) {
-						throw new IllegalStateException("should never happen");
-					}
-					if (tsFmtResult[0].isError()) {
-						throw new RuntimeException(tsFmtResult[0].getMessage());
-					}
-					return tsFmtResult[0].getFormatted();
-				}
-			});
-		}
-
-		private V8FunctionWrapper createFormatResultCallback(NodeJSWrapper nodeJSWrapper, TsFmtResult[] outputTsFmtResult, Exception[] toThrow) {
-			return nodeJSWrapper.createNewFunction((receiver, parameters) -> {
-				try (final V8ObjectWrapper result = parameters.getObject(0)) {
-					outputTsFmtResult[0] = new TsFmtResult(result.getString("message"), result.getBoolean("error"), result.getString("dest"));
-				} catch (Exception e) {
-					toThrow[0] = e;
-				}
-				return receiver;
-			});
 		}
 
 		private Map<String, Object> unifyOptions() {

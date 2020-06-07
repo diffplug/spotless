@@ -66,6 +66,10 @@ public class SimpleJsonWriter {
 		return "{\n" + valueString + "\n}";
 	}
 
+	RawJsonValue toRawJsonValue() {
+		return RawJsonValue.asRawJson(toJsonString());
+	}
+
 	private String jsonEscape(Object val) {
 		requireNonNull(val);
 		if (val instanceof RawJsonValue) {
