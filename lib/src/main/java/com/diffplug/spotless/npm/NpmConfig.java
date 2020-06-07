@@ -15,8 +15,9 @@
  */
 package com.diffplug.spotless.npm;
 
-import javax.annotation.Nonnull;
 import java.io.Serializable;
+
+import javax.annotation.Nonnull;
 
 class NpmConfig implements Serializable {
 
