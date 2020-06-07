@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.time.Duration;
+import java.util.concurrent.TimeoutException;
 
 import com.diffplug.spotless.ThrowingEx;
 
@@ -68,6 +70,16 @@ final class SimpleResourceHelper {
 		if (!directory.exists()) {
 			if (!directory.mkdirs()) {
 				throw new IOException("cannot create temp dir for node modules at " + directory);
+			}
+		}
+	}
+
+	static void awaitReadableFile(File file, Duration maxWaitTime) throws TimeoutException {
+		final long startedAt = System.currentTimeMillis();
+		while (!file.exists() || !file.canRead()) {
+			// wait for at most maxWaitTime
+			if ((System.currentTimeMillis() - startedAt) > maxWaitTime.toMillis()) {
+				throw new TimeoutException("The file did not appear within " + maxWaitTime);
 			}
 		}
 	}

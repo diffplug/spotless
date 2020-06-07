@@ -17,7 +17,10 @@ package com.diffplug.spotless.npm;
 
 import static java.util.Objects.requireNonNull;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
@@ -27,7 +30,8 @@ import java.util.concurrent.TimeoutException;
 
 import javax.annotation.Nullable;
 
-import com.diffplug.spotless.*;
+import com.diffplug.spotless.FileSignature;
+import com.diffplug.spotless.FormatterFunc;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -66,18 +70,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 	}
 
 	private void runNpmInstall(File npmProjectDir) throws IOException {
-		Process npmInstall = new ProcessBuilder()
-				.inheritIO()
-				.directory(npmProjectDir)
-				.command(this.npmExecutable.getAbsolutePath(), "install", "--no-audit", "--no-package-lock")
-				.start();
-		try {
-			if (npmInstall.waitFor() != 0) {
-				throw new IOException("Creating npm modules failed with exit code: " + npmInstall.exitValue());
-			}
-		} catch (InterruptedException e) {
-			throw new IOException("Running npm install was interrupted.", e);
-		}
+		new NpmProcess(npmProjectDir, this.npmExecutable).install();
 	}
 
 	protected ServerProcessInfo npmRunServer() throws ServerStartException {
@@ -87,25 +80,22 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 			final File serverPortFile = new File(this.nodeModulesDir, "server.port");
 			SimpleResourceHelper.deleteFileIfExists(serverPortFile);
 			// start the http server in node
-			Process server = new ProcessBuilder()
-					.inheritIO()
-					.directory(this.nodeModulesDir)
-					.command(this.npmExecutable.getAbsolutePath(), "start")
-					.start();
+			Process server = new NpmProcess(this.nodeModulesDir, this.npmExecutable).start();
 
-			// await the readiness of the http server
-			final long startedAt = System.currentTimeMillis();
-			while (!serverPortFile.exists() || !serverPortFile.canRead()) {
-				// wait for at most 60 seconds - if it is not ready by then, something is terribly wrong
-				if ((System.currentTimeMillis() - startedAt) > (60 * 1000L)) {
-					// forcibly end the server process
-					try {
+			// await the readiness of the http server - wait for at most 60 seconds
+			try {
+				SimpleResourceHelper.awaitReadableFile(serverPortFile, Duration.ofSeconds(60));
+			} catch (TimeoutException timeoutException) {
+				// forcibly end the server process
+				try {
+					if (server.isAlive()) {
 						server.destroyForcibly();
-					} catch (Throwable t) {
-						// ignore
+						server.waitFor();
 					}
-					throw new TimeoutException("The server did not startup in the requested time frame of 60 seconds.");
+				} catch (Throwable t) {
+					// ignore
 				}
+				throw timeoutException;
 			}
 			// read the server.port file for resulting port and remember the port for later formatting calls
 			String serverPort = SimpleResourceHelper.readUtf8StringFromFile(serverPortFile).trim();
