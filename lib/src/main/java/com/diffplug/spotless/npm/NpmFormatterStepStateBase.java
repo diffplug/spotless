@@ -45,6 +45,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	public final transient File nodeModulesDir;
 
+	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	private final transient File npmExecutable;
 
 	private final NpmConfig npmConfig;
