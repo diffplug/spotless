@@ -126,21 +126,9 @@ jobs:
       shell: cmd.exe
     steps:
       - checkout
-      # install openjdk8
-      - restore_cache:
-          key: choco2-ojdkbuild8
       - run:
           name: install 
           command: choco install ojdkbuild8
-      - save_cache:
-          key: choco2-ojdkbuild8
-          paths:
-            - ~\AppData\Local\Temp\chocolatey\ojdkbuild8
-      # do the test
-      - restore_cache:
-          keys:
-          - gradle-deps-win2-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
-          - gradle-deps-win2-
       - run:
           name: gradlew check
           command: gradlew check --build-cache
@@ -152,13 +140,6 @@ jobs:
           path: plugin-gradle/build/test-results/test
       - store_test_results:
           path: plugin-maven/build/test-results/test
-      - save_cache:
-          key: gradle-deps-win2-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
-          paths:
-            - ~/.gradle/caches
-            - ~/.gradle/wrapper
-            - ~/.m2
-            - ~/project/plugin-maven/build/localMavenRepository
   changelog_print:
     << : *env_gradle
     steps:
