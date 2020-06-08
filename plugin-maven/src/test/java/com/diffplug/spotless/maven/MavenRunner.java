@@ -17,17 +17,12 @@ package com.diffplug.spotless.maven;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import com.diffplug.common.base.Throwables;
-import com.diffplug.common.io.ByteStreams;
 import com.diffplug.spotless.LineEnding;
 
 /**
@@ -69,13 +64,22 @@ public class MavenRunner {
 		ProcessBuilder builder = new ProcessBuilder(cmds);
 		builder.directory(projectDir);
 		Process process = builder.start();
-		// slurp and return the stdout, stderr, and exitValue
-		Slurper output = new Slurper(process.getInputStream());
-		Slurper error = new Slurper(process.getErrorStream());
 		int exitValue = process.waitFor();
-		output.join();
-		error.join();
-		return new Result(exitValue, output.result(), error.result());
+		try (InputStream processOutputStream = process.getInputStream(); InputStream processErrorStream = process.getErrorStream()) {
+			String output = readFully(processOutputStream);
+			String error = readFully(processErrorStream);
+			return new Result(exitValue, output, error);
+		}
+	}
+
+	private String readFully(InputStream input) throws IOException {
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		byte[] buffer = new byte[1024];
+		int numRead;
+		while ((numRead = input.read(buffer)) != -1) {
+			output.write(buffer, 0, numRead);
+		}
+		return output.toString(StandardCharsets.UTF_8.name());
 	}
 
 	/** Runs the command and asserts that exit code is 0. */
@@ -135,28 +139,4 @@ public class MavenRunner {
 		}
 	}
 
-	private static class Slurper extends Thread {
-		private final InputStream input;
-		private volatile String result;
-
-		Slurper(InputStream input) {
-			this.input = Objects.requireNonNull(input);
-			start();
-		}
-
-		@Override
-		public void run() {
-			try {
-				ByteArrayOutputStream output = new ByteArrayOutputStream();
-				ByteStreams.copy(input, output);
-				result = output.toString(Charset.defaultCharset().name());
-			} catch (Exception e) {
-				result = Throwables.getStackTraceAsString(e);
-			}
-		}
-
-		public String result() {
-			return result;
-		}
-	}
 }
