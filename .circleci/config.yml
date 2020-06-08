@@ -50,8 +50,6 @@ jobs:
   # gradlew spotlessCheck assemble testClasses
   assemble_testClasses: 
     <<: *env_gradle_large
-    docker:
-      - image: cimg/openjdk:8.0-node # use node due to spotlessJavascript
     steps:
       - checkout
       - *restore_cache_wrapper
