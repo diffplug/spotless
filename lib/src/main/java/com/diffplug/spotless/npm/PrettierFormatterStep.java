@@ -23,16 +23,21 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.FormatterFunc.Closeable;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx;
 
 public class PrettierFormatterStep {
+
+	private static final Logger logger = Logger.getLogger(PrettierFormatterStep.class.getName());
 
 	public static final String NAME = "prettier-format";
 
@@ -79,17 +84,23 @@ public class PrettierFormatterStep {
 		@Override
 		@Nonnull
 		public FormatterFunc createFormatterFunc() {
-
 			try {
-
 				ServerProcessInfo prettierRestServer = npmRunServer();
 				PrettierRestService restService = new PrettierRestService(prettierRestServer.getBaseUrl());
-
 				String prettierConfigOptions = restService.resolveConfig(this.prettierConfig.getPrettierConfigPath(), this.prettierConfig.getOptions());
-				return FormatterFunc.Closeable.of(prettierRestServer, input -> restService.format(input, prettierConfigOptions));
+				return Closeable.of(() -> endServer(restService, prettierRestServer), input -> restService.format(input, prettierConfigOptions));
 			} catch (Exception e) {
 				throw ThrowingEx.asRuntime(e);
 			}
+		}
+
+		private void endServer(PrettierRestService restService, ServerProcessInfo restServer) throws Exception {
+			try {
+				restService.shutdown();
+			} catch (Throwable t) {
+				logger.log(Level.INFO, "Failed to request shutdown of rest service via api. Trying via process.", t);
+			}
+			restServer.close();
 		}
 
 	}

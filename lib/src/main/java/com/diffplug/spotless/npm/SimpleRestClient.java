@@ -44,6 +44,10 @@ class SimpleRestClient {
 		return postJson(endpoint, jsonString);
 	}
 
+	String post(String endpoint) throws SimpleRestException {
+		return postJson(endpoint, (String) null);
+	}
+
 	String postJson(String endpoint, String rawJson) throws SimpleRestException {
 		try {
 			URL url = new URL(this.baseUrl + endpoint);
@@ -53,9 +57,11 @@ class SimpleRestClient {
 			con.setRequestMethod("POST");
 			con.setRequestProperty("Content-Type", "application/json");
 			con.setDoOutput(true);
-			try (OutputStream out = con.getOutputStream()) {
-				NpmResourceHelper.writeUtf8StringToOutputStream(rawJson, out);
-				out.flush();
+			if (rawJson != null) {
+				try (OutputStream out = con.getOutputStream()) {
+					NpmResourceHelper.writeUtf8StringToOutputStream(rawJson, out);
+					out.flush();
+				}
 			}
 
 			int status = con.getResponseCode();

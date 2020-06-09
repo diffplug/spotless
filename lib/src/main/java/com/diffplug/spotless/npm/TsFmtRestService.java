@@ -36,4 +36,8 @@ public class TsFmtRestService {
 		return restClient.postJson("/tsfmt/format", jsonProperties);
 	}
 
+	public String shutdown() {
+		return restClient.post("/shutdown");
+	}
+
 }

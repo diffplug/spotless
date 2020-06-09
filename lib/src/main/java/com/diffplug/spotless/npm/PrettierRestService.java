@@ -49,4 +49,8 @@ public class PrettierRestService {
 		return restClient.postJson("/prettier/format", jsonProperties);
 	}
 
+	public String shutdown() {
+		return restClient.post("/shutdown");
+	}
+
 }

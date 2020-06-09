@@ -26,7 +26,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
 
@@ -36,6 +38,8 @@ import com.diffplug.spotless.FormatterFunc;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 abstract class NpmFormatterStepStateBase implements Serializable {
+
+	private static final Logger logger = Logger.getLogger(NpmFormatterStepStateBase.class.getName());
 
 	private static final long serialVersionUID = 1460749955865959948L;
 
@@ -156,9 +160,19 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 
 		@Override
 		public void close() throws Exception {
-			NpmResourceHelper.deleteFileIfExists(serverPortFile);
-			if (this.server.isAlive()) {
-				this.server.destroy();
+			try {
+				logger.fine("Closing npm server in directory <" + serverPortFile.getParent() + "> and port <" + serverPort + ">");
+				if (server.isAlive()) {
+					boolean ended = server.waitFor(5, TimeUnit.SECONDS);
+					System.out.println("BBB/Closing server at port " + serverPort + " -- " + ended);
+					if (!ended) {
+						logger.info("Force-Closing npm server in directory <" + serverPortFile.getParent() + "> and port <" + serverPort + ">");
+						server.destroyForcibly().waitFor();
+						logger.fine("Force-Closing npm server in directory <" + serverPortFile.getParent() + "> and port <" + serverPort + "> -- Finished");
+					}
+				}
+			} finally {
+				NpmResourceHelper.deleteFileIfExists(serverPortFile);
 			}
 		}
 	}

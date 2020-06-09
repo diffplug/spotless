@@ -21,16 +21,22 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.FormatterFunc.Closeable;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx;
 
 public class TsFmtFormatterStep {
+
+	private static final Logger logger = Logger.getLogger(TsFmtFormatterStep.class.getName());
+
 	public static final String NAME = "tsfmt-format";
 
 	@Deprecated
@@ -92,11 +98,9 @@ public class TsFmtFormatterStep {
 		public FormatterFunc createFormatterFunc() {
 			try {
 				Map<String, Object> tsFmtOptions = unifyOptions();
-
 				ServerProcessInfo tsfmtRestServer = npmRunServer();
 				TsFmtRestService restService = new TsFmtRestService(tsfmtRestServer.getBaseUrl());
-
-				return FormatterFunc.Closeable.of(tsfmtRestServer, input -> restService.format(input, tsFmtOptions));
+				return Closeable.of(() -> endServer(restService, tsfmtRestServer), input -> restService.format(input, tsFmtOptions));
 			} catch (Exception e) {
 				throw ThrowingEx.asRuntime(e);
 			}
@@ -114,6 +118,15 @@ public class TsFmtFormatterStep {
 				unified.put(this.configFile.configFileOptionName(), this.configFile.absolutePath());
 			}
 			return unified;
+		}
+
+		private void endServer(TsFmtRestService restService, ServerProcessInfo restServer) throws Exception {
+			try {
+				restService.shutdown();
+			} catch (Throwable t) {
+				logger.log(Level.INFO, "Failed to request shutdown of rest service via api. Trying via process.", t);
+			}
+			restServer.close();
 		}
 	}
 }
