@@ -164,7 +164,6 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 				logger.fine("Closing npm server in directory <" + serverPortFile.getParent() + "> and port <" + serverPort + ">");
 				if (server.isAlive()) {
 					boolean ended = server.waitFor(5, TimeUnit.SECONDS);
-					System.out.println("BBB/Closing server at port " + serverPort + " -- " + ended);
 					if (!ended) {
 						logger.info("Force-Closing npm server in directory <" + serverPortFile.getParent() + "> and port <" + serverPort + ">");
 						server.destroyForcibly().waitFor();
