@@ -116,11 +116,11 @@ public class RatchetFromTest extends GradleIntegrationHarness {
 	}
 
 	private BuildResultAssertion assertPass(String... tasks) throws Exception {
-		return new BuildResultAssertion(gradleRunner().withGradleVersion("6.0").withArguments(tasks).build());
+		return new BuildResultAssertion(gradleRunner().withGradleVersion(GradleVersionSupport.SETTINGS_PLUGINS.version).withArguments(tasks).build());
 	}
 
 	private BuildResultAssertion assertFail(String... tasks) throws Exception {
-		return new BuildResultAssertion(gradleRunner().withGradleVersion("6.0").withArguments(tasks).buildAndFail());
+		return new BuildResultAssertion(gradleRunner().withGradleVersion(GradleVersionSupport.SETTINGS_PLUGINS.version).withArguments(tasks).buildAndFail());
 	}
 
 	private static final String BASELINE_ROOT = "ebb03d6940ee0254010e71917735efa203c27e16";

@@ -39,6 +39,6 @@ public class MultiProjectAfterEvaluate extends GradleIntegrationHarness {
 	}
 
 	private final GradleRunner gradleRunner6() throws IOException {
-		return gradleRunner().withGradleVersion("6.0");
+		return gradleRunner().withGradleVersion(GradleVersionSupport.MODERN.version);
 	}
 }
