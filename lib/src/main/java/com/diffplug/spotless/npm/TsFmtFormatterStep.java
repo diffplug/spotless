@@ -59,8 +59,8 @@ public class TsFmtFormatterStep {
 	public static Map<String, String> defaultDevDependenciesWithTsFmt(String typescriptFormatter) {
 		TreeMap<String, String> defaults = new TreeMap<>();
 		defaults.put("typescript-formatter", typescriptFormatter);
-		defaults.put("typescript", "3.3.3");
-		defaults.put("tslint", "5.12.1");
+		defaults.put("typescript", "3.9.5");
+		defaults.put("tslint", "6.1.2");
 		return defaults;
 	}
 

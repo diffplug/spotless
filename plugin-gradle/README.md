@@ -425,7 +425,7 @@ spotless {
     target '**/*.css', '**/*.scss'
 
     // at least provide the parser to use
-    prettier().config(['parser': 'postcss'])
+    prettier().config(['parser': 'css'])
     // prettier('1.16.4') to specify specific version of prettier
     // prettier(['my-prettier-fork': '1.16.4']) to specify exactly which npm packages to use
 
@@ -447,7 +447,7 @@ spotless {
     prettier().configFile('/path-to/.prettierrc.yml')
 
     // or provide both (config options take precedence over configFile options)
-    prettier().config(['parser': 'postcss']).configFile('path-to/.prettierrc.yml')
+    prettier().config(['parser': 'css']).configFile('path-to/.prettierrc.yml')
   }
 }
 ```
