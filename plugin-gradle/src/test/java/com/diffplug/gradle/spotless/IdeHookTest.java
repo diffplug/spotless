@@ -70,7 +70,7 @@ public class IdeHookTest extends GradleIntegrationHarness {
 			// gradle 4.7 -> 5.1 don't work in tooling API because of https://github.com/gradle/gradle/issues/7617
 			// gradle 5.1 -> current confirmed to work
 			gradleRunner()
-					.withGradleVersion(SpotlessPluginModern.MINIMUM_GRADLE)
+					.withGradleVersion(GradleVersionSupport.MODERN.version)
 					.withProjectDir(rootFolder())
 					.withPluginClasspath()
 					.withArguments(arguments)

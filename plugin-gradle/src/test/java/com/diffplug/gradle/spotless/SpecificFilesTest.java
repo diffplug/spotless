@@ -116,7 +116,7 @@ public class SpecificFilesTest extends GradleIntegrationHarness {
 		GradleRunner runner = gradleRunner()
 				.withArguments("spotlessApply", "-PspotlessFiles=" + patterns);
 		if (isKotlin) {
-			runner.withGradleVersion(requestGradleForJre8and11("4.0"));
+			runner.withGradleVersion(GradleVersionSupport.KOTLIN.version);
 		}
 		runner.build();
 

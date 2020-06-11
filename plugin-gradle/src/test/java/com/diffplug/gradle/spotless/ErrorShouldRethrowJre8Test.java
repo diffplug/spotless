@@ -123,7 +123,7 @@ public class ErrorShouldRethrowJre8Test extends GradleIntegrationHarness {
 		if (JreVersion.thisVm() != JreVersion._8) {
 			return;
 		}
-		BuildResult result = gradleRunner().withGradleVersion(SpotlessPluginModern.MINIMUM_GRADLE).withArguments("check").build();
+		BuildResult result = gradleRunner().withGradleVersion(GradleVersionSupport.MODERN.version).withArguments("check").build();
 		assertResultAndMessages(result, TaskOutcome.SUCCESS, messages);
 	}
 
@@ -131,7 +131,7 @@ public class ErrorShouldRethrowJre8Test extends GradleIntegrationHarness {
 		if (JreVersion.thisVm() != JreVersion._8) {
 			return;
 		}
-		BuildResult result = gradleRunner().withGradleVersion(SpotlessPluginModern.MINIMUM_GRADLE).withArguments("check").buildAndFail();
+		BuildResult result = gradleRunner().withGradleVersion(GradleVersionSupport.MODERN.version).withArguments("check").buildAndFail();
 		assertResultAndMessages(result, TaskOutcome.FAILED, messages);
 	}
 
