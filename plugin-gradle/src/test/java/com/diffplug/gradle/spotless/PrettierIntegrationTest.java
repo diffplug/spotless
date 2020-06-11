@@ -92,4 +92,29 @@ public class PrettierIntegrationTest extends GradleIntegrationHarness {
 		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
 		assertFile("JavaTest.java").sameAsResource("npm/prettier/plugins/java-test.clean");
 	}
+
+	@Test
+	public void usePhpCommunityPlugin() throws IOException {
+		setFile("build.gradle").toLines(
+				"buildscript { repositories { mavenCentral() } }",
+				"plugins {",
+				"    id 'com.diffplug.gradle.spotless'",
+				"}",
+				"def prettierConfig = [:]",
+				"prettierConfig['tabWidth'] = 3",
+				"prettierConfig['parser'] = 'php'",
+				"def prettierPackages = [:]",
+				"prettierPackages['prettier'] = '2.0.5'",
+				"prettierPackages['@prettier/plugin-php'] = '0.14.2'",
+				"spotless {",
+				"    format 'php', {",
+				"        target 'php-example.php'",
+				"        prettier(prettierPackages).config(prettierConfig)",
+				"    }",
+				"}");
+		setFile("php-example.php").toResource("npm/prettier/plugins/php.dirty");
+		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		assertFile("php-example.php").sameAsResource("npm/prettier/plugins/php.clean");
+	}
 }

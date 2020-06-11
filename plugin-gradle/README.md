@@ -468,8 +468,28 @@ spotless {
 }
 ```
 
+<a name="prettier-plugins"></a>
+### Using community plugins for prettier
+
+Since spotless uses the actual npm prettier package behind the scenes, it is possible to use prettier with
+community-plugins in order to support even more file types.
+
+```gradle
+spotless {
+  format 'prettierJava', {
+    target '**/*.java'
+
+    prettier(['prettier': '2.0.5', 'prettier-plugin-java': '0.8.0']).config(['parser': 'java', 'tabWidth': 4])
+  }
+  format 'php', {
+    target '**/*.php'
+    prettier(['prettier': '2.0.5', '@prettier/plugin-php': '0.14.2']).config(['parser': 'php', 'tabWidth': 3])
+  }
+}
+```
+
 <a name="typescript-prettier"></a>
-Prettier can also be applied from within the [typescript config block](#typescript-formatter):
+### Note: Prettier can also be applied from within the [typescript config block](#typescript-formatter)
 
 ```gradle
 spotless {
