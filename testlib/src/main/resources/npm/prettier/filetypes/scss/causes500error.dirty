@@ -1,0 +1,94 @@
+/////////////////
+// OPEN SOURCE //
+/////////////////
+#opensource-heading {
+	@extend .btn-raised;
+	background-color: white;
+	padding: 10px;
+	border-radius: $border-radius-base;
+	> h3 {
+		margin: 0;
+	}
+	img {
+		width: 500px;
+		max-width: 100%;
+		float: left;
+	}
+	ul {
+		list-style-position: inside;
+		> li > span {
+			position: relative;
+			left: -1em;
+		}
+	}
+}
+#opensource {
+	$animate-time: 500ms;
+	$min-width: 300px;
+	.category {
+		color: white;
+		display: block;
+		background-color: $blue-light;
+		text-transform: uppercase;
+		text-align: center;
+
+		&:hover {
+			background-color: lighten($blue-light, 10%);
+			cursor: pointer;
+			text-decoration: none;
+		}
+	}
+
+	> #opensource-categories {
+		margin: 15px 0;
+		> .category {
+			@extend .btn-raised;
+			width: 120px;
+			float: left;
+			font-size: 20px;
+			padding: 5px 10px;
+			margin: 0 10px 10px 0;
+		}
+	}
+
+	> .opensource-lib {
+		@include transition(all $transition-time ease-in-out);
+		@extend .btn-raised;
+		float: left;
+		width: $min-width;
+		height: 100px;
+		padding: 5px;
+		margin: 0 10px 10px 0;
+		background-color: white;
+		color: black;
+		&:hover {
+			text-decoration: none;
+		}
+		img {
+			max-height: 90px;
+			max-width: 90px;
+			float: left;
+		}
+		> h3 {
+			padding: 0;
+			margin: 0;
+			line-height: $font-size-h3;
+			display: inline;
+		}
+		> .categories {
+			float: right;
+			font-size: 13px;
+			width: 60px;
+			//margin: 2px 0;
+			padding: 0;
+			> .category {
+				width: 100%;
+				padding: 2px 5px;
+				margin: 0 0 5px 0;
+			}
+		}
+		> .description {
+			margin: 0;
+		}
+	}
+}

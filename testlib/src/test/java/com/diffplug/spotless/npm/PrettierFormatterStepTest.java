@@ -86,6 +86,21 @@ public class PrettierFormatterStepTest {
 				stepHarness.testResource(dirtyFile, cleanFile);
 			}
 		}
+
+		@Test
+		public void recreate500InternalServerError() throws Exception {
+			FormatterStep formatterStep = PrettierFormatterStep.create(
+					PrettierFormatterStep.defaultDevDependenciesWithPrettier("2.0.5"),
+					TestProvisioner.mavenCentral(),
+					buildDir(),
+					npmExecutable(),
+					new PrettierConfig(null, ImmutableMap.of("parser", "postcss")));
+			try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
+				stepHarness.testException("npm/prettier/filetypes/scss/causes500error.dirty", exception -> {
+					exception.hasMessageStartingWith("500: Internal Server Error");
+				});
+			}
+		}
 	}
 
 	@Category(NpmTest.class)
