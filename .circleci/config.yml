@@ -132,6 +132,9 @@ jobs:
       - run:
           name: gradlew check
           command: gradlew check --build-cache
+      - run:
+          name: gradlew npmTest
+          command: ./gradlew npmTest --build-cache
       - store_test_results:
           path: testlib/build/test-results/test
       - store_test_results:
