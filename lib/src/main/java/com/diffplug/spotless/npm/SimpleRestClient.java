@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -67,7 +68,7 @@ class SimpleRestClient {
 			int status = con.getResponseCode();
 
 			if (status != 200) {
-				throw new SimpleRestResponseException(status, con.getResponseMessage(), "Unexpected response status code.");
+				throw new SimpleRestResponseException(status, readError(con), "Unexpected response status code at " + endpoint);
 			}
 
 			String response = readResponse(con);
@@ -77,8 +78,16 @@ class SimpleRestClient {
 		}
 	}
 
+	private String readError(HttpURLConnection con) throws IOException {
+		return readInputStream(con.getErrorStream());
+	}
+
 	private String readResponse(HttpURLConnection con) throws IOException {
-		try (BufferedInputStream input = new BufferedInputStream(con.getInputStream())) {
+		return readInputStream(con.getInputStream());
+	}
+
+	private String readInputStream(InputStream inputStream) throws IOException {
+		try (BufferedInputStream input = new BufferedInputStream(inputStream)) {
 			return NpmResourceHelper.readUtf8StringFromInputStream(input);
 		}
 	}
@@ -121,7 +130,7 @@ class SimpleRestClient {
 
 		@Override
 		public String getMessage() {
-			return String.format("%s: %s (%s)", getStatusCode(), getResponseMessage(), getExceptionMessage());
+			return String.format("%s [HTTP %s] -- (%s)", getExceptionMessage(), getStatusCode(), getResponseMessage());
 		}
 	}
 
