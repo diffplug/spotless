@@ -443,9 +443,7 @@ It is also possible to specify the config via file:
 spotless {
   format 'styling', {
     target 'src/*/webapp/**/*.css', 'src/*/webapp/**/*.scss', 'app/**/*.css', 'app/**/*.scss'
-
     prettier().configFile('/path-to/.prettierrc.yml')
-
     // or provide both (config options take precedence over configFile options)
     prettier().config(['parser': 'css']).configFile('path-to/.prettierrc.yml')
   }
@@ -478,7 +476,6 @@ Since spotless uses the actual npm prettier package behind the scenes, it is pos
 spotless {
   format 'prettierJava', {
     target 'src/*/java/**/*.java'
-
     prettier(['prettier': '2.0.5', 'prettier-plugin-java': '0.8.0']).config(['parser': 'java', 'tabWidth': 4])
   }
   format 'php', {
