@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 package com.diffplug.spotless.maven.generic;
 
 import java.io.File;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
@@ -29,11 +29,16 @@ import com.diffplug.spotless.npm.PrettierFormatterStep;
 
 public class Prettier implements FormatterStepFactory {
 
+	public static final String ERROR_MESSAGE_ONLY_ONE_CONFIG = "must specify exactly one prettierVersion, devDependencies or devDependencyProperties";
+
 	@Parameter
 	private String prettierVersion;
 
 	@Parameter
 	private Map<String, String> devDependencies;
+
+	@Parameter
+	private Properties devDependencyProperties;
 
 	@Parameter
 	private Map<String, String> config;
@@ -48,17 +53,17 @@ public class Prettier implements FormatterStepFactory {
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
 
 		// check if config is only setup in one way
-		if (this.prettierVersion != null && this.devDependencies != null) {
+		if (moreThanOneNonNull(this.prettierVersion, this.devDependencies, this.devDependencyProperties)) {
 			throw onlyOneConfig();
 		}
-
-		// set dev dependencies
 		if (devDependencies == null) {
-			if (prettierVersion == null || prettierVersion.isEmpty()) {
-				devDependencies = PrettierFormatterStep.defaultDevDependencies();
-			} else {
-				devDependencies = PrettierFormatterStep.defaultDevDependenciesWithPrettier(prettierVersion);
-			}
+			devDependencies = PrettierFormatterStep.defaultDevDependencies(); // fallback
+		}
+
+		if (prettierVersion != null && !prettierVersion.isEmpty()) {
+			this.devDependencies = PrettierFormatterStep.defaultDevDependenciesWithPrettier(prettierVersion);
+		} else if (devDependencyProperties != null) {
+			this.devDependencies = dependencyPropertiesAsMap();
 		}
 
 		File npm = npmExecutable != null ? stepConfig.getFileLocator().locateFile(npmExecutable) : null;
@@ -73,19 +78,20 @@ public class Prettier implements FormatterStepFactory {
 
 		Map<String, Object> configInline;
 		if (config != null) {
-			configInline = new LinkedHashMap<>();
-			// try to parse string values as integers or booleans
-			for (Map.Entry<String, String> e : config.entrySet()) {
-				try {
-					configInline.put(e.getKey(), Integer.parseInt(e.getValue()));
-				} catch (NumberFormatException ignore) {
-					try {
-						configInline.put(e.getKey(), Boolean.parseBoolean(e.getValue()));
-					} catch (IllegalArgumentException ignore2) {
-						configInline.put(e.getKey(), e.getValue());
-					}
-				}
-			}
+			configInline = config.entrySet().stream()
+					.map(entry -> {
+						try {
+							Integer value = Integer.parseInt(entry.getValue());
+							return new AbstractMap.SimpleEntry<>(entry.getKey(), value);
+						} catch (NumberFormatException ignore) {
+							// ignored
+						}
+						if (Boolean.TRUE.toString().equalsIgnoreCase(entry.getValue()) || Boolean.FALSE.toString().equalsIgnoreCase(entry.getValue())) {
+							return new AbstractMap.SimpleEntry<>(entry.getKey(), Boolean.parseBoolean(entry.getValue()));
+						}
+						return entry;
+					})
+					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
 		} else {
 			configInline = null;
 		}
@@ -96,7 +102,21 @@ public class Prettier implements FormatterStepFactory {
 		return PrettierFormatterStep.create(devDependencies, stepConfig.getProvisioner(), buildDir, npm, prettierConfig);
 	}
 
+	private boolean moreThanOneNonNull(Object... objects) {
+		return Arrays.stream(objects)
+				.filter(Objects::nonNull)
+				.filter(o -> !(o instanceof String) || !((String) o).isEmpty()) // if it is a string, it should not be empty
+				.count() > 1;
+	}
+
+	private Map<String, String> dependencyPropertiesAsMap() {
+		return this.devDependencyProperties.stringPropertyNames()
+				.stream()
+				.map(name -> new AbstractMap.SimpleEntry<>(name, this.devDependencyProperties.getProperty(name)))
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+	}
+
 	private static IllegalArgumentException onlyOneConfig() {
-		return new IllegalArgumentException("must specify exactly one configFile or config");
+		return new IllegalArgumentException(ERROR_MESSAGE_ONLY_ONE_CONFIG);
 	}
 }

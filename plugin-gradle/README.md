@@ -138,13 +138,13 @@ See [ECLIPSE_SCREENSHOTS](../ECLIPSE_SCREENSHOTS.md) for screenshots that demons
 <a name="android"></a>
 
 ### Applying to Android Java source
-Be sure to add `target '**/*.java'` otherwise spotless will not detect Java code inside Android modules.
+Be sure to add `target 'src/*/java/**/*.java'` otherwise spotless will not detect Java code inside Android modules.
 
 ```gradle
 spotless {
   java {
     // ...
-    target '**/*.java'
+    target 'src/*/java/**/*.java'
     // ...
   }
 }
@@ -409,7 +409,7 @@ spotless {
 }
 ```
 
-Spotless uses npm to install necessary packages locally. It runs tsfmt using [J2V8](https://github.com/eclipsesource/J2V8) internally after that.
+Spotless uses npm to install necessary packages and run the `typescript-formatter` (`tsfmt`) package.
 
 <a name="prettier"></a>
 
@@ -422,10 +422,10 @@ To use prettier, you first have to specify the files that you want it to apply t
 ```gradle
 spotless {
   format 'styling', {
-    target '**/*.css', '**/*.scss'
+    target 'src/*/webapp/**/*.css', 'src/*/webapp/**/*.scss', 'app/**/*.css', 'app/**/*.scss'
 
     // at least provide the parser to use
-    prettier().config(['parser': 'postcss'])
+    prettier().config(['parser': 'css'])
     // prettier('1.16.4') to specify specific version of prettier
     // prettier(['my-prettier-fork': '1.16.4']) to specify exactly which npm packages to use
 
@@ -442,12 +442,10 @@ It is also possible to specify the config via file:
 ```gradle
 spotless {
   format 'styling', {
-    target '**/*.css', '**/*.scss'
-
+    target 'src/*/webapp/**/*.css', 'src/*/webapp/**/*.scss', 'app/**/*.css', 'app/**/*.scss'
     prettier().configFile('/path-to/.prettierrc.yml')
-
     // or provide both (config options take precedence over configFile options)
-    prettier().config(['parser': 'postcss']).configFile('path-to/.prettierrc.yml')
+    prettier().config(['parser': 'css']).configFile('path-to/.prettierrc.yml')
   }
 }
 ```
@@ -468,8 +466,27 @@ spotless {
 }
 ```
 
+<a name="prettier-plugins"></a>
+### Using plugins for prettier
+
+Since spotless uses the actual npm prettier package behind the scenes, it is possible to use prettier with
+[plugins](https://prettier.io/docs/en/plugins.html#official-plugins) or [community-plugins](https://www.npmjs.com/search?q=prettier-plugin) in order to support even more file types.
+
+```gradle
+spotless {
+  format 'prettierJava', {
+    target 'src/*/java/**/*.java'
+    prettier(['prettier': '2.0.5', 'prettier-plugin-java': '0.8.0']).config(['parser': 'java', 'tabWidth': 4])
+  }
+  format 'php', {
+    target 'src/**/*.php'
+    prettier(['prettier': '2.0.5', '@prettier/plugin-php': '0.14.2']).config(['parser': 'php', 'tabWidth': 3])
+  }
+}
+```
+
 <a name="typescript-prettier"></a>
-Prettier can also be applied from within the [typescript config block](#typescript-formatter):
+### Note: Prettier can also be applied from within the [typescript config block](#typescript-formatter)
 
 ```gradle
 spotless {
@@ -494,7 +511,7 @@ spotless {
 }
 ```
 
-Spotless uses npm to install necessary packages locally. It runs prettier using [J2V8](https://github.com/eclipsesource/J2V8) internally after that.
+Spotless uses npm to install necessary packages and run the `prettier` (`tsfmt`) package.
 
 <a name="eclipse-wtp"></a>
 

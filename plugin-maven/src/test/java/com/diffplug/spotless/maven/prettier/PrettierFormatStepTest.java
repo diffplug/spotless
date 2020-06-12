@@ -25,6 +25,7 @@ import org.junit.experimental.categories.Category;
 import com.diffplug.spotless.category.NpmTest;
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 import com.diffplug.spotless.maven.MavenRunner;
+import com.diffplug.spotless.maven.generic.Prettier;
 
 @Category(NpmTest.class)
 public class PrettierFormatStepTest extends MavenIntegrationHarness {
@@ -93,6 +94,32 @@ public class PrettierFormatStepTest extends MavenIntegrationHarness {
 				"</prettier>");
 
 		MavenRunner.Result result = mavenRunner().withArguments("spotless:apply").runHasError();
-		assertThat(result.output()).contains("must specify exactly one configFile or config");
+		assertThat(result.output()).contains(Prettier.ERROR_MESSAGE_ONLY_ONE_CONFIG);
+	}
+
+	@Test
+	public void custom_plugin() throws Exception {
+		writePomWithFormatSteps(
+				"<includes><include>php-example.php</include></includes>",
+				"<prettier>",
+				"  <devDependencyProperties>",
+				"    <property>",
+				"      <name>prettier</name>",
+				"      <value>2.0.5</value>",
+				"    </property>",
+				"    <property>",
+				"      <name>@prettier/plugin-php</name>",
+				"      <value>0.14.2</value>",
+				"    </property>",
+				"  </devDependencyProperties>",
+				"  <config>",
+				"    <tabWidth>3</tabWidth>",
+				"    <parser>php</parser>",
+				"  </config>",
+				"</prettier>");
+
+		setFile("php-example.php").toResource("npm/prettier/plugins/php.dirty");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("php-example.php").sameAsResource("npm/prettier/plugins/php.clean");
 	}
 }

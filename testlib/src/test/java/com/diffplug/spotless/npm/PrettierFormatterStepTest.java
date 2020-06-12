@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public class PrettierFormatterStepTest {
 
 		@Parameterized.Parameters(name = "{index}: prettier can be applied to {0}")
 		public static Iterable<String> formattingConfigFiles() {
-			return Arrays.asList("typescript", "json", "javascript-es5", "javascript-es6", "css", "scss", "markdown", "yaml");
+			return Arrays.asList("html", "typescript", "json", "javascript-es5", "javascript-es6", "css", "scss", "markdown", "yaml");
 		}
 
 		@Test
@@ -84,6 +84,22 @@ public class PrettierFormatterStepTest {
 
 			try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
 				stepHarness.testResource(dirtyFile, cleanFile);
+			}
+		}
+
+		@Test
+		public void verifyPrettierErrorMessageIsRelayed() throws Exception {
+			FormatterStep formatterStep = PrettierFormatterStep.create(
+					PrettierFormatterStep.defaultDevDependenciesWithPrettier("2.0.5"),
+					TestProvisioner.mavenCentral(),
+					buildDir(),
+					npmExecutable(),
+					new PrettierConfig(null, ImmutableMap.of("parser", "postcss")));
+			try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
+				stepHarness.testException("npm/prettier/filetypes/scss/scss.dirty", exception -> {
+					exception.hasMessageContaining("HTTP 501");
+					exception.hasMessageContaining("Couldn't resolve parser \"postcss\"");
+				});
 			}
 		}
 	}
