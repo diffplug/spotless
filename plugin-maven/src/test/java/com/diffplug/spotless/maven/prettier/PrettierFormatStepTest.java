@@ -19,13 +19,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 
-import com.diffplug.spotless.maven.generic.Prettier;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import com.diffplug.spotless.category.NpmTest;
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 import com.diffplug.spotless.maven.MavenRunner;
+import com.diffplug.spotless.maven.generic.Prettier;
 
 @Category(NpmTest.class)
 public class PrettierFormatStepTest extends MavenIntegrationHarness {

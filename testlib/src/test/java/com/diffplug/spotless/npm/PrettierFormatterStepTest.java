@@ -97,7 +97,7 @@ public class PrettierFormatterStepTest {
 					new PrettierConfig(null, ImmutableMap.of("parser", "postcss")));
 			try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
 				stepHarness.testException("npm/prettier/filetypes/scss/causes500error.dirty", exception -> {
-					exception.hasMessageStartingWith("500: Internal Server Error");
+					exception.hasMessageContaining("HTTP 501");
 				});
 			}
 		}
