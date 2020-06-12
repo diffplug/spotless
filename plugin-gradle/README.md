@@ -469,10 +469,10 @@ spotless {
 ```
 
 <a name="prettier-plugins"></a>
-### Using community plugins for prettier
+### Using plugins for prettier
 
 Since spotless uses the actual npm prettier package behind the scenes, it is possible to use prettier with
-community-plugins in order to support even more file types.
+[plugins](https://prettier.io/docs/en/plugins.html#official-plugins) or [community-plugins](https://www.npmjs.com/search?q=prettier-plugin) in order to support even more file types.
 
 ```gradle
 spotless {
