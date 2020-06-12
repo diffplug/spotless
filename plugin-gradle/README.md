@@ -138,13 +138,13 @@ See [ECLIPSE_SCREENSHOTS](../ECLIPSE_SCREENSHOTS.md) for screenshots that demons
 <a name="android"></a>
 
 ### Applying to Android Java source
-Be sure to add `target '**/*.java'` otherwise spotless will not detect Java code inside Android modules.
+Be sure to add `target 'src/*/java/**/*.java'` otherwise spotless will not detect Java code inside Android modules.
 
 ```gradle
 spotless {
   java {
     // ...
-    target '**/*.java'
+    target 'src/*/java/**/*.java'
     // ...
   }
 }
@@ -422,7 +422,7 @@ To use prettier, you first have to specify the files that you want it to apply t
 ```gradle
 spotless {
   format 'styling', {
-    target '**/*.css', '**/*.scss'
+    target 'src/*/webapp/**/*.css', 'src/*/webapp/**/*.scss', 'app/**/*.css', 'app/**/*.scss'
 
     // at least provide the parser to use
     prettier().config(['parser': 'css'])
@@ -442,7 +442,7 @@ It is also possible to specify the config via file:
 ```gradle
 spotless {
   format 'styling', {
-    target '**/*.css', '**/*.scss'
+    target 'src/*/webapp/**/*.css', 'src/*/webapp/**/*.scss', 'app/**/*.css', 'app/**/*.scss'
 
     prettier().configFile('/path-to/.prettierrc.yml')
 
@@ -477,12 +477,12 @@ community-plugins in order to support even more file types.
 ```gradle
 spotless {
   format 'prettierJava', {
-    target '**/*.java'
+    target 'src/*/java/**/*.java'
 
     prettier(['prettier': '2.0.5', 'prettier-plugin-java': '0.8.0']).config(['parser': 'java', 'tabWidth': 4])
   }
   format 'php', {
-    target '**/*.php'
+    target 'src/**/*.php'
     prettier(['prettier': '2.0.5', '@prettier/plugin-php': '0.14.2']).config(['parser': 'php', 'tabWidth': 3])
   }
 }
