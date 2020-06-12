@@ -88,7 +88,7 @@ public class PrettierFormatterStepTest {
 		}
 
 		@Test
-		public void recreate500InternalServerError() throws Exception {
+		public void verifyPrettierErrorMessageIsRelayed() throws Exception {
 			FormatterStep formatterStep = PrettierFormatterStep.create(
 					PrettierFormatterStep.defaultDevDependenciesWithPrettier("2.0.5"),
 					TestProvisioner.mavenCentral(),
@@ -96,8 +96,9 @@ public class PrettierFormatterStepTest {
 					npmExecutable(),
 					new PrettierConfig(null, ImmutableMap.of("parser", "postcss")));
 			try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
-				stepHarness.testException("npm/prettier/filetypes/scss/causes500error.dirty", exception -> {
+				stepHarness.testException("npm/prettier/filetypes/scss/scss.dirty", exception -> {
 					exception.hasMessageContaining("HTTP 501");
+					exception.hasMessageContaining("Couldn't resolve parser \"postcss\"");
 				});
 			}
 		}
