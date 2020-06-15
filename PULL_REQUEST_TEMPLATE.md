@@ -2,7 +2,7 @@ Please make sure that your [PR allows edits from maintainers](https://help.githu
 
 ![Allow edits from maintainers](https://help.github.com/assets/images/help/pull_requests/allow-maintainers-to-make-edits-sidebar-checkbox.png)
 
-After creating the PR, please add a commit that adds a bullet-point under the `-SNAPSHOT` section of [CHANGES.md](https://github.com/diffplug/spotless/blob/master/CHANGES.md), [plugin-gradle/CHANGES.md](https://github.com/diffplug/spotless/blob/master/plugin-gradle/CHANGES.md), and [plugin-maven/CHANGES.md](https://github.com/diffplug/spotless/blob/master/plugin-maven/CHANGES.md) which includes:
+After creating the PR, please add a commit that adds a bullet-point under the `-SNAPSHOT` section of [CHANGES.md](https://github.com/diffplug/spotless/blob/main/CHANGES.md), [plugin-gradle/CHANGES.md](https://github.com/diffplug/spotless/blob/main/plugin-gradle/CHANGES.md), and [plugin-maven/CHANGES.md](https://github.com/diffplug/spotless/blob/main/plugin-maven/CHANGES.md) which includes:
 
 - [ ] a summary of the change
 - either

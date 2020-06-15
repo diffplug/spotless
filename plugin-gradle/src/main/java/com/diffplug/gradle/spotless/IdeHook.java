@@ -59,7 +59,7 @@ class IdeHook {
 					dumpIsClean();
 				} else if (dirty.didNotConverge()) {
 					System.err.println("DID NOT CONVERGE");
-					System.err.println("Run 'spotlessDiagnose' for details https://github.com/diffplug/spotless/blob/master/PADDEDCELL.md");
+					System.err.println("Run 'spotlessDiagnose' for details https://github.com/diffplug/spotless/blob/main/PADDEDCELL.md");
 				} else {
 					System.err.println("IS DIRTY");
 					if (spotlessTask.getProject().hasProperty(USE_STD_OUT)) {

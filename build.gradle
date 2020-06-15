@@ -1,5 +1,5 @@
 plugins {
-	// https://github.com/diffplug/goomph/blob/master/CHANGES.md
+	// https://github.com/diffplug/goomph/blob/main/CHANGES.md
 	id 'com.diffplug.eclipse.resourcefilters' version '3.22.0'
 	// https://plugins.gradle.org/plugin/com.gradle.plugin-publish
 	id 'com.gradle.plugin-publish' version '0.11.0' apply false
