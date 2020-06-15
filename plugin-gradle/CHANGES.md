@@ -10,6 +10,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   * Bumped default versions, prettier `1.16.4` -> `2.0.5`, tslint `5.12.1` -> `6.1.2`
 ### Fixed
 * Using `ratchetFrom 'origin/main'` on a bare checkout generated a cryptic error, now generates a clear error. ([#608](https://github.com/diffplug/spotless/issues/608))
+* Using `ratchetFrom 'nonexistent-reference` generated a cryptic error, now generates a clear error. ([#612](https://github.com/diffplug/spotless/issues/612))
 
 ## [4.3.0] - 2020-06-05
 ### Deprecated
