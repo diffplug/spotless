@@ -186,6 +186,9 @@ class GitRatchet implements AutoCloseable {
 			ObjectId treeSha = rootTreeShaCache.get(repo, reference);
 			if (treeSha == null) {
 				ObjectId commitSha = repo.resolve(reference);
+				if (commitSha == null) {
+					throw new IllegalArgumentException("No such reference '" + reference + "'");
+				}
 				try (RevWalk revWalk = new RevWalk(repo)) {
 					RevCommit revCommit = revWalk.parseCommit(commitSha);
 					treeSha = revCommit.getTree();
