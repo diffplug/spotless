@@ -152,13 +152,16 @@ class GitRatchet implements AutoCloseable {
 	}
 
 	private static @Nullable Repository traverseParentsUntil(File startWith, File file) throws IOException {
-		do {
+		while (startWith != null) {
 			if (isGitRoot(startWith)) {
 				return createRepo(startWith);
 			} else {
 				startWith = startWith.getParentFile();
+				if (Objects.equals(startWith, file)) {
+					return null;
+				}
 			}
-		} while (!Objects.equals(startWith, file));
+		}
 		return null;
 	}
 
