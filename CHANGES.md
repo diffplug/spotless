@@ -15,7 +15,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   * This removes the dependency to the no-longer-maintained Linux/Windows/macOs variants of J2V8.
   * This enables spotless to use the latest `prettier` versions (instead of being stuck at prettier version <= `1.19.0`)
   * Bumped default versions, prettier `1.16.4` -> `2.0.5`, tslint `5.12.1` -> `6.1.2`
-
+* Our main branch is now called `main`. ([#613](https://github.com/diffplug/spotless/pull/613))
 
 ## [1.34.0] - 2020-06-05
 ### Added
