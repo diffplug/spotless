@@ -15,6 +15,7 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Objects;
 import java.util.TimeZone;
@@ -23,8 +24,10 @@ import org.assertj.core.api.Assertions;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoFilepatternException;
+import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.PersonIdent;
+import org.eclipse.jgit.lib.RefDatabase;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.gradle.testkit.runner.BuildResult;
@@ -34,9 +37,18 @@ import org.junit.Test;
 public class RatchetFromTest extends GradleIntegrationHarness {
 	private static final String TEST_PATH = "src/markdown/test.md";
 
+	private Git initRepo() throws IllegalStateException, GitAPIException, IOException {
+		Git git = Git.init().setDirectory(rootFolder()).call();
+		RefDatabase refDB = git.getRepository().getRefDatabase();
+		refDB.newUpdate(Constants.R_HEADS + "main", false).setNewObjectId(ObjectId.zeroId());
+		refDB.newUpdate(Constants.HEAD, false).link(Constants.R_HEADS + "main");
+		refDB.newUpdate(Constants.R_HEADS + Constants.MASTER, false).delete();
+		return git;
+	}
+
 	@Test
 	public void singleProjectExhaustive() throws Exception {
-		try (Git git = Git.init().setDirectory(rootFolder()).call()) {
+		try (Git git = initRepo()) {
 			setFile("build.gradle").toLines(
 					"plugins { id 'com.diffplug.gradle.spotless' }",
 					"spotless {",
@@ -123,13 +135,13 @@ public class RatchetFromTest extends GradleIntegrationHarness {
 		return new BuildResultAssertion(gradleRunner().withGradleVersion(GradleVersionSupport.SETTINGS_PLUGINS.version).withArguments(tasks).buildAndFail());
 	}
 
-	private static final String BASELINE_ROOT = "ebb03d6940ee0254010e71917735efa203c27e16";
+	private static final String BASELINE_ROOT = "bbb159b780adb549d15922091211f86b88464b68";
 	private static final String BASELINE_CLEAN = "65fdd75c1ae00c0646f6487d68c44ddca51f0841";
 	private static final String BASELINE_DIRTY = "4cfc3358ccbf186738b82a60276b1e5306bc3870";
 
 	@Test
 	public void multiProject() throws Exception {
-		try (Git git = Git.init().setDirectory(rootFolder()).call()) {
+		try (Git git = initRepo()) {
 			setFile("settings.gradle").toLines(
 					"plugins {",
 					"  id 'com.diffplug.gradle.spotless' apply false",
@@ -140,7 +152,7 @@ public class RatchetFromTest extends GradleIntegrationHarness {
 			setFile("spotless.gradle").toLines(
 					"apply plugin: 'com.diffplug.gradle.spotless'",
 					"spotless {",
-					"  ratchetFrom 'master'",
+					"  ratchetFrom 'main'",
 					"  format 'misc', {",
 					"    target 'src/markdown/*.md'",
 					"    custom 'lowercase', { str -> str.toLowerCase() }",
@@ -199,7 +211,7 @@ public class RatchetFromTest extends GradleIntegrationHarness {
 
 			RevCommit next = addAndCommit(git);
 			Assertions.assertThat(next.getTree().toObjectId()).isNotEqualTo(baseline.getTree().toObjectId());
-			// if we commit to master (the baseline), then tasks will be out of date only because the baseline changed
+			// if we commit to main (the baseline), then tasks will be out of date only because the baseline changed
 			// TO REPEAAT:
 			// - everything was up-to-date
 			// - we pressed "commit", which didn't change the files, just the baseline

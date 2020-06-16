@@ -9,7 +9,7 @@ output = [
   link(shield('License Apache', 'license', 'apache', 'blue'), 'https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)'),
   link(shield('Changelog', 'changelog', '{{versionLast}}', 'blue'), 'CHANGES.md'),
   '',
-  link(image('Circle CI', 'https://circleci.com/gh/diffplug/spotless/tree/master.svg?style=shield'), 'https://circleci.com/gh/diffplug/spotless/tree/master'),
+  link(image('Circle CI', 'https://circleci.com/gh/diffplug/spotless/tree/main.svg?style=shield'), 'https://circleci.com/gh/diffplug/spotless/tree/main'),
   link(shield('Live chat', 'gitter', 'chat', 'brightgreen'), 'https://gitter.im/{{org}}/{{name}}'),
   link(shield('VS Code plugin Apache', 'IDE', 'VS Code', 'blueviolet'), 'https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle'),
   link(shield('VS Code plugin Apache', 'IDE', 'add yours', 'blueviolet'), 'IDE_HOOK.md')
@@ -21,7 +21,7 @@ output = [
 [![License Apache](https://img.shields.io/badge/license-apache-blue.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
 [![Changelog](https://img.shields.io/badge/changelog-4.3.0-blue.svg)](CHANGES.md)
 
-[![Circle CI](https://circleci.com/gh/diffplug/spotless/tree/master.svg?style=shield)](https://circleci.com/gh/diffplug/spotless/tree/master)
+[![Circle CI](https://circleci.com/gh/diffplug/spotless/tree/main.svg?style=shield)](https://circleci.com/gh/diffplug/spotless/tree/main)
 [![Live chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
 [![VS Code plugin Apache](https://img.shields.io/badge/IDE-VS_Code-blueviolet.svg)](https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle)
 [![VS Code plugin Apache](https://img.shields.io/badge/IDE-add_yours-blueviolet.svg)](IDE_HOOK.md)
@@ -128,7 +128,7 @@ spotless {
     eclipse().configFile 'spotless.eclipseformat.xml'	// XML file dumped out by the Eclipse formatter
     // If you have Eclipse preference or property files, you can use them too.
     // eclipse('4.7.1') to specify a specific version of eclipse,
-    // available versions are: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_jdt_formatter
+    // available versions are: https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_jdt_formatter
   }
 }
 ```
@@ -210,7 +210,7 @@ spotless {
     // Use the default version and Groovy-Eclipse default configuration
     greclipse()
     // optional: you can specify a specific version or config file(s)
-    // available versions: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/groovy_eclipse_formatter
+    // available versions: https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/groovy_eclipse_formatter
     greclipse('2.3.0').configFile('spotless.eclipseformat.xml', 'org.codehaus.groovy.eclipse.ui.prefs')
   }
 }
@@ -310,7 +310,7 @@ spotless {
   sql {
     // default value for target files
     target '**/*.sql'
-    // configFile is optional, arguments available here: https://github.com/diffplug/spotless/blob/master/lib/src/main/java/com/diffplug/spotless/sql/dbeaver/DBeaverSQLFormatterConfiguration.java
+    // configFile is optional, arguments available here: https://github.com/diffplug/spotless/blob/main/lib/src/main/java/com/diffplug/spotless/sql/dbeaver/DBeaverSQLFormatterConfiguration.java
     dbeaver().configFile('dbeaver.props')
   }
 }
@@ -339,7 +339,7 @@ spotless {
     eclipse().configFile 'spotless.eclipseformat.xml'	// XML file dumped out by the Eclipse formatter
     // If you have Eclipse preference or property files, you can use them too.
     // eclipse('4.7.1') to specify a specific version of Eclipse,
-    // available versions are: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_cdt_formatter
+    // available versions are: https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_cdt_formatter
     licenseHeader '// Licensed under Apache'	// License header
     licenseHeaderFile './license.txt'	// License header file
   }
@@ -527,7 +527,7 @@ spotless {
       exclude '**/build/**'
     }
     // Use for example eclipseWtp('xml', '4.7.3a') to specify a specific version of Eclipse,
-    // available versions are: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatters
+    // available versions are: https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatters
     eclipseWtp('xml').configFile 'spotless.xml.prefs', 'spotless.common.properties'
   }
 }
@@ -697,14 +697,14 @@ If your project is not currently enforcing formatting, then it can be a noisy tr
 
 ```gradle
 spotless {
-  ratchetFrom 'origin/master' // only format files which have changed since origin/master
+  ratchetFrom 'origin/main' // only format files which have changed since origin/main
   ...
 }
 ```
 
-In this mode, Spotless will apply only to files which have changed since `origin/master`.  You can ratchet from [any point you want](https://javadoc.io/static/org.eclipse.jgit/org.eclipse.jgit/5.6.1.202002131546-r/org/eclipse/jgit/lib/Repository.html#resolve-java.lang.String-), even `HEAD`.  You can also set `ratchetFrom` per-format if you prefer (e.g. `spotless { java { ratchetFrom ...`).
+In this mode, Spotless will apply only to files which have changed since `origin/main`.  You can ratchet from [any point you want](https://javadoc.io/static/org.eclipse.jgit/org.eclipse.jgit/5.6.1.202002131546-r/org/eclipse/jgit/lib/Repository.html#resolve-java.lang.String-), even `HEAD`.  You can also set `ratchetFrom` per-format if you prefer (e.g. `spotless { java { ratchetFrom ...`).
 
-However, we strongly recommend that you use a non-local branch, such as a tag or `origin/master`.  The problem with `HEAD` or any local branch is that as soon as you commit a file, that is now the canonical formatting, even if it was formatted incorrectly.  By instead specifying `origin/master` or a tag, your CI server will fail unless every changed file is at least as good or better than it was before the change.
+However, we strongly recommend that you use a non-local branch, such as a tag or `origin/main`.  The problem with `HEAD` or any local branch is that as soon as you commit a file, that is now the canonical formatting, even if it was formatted incorrectly.  By instead specifying `origin/main` or a tag, your CI server will fail unless every changed file is at least as good or better than it was before the change.
 
 This is especially helpful for injecting accurate copyright dates using the [license step](#license-header).
 

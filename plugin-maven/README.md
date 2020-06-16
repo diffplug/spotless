@@ -6,7 +6,7 @@ output = [
   link(shield('Javadoc', 'javadoc', '{{versionLast}}', 'blue'), 'https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/{{versionLast}}/index.html'),
   '',
   link(shield('Changelog', 'changelog', '{{versionLast}}', 'brightgreen'), 'CHANGES.md'),
-  link(image('Travis CI', 'https://travis-ci.org/{{org}}/{{name}}.svg?branch=master'), 'https://travis-ci.org/{{org}}/{{name}}'),
+  link(image('Travis CI', 'https://travis-ci.org/{{org}}/{{name}}.svg?branch=main'), 'https://travis-ci.org/{{org}}/{{name}}'),
   link(shield('Live chat', 'gitter', 'chat', 'brightgreen'), 'https://gitter.im/{{org}}/{{name}}'),
   link(shield('License Apache', 'license', 'apache', 'brightgreen'), 'https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)')
   ].join('\n');
@@ -15,7 +15,7 @@ output = [
 [![Javadoc](https://img.shields.io/badge/javadoc-1.31.2-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/1.31.2/index.html)
 
 [![Changelog](https://img.shields.io/badge/changelog-1.31.2-brightgreen.svg)](CHANGES.md)
-[![Travis CI](https://travis-ci.org/diffplug/spotless.svg?branch=master)](https://travis-ci.org/diffplug/spotless)
+[![Travis CI](https://travis-ci.org/diffplug/spotless.svg?branch=main)](https://travis-ci.org/diffplug/spotless)
 [![Live chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
 [![License Apache](https://img.shields.io/badge/license-apache-brightgreen.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
 <!---freshmark /shields -->
@@ -101,13 +101,13 @@ By default, all files matching `src/main/java/**/*.java` and `src/test/java/**/*
      <eclipse>
        <!-- Optional, otherwise Eclipse defaults are used. Eclipse preference or property files are also supported. -->
        <file>${basedir}/eclipse-format.xml</file>
-       <!-- Optional, available versions: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_jdt_formatter -->
+       <!-- Optional, available versions: https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_jdt_formatter -->
        <version>4.7.1</version>
      </eclipse>
      <googleJavaFormat>
        <!-- Optional, available versions: https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.google.googlejavaformat%22%20AND%20a%3A%22google-java-format%22 -->
        <version>1.5</version>
-       <!-- Optional, available versions: GOOGLE, AOSP  https://github.com/google/google-java-format/blob/master/core/src/main/java/com/google/googlejavaformat/java/JavaFormatterOptions.java -->
+       <!-- Optional, available versions: GOOGLE, AOSP  https://github.com/google/google-java-format/blob/main/core/src/main/java/com/google/googlejavaformat/java/JavaFormatterOptions.java -->
        <style>GOOGLE</style>
      </googleJavaFormat>
      <removeUnusedImports/>
@@ -209,7 +209,7 @@ By default, all files matching `src/main/cpp/**/*.<ext>` and `src/test/cpp/**/*.
      </licenseHeader>
      <eclipse>
        <file>${basedir}/eclipse-fmt.xml</file>
-       <!-- Optional, available versions: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_cdt_formatter -->
+       <!-- Optional, available versions: https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_cdt_formatter -->
        <version>4.7.3a</version>
      </eclipse>
   </cpp>
@@ -478,7 +478,7 @@ The Eclipse [WTP](https://www.eclipse.org/webtools/) formatter can be applied as
           <file>${basedir}/xml.prefs</file>
           <file>${basedir}/additional.properties</file>
         </files>
-        <!-- Optional, available versions: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatters -->
+        <!-- Optional, available versions: https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatters -->
         <version>4.7.3a</version>
       </eclipseWtp>
     </format>

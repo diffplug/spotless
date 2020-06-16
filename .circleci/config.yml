@@ -224,7 +224,7 @@ workflows:
       - changelog_print:
           filters:
             branches:
-              only: master
+              only: main
       - release_all:
           type: approval
           requires:

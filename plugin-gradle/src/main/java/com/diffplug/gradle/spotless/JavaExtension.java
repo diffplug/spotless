@@ -66,7 +66,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 				StringPrinter.buildStringFromLines(
 						"'importOrder([x, y, z])' is deprecated.",
 						"Use 'importOrder x, y, z' instead.",
-						"For details see https://github.com/diffplug/spotless/tree/master/plugin-gradle#applying-to-java-source"));
+						"For details see https://github.com/diffplug/spotless/tree/main/plugin-gradle#applying-to-java-source"));
 		addStep(ImportOrderStep.createFromOrder(importOrder));
 	}
 
@@ -94,7 +94,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 				StringPrinter.buildStringFromLines(
 						"'eclipseFormatFile [version] <file>' is deprecated.",
 						"Use 'eclipse([version]).configFile(<file>)' instead.",
-						"For details see https://github.com/diffplug/spotless/tree/master/plugin-gradle#applying-to-java-source"));
+						"For details see https://github.com/diffplug/spotless/tree/main/plugin-gradle#applying-to-java-source"));
 		eclipse(eclipseVersion).configFile(eclipseFormatFile);
 	}
 

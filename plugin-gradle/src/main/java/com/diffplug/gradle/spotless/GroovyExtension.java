@@ -72,7 +72,7 @@ public class GroovyExtension extends FormatExtension implements HasBuiltinDelimi
 				StringPrinter.buildStringFromLines(
 						"'importOrder([x, y, z])' is deprecated.",
 						"Use 'importOrder x, y, z' instead.",
-						"For details see https://github.com/diffplug/spotless/tree/master/plugin-gradle#applying-to-java-source"));
+						"For details see https://github.com/diffplug/spotless/tree/main/plugin-gradle#applying-to-java-source"));
 		importOrder(importOrder.toArray(new String[0]));
 	}
 
