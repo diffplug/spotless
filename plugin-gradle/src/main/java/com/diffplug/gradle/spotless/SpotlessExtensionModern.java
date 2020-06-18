@@ -48,8 +48,7 @@ public class SpotlessExtensionModern extends SpotlessExtensionBase {
 
 	@Override
 	protected void createFormatTasks(String name, FormatExtension formatExtension) {
-		// TODO level 1: implement SpotlessExtension::createFormatTasks, but using config avoidance
-		// TODO level 2: override configure(String name, Class<T> clazz, Action<T> configure) so that it is lazy
+		// TODO override configure(String name, Class<T> clazz, Action<T> configure) so that it is lazy
 
 		boolean isIdeHook = project.hasProperty(IdeHook.PROPERTY);
 		TaskContainer tasks = project.getTasks();
