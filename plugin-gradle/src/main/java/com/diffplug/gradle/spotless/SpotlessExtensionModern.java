@@ -19,6 +19,8 @@ import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaBasePlugin;
+import org.gradle.api.tasks.TaskContainer;
+import org.gradle.api.tasks.TaskProvider;
 
 public class SpotlessExtensionModern extends SpotlessExtensionBase {
 	public SpotlessExtensionModern(Project project) {
@@ -47,46 +49,50 @@ public class SpotlessExtensionModern extends SpotlessExtensionBase {
 		// TODO level 1: implement SpotlessExtension::createFormatTasks, but using config avoidance
 		// TODO level 2: override configure(String name, Class<T> clazz, Action<T> configure) so that it is lazy
 
+		boolean isIdeHook = project.hasProperty(IdeHook.PROPERTY);
+		TaskContainer tasks = project.getTasks();
+
 		// create the SpotlessTask
 		String taskName = EXTENSION + SpotlessPlugin.capitalize(name);
-		SpotlessTaskModern spotlessTask = project.getTasks().create(taskName, SpotlessTaskModern.class);
-		project.afterEvaluate(unused -> formatExtension.setupTask(spotlessTask));
+		TaskProvider<SpotlessTaskModern> spotlessTask = tasks.register(taskName, SpotlessTaskModern.class, task -> {
+			task.setEnabled(!isIdeHook);
+			// clean removes the SpotlessCache, so we have to run after clean
+			task.mustRunAfter(BasePlugin.CLEAN_TASK_NAME);
+		});
 
-		// clean removes the SpotlessCache, so we have to run after clean
-		Task clean = project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME);
-		spotlessTask.mustRunAfter(clean);
+		project.afterEvaluate(unused -> spotlessTask.configure(formatExtension::setupTask));
 
 		// create the check and apply control tasks
-		SpotlessCheck checkTask = project.getTasks().create(taskName + CHECK, SpotlessCheck.class);
-		checkTask.setSpotlessOutDirectory(spotlessTask.getOutputDirectory());
-		checkTask.source = spotlessTask;
-		checkTask.dependsOn(spotlessTask);
+		TaskProvider<SpotlessApply> applyTask = tasks.register(taskName + APPLY, SpotlessApply.class, task -> {
+			task.setEnabled(!isIdeHook);
+			task.dependsOn(spotlessTask);
+			task.setSpotlessOutDirectory(spotlessTask.get().getOutputDirectory());
+			task.linkSource(spotlessTask.get());
+		});
+		TaskProvider<SpotlessCheck> checkTask = tasks.register(taskName + CHECK, SpotlessCheck.class, task -> {
+			task.setEnabled(!isIdeHook);
+			task.dependsOn(spotlessTask);
+			task.setSpotlessOutDirectory(spotlessTask.get().getOutputDirectory());
+			task.source = spotlessTask.get();
 
-		SpotlessApply applyTask = project.getTasks().create(taskName + APPLY, SpotlessApply.class);
-		applyTask.setSpotlessOutDirectory(spotlessTask.getOutputDirectory());
-		applyTask.linkSource(spotlessTask);
-		applyTask.dependsOn(spotlessTask);
-
-		// if the user runs both, make sure that apply happens first,
-		checkTask.mustRunAfter(applyTask);
+			// if the user runs both, make sure that apply happens first,
+			task.mustRunAfter(applyTask);
+		});
 
 		// the root tasks depend on the control tasks
 		rootCheckTask.dependsOn(checkTask);
 		rootApplyTask.dependsOn(applyTask);
 
 		// create the diagnose task
-		SpotlessDiagnoseTask diagnoseTask = project.getTasks().create(taskName + DIAGNOSE, SpotlessDiagnoseTask.class);
-		diagnoseTask.source = spotlessTask;
+		TaskProvider<SpotlessDiagnoseTask> diagnoseTask = tasks.register(taskName + DIAGNOSE, SpotlessDiagnoseTask.class, task -> {
+			task.source = spotlessTask.get();
+			task.mustRunAfter(BasePlugin.CLEAN_TASK_NAME);
+		});
 		rootDiagnoseTask.dependsOn(diagnoseTask);
-		diagnoseTask.mustRunAfter(clean);
 
-		if (project.hasProperty(IdeHook.PROPERTY)) {
-			// disable the normal tasks, to disable their up-to-date checking
-			spotlessTask.setEnabled(false);
-			checkTask.setEnabled(false);
-			applyTask.setEnabled(false);
+		if (isIdeHook) {
 			// the rootApplyTask is no longer just a marker task, now it does a bit of work itself
-			rootApplyTask.doLast(unused -> IdeHook.performHook(spotlessTask));
+			rootApplyTask.doLast(unused -> IdeHook.performHook(spotlessTask.get()));
 		}
 	}
 }
