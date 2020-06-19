@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
+import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -56,6 +57,7 @@ import groovy.lang.Closure;
 /** Adds a `spotless{Name}Check` and `spotless{Name}Apply` task. */
 public class FormatExtension {
 	final SpotlessExtensionBase spotless;
+	final List<Action<FormatExtension>> modernLazyActions = new ArrayList<>();
 
 	public FormatExtension(SpotlessExtensionBase spotless) {
 		this.spotless = Objects.requireNonNull(spotless);
