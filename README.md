@@ -99,6 +99,7 @@ Once someone has filled in one square of the formatter/build system matrix, it's
   - breaking spotless into libraries [#56](https://github.com/diffplug/spotless/issues/56)
   - lots of other things, but especially the diff support in `spotlessCheck`
   - constant improvements on a variety of topics with high-quality code reviews
+- Thanks to [Daz DeBoer](https://github.com/bigdaz) for the reworking the guts of our gradle plugin to support [buildcache](https://github.com/diffplug/spotless/pull/576), [InputChanges](https://github.com/diffplug/spotless/pull/607), and [lazy configuration](https://github.com/diffplug/spotless/pull/617).
 - Thanks to [Richard Willis](https://github.com/badsyntax) for creating the [VS Code extension for Spotless Gradle](https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle).
 - Thanks to [Matthias Andreas Benkard](https://github.com/benkard) for adding support for google-java-format 1.8+ ([#563](https://github.com/diffplug/spotless/pull/563))
 - Thanks to [Ranadeep Polavarapu](https://github.com/RanadeepPolavarapu) for adding support for ktfmt ([#569](https://github.com/diffplug/spotless/pull/569))
