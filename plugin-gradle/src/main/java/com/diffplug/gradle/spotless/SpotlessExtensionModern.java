@@ -15,6 +15,7 @@
  */
 package com.diffplug.gradle.spotless;
 
+import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaBasePlugin;
@@ -46,10 +47,14 @@ public class SpotlessExtensionModern extends SpotlessExtensionBase {
 
 	final TaskProvider<?> rootCheckTask, rootApplyTask, rootDiagnoseTask;
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends FormatExtension> void format(String name, Class<T> clazz, Action<T> configure) {
+		maybeCreate(name, clazz).modernLazyActions.add((Action<FormatExtension>) configure);
+	}
+
 	@Override
 	protected void createFormatTasks(String name, FormatExtension formatExtension) {
-		// TODO override configure(String name, Class<T> clazz, Action<T> configure) so that it is lazy
-
 		boolean isIdeHook = project.hasProperty(IdeHook.PROPERTY);
 		TaskContainer tasks = project.getTasks();
 		TaskProvider<?> cleanTask = tasks.named(BasePlugin.CLEAN_TASK_NAME);
@@ -62,7 +67,16 @@ public class SpotlessExtensionModern extends SpotlessExtensionBase {
 			task.mustRunAfter(cleanTask);
 		});
 
-		project.afterEvaluate(unused -> spotlessTask.configure(formatExtension::setupTask));
+		project.afterEvaluate(unused -> {
+			spotlessTask.configure(task -> {
+				// now that the task is being configured, we execute our actions
+				for (Action<FormatExtension> lazyAction : formatExtension.modernLazyActions) {
+					lazyAction.execute(formatExtension);
+				}
+				// and now we'll setup the task
+				formatExtension.setupTask(task);
+			});
+		});
 
 		// create the check and apply control tasks
 		TaskProvider<SpotlessApply> applyTask = tasks.register(taskName + APPLY, SpotlessApply.class, task -> {

@@ -44,7 +44,7 @@ public class SpotlessExtension extends SpotlessExtensionBase {
 	 */
 	@Deprecated
 	public void css(Action<CssExtension> closure) {
-		configure(CssExtension.NAME, CssExtension.class, closure);
+		format(CssExtension.NAME, CssExtension.class, closure);
 	}
 
 	/**
@@ -55,7 +55,7 @@ public class SpotlessExtension extends SpotlessExtensionBase {
 	 */
 	@Deprecated
 	public void xml(Action<XmlExtension> closure) {
-		configure(XmlExtension.NAME, XmlExtension.class, closure);
+		format(XmlExtension.NAME, XmlExtension.class, closure);
 	}
 
 	/**
