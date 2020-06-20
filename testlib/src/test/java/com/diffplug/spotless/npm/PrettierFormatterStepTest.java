@@ -17,6 +17,7 @@ package com.diffplug.spotless.npm;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -69,7 +70,7 @@ public class PrettierFormatterStepTest {
 	public static class SpecificPrettierFormatterStepTests extends NpmFormatterStepCommonTests {
 
 		@Test
-		public void parserInferenceIsWorking() throws Exception {
+		public void parserInferenceBasedOnExplicitFilepathIsWorking() throws Exception {
 			String filedir = "npm/prettier/filetypes/json/";
 
 			final String dirtyFile = filedir + "json.dirty";
@@ -81,6 +82,25 @@ public class PrettierFormatterStepTest {
 					buildDir(),
 					npmExecutable(),
 					new PrettierConfig(null, ImmutableMap.of("filepath", "anyname.json"))); // should select parser based on this name
+
+			try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
+				stepHarness.testResource(dirtyFile, cleanFile);
+			}
+		}
+
+		@Test
+		public void parserInferenceBasedOnFilenameIsWorking() throws Exception {
+			String filedir = "npm/prettier/filename/";
+
+			final String dirtyFile = filedir + "dirty.json";
+			final String cleanFile = filedir + "clean.json";
+
+			final FormatterStep formatterStep = PrettierFormatterStep.create(
+					PrettierFormatterStep.defaultDevDependencies(),
+					TestProvisioner.mavenCentral(),
+					buildDir(),
+					npmExecutable(),
+					new PrettierConfig(null, Collections.emptyMap()));
 
 			try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
 				stepHarness.testResource(dirtyFile, cleanFile);
