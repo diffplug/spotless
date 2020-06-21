@@ -70,7 +70,6 @@ public class PrettierIntegrationTest extends GradleIntegrationHarness {
 
 	@Test
 	public void chooseParserBasedOnFilename() throws IOException {
-		setFile(".prettierrc.yml").toResource("npm/prettier/filename/.prettierrc.yml");
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
@@ -79,7 +78,7 @@ public class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    format 'webResources', {",
 				"        target 'dirty.*'",
-				"        prettier().configFile('.prettierrc.yml')",
+				"        prettier()",
 				"    }",
 				"}");
 		setFile("dirty.json").toResource("npm/prettier/filename/dirty.json");
