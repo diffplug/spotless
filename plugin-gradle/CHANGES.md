@@ -5,6 +5,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 **5.x preview:** If you are using Gradle 5.4+, you can preview thew upcoming `com.diffplug.spotless` plugin by adding `-PspotlessModern`, see [CHANGES-5.x-PREVIEW.md](CHANGES-5.x-PREVIEW.md) for details.
 
 ## [Unreleased]
+### Added
+* `prettier` will now autodetect the parser (and formatter) to use based on the filename, unless you override this using `config()` or `configFile()` with the option `parser` or `filepath`. ([#620](https://github.com/diffplug/spotless/pull/620))
 
 ## [4.4.0] - 2020-06-19
 ### Added
