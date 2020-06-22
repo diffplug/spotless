@@ -22,18 +22,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -50,11 +45,9 @@ import org.eclipse.jgit.util.FS;
 import org.eclipse.jgit.util.SystemReader;
 
 import com.googlecode.concurrenttrees.radix.ConcurrentRadixTree;
-import com.googlecode.concurrenttrees.radix.node.Node;
 import com.googlecode.concurrenttrees.radix.node.concrete.DefaultCharSequenceNodeFactory;
 
 import com.diffplug.common.base.Errors;
-import com.diffplug.common.tree.TreeStream;
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.LazyForwardingEquality;
 import com.diffplug.spotless.LineEnding;
@@ -103,6 +96,7 @@ public final class GitAttributesLineEndings {
 		}
 	}
 
+	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	static class CachedEndings implements Serializable {
 		private static final long serialVersionUID = -2534772773057900619L;
 
@@ -143,9 +137,6 @@ public final class GitAttributesLineEndings {
 
 		/** git worktree root, might not exist if we're not in a git repo. */
 		final @Nullable File workTree;
-
-		/** All the .gitattributes files in the work tree that we're formatting. */
-		final List<File> gitattributes;
 
 		@SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
 		FileState(File projectDir, Iterable<File> toFormat) throws IOException {
@@ -199,48 +190,6 @@ public final class GitAttributesLineEndings {
 				repoAttributesFile = null;
 			}
 			Errors.log().run(repoConfig::load);
-
-			// The .gitattributes files which apply to the files we are formatting
-			gitattributes = gitAttributes(toFormat);
-		}
-
-		/** Returns all of the .gitattributes files which affect the given files. */
-		static List<File> gitAttributes(Iterable<File> files) {
-			// build a radix tree out of all the parent folders in these files
-			ConcurrentRadixTree<String> tree = new ConcurrentRadixTree<>(new DefaultCharSequenceNodeFactory());
-			for (File file : files) {
-				String parentPath = file.getParent() + File.separator;
-				tree.putIfAbsent(parentPath, parentPath);
-			}
-			// traverse the edge nodes to find the outermost folders
-			List<File> edgeFolders = TreeStream.depthFirst(Node::getOutgoingEdges, tree.getNode())
-					.filter(node -> node.getOutgoingEdges().isEmpty() && node.getValue() != null)
-					.map(node -> new File((String) node.getValue()))
-					.collect(Collectors.toList());
-
-			List<File> gitAttrFiles = new ArrayList<>();
-			Set<File> visitedFolders = new HashSet<>();
-			for (File edgeFolder : edgeFolders) {
-				gitAttrAddWithParents(edgeFolder, visitedFolders, gitAttrFiles);
-			}
-			return gitAttrFiles;
-		}
-
-		/** Searches folder and all its parents for gitattributes files. */
-		private static void gitAttrAddWithParents(File folder, Set<File> visitedFolders, Collection<File> gitAttrFiles) {
-			if (!visitedFolders.add(folder)) {
-				// bail if we already visited this folder
-				return;
-			}
-
-			File gitAttr = new File(folder, Constants.DOT_GIT_ATTRIBUTES);
-			if (gitAttr.exists() && gitAttr.isFile()) {
-				gitAttrFiles.add(gitAttr);
-			}
-			File parentFile = folder.getParentFile();
-			if (parentFile != null) {
-				gitAttrAddWithParents(folder.getParentFile(), visitedFolders, gitAttrFiles);
-			}
 		}
 
 		private Runtime atRuntime() {
