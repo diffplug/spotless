@@ -76,7 +76,7 @@ public final class GitAttributesLineEndings {
 	 * Creates a line-endings policy whose serialized state is relativized against projectDir,
 	 * at the cost of eagerly evaluating the line-ending state of every target file.
 	 */
-	public static LineEnding.Policy createRelocatable(File projectDir, Supplier<Iterable<File>> toFormat) {
+	public static LineEnding.Policy create(File projectDir, Supplier<Iterable<File>> toFormat) {
 		return new RelocatablePolicy(projectDir, toFormat);
 	}
 
@@ -131,42 +131,6 @@ public final class GitAttributesLineEndings {
 			String subpath = FileSignature.subpath(rootDir, path);
 			String ending = hasNonDefaultEnding.getValueForExactKey(subpath);
 			return ending == null ? defaultEnding : ending;
-		}
-	}
-
-	/** Creates a line-endings policy whose serialized state includes absolute paths to this machine. */
-	public static LineEnding.Policy create(File projectDir, Supplier<Iterable<File>> toFormat) {
-		return new Policy(projectDir, toFormat);
-	}
-
-	static class Policy extends LazyForwardingEquality<FileState> implements LineEnding.Policy {
-		private static final long serialVersionUID = 1L;
-
-		final transient File projectDir;
-		final transient Supplier<Iterable<File>> toFormat;
-
-		Policy(File projectDir, Supplier<Iterable<File>> toFormat) {
-			this.projectDir = Objects.requireNonNull(projectDir, "projectDir");
-			this.toFormat = Objects.requireNonNull(toFormat, "toFormat");
-		}
-
-		@Override
-		protected FileState calculateState() throws Exception {
-			return new FileState(projectDir, toFormat.get());
-		}
-
-		/**
-		 * Initializing the state() for up-to-date checking is faster than the full initialization
-		 * needed to actually do the formatting. We load the Runtime lazily from the state().
-		 */
-		transient Runtime runtime;
-
-		@Override
-		public String getEndingFor(File file) {
-			if (runtime == null) {
-				runtime = state().atRuntime();
-			}
-			return runtime.getEndingFor(file);
 		}
 	}
 
