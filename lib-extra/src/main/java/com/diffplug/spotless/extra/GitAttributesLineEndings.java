@@ -86,7 +86,7 @@ public final class GitAttributesLineEndings {
 
 		@Override
 		protected CachedEndings calculateState() throws Exception {
-			Runtime runtime = new FileState(projectDir, toFormat.get()).atRuntime();
+			Runtime runtime = new RuntimeInit(projectDir, toFormat.get()).atRuntime();
 			return new CachedEndings(projectDir, runtime, toFormat.get());
 		}
 
@@ -128,7 +128,7 @@ public final class GitAttributesLineEndings {
 		}
 	}
 
-	static class FileState {
+	static class RuntimeInit {
 		/** /etc/gitconfig (system-global), ~/.gitconfig, project/.git/config (each might-not exist). */
 		final FileBasedConfig systemConfig, userConfig, repoConfig;
 
@@ -139,7 +139,7 @@ public final class GitAttributesLineEndings {
 		final @Nullable File workTree;
 
 		@SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
-		FileState(File projectDir, Iterable<File> toFormat) throws IOException {
+		RuntimeInit(File projectDir, Iterable<File> toFormat) throws IOException {
 			requireElementsNonNull(toFormat);
 			/////////////////////////////////
 			// USER AND SYSTEM-WIDE VALUES //
