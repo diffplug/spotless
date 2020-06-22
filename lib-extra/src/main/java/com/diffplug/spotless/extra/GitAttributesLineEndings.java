@@ -73,7 +73,8 @@ public final class GitAttributesLineEndings {
 
 	/**
 	 * Creates a line-endings policy whose serialized state is relativized against projectDir,
-	 * at the cost of eagerly evaluating the line-ending state of every target file.
+	 * at the cost of eagerly evaluating the line-ending state of every target file when the
+	 * policy is checked for equality with another policy.
 	 */
 	public static LineEnding.Policy create(File projectDir, Supplier<Iterable<File>> toFormat) {
 		return new RelocatablePolicy(projectDir, toFormat);
