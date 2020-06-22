@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +72,70 @@ public final class GitAttributesLineEndings {
 	// prevent direct instantiation
 	private GitAttributesLineEndings() {}
 
-	public static Policy create(File projectDir, Supplier<Iterable<File>> toFormat) {
+	/**
+	 * Creates a line-endings policy whose serialized state is relativized against projectDir,
+	 * at the cost of eagerly evaluating the line-ending state of every target file.
+	 */
+	public static LineEnding.Policy createRelocatable(File projectDir, Supplier<Iterable<File>> toFormat) {
+		return new RelocatablePolicy(projectDir, toFormat);
+	}
+
+	static class RelocatablePolicy extends LazyForwardingEquality<CachedEndings> implements LineEnding.Policy {
+		private static final long serialVersionUID = 5868522122123693015L;
+
+		final transient File projectDir;
+		final transient Supplier<Iterable<File>> toFormat;
+
+		RelocatablePolicy(File projectDir, Supplier<Iterable<File>> toFormat) {
+			this.projectDir = Objects.requireNonNull(projectDir, "projectDir");
+			this.toFormat = Objects.requireNonNull(toFormat, "toFormat");
+		}
+
+		@Override
+		protected CachedEndings calculateState() throws Exception {
+			Runtime runtime = new FileState(projectDir, toFormat.get()).atRuntime();
+			return new CachedEndings(projectDir, runtime, toFormat.get());
+		}
+
+		@Override
+		public String getEndingFor(File file) {
+			return state().endingFor(file);
+		}
+	}
+
+	static class CachedEndings implements Serializable {
+		private static final long serialVersionUID = -2534772773057900619L;
+
+		/** this is transient, to simulate PathSensitive.RELATIVE */
+		transient final String rootDir;
+		/** the line ending used for most files */
+		final String defaultEnding;
+		/** any exceptions to that default, in terms of relative path from rootDir */
+		final ConcurrentRadixTree<String> hasNonDefaultEnding = new ConcurrentRadixTree<>(new DefaultCharSequenceNodeFactory());
+
+		CachedEndings(File projectDir, Runtime runtime, Iterable<File> toFormat) {
+			rootDir = FileSignature.pathNativeToUnix(projectDir.getAbsolutePath()) + "/";
+			defaultEnding = runtime.defaultEnding;
+			for (File file : toFormat) {
+				String ending = runtime.getEndingFor(file);
+				if (!ending.equals(defaultEnding)) {
+					String path = FileSignature.pathNativeToUnix(file.getAbsolutePath());
+					hasNonDefaultEnding.put(path, ending);
+				}
+			}
+		}
+
+		/** Returns the line ending appropriate for the given file. */
+		public String endingFor(File file) {
+			String path = FileSignature.pathNativeToUnix(file.getAbsolutePath());
+			String subpath = FileSignature.subpath(rootDir, path);
+			String ending = hasNonDefaultEnding.getValueForExactKey(subpath);
+			return ending == null ? defaultEnding : ending;
+		}
+	}
+
+	/** Creates a line-endings policy whose serialized state includes absolute paths to this machine. */
+	public static LineEnding.Policy create(File projectDir, Supplier<Iterable<File>> toFormat) {
 		return new Policy(projectDir, toFormat);
 	}
 
