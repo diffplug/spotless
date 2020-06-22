@@ -119,4 +119,13 @@ public final class FileSignature implements Serializable {
 	public static String pathUnixToNative(String pathUnix) {
 		return LineEnding.nativeIsWin() ? pathUnix.replace('/', '\\') : pathUnix;
 	}
+
+	/** Asserts that child is a subpath of root. and returns the subpath. */
+	public static String subpath(String root, String child) {
+		if (child.startsWith(root)) {
+			return child.substring(root.length());
+		} else {
+			throw new IllegalArgumentException("Expected '" + child + "' to start with '" + root + "'");
+		}
+	}
 }
