@@ -34,7 +34,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
@@ -134,24 +133,18 @@ public final class GitAttributesLineEndings {
 		}
 	}
 
-	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-	static class FileState implements Serializable {
-		private static final long serialVersionUID = 1L;
-
+	static class FileState {
 		/** /etc/gitconfig (system-global), ~/.gitconfig, project/.git/config (each might-not exist). */
-		transient final FileBasedConfig systemConfig, userConfig, repoConfig;
+		final FileBasedConfig systemConfig, userConfig, repoConfig;
 
 		/** Global .gitattributes file pointed at by systemConfig or userConfig, and the file in the repo. */
-		transient final @Nullable File globalAttributesFile, repoAttributesFile;
+		final @Nullable File globalAttributesFile, repoAttributesFile;
 
 		/** git worktree root, might not exist if we're not in a git repo. */
-		transient final @Nullable File workTree;
+		final @Nullable File workTree;
 
 		/** All the .gitattributes files in the work tree that we're formatting. */
-		transient final List<File> gitattributes;
-
-		/** The signature of *all* of the files below. */
-		final FileSignature signature;
+		final List<File> gitattributes;
 
 		@SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
 		FileState(File projectDir, Iterable<File> toFormat) throws IOException {
@@ -208,14 +201,6 @@ public final class GitAttributesLineEndings {
 
 			// The .gitattributes files which apply to the files we are formatting
 			gitattributes = gitAttributes(toFormat);
-
-			// find every actual File which exists above
-			Stream<File> misc = Stream.of(systemConfig.getFile(), userConfig.getFile(), repoConfig.getFile(), globalAttributesFile, repoAttributesFile);
-			List<File> toSign = Stream.concat(gitattributes.stream(), misc)
-					.filter(file -> file != null && file.exists() && file.isFile())
-					.collect(Collectors.toList());
-			// sign it for up-to-date checking
-			signature = FileSignature.signAsSet(toSign);
 		}
 
 		/** Returns all of the .gitattributes files which affect the given files. */
