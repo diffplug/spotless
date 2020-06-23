@@ -35,14 +35,15 @@ public class SpotlessPluginModern implements Plugin<Project> {
 		project.getExtensions().create(SpotlessExtension.EXTENSION, SpotlessExtensionModern.class, project);
 
 		// clear spotless' cache when the user does a clean
-		Task clean = project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME);
-		clean.doLast(unused -> {
-			// resolution for: https://github.com/diffplug/spotless/issues/243#issuecomment-564323856
-			// project.getRootProject() is consistent across every project, so only of one the clears will
-			// actually happen (as desired)
-			//
-			// we use System.identityHashCode() to avoid a memory leak by hanging on to the reference directly
-			SpotlessCache.clearOnce(System.identityHashCode(project.getRootProject()));
+		project.getTasks().named(BasePlugin.CLEAN_TASK_NAME).configure(clean -> {
+			clean.doLast(unused -> {
+				// resolution for: https://github.com/diffplug/spotless/issues/243#issuecomment-564323856
+				// project.getRootProject() is consistent across every project, so only of one the clears will
+				// actually happen (as desired)
+				//
+				// we use System.identityHashCode() to avoid a memory leak by hanging on to the reference directly
+				SpotlessCache.clearOnce(System.identityHashCode(project.getRootProject()));
+			});
 		});
 	}
 }
