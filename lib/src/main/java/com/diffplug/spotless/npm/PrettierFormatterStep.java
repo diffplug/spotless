@@ -116,7 +116,7 @@ public class PrettierFormatterStep {
 
 		@Override
 		public String apply(String input) throws Exception {
-			throw new IllegalStateException("should never be called");
+			return apply(input, new File(""));
 		}
 
 		@Override
