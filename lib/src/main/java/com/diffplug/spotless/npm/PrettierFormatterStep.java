@@ -129,7 +129,7 @@ public class PrettierFormatterStep {
 
 		private String assertFilepathInConfigOptions(File file) {
 			// if it is already in the options, we do nothing
-			if (prettierConfigOptions.contains("\"filepath\"")) {
+			if (prettierConfigOptions.contains("\"filepath\"") || prettierConfigOptions.contains("\"parser\"")) {
 				return prettierConfigOptions;
 			}
 			// if the file has no name, we  cannot use it
