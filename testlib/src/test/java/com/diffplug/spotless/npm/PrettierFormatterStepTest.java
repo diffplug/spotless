@@ -60,7 +60,7 @@ public class PrettierFormatterStepTest {
 					npmExecutable(),
 					new PrettierConfig(prettierRc, null));
 
-			try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
+			try (StepHarnessWithFile stepHarness = StepHarnessWithFile.forStep(formatterStep)) {
 				stepHarness.testResource(dirtyFile, cleanFile);
 			}
 		}
@@ -83,7 +83,7 @@ public class PrettierFormatterStepTest {
 					npmExecutable(),
 					new PrettierConfig(null, ImmutableMap.of("filepath", "anyname.json"))); // should select parser based on this name
 
-			try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
+			try (StepHarnessWithFile stepHarness = StepHarnessWithFile.forStep(formatterStep)) {
 				stepHarness.testResource(dirtyFile, cleanFile);
 			}
 		}
@@ -102,7 +102,7 @@ public class PrettierFormatterStepTest {
 					npmExecutable(),
 					new PrettierConfig(null, Collections.emptyMap()));
 
-			try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
+			try (StepHarnessWithFile stepHarness = StepHarnessWithFile.forStep(formatterStep)) {
 				stepHarness.testResource(dirtyFile, cleanFile);
 			}
 		}
@@ -115,7 +115,7 @@ public class PrettierFormatterStepTest {
 					buildDir(),
 					npmExecutable(),
 					new PrettierConfig(null, ImmutableMap.of("parser", "postcss")));
-			try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
+			try (StepHarnessWithFile stepHarness = StepHarnessWithFile.forStep(formatterStep)) {
 				stepHarness.testException("npm/prettier/filetypes/scss/scss.dirty", exception -> {
 					exception.hasMessageContaining("HTTP 501");
 					exception.hasMessageContaining("Couldn't resolve parser \"postcss\"");
@@ -141,7 +141,7 @@ public class PrettierFormatterStepTest {
 					npmExecutable(),
 					config); // should select parser based on this name
 
-			try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
+			try (StepHarnessWithFile stepHarness = StepHarnessWithFile.forStep(formatterStep)) {
 				stepHarness.testResource(dirtyFile, cleanFile);
 			}
 		}
