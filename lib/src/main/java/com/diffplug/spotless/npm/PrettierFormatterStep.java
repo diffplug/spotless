@@ -121,6 +121,8 @@ public class PrettierFormatterStep {
 
 		@Override
 		public String apply(String input, File source) throws Exception {
+			requireNonNull(input, "input must not be null");
+			requireNonNull(source, "source must not be null");
 			final String prettierConfigOptionsWithFilepath = assertFilepathInConfigOptions(source);
 			return restService.format(input, prettierConfigOptionsWithFilepath);
 		}
