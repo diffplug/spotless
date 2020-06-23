@@ -38,7 +38,8 @@ class NpmProcess {
 	}
 
 	Process start() {
-		return npm("start");
+		// adding --scripts-prepend-node-path=true due to https://github.com/diffplug/spotless/issues/619#issuecomment-648018679
+		return npm("start", "--scripts-prepend-node-path=true");
 	}
 
 	private void npmAwait(String... args) {

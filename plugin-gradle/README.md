@@ -466,6 +466,18 @@ spotless {
 }
 ```
 
+Or you might even let prettier detect the file type and choose the parser on its own such as:
+
+```gradle
+spotless {
+  format 'webResources', {
+    target 'src/*/webapp/**', 'app/**'
+    prettier()
+  }
+}
+```
+
+
 <a name="prettier-plugins"></a>
 ### Using plugins for prettier
 

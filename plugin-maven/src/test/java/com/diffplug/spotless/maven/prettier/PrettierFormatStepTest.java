@@ -122,4 +122,16 @@ public class PrettierFormatStepTest extends MavenIntegrationHarness {
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile("php-example.php").sameAsResource("npm/prettier/plugins/php.clean");
 	}
+
+	@Test
+	public void autodetect_parser_based_on_filename() throws Exception {
+		writePomWithFormatSteps(
+				"<includes><include>dirty.json</include></includes>",
+				"<prettier/>");
+
+		setFile("dirty.json").toResource("npm/prettier/filename/dirty.json");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("dirty.json").sameAsResource("npm/prettier/filename/clean.json");
+	}
+
 }
