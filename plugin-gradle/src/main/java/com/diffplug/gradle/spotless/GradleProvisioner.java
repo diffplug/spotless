@@ -39,7 +39,7 @@ public class GradleProvisioner {
 
 	@Deprecated
 	public static Provisioner fromProject(Project project) {
-		return project.getPlugins().apply(SpotlessPlugin.class).getExtension().registerDependenciesTask.rootProvisioner;
+		return project.getPlugins().apply(SpotlessPlugin.class).getExtension().getRegisterDependenciesTask().rootProvisioner;
 	}
 
 	/** The provisioner used for the root project. */

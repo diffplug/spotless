@@ -23,6 +23,7 @@ import org.gradle.api.plugins.BasePlugin;
 public class SpotlessExtension extends SpotlessExtensionBase {
 	final Task rootCheckTask, rootApplyTask, rootDiagnoseTask;
 	private static final String FILES_PROPERTY = "spotlessFiles";
+	private final RegisterDependenciesTask registerDependenciesTask;
 
 	public SpotlessExtension(Project project) {
 		super(project);
@@ -34,6 +35,18 @@ public class SpotlessExtension extends SpotlessExtensionBase {
 		rootApplyTask.setDescription(APPLY_DESCRIPTION);
 		rootDiagnoseTask = project.task(EXTENSION + DIAGNOSE);
 		rootDiagnoseTask.setGroup(TASK_GROUP);	// no description on purpose
+
+		RegisterDependenciesTask registerDependenciesTask = (RegisterDependenciesTask) project.getRootProject().getTasks().findByName(RegisterDependenciesTask.TASK_NAME);
+		if (registerDependenciesTask == null) {
+			registerDependenciesTask = project.getRootProject().getTasks().create(RegisterDependenciesTask.TASK_NAME, RegisterDependenciesTask.class);
+			registerDependenciesTask.setup();
+		}
+		this.registerDependenciesTask = registerDependenciesTask;
+	}
+
+	@Override
+	RegisterDependenciesTask getRegisterDependenciesTask() {
+		return registerDependenciesTask;
 	}
 
 	/**
