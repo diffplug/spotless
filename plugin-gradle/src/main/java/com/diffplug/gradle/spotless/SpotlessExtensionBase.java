@@ -34,7 +34,6 @@ import com.diffplug.spotless.LineEnding;
 
 public abstract class SpotlessExtensionBase {
 	final Project project;
-	final RegisterDependenciesTask registerDependenciesTask;
 
 	protected static final String TASK_GROUP = "Verification";
 	protected static final String CHECK_DESCRIPTION = "Checks that sourcecode satisfies formatting steps.";
@@ -47,14 +46,9 @@ public abstract class SpotlessExtensionBase {
 
 	public SpotlessExtensionBase(Project project) {
 		this.project = requireNonNull(project);
-
-		RegisterDependenciesTask registerDependenciesTask = (RegisterDependenciesTask) project.getRootProject().getTasks().findByName(RegisterDependenciesTask.TASK_NAME);
-		if (registerDependenciesTask == null) {
-			registerDependenciesTask = project.getRootProject().getTasks().create(RegisterDependenciesTask.TASK_NAME, RegisterDependenciesTask.class);
-			registerDependenciesTask.setup();
-		}
-		this.registerDependenciesTask = registerDependenciesTask;
 	}
+
+	abstract RegisterDependenciesTask getRegisterDependenciesTask();
 
 	/** Line endings (if any). */
 	LineEnding lineEndings = LineEnding.GIT_ATTRIBUTES;

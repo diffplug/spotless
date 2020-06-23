@@ -64,7 +64,7 @@ public class FormatExtension {
 	}
 
 	protected final Provisioner provisioner() {
-		return spotless.registerDependenciesTask.rootProvisioner;
+		return spotless.getRegisterDependenciesTask().rootProvisioner;
 	}
 
 	private String formatName() {
@@ -677,10 +677,10 @@ public class FormatExtension {
 		task.setSteps(steps);
 		task.setLineEndingsPolicy(getLineEndings().createPolicy(getProject().getProjectDir(), () -> task.target));
 		if (spotless.project != spotless.project.getRootProject()) {
-			spotless.registerDependenciesTask.hookSubprojectTask(task);
+			spotless.getRegisterDependenciesTask().hookSubprojectTask(task);
 		}
 		if (getRatchetFrom() != null) {
-			task.setupRatchet(spotless.registerDependenciesTask.gitRatchet, getRatchetFrom());
+			task.setupRatchet(spotless.getRegisterDependenciesTask().gitRatchet, getRatchetFrom());
 		}
 	}
 
