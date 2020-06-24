@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -110,4 +110,13 @@ public final class FileSignature implements Serializable {
 		}
 	}
 
+	/** Transforms a native path to a unix one. */
+	public static String pathNativeToUnix(String pathNative) {
+		return LineEnding.nativeIsWin() ? pathNative.replace('\\', '/') : pathNative;
+	}
+
+	/** Transforms a unix path to a native one. */
+	public static String pathUnixToNative(String pathUnix) {
+		return LineEnding.nativeIsWin() ? pathUnix.replace('/', '\\') : pathUnix;
+	}
 }

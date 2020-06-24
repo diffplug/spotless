@@ -46,6 +46,7 @@ import com.diffplug.spotless.maven.generic.LicenseHeader;
 import com.diffplug.spotless.maven.java.Java;
 import com.diffplug.spotless.maven.kotlin.Kotlin;
 import com.diffplug.spotless.maven.scala.Scala;
+import com.diffplug.spotless.maven.typescript.Typescript;
 
 public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
@@ -68,7 +69,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	private File baseDir;
 
 	@Parameter(defaultValue = "${project.build.directory}", required = true, readonly = true)
-	private File targetDir;
+	private File buildDir;
 
 	@Parameter(defaultValue = DEFAULT_ENCODING)
 	private String encoding;
@@ -98,6 +99,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	@Parameter
 	private Cpp cpp;
+
+	@Parameter
+	private Typescript typescript;
 
 	/** The CSS extension is discontinued. */
 	@Parameter
@@ -135,7 +139,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		Set<String> includes = configuredIncludes.isEmpty() ? formatterFactory.defaultIncludes() : configuredIncludes;
 
 		Set<String> excludes = new HashSet<>(FileUtils.getDefaultExcludesAsList());
-		excludes.add(withTrailingSeparator(targetDir.toString()));
+		excludes.add(withTrailingSeparator(buildDir.toString()));
 		excludes.addAll(configuredExcludes);
 
 		String includesString = String.join(",", includes);
@@ -178,12 +182,12 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	private FileLocator getFileLocator() {
 		resourceManager.addSearchPath(FileResourceLoader.ID, baseDir.getAbsolutePath());
 		resourceManager.addSearchPath("url", "");
-		resourceManager.setOutputDirectory(targetDir);
-		return new FileLocator(resourceManager);
+		resourceManager.setOutputDirectory(buildDir);
+		return new FileLocator(resourceManager, baseDir, buildDir);
 	}
 
 	private List<FormatterFactory> getFormatterFactories() {
-		return Stream.concat(formats.stream(), Stream.of(java, scala, kotlin, cpp, css, xml, antlr4))
+		return Stream.concat(formats.stream(), Stream.of(java, scala, kotlin, cpp, typescript, css, xml, antlr4))
 				.filter(Objects::nonNull)
 				.collect(toList());
 	}

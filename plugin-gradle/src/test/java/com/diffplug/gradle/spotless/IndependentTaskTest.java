@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-public class IndependentTaskTest extends GradleIntegrationTest {
+public class IndependentTaskTest extends GradleIntegrationHarness {
 	@Test
 	public void independent() throws IOException {
 		setFile("build.gradle").toLines(
@@ -34,8 +34,7 @@ public class IndependentTaskTest extends GradleIntegrationTest {
 				"underTest.target file('test.java')",
 				"underTest.googleJavaFormat('1.2')",
 				"",
-				"def independent = underTest.createIndependentTask('independent')",
-				"independent.setApply()");
+				"def independent = underTest.createIndependentApplyTask('independent')");
 		setFile("test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
 		gradleRunner().withArguments("independent").build();
 		assertFile("test.java").sameAsResource("java/googlejavaformat/JavaCodeFormatted.test");

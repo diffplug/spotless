@@ -10,6 +10,66 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* `prettier` will now autodetect the parser (and formatter) to use based on the filename, unless you override this using `config` or `configFile` with the option `parser` or `filepath`. ([#620](https://github.com/diffplug/spotless/pull/620))
+
+## [1.34.1] - 2020-06-17
+### Changed
+* Nodejs-based formatters `prettier` and `tsfmt` now use native node instead of the J2V8 approach. ([#606](https://github.com/diffplug/spotless/pull/606))
+  * This removes the dependency to the no-longer-maintained Linux/Windows/macOs variants of J2V8.
+  * This enables spotless to use the latest `prettier` versions (instead of being stuck at prettier version <= `1.19.0`)
+  * Bumped default versions, prettier `1.16.4` -> `2.0.5`, tslint `5.12.1` -> `6.1.2`
+* Our main branch is now called `main`. ([#613](https://github.com/diffplug/spotless/pull/613))
+
+## [1.34.0] - 2020-06-05
+### Added
+* `LicenseHeaderStep.setLicenseHeaderYearsFromGitHistory`, which does an expensive search through git history to determine the oldest and newest commits for each file, and uses that to determine license header years. ([#604](https://github.com/diffplug/spotless/pull/604))
+
+## [1.33.1] - 2020-06-04
+* We are now running CI on windows. ([#596](https://github.com/diffplug/spotless/pull/596))
+* We are now dogfooding `ratchetFrom` and `licenseHeader` with a `$YEAR` token to ensure that Spotless copyright headers stay up-to-date without adding noise to file history. ([#595](https://github.com/diffplug/spotless/pull/595))
+* Added `LineEnding.nativeIsWin()`, `FileSignature.pathNativeToUnix()`, and `FileSignature.pathUnixToNative()`, along with many API-invisible fixes and cleanup. ([#592](https://github.com/diffplug/spotless/pull/592))
+
+## [1.33.0] - 2020-06-03
+### Added
+* `LicenseHeaderStep` now has an `updateYearWithLatest` parameter which can update copyright headers to today's date. ([#593](https://github.com/diffplug/spotless/pull/593))
+  * Parsing of existing years from headers is now more lenient.
+  * The `LicenseHeaderStep` constructor is now public, which allows capturing its state lazily, which is helpful for setting defaults based on `ratchetFrom`.
+
+## [1.32.0] - 2020-06-01
+### Added
+* `NodeJsGlobal.setSharedLibFolder` allows to set the location of nodejs shared libs. ([#586](https://github.com/diffplug/spotless/pull/586))
+* `PaddedCell.isClean()` returns the instance of `PaddedCell.DirtyState` which represents clean. ([#590](https://github.com/diffplug/spotless/pull/590))
+### Fixed
+* Previously, the nodejs-based steps would throw `UnsatisfiedLinkError` if they were ever used from more than one classloader.  Now they can be used from any number of classloaders (important for gradle build daemon). ([#586](https://github.com/diffplug/spotless/pull/586))
+
+## [1.31.0] - 2020-05-21
+### Added
+* `PaddedCell.calculateDirtyState` is now defensive about misconfigured character encoding. ([#575](https://github.com/diffplug/spotless/pull/575))
+
+## [1.30.1] - 2020-05-17
+### Fixed
+* `PaddedCell.DirtyState::writeCanonicalTo(File)` can now create a new file if necessary (previously required to overwrite an existing file) ([#576](https://github.com/diffplug/spotless/pull/576)).
+
+## [1.30.0] - 2020-05-11
+### Added
+* `PaddedCell.calculateDirtyState(Formatter, File, byte[])` to allow IDE integrations to send dirty editor buffers.
+
+## [1.29.0] - 2020-05-05
+### Added
+* Support for google-java-format 1.8 (including test infrastructure for Java 11). ([#562](https://github.com/diffplug/spotless/issues/562))
+* Improved PaddedCell such that it is as performant as non-padded cell - no reason not to have it always enabled.  Deprecated all of `PaddedCellBulk`. ([#561](https://github.com/diffplug/spotless/pull/561))
+* Support for ktfmt 0.13 ([#569](https://github.com/diffplug/spotless/pull/569))
+### Changed
+* Updated a bunch of dependencies, most notably: ([#564](https://github.com/diffplug/spotless/pull/564))
+  * jgit `5.5.0.201909110433-r` -> `5.7.0.202003110725-r`
+  * gradle `6.2.2` -> `6.3`
+  * spotbugs gradle plugin `2.0.0` -> `4.0.8`
+
+## [1.28.1] - 2020-04-02
+### Fixed
+* Javadoc for the `ext/eclipse-*` projects.
+* Replace the deprecated `compile` with `implementation` for the `ext/eclipse-*` projects.
 
 ## [1.28.0] - 2020-03-20
 ### Added
@@ -20,7 +80,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Build
 * All `CHANGES.md` are now in keepachangelog format. ([#507](https://github.com/diffplug/spotless/pull/507))
 * We now use [javadoc.io](https://javadoc.io/) instead of github pages. ([#508](https://github.com/diffplug/spotless/pull/508))
-* We no longer publish `-SNAPSHOT` for every build to `master`, since we have good [JitPack integration](https://github.com/diffplug/spotless/blob/master/CONTRIBUTING.md#gradle---any-commit-in-a-public-github-repo-this-one-or-any-fork). ([#508](https://github.com/diffplug/spotless/pull/508))
+* We no longer publish `-SNAPSHOT` for every build to `main`, since we have good [JitPack integration](https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md#gradle---any-commit-in-a-public-github-repo-this-one-or-any-fork). ([#508](https://github.com/diffplug/spotless/pull/508))
 * Improved how we use Spotless on itself. ([#509](https://github.com/diffplug/spotless/pull/509))
 * Fix build warnings when building on Gradle 6+, bump build gradle to 6.2.2, and fix javadoc links. ([#536](https://github.com/diffplug/spotless/pull/536))
 

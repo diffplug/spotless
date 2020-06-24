@@ -48,7 +48,6 @@ public final class DiffMessageFormatter {
 		private Builder() {}
 
 		private String runToFix;
-		private boolean isPaddedCell;
 		private Formatter formatter;
 		private List<File> problemFiles;
 
@@ -58,8 +57,9 @@ public final class DiffMessageFormatter {
 			return this;
 		}
 
+		@Deprecated
 		public Builder isPaddedCell(boolean isPaddedCell) {
-			this.isPaddedCell = isPaddedCell;
+			System.err.println("PaddedCell is now always on, and cannot be turned off.");
 			return this;
 		}
 
@@ -171,11 +171,7 @@ public final class DiffMessageFormatter {
 		String raw = new String(Files.readAllBytes(file.toPath()), builder.formatter.getEncoding());
 		String rawUnix = LineEnding.toUnix(raw);
 		String formattedUnix;
-		if (builder.isPaddedCell) {
-			formattedUnix = PaddedCell.check(builder.formatter, file, rawUnix).canonical();
-		} else {
-			formattedUnix = builder.formatter.compute(rawUnix, file);
-		}
+		formattedUnix = PaddedCell.check(builder.formatter, file, rawUnix).canonical();
 
 		if (rawUnix.equals(formattedUnix)) {
 			// the formatting is fine, so it's a line-ending issue

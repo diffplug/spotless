@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.ThrowingEx.Function;
 
 /** Wraps up [google-java-format](https://github.com/google/google-java-format) as a FormatterStep. */
 public class GoogleJavaFormatStep {
@@ -124,35 +125,50 @@ public class GoogleJavaFormatStep {
 			Object formatter = formatterClazz.getConstructor(optionsClass).newInstance(options);
 			Method formatterMethod = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
 
-			Class<?> removeUnusedClass = classLoader.loadClass(REMOVE_UNUSED_CLASS);
-			Class<?> removeJavadocOnlyClass = classLoader.loadClass(REMOVE_UNUSED_IMPORT_JavadocOnlyImports);
-			Object removeJavadocConstant = Enum.valueOf((Class<Enum>) removeJavadocOnlyClass, REMOVE_UNUSED_IMPORT_JavadocOnlyImports_Keep);
-			Method removeUnusedMethod = removeUnusedClass.getMethod(REMOVE_UNUSED_METHOD, String.class, removeJavadocOnlyClass);
+			Function<String, String> removeUnused = constructRemoveUnusedFunction(classLoader);
 
 			Class<?> importOrdererClass = classLoader.loadClass(IMPORT_ORDERER_CLASS);
 			Method importOrdererMethod = importOrdererClass.getMethod(IMPORT_ORDERER_METHOD, String.class);
 
 			return input -> {
 				String formatted = (String) formatterMethod.invoke(formatter, input);
-				String removedUnused = (String) removeUnusedMethod.invoke(null, formatted, removeJavadocConstant);
+				String removedUnused = removeUnused.apply(formatted);
 				String sortedImports = (String) importOrdererMethod.invoke(null, removedUnused);
 				return fixWindowsBug(sortedImports, version);
 			};
 		}
 
-		@SuppressWarnings({"unchecked", "rawtypes"})
 		FormatterFunc createRemoveUnusedImportsOnly() throws Exception {
 			ClassLoader classLoader = jarState.getClassLoader();
 
-			Class<?> removeUnusedClass = classLoader.loadClass(REMOVE_UNUSED_CLASS);
-			Class<?> removeJavadocOnlyClass = classLoader.loadClass(REMOVE_UNUSED_IMPORT_JavadocOnlyImports);
-			Object removeJavadocConstant = Enum.valueOf((Class<Enum>) removeJavadocOnlyClass, REMOVE_UNUSED_IMPORT_JavadocOnlyImports_Keep);
-			Method removeUnusedMethod = removeUnusedClass.getMethod(REMOVE_UNUSED_METHOD, String.class, removeJavadocOnlyClass);
+			Function<String, String> removeUnused = constructRemoveUnusedFunction(classLoader);
 
-			return input -> {
-				String removeUnused = (String) removeUnusedMethod.invoke(null, input, removeJavadocConstant);
-				return fixWindowsBug(removeUnused, version);
-			};
+			return input -> fixWindowsBug(removeUnused.apply(input), version);
+		}
+
+		private static Function<String, String> constructRemoveUnusedFunction(ClassLoader classLoader)
+				throws NoSuchMethodException, ClassNotFoundException {
+			Class<?> removeUnusedClass = classLoader.loadClass(REMOVE_UNUSED_CLASS);
+			Class<?> removeJavadocOnlyClass;
+			try {
+				// google-java-format 1.7 or lower
+				removeJavadocOnlyClass = classLoader.loadClass(REMOVE_UNUSED_IMPORT_JavadocOnlyImports);
+			} catch (ClassNotFoundException e) {
+				// google-java-format 1.8+
+				removeJavadocOnlyClass = null;
+			}
+
+			Function<String, String> removeUnused;
+			if (removeJavadocOnlyClass != null) {
+				@SuppressWarnings({"unchecked", "rawtypes"})
+				Object removeJavadocConstant = Enum.valueOf((Class<Enum>) removeJavadocOnlyClass, REMOVE_UNUSED_IMPORT_JavadocOnlyImports_Keep);
+				Method removeUnusedMethod = removeUnusedClass.getMethod(REMOVE_UNUSED_METHOD, String.class, removeJavadocOnlyClass);
+				removeUnused = (x) -> (String) removeUnusedMethod.invoke(null, x, removeJavadocConstant);
+			} else {
+				Method removeUnusedMethod = removeUnusedClass.getMethod(REMOVE_UNUSED_METHOD, String.class);
+				removeUnused = (x) -> (String) removeUnusedMethod.invoke(null, x);
+			}
+			return removeUnused;
 		}
 	}
 

@@ -64,7 +64,7 @@ public abstract class FormatterFactory {
 	public final Formatter newFormatter(List<File> filesToFormat, FormatterConfig config) {
 		Charset formatterEncoding = encoding(config);
 		LineEnding formatterLineEndings = lineEndings(config);
-		LineEnding.Policy formatterLineEndingPolicy = formatterLineEndings.createPolicy(config.getBaseDir(), () -> filesToFormat);
+		LineEnding.Policy formatterLineEndingPolicy = formatterLineEndings.createPolicy(config.getFileLocator().getBaseDir(), () -> filesToFormat);
 
 		FormatterStepConfig stepConfig = stepConfig(formatterEncoding, config);
 		List<FormatterStepFactory> factories = gatherStepFactories(config.getGlobalStepFactories(), stepFactories);
@@ -79,7 +79,7 @@ public abstract class FormatterFactory {
 				.lineEndingsPolicy(formatterLineEndingPolicy)
 				.exceptionPolicy(new FormatExceptionPolicyStrict())
 				.steps(formatterSteps)
-				.rootDir(config.getBaseDir().toPath())
+				.rootDir(config.getFileLocator().getBaseDir().toPath())
 				.build();
 	}
 
@@ -109,6 +109,10 @@ public abstract class FormatterFactory {
 
 	public final void addEclipseWtp(EclipseWtp eclipseWtp) {
 		addStepFactory(eclipseWtp);
+	}
+
+	public final void addPrettier(Prettier prettier) {
+		addStepFactory(prettier);
 	}
 
 	protected final void addStepFactory(FormatterStepFactory stepFactory) {

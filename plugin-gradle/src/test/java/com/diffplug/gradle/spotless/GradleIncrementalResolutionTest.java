@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.junit.Test;
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StringPrinter;
 
-public class GradleIncrementalResolutionTest extends GradleIntegrationTest {
+public class GradleIncrementalResolutionTest extends GradleIntegrationHarness {
 	@Test
 	public void failureDoesntTriggerAll() throws IOException {
 		setFile("build.gradle").toLines(
@@ -51,13 +51,15 @@ public class GradleIncrementalResolutionTest extends GradleIntegrationTest {
 		assertState("ABC");
 		writeState("aBc");
 		assertState("aBc");
-		// check will run against all three the first time (and second and third)
+		// check will run against all three the first time.
+		// Subsequent runs will only run the formatter on the bad file (in order to generate the failure message)
 		checkRanAgainst("abc");
-		checkRanAgainst("abc");
-		checkRanAgainst("abc");
-		// apply will run against all three the first time
-		applyRanAgainst("abc");
-		// the second time, it will only run on the file that was changes
+		checkRanAgainst("b");
+		checkRanAgainst("b");
+
+		// apply will simply copy outputs the first time: no formatters executed
+		applyRanAgainst("");
+		// the second time, it will only run on the file that was changed by apply
 		applyRanAgainst("b");
 		// and nobody the last time
 		applyRanAgainst("");
@@ -65,12 +67,11 @@ public class GradleIncrementalResolutionTest extends GradleIntegrationTest {
 		// if we change just one file
 		writeState("Abc");
 		// then check runs against just the changed file
-		// and also (because #144) the last files to be changed
-		checkRanAgainst("a", "b");
-		// even after failing, still just the one
-		checkRanAgainst("a", "b");
+		checkRanAgainst("a");
+		// even after failing
+		checkRanAgainst("a");
 		// and so does apply
-		applyRanAgainst("a", "b");
+		applyRanAgainst();
 		applyRanAgainst("a");
 		// until the issue has been fixed
 		applyRanAgainst("");

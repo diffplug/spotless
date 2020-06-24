@@ -32,6 +32,9 @@ import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.io.Files;
 import com.diffplug.spotless.FormatterStep;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import groovy.lang.Closure;
+
 /**
  * NOT AN END-USER TASK, DO NOT USE FOR ANYTHING!
  *
@@ -83,15 +86,30 @@ public class RegisterDependenciesTask extends DefaultTask {
 		return rootProvisioner;
 	}
 
+	@SuppressWarnings({"rawtypes", "serial"})
 	void setup() {
 		Preconditions.checkArgument(getProject().getRootProject() == getProject(), "Can only be used on the root project");
 		unitOutput = new File(getProject().getBuildDir(), "tmp/spotless-register-dependencies");
 		rootProvisioner = new GradleProvisioner.RootProvisioner(getProject());
+		getProject().getGradle().buildFinished(new Closure(null) {
+			@SuppressFBWarnings("UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS")
+			public Object doCall() {
+				gitRatchet.close();
+				return null;
+			}
+		});
 	}
 
 	@TaskAction
 	public void trivialFunction() throws IOException {
 		Files.createParentDirs(unitOutput);
 		Files.write(Integer.toString(getSteps().size()), unitOutput, StandardCharsets.UTF_8);
+	}
+
+	GitRatchet gitRatchet = new GitRatchet();
+
+	@Internal
+	GitRatchet getGitRatchet() {
+		return gitRatchet;
 	}
 }

@@ -73,7 +73,7 @@ dependencies {
 		embeddedJars "p2:${groupArtifact}:${version}"
 	}
 	// Includes the classes from P2 JARs during compilation
-	compile files(embeddedClassesDir)
+	implementation files(embeddedClassesDir)
 }
 
 jar {

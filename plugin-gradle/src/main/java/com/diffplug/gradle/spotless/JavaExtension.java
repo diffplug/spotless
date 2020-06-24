@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,8 @@ import com.diffplug.spotless.java.RemoveUnusedImportsStep;
 public class JavaExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "java";
 
-	public JavaExtension(SpotlessExtension rootExtension) {
-		super(rootExtension);
+	public JavaExtension(SpotlessExtensionBase spotless) {
+		super(spotless);
 	}
 
 	// If this constant changes, don't forget to change the similarly-named one in
@@ -66,7 +66,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 				StringPrinter.buildStringFromLines(
 						"'importOrder([x, y, z])' is deprecated.",
 						"Use 'importOrder x, y, z' instead.",
-						"For details see https://github.com/diffplug/spotless/tree/master/plugin-gradle#applying-to-java-source"));
+						"For details see https://github.com/diffplug/spotless/tree/main/plugin-gradle#applying-to-java-source"));
 		addStep(ImportOrderStep.createFromOrder(importOrder));
 	}
 
@@ -94,13 +94,13 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 				StringPrinter.buildStringFromLines(
 						"'eclipseFormatFile [version] <file>' is deprecated.",
 						"Use 'eclipse([version]).configFile(<file>)' instead.",
-						"For details see https://github.com/diffplug/spotless/tree/master/plugin-gradle#applying-to-java-source"));
+						"For details see https://github.com/diffplug/spotless/tree/main/plugin-gradle#applying-to-java-source"));
 		eclipse(eclipseVersion).configFile(eclipseFormatFile);
 	}
 
 	/** Removes any unused imports. */
 	public void removeUnusedImports() {
-		addStep(RemoveUnusedImportsStep.create(GradleProvisioner.fromProject(getProject())));
+		addStep(RemoveUnusedImportsStep.create(provisioner()));
 	}
 
 	/** Uses the [google-java-format](https://github.com/google/google-java-format) jar to format source code. */
@@ -139,10 +139,9 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 		}
 
 		private FormatterStep createStep() {
-			Project project = getProject();
 			return GoogleJavaFormatStep.create(version,
 					style,
-					GradleProvisioner.fromProject(project));
+					provisioner());
 		}
 	}
 
@@ -158,7 +157,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 		private final EclipseBasedStepBuilder builder;
 
 		EclipseConfig(String version) {
-			builder = EclipseJdtFormatterStep.createBuilder(GradleProvisioner.fromProject(getProject()));
+			builder = EclipseJdtFormatterStep.createBuilder(provisioner());
 			builder.setVersion(version);
 			addStep(builder.build());
 		}

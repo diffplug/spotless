@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,15 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
+import org.assertj.core.api.Assertions;
+import org.gradle.testkit.runner.BuildResult;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import com.diffplug.spotless.category.NpmTest;
 
 @Category(NpmTest.class)
-public class PrettierIntegrationTest extends GradleIntegrationTest {
+public class PrettierIntegrationTest extends GradleIntegrationHarness {
 	@Test
 	public void useInlineConfig() throws IOException {
 		setFile("build.gradle").toLines(
@@ -41,7 +43,8 @@ public class PrettierIntegrationTest extends GradleIntegrationTest {
 				"    }",
 				"}");
 		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
-		gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
 		assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile.clean");
 	}
 
@@ -60,8 +63,77 @@ public class PrettierIntegrationTest extends GradleIntegrationTest {
 				"    }",
 				"}");
 		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
-		gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
 		assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile.clean");
 	}
 
+	@Test
+	public void chooseParserBasedOnFilename() throws IOException {
+		setFile("build.gradle").toLines(
+				"buildscript { repositories { mavenCentral() } }",
+				"plugins {",
+				"    id 'com.diffplug.gradle.spotless'",
+				"}",
+				"spotless {",
+				"    format 'webResources', {",
+				"        target 'dirty.*'",
+				"        prettier()",
+				"    }",
+				"}");
+		setFile("dirty.json").toResource("npm/prettier/filename/dirty.json");
+		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		assertFile("dirty.json").sameAsResource("npm/prettier/filename/clean.json");
+	}
+
+	@Test
+	public void useJavaCommunityPlugin() throws IOException {
+		setFile("build.gradle").toLines(
+				"buildscript { repositories { mavenCentral() } }",
+				"plugins {",
+				"    id 'com.diffplug.gradle.spotless'",
+				"}",
+				"def prettierConfig = [:]",
+				"prettierConfig['tabWidth'] = 4",
+				"prettierConfig['parser'] = 'java'",
+				"def prettierPackages = [:]",
+				"prettierPackages['prettier'] = '2.0.5'",
+				"prettierPackages['prettier-plugin-java'] = '0.8.0'",
+				"spotless {",
+				"    format 'java', {",
+				"        target 'JavaTest.java'",
+				"        prettier(prettierPackages).config(prettierConfig)",
+				"    }",
+				"}");
+		setFile("JavaTest.java").toResource("npm/prettier/plugins/java-test.dirty");
+		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		assertFile("JavaTest.java").sameAsResource("npm/prettier/plugins/java-test.clean");
+	}
+
+	@Test
+	public void usePhpCommunityPlugin() throws IOException {
+		setFile("build.gradle").toLines(
+				"buildscript { repositories { mavenCentral() } }",
+				"plugins {",
+				"    id 'com.diffplug.gradle.spotless'",
+				"}",
+				"def prettierConfig = [:]",
+				"prettierConfig['tabWidth'] = 3",
+				"prettierConfig['parser'] = 'php'",
+				"def prettierPackages = [:]",
+				"prettierPackages['prettier'] = '2.0.5'",
+				"prettierPackages['@prettier/plugin-php'] = '0.14.2'",
+				"spotless {",
+				"    format 'php', {",
+				"        target 'php-example.php'",
+				"        prettier(prettierPackages).config(prettierConfig)",
+				"    }",
+				"}");
+		setFile("php-example.php").toResource("npm/prettier/plugins/php.dirty");
+		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		assertFile("php-example.php").sameAsResource("npm/prettier/plugins/php.clean");
+	}
 }

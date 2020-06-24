@@ -1,0 +1,31 @@
+import { Component } from "@stencil/core";
+
+@Component({
+  tag: "testtag",
+  shadow: false
+})
+export class Sample {
+  @Prop() error: error;
+
+  hello(word = "world") {
+    return "Hello, " + word;
+  }
+
+  render() {
+    return [
+      <div>
+        <table>
+          <tr>
+            {this.error.messages
+              .sort((n1, n2) => this.hello(n1))
+              .map(message => (
+                <td>{message} </td>
+              ))}
+          </tr>
+        </table>
+      </div>
+    ];
+  }
+}
+
+var s = new Sample();

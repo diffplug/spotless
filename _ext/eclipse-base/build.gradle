@@ -8,12 +8,12 @@ ext {
 }
 
 dependencies {
-	compile("org.eclipse.platform:org.eclipse.core.resources:${VER_ECLIPSE_CORE_RESOURCES}") {
+	implementation("org.eclipse.platform:org.eclipse.core.resources:${VER_ECLIPSE_CORE_RESOURCES}") {
 		exclude group: 'org.eclipse.platform', module: 'org.eclipse.ant.core'
 		exclude group: 'org.eclipse.platform', module: 'org.eclipse.core.expressions'
 		exclude group: 'org.eclipse.platform', module: 'org.eclipse.core.filesystem'
 	}
-	compile("org.slf4j:slf4j-api:${VER_SLF4J}")
+	implementation("org.slf4j:slf4j-api:${VER_SLF4J}")
 
 	testImplementation("org.slf4j:slf4j-simple:${VER_SLF4J}")
 }

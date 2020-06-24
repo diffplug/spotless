@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
-import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -35,27 +33,8 @@ import java.util.logging.Logger;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-/**
- * Incorporates the PaddedCell machinery into broader apply / check usage.
- *
- * Here's the general workflow:
- *
- * ### Identify that paddedCell is needed
- *
- * Initially, paddedCell is off.  That's the default, and there's no need for users to know about it.
- *
- * If they encounter a scenario where `spotlessCheck` fails after calling `spotlessApply`, then they would
- * justifiably be frustrated.  Luckily, every time `spotlessCheck` fails, it passes the failed files to
- * {@link #anyMisbehave(Formatter, List)}, which checks to see if any of the rules are causing a cycle
- * or some other kind of mischief.  If they are, it can give the user a special error message instructing
- * them to turn on paddedCell.
- *
- * ### spotlessCheck with paddedCell on
- *
- * Spotless check behaves as normal, finding a list of problem files, but then passes that list
- * to {@link #check(File, File, Formatter, List)}.  If there were no problem files, then `paddedCell`
- * is no longer necessary, so users might as well turn it off, so we give that info as a warning.
- */
+/** COMPLETELY DEPRECATED, use {@link PaddedCell#calculateDirtyState(Formatter, File)} instead. */
+@Deprecated
 public final class PaddedCellBulk {
 	private static final Logger logger = Logger.getLogger(PaddedCellBulk.class.getName());
 
@@ -72,11 +51,13 @@ public final class PaddedCellBulk {
 	 * tell the user about a misbehaving rule and alert her to how to enable
 	 * paddedCell mode, with minimal effort.
 	 */
+	@Deprecated
 	public static boolean anyMisbehave(Formatter formatter, List<File> problemFiles) {
 		return anyMisbehave(formatter, problemFiles, 500);
 	}
 
 	/** Same as {@link #anyMisbehave(Formatter, List)} but with a customizable timeout. */
+	@Deprecated
 	public static boolean anyMisbehave(Formatter formatter, List<File> problemFiles, long timeoutMs) {
 		Objects.requireNonNull(formatter, "formatter");
 		Objects.requireNonNull(problemFiles, "problemFiles");
@@ -105,6 +86,7 @@ public final class PaddedCellBulk {
 	 * @return	A list of files which are failing because of paddedCell problems, but could be fixed. (specifically, the files for which spotlessApply would be effective)
 	 */
 	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
+	@Deprecated
 	public static List<File> check(File rootDir, File diagnoseDir, Formatter formatter, List<File> problemFiles) throws IOException {
 		Objects.requireNonNull(rootDir, "rootDir");
 		Objects.requireNonNull(diagnoseDir, "diagnoseDir");
@@ -191,47 +173,20 @@ public final class PaddedCellBulk {
 	}
 
 	/** Performs the typical spotlessApply, but with PaddedCell handling of misbehaving FormatterSteps. */
+	@Deprecated
 	public static void apply(Formatter formatter, File file) throws IOException {
 		applyAnyChanged(formatter, file);
 	}
 
 	/** Performs the typical spotlessApply, but with PaddedCell handling of misbehaving FormatterSteps. */
+	@Deprecated
 	public static boolean applyAnyChanged(Formatter formatter, File file) throws IOException {
-		Objects.requireNonNull(formatter, "formatter");
-		Objects.requireNonNull(file, "file");
-
-		byte[] rawBytes = Files.readAllBytes(file.toPath());
-		String raw = new String(rawBytes, formatter.getEncoding());
-		String rawUnix = LineEnding.toUnix(raw);
-
-		// enforce the format
-		String formattedUnix = formatter.compute(rawUnix, file);
-		// convert the line endings if necessary
-		String formatted = formatter.computeLineEndings(formattedUnix, file);
-
-		// if F(input) == input, then the formatter is well-behaving and the input is clean
-		byte[] formattedBytes = formatted.getBytes(formatter.getEncoding());
-		if (Arrays.equals(rawBytes, formattedBytes)) {
+		PaddedCell.DirtyState dirtyState = PaddedCell.calculateDirtyState(formatter, file);
+		if (dirtyState.isClean() || dirtyState.didNotConverge()) {
 			return false;
-		}
-
-		// F(input) != input, so we'll do a padded check
-		PaddedCell cell = PaddedCell.check(formatter, file, rawUnix);
-		if (!cell.isResolvable()) {
-			// nothing we can do, but check will warn and dump out the divergence path
-			return false;
-		}
-
-		// get the canonical bytes
-		String canonicalUnix = cell.canonical();
-		String canonical = formatter.computeLineEndings(canonicalUnix, file);
-		byte[] canonicalBytes = canonical.getBytes(formatter.getEncoding());
-		if (!Arrays.equals(rawBytes, canonicalBytes)) {
-			// and write them to disk if needed
-			Files.write(file.toPath(), canonicalBytes, StandardOpenOption.TRUNCATE_EXISTING);
-			return true;
 		} else {
-			return false;
+			dirtyState.writeCanonicalTo(file);
+			return true;
 		}
 	}
 

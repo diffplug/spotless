@@ -57,7 +57,9 @@ public class TsFmtFormatterStepTest {
 			final String cleanFile = filedir + configFileNameWithoutExtension + ".clean";
 
 			// some config options expect to see at least one file in the baseDir, so let's write one there
-			Files.write(new File(configFile.getParentFile(), configFileNameWithoutExtension + ".ts").toPath(), getTestResource(dirtyFile).getBytes(StandardCharsets.UTF_8));
+			File srcDir = new File(rootFolder(), "src/main/typescript");
+			Files.createDirectories(srcDir.toPath());
+			Files.write(new File(srcDir, configFileNameWithoutExtension + ".ts").toPath(), getTestResource(dirtyFile).getBytes(StandardCharsets.UTF_8));
 
 			final FormatterStep formatterStep = TsFmtFormatterStep.create(
 					TsFmtFormatterStep.defaultDevDependencies(),

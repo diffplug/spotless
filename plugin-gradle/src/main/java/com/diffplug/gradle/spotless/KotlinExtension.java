@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +28,13 @@ import org.gradle.api.tasks.SourceSet;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.kotlin.KtLintStep;
+import com.diffplug.spotless.kotlin.KtfmtStep;
 
 public class KotlinExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "kotlin";
 
-	public KotlinExtension(SpotlessExtension rootExtension) {
-		super(rootExtension);
+	public KotlinExtension(SpotlessExtensionBase spotless) {
+		super(spotless);
 	}
 
 	@Override
@@ -75,7 +76,34 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 		}
 
 		private FormatterStep createStep() {
-			return KtLintStep.create(version, GradleProvisioner.fromProject(getProject()), userData);
+			return KtLintStep.create(version, provisioner(), userData);
+		}
+	}
+
+	/** Uses the [ktfmt](https://github.com/facebookincubator/ktfmt) jar to format source code. */
+	public KtfmtConfig ktfmt() {
+		return ktfmt(KtfmtStep.defaultVersion());
+	}
+
+	/**
+	 * Uses the given version of [ktfmt](https://github.com/facebookincubator/ktfmt) to format source
+	 * code.
+	 */
+	public KtfmtConfig ktfmt(String version) {
+		Objects.requireNonNull(version);
+		return new KtfmtConfig(version);
+	}
+
+	public class KtfmtConfig {
+		final String version;
+
+		KtfmtConfig(String version) {
+			this.version = Objects.requireNonNull(version);
+			addStep(createStep());
+		}
+
+		private FormatterStep createStep() {
+			return KtfmtStep.create(version, provisioner());
 		}
 	}
 

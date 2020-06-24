@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,22 +17,35 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
-import org.gradle.testkit.runner.*;
+import org.gradle.testkit.runner.GradleRunner;
+import org.gradle.testkit.runner.UnexpectedBuildFailure;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
-public class SpecificFilesTest extends GradleIntegrationTest {
+import com.diffplug.spotless.LineEnding;
+
+@Category(ExcludeFromPluginGradleModern.class)
+public class SpecificFilesTest extends GradleIntegrationHarness {
+
+	private static String regexWinSafe(String input) {
+		return LineEnding.nativeIsWin() ? input.replace("/", "\\\\") : input;
+	}
+
 	private String testFilePath(int number) {
 		return testFilePath(number, true);
 	}
 
 	private String testFilePath(int number, boolean absolute) {
 		String relPath = "src/main/java/test" + number + ".java";
+		String returnValue;
 		if (absolute) {
-			return rootFolder() + "/" + relPath;
+			returnValue = rootFolder().getAbsolutePath().replace('\\', '/') + "/" + relPath;
 		} else {
-			return relPath;
+			returnValue = relPath;
 		}
+		// regex-escape on windows;
+		return regexWinSafe(returnValue);
 	}
 
 	private String fixture() {
@@ -103,7 +116,7 @@ public class SpecificFilesTest extends GradleIntegrationTest {
 		GradleRunner runner = gradleRunner()
 				.withArguments("spotlessApply", "-PspotlessFiles=" + patterns);
 		if (isKotlin) {
-			runner.withGradleVersion("4.0");
+			runner.withGradleVersion(GradleVersionSupport.KOTLIN.version);
 		}
 		runner.build();
 
@@ -141,7 +154,7 @@ public class SpecificFilesTest extends GradleIntegrationTest {
 	@Test
 	public void regexp() throws IOException {
 		createBuildScript();
-		integration(".*/src/main/java/test(1|3).java", true, false, true);
+		integration(regexWinSafe(".*/src/main/java/test(1|3).java"), true, false, true);
 	}
 
 	@Test(expected = UnexpectedBuildFailure.class)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,15 +24,20 @@ import org.gradle.util.GradleVersion;
 import com.diffplug.spotless.SpotlessCache;
 
 public class SpotlessPlugin implements Plugin<Project> {
-	SpotlessExtension spotlessExtension;
+	SpotlessExtension spotless;
 
 	@Override
 	public void apply(Project project) {
+		// if -PspotlessModern=true, then use the modern stuff instead of the legacy stuff
+		if (project.hasProperty(SpotlessPluginModern.SPOTLESS_MODERN) && project.findProperty(SpotlessPluginModern.SPOTLESS_MODERN).equals("true")) {
+			new SpotlessPluginModern().apply(project);
+			return;
+		}
 		// make sure there's a `clean` task
 		project.getPlugins().apply(BasePlugin.class);
 
 		// setup the extension
-		spotlessExtension = project.getExtensions().create(SpotlessExtension.EXTENSION, SpotlessExtension.class, project);
+		spotless = project.getExtensions().create(SpotlessExtension.EXTENSION, SpotlessExtension.class, project);
 
 		// clear spotless' cache when the user does a clean
 		Task clean = project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME);
@@ -49,19 +54,20 @@ public class SpotlessPlugin implements Plugin<Project> {
 			// Add our check task as a dependency on the global check task
 			// getTasks() returns a "live" collection, so this works even if the
 			// task doesn't exist at the time this call is made
-			if (spotlessExtension.enforceCheck) {
-				if (GradleVersion.current().compareTo(SpotlessPluginLegacy.CONFIG_AVOIDANCE_INTRODUCED) >= 0) {
-					SpotlessPluginConfigAvoidance.enforceCheck(spotlessExtension, project);
+			if (spotless.enforceCheck) {
+				if (GradleVersion.current().compareTo(SpotlessPluginPreConfigAvoidance.CONFIG_AVOIDANCE_INTRODUCED) >= 0) {
+					SpotlessPluginPostConfigAvoidance.enforceCheck(spotless, project);
 				} else {
-					SpotlessPluginLegacy.enforceCheck(spotlessExtension, project);
+					SpotlessPluginPreConfigAvoidance.enforceCheck(spotless, project);
 				}
 			}
 		});
 	}
 
 	/** The extension for this plugin. */
+	@Deprecated
 	public SpotlessExtension getExtension() {
-		return spotlessExtension;
+		return spotless;
 	}
 
 	static String capitalize(String input) {

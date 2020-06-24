@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import java.nio.charset.Charset;
 
 import org.junit.Test;
 
-public class EncodingTest extends GradleIntegrationTest {
+public class EncodingTest extends GradleIntegrationHarness {
 	@Test
 	public void defaultIsUtf8() throws Exception {
 		setFile("build.gradle").toLines(
@@ -51,8 +51,8 @@ public class EncodingTest extends GradleIntegrationTest {
 				"    encoding 'US-ASCII'",
 				"}");
 		setFile("test.java").toContent("µ");
-		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("test.java").hasContent("??");
+		gradleRunner().withArguments("spotlessApply").buildAndFail().getOutput().contains("Encoding error!");
+		assertFile("test.java").hasContent("µ");
 	}
 
 	@Test
@@ -75,8 +75,8 @@ public class EncodingTest extends GradleIntegrationTest {
 				"}");
 		setFile("test.java").toContent("µ");
 		setFile("utf32.encoded").toContent("µ", Charset.forName("UTF-32"));
-		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("test.java").hasContent("??");
-		assertFile("utf32.encoded").hasContent("A", Charset.forName("UTF-32"));
+		gradleRunner().withArguments("spotlessApply").buildAndFail().getOutput().contains("Encoding error!");
+		assertFile("test.java").hasContent("µ");
+		assertFile("utf32.encoded").hasContent("µ", Charset.forName("UTF-32"));
 	}
 }

@@ -1,4 +1,8 @@
 {
-	// comment
-	/* comment */
+  "include": [
+	 "src/main/typescript/*.ts"
+	],
+	"exclude": [
+	 "nothing.xml"
+	]
 }

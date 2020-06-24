@@ -4,6 +4,10 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+## [3.15.3] - 2020-03-26
+### Fixed
+* Handling of character encodings on OS with non-unicode default file encoding format. CSS, HTML and JSON formatter steps encoded intermediately the input using the default file encoding, which was not lossless if the default file encoding did not support the full unicode character set. ([#545](https://github.com/diffplug/spotless/issues/545)).
+
 ## [3.15.2] - 2020-03-04
 ### Fixed
 * Racing conditions in WTP formatter configurations. Multiple configurations within the same project are no longer supported. ([#492](https://github.com/diffplug/spotless/pull/492)).

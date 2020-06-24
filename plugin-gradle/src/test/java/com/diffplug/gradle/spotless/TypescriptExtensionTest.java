@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import org.junit.experimental.categories.Category;
 import com.diffplug.spotless.category.NpmTest;
 
 @Category(NpmTest.class)
-public class TypescriptExtensionTest extends GradleIntegrationTest {
+public class TypescriptExtensionTest extends GradleIntegrationHarness {
 	@Test
 	public void allowToSpecifyFormatterVersion() throws IOException {
 		setFile("build.gradle").toLines(
@@ -89,11 +89,7 @@ public class TypescriptExtensionTest extends GradleIntegrationTest {
 
 	@Test
 	public void useTsfmtFileConfig() throws IOException {
-		setFile("tsfmt.json").toLines(
-				"{",
-				"    \"indentSize\": 1,",
-				"    \"convertTabsToSpaces\": true",
-				"}");
+		setFile("tsfmt.json").toResource("npm/tsfmt/tsfmt/tsfmt.json");
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
@@ -108,6 +104,24 @@ public class TypescriptExtensionTest extends GradleIntegrationTest {
 		setFile("test.ts").toResource("npm/tsfmt/tsfmt/tsfmt.dirty");
 		gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 		assertFile("test.ts").sameAsResource("npm/tsfmt/tsfmt/tsfmt.clean");
+	}
+
+	@Test
+	public void useTsConfigFileConfig() throws IOException {
+		setFile("tsconfig.json").toResource("npm/tsfmt/tsconfig/tsconfig.json");
+		setFile("build.gradle").toLines(
+				"buildscript { repositories { mavenCentral() } }",
+				"plugins {",
+				"    id 'com.diffplug.gradle.spotless'",
+				"}",
+				"spotless {",
+				"    typescript {",
+				"        tsfmt().tsconfigFile('tsconfig.json')",
+				"    }",
+				"}");
+		setFile("src/main/typescript/test.ts").toResource("npm/tsfmt/tsconfig/tsconfig.dirty");
+		gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		assertFile("src/main/typescript/test.ts").sameAsResource("npm/tsfmt/tsconfig/tsconfig.clean");
 	}
 
 	@Test

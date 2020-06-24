@@ -26,6 +26,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.Formatter;
+import com.diffplug.spotless.PaddedCell;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
 /**
@@ -48,7 +49,8 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 		List<File> problemFiles = new ArrayList<>();
 		for (File file : files) {
 			try {
-				if (!formatter.isClean(file)) {
+				PaddedCell.DirtyState dirtyState = PaddedCell.calculateDirtyState(formatter, file);
+				if (!dirtyState.isClean() && !dirtyState.didNotConverge()) {
 					problemFiles.add(file);
 				}
 			} catch (IOException e) {
@@ -59,7 +61,6 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 		if (!problemFiles.isEmpty()) {
 			throw new MojoExecutionException(DiffMessageFormatter.builder()
 					.runToFix("Run 'mvn spotless:apply' to fix these violations.")
-					.isPaddedCell(false)
 					.formatter(formatter)
 					.problemFiles(problemFiles)
 					.getMessage());

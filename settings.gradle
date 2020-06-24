@@ -1,6 +1,6 @@
 pluginManagement {
 	plugins {
-		id 'com.diffplug.gradle.spotless' version '3.27.0'
+		id 'com.diffplug.gradle.spotless' version '4.3.0'
 	}
 }
 plugins {
@@ -42,9 +42,11 @@ include 'testlib'	// library for sharing test infrastructure between the project
 include 'lib-extra'	// reusable library with lots of dependencies
 include 'plugin-gradle'	// gradle-specific glue code
 
-// excludes maven from JitCI builds,
-if (System.getenv('SPOTLESS_EXCLUDE_MAVEN') != 'true' && System.getenv('JITPACK') != 'true') {
-	include 'plugin-maven'	// maven-specific glue code
+if (org.gradle.api.JavaVersion.current() == org.gradle.api.JavaVersion.VERSION_1_8) {
+	// only build Java 8
+	if (System.getenv('SPOTLESS_EXCLUDE_MAVEN') != 'true' && System.getenv('JITPACK') != 'true') {
+		include 'plugin-maven'	// maven-specific glue code
+	}
 }
 
 def getStartProperty(java.lang.String name) {

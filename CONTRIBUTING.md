@@ -1,6 +1,6 @@
 # Contributing to Spotless
 
-Pull requests are welcome, preferably against `master`.  Feel free to develop spotless any way you like, but the easiest way to look at the code is to clone the repo and run `gradlew ide`, which will download, setup, and start an Eclipse IDE for you.
+Pull requests are welcome, preferably against `main`.  Feel free to develop spotless any way you like, but the easiest way to look at the code is to clone the repo and run `gradlew ide`, which will download, setup, and start an Eclipse IDE for you.
 
 ## How Spotless works
 
@@ -195,7 +195,7 @@ Run `./gradlew publishToMavenLocal` to publish this to your local repository. Th
 
 ## License
 
-By contributing your code, you agree to license your contribution under the terms of the APLv2: https://github.com/diffplug/spotless/blob/master/LICENSE.txt
+By contributing your code, you agree to license your contribution under the terms of the APLv2: https://github.com/diffplug/spotless/blob/main/LICENSE.txt
 
 All files are released with the Apache 2.0 license as such:
 

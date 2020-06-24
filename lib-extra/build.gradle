@@ -12,10 +12,10 @@ dependencies {
 	implementation "com.diffplug.durian:durian-core:${VER_DURIAN}"
 	implementation "com.diffplug.durian:durian-collect:${VER_DURIAN}"
 	// needed by GitAttributesLineEndings
-	implementation "org.eclipse.jgit:org.eclipse.jgit:5.5.0.201909110433-r"
+	implementation "org.eclipse.jgit:org.eclipse.jgit:${VER_JGIT}"
 	implementation "com.googlecode.concurrent-trees:concurrent-trees:2.6.1"
 	// used for xml parsing in EclipseFormatter
-	implementation "org.codehaus.groovy:groovy-xml:2.4.7"
+	implementation "org.codehaus.groovy:groovy-xml:3.0.3"
 
 	// testing
 	testImplementation project(':testlib')

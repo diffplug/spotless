@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
-public class RegisterDependenciesTaskTest extends GradleIntegrationTest {
+public class RegisterDependenciesTaskTest extends GradleIntegrationHarness {
 	@Test
 	public void registerDependencies() throws IOException {
 		setFile("settings.gradle")
@@ -38,24 +38,13 @@ public class RegisterDependenciesTaskTest extends GradleIntegrationTest {
 				"  }",
 				"}");
 
-		String oldestSupported = gradleRunner()
-				.withArguments("spotlessCheck").build().getOutput();
-		Assertions.assertThat(oldestSupported.replace("\r", "")).startsWith(
-				":spotlessCheck UP-TO-DATE\n" +
-						":spotlessInternalRegisterDependencies\n" +
-						":sub:spotlessJava\n" +
-						":sub:spotlessJavaCheck\n" +
-						":sub:spotlessCheck\n" +
-						"\n" +
-						"BUILD SUCCESSFUL");
-
 		setFile("gradle.properties").toLines();
-		String newestSupported = gradleRunner().withGradleVersion("6.0")
+		String newestSupported = gradleRunner().withGradleVersion(GradleVersionSupport.MODERN.version)
 				.withArguments("spotlessCheck").build().getOutput();
-		Assertions.assertThat(newestSupported.replace("\r", "")).startsWith(
-				"> Task :spotlessCheck UP-TO-DATE\n" +
-						"> Task :spotlessInternalRegisterDependencies\n" +
-						"> Task :sub:spotlessJava\n" +
+		Assertions.assertThat(newestSupported.replace("\r", ""))
+				.startsWith("> Task :spotlessCheck UP-TO-DATE\n" +
+						"> Task :spotlessInternalRegisterDependencies\n")
+				.contains("> Task :sub:spotlessJava\n" +
 						"> Task :sub:spotlessJavaCheck\n" +
 						"> Task :sub:spotlessCheck\n" +
 						"\n" +

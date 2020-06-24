@@ -15,6 +15,8 @@ task sourcesJar(type: Jar) {
 // Thus, no javadoc warnings.
 javadoc {
 	options.addStringOption('Xdoclint:none', '-quiet')
+	options.addStringOption('Xwerror', '-quiet')
+	enabled = org.gradle.api.JavaVersion.current() == org.gradle.api.JavaVersion.VERSION_1_8
 }
 
 // use markdown in javadoc
@@ -22,8 +24,10 @@ def makeLink = { url, text -> "<a href=\"${url}\" style=\"text-transform: none;\
 def javadocInfo = '<h2>' + makeLink("https://github.com/${org}/${name}", "${group}:${project.ext.artifactId}:${version}") +
 		' by ' + makeLink('https://www.diffplug.com', 'DiffPlug') + '</h2>'
 
+String dotdotGradle = project.name.startsWith('eclipse-') ? '../../gradle' : '../gradle'
 apply plugin: 'org.jdrupes.mdoclet'
 javadoc {
+	options.encoding = 'UTF-8'
 	// Where it's possible to name parameters and methods clearly enough
 	// that javadoc is not necessary, why make the code bigger?
 	//
@@ -33,12 +37,12 @@ javadoc {
 	options.header javadocInfo
 	options.footer javadocInfo
 	// setup links
-	options.linksOffline('https://docs.oracle.com/javase/8/docs/api/', '../gradle/javadoc/java8')
-	options.linksOffline('https://docs.gradle.org/2.14/javadoc/', '../gradle/javadoc/gradle')
+	options.linksOffline('https://docs.oracle.com/javase/8/docs/api/', "${dotdotGradle}/javadoc/java8")
+	options.linksOffline('https://docs.gradle.org/2.14/javadoc/', "${dotdotGradle}/javadoc/gradle")
 
 	// links to javadoc from the other versions
-	options.linksOffline("https://javadoc.io/static/com.diffplug.spotless/spotless-lib/${rootProject.spotlessChangelog.versionLast}", "../gradle/javadoc/spotless-lib")
-	options.linksOffline("https://javadoc.io/static/com.diffplug.spotless/spotless-lib-extra/${rootProject.spotlessChangelog.versionLast}", "../gradle/javadoc/spotless-lib-extra")
+	options.linksOffline("https://javadoc.io/static/com.diffplug.spotless/spotless-lib/${rootProject.spotlessChangelog.versionLast}", "${dotdotGradle}/javadoc/spotless-lib")
+	options.linksOffline("https://javadoc.io/static/com.diffplug.spotless/spotless-lib-extra/${rootProject.spotlessChangelog.versionLast}", "${dotdotGradle}/javadoc/spotless-lib-extra")
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {

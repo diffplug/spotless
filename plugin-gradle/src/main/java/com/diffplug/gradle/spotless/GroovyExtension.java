@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,8 @@ import com.diffplug.spotless.java.ImportOrderStep;
 public class GroovyExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "groovy";
 
-	public GroovyExtension(SpotlessExtension rootExtension) {
-		super(rootExtension);
+	public GroovyExtension(SpotlessExtensionBase spotless) {
+		super(spotless);
 	}
 
 	boolean excludeJava = false;
@@ -72,7 +72,7 @@ public class GroovyExtension extends FormatExtension implements HasBuiltinDelimi
 				StringPrinter.buildStringFromLines(
 						"'importOrder([x, y, z])' is deprecated.",
 						"Use 'importOrder x, y, z' instead.",
-						"For details see https://github.com/diffplug/spotless/tree/master/plugin-gradle#applying-to-java-source"));
+						"For details see https://github.com/diffplug/spotless/tree/main/plugin-gradle#applying-to-java-source"));
 		importOrder(importOrder.toArray(new String[0]));
 	}
 
@@ -99,7 +99,7 @@ public class GroovyExtension extends FormatExtension implements HasBuiltinDelimi
 
 		GrEclipseConfig(String version, FormatExtension extension) {
 			this.extension = extension;
-			builder = GrEclipseFormatterStep.createBuilder(GradleProvisioner.fromProject(extension.getProject()));
+			builder = GrEclipseFormatterStep.createBuilder(extension.provisioner());
 			builder.setVersion(version);
 			extension.addStep(builder.build());
 		}

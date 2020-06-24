@@ -89,6 +89,26 @@ public class EclipseHtmlFormatterStepImplTest {
 				testData.expected("css.html"), output);
 	}
 
+	@Test
+	public void checkCleanupForNonUtf8() throws Exception {
+		String osEncoding = System.getProperty("file.encoding");
+		System.setProperty("file.encoding", "ISO-8859-1"); //Simulate a non UTF-8 OS
+		String[] input = testData.input("utf-8.html");
+		String output = formatter.format(input[0]);
+		System.setProperty("file.encoding", osEncoding);
+		assertEquals("Unexpected formatting of UTF-8", testData.expected("utf-8.html"), output);
+	}
+
+	@Test
+	public void checkBOMisStripped() throws Exception {
+		String[] input = testData.input("bom.html");
+		String[] inputWithoutBom = testData.input("utf-8.html");
+		//The UTF-8 BOM is interpreted as on UTF-16 character.
+		assertEquals("BOM input invalid", input[0].length() - 1, inputWithoutBom[0].length());
+		String output = formatter.format(input[0]);
+		assertEquals("BOM is not stripped", testData.expected("utf-8.html"), output);
+	}
+
 	@Test(expected = IllegalArgumentException.class)
 	public void configurationChange() throws Exception {
 		new EclipseHtmlFormatterStepImpl(new Properties());
