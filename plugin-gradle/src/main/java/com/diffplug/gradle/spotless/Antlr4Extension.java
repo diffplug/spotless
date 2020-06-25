@@ -24,7 +24,7 @@ import com.diffplug.spotless.antlr4.Antlr4FormatterStep;
 public class Antlr4Extension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "antlr4";
 
-	public Antlr4Extension(SpotlessExtension rootExtension) {
+	public Antlr4Extension(SpotlessExtensionBase rootExtension) {
 		super(rootExtension);
 	}
 
