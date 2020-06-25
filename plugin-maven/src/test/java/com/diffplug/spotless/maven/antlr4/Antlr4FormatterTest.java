@@ -17,9 +17,9 @@ package com.diffplug.spotless.maven.antlr4;
 
 import org.junit.Test;
 
-import com.diffplug.spotless.maven.MavenIntegrationTest;
+import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
-public class Antlr4FormatterTest extends MavenIntegrationTest {
+public class Antlr4FormatterTest extends MavenIntegrationHarness {
 
 	@Test
 	public void applyUsingCustomVersion() throws Exception {

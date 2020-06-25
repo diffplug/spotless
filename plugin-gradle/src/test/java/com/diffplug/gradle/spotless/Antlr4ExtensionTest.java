@@ -19,7 +19,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-public class Antlr4ExtensionTest extends GradleIntegrationTest {
+public class Antlr4ExtensionTest extends GradleIntegrationHarness {
 
 	@Test
 	public void applyUsingDefaultVersion() throws IOException {
