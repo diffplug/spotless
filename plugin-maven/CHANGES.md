@@ -5,6 +5,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * `prettier` will now autodetect the parser (and formatter) to use based on the filename, unless you override this using `config` or `configFile` with the option `parser` or `filepath`. ([#620](https://github.com/diffplug/spotless/pull/620))
+* Added ANTLR4 support ([#326](https://github.com/diffplug/spotless/issues/326)).
 
 ## [1.31.3] - 2020-06-17
 ### Changed
@@ -44,7 +45,6 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [1.28.0] - 2020-03-20
 ### Added
-* Added ANTLR4 support ([#326](https://github.com/diffplug/spotless/issues/326)).
 * Enable IntelliJ-compatible token `$today.year` for specifying the year in license header files. ([#542](https://github.com/diffplug/spotless/pull/542))
 ### Fixed
 * Fix scala and kotlin maven config documentation.

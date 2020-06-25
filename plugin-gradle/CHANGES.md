@@ -7,6 +7,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * `prettier` will now autodetect the parser (and formatter) to use based on the filename, unless you override this using `config()` or `configFile()` with the option `parser` or `filepath`. ([#620](https://github.com/diffplug/spotless/pull/620))
+* Added ANTLR4 support ([#326](https://github.com/diffplug/spotless/issues/326)).
 
 ## [4.4.0] - 2020-06-19
 ### Added
@@ -111,7 +112,6 @@ spotless {
 
 ## [3.28.0] - 2020-03-20
 ### Added
-* Added ANTLR4 support ([#326](https://github.com/diffplug/spotless/issues/326)).
 * Enable IntelliJ-compatible token `$today.year` for specifying the year in license header files. ([#542](https://github.com/diffplug/spotless/pull/542))
 ### Fixed
 * Eclipse-WTP formatter (web tools platform, not java) could encounter errors in parallel multiproject builds [#492](https://github.com/diffplug/spotless/issues/492). Fixed for Eclipse-WTP formatter Eclipse version 4.13.0 (default version).
