@@ -17,10 +17,14 @@ package com.diffplug.spotless;
 
 import static com.diffplug.spotless.MoreIterables.toNullHostileList;
 import static com.diffplug.spotless.MoreIterables.toSortedSet;
+import static java.util.Comparator.comparing;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,7 +46,7 @@ public final class FileSignature implements Serializable {
 
 	private final String[] filenames;
 	private final long[] filesizes;
-	private final long[] lastModified;
+	private final byte[][] fileHashes;
 
 	/** Method has been renamed to {@link FileSignature#signAsSet}.
 	 * In case no sorting and removal of duplicates is required,
@@ -77,21 +81,21 @@ public final class FileSignature implements Serializable {
 
 	/** Creates file signature insensitive to the order of the files. */
 	public static FileSignature signAsSet(Iterable<File> files) throws IOException {
-		return new FileSignature(toSortedSet(files));
+		return new FileSignature(toSortedSet(files, comparing(File::getName)));
 	}
 
 	private FileSignature(final List<File> files) throws IOException {
-		this.files = files;
+		this.files = validateInputFiles(files);
 
 		filenames = new String[this.files.size()];
 		filesizes = new long[this.files.size()];
-		lastModified = new long[this.files.size()];
+		fileHashes = new byte[this.files.size()][];
 
 		int i = 0;
 		for (File file : this.files) {
-			filenames[i] = file.getCanonicalPath();
+			filenames[i] = file.getName();
 			filesizes[i] = file.length();
-			lastModified[i] = file.lastModified();
+			fileHashes[i] = hash(file);
 			++i;
 		}
 	}
@@ -118,5 +122,28 @@ public final class FileSignature implements Serializable {
 	/** Transforms a unix path to a native one. */
 	public static String pathUnixToNative(String pathUnix) {
 		return LineEnding.nativeIsWin() ? pathUnix.replace('/', '\\') : pathUnix;
+	}
+
+	private static List<File> validateInputFiles(List<File> files) {
+		for (File file : files) {
+			if (!file.isFile()) {
+				throw new IllegalArgumentException(
+						"File signature can only be created for existing regular files, given: "
+								+ file);
+			}
+		}
+		return files;
+	}
+
+	private static byte[] hash(File file) throws IOException {
+		MessageDigest messageDigest;
+		try {
+			messageDigest = MessageDigest.getInstance("SHA-256");
+		} catch (NoSuchAlgorithmException e) {
+			throw new IllegalStateException("SHA-256 digest algorithm not available", e);
+		}
+		byte[] fileContent = Files.readAllBytes(file.toPath());
+		messageDigest.update(fileContent);
+		return messageDigest.digest();
 	}
 }
