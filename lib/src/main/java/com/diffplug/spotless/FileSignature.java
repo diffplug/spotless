@@ -21,20 +21,24 @@ import static java.util.Comparator.comparing;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /** Computes a signature for any needed files. */
 public final class FileSignature implements Serializable {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
 
 	/*
 	 * Transient because not needed to uniquely identify a FileSignature instance, and also because
@@ -43,10 +47,7 @@ public final class FileSignature implements Serializable {
 	 */
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	private final transient List<File> files;
-
-	private final String[] filenames;
-	private final long[] filesizes;
-	private final byte[][] fileHashes;
+	private final Sig[] signatures;
 
 	/** Method has been renamed to {@link FileSignature#signAsSet}.
 	 * In case no sorting and removal of duplicates is required,
@@ -86,16 +87,11 @@ public final class FileSignature implements Serializable {
 
 	private FileSignature(final List<File> files) throws IOException {
 		this.files = validateInputFiles(files);
-
-		filenames = new String[this.files.size()];
-		filesizes = new long[this.files.size()];
-		fileHashes = new byte[this.files.size()][];
+		this.signatures = new Sig[this.files.size()];
 
 		int i = 0;
 		for (File file : this.files) {
-			filenames[i] = file.getName();
-			filesizes[i] = file.length();
-			fileHashes[i] = hash(file);
+			signatures[i] = cache.sign(file);
 			++i;
 		}
 	}
@@ -135,15 +131,58 @@ public final class FileSignature implements Serializable {
 		return files;
 	}
 
-	private static byte[] hash(File file) throws IOException {
-		MessageDigest messageDigest;
-		try {
-			messageDigest = MessageDigest.getInstance("SHA-256");
-		} catch (NoSuchAlgorithmException e) {
-			throw new IllegalStateException("SHA-256 digest algorithm not available", e);
+	/**
+	 * It is very common for a given set of files to be "signed" many times.  For example,
+	 * the jars which constitute any given formatter live in a central cache, but will be signed
+	 * over and over.  To save this I/O, we maintain a cache, invalidated by lastModified time.
+	 */
+	static final Cache cache = new Cache();
+
+	static class Cache {
+		Map<Key, Sig> cache = new HashMap<>();
+
+		synchronized Sig sign(File file) throws IOException {
+			String canonicalPath = file.getCanonicalPath();
+			long lastModified = file.lastModified();
+			return cache.computeIfAbsent(new Key(canonicalPath, lastModified), ThrowingEx.<Key, Sig> wrap(key -> {
+				MessageDigest digest = MessageDigest.getInstance("SHA-256");
+				Path path = Paths.get(key.canonicalPath);
+				// calculate the size and content hash of the file
+				long size = 0;
+				byte[] data = Files.readAllBytes(path);
+				try (InputStream input = Files.newInputStream(path)) {
+					int numRead = input.read(data);
+					while (numRead != -1) {
+						size += numRead;
+						digest.update(data, 0, numRead);
+					}
+				}
+				return new Sig(path.getFileName().toString(), size, digest.digest());
+			}));
 		}
-		byte[] fileContent = Files.readAllBytes(file.toPath());
-		messageDigest.update(fileContent);
-		return messageDigest.digest();
+	}
+
+	static class Key {
+		final String canonicalPath;
+		final long lastModified;
+
+		public Key(String canonicalPath, long lastModified) {
+			this.canonicalPath = canonicalPath;
+			this.lastModified = lastModified;
+		}
+	}
+
+	static class Sig implements Serializable {
+		private static final long serialVersionUID = 4375346948593472485L;
+
+		final String name;
+		final long size;
+		final byte[] hash;
+
+		Sig(String name, long size, byte[] hash) {
+			this.name = name;
+			this.size = size;
+			this.hash = hash;
+		}
 	}
 }
