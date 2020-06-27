@@ -28,9 +28,8 @@ final class NpmResourceHelper {
 		// no instance required
 	}
 
-	static void writeUtf8StringToFile(File targetDir, String fileName, String stringToWrite) throws IOException {
-		File packageJsonFile = new File(targetDir, fileName);
-		Files.write(packageJsonFile.toPath(), stringToWrite.getBytes(StandardCharsets.UTF_8));
+	static void writeUtf8StringToFile(File file, String stringToWrite) throws IOException {
+		Files.write(file.toPath(), stringToWrite.getBytes(StandardCharsets.UTF_8));
 	}
 
 	static void writeUtf8StringToOutputStream(String stringToWrite, OutputStream outputStream) throws IOException {
