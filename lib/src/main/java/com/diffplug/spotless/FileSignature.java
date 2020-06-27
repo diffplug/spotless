@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Collection;
@@ -139,50 +140,51 @@ public final class FileSignature implements Serializable {
 	static final Cache cache = new Cache();
 
 	static class Cache {
-		Map<Key, Sig> cache = new HashMap<>();
+		Map<String, Sig> cache = new HashMap<>();
 
 		synchronized Sig sign(File file) throws IOException {
 			String canonicalPath = file.getCanonicalPath();
-			long lastModified = file.lastModified();
-			return cache.computeIfAbsent(new Key(canonicalPath, lastModified), ThrowingEx.<Key, Sig> wrap(key -> {
+			Sig sig = cache.computeIfAbsent(canonicalPath, ThrowingEx.<String, Sig> wrap(p -> {
 				MessageDigest digest = MessageDigest.getInstance("SHA-256");
-				Path path = Paths.get(key.canonicalPath);
+				Path path = Paths.get(p);
 				// calculate the size and content hash of the file
 				long size = 0;
 				byte[] data = Files.readAllBytes(path);
+				long lastModified;
 				try (InputStream input = Files.newInputStream(path)) {
+					lastModified = Files.readAttributes(path, BasicFileAttributes.class).lastModifiedTime().toMillis();
 					int numRead = input.read(data);
 					while (numRead != -1) {
 						size += numRead;
 						digest.update(data, 0, numRead);
 					}
 				}
-				return new Sig(path.getFileName().toString(), size, digest.digest());
+				return new Sig(path.getFileName().toString(), size, digest.digest(), lastModified);
 			}));
-		}
-	}
-
-	static class Key {
-		final String canonicalPath;
-		final long lastModified;
-
-		public Key(String canonicalPath, long lastModified) {
-			this.canonicalPath = canonicalPath;
-			this.lastModified = lastModified;
+			long lastModified = file.lastModified();
+			if (sig.lastModified != lastModified) {
+				cache.remove(canonicalPath);
+				return sign(file);
+			} else {
+				return sig;
+			}
 		}
 	}
 
 	static class Sig implements Serializable {
-		private static final long serialVersionUID = 4375346948593472485L;
+		private static final long serialVersionUID = 6727302747168655222L;
 
 		final String name;
 		final long size;
 		final byte[] hash;
+		/** transient because state should be transferable from machine to machine. */
+		final transient long lastModified;
 
-		Sig(String name, long size, byte[] hash) {
+		Sig(String name, long size, byte[] hash, long lastModified) {
 			this.name = name;
 			this.size = size;
 			this.hash = hash;
+			this.lastModified = lastModified;
 		}
 	}
 }
