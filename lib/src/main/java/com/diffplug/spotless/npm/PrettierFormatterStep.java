@@ -88,7 +88,7 @@ public class PrettierFormatterStep {
 				ServerProcessInfo prettierRestServer = npmRunServer();
 				PrettierRestService restService = new PrettierRestService(prettierRestServer.getBaseUrl());
 				String prettierConfigOptions = restService.resolveConfig(this.prettierConfig.getPrettierConfigPath(), this.prettierConfig.getOptions());
-				return Closeable.of(() -> endServer(restService, prettierRestServer), input -> restService.format(input, prettierConfigOptions));
+				return Closeable.of(() -> endServer(restService, prettierRestServer), new PrettierFilePathPassingFormatterFunc(prettierConfigOptions, restService));
 			} catch (Exception e) {
 				throw ThrowingEx.asRuntime(e);
 			}
@@ -103,5 +103,44 @@ public class PrettierFormatterStep {
 			restServer.close();
 		}
 
+	}
+
+	public static class PrettierFilePathPassingFormatterFunc implements FormatterFunc {
+		private final String prettierConfigOptions;
+		private final PrettierRestService restService;
+
+		public PrettierFilePathPassingFormatterFunc(String prettierConfigOptions, PrettierRestService restService) {
+			this.prettierConfigOptions = requireNonNull(prettierConfigOptions);
+			this.restService = requireNonNull(restService);
+		}
+
+		@Override
+		public String apply(String input) throws Exception {
+			return apply(input, new File(""));
+		}
+
+		@Override
+		public String apply(String input, File source) throws Exception {
+			requireNonNull(input, "input must not be null");
+			requireNonNull(source, "source must not be null");
+			final String prettierConfigOptionsWithFilepath = assertFilepathInConfigOptions(source);
+			return restService.format(input, prettierConfigOptionsWithFilepath);
+		}
+
+		private String assertFilepathInConfigOptions(File file) {
+			// if it is already in the options, we do nothing
+			if (prettierConfigOptions.contains("\"filepath\"") || prettierConfigOptions.contains("\"parser\"")) {
+				return prettierConfigOptions;
+			}
+			// if the file has no name, we  cannot use it
+			if (file.getName().trim().length() == 0) {
+				return prettierConfigOptions;
+			}
+			// if it is not there, we add it at the beginning of the Options
+			final int startOfConfigOption = prettierConfigOptions.indexOf('{');
+			final boolean hasAnyConfigOption = prettierConfigOptions.indexOf(':', startOfConfigOption + 1) != -1;
+			final String filePathOption = "\"filepath\":\"" + file.getName() + "\"";
+			return "{" + filePathOption + (hasAnyConfigOption ? "," : "") + prettierConfigOptions.substring(startOfConfigOption + 1);
+		}
 	}
 }

@@ -69,6 +69,25 @@ public class PrettierIntegrationTest extends GradleIntegrationHarness {
 	}
 
 	@Test
+	public void chooseParserBasedOnFilename() throws IOException {
+		setFile("build.gradle").toLines(
+				"buildscript { repositories { mavenCentral() } }",
+				"plugins {",
+				"    id 'com.diffplug.gradle.spotless'",
+				"}",
+				"spotless {",
+				"    format 'webResources', {",
+				"        target 'dirty.*'",
+				"        prettier()",
+				"    }",
+				"}");
+		setFile("dirty.json").toResource("npm/prettier/filename/dirty.json");
+		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		assertFile("dirty.json").sameAsResource("npm/prettier/filename/clean.json");
+	}
+
+	@Test
 	public void useJavaCommunityPlugin() throws IOException {
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",

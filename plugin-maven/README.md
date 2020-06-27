@@ -323,6 +323,23 @@ Supported config file variants are documented on [prettier.io](https://prettier.
 
 To apply prettier to more kinds of files, just add more formats.
 
+
+Or you might even let prettier detect the file type and choose the parser on its own such as:
+
+```xml
+<configuration>
+  <formats>
+    <format>
+      <includes>
+        <include>src/*/webapp/**</include>
+        <include>app/**</include>
+      </includes>
+      <prettier/>
+    </format>
+  </formats>
+</configuration>
+```
+
 <a name="prettier-plugins"></a>
 ### Using plugins for prettier
 
