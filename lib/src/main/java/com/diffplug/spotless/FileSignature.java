@@ -83,7 +83,21 @@ public final class FileSignature implements Serializable {
 
 	/** Creates file signature insensitive to the order of the files. */
 	public static FileSignature signAsSet(Iterable<File> files) throws IOException {
-		return new FileSignature(toSortedSet(files, comparing(File::getName)));
+		List<File> natural = toSortedSet(files);
+		List<File> onNameOnly = toSortedSet(files, comparing(File::getName));
+		if (natural.size() != onNameOnly.size()) {
+			StringBuilder builder = new StringBuilder();
+			builder.append("For these files:\n");
+			for (File file : files) {
+				builder.append("  " + file.getAbsolutePath() + "\n");
+			}
+			builder.append("a caching signature is being generated, which will be based only on their\n");
+			builder.append("names, not their full path (foo.txt, not C:\folder\foo.txt). Unexpectedly,\n");
+			builder.append("you have two files with different paths, but the same names.  You must\n");
+			builder.append("rename one of them so that all files have unique names.");
+			throw new IllegalArgumentException(builder.toString());
+		}
+		return new FileSignature(onNameOnly);
 	}
 
 	private FileSignature(final List<File> files) throws IOException {
