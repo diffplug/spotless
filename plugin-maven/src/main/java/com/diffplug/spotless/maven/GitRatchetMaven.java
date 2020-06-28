@@ -24,7 +24,7 @@ import org.eclipse.jgit.lib.ObjectId;
 import com.diffplug.common.base.Errors;
 import com.diffplug.spotless.extra.GitRatchet;
 
-class MavenGitRatchet extends GitRatchet<File> {
+class GitRatchetMaven extends GitRatchet<File> {
 	@Override
 	protected File getDir(File project) {
 		return project;
@@ -35,13 +35,13 @@ class MavenGitRatchet extends GitRatchet<File> {
 		return project.getParentFile();
 	}
 
-	private static MavenGitRatchet instance = new MavenGitRatchet();
+	private static GitRatchetMaven instance = new GitRatchetMaven();
 
-	static MavenGitRatchet instance() {
+	static GitRatchetMaven instance() {
 		if (instance == null) {
-			synchronized (MavenGitRatchet.class) {
+			synchronized (GitRatchetMaven.class) {
 				if (instance == null) {
-					instance = new MavenGitRatchet();
+					instance = new GitRatchetMaven();
 				}
 			}
 		}

@@ -138,7 +138,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		if (!ratchetFrom.isPresent()) {
 			toFormat = files;
 		} else {
-			toFormat = Iterables.filter(files, MavenGitRatchet.instance().isGitDirty(baseDir, ratchetFrom.get()));
+			toFormat = Iterables.filter(files, GitRatchetMaven.instance().isGitDirty(baseDir, ratchetFrom.get()));
 		}
 		try (Formatter formatter = formatterFactory.newFormatter(files, config)) {
 			process(toFormat, formatter);

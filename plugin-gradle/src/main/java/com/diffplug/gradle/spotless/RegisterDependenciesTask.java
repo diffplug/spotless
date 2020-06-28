@@ -106,10 +106,10 @@ public class RegisterDependenciesTask extends DefaultTask {
 		Files.write(Integer.toString(getSteps().size()), unitOutput, StandardCharsets.UTF_8);
 	}
 
-	GradleGitRatchet gitRatchet = new GradleGitRatchet();
+	GitRatchetGradle gitRatchet = new GitRatchetGradle();
 
 	@Internal
-	GradleGitRatchet getGitRatchet() {
+	GitRatchetGradle getGitRatchet() {
 		return gitRatchet;
 	}
 }
