@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,4 +56,8 @@ public class FileSignatureTest extends ResourceHarness {
 		return result;
 	}
 
+	@Test
+	public void testSubpath() {
+		assertThat(FileSignature.subpath("root/", "root/child")).isEqualTo("child");
+	}
 }

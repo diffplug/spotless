@@ -669,13 +669,10 @@ public class FormatExtension {
 	protected void setupTask(SpotlessTask task) {
 		task.setEncoding(getEncoding().name());
 		task.setExceptionPolicy(exceptionPolicy);
-		if (targetExclude == null) {
-			task.setTarget(target);
-		} else {
-			task.setTarget(target.minus(targetExclude));
-		}
+		FileCollection totalTarget = targetExclude == null ? target : target.minus(targetExclude);
+		task.setTarget(totalTarget);
 		task.setSteps(steps);
-		task.setLineEndingsPolicy(getLineEndings().createPolicy(getProject().getProjectDir(), () -> task.target));
+		task.setLineEndingsPolicy(getLineEndings().createPolicy(getProject().getProjectDir(), () -> totalTarget));
 		if (spotless.project != spotless.project.getRootProject()) {
 			spotless.getRegisterDependenciesTask().hookSubprojectTask(task);
 		}
