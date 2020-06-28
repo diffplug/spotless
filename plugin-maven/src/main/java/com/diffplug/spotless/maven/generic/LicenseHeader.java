@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ public class LicenseHeader implements FormatterStepFactory {
 		if (file != null ^ content != null) {
 			FormatterStep step = file != null
 					? createStepFromFile(config, delimiterString)
-					: createStepFromContent(delimiterString);
+					: createStepFromContent(config, delimiterString);
 
 			return step.filterByFile(LicenseHeaderStep.unsupportedJvmFilesFilter());
 		} else {
@@ -58,7 +58,7 @@ public class LicenseHeader implements FormatterStepFactory {
 		return LicenseHeaderStep.createFromFile(licenseHeaderFile, config.getEncoding(), delimiterString);
 	}
 
-	private FormatterStep createStepFromContent(String delimiterString) {
+	private FormatterStep createStepFromContent(FormatterStepConfig config, String delimiterString) {
 		return LicenseHeaderStep.createFromHeader(content, delimiterString);
 	}
 }
