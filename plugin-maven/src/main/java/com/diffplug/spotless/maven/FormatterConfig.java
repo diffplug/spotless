@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ import static java.util.Collections.unmodifiableList;
 import java.io.File;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Provisioner;
 
@@ -27,14 +29,16 @@ public class FormatterConfig {
 
 	private final String encoding;
 	private final LineEnding lineEndings;
+	private final @Nullable String ratchetFrom;
 	private final Provisioner provisioner;
 	private final FileLocator fileLocator;
 	private final List<FormatterStepFactory> globalStepFactories;
 
-	public FormatterConfig(File baseDir, String encoding, LineEnding lineEndings, Provisioner provisioner,
+	public FormatterConfig(File baseDir, String encoding, LineEnding lineEndings, @Nullable String ratchetFrom, Provisioner provisioner,
 			FileLocator fileLocator, List<FormatterStepFactory> globalStepFactories) {
 		this.encoding = encoding;
 		this.lineEndings = lineEndings;
+		this.ratchetFrom = ratchetFrom;
 		this.provisioner = provisioner;
 		this.fileLocator = fileLocator;
 		this.globalStepFactories = globalStepFactories;
@@ -46,6 +50,10 @@ public class FormatterConfig {
 
 	public LineEnding getLineEndings() {
 		return lineEndings;
+	}
+
+	public @Nullable String getRatchetFrom() {
+		return ratchetFrom;
 	}
 
 	public Provisioner getProvisioner() {
