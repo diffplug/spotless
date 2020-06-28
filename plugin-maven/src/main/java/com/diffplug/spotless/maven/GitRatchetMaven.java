@@ -35,7 +35,7 @@ class GitRatchetMaven extends GitRatchet<File> {
 		return project.getParentFile();
 	}
 
-	private static GitRatchetMaven instance = new GitRatchetMaven();
+	private static volatile GitRatchetMaven instance = new GitRatchetMaven();
 
 	static GitRatchetMaven instance() {
 		if (instance == null) {
