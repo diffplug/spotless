@@ -24,7 +24,9 @@ import org.eclipse.jgit.lib.ObjectId;
 import com.diffplug.common.base.Errors;
 import com.diffplug.spotless.extra.GitRatchet;
 
-class GitRatchetMaven extends GitRatchet<File> {
+final class GitRatchetMaven extends GitRatchet<File> {
+	private GitRatchetMaven() {}
+
 	@Override
 	protected File getDir(File project) {
 		return project;

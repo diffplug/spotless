@@ -24,7 +24,7 @@ import org.gradle.api.Project;
 import com.diffplug.spotless.extra.GitRatchet;
 
 /** Gradle implementation of GitRatchet. */
-class GitRatchetGradle extends GitRatchet<Project> {
+final class GitRatchetGradle extends GitRatchet<Project> {
 	@Override
 	protected File getDir(Project project) {
 		return project.getProjectDir();
