@@ -75,4 +75,8 @@ public class FileSignatureTest extends ResourceHarness {
 		return result;
 	}
 
+	@Test
+	public void testSubpath() {
+		assertThat(FileSignature.subpath("root/", "root/child")).isEqualTo("child");
+	}
 }

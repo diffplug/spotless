@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Changed
+* `LineEnding.GIT_ATTRIBUTES` now creates a policy whose serialized state can be relocated from one machine to another.  No user-visible change, but paves the way for remote build cache support in Gradle. ([#621](https://github.com/diffplug/spotless/pull/621))
 ### Added
 * `prettier` will now autodetect the parser (and formatter) to use based on the filename, unless you override this using `config` or `configFile` with the option `parser` or `filepath`. ([#620](https://github.com/diffplug/spotless/pull/620))
 ### Changed

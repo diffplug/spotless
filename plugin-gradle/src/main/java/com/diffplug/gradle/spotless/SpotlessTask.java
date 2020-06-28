@@ -61,6 +61,9 @@ public class SpotlessTask extends SpotlessTaskBase {
 	}
 
 	public void setFilePatterns(String filePatterns) {
+		if (!filePatterns.equals("") && this instanceof SpotlessTaskModern) {
+			throw new IllegalArgumentException("-PspotlessFiles is not supported in the modern plugin");
+		}
 		this.filePatterns = Objects.requireNonNull(filePatterns);
 	}
 
