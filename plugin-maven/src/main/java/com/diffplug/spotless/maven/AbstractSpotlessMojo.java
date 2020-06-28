@@ -24,13 +24,12 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import javax.annotation.Nullable;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -134,13 +133,12 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	private void execute(FormatterFactory formatterFactory) throws MojoExecutionException {
 		List<File> files = collectFiles(formatterFactory);
 		FormatterConfig config = getFormatterConfig();
-		@Nullable
-		String ratchetFrom = formatterFactory.ratchetFrom(config);
+		Optional<String> ratchetFrom = formatterFactory.ratchetFrom(config);
 		Iterable<File> toFormat;
-		if (ratchetFrom == null) {
+		if (!ratchetFrom.isPresent()) {
 			toFormat = files;
 		} else {
-			toFormat = Iterables.filter(files, MavenGitRatchet.instance().isGitDirty(baseDir, ratchetFrom));
+			toFormat = Iterables.filter(files, MavenGitRatchet.instance().isGitDirty(baseDir, ratchetFrom.get()));
 		}
 		try (Formatter formatter = formatterFactory.newFormatter(files, config)) {
 			process(toFormat, formatter);
@@ -191,7 +189,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		Provisioner provisioner = MavenProvisioner.create(resolver);
 		List<FormatterStepFactory> formatterStepFactories = getFormatterStepFactories();
 		FileLocator fileLocator = getFileLocator();
-		return new FormatterConfig(baseDir, encoding, lineEndings, ratchetFrom, provisioner, fileLocator, formatterStepFactories);
+		return new FormatterConfig(baseDir, encoding, lineEndings, Optional.ofNullable(ratchetFrom), provisioner, fileLocator, formatterStepFactories);
 	}
 
 	private FileLocator getFileLocator() {

@@ -19,8 +19,7 @@ import static java.util.Collections.unmodifiableList;
 
 import java.io.File;
 import java.util.List;
-
-import javax.annotation.Nullable;
+import java.util.Optional;
 
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Provisioner;
@@ -29,12 +28,12 @@ public class FormatterConfig {
 
 	private final String encoding;
 	private final LineEnding lineEndings;
-	private final @Nullable String ratchetFrom;
+	private final Optional<String> ratchetFrom;
 	private final Provisioner provisioner;
 	private final FileLocator fileLocator;
 	private final List<FormatterStepFactory> globalStepFactories;
 
-	public FormatterConfig(File baseDir, String encoding, LineEnding lineEndings, @Nullable String ratchetFrom, Provisioner provisioner,
+	public FormatterConfig(File baseDir, String encoding, LineEnding lineEndings, Optional<String> ratchetFrom, Provisioner provisioner,
 			FileLocator fileLocator, List<FormatterStepFactory> globalStepFactories) {
 		this.encoding = encoding;
 		this.lineEndings = lineEndings;
@@ -52,7 +51,7 @@ public class FormatterConfig {
 		return lineEndings;
 	}
 
-	public @Nullable String getRatchetFrom() {
+	public Optional<String> getRatchetFrom() {
 		return ratchetFrom;
 	}
 
