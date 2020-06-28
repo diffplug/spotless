@@ -15,7 +15,7 @@
  */
 package com.diffplug.spotless.maven.generic;
 
-import java.io.File;
+import java.nio.file.Files;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
@@ -41,24 +41,22 @@ public class LicenseHeader implements FormatterStepFactory {
 		if (delimiterString == null) {
 			throw new IllegalArgumentException("You need to specify 'delimiter'.");
 		}
-
 		if (file != null ^ content != null) {
-			FormatterStep step = file != null
-					? createStepFromFile(config, delimiterString)
-					: createStepFromContent(config, delimiterString);
-
-			return step.filterByFile(LicenseHeaderStep.unsupportedJvmFilesFilter());
+			FormatterStep unfiltered = FormatterStep.createLazy(LicenseHeaderStep.name(), () -> {
+				// by default, we should update the year if the user is using ratchetFrom
+				boolean updateYear = config.getRatchetFrom().isPresent();
+				String header;
+				if (content != null) {
+					header = content;
+				} else {
+					byte[] raw = Files.readAllBytes(config.getFileLocator().locateFile(file).toPath());
+					header = new String(raw, config.getEncoding());
+				}
+				return new LicenseHeaderStep(header, delimiterString, LicenseHeaderStep.defaultYearDelimiter(), updateYear);
+			}, step -> step::format);
+			return unfiltered.filterByFile(LicenseHeaderStep.unsupportedJvmFilesFilter());
 		} else {
 			throw new IllegalArgumentException("Must specify exactly one of 'file' or 'content'.");
 		}
-	}
-
-	private FormatterStep createStepFromFile(FormatterStepConfig config, String delimiterString) {
-		File licenseHeaderFile = config.getFileLocator().locateFile(file);
-		return LicenseHeaderStep.createFromFile(licenseHeaderFile, config.getEncoding(), delimiterString);
-	}
-
-	private FormatterStep createStepFromContent(FormatterStepConfig config, String delimiterString) {
-		return LicenseHeaderStep.createFromHeader(content, delimiterString);
 	}
 }
