@@ -9,7 +9,7 @@ output = [
   link(shield('License Apache', 'license', 'apache', 'blue'), 'https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)'),
   link(shield('Changelog', 'changelog', '{{versionLast}}', 'blue'), 'CHANGES.md'),
   '',
-  link(image('Circle CI', 'https://circleci.com/gh/diffplug/spotless/tree/master.svg?style=shield'), 'https://circleci.com/gh/diffplug/spotless/tree/master'),
+  link(image('Circle CI', 'https://circleci.com/gh/diffplug/spotless/tree/main.svg?style=shield'), 'https://circleci.com/gh/diffplug/spotless/tree/main'),
   link(shield('Live chat', 'gitter', 'chat', 'brightgreen'), 'https://gitter.im/{{org}}/{{name}}'),
   link(shield('VS Code plugin Apache', 'IDE', 'VS Code', 'blueviolet'), 'https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle'),
   link(shield('VS Code plugin Apache', 'IDE', 'add yours', 'blueviolet'), 'IDE_HOOK.md')
@@ -17,11 +17,11 @@ output = [
 -->
 [![Gradle plugin](https://img.shields.io/badge/plugins.gradle.org-com.diffplug.gradle.spotless-blue.svg)](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless)
 [![Maven central](https://img.shields.io/badge/mavencentral-yes-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-gradle%22)
-[![Javadoc](https://img.shields.io/badge/javadoc-yes-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/4.2.0/index.html)
+[![Javadoc](https://img.shields.io/badge/javadoc-yes-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/4.4.0/index.html)
 [![License Apache](https://img.shields.io/badge/license-apache-blue.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
-[![Changelog](https://img.shields.io/badge/changelog-4.2.0-blue.svg)](CHANGES.md)
+[![Changelog](https://img.shields.io/badge/changelog-4.4.0-blue.svg)](CHANGES.md)
 
-[![Circle CI](https://circleci.com/gh/diffplug/spotless/tree/master.svg?style=shield)](https://circleci.com/gh/diffplug/spotless/tree/master)
+[![Circle CI](https://circleci.com/gh/diffplug/spotless/tree/main.svg?style=shield)](https://circleci.com/gh/diffplug/spotless/tree/main)
 [![Live chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
 [![VS Code plugin Apache](https://img.shields.io/badge/IDE-VS_Code-blueviolet.svg)](https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle)
 [![VS Code plugin Apache](https://img.shields.io/badge/IDE-add_yours-blueviolet.svg)](IDE_HOOK.md)
@@ -80,7 +80,7 @@ spotless {
 }
 ```
 
-Spotless can check and apply formatting to any plain-text file, using simple rules ([javadoc](https://javadoc.io/static/com.diffplug.spotless/spotless-plugin-gradle/4.2.0/com/diffplug/gradle/spotless/FormatExtension.html)) like those above.  It also supports more powerful formatters:
+Spotless can check and apply formatting to any plain-text file, using simple rules ([javadoc](https://javadoc.io/static/com.diffplug.spotless/spotless-plugin-gradle/4.4.0/com/diffplug/gradle/spotless/FormatExtension.html)) like those above.  It also supports more powerful formatters:
 
 * Eclipse's [CDT](#eclipse-cdt) C/C++ code formatter
 * Eclipse's java code formatter (including style and import ordering)
@@ -128,7 +128,7 @@ spotless {
     eclipse().configFile 'spotless.eclipseformat.xml'	// XML file dumped out by the Eclipse formatter
     // If you have Eclipse preference or property files, you can use them too.
     // eclipse('4.7.1') to specify a specific version of eclipse,
-    // available versions are: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_jdt_formatter
+    // available versions are: https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_jdt_formatter
   }
 }
 ```
@@ -138,13 +138,13 @@ See [ECLIPSE_SCREENSHOTS](../ECLIPSE_SCREENSHOTS.md) for screenshots that demons
 <a name="android"></a>
 
 ### Applying to Android Java source
-Be sure to add `target '**/*.java'` otherwise spotless will not detect Java code inside Android modules.
+Be sure to add `target 'src/*/java/**/*.java'` otherwise spotless will not detect Java code inside Android modules.
 
 ```gradle
 spotless {
   java {
     // ...
-    target '**/*.java'
+    target 'src/*/java/**/*.java'
     // ...
   }
 }
@@ -210,7 +210,7 @@ spotless {
     // Use the default version and Groovy-Eclipse default configuration
     greclipse()
     // optional: you can specify a specific version or config file(s)
-    // available versions: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/groovy_eclipse_formatter
+    // available versions: https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/groovy_eclipse_formatter
     greclipse('2.3.0').configFile('spotless.eclipseformat.xml', 'org.codehaus.groovy.eclipse.ui.prefs')
   }
 }
@@ -310,7 +310,7 @@ spotless {
   sql {
     // default value for target files
     target '**/*.sql'
-    // configFile is optional, arguments available here: https://github.com/diffplug/spotless/blob/master/lib/src/main/java/com/diffplug/spotless/sql/dbeaver/DBeaverSQLFormatterConfiguration.java
+    // configFile is optional, arguments available here: https://github.com/diffplug/spotless/blob/main/lib/src/main/java/com/diffplug/spotless/sql/dbeaver/DBeaverSQLFormatterConfiguration.java
     dbeaver().configFile('dbeaver.props')
   }
 }
@@ -339,7 +339,7 @@ spotless {
     eclipse().configFile 'spotless.eclipseformat.xml'	// XML file dumped out by the Eclipse formatter
     // If you have Eclipse preference or property files, you can use them too.
     // eclipse('4.7.1') to specify a specific version of Eclipse,
-    // available versions are: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_cdt_formatter
+    // available versions are: https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_cdt_formatter
     licenseHeader '// Licensed under Apache'	// License header
     licenseHeaderFile './license.txt'	// License header file
   }
@@ -409,7 +409,7 @@ spotless {
 }
 ```
 
-Spotless uses npm to install necessary packages locally. It runs tsfmt using [J2V8](https://github.com/eclipsesource/J2V8) internally after that.
+Spotless uses npm to install necessary packages and run the `typescript-formatter` (`tsfmt`) package.
 
 <a name="prettier"></a>
 
@@ -422,10 +422,10 @@ To use prettier, you first have to specify the files that you want it to apply t
 ```gradle
 spotless {
   format 'styling', {
-    target '**/*.css', '**/*.scss'
+    target 'src/*/webapp/**/*.css', 'src/*/webapp/**/*.scss', 'app/**/*.css', 'app/**/*.scss'
 
     // at least provide the parser to use
-    prettier().config(['parser': 'postcss'])
+    prettier().config(['parser': 'css'])
     // prettier('1.16.4') to specify specific version of prettier
     // prettier(['my-prettier-fork': '1.16.4']) to specify exactly which npm packages to use
 
@@ -442,12 +442,10 @@ It is also possible to specify the config via file:
 ```gradle
 spotless {
   format 'styling', {
-    target '**/*.css', '**/*.scss'
-
+    target 'src/*/webapp/**/*.css', 'src/*/webapp/**/*.scss', 'app/**/*.css', 'app/**/*.scss'
     prettier().configFile('/path-to/.prettierrc.yml')
-
     // or provide both (config options take precedence over configFile options)
-    prettier().config(['parser': 'postcss']).configFile('path-to/.prettierrc.yml')
+    prettier().config(['parser': 'css']).configFile('path-to/.prettierrc.yml')
   }
 }
 ```
@@ -468,8 +466,39 @@ spotless {
 }
 ```
 
+Or you might even let prettier detect the file type and choose the parser on its own such as:
+
+```gradle
+spotless {
+  format 'webResources', {
+    target 'src/*/webapp/**', 'app/**'
+    prettier()
+  }
+}
+```
+
+
+<a name="prettier-plugins"></a>
+### Using plugins for prettier
+
+Since spotless uses the actual npm prettier package behind the scenes, it is possible to use prettier with
+[plugins](https://prettier.io/docs/en/plugins.html#official-plugins) or [community-plugins](https://www.npmjs.com/search?q=prettier-plugin) in order to support even more file types.
+
+```gradle
+spotless {
+  format 'prettierJava', {
+    target 'src/*/java/**/*.java'
+    prettier(['prettier': '2.0.5', 'prettier-plugin-java': '0.8.0']).config(['parser': 'java', 'tabWidth': 4])
+  }
+  format 'php', {
+    target 'src/**/*.php'
+    prettier(['prettier': '2.0.5', '@prettier/plugin-php': '0.14.2']).config(['parser': 'php', 'tabWidth': 3])
+  }
+}
+```
+
 <a name="typescript-prettier"></a>
-Prettier can also be applied from within the [typescript config block](#typescript-formatter):
+### Note: Prettier can also be applied from within the [typescript config block](#typescript-formatter)
 
 ```gradle
 spotless {
@@ -494,7 +523,7 @@ spotless {
 }
 ```
 
-Spotless uses npm to install necessary packages locally. It runs prettier using [J2V8](https://github.com/eclipsesource/J2V8) internally after that.
+Spotless uses npm to install necessary packages and run the `prettier` (`tsfmt`) package.
 
 <a name="eclipse-wtp"></a>
 
@@ -510,7 +539,7 @@ spotless {
       exclude '**/build/**'
     }
     // Use for example eclipseWtp('xml', '4.7.3a') to specify a specific version of Eclipse,
-    // available versions are: https://github.com/diffplug/spotless/tree/master/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatters
+    // available versions are: https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatters
     eclipseWtp('xml').configFile 'spotless.xml.prefs', 'spotless.common.properties'
   }
 }
@@ -551,7 +580,11 @@ Once a file's license header has a valid year, whether it is a year (`2020`) or 
 * `2017` -> `2017-2020`
 * `2017-2019` -> `2017-2020`
 
-See the [javadoc](https://javadoc.io/static/com.diffplug.spotless/spotless-plugin-gradle/4.2.0/com/diffplug/gradle/spotless/FormatExtension.LicenseHeaderConfig.html) for a complete listing of options.
+See the [javadoc](https://javadoc.io/static/com.diffplug.spotless/spotless-plugin-gradle/4.4.0/com/diffplug/gradle/spotless/FormatExtension.LicenseHeaderConfig.html) for a complete listing of options.
+
+### Retroactively populating year range from git history
+
+If your project has not been rigorous with copyright headers, and you'd like to use git history to repair this retroactively, you can do so with `-PspotlessSetLicenseHeaderYearsFromGitHistory=true`.  When run in this mode, Spotless will do an expensive search through git history for each file, and set the copyright header based on the oldest and youngest commits for that file.  This is intended to be a one-off sort of thing.
 
 <a name="custom"></a>
 
@@ -599,7 +632,7 @@ spotless {
 }
 ```
 
-If you use `custom` or `customLazy`, you might want to take a look at [this javadoc](https://javadoc.io/static/com.diffplug.spotless/spotless-plugin-gradle/4.2.0/com/diffplug/gradle/spotless/FormatExtension.html#bumpThisNumberIfACustomStepChanges-int-) for a big performance win.
+If you use `custom` or `customLazy`, you might want to take a look at [this javadoc](https://javadoc.io/static/com.diffplug.spotless/spotless-plugin-gradle/4.4.0/com/diffplug/gradle/spotless/FormatExtension.html#bumpThisNumberIfACustomStepChanges-int-) for a big performance win.
 
 See [`JavaExtension.java`](src/main/java/com/diffplug/gradle/spotless/JavaExtension.java) if you'd like to see how a language-specific set of custom rules is implemented.  We'd love PR's which add support for other languages.
 
@@ -676,14 +709,14 @@ If your project is not currently enforcing formatting, then it can be a noisy tr
 
 ```gradle
 spotless {
-  ratchetFrom 'origin/master'
+  ratchetFrom 'origin/main' // only format files which have changed since origin/main
   ...
 }
 ```
 
-In this mode, Spotless will apply only to files which have changed since `origin/master`.  You can ratchet from [any point you want](https://javadoc.io/static/org.eclipse.jgit/org.eclipse.jgit/5.6.1.202002131546-r/org/eclipse/jgit/lib/Repository.html#resolve-java.lang.String-), even `HEAD`.
+In this mode, Spotless will apply only to files which have changed since `origin/main`.  You can ratchet from [any point you want](https://javadoc.io/static/org.eclipse.jgit/org.eclipse.jgit/5.6.1.202002131546-r/org/eclipse/jgit/lib/Repository.html#resolve-java.lang.String-), even `HEAD`.  You can also set `ratchetFrom` per-format if you prefer (e.g. `spotless { java { ratchetFrom ...`).
 
-However, we strongly recommend that you use a non-local branch, such as a tag or `origin/master`.  The problem with `HEAD` or any local branch is that as soon as you commit a file, that is now the canonical formatting, even if it was formatted incorrectly.  By instead specifying `origin/master` or a tag, your CI server will fail unless every changed file is at least as good or better than it was before the change.
+However, we strongly recommend that you use a non-local branch, such as a tag or `origin/main`.  The problem with `HEAD` or any local branch is that as soon as you commit a file, that is now the canonical formatting, even if it was formatted incorrectly.  By instead specifying `origin/main` or a tag, your CI server will fail unless every changed file is at least as good or better than it was before the change.
 
 This is especially helpful for injecting accurate copyright dates using the [license step](#license-header).
 

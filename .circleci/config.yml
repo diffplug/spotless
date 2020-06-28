@@ -126,21 +126,9 @@ jobs:
       shell: cmd.exe
     steps:
       - checkout
-      # install openjdk8
-      - restore_cache:
-          key: choco2-ojdkbuild8
       - run:
           name: install 
           command: choco install ojdkbuild8
-      - save_cache:
-          key: choco2-ojdkbuild8
-          paths:
-            - ~\AppData\Local\Temp\chocolatey\ojdkbuild8
-      # do the test
-      - restore_cache:
-          keys:
-          - gradle-deps-win2-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
-          - gradle-deps-win2-
       - run:
           name: gradlew check
           command: gradlew check --build-cache
@@ -152,13 +140,15 @@ jobs:
           path: plugin-gradle/build/test-results/test
       - store_test_results:
           path: plugin-maven/build/test-results/test
-      - save_cache:
-          key: gradle-deps-win2-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
-          paths:
-            - ~/.gradle/caches
-            - ~/.gradle/wrapper
-            - ~/.m2
-            - ~/project/plugin-maven/build/localMavenRepository
+      - run:
+          name: gradlew npmTest
+          command: gradlew npmTest --build-cache
+      - store_test_results:
+          path: testlib/build/test-results/npm
+      - store_test_results:
+          path: plugin-maven/build/test-results/npm
+      - store_test_results:
+          path: plugin-gradle/build/test-results/npm
   changelog_print:
     << : *env_gradle
     steps:
@@ -184,7 +174,7 @@ jobs:
       - run:
           name: gradlew :plugin-maven:changelogPush
           command: ./gradlew :plugin-maven:changelogPush -Prelease=true --stacktrace --warning-mode all
-  do_release_plugin_gradle:
+  do_release_lib:
     << : *env_gradle
     steps:
       - checkout
@@ -193,7 +183,14 @@ jobs:
       - *set_git_origin_to_https
       - run:
           name: gradlew :changelogPush
-          command: ./gradlew :changelogPush -Prelease=true --stacktrace
+          command: ./gradlew :changelogPush -Prelease=true --stacktrace --warning-mode all
+  do_release_plugin_gradle:
+    << : *env_gradle
+    steps:
+      - checkout
+      - *restore_cache_wrapper
+      - *restore_cache_deps
+      - *set_git_origin_to_https
       - run:
           name: gradlew :plugin-gradle:changelogPush
           command: ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${gradle_key} -Pgradle.publish.secret=${gradle_secret} --stacktrace
@@ -229,12 +226,12 @@ workflows:
       - test_gradle_modern_8:
           requires:
             - assemble_testClasses
-deploy:
+  deploy:
     jobs:
       - changelog_print:
           filters:
             branches:
-              only: master
+              only: main
       - release_all:
           type: approval
           requires:
@@ -256,3 +253,10 @@ deploy:
       - do_release_plugin_maven:
           requires:
             - release_plugin_maven
+      - release_lib:
+          type: approval
+          requires:
+            - changelog_print
+      - do_release_lib:
+          requires:
+            - release_lib

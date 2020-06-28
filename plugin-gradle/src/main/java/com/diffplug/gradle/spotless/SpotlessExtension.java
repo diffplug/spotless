@@ -23,6 +23,7 @@ import org.gradle.api.plugins.BasePlugin;
 public class SpotlessExtension extends SpotlessExtensionBase {
 	final Task rootCheckTask, rootApplyTask, rootDiagnoseTask;
 	private static final String FILES_PROPERTY = "spotlessFiles";
+	private final RegisterDependenciesTask registerDependenciesTask;
 
 	public SpotlessExtension(Project project) {
 		super(project);
@@ -34,6 +35,18 @@ public class SpotlessExtension extends SpotlessExtensionBase {
 		rootApplyTask.setDescription(APPLY_DESCRIPTION);
 		rootDiagnoseTask = project.task(EXTENSION + DIAGNOSE);
 		rootDiagnoseTask.setGroup(TASK_GROUP);	// no description on purpose
+
+		RegisterDependenciesTask registerDependenciesTask = (RegisterDependenciesTask) project.getRootProject().getTasks().findByName(RegisterDependenciesTask.TASK_NAME);
+		if (registerDependenciesTask == null) {
+			registerDependenciesTask = project.getRootProject().getTasks().create(RegisterDependenciesTask.TASK_NAME, RegisterDependenciesTask.class);
+			registerDependenciesTask.setup();
+		}
+		this.registerDependenciesTask = registerDependenciesTask;
+	}
+
+	@Override
+	RegisterDependenciesTask getRegisterDependenciesTask() {
+		return registerDependenciesTask;
 	}
 
 	/**
@@ -44,7 +57,7 @@ public class SpotlessExtension extends SpotlessExtensionBase {
 	 */
 	@Deprecated
 	public void css(Action<CssExtension> closure) {
-		configure(CssExtension.NAME, CssExtension.class, closure);
+		format(CssExtension.NAME, CssExtension.class, closure);
 	}
 
 	/**
@@ -55,7 +68,7 @@ public class SpotlessExtension extends SpotlessExtensionBase {
 	 */
 	@Deprecated
 	public void xml(Action<XmlExtension> closure) {
-		configure(XmlExtension.NAME, XmlExtension.class, closure);
+		format(XmlExtension.NAME, XmlExtension.class, closure);
 	}
 
 	/**
@@ -93,8 +106,8 @@ public class SpotlessExtension extends SpotlessExtensionBase {
 			String filePatterns;
 			if (project.hasProperty(FILES_PROPERTY) && project.property(FILES_PROPERTY) instanceof String) {
 				System.err.println("Spotless with -P" + FILES_PROPERTY + " has been deprecated and will be removed. It is slow and error-prone, especially for win/unix cross-platform, and we have better options available now:");
-				System.err.println("  If you are formatting just one file, try the much faster IDE hook: https://github.com/diffplug/spotless/blob/master/plugin-gradle/IDE_HOOK.md");
-				System.err.println("  If you are integrating with git, try `ratchetFrom 'origin/master'`: https://github.com/diffplug/spotless/tree/master/plugin-gradle#ratchet");
+				System.err.println("  If you are formatting just one file, try the much faster IDE hook: https://github.com/diffplug/spotless/blob/main/plugin-gradle/IDE_HOOK.md");
+				System.err.println("  If you are integrating with git, try `ratchetFrom 'origin/main'`: https://github.com/diffplug/spotless/tree/main/plugin-gradle#ratchet");
 				System.err.println("  If neither of these work for you, please let us know in this PR: https://github.com/diffplug/spotless/pull/602");
 				filePatterns = (String) project.property(FILES_PROPERTY);
 			} else {

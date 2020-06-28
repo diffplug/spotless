@@ -24,9 +24,16 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.gradle.api.GradleException;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.CacheableTask;
+import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.PathSensitive;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
-import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
+import org.gradle.work.ChangeType;
+import org.gradle.work.FileChange;
+import org.gradle.work.Incremental;
+import org.gradle.work.InputChanges;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.Preconditions;
@@ -35,10 +42,17 @@ import com.diffplug.spotless.Formatter;
 
 @CacheableTask
 public class SpotlessTaskModern extends SpotlessTask {
-	@TaskAction
-	public void performAction(IncrementalTaskInputs inputs) throws Exception {
-		// TODO: implement using the InputChanges api
 
+	@PathSensitive(PathSensitivity.RELATIVE)
+	@Incremental
+	@InputFiles
+	@Override
+	public FileCollection getTarget() {
+		return super.getTarget();
+	}
+
+	@TaskAction
+	public void performAction(InputChanges inputs) throws Exception {
 		if (target == null) {
 			throw new GradleException("You must specify 'Iterable<File> target'");
 		}
@@ -68,27 +82,27 @@ public class SpotlessTaskModern extends SpotlessTask {
 		}
 
 		try (Formatter formatter = buildFormatter()) {
-			inputs.outOfDate(inputDetails -> {
-				File input = inputDetails.getFile();
-				try {
-					if (shouldInclude.test(input) && input.isFile()) {
-						processInputFile(formatter, input);
+			for (FileChange fileChange : inputs.getFileChanges(target)) {
+				File input = fileChange.getFile();
+				if (fileChange.getChangeType() == ChangeType.REMOVED) {
+					try {
+						if (shouldInclude.test(input)) {
+							deletePreviousResult(input);
+						}
+					} catch (IOException e) {
+						throw Errors.asRuntime(e);
 					}
-				} catch (IOException e) {
-					throw Errors.asRuntime(e);
-				}
-			});
-		}
 
-		inputs.removed(removedDetails -> {
-			File input = removedDetails.getFile();
-			try {
-				if (shouldInclude.test(input)) {
-					deletePreviousResult(input);
+				} else {
+					try {
+						if (shouldInclude.test(input) && input.isFile()) {
+							processInputFile(formatter, input);
+						}
+					} catch (IOException e) {
+						throw Errors.asRuntime(e);
+					}
 				}
-			} catch (IOException e) {
-				throw Errors.asRuntime(e);
 			}
-		});
+		}
 	}
 }

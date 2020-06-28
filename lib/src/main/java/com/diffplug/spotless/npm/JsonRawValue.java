@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,21 @@ package com.diffplug.spotless.npm;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Map;
+/**
+ * Wrapper class to signal the contained string must not be escaped when printing to json.
+ */
+class JsonRawValue {
+	private final String rawJson;
 
-class V8ObjectUtilsWrapper {
+	private JsonRawValue(String rawJson) {
+		this.rawJson = requireNonNull(rawJson);
+	}
 
-	public static final String WRAPPED_CLASS = "com.eclipsesource.v8.utils.V8ObjectUtils";
+	static JsonRawValue wrap(String rawJson) {
+		return new JsonRawValue(rawJson);
+	}
 
-	public static Map<String, ? super Object> toMap(final V8ObjectWrapper object) {
-		requireNonNull(object);
-
-		final Reflective reflective = object.reflective();
-
-		@SuppressWarnings("unchecked")
-		final Map<String, ? super Object> map = (Map<String, ? super Object>) reflective.invokeStaticMethod(WRAPPED_CLASS, "toMap", object.wrappedObj());
-		return map;
+	public String getRawJson() {
+		return rawJson;
 	}
 }

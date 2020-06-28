@@ -15,7 +15,7 @@ spotless {
 	if (project.name != 'ide' && project != rootProject) {
 		// the rootProject and ide projects don't have any java
 		java {
-			ratchetFrom 'origin/master'
+			ratchetFrom 'origin/main'
 			custom 'noInternalDeps', noInternalDepsClosure
 			bumpThisNumberIfACustomStepChanges(1)
 			licenseHeaderFile rootProject.file('gradle/spotless.license')

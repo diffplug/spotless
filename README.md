@@ -2,12 +2,12 @@
 
 <!---freshmark shields
 output = [
-  link(image('Travis CI', 'https://travis-ci.org/{{org}}/{{name}}.svg?branch=master'), 'https://travis-ci.org/{{org}}/{{name}}'),
+  link(image('Travis CI', 'https://travis-ci.org/{{org}}/{{name}}.svg?branch=main'), 'https://travis-ci.org/{{org}}/{{name}}'),
   link(shield('Live chat', 'gitter', 'chat', 'brightgreen'), 'https://gitter.im/{{org}}/{{name}}'),
   link(shield('License Apache', 'license', 'apache', 'brightgreen'), 'https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)')
   ].join('\n');
 -->
-[![Travis CI](https://travis-ci.org/diffplug/spotless.svg?branch=master)](https://travis-ci.org/diffplug/spotless)
+[![Travis CI](https://travis-ci.org/diffplug/spotless.svg?branch=main)](https://travis-ci.org/diffplug/spotless)
 [![Live chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
 [![License Apache](https://img.shields.io/badge/license-apache-brightgreen.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
 <!---freshmark /shields -->
@@ -99,10 +99,11 @@ Once someone has filled in one square of the formatter/build system matrix, it's
   - breaking spotless into libraries [#56](https://github.com/diffplug/spotless/issues/56)
   - lots of other things, but especially the diff support in `spotlessCheck`
   - constant improvements on a variety of topics with high-quality code reviews
+- Thanks to [Daz DeBoer](https://github.com/bigdaz) for the reworking the guts of our gradle plugin to support [buildcache](https://github.com/diffplug/spotless/pull/576), [InputChanges](https://github.com/diffplug/spotless/pull/607), and [lazy configuration](https://github.com/diffplug/spotless/pull/617).
 - Thanks to [Richard Willis](https://github.com/badsyntax) for creating the [VS Code extension for Spotless Gradle](https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle).
 - Thanks to [Matthias Andreas Benkard](https://github.com/benkard) for adding support for google-java-format 1.8+ ([#563](https://github.com/diffplug/spotless/pull/563))
 - Thanks to [Ranadeep Polavarapu](https://github.com/RanadeepPolavarapu) for adding support for ktfmt ([#569](https://github.com/diffplug/spotless/pull/569))
-- Thanks to [Simon Gamma](https://github.com/simschla) for [adding support for npm-based formatters](https://github.com/diffplug/spotless/pull/283), including `prettier` and `tsfmt`.
+- Thanks to [Simon Gamma](https://github.com/simschla) for [adding support for npm-based formatters](https://github.com/diffplug/spotless/pull/283), [twice](https://github.com/diffplug/spotless/pull/606) including `prettier` and `tsfmt`.
 - Thanks to [Kevin Brooks](https://github.com/k-brooks) for [updating all eclipse-based formatters to 4.13](https://github.com/diffplug/spotless/pull/482).
 - Thanks to [Joan Goyeau](https://github.com/joan38) for [fixing scalafmt integration](https://github.com/diffplug/spotless/pull/260).
 - Thanks to [Nick Sutcliffe](https://github.com/nsutcliffe) for [fixing scalafmt post-2.0](https://github.com/diffplug/spotless/pull/416).

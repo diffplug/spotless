@@ -3,6 +3,15 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* `prettier` will now autodetect the parser (and formatter) to use based on the filename, unless you override this using `config` or `configFile` with the option `parser` or `filepath`. ([#620](https://github.com/diffplug/spotless/pull/620))
+
+## [1.31.3] - 2020-06-17
+### Changed
+* Nodejs-based formatters `prettier` and `tsfmt` now use native node instead of the J2V8 approach. ([#606](https://github.com/diffplug/spotless/pull/606))
+  * This removes the dependency to the no-longer-maintained Linux/Windows/macOs variants of J2V8.
+  * This enables spotless to use the latest `prettier` versions (instead of being stuck at prettier version <= `1.19.0`)
+  * Bumped default versions, prettier `1.16.4` -> `2.0.5`, tslint `5.12.1` -> `6.1.2`
 ### Fixed
 * `licenseHeader` is now more robust when parsing years from existing license headers. ([#593](https://github.com/diffplug/spotless/pull/593))
 
@@ -20,7 +29,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Added
 * Support for google-java-format 1.8 (requires build to run on Java 11+) ([#562](https://github.com/diffplug/spotless/issues/562))
 * Support for ktfmt 0.13 (requires build to run on Java 11+) ([#569](https://github.com/diffplug/spotless/pull/569))
-* `mvn spotless:apply` is now guaranteed to be idempotent, even if some of the formatters are not.  See [`PADDEDCELL.md` for details](https://github.com/diffplug/spotless/blob/master/PADDEDCELL.md) if you're curious. ([#565](https://github.com/diffplug/spotless/pull/565))
+* `mvn spotless:apply` is now guaranteed to be idempotent, even if some of the formatters are not.  See [`PADDEDCELL.md` for details](https://github.com/diffplug/spotless/blob/main/PADDEDCELL.md) if you're curious. ([#565](https://github.com/diffplug/spotless/pull/565))
 * Updated a bunch of dependencies, most notably jgit `5.5.0.201909110433-r` -> `5.7.0.202003110725-r`. ([#564](https://github.com/diffplug/spotless/pull/564))
 
 ## [1.30.0] - 2020-04-10

@@ -40,7 +40,7 @@ public class SelfTest {
 	/** Runs a full task manually, so you can step through all the logic. */
 	private static void runTaskManually() throws Exception {
 		Project project = createProject(extension -> {
-			extension.ratchetFrom("origin/master");
+			extension.ratchetFrom("origin/main");
 			extension.java(java -> {
 				java.target("src/*/java/**/*.java");
 				java.licenseHeaderFile("../gradle/spotless.license");

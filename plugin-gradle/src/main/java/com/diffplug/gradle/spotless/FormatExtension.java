@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
+import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -56,13 +57,14 @@ import groovy.lang.Closure;
 /** Adds a `spotless{Name}Check` and `spotless{Name}Apply` task. */
 public class FormatExtension {
 	final SpotlessExtensionBase spotless;
+	final List<Action<FormatExtension>> modernLazyActions = new ArrayList<>();
 
 	public FormatExtension(SpotlessExtensionBase spotless) {
 		this.spotless = Objects.requireNonNull(spotless);
 	}
 
 	protected final Provisioner provisioner() {
-		return spotless.registerDependenciesTask.rootProvisioner;
+		return spotless.getRegisterDependenciesTask().rootProvisioner;
 	}
 
 	private String formatName() {
@@ -74,13 +76,13 @@ public class FormatExtension {
 		throw new IllegalStateException("This format is not contained by any SpotlessExtension.");
 	}
 
-	/** Enables paddedCell mode. @see <a href="https://github.com/diffplug/spotless/blob/master/PADDEDCELL.md">Padded cell</a> */
+	/** Enables paddedCell mode. @see <a href="https://github.com/diffplug/spotless/blob/main/PADDEDCELL.md">Padded cell</a> */
 	@Deprecated
 	public void paddedCell() {
 		paddedCell(true);
 	}
 
-	/** Enables paddedCell mode. @see <a href="https://github.com/diffplug/spotless/blob/master/PADDEDCELL.md">Padded cell</a> */
+	/** Enables paddedCell mode. @see <a href="https://github.com/diffplug/spotless/blob/main/PADDEDCELL.md">Padded cell</a> */
 	@Deprecated
 	public void paddedCell(boolean paddedCell) {
 		spotless.project.getLogger().warn("PaddedCell is now always on, and cannot be turned off.");
@@ -108,6 +110,29 @@ public class FormatExtension {
 	/** Sets the encoding to use (defaults to {@link SpotlessExtension#getEncoding()}. */
 	public void setEncoding(String name) {
 		setEncoding(Charset.forName(Objects.requireNonNull(name)));
+	}
+
+	/** Sentinel to distinguish between "don't ratchet this format" and "use spotless parent format". */
+	private static final String RATCHETFROM_NOT_SET_AT_FORMAT_LEVEL = " not set at format level ";
+
+	private String ratchetFrom = RATCHETFROM_NOT_SET_AT_FORMAT_LEVEL;
+
+	/** @see #setRatchetFrom(String) */
+	public String getRatchetFrom() {
+		return ratchetFrom == RATCHETFROM_NOT_SET_AT_FORMAT_LEVEL ? spotless.getRatchetFrom() : ratchetFrom;
+	}
+
+	/**
+	 * Allows you to override the value from the parent {@link SpotlessExtensionBase#setRatchetFrom(String)}
+	 * for this specific format.
+	 */
+	public void setRatchetFrom(String ratchetFrom) {
+		this.ratchetFrom = ratchetFrom;
+	}
+
+	/** @see #setRatchetFrom(String) */
+	public void ratchetFrom(String ratchetFrom) {
+		setRatchetFrom(ratchetFrom);
 	}
 
 	/** Sets the encoding to use (defaults to {@link SpotlessExtension#getEncoding()}. */
@@ -461,11 +486,29 @@ public class FormatExtension {
 		protected abstract String licenseHeader() throws IOException;
 
 		FormatterStep createStep() {
-			return FormatterStep.createLazy(LicenseHeaderStep.name(), () -> {
-				// by default, we should update the year if the user is using ratchetFrom
-				boolean updateYear = updateYearWithLatest == null ? FormatExtension.this.spotless.getRatchetFrom() != null : updateYearWithLatest;
-				return new LicenseHeaderStep(licenseHeader(), delimiter, yearSeparator, updateYear);
-			}, step -> step::format);
+			if ("true".equals(spotless.project.findProperty(LicenseHeaderStep.FLAG_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY()))) {
+				return FormatterStep.createNeverUpToDateLazy(LicenseHeaderStep.name(), () -> {
+					boolean updateYear = false; // doesn't matter
+					LicenseHeaderStep step = new LicenseHeaderStep(licenseHeader(), delimiter, yearSeparator, updateYear);
+					return new FormatterFunc() {
+						@Override
+						public String apply(String input, File source) throws Exception {
+							return step.setLicenseHeaderYearsFromGitHistory(input, source);
+						}
+
+						@Override
+						public String apply(String input) throws Exception {
+							throw new UnsupportedOperationException();
+						}
+					};
+				});
+			} else {
+				return FormatterStep.createLazy(LicenseHeaderStep.name(), () -> {
+					// by default, we should update the year if the user is using ratchetFrom
+					boolean updateYear = updateYearWithLatest == null ? getRatchetFrom() != null : updateYearWithLatest;
+					return new LicenseHeaderStep(licenseHeader(), delimiter, yearSeparator, updateYear);
+				}, step -> step::format);
+			}
 		}
 	}
 
@@ -634,10 +677,10 @@ public class FormatExtension {
 		task.setSteps(steps);
 		task.setLineEndingsPolicy(getLineEndings().createPolicy(getProject().getProjectDir(), () -> task.target));
 		if (spotless.project != spotless.project.getRootProject()) {
-			spotless.registerDependenciesTask.hookSubprojectTask(task);
+			spotless.getRegisterDependenciesTask().hookSubprojectTask(task);
 		}
-		if (spotless.getRatchetFrom() != null) {
-			task.setupRatchet(spotless.registerDependenciesTask.gitRatchet, spotless.getRatchetFrom());
+		if (getRatchetFrom() != null) {
+			task.setupRatchet(spotless.getRegisterDependenciesTask().gitRatchet, getRatchetFrom());
 		}
 	}
 

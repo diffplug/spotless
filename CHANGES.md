@@ -10,6 +10,20 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* `prettier` will now autodetect the parser (and formatter) to use based on the filename, unless you override this using `config` or `configFile` with the option `parser` or `filepath`. ([#620](https://github.com/diffplug/spotless/pull/620))
+
+## [1.34.1] - 2020-06-17
+### Changed
+* Nodejs-based formatters `prettier` and `tsfmt` now use native node instead of the J2V8 approach. ([#606](https://github.com/diffplug/spotless/pull/606))
+  * This removes the dependency to the no-longer-maintained Linux/Windows/macOs variants of J2V8.
+  * This enables spotless to use the latest `prettier` versions (instead of being stuck at prettier version <= `1.19.0`)
+  * Bumped default versions, prettier `1.16.4` -> `2.0.5`, tslint `5.12.1` -> `6.1.2`
+* Our main branch is now called `main`. ([#613](https://github.com/diffplug/spotless/pull/613))
+
+## [1.34.0] - 2020-06-05
+### Added
+* `LicenseHeaderStep.setLicenseHeaderYearsFromGitHistory`, which does an expensive search through git history to determine the oldest and newest commits for each file, and uses that to determine license header years. ([#604](https://github.com/diffplug/spotless/pull/604))
 
 ## [1.33.1] - 2020-06-04
 * We are now running CI on windows. ([#596](https://github.com/diffplug/spotless/pull/596))
@@ -65,7 +79,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Build
 * All `CHANGES.md` are now in keepachangelog format. ([#507](https://github.com/diffplug/spotless/pull/507))
 * We now use [javadoc.io](https://javadoc.io/) instead of github pages. ([#508](https://github.com/diffplug/spotless/pull/508))
-* We no longer publish `-SNAPSHOT` for every build to `master`, since we have good [JitPack integration](https://github.com/diffplug/spotless/blob/master/CONTRIBUTING.md#gradle---any-commit-in-a-public-github-repo-this-one-or-any-fork). ([#508](https://github.com/diffplug/spotless/pull/508))
+* We no longer publish `-SNAPSHOT` for every build to `main`, since we have good [JitPack integration](https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md#gradle---any-commit-in-a-public-github-repo-this-one-or-any-fork). ([#508](https://github.com/diffplug/spotless/pull/508))
 * Improved how we use Spotless on itself. ([#509](https://github.com/diffplug/spotless/pull/509))
 * Fix build warnings when building on Gradle 6+, bump build gradle to 6.2.2, and fix javadoc links. ([#536](https://github.com/diffplug/spotless/pull/536))
 

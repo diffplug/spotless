@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package com.diffplug.spotless.npm;
 
-import static java.util.Objects.requireNonNull;
+import static com.diffplug.spotless.npm.JsonEscaper.jsonEscape;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,8 +53,8 @@ public class SimpleJsonWriter {
 	private void verifyValues(Map<String, ?> values) {
 		if (values.values()
 				.stream()
-				.anyMatch(val -> !(val instanceof String || val instanceof Number || val instanceof Boolean))) {
-			throw new IllegalArgumentException("Only values of type 'String', 'Number' and 'Boolean' are supported. You provided: " + values.values());
+				.anyMatch(val -> !(val instanceof String || val instanceof JsonRawValue || val instanceof Number || val instanceof Boolean))) {
+			throw new IllegalArgumentException("Only values of type 'String', 'JsonRawValue', 'Number' and 'Boolean' are supported. You provided: " + values.values());
 		}
 	}
 
@@ -66,12 +66,8 @@ public class SimpleJsonWriter {
 		return "{\n" + valueString + "\n}";
 	}
 
-	private String jsonEscape(Object val) {
-		requireNonNull(val);
-		if (val instanceof String) {
-			return "\"" + val + "\"";
-		}
-		return val.toString();
+	JsonRawValue toJsonRawValue() {
+		return JsonRawValue.wrap(toJsonString());
 	}
 
 	void toJsonFile(File file) {
@@ -91,4 +87,5 @@ public class SimpleJsonWriter {
 	public String toString() {
 		return this.toJsonString();
 	}
+
 }

@@ -17,7 +17,6 @@ package com.diffplug.gradle.spotless;
 
 import static java.util.Objects.requireNonNull;
 
-import java.io.File;
 import java.lang.reflect.Constructor;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -32,11 +31,9 @@ import org.gradle.api.Project;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.spotless.LineEnding;
-import com.diffplug.spotless.npm.NodeJsGlobal;
 
 public abstract class SpotlessExtensionBase {
 	final Project project;
-	final RegisterDependenciesTask registerDependenciesTask;
 
 	protected static final String TASK_GROUP = "Verification";
 	protected static final String CHECK_DESCRIPTION = "Checks that sourcecode satisfies formatting steps.";
@@ -49,16 +46,9 @@ public abstract class SpotlessExtensionBase {
 
 	public SpotlessExtensionBase(Project project) {
 		this.project = requireNonNull(project);
-
-		RegisterDependenciesTask registerDependenciesTask = (RegisterDependenciesTask) project.getRootProject().getTasks().findByName(RegisterDependenciesTask.TASK_NAME);
-		if (registerDependenciesTask == null) {
-			registerDependenciesTask = project.getRootProject().getTasks().create(RegisterDependenciesTask.TASK_NAME, RegisterDependenciesTask.class);
-			registerDependenciesTask.setup();
-			// set where the nodejs runtime will put its temp dlls
-			NodeJsGlobal.setSharedLibFolder(new File(project.getBuildDir(), "spotless-nodejs-cache"));
-		}
-		this.registerDependenciesTask = registerDependenciesTask;
 	}
+
+	abstract RegisterDependenciesTask getRegisterDependenciesTask();
 
 	/** Line endings (if any). */
 	LineEnding lineEndings = LineEnding.GIT_ATTRIBUTES;
@@ -104,10 +94,12 @@ public abstract class SpotlessExtensionBase {
 		this.ratchetFrom = ratchetFrom;
 	}
 
+	/** @see #setRatchetFrom(String) */
 	public @Nullable String getRatchetFrom() {
 		return ratchetFrom;
 	}
 
+	/** @see #setRatchetFrom(String) */
 	public void ratchetFrom(String ratchetFrom) {
 		setRatchetFrom(ratchetFrom);
 	}
@@ -117,63 +109,63 @@ public abstract class SpotlessExtensionBase {
 	/** Configures the special java-specific extension. */
 	public void java(Action<JavaExtension> closure) {
 		requireNonNull(closure);
-		configure(JavaExtension.NAME, JavaExtension.class, closure);
+		format(JavaExtension.NAME, JavaExtension.class, closure);
 	}
 
 	/** Configures the special scala-specific extension. */
 	public void scala(Action<ScalaExtension> closure) {
 		requireNonNull(closure);
-		configure(ScalaExtension.NAME, ScalaExtension.class, closure);
+		format(ScalaExtension.NAME, ScalaExtension.class, closure);
 	}
 
 	/** Configures the special kotlin-specific extension. */
 	public void kotlin(Action<KotlinExtension> closure) {
 		requireNonNull(closure);
-		configure(KotlinExtension.NAME, KotlinExtension.class, closure);
+		format(KotlinExtension.NAME, KotlinExtension.class, closure);
 	}
 
 	/** Configures the special Gradle Kotlin DSL specific extension. */
 	public void kotlinGradle(Action<KotlinGradleExtension> closure) {
 		requireNonNull(closure);
-		configure(KotlinGradleExtension.NAME, KotlinGradleExtension.class, closure);
+		format(KotlinGradleExtension.NAME, KotlinGradleExtension.class, closure);
 	}
 
 	/** Configures the special freshmark-specific extension. */
 	public void freshmark(Action<FreshMarkExtension> closure) {
 		requireNonNull(closure);
-		configure(FreshMarkExtension.NAME, FreshMarkExtension.class, closure);
+		format(FreshMarkExtension.NAME, FreshMarkExtension.class, closure);
 	}
 
 	/** Configures the special groovy-specific extension. */
 	public void groovy(Action<GroovyExtension> closure) {
-		configure(GroovyExtension.NAME, GroovyExtension.class, closure);
+		format(GroovyExtension.NAME, GroovyExtension.class, closure);
 	}
 
 	/** Configures the special groovy-specific extension for Gradle files. */
 	public void groovyGradle(Action<GroovyGradleExtension> closure) {
-		configure(GroovyGradleExtension.NAME, GroovyGradleExtension.class, closure);
+		format(GroovyGradleExtension.NAME, GroovyGradleExtension.class, closure);
 	}
 
 	/** Configures the special sql-specific extension for SQL files. */
 	public void sql(Action<SqlExtension> closure) {
-		configure(SqlExtension.NAME, SqlExtension.class, closure);
+		format(SqlExtension.NAME, SqlExtension.class, closure);
 	}
 
 	/** Configures the special C/C++-specific extension. */
 	public void cpp(Action<CppExtension> closure) {
-		configure(CppExtension.NAME, CppExtension.class, closure);
+		format(CppExtension.NAME, CppExtension.class, closure);
 	}
 
 	/** Configures the special typescript-specific extension for typescript files. */
 	public void typescript(Action<TypescriptExtension> closure) {
-		configure(TypescriptExtension.NAME, TypescriptExtension.class, closure);
+		format(TypescriptExtension.NAME, TypescriptExtension.class, closure);
 	}
 
 	/** Configures a custom extension. */
 	public void format(String name, Action<FormatExtension> closure) {
 		requireNonNull(name, "name");
 		requireNonNull(closure, "closure");
-		configure(name, FormatExtension.class, closure);
+		format(name, FormatExtension.class, closure);
 	}
 
 	/** Makes it possible to remove a format which was created earlier. */
@@ -202,13 +194,13 @@ public abstract class SpotlessExtensionBase {
 		this.enforceCheck = enforceCheck;
 	}
 
-	protected <T extends FormatExtension> void configure(String name, Class<T> clazz, Action<T> configure) {
-		T value = maybeCreate(name, clazz);
-		configure.execute(value);
+	public <T extends FormatExtension> void format(String name, Class<T> clazz, Action<T> configure) {
+		T format = maybeCreate(name, clazz);
+		configure.execute(format);
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends FormatExtension> T maybeCreate(String name, Class<T> clazz) {
+	protected final <T extends FormatExtension> T maybeCreate(String name, Class<T> clazz) {
 		FormatExtension existing = formats.get(name);
 		if (existing != null) {
 			if (!existing.getClass().equals(clazz)) {

@@ -162,13 +162,16 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 	protected abstract @Nullable Project getParent(Project project);
 
 	private static @Nullable Repository traverseParentsUntil(File startWith, File file) throws IOException {
-		do {
+		while (startWith != null) {
 			if (isGitRoot(startWith)) {
 				return createRepo(startWith);
 			} else {
 				startWith = startWith.getParentFile();
+				if (Objects.equals(startWith, file)) {
+					return null;
+				}
 			}
-		} while (!Objects.equals(startWith, file));
+		}
 		return null;
 	}
 
@@ -193,6 +196,9 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 			ObjectId treeSha = rootTreeShaCache.get(repo, reference);
 			if (treeSha == null) {
 				ObjectId commitSha = repo.resolve(reference);
+				if (commitSha == null) {
+					throw new IllegalArgumentException("No such reference '" + reference + "'");
+				}
 				try (RevWalk revWalk = new RevWalk(repo)) {
 					RevCommit revCommit = revWalk.parseCommit(commitSha);
 					treeSha = revCommit.getTree();

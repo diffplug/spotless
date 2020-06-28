@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,23 +15,28 @@
  */
 package com.diffplug.spotless.npm;
 
-import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.FormatterFunc.Closeable;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx;
 
 public class TsFmtFormatterStep {
+
+	private static final Logger logger = Logger.getLogger(TsFmtFormatterStep.class.getName());
+
 	public static final String NAME = "tsfmt-format";
 
 	@Deprecated
@@ -43,7 +48,7 @@ public class TsFmtFormatterStep {
 		requireNonNull(provisioner);
 		requireNonNull(buildDir);
 		return FormatterStep.createLazy(NAME,
-				() -> new State(NAME, versions, provisioner, buildDir, npm, configFile, inlineTsFmtSettings),
+				() -> new State(NAME, versions, buildDir, npm, configFile, inlineTsFmtSettings),
 				State::createFormatterFunc);
 	}
 
@@ -54,14 +59,14 @@ public class TsFmtFormatterStep {
 	public static Map<String, String> defaultDevDependenciesWithTsFmt(String typescriptFormatter) {
 		TreeMap<String, String> defaults = new TreeMap<>();
 		defaults.put("typescript-formatter", typescriptFormatter);
-		defaults.put("typescript", "3.3.3");
-		defaults.put("tslint", "5.12.1");
+		defaults.put("typescript", "3.9.5");
+		defaults.put("tslint", "6.1.2");
 		return defaults;
 	}
 
 	public static class State extends NpmFormatterStepStateBase implements Serializable {
 
-		private static final long serialVersionUID = -3811104513825329168L;
+		private static final long serialVersionUID = -3789035117345809383L;
 
 		private final TreeMap<String, Object> inlineTsFmtSettings;
 
@@ -71,16 +76,16 @@ public class TsFmtFormatterStep {
 		private final TypedTsFmtConfigFile configFile;
 
 		@Deprecated
-		public State(String stepName, Provisioner provisioner, File buildDir, @Nullable File npm, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) throws IOException {
-			this(stepName, defaultDevDependencies(), provisioner, buildDir, npm, configFile, inlineTsFmtSettings);
+		public State(String stepName, File buildDir, @Nullable File npm, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) throws IOException {
+			this(stepName, defaultDevDependencies(), buildDir, npm, configFile, inlineTsFmtSettings);
 		}
 
-		public State(String stepName, Map<String, String> versions, Provisioner provisioner, File buildDir, @Nullable File npm, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) throws IOException {
+		public State(String stepName, Map<String, String> versions, File buildDir, @Nullable File npm, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) throws IOException {
 			super(stepName,
-					provisioner,
 					new NpmConfig(
-							replaceDevDependencies(readFileFromClasspath(TsFmtFormatterStep.class, "/com/diffplug/spotless/npm/tsfmt-package.json"), new TreeMap<>(versions)),
-							"typescript-formatter"),
+							replaceDevDependencies(NpmResourceHelper.readUtf8StringFromClasspath(TsFmtFormatterStep.class, "/com/diffplug/spotless/npm/tsfmt-package.json"), new TreeMap<>(versions)),
+							"typescript-formatter",
+							NpmResourceHelper.readUtf8StringFromClasspath(PrettierFormatterStep.class, "/com/diffplug/spotless/npm/tsfmt-serve.js")),
 					buildDir,
 					npm);
 			this.buildDir = requireNonNull(buildDir);
@@ -91,69 +96,14 @@ public class TsFmtFormatterStep {
 		@Override
 		@Nonnull
 		public FormatterFunc createFormatterFunc() {
-
-			Map<String, Object> tsFmtOptions = unifyOptions();
-
-			final NodeJSWrapper nodeJSWrapper = nodeJSWrapper();
-			final V8ObjectWrapper tsFmt = nodeJSWrapper.require(nodeModulePath());
-			final V8ObjectWrapper formatterOptions = nodeJSWrapper.createNewObject(tsFmtOptions);
-
-			final TsFmtResult[] tsFmtResult = new TsFmtResult[1];
-			final Exception[] toThrow = new Exception[1];
-
-			V8FunctionWrapper formatResultCallback = createFormatResultCallback(nodeJSWrapper, tsFmtResult, toThrow);
-
-			/* var result = {
-			fileName: fileName,
-			settings: formatSettings,
-			message: message, <-- string
-			error: error, <-- boolean
-			src: content,
-			dest: formattedCode, <-- result
+			try {
+				Map<String, Object> tsFmtOptions = unifyOptions();
+				ServerProcessInfo tsfmtRestServer = npmRunServer();
+				TsFmtRestService restService = new TsFmtRestService(tsfmtRestServer.getBaseUrl());
+				return Closeable.of(() -> endServer(restService, tsfmtRestServer), input -> restService.format(input, tsFmtOptions));
+			} catch (Exception e) {
+				throw ThrowingEx.asRuntime(e);
 			}
-			*/
-			return FormatterFunc.Closeable.of(() -> {
-				asList(formatResultCallback, formatterOptions, tsFmt, nodeJSWrapper).forEach(ReflectiveObjectWrapper::release);
-			}, input -> {
-				tsFmtResult[0] = null;
-
-				// function processString(fileName: string, content: string, opts: Options): Promise<Result> {
-
-				try (
-						V8ArrayWrapper processStringArgs = nodeJSWrapper.createNewArray("spotless-format-string.ts", input, formatterOptions);
-						V8ObjectWrapper promise = tsFmt.executeObjectFunction("processString", processStringArgs);
-						V8ArrayWrapper callbacks = nodeJSWrapper.createNewArray(formatResultCallback)) {
-
-					promise.executeVoidFunction("then", callbacks);
-
-					while (tsFmtResult[0] == null && toThrow[0] == null) {
-						nodeJSWrapper.handleMessage();
-					}
-
-					if (toThrow[0] != null) {
-						throw ThrowingEx.asRuntime(toThrow[0]);
-					}
-
-					if (tsFmtResult[0] == null) {
-						throw new IllegalStateException("should never happen");
-					}
-					if (tsFmtResult[0].isError()) {
-						throw new RuntimeException(tsFmtResult[0].getMessage());
-					}
-					return tsFmtResult[0].getFormatted();
-				}
-			});
-		}
-
-		private V8FunctionWrapper createFormatResultCallback(NodeJSWrapper nodeJSWrapper, TsFmtResult[] outputTsFmtResult, Exception[] toThrow) {
-			return nodeJSWrapper.createNewFunction((receiver, parameters) -> {
-				try (final V8ObjectWrapper result = parameters.getObject(0)) {
-					outputTsFmtResult[0] = new TsFmtResult(result.getString("message"), result.getBoolean("error"), result.getString("dest"));
-				} catch (Exception e) {
-					toThrow[0] = e;
-				}
-				return receiver;
-			});
 		}
 
 		private Map<String, Object> unifyOptions() {
@@ -168,6 +118,15 @@ public class TsFmtFormatterStep {
 				unified.put(this.configFile.configFileOptionName(), this.configFile.absolutePath());
 			}
 			return unified;
+		}
+
+		private void endServer(TsFmtRestService restService, ServerProcessInfo restServer) throws Exception {
+			try {
+				restService.shutdown();
+			} catch (Throwable t) {
+				logger.log(Level.INFO, "Failed to request shutdown of rest service via api. Trying via process.", t);
+			}
+			restServer.close();
 		}
 	}
 }

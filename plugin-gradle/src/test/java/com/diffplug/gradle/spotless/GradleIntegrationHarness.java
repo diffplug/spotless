@@ -39,6 +39,39 @@ import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ResourceHarness;
 
 public class GradleIntegrationHarness extends ResourceHarness {
+	public enum GradleVersionSupport {
+		LEGACY("2.14"), KOTLIN("4.0"), CONFIG_AVOIDANCE("4.9"), MODERN(SpotlessPluginModern.MINIMUM_GRADLE), SETTINGS_PLUGINS("6.0");
+
+		final String version;
+
+		GradleVersionSupport(String version) {
+			this.version = adaptGradleVersionForJdk(adaptGradleVersionForModern(version));
+		}
+	}
+
+	protected static String adaptGradleVersionForModern(String ver) {
+		if ("true".equals(System.getProperty(SpotlessPluginModern.SPOTLESS_MODERN))) {
+			return Double.parseDouble(ver) < Double.parseDouble(SpotlessPluginModern.MINIMUM_GRADLE) ? SpotlessPluginModern.MINIMUM_GRADLE : ver;
+		}
+		return ver;
+	}
+
+	/**
+	 * For Java 11+, Gradle 5 is the minimum.
+	 * So if you ask for less than Gradle 5, you get it on Java 8, but on Java 11 you get promoted to Gradle 5.
+	 * If you ask for more than Gradle 5, you'll definitely get it.
+	 */
+	protected static String adaptGradleVersionForJdk(String ver) {
+		JreVersion jre = JreVersion.thisVm();
+		// @formatter:off
+		switch (jre) {
+			case _8:  return ver;
+			case _11: return Double.parseDouble(ver) < 5.0 ? "5.0" : ver;
+			default:  throw new IllegalStateException("Spotless build is only supported on Java 8 and Java 11");
+		}
+		// @formatter:on
+	}
+
 	/**
 	 * Each test gets its own temp folder, and we create a gradle
 	 * build there and run it.
@@ -58,30 +91,14 @@ public class GradleIntegrationHarness extends ResourceHarness {
 		setFile(".gitattributes").toContent("* text eol=lf");
 	}
 
-	/**
-	 * For Java 11+, Gradle 5 is the minimum.
-	 * So if you ask for less than Gradle 5, you get it on Java 8, but on Java 11 you get promoted to Gradle 5.
-	 * If you ask for more than Gradle 5, you'll definitely get it.
-	 */
-	protected static String requestGradleForJre8and11(String ver) {
-		JreVersion jre = JreVersion.thisVm();
-		// @formatter:off
-		switch (jre) {
-		case _8:  return ver;
-		case _11: return Double.parseDouble(ver) < 5.0 ? "5.0" : ver;
-		default:  throw new IllegalStateException("Spotless build is only supported on Java 8 and Java 11");
-		}
-		// @formatter:on
-	}
-
 	protected final GradleRunner gradleRunner() throws IOException {
 		GradleRunner runner = GradleRunner.create()
-				.withGradleVersion(requestGradleForJre8and11("2.14"))
+				.withGradleVersion(GradleVersionSupport.LEGACY.version)
 				.withProjectDir(rootFolder())
 				.withPluginClasspath();
 		if ("true".equals(System.getProperty(SpotlessPluginModern.SPOTLESS_MODERN))) {
 			runner.withEnvironment(ImmutableMap.of("ORG_GRADLE_PROJECT_" + SpotlessPluginModern.SPOTLESS_MODERN, "true"));
-			runner.withGradleVersion(SpotlessPluginModern.MINIMUM_GRADLE);
+			runner.withGradleVersion(GradleVersionSupport.MODERN.version);
 		}
 		return runner;
 	}
