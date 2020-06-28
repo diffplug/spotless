@@ -27,13 +27,15 @@ public class FormatterStepConfig {
 	private final Optional<String> ratchetFrom;
 	private final Provisioner provisioner;
 	private final FileLocator fileLocator;
+	private final Optional<String> spotlessSetLicenseHeaderYearsFromGitHistory;
 
-	public FormatterStepConfig(Charset encoding, String licenseHeaderDelimiter, Optional<String> ratchetFrom, Provisioner provisioner, FileLocator fileLocator) {
+	public FormatterStepConfig(Charset encoding, String licenseHeaderDelimiter, Optional<String> ratchetFrom, Provisioner provisioner, FileLocator fileLocator, Optional<String> spotlessSetLicenseHeaderYearsFromGitHistory) {
 		this.encoding = encoding;
 		this.licenseHeaderDelimiter = licenseHeaderDelimiter;
 		this.ratchetFrom = ratchetFrom;
 		this.provisioner = provisioner;
 		this.fileLocator = fileLocator;
+		this.spotlessSetLicenseHeaderYearsFromGitHistory = spotlessSetLicenseHeaderYearsFromGitHistory;
 	}
 
 	public Charset getEncoding() {
@@ -54,5 +56,9 @@ public class FormatterStepConfig {
 
 	public FileLocator getFileLocator() {
 		return fileLocator;
+	}
+
+	public Optional<String> spotlessSetLicenseHeaderYearsFromGitHistory() {
+		return spotlessSetLicenseHeaderYearsFromGitHistory;
 	}
 }

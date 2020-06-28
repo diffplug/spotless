@@ -32,15 +32,17 @@ public class FormatterConfig {
 	private final Provisioner provisioner;
 	private final FileLocator fileLocator;
 	private final List<FormatterStepFactory> globalStepFactories;
+	private final Optional<String> spotlessSetLicenseHeaderYearsFromGitHistory;
 
 	public FormatterConfig(File baseDir, String encoding, LineEnding lineEndings, Optional<String> ratchetFrom, Provisioner provisioner,
-			FileLocator fileLocator, List<FormatterStepFactory> globalStepFactories) {
+			FileLocator fileLocator, List<FormatterStepFactory> globalStepFactories, Optional<String> spotlessSetLicenseHeaderYearsFromGitHistory) {
 		this.encoding = encoding;
 		this.lineEndings = lineEndings;
 		this.ratchetFrom = ratchetFrom;
 		this.provisioner = provisioner;
 		this.fileLocator = fileLocator;
 		this.globalStepFactories = globalStepFactories;
+		this.spotlessSetLicenseHeaderYearsFromGitHistory = spotlessSetLicenseHeaderYearsFromGitHistory;
 	}
 
 	public String getEncoding() {
@@ -61,6 +63,10 @@ public class FormatterConfig {
 
 	public List<FormatterStepFactory> getGlobalStepFactories() {
 		return unmodifiableList(globalStepFactories);
+	}
+
+	public Optional<String> getSpotlessSetLicenseHeaderYearsFromGitHistory() {
+		return spotlessSetLicenseHeaderYearsFromGitHistory;
 	}
 
 	public FileLocator getFileLocator() {
