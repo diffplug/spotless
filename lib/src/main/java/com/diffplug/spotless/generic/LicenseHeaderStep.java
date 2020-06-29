@@ -20,8 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.time.YearMonth;
 import java.util.Arrays;
 import java.util.List;
@@ -32,15 +30,105 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
+import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.SerializableFileFilter;
+import com.diffplug.spotless.ThrowingEx;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /** Prefixes a license header before the package statement. */
 public final class LicenseHeaderStep implements Serializable {
-	private static final long serialVersionUID = 1L;
+	public enum YearMode {
+		PRESERVE, UPDATE_TO_TODAY, SET_FROM_GIT
+	}
+
+	public static Builder headerDelimiter(ThrowingEx.Supplier<String> headerLazy, String delimiter) {
+		return new Builder(headerLazy, delimiter, DEFAULT_YEAR_DELIMITER, YearMode.PRESERVE);
+	}
+
+	public static Builder headerDelimiter(String header, String delimiter) {
+		return headerDelimiter(() -> header, delimiter);
+	}
+
+	public static final class Builder {
+		final ThrowingEx.Supplier<String> headerLazy;
+		final String delimiter;
+		final String yearSeparator;
+		final YearMode yearMode;
+
+		private Builder(ThrowingEx.Supplier<String> headerLazy, String delimiter, String yearSeparator, YearMode yearMode) {
+			this.headerLazy = Objects.requireNonNull(headerLazy);
+			this.delimiter = Objects.requireNonNull(delimiter);
+			this.yearSeparator = Objects.requireNonNull(yearSeparator);
+			this.yearMode = Objects.requireNonNull(yearMode);
+		}
+
+		public Builder withHeaderString(String header) {
+			return withHeaderLazy(() -> header);
+		}
+
+		public Builder withHeaderLazy(ThrowingEx.Supplier<String> headerLazy) {
+			return new Builder(headerLazy, delimiter, yearSeparator, yearMode);
+		}
+
+		public Builder withDelimiter(String delimiter) {
+			return new Builder(headerLazy, delimiter, yearSeparator, yearMode);
+		}
+
+		public Builder withYearSeparator(String yearSeparator) {
+			return new Builder(headerLazy, delimiter, yearSeparator, yearMode);
+		}
+
+		public Builder withYearMode(YearMode yearMode) {
+			return new Builder(headerLazy, delimiter, yearSeparator, yearMode);
+		}
+
+		public FormatterStep build() {
+			if (yearMode == YearMode.SET_FROM_GIT) {
+				return FormatterStep.createNeverUpToDateLazy(LicenseHeaderStep.name(), () -> {
+					boolean updateYear = false; // doesn't matter
+					LicenseHeaderStep step = new LicenseHeaderStep(headerLazy.get(), delimiter, yearSeparator, updateYear);
+					return new FormatterFunc() {
+						@Override
+						public String apply(String input, File source) throws Exception {
+							return step.setLicenseHeaderYearsFromGitHistory(input, source);
+						}
+
+						@Override
+						public String apply(String input) throws Exception {
+							throw new UnsupportedOperationException();
+						}
+					};
+				});
+			} else {
+				return FormatterStep.createLazy(LicenseHeaderStep.name(), () -> {
+					// by default, we should update the year if the user is using ratchetFrom
+					boolean updateYear;
+					switch (yearMode) {
+					case PRESERVE:
+						updateYear = false;
+						break;
+					case UPDATE_TO_TODAY:
+						updateYear = true;
+						break;
+					case SET_FROM_GIT:
+					default:
+						throw new IllegalStateException(yearMode.toString());
+					}
+					return new LicenseHeaderStep(headerLazy.get(), delimiter, yearSeparator, updateYear);
+				}, step -> step::format);
+			}
+		}
+	}
+
+	private static final long serialVersionUID = 2L;
+
+	public static FormatterStep createFromHeader(String header, String delimiterExpr) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	private static final String NAME = "licenseHeader";
 	private static final String DEFAULT_YEAR_DELIMITER = "-";
@@ -48,42 +136,6 @@ public final class LicenseHeaderStep implements Serializable {
 
 	private static final SerializableFileFilter UNSUPPORTED_JVM_FILES_FILTER = SerializableFileFilter.skipFilesNamed(
 			"package-info.java", "package-info.groovy", "module-info.java");
-
-	/** Creates a FormatterStep which forces the start of each file to match a license header. */
-	public static FormatterStep createFromHeader(String licenseHeader, String delimiter) {
-		return createFromHeader(licenseHeader, delimiter, DEFAULT_YEAR_DELIMITER);
-	}
-
-	public static FormatterStep createFromHeader(String licenseHeader, String delimiter, String yearSeparator) {
-		Objects.requireNonNull(licenseHeader, "licenseHeader");
-		Objects.requireNonNull(delimiter, "delimiter");
-		Objects.requireNonNull(yearSeparator, "yearSeparator");
-		return FormatterStep.create(LicenseHeaderStep.NAME,
-				new LicenseHeaderStep(licenseHeader, delimiter, yearSeparator),
-				step -> step::format);
-	}
-
-	/**
-	 * Creates a FormatterStep which forces the start of each file to match the license header
-	 * contained in the given file.
-	 */
-	public static FormatterStep createFromFile(File licenseHeaderFile, Charset encoding, String delimiter) {
-		return createFromFile(licenseHeaderFile, encoding, delimiter, DEFAULT_YEAR_DELIMITER);
-	}
-
-	/**
-	 * Creates a FormatterStep which forces the start of each file to match the license header
-	 * contained in the given file.
-	 */
-	public static FormatterStep createFromFile(File licenseHeaderFile, Charset encoding, String delimiter, String yearSeparator) {
-		Objects.requireNonNull(licenseHeaderFile, "licenseHeaderFile");
-		Objects.requireNonNull(encoding, "encoding");
-		Objects.requireNonNull(delimiter, "delimiter");
-		Objects.requireNonNull(yearSeparator, "yearSeparator");
-		return FormatterStep.createLazy(LicenseHeaderStep.NAME,
-				() -> new LicenseHeaderStep(new String(Files.readAllBytes(licenseHeaderFile.toPath()), encoding), delimiter, yearSeparator),
-				step -> step::format);
-	}
 
 	public static String name() {
 		return NAME;
@@ -104,12 +156,8 @@ public final class LicenseHeaderStep implements Serializable {
 	private final @Nullable String afterYear;
 	private final boolean updateYearWithLatest;
 
-	private LicenseHeaderStep(String licenseHeader, String delimiter, String yearSeparator) {
-		this(licenseHeader, delimiter, yearSeparator, false);
-	}
-
 	/** The license that we'd like enforced. */
-	public LicenseHeaderStep(String licenseHeader, String delimiter, String yearSeparator, boolean updateYearWithLatest) {
+	private LicenseHeaderStep(String licenseHeader, String delimiter, String yearSeparator, boolean updateYearWithLatest) {
 		if (delimiter.contains("\n")) {
 			throw new IllegalArgumentException("The delimiter must not contain any newlines.");
 		}
@@ -151,7 +199,7 @@ public final class LicenseHeaderStep implements Serializable {
 	}
 
 	/** Formats the given string. */
-	public String format(String raw) {
+	private String format(String raw) {
 		Matcher contentMatcher = delimiterPattern.matcher(raw);
 		if (!contentMatcher.find()) {
 			throw new IllegalArgumentException("Unable to find delimiter regex " + delimiterPattern);
@@ -220,7 +268,7 @@ public final class LicenseHeaderStep implements Serializable {
 	}
 
 	/** Sets copyright years on the given file by finding the oldest and most recent commits throughout git history. */
-	public String setLicenseHeaderYearsFromGitHistory(String raw, File file) throws IOException {
+	private String setLicenseHeaderYearsFromGitHistory(String raw, File file) throws IOException {
 		if (yearToday == null) {
 			return raw;
 		}

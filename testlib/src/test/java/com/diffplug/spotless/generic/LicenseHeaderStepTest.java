@@ -17,7 +17,6 @@ package com.diffplug.spotless.generic;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.time.YearMonth;
 
 import org.junit.Assert;
@@ -27,6 +26,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
+import com.diffplug.spotless.generic.LicenseHeaderStep.YearMode;
 
 public class LicenseHeaderStepTest extends ResourceHarness {
 	private static final String KEY_LICENSE = "license/TestLicense";
@@ -52,12 +52,6 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 	@Test
 	public void fromHeader() throws Throwable {
 		FormatterStep step = LicenseHeaderStep.createFromHeader(getTestResource(KEY_LICENSE), LICENSE_HEADER_DELIMITER);
-		assertOnResources(step, KEY_FILE_NOTAPPLIED, KEY_FILE_APPLIED);
-	}
-
-	@Test
-	public void fromFile() throws Throwable {
-		FormatterStep step = LicenseHeaderStep.createFromFile(createTestFile(KEY_LICENSE), StandardCharsets.UTF_8, LICENSE_HEADER_DELIMITER);
 		assertOnResources(step, KEY_FILE_NOTAPPLIED, KEY_FILE_APPLIED);
 	}
 
@@ -91,8 +85,9 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 
 	@Test
 	public void updateYearWithLatest() throws Throwable {
-		LicenseHeaderStep stepState = new LicenseHeaderStep(licenseWith(HEADER_WITH_YEAR), LICENSE_HEADER_DELIMITER, "-", true);
-		FormatterStep step = FormatterStep.create(LicenseHeaderStep.name(), stepState, s -> s::format);
+		FormatterStep step = LicenseHeaderStep.headerDelimiter(licenseWith(HEADER_WITH_YEAR), LICENSE_HEADER_DELIMITER)
+				.withYearMode(YearMode.UPDATE_TO_TODAY)
+				.build();
 		StepHarness.forStep(step)
 				.testUnaffected(fileContainingYear(HEADER_WITH_YEAR, currentYear()))
 				.test(fileContainingYear(HEADER_WITH_YEAR, "2003"), fileContainingYear(HEADER_WITH_YEAR, "2003-" + currentYear()))
@@ -101,14 +96,14 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 
 	@Test
 	public void should_apply_license_containing_YEAR_token_with_non_default_year_separator() throws Throwable {
-		StepHarness.forStep(LicenseHeaderStep.createFromHeader(licenseWith(HEADER_WITH_YEAR), LICENSE_HEADER_DELIMITER, ", "))
+		StepHarness.forStep(LicenseHeaderStep.headerDelimiter(licenseWith(HEADER_WITH_YEAR), LICENSE_HEADER_DELIMITER).withYearSeparator(", ").build())
 				.testUnaffected(fileContainingYear(HEADER_WITH_YEAR, "1990, 2015"))
 				.test(fileContainingYear(HEADER_WITH_YEAR, "1990-2015"), fileContainingYear(HEADER_WITH_YEAR, "1990, 2015"));
 	}
 
 	@Test
 	public void should_apply_license_containing_YEAR_token_with_special_character_in_year_separator() throws Throwable {
-		StepHarness.forStep(LicenseHeaderStep.createFromHeader(licenseWith(HEADER_WITH_YEAR), LICENSE_HEADER_DELIMITER, "("))
+		StepHarness.forStep(LicenseHeaderStep.headerDelimiter(licenseWith(HEADER_WITH_YEAR), LICENSE_HEADER_DELIMITER).withYearSeparator("(").build())
 				.testUnaffected(fileContainingYear(HEADER_WITH_YEAR, "1990(2015"))
 				.test(fileContainingYear(HEADER_WITH_YEAR, "1990-2015"), fileContainingYear(HEADER_WITH_YEAR, "1990(2015"));
 	}
@@ -169,35 +164,33 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 	@Test
 	public void equality() {
 		new SerializableEqualityTester() {
-			String header = "LICENSE";
-			String delimiter = "package";
-			String yearSep = "-";
-			boolean updateYearWithLatest = false;
+			LicenseHeaderStep.Builder builder = LicenseHeaderStep.headerDelimiter("LICENSE", "package")
+					.withYearSeparator("-")
+					.withYearMode(YearMode.PRESERVE);
 
 			@Override
 			protected void setupTest(API api) {
 				api.areDifferentThan();
 
-				delimiter = "crate";
+				builder = builder.withDelimiter("crate");
 				api.areDifferentThan();
 
-				header = "APACHE $YEAR";
+				builder = builder.withHeaderString("APACHE $YEAR");
 				api.areDifferentThan();
 
-				delimiter = "package";
+				builder = builder.withDelimiter("package");
 				api.areDifferentThan();
 
-				yearSep = " - ";
+				builder = builder.withYearSeparator(" - ");
 				api.areDifferentThan();
 
-				updateYearWithLatest = true;
+				builder = builder.withYearMode(YearMode.UPDATE_TO_TODAY);
 				api.areDifferentThan();
 			}
 
 			@Override
 			protected FormatterStep create() {
-				LicenseHeaderStep stepState = new LicenseHeaderStep(header, delimiter, yearSep, updateYearWithLatest);
-				return FormatterStep.create(LicenseHeaderStep.name(), stepState, s -> s::format);
+				return builder.build();
 			}
 		}.testEquals();
 	}
