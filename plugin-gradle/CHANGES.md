@@ -6,7 +6,10 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
+* Full support for the Gradle buildcache - previously only supported local, now supports remote too. Fixes [#566](https://github.com/diffplug/spotless/issues/566) and [#280](https://github.com/diffplug/spotless/issues/280), via changes in [#621](https://github.com/diffplug/spotless/pull/621) and [#571](https://github.com/diffplug/spotless/pull/571).
 * `prettier` will now autodetect the parser (and formatter) to use based on the filename, unless you override this using `config()` or `configFile()` with the option `parser` or `filepath`. ([#620](https://github.com/diffplug/spotless/pull/620))
+### Fixed
+* LineEndings.GIT_ATTRIBUTES is now a bit more efficient, and paves the way for remote build cache support in Gradle. ([#621](https://github.com/diffplug/spotless/pull/621))
 
 ## [4.4.0] - 2020-06-19
 ### Added

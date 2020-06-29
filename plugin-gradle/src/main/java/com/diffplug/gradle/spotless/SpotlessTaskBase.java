@@ -63,7 +63,7 @@ public class SpotlessTaskBase extends DefaultTask {
 		this.encoding = Objects.requireNonNull(encoding);
 	}
 
-	protected LineEnding.Policy lineEndingsPolicy = LineEnding.UNIX.createPolicy();
+	protected LineEnding.Policy lineEndingsPolicy;
 
 	@Input
 	public LineEnding.Policy getLineEndingsPolicy() {
