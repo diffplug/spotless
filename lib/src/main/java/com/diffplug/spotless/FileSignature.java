@@ -186,8 +186,11 @@ public final class FileSignature implements Serializable {
 	private static final class Sig implements Serializable {
 		private static final long serialVersionUID = 6727302747168655222L;
 
+		@SuppressWarnings("unused")
 		final String name;
+		@SuppressWarnings("unused")
 		final long size;
+		@SuppressWarnings("unused")
 		final byte[] hash;
 		/** transient because state should be transferable from machine to machine. */
 		final transient long lastModified;
