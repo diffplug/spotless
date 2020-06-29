@@ -213,7 +213,7 @@ public final class LicenseHeaderStep implements Serializable {
 		}
 	}
 
-	private static final String spotlessSetLicenseHeaderYearsFromGitHistory = "spotlessSetLicenseHeaderYearsFromGitHistory";
+	public static final String spotlessSetLicenseHeaderYearsFromGitHistory = "spotlessSetLicenseHeaderYearsFromGitHistory";
 
 	public static final String FLAG_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY() {
 		return spotlessSetLicenseHeaderYearsFromGitHistory;
