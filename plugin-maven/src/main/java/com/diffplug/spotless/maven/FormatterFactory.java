@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.maven.plugins.annotations.Parameter;
@@ -40,6 +41,12 @@ public abstract class FormatterFactory {
 
 	@Parameter
 	private LineEnding lineEndings;
+
+	/** Sentinel to distinguish between "don't ratchet this format" and "use spotless parent format". */
+	private static final String RATCHETFROM_NOT_SET_AT_FORMAT_LEVEL = " not set at format level ";
+
+	@Parameter(defaultValue = RATCHETFROM_NOT_SET_AT_FORMAT_LEVEL)
+	private String ratchetFrom;
 
 	@Parameter
 	private String[] includes;
@@ -126,6 +133,14 @@ public abstract class FormatterFactory {
 
 	private LineEnding lineEndings(FormatterConfig config) {
 		return lineEndings == null ? config.getLineEndings() : lineEndings;
+	}
+
+	Optional<String> ratchetFrom(FormatterConfig config) {
+		if (ratchetFrom == RATCHETFROM_NOT_SET_AT_FORMAT_LEVEL) {
+			return config.getRatchetFrom();
+		} else {
+			return Optional.ofNullable(ratchetFrom);
+		}
 	}
 
 	private FormatterStepConfig stepConfig(Charset encoding, FormatterConfig config) {

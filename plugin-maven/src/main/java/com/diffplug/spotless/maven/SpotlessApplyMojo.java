@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ package com.diffplug.spotless.maven;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -35,7 +34,7 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 	private boolean skip;
 
 	@Override
-	protected void process(List<File> files, Formatter formatter) throws MojoExecutionException {
+	protected void process(Iterable<File> files, Formatter formatter) throws MojoExecutionException {
 		if (skip) {
 			getLog().info("Spotless apply skipped");
 			return;

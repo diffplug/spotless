@@ -34,7 +34,7 @@ import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.Test;
 
-public class RatchetFromTest extends GradleIntegrationHarness {
+public class GitRatchetGradleTest extends GradleIntegrationHarness {
 	private static final String TEST_PATH = "src/markdown/test.md";
 
 	private Git initRepo() throws IllegalStateException, GitAPIException, IOException {

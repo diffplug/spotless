@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 	private boolean skip;
 
 	@Override
-	protected void process(List<File> files, Formatter formatter) throws MojoExecutionException {
+	protected void process(Iterable<File> files, Formatter formatter) throws MojoExecutionException {
 		if (skip) {
 			getLog().info("Spotless check skipped");
 			return;

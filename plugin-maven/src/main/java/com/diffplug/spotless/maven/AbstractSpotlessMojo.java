@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,13 @@ import static java.util.stream.Collectors.toList;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -36,6 +42,7 @@ import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.repository.RemoteRepository;
 
+import com.diffplug.common.collect.Iterables;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Provisioner;
@@ -77,6 +84,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	private LineEnding lineEndings;
 
 	@Parameter
+	private String ratchetFrom;
+
+	@Parameter
 	private LicenseHeader licenseHeader;
 
 	@Parameter
@@ -110,12 +120,11 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Parameter(property = "spotlessFiles")
 	private String filePatterns;
 
-	protected abstract void process(List<File> files, Formatter formatter) throws MojoExecutionException;
+	protected abstract void process(Iterable<File> files, Formatter formatter) throws MojoExecutionException;
 
 	@Override
 	public final void execute() throws MojoExecutionException {
 		List<FormatterFactory> formatterFactories = getFormatterFactories();
-
 		for (FormatterFactory formatterFactory : formatterFactories) {
 			execute(formatterFactory);
 		}
@@ -123,8 +132,16 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	private void execute(FormatterFactory formatterFactory) throws MojoExecutionException {
 		List<File> files = collectFiles(formatterFactory);
-		try (Formatter formatter = formatterFactory.newFormatter(files, getFormatterConfig())) {
-			process(files, formatter);
+		FormatterConfig config = getFormatterConfig();
+		Optional<String> ratchetFrom = formatterFactory.ratchetFrom(config);
+		Iterable<File> toFormat;
+		if (!ratchetFrom.isPresent()) {
+			toFormat = files;
+		} else {
+			toFormat = Iterables.filter(files, GitRatchetMaven.instance().isGitDirty(baseDir, ratchetFrom.get()));
+		}
+		try (Formatter formatter = formatterFactory.newFormatter(files, config)) {
+			process(toFormat, formatter);
 		}
 	}
 
@@ -172,7 +189,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		Provisioner provisioner = MavenProvisioner.create(resolver);
 		List<FormatterStepFactory> formatterStepFactories = getFormatterStepFactories();
 		FileLocator fileLocator = getFileLocator();
-		return new FormatterConfig(baseDir, encoding, lineEndings, provisioner, fileLocator, formatterStepFactories);
+		return new FormatterConfig(baseDir, encoding, lineEndings, Optional.ofNullable(ratchetFrom), provisioner, fileLocator, formatterStepFactories);
 	}
 
 	private FileLocator getFileLocator() {
