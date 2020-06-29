@@ -125,11 +125,6 @@ public final class LicenseHeaderStep implements Serializable {
 
 	private static final long serialVersionUID = 2L;
 
-	public static FormatterStep createFromHeader(String header, String delimiterExpr) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	private static final String NAME = "licenseHeader";
 	private static final String DEFAULT_YEAR_DELIMITER = "-";
 	private static final List<String> YEAR_TOKENS = Arrays.asList("$YEAR", "$today.year");
