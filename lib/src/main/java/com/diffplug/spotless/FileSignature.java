@@ -150,7 +150,7 @@ public final class FileSignature implements Serializable {
 	 */
 	static final Cache cache = new Cache();
 
-	static class Cache {
+	private static final class Cache {
 		Map<String, Sig> cache = new HashMap<>();
 
 		synchronized Sig sign(File fileInput) throws IOException {
@@ -183,7 +183,7 @@ public final class FileSignature implements Serializable {
 	}
 
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-	static class Sig implements Serializable {
+	private static final class Sig implements Serializable {
 		private static final long serialVersionUID = 6727302747168655222L;
 
 		final String name;
