@@ -444,10 +444,10 @@ public class FormatExtension {
 	 * automatically ({@link HasBuiltinDelimiterForLicense}).
 	 */
 	public class LicenseHeaderConfig {
-		LicenseHeaderStep.Builder builder;
+		LicenseHeaderStep builder;
 		Boolean updateYearWithLatest = null;
 
-		public LicenseHeaderConfig(LicenseHeaderStep.Builder builder) {
+		public LicenseHeaderConfig(LicenseHeaderStep builder) {
 			this.builder = builder;
 		}
 

@@ -164,7 +164,7 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 	@Test
 	public void equality() {
 		new SerializableEqualityTester() {
-			LicenseHeaderStep.Builder builder = LicenseHeaderStep.headerDelimiter("LICENSE", "package")
+			LicenseHeaderStep builder = LicenseHeaderStep.headerDelimiter("LICENSE", "package")
 					.withYearSeparator("-")
 					.withYearMode(YearMode.PRESERVE);
 
