@@ -16,11 +16,13 @@
 package com.diffplug.spotless;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -46,6 +48,23 @@ public class FileSignatureTest extends ResourceHarness {
 		Collection<File> expectedFiles = getTestFiles(expectedPathSet);
 		Collection<File> outputFiles = signature.files();
 		assertThat(outputFiles).containsExactlyElementsOf(expectedFiles);
+	}
+
+	@Test
+	public void testFromDirectory() {
+		File dir = new File(rootFolder(), "dir");
+		assertThatThrownBy(() -> FileSignature.signAsList(dir))
+				.isInstanceOf(IllegalArgumentException.class);
+	}
+
+	@Test
+	public void testFromFilesAndDirectory() throws IOException {
+		File dir = new File(rootFolder(), "dir");
+		List<File> files = getTestFiles(inputPaths);
+		files.add(dir);
+		Collections.shuffle(files);
+		assertThatThrownBy(() -> FileSignature.signAsList(files))
+				.isInstanceOf(IllegalArgumentException.class);
 	}
 
 	private List<File> getTestFiles(final String[] paths) throws IOException {
