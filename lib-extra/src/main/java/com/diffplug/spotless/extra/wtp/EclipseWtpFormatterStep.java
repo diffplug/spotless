@@ -57,15 +57,6 @@ public enum EclipseWtpFormatterStep {
 	}
 
 	/**
-	 * Provides default configuration for CSSformatter.
-	 * Method is deprecated. Use {@link EclipseWtpFormatterStep#createBuilder(Provisioner)} instead.
-	 */
-	@Deprecated
-	public static EclipseBasedStepBuilder createCssBuilder(Provisioner provisioner) {
-		return new EclipseBasedStepBuilder(NAME, " - css", provisioner, state -> applyWithoutFile("EclipseCssFormatterStepImpl", state));
-	}
-
-	/**
 	 * Provides default configuration for XML formatter.
 	 * Method is deprecated. Use {@link EclipseWtpFormatterStep#createBuilder(Provisioner)} instead.
 	 */
