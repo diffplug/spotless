@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,29 +65,6 @@ public final class ImportOrderStep {
 		return FormatterStep.createLazy("importOrder",
 				() -> new State(importOrder.get(), lineFormat),
 				State::toFormatter);
-	}
-
-	/** Method interface has been changed to
-	 * {@link ImportOrderStep#createFromOrder(String...)}.*/
-	@Deprecated
-	public static FormatterStep createFromOrder(List<String> importOrder) {
-		// defensive copying and null checking
-		List<String> importOrderCopy = requireElementsNonNull(new ArrayList<>(importOrder));
-		return forJava().createFrom(() -> importOrderCopy);
-	}
-
-	/** Static method has been replaced by instance method
-	 * {@link ImportOrderStep#createFrom(String...)}.*/
-	@Deprecated
-	public static FormatterStep createFromOrder(String... importOrder) {
-		return forJava().createFrom(importOrder);
-	}
-
-	/** Static method has been replaced by instance method
-	 * {@link ImportOrderStep#createFrom(File)}.*/
-	@Deprecated
-	public static FormatterStep createFromFile(File importsFile) {
-		return forJava().createFrom(importsFile);
 	}
 
 	private static List<String> getImportOrder(File importsFile) {

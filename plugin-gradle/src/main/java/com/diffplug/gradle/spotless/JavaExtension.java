@@ -67,7 +67,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 						"'importOrder([x, y, z])' is deprecated.",
 						"Use 'importOrder x, y, z' instead.",
 						"For details see https://github.com/diffplug/spotless/tree/main/plugin-gradle#applying-to-java-source"));
-		addStep(ImportOrderStep.createFromOrder(importOrder));
+		importOrder(importOrder.toArray(new String[0]));
 	}
 
 	public void importOrder(String... importOrder) {
