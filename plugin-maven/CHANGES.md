@@ -9,7 +9,11 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * If you specify `-DspotlessSetLicenseHeaderYearsFromGitHistory=true`, Spotless will perform an expensive search through git history to determine the oldest and newest commits for each file, and uses that to determine license header years. ([#626](https://github.com/diffplug/spotless/pull/626))
 * `prettier` will now autodetect the parser (and formatter) to use based on the filename, unless you override this using `config` or `configFile` with the option `parser` or `filepath` ([#620](https://github.com/diffplug/spotless/pull/620)).
 ### Removed
-* **BREAKING** In [`1.18.0` (released 2019-02-11)](#1180---2019-02-11), we deprecated the `<xml>` and `<css>` elements, in favor of the generic `eclipseWtp` step.
+* **BREAKING** the long-deprecated `<xml>` and `<css>` formats have been removed, in favor of the long-available [`<eclipseWtp>`](https://github.com/diffplug/spotless/tree/main/plugin-maven#eclipse-wtp) step which is available in every generic format.
+  * This probably doesn't affect you, but if it does, you just need to change `<xml>...` into `<formats><format><eclipseWtp><type>XML</type>...`
+  * In [`1.15.0` (released 2018-09-23)](#1150---2018-09-23), we added support for `xml` and `css` formats using the Eclipse WTP.
+  * In [`1.18.0` (released 2019-02-11)](#1180---2019-02-11), we deprecated these, in favor of the generic `eclipseWtp` step which is available for all generic formats.  This allows you to have multiple XML and CSS formats, rather than just one.
+  * And now we removed them entirely.
 
 ## [1.31.3] - 2020-06-17
 ### Changed
