@@ -29,14 +29,12 @@ import org.gradle.api.tasks.SourceSet;
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
-import com.diffplug.spotless.extra.java.EclipseFormatterStep;
 import com.diffplug.spotless.extra.java.EclipseJdtFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.java.GoogleJavaFormatStep;
 import com.diffplug.spotless.java.ImportOrderStep;
 import com.diffplug.spotless.java.RemoveUnusedImportsStep;
 
-@SuppressWarnings("deprecation")
 public class JavaExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "java";
 
@@ -82,7 +80,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 	/** Use {@link #eclipse()} instead */
 	@Deprecated
 	public void eclipseFormatFile(Object eclipseFormatFile) {
-		eclipseFormatFile(EclipseFormatterStep.defaultVersion(), eclipseFormatFile);
+		eclipseFormatFile(EclipseJdtFormatterStep.defaultVersion(), eclipseFormatFile);
 	}
 
 	/** Use {@link #eclipse(String)} instead */
