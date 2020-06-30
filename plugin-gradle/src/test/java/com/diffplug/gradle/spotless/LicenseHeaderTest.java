@@ -46,7 +46,7 @@ public class LicenseHeaderTest extends GradleIntegrationHarness {
 
 	private void assertTransform(String yearBefore, String yearAfter) throws IOException {
 		setFile(TEST_JAVA).toContent("/** " + yearBefore + " */\n" + CONTENT);
-		gradleRunner().withArguments("spotlessApply", "--stacktrace").build();
+		gradleRunner().withArguments("spotlessApply", "--stacktrace").forwardOutput().build();
 		assertFile(TEST_JAVA).hasContent("/** " + yearAfter + " */\n" + CONTENT);
 	}
 

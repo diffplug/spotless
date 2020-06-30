@@ -483,14 +483,14 @@ public class FormatExtension {
 		}
 
 		FormatterStep createStep() {
-			YearMode yearMode;
-			if ("true".equals(spotless.project.findProperty(LicenseHeaderStep.FLAG_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY()))) {
-				yearMode = YearMode.SET_FROM_GIT;
-			} else {
-				boolean updateYear = updateYearWithLatest == null ? getRatchetFrom() != null : updateYearWithLatest;
-				yearMode = updateYear ? YearMode.UPDATE_TO_TODAY : YearMode.PRESERVE;
-			}
-			return builder.withYearMode(yearMode).build();
+			return builder.withYearModeLazy(() -> {
+				if ("true".equals(spotless.project.findProperty(LicenseHeaderStep.FLAG_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY()))) {
+					return YearMode.SET_FROM_GIT;
+				} else {
+					boolean updateYear = updateYearWithLatest == null ? getRatchetFrom() != null : updateYearWithLatest;
+					return updateYear ? YearMode.UPDATE_TO_TODAY : YearMode.PRESERVE;
+				}
+			}).build();
 		}
 	}
 

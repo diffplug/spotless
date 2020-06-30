@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,15 +50,15 @@ public final class LicenseHeaderStep {
 	}
 
 	public static LicenseHeaderStep headerDelimiter(ThrowingEx.Supplier<String> headerLazy, String delimiter) {
-		return new LicenseHeaderStep(headerLazy, delimiter, DEFAULT_YEAR_DELIMITER, YearMode.PRESERVE);
+		return new LicenseHeaderStep(headerLazy, delimiter, DEFAULT_YEAR_DELIMITER, () -> YearMode.PRESERVE);
 	}
 
 	final ThrowingEx.Supplier<String> headerLazy;
 	final String delimiter;
 	final String yearSeparator;
-	final YearMode yearMode;
+	final Supplier<YearMode> yearMode;
 
-	private LicenseHeaderStep(ThrowingEx.Supplier<String> headerLazy, String delimiter, String yearSeparator, YearMode yearMode) {
+	private LicenseHeaderStep(ThrowingEx.Supplier<String> headerLazy, String delimiter, String yearSeparator, Supplier<YearMode> yearMode) {
 		this.headerLazy = Objects.requireNonNull(headerLazy);
 		this.delimiter = Objects.requireNonNull(delimiter);
 		this.yearSeparator = Objects.requireNonNull(yearSeparator);
@@ -81,6 +82,10 @@ public final class LicenseHeaderStep {
 	}
 
 	public LicenseHeaderStep withYearMode(YearMode yearMode) {
+		return withYearModeLazy(() -> yearMode);
+	}
+
+	public LicenseHeaderStep withYearModeLazy(Supplier<YearMode> yearMode) {
 		return new LicenseHeaderStep(headerLazy, delimiter, yearSeparator, yearMode);
 	}
 
@@ -103,7 +108,7 @@ public final class LicenseHeaderStep {
 	}
 
 	public FormatterStep build() {
-		if (yearMode == YearMode.SET_FROM_GIT) {
+		if (yearMode.get() == YearMode.SET_FROM_GIT) {
 			return FormatterStep.createNeverUpToDateLazy(LicenseHeaderStep.name(), () -> {
 				boolean updateYear = false; // doesn't matter
 				Runtime step = new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear);
@@ -113,7 +118,7 @@ public final class LicenseHeaderStep {
 			return FormatterStep.createLazy(LicenseHeaderStep.name(), () -> {
 				// by default, we should update the year if the user is using ratchetFrom
 				boolean updateYear;
-				switch (yearMode) {
+				switch (yearMode.get()) {
 				case PRESERVE:
 					updateYear = false;
 					break;
