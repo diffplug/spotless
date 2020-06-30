@@ -19,7 +19,7 @@ import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElem
 
 import org.gradle.api.Project;
 
-import com.diffplug.spotless.css.CssDefaults;
+import com.diffplug.gradle.spotless.libdeprecated.CssDefaults;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
 

@@ -108,11 +108,6 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Parameter
 	private Typescript typescript;
 
-	/** The CSS extension is discontinued. */
-	@Parameter
-	@Deprecated
-	private com.diffplug.spotless.maven.css.Css css;
-
 	@Parameter(property = "spotlessFiles")
 	private String filePatterns;
 
@@ -199,7 +194,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private List<FormatterFactory> getFormatterFactories() {
-		return Stream.concat(formats.stream(), Stream.of(java, scala, kotlin, cpp, typescript, css))
+		return Stream.concat(formats.stream(), Stream.of(java, scala, kotlin, cpp, typescript))
 				.filter(Objects::nonNull)
 				.collect(toList());
 	}
