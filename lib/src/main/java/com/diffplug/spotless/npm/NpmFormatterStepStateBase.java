@@ -181,6 +181,8 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 	}
 
 	protected static class ServerStartException extends RuntimeException {
+		private static final long serialVersionUID = -8803977379866483002L;
+
 		public ServerStartException(Throwable cause) {
 			super(cause);
 		}

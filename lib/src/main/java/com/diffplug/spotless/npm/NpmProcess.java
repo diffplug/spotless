@@ -79,6 +79,8 @@ class NpmProcess {
 	}
 
 	static class NpmProcessException extends RuntimeException {
+		private static final long serialVersionUID = 6424331316676759525L;
+
 		public NpmProcessException(String message) {
 			super(message);
 		}
