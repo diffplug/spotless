@@ -15,15 +15,14 @@
  */
 package com.diffplug.spotless.maven.generic;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
-import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
+import com.diffplug.spotless.generic.LicenseHeaderStep.YearMode;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 
@@ -45,32 +44,17 @@ public class LicenseHeader implements FormatterStepFactory {
 			throw new IllegalArgumentException("You need to specify 'delimiter'.");
 		}
 		if (file != null ^ content != null) {
-			FormatterStep unfiltered;
+			YearMode yearMode;
 			if ("true".equals(config.spotlessSetLicenseHeaderYearsFromGitHistory().orElse(""))) {
-				unfiltered = FormatterStep.createNeverUpToDateLazy(LicenseHeaderStep.name(), () -> {
-					boolean updateYear = false; // doesn't matter
-					LicenseHeaderStep step = new LicenseHeaderStep(readFileOrContent(config), delimiterString, LicenseHeaderStep.defaultYearDelimiter(), updateYear);
-					return new FormatterFunc() {
-						@Override
-						public String apply(String input, File source) throws Exception {
-							return step.setLicenseHeaderYearsFromGitHistory(input, source);
-						}
-
-						@Override
-						public String apply(String input) throws Exception {
-							throw new UnsupportedOperationException();
-						}
-					};
-				});
+				yearMode = YearMode.SET_FROM_GIT;
 			} else {
-				unfiltered = FormatterStep.createLazy(LicenseHeaderStep.name(), () -> {
-					// by default, we should update the year if the user is using ratchetFrom
-					boolean updateYear = config.getRatchetFrom().isPresent();
-					String header = readFileOrContent(config);
-					return new LicenseHeaderStep(header, delimiterString, LicenseHeaderStep.defaultYearDelimiter(), updateYear);
-				}, step -> step::format);
+				boolean updateYear = config.getRatchetFrom().isPresent();
+				yearMode = updateYear ? YearMode.UPDATE_TO_TODAY : YearMode.PRESERVE;
 			}
-			return unfiltered.filterByFile(LicenseHeaderStep.unsupportedJvmFilesFilter());
+			return LicenseHeaderStep.headerDelimiter(() -> readFileOrContent(config), delimiterString)
+					.withYearMode(yearMode)
+					.build()
+					.filterByFile(LicenseHeaderStep.unsupportedJvmFilesFilter());
 		} else {
 			throw new IllegalArgumentException("Must specify exactly one of 'file' or 'content'.");
 		}

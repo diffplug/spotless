@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless;
+package com.diffplug.spotless.maven.generic;
 
 import java.io.IOException;
 import java.time.YearMonth;
@@ -21,36 +21,33 @@ import java.time.YearMonth;
 import org.eclipse.jgit.api.Git;
 import org.junit.Test;
 
-public class LicenseHeaderTest extends GradleIntegrationHarness {
+import com.diffplug.spotless.maven.MavenIntegrationHarness;
+
+public class LicenseHeaderRatchetTest extends MavenIntegrationHarness {
 	private static final String NOW = String.valueOf(YearMonth.now().getYear());
 
 	private static final String TEST_JAVA = "src/main/java/pkg/Test.java";
 	private static final String CONTENT = "package pkg;\npublic class Test {}";
 
-	private void setLicenseStep(String licenseLine) throws IOException {
-		setFile("build.gradle").toLines(
-				"plugins {",
-				"  id 'com.diffplug.gradle.spotless'",
-				"  id 'java'",
-				"}",
-				"spotless {",
-				"  java {",
-				licenseLine,
-				"  }",
-				"}");
+	private void setRatchetFrom(String ratchetFrom) throws IOException {
+		writePomWithJavaSteps(
+				"<licenseHeader>",
+				"  <content>/** $YEAR */</content>",
+				"</licenseHeader>",
+				ratchetFrom);
 	}
 
-	private void assertUnchanged(String year) throws IOException {
+	private void assertUnchanged(String year) throws Exception {
 		assertTransform(year, year);
 	}
 
-	private void assertTransform(String yearBefore, String yearAfter) throws IOException {
+	private void assertTransform(String yearBefore, String yearAfter) throws Exception {
 		setFile(TEST_JAVA).toContent("/** " + yearBefore + " */\n" + CONTENT);
-		gradleRunner().withArguments("spotlessApply", "--stacktrace").forwardOutput().build();
+		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(TEST_JAVA).hasContent("/** " + yearAfter + " */\n" + CONTENT);
 	}
 
-	private void testSuiteUpdateWithLatest(boolean update) throws IOException {
+	private void testSuiteUpdateWithLatest(boolean update) throws Exception {
 		if (update) {
 			assertTransform("2003", "2003-" + NOW);
 			assertTransform("2003-2005", "2003-" + NOW);
@@ -63,15 +60,9 @@ public class LicenseHeaderTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void normal() throws IOException {
-		setLicenseStep("licenseHeader('/** $YEAR */')");
+	public void normal() throws Exception {
+		setRatchetFrom("");
 		testSuiteUpdateWithLatest(false);
-	}
-
-	@Test
-	public void updateYearWithLatestTrue() throws IOException {
-		setLicenseStep("licenseHeader('/** $YEAR */').updateYearWithLatest(true)");
-		testSuiteUpdateWithLatest(true);
 	}
 
 	@Test
@@ -79,17 +70,7 @@ public class LicenseHeaderTest extends GradleIntegrationHarness {
 		try (Git git = Git.init().setDirectory(rootFolder()).call()) {
 			git.commit().setMessage("First commit").call();
 		}
-		setLicenseStep("licenseHeader('/** $YEAR */')\nratchetFrom 'HEAD'");
+		setRatchetFrom("<ratchetFrom>HEAD</ratchetFrom>");
 		testSuiteUpdateWithLatest(true);
-	}
-
-	@Test
-	public void ratchetFromButUpdateFalse() throws Exception {
-		try (Git git = Git.init().setDirectory(rootFolder()).call()) {
-			git.commit().setMessage("First commit").call();
-		}
-		Git.init().setDirectory(rootFolder()).call();
-		setLicenseStep("licenseHeader('/** $YEAR */').updateYearWithLatest(false)\nratchetFrom 'HEAD'");
-		testSuiteUpdateWithLatest(false);
 	}
 }
