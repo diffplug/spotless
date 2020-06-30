@@ -18,6 +18,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * **BREAKING** `FileSignature` can no longer sign folders, only files.  Signatures are now based only on filename (not path), size, and a content hash.  It throws an error if a signature is attempted on a folder or on multiple files with different paths but the same filename - it never breaks silently.  This change does not break any of Spotless' internal logic, so it is unlikely to affect any of Spotless' consumers either. ([#571](https://github.com/diffplug/spotless/pull/571))
   * This change allows the maven plugin to cache classloaders across subprojects when loading config resources from the classpath (fixes [#559](https://github.com/diffplug/spotless/issues/559)).
   * This change also allows the gradle plugin to work with the remote buildcache (fixes [#280](https://github.com/diffplug/spotless/issues/280)).
+* **BREAKING** Heavy refactor of the `LicenseHeaderStep` public API.  Doesn't change internal behavior, but makes implementation of the gradle and maven plugins much easier. ([#628](https://github.com/diffplug/spotless/pull/628))
 
 ## [1.34.1] - 2020-06-17
 ### Changed
