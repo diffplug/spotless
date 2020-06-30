@@ -19,6 +19,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   * This change allows the maven plugin to cache classloaders across subprojects when loading config resources from the classpath (fixes [#559](https://github.com/diffplug/spotless/issues/559)).
   * This change also allows the gradle plugin to work with the remote buildcache (fixes [#280](https://github.com/diffplug/spotless/issues/280)).
 * **BREAKING** Heavy refactor of the `LicenseHeaderStep` public API.  Doesn't change internal behavior, but makes implementation of the gradle and maven plugins much easier. ([#628](https://github.com/diffplug/spotless/pull/628))
+* **BREAKING** Removed all deprecated methods and classes.
+  * [#629](https://github.com/diffplug/spotless/pull/629) removes the code which wasn't being used in plugin-gradle or plugin-maven.
 
 ## [1.34.1] - 2020-06-17
 ### Changed
