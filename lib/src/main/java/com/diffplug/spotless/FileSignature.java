@@ -47,22 +47,6 @@ public final class FileSignature implements Serializable {
 	private final transient List<File> files;
 	private final Sig[] signatures;
 
-	/** Method has been renamed to {@link FileSignature#signAsSet}.
-	 * In case no sorting and removal of duplicates is required,
-	 * use {@link FileSignature#signAsList} instead.*/
-	@Deprecated
-	public static FileSignature from(File... files) throws IOException {
-		return from(Arrays.asList(files));
-	}
-
-	/** Method has been renamed to {@link FileSignature#signAsSet}.
-	 * In case no sorting and removal of duplicates is required,
-	 * use {@link FileSignature#signAsList} instead.*/
-	@Deprecated
-	public static FileSignature from(Iterable<File> files) throws IOException {
-		return signAsSet(files);
-	}
-
 	/** Creates file signature whereas order of the files remains unchanged. */
 	public static FileSignature signAsList(File... files) throws IOException {
 		return signAsList(Arrays.asList(files));
