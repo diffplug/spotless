@@ -47,13 +47,11 @@ public class GitRachetMergeBaseTest extends ResourceHarness {
 
 			// it shouldn't affect files that we haven't changed
 			git.checkout().setName("main").call();
-			ratchetFrom("main").allClean();
-			ratchetFrom("rem-branch").onlyDirty("untouched.txt"); // this is a bummer, because we didn't change it
+			ratchetFrom("main", "rem-branch").allClean();
 
 			// and when we work, it should continue to only affect our own work
 			setFile("mine.txt").toContent("changed");
-			ratchetFrom("main").onlyDirty("mine.txt");
-			ratchetFrom("rem-branch").allDirty(); // this is a bummer, because we only changed mine, not everything
+			ratchetFrom("main", "rem-branch").onlyDirty("mine.txt");
 		}
 	}
 

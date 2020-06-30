@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.annotation.Nullable;
 
@@ -31,6 +32,7 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryCache;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.FileTreeIterator;
@@ -195,13 +197,21 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 			Repository repo = repositoryFor(project);
 			ObjectId treeSha = rootTreeShaCache.get(repo, reference);
 			if (treeSha == null) {
-				ObjectId commitSha = repo.resolve(reference);
-				if (commitSha == null) {
-					throw new IllegalArgumentException("No such reference '" + reference + "'");
-				}
 				try (RevWalk revWalk = new RevWalk(repo)) {
-					RevCommit revCommit = revWalk.parseCommit(commitSha);
-					treeSha = revCommit.getTree();
+					ObjectId commitSha = repo.resolve(reference);
+					if (commitSha == null) {
+						throw new IllegalArgumentException("No such reference '" + reference + "'");
+					}
+
+					RevCommit ratchetFrom = revWalk.parseCommit(commitSha);
+					RevCommit head = revWalk.parseCommit(repo.resolve(Constants.HEAD));
+
+					revWalk.setRevFilter(RevFilter.MERGE_BASE);
+					revWalk.markStart(ratchetFrom);
+					revWalk.markStart(head);
+
+					RevCommit mergeBase = revWalk.next();
+					treeSha = Optional.ofNullable(mergeBase).orElse(ratchetFrom).getTree();
 				}
 				rootTreeShaCache.put(repo, reference, treeSha);
 			}
