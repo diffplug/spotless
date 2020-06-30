@@ -526,6 +526,36 @@ Unlike Eclipse, Spotless WTP ignores per default external URIs in schema locatio
 external entities. To allow the access of external URIs, set the property `resolveExternalURI`
 to true.
 
+<a name="license-header"></a>
+
+## License header
+
+Spotless can inject a license header into your files, including populating an accurate copyright header from today's date or from git history.
+
+```xml
+<format>  <!-- or java, scala, kotlin, etc. -->
+  <licenseHeader>
+    <!-- Specify either content or file, but not both -->
+    <content>/* Licensed under Apache-2.0 */</content>
+    <file>${basedir}/license-header</file>
+    <!-- content until first occurrence of the delimiter regex will be interpreted as header section -->
+    <!-- for language-specific formats (java, etc.) this is optional, and the regex is provided automatically. -->
+    <delimiter>#</delimiter>
+  </licenseHeader>
+```
+
+If the license header (specified with `content` or `file`) contains `$YEAR` or `$today.year`, then that token will be replaced with the current 4-digit year.  For example, if Spotless is launched in 2020, then `/* Licensed under Apache-2.0 $YEAR. */` will produce `/* Licensed under Apache-2.0 2020. */`
+
+Once a file's license header has a valid year, whether it is a year (`2020`) or a year range (`2017-2020`), it will not be changed.  If you want the date to be updated when it changes, enable the [`ratchetFrom` functionality](#ratchet), and the year will be automatically set to today's year according to the following table (assuming the current year is 2020):
+
+* No license header -> `2020`
+* `2017` -> `2017-2020`
+* `2017-2019` -> `2017-2020`
+
+### Retroactively populating year range from git history
+
+If your project has not been rigorous with copyright headers, and you'd like to use git history to repair this retroactively, you can do so with `-DspotlessSetLicenseHeaderYearsFromGitHistory=true`.  When run in this mode, Spotless will do an expensive search through git history for each file, and set the copyright header based on the oldest and youngest commits for that file.  This is intended to be a one-off sort of thing.
+
 <a name="invisible"></a>
 
 ## Line endings and encodings (invisible stuff)
