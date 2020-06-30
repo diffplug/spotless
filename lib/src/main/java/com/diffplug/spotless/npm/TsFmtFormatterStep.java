@@ -39,11 +39,6 @@ public class TsFmtFormatterStep {
 
 	public static final String NAME = "tsfmt-format";
 
-	@Deprecated
-	public static FormatterStep create(Provisioner provisioner, File buildDir, @Nullable File npm, File baseDir, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) {
-		return create(defaultDevDependencies(), provisioner, buildDir, npm, configFile, inlineTsFmtSettings);
-	}
-
 	public static FormatterStep create(Map<String, String> versions, Provisioner provisioner, File buildDir, @Nullable File npm, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) {
 		requireNonNull(provisioner);
 		requireNonNull(buildDir);
@@ -74,11 +69,6 @@ public class TsFmtFormatterStep {
 
 		@Nullable
 		private final TypedTsFmtConfigFile configFile;
-
-		@Deprecated
-		public State(String stepName, File buildDir, @Nullable File npm, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) throws IOException {
-			this(stepName, defaultDevDependencies(), buildDir, npm, configFile, inlineTsFmtSettings);
-		}
 
 		public State(String stepName, Map<String, String> versions, File buildDir, @Nullable File npm, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) throws IOException {
 			super(stepName,
