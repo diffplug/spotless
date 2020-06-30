@@ -102,11 +102,6 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Parameter
 	private Kotlin kotlin;
 
-	/** The XML extension is discontinued. */
-	@Parameter
-	@Deprecated
-	private com.diffplug.spotless.maven.xml.Xml xml;
-
 	@Parameter
 	private Cpp cpp;
 
@@ -204,7 +199,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private List<FormatterFactory> getFormatterFactories() {
-		return Stream.concat(formats.stream(), Stream.of(java, scala, kotlin, cpp, typescript, css, xml))
+		return Stream.concat(formats.stream(), Stream.of(java, scala, kotlin, cpp, typescript, css))
 				.filter(Objects::nonNull)
 				.collect(toList());
 	}
