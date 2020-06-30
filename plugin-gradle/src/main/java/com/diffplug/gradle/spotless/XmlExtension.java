@@ -46,7 +46,7 @@ public class XmlExtension extends FormatExtension implements HasBuiltinDelimiter
 		private final EclipseBasedStepBuilder builder;
 
 		EclipseConfig(String version) {
-			builder = EclipseWtpFormatterStep.createXmlBuilder(provisioner());
+			builder = EclipseWtpFormatterStep.XML.createBuilder(provisioner());
 			builder.setVersion(version);
 			addStep(builder.build());
 		}
