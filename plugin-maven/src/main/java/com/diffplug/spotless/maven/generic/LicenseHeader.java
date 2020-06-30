@@ -66,13 +66,7 @@ public class LicenseHeader implements FormatterStepFactory {
 				unfiltered = FormatterStep.createLazy(LicenseHeaderStep.name(), () -> {
 					// by default, we should update the year if the user is using ratchetFrom
 					boolean updateYear = config.getRatchetFrom().isPresent();
-					String header;
-					if (content != null) {
-						header = content;
-					} else {
-						byte[] raw = Files.readAllBytes(config.getFileLocator().locateFile(file).toPath());
-						header = new String(raw, config.getEncoding());
-					}
+					String header = readFileOrContent(config);
 					return new LicenseHeaderStep(header, delimiterString, LicenseHeaderStep.defaultYearDelimiter(), updateYear);
 				}, step -> step::format);
 			}
