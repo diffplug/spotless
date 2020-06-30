@@ -93,6 +93,8 @@ class SimpleRestClient {
 	}
 
 	static abstract class SimpleRestException extends RuntimeException {
+		private static final long serialVersionUID = -8260821395756603787L;
+
 		public SimpleRestException() {}
 
 		public SimpleRestException(Throwable cause) {
@@ -101,6 +103,8 @@ class SimpleRestClient {
 	}
 
 	static class SimpleRestResponseException extends SimpleRestException {
+		private static final long serialVersionUID = -7637152299410053401L;
+
 		private final int statusCode;
 
 		private final String responseMessage;
@@ -135,6 +139,8 @@ class SimpleRestClient {
 	}
 
 	static class SimpleRestIOException extends SimpleRestException {
+		private static final long serialVersionUID = -7909757660531122308L;
+
 		public SimpleRestIOException(Throwable cause) {
 			super(cause);
 		}

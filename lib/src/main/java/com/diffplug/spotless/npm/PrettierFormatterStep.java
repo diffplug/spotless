@@ -49,11 +49,6 @@ public class PrettierFormatterStep {
 		return Collections.singletonMap("prettier", version);
 	}
 
-	@Deprecated
-	public static FormatterStep create(Provisioner provisioner, File buildDir, @Nullable File npm, PrettierConfig prettierConfig) {
-		return create(defaultDevDependencies(), provisioner, buildDir, npm, prettierConfig);
-	}
-
 	public static FormatterStep create(Map<String, String> devDependencies, Provisioner provisioner, File buildDir, @Nullable File npm, PrettierConfig prettierConfig) {
 		requireNonNull(devDependencies);
 		requireNonNull(provisioner);

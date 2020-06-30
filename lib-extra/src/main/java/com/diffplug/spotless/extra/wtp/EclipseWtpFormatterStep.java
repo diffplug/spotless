@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,33 +63,6 @@ public enum EclipseWtpFormatterStep {
 	@Deprecated
 	public static EclipseBasedStepBuilder createCssBuilder(Provisioner provisioner) {
 		return new EclipseBasedStepBuilder(NAME, " - css", provisioner, state -> applyWithoutFile("EclipseCssFormatterStepImpl", state));
-	}
-
-	/**
-	 * Provides default configuration for HTML formatter.
-	 * Method is deprecated. Use {@link EclipseWtpFormatterStep#createBuilder(Provisioner)} instead.
-	 */
-	@Deprecated
-	public static EclipseBasedStepBuilder createHtmlBuilder(Provisioner provisioner) {
-		return HTML.createBuilder(provisioner);
-	}
-
-	/**
-	 * Provides default configuration for Java Script formatter.
-	 * Method is deprecated. Use {@link EclipseWtpFormatterStep#createBuilder(Provisioner)} instead.
-	 */
-	@Deprecated
-	public static EclipseBasedStepBuilder createJsBuilder(Provisioner provisioner) {
-		return JS.createBuilder(provisioner);
-	}
-
-	/**
-	 * Provides default configuration for JSON formatter.
-	 * Method is deprecated. Use {@link EclipseWtpFormatterStep#createBuilder(Provisioner)} instead.
-	 */
-	@Deprecated
-	public static EclipseBasedStepBuilder createJsonBuilder(Provisioner provisioner) {
-		return JSON.createBuilder(provisioner);
 	}
 
 	/**

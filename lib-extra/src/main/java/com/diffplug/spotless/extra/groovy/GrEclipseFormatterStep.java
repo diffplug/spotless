@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,11 @@
  */
 package com.diffplug.spotless.extra.groovy;
 
-import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Properties;
 
 import com.diffplug.spotless.FormatterFunc;
-import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder.State;
@@ -37,21 +35,6 @@ public final class GrEclipseFormatterStep {
 	private static final String MAVEN_GROUP_ARTIFACT = "com.diffplug.spotless:spotless-eclipse-groovy";
 	private static final String DEFAULT_VERSION = "4.13.0";
 	private static final String FORMATTER_METHOD = "format";
-
-	/** Creates a formatter step using the default version for the given settings file. */
-	@Deprecated
-	public static FormatterStep create(Iterable<File> settingsFiles, Provisioner provisioner) {
-		return create(defaultVersion(), settingsFiles, provisioner);
-	}
-
-	/** Creates a formatter step for the given version and settings file. */
-	@Deprecated
-	public static FormatterStep create(String version, Iterable<File> settingsFiles, Provisioner provisioner) {
-		EclipseBasedStepBuilder builder = createBuilder(provisioner);
-		builder.setVersion(version);
-		builder.setPreferences(settingsFiles);
-		return builder.build();
-	}
 
 	public static String defaultVersion() {
 		return DEFAULT_VERSION;
