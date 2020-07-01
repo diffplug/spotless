@@ -36,7 +36,6 @@ For the folders below in monospace text, they are published on maven central at 
 | `lib-extra` | Contains the optional parts of Spotless which require external dependencies.  `LineEnding.GIT_ATTRIBUTES` won't work unless `lib-extra` is available. |
 | `plugin-gradle` | Integrates spotless and all of its formatters into Gradle. |
 | `plugin-maven` | Integrates spotless and all of its formatters into Maven. |
-| javadoc-publish | Logic for publishing javadoc to github-pages. |
 | ide | Generates and launches an IDE for developing spotless. |
 | _ext | Folder for generating glue jars (specifically packaging Eclipse jars from p2 for consumption using maven).
 
@@ -105,8 +104,7 @@ Here's a checklist for creating a new step for Spotless:
 
 The `_ext` projects are disabled per default, since:
 
-* some of the projects perform vasts downloads at configuration time
-
+* some of the projects perform vast downloads at configuration time
 * the downloaded content may change on server side and break CI builds
 
 
@@ -116,7 +114,6 @@ Activate the the property via command line, like for example:
 
 ```
 gradlew -Pcom.diffplug.spotless.include.ext=true build
-
 ```
 
 Or set the property in your user `gradle.properties` file, which is especially recommended if you like to work with the `_ext` projects using IDEs.

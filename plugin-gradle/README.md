@@ -62,17 +62,20 @@ BUILD SUCCESSFUL
   - [C/C++](#c-c++) ([eclipse cdt](https://www.eclipse.org/cdt/))
   - Markdown ([freshmark](#freshmark))
   - [SQL](#SQL) ([dbeaver](#dbeaver), [prettier](#prettier))
-  - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier) )
-  - Multiple filetypes ([prettier](#prettier), [eclipse web tools platform](#eclipse-wtp))
+  - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier))
+  - Multiple filetypes
+    - [Prettier](#prettier) (and [plugins](#prettier-plugins))
+    - [eclipse web tools platform](#eclipse-web-tools-platform)
 - **Platform**
+  - [License header](#license-header) ([slurp year from git](#retroactively-slurp-years-from-git-history))
+  - [How can I enforce formatting gradually? (aka "ratchet")](#ratchet)
   - [Custom rules](#custom-rules)
   - [Line endings and encodings (invisible stuff)](#line-endings-and-encodings-invisible-stuff)
   - [Disabling warnings and error messages](#disabling-warnings-and-error-messages)
   - [How do I preview what `spotlessApply` will do?](#how-do-i-preview-what-spotlessapply-will-do)
-  - [How can I enforce formatting gradually?](#how-can-i-enforce-formatting-gradually)
   - [Example configurations (from real-world projects)](#example-configurations-from-real-world-projects)
 
-Contributions are welcome, see [the contributing guide](../CONTRIBUTING.md) for development info.
+***Contributions are welcome, see [the contributing guide](../CONTRIBUTING.md) for development info.***
 
 ## Quickstart
 
@@ -166,7 +169,7 @@ spotless {
 
 ### eclipse jdt
 
-[homepage](https://www.eclipse.org/downloads/packages/). [available versions](https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_jdt_formatter). See [here](../ECLIPSE_SCREENSHOTS.md) for screenshots that demonstrate how to get and install the config file mentioned below.
+[homepage](https://www.eclipse.org/downloads/packages/). [compatible versions](https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_jdt_formatter). See [here](../ECLIPSE_SCREENSHOTS.md) for screenshots that demonstrate how to get and install the config file mentioned below.
 
 ```gradle
 spotless {
@@ -192,7 +195,8 @@ The groovy formatter's default behavior is to format all `.groovy` and `.java` f
 apply plugin: 'groovy'
 spotless {
   groovy {
-    importOrder() 'java', 'javax', 'com.acme', '' // or importOrderFile
+    importOrder() // standard import order
+    importOrder('java', 'javax', 'com.acme', '') // or importOrderFile
 
     excludeJava() // excludes all Java sources within the Groovy source dirs from formatting
     // the Groovy Eclipse formatter extends the Java Eclipse formatter,
@@ -210,8 +214,7 @@ spotless {
 
 ### eclipse groovy
 
-[homepage](https://github.com/groovy/groovy-eclipse/wiki). [changelog](https://github.com/groovy/groovy-eclipse/releases). [available versions](https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/groovy_eclipse_formatter). The Groovy formatter uses some of the [eclipse jdt](#eclipse-jdt) configuration parameters in addition to groovy-specific ones. All parameters can be configured within a single file, like the Java properties file [greclipse.properties](../testlib/src/main/resources/groovy/greclipse/format/greclipse.properties) in the previous example. The formatter step can also load the [exported Eclipse properties](../ECLIPSE_SCREENSHOTS.md) and augment it with the `.metadata/.plugins/org.eclipse.core.runtime/.settings/org.codehaus.groovy.eclipse.ui.prefs` from your Eclipse workspace as shown below.
-
+[homepage](https://github.com/groovy/groovy-eclipse/wiki). [changelog](https://github.com/groovy/groovy-eclipse/releases). [compatible versions](https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/groovy_eclipse_formatter). The Groovy formatter uses some of the [eclipse jdt](#eclipse-jdt) configuration parameters in addition to groovy-specific ones. All parameters can be configured within a single file, like the Java properties file [greclipse.properties](../testlib/src/main/resources/groovy/greclipse/format/greclipse.properties) in the previous example. The formatter step can also load the [exported Eclipse properties](../ECLIPSE_SCREENSHOTS.md) and augment it with the `.metadata/.plugins/org.eclipse.core.runtime/.settings/org.codehaus.groovy.eclipse.ui.prefs` from your Eclipse workspace as shown below.
 
 ```gradle
 spotless {
@@ -219,7 +222,7 @@ spotless {
     // Use the default version and Groovy-Eclipse default configuration
     greclipse()
     // optional: you can specify a specific version or config file(s)
-    // available versions: https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/groovy_eclipse_formatter
+    // compatible versions: https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/groovy_eclipse_formatter
     greclipse('2.3.0').configFile('spotless.eclipseformat.xml', 'org.codehaus.groovy.eclipse.ui.prefs')
 ```
 
@@ -325,7 +328,7 @@ spotless {
 
 ### eclipse cdt
 
-[homepage](https://www.eclipse.org/cdt/). [available versions](https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_cdt_formatter).
+[homepage](https://www.eclipse.org/cdt/). [compatible versions](https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_cdt_formatter).
 
 Use Eclipse to define the *Code Style preferences* (see [Eclipse documentation](https://www.eclipse.org/documentation/)). Within the preferences *Edit...* dialog, you can export your configuration as XML file, which can be used as a `configFile`. If no `configFile` is provided, the CDT default configuration is used.
 
@@ -451,7 +454,7 @@ Spotless uses npm to install necessary packages and run the `typescript-formatte
 
 ## Prettier
 
-Prettier is a formatter that can format almost every anythin - JavaScript, JSX, Angular, Vue, Flow, TypeScript, CSS, Less, SCSS, HTML, JSON, GraphQL, Markdown (including GFM and MDX), and YAML.  It can format even more [using plugins](https://prettier.io/docs/en/plugins.html) (PHP, Ruby, Swift, XML, Apex, Elm, Java (!!), Kotlin, pgSQL, .properties, solidity, svelte, toml, shellscript, ....).
+[homepage](https://prettier.io/). [changelog](https://github.com/prettier/prettier/blob/master/CHANGELOG.md). [official plugins](https://prettier.io/docs/en/plugins.html#official-plugins). [community plugins](https://prettier.io/docs/en/plugins.html#community-plugins). Prettier is a formatter that can format almost every anything - JavaScript, JSX, Angular, Vue, Flow, TypeScript, CSS, Less, SCSS, HTML, JSON, GraphQL, Markdown (including GFM and MDX), and YAML.  It can format even more [using plugins](https://prettier.io/docs/en/plugins.html) (PHP, Ruby, Swift, XML, Apex, Elm, Java (!!), Kotlin, pgSQL, .properties, solidity, svelte, toml, shellscript, ...).
 
 You can use prettier in any language-specific format, but usually you will be creating a generic format.
 
@@ -461,69 +464,41 @@ spotless {
     // you have to set the target manually
     target 'src/*/webapp/**/*.css', 'src/*/webapp/**/*.scss'
 
-    // at least provide the parser to use
+    prettier('2.0.4') // version is optional
+    prettier(['my-prettier-fork': '1.16.4']) // can specify exactly which npm packages to use
+
+    // by default, prettier uses the file's extension to guess a parser
+    // but you can override that and specify the parser manually
     prettier().config(['parser': 'css'])
-    // prettier('1.16.4') to specify specific version of prettier
-    // prettier(['my-prettier-fork': '1.16.4']) to specify exactly which npm packages to use
 
-    // or provide a typical filename
-    prettier().config(['filepath': 'style.scss'])
+    // you can also set some style options
+    // https://prettier.io/docs/en/configuration.html
+    prettier().config(['tabWidth: 4'])
+
+    // you can also slurp from a file or even provide both (inline always takes precedence over file)
+    prettier().config(['tabWidth: 4']).configFile('path-to/.prettierrc.yml')
   }
 }
 ```
 
-Supported config options are documented on [prettier.io](https://prettier.io/docs/en/options.html).
-
-It is also possible to specify the config via file:
-
-```gradle
-spotless {
-  format 'styling', {
-    target 'src/*/webapp/**/*.css', 'src/*/webapp/**/*.scss', 'app/**/*.css', 'app/**/*.scss'
-    prettier().configFile('/path-to/.prettierrc.yml')
-    // or provide both (config options take precedence over configFile options)
-    prettier().config(['parser': 'css']).configFile('path-to/.prettierrc.yml')
-  }
-}
-```
-
-Supported config file variants are documented on [prettier.io](https://prettier.io/docs/en/configuration.html).
-*Please note:*
+**Limitations:**
 - The auto-discovery of config files (up the file tree) will not work when using prettier within spotless.
 - Prettier's override syntax is not supported when using prettier within spotless.
 
 To apply prettier to more kinds of files, just add more formats
 
-```gradle
-spotless {
-  format 'javascript', {
-    target 'src/main/resources/**/*.js'
-    prettier().config(['filepath': 'file.js'])
-  }
-}
-```
 
-Or you might even let prettier detect the file type and choose the parser on its own such as:
 
-```gradle
-spotless {
-  format 'webResources', {
-    target 'src/*/webapp/**', 'app/**'
-    prettier()
-  }
-}
-```
 
-<a name="prettier-plugins"></a>
-### Using plugins for prettier
+<a name="Using plugins for prettier"></a>
+### Prettier plugins
 
 Since spotless uses the actual npm prettier package behind the scenes, it is possible to use prettier with
 [plugins](https://prettier.io/docs/en/plugins.html#official-plugins) or [community-plugins](https://www.npmjs.com/search?q=prettier-plugin) in order to support even more file types.
 
 ```gradle
 spotless {
-  format 'prettierJava', {
-    target 'src/*/java/**/*.java'
+  java {
     prettier(['prettier': '2.0.5', 'prettier-plugin-java': '0.8.0']).config(['parser': 'java', 'tabWidth': 4])
   }
   format 'php', {
@@ -533,7 +508,7 @@ spotless {
 }
 ```
 
-**Prerequisite: prettier requires a working NodeJS version**
+### NPM detection
 
 Prettier is based on NodeJS, so a working NodeJS installation (especially npm) is required on the host running spotless.
 Spotless will try to auto-discover an npm installation. If that is not working for you, it is possible to directly configure the npm binary to use.
@@ -542,26 +517,22 @@ Spotless will try to auto-discover an npm installation. If that is not working f
 spotless {
   format 'javascript', {
     prettier().npmExecutable('/usr/bin/npm').config(...)
-  }
-}
 ```
 
 <a name="applying-eclipse-wtp-to-css--html--etc"></a>
 
-## eclipse web tools platform
+## Eclipse web tools platform
 
-The Eclipse [WTP](https://www.eclipse.org/webtools/) formatter can be applied as follows:
+[changelog](https://www.eclipse.org/webtools/). [compatible versions](https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatters).
 
 ```gradle
 spotless {
   format 'xml', {
-    target fileTree('.') {
-      include '**/*.xml', '**/*.xsd'
-      exclude '**/build/**'
-    }
-    // Use for example eclipseWtp('xml', '4.7.3a') to specify a specific version of Eclipse,
-    // available versions are: https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatters
-    eclipseWtp('xml').configFile 'spotless.xml.prefs', 'spotless.common.properties'
+    target 'src/**/*/xml' // must specify target
+    eclipseWtp('xml')     // must specify a type (table below)
+    eclipseWtp('xml', '4.7.3a') // optional version
+    // you can also specify an arbitrary number of config files
+    eclipseWtp('xml').configFile('spotless.xml.prefs', 'spotless.common.properties'
   }
 }
 ```
@@ -589,9 +560,9 @@ Unlike Eclipse, Spotless WTP ignores per default external URIs in schema locatio
 external entities. To allow the access of external URIs, set the property `resolveExternalURI`
 to true.
 
-<a name="license-header"></a>
+<a name="license-header-options"></a>
 
-## License header options
+## License header
 
 If the license header (specified with `licenseHeader` or `licenseHeaderFile`) contains `$YEAR` or `$today.year`, then that token will be replaced with the current 4-digit year.  For example, if Spotless is launched in 2020, then `/* Licensed under Apache-2.0 $YEAR. */` will produce `/* Licensed under Apache-2.0 2020. */`
 
@@ -603,9 +574,28 @@ Once a file's license header has a valid year, whether it is a year (`2020`) or 
 
 See the [javadoc](https://javadoc.io/static/com.diffplug.spotless/spotless-plugin-gradle/4.4.0/com/diffplug/gradle/spotless/FormatExtension.LicenseHeaderConfig.html) for a complete listing of options.
 
-### Retroactively populating year range from git history
+<a name="retroactively-populating-year-range-from-git-history">
+
+### Retroactively slurp years from git history
 
 If your project has not been rigorous with copyright headers, and you'd like to use git history to repair this retroactively, you can do so with `-PspotlessSetLicenseHeaderYearsFromGitHistory=true`.  When run in this mode, Spotless will do an expensive search through git history for each file, and set the copyright header based on the oldest and youngest commits for that file.  This is intended to be a one-off sort of thing.
+
+<a name="ratchet">
+
+## How can I enforce formatting gradually? (aka "ratchet")
+
+If your project is not currently enforcing formatting, then it can be a noisy transition.  Having a giant commit where every single file gets changed makes the history harder to read.  To address this, you can use the `ratchet` feature:
+
+```gradle
+spotless {
+  ratchetFrom 'origin/main' // only format files which have changed since origin/main
+```
+
+In this mode, Spotless will apply only to files which have changed since `origin/main`.  You can ratchet from [any point you want](https://javadoc.io/static/org.eclipse.jgit/org.eclipse.jgit/5.6.1.202002131546-r/org/eclipse/jgit/lib/Repository.html#resolve-java.lang.String-), even `HEAD`.  You can also set `ratchetFrom` per-format if you prefer (e.g. `spotless { java { ratchetFrom ...`).
+
+However, we strongly recommend that you use a non-local branch, such as a tag or `origin/main`.  The problem with `HEAD` or any local branch is that as soon as you commit a file, that is now the canonical formatting, even if it was formatted incorrectly.  By instead specifying `origin/main` or a tag, your CI server will fail unless every changed file is at least as good or better than it was before the change.
+
+This is especially helpful for injecting accurate copyright dates using the [license step](#license-header).
 
 <a name="custom"></a>
 
@@ -721,25 +711,6 @@ spotless {
 - View the changes with `git diff`
 - If you don't like what spotless did, `git reset --hard`
 - If you'd like to remove the "checkpoint" commit, `git reset --soft head~1` will make the checkpoint commit "disappear" from history, but keeps the changes in your working directory.
-
-<a name="ratchet"></a>
-
-## How can I enforce formatting gradually?
-
-If your project is not currently enforcing formatting, then it can be a noisy transition.  Having a giant commit where every single file gets changed makes the history harder to read.  To address this, you can use the `ratchet` feature:
-
-```gradle
-spotless {
-  ratchetFrom 'origin/main' // only format files which have changed since origin/main
-  ...
-}
-```
-
-In this mode, Spotless will apply only to files which have changed since `origin/main`.  You can ratchet from [any point you want](https://javadoc.io/static/org.eclipse.jgit/org.eclipse.jgit/5.6.1.202002131546-r/org/eclipse/jgit/lib/Repository.html#resolve-java.lang.String-), even `HEAD`.  You can also set `ratchetFrom` per-format if you prefer (e.g. `spotless { java { ratchetFrom ...`).
-
-However, we strongly recommend that you use a non-local branch, such as a tag or `origin/main`.  The problem with `HEAD` or any local branch is that as soon as you commit a file, that is now the canonical formatting, even if it was formatted incorrectly.  By instead specifying `origin/main` or a tag, your CI server will fail unless every changed file is at least as good or better than it was before the change.
-
-This is especially helpful for injecting accurate copyright dates using the [license step](#license-header).
 
 <a name="examples"></a>
 
