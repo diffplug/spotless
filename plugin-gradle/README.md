@@ -64,7 +64,7 @@ BUILD SUCCESSFUL
   - [SQL](#SQL) ([dbeaver](#dbeaver), [prettier](#prettier))
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier))
   - Multiple filetypes
-    - [Prettier](#prettier) (and [plugins](#prettier-plugins))
+    - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection))
     - [eclipse web tools platform](#eclipse-web-tools-platform)
 - **Platform**
   - [License header](#license-header) ([slurp year from git](#retroactively-slurp-years-from-git-history))
@@ -330,7 +330,14 @@ spotless {
 
 [homepage](https://www.eclipse.org/cdt/). [compatible versions](https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_cdt_formatter).
 
-Use Eclipse to define the *Code Style preferences* (see [Eclipse documentation](https://www.eclipse.org/documentation/)). Within the preferences *Edit...* dialog, you can export your configuration as XML file, which can be used as a `configFile`. If no `configFile` is provided, the CDT default configuration is used.
+```gradle
+spotles {
+  cpp {
+    // version and configFile are both optional
+    eclipseCdt('4.13.0').configFile('eclipse-cdt.xml')
+  }
+}
+```
 
 <a name="applying-freshmark-to-markdown-files"></a>
 
@@ -412,7 +419,7 @@ spotless {
 
     licenseHeader '/* (C) $YEAR */', '(import|const|declare|export|var) ' // or licenseHeaderFile
     // note the '(import|const|...' argument - this is a regex which identifies the top
-    // of the file, be careful that all of your source has a suitable top-level declaration
+    // of the file, be careful that all of your sources have a suitable top-level declaration,
     // or pick a regex which works better for your code
   }
 }
@@ -428,7 +435,7 @@ The auto-discovery of config files (up the file tree) will not work when using t
 spotless {
   typescript {
     tsfmt('7.2.2')
-      // provide config inline
+      // provide config inline: https://github.com/vvakame/typescript-formatter/blob/7764258ad42ac65071399840d1b8701868510ca7/lib/utils.ts#L11L32
       .config(['indentSize': 1, 'convertTabsToSpaces': true])
       // or according to tsfmt-parameters: https://github.com/vvakame/typescript-formatter/blob/7764258ad42ac65071399840d1b8701868510ca7/lib/index.ts#L27L34
       .tsconfigFile('tsconfig.json')
@@ -447,8 +454,6 @@ spotless {
   typescript {
     tsfmt().npmExecutable('/usr/bin/npm').config(...)
 ```
-
-Spotless uses npm to install necessary packages and run the `typescript-formatter` (`tsfmt`) package.
 
 <a name="applying-prettier-to-javascript--flow--typescript--css--scss--less--jsx--graphql--yaml--etc"></a>
 
@@ -487,11 +492,9 @@ spotless {
 
 To apply prettier to more kinds of files, just add more formats
 
+<a name="using-plugins-for-prettier"></a>
 
-
-
-<a name="Using plugins for prettier"></a>
-### Prettier plugins
+### prettier plugins
 
 Since spotless uses the actual npm prettier package behind the scenes, it is possible to use prettier with
 [plugins](https://prettier.io/docs/en/plugins.html#official-plugins) or [community-plugins](https://www.npmjs.com/search?q=prettier-plugin) in order to support even more file types.
@@ -508,7 +511,7 @@ spotless {
 }
 ```
 
-### NPM detection
+### npm detection
 
 Prettier is based on NodeJS, so a working NodeJS installation (especially npm) is required on the host running spotless.
 Spotless will try to auto-discover an npm installation. If that is not working for you, it is possible to directly configure the npm binary to use.

@@ -47,11 +47,9 @@ user@machine repo % mvn spotless:check
   - [Requirements](#requirements)
 - **Languages**
   - [Java](#java) ([android](#android), [google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier))
-  - [Scala](#scala) ([scalafmt](https://github.com/scalameta/scalafmt/releases))
   - [Kotlin](#kotlin) ([ktlint](#ktlint), [ktfmt](#ktmt), [prettier](#prettier))
+  - [Scala](#scala) ([scalafmt](https://github.com/scalameta/scalafmt/releases))
   - [C/C++](#c-c++) ([eclipse cdt](https://www.eclipse.org/cdt/))
-  - Markdown ([freshmark](#freshmark))
-  - [SQL](#SQL) ([dbeaver](#dbeaver), [prettier](#prettier))
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier))
   - Multiple filetypes
     - [Prettier](#prettier) (and [plugins](#prettier-plugins))
@@ -167,8 +165,8 @@ Spotless requires Maven to be running on JRE 8+.
 
 ```xml
 <googleJavaFormat>
-  <version>1.7</version>
-  <style>GOOGLE</style> <!-- or AOSP -->
+  <version>1.7</version> <!-- optional -->
+  <style>GOOGLE</style>  <!-- or AOSP (optional) -->
 </googleJavaFormat>
 ```
 
@@ -178,9 +176,68 @@ Spotless requires Maven to be running on JRE 8+.
 
 ```xml
 <eclipse>
-  <version>4.13.0</version>
-  <file>${basedir}/eclipse-formatter.xml</file>
+  <version>4.13.0</version>                     <!-- optional -->
+  <file>${basedir}/eclipse-formatter.xml</file> <!-- optional -->
 </eclipse>
+```
+
+<a name="applying-to-kotlin-source"></a>
+
+## Kotlin
+
+[code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/kotlin/Kotlin.java). [available steps](https://github.com/diffplug/spotless/tree/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/kotlin).
+
+```xml
+<configuration>
+  <kotlin>
+    <!-- These are the defaults, you can override if you want -->
+    <includes>
+      <include>src/main/kotlin/**/*.kt</include>
+      <include>src/test/kotlin/**/*.kt</include>
+    </includes>
+
+    <importOrder/> <!-- standard import order -->
+    <importOrder>  <!-- or a custom ordering -->
+      <order>java,javax,org,com,com.diffplug,</order>  <!-- or use <file>${basedir}/eclipse.importorder</file> -->
+      <!-- You probably want an empty string at the end - all of the
+           imports you didn't specify explicitly will go there. -->
+    </importOrder>
+
+    <removeUnusedImports/> <!-- self-explanatory -->
+
+    <ktlint/>   <!-- has its own section below -->
+    <ktfmt/>    <!-- has its own section below -->
+    <prettier/> <!-- has its own section below -->
+
+    <licenseHeader>
+      <content>/* (C)$YEAR */</content>  <!-- or <file>${basedir}/license-header</file> -->
+    </licenseHeader>
+  </kotlin>
+</configuration>
+```
+
+<a name="applying-ktlint-to-kotlin-files"></a>
+
+### ktlint
+
+[homepage](https://github.com/pinterest/ktlint). [changelog](https://github.com/pinterest/ktlint/releases). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/kotlin/Ktlint.java).  Spotless does not ([yet](https://github.com/diffplug/spotless/issues/142)) respect the `.editorconfig` settings.
+
+```xml
+<ktlint>
+  <version>0.37.2</version> <!-- optional -->
+</ktlint>
+```
+
+<a name="applying-ktfmt-to-kotlin-files"></a>
+
+### ktfmt
+
+[homepage](https://github.com/facebookincubator/ktfmt). [changelog](https://github.com/facebookincubator/ktfmt/releases). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/kotlin/Ktfmt.java).
+
+```xml
+<ktfmt>
+  <version>0.13</version> <!-- optional -->
+</ktfmt>
 ```
 
 <a name="applying-to-scala-source"></a>
@@ -213,140 +270,127 @@ Spotless requires Maven to be running on JRE 8+.
 </configuration>
 ```
 
-<a name="applying-to-kotlin-source"></a>
+### scalafmt
 
-## Kotlin
-
-By default, all files matching `src/main/kotlin/**/*.kt` and `src/test/kotlin/**/*.kt` Ant style pattern will be formatted.  Each element under `<kotlin>` is a step, and they will be applied in the order specified.  Every step is optional.
-
-### Applying [ktlint](https://github.com/pinterest/ktlint) to Kotlin files
+[homepage](https://scalameta.org/scalafmt/). [changelog](https://github.com/scalameta/scalafmt/releases). [config docs](https://scalameta.org/scalafmt/docs/configuration.html). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/scala/Scalafmt.java).
 
 ```xml
-<configuration>
-  <kotlin>
-     <licenseHeader>
-       <!-- Specify either content or file, but not both -->
-       <content>/* Licensed under Apache-2.0 */</content>
-       <file>${basedir}/license-header</file>
-     </licenseHeader>
-     <endWithNewline/>
-     <trimTrailingWhitespace/>
-     <ktlint>
-       <!-- Optional, available versions: https://github.com/pinterest/ktlint/releases -->
-       <version>0.14.0</version>
-     </ktlint>
-  </kotlin>
-</configuration>
-```
-
-### Applying [ktfmt](https://github.com/facebookincubator/ktfmt) to Kotlin files
-
-```xml
-<configuration>
-  <kotlin>
-     <licenseHeader>
-       <!-- Specify either content or file, but not both -->
-       <content>/* Licensed under Apache-2.0 */</content>
-       <file>${basedir}/license-header</file>
-     </licenseHeader>
-     <endWithNewline/>
-     <trimTrailingWhitespace/>
-     <ktfmt>
-       <!-- Optional, available versions: https://github.com/facebookincubator/ktfmt/releases -->
-       <version>0.11</version>
-     </ktfmt>
-  </kotlin>
-</configuration>
+<scalafmt>
+  <version>2.0.1</version>              <!-- optional -->
+  <file>${basedir}/scalafmt.conf</file> <!-- optional -->
+</scalafmt>
 ```
 
 <a name="cpp"></a>
 
-## Applying to C/C++ source
+<a name="applying-to-cc-source"></a>
 
-By default, all files matching `src/main/cpp/**/*.<ext>` and `src/test/cpp/**/*.<ext>` Ant style pattern will be formatted, whereas the file extensions `c`, `h`, `C`, `cpp`, `cxx`, `cc`, `c++`, `h`, `hpp`, `hh`, `hxx` and `inc` are supported.  Each element under `<cpp>` is a step, and they will be applied in the order specified.  Every step is optional, and they will be applied in the order specified.
+## C/C++
+
+[code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/cpp/Cpp.java). [available steps](https://github.com/diffplug/spotless/tree/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/cpp).
 
 ```xml
 <configuration>
   <cpp>
-     <licenseHeader>
-       <!-- Specify either content or file, but not both -->
-       <content>/* Licensed under Apache-2.0 */</content>
-       <file>${basedir}/license-header</file>
-     </licenseHeader>
-     <eclipse>
-       <file>${basedir}/eclipse-fmt.xml</file>
-       <!-- Optional, available versions: https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_cdt_formatter -->
-       <version>4.7.3a</version>
-     </eclipse>
+    <!-- You have to set the target manually -->
+    <includes>
+      <include>src/native/**</inclue>
+    </includes>
+
+    <eclipseCdt> <!-- has its own section below -->
+
+    <licenseHeader>
+      <content>/* (C)$YEAR */</content>  <!-- or <file>${basedir}/license-header</file> -->
+    </licenseHeader>
   </cpp>
 </configuration>
 ```
-Use the Eclipse to define the *Code Style preferences* (see [Eclipse documentation](https://www.eclipse.org/documentation/)). Within the preferences *Edit...* dialog, you can export your configuration as XML file, which can be used as a configuration `<file>`. If no `<file>` is provided, the CDT default configuration is used.
 
-<a name="typescript"></a>
+### eclipse cdt
 
-## Applying to Typescript source
+[homepage](https://www.eclipse.org/cdt/). [compatible versions](https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_cdt_formatter). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/cpp/EclipseCdt.java).
+
+```xml
+<eclipseCdt>
+  <version>4.13.0</version>               <!-- optional -->
+  <file>${basedir}/eclipse-cdt.xml</file> <!-- optional -->
+</eclipseCdt>
+```
+
+<a name="applying-to-typescript-source"></a>
+
+## Typescript
+
+[code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/typescript/Typescript.java). [available steps](https://github.com/diffplug/spotless/tree/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/typescript).
 
 ```xml
 <configuration>
   <typescript>
+    <!-- These are the defaults, you can override if you want -->
+    <includes>
+      <include>src/**/*.ts</include>
+    </includes>
 
-       <!-- optionally define which files will be formatted. -->
-       <includes>
-         <include>src/**/*.ts</include> <!-- default value if nothing is specified -->
-       </includes>
+    <tsfmt/>    <!-- has its own section below -->
+    <prettier/> <!-- has its own section below -->
 
-     <tsfmt>
-       <!-- must specify exactly one of the following "{foo}File" or "config" elements -->
-       <tslintFile>${basedir}/path/to/repo/tslint.json</tslintFile>
-       <tsfmtFile>${basedir}/path/to/repo/tsfmt.json</tsfmtFile>
-       <tsconfigFile>${basedir}/path/to/repo/tsconfig.json</tsconfigFile>
-       <vscodeFile>${basedir}/path/to/repo/vscode.json</vscodeFile>
-       <config>
-         <indentSize>1</indentSize>
-         <convertTabsToSpaces>true</convertTabsToSpaces>
-       </config>
-       <!-- optionally configure following versions to use, shown values are defaults-->
-       <typescriptFormatterVersion>7.2.2</typescriptFormatterVersion>
-       <typescriptVersion>3.3.3</typescriptVersion>
-       <tslintVersion>5.12.1</tslintVersion>
-     </tsfmt>
+    <licenseHeader>
+      <content>/* (C)$YEAR */</content>  <!-- or <file>${basedir}/license-header</file> -->
+      <delimiter>(import|const|declare|export|var) </delimiter> <!--
+        note the '(import|const|...' argument - this is a regex which identifies the top
+        of the file, be careful that all of your sources have a suitable top-level declaration,
+        or pick a regex which works better for your code -->
+    </licenseHeader>
   </typescript>
 </configuration>
 ```
 
-Supported config file types are `tsconfigFile`, `tslintFile`, `vscodeFile` and `tsfmtFile`. They are corresponding to the respective
-[tsfmt-parameters](https://github.com/vvakame/typescript-formatter/blob/7764258ad42ac65071399840d1b8701868510ca7/lib/index.ts#L27L34).  See [tsfmt's default config settings](https://github.com/vvakame/typescript-formatter/blob/7764258ad42ac65071399840d1b8701868510ca7/lib/utils.ts#L11L32) for what is available.
+### tsfmt
 
-*Please note:*
+[npm](https://www.npmjs.com/package/typescript-formatter). [changelog](https://github.com/vvakame/typescript-formatter/blob/master/CHANGELOG.md). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/typescript/Tsfmt.java). *Please note:*
 The auto-discovery of config files (up the file tree) will not work when using tsfmt within spotless,
-  hence you are required to provide resolvable file paths for config files.
+  hence you are required to provide resolvable file paths for config files, or alternatively provide the configuration inline. See [tsfmt's default config settings](https://github.com/vvakame/typescript-formatter/blob/7764258ad42ac65071399840d1b8701868510ca7/lib/utils.ts#L11L32) for what is available.
 
-### Prerequisite: tsfmt requires a working NodeJS version
+```xml
+<tsfmt>
+  <typescriptFormatterVersion>7.2.2</typescriptFormatterVersion> <!-- optional https://www.npmjs.com/package/typescript-formatter -->
+  <typescriptVersion>3.9.5</typescriptVersion> <!-- optional https://www.npmjs.com/package/typescript -->
+  <tslintVersion>6.1.2</tslintVersion> <!-- optional https://www.npmjs.com/package/tslint -->
+
+  <config> <!-- https://github.com/vvakame/typescript-formatter/blob/7764258ad42ac65071399840d1b8701868510ca7/lib/utils.ts#L11L32 -->
+    <indentSize>1</indentSize>
+    <convertTabsToSpaces>true</convertTabsToSpaces>
+  </config>
+  <!-- // or according to tsfmt-parameters: https://github.com/vvakame/typescript-formatter/blob/7764258ad42ac65071399840d1b8701868510ca7/lib/index.ts#L27L34 -->
+  <tsconfigFile>${basedir}/tsconfig.json</tsconfigFile>
+  <tslintFile>${basedir}/tslint.json</tslintFile>
+  <vscodeFile>${basedir}/vscode.json</vscodeFile>
+  <tsfmtFile>${basedir}/tsfmt.json</tsfmtFile>
+</tsfmt>
+```
+
+**Prerequisite: tsfmt requires a working NodeJS version**
 
 tsfmt is based on NodeJS, so to use it, a working NodeJS installation (especially npm) is required on the host running spotless.
 Spotless will try to auto-discover an npm installation. If that is not working for you, it is possible to directly configure the npm binary to use.
 
 ```xml
-<configuration><typescript><tsfmt>
-  ...
+<tsfmt>
   <npmExecutable>/usr/bin/npm</npmExecutable>
+</tsfmt>
 ```
 
-Spotless uses npm to install necessary packages locally. It runs tsfmt using [J2V8](https://github.com/eclipsesource/J2V8) internally after that.
+<a name="applying-prettier-to-javascript--flow--typescript--css--scss--less--jsx--graphql--yaml--etc"></a>
 
-<a name="prettier"></a>
+## Prettier
 
-## Applying [Prettier](https://prettier.io) to javascript | flow | typeScript | css | scss | less | jsx | graphQL | yaml | etc.
+[homepage](https://prettier.io/). [changelog](https://github.com/prettier/prettier/blob/master/CHANGELOG.md). [official plugins](https://prettier.io/docs/en/plugins.html#official-plugins). [community plugins](https://prettier.io/docs/en/plugins.html#community-plugins). Prettier is a formatter that can format almost every anything - JavaScript, JSX, Angular, Vue, Flow, TypeScript, CSS, Less, SCSS, HTML, JSON, GraphQL, Markdown (including GFM and MDX), and YAML.  It can format even more [using plugins](https://prettier.io/docs/en/plugins.html) (PHP, Ruby, Swift, XML, Apex, Elm, Java (!!), Kotlin, pgSQL, .properties, solidity, svelte, toml, shellscript, ...).
 
-Prettier is a formatter that can format [multiple file types](https://prettier.io/docs/en/language-support.html).
-
-To use prettier, you first have to specify the files that you want it to apply to.  Then you specify prettier, and how you want to apply it.
+You can use prettier in any language-specific format, but usually you will be creating a generic format.
 
 ```xml
 <configuration>
   <formats>
-
     <format>
       <includes>
         <include>src/**/typescript/**/*.ts</include>
@@ -368,7 +412,7 @@ To use prettier, you first have to specify the files that you want it to apply t
             <value>0.14.2</value>
           </property>
         </devDependencyProperties>
-        <!-- Specify config file and/or inline config -->
+        <!-- Specify config file and/or inline config, the inline always trumps file -->
         <configFile>${basedir}/path/to/configfile</configFile>
         <config>
             <useTabs>true</useTabs>
@@ -380,34 +424,22 @@ To use prettier, you first have to specify the files that you want it to apply t
 </configuration>
 ```
 
-Supported config options are documented on [prettier.io](https://prettier.io/docs/en/options.html).
-Supported config file variants are documented on [prettier.io](https://prettier.io/docs/en/configuration.html).
-
-*Please note:*
+**Limitations:**
 - The auto-discovery of config files (up the file tree) will not work when using prettier within spotless.
 - Prettier's override syntax is not supported when using prettier within spotless.
 
-To apply prettier to more kinds of files, just add more formats.
-
-
-Or you might even let prettier detect the file type and choose the parser on its own such as:
+To apply prettier to more kinds of files, just add more formats
 
 ```xml
 <configuration>
   <formats>
-    <format>
-      <includes>
-        <include>src/*/webapp/**</include>
-        <include>app/**</include>
-      </includes>
-      <prettier/>
-    </format>
-  </formats>
-</configuration>
+    <format><includes>src/**/*.ts</includes><prettier/></format>
+    <format><includes>src/**/*.css</includes><prettier/></format>
 ```
 
-<a name="prettier-plugins"></a>
-### Using plugins for prettier
+<a name="using-plugins-for-prettier"></a>
+
+### prettier plugins
 
 Since spotless uses the actual npm prettier package behind the scenes, it is possible to use prettier with
 [plugins](https://prettier.io/docs/en/plugins.html#official-plugins) or [community-plugins](https://www.npmjs.com/search?q=prettier-plugin) in order to support even more file types.
@@ -462,18 +494,15 @@ Since spotless uses the actual npm prettier package behind the scenes, it is pos
 </configuration>
 ```
 
-### Prerequisite: prettier requires a working NodeJS version
+### npm detection
 
-Prettier, like tsfmt, is based on NodeJS, so to use it, a working NodeJS installation (especially npm) is required on the host running spotless.
+Prettier is based on NodeJS, so to use it, a working NodeJS installation (especially npm) is required on the host running spotless.
 Spotless will try to auto-discover an npm installation. If that is not working for you, it is possible to directly configure the npm binary to use.
 
 ```xml
-<formats><format><prettier>
+<prettier>
   <npmExecutable>/usr/bin/npm</npmExecutable>
-  ...
 ```
-
-Spotless uses npm to install necessary packages and to run the prettier formatter after that.
 
 <a name="format"></a>
 
@@ -484,69 +513,49 @@ By default, no Ant-Style include patterns are defined.  Each element under `<for
 ```xml
 <configuration>
   <formats>
-
-    <!-- Define first formatter that operates on properties files -->
+    <!-- define first formatter that operates on properties files -->
     <format>
       <includes>
-        <!-- Include all property files in "resource" folders under "src" -->
+        <!-- include all property files in "resource" folders under "src" -->
         <include>src/**/resources/**/*.properties</include>
       </includes>
 
-      <licenseHeader>
-        <!-- Specify either content or file, but not both -->
-        <content>/* Licensed under Apache-2.0 */</content>
-        <file>${basedir}/license-header</file>
-        <!-- conent until first occurrence of the delimiter regex will be interpreted as header section -->
-        <delimiter>#</delimiter>
-      </licenseHeader>
+      <endWithNewline /> <!-- files must end with a newline -->
 
-      <!-- Files must end with a newline -->
-      <endWithNewline />
-
-      <!-- Specify whether to use tabs or spaces for indentation -->
-      <indent>
-        <!-- Specify either spaces or tabs -->
-        <spaces>true</spaces>
-        <tabs>true</tabs>
-        <!-- Specify how many spaces are used to convert one tab and vice versa. Defaults to 4 -->
-        <spacesPerTab>4</spacesPerTab>
+      <indent> <!-- specify whether to use tabs or spaces for indentation -->
+        <spaces>true</spaces> <!-- or <tabs>true</tabs> -->
+        <spacesPerTab>4</spacesPerTab> <!-- optional, default -->
       </indent>
 
-      <!-- Trim trailing whitespaces -->
-      <trimTrailingWhitespace />
+      <trimTrailingWhitespace /> <!-- trim trailing whitespaces -->
 
-      <!-- Specify replacements using search and replace -->
-      <replace>
+      <replace> <!-- specify replacements using search and replace -->
         <name>Say Hello to Mars</name>
         <search>World</search>
         <replacement>Mars</replacement>
       </replace>
 
-      <!-- Specify replacements using regex match and replace -->
-      <replaceRegex>
+      <replaceRegex> <!-- specify replacements using regex match and replace -->
         <name>Say Hello to Mars from Regex</name>
         <searchRegex>(Hello) W[a-z]{3}d</searchRegex>
         <replacement>$1 Mars</replacement>
       </replaceRegex>
     </format>
 
-    <!-- Other formats can be defined here, they will be applied in the order specified -->
-
+    <!-- other formats can be defined here, they will be applied in the order specified -->
   </formats>
 </configuration>
 ```
 
+<a name="applying-eclipse-wtp-to-css--html--etc"></a>
 
-<a name="eclipse-wtp"></a>
+## Eclipse web tools platform
 
-## Applying [Eclipse WTP](https://www.eclipse.org/webtools/) to css | html | etc.
-
-The Eclipse [WTP](https://www.eclipse.org/webtools/) formatter can be applied as follows:
+[changelog](https://www.eclipse.org/webtools/). [compatible versions](https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatters).
 
 ```xml
 <configuration>
   <formats>
-
     <format>
       <includes>
         <include>src/**/resources/**/*.xml</include>
@@ -554,20 +563,18 @@ The Eclipse [WTP](https://www.eclipse.org/webtools/) formatter can be applied as
       </includes>
 
       <eclipseWtp>
-        <!-- Specify the WTP formatter type (XML, JS, ...) -->
-        <type>XML</type>
-        <!-- Specify the configuration for the selected type -->
-        <files>
+        <type>XML</type> <!-- specify the WTP formatter type (XML, JS, ...) -->
+        <files> <!-- specify the configuration for the selected type -->
           <file>${basedir}/xml.prefs</file>
           <file>${basedir}/additional.properties</file>
         </files>
-        <!-- Optional, available versions: https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatters -->
-        <version>4.7.3a</version>
+        <version>4.7.3a</version> <!-- optional -->
       </eclipseWtp>
     </format>
   </formats>
 </configuration>
 ```
+
 The WTP formatter accept multiple configuration files. All Eclipse configuration file formats are accepted as well as simple Java property files. Omit the `<files>` entirely to use the default Eclipse configuration. The following formatters and configurations are supported:
 
 | Type | Configuration       | File location
@@ -592,22 +599,17 @@ Unlike Eclipse, Spotless WTP ignores per default external URIs in schema locatio
 external entities. To allow the access of external URIs, set the property `resolveExternalURI`
 to true.
 
-<a name="license-header"></a>
+<a name="license-header-options"></a>
 
 ## License header
 
 Spotless can inject a license header into your files, including populating an accurate copyright header from today's date or from git history.
 
 ```xml
-<format>  <!-- or java, scala, kotlin, etc. -->
-  <licenseHeader>
-    <!-- Specify either content or file, but not both -->
-    <content>/* Licensed under Apache-2.0 */</content>
-    <file>${basedir}/license-header</file>
-    <!-- content until first occurrence of the delimiter regex will be interpreted as header section -->
-    <!-- for language-specific formats (java, etc.) this is optional, and the regex is provided automatically. -->
-    <delimiter>#</delimiter>
-  </licenseHeader>
+<licenseHeader> <!-- specify either content or file, but not both -->
+  <content>/* (C)$YEAR */</content>  <!-- or <file>${basedir}/license-header</file> -->
+  <delimiter>#</delimiter>  <!-- content until first occurrence of the delimiter regex will be interpreted as header section -->
+</licenseHeader>
 ```
 
 If the license header (specified with `content` or `file`) contains `$YEAR` or `$today.year`, then that token will be replaced with the current 4-digit year.  For example, if Spotless is launched in 2020, then `/* Licensed under Apache-2.0 $YEAR. */` will produce `/* Licensed under Apache-2.0 2020. */`
