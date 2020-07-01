@@ -52,7 +52,7 @@ user@machine repo % mvn spotless:check
   - [C/C++](#c-c++) ([eclipse cdt](#eclipse-cdt))
   - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier))
-  - Multiple filetypes
+  - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection))
     - [eclipse web tools platform](#eclipse-web-tools-platform)
 - **Platform**
