@@ -516,9 +516,11 @@ By default, no Ant-Style include patterns are defined.  Each element under `<for
     <!-- define first formatter that operates on properties files -->
     <format>
       <includes>
-        <!-- include all property files in "resource" folders under "src" -->
         <include>src/**/resources/**/*.properties</include>
       </includes>
+      <excludes>
+        <exclude>src/main/resources/autogen/**</exclude>
+      </excludes>
 
       <endWithNewline /> <!-- files must end with a newline -->
 
