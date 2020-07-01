@@ -103,7 +103,7 @@ spotless {
     // make sure every file has the following copyright header.
     // optionally, Spotless can set copyright years by digging
     // through git history (see "license" section below)
-    licenseHeader '/* (C)$YEAR */
+    licenseHeader '/* (C)$YEAR */'
   }
 }
 ```

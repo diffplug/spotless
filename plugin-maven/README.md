@@ -41,6 +41,35 @@ user@machine repo % mvn spotless:check
 [INFO] BUILD SUCCESS
 ```
 
+### Table of Contents
+
+- [**Quickstart**](#quickstart)
+  - [Requirements](#requirements)
+- **Languages**
+  - [Java](#java) ([android](#android), [google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier))
+  - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
+  - [Kotlin](#kotlin) ([ktlint](#ktlint), [ktfmt](#ktmt), [prettier](#prettier))
+  - [Scala](#scala) ([scalafmt](https://github.com/scalameta/scalafmt/releases))
+  - [C/C++](#c-c++) ([eclipse cdt](https://www.eclipse.org/cdt/))
+  - Markdown ([freshmark](#freshmark))
+  - [SQL](#SQL) ([dbeaver](#dbeaver), [prettier](#prettier))
+  - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier))
+  - Multiple filetypes
+    - [Prettier](#prettier) (and [plugins](#prettier-plugins))
+    - [eclipse web tools platform](#eclipse-web-tools-platform)
+- **Platform**
+  - [License header](#license-header) ([slurp year from git](#retroactively-slurp-years-from-git-history))
+  - [How can I enforce formatting gradually? (aka "ratchet")](#ratchet)
+  - [Custom rules](#custom-rules)
+  - [Line endings and encodings (invisible stuff)](#line-endings-and-encodings-invisible-stuff)
+  - [Disabling warnings and error messages](#disabling-warnings-and-error-messages)
+  - [How do I preview what `spotlessApply` will do?](#how-do-i-preview-what-spotlessapply-will-do)
+  - [Example configurations (from real-world projects)](#example-configurations-from-real-world-projects)
+
+***Contributions are welcome, see [the contributing guide](../CONTRIBUTING.md) for development info.***
+
+## Quickstart
+
 To use it in your pom, just [add the Spotless dependency](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22), and configure it like so:
 
 ```xml
@@ -49,27 +78,51 @@ To use it in your pom, just [add the Spotless dependency](https://search.maven.o
   <artifactId>spotless-maven-plugin</artifactId>
   <version>${spotless.version}</version>
   <configuration>
+    <!-- optional: limit format enforcement to just the files changed by this feature branch -->
+    <ratchetFrom>origin/main</ratchetFrom>
+    <formats>
+      <!-- you can define as many formats as you want, each is independent -->
+      <format>
+        <!-- define the files to apply to -->
+        <includes>
+          <include>*.md</include>
+          <include>.gitignore</include>
+        </includes>
+        <!-- define the steps to apply to those files -->
+        <trimTrailingWhitespace/>
+        <endWithNewline/>
+        <indent>
+          <tabs>true</tabs>
+          <spacesPerTab>4</spacesPerTab>
+        </indent>
+      </format>
+    </formats>
+    <!-- define a language-specific format -->
     <java>
-      <eclipse>
-        <file>${basedir}/eclipse-fmt.xml</file>
-        <version>4.7.1</version>
-      </eclipse>
+      <!-- no need to specify files, inferred automatically, but you can if you want -->
+
+      <!-- apply a specific flavor of google-java-format -->
+      <googleJavaFormat>
+        <version>1.8</version>
+        <style>AOSP</style>
+      </googleJavaFormat>
+      <!-- make sure every file has the following copyright header.
+        optionally, Spotless can set copyright years by digging
+        through git history (see "license" section below) -->
+      <licenseHeader>
+        <content>/* (C)$YEAR */</content>
+      </licenseHeader>
     </java>
   </configuration>
 </plugin>
 ```
 
-Spotless supports the following powerful formatters:
+Spotless consists of a list of formats (in the example above, `misc` and `java`), and each format has:
+- a `target` (the files to format), which you set with [`includes` and `excludes`](https://github.com/diffplug/spotless/blob/989abbecff4d8373c6111c1a98f359eadc532429/plugin-maven/src/main/java/com/diffplug/spotless/maven/FormatterFactory.java#L51-L55)
+- a list of `FormatterStep`, which are just `String -> String` functions, such as [`replace`](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/generic/Replace.java), [`replaceRegex`](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/generic/ReplaceRegex.java), [`trimTrailingWhitespace`](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/generic/TrimTrailingWhitespace.java), [`indent`](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/generic/Indent.java), [`prettier`](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/generic/Prettier.java), [`eclipseWtp`](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/generic/EclipseWtp.java), and [`licenseHeader`](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/generic/LicenseHeader.java).
 
-* Eclipse's java code formatter (including style and import ordering)
-* Eclipse's [CDT](https://www.eclipse.org/cdt/) C/C++ code formatter
-* Eclipse's [WTP](https://www.eclipse.org/webtools/) Web-Tools code formatters
-* Google's [google-java-format](https://github.com/google/google-java-format)
-* [Typescript Tsfmt formatter](https://github.com/vvakame/typescript-formatter)
-* [Prettier formatter](https://prettier.io)
-* User-defined license enforcement, regex replacement, etc.
 
-Contributions are welcome, see [the contributing guide](../CONTRIBUTING.md) for development info.
+### Requirements
 
 Spotless requires Maven to be running on JRE 8+.
 
