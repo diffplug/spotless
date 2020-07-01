@@ -53,7 +53,6 @@ lib('npm.TsFmtFormatterStep')                    +'{{yes}}       | {{yes}}      
 lib('scala.ScalaFmtStep')                        +'{{yes}}       | {{yes}}       | {{no}}  |',
 lib('sql.DBeaverSQLFormatterStep')               +'{{yes}}       | {{no}}       | {{no}}  |',
 extra('wtp.EclipseWtpFormatterStep')             +'{{yes}}       | {{yes}}      | {{no}}  |',
-lib('antlr4.Antlr4FormatterStep')                +'{{yes}}       | {{yes}}       | {{no}}  |',
 '| [(Your FormatterStep here)](CONTRIBUTING.md#how-to-add-a-new-formatterstep) | {{no}}        | {{no}}       | {{no}}  |',
 '| Fast up-to-date checking                      | {{yes}}       | {{no}}       | {{no}}  |',
 '| Automatic idempotency safeguard               | {{yes}}       | {{no}}       | {{no}}  |',
@@ -82,7 +81,6 @@ lib('antlr4.Antlr4FormatterStep')                +'{{yes}}       | {{yes}}      
 | [`scala.ScalaFmtStep`](lib/src/main/java/com/diffplug/spotless/scala/ScalaFmtStep.java) | :+1:       | :+1:       | :white_large_square:  |
 | [`sql.DBeaverSQLFormatterStep`](lib/src/main/java/com/diffplug/spotless/sql/DBeaverSQLFormatterStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
 | [`wtp.EclipseWtpFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/wtp/EclipseWtpFormatterStep.java) | :+1:       | :+1:      | :white_large_square:  |
-| [`antlr4.Antlr4FormatterStep`](lib/src/main/java/com/diffplug/spotless/antlr4/Antlr4FormatterStep.java) | :+1:       | :+1:       | :white_large_square:  |
 | [(Your FormatterStep here)](CONTRIBUTING.md#how-to-add-a-new-formatterstep) | :white_large_square:        | :white_large_square:       | :white_large_square:  |
 | Fast up-to-date checking                      | :+1:       | :white_large_square:       | :white_large_square:  |
 | Automatic idempotency safeguard               | :+1:       | :white_large_square:       | :white_large_square:  |

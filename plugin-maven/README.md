@@ -78,7 +78,6 @@ Spotless supports the following powerful formatters:
 * Google's [google-java-format](https://github.com/google/google-java-format)
 * [Typescript Tsfmt formatter](https://github.com/vvakame/typescript-formatter)
 * [Prettier formatter](https://prettier.io)
-* [Antlr4Formatter](https://github.com/antlr/Antlr4Formatter)
 * User-defined license enforcement, regex replacement, etc.
 
 Contributions are welcome, see [the contributing guide](../CONTRIBUTING.md) for development info.
@@ -217,26 +216,6 @@ By default, all files matching `src/main/cpp/**/*.<ext>` and `src/test/cpp/**/*.
 </configuration>
 ```
 Use the Eclipse to define the *Code Style preferences* (see [Eclipse documentation](https://www.eclipse.org/documentation/)). Within the preferences *Edit...* dialog, you can export your configuration as XML file, which can be used as a configuration `<file>`. If no `<file>` is provided, the CDT default configuration is used.
-
-<a name="antlr4"></a>
-## Applying to ANTLR4 source
-
-By default, all ANTLR4 sources matching `src/main/antlr4/**/*.g4` or `src/test/antlr4/**/*.g4` will be formatted. To change this,
-set the `includes` parameter as described in the [File incudes and excludes](#includeExclude) section.
-
-```xml
-<configuration>
-  <antlr4>
-    <!-- use default Antlr4Formatter version -->
-    <antlr4Formatter />
-
-    <antlr4Formatter>
-      <!-- specify a custom Antlr4Formatter version -->
-      <version>1.2.1</version>
-    </antlr4Formatter>
-  </antlr4>
-</configuration>
-```
 
 <a name="typescript"></a>
 
