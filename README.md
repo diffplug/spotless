@@ -33,13 +33,19 @@ function extra(className) { return '| [`' + className + '`](lib-extra/src/main/j
 output = [
 '| Feature / FormatterStep                       | [plugin-gradle](plugin-gradle/README.md) | [plugin-maven](plugin-maven/README.md) | [(Your build tool here)](CONTRIBUTING.md#how-to-add-a-new-plugin-for-a-build-system) |',
 '| --------------------------------------------- | ------------- | ------------ | --------|',
-lib('generic.EndWithNewlineStep')                +'{{yes}}       | {{yes}}       | {{no}}  |',
-lib('generic.IndentStep')                        +'{{yes}}       | {{yes}}       | {{no}}  |',
+'| Automatic [idempotency safeguard](PADDEDCELL.md) | {{yes}}    | {{yes}}      | {{no}}  |',
+'| Misconfigured [encoding safeguard](https://github.com/diffplug/spotless/blob/08340a11566cdf56ecf50dbd4d557ed84a70a502/testlib/src/test/java/com/diffplug/spotless/EncodingErrorMsgTest.java#L34-L38) | {{yes}}    | {{yes}}      | {{no}}  |',
+'| [Ratchet from](https://github.com/diffplug/spotless/tree/main/plugin-gradle#ratchet) `origin/main` or other git ref | {{yes}}    | {{yes}}      | {{no}}  |',
+'| Define [line endings using git](https://github.com/diffplug/spotless/tree/main/plugin-gradle#line-endings-and-encodings-invisible-stuff) | {{yes}}    | {{yes}}      | {{no}}  |',
+'| Fast incremental format and up-to-date check   | {{yes}}      | {{no}}       | {{no}}  |',
+'| Fast format on fresh checkout using buildcache | {{yes}}      | {{no}}       | {{no}}  |',
+lib('generic.EndWithNewlineStep')                +'{{yes}}       | {{yes}}      | {{no}}  |',
+lib('generic.IndentStep')                        +'{{yes}}       | {{yes}}      | {{no}}  |',
 lib('generic.LicenseHeaderStep')                 +'{{yes}}       | {{yes}}      | {{no}}  |',
-lib('generic.ReplaceRegexStep')                  +'{{yes}}       | {{yes}}       | {{no}}  |',
-lib('generic.ReplaceStep')                       +'{{yes}}       | {{yes}}       | {{no}}  |',
-lib('generic.TrimTrailingWhitespaceStep')        +'{{yes}}       | {{yes}}       | {{no}}  |',
-extra('cpp.EclipseFormatterStep')                +'{{yes}}       | {{yes}}       | {{no}}  |',
+lib('generic.ReplaceRegexStep')                  +'{{yes}}       | {{yes}}      | {{no}}  |',
+lib('generic.ReplaceStep')                       +'{{yes}}       | {{yes}}      | {{no}}  |',
+lib('generic.TrimTrailingWhitespaceStep')        +'{{yes}}       | {{yes}}      | {{no}}  |',
+extra('cpp.EclipseFormatterStep')                +'{{yes}}       | {{yes}}      | {{no}}  |',
 extra('groovy.GrEclipseFormatterStep')           +'{{yes}}       | {{no}}       | {{no}}  |',
 lib('java.GoogleJavaFormatStep')                 +'{{yes}}       | {{yes}}      | {{no}}  |',
 lib('java.ImportOrderStep')                      +'{{yes}}       | {{yes}}      | {{no}}  |',
@@ -48,26 +54,29 @@ extra('java.EclipseFormatterStep')               +'{{yes}}       | {{yes}}      
 lib('kotlin.KtLintStep')                         +'{{yes}}       | {{yes}}      | {{no}}  |',
 lib('kotlin.KtfmtStep')                          +'{{yes}}       | {{yes}}      | {{no}}  |',
 lib('markdown.FreshMarkStep')                    +'{{yes}}       | {{no}}       | {{no}}  |',
-lib('npm.PrettierFormatterStep')                 +'{{yes}}       | {{yes}}       | {{no}}  |',
-lib('npm.TsFmtFormatterStep')                    +'{{yes}}       | {{yes}}       | {{no}}  |',
-lib('scala.ScalaFmtStep')                        +'{{yes}}       | {{yes}}       | {{no}}  |',
+lib('npm.PrettierFormatterStep')                 +'{{yes}}       | {{yes}}      | {{no}}  |',
+lib('npm.TsFmtFormatterStep')                    +'{{yes}}       | {{yes}}      | {{no}}  |',
+lib('scala.ScalaFmtStep')                        +'{{yes}}       | {{yes}}      | {{no}}  |',
 lib('sql.DBeaverSQLFormatterStep')               +'{{yes}}       | {{no}}       | {{no}}  |',
 extra('wtp.EclipseWtpFormatterStep')             +'{{yes}}       | {{yes}}      | {{no}}  |',
-'| [(Your FormatterStep here)](CONTRIBUTING.md#how-to-add-a-new-formatterstep) | {{no}}        | {{no}}       | {{no}}  |',
-'| Fast up-to-date checking                      | {{yes}}       | {{no}}       | {{no}}  |',
-'| Automatic idempotency safeguard               | {{yes}}       | {{no}}       | {{no}}  |',
-''
+'| [(Your FormatterStep here)](CONTRIBUTING.md#how-to-add-a-new-formatterstep) | {{no}} | {{no}} | {{no}} |',
 ].join('\n');
 -->
 | Feature / FormatterStep                       | [plugin-gradle](plugin-gradle/README.md) | [plugin-maven](plugin-maven/README.md) | [(Your build tool here)](CONTRIBUTING.md#how-to-add-a-new-plugin-for-a-build-system) |
 | --------------------------------------------- | ------------- | ------------ | --------|
-| [`generic.EndWithNewlineStep`](lib/src/main/java/com/diffplug/spotless/generic/EndWithNewlineStep.java) | :+1:       | :+1:       | :white_large_square:  |
-| [`generic.IndentStep`](lib/src/main/java/com/diffplug/spotless/generic/IndentStep.java) | :+1:       | :+1:       | :white_large_square:  |
+| Automatic [idempotency safeguard](PADDEDCELL.md) | :+1:    | :+1:      | :white_large_square:  |
+| Misconfigured [encoding safeguard](https://github.com/diffplug/spotless/blob/08340a11566cdf56ecf50dbd4d557ed84a70a502/testlib/src/test/java/com/diffplug/spotless/EncodingErrorMsgTest.java#L34-L38) | :+1:    | :+1:      | :white_large_square:  |
+| [Ratchet from](https://github.com/diffplug/spotless/tree/main/plugin-gradle#ratchet) `origin/main` or other git ref | :+1:    | :+1:      | :white_large_square:  |
+| Define [line endings using git](https://github.com/diffplug/spotless/tree/main/plugin-gradle#line-endings-and-encodings-invisible-stuff) | :+1:    | :+1:      | :white_large_square:  |
+| Fast incremental format and up-to-date check   | :+1:      | :white_large_square:       | :white_large_square:  |
+| Fast format on fresh checkout using buildcache | :+1:      | :white_large_square:       | :white_large_square:  |
+| [`generic.EndWithNewlineStep`](lib/src/main/java/com/diffplug/spotless/generic/EndWithNewlineStep.java) | :+1:       | :+1:      | :white_large_square:  |
+| [`generic.IndentStep`](lib/src/main/java/com/diffplug/spotless/generic/IndentStep.java) | :+1:       | :+1:      | :white_large_square:  |
 | [`generic.LicenseHeaderStep`](lib/src/main/java/com/diffplug/spotless/generic/LicenseHeaderStep.java) | :+1:       | :+1:      | :white_large_square:  |
-| [`generic.ReplaceRegexStep`](lib/src/main/java/com/diffplug/spotless/generic/ReplaceRegexStep.java) | :+1:       | :+1:       | :white_large_square:  |
-| [`generic.ReplaceStep`](lib/src/main/java/com/diffplug/spotless/generic/ReplaceStep.java) | :+1:       | :+1:       | :white_large_square:  |
-| [`generic.TrimTrailingWhitespaceStep`](lib/src/main/java/com/diffplug/spotless/generic/TrimTrailingWhitespaceStep.java) | :+1:       | :+1:       | :white_large_square:  |
-| [`cpp.EclipseFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/cpp/EclipseFormatterStep.java) | :+1:       | :+1:       | :white_large_square:  |
+| [`generic.ReplaceRegexStep`](lib/src/main/java/com/diffplug/spotless/generic/ReplaceRegexStep.java) | :+1:       | :+1:      | :white_large_square:  |
+| [`generic.ReplaceStep`](lib/src/main/java/com/diffplug/spotless/generic/ReplaceStep.java) | :+1:       | :+1:      | :white_large_square:  |
+| [`generic.TrimTrailingWhitespaceStep`](lib/src/main/java/com/diffplug/spotless/generic/TrimTrailingWhitespaceStep.java) | :+1:       | :+1:      | :white_large_square:  |
+| [`cpp.EclipseFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/cpp/EclipseFormatterStep.java) | :+1:       | :+1:      | :white_large_square:  |
 | [`groovy.GrEclipseFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/groovy/GrEclipseFormatterStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
 | [`java.GoogleJavaFormatStep`](lib/src/main/java/com/diffplug/spotless/java/GoogleJavaFormatStep.java) | :+1:       | :+1:      | :white_large_square:  |
 | [`java.ImportOrderStep`](lib/src/main/java/com/diffplug/spotless/java/ImportOrderStep.java) | :+1:       | :+1:      | :white_large_square:  |
@@ -76,14 +85,12 @@ extra('wtp.EclipseWtpFormatterStep')             +'{{yes}}       | {{yes}}      
 | [`kotlin.KtLintStep`](lib/src/main/java/com/diffplug/spotless/kotlin/KtLintStep.java) | :+1:       | :+1:      | :white_large_square:  |
 | [`kotlin.KtfmtStep`](lib/src/main/java/com/diffplug/spotless/kotlin/KtfmtStep.java) | :+1:       | :+1:      | :white_large_square:  |
 | [`markdown.FreshMarkStep`](lib/src/main/java/com/diffplug/spotless/markdown/FreshMarkStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
-| [`npm.PrettierFormatterStep`](lib/src/main/java/com/diffplug/spotless/npm/PrettierFormatterStep.java) | :+1:       | :+1:       | :white_large_square:  |
-| [`npm.TsFmtFormatterStep`](lib/src/main/java/com/diffplug/spotless/npm/TsFmtFormatterStep.java) | :+1:       | :+1:       | :white_large_square:  |
-| [`scala.ScalaFmtStep`](lib/src/main/java/com/diffplug/spotless/scala/ScalaFmtStep.java) | :+1:       | :+1:       | :white_large_square:  |
+| [`npm.PrettierFormatterStep`](lib/src/main/java/com/diffplug/spotless/npm/PrettierFormatterStep.java) | :+1:       | :+1:      | :white_large_square:  |
+| [`npm.TsFmtFormatterStep`](lib/src/main/java/com/diffplug/spotless/npm/TsFmtFormatterStep.java) | :+1:       | :+1:      | :white_large_square:  |
+| [`scala.ScalaFmtStep`](lib/src/main/java/com/diffplug/spotless/scala/ScalaFmtStep.java) | :+1:       | :+1:      | :white_large_square:  |
 | [`sql.DBeaverSQLFormatterStep`](lib/src/main/java/com/diffplug/spotless/sql/DBeaverSQLFormatterStep.java) | :+1:       | :white_large_square:       | :white_large_square:  |
 | [`wtp.EclipseWtpFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/wtp/EclipseWtpFormatterStep.java) | :+1:       | :+1:      | :white_large_square:  |
-| [(Your FormatterStep here)](CONTRIBUTING.md#how-to-add-a-new-formatterstep) | :white_large_square:        | :white_large_square:       | :white_large_square:  |
-| Fast up-to-date checking                      | :+1:       | :white_large_square:       | :white_large_square:  |
-| Automatic idempotency safeguard               | :+1:       | :white_large_square:       | :white_large_square:  |
+| [(Your FormatterStep here)](CONTRIBUTING.md#how-to-add-a-new-formatterstep) | :white_large_square: | :white_large_square: | :white_large_square: |
 <!---freshmark /matrix -->
 
 *Why are there empty squares?* Many projects get harder to work on as they get bigger. Spotless is easier to work on than ever, and one of the reasons why is that we don't require contributors to "fill the matrix". If you want to [add Bazel support](https://github.com/diffplug/spotless/issues/76), we'd happily accept the PR even if it only supports the one formatter you use. And if you want to add FooFormatter support, we'll happily accept the PR even if it only supports the one build system you use.
