@@ -47,6 +47,7 @@ import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
+import com.diffplug.spotless.maven.antlr4.Antlr4;
 import com.diffplug.spotless.maven.cpp.Cpp;
 import com.diffplug.spotless.maven.generic.Format;
 import com.diffplug.spotless.maven.generic.LicenseHeader;
@@ -107,6 +108,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	@Parameter
 	private Typescript typescript;
+
+	@Parameter
+	private Antlr4 antlr4;
 
 	@Parameter(property = "spotlessFiles")
 	private String filePatterns;
@@ -194,7 +198,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private List<FormatterFactory> getFormatterFactories() {
-		return Stream.concat(formats.stream(), Stream.of(java, scala, kotlin, cpp, typescript))
+		return Stream.concat(formats.stream(), Stream.of(java, scala, kotlin, cpp, typescript, antlr4))
 				.filter(Objects::nonNull)
 				.collect(toList());
 	}

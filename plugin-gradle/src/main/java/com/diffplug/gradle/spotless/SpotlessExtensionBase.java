@@ -161,6 +161,11 @@ public abstract class SpotlessExtensionBase {
 		format(TypescriptExtension.NAME, TypescriptExtension.class, closure);
 	}
 
+	/** Configures the special antlr4-specific extension for antlr4 files. */
+	public void antlr4(Action<Antlr4Extension> closure) {
+		format(Antlr4Extension.NAME, Antlr4Extension.class, closure);
+	}
+
 	/** Configures a custom extension. */
 	public void format(String name, Action<FormatExtension> closure) {
 		requireNonNull(name, "name");
