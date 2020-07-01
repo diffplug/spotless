@@ -46,14 +46,14 @@ user@machine repo % mvn spotless:check
 - [**Quickstart**](#quickstart)
   - [Requirements](#requirements)
 - **Languages**
-  - [Java](#java) ([android](#android), [google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier))
-  - [Kotlin](#kotlin) ([ktlint](#ktlint), [ktfmt](#ktmt), [prettier](#prettier))
+  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier))
+  - [Kotlin](#kotlin) ([ktlint](#ktlint), [ktfmt](#ktfmt), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
   - [C/C++](#c-c++) ([eclipse cdt](#eclipse-cdt))
   - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier))
   - Multiple filetypes
-    - [Prettier](#prettier) (and [plugins](#prettier-plugins))
+    - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection))
     - [eclipse web tools platform](#eclipse-web-tools-platform)
 - **Platform**
   - [License header](#license-header) ([slurp year from git](#retroactively-slurp-years-from-git-history))
@@ -654,11 +654,31 @@ Once a file's license header has a valid year, whether it is a year (`2020`) or 
 * `2017` -> `2017-2020`
 * `2017-2019` -> `2017-2020`
 
-### Retroactively populating year range from git history
+### Retroactively slurp years from git history
 
 If your project has not been rigorous with copyright headers, and you'd like to use git history to repair this retroactively, you can do so with `-DspotlessSetLicenseHeaderYearsFromGitHistory=true`.  When run in this mode, Spotless will do an expensive search through git history for each file, and set the copyright header based on the oldest and youngest commits for that file.  This is intended to be a one-off sort of thing.
 
 <a name="invisible"></a>
+
+<a name="ratchet"></a>
+
+## How can I enforce formatting gradually? (aka "ratchet")
+
+If your project is not currently enforcing formatting, then it can be a noisy transition.  Having a giant commit where every single file gets changed makes the history harder to read.  To address this, you can use the `ratchet` feature:
+
+```xml
+<configuration>
+  <ratchetFrom>origin/main</ratchetFrom> <!-- only format files which have changed since origin/main -->
+  <!-- ... define formats ... -->
+</configuration>
+```
+
+In this mode, Spotless will apply only to files which have changed since `origin/main`.  You can ratchet from [any point you want](https://javadoc.io/static/org.eclipse.jgit/org.eclipse.jgit/5.6.1.202002131546-r/org/eclipse/jgit/lib/Repository.html#resolve-java.lang.String-), even `HEAD`.  You can also set `ratchetFrom` per-format if you prefer (e.g. `<configuration><java><ratchetFrom>...`).
+
+However, we strongly recommend that you use a non-local branch, such as a tag or `origin/main`.  The problem with `HEAD` or any local branch is that as soon as you commit a file, that is now the canonical formatting, even if it was formatted incorrectly.  By instead specifying `origin/main` or a tag, your CI server will fail unless every changed file is at least as good or better than it was before the change.
+
+This is especially helpful for injecting accurate copyright dates using the [license step](#license-header).
+
 
 ## Line endings and encodings (invisible stuff)
 
@@ -725,26 +745,6 @@ By default, `spotless:check` is bound to the `verify` phase.  You might want to 
 - View the changes with `git diff`
 - If you don't like what spotless did, `git reset --hard`
 - If you'd like to remove the "checkpoint" commit, `git reset --soft head~1` will make the checkpoint commit "disappear" from history, but keeps the changes in your working directory.
-
-<a name="ratchet"></a>
-
-## How can I enforce formatting gradually?
-
-If your project is not currently enforcing formatting, then it can be a noisy transition.  Having a giant commit where every single file gets changed makes the history harder to read.  To address this, you can use the `ratchet` feature:
-
-```xml
-<configuration>
-  <ratchetFrom>origin/main</ratchetFrom> <!-- only format files which have changed since origin/main -->
-  <!-- ... define formats ... -->
-</configuration>
-```
-
-In this mode, Spotless will apply only to files which have changed since `origin/main`.  You can ratchet from [any point you want](https://javadoc.io/static/org.eclipse.jgit/org.eclipse.jgit/5.6.1.202002131546-r/org/eclipse/jgit/lib/Repository.html#resolve-java.lang.String-), even `HEAD`.  You can also set `ratchetFrom` per-format if you prefer (e.g. `<configuration><java><ratchetFrom>...`).
-
-However, we strongly recommend that you use a non-local branch, such as a tag or `origin/main`.  The problem with `HEAD` or any local branch is that as soon as you commit a file, that is now the canonical formatting, even if it was formatted incorrectly.  By instead specifying `origin/main` or a tag, your CI server will fail unless every changed file is at least as good or better than it was before the change.
-
-This is especially helpful for injecting accurate copyright dates using the [license step](#license-header).
-
 
 ## Can I apply Spotless to specific files?
 
