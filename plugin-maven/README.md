@@ -28,28 +28,17 @@ Spotless is a general-purpose formatting plugin.  It is completely à la carte, 
 
 To people who use your build, it looks like this:
 
-```
-cmd> mvn spotless:check
-...
-[ERROR] ... The following files had format violations:
+```console
+user@machine repo % mvn spotless:check
+[ERROR]  > The following files had format violations:
 [ERROR]  src\main\java\com\diffplug\gradle\spotless\FormatExtension.java
-[ERROR]    @@ -109,7 +109,7 @@
-[ERROR]    ...
 [ERROR]    -\t\t····if·(targets.length·==·0)·{
 [ERROR]    +\t\tif·(targets.length·==·0)·{
-[ERROR]    ...
 [ERROR]  Run 'mvn spotless:apply' to fix these violations.
-...
-
-cmd> mvn spotless:apply
-...
+user@machine repo % mvn spotless:apply
 [INFO] BUILD SUCCESS
-...
-
-cmd> mvn spotless:check
-...
+user@machine repo % mvn spotless:check
 [INFO] BUILD SUCCESS
-...
 ```
 
 To use it in your pom, just [add the Spotless dependency](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22), and configure it like so:

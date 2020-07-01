@@ -36,17 +36,17 @@ Spotless is a general-purpose formatting plugin used by [3,500 projects on GitHu
 To people who use your build, it looks like this ([IDE support also available]()):
 
 ```console
-cmd> gradlew build
+user@machine repo % ./gradlew build
 :spotlessJavaCheck FAILED
   The following files had format violations:
   src\main\java\com\diffplug\gradle\spotless\FormatExtension.java
     -\t\t····if·(targets.length·==·0)·{
     +\t\tif·(targets.length·==·0)·{
-  Run 'gradlew spotlessApply' to fix these violations.
-cmd> gradlew spotlessApply
+  Run './gradlew spotlessApply' to fix these violations.
+user@machine repo % ./gradlew spotlessApply
 :spotlessApply
 BUILD SUCCESSFUL
-cmd> gradlew build
+user@machine repo % ./gradlew build
 BUILD SUCCESSFUL
 ```
 
