@@ -48,8 +48,9 @@ user@machine repo % mvn spotless:check
 - **Languages**
   - [Java](#java) ([android](#android), [google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier))
   - [Kotlin](#kotlin) ([ktlint](#ktlint), [ktfmt](#ktmt), [prettier](#prettier))
-  - [Scala](#scala) ([scalafmt](https://github.com/scalameta/scalafmt/releases))
-  - [C/C++](#c-c++) ([eclipse cdt](https://www.eclipse.org/cdt/))
+  - [Scala](#scala) ([scalafmt](#scalafmt))
+  - [C/C++](#c-c++) ([eclipse cdt](#eclipse-cdt))
+  - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier))
   - Multiple filetypes
     - [Prettier](#prettier) (and [plugins](#prettier-plugins))
@@ -139,18 +140,18 @@ Spotless requires Maven to be running on JRE 8+.
       <include>src/test/java/**/*.java</include>
     </includes>
 
-    <importOrder/> <!-- standard import order -->
+    <importOrder /> <!-- standard import order -->
     <importOrder>  <!-- or a custom ordering -->
       <order>java,javax,org,com,com.diffplug,</order>  <!-- or use <file>${basedir}/eclipse.importorder</file> -->
       <!-- You probably want an empty string at the end - all of the
            imports you didn't specify explicitly will go there. -->
     </importOrder>
 
-    <removeUnusedImports/> <!-- self-explanatory -->
+    <removeUnusedImports /> <!-- self-explanatory -->
 
-    <googleJavaFormat/> <!-- has its own section below -->
-    <eclipse/>          <!-- has its own section below -->
-    <prettier/>         <!-- has its own section below -->
+    <googleJavaFormat /> <!-- has its own section below -->
+    <eclipse />          <!-- has its own section below -->
+    <prettier />         <!-- has its own section below -->
 
     <licenseHeader>
       <content>/* (C)$YEAR */</content>  <!-- or <file>${basedir}/license-header</file> -->
@@ -203,11 +204,11 @@ Spotless requires Maven to be running on JRE 8+.
            imports you didn't specify explicitly will go there. -->
     </importOrder>
 
-    <removeUnusedImports/> <!-- self-explanatory -->
+    <removeUnusedImports /> <!-- self-explanatory -->
 
-    <ktlint/>   <!-- has its own section below -->
-    <ktfmt/>    <!-- has its own section below -->
-    <prettier/> <!-- has its own section below -->
+    <ktlint />   <!-- has its own section below -->
+    <ktfmt />    <!-- has its own section below -->
+    <prettierv/> <!-- has its own section below -->
 
     <licenseHeader>
       <content>/* (C)$YEAR */</content>  <!-- or <file>${basedir}/license-header</file> -->
@@ -257,7 +258,7 @@ Spotless requires Maven to be running on JRE 8+.
       <include>src/test/scala/**/*.sc</include>
     </includes>
 
-    <scalafmt/> <!-- has its own section below -->
+    <scalafmt /> <!-- has its own section below -->
 
     <licenseHeader>
       <content>/* (C)$YEAR */</content>  <!-- or <file>${basedir}/license-header</file> -->
@@ -297,7 +298,7 @@ Spotless requires Maven to be running on JRE 8+.
       <include>src/native/**</inclue>
     </includes>
 
-    <eclipseCdt> <!-- has its own section below -->
+    <eclipseCdt /> <!-- has its own section below -->
 
     <licenseHeader>
       <content>/* (C)$YEAR */</content>  <!-- or <file>${basedir}/license-header</file> -->
@@ -315,6 +316,37 @@ Spotless requires Maven to be running on JRE 8+.
   <version>4.13.0</version>               <!-- optional -->
   <file>${basedir}/eclipse-cdt.xml</file> <!-- optional -->
 </eclipseCdt>
+```
+
+## Antlr4
+
+[code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/antlr4/Antlr4.java). [available steps](https://github.com/diffplug/spotless/tree/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/antlr4).
+
+```xml
+<configuration>
+  <antlr4>
+    <!-- These are the defaults, you can override if you want -->
+    <includes>
+      <include>src/*/antlr4/**/*.g4</include>
+    </includes>
+
+    <antlr4formatter /> <!-- has its own section below -->
+
+    <licenseHeader>
+      <content>/* (C)$YEAR */</content>  <!-- or <file>${basedir}/license-header</file> -->
+    </licenseHeader>
+  </antlr4>
+</configuration>
+```
+
+### antlr4formatter
+
+[homepage](https://github.com/antlr/Antlr4Formatter). [available versions](https://search.maven.org/artifact/com.khubla.antlr4formatter/antlr4-formatter). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/antlr4/Antlr4Formatter.java).
+
+```xml
+<antlr4formatter>
+  <version>1.2.1</version> <!-- optional -->
+</antlr4formatter>
 ```
 
 <a name="applying-to-typescript-source"></a>

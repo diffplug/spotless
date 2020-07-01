@@ -58,10 +58,11 @@ BUILD SUCCESSFUL
   - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
   - [Kotlin](#kotlin) ([ktlint](#ktlint), [ktfmt](#ktmt), [prettier](#prettier))
-  - [Scala](#scala) ([scalafmt](https://github.com/scalameta/scalafmt/releases))
-  - [C/C++](#c-c++) ([eclipse cdt](https://www.eclipse.org/cdt/))
+  - [Scala](#scala) ([scalafmt](#scalafmt))
+  - [C/C++](#c-c++) ([eclipse cdt](#eclipse-cdt))
   - Markdown ([freshmark](#freshmark))
-  - [SQL](#SQL) ([dbeaver](#dbeaver), [prettier](#prettier))
+  - [SQL](#sql) ([dbeaver](#dbeaver), [prettier](#prettier))
+  - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier))
   - Multiple filetypes
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection))
@@ -360,6 +361,28 @@ spotless {
     }
   }
 }
+```
+
+## Antlr4
+
+`com.diffplug.gradle.spotless.Antlr4Extension` [javadoc](https://javadoc.io/static/com.diffplug.spotless/spotless-plugin-gradle/4.4.0/com/diffplug/gradle/spotless/Antlr4Extension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/Antlr4Extension.java)
+
+```gradle
+spotless {
+  antlr4 {
+    target 'src/*/antlr4/**/*.g4' // default value, you can change if you want
+    antlr4Formatter() // has its own section below
+    licenseHeader '/* (C) $YEAR */' // or licenseHeaderFile
+  }
+}
+```
+
+### antlr4formatter
+
+[homepage](https://github.com/antlr/Antlr4Formatter). [available versions](https://search.maven.org/artifact/com.khubla.antlr4formatter/antlr4-formatter).
+
+```gradle
+antlr4formatter('1.2.1') // version is optional
 ```
 
 <a name="sql-dbeaver"></a>
