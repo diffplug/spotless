@@ -61,8 +61,8 @@ BUILD SUCCESSFUL
   - [Scala](#scala) ([scalafmt](#scalafmt))
   - [C/C++](#c-c++) ([eclipse cdt](#eclipse-cdt))
   - [FreshMark](#freshmark) aka markdown
-  - [SQL](#sql) ([dbeaver](#dbeaver), [prettier](#prettier))
   - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
+  - [SQL](#sql) ([dbeaver](#dbeaver), [prettier](#prettier))
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier))
   - Multiple filetypes
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection))
@@ -714,7 +714,7 @@ When a misformatted file throws an exception, it will be for one of two reasons:
 1) Spotless calculated the properly formatted version, and it is different than the current contents.
 2) One of the formatters threw an exception while attempting to calculate the properly formatted version.
 
-You can fix (1) by excluding the file from formatting using the `targetExclude` method, see the [custom rules](#custom) section for details.  You can fix (2) and turn these exceptions into warnings like this:
+You can fix (1) by excluding the file from formatting using the `targetExclude` method, see the [quickstart](#quickstart) section for details.  You can fix (2) and turn these exceptions into warnings like this:
 
 ```gradle
 spotless {
