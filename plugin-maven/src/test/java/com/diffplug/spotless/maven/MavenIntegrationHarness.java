@@ -98,6 +98,10 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		writePom(formats(groupWithSteps("format", including("<include>src/**/java/**/*.java</include>"), steps)));
 	}
 
+	protected void writePomWithAntlr4Steps(String... steps) throws IOException {
+		writePom(groupWithSteps("antlr4", steps));
+	}
+
 	protected void writePomWithJavaSteps(String... steps) throws IOException {
 		writePom(groupWithSteps("java", steps));
 	}
@@ -110,20 +114,8 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		writePom(groupWithSteps("kotlin", steps));
 	}
 
-	/** The XML extension is discontinued. */
-	@Deprecated
-	protected void writePomWithXmlSteps(String... steps) throws IOException {
-		writePom(groupWithSteps("xml", steps));
-	}
-
 	protected void writePomWithCppSteps(String... steps) throws IOException {
 		writePom(groupWithSteps("cpp", steps));
-	}
-
-	/** The CSS extension is discontinued. */
-	@Deprecated
-	protected void writePomWithCssSteps(String... steps) throws IOException {
-		writePom(groupWithSteps("css", steps));
 	}
 
 	protected void writePomWithTypescriptSteps(String... steps) throws IOException {

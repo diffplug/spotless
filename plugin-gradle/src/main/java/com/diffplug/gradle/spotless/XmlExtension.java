@@ -19,9 +19,9 @@ import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElem
 
 import org.gradle.api.Project;
 
+import com.diffplug.gradle.spotless.libdeprecated.XmlDefaults;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
-import com.diffplug.spotless.xml.XmlDefaults;
 
 /**
  * The XML extension is deprecated. Use the generic {@link FormatExtension} instead.
@@ -46,7 +46,7 @@ public class XmlExtension extends FormatExtension implements HasBuiltinDelimiter
 		private final EclipseBasedStepBuilder builder;
 
 		EclipseConfig(String version) {
-			builder = EclipseWtpFormatterStep.createXmlBuilder(provisioner());
+			builder = EclipseWtpFormatterStep.XML.createBuilder(provisioner());
 			builder.setVersion(version);
 			addStep(builder.build());
 		}

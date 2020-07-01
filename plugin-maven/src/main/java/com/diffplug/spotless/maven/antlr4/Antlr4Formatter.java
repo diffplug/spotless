@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,38 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.maven.css;
-
-import java.io.File;
-import java.util.Arrays;
+package com.diffplug.spotless.maven.antlr4;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
-import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
+import com.diffplug.spotless.antlr4.Antlr4FormatterStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
-import com.diffplug.spotless.maven.generic.EclipseWtp;
 
-/** CSS Eclipse is deprecated. Use {@link EclipseWtp} instead.*/
-@Deprecated
-public class Eclipse implements FormatterStepFactory {
-
-	@Parameter
-	private String file;
+public class Antlr4Formatter implements FormatterStepFactory {
 
 	@Parameter
 	private String version;
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
-		EclipseBasedStepBuilder eclipseConfig = EclipseWtpFormatterStep.createCssBuilder(stepConfig.getProvisioner());
-		eclipseConfig.setVersion(version == null ? EclipseWtpFormatterStep.defaultVersion() : version);
-		if (null != file) {
-			File settingsFile = stepConfig.getFileLocator().locateFile(file);
-			eclipseConfig.setPreferences(Arrays.asList(settingsFile));
-		}
-		return eclipseConfig.build();
+		String version = this.version == null ? Antlr4FormatterStep.defaultVersion() : this.version;
+		return Antlr4FormatterStep.create(version, stepConfig.getProvisioner());
 	}
 }
