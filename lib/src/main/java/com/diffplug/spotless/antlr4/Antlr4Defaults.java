@@ -15,14 +15,14 @@
  */
 package com.diffplug.spotless.antlr4;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class Antlr4Defaults {
 
 	private static final String LICENSE_HEADER_DELIMITER = "(grammar|lexer grammar|parser grammar)";
 
-	private static final List<String> defaultIncludes = Arrays.asList("src/main/antlr4/**/*.g4", "src/test/antlr4/**/*.g4");
+	private static final List<String> defaultIncludes = Collections.singletonList("src/*/antlr4/**/*.g4");
 
 	private Antlr4Defaults() {}
 
