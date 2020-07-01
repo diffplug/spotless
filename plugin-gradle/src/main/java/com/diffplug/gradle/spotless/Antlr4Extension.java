@@ -46,7 +46,7 @@ public class Antlr4Extension extends FormatExtension implements HasBuiltinDelimi
 		}
 
 		private FormatterStep createStep() {
-			return Antlr4FormatterStep.create(this.version, GradleProvisioner.fromProject(getProject()));
+			return Antlr4FormatterStep.create(this.version, provisioner());
 		}
 	}
 
