@@ -56,24 +56,6 @@ public enum EclipseWtpFormatterStep {
 		return DEFAULT_VERSION;
 	}
 
-	/**
-	 * Provides default configuration for CSSformatter.
-	 * Method is deprecated. Use {@link EclipseWtpFormatterStep#createBuilder(Provisioner)} instead.
-	 */
-	@Deprecated
-	public static EclipseBasedStepBuilder createCssBuilder(Provisioner provisioner) {
-		return new EclipseBasedStepBuilder(NAME, " - css", provisioner, state -> applyWithoutFile("EclipseCssFormatterStepImpl", state));
-	}
-
-	/**
-	 * Provides default configuration for XML formatter.
-	 * Method is deprecated. Use {@link EclipseWtpFormatterStep#createBuilder(Provisioner)} instead.
-	 */
-	@Deprecated
-	public static EclipseBasedStepBuilder createXmlBuilder(Provisioner provisioner) {
-		return XML.createBuilder(provisioner);
-	}
-
 	private static FormatterFunc applyWithoutFile(String className, EclipseBasedStepBuilder.State state) throws Exception {
 		Class<?> formatterClazz = state.loadClass(FORMATTER_PACKAGE + className);
 		Object formatter = formatterClazz.getConstructor(Properties.class).newInstance(state.getPreferences());
