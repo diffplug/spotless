@@ -56,13 +56,14 @@ user@machine repo % mvn spotless:check
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection))
     - [eclipse web tools platform](#eclipse-web-tools-platform)
 - **Platform**
+  - [Generic steps](#generic-steps)
   - [License header](#license-header) ([slurp year from git](#retroactively-slurp-years-from-git-history))
   - [How can I enforce formatting gradually? (aka "ratchet")](#ratchet)
-  - [Custom rules](#custom-rules)
   - [Line endings and encodings (invisible stuff)](#line-endings-and-encodings-invisible-stuff)
   - [Disabling warnings and error messages](#disabling-warnings-and-error-messages)
   - [How do I preview what `spotlessApply` will do?](#how-do-i-preview-what-spotlessapply-will-do)
-  - [Example configurations (from real-world projects)](#example-configurations-from-real-world-projects)
+  - [Can I apply Spotless to specific files?](#can-i-apply-spotless-to-specific-files)
+  - [Example configurations (from real-world projects)](#examples)
 
 ***Contributions are welcome, see [the contributing guide](../CONTRIBUTING.md) for development info.***
 
@@ -536,51 +537,6 @@ Spotless will try to auto-discover an npm installation. If that is not working f
   <npmExecutable>/usr/bin/npm</npmExecutable>
 ```
 
-<a name="format"></a>
-
-## Applying to custom sources
-
-By default, no Ant-Style include patterns are defined.  Each element under `<format>` is a step, and they will be applied in the order specified.  Every step is optional, and they will be applied in the order specified. It is possible to define multiple custom formats.
-
-```xml
-<configuration>
-  <formats>
-    <!-- define first formatter that operates on properties files -->
-    <format>
-      <includes>
-        <include>src/**/resources/**/*.properties</include>
-      </includes>
-      <excludes>
-        <exclude>src/main/resources/autogen/**</exclude>
-      </excludes>
-
-      <endWithNewline /> <!-- files must end with a newline -->
-
-      <indent> <!-- specify whether to use tabs or spaces for indentation -->
-        <spaces>true</spaces> <!-- or <tabs>true</tabs> -->
-        <spacesPerTab>4</spacesPerTab> <!-- optional, default -->
-      </indent>
-
-      <trimTrailingWhitespace /> <!-- trim trailing whitespaces -->
-
-      <replace> <!-- specify replacements using search and replace -->
-        <name>Say Hello to Mars</name>
-        <search>World</search>
-        <replacement>Mars</replacement>
-      </replace>
-
-      <replaceRegex> <!-- specify replacements using regex match and replace -->
-        <name>Say Hello to Mars from Regex</name>
-        <searchRegex>(Hello) W[a-z]{3}d</searchRegex>
-        <replacement>$1 Mars</replacement>
-      </replaceRegex>
-    </format>
-
-    <!-- other formats can be defined here, they will be applied in the order specified -->
-  </formats>
-</configuration>
-```
-
 <a name="applying-eclipse-wtp-to-css--html--etc"></a>
 
 ## Eclipse web tools platform
@@ -632,6 +588,36 @@ user defined catalog file can be specified using the property `userCatalog`. Cat
 Unlike Eclipse, Spotless WTP ignores per default external URIs in schema location hints and
 external entities. To allow the access of external URIs, set the property `resolveExternalURI`
 to true.
+
+<a name="format"></a>
+<a name="custom rules"></a>
+
+## Generic steps
+
+[Prettier](#prettier), [eclipse wtp](#eclipse-web-tools-platform), and [license header](#license-header) are available in every format, and they each have their own section. As mentioned in the [quickstart](#quickstart), there are a variety of simple generic steps which are also available in every format, here are examples of these:
+
+```xml
+<trimTrailingWhitespace /> <!-- trim trailing whitespaces -->
+
+<endWithNewline /> <!-- files must end with a newline -->
+
+<indent> <!-- specify whether to use tabs or spaces for indentation -->
+  <spaces>true</spaces> <!-- or <tabs>true</tabs> -->
+  <spacesPerTab>4</spacesPerTab> <!-- optional, default is 4 -->
+</indent>
+
+<replace> <!-- specify replacements using search and replace -->
+  <name>Say Hello to Mars</name>
+  <search>World</search>
+  <replacement>Mars</replacement>
+</replace>
+
+<replaceRegex> <!-- specify replacements using regex match and replace -->
+  <name>Say Hello to Mars from Regex</name>
+  <searchRegex>(Hello) W[a-z]{3}d</searchRegex>
+  <replacement>$1 Mars</replacement>
+</replaceRegex>
+```
 
 <a name="license-header-options"></a>
 
@@ -699,35 +685,6 @@ Line endings can also be set globally or per-format using the `lineEndings` prop
 You can easily set the line endings of different files using [a `.gitattributes` file](https://help.github.com/articles/dealing-with-line-endings/).  Here's an example `.gitattributes` which sets all files to unix newlines: `* text eol=lf`.
 
 <a name="enforceCheck"></a>
-
-<a name="includeExclude"></a>
-
-## File includes and excludes
-
-Spotless uses [Ant style patterns](https://ant.apache.org/manual/dirtasks.html) to define included and excluded files.
-By default, most common compile and test source roots for the supported languages are included. They are `src/main/java/**/*.java`, `src/test/java/**/*.java` for Java and `src/main/scala/**/*.scala`, `src/main/scala/**/*.sc`, `src/test/scala/**/*.scala`, `src/test/scala/**/*.sc` for Scala.
-Includes can be completely overriden using `<includes>...</includes>` configuration section.
-
-Default excludes only contain output directory (usually `target/`) and various temporary and VCS-related files. Additional excludes can also be configured.
-
-Includes and excludes can be configured the same way for all supported languages. Excample for Java:
-
-```xml
-<java>
-  <includes>
-    <!-- include all java files in "java" folders under "src" -->
-    <include>src/**/java/**/*.java</include>
-
-    <!-- include all java files in "java" folders under "other" -->
-    <include>other/java/**/*.java</include>
-  </includes>
-
-  <excludes>
-    <!-- exclude examples from formatting -->
-    <exclude>src/test/java/**/*Example.java</exclude>
-  </excludes>
-</java>
-```
 
 ## Disabling warnings and error messages
 
