@@ -55,7 +55,7 @@ user@machine repo % mvn spotless:check
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection))
     - [eclipse web tools platform](#eclipse-web-tools-platform)
-- **Platform**
+- **Language independent**
   - [Generic steps](#generic-steps)
   - [License header](#license-header) ([slurp year from git](#retroactively-slurp-years-from-git-history))
   - [How can I enforce formatting gradually? (aka "ratchet")](#ratchet)

@@ -67,11 +67,12 @@ BUILD SUCCESSFUL
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection))
     - [eclipse web tools platform](#eclipse-web-tools-platform)
-- **Platform**
+- **Language independent**
   - [License header](#license-header) ([slurp year from git](#retroactively-slurp-years-from-git-history))
   - [How can I enforce formatting gradually? (aka "ratchet")](#ratchet)
-  - [Custom rules](#custom-rules)
   - [Line endings and encodings (invisible stuff)](#line-endings-and-encodings-invisible-stuff)
+  - [Custom steps](#custom-steps)
+  - [Multiple (or custom) language-specific blocks](#multiple-or-custom-language-specific-blocks)
   - [Disabling warnings and error messages](#disabling-warnings-and-error-messages)
   - [How do I preview what `spotlessApply` will do?](#how-do-i-preview-what-spotlessapply-will-do)
   - [Example configurations (from real-world projects)](#example-configurations-from-real-world-projects)
@@ -623,58 +624,6 @@ However, we strongly recommend that you use a non-local branch, such as a tag or
 
 This is especially helpful for injecting accurate copyright dates using the [license step](#license-header).
 
-<a name="custom"></a>
-
-## Custom rules
-
-Spotless is a generic system for specifying a sequence of steps which are applied to a set of files.
-
-```gradle
-spotless {
-  // this will create two tasks: spotlessMiscCheck and spotlessMiscApply
-  format 'misc', {
-    // target determines which files this format will apply to
-    // - if you pass a string or a list of strings, they will be treated
-    //       as 'include' parameters to a fileTree in the root directory
-    // - if you pass a FileCollection, it will pass through untouched
-    //       e.g. project.files('build.gradle', 'settings.gradle')
-    // - if you pass anything else, it will be sent to project.files(yourArg)
-    target '**/*.gradle', '**/*.md', '**/.gitignore'
-
-    targetExclude 'src/main/codegen/**', 'src/test/codegen/**'
-    // the files to be formatted = (target - targetExclude)
-    // NOTE: if target or targetExclude is called multiple times, only the
-    // last call is effective
-
-    // spotless has built-in rules for the most basic formatting tasks
-    trimTrailingWhitespace()
-    indentWithTabs() // or spaces. Takes an integer argument if you don't like 4
-    endWithNewline()
-
-    // you can also call out to your own function
-    custom 'superFormatter', {
-      // when writing a custom step, it will be helpful to know
-      // how the formatting process works, which is as follows:
-
-      // 1) Load each target file, and convert it to unix-style line endings ('\n')
-      // 2) Pass its content through a series of steps, feeding the output of each step to the next
-      // 3) Put the correct line endings back on, then either check or apply
-
-      // each step receives a string as input, and should output
-      // a formatted string as output.  Each step can trust that its
-      // input will have unix newlines, and it must promise to output
-      // only unix newlines.  Other than that, anything is fair game!
-    }
-  }
-}
-```
-
-If you use `custom` or `customLazy`, you might want to take a look at [this javadoc](https://javadoc.io/static/com.diffplug.spotless/spotless-plugin-gradle/4.4.0/com/diffplug/gradle/spotless/FormatExtension.html#bumpThisNumberIfACustomStepChanges-int-) for a big performance win.
-
-See [`JavaExtension.java`](src/main/java/com/diffplug/gradle/spotless/JavaExtension.java) if you'd like to see how a language-specific set of custom rules is implemented.  We'd love PR's which add support for other languages.
-
-If you'd like to create a one-off Spotless task outside of the `check`/`apply` framework, see [`FormatExtension.createIndependentApplyTask`](https://javadoc.io/static/com.diffplug.spotless/spotless-plugin-gradle/4.4.0/com/diffplug/gradle/spotless/FormatExtension.html#createIndependentApplyTask-java.lang.String-).
-
 <a name="invisible"></a>
 
 ## Line endings and encodings (invisible stuff)
@@ -683,17 +632,71 @@ Spotless uses UTF-8 by default, but you can use [any encoding which Java support
 
 ```gradle
 spotless {
+  encoding 'UTF-8' // all formats will be interpreted as UTF-8
   java {
-    ...
-    encoding 'Cp1252' // java will have Cp1252
-  }
-  encoding 'US-ASCII'   // but all other formats will be interpreted as US-ASCII
-}
+    encoding 'Cp1252' // except java, which will be Cp1252
 ```
 
 Line endings can also be set globally or per-format using the `lineEndings` property.  Spotless supports four line ending modes: `UNIX`, `WINDOWS`, `PLATFORM_NATIVE`, and `GIT_ATTRIBUTES`.  The default value is `GIT_ATTRIBUTES`, and *we highly recommend that you* ***do not change*** *this value*.  Git has opinions about line endings, and if Spotless and git disagree, then you're going to have a bad time.
 
 You can easily set the line endings of different files using [a `.gitattributes` file](https://help.github.com/articles/dealing-with-line-endings/).  Here's an example `.gitattributes` which sets all files to unix newlines: `* text eol=lf`.
+
+<a name="custom"></a>
+<a name="custom-rulwa"></a>
+
+## Custom steps
+
+As described in the [quickstart](#quickstart), Spotless is just a set of files ("target"), passed through a list of `String -> String` functions.  The string each function gets will always have unix `\n` endings, and Spotless doesn't care which endings the function provides back, it will renormalize regardless.  You can easily make a new step directly in your buildscript, like so:
+
+```gradle
+spotless {
+  format 'misc', {
+    custom 'lowercase', { str -> str.toLowerCase() }
+```
+
+However, custom rules will disable up-to-date checking and caching, unless you read [this javadoc](https://javadoc.io/static/com.diffplug.spotless/spotless-plugin-gradle/4.4.0/com/diffplug/gradle/spotless/FormatExtension.html#bumpThisNumberIfACustomStepChanges-int-) and follow its instructions carefully.
+
+Another option is to create proper `FormatterStep` in your `buildSrc`, and then call [`addStep`](https://javadoc.io/static/com.diffplug.spotless/spotless-plugin-gradle/4.4.0/com/diffplug/gradle/spotless/FormatExtension.html#addStep-com.diffplug.spotless.FormatterStep-).  The contributing guide describes [how to do this](https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md#how-to-add-a-new-formatterstep).  If the step is generally-useful, we hope you'll open a PR to share it!
+
+
+```gradle
+spotless {
+  format 'misc', {
+    addStep(MyFormatterStep.create())
+```
+
+### Throwing errors
+
+Ideally, your formatter will be able to silently fix any problems that it finds, that's the beauty of the `String -> String` model.  But sometimes that's not possible.  If you throw
+
+- `AssertionError` or a subclass -> Spotless reports as a problem in the file being formatted
+- anything else -> Spotless reports as a bug in the formatter itself
+
+## Multiple (or custom) language-specific blocks
+
+The following two lines are exact synonyms:
+
+```gradle
+spotless { format 'java', com.diffplug.gradle.spotless.JavaExtension, { ... } }
+spotless { java { ... } }
+```
+
+So if you want to have two different `java` blocks, you can do something like this:
+
+```gradle
+spotless { java { ... } }
+spotless { format 'javaFoo', com.diffplug.gradle.spotless.JavaExtension, { ... } }
+// has to be 'javaFoo' not 'java' because each format needs a unique name
+```
+
+As a follow-on, you can make your own subclass to `FormatExtension` in the `buildSrc` directory, and then use it in your buildscript like so:
+
+```gradle
+spotless {
+  format 'foo', com.acme.FooLanguageExtension, {
+```
+
+If you'd like to create a one-off Spotless task outside of the `check`/`apply` framework, see [`FormatExtension.createIndependentApplyTask`](https://javadoc.io/static/com.diffplug.spotless/spotless-plugin-gradle/4.4.0/com/diffplug/gradle/spotless/FormatExtension.html#createIndependentApplyTask-java.lang.String-).
 
 <a name="enforceCheck"></a>
 
@@ -719,13 +722,10 @@ You can fix (1) by excluding the file from formatting using the `targetExclude` 
 ```gradle
 spotless {
   java {
-    googleJavaFormat()
-    custom 'my-glitchy-step', { }
+    custom 'my-glitchy-step', { ... }
 
     ignoreErrorForStep('my-glitchy-step')   // ignore errors on all files thrown by a specific step
     ignoreErrorForPath('path/to/file.java') // ignore errors by all steps on this specific file
-  }
-}
 ```
 
 <a name="preview"></a>
