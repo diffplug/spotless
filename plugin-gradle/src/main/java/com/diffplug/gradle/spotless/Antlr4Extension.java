@@ -53,7 +53,7 @@ public class Antlr4Extension extends FormatExtension implements HasBuiltinDelimi
 	@Override
 	protected void setupTask(SpotlessTask task) {
 		if (target == null) {
-			target = parseTarget(Antlr4Defaults.defaultIncludes());
+			target = parseTarget(Antlr4Defaults.includes());
 		}
 		super.setupTask(task);
 	}

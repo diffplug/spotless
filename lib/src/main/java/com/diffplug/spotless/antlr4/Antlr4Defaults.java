@@ -15,14 +15,9 @@
  */
 package com.diffplug.spotless.antlr4;
 
-import java.util.Collections;
-import java.util.List;
-
 public class Antlr4Defaults {
-
 	private static final String LICENSE_HEADER_DELIMITER = "(grammar|lexer grammar|parser grammar)";
-
-	private static final List<String> defaultIncludes = Collections.singletonList("src/*/antlr4/**/*.g4");
+	private static final String INCLUDES = "src/*/antlr4/**/*.g4";
 
 	private Antlr4Defaults() {}
 
@@ -30,7 +25,7 @@ public class Antlr4Defaults {
 		return LICENSE_HEADER_DELIMITER;
 	}
 
-	public static List<String> defaultIncludes() {
-		return defaultIncludes;
+	public static String includes() {
+		return INCLUDES;
 	}
 }

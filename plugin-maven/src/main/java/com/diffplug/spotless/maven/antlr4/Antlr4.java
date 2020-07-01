@@ -29,12 +29,9 @@ import com.diffplug.spotless.maven.generic.LicenseHeader;
  * and anltr4-specific (e.g. {@link Antlr4Formatter}) steps.
  */
 public class Antlr4 extends FormatterFactory {
-
-	private static final Set<String> DEFAULT_INCLUDES = ImmutableSet.copyOf(Antlr4Defaults.defaultIncludes());
-
 	@Override
 	public Set<String> defaultIncludes() {
-		return DEFAULT_INCLUDES;
+		return ImmutableSet.of(Antlr4Defaults.includes());
 	}
 
 	@Override
