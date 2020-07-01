@@ -47,9 +47,8 @@ user@machine repo % mvn spotless:check
   - [Requirements](#requirements)
 - **Languages**
   - [Java](#java) ([android](#android), [google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier))
-  - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
-  - [Kotlin](#kotlin) ([ktlint](#ktlint), [ktfmt](#ktmt), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](https://github.com/scalameta/scalafmt/releases))
+  - [Kotlin](#kotlin) ([ktlint](#ktlint), [ktfmt](#ktmt), [prettier](#prettier))
   - [C/C++](#c-c++) ([eclipse cdt](https://www.eclipse.org/cdt/))
   - Markdown ([freshmark](#freshmark))
   - [SQL](#SQL) ([dbeaver](#dbeaver), [prettier](#prettier))
@@ -106,11 +105,12 @@ To use it in your pom, just [add the Spotless dependency](https://search.maven.o
         <version>1.8</version>
         <style>AOSP</style>
       </googleJavaFormat>
+
       <!-- make sure every file has the following copyright header.
         optionally, Spotless can set copyright years by digging
         through git history (see "license" section below) -->
       <licenseHeader>
-        <content>/* (C)$YEAR */</content>
+        <content>/* (C)$YEAR */</content>  <!-- or <file>${basedir}/license-header</file> -->
       </licenseHeader>
     </java>
   </configuration>
@@ -126,72 +126,96 @@ Spotless consists of a list of formats (in the example above, `misc` and `java`)
 
 Spotless requires Maven to be running on JRE 8+.
 
-<a name="java"></a>
+<a name="applying-to-java-source"></a>
 
-## Applying to Java source
+## Java
 
-By default, all files matching `src/main/java/**/*.java` and `src/test/java/**/*.java` Ant style pattern will be formatted.  Each element under `<java>` is a step, and they will be applied in the order specified.  Every step is optional, and they will be applied in the order specified.  It doesn't make sense to use both eclipse and google-java-format.
+[code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/java/Java.java). [available steps](https://github.com/diffplug/spotless/tree/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/java).
 
 ```xml
 <configuration>
   <java>
-     <licenseHeader>
-       <!-- Specify either content or file, but not both -->
-       <content>/* Licensed under Apache-2.0 */</content>
-       <file>${basedir}/license-header</file>
-     </licenseHeader>
-     <eclipse>
-       <!-- Optional, otherwise Eclipse defaults are used. Eclipse preference or property files are also supported. -->
-       <file>${basedir}/eclipse-format.xml</file>
-       <!-- Optional, available versions: https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_jdt_formatter -->
-       <version>4.7.1</version>
-     </eclipse>
-     <googleJavaFormat>
-       <!-- Optional, available versions: https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.google.googlejavaformat%22%20AND%20a%3A%22google-java-format%22 -->
-       <version>1.5</version>
-       <!-- Optional, available versions: GOOGLE, AOSP  https://github.com/google/google-java-format/blob/main/core/src/main/java/com/google/googlejavaformat/java/JavaFormatterOptions.java -->
-       <style>GOOGLE</style>
-     </googleJavaFormat>
-     <removeUnusedImports/>
-     <importOrder>
-       <!-- Specify either order or file, but not both -->
-       <order>java,javax,org,com,com.diffplug,</order>
-       <file>${basedir}/eclipse.importorder</file>
-     </importOrder>
+    <!-- These are the defaults, you can override if you want -->
+    <includes>
+      <include>src/main/java/**/*.java</include>
+      <include>src/test/java/**/*.java</include>
+    </includes>
+
+    <importOrder/> <!-- standard import order -->
+    <importOrder>  <!-- or a custom ordering -->
+      <order>java,javax,org,com,com.diffplug,</order>  <!-- or use <file>${basedir}/eclipse.importorder</file> -->
+      <!-- You probably want an empty string at the end - all of the
+           imports you didn't specify explicitly will go there. -->
+    </importOrder>
+
+    <removeUnusedImports/> <!-- self-explanatory -->
+
+    <googleJavaFormat/> <!-- has its own section below -->
+    <eclipse/>          <!-- has its own section below -->
+    <prettier/>         <!-- has its own section below -->
+
+    <licenseHeader>
+      <content>/* (C)$YEAR */</content>  <!-- or <file>${basedir}/license-header</file> -->
+    </licenseHeader>
   </java>
 </configuration>
 ```
 
-See [ECLIPSE_SCREENSHOTS](../ECLIPSE_SCREENSHOTS.md) for screenshots that demonstrate how to get and install the Eclipse format configuration file and Eclipse import order file mentioned above.
+### google-java-format
 
-<a name="scala"></a>
+[homepage](https://github.com/google/google-java-format). [changelog](https://github.com/google/google-java-format/releases). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/java/GoogleJavaFormat.java).
 
-## Applying to Scala source
+```xml
+<googleJavaFormat>
+  <version>1.7</version>
+  <style>GOOGLE</style> <!-- or AOSP -->
+</googleJavaFormat>
+```
 
-By default, all files matching `src/main/scala/**/*.scala`, `src/test/scala/**/*.scala`, `src/main/scala/**/*.sc` and `src/test/scala/**/*.sc` Ant style pattern will be formatted.  Each element under `<scala>` is a step, and they will be applied in the order specified.  Every step is optional.
+### eclipse jdt
+
+[homepage](https://www.eclipse.org/downloads/packages/). [compatible versions](https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_jdt_formatter). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/java/Eclipse.java). See [here](../ECLIPSE_SCREENSHOTS.md) for screenshots that demonstrate how to get and install the config file mentioned below.
+
+```xml
+<eclipse>
+  <version>4.13.0</version>
+  <file>${basedir}/eclipse-formatter.xml</file>
+</eclipse>
+```
+
+<a name="applying-to-scala-source"></a>
+
+## Scala
+
+[code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/scala/Scala.java). [available steps](https://github.com/diffplug/spotless/tree/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/scala).
 
 ```xml
 <configuration>
   <scala>
-     <licenseHeader>
-       <!-- Specify either content or file, but not both -->
-       <content>/* Licensed under Apache-2.0 */</content>
-       <file>${basedir}/license-header</file>
-     </licenseHeader>
-     <endWithNewline/>
-     <trimTrailingWhitespace/>
-     <scalafmt>
-       <file>${basedir}/scalafmt.conf</file>
-       <!-- Optional, available versions: https://github.com/scalameta/scalafmt/releases -->
-       <version>1.1.0</version>
-     </scalafmt>
+    <!-- These are the defaults, you can override if you want -->
+    <includes>
+      <include>src/main/scala/**/*.scala</include>
+      <include>src/test/scala/**/*.scala</include>
+      <include>src/main/scala/**/*.sc</include>
+      <include>src/test/scala/**/*.sc</include>
+    </includes>
+
+    <scalafmt/> <!-- has its own section below -->
+
+    <licenseHeader>
+      <content>/* (C)$YEAR */</content>  <!-- or <file>${basedir}/license-header</file> -->
+      <delimiter>package </delimiter> <!--
+        note the 'package ' argument - this is a regex which identifies the top
+        of the file, be careful that all of your sources have a package declaration,
+        or pick a regex which works better for your code -->
+    </licenseHeader>
   </scala>
 </configuration>
 ```
 
-<a name="kotlin"></a>
+<a name="applying-to-kotlin-source"></a>
 
-## Applying to Kotlin source
+## Kotlin
 
 By default, all files matching `src/main/kotlin/**/*.kt` and `src/test/kotlin/**/*.kt` Ant style pattern will be formatted.  Each element under `<kotlin>` is a step, and they will be applied in the order specified.  Every step is optional.
 

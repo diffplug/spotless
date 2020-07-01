@@ -55,7 +55,7 @@ BUILD SUCCESSFUL
 - [**Quickstart**](#quickstart)
   - [Requirements](#requirements)
 - **Languages**
-  - [Java](#java) ([android](#android), [google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier))
+  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
   - [Kotlin](#kotlin) ([ktlint](#ktlint), [ktfmt](#ktmt), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](https://github.com/scalameta/scalafmt/releases))
@@ -289,7 +289,7 @@ spotless {
 
     licenseHeader '/* (C) $YEAR */', 'package ' // or licenseHeaderFile
     // note the 'package ' argument - this is a regex which identifies the top
-    // of the file, be careful that all of your source has a package declaration
+    // of the file, be careful that all of your sources have a package declaration,
     // or pick a regex which works better for your code
   }
 }
