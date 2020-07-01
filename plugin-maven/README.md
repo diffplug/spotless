@@ -547,6 +547,36 @@ Unlike Eclipse, Spotless WTP ignores per default external URIs in schema locatio
 external entities. To allow the access of external URIs, set the property `resolveExternalURI`
 to true.
 
+<a name="license-header"></a>
+
+## License header
+
+Spotless can inject a license header into your files, including populating an accurate copyright header from today's date or from git history.
+
+```xml
+<format>  <!-- or java, scala, kotlin, etc. -->
+  <licenseHeader>
+    <!-- Specify either content or file, but not both -->
+    <content>/* Licensed under Apache-2.0 */</content>
+    <file>${basedir}/license-header</file>
+    <!-- content until first occurrence of the delimiter regex will be interpreted as header section -->
+    <!-- for language-specific formats (java, etc.) this is optional, and the regex is provided automatically. -->
+    <delimiter>#</delimiter>
+  </licenseHeader>
+```
+
+If the license header (specified with `content` or `file`) contains `$YEAR` or `$today.year`, then that token will be replaced with the current 4-digit year.  For example, if Spotless is launched in 2020, then `/* Licensed under Apache-2.0 $YEAR. */` will produce `/* Licensed under Apache-2.0 2020. */`
+
+Once a file's license header has a valid year, whether it is a year (`2020`) or a year range (`2017-2020`), it will not be changed.  If you want the date to be updated when it changes, enable the [`ratchetFrom` functionality](#ratchet), and the year will be automatically set to today's year according to the following table (assuming the current year is 2020):
+
+* No license header -> `2020`
+* `2017` -> `2017-2020`
+* `2017-2019` -> `2017-2020`
+
+### Retroactively populating year range from git history
+
+If your project has not been rigorous with copyright headers, and you'd like to use git history to repair this retroactively, you can do so with `-DspotlessSetLicenseHeaderYearsFromGitHistory=true`.  When run in this mode, Spotless will do an expensive search through git history for each file, and set the copyright header based on the oldest and youngest commits for that file.  This is intended to be a one-off sort of thing.
+
 <a name="invisible"></a>
 
 ## Line endings and encodings (invisible stuff)
@@ -615,7 +645,25 @@ By default, `spotless:check` is bound to the `verify` phase.  You might want to 
 - If you don't like what spotless did, `git reset --hard`
 - If you'd like to remove the "checkpoint" commit, `git reset --soft head~1` will make the checkpoint commit "disappear" from history, but keeps the changes in your working directory.
 
-<a name="examples"></a>
+<a name="ratchet"></a>
+
+## How can I enforce formatting gradually?
+
+If your project is not currently enforcing formatting, then it can be a noisy transition.  Having a giant commit where every single file gets changed makes the history harder to read.  To address this, you can use the `ratchet` feature:
+
+```xml
+<configuration>
+  <ratchetFrom>origin/main</ratchetFrom> <!-- only format files which have changed since origin/main -->
+  <!-- ... define formats ... -->
+</configuration>
+```
+
+In this mode, Spotless will apply only to files which have changed since `origin/main`.  You can ratchet from [any point you want](https://javadoc.io/static/org.eclipse.jgit/org.eclipse.jgit/5.6.1.202002131546-r/org/eclipse/jgit/lib/Repository.html#resolve-java.lang.String-), even `HEAD`.  You can also set `ratchetFrom` per-format if you prefer (e.g. `<configuration><java><ratchetFrom>...`).
+
+However, we strongly recommend that you use a non-local branch, such as a tag or `origin/main`.  The problem with `HEAD` or any local branch is that as soon as you commit a file, that is now the canonical formatting, even if it was formatted incorrectly.  By instead specifying `origin/main` or a tag, your CI server will fail unless every changed file is at least as good or better than it was before the change.
+
+This is especially helpful for injecting accurate copyright dates using the [license step](#license-header).
+
 
 ## Can I apply Spotless to specific files?
 
@@ -626,6 +674,8 @@ cmd> mvn spotless:apply -DspotlessFiles=my/file/pattern.java,more/generic/.*-pat
 ```
 
 The patterns are matched using `String#matches(String)` against the absolute file path.
+
+<a name="examples"></a>
 
 ## Example configurations (from real-world projects)
 

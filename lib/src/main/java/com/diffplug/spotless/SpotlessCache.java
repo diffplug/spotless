@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,11 +77,8 @@ public final class SpotlessCache {
 
 	/**
 	 * Closes all cached classloaders.
-	 *
-	 * @deprecated because it is [dangerous](https://github.com/diffplug/spotless/issues/243#issuecomment-564323856), replacement is {@link #clearOnce(Object)}.
 	 */
-	@Deprecated
-	public static void clear() {
+	private static void clear() {
 		List<URLClassLoader> toDelete;
 		synchronized (instance) {
 			toDelete = new ArrayList<>(instance.cache.values());

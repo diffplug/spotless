@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ public class FormatTaskTest extends ResourceHarness {
 	public void createTask() throws IOException {
 		Project project = TestProvisioner.gradleProject(rootFolder());
 		spotlessTask = project.getTasks().create("spotlessTaskUnderTest", SpotlessTask.class);
+		spotlessTask.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
 	}
 
 	@Test
@@ -44,7 +45,6 @@ public class FormatTaskTest extends ResourceHarness {
 		File testFile = setFile("testFile").toContent("\r\n");
 		File outputFile = new File(spotlessTask.getOutputDirectory(), "testFile");
 
-		spotlessTask.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
 		spotlessTask.setTarget(Collections.singleton(testFile));
 		execute(spotlessTask);
 

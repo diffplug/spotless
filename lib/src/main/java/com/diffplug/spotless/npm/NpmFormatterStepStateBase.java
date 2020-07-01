@@ -44,7 +44,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 	private static final long serialVersionUID = 1460749955865959948L;
 
 	@SuppressWarnings("unused")
-	private final FileSignature nodeModulesSignature;
+	private final FileSignature packageJsonSignature;
 
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	public final transient File nodeModulesDir;
@@ -56,22 +56,26 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 
 	private final String stepName;
 
-	protected NpmFormatterStepStateBase(String stepName, NpmConfig npmConfig, File buildDir, @Nullable File npm) throws IOException {
+	protected NpmFormatterStepStateBase(String stepName, NpmConfig npmConfig, File buildDir,
+			@Nullable File npm) throws IOException {
 		this.stepName = requireNonNull(stepName);
 		this.npmConfig = requireNonNull(npmConfig);
 		this.npmExecutable = resolveNpm(npm);
 
-		this.nodeModulesDir = prepareNodeServer(buildDir);
-		this.nodeModulesSignature = FileSignature.signAsList(this.nodeModulesDir);
+		NodeServerLayout layout = prepareNodeServer(buildDir);
+		this.nodeModulesDir = layout.nodeModulesDir();
+		this.packageJsonSignature = FileSignature.signAsList(layout.packageJsonFile());
 	}
 
-	private File prepareNodeServer(File buildDir) throws IOException {
-		File targetDir = new File(buildDir, "spotless-node-modules-" + stepName);
-		NpmResourceHelper.assertDirectoryExists(targetDir);
-		NpmResourceHelper.writeUtf8StringToFile(targetDir, "package.json", this.npmConfig.getPackageJsonContent());
-		NpmResourceHelper.writeUtf8StringToFile(targetDir, "serve.js", this.npmConfig.getServeScriptContent());
-		runNpmInstall(targetDir);
-		return targetDir;
+	private NodeServerLayout prepareNodeServer(File buildDir) throws IOException {
+		NodeServerLayout layout = new NodeServerLayout(buildDir, stepName);
+		NpmResourceHelper.assertDirectoryExists(layout.nodeModulesDir());
+		NpmResourceHelper.writeUtf8StringToFile(layout.packageJsonFile(),
+				this.npmConfig.getPackageJsonContent());
+		NpmResourceHelper
+				.writeUtf8StringToFile(layout.serveJsFile(), this.npmConfig.getServeScriptContent());
+		runNpmInstall(layout.nodeModulesDir());
+		return layout;
 	}
 
 	private void runNpmInstall(File npmProjectDir) throws IOException {
@@ -177,6 +181,8 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 	}
 
 	protected static class ServerStartException extends RuntimeException {
+		private static final long serialVersionUID = -8803977379866483002L;
+
 		public ServerStartException(Throwable cause) {
 			super(cause);
 		}

@@ -50,25 +50,6 @@ public class LicenseHeaderTest extends MavenIntegrationHarness {
 		assertFile(path).hasContent(cppLicense + '\n' + cppContent);
 	}
 
-	/** The CSS extension is discontinued. */
-	@Test
-	@Deprecated
-	public void fromContentCss() throws Exception {
-		String license = "/* my license */";
-		writePomWithCssSteps(
-				"<licenseHeader>",
-				"  <content>",
-				license,
-				"  </content>",
-				"</licenseHeader>");
-
-		String path = "src/file.css";
-		String content = "p {}";
-		setFile(path).toContent(content);
-		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).hasContent(license + '\n' + content);
-	}
-
 	@Test
 	public void fromContentJava() throws Exception {
 		writePomWithJavaSteps(
@@ -131,23 +112,6 @@ public class LicenseHeaderTest extends MavenIntegrationHarness {
 		setFile(path).toContent(noLicenseHeader);
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).hasContent(KOTLIN_LICENSE_HEADER + '\n' + noLicenseHeader);
-	}
-
-	/** XML extension is discontinued. */
-	@Test
-	@Deprecated
-	public void fromContentXml() throws Exception {
-		String license = " Licensed under Apache-2.0 ";
-		writePomWithXmlSteps(
-				"<licenseHeader>",
-				"  <content>",
-				"&lt;!--" + license + "--&gt;",
-				"  </content>",
-				"</licenseHeader>");
-		String path = "src/test.xml";
-		setFile(path).toContent("<a/>");
-		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).hasContent("<!--" + license + "-->\n<a/>");
 	}
 
 	@Test

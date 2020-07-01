@@ -18,7 +18,6 @@ package com.diffplug.gradle.spotless;
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -47,6 +46,7 @@ import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
 import com.diffplug.spotless.generic.EndWithNewlineStep;
 import com.diffplug.spotless.generic.IndentStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
+import com.diffplug.spotless.generic.LicenseHeaderStep.YearMode;
 import com.diffplug.spotless.generic.ReplaceRegexStep;
 import com.diffplug.spotless.generic.ReplaceStep;
 import com.diffplug.spotless.generic.TrimTrailingWhitespaceStep;
@@ -443,13 +443,12 @@ public class FormatExtension {
 	 * For most language-specific formats (e.g. java, scala, etc.) you can omit the second `delimiter` argument, because it is supplied
 	 * automatically ({@link HasBuiltinDelimiterForLicense}).
 	 */
-	public abstract class LicenseHeaderConfig {
-		String delimiter;
-		String yearSeparator = LicenseHeaderStep.defaultYearDelimiter();
+	public class LicenseHeaderConfig {
+		LicenseHeaderStep builder;
 		Boolean updateYearWithLatest = null;
 
-		public LicenseHeaderConfig(String delimiter) {
-			this.delimiter = Objects.requireNonNull(delimiter, "delimiter");
+		public LicenseHeaderConfig(LicenseHeaderStep builder) {
+			this.builder = builder;
 		}
 
 		/**
@@ -457,7 +456,7 @@ public class FormatExtension {
 		 *            Spotless will look for a line that starts with this regular expression pattern to know what the "top" is.
 		 */
 		public LicenseHeaderConfig delimiter(String delimiter) {
-			this.delimiter = Objects.requireNonNull(delimiter, "delimiter");
+			builder = builder.withDelimiter(delimiter);
 			replaceStep(createStep());
 			return this;
 		}
@@ -467,7 +466,7 @@ public class FormatExtension {
 		 *           The characters used to separate the first and last years in multi years patterns.
 		 */
 		public LicenseHeaderConfig yearSeparator(String yearSeparator) {
-			this.yearSeparator = Objects.requireNonNull(yearSeparator, "yearSeparator");
+			builder = builder.withYearSeparator(yearSeparator);
 			replaceStep(createStep());
 			return this;
 		}
@@ -483,61 +482,15 @@ public class FormatExtension {
 			return this;
 		}
 
-		protected abstract String licenseHeader() throws IOException;
-
 		FormatterStep createStep() {
-			if ("true".equals(spotless.project.findProperty(LicenseHeaderStep.FLAG_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY()))) {
-				return FormatterStep.createNeverUpToDateLazy(LicenseHeaderStep.name(), () -> {
-					boolean updateYear = false; // doesn't matter
-					LicenseHeaderStep step = new LicenseHeaderStep(licenseHeader(), delimiter, yearSeparator, updateYear);
-					return new FormatterFunc() {
-						@Override
-						public String apply(String input, File source) throws Exception {
-							return step.setLicenseHeaderYearsFromGitHistory(input, source);
-						}
-
-						@Override
-						public String apply(String input) throws Exception {
-							throw new UnsupportedOperationException();
-						}
-					};
-				});
-			} else {
-				return FormatterStep.createLazy(LicenseHeaderStep.name(), () -> {
-					// by default, we should update the year if the user is using ratchetFrom
+			return builder.withYearModeLazy(() -> {
+				if ("true".equals(spotless.project.findProperty(LicenseHeaderStep.FLAG_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY()))) {
+					return YearMode.SET_FROM_GIT;
+				} else {
 					boolean updateYear = updateYearWithLatest == null ? getRatchetFrom() != null : updateYearWithLatest;
-					return new LicenseHeaderStep(licenseHeader(), delimiter, yearSeparator, updateYear);
-				}, step -> step::format);
-			}
-		}
-	}
-
-	private class LicenseStringHeaderConfig extends LicenseHeaderConfig {
-		private String header;
-
-		LicenseStringHeaderConfig(String delimiter, String header) {
-			super(delimiter);
-			this.header = Objects.requireNonNull(header, "header");
-		}
-
-		@Override
-		protected String licenseHeader() {
-			return header;
-		}
-	}
-
-	private class LicenseFileHeaderConfig extends LicenseHeaderConfig {
-		private Object headerFile;
-
-		LicenseFileHeaderConfig(String delimiter, Object headerFile) {
-			super(delimiter);
-			this.headerFile = Objects.requireNonNull(headerFile, "headerFile");
-		}
-
-		@Override
-		protected String licenseHeader() throws IOException {
-			byte[] content = Files.readAllBytes(getProject().file(headerFile).toPath());
-			return new String(content, getEncoding());
+					return updateYear ? YearMode.UPDATE_TO_TODAY : YearMode.PRESERVE;
+				}
+			}).build();
 		}
 	}
 
@@ -548,7 +501,7 @@ public class FormatExtension {
 	 *            Spotless will look for a line that starts with this regular expression pattern to know what the "top" is.
 	 */
 	public LicenseHeaderConfig licenseHeader(String licenseHeader, String delimiter) {
-		LicenseHeaderConfig config = new LicenseStringHeaderConfig(delimiter, licenseHeader);
+		LicenseHeaderConfig config = new LicenseHeaderConfig(LicenseHeaderStep.headerDelimiter(licenseHeader, delimiter));
 		addStep(config.createStep());
 		return config;
 	}
@@ -560,7 +513,11 @@ public class FormatExtension {
 	 *            Spotless will look for a line that starts with this regular expression pattern to know what the "top" is.
 	 */
 	public LicenseHeaderConfig licenseHeaderFile(Object licenseHeaderFile, String delimiter) {
-		LicenseHeaderConfig config = new LicenseFileHeaderConfig(delimiter, licenseHeaderFile);
+		LicenseHeaderConfig config = new LicenseHeaderConfig(LicenseHeaderStep.headerDelimiter(() -> {
+			File file = getProject().file(licenseHeaderFile);
+			byte[] data = Files.readAllBytes(file.toPath());
+			return new String(data, getEncoding());
+		}, delimiter));
 		addStep(config.createStep());
 		return config;
 	}
@@ -669,13 +626,10 @@ public class FormatExtension {
 	protected void setupTask(SpotlessTask task) {
 		task.setEncoding(getEncoding().name());
 		task.setExceptionPolicy(exceptionPolicy);
-		if (targetExclude == null) {
-			task.setTarget(target);
-		} else {
-			task.setTarget(target.minus(targetExclude));
-		}
+		FileCollection totalTarget = targetExclude == null ? target : target.minus(targetExclude);
+		task.setTarget(totalTarget);
 		task.setSteps(steps);
-		task.setLineEndingsPolicy(getLineEndings().createPolicy(getProject().getProjectDir(), () -> task.target));
+		task.setLineEndingsPolicy(getLineEndings().createPolicy(getProject().getProjectDir(), () -> totalTarget));
 		if (spotless.project != spotless.project.getRootProject()) {
 			spotless.getRegisterDependenciesTask().hookSubprojectTask(task);
 		}

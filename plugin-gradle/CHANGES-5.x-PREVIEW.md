@@ -4,6 +4,8 @@ For now, you can access this plugin by using `com.diffplug.gradle.spotless` and 
 
 * We now calculate incremental builds using the new `InputChanges` rather than the deprecated `IncrementalTaskInputs`. ([#607](https://github.com/diffplug/spotless/pull/607))
 * We now use Gradle's config avoidance APIs. ([#617](https://github.com/diffplug/spotless/pull/617))
+* Spotless no longer creates any tasks eagerly. ([#622](https://github.com/diffplug/spotless/pull/622))
+* **BREAKING** `-PspotlessFiles` (which was deprecated) has been removed. ([#624](https://github.com/diffplug/spotless/pull/624))
 * **BREAKING** The closures inside each format specification are now executed lazily on task configuration. ([#618](https://github.com/diffplug/spotless/pull/618))
 
 ```groovy

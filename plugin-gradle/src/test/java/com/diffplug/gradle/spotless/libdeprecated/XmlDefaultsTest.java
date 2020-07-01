@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.xml;
+package com.diffplug.gradle.spotless.libdeprecated;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,7 +33,7 @@ public class XmlDefaultsTest extends ResourceHarness {
 	@Test
 	public void testDelimiterExpr() throws Exception {
 		final String header = "<!--My tests header-->";
-		FormatterStep step = LicenseHeaderStep.createFromHeader(header, XmlDefaults.DELIMITER_EXPR);
+		FormatterStep step = LicenseHeaderStep.headerDelimiter(header, XmlDefaults.DELIMITER_EXPR).build();
 		final File dummyFile = setFile("src/main/file.dummy").toContent("");
 		for (String testSource : Arrays.asList(
 				"<!--XML starts with element-->@\n<a></a>",

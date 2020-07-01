@@ -10,9 +10,20 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Changed
+* `LineEnding.GIT_ATTRIBUTES` now creates a policy whose serialized state can be relocated from one machine to another.  No user-visible change, but paves the way for remote build cache support in Gradle. ([#621](https://github.com/diffplug/spotless/pull/621))
 ### Added
 * `prettier` will now autodetect the parser (and formatter) to use based on the filename, unless you override this using `config` or `configFile` with the option `parser` or `filepath`. ([#620](https://github.com/diffplug/spotless/pull/620))
+* `GitRatchet` now lives in `lib-extra`, and is shared across `plugin-gradle` and `plugin-maven` ([#626](https://github.com/diffplug/spotless/pull/626)).
 * Added ANTLR4 support ([#326](https://github.com/diffplug/spotless/issues/326)).
+### Changed
+* **BREAKING** `FileSignature` can no longer sign folders, only files.  Signatures are now based only on filename (not path), size, and a content hash.  It throws an error if a signature is attempted on a folder or on multiple files with different paths but the same filename - it never breaks silently.  This change does not break any of Spotless' internal logic, so it is unlikely to affect any of Spotless' consumers either. ([#571](https://github.com/diffplug/spotless/pull/571))
+  * This change allows the maven plugin to cache classloaders across subprojects when loading config resources from the classpath (fixes [#559](https://github.com/diffplug/spotless/issues/559)).
+  * This change also allows the gradle plugin to work with the remote buildcache (fixes [#280](https://github.com/diffplug/spotless/issues/280)).
+* **BREAKING** Heavy refactor of the `LicenseHeaderStep` public API.  Doesn't change internal behavior, but makes implementation of the gradle and maven plugins much easier. ([#628](https://github.com/diffplug/spotless/pull/628))
+* **BREAKING** Removed all deprecated methods and classes from `lib` and `lib-extra`.
+  * [#629](https://github.com/diffplug/spotless/pull/629) removes the code which wasn't being used in plugin-gradle or plugin-maven.
+  * [#630](https://github.com/diffplug/spotless/pull/630) moves the code which was still being used in deprecated parts of plugin-gradle into `.deprecated` package in `plugin-gradle`, which allows us to break `lib` without a breaking change in `plugin-gradle`.
 
 ## [1.34.1] - 2020-06-17
 ### Changed
@@ -161,7 +172,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   * Updated default npm package version of `prettier` from 1.13.4 to 1.16.4
   * Updated default npm package version of internally used typescript package from 2.9.2 to 3.3.3 and tslint package from 5.1.0 to 5.12.0 (both used by `tsfmt`)
 * Updated default eclipse-wtp from 4.7.3a to 4.7.3b ([#371](https://github.com/diffplug/spotless/pull/371)).
-* Configured `buìld-scan` plugin in build ([#356](https://github.com/diffplug/spotless/pull/356)).
+* Configured `build-scan` plugin in build ([#356](https://github.com/diffplug/spotless/pull/356)).
   * Runs on every CI build automatically.
   * Users need to opt-in on their local machine.
 * Default behavior of XML formatter changed to ignore external URIs ([#369](https://github.com/diffplug/spotless/issues/369)).
