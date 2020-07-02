@@ -100,7 +100,7 @@ public class PrettierFormatterStep {
 
 	}
 
-	public static class PrettierFilePathPassingFormatterFunc implements FormatterFunc {
+	public static class PrettierFilePathPassingFormatterFunc implements FormatterFunc.NeedsFile {
 		private final String prettierConfigOptions;
 		private final PrettierRestService restService;
 
@@ -110,16 +110,9 @@ public class PrettierFormatterStep {
 		}
 
 		@Override
-		public String apply(String input) throws Exception {
-			return apply(input, new File(""));
-		}
-
-		@Override
-		public String apply(String input, File source) throws Exception {
-			requireNonNull(input, "input must not be null");
-			requireNonNull(source, "source must not be null");
-			final String prettierConfigOptionsWithFilepath = assertFilepathInConfigOptions(source);
-			return restService.format(input, prettierConfigOptionsWithFilepath);
+		public String applyWithFile(String unix, File file) throws Exception {
+			final String prettierConfigOptionsWithFilepath = assertFilepathInConfigOptions(file);
+			return restService.format(unix, prettierConfigOptionsWithFilepath);
 		}
 
 		private String assertFilepathInConfigOptions(File file) {
