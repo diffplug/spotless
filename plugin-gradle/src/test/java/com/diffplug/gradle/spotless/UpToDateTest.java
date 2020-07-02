@@ -32,9 +32,7 @@ public class UpToDateTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    format 'misc', {",
 				"        target file('README.md')",
-				"        customLazyGroovy('lowercase') {",
-				"             return { str -> str.toLowerCase(Locale.ROOT) }",
-				"        }",
+				"        custom 'lowercase', { str -> str.toLowerCase(Locale.ROOT) }",
 				"        bumpThisNumberIfACustomStepChanges(1)",
 				"    }",
 				"}");

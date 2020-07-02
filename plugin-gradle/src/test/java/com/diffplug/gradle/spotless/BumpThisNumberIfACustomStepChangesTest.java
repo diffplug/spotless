@@ -29,9 +29,7 @@ public class BumpThisNumberIfACustomStepChangesTest extends GradleIntegrationHar
 				"spotless {",
 				"    format 'misc', {",
 				"        target file('README.md')",
-				"        customLazyGroovy('lowercase') {",
-				"             return { str -> str.toLowerCase(Locale.ROOT) }",
-				"        }",
+				"        custom 'lowercase', { str -> str.toLowerCase(Locale.ROOT) }",
 				toInsert,
 				"    }",
 				"}");

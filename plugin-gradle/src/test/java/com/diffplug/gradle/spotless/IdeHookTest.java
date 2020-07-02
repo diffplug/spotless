@@ -40,15 +40,11 @@ public class IdeHookTest extends GradleIntegrationHarness {
 				"spotless {",
 				"  format 'misc', {",
 				"    target 'DIRTY.md', 'CLEAN.md'",
-				"    customLazyGroovy('lowercase') {",
-				"       return { str -> str.toLowerCase(Locale.ROOT) }",
-				"    }",
+				"    custom 'lowercase', { str -> str.toLowerCase(Locale.ROOT) }",
 				"  }",
 				"  format 'diverge', {",
 				"    target 'DIVERGE.md'",
-				"    customLazyGroovy('diverge') {",
-				"       return { str -> str + ' ' }",
-				"    }",
+				"    custom 'diverge', { str -> str + ' ' }",
 				"  }",
 				"}");
 		dirty = new File(rootFolder(), "DIRTY.md");
