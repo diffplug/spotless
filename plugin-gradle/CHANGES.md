@@ -13,6 +13,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Fixed
 * LineEndings.GIT_ATTRIBUTES is now a bit more efficient, and paves the way for remote build cache support in Gradle. ([#621](https://github.com/diffplug/spotless/pull/621))
 * `ratchetFrom` now ratchets from the merge base of `HEAD` and the specified branch.  This fixes the surprising behavior when a remote branch advanced ([#631](https://github.com/diffplug/spotless/pull/631) fixes [#627](https://github.com/diffplug/spotless/issues/627)).
+### Deprecated
+* The default targets for `C/C++`, `freshmark`, `sql`, and `typescript` now generate a warning, asking the user to specify a target manually. There is no well-established convention for these languages in the gradle ecosystem, and the performance of the default target is far worse than a user-provided one.  If you dislike this change, please complain in [#634](https://github.com/diffplug/spotless/pull/634).
 
 ## [4.4.0] - 2020-06-19
 ### Added
