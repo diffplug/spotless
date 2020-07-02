@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.0.0] - 2020-07-02
 ### Added
 * You can now ratchet a project's style by limiting Spotless only to files which have changed since a given [git reference](https://javadoc.io/static/org.eclipse.jgit/org.eclipse.jgit/5.6.1.202002131546-r/org/eclipse/jgit/lib/Repository.html#resolve-java.lang.String-), e.g. `ratchetFrom 'origin/main'`. ([#590](https://github.com/diffplug/spotless/pull/590))
 * Huge speed improvement for multi-module projects thanks to improved cross-project classloader caching ([#571](https://github.com/diffplug/spotless/pull/571), fixes [#559](https://github.com/diffplug/spotless/issues/559)).
