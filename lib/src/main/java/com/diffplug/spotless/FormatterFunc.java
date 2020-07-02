@@ -19,15 +19,16 @@ import java.io.File;
 import java.util.Objects;
 
 /**
- * A `Function<String, String>` which can throw an exception.
- * Also the `BiFunction<String, File, String>` is supported, whereas the default
- * implementation only requires the `Function<String, String>` implementation.
+ * A `Function<String, String>` which can throw an exception.  Technically, there
+ * is also a `File` argument which gets passed around as well, but that is invisible
+ * to formatters.  If you need the File, see {@link NeedsFile}.
  */
 @FunctionalInterface
 public interface FormatterFunc
 		extends ThrowingEx.Function<String, String>, ThrowingEx.BiFunction<String, File, String> {
 
-	@Override
+	String apply(String input) throws Exception;
+
 	default String apply(String unix, File file) throws Exception {
 		return apply(unix);
 	}
@@ -80,7 +81,7 @@ public interface FormatterFunc
 
 		@Override
 		default String apply(String unix, File file) throws Exception {
-			if (file == null) {
+			if (file == FormatterStepImpl.SENTINEL) {
 				throw new IllegalArgumentException("This step requires the underlying file. If this is a test, use StepHarnessWithFile");
 			}
 			return applyWithFile(unix, file);
@@ -88,7 +89,7 @@ public interface FormatterFunc
 
 		@Override
 		default String apply(String unix) throws Exception {
-			return apply(unix, null);
+			return apply(unix, FormatterStepImpl.SENTINEL);
 		}
 	}
 }

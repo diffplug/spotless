@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -110,4 +110,7 @@ abstract class FormatterStepImpl<State extends Serializable> extends Strict<Stat
 			return formatter.apply(rawUnix, file);
 		}
 	}
+
+	/** A dummy SENTINEL file. */
+	static final File SENTINEL = new File("");
 }
