@@ -24,8 +24,7 @@ import java.util.Objects;
  * to formatters.  If you need the File, see {@link NeedsFile}.
  */
 @FunctionalInterface
-public interface FormatterFunc
-		extends ThrowingEx.Function<String, String>, ThrowingEx.BiFunction<String, File, String> {
+public interface FormatterFunc {
 
 	String apply(String input) throws Exception;
 
