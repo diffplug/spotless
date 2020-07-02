@@ -49,7 +49,7 @@ user@machine repo % mvn spotless:check
   - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier))
   - [Kotlin](#kotlin) ([ktlint](#ktlint), [ktfmt](#ktfmt), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
-  - [C/C++](#c-c++) ([eclipse cdt](#eclipse-cdt))
+  - [C/C++](#cc) ([eclipse cdt](#eclipse-cdt))
   - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier))
   - Multiple languages
@@ -61,7 +61,7 @@ user@machine repo % mvn spotless:check
   - [How can I enforce formatting gradually? (aka "ratchet")](#ratchet)
   - [Line endings and encodings (invisible stuff)](#line-endings-and-encodings-invisible-stuff)
   - [Disabling warnings and error messages](#disabling-warnings-and-error-messages)
-  - [How do I preview what `spotlessApply` will do?](#how-do-i-preview-what-spotlessapply-will-do)
+  - [How do I preview what `mvn spotless:apply` will do?](#how-do-i-preview-what-mvn-spotlessapply-will-do)
   - [Can I apply Spotless to specific files?](#can-i-apply-spotless-to-specific-files)
   - [Example configurations (from real-world projects)](#examples)
 

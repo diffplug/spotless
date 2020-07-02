@@ -59,7 +59,7 @@ BUILD SUCCESSFUL
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
   - [Kotlin](#kotlin) ([ktlint](#ktlint), [ktfmt](#ktfmt), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
-  - [C/C++](#c-c++) ([eclipse cdt](#eclipse-cdt))
+  - [C/C++](#cc) ([eclipse cdt](#eclipse-cdt))
   - [FreshMark](#freshmark) aka markdown
   - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
   - [SQL](#sql) ([dbeaver](#dbeaver), [prettier](#prettier))
