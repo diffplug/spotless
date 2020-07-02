@@ -335,13 +335,13 @@ public class FormatExtension {
 	}
 
 	/**
-	 * An optional performance optimization if you are using any of the `custom` or `customLazy`
-	 * methods.  If you aren't explicitly calling `custom` or `customLazy`, then this method
+	 * An optional performance optimization if you are using any of the `custom`
+	 * methods.  If you aren't explicitly calling `custom`, then this method
 	 * has no effect.
 	 *
 	 * Spotless tracks what files have changed from run to run, so that it can run faster
 	 * by only checking files which have changed, or whose formatting steps have changed.
-	 * If you use either the `custom` or `customLazy` methods, then gradle can never mark
+	 * If you use the `custom` methods, then gradle can never mark
 	 * your files as `up-to-date`, because it can't know if perhaps the behavior of your
 	 * custom function has changed.
 	 *
@@ -367,20 +367,21 @@ public class FormatExtension {
 	}
 
 	/**
-	 * Adds the given custom step, which is constructed lazily for performance reasons.
+	 * Adds the given custom step, which is constructed lazily for ~~performance reasons~~.
 	 *
-	 * The resulting function will receive a string with unix-newlines, and it must return a string unix newlines.
-	 *
-	 * If you're getting errors about `closure cannot be cast to com.diffplug.common.base.Throwing$Function`, then use
-	 * {@link #customLazyGroovy(String, ThrowingEx.Supplier)}.
+	 * @deprecated starting in spotless 5.0, you get the same performance benefit out of
+	 * {@link #custom(String, FormatterFunc)}, so you should just use that.
 	 */
+	@Deprecated
 	public void customLazy(String name, ThrowingEx.Supplier<FormatterFunc> formatterSupplier) {
+		getProject().getLogger().warn("Spotless: customLazy has been deprecated, use custom instead");
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(formatterSupplier, "formatterSupplier");
 		addStep(FormatterStep.createLazy(name, () -> globalState, unusedState -> formatterSupplier.get()));
 	}
 
 	/** Same as {@link #customLazy(String, ThrowingEx.Supplier)}, but for Groovy closures. */
+	@Deprecated
 	public void customLazyGroovy(String name, ThrowingEx.Supplier<Closure<String>> formatterSupplier) {
 		Objects.requireNonNull(formatterSupplier, "formatterSupplier");
 		customLazy(name, () -> formatterSupplier.get()::call);
@@ -395,7 +396,7 @@ public class FormatExtension {
 	/** Adds a custom step. Receives a string with unix-newlines, must return a string with unix newlines. */
 	public void custom(String name, FormatterFunc formatter) {
 		Objects.requireNonNull(formatter, "formatter");
-		customLazy(name, () -> formatter);
+		addStep(FormatterStep.createLazy(name, () -> globalState, unusedState -> formatter));
 	}
 
 	/** Highly efficient find-replace char sequence. */
