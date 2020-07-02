@@ -89,30 +89,12 @@ public final class LicenseHeaderStep {
 		return new LicenseHeaderStep(headerLazy, delimiter, yearSeparator, yearMode);
 	}
 
-	private static class SetFromGitFormatterFunc implements FormatterFunc {
-		private final Runtime runtime;
-
-		private SetFromGitFormatterFunc(Runtime runtime) {
-			this.runtime = runtime;
-		}
-
-		@Override
-		public String apply(String input, File source) throws Exception {
-			return runtime.setLicenseHeaderYearsFromGitHistory(input, source);
-		}
-
-		@Override
-		public String apply(String input) throws Exception {
-			throw new UnsupportedOperationException();
-		}
-	}
-
 	public FormatterStep build() {
 		if (yearMode.get() == YearMode.SET_FROM_GIT) {
 			return FormatterStep.createNeverUpToDateLazy(LicenseHeaderStep.name(), () -> {
 				boolean updateYear = false; // doesn't matter
-				Runtime step = new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear);
-				return new SetFromGitFormatterFunc(step);
+				Runtime runtime = new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear);
+				return FormatterFunc.needsFile(runtime::setLicenseHeaderYearsFromGitHistory);
 			});
 		} else {
 			return FormatterStep.createLazy(LicenseHeaderStep.name(), () -> {

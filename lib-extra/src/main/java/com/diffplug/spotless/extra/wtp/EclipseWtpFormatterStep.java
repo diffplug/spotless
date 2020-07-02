@@ -15,7 +15,6 @@
  */
 package com.diffplug.spotless.extra.wtp;
 
-import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Properties;
@@ -71,27 +70,18 @@ public enum EclipseWtpFormatterStep {
 		};
 	}
 
-	private static FormatterFuncWithFile applyWithFile(String className, EclipseBasedStepBuilder.State state) throws Exception {
+	private static FormatterFunc.NeedsFile applyWithFile(String className, EclipseBasedStepBuilder.State state) throws Exception {
 		Class<?> formatterClazz = state.loadClass(FORMATTER_PACKAGE + className);
 		Object formatter = formatterClazz.getConstructor(Properties.class).newInstance(state.getPreferences());
 		Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class, String.class);
-		return (input, source) -> {
+		return (unixString, file) -> {
 			try {
-				return (String) method.invoke(formatter, input, source.getAbsolutePath());
+				return (String) method.invoke(formatter, unixString, file.getAbsolutePath());
 			} catch (InvocationTargetException exceptionWrapper) {
 				Throwable throwable = exceptionWrapper.getTargetException();
 				Exception exception = (throwable instanceof Exception) ? (Exception) throwable : null;
 				throw (null == exception) ? exceptionWrapper : exception;
 			}
 		};
-	}
-
-	private static interface FormatterFuncWithFile extends FormatterFunc {
-		@Override
-		default String apply(String input) throws Exception {
-			throw new UnsupportedOperationException("Formatter requires file path of source.");
-		}
-
-		public String apply(String input, File source) throws Exception;
 	}
 }
