@@ -44,13 +44,13 @@ public class StepHarnessWithFile implements AutoCloseable {
 				},
 				new FormatterFunc() {
 					@Override
-					public String apply(String input) throws Exception {
-						return apply(input, new File(""));
+					public String apply(String unix) throws Exception {
+						return apply(unix, new File(""));
 					}
 
 					@Override
-					public String apply(String input, File source) throws Exception {
-						return LineEnding.toUnix(step.format(input, source));
+					public String apply(String unix, File file) throws Exception {
+						return LineEnding.toUnix(step.format(unix, file));
 					}
 				}));
 	}

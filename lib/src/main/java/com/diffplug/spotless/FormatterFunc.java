@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,8 @@ public interface FormatterFunc
 		extends ThrowingEx.Function<String, String>, ThrowingEx.BiFunction<String, File, String> {
 
 	@Override
-	default String apply(String input, File source) throws Exception {
-		return apply(input);
+	default String apply(String unix, File file) throws Exception {
+		return apply(unix);
 	}
 
 	/**
@@ -50,16 +50,15 @@ public interface FormatterFunc
 				}
 
 				@Override
-				public String apply(String input, File source) throws Exception {
-					return function.apply(Objects.requireNonNull(input), Objects.requireNonNull(source));
+				public String apply(String unix, File file) throws Exception {
+					return function.apply(Objects.requireNonNull(unix), Objects.requireNonNull(file));
 				}
 
 				@Override
-				public String apply(String input) throws Exception {
-					return function.apply(Objects.requireNonNull(input));
+				public String apply(String unix) throws Exception {
+					return function.apply(Objects.requireNonNull(unix));
 				}
 			};
 		}
 	}
-
 }
