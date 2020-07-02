@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ public class CppDefaults {
 	 * Filter based on Eclipse-CDT <code>org.eclipse.core.contenttype.contentTypes</code>
 	 * extension <code>cSource</code>, <code>cHeader</code>, <code>cxxSource</code> and <code>cxxHeader</code>.
 	 */
+	@Deprecated
 	public static final List<String> FILE_FILTER = Collections.unmodifiableList(
 			Arrays.asList("c", "h", "C", "cpp", "cxx", "cc", "c++", "h", "hpp", "hh", "hxx", "inc")
 					.stream().map(s -> {

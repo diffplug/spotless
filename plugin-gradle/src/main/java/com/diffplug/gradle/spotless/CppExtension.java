@@ -65,6 +65,7 @@ public class CppExtension extends FormatExtension implements HasBuiltinDelimiter
 			 * Hence file extension based filtering is used in line with the org.eclipse.core.contenttype.contentTypes<
 			 * defined by the CDT plugin.
 			 */
+			noDefaultTarget();
 			target(CppDefaults.FILE_FILTER.toArray());
 		}
 		super.setupTask(task);
