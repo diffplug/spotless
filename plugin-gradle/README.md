@@ -674,14 +674,7 @@ Ideally, your formatter will be able to silently fix any problems that it finds,
 
 ## Multiple (or custom) language-specific blocks
 
-The following two lines are exact synonyms:
-
-```gradle
-spotless { format 'java', com.diffplug.gradle.spotless.JavaExtension, { ... } }
-spotless { java { ... } }
-```
-
-So if you want to have two different `java` blocks, you can do something like this:
+If you want to have two independent `java` blocks, you can do something like this:
 
 ```gradle
 spotless { java { ... } }
@@ -689,7 +682,7 @@ spotless { format 'javaFoo', com.diffplug.gradle.spotless.JavaExtension, { ... }
 // has to be 'javaFoo' not 'java' because each format needs a unique name
 ```
 
-As a follow-on, you can make your own subclass to `FormatExtension` in the `buildSrc` directory, and then use it in your buildscript like so:
+That's how the [real `spotless { java {` works anyway](https://github.com/diffplug/spotless/blob/1a19b3f6e92da9ccfb6e4a0024b8fc5de8898ade/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/SpotlessExtensionBase.java#L109-L113). As a follow-on, you can make your own subclass to `FormatExtension` in the `buildSrc` directory, and then use it in your buildscript like so:
 
 ```gradle
 spotless {
