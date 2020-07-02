@@ -58,7 +58,7 @@ public class PrettierFormatterStep {
 				State::createFormatterFunc);
 	}
 
-	public static class State extends NpmFormatterStepStateBase implements Serializable {
+	private static class State extends NpmFormatterStepStateBase implements Serializable {
 
 		private static final long serialVersionUID = -539537027004745812L;
 		private final PrettierConfig prettierConfig;
@@ -100,7 +100,7 @@ public class PrettierFormatterStep {
 
 	}
 
-	public static class PrettierFilePathPassingFormatterFunc implements FormatterFunc.NeedsFile {
+	private static class PrettierFilePathPassingFormatterFunc implements FormatterFunc.NeedsFile {
 		private final String prettierConfigOptions;
 		private final PrettierRestService restService;
 
