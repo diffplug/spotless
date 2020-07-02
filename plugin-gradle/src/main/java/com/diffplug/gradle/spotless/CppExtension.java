@@ -17,6 +17,11 @@ package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.gradle.api.Project;
 
 import com.diffplug.spotless.cpp.CppDefaults;
@@ -79,10 +84,21 @@ public class CppExtension extends FormatExtension implements HasBuiltinDelimiter
 			 * defined by the CDT plugin.
 			 */
 			noDefaultTarget();
-			target(CppDefaults.FILE_FILTER.toArray());
+			target(FILE_FILTER.toArray());
 		}
 		super.setupTask(task);
 	}
+
+	/**
+	 * Filter based on Eclipse-CDT <code>org.eclipse.core.contenttype.contentTypes</code>
+	 * extension <code>cSource</code>, <code>cHeader</code>, <code>cxxSource</code> and <code>cxxHeader</code>.
+	 */
+	@Deprecated
+	private static final List<String> FILE_FILTER = Collections.unmodifiableList(
+			Arrays.asList("c", "h", "C", "cpp", "cxx", "cc", "c++", "h", "hpp", "hh", "hxx", "inc")
+					.stream().map(s -> {
+						return "**/*." + s;
+					}).collect(Collectors.toList()));
 
 	@Override
 	public LicenseHeaderConfig licenseHeader(String licenseHeader) {

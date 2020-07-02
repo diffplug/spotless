@@ -16,26 +16,12 @@
 package com.diffplug.spotless.cpp;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /** Common utilities for C/C++ */
 public class CppDefaults {
 	//Prevent instantiation
 	private CppDefaults() {};
-
-	/** Filtering based on Eclipse-CDT <code>org.eclipse.core.contenttype.contentTypes</code> */
-	/**
-	 * Filter based on Eclipse-CDT <code>org.eclipse.core.contenttype.contentTypes</code>
-	 * extension <code>cSource</code>, <code>cHeader</code>, <code>cxxSource</code> and <code>cxxHeader</code>.
-	 */
-	@Deprecated
-	public static final List<String> FILE_FILTER = Collections.unmodifiableList(
-			Arrays.asList("c", "h", "C", "cpp", "cxx", "cc", "c++", "h", "hpp", "hh", "hxx", "inc")
-					.stream().map(s -> {
-						return "**/*." + s;
-					}).collect(Collectors.toList()));
 
 	/**
 	 * Default delimiter expression shall cover most valid and common starts of C/C++ declarations and definitions.
