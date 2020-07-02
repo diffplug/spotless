@@ -44,7 +44,7 @@ For the folders below in monospace text, they are published on maven central at 
 The easiest way to create a FormatterStep is `FormatterStep createNeverUpToDate(String name, FormatterFunc function)`, which you can use like this:
 
 ```java
-FormatterStep identityStep = FormatterStep.createNeverUpToDate("identity", unix -> unix)
+FormatterStep identityStep = FormatterStep.createNeverUpToDate("identity", unixStr -> unixStr)
 ```
 
 This creates a step which will fail up-to-date checks (it is equal only to itself), and will use the function you passed in to do the formatting pass.
@@ -73,7 +73,7 @@ public final class ReplaceStep {
     }
 
     FormatterFunc toFormatter() {
-      return raw -> raw.replace(target, replacement);
+      return unixStr -> unixStr.replace(target, replacement);
     }
   }
 }
@@ -99,6 +99,10 @@ Here's a checklist for creating a new step for Spotless:
 - [ ] Has a test class named `SomeNewStepTest`.
 - [ ] Test class has test methods to verify behavior.
 - [ ] Test class has a test method `equality()` which tests equality using `StepEqualityTester` (see existing methods for examples).
+
+### Accessing the underlying File
+
+In order for Spotless' model to work, each step needs to look only at the `String` input, otherwise they cannot compose.  However, there are some cases where the source `File` is useful, such as to look at the file extension.  In this case, you can pass a `FormatterFunc.NeedsFile` instead of a `FormatterFunc`.  This should only be used in [rare circumstances](https://github.com/diffplug/spotless/pull/637), be careful that you don't accidentally depend on the bytes inside of the `File`!
 
 ## How to enable the _ext projects
 
