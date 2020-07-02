@@ -23,6 +23,7 @@ import java.util.Objects;
  * Also the `BiFunction<String, File, String>` is supported, whereas the default
  * implementation only requires the `Function<String, String>` implementation.
  */
+@FunctionalInterface
 public interface FormatterFunc
 		extends ThrowingEx.Function<String, String>, ThrowingEx.BiFunction<String, File, String> {
 
@@ -59,6 +60,35 @@ public interface FormatterFunc
 					return function.apply(Objects.requireNonNull(unix));
 				}
 			};
+		}
+	}
+
+	/**
+	 * Ideally, formatters don't need the underlying file. But in case they do, they should only use it's path,
+	 * and should never read the content inside the file, because that breaks the `Function<String, String>` composition
+	 * that Spotless is based on.  For the rare case that you need access to the file, use this method
+	 * or {@link NeedsFile} to create a {@link FormatterFunc} which needs the File.
+	 */
+	static FormatterFunc needsFile(NeedsFile needsFile) {
+		return needsFile;
+	}
+
+	/** @see FormatterFunc#needsFile(NeedsFile) */
+	@FunctionalInterface
+	interface NeedsFile extends FormatterFunc {
+		String applyWithFile(String unix, File file) throws Exception;
+
+		@Override
+		default String apply(String unix, File file) throws Exception {
+			if (file == null) {
+				throw new IllegalArgumentException("This step requires the underlying file. If this is a test, use StepHarnessWithFile");
+			}
+			return applyWithFile(unix, file);
+		}
+
+		@Override
+		default String apply(String unix) throws Exception {
+			return apply(unix, null);
 		}
 	}
 }
