@@ -15,9 +15,7 @@ spotless {
 	if (project.name != 'ide' && project != rootProject) {
 		// the rootProject and ide projects don't have any java
 		java {
-			ratchetFrom 'gradle/4.4.0' // this should go back to origin/main
-			// when a solution to https://github.com/diffplug/spotless/issues/627
-			// is available in a published release
+			ratchetFrom 'origin/main'
 			custom 'noInternalDeps', noInternalDepsClosure
 			bumpThisNumberIfACustomStepChanges(1)
 			licenseHeaderFile rootProject.file('gradle/spotless.license')
