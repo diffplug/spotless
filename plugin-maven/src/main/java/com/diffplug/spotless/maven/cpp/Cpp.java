@@ -26,7 +26,7 @@ import com.diffplug.spotless.maven.generic.LicenseHeader;
  * A {@link FormatterFactory} implementation that corresponds to {@code <cpp>...</cpp>} configuration element.
  * <p>
  * It defines a formatter for java source files that can execute both language agnostic (e.g. {@link LicenseHeader})
- * and cpp-specific (e.g. {@link Eclipse}) steps.
+ * and cpp-specific (e.g. {@link EclipseCdt}) steps.
  */
 public class Cpp extends FormatterFactory {
 	@Override
@@ -34,7 +34,7 @@ public class Cpp extends FormatterFactory {
 		return Collections.emptySet();
 	}
 
-	public void addEclipse(Eclipse eclipse) {
+	public void addEclipseCdt(EclipseCdt eclipse) {
 		addStepFactory(eclipse);
 	}
 

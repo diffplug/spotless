@@ -30,11 +30,25 @@ public class CppExtension extends FormatExtension implements HasBuiltinDelimiter
 		super(spotless);
 	}
 
-	public EclipseConfig eclipse() {
+	public EclipseConfig eclipseCdt() {
 		return new EclipseConfig(EclipseCdtFormatterStep.defaultVersion());
 	}
 
+	public EclipseConfig eclipseCdt(String version) {
+		return new EclipseConfig(version);
+	}
+
+	/** Use {@link #eclipseCdt} instead. */
+	@Deprecated
+	public EclipseConfig eclipse() {
+		getProject().getLogger().warn("Spotless: in the `cpp { }` block, use `eclipseCdt()` instead of `eclipse()`");
+		return new EclipseConfig(EclipseCdtFormatterStep.defaultVersion());
+	}
+
+	/** Use {@link #eclipseCdt} instead. */
+	@Deprecated
 	public EclipseConfig eclipse(String version) {
+		getProject().getLogger().warn("Spotless: in the `cpp { }` block, use `eclipseCdt('" + version + "')` instead of `eclipse('" + version + "')`");
 		return new EclipseConfig(version);
 	}
 
@@ -53,7 +67,6 @@ public class CppExtension extends FormatExtension implements HasBuiltinDelimiter
 			builder.setPreferences(project.files(configFiles).getFiles());
 			replaceStep(builder.build());
 		}
-
 	}
 
 	@Override
