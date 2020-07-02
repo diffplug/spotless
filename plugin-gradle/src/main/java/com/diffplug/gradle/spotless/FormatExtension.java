@@ -671,4 +671,8 @@ public class FormatExtension {
 
 		return applyTask;
 	}
+
+	protected void noDefaultTarget() {
+		getProject().getLogger().warn("Spotless: no target set for " + formatName() + ", will be an error in the next release!");
+	}
 }

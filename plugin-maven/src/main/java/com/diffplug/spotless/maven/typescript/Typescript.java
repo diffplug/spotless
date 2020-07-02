@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,9 @@
  */
 package com.diffplug.spotless.maven.typescript;
 
+import java.util.Collections;
 import java.util.Set;
 
-import com.diffplug.common.collect.ImmutableSet;
 import com.diffplug.spotless.maven.FormatterFactory;
 
 /**
@@ -26,14 +26,11 @@ import com.diffplug.spotless.maven.FormatterFactory;
  * It defines a formatter for typescript source files.
  */
 public class Typescript extends FormatterFactory {
-
-	private static final Set<String> DEFAULT_INCLUDES = ImmutableSet.of("src/**/*.ts");
-
 	private static final String LICENSE_HEADER_DELIMITER = null;
 
 	@Override
 	public Set<String> defaultIncludes() {
-		return DEFAULT_INCLUDES;
+		return Collections.emptySet();
 	}
 
 	@Override
@@ -44,5 +41,4 @@ public class Typescript extends FormatterFactory {
 	public void addTsfmt(Tsfmt tsfmt) {
 		addStepFactory(tsfmt);
 	}
-
 }

@@ -294,8 +294,7 @@ Spotless requires Maven to be running on JRE 8+.
 ```xml
 <configuration>
   <cpp>
-    <!-- You have to set the target manually -->
-    <includes>
+    <includes> <!-- You have to set the target manually -->
       <include>src/native/**</inclue>
     </includes>
 
@@ -359,8 +358,7 @@ Spotless requires Maven to be running on JRE 8+.
 ```xml
 <configuration>
   <typescript>
-    <!-- These are the defaults, you can override if you want -->
-    <includes>
+    <includes> <!-- You have to set the target manually -->
       <include>src/**/*.ts</include>
     </includes>
 
