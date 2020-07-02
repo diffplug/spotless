@@ -101,8 +101,8 @@ Once someone has filled in one square of the formatter/build system matrix, it's
 
 ## Acknowledgements
 
+- Thanks to [Konstantin Lutovich](https://github.com/lutovich) for [implementing and maintaining the maven plugin](https://github.com/diffplug/spotless/pull/188), as well as fixing [remote-build cache support for Gradle](https://github.com/diffplug/spotless/pull/571).
 - Thanks to [Frank Vennemeyer](https://github.com/fvgh) for [Groovy support via greclipse](https://github.com/diffplug/spotless/issues/13), [C++ support via CDT](https://github.com/diffplug/spotless/issues/232), [XML support via WTP](https://github.com/diffplug/spotless/pull/241) and a huge body of work with other eclipse-based formatters.
-- Thanks to [Konstantin Lutovich](https://github.com/lutovich) for [implementing the maven plugin](https://github.com/diffplug/spotless/pull/188).
 - Thanks to [Jonathan Bluett-Duncan](https://github.com/jbduncan) for
   - implementing up-to-date checking [#31](https://github.com/diffplug/spotless/issues/31)
   - breaking spotless into libraries [#56](https://github.com/diffplug/spotless/issues/56)
