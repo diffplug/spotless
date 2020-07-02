@@ -37,6 +37,7 @@ public class LicenseHeaderTest extends MavenIntegrationHarness {
 	public void fromContentCpp() throws Exception {
 		String cppLicense = "//my license";
 		writePomWithCppSteps(
+				"<includes><include>src/**</include></includes>",
 				"<licenseHeader>",
 				"  <content>",
 				cppLicense,
