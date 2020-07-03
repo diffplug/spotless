@@ -23,13 +23,13 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.FileSignature;
 
 @Category(ExcludeFromPluginGradleModern.class)
 public class SpecificFilesTest extends GradleIntegrationHarness {
 
 	private static String regexWinSafe(String input) {
-		return LineEnding.nativeIsWin() ? input.replace("/", "\\\\") : input;
+		return FileSignature.machineIsWin() ? input.replace("/", "\\\\") : input;
 	}
 
 	private String testFilePath(int number) {

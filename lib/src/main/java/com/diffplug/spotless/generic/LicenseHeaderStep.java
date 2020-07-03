@@ -31,6 +31,7 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
+import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
@@ -288,7 +289,7 @@ public final class LicenseHeaderStep {
 		private static String parseYear(String cmd, File file) throws IOException {
 			String fullCmd = cmd + " " + file.getAbsolutePath();
 			ProcessBuilder builder = new ProcessBuilder().directory(file.getParentFile());
-			if (LineEnding.nativeIsWin()) {
+			if (FileSignature.machineIsWin()) {
 				builder.command("cmd", "/c", fullCmd);
 			} else {
 				builder.command("bash", "-c", fullCmd);
