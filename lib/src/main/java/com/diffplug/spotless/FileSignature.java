@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -106,14 +107,21 @@ public final class FileSignature implements Serializable {
 		}
 	}
 
+	private static boolean machineIsWin = System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win");
+
+	/** Returns true if this JVM is running on a windows machine. */
+	public static boolean machineIsWin() {
+		return machineIsWin;
+	}
+
 	/** Transforms a native path to a unix one. */
 	public static String pathNativeToUnix(String pathNative) {
-		return LineEnding.nativeIsWin() ? pathNative.replace('\\', '/') : pathNative;
+		return machineIsWin() ? pathNative.replace('\\', '/') : pathNative;
 	}
 
 	/** Transforms a unix path to a native one. */
 	public static String pathUnixToNative(String pathUnix) {
-		return LineEnding.nativeIsWin() ? pathUnix.replace('/', '\\') : pathUnix;
+		return machineIsWin() ? pathUnix.replace('/', '\\') : pathUnix;
 	}
 
 	private static List<File> validateInputFiles(List<File> files) {
