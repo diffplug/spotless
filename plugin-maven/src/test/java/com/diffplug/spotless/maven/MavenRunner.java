@@ -28,7 +28,7 @@ import java.util.Objects;
 
 import com.diffplug.common.base.Throwables;
 import com.diffplug.common.io.ByteStreams;
-import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.FileSignature;
 
 /**
  * Harness for running a maven build, same idea as the
@@ -128,7 +128,7 @@ public class MavenRunner {
 
 	/** Prepends any arguments necessary to run a console command. */
 	private static List<String> getPlatformCmds(String cmd) {
-		if (LineEnding.nativeIsWin()) {
+		if (FileSignature.machineIsWin()) {
 			return Arrays.asList("cmd", "/c", "mvnw " + cmd);
 		} else {
 			return Arrays.asList("/bin/sh", "-c", "./mvnw " + cmd);

@@ -100,6 +100,13 @@ public enum LineEnding {
 	private static final Policy _platformNativePolicy = new ConstantLineEndingPolicy(_platformNative);
 	private static final boolean nativeIsWin = _platformNative.equals(WINDOWS.str());
 
+	/**
+	 * @deprecated Using the system-native line endings to detect the windows operating system has turned out
+	 * to be unreliable.  Use {@link FileSignature#machineIsWin()} instead.
+	 *
+	 * @see FileSignature#machineIsWin()
+	 */
+	@Deprecated
 	public static boolean nativeIsWin() {
 		return nativeIsWin;
 	}

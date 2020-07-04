@@ -30,8 +30,8 @@ import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 
+import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.Formatter;
-import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
 public class SpotlessCheck extends DefaultTask {
@@ -105,6 +105,6 @@ public class SpotlessCheck extends DefaultTask {
 	}
 
 	private static String calculateGradleCommand() {
-		return LineEnding.nativeIsWin() ? "gradlew.bat" : "./gradlew";
+		return FileSignature.machineIsWin() ? "gradlew.bat" : "./gradlew";
 	}
 }

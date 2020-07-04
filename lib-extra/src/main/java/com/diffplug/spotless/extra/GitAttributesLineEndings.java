@@ -113,16 +113,17 @@ public final class GitAttributesLineEndings {
 			for (File file : toFormat) {
 				String ending = runtime.getEndingFor(file);
 				if (!ending.equals(defaultEnding)) {
-					String path = FileSignature.pathNativeToUnix(file.getAbsolutePath());
-					hasNonDefaultEnding.put(path, ending);
+					String absPath = FileSignature.pathNativeToUnix(file.getAbsolutePath());
+					String subPath = FileSignature.subpath(rootDir, absPath);
+					hasNonDefaultEnding.put(subPath, ending);
 				}
 			}
 		}
 
 		/** Returns the line ending appropriate for the given file. */
 		public String endingFor(File file) {
-			String path = FileSignature.pathNativeToUnix(file.getAbsolutePath());
-			String subpath = FileSignature.subpath(rootDir, path);
+			String absPath = FileSignature.pathNativeToUnix(file.getAbsolutePath());
+			String subpath = FileSignature.subpath(rootDir, absPath);
 			String ending = hasNonDefaultEnding.getValueForExactKey(subpath);
 			return ending == null ? defaultEnding : ending;
 		}

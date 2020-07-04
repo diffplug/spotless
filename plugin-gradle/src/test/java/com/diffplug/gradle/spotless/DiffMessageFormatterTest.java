@@ -30,6 +30,7 @@ import org.gradle.api.Project;
 import org.junit.Test;
 
 import com.diffplug.common.base.StringPrinter;
+import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ResourceHarness;
@@ -110,7 +111,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 		Assertions.assertThat(middle).isEqualTo(expectedMessage.substring(0, expectedMessage.length() - 1));
 	}
 
-	static final String EXPECTED_RUN_SPOTLESS_APPLY_SUGGESTION = LineEnding.nativeIsWin()
+	static final String EXPECTED_RUN_SPOTLESS_APPLY_SUGGESTION = FileSignature.machineIsWin()
 			? "Run 'gradlew.bat :spotlessApply' to fix these violations."
 			: "Run './gradlew :spotlessApply' to fix these violations.";
 
