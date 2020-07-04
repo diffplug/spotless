@@ -22,10 +22,10 @@ import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 
-public class SpotlessExtensionModern extends SpotlessExtensionBase {
+public class SpotlessExtension extends SpotlessExtensionBase {
 	private final TaskProvider<RegisterDependenciesTask> registerDependenciesTask;
 
-	public SpotlessExtensionModern(Project project) {
+	public SpotlessExtension(Project project) {
 		super(project);
 		rootCheckTask = project.getTasks().register(EXTENSION + CHECK, task -> {
 			task.setGroup(TASK_GROUP);

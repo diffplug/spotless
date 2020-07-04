@@ -31,7 +31,7 @@ public class SpotlessPlugin implements Plugin<Project> {
 		project.getPlugins().apply(BasePlugin.class);
 
 		// setup the extension
-		project.getExtensions().create(SpotlessExtension.EXTENSION, SpotlessExtensionModern.class, project);
+		project.getExtensions().create(SpotlessExtension.EXTENSION, SpotlessExtension.class, project);
 
 		// clear spotless' cache when the user does a clean
 		project.getTasks().named(BasePlugin.CLEAN_TASK_NAME).configure(clean -> {
