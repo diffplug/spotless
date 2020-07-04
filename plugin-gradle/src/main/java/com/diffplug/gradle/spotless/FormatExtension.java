@@ -295,15 +295,6 @@ public class FormatExtension {
 		steps.add(newStep);
 	}
 
-	/** Returns the existing step with the given name, if any. */
-	@Deprecated
-	protected @Nullable FormatterStep getExistingStep(String stepName) {
-		return steps.stream() //
-				.filter(step -> stepName.equals(step.getName())) //
-				.findFirst() //
-				.orElse(null);
-	}
-
 	/** Returns the index of the existing step with the given name, or -1 if no such step exists. */
 	protected int getExistingStepIdx(String stepName) {
 		for (int i = 0; i < steps.size(); ++i) {

@@ -64,12 +64,6 @@ public class SpotlessPlugin implements Plugin<Project> {
 		});
 	}
 
-	/** The extension for this plugin. */
-	@Deprecated
-	public SpotlessExtension getExtension() {
-		return spotless;
-	}
-
 	static String capitalize(String input) {
 		return Character.toUpperCase(input.charAt(0)) + input.substring(1);
 	}

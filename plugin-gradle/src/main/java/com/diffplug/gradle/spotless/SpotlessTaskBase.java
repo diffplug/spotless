@@ -44,10 +44,9 @@ import com.diffplug.spotless.LineEnding;
 public class SpotlessTaskBase extends DefaultTask {
 	SpotlessApply applyTask;
 
-	/** @deprecated internal use only, allows coordination between check and apply when they are in the same build */
+	/** Internal use only, allows coordination between check and apply when they are in the same build */
 	@Internal
-	@Deprecated
-	public SpotlessApply getApplyTask() {
+	SpotlessApply getApplyTask() {
 		return applyTask;
 	}
 
