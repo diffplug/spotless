@@ -82,18 +82,6 @@ public class FormatExtension {
 		throw new IllegalStateException("This format is not contained by any SpotlessExtension.");
 	}
 
-	/** Enables paddedCell mode. @see <a href="https://github.com/diffplug/spotless/blob/main/PADDEDCELL.md">Padded cell</a> */
-	@Deprecated
-	public void paddedCell() {
-		paddedCell(true);
-	}
-
-	/** Enables paddedCell mode. @see <a href="https://github.com/diffplug/spotless/blob/main/PADDEDCELL.md">Padded cell</a> */
-	@Deprecated
-	public void paddedCell(boolean paddedCell) {
-		spotless.project.getLogger().warn("PaddedCell is now always on, and cannot be turned off.");
-	}
-
 	LineEnding lineEndings;
 
 	/** Returns the line endings to use (defaults to {@link SpotlessExtension#getLineEndings()}. */

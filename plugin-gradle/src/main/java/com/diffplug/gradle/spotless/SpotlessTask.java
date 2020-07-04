@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.CacheableTask;
 import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 
@@ -42,17 +41,6 @@ import com.diffplug.spotless.PaddedCell;
 
 @CacheableTask
 public class SpotlessTask extends SpotlessTaskBase {
-	@Deprecated
-	@Internal
-	public boolean isPaddedCell() {
-		return true;
-	}
-
-	@Deprecated
-	public void setPaddedCell(boolean paddedCell) {
-		getLogger().warn("Spotless warning: Padded Cell is now always on, and cannot be turned off.  Find `paddedCell(` and remove all invocations.");
-	}
-
 	protected String filePatterns = "";
 
 	@Input
