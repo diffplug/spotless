@@ -17,7 +17,6 @@ package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
 
-import java.util.List;
 import java.util.Objects;
 
 import org.gradle.api.GradleException;
@@ -29,7 +28,6 @@ import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.GroovySourceSet;
 import org.gradle.api.tasks.SourceSet;
 
-import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.groovy.GrEclipseFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
@@ -62,18 +60,6 @@ public class GroovyExtension extends FormatExtension implements HasBuiltinDelimi
 	@Override
 	public LicenseHeaderConfig licenseHeaderFile(Object licenseHeaderFile) {
 		return licenseHeaderFile(licenseHeaderFile, JavaExtension.LICENSE_HEADER_DELIMITER);
-	}
-
-	/** Method interface has been changed to
-	 * {@link GroovyExtension#importOrder(String...)}.*/
-	@Deprecated
-	public void importOrder(List<String> importOrder) {
-		getProject().getLogger().warn(
-				StringPrinter.buildStringFromLines(
-						"'importOrder([x, y, z])' is deprecated.",
-						"Use 'importOrder x, y, z' instead.",
-						"For details see https://github.com/diffplug/spotless/tree/main/plugin-gradle#applying-to-java-source"));
-		importOrder(importOrder.toArray(new String[0]));
 	}
 
 	public void importOrder(String... importOrder) {
