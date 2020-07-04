@@ -21,7 +21,13 @@ import java.io.File;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Random;
+import java.util.TreeMap;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
@@ -673,7 +679,7 @@ public class FormatExtension {
 		return applyTask;
 	}
 
-	protected void noDefaultTarget() {
-		getProject().getLogger().warn("Spotless: no target set for " + formatName() + ", will be an error in the next release!");
+	protected GradleException noDefaultTargetException() {
+		return new GradleException("Spotless failure, no target set!  You must set a target for " + formatName());
 	}
 }

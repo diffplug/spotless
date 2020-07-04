@@ -62,8 +62,7 @@ public class FreshMarkExtension extends FormatExtension {
 	protected void setupTask(SpotlessTask task) {
 		// defaults to all markdown files
 		if (target == null) {
-			noDefaultTarget();
-			target = parseTarget("**/*.md");
+			throw noDefaultTargetException();
 		}
 		super.setupTask(task);
 	}

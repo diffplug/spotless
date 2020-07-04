@@ -56,8 +56,7 @@ public class SqlExtension extends FormatExtension {
 	@Override
 	protected void setupTask(SpotlessTask task) {
 		if (target == null) {
-			target("**/*.sql");
-			noDefaultTarget();
+			throw noDefaultTargetException();
 		}
 		super.setupTask(task);
 	}
