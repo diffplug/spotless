@@ -15,7 +15,6 @@
  */
 package com.diffplug.gradle.spotless;
 
-import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.plugins.BasePlugin;
@@ -47,28 +46,6 @@ public class SpotlessExtension extends SpotlessExtensionBase {
 	@Override
 	RegisterDependenciesTask getRegisterDependenciesTask() {
 		return registerDependenciesTask;
-	}
-
-	/**
-	 * Configures the special css-specific extension for CSS files.
-	 * <br/>
-	 * The CSS extension is discontinued. CSS formatters are now part of
-	 * the generic {@link FormatExtension}.
-	 */
-	@Deprecated
-	public void css(Action<CssExtension> closure) {
-		format(CssExtension.NAME, CssExtension.class, closure);
-	}
-
-	/**
-	 * Configures the special xml-specific extension for XML/XSL/... files (XHTML is excluded).
-	 * <br/>
-	 * The XML extension is discontinued. XML formatters are now part of
-	 * the generic {@link FormatExtension}.
-	 */
-	@Deprecated
-	public void xml(Action<XmlExtension> closure) {
-		format(XmlExtension.NAME, XmlExtension.class, closure);
 	}
 
 	/**
