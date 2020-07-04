@@ -38,7 +38,7 @@ import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.PaddedCell;
 
 @CacheableTask
-public class SpotlessTaskModern extends SpotlessTask {
+public class SpotlessTask extends SpotlessTaskBase {
 
 	@PathSensitive(PathSensitivity.RELATIVE)
 	@Incremental
