@@ -13,7 +13,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Added
 * `FileSignature.machineIsWin()`, to replace the now-deprecated `LineEnding.nativeIsWin()`, because it turns out that `\r\n` is [not a reliable way](https://github.com/diffplug/spotless/issues/559#issuecomment-653739898) to detect the windows OS ([#639](https://github.com/diffplug/spotless/pull/639)).
 ### Fixed
-* `GitAttributesLineEndings` was fatally broken (always returned platform default), and our tests missed it because they tested the part before the broken part ([#639](https://github.com/diffplug/spotless/pull/639)). 
+* `GitAttributesLineEndings` was fatally broken (always returned platform default), and our tests missed it because they tested the part before the broken part ([#639](https://github.com/diffplug/spotless/pull/639)).
 
 ## [2.0.0] - 2020-07-02
 ### Changed
