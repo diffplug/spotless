@@ -46,7 +46,6 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LazyForwardingEquality;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
 import com.diffplug.spotless.generic.EndWithNewlineStep;
@@ -349,27 +348,6 @@ public class FormatExtension {
 		protected Integer calculateState() throws Exception {
 			return RANDOM.nextInt();
 		}
-	}
-
-	/**
-	 * Adds the given custom step, which is constructed lazily for ~~performance reasons~~.
-	 *
-	 * @deprecated starting in spotless 5.0, you get the same performance benefit out of
-	 * {@link #custom(String, FormatterFunc)}, so you should just use that.
-	 */
-	@Deprecated
-	public void customLazy(String name, ThrowingEx.Supplier<FormatterFunc> formatterSupplier) {
-		getProject().getLogger().warn("Spotless: customLazy has been deprecated, use custom instead");
-		Objects.requireNonNull(name, "name");
-		Objects.requireNonNull(formatterSupplier, "formatterSupplier");
-		addStep(FormatterStep.createLazy(name, () -> globalState, unusedState -> formatterSupplier.get()));
-	}
-
-	/** Same as {@link #customLazy(String, ThrowingEx.Supplier)}, but for Groovy closures. */
-	@Deprecated
-	public void customLazyGroovy(String name, ThrowingEx.Supplier<Closure<String>> formatterSupplier) {
-		Objects.requireNonNull(formatterSupplier, "formatterSupplier");
-		customLazy(name, () -> formatterSupplier.get()::call);
 	}
 
 	/** Adds a custom step. Receives a string with unix-newlines, must return a string with unix newlines. */
