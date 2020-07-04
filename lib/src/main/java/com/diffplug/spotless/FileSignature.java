@@ -121,7 +121,7 @@ public final class FileSignature implements Serializable {
 
 	/** Transforms a unix path to a native one. */
 	public static String pathUnixToNative(String pathUnix) {
-		return machineIsWin() ? pathUnix.replace('/', '\\') : pathUnix;
+		return pathUnix.replace('/', File.separatorChar);
 	}
 
 	private static List<File> validateInputFiles(List<File> files) {
