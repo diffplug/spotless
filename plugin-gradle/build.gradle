@@ -44,7 +44,7 @@ task npmTest(type: Test) {
 task modernTest(type: Test) {
 	systemProperty 'spotlessModern', 'true'
 	useJUnit {
-		excludeCategories 'com.diffplug.spotless.category.NpmTest', 'com.diffplug.gradle.spotless.ExcludeFromPluginGradleModern'
+		excludeCategories 'com.diffplug.spotless.category.NpmTest'
 	}
 }
 
