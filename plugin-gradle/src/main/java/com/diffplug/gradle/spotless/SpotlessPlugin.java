@@ -21,7 +21,7 @@ import org.gradle.api.plugins.BasePlugin;
 
 import com.diffplug.spotless.SpotlessCache;
 
-public class SpotlessPluginModern implements Plugin<Project> {
+public class SpotlessPlugin implements Plugin<Project> {
 	static final String SPOTLESS_MODERN = "spotlessModern";
 	static final String MINIMUM_GRADLE = "5.4";
 
@@ -44,5 +44,9 @@ public class SpotlessPluginModern implements Plugin<Project> {
 				SpotlessCache.clearOnce(System.identityHashCode(project.getRootProject()));
 			});
 		});
+	}
+
+	static String capitalize(String input) {
+		return Character.toUpperCase(input.charAt(0)) + input.substring(1);
 	}
 }

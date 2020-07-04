@@ -40,7 +40,7 @@ import com.diffplug.spotless.ResourceHarness;
 
 public class GradleIntegrationHarness extends ResourceHarness {
 	public enum GradleVersionSupport {
-		LEGACY("2.14"), KOTLIN("4.0"), CONFIG_AVOIDANCE("4.9"), MODERN(SpotlessPluginModern.MINIMUM_GRADLE), SETTINGS_PLUGINS("6.0");
+		LEGACY("2.14"), KOTLIN("4.0"), CONFIG_AVOIDANCE("4.9"), MODERN(SpotlessPlugin.MINIMUM_GRADLE), SETTINGS_PLUGINS("6.0");
 
 		final String version;
 
@@ -50,8 +50,8 @@ public class GradleIntegrationHarness extends ResourceHarness {
 	}
 
 	protected static String adaptGradleVersionForModern(String ver) {
-		if ("true".equals(System.getProperty(SpotlessPluginModern.SPOTLESS_MODERN))) {
-			return Double.parseDouble(ver) < Double.parseDouble(SpotlessPluginModern.MINIMUM_GRADLE) ? SpotlessPluginModern.MINIMUM_GRADLE : ver;
+		if ("true".equals(System.getProperty(SpotlessPlugin.SPOTLESS_MODERN))) {
+			return Double.parseDouble(ver) < Double.parseDouble(SpotlessPlugin.MINIMUM_GRADLE) ? SpotlessPlugin.MINIMUM_GRADLE : ver;
 		}
 		return ver;
 	}
@@ -96,8 +96,8 @@ public class GradleIntegrationHarness extends ResourceHarness {
 				.withGradleVersion(GradleVersionSupport.LEGACY.version)
 				.withProjectDir(rootFolder())
 				.withPluginClasspath();
-		if ("true".equals(System.getProperty(SpotlessPluginModern.SPOTLESS_MODERN))) {
-			runner.withEnvironment(ImmutableMap.of("ORG_GRADLE_PROJECT_" + SpotlessPluginModern.SPOTLESS_MODERN, "true"));
+		if ("true".equals(System.getProperty(SpotlessPlugin.SPOTLESS_MODERN))) {
+			runner.withEnvironment(ImmutableMap.of("ORG_GRADLE_PROJECT_" + SpotlessPlugin.SPOTLESS_MODERN, "true"));
 			runner.withGradleVersion(GradleVersionSupport.MODERN.version);
 		}
 		return runner;
