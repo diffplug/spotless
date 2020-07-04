@@ -16,7 +16,10 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCollection;
@@ -30,7 +33,9 @@ import org.gradle.work.FileChange;
 import org.gradle.work.Incremental;
 import org.gradle.work.InputChanges;
 
+import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.Formatter;
+import com.diffplug.spotless.PaddedCell;
 
 @CacheableTask
 public class SpotlessTaskModern extends SpotlessTask {
@@ -67,5 +72,53 @@ public class SpotlessTaskModern extends SpotlessTask {
 				}
 			}
 		}
+	}
+
+	protected void processInputFile(Formatter formatter, File input) throws IOException {
+		File output = getOutputFile(input);
+		getLogger().debug("Applying format to " + input + " and writing to " + output);
+		PaddedCell.DirtyState dirtyState;
+		if (ratchet != null && ratchet.isClean(getProject(), rootTreeSha, input)) {
+			dirtyState = PaddedCell.isClean();
+		} else {
+			dirtyState = PaddedCell.calculateDirtyState(formatter, input);
+		}
+		if (dirtyState.isClean()) {
+			// Remove previous output if it exists
+			Files.deleteIfExists(output.toPath());
+		} else if (dirtyState.didNotConverge()) {
+			getLogger().warn("Skipping '" + input + "' because it does not converge.  Run `spotlessDiagnose` to understand why");
+		} else {
+			Path parentDir = output.toPath().getParent();
+			if (parentDir == null) {
+				throw new IllegalStateException("Every file has a parent folder.");
+			}
+			Files.createDirectories(parentDir);
+			dirtyState.writeCanonicalTo(output);
+		}
+	}
+
+	protected void deletePreviousResult(File input) throws IOException {
+		File output = getOutputFile(input);
+		if (output.isDirectory()) {
+			Files.walk(output.toPath())
+					.sorted(Comparator.reverseOrder())
+					.map(Path::toFile)
+					.forEach(File::delete);
+		} else {
+			Files.deleteIfExists(output.toPath());
+		}
+	}
+
+	private File getOutputFile(File input) {
+		String outputFileName = FormatExtension.relativize(getProject().getProjectDir(), input);
+		if (outputFileName == null) {
+			throw new IllegalArgumentException(StringPrinter.buildString(printer -> {
+				printer.println("Spotless error! All target files must be within the project root. In project " + getProject().getPath());
+				printer.println("  root dir: " + getProject().getProjectDir().getAbsolutePath());
+				printer.println("    target: " + input.getAbsolutePath());
+			}));
+		}
+		return new File(outputDirectory, outputFileName);
 	}
 }
