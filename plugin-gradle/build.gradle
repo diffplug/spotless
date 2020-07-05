@@ -41,13 +41,6 @@ task npmTest(type: Test) {
 	}
 }
 
-task modernTest(type: Test) {
-	systemProperty 'spotlessModern', 'true'
-	useJUnit {
-		excludeCategories 'com.diffplug.spotless.category.NpmTest'
-	}
-}
-
 // make it easy for eclipse to run against latest build
 tasks.eclipse.dependsOn(pluginUnderTestMetadata)
 
