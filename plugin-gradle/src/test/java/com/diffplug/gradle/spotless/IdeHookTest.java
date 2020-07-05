@@ -62,13 +62,7 @@ public class IdeHookTest extends GradleIntegrationHarness {
 		StringBuilder error = new StringBuilder();
 		try (Writer outputWriter = new StringPrinter(output::append).toWriter();
 				Writer errorWriter = new StringPrinter(error::append).toWriter();) {
-			// gradle 2.14 -> 4.6 confirmed to work
-			// gradle 4.7 -> 5.1 don't work in tooling API because of https://github.com/gradle/gradle/issues/7617
-			// gradle 5.1 -> current confirmed to work
 			gradleRunner()
-					.withGradleVersion(GradleVersionSupport.MODERN.version)
-					.withProjectDir(rootFolder())
-					.withPluginClasspath()
 					.withArguments(arguments)
 					.forwardStdOutput(outputWriter)
 					.forwardStdError(errorWriter)

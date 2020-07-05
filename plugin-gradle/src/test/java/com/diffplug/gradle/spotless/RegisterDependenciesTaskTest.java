@@ -39,8 +39,7 @@ public class RegisterDependenciesTaskTest extends GradleIntegrationHarness {
 				"}");
 
 		setFile("gradle.properties").toLines();
-		String newestSupported = gradleRunner().withGradleVersion(GradleVersionSupport.MODERN.version)
-				.withArguments("spotlessCheck").build().getOutput();
+		String newestSupported = gradleRunner().withArguments("spotlessCheck").build().getOutput();
 		Assertions.assertThat(newestSupported.replace("\r", ""))
 				.startsWith("> Task :spotlessCheck UP-TO-DATE\n" +
 						"> Task :spotlessInternalRegisterDependencies\n")
