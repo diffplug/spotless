@@ -199,9 +199,9 @@ public abstract class SpotlessExtensionBase {
 		this.enforceCheck = enforceCheck;
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T extends FormatExtension> void format(String name, Class<T> clazz, Action<T> configure) {
-		T format = maybeCreate(name, clazz);
-		configure.execute(format);
+		maybeCreate(name, clazz).lazyActions.add((Action<FormatExtension>) configure);
 	}
 
 	@SuppressWarnings("unchecked")

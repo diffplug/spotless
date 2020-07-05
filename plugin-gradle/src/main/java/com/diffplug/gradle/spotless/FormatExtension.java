@@ -62,7 +62,7 @@ import groovy.lang.Closure;
 /** Adds a `spotless{Name}Check` and `spotless{Name}Apply` task. */
 public class FormatExtension {
 	final SpotlessExtensionBase spotless;
-	final List<Action<FormatExtension>> modernLazyActions = new ArrayList<>();
+	final List<Action<FormatExtension>> lazyActions = new ArrayList<>();
 
 	public FormatExtension(SpotlessExtensionBase spotless) {
 		this.spotless = Objects.requireNonNull(spotless);

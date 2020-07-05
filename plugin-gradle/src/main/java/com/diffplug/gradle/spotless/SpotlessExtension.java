@@ -56,15 +56,8 @@ public class SpotlessExtension extends SpotlessExtensionBase {
 
 	final TaskProvider<?> rootCheckTask, rootApplyTask, rootDiagnoseTask;
 
-	@Override
 	RegisterDependenciesTask getRegisterDependenciesTask() {
 		return registerDependenciesTask.get();
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T extends FormatExtension> void format(String name, Class<T> clazz, Action<T> configure) {
-		maybeCreate(name, clazz).modernLazyActions.add((Action<FormatExtension>) configure);
 	}
 
 	@Override
@@ -84,7 +77,7 @@ public class SpotlessExtension extends SpotlessExtensionBase {
 		project.afterEvaluate(unused -> {
 			spotlessTask.configure(task -> {
 				// now that the task is being configured, we execute our actions
-				for (Action<FormatExtension> lazyAction : formatExtension.modernLazyActions) {
+				for (Action<FormatExtension> lazyAction : formatExtension.lazyActions) {
 					lazyAction.execute(formatExtension);
 				}
 				// and now we'll setup the task
