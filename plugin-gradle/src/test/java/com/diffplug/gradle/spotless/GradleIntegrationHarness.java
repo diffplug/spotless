@@ -33,7 +33,7 @@ import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.common.tree.TreeDef;
 import com.diffplug.common.tree.TreeStream;
-import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.ResourceHarness;
 
 public class GradleIntegrationHarness extends ResourceHarness {
@@ -111,8 +111,7 @@ public class GradleIntegrationHarness extends ResourceHarness {
 		taskIsUpToDate("spotlessCheck", upToDate);
 	}
 
-	private static final boolean IS_UNIX = LineEnding.PLATFORM_NATIVE.str().equals("\n");
-	private static final int FILESYSTEM_RESOLUTION_MS = IS_UNIX ? 2000 : 150;
+	private static final int FILESYSTEM_RESOLUTION_MS = FileSignature.machineIsWin() ? 150 : 2000;
 
 	void pauseForFilesystem() {
 		Errors.rethrow().run(() -> Thread.sleep(FILESYSTEM_RESOLUTION_MS));
