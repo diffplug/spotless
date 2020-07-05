@@ -27,6 +27,10 @@ public class SpotlessPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
+		// if -PspotlessModern=true, then use the modern stuff instead of the legacy stuff
+		if (project.hasProperty(SPOTLESS_MODERN)) {
+			project.getLogger().warn("'spotlessModern' has no effect as of Spotless 5.0, recommend removing it.");
+		}
 		// make sure there's a `clean` task
 		project.getPlugins().apply(BasePlugin.class);
 
