@@ -6,6 +6,35 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+This release is *exactly* the same as `4.5.1`, except:
+
+- it now has plugin id `com.diffplug.spotless`, rather than `com.diffplug.gradle.spotless` ([why](https://dev.to/nedtwigg/names-in-java-maven-and-gradle-2fm2))
+- the minimum required Gradle has bumped from `2.14` to `5.4`
+- all deprecated functionality has been removed
+- `-PspotlessModern=true` (introduced in [`4.3.0`](#430---2020-06-05)) is now always on
+
+If `id 'com.diffplug.gradle.spotless' version '4.5.1'` works without deprecation warnings, then you can upgrade to `id 'com.diffplug.spotless' version '5.0.0'` and no changes will be required.
+
+* **BREAKING** All deprecated functionality has been removed (TODO)
+  * (dev-only) `SpotlessTask` was deleted, and `SpotlessTaskModern` was renamed to `SpotlessTask` (ditto for `SpotlessPlugin` and `SpotlessExtension`).
+* Introduced in earlier versions, but formerly gated behind `-PspotlessModern=true`
+  * We now calculate incremental builds using the new `InputChanges` rather than the deprecated `IncrementalTaskInputs`. ([#607](https://github.com/diffplug/spotless/pull/607))
+  * We now use Gradle's config avoidance APIs. ([#617](https://github.com/diffplug/spotless/pull/617))
+  * Spotless no longer creates any tasks eagerly. ([#622](https://github.com/diffplug/spotless/pull/622))
+  * **BREAKING** The closures inside each format specification are now executed lazily on task configuration. ([#618](https://github.com/diffplug/spotless/pull/618))
+
+```groovy
+String isEager = 'nope'
+spotless {
+    java {
+        isEager = 'yup'
+    }
+}
+println "isEager $isEager"
+// 'com.diffplug.gradle.spotless' -> isEager yup
+// 'com.diffplug.spotless'        -> isEager nope
+```
+
 ## [4.5.1] - 2020-07-04
 ### Fixed
 * Git-native handling of line endings was broken, now fixed ([#639](https://github.com/diffplug/spotless/pull/639)).
