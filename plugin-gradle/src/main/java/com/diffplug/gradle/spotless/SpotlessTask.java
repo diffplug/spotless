@@ -34,6 +34,7 @@ import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
+import org.gradle.work.Incremental;
 
 import com.diffplug.spotless.FormatExceptionPolicy;
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
@@ -120,6 +121,7 @@ public class SpotlessTask extends DefaultTask {
 	protected FileCollection target;
 
 	@PathSensitive(PathSensitivity.RELATIVE)
+	@Incremental
 	@InputFiles
 	public FileCollection getTarget() {
 		return target;

@@ -22,15 +22,10 @@ import java.nio.file.Path;
 import java.util.Comparator;
 
 import org.gradle.api.GradleException;
-import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.CacheableTask;
-import org.gradle.api.tasks.InputFiles;
-import org.gradle.api.tasks.PathSensitive;
-import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.work.ChangeType;
 import org.gradle.work.FileChange;
-import org.gradle.work.Incremental;
 import org.gradle.work.InputChanges;
 
 import com.diffplug.common.base.StringPrinter;
@@ -39,15 +34,6 @@ import com.diffplug.spotless.PaddedCell;
 
 @CacheableTask
 public class SpotlessTaskImpl extends SpotlessTask {
-
-	@PathSensitive(PathSensitivity.RELATIVE)
-	@Incremental
-	@InputFiles
-	@Override
-	public FileCollection getTarget() {
-		return super.getTarget();
-	}
-
 	@TaskAction
 	public void performAction(InputChanges inputs) throws Exception {
 		if (target == null) {
