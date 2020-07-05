@@ -116,6 +116,7 @@ public class TypescriptExtensionTest extends GradleIntegrationHarness {
 				"}",
 				"spotless {",
 				"    typescript {",
+				"        target 'src/**/*.ts'",
 				"        tsfmt().tsconfigFile('tsconfig.json')",
 				"    }",
 				"}");
