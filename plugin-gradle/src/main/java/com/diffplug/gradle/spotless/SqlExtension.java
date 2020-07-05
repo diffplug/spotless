@@ -25,7 +25,7 @@ import com.diffplug.spotless.sql.DBeaverSQLFormatterStep;
 public class SqlExtension extends FormatExtension {
 	static final String NAME = "sql";
 
-	public SqlExtension(SpotlessExtensionBase spotless) {
+	public SqlExtension(SpotlessExtension spotless) {
 		super(spotless);
 	}
 

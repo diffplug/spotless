@@ -15,108 +15,219 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static java.util.Objects.requireNonNull;
+
+import java.lang.reflect.Constructor;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import javax.annotation.Nullable;
+
 import org.gradle.api.Action;
+import org.gradle.api.GradleException;
 import org.gradle.api.Project;
-import org.gradle.api.plugins.BasePlugin;
-import org.gradle.api.plugins.JavaBasePlugin;
-import org.gradle.api.tasks.TaskContainer;
-import org.gradle.api.tasks.TaskProvider;
 
-public class SpotlessExtension extends SpotlessExtensionBase {
-	private final TaskProvider<RegisterDependenciesTask> registerDependenciesTask;
+import com.diffplug.common.base.Errors;
+import com.diffplug.spotless.LineEnding;
 
-	public SpotlessExtension(Project project) {
-		super(project);
-		rootCheckTask = project.getTasks().register(EXTENSION + CHECK, task -> {
-			task.setGroup(TASK_GROUP);
-			task.setDescription(CHECK_DESCRIPTION);
-		});
-		rootApplyTask = project.getTasks().register(EXTENSION + APPLY, task -> {
-			task.setGroup(TASK_GROUP);
-			task.setDescription(APPLY_DESCRIPTION);
-		});
-		rootDiagnoseTask = project.getTasks().register(EXTENSION + DIAGNOSE, task -> {
-			task.setGroup(TASK_GROUP); // no description on purpose
-		});
+public abstract class SpotlessExtension {
+	final Project project;
 
-		TaskContainer rootProjectTasks = project.getRootProject().getTasks();
-		if (!rootProjectTasks.getNames().contains(RegisterDependenciesTask.TASK_NAME)) {
-			this.registerDependenciesTask = rootProjectTasks.register(RegisterDependenciesTask.TASK_NAME, RegisterDependenciesTask.class, RegisterDependenciesTask::setup);
-		} else {
-			this.registerDependenciesTask = rootProjectTasks.named(RegisterDependenciesTask.TASK_NAME, RegisterDependenciesTask.class);
+	protected static final String TASK_GROUP = "Verification";
+	protected static final String CHECK_DESCRIPTION = "Checks that sourcecode satisfies formatting steps.";
+	protected static final String APPLY_DESCRIPTION = "Applies code formatting steps to sourcecode in-place.";
+
+	static final String EXTENSION = "spotless";
+	static final String CHECK = "Check";
+	static final String APPLY = "Apply";
+	static final String DIAGNOSE = "Diagnose";
+
+	protected SpotlessExtension(Project project) {
+		this.project = requireNonNull(project);
+	}
+
+	abstract RegisterDependenciesTask getRegisterDependenciesTask();
+
+	/** Line endings (if any). */
+	LineEnding lineEndings = LineEnding.GIT_ATTRIBUTES;
+
+	public LineEnding getLineEndings() {
+		return lineEndings;
+	}
+
+	public void setLineEndings(LineEnding lineEndings) {
+		this.lineEndings = requireNonNull(lineEndings);
+	}
+
+	Charset encoding = StandardCharsets.UTF_8;
+
+	/** Returns the encoding to use. */
+	public Charset getEncoding() {
+		return encoding;
+	}
+
+	/** Sets encoding to use (defaults to UTF_8). */
+	public void setEncoding(String name) {
+		requireNonNull(name);
+		setEncoding(Charset.forName(name));
+	}
+
+	/** Sets encoding to use (defaults to UTF_8). */
+	public void setEncoding(Charset charset) {
+		encoding = requireNonNull(charset);
+	}
+
+	/** Sets encoding to use (defaults to UTF_8). */
+	public void encoding(String charset) {
+		setEncoding(charset);
+	}
+
+	private @Nullable String ratchetFrom;
+
+	/**
+	 * Limits the target to only the files which have changed since the given git reference,
+	 * which is resolved according to [this](https://javadoc.io/static/org.eclipse.jgit/org.eclipse.jgit/5.6.1.202002131546-r/org/eclipse/jgit/lib/Repository.html#resolve-java.lang.String-)
+	 */
+	public void setRatchetFrom(String ratchetFrom) {
+		this.ratchetFrom = ratchetFrom;
+	}
+
+	/** @see #setRatchetFrom(String) */
+	public @Nullable String getRatchetFrom() {
+		return ratchetFrom;
+	}
+
+	/** @see #setRatchetFrom(String) */
+	public void ratchetFrom(String ratchetFrom) {
+		setRatchetFrom(ratchetFrom);
+	}
+
+	final Map<String, FormatExtension> formats = new LinkedHashMap<>();
+
+	/** Configures the special java-specific extension. */
+	public void java(Action<JavaExtension> closure) {
+		requireNonNull(closure);
+		format(JavaExtension.NAME, JavaExtension.class, closure);
+	}
+
+	/** Configures the special scala-specific extension. */
+	public void scala(Action<ScalaExtension> closure) {
+		requireNonNull(closure);
+		format(ScalaExtension.NAME, ScalaExtension.class, closure);
+	}
+
+	/** Configures the special kotlin-specific extension. */
+	public void kotlin(Action<KotlinExtension> closure) {
+		requireNonNull(closure);
+		format(KotlinExtension.NAME, KotlinExtension.class, closure);
+	}
+
+	/** Configures the special Gradle Kotlin DSL specific extension. */
+	public void kotlinGradle(Action<KotlinGradleExtension> closure) {
+		requireNonNull(closure);
+		format(KotlinGradleExtension.NAME, KotlinGradleExtension.class, closure);
+	}
+
+	/** Configures the special freshmark-specific extension. */
+	public void freshmark(Action<FreshMarkExtension> closure) {
+		requireNonNull(closure);
+		format(FreshMarkExtension.NAME, FreshMarkExtension.class, closure);
+	}
+
+	/** Configures the special groovy-specific extension. */
+	public void groovy(Action<GroovyExtension> closure) {
+		format(GroovyExtension.NAME, GroovyExtension.class, closure);
+	}
+
+	/** Configures the special groovy-specific extension for Gradle files. */
+	public void groovyGradle(Action<GroovyGradleExtension> closure) {
+		format(GroovyGradleExtension.NAME, GroovyGradleExtension.class, closure);
+	}
+
+	/** Configures the special sql-specific extension for SQL files. */
+	public void sql(Action<SqlExtension> closure) {
+		format(SqlExtension.NAME, SqlExtension.class, closure);
+	}
+
+	/** Configures the special C/C++-specific extension. */
+	public void cpp(Action<CppExtension> closure) {
+		format(CppExtension.NAME, CppExtension.class, closure);
+	}
+
+	/** Configures the special typescript-specific extension for typescript files. */
+	public void typescript(Action<TypescriptExtension> closure) {
+		format(TypescriptExtension.NAME, TypescriptExtension.class, closure);
+	}
+
+	/** Configures the special antlr4-specific extension for antlr4 files. */
+	public void antlr4(Action<Antlr4Extension> closure) {
+		format(Antlr4Extension.NAME, Antlr4Extension.class, closure);
+	}
+
+	/** Configures a custom extension. */
+	public void format(String name, Action<FormatExtension> closure) {
+		requireNonNull(name, "name");
+		requireNonNull(closure, "closure");
+		format(name, FormatExtension.class, closure);
+	}
+
+	/** Makes it possible to remove a format which was created earlier. */
+	public void removeFormat(String name) {
+		requireNonNull(name);
+		FormatExtension toRemove = formats.remove(name);
+		if (toRemove == null) {
+			project.getLogger().warn("Called removeFormat('" + name + "') but there was no such format.");
 		}
+	}
 
-		project.afterEvaluate(unused -> {
-			if (enforceCheck) {
-				project.getTasks().named(JavaBasePlugin.CHECK_TASK_NAME)
-						.configure(task -> task.dependsOn(rootCheckTask));
+	boolean enforceCheck = true;
+
+	/** Returns `true` if Gradle's `check` task should run `spotlessCheck`; `false` otherwise. */
+	public boolean isEnforceCheck() {
+		return enforceCheck;
+	}
+
+	/**
+	 * Configures Gradle's `check` task to run `spotlessCheck` if `true`,
+	 * but to not do so if `false`.
+	 *
+	 * `true` by default.
+	 */
+	public void setEnforceCheck(boolean enforceCheck) {
+		this.enforceCheck = enforceCheck;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T extends FormatExtension> void format(String name, Class<T> clazz, Action<T> configure) {
+		maybeCreate(name, clazz).lazyActions.add((Action<FormatExtension>) configure);
+	}
+
+	@SuppressWarnings("unchecked")
+	protected final <T extends FormatExtension> T maybeCreate(String name, Class<T> clazz) {
+		FormatExtension existing = formats.get(name);
+		if (existing != null) {
+			if (!existing.getClass().equals(clazz)) {
+				throw new GradleException("Tried to add format named '" + name + "'" +
+						" of type " + clazz + " but one has already been created of type " + existing.getClass());
+			} else {
+				return (T) existing;
 			}
-		});
-	}
-
-	final TaskProvider<?> rootCheckTask, rootApplyTask, rootDiagnoseTask;
-
-	RegisterDependenciesTask getRegisterDependenciesTask() {
-		return registerDependenciesTask.get();
-	}
-
-	@Override
-	protected void createFormatTasks(String name, FormatExtension formatExtension) {
-		boolean isIdeHook = project.hasProperty(IdeHook.PROPERTY);
-		TaskContainer tasks = project.getTasks();
-		TaskProvider<?> cleanTask = tasks.named(BasePlugin.CLEAN_TASK_NAME);
-
-		// create the SpotlessTask
-		String taskName = EXTENSION + SpotlessPlugin.capitalize(name);
-		TaskProvider<SpotlessTask> spotlessTask = tasks.register(taskName, SpotlessTask.class, task -> {
-			task.setEnabled(!isIdeHook);
-			// clean removes the SpotlessCache, so we have to run after clean
-			task.mustRunAfter(cleanTask);
-		});
-
-		project.afterEvaluate(unused -> {
-			spotlessTask.configure(task -> {
-				// now that the task is being configured, we execute our actions
-				for (Action<FormatExtension> lazyAction : formatExtension.lazyActions) {
-					lazyAction.execute(formatExtension);
-				}
-				// and now we'll setup the task
-				formatExtension.setupTask(task);
-			});
-		});
-
-		// create the check and apply control tasks
-		TaskProvider<SpotlessApply> applyTask = tasks.register(taskName + APPLY, SpotlessApply.class, task -> {
-			task.setEnabled(!isIdeHook);
-			task.dependsOn(spotlessTask);
-			task.setSpotlessOutDirectory(spotlessTask.get().getOutputDirectory());
-			task.linkSource(spotlessTask.get());
-		});
-		rootApplyTask.configure(task -> {
-			task.dependsOn(applyTask);
-
-			if (isIdeHook) {
-				// the rootApplyTask is no longer just a marker task, now it does a bit of work itself
-				task.doLast(unused -> IdeHook.performHook(spotlessTask.get()));
+		} else {
+			try {
+				Constructor<T> constructor = clazz.getConstructor(SpotlessExtension.class);
+				T formatExtension = constructor.newInstance(this);
+				formats.put(name, formatExtension);
+				createFormatTasks(name, formatExtension);
+				return formatExtension;
+			} catch (NoSuchMethodException e) {
+				throw new GradleException("Must have a constructor " + clazz.getSimpleName() + "(SpotlessExtension root)", e);
+			} catch (Exception e) {
+				throw Errors.asRuntime(e);
 			}
-		});
-
-		TaskProvider<SpotlessCheck> checkTask = tasks.register(taskName + CHECK, SpotlessCheck.class, task -> {
-			task.setEnabled(!isIdeHook);
-			task.dependsOn(spotlessTask);
-			task.setSpotlessOutDirectory(spotlessTask.get().getOutputDirectory());
-			task.source = spotlessTask.get();
-
-			// if the user runs both, make sure that apply happens first,
-			task.mustRunAfter(applyTask);
-		});
-		rootCheckTask.configure(task -> task.dependsOn(checkTask));
-
-		// create the diagnose task
-		TaskProvider<SpotlessDiagnoseTask> diagnoseTask = tasks.register(taskName + DIAGNOSE, SpotlessDiagnoseTask.class, task -> {
-			task.source = spotlessTask.get();
-			task.mustRunAfter(cleanTask);
-		});
-		rootDiagnoseTask.configure(task -> task.dependsOn(diagnoseTask));
+		}
 	}
+
+	protected abstract void createFormatTasks(String name, FormatExtension formatExtension);
 }

@@ -26,7 +26,7 @@ import com.diffplug.spotless.extra.cpp.EclipseCdtFormatterStep;
 public class CppExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "cpp";
 
-	public CppExtension(SpotlessExtensionBase spotless) {
+	public CppExtension(SpotlessExtension spotless) {
 		super(spotless);
 	}
 

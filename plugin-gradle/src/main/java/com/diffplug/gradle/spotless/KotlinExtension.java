@@ -33,7 +33,7 @@ import com.diffplug.spotless.kotlin.KtfmtStep;
 public class KotlinExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "kotlin";
 
-	public KotlinExtension(SpotlessExtensionBase spotless) {
+	public KotlinExtension(SpotlessExtension spotless) {
 		super(spotless);
 	}
 

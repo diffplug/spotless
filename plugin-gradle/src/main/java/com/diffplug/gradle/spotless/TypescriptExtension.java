@@ -36,7 +36,7 @@ public class TypescriptExtension extends FormatExtension {
 
 	static final String NAME = "typescript";
 
-	public TypescriptExtension(SpotlessExtensionBase spotless) {
+	public TypescriptExtension(SpotlessExtension spotless) {
 		super(spotless);
 	}
 

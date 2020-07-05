@@ -61,10 +61,10 @@ import groovy.lang.Closure;
 
 /** Adds a `spotless{Name}Check` and `spotless{Name}Apply` task. */
 public class FormatExtension {
-	final SpotlessExtensionBase spotless;
+	final SpotlessExtension spotless;
 	final List<Action<FormatExtension>> lazyActions = new ArrayList<>();
 
-	public FormatExtension(SpotlessExtensionBase spotless) {
+	public FormatExtension(SpotlessExtension spotless) {
 		this.spotless = Objects.requireNonNull(spotless);
 	}
 
@@ -83,24 +83,24 @@ public class FormatExtension {
 
 	LineEnding lineEndings;
 
-	/** Returns the line endings to use (defaults to {@link SpotlessExtension#getLineEndings()}. */
+	/** Returns the line endings to use (defaults to {@link SpotlessExtensionImpl#getLineEndings()}. */
 	public LineEnding getLineEndings() {
 		return lineEndings == null ? spotless.getLineEndings() : lineEndings;
 	}
 
-	/** Sets the line endings to use (defaults to {@link SpotlessExtension#getLineEndings()}. */
+	/** Sets the line endings to use (defaults to {@link SpotlessExtensionImpl#getLineEndings()}. */
 	public void setLineEndings(LineEnding lineEndings) {
 		this.lineEndings = Objects.requireNonNull(lineEndings);
 	}
 
 	Charset encoding;
 
-	/** Returns the encoding to use (defaults to {@link SpotlessExtension#getEncoding()}. */
+	/** Returns the encoding to use (defaults to {@link SpotlessExtensionImpl#getEncoding()}. */
 	public Charset getEncoding() {
 		return encoding == null ? spotless.getEncoding() : encoding;
 	}
 
-	/** Sets the encoding to use (defaults to {@link SpotlessExtension#getEncoding()}. */
+	/** Sets the encoding to use (defaults to {@link SpotlessExtensionImpl#getEncoding()}. */
 	public void setEncoding(String name) {
 		setEncoding(Charset.forName(Objects.requireNonNull(name)));
 	}
@@ -116,7 +116,7 @@ public class FormatExtension {
 	}
 
 	/**
-	 * Allows you to override the value from the parent {@link SpotlessExtensionBase#setRatchetFrom(String)}
+	 * Allows you to override the value from the parent {@link SpotlessExtension#setRatchetFrom(String)}
 	 * for this specific format.
 	 */
 	public void setRatchetFrom(String ratchetFrom) {
@@ -128,7 +128,7 @@ public class FormatExtension {
 		setRatchetFrom(ratchetFrom);
 	}
 
-	/** Sets the encoding to use (defaults to {@link SpotlessExtension#getEncoding()}. */
+	/** Sets the encoding to use (defaults to {@link SpotlessExtensionImpl#getEncoding()}. */
 	public void setEncoding(Charset charset) {
 		encoding = Objects.requireNonNull(charset);
 	}
@@ -145,7 +145,7 @@ public class FormatExtension {
 		exceptionPolicy.excludePath(Objects.requireNonNull(relativePath));
 	}
 
-	/** Sets encoding to use (defaults to {@link SpotlessExtension#getEncoding()}). */
+	/** Sets encoding to use (defaults to {@link SpotlessExtensionImpl#getEncoding()}). */
 	public void encoding(String charset) {
 		setEncoding(charset);
 	}
@@ -438,7 +438,7 @@ public class FormatExtension {
 		/**
 		 * @param updateYearWithLatest
 		 *           Will turn `2004` into `2004-2020`, and `2004-2019` into `2004-2020`
-		 *           Default value is false, unless {@link SpotlessExtension#ratchetFrom(String)} is used, in which case default value is true.
+		 *           Default value is false, unless {@link SpotlessExtensionImpl#ratchetFrom(String)} is used, in which case default value is true.
 		 */
 		public LicenseHeaderConfig updateYearWithLatest(boolean updateYearWithLatest) {
 			this.updateYearWithLatest = updateYearWithLatest;
