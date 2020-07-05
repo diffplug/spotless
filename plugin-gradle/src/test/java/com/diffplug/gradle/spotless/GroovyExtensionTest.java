@@ -39,7 +39,7 @@ public class GroovyExtensionTest extends GradleIntegrationHarness {
 		String excludeStatement = excludeJava ? "excludeJava()" : "";
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
 				"apply plugin: 'groovy'",
 				"",
@@ -71,7 +71,7 @@ public class GroovyExtensionTest extends GradleIntegrationHarness {
 	public void excludeJavaWithCustomTarget() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
 				"apply plugin: 'groovy'",
 				"",
@@ -94,7 +94,7 @@ public class GroovyExtensionTest extends GradleIntegrationHarness {
 	public void groovyPluginMissingCheck() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
 				"apply plugin: 'java'",
 				"",

@@ -26,7 +26,7 @@ public class FreshMarkExtensionTest extends GradleIntegrationHarness {
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'java'",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
 				"spotless {",
 				"    freshmark {",

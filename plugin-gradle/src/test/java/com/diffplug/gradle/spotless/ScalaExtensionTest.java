@@ -25,7 +25,7 @@ public class ScalaExtensionTest extends GradleIntegrationHarness {
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
 				"apply plugin: 'scala'",
 				"spotless {",

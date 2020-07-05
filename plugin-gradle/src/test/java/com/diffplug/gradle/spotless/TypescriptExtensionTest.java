@@ -29,7 +29,7 @@ public class TypescriptExtensionTest extends GradleIntegrationHarness {
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
 				"def tsfmtconfig = [:]",
 				"tsfmtconfig['indentSize'] = 1",
@@ -50,7 +50,7 @@ public class TypescriptExtensionTest extends GradleIntegrationHarness {
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
 				"def tsfmtconfig = [:]",
 				"tsfmtconfig['indentSize'] = 1",
@@ -71,7 +71,7 @@ public class TypescriptExtensionTest extends GradleIntegrationHarness {
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
 				"def tsfmtconfig = [:]",
 				"tsfmtconfig['indentSize'] = 1",
@@ -93,7 +93,7 @@ public class TypescriptExtensionTest extends GradleIntegrationHarness {
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
 				"spotless {",
 				"    typescript {",
@@ -112,7 +112,7 @@ public class TypescriptExtensionTest extends GradleIntegrationHarness {
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
 				"spotless {",
 				"    typescript {",
@@ -129,7 +129,7 @@ public class TypescriptExtensionTest extends GradleIntegrationHarness {
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
 				"spotless {",
 				"    typescript {",

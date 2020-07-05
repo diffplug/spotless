@@ -29,7 +29,7 @@ public class MultiProjectAfterEvaluate extends GradleIntegrationHarness {
 		setFile("sub/build.gradle")
 				.toLines(
 						"plugins {",
-						"  id 'com.diffplug.gradle.spotless'",
+						"  id 'com.diffplug.spotless'",
 						"  id 'java'",
 						"}",
 						"spotless { java { googleJavaFormat() } }");

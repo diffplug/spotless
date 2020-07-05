@@ -27,9 +27,9 @@ public class RegisterDependenciesTaskTest extends GradleIntegrationHarness {
 				.toLines("include 'sub'");
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
-				"plugins { id 'com.diffplug.gradle.spotless' }");
+				"plugins { id 'com.diffplug.spotless' }");
 		setFile("sub/build.gradle").toLines(
-				"apply plugin: 'com.diffplug.gradle.spotless'",
+				"apply plugin: 'com.diffplug.spotless'",
 				"",
 				"spotless {",
 				"  java {",

@@ -30,7 +30,7 @@ public class LicenseHeaderTest extends GradleIntegrationHarness {
 	private void setLicenseStep(String licenseLine) throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"  id 'com.diffplug.gradle.spotless'",
+				"  id 'com.diffplug.spotless'",
 				"  id 'java'",
 				"}",
 				"spotless {",

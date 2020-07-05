@@ -35,7 +35,7 @@ public class IdeHookTest extends GradleIntegrationHarness {
 	public void before() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"  id 'com.diffplug.gradle.spotless'",
+				"  id 'com.diffplug.spotless'",
 				"}",
 				"spotless {",
 				"  format 'misc', {",
