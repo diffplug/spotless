@@ -33,6 +33,12 @@ public class SpotlessPluginRedirect implements Plugin<Project> {
 				"- Now you can use:      id 'com.diffplug.spotless' version '5.0.0'",
 				"",
 				"That's all you really need to know, but as always, there are more details in the changelog:",
-				"https://github.com/diffplug/spotless/blob/main/plugin-gradle/CHANGES.md"));
+				"https://github.com/diffplug/spotless/blob/main/plugin-gradle/CHANGES.md",
+				"",
+				"Also, if you haven't tried it yet, take a look at our IDE integration",
+				"and 'ratchetFrom'. We've found them to be useful, hope you do too.",
+				"",
+				"If you like the idea behind 'ratchetFrom', you should checkout spotless-changelog",
+				"https://github.com/diffplug/spotless-changelog"));
 	}
 }
