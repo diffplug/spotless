@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,109 +16,162 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Comparator;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
-import org.gradle.api.GradleException;
+import javax.annotation.Nullable;
+
+import org.eclipse.jgit.lib.ObjectId;
+import org.gradle.api.DefaultTask;
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.tasks.CacheableTask;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.Internal;
+import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
-import org.gradle.api.tasks.TaskAction;
-import org.gradle.work.ChangeType;
-import org.gradle.work.FileChange;
-import org.gradle.work.Incremental;
-import org.gradle.work.InputChanges;
 
-import com.diffplug.common.base.StringPrinter;
+import com.diffplug.spotless.FormatExceptionPolicy;
+import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
-import com.diffplug.spotless.PaddedCell;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.LineEnding;
 
-@CacheableTask
-public class SpotlessTask extends SpotlessTaskBase {
+public class SpotlessTask extends DefaultTask {
+	SpotlessApply applyTask;
+
+	/** Internal use only, allows coordination between check and apply when they are in the same build */
+	@Internal
+	SpotlessApply getApplyTask() {
+		return applyTask;
+	}
+
+	// set by SpotlessExtension, but possibly overridden by FormatExtension
+	protected String encoding = "UTF-8";
+
+	@Input
+	public String getEncoding() {
+		return encoding;
+	}
+
+	public void setEncoding(String encoding) {
+		this.encoding = Objects.requireNonNull(encoding);
+	}
+
+	protected LineEnding.Policy lineEndingsPolicy;
+
+	@Input
+	public LineEnding.Policy getLineEndingsPolicy() {
+		return lineEndingsPolicy;
+	}
+
+	public void setLineEndingsPolicy(LineEnding.Policy lineEndingsPolicy) {
+		this.lineEndingsPolicy = Objects.requireNonNull(lineEndingsPolicy);
+	}
+
+	/*** API which performs git up-to-date tasks. */
+	@Nullable
+	GitRatchetGradle ratchet;
+	/** The sha of the tree at repository root, used for determining if an individual *file* is clean according to git. */
+	ObjectId rootTreeSha;
+	/**
+	 * The sha of the tree at the root of *this project*, used to determine if the git baseline has changed within this folder.
+	 * Using a more fine-grained tree (rather than the project root) allows Gradle to mark more subprojects as up-to-date
+	 * compared to using the project root.
+	 */
+	private ObjectId subtreeSha = ObjectId.zeroId();
+
+	public void setupRatchet(GitRatchetGradle gitRatchet, String ratchetFrom) {
+		ratchet = gitRatchet;
+		rootTreeSha = gitRatchet.rootTreeShaOf(getProject(), ratchetFrom);
+		subtreeSha = gitRatchet.subtreeShaOf(getProject(), rootTreeSha);
+	}
+
+	@Internal
+	GitRatchetGradle getRatchet() {
+		return ratchet;
+	}
+
+	@Internal
+	ObjectId getRootTreeSha() {
+		return rootTreeSha;
+	}
+
+	@Input
+	public ObjectId getRatchetSha() {
+		return subtreeSha;
+	}
+
+	protected FormatExceptionPolicy exceptionPolicy = new FormatExceptionPolicyStrict();
+
+	public void setExceptionPolicy(FormatExceptionPolicy exceptionPolicy) {
+		this.exceptionPolicy = Objects.requireNonNull(exceptionPolicy);
+	}
+
+	@Input
+	public FormatExceptionPolicy getExceptionPolicy() {
+		return exceptionPolicy;
+	}
+
+	protected FileCollection target;
 
 	@PathSensitive(PathSensitivity.RELATIVE)
-	@Incremental
 	@InputFiles
-	@Override
 	public FileCollection getTarget() {
-		return super.getTarget();
+		return target;
 	}
 
-	@TaskAction
-	public void performAction(InputChanges inputs) throws Exception {
-		if (target == null) {
-			throw new GradleException("You must specify 'Iterable<File> target'");
-		}
-
-		if (!inputs.isIncremental()) {
-			getLogger().info("Not incremental: removing prior outputs");
-			getProject().delete(outputDirectory);
-			Files.createDirectories(outputDirectory.toPath());
-		}
-
-		try (Formatter formatter = buildFormatter()) {
-			for (FileChange fileChange : inputs.getFileChanges(target)) {
-				File input = fileChange.getFile();
-				if (fileChange.getChangeType() == ChangeType.REMOVED) {
-					deletePreviousResult(input);
-				} else {
-					if (input.isFile()) {
-						processInputFile(formatter, input);
-					}
-				}
-			}
-		}
-	}
-
-	protected void processInputFile(Formatter formatter, File input) throws IOException {
-		File output = getOutputFile(input);
-		getLogger().debug("Applying format to " + input + " and writing to " + output);
-		PaddedCell.DirtyState dirtyState;
-		if (ratchet != null && ratchet.isClean(getProject(), rootTreeSha, input)) {
-			dirtyState = PaddedCell.isClean();
+	public void setTarget(Iterable<File> target) {
+		if (target instanceof FileCollection) {
+			this.target = (FileCollection) target;
 		} else {
-			dirtyState = PaddedCell.calculateDirtyState(formatter, input);
-		}
-		if (dirtyState.isClean()) {
-			// Remove previous output if it exists
-			Files.deleteIfExists(output.toPath());
-		} else if (dirtyState.didNotConverge()) {
-			getLogger().warn("Skipping '" + input + "' because it does not converge.  Run `spotlessDiagnose` to understand why");
-		} else {
-			Path parentDir = output.toPath().getParent();
-			if (parentDir == null) {
-				throw new IllegalStateException("Every file has a parent folder.");
-			}
-			Files.createDirectories(parentDir);
-			dirtyState.writeCanonicalTo(output);
+			this.target = getProject().files(target);
 		}
 	}
 
-	protected void deletePreviousResult(File input) throws IOException {
-		File output = getOutputFile(input);
-		if (output.isDirectory()) {
-			Files.walk(output.toPath())
-					.sorted(Comparator.reverseOrder())
-					.map(Path::toFile)
-					.forEach(File::delete);
+	protected File outputDirectory = new File(getProject().getBuildDir(), "spotless/" + getName());
+
+	@OutputDirectory
+	public File getOutputDirectory() {
+		return outputDirectory;
+	}
+
+	protected List<FormatterStep> steps = new ArrayList<>();
+
+	@Input
+	public List<FormatterStep> getSteps() {
+		return Collections.unmodifiableList(steps);
+	}
+
+	public void setSteps(List<FormatterStep> steps) {
+		this.steps = PluginGradlePreconditions.requireElementsNonNull(steps);
+	}
+
+	public boolean addStep(FormatterStep step) {
+		return this.steps.add(Objects.requireNonNull(step));
+	}
+
+	/** Returns the name of this format. */
+	String formatName() {
+		String name = getName();
+		if (name.startsWith(SpotlessExtension.EXTENSION)) {
+			return name.substring(SpotlessExtension.EXTENSION.length()).toLowerCase(Locale.ROOT);
 		} else {
-			Files.deleteIfExists(output.toPath());
+			return name;
 		}
 	}
 
-	private File getOutputFile(File input) {
-		String outputFileName = FormatExtension.relativize(getProject().getProjectDir(), input);
-		if (outputFileName == null) {
-			throw new IllegalArgumentException(StringPrinter.buildString(printer -> {
-				printer.println("Spotless error! All target files must be within the project root. In project " + getProject().getPath());
-				printer.println("  root dir: " + getProject().getProjectDir().getAbsolutePath());
-				printer.println("    target: " + input.getAbsolutePath());
-			}));
-		}
-		return new File(outputDirectory, outputFileName);
+	Formatter buildFormatter() {
+		return Formatter.builder()
+				.lineEndingsPolicy(lineEndingsPolicy)
+				.encoding(Charset.forName(encoding))
+				.rootDir(getProject().getRootDir().toPath())
+				.steps(steps)
+				.exceptionPolicy(exceptionPolicy)
+				.build();
 	}
 }

@@ -50,9 +50,9 @@ public class SelfTest {
 			});
 		});
 		project.getBuildscript().getRepositories().mavenCentral();
-		SpotlessTask onlyTask = project.getTasks().stream()
-				.filter(task -> task instanceof SpotlessTask)
-				.map(task -> (SpotlessTask) task)
+		SpotlessTaskImpl onlyTask = project.getTasks().stream()
+				.filter(task -> task instanceof SpotlessTaskImpl)
+				.map(task -> (SpotlessTaskImpl) task)
 				.collect(MoreCollectors.singleOrEmpty()).get();
 		Tasks.execute(onlyTask);
 		// it will run forever with empty threads, so we have to kill it

@@ -68,7 +68,7 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 
 		// create the SpotlessTask
 		String taskName = EXTENSION + SpotlessPlugin.capitalize(name);
-		TaskProvider<SpotlessTask> spotlessTask = tasks.register(taskName, SpotlessTask.class, task -> {
+		TaskProvider<SpotlessTaskImpl> spotlessTask = tasks.register(taskName, SpotlessTaskImpl.class, task -> {
 			task.setEnabled(!isIdeHook);
 			// clean removes the SpotlessCache, so we have to run after clean
 			task.mustRunAfter(cleanTask);

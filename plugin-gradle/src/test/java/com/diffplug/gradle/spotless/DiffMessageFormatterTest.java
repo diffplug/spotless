@@ -15,8 +15,6 @@
  */
 package com.diffplug.gradle.spotless;
 
-import static com.diffplug.gradle.spotless.Tasks.execute;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,7 +40,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 	private class Bundle {
 		Project project = TestProvisioner.gradleProject(rootFolder());
 		File file;
-		SpotlessTask task;
+		SpotlessTaskImpl task;
 		SpotlessCheck check;
 
 		Bundle(String name) throws IOException {
@@ -52,8 +50,8 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 			createApplyTask(name, task);
 		}
 
-		private SpotlessTask createFormatTask(String name) {
-			SpotlessTask task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name), SpotlessTask.class);
+		private SpotlessTaskImpl createFormatTask(String name) {
+			SpotlessTaskImpl task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name), SpotlessTaskImpl.class);
 			task.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
 			task.setTarget(Collections.singletonList(file));
 			return task;
@@ -83,7 +81,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 		}
 
 		void check() throws Exception {
-			execute(task);
+			Tasks.execute(task);
 			check.performActionTest();
 		}
 	}

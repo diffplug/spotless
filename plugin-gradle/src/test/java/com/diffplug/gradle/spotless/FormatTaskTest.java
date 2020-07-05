@@ -15,8 +15,6 @@
  */
 package com.diffplug.gradle.spotless;
 
-import static com.diffplug.gradle.spotless.Tasks.execute;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -31,12 +29,12 @@ import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.TestProvisioner;
 
 public class FormatTaskTest extends ResourceHarness {
-	private SpotlessTask spotlessTask;
+	private SpotlessTaskImpl spotlessTask;
 
 	@Before
 	public void createTask() throws IOException {
 		Project project = TestProvisioner.gradleProject(rootFolder());
-		spotlessTask = project.getTasks().create("spotlessTaskUnderTest", SpotlessTask.class);
+		spotlessTask = project.getTasks().create("spotlessTaskUnderTest", SpotlessTaskImpl.class);
 		spotlessTask.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
 	}
 
@@ -46,7 +44,7 @@ public class FormatTaskTest extends ResourceHarness {
 		File outputFile = new File(spotlessTask.getOutputDirectory(), "testFile");
 
 		spotlessTask.setTarget(Collections.singleton(testFile));
-		execute(spotlessTask);
+		Tasks.execute(spotlessTask);
 
 		assertFile(outputFile).hasContent("\n");
 	}
@@ -58,7 +56,7 @@ public class FormatTaskTest extends ResourceHarness {
 		spotlessTask.setTarget(Collections.singleton(testFile));
 
 		spotlessTask.addStep(FormatterStep.createNeverUpToDate("double-p", content -> content.replace("pp", "p")));
-		execute(spotlessTask);
+		Tasks.execute(spotlessTask);
 
 		assertFile(outputFile).hasContent("aple");
 	}

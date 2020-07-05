@@ -31,7 +31,7 @@ import com.diffplug.spotless.FileSignature;
 final class Tasks {
 	private Tasks() {}
 
-	static void execute(SpotlessTask task) throws Exception {
+	static void execute(SpotlessTaskImpl task) throws Exception {
 		task.performAction(mockIncrementalTaskInputs(task.getProject().getProjectDir(), task.getTarget()));
 	}
 

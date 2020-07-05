@@ -35,7 +35,7 @@ import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
 public class SpotlessCheck extends DefaultTask {
-	SpotlessTaskBase source;
+	SpotlessTask source;
 	private File spotlessOutDirectory;
 
 	@PathSensitive(PathSensitivity.RELATIVE)
