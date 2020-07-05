@@ -29,6 +29,7 @@ public class SqlExtensionTest extends GradleIntegrationHarness {
 				"}",
 				"spotless {",
 				"    sql {",
+				"       target 'src/**'",
 				"       dbeaver()",
 				"    }",
 				"}");
@@ -46,6 +47,7 @@ public class SqlExtensionTest extends GradleIntegrationHarness {
 				"}",
 				"spotless {",
 				"    sql {",
+				"       target 'src/**'",
 				"       dbeaver().configFile 'myConfig.properties'",
 				"    }",
 				"}");

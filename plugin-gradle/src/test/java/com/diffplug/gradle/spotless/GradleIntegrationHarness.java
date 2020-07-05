@@ -31,7 +31,6 @@ import org.junit.Before;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StringPrinter;
-import com.diffplug.common.collect.ImmutableMap;
 import com.diffplug.common.tree.TreeDef;
 import com.diffplug.common.tree.TreeStream;
 import com.diffplug.spotless.JreVersion;
@@ -40,7 +39,7 @@ import com.diffplug.spotless.ResourceHarness;
 
 public class GradleIntegrationHarness extends ResourceHarness {
 	public enum GradleVersionSupport {
-		LEGACY("2.14"), KOTLIN("4.0"), CONFIG_AVOIDANCE("4.9"), MODERN(SpotlessPlugin.MINIMUM_GRADLE), SETTINGS_PLUGINS("6.0");
+		MODERN(SpotlessPlugin.MINIMUM_GRADLE), SETTINGS_PLUGINS("6.0");
 
 		final String version;
 
@@ -92,15 +91,10 @@ public class GradleIntegrationHarness extends ResourceHarness {
 	}
 
 	protected final GradleRunner gradleRunner() throws IOException {
-		GradleRunner runner = GradleRunner.create()
-				.withGradleVersion(GradleVersionSupport.LEGACY.version)
+		return GradleRunner.create()
+				.withGradleVersion(GradleVersionSupport.MODERN.version)
 				.withProjectDir(rootFolder())
 				.withPluginClasspath();
-		if ("true".equals(System.getProperty(SpotlessPlugin.SPOTLESS_MODERN))) {
-			runner.withEnvironment(ImmutableMap.of("ORG_GRADLE_PROJECT_" + SpotlessPlugin.SPOTLESS_MODERN, "true"));
-			runner.withGradleVersion(GradleVersionSupport.MODERN.version);
-		}
-		return runner;
 	}
 
 	/** Dumps the complete file contents of the folder to the console. */

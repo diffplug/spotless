@@ -30,6 +30,7 @@ public class FreshMarkExtensionTest extends GradleIntegrationHarness {
 				"}",
 				"spotless {",
 				"    freshmark {",
+				"        target '*.md'",
 				"        properties {",
 				"            it.put('lib', 'MyLib')",
 				"            it.put('author', 'Me')",
