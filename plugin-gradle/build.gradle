@@ -50,9 +50,15 @@ tasks.eclipse.dependsOn(pluginUnderTestMetadata)
 gradlePlugin {
 	plugins {
 		spotlessPlugin {
-			id = 'com.diffplug.gradle.spotless'
+			id = 'com.diffplug.spotless'
 			implementationClass = 'com.diffplug.gradle.spotless.SpotlessPlugin'
 			displayName = 'Spotless formatting plugin'
+			description = project.description
+		}
+		spotlessPluginLegacy {
+			id = 'com.diffplug.gradle.spotless'
+			implementationClass = 'com.diffplug.gradle.spotless.SpotlessPluginRedirect'
+			displayName = 'Spotless formatting plugin (legacy)'
 			description = project.description
 		}
 	}
@@ -80,6 +86,9 @@ if (version.endsWith('-SNAPSHOT')) {
 		]
 		plugins {
 			spotlessPlugin {
+				id = 'com.diffplug.spotless'
+			}
+			spotlessPluginLegacy {
 				id = 'com.diffplug.gradle.spotless'
 			}
 		}
