@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,54 +17,65 @@ package com.diffplug.gradle.spotless;
 
 import java.io.File;
 
-import org.gradle.api.Action;
-import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
-import org.gradle.api.tasks.incremental.InputFileDetails;
+import org.gradle.api.file.FileCollection;
+import org.gradle.api.file.FileSystemLocation;
+import org.gradle.api.file.FileType;
+import org.gradle.api.provider.Provider;
+import org.gradle.work.ChangeType;
+import org.gradle.work.FileChange;
+import org.gradle.work.InputChanges;
+
+import com.diffplug.common.collect.Iterables;
+import com.diffplug.spotless.FileSignature;
 
 final class Mocks {
 	private Mocks() {}
 
-	static IncrementalTaskInputs mockIncrementalTaskInputs(Iterable<File> target) {
-		return new IncrementalTaskInputs() {
+	static InputChanges mockIncrementalTaskInputs(File rootDir, Iterable<File> target) {
+		return new InputChanges() {
 			@Override
 			public boolean isIncremental() {
 				return false;
 			}
 
-			@Override
-			public void outOfDate(Action<? super InputFileDetails> action) {
-				for (File file : target) {
-					action.execute(mockInputFileDetails(file));
-				}
+			private Iterable<FileChange> getFileChanges() {
+				return Iterables.transform(target, file -> mockInputFileDetails(rootDir, file));
 			}
 
 			@Override
-			public void removed(Action<? super InputFileDetails> action) {
-				// do nothing
+			public Iterable<FileChange> getFileChanges(FileCollection arg0) {
+				return getFileChanges();
+			}
+
+			@Override
+			public Iterable<FileChange> getFileChanges(Provider<? extends FileSystemLocation> arg0) {
+				return getFileChanges();
 			}
 		};
 	}
 
-	private static InputFileDetails mockInputFileDetails(File file) {
-		return new InputFileDetails() {
+	private static FileChange mockInputFileDetails(File rootDir, File file) {
+		return new FileChange() {
 			@Override
-			public boolean isAdded() {
-				return false;
-			}
-
-			@Override
-			public boolean isModified() {
-				return false;
-			}
-
-			@Override
-			public boolean isRemoved() {
-				return false;
+			public ChangeType getChangeType() {
+				return ChangeType.MODIFIED;
 			}
 
 			@Override
 			public File getFile() {
 				return file;
+			}
+
+			@Override
+			public FileType getFileType() {
+				return FileType.FILE;
+			}
+
+			@Override
+			public String getNormalizedPath() {
+				String rootPath = FileSignature.pathNativeToUnix(rootDir.getAbsolutePath());
+				String absPath = FileSignature.pathNativeToUnix(file.getAbsolutePath());
+				return FileSignature.subpath(rootPath, absPath);
 			}
 		};
 	}

@@ -20,7 +20,6 @@ import java.util.function.Consumer;
 
 import org.gradle.api.Project;
 import org.gradle.api.internal.project.ProjectInternal;
-import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 import org.gradle.testkit.runner.GradleRunner;
 
 import com.diffplug.common.base.StandardSystemProperty;
@@ -55,9 +54,7 @@ public class SelfTest {
 				.filter(task -> task instanceof SpotlessTask)
 				.map(task -> (SpotlessTask) task)
 				.collect(MoreCollectors.singleOrEmpty()).get();
-
-		IncrementalTaskInputs inputs = Mocks.mockIncrementalTaskInputs(onlyTask.getTarget());
-		onlyTask.performAction(inputs);
+		Tasks.execute(onlyTask);
 		// it will run forever with empty threads, so we have to kill it
 		System.exit(0);
 	}
