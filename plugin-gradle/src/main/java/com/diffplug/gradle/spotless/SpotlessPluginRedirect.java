@@ -35,8 +35,11 @@ public class SpotlessPluginRedirect implements Plugin<Project> {
 				"That's all you really need to know, but as always, there are more details in the changelog:",
 				"https://github.com/diffplug/spotless/blob/main/plugin-gradle/CHANGES.md",
 				"",
-				"Also, if you haven't tried it yet, take a look at our IDE integration",
-				"and 'ratchetFrom'. We've found them to be useful, hope you do too.",
+				"While you're at it, you might want to search for \"target '**/\".  We used",
+				"to  recommend that in our README, but it's a lot slower than something",
+				"more specific like \"target 'src/**\".  Also, if you haven't tried them yet,",
+				"take a look at our IDE integration and 'ratchetFrom'.  We've found them",
+				"to be useful, hope you do too.",
 				"",
 				"If you like the idea behind 'ratchetFrom', you should checkout spotless-changelog",
 				"https://github.com/diffplug/spotless-changelog"));
