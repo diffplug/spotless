@@ -120,7 +120,9 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
 
 ### Requirements
 
-Spotless requires JRE 8+, and Gradle 2.14+.  Some steps require JRE 11+, `Unsupported major.minor version` means you're using a step that needs a newer JRE.
+Spotless requires JRE 8+, and Gradle 5.4+.  Some steps require JRE 11+, `Unsupported major.minor version` means you're using a step that needs a newer JRE.
+
+If you're stuck on an older version of Gradle, `id 'com.diffplug.gradle.spotless' version '4.5.1'` supports all the way back to Gradle 2.x`.
 
 <a name="applying-to-java-source"></a>
 
