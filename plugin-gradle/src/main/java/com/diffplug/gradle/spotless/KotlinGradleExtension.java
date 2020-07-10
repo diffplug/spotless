@@ -80,16 +80,34 @@ public class KotlinGradleExtension extends FormatExtension {
 		return new KtfmtConfig(version);
 	}
 
+	/**
+	 * Uses the given version of [ktfmt](https://github.com/facebookincubator/ktfmt) to format source
+	 * code.
+	 */
+	public KtfmtConfig ktfmt(String version, Boolean withDropboxStyle) {
+		Objects.requireNonNull(version);
+		Objects.requireNonNull(withDropboxStyle);
+		return new KtfmtConfig(version, withDropboxStyle);
+	}
+
 	public class KtfmtConfig {
 		final String version;
+		Boolean withDropboxStyle;
 
 		KtfmtConfig(String version) {
 			this.version = Objects.requireNonNull(version);
+			this.withDropboxStyle = false;
+			addStep(createStep());
+		}
+
+		KtfmtConfig(String version, Boolean withDropboxStyle) {
+			this.version = Objects.requireNonNull(version);
+			this.withDropboxStyle = Objects.requireNonNull(withDropboxStyle);
 			addStep(createStep());
 		}
 
 		private FormatterStep createStep() {
-			return KtfmtStep.create(version, provisioner());
+			return KtfmtStep.create(version, provisioner(), withDropboxStyle);
 		}
 	}
 

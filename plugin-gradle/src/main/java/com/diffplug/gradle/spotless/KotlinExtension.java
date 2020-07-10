@@ -90,20 +90,37 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 	 * code.
 	 */
 	public KtfmtConfig ktfmt(String version) {
+		return ktfmt(version, false);
+	}
+
+	/**
+	 * Uses the given version of [ktfmt](https://github.com/facebookincubator/ktfmt) and applies the dropbox style
+	 * option to format source code.
+	 */
+	public KtfmtConfig ktfmt(String version, Boolean withDropboxStyle) {
 		Objects.requireNonNull(version);
-		return new KtfmtConfig(version);
+		Objects.requireNonNull(withDropboxStyle);
+		return new KtfmtConfig(version, withDropboxStyle);
 	}
 
 	public class KtfmtConfig {
 		final String version;
+		final Boolean withDropboxStyle;
 
 		KtfmtConfig(String version) {
 			this.version = Objects.requireNonNull(version);
+			this.withDropboxStyle = false;
+			addStep(createStep());
+		}
+
+		KtfmtConfig(String version, Boolean withDropBoxStyle) {
+			this.version = Objects.requireNonNull(version);
+			this.withDropboxStyle = withDropBoxStyle;
 			addStep(createStep());
 		}
 
 		private FormatterStep createStep() {
-			return KtfmtStep.create(version, provisioner());
+			return KtfmtStep.create(version, provisioner(), withDropboxStyle);
 		}
 	}
 

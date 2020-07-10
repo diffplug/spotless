@@ -134,6 +134,28 @@ public class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
+	public void integration_ktfmt_with_dropbox_style() throws IOException {
+		if (JreVersion.thisVm() == JreVersion._8) {
+			// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
+			return;
+		}
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'nebula.kotlin' version '1.0.6'",
+				"    id 'com.diffplug.gradle.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlinGradle {",
+				"        ktfmt('0.15', true)",
+				"    }",
+				"}");
+		setFile("configuration.gradle.kts").toResource("kotlin/ktfmt/dropboxstyle.dirty");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("configuration.gradle.kts").sameAsResource("kotlin/ktfmt/dropboxstyle.clean");
+	}
+
+	@Test
 	public void integration_lint_script_files_without_top_level_declaration() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
