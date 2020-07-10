@@ -5,6 +5,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 **5.x preview:** If you are using Gradle 5.4+, you can preview thew upcoming `com.diffplug.spotless` plugin by adding `-PspotlessModern`, see [CHANGES-5.x-PREVIEW.md](CHANGES-5.x-PREVIEW.md) for details.
 
 ## [Unreleased]
+* Adding ktfmt(version, withDropBoxStyle) to allow [--dropbox-style option](https://github.com/diffplug/spotless/issues/641) which enables 4 spaces indenting.
 
 ## [4.5.1] - 2020-07-04
 ### Fixed

@@ -10,6 +10,7 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+* Adding ktfmt(version, withDropBoxStyle) to allow [--dropbox-style option](https://github.com/diffplug/spotless/issues/641) which enables 4 spaces indenting.
 
 ## [2.1.0] - 2020-07-04
 ### Added
