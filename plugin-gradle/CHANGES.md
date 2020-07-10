@@ -2,8 +2,6 @@
 
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
-**5.x preview:** If you are using Gradle 5.4+, you can preview thew upcoming `com.diffplug.spotless` plugin by adding `-PspotlessModern`, see [CHANGES-5.x-PREVIEW.md](CHANGES-5.x-PREVIEW.md) for details.
-
 ## [Unreleased]
 
 This release is *exactly* the same as `4.5.1`, except:
@@ -15,7 +13,7 @@ This release is *exactly* the same as `4.5.1`, except:
 
 If `id 'com.diffplug.gradle.spotless' version '4.5.1'` works without deprecation warnings, then you can upgrade to `id 'com.diffplug.spotless' version '5.0.0'` and no changes will be required.
 
-* **BREAKING** All deprecated functionality has been removed (TODO)
+* **BREAKING** All deprecated functionality has been removed ([#640](https://github.com/diffplug/spotless/pull/640)).
   * (dev-only) `SpotlessTask` was deleted, and `SpotlessTaskModern` was renamed to `SpotlessTask` (ditto for `SpotlessPlugin` and `SpotlessExtension`).
 * Introduced in earlier versions, but formerly gated behind `-PspotlessModern=true`
   * We now calculate incremental builds using the new `InputChanges` rather than the deprecated `IncrementalTaskInputs`. ([#607](https://github.com/diffplug/spotless/pull/607))
