@@ -41,13 +41,6 @@ task npmTest(type: Test) {
 	}
 }
 
-task modernTest(type: Test) {
-	systemProperty 'spotlessModern', 'true'
-	useJUnit {
-		excludeCategories 'com.diffplug.spotless.category.NpmTest', 'com.diffplug.gradle.spotless.ExcludeFromPluginGradleModern'
-	}
-}
-
 // make it easy for eclipse to run against latest build
 tasks.eclipse.dependsOn(pluginUnderTestMetadata)
 
@@ -57,9 +50,15 @@ tasks.eclipse.dependsOn(pluginUnderTestMetadata)
 gradlePlugin {
 	plugins {
 		spotlessPlugin {
-			id = 'com.diffplug.gradle.spotless'
+			id = 'com.diffplug.spotless'
 			implementationClass = 'com.diffplug.gradle.spotless.SpotlessPlugin'
 			displayName = 'Spotless formatting plugin'
+			description = project.description
+		}
+		spotlessPluginLegacy {
+			id = 'com.diffplug.gradle.spotless'
+			implementationClass = 'com.diffplug.gradle.spotless.SpotlessPluginRedirect'
+			displayName = 'Spotless formatting plugin (legacy)'
 			description = project.description
 		}
 	}
@@ -87,6 +86,9 @@ if (version.endsWith('-SNAPSHOT')) {
 		]
 		plugins {
 			spotlessPlugin {
+				id = 'com.diffplug.spotless'
+			}
+			spotlessPluginLegacy {
 				id = 'com.diffplug.gradle.spotless'
 			}
 		}

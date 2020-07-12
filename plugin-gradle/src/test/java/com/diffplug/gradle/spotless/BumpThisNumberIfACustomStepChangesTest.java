@@ -24,7 +24,7 @@ public class BumpThisNumberIfACustomStepChangesTest extends GradleIntegrationHar
 	private void writeBuildFile(String toInsert) throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
 				"spotless {",
 				"    format 'misc', {",

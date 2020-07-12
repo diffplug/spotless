@@ -17,7 +17,6 @@ package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
 
-import java.util.List;
 import java.util.Objects;
 
 import org.gradle.api.GradleException;
@@ -26,7 +25,6 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 
-import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.java.EclipseJdtFormatterStep;
@@ -38,7 +36,7 @@ import com.diffplug.spotless.java.RemoveUnusedImportsStep;
 public class JavaExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "java";
 
-	public JavaExtension(SpotlessExtensionBase spotless) {
+	public JavaExtension(SpotlessExtension spotless) {
 		super(spotless);
 	}
 
@@ -56,18 +54,6 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 		return licenseHeaderFile(licenseHeaderFile, LICENSE_HEADER_DELIMITER);
 	}
 
-	/** Method interface has been changed to
-	 * {@link JavaExtension#importOrder(String...)}.*/
-	@Deprecated
-	public void importOrder(List<String> importOrder) {
-		getProject().getLogger().warn(
-				StringPrinter.buildStringFromLines(
-						"'importOrder([x, y, z])' is deprecated.",
-						"Use 'importOrder x, y, z' instead.",
-						"For details see https://github.com/diffplug/spotless/tree/main/plugin-gradle#applying-to-java-source"));
-		importOrder(importOrder.toArray(new String[0]));
-	}
-
 	public void importOrder(String... importOrder) {
 		addStep(ImportOrderStep.forJava().createFrom(importOrder));
 	}
@@ -75,25 +61,6 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 	public void importOrderFile(Object importOrderFile) {
 		Objects.requireNonNull(importOrderFile);
 		addStep(ImportOrderStep.forJava().createFrom(getProject().file(importOrderFile)));
-	}
-
-	/** Use {@link #eclipse()} instead */
-	@Deprecated
-	public void eclipseFormatFile(Object eclipseFormatFile) {
-		eclipseFormatFile(EclipseJdtFormatterStep.defaultVersion(), eclipseFormatFile);
-	}
-
-	/** Use {@link #eclipse(String)} instead */
-	@Deprecated
-	public void eclipseFormatFile(String eclipseVersion, Object eclipseFormatFile) {
-		Objects.requireNonNull(eclipseVersion, "eclipseVersion");
-		Objects.requireNonNull(eclipseFormatFile, "eclipseFormatFile");
-		getProject().getLogger().warn(
-				StringPrinter.buildStringFromLines(
-						"'eclipseFormatFile [version] <file>' is deprecated.",
-						"Use 'eclipse([version]).configFile(<file>)' instead.",
-						"For details see https://github.com/diffplug/spotless/tree/main/plugin-gradle#applying-to-java-source"));
-		eclipse(eclipseVersion).configFile(eclipseFormatFile);
 	}
 
 	/** Removes any unused imports. */

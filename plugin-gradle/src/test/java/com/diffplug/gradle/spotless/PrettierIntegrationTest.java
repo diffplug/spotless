@@ -31,7 +31,7 @@ public class PrettierIntegrationTest extends GradleIntegrationHarness {
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
 				"def prettierConfig = [:]",
 				"prettierConfig['printWidth'] = 50",
@@ -54,7 +54,7 @@ public class PrettierIntegrationTest extends GradleIntegrationHarness {
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
 				"spotless {",
 				"    format 'mytypescript', {",
@@ -73,7 +73,7 @@ public class PrettierIntegrationTest extends GradleIntegrationHarness {
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
 				"spotless {",
 				"    format 'webResources', {",
@@ -92,7 +92,7 @@ public class PrettierIntegrationTest extends GradleIntegrationHarness {
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
 				"def prettierConfig = [:]",
 				"prettierConfig['tabWidth'] = 4",
@@ -117,7 +117,7 @@ public class PrettierIntegrationTest extends GradleIntegrationHarness {
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
 				"def prettierConfig = [:]",
 				"prettierConfig['tabWidth'] = 3",

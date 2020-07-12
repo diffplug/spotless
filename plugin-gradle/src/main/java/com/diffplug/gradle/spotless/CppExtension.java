@@ -17,11 +17,6 @@ package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.gradle.api.Project;
 
 import com.diffplug.spotless.cpp.CppDefaults;
@@ -31,29 +26,15 @@ import com.diffplug.spotless.extra.cpp.EclipseCdtFormatterStep;
 public class CppExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "cpp";
 
-	public CppExtension(SpotlessExtensionBase spotless) {
+	public CppExtension(SpotlessExtension spotless) {
 		super(spotless);
 	}
 
 	public EclipseConfig eclipseCdt() {
-		return new EclipseConfig(EclipseCdtFormatterStep.defaultVersion());
+		return eclipseCdt(EclipseCdtFormatterStep.defaultVersion());
 	}
 
 	public EclipseConfig eclipseCdt(String version) {
-		return new EclipseConfig(version);
-	}
-
-	/** Use {@link #eclipseCdt} instead. */
-	@Deprecated
-	public EclipseConfig eclipse() {
-		getProject().getLogger().warn("Spotless: in the `cpp { }` block, use `eclipseCdt()` instead of `eclipse()`");
-		return new EclipseConfig(EclipseCdtFormatterStep.defaultVersion());
-	}
-
-	/** Use {@link #eclipseCdt} instead. */
-	@Deprecated
-	public EclipseConfig eclipse(String version) {
-		getProject().getLogger().warn("Spotless: in the `cpp { }` block, use `eclipseCdt('" + version + "')` instead of `eclipse('" + version + "')`");
 		return new EclipseConfig(version);
 	}
 
@@ -77,28 +58,10 @@ public class CppExtension extends FormatExtension implements HasBuiltinDelimiter
 	@Override
 	protected void setupTask(SpotlessTask task) {
 		if (target == null) {
-			/*
-			 * The org.gradle.language.c and org.gradle.language.cpp source sets are seldom used.
-			 * Most Gradle C/C++ use external CMake builds (so the source location is unknown to Gradle).
-			 * Hence file extension based filtering is used in line with the org.eclipse.core.contenttype.contentTypes<
-			 * defined by the CDT plugin.
-			 */
-			noDefaultTarget();
-			target(FILE_FILTER.toArray());
+			throw noDefaultTargetException();
 		}
 		super.setupTask(task);
 	}
-
-	/**
-	 * Filter based on Eclipse-CDT <code>org.eclipse.core.contenttype.contentTypes</code>
-	 * extension <code>cSource</code>, <code>cHeader</code>, <code>cxxSource</code> and <code>cxxHeader</code>.
-	 */
-	@Deprecated
-	private static final List<String> FILE_FILTER = Collections.unmodifiableList(
-			Arrays.asList("c", "h", "C", "cpp", "cxx", "cc", "c++", "h", "hpp", "hh", "hxx", "inc")
-					.stream().map(s -> {
-						return "**/*." + s;
-					}).collect(Collectors.toList()));
 
 	@Override
 	public LicenseHeaderConfig licenseHeader(String licenseHeader) {

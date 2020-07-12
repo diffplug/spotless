@@ -50,7 +50,7 @@ public class GitRatchetGradleTest extends GradleIntegrationHarness {
 	public void singleProjectExhaustive() throws Exception {
 		try (Git git = initRepo()) {
 			setFile("build.gradle").toLines(
-					"plugins { id 'com.diffplug.gradle.spotless' }",
+					"plugins { id 'com.diffplug.spotless' }",
 					"spotless {",
 					"  ratchetFrom 'baseline'",
 					"  format 'misc', {",
@@ -135,7 +135,7 @@ public class GitRatchetGradleTest extends GradleIntegrationHarness {
 		return new BuildResultAssertion(gradleRunner().withGradleVersion(GradleVersionSupport.SETTINGS_PLUGINS.version).withArguments(tasks).buildAndFail());
 	}
 
-	private static final String BASELINE_ROOT = "bbb159b780adb549d15922091211f86b88464b68";
+	private static final String BASELINE_ROOT = "cf049829afeba064f27cd67911dc36e585c9d869";
 	private static final String BASELINE_CLEAN = "65fdd75c1ae00c0646f6487d68c44ddca51f0841";
 	private static final String BASELINE_DIRTY = "4cfc3358ccbf186738b82a60276b1e5306bc3870";
 
@@ -144,13 +144,13 @@ public class GitRatchetGradleTest extends GradleIntegrationHarness {
 		try (Git git = initRepo()) {
 			setFile("settings.gradle").toLines(
 					"plugins {",
-					"  id 'com.diffplug.gradle.spotless' apply false",
+					"  id 'com.diffplug.spotless' apply false",
 					"}",
 					"include 'clean'",
 					"include 'dirty'",
 					"include 'added'");
 			setFile("spotless.gradle").toLines(
-					"apply plugin: 'com.diffplug.gradle.spotless'",
+					"apply plugin: 'com.diffplug.spotless'",
 					"spotless {",
 					"  ratchetFrom 'main'",
 					"  format 'misc', {",

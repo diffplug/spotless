@@ -15,7 +15,6 @@
  */
 package com.diffplug.gradle.spotless;
 
-import static com.diffplug.gradle.spotless.Tasks.execute;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
@@ -41,7 +40,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 		Project project = TestProvisioner.gradleProject(rootFolder());
 		File file;
 		File outputFile;
-		SpotlessTask task;
+		SpotlessTaskImpl task;
 		SpotlessCheck check;
 		SpotlessApply apply;
 
@@ -55,8 +54,8 @@ public class PaddedCellTaskTest extends ResourceHarness {
 			outputFile = new File(task.getOutputDirectory() + "/src", file.getName());
 		}
 
-		private SpotlessTask createFormatTask(String name, FormatterStep step) {
-			SpotlessTask task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name), SpotlessTask.class);
+		private SpotlessTaskImpl createFormatTask(String name, FormatterStep step) {
+			SpotlessTaskImpl task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name), SpotlessTaskImpl.class);
 			task.addStep(step);
 			task.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
 			task.setTarget(Collections.singletonList(file));
@@ -93,16 +92,16 @@ public class PaddedCellTaskTest extends ResourceHarness {
 		}
 
 		void format() throws Exception {
-			execute(task);
+			Tasks.execute(task);
 		}
 
 		void apply() throws Exception {
-			execute(task);
+			Tasks.execute(task);
 			apply.performAction();
 		}
 
 		void check() throws Exception {
-			execute(task);
+			Tasks.execute(task);
 			check.performActionTest();
 		}
 	}

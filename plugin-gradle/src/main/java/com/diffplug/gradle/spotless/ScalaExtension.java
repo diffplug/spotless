@@ -31,7 +31,7 @@ import com.diffplug.spotless.scala.ScalaFmtStep;
 public class ScalaExtension extends FormatExtension {
 	static final String NAME = "scala";
 
-	public ScalaExtension(SpotlessExtensionBase spotless) {
+	public ScalaExtension(SpotlessExtension spotless) {
 		super(spotless);
 	}
 

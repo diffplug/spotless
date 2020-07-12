@@ -33,7 +33,7 @@ public class GradleIncrementalResolutionTest extends GradleIntegrationHarness {
 	public void failureDoesntTriggerAll() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
 				"spotless {",
 				"    format 'misc', {",

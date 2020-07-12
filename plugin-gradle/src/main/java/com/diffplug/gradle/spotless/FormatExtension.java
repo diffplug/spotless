@@ -21,7 +21,13 @@ import java.io.File;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Random;
+import java.util.TreeMap;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
@@ -40,7 +46,6 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LazyForwardingEquality;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
 import com.diffplug.spotless.generic.EndWithNewlineStep;
@@ -56,10 +61,10 @@ import groovy.lang.Closure;
 
 /** Adds a `spotless{Name}Check` and `spotless{Name}Apply` task. */
 public class FormatExtension {
-	final SpotlessExtensionBase spotless;
-	final List<Action<FormatExtension>> modernLazyActions = new ArrayList<>();
+	final SpotlessExtension spotless;
+	final List<Action<FormatExtension>> lazyActions = new ArrayList<>();
 
-	public FormatExtension(SpotlessExtensionBase spotless) {
+	public FormatExtension(SpotlessExtension spotless) {
 		this.spotless = Objects.requireNonNull(spotless);
 	}
 
@@ -76,38 +81,26 @@ public class FormatExtension {
 		throw new IllegalStateException("This format is not contained by any SpotlessExtension.");
 	}
 
-	/** Enables paddedCell mode. @see <a href="https://github.com/diffplug/spotless/blob/main/PADDEDCELL.md">Padded cell</a> */
-	@Deprecated
-	public void paddedCell() {
-		paddedCell(true);
-	}
-
-	/** Enables paddedCell mode. @see <a href="https://github.com/diffplug/spotless/blob/main/PADDEDCELL.md">Padded cell</a> */
-	@Deprecated
-	public void paddedCell(boolean paddedCell) {
-		spotless.project.getLogger().warn("PaddedCell is now always on, and cannot be turned off.");
-	}
-
 	LineEnding lineEndings;
 
-	/** Returns the line endings to use (defaults to {@link SpotlessExtension#getLineEndings()}. */
+	/** Returns the line endings to use (defaults to {@link SpotlessExtensionImpl#getLineEndings()}. */
 	public LineEnding getLineEndings() {
 		return lineEndings == null ? spotless.getLineEndings() : lineEndings;
 	}
 
-	/** Sets the line endings to use (defaults to {@link SpotlessExtension#getLineEndings()}. */
+	/** Sets the line endings to use (defaults to {@link SpotlessExtensionImpl#getLineEndings()}. */
 	public void setLineEndings(LineEnding lineEndings) {
 		this.lineEndings = Objects.requireNonNull(lineEndings);
 	}
 
 	Charset encoding;
 
-	/** Returns the encoding to use (defaults to {@link SpotlessExtension#getEncoding()}. */
+	/** Returns the encoding to use (defaults to {@link SpotlessExtensionImpl#getEncoding()}. */
 	public Charset getEncoding() {
 		return encoding == null ? spotless.getEncoding() : encoding;
 	}
 
-	/** Sets the encoding to use (defaults to {@link SpotlessExtension#getEncoding()}. */
+	/** Sets the encoding to use (defaults to {@link SpotlessExtensionImpl#getEncoding()}. */
 	public void setEncoding(String name) {
 		setEncoding(Charset.forName(Objects.requireNonNull(name)));
 	}
@@ -123,7 +116,7 @@ public class FormatExtension {
 	}
 
 	/**
-	 * Allows you to override the value from the parent {@link SpotlessExtensionBase#setRatchetFrom(String)}
+	 * Allows you to override the value from the parent {@link SpotlessExtension#setRatchetFrom(String)}
 	 * for this specific format.
 	 */
 	public void setRatchetFrom(String ratchetFrom) {
@@ -135,7 +128,7 @@ public class FormatExtension {
 		setRatchetFrom(ratchetFrom);
 	}
 
-	/** Sets the encoding to use (defaults to {@link SpotlessExtension#getEncoding()}. */
+	/** Sets the encoding to use (defaults to {@link SpotlessExtensionImpl#getEncoding()}. */
 	public void setEncoding(Charset charset) {
 		encoding = Objects.requireNonNull(charset);
 	}
@@ -152,7 +145,7 @@ public class FormatExtension {
 		exceptionPolicy.excludePath(Objects.requireNonNull(relativePath));
 	}
 
-	/** Sets encoding to use (defaults to {@link SpotlessExtension#getEncoding()}). */
+	/** Sets encoding to use (defaults to {@link SpotlessExtensionImpl#getEncoding()}). */
 	public void encoding(String charset) {
 		setEncoding(charset);
 	}
@@ -301,15 +294,6 @@ public class FormatExtension {
 		steps.add(newStep);
 	}
 
-	/** Returns the existing step with the given name, if any. */
-	@Deprecated
-	protected @Nullable FormatterStep getExistingStep(String stepName) {
-		return steps.stream() //
-				.filter(step -> stepName.equals(step.getName())) //
-				.findFirst() //
-				.orElse(null);
-	}
-
 	/** Returns the index of the existing step with the given name, or -1 if no such step exists. */
 	protected int getExistingStepIdx(String stepName) {
 		for (int i = 0; i < steps.size(); ++i) {
@@ -364,27 +348,6 @@ public class FormatExtension {
 		protected Integer calculateState() throws Exception {
 			return RANDOM.nextInt();
 		}
-	}
-
-	/**
-	 * Adds the given custom step, which is constructed lazily for ~~performance reasons~~.
-	 *
-	 * @deprecated starting in spotless 5.0, you get the same performance benefit out of
-	 * {@link #custom(String, FormatterFunc)}, so you should just use that.
-	 */
-	@Deprecated
-	public void customLazy(String name, ThrowingEx.Supplier<FormatterFunc> formatterSupplier) {
-		getProject().getLogger().warn("Spotless: customLazy has been deprecated, use custom instead");
-		Objects.requireNonNull(name, "name");
-		Objects.requireNonNull(formatterSupplier, "formatterSupplier");
-		addStep(FormatterStep.createLazy(name, () -> globalState, unusedState -> formatterSupplier.get()));
-	}
-
-	/** Same as {@link #customLazy(String, ThrowingEx.Supplier)}, but for Groovy closures. */
-	@Deprecated
-	public void customLazyGroovy(String name, ThrowingEx.Supplier<Closure<String>> formatterSupplier) {
-		Objects.requireNonNull(formatterSupplier, "formatterSupplier");
-		customLazy(name, () -> formatterSupplier.get()::call);
 	}
 
 	/** Adds a custom step. Receives a string with unix-newlines, must return a string with unix newlines. */
@@ -475,7 +438,7 @@ public class FormatExtension {
 		/**
 		 * @param updateYearWithLatest
 		 *           Will turn `2004` into `2004-2020`, and `2004-2019` into `2004-2020`
-		 *           Default value is false, unless {@link SpotlessExtension#ratchetFrom(String)} is used, in which case default value is true.
+		 *           Default value is false, unless {@link SpotlessExtensionImpl#ratchetFrom(String)} is used, in which case default value is true.
 		 */
 		public LicenseHeaderConfig updateYearWithLatest(boolean updateYearWithLatest) {
 			this.updateYearWithLatest = updateYearWithLatest;
@@ -657,13 +620,11 @@ public class FormatExtension {
 	 */
 	public SpotlessApply createIndependentApplyTask(String taskName) {
 		// create and setup the task
-		SpotlessTask spotlessTask = spotless.project.getTasks().create(taskName + "Helper", SpotlessTask.class);
+		SpotlessTask spotlessTask = spotless.project.getTasks().create(taskName + "Helper", SpotlessTaskImpl.class);
 		setupTask(spotlessTask);
 		// enforce the clean ordering
 		Task clean = spotless.project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME);
 		spotlessTask.mustRunAfter(clean);
-		// ignore the filePatterns
-		spotlessTask.setFilePatterns("");
 		// create the apply task
 		SpotlessApply applyTask = spotless.project.getTasks().create(taskName, SpotlessApply.class);
 		applyTask.setSpotlessOutDirectory(spotlessTask.getOutputDirectory());
@@ -673,7 +634,7 @@ public class FormatExtension {
 		return applyTask;
 	}
 
-	protected void noDefaultTarget() {
-		getProject().getLogger().warn("Spotless: no target set for " + formatName() + ", will be an error in the next release!");
+	protected GradleException noDefaultTargetException() {
+		return new GradleException("Spotless failure, no target set!  You must set a target for " + formatName());
 	}
 }

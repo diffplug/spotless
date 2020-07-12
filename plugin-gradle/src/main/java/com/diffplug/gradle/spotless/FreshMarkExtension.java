@@ -33,7 +33,7 @@ public class FreshMarkExtension extends FormatExtension {
 
 	public final List<Action<Map<String, Object>>> propertyActions = new ArrayList<>();
 
-	public FreshMarkExtension(SpotlessExtensionBase spotless) {
+	public FreshMarkExtension(SpotlessExtension spotless) {
 		super(spotless);
 		addStep(FreshMarkStep.create(() -> {
 			Map<String, Object> map = new HashMap<>();
@@ -62,8 +62,7 @@ public class FreshMarkExtension extends FormatExtension {
 	protected void setupTask(SpotlessTask task) {
 		// defaults to all markdown files
 		if (target == null) {
-			noDefaultTarget();
-			target = parseTarget("**/*.md");
+			throw noDefaultTargetException();
 		}
 		super.setupTask(task);
 	}

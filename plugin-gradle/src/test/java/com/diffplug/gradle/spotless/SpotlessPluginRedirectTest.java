@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,25 +17,23 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
-public class CustomLazyGroovyTest extends GradleIntegrationHarness {
+import com.diffplug.common.base.StringPrinter;
+
+public class SpotlessPluginRedirectTest extends GradleIntegrationHarness {
 	@Test
-	public void integration() throws IOException {
+	public void test() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",
-				"}",
-				"spotless {",
-				"    format 'misc', {",
-				"        target file('README.md')",
-				"        customLazyGroovy('lowercase') {",
-				"             return { str -> str.toLowerCase(Locale.ROOT) }",
-				"        }",
-				"    }",
 				"}");
-		setFile("README.md").toContent("ABC");
-		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("README.md").hasContent("abc");
+		Assertions.assertThat(gradleRunner().buildAndFail().getOutput().replace("\r", ""))
+				.contains(StringPrinter.buildStringFromLines(
+						"> Failed to apply plugin [id 'com.diffplug.gradle.spotless']",
+						"   > We have moved from 'com.diffplug.gradle.spotless'",
+						"                     to 'com.diffplug.spotless'",
+						"     To migrate:"));
 	}
 }

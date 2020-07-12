@@ -29,7 +29,7 @@ public class KotlinGradleExtension extends FormatExtension {
 
 	static final String NAME = "kotlinGradle";
 
-	public KotlinGradleExtension(SpotlessExtensionBase spotless) {
+	public KotlinGradleExtension(SpotlessExtension spotless) {
 		super(spotless);
 	}
 
