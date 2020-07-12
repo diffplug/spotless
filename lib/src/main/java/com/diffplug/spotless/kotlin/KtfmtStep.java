@@ -97,6 +97,9 @@ public class KtfmtStep {
 			return input -> {
 				try {
 					if (withDropboxStyle) {
+						// we are duplicating the result of this parsing logic from ktfmt 0.15
+						// https://github.com/facebookincubator/ktfmt/blob/59f7ad8d1fde08f3402a013571c9997316083ebf/core/src/main/java/com/facebook/ktfmt/ParsedArgs.kt#L37
+						// if the code above changes in a future version, we will need to change this code
 						Class<?> formattingOptionsClazz = classLoader.loadClass(pkg + ".ktfmt.FormattingOptions");
 						Object formattingOptions = formattingOptionsClazz.getConstructor(
 								int.class, int.class, int.class).newInstance(
