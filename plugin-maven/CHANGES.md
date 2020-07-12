@@ -3,6 +3,7 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+*  Bump default ktfmt from 0.13 to 0.15 (#641).
 
 ## [2.0.1] - 2020-07-04
 ### Fixed

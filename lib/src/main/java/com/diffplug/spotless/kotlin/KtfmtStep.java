@@ -36,7 +36,8 @@ public class KtfmtStep {
 	/**
 	 * Used to allow drpobox style option through formatting options.
 	 *
-	 * @see: https://github.com/facebookincubator/ktfmt/blob/master/core/src/main/java/com/facebook/ktfmt/Formatter.kt#L47-L73
+	 * @see:
+	 *     https://github.com/facebookincubator/ktfmt/blob/bfd3f08059eace1562191d542d11c0f9dbd49332/core/src/main/java/com/facebook/ktfmt/Formatter.kt#L47-L73
 	 */
 	private static final int MAX_WIDTH_LINE = 100;
 	private static final int BLOCK_INDENT = 4;
@@ -46,7 +47,7 @@ public class KtfmtStep {
 	 * The <code>format</code> method is available in the link below.
 	 *
 	 * @see:
-	 *     https://github.com/facebookincubator/ktfmt/blob/master/core/src/main/java/com/facebook/ktfmt/Formatter.kt#L79-L92
+	 *     https://github.com/facebookincubator/ktfmt/blob/bfd3f08059eace1562191d542d11c0f9dbd49332/core/src/main/java/com/facebook/ktfmt/Formatter.kt#L75-L92
 	 */
 	static final String FORMATTER_METHOD = "format";
 
