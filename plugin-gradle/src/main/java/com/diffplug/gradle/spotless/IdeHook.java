@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,10 @@ class IdeHook {
 	final static String USE_STD_IN = "spotlessIdeHookUseStdIn";
 	final static String USE_STD_OUT = "spotlessIdeHookUseStdOut";
 
+	private static void dumpIsClean() {
+		System.err.println("IS CLEAN");
+	}
+
 	static void performHook(SpotlessTask spotlessTask) {
 		String path = (String) spotlessTask.getProject().property(PROPERTY);
 		File file = new File(path);
@@ -38,6 +42,12 @@ class IdeHook {
 		}
 		if (spotlessTask.getTarget().contains(file)) {
 			try (Formatter formatter = spotlessTask.buildFormatter()) {
+				if (spotlessTask.ratchet != null) {
+					if (spotlessTask.ratchet.isClean(spotlessTask.getProject(), spotlessTask.rootTreeSha, file)) {
+						dumpIsClean();
+						return;
+					}
+				}
 				byte[] bytes;
 				if (spotlessTask.getProject().hasProperty(USE_STD_IN)) {
 					bytes = ByteStreams.toByteArray(System.in);
@@ -46,10 +56,10 @@ class IdeHook {
 				}
 				PaddedCell.DirtyState dirty = PaddedCell.calculateDirtyState(formatter, file, bytes);
 				if (dirty.isClean()) {
-					System.err.println("IS CLEAN");
+					dumpIsClean();
 				} else if (dirty.didNotConverge()) {
 					System.err.println("DID NOT CONVERGE");
-					System.err.println("Run 'spotlessDiagnose' for details https://github.com/diffplug/spotless/blob/master/PADDEDCELL.md");
+					System.err.println("Run 'spotlessDiagnose' for details https://github.com/diffplug/spotless/blob/main/PADDEDCELL.md");
 				} else {
 					System.err.println("IS DIRTY");
 					if (spotlessTask.getProject().hasProperty(USE_STD_OUT)) {
@@ -58,11 +68,12 @@ class IdeHook {
 						dirty.writeCanonicalTo(file);
 					}
 				}
-				System.err.close();
-				System.out.close();
 			} catch (IOException e) {
 				e.printStackTrace(System.err);
 				throw Errors.asRuntime(e);
+			} finally {
+				System.err.close();
+				System.out.close();
 			}
 		}
 	}

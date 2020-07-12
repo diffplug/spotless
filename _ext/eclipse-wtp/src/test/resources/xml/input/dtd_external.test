@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE r SYSTEM "https://raw.githubusercontent.com/diffplug/spotless/master/_ext/eclipse-wtp/src/test/resources/xml/restrictions/test.dtd">
+<!DOCTYPE r SYSTEM "https://raw.githubusercontent.com/diffplug/spotless/main/_ext/eclipse-wtp/src/test/resources/xml/restrictions/test.dtd">
 <r>
 	<x>indent
   this text</x>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public class ScalaExtension extends FormatExtension {
 
 	private final ScalaCompiler scalaCompiler;
 
-	public ScalaExtension(SpotlessExtension rootExtension) {
+	public ScalaExtension(SpotlessExtensionBase rootExtension) {
 		super(rootExtension);
 
 		final PluginManager pluginManager = getProject().getPluginManager();
@@ -98,7 +98,7 @@ public class ScalaExtension extends FormatExtension {
 
 		private FormatterStep createStep() {
 			File resolvedConfigFile = configFile == null ? null : getProject().file(configFile);
-			return ScalaFmtStep.create(version, GradleProvisioner.fromProject(getProject()), resolvedConfigFile);
+			return ScalaFmtStep.create(version, provisioner(), resolvedConfigFile);
 		}
 	}
 

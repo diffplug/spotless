@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -235,9 +235,9 @@ public final class PaddedCell {
 	/**
 	 * The clean/dirty state of a single file.  Intended use:
 	 * - {@link #isClean()} means that the file is is clean, and there's nothing else to say
-	 * - {@link #isConverged()} means that we were able to determine a clean state
+	 * - {@link #didNotConverge()} means that we were unable to determine a clean state
 	 * - once you've tested the above conditions and you know that it's a dirty file with a converged state,
-	 *   then you can call {@link #writeCanonicalTo()} to get the canonical form of the given file.
+	 *   then you can call {@link #writeCanonicalTo(OutputStream)} to get the canonical form of the given file.
 	 */
 	public static class DirtyState {
 		private final byte[] canonicalBytes;
@@ -268,6 +268,11 @@ public final class PaddedCell {
 		public void writeCanonicalTo(OutputStream out) throws IOException {
 			out.write(canonicalBytes());
 		}
+	}
+
+	/** Returns the DirtyState which corresponds to `isClean()`. */
+	public static DirtyState isClean() {
+		return isClean;
 	}
 
 	private static final DirtyState didNotConverge = new DirtyState(null);

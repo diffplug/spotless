@@ -1,6 +1,6 @@
 # Contributing to Spotless
 
-Pull requests are welcome, preferably against `master`.  Feel free to develop spotless any way you like, but the easiest way to look at the code is to clone the repo and run `gradlew ide`, which will download, setup, and start an Eclipse IDE for you.
+Pull requests are welcome, preferably against `main`.  Feel free to develop spotless any way you like, but the easiest way to look at the code is to clone the repo and run `gradlew ide`, which will download, setup, and start an Eclipse IDE for you.
 
 ## How Spotless works
 
@@ -36,7 +36,6 @@ For the folders below in monospace text, they are published on maven central at 
 | `lib-extra` | Contains the optional parts of Spotless which require external dependencies.  `LineEnding.GIT_ATTRIBUTES` won't work unless `lib-extra` is available. |
 | `plugin-gradle` | Integrates spotless and all of its formatters into Gradle. |
 | `plugin-maven` | Integrates spotless and all of its formatters into Maven. |
-| javadoc-publish | Logic for publishing javadoc to github-pages. |
 | ide | Generates and launches an IDE for developing spotless. |
 | _ext | Folder for generating glue jars (specifically packaging Eclipse jars from p2 for consumption using maven).
 
@@ -45,7 +44,7 @@ For the folders below in monospace text, they are published on maven central at 
 The easiest way to create a FormatterStep is `FormatterStep createNeverUpToDate(String name, FormatterFunc function)`, which you can use like this:
 
 ```java
-FormatterStep identityStep = FormatterStep.createNeverUpToDate("identity", unix -> unix)
+FormatterStep identityStep = FormatterStep.createNeverUpToDate("identity", unixStr -> unixStr)
 ```
 
 This creates a step which will fail up-to-date checks (it is equal only to itself), and will use the function you passed in to do the formatting pass.
@@ -74,7 +73,7 @@ public final class ReplaceStep {
     }
 
     FormatterFunc toFormatter() {
-      return raw -> raw.replace(target, replacement);
+      return unixStr -> unixStr.replace(target, replacement);
     }
   }
 }
@@ -101,12 +100,15 @@ Here's a checklist for creating a new step for Spotless:
 - [ ] Test class has test methods to verify behavior.
 - [ ] Test class has a test method `equality()` which tests equality using `StepEqualityTester` (see existing methods for examples).
 
+### Accessing the underlying File
+
+In order for Spotless' model to work, each step needs to look only at the `String` input, otherwise they cannot compose.  However, there are some cases where the source `File` is useful, such as to look at the file extension.  In this case, you can pass a `FormatterFunc.NeedsFile` instead of a `FormatterFunc`.  This should only be used in [rare circumstances](https://github.com/diffplug/spotless/pull/637), be careful that you don't accidentally depend on the bytes inside of the `File`!
+
 ## How to enable the _ext projects
 
 The `_ext` projects are disabled per default, since:
 
-* some of the projects perform vasts downloads at configuration time
-
+* some of the projects perform vast downloads at configuration time
 * the downloaded content may change on server side and break CI builds
 
 
@@ -116,7 +118,6 @@ Activate the the property via command line, like for example:
 
 ```
 gradlew -Pcom.diffplug.spotless.include.ext=true build
-
 ```
 
 Or set the property in your user `gradle.properties` file, which is especially recommended if you like to work with the `_ext` projects using IDEs.
@@ -171,10 +172,6 @@ pluginManagement {
   repositories {
     maven {
       url 'https://jitpack.io'
-      metadataSources {
-        ignoreGradleMetadataRedirection() // not available until Gradle 5.6+, delete if you're on an older version
-        mavenPom()
-      }
       content {
         includeGroup 'com.github.{{user-or-org}}.spotless'
       }
@@ -199,7 +196,7 @@ Run `./gradlew publishToMavenLocal` to publish this to your local repository. Th
 
 ## License
 
-By contributing your code, you agree to license your contribution under the terms of the APLv2: https://github.com/diffplug/spotless/blob/master/LICENSE.txt
+By contributing your code, you agree to license your contribution under the terms of the APLv2: https://github.com/diffplug/spotless/blob/main/LICENSE.txt
 
 All files are released with the Apache 2.0 license as such:
 

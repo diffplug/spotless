@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,13 @@ import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElem
 import java.io.File;
 import java.io.Serializable;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
+import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -37,12 +39,14 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LazyForwardingEquality;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
 import com.diffplug.spotless.generic.EndWithNewlineStep;
 import com.diffplug.spotless.generic.IndentStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
+import com.diffplug.spotless.generic.LicenseHeaderStep.YearMode;
 import com.diffplug.spotless.generic.ReplaceRegexStep;
 import com.diffplug.spotless.generic.ReplaceStep;
 import com.diffplug.spotless.generic.TrimTrailingWhitespaceStep;
@@ -52,14 +56,19 @@ import groovy.lang.Closure;
 
 /** Adds a `spotless{Name}Check` and `spotless{Name}Apply` task. */
 public class FormatExtension {
-	final SpotlessExtension root;
+	final SpotlessExtensionBase spotless;
+	final List<Action<FormatExtension>> modernLazyActions = new ArrayList<>();
 
-	public FormatExtension(SpotlessExtension root) {
-		this.root = Objects.requireNonNull(root);
+	public FormatExtension(SpotlessExtensionBase spotless) {
+		this.spotless = Objects.requireNonNull(spotless);
+	}
+
+	protected final Provisioner provisioner() {
+		return spotless.getRegisterDependenciesTask().rootProvisioner;
 	}
 
 	private String formatName() {
-		for (Map.Entry<String, FormatExtension> entry : root.formats.entrySet()) {
+		for (Map.Entry<String, FormatExtension> entry : spotless.formats.entrySet()) {
 			if (entry.getValue() == this) {
 				return entry.getKey();
 			}
@@ -67,23 +76,23 @@ public class FormatExtension {
 		throw new IllegalStateException("This format is not contained by any SpotlessExtension.");
 	}
 
-	/** Enables paddedCell mode. @see <a href="https://github.com/diffplug/spotless/blob/master/PADDEDCELL.md">Padded cell</a> */
+	/** Enables paddedCell mode. @see <a href="https://github.com/diffplug/spotless/blob/main/PADDEDCELL.md">Padded cell</a> */
 	@Deprecated
 	public void paddedCell() {
 		paddedCell(true);
 	}
 
-	/** Enables paddedCell mode. @see <a href="https://github.com/diffplug/spotless/blob/master/PADDEDCELL.md">Padded cell</a> */
+	/** Enables paddedCell mode. @see <a href="https://github.com/diffplug/spotless/blob/main/PADDEDCELL.md">Padded cell</a> */
 	@Deprecated
 	public void paddedCell(boolean paddedCell) {
-		root.project.getLogger().warn("PaddedCell is now always on, and cannot be turned off.");
+		spotless.project.getLogger().warn("PaddedCell is now always on, and cannot be turned off.");
 	}
 
 	LineEnding lineEndings;
 
 	/** Returns the line endings to use (defaults to {@link SpotlessExtension#getLineEndings()}. */
 	public LineEnding getLineEndings() {
-		return lineEndings == null ? root.getLineEndings() : lineEndings;
+		return lineEndings == null ? spotless.getLineEndings() : lineEndings;
 	}
 
 	/** Sets the line endings to use (defaults to {@link SpotlessExtension#getLineEndings()}. */
@@ -95,12 +104,35 @@ public class FormatExtension {
 
 	/** Returns the encoding to use (defaults to {@link SpotlessExtension#getEncoding()}. */
 	public Charset getEncoding() {
-		return encoding == null ? root.getEncoding() : encoding;
+		return encoding == null ? spotless.getEncoding() : encoding;
 	}
 
 	/** Sets the encoding to use (defaults to {@link SpotlessExtension#getEncoding()}. */
 	public void setEncoding(String name) {
 		setEncoding(Charset.forName(Objects.requireNonNull(name)));
+	}
+
+	/** Sentinel to distinguish between "don't ratchet this format" and "use spotless parent format". */
+	private static final String RATCHETFROM_NOT_SET_AT_FORMAT_LEVEL = " not set at format level ";
+
+	private String ratchetFrom = RATCHETFROM_NOT_SET_AT_FORMAT_LEVEL;
+
+	/** @see #setRatchetFrom(String) */
+	public String getRatchetFrom() {
+		return ratchetFrom == RATCHETFROM_NOT_SET_AT_FORMAT_LEVEL ? spotless.getRatchetFrom() : ratchetFrom;
+	}
+
+	/**
+	 * Allows you to override the value from the parent {@link SpotlessExtensionBase#setRatchetFrom(String)}
+	 * for this specific format.
+	 */
+	public void setRatchetFrom(String ratchetFrom) {
+		this.ratchetFrom = ratchetFrom;
+	}
+
+	/** @see #setRatchetFrom(String) */
+	public void ratchetFrom(String ratchetFrom) {
+		setRatchetFrom(ratchetFrom);
 	}
 
 	/** Sets the encoding to use (defaults to {@link SpotlessExtension#getEncoding()}. */
@@ -303,13 +335,13 @@ public class FormatExtension {
 	}
 
 	/**
-	 * An optional performance optimization if you are using any of the `custom` or `customLazy`
-	 * methods.  If you aren't explicitly calling `custom` or `customLazy`, then this method
+	 * An optional performance optimization if you are using any of the `custom`
+	 * methods.  If you aren't explicitly calling `custom`, then this method
 	 * has no effect.
 	 *
 	 * Spotless tracks what files have changed from run to run, so that it can run faster
 	 * by only checking files which have changed, or whose formatting steps have changed.
-	 * If you use either the `custom` or `customLazy` methods, then gradle can never mark
+	 * If you use the `custom` methods, then gradle can never mark
 	 * your files as `up-to-date`, because it can't know if perhaps the behavior of your
 	 * custom function has changed.
 	 *
@@ -335,20 +367,21 @@ public class FormatExtension {
 	}
 
 	/**
-	 * Adds the given custom step, which is constructed lazily for performance reasons.
+	 * Adds the given custom step, which is constructed lazily for ~~performance reasons~~.
 	 *
-	 * The resulting function will receive a string with unix-newlines, and it must return a string unix newlines.
-	 *
-	 * If you're getting errors about `closure cannot be cast to com.diffplug.common.base.Throwing$Function`, then use
-	 * {@link #customLazyGroovy(String, ThrowingEx.Supplier)}.
+	 * @deprecated starting in spotless 5.0, you get the same performance benefit out of
+	 * {@link #custom(String, FormatterFunc)}, so you should just use that.
 	 */
+	@Deprecated
 	public void customLazy(String name, ThrowingEx.Supplier<FormatterFunc> formatterSupplier) {
+		getProject().getLogger().warn("Spotless: customLazy has been deprecated, use custom instead");
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(formatterSupplier, "formatterSupplier");
 		addStep(FormatterStep.createLazy(name, () -> globalState, unusedState -> formatterSupplier.get()));
 	}
 
 	/** Same as {@link #customLazy(String, ThrowingEx.Supplier)}, but for Groovy closures. */
+	@Deprecated
 	public void customLazyGroovy(String name, ThrowingEx.Supplier<Closure<String>> formatterSupplier) {
 		Objects.requireNonNull(formatterSupplier, "formatterSupplier");
 		customLazy(name, () -> formatterSupplier.get()::call);
@@ -363,7 +396,7 @@ public class FormatExtension {
 	/** Adds a custom step. Receives a string with unix-newlines, must return a string with unix newlines. */
 	public void custom(String name, FormatterFunc formatter) {
 		Objects.requireNonNull(formatter, "formatter");
-		customLazy(name, () -> formatter);
+		addStep(FormatterStep.createLazy(name, () -> globalState, unusedState -> formatter));
 	}
 
 	/** Highly efficient find-replace char sequence. */
@@ -406,12 +439,17 @@ public class FormatExtension {
 		addStep(IndentStep.Type.TAB.create());
 	}
 
-	public abstract class LicenseHeaderConfig {
-		String delimiter;
-		String yearSeparator = LicenseHeaderStep.defaultYearDelimiter();
+	/**
+	 * Created by {@link FormatExtension#licenseHeader(String, String)} or {@link FormatExtension#licenseHeaderFile(Object, String)}.
+	 * For most language-specific formats (e.g. java, scala, etc.) you can omit the second `delimiter` argument, because it is supplied
+	 * automatically ({@link HasBuiltinDelimiterForLicense}).
+	 */
+	public class LicenseHeaderConfig {
+		LicenseHeaderStep builder;
+		Boolean updateYearWithLatest = null;
 
-		public LicenseHeaderConfig(String delimiter) {
-			this.delimiter = Objects.requireNonNull(delimiter, "delimiter");
+		public LicenseHeaderConfig(LicenseHeaderStep builder) {
+			this.builder = builder;
 		}
 
 		/**
@@ -419,7 +457,7 @@ public class FormatExtension {
 		 *            Spotless will look for a line that starts with this regular expression pattern to know what the "top" is.
 		 */
 		public LicenseHeaderConfig delimiter(String delimiter) {
-			this.delimiter = Objects.requireNonNull(delimiter, "delimiter");
+			builder = builder.withDelimiter(delimiter);
 			replaceStep(createStep());
 			return this;
 		}
@@ -429,41 +467,31 @@ public class FormatExtension {
 		 *           The characters used to separate the first and last years in multi years patterns.
 		 */
 		public LicenseHeaderConfig yearSeparator(String yearSeparator) {
-			this.yearSeparator = Objects.requireNonNull(yearSeparator, "yearSeparator");
+			builder = builder.withYearSeparator(yearSeparator);
 			replaceStep(createStep());
 			return this;
 		}
 
-		abstract FormatterStep createStep();
-	}
-
-	public class LicenseStringHeaderConfig extends LicenseHeaderConfig {
-
-		private String header;
-
-		LicenseStringHeaderConfig(String delimiter, String header) {
-			super(delimiter);
-			this.header = Objects.requireNonNull(header, "header");
+		/**
+		 * @param updateYearWithLatest
+		 *           Will turn `2004` into `2004-2020`, and `2004-2019` into `2004-2020`
+		 *           Default value is false, unless {@link SpotlessExtension#ratchetFrom(String)} is used, in which case default value is true.
+		 */
+		public LicenseHeaderConfig updateYearWithLatest(boolean updateYearWithLatest) {
+			this.updateYearWithLatest = updateYearWithLatest;
+			replaceStep(createStep());
+			return this;
 		}
 
 		FormatterStep createStep() {
-			return LicenseHeaderStep.createFromHeader(header, delimiter, yearSeparator);
-		}
-	}
-
-	public class LicenseFileHeaderConfig extends LicenseHeaderConfig {
-
-		private Object headerFile;
-
-		LicenseFileHeaderConfig(String delimiter, Object headerFile) {
-			super(delimiter);
-			this.headerFile = Objects.requireNonNull(headerFile, "headerFile");
-		}
-
-		FormatterStep createStep() {
-			return LicenseHeaderStep
-					.createFromFile(getProject().file(headerFile), getEncoding(), delimiter,
-							yearSeparator);
+			return builder.withYearModeLazy(() -> {
+				if ("true".equals(spotless.project.findProperty(LicenseHeaderStep.FLAG_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY()))) {
+					return YearMode.SET_FROM_GIT;
+				} else {
+					boolean updateYear = updateYearWithLatest == null ? getRatchetFrom() != null : updateYearWithLatest;
+					return updateYear ? YearMode.UPDATE_TO_TODAY : YearMode.PRESERVE;
+				}
+			}).build();
 		}
 	}
 
@@ -474,7 +502,7 @@ public class FormatExtension {
 	 *            Spotless will look for a line that starts with this regular expression pattern to know what the "top" is.
 	 */
 	public LicenseHeaderConfig licenseHeader(String licenseHeader, String delimiter) {
-		LicenseHeaderConfig config = new LicenseStringHeaderConfig(delimiter, licenseHeader);
+		LicenseHeaderConfig config = new LicenseHeaderConfig(LicenseHeaderStep.headerDelimiter(licenseHeader, delimiter));
 		addStep(config.createStep());
 		return config;
 	}
@@ -486,7 +514,11 @@ public class FormatExtension {
 	 *            Spotless will look for a line that starts with this regular expression pattern to know what the "top" is.
 	 */
 	public LicenseHeaderConfig licenseHeaderFile(Object licenseHeaderFile, String delimiter) {
-		LicenseHeaderConfig config = new LicenseFileHeaderConfig(delimiter, licenseHeaderFile);
+		LicenseHeaderConfig config = new LicenseHeaderConfig(LicenseHeaderStep.headerDelimiter(() -> {
+			File file = getProject().file(licenseHeaderFile);
+			byte[] data = Files.readAllBytes(file.toPath());
+			return new String(data, getEncoding());
+		}, delimiter));
 		addStep(config.createStep());
 		return config;
 	}
@@ -540,7 +572,7 @@ public class FormatExtension {
 			final Project project = getProject();
 			return PrettierFormatterStep.create(
 					devDependencies,
-					GradleProvisioner.fromProject(project),
+					provisioner(),
 					project.getBuildDir(),
 					npmFileOrNull(),
 					new com.diffplug.spotless.npm.PrettierConfig(
@@ -570,7 +602,7 @@ public class FormatExtension {
 		private final EclipseBasedStepBuilder builder;
 
 		EclipseWtpConfig(EclipseWtpFormatterStep type, String version) {
-			builder = type.createBuilder(GradleProvisioner.fromProject(getProject()));
+			builder = type.createBuilder(provisioner());
 			builder.setVersion(version);
 			addStep(builder.build());
 		}
@@ -595,21 +627,21 @@ public class FormatExtension {
 	protected void setupTask(SpotlessTask task) {
 		task.setEncoding(getEncoding().name());
 		task.setExceptionPolicy(exceptionPolicy);
-		if (targetExclude == null) {
-			task.setTarget(target);
-		} else {
-			task.setTarget(target.minus(targetExclude));
-		}
+		FileCollection totalTarget = targetExclude == null ? target : target.minus(targetExclude);
+		task.setTarget(totalTarget);
 		task.setSteps(steps);
-		task.setLineEndingsPolicy(getLineEndings().createPolicy(getProject().getProjectDir(), () -> task.target));
-		if (root.project != root.project.getRootProject()) {
-			root.registerDependenciesTask.hookSubprojectTask(task);
+		task.setLineEndingsPolicy(getLineEndings().createPolicy(getProject().getProjectDir(), () -> totalTarget));
+		if (spotless.project != spotless.project.getRootProject()) {
+			spotless.getRegisterDependenciesTask().hookSubprojectTask(task);
+		}
+		if (getRatchetFrom() != null) {
+			task.setupRatchet(spotless.getRegisterDependenciesTask().gitRatchet, getRatchetFrom());
 		}
 	}
 
 	/** Returns the project that this extension is attached to. */
 	protected Project getProject() {
-		return root.project;
+		return spotless.project;
 	}
 
 	/**
@@ -625,19 +657,23 @@ public class FormatExtension {
 	 */
 	public SpotlessApply createIndependentApplyTask(String taskName) {
 		// create and setup the task
-		SpotlessTask spotlessTask = root.project.getTasks().create(taskName + "Helper", SpotlessTask.class);
+		SpotlessTask spotlessTask = spotless.project.getTasks().create(taskName + "Helper", SpotlessTask.class);
 		setupTask(spotlessTask);
 		// enforce the clean ordering
-		Task clean = root.project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME);
+		Task clean = spotless.project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME);
 		spotlessTask.mustRunAfter(clean);
 		// ignore the filePatterns
 		spotlessTask.setFilePatterns("");
 		// create the apply task
-		SpotlessApply applyTask = root.project.getTasks().create(taskName, SpotlessApply.class);
+		SpotlessApply applyTask = spotless.project.getTasks().create(taskName, SpotlessApply.class);
 		applyTask.setSpotlessOutDirectory(spotlessTask.getOutputDirectory());
 		applyTask.linkSource(spotlessTask);
 		applyTask.dependsOn(spotlessTask);
 
 		return applyTask;
+	}
+
+	protected void noDefaultTarget() {
+		getProject().getLogger().warn("Spotless: no target set for " + formatName() + ", will be an error in the next release!");
 	}
 }

@@ -10,9 +10,60 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+# Added
+* Support for Scalafix ([#591](https://github.com/diffplug/spotless/pull/591))
+
+## [2.1.0] - 2020-07-04
+### Added
+* `FileSignature.machineIsWin()`, to replace the now-deprecated `LineEnding.nativeIsWin()`, because it turns out that `\r\n` is [not a reliable way](https://github.com/diffplug/spotless/issues/559#issuecomment-653739898) to detect the windows OS ([#639](https://github.com/diffplug/spotless/pull/639)).
+### Fixed
+* `GitAttributesLineEndings` was fatally broken (always returned platform default), and our tests missed it because they tested the part before the broken part ([#639](https://github.com/diffplug/spotless/pull/639)).
+
+## [2.0.0] - 2020-07-02
+### Changed
+* `LineEnding.GIT_ATTRIBUTES` now creates a policy whose serialized state can be relocated from one machine to another.  No user-visible change, but paves the way for remote build cache support in Gradle. ([#621](https://github.com/diffplug/spotless/pull/621))
+### Added
+* `prettier` will now autodetect the parser (and formatter) to use based on the filename, unless you override this using `config` or `configFile` with the option `parser` or `filepath`. ([#620](https://github.com/diffplug/spotless/pull/620))
+* `GitRatchet` now lives in `lib-extra`, and is shared across `plugin-gradle` and `plugin-maven` ([#626](https://github.com/diffplug/spotless/pull/626)).
+* Added ANTLR4 support ([#326](https://github.com/diffplug/spotless/issues/326)).
+* `FormatterFunc.NeedsFile` for implementing file-based formatters more cleanly than we have so far ([#637](https://github.com/diffplug/spotless/issues/637)).
+### Changed
+* **BREAKING** `FileSignature` can no longer sign folders, only files.  Signatures are now based only on filename (not path), size, and a content hash.  It throws an error if a signature is attempted on a folder or on multiple files with different paths but the same filename - it never breaks silently.  This change does not break any of Spotless' internal logic, so it is unlikely to affect any of Spotless' consumers either. ([#571](https://github.com/diffplug/spotless/pull/571))
+  * This change allows the maven plugin to cache classloaders across subprojects when loading config resources from the classpath (fixes [#559](https://github.com/diffplug/spotless/issues/559)).
+  * This change also allows the gradle plugin to work with the remote buildcache (fixes [#280](https://github.com/diffplug/spotless/issues/280)).
+* **BREAKING** `FormatterFunc` no longer `extends ThrowingEx.Function` and `BiFunction`. In a major win for Java's idea of ["target typing"](https://cr.openjdk.java.net/~briangoetz/lambda/lambda-state-final.html), this required no changes anywhere in the codebase except deleting the `extends` part of `FormatterFunc` ([#638](https://github.com/diffplug/spotless/issues/638)).
+* **BREAKING** Heavy refactor of the `LicenseHeaderStep` public API.  Doesn't change internal behavior, but makes implementation of the gradle and maven plugins much easier. ([#628](https://github.com/diffplug/spotless/pull/628))
+* **BREAKING** Removed all deprecated methods and classes from `lib` and `lib-extra`.
+  * [#629](https://github.com/diffplug/spotless/pull/629) removes the code which wasn't being used in plugin-gradle or plugin-maven.
+  * [#630](https://github.com/diffplug/spotless/pull/630) moves the code which was still being used in deprecated parts of plugin-gradle into `.deprecated` package in `plugin-gradle`, which allows us to break `lib` without a breaking change in `plugin-gradle`.
+
+## [1.34.1] - 2020-06-17
+### Changed
+* Nodejs-based formatters `prettier` and `tsfmt` now use native node instead of the J2V8 approach. ([#606](https://github.com/diffplug/spotless/pull/606))
+  * This removes the dependency to the no-longer-maintained Linux/Windows/macOs variants of J2V8.
+  * This enables spotless to use the latest `prettier` versions (instead of being stuck at prettier version <= `1.19.0`)
+  * Bumped default versions, prettier `1.16.4` -> `2.0.5`, tslint `5.12.1` -> `6.1.2`
+* Our main branch is now called `main`. ([#613](https://github.com/diffplug/spotless/pull/613))
+
+## [1.34.0] - 2020-06-05
+### Added
+* `LicenseHeaderStep.setLicenseHeaderYearsFromGitHistory`, which does an expensive search through git history to determine the oldest and newest commits for each file, and uses that to determine license header years. ([#604](https://github.com/diffplug/spotless/pull/604))
+
+## [1.33.1] - 2020-06-04
+* We are now running CI on windows. ([#596](https://github.com/diffplug/spotless/pull/596))
+* We are now dogfooding `ratchetFrom` and `licenseHeader` with a `$YEAR` token to ensure that Spotless copyright headers stay up-to-date without adding noise to file history. ([#595](https://github.com/diffplug/spotless/pull/595))
+* Added `LineEnding.nativeIsWin()`, `FileSignature.pathNativeToUnix()`, and `FileSignature.pathUnixToNative()`, along with many API-invisible fixes and cleanup. ([#592](https://github.com/diffplug/spotless/pull/592))
+
+## [1.33.0] - 2020-06-03
+### Added
+* `LicenseHeaderStep` now has an `updateYearWithLatest` parameter which can update copyright headers to today's date. ([#593](https://github.com/diffplug/spotless/pull/593))
+  * Parsing of existing years from headers is now more lenient.
+  * The `LicenseHeaderStep` constructor is now public, which allows capturing its state lazily, which is helpful for setting defaults based on `ratchetFrom`.
+
+## [1.32.0] - 2020-06-01
 ### Added
 * `NodeJsGlobal.setSharedLibFolder` allows to set the location of nodejs shared libs. ([#586](https://github.com/diffplug/spotless/pull/586))
-* Support for Scalafix ([#591](https://github.com/diffplug/spotless/pull/591))
+* `PaddedCell.isClean()` returns the instance of `PaddedCell.DirtyState` which represents clean. ([#590](https://github.com/diffplug/spotless/pull/590))
 ### Fixed
 * Previously, the nodejs-based steps would throw `UnsatisfiedLinkError` if they were ever used from more than one classloader.  Now they can be used from any number of classloaders (important for gradle build daemon). ([#586](https://github.com/diffplug/spotless/pull/586))
 
@@ -52,7 +103,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Build
 * All `CHANGES.md` are now in keepachangelog format. ([#507](https://github.com/diffplug/spotless/pull/507))
 * We now use [javadoc.io](https://javadoc.io/) instead of github pages. ([#508](https://github.com/diffplug/spotless/pull/508))
-* We no longer publish `-SNAPSHOT` for every build to `master`, since we have good [JitPack integration](https://github.com/diffplug/spotless/blob/master/CONTRIBUTING.md#gradle---any-commit-in-a-public-github-repo-this-one-or-any-fork). ([#508](https://github.com/diffplug/spotless/pull/508))
+* We no longer publish `-SNAPSHOT` for every build to `main`, since we have good [JitPack integration](https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md#gradle---any-commit-in-a-public-github-repo-this-one-or-any-fork). ([#508](https://github.com/diffplug/spotless/pull/508))
 * Improved how we use Spotless on itself. ([#509](https://github.com/diffplug/spotless/pull/509))
 * Fix build warnings when building on Gradle 6+, bump build gradle to 6.2.2, and fix javadoc links. ([#536](https://github.com/diffplug/spotless/pull/536))
 
@@ -133,7 +184,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   * Updated default npm package version of `prettier` from 1.13.4 to 1.16.4
   * Updated default npm package version of internally used typescript package from 2.9.2 to 3.3.3 and tslint package from 5.1.0 to 5.12.0 (both used by `tsfmt`)
 * Updated default eclipse-wtp from 4.7.3a to 4.7.3b ([#371](https://github.com/diffplug/spotless/pull/371)).
-* Configured `buìld-scan` plugin in build ([#356](https://github.com/diffplug/spotless/pull/356)).
+* Configured `build-scan` plugin in build ([#356](https://github.com/diffplug/spotless/pull/356)).
   * Runs on every CI build automatically.
   * Users need to opt-in on their local machine.
 * Default behavior of XML formatter changed to ignore external URIs ([#369](https://github.com/diffplug/spotless/issues/369)).

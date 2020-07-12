@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,13 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 
 import org.assertj.core.api.Assertions;
-import org.gradle.testkit.runner.GradleRunner;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.common.io.Files;
 
-public class IdeHookTest extends GradleIntegrationTest {
+public class IdeHookTest extends GradleIntegrationHarness {
 	private String output, error;
 	private File dirty, clean, diverge, outofbounds;
 
@@ -41,15 +40,11 @@ public class IdeHookTest extends GradleIntegrationTest {
 				"spotless {",
 				"  format 'misc', {",
 				"    target 'DIRTY.md', 'CLEAN.md'",
-				"    customLazyGroovy('lowercase') {",
-				"       return { str -> str.toLowerCase(Locale.ROOT) }",
-				"    }",
+				"    custom 'lowercase', { str -> str.toLowerCase(Locale.ROOT) }",
 				"  }",
 				"  format 'diverge', {",
 				"    target 'DIVERGE.md'",
-				"    customLazyGroovy('diverge') {",
-				"       return { str -> str + ' ' }",
-				"    }",
+				"    custom 'diverge', { str -> str + ' ' }",
 				"  }",
 				"}");
 		dirty = new File(rootFolder(), "DIRTY.md");
@@ -70,7 +65,8 @@ public class IdeHookTest extends GradleIntegrationTest {
 			// gradle 2.14 -> 4.6 confirmed to work
 			// gradle 4.7 -> 5.1 don't work in tooling API because of https://github.com/gradle/gradle/issues/7617
 			// gradle 5.1 -> current confirmed to work
-			GradleRunner.create()
+			gradleRunner()
+					.withGradleVersion(GradleVersionSupport.MODERN.version)
 					.withProjectDir(rootFolder())
 					.withPluginClasspath()
 					.withArguments(arguments)

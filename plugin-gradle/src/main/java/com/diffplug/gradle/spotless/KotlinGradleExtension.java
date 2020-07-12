@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,8 @@ public class KotlinGradleExtension extends FormatExtension {
 
 	static final String NAME = "kotlinGradle";
 
-	public KotlinGradleExtension(SpotlessExtension rootExtension) {
-		super(rootExtension);
+	public KotlinGradleExtension(SpotlessExtensionBase spotless) {
+		super(spotless);
 	}
 
 	/** Adds the specified version of [ktlint](https://github.com/pinterest/ktlint). */
@@ -62,7 +62,7 @@ public class KotlinGradleExtension extends FormatExtension {
 		}
 
 		private FormatterStep createStep() {
-			return KtLintStep.createForScript(version, GradleProvisioner.fromProject(getProject()), userData);
+			return KtLintStep.createForScript(version, provisioner(), userData);
 		}
 	}
 
@@ -89,7 +89,7 @@ public class KotlinGradleExtension extends FormatExtension {
 		}
 
 		private FormatterStep createStep() {
-			return KtfmtStep.create(version, GradleProvisioner.fromProject(getProject()));
+			return KtfmtStep.create(version, provisioner());
 		}
 	}
 

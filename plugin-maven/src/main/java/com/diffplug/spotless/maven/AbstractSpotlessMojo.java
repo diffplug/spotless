@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,13 @@ import static java.util.stream.Collectors.toList;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -36,9 +42,12 @@ import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.repository.RemoteRepository;
 
+import com.diffplug.common.collect.Iterables;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.generic.LicenseHeaderStep;
+import com.diffplug.spotless.maven.antlr4.Antlr4;
 import com.diffplug.spotless.maven.cpp.Cpp;
 import com.diffplug.spotless.maven.generic.Format;
 import com.diffplug.spotless.maven.generic.LicenseHeader;
@@ -77,6 +86,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	private LineEnding lineEndings;
 
 	@Parameter
+	private String ratchetFrom;
+
+	@Parameter
 	private LicenseHeader licenseHeader;
 
 	@Parameter
@@ -91,31 +103,26 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Parameter
 	private Kotlin kotlin;
 
-	/** The XML extension is discontinued. */
-	@Parameter
-	@Deprecated
-	private com.diffplug.spotless.maven.xml.Xml xml;
-
 	@Parameter
 	private Cpp cpp;
 
 	@Parameter
 	private Typescript typescript;
 
-	/** The CSS extension is discontinued. */
 	@Parameter
-	@Deprecated
-	private com.diffplug.spotless.maven.css.Css css;
+	private Antlr4 antlr4;
 
 	@Parameter(property = "spotlessFiles")
 	private String filePatterns;
 
-	protected abstract void process(List<File> files, Formatter formatter) throws MojoExecutionException;
+	@Parameter(property = LicenseHeaderStep.spotlessSetLicenseHeaderYearsFromGitHistory)
+	private String setLicenseHeaderYearsFromGitHistory;
+
+	protected abstract void process(Iterable<File> files, Formatter formatter) throws MojoExecutionException;
 
 	@Override
 	public final void execute() throws MojoExecutionException {
 		List<FormatterFactory> formatterFactories = getFormatterFactories();
-
 		for (FormatterFactory formatterFactory : formatterFactories) {
 			execute(formatterFactory);
 		}
@@ -123,8 +130,16 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	private void execute(FormatterFactory formatterFactory) throws MojoExecutionException {
 		List<File> files = collectFiles(formatterFactory);
-		try (Formatter formatter = formatterFactory.newFormatter(files, getFormatterConfig())) {
-			process(files, formatter);
+		FormatterConfig config = getFormatterConfig();
+		Optional<String> ratchetFrom = formatterFactory.ratchetFrom(config);
+		Iterable<File> toFormat;
+		if (!ratchetFrom.isPresent()) {
+			toFormat = files;
+		} else {
+			toFormat = Iterables.filter(files, GitRatchetMaven.instance().isGitDirty(baseDir, ratchetFrom.get()));
+		}
+		try (Formatter formatter = formatterFactory.newFormatter(files, config)) {
+			process(toFormat, formatter);
 		}
 	}
 
@@ -133,6 +148,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		Set<String> configuredExcludes = formatterFactory.excludes();
 
 		Set<String> includes = configuredIncludes.isEmpty() ? formatterFactory.defaultIncludes() : configuredIncludes;
+		if (includes.isEmpty()) {
+			throw new MojoExecutionException("You must specify some files to include, such as '<includes><include>src/**</include></includes>'");
+		}
 
 		Set<String> excludes = new HashSet<>(FileUtils.getDefaultExcludesAsList());
 		excludes.add(withTrailingSeparator(buildDir.toString()));
@@ -172,7 +190,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		Provisioner provisioner = MavenProvisioner.create(resolver);
 		List<FormatterStepFactory> formatterStepFactories = getFormatterStepFactories();
 		FileLocator fileLocator = getFileLocator();
-		return new FormatterConfig(baseDir, encoding, lineEndings, provisioner, fileLocator, formatterStepFactories);
+		return new FormatterConfig(baseDir, encoding, lineEndings, Optional.ofNullable(ratchetFrom), provisioner, fileLocator, formatterStepFactories, Optional.ofNullable(setLicenseHeaderYearsFromGitHistory));
 	}
 
 	private FileLocator getFileLocator() {
@@ -183,7 +201,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private List<FormatterFactory> getFormatterFactories() {
-		return Stream.concat(formats.stream(), Stream.of(java, scala, kotlin, cpp, typescript, css, xml))
+		return Stream.concat(formats.stream(), Stream.of(java, scala, kotlin, cpp, typescript, antlr4))
 				.filter(Objects::nonNull)
 				.collect(toList());
 	}

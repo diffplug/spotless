@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.gradle.api.Project;
 import org.junit.Test;
 
 import com.diffplug.common.base.StringPrinter;
+import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ResourceHarness;
@@ -102,13 +103,17 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 		String msg = spotless.checkFailureMsg();
 
 		String firstLine = "The following files had format violations:\n";
-		String lastLine = "\n" + TestFixtures.EXPECTED_RUN_SPOTLESS_APPLY_SUGGESTION;
+		String lastLine = "\n" + EXPECTED_RUN_SPOTLESS_APPLY_SUGGESTION;
 		Assertions.assertThat(msg).startsWith(firstLine).endsWith(lastLine);
 
 		String middle = msg.substring(firstLine.length(), msg.length() - lastLine.length());
 		String expectedMessage = StringPrinter.buildStringFromLines(expectedLines);
 		Assertions.assertThat(middle).isEqualTo(expectedMessage.substring(0, expectedMessage.length() - 1));
 	}
+
+	static final String EXPECTED_RUN_SPOTLESS_APPLY_SUGGESTION = FileSignature.machineIsWin()
+			? "Run 'gradlew.bat :spotlessApply' to fix these violations."
+			: "Run './gradlew :spotlessApply' to fix these violations.";
 
 	@Test
 	public void lineEndingProblem() throws Exception {

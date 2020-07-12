@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElem
 
 import org.gradle.api.Project;
 
+import com.diffplug.gradle.spotless.libdeprecated.XmlDefaults;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
-import com.diffplug.spotless.xml.XmlDefaults;
 
 /**
  * The XML extension is deprecated. Use the generic {@link FormatExtension} instead.
@@ -30,8 +30,8 @@ import com.diffplug.spotless.xml.XmlDefaults;
 public class XmlExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "xml";
 
-	public XmlExtension(SpotlessExtension rootExtension) {
-		super(rootExtension);
+	public XmlExtension(SpotlessExtensionBase spotless) {
+		super(spotless);
 	}
 
 	public EclipseConfig eclipse() {
@@ -46,7 +46,7 @@ public class XmlExtension extends FormatExtension implements HasBuiltinDelimiter
 		private final EclipseBasedStepBuilder builder;
 
 		EclipseConfig(String version) {
-			builder = EclipseWtpFormatterStep.createXmlBuilder(GradleProvisioner.fromProject(getProject()));
+			builder = EclipseWtpFormatterStep.XML.createBuilder(provisioner());
 			builder.setVersion(version);
 			addStep(builder.build());
 		}

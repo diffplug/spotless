@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.Test;
 
-public class UpToDateTest extends GradleIntegrationTest {
+public class UpToDateTest extends GradleIntegrationHarness {
 	/** Requires that README be lowercase. */
 	private void writeBuildFile() throws IOException {
 		setFile("build.gradle").toLines(
@@ -32,9 +32,7 @@ public class UpToDateTest extends GradleIntegrationTest {
 				"spotless {",
 				"    format 'misc', {",
 				"        target file('README.md')",
-				"        customLazyGroovy('lowercase') {",
-				"             return { str -> str.toLowerCase(Locale.ROOT) }",
-				"        }",
+				"        custom 'lowercase', { str -> str.toLowerCase(Locale.ROOT) }",
 				"        bumpThisNumberIfACustomStepChanges(1)",
 				"    }",
 				"}");

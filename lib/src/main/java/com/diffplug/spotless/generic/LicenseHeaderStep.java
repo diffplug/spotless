@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,26 +15,107 @@
  */
 package com.diffplug.spotless.generic;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.time.YearMonth;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
+import com.diffplug.spotless.FileSignature;
+import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.SerializableFileFilter;
+import com.diffplug.spotless.ThrowingEx;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /** Prefixes a license header before the package statement. */
-public final class LicenseHeaderStep implements Serializable {
-	private static final long serialVersionUID = 1L;
+public final class LicenseHeaderStep {
+	public enum YearMode {
+		PRESERVE, UPDATE_TO_TODAY, SET_FROM_GIT
+	}
+
+	public static LicenseHeaderStep headerDelimiter(String header, String delimiter) {
+		return headerDelimiter(() -> header, delimiter);
+	}
+
+	public static LicenseHeaderStep headerDelimiter(ThrowingEx.Supplier<String> headerLazy, String delimiter) {
+		return new LicenseHeaderStep(headerLazy, delimiter, DEFAULT_YEAR_DELIMITER, () -> YearMode.PRESERVE);
+	}
+
+	final ThrowingEx.Supplier<String> headerLazy;
+	final String delimiter;
+	final String yearSeparator;
+	final Supplier<YearMode> yearMode;
+
+	private LicenseHeaderStep(ThrowingEx.Supplier<String> headerLazy, String delimiter, String yearSeparator, Supplier<YearMode> yearMode) {
+		this.headerLazy = Objects.requireNonNull(headerLazy);
+		this.delimiter = Objects.requireNonNull(delimiter);
+		this.yearSeparator = Objects.requireNonNull(yearSeparator);
+		this.yearMode = Objects.requireNonNull(yearMode);
+	}
+
+	public LicenseHeaderStep withHeaderString(String header) {
+		return withHeaderLazy(() -> header);
+	}
+
+	public LicenseHeaderStep withHeaderLazy(ThrowingEx.Supplier<String> headerLazy) {
+		return new LicenseHeaderStep(headerLazy, delimiter, yearSeparator, yearMode);
+	}
+
+	public LicenseHeaderStep withDelimiter(String delimiter) {
+		return new LicenseHeaderStep(headerLazy, delimiter, yearSeparator, yearMode);
+	}
+
+	public LicenseHeaderStep withYearSeparator(String yearSeparator) {
+		return new LicenseHeaderStep(headerLazy, delimiter, yearSeparator, yearMode);
+	}
+
+	public LicenseHeaderStep withYearMode(YearMode yearMode) {
+		return withYearModeLazy(() -> yearMode);
+	}
+
+	public LicenseHeaderStep withYearModeLazy(Supplier<YearMode> yearMode) {
+		return new LicenseHeaderStep(headerLazy, delimiter, yearSeparator, yearMode);
+	}
+
+	public FormatterStep build() {
+		if (yearMode.get() == YearMode.SET_FROM_GIT) {
+			return FormatterStep.createNeverUpToDateLazy(LicenseHeaderStep.name(), () -> {
+				boolean updateYear = false; // doesn't matter
+				Runtime runtime = new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear);
+				return FormatterFunc.needsFile(runtime::setLicenseHeaderYearsFromGitHistory);
+			});
+		} else {
+			return FormatterStep.createLazy(LicenseHeaderStep.name(), () -> {
+				// by default, we should update the year if the user is using ratchetFrom
+				boolean updateYear;
+				switch (yearMode.get()) {
+				case PRESERVE:
+					updateYear = false;
+					break;
+				case UPDATE_TO_TODAY:
+					updateYear = true;
+					break;
+				case SET_FROM_GIT:
+				default:
+					throw new IllegalStateException(yearMode.toString());
+				}
+				return new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear);
+			}, step -> step::format);
+		}
+	}
 
 	private static final String NAME = "licenseHeader";
 	private static final String DEFAULT_YEAR_DELIMITER = "-";
@@ -42,50 +123,6 @@ public final class LicenseHeaderStep implements Serializable {
 
 	private static final SerializableFileFilter UNSUPPORTED_JVM_FILES_FILTER = SerializableFileFilter.skipFilesNamed(
 			"package-info.java", "package-info.groovy", "module-info.java");
-
-	private final String licenseHeader;
-	private final boolean hasYearToken;
-	private final Pattern delimiterPattern;
-	private final Pattern yearMatcherPattern;
-	private final String licenseHeaderBeforeYearToken;
-	private final String licenseHeaderAfterYearToken;
-	private final String licenseHeaderWithYearTokenReplaced;
-
-	/** Creates a FormatterStep which forces the start of each file to match a license header. */
-	public static FormatterStep createFromHeader(String licenseHeader, String delimiter) {
-		return createFromHeader(licenseHeader, delimiter, DEFAULT_YEAR_DELIMITER);
-	}
-
-	public static FormatterStep createFromHeader(String licenseHeader, String delimiter, String yearSeparator) {
-		Objects.requireNonNull(licenseHeader, "licenseHeader");
-		Objects.requireNonNull(delimiter, "delimiter");
-		Objects.requireNonNull(yearSeparator, "yearSeparator");
-		return FormatterStep.create(LicenseHeaderStep.NAME,
-				new LicenseHeaderStep(licenseHeader, delimiter, yearSeparator),
-				step -> step::format);
-	}
-
-	/**
-	 * Creates a FormatterStep which forces the start of each file to match the license header
-	 * contained in the given file.
-	 */
-	public static FormatterStep createFromFile(File licenseHeaderFile, Charset encoding, String delimiter) {
-		return createFromFile(licenseHeaderFile, encoding, delimiter, DEFAULT_YEAR_DELIMITER);
-	}
-
-	/**
-	 * Creates a FormatterStep which forces the start of each file to match the license header
-	 * contained in the given file.
-	 */
-	public static FormatterStep createFromFile(File licenseHeaderFile, Charset encoding, String delimiter, String yearSeparator) {
-		Objects.requireNonNull(licenseHeaderFile, "licenseHeaderFile");
-		Objects.requireNonNull(encoding, "encoding");
-		Objects.requireNonNull(delimiter, "delimiter");
-		Objects.requireNonNull(yearSeparator, "yearSeparator");
-		return FormatterStep.createLazy(LicenseHeaderStep.NAME,
-				() -> new LicenseHeaderStep(licenseHeaderFile, encoding, delimiter, yearSeparator),
-				step -> step::format);
-	}
 
 	public static String name() {
 		return NAME;
@@ -99,79 +136,189 @@ public final class LicenseHeaderStep implements Serializable {
 		return UNSUPPORTED_JVM_FILES_FILTER;
 	}
 
-	/** The license that we'd like enforced. */
-	private LicenseHeaderStep(String licenseHeader, String delimiter, String yearSeparator) {
-		if (delimiter.contains("\n")) {
-			throw new IllegalArgumentException("The delimiter must not contain any newlines.");
-		}
-		// sanitize the input license
-		licenseHeader = LineEnding.toUnix(licenseHeader);
-		if (!licenseHeader.endsWith("\n")) {
-			licenseHeader = licenseHeader + "\n";
-		}
-		this.licenseHeader = licenseHeader;
-		this.delimiterPattern = Pattern.compile('^' + delimiter, Pattern.UNIX_LINES | Pattern.MULTILINE);
+	public static final String spotlessSetLicenseHeaderYearsFromGitHistory = "spotlessSetLicenseHeaderYearsFromGitHistory";
 
-		Optional<String> yearToken = getYearToken(licenseHeader);
-		this.hasYearToken = yearToken.isPresent();
-		if (hasYearToken) {
-			int yearTokenIndex = licenseHeader.indexOf(yearToken.get());
-			licenseHeaderBeforeYearToken = licenseHeader.substring(0, yearTokenIndex);
-			licenseHeaderAfterYearToken = licenseHeader.substring(yearTokenIndex + 5);
-			licenseHeaderWithYearTokenReplaced = licenseHeader.replace(yearToken.get(), String.valueOf(YearMonth.now().getYear()));
-			yearMatcherPattern = Pattern.compile("[0-9]{4}(" + Pattern.quote(yearSeparator) + "[0-9]{4})?");
-		} else {
-			licenseHeaderBeforeYearToken = null;
-			licenseHeaderAfterYearToken = null;
-			licenseHeaderWithYearTokenReplaced = null;
-			yearMatcherPattern = null;
-		}
+	public static final String FLAG_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY() {
+		return spotlessSetLicenseHeaderYearsFromGitHistory;
 	}
 
-	/**
-	 * Get the first place holder token being used in the
-	 * license header for specifying the year
-	 *
-	 * @param licenseHeader String representation of the license header
-	 * @return Matching value from YEAR_TOKENS or null if none exist
-	 */
-	private static Optional<String> getYearToken(String licenseHeader) {
-		return YEAR_TOKENS.stream().filter(licenseHeader::contains).findFirst();
-	}
+	private static class Runtime implements Serializable {
+		private static final long serialVersionUID = 1475199492829130965L;
 
-	/** Reads the license file from the given file. */
-	private LicenseHeaderStep(File licenseFile, Charset encoding, String delimiter, String yearSeparator) throws IOException {
-		this(new String(Files.readAllBytes(licenseFile.toPath()), encoding), delimiter, yearSeparator);
-	}
+		private final Pattern delimiterPattern;
+		private final String yearSepOrFull;
+		private final @Nullable String yearToday;
+		private final @Nullable String beforeYear;
+		private final @Nullable String afterYear;
+		private final boolean updateYearWithLatest;
 
-	/** Formats the given string. */
-	public String format(String raw) {
-		Matcher matcher = delimiterPattern.matcher(raw);
-		if (!matcher.find()) {
-			throw new IllegalArgumentException("Unable to find delimiter regex " + delimiterPattern);
-		} else {
-			if (hasYearToken) {
-				if (matchesLicenseWithYearToken(raw, matcher)) {
-					// that means we have the license like `licenseHeaderBeforeYearToken 1990-2015 licenseHeaderAfterYearToken`
-					return raw;
-				} else {
-					return licenseHeaderWithYearTokenReplaced + raw.substring(matcher.start());
-				}
-			} else if (matcher.start() == licenseHeader.length() && raw.startsWith(licenseHeader)) {
-				// if no change is required, return the raw string without
-				// creating any other new strings for maximum performance
-				return raw;
+		/** The license that we'd like enforced. */
+		private Runtime(String licenseHeader, String delimiter, String yearSeparator, boolean updateYearWithLatest) {
+			if (delimiter.contains("\n")) {
+				throw new IllegalArgumentException("The delimiter must not contain any newlines.");
+			}
+			// sanitize the input license
+			licenseHeader = LineEnding.toUnix(licenseHeader);
+			if (!licenseHeader.endsWith("\n")) {
+				licenseHeader = licenseHeader + "\n";
+			}
+			this.delimiterPattern = Pattern.compile('^' + delimiter, Pattern.UNIX_LINES | Pattern.MULTILINE);
+
+			Optional<String> yearToken = getYearToken(licenseHeader);
+			if (yearToken.isPresent()) {
+				yearToday = String.valueOf(YearMonth.now().getYear());
+				int yearTokenIndex = licenseHeader.indexOf(yearToken.get());
+				beforeYear = licenseHeader.substring(0, yearTokenIndex);
+				afterYear = licenseHeader.substring(yearTokenIndex + yearToken.get().length());
+				yearSepOrFull = yearSeparator;
+				this.updateYearWithLatest = updateYearWithLatest;
 			} else {
-				// otherwise we'll have to add the header
-				return licenseHeader + raw.substring(matcher.start());
+				yearToday = null;
+				beforeYear = null;
+				afterYear = null;
+				this.yearSepOrFull = licenseHeader;
+				this.updateYearWithLatest = false;
 			}
 		}
-	}
 
-	private boolean matchesLicenseWithYearToken(String raw, Matcher matcher) {
-		int startOfTheSecondPart = raw.indexOf(licenseHeaderAfterYearToken);
-		return startOfTheSecondPart > licenseHeaderBeforeYearToken.length()
-				&& (raw.startsWith(licenseHeaderBeforeYearToken) && startOfTheSecondPart + licenseHeaderAfterYearToken.length() == matcher.start())
-				&& yearMatcherPattern.matcher(raw.substring(licenseHeaderBeforeYearToken.length(), startOfTheSecondPart)).matches();
+		private static final Pattern patternYearSingle = Pattern.compile("[0-9]{4}");
+
+		/**
+		 * Get the first place holder token being used in the
+		 * license header for specifying the year
+		 *
+		 * @param licenseHeader String representation of the license header
+		 * @return Matching value from YEAR_TOKENS or null if none exist
+		 */
+		private static Optional<String> getYearToken(String licenseHeader) {
+			return YEAR_TOKENS.stream().filter(licenseHeader::contains).findFirst();
+		}
+
+		/** Formats the given string. */
+		private String format(String raw) {
+			Matcher contentMatcher = delimiterPattern.matcher(raw);
+			if (!contentMatcher.find()) {
+				throw new IllegalArgumentException("Unable to find delimiter regex " + delimiterPattern);
+			} else {
+				if (yearToday == null) {
+					// the no year case is easy
+					if (contentMatcher.start() == yearSepOrFull.length() && raw.startsWith(yearSepOrFull)) {
+						// if no change is required, return the raw string without
+						// creating any other new strings for maximum performance
+						return raw;
+					} else {
+						// otherwise we'll have to add the header
+						return yearSepOrFull + raw.substring(contentMatcher.start());
+					}
+				} else {
+					// the yes year case is a bit harder
+					int beforeYearIdx = raw.indexOf(beforeYear);
+					int afterYearIdx = raw.indexOf(afterYear, beforeYearIdx + beforeYear.length() + 1);
+
+					if (beforeYearIdx >= 0 && afterYearIdx >= 0 && afterYearIdx + afterYear.length() <= contentMatcher.start()) {
+						boolean noPadding = beforeYearIdx == 0 && afterYearIdx + afterYear.length() == contentMatcher.start(); // allows fastpath return raw
+						String parsedYear = raw.substring(beforeYearIdx + beforeYear.length(), afterYearIdx);
+						if (parsedYear.equals(yearToday)) {
+							// it's good as is!
+							return noPadding ? raw : beforeYear + yearToday + afterYear + raw.substring(contentMatcher.start());
+						} else if (patternYearSingle.matcher(parsedYear).matches()) {
+							if (updateYearWithLatest) {
+								// expand from `2004` to `2004-2020`
+								return beforeYear + parsedYear + yearSepOrFull + yearToday + afterYear + raw.substring(contentMatcher.start());
+							} else {
+								// it's already good as a single year
+								return noPadding ? raw : beforeYear + parsedYear + afterYear + raw.substring(contentMatcher.start());
+							}
+						} else {
+							Matcher yearMatcher = patternYearSingle.matcher(parsedYear);
+							if (yearMatcher.find()) {
+								String firstYear = yearMatcher.group();
+								String newYear;
+								String secondYear;
+								if (updateYearWithLatest) {
+									secondYear = firstYear.equals(yearToday) ? null : yearToday;
+								} else if (yearMatcher.find(yearMatcher.end() + 1)) {
+									secondYear = yearMatcher.group();
+								} else {
+									secondYear = null;
+								}
+								if (secondYear == null) {
+									newYear = firstYear;
+								} else {
+									newYear = firstYear + yearSepOrFull + secondYear;
+								}
+								return noPadding && newYear.equals(parsedYear) ? raw : beforeYear + newYear + afterYear + raw.substring(contentMatcher.start());
+							}
+						}
+					}
+					// at worst, we just say that it was made today
+					return beforeYear + yearToday + afterYear + raw.substring(contentMatcher.start());
+				}
+			}
+		}
+
+		/** Sets copyright years on the given file by finding the oldest and most recent commits throughout git history. */
+		private String setLicenseHeaderYearsFromGitHistory(String raw, File file) throws IOException {
+			if (yearToday == null) {
+				return raw;
+			}
+			Matcher contentMatcher = delimiterPattern.matcher(raw);
+			if (!contentMatcher.find()) {
+				throw new IllegalArgumentException("Unable to find delimiter regex " + delimiterPattern);
+			}
+
+			String oldYear;
+			try {
+				oldYear = parseYear("git log --follow --find-renames=40% --diff-filter=A", file);
+			} catch (IllegalArgumentException e) {
+				// Ideally, git log would always find the commit where it was added.
+				// For some reason, that is sometimes not possible - in that case,
+				// we'll settle for just the most recent, even if it was just a modification.
+				oldYear = parseYear("git log --follow --find-renames=40% --reverse", file);
+			}
+			String newYear = parseYear("git log --max-count=1", file);
+			String yearRange;
+			if (oldYear.equals(newYear)) {
+				yearRange = oldYear;
+			} else {
+				yearRange = oldYear + yearSepOrFull + newYear;
+			}
+			return beforeYear + yearRange + afterYear + raw.substring(contentMatcher.start());
+		}
+
+		private static String parseYear(String cmd, File file) throws IOException {
+			String fullCmd = cmd + " " + file.getAbsolutePath();
+			ProcessBuilder builder = new ProcessBuilder().directory(file.getParentFile());
+			if (FileSignature.machineIsWin()) {
+				builder.command("cmd", "/c", fullCmd);
+			} else {
+				builder.command("bash", "-c", fullCmd);
+			}
+			Process process = builder.start();
+			String output = drain(process.getInputStream());
+			String error = drain(process.getErrorStream());
+			if (!error.isEmpty()) {
+				throw new IllegalArgumentException("Error for command '" + fullCmd + "':\n" + error);
+			}
+			Matcher matcher = FIND_YEAR.matcher(output);
+			if (matcher.find()) {
+				return matcher.group(1);
+			} else {
+				throw new IllegalArgumentException("Unable to parse date from command '" + fullCmd + "':\n" + output);
+			}
+		}
+
+		private static final Pattern FIND_YEAR = Pattern.compile("Date:   .* ([0-9]{4}) ");
+
+		@SuppressFBWarnings("DM_DEFAULT_ENCODING")
+		private static String drain(InputStream stream) throws IOException {
+			ByteArrayOutputStream output = new ByteArrayOutputStream();
+			byte[] buf = new byte[1024];
+			int numRead;
+			while ((numRead = stream.read(buf)) != -1) {
+				output.write(buf, 0, numRead);
+			}
+			return new String(output.toByteArray());
+		}
 	}
 }

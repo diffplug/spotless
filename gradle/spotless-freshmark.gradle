@@ -18,6 +18,8 @@ Action<FreshMarkExtension> freshmarkSetup = {
 spotless {
 	freshmark {
 		freshmarkSetup.execute(it)
+		// disable ratchetFrom for freshmark, because we always want to update the readme links
+		ratchetFrom null
 	}
 }
 
@@ -39,8 +41,7 @@ if (tasks.names.contains('changelogCheck')) {
 		// that uses versionNext as versionLast
 		it.put('versionLast', spotlessChangelog.versionNext)
 	}
-	def changelogBumpFreshmark = freshmark.createIndependentTask('changelogBumpFreshmark')
-	changelogBumpFreshmark.setApply()
+	def changelogBumpFreshmark = freshmark.createIndependentApplyTask('changelogBumpFreshmark')
 	// freshmark should run after the changelog bump
 	changelogBumpFreshmark.dependsOn tasks.named('changelogBump')
 

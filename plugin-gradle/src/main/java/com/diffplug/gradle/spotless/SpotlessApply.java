@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,10 +30,10 @@ import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 
 public class SpotlessApply extends DefaultTask {
-	private SpotlessTask source;
+	private SpotlessTaskBase source;
 
 	/** Bidirectional link between Apply and Spotless allows check to know if Apply ran or not. */
-	void linkSource(SpotlessTask source) {
+	void linkSource(SpotlessTaskBase source) {
 		this.source = source;
 		source.applyTask = this;
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,13 +32,14 @@ import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.spotless.Provisioner;
 
-/** Gradle integration for Provisioner. */
+/** Should be package-private. */
+@Deprecated
 public class GradleProvisioner {
 	private GradleProvisioner() {}
 
+	@Deprecated
 	public static Provisioner fromProject(Project project) {
-		// TODO: this method is not necessary - we could remove it entirely for a small speedup
-		return project.getPlugins().apply(SpotlessPlugin.class).getExtension().registerDependenciesTask.rootProvisioner;
+		return project.getPlugins().apply(SpotlessPlugin.class).getExtension().getRegisterDependenciesTask().rootProvisioner;
 	}
 
 	/** The provisioner used for the root project. */

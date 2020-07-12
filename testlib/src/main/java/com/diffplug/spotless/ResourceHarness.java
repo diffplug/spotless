@@ -234,5 +234,10 @@ public class ResourceHarness {
 			Files.write(file.toPath(), getTestResource(path).getBytes(StandardCharsets.UTF_8));
 			return file;
 		}
+
+		public File deleted() throws IOException {
+			Files.delete(file.toPath());
+			return file;
+		}
 	}
 }

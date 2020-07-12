@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-public class BumpThisNumberIfACustomStepChangesTest extends GradleIntegrationTest {
+public class BumpThisNumberIfACustomStepChangesTest extends GradleIntegrationHarness {
 
 	private void writeBuildFile(String toInsert) throws IOException {
 		setFile("build.gradle").toLines(
@@ -29,9 +29,7 @@ public class BumpThisNumberIfACustomStepChangesTest extends GradleIntegrationTes
 				"spotless {",
 				"    format 'misc', {",
 				"        target file('README.md')",
-				"        customLazyGroovy('lowercase') {",
-				"             return { str -> str.toLowerCase(Locale.ROOT) }",
-				"        }",
+				"        custom 'lowercase', { str -> str.toLowerCase(Locale.ROOT) }",
 				toInsert,
 				"    }",
 				"}");

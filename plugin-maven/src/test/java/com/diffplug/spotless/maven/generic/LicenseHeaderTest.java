@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@ package com.diffplug.spotless.maven.generic;
 
 import org.junit.Test;
 
-import com.diffplug.spotless.maven.MavenIntegrationTest;
+import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
-public class LicenseHeaderTest extends MavenIntegrationTest {
+public class LicenseHeaderTest extends MavenIntegrationHarness {
 	private static final String KEY_LICENSE = "license/TestLicense";
 	private static final String KOTLIN_LICENSE_HEADER = "// Hello, I'm Kotlin license header";
 
@@ -37,6 +37,7 @@ public class LicenseHeaderTest extends MavenIntegrationTest {
 	public void fromContentCpp() throws Exception {
 		String cppLicense = "//my license";
 		writePomWithCppSteps(
+				"<includes><include>src/**</include></includes>",
 				"<licenseHeader>",
 				"  <content>",
 				cppLicense,
@@ -48,25 +49,6 @@ public class LicenseHeaderTest extends MavenIntegrationTest {
 		setFile(path).toContent(cppContent);
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).hasContent(cppLicense + '\n' + cppContent);
-	}
-
-	/** The CSS extension is discontinued. */
-	@Test
-	@Deprecated
-	public void fromContentCss() throws Exception {
-		String license = "/* my license */";
-		writePomWithCssSteps(
-				"<licenseHeader>",
-				"  <content>",
-				license,
-				"  </content>",
-				"</licenseHeader>");
-
-		String path = "src/file.css";
-		String content = "p {}";
-		setFile(path).toContent(content);
-		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).hasContent(license + '\n' + content);
 	}
 
 	@Test
@@ -131,23 +113,6 @@ public class LicenseHeaderTest extends MavenIntegrationTest {
 		setFile(path).toContent(noLicenseHeader);
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).hasContent(KOTLIN_LICENSE_HEADER + '\n' + noLicenseHeader);
-	}
-
-	/** XML extension is discontinued. */
-	@Test
-	@Deprecated
-	public void fromContentXml() throws Exception {
-		String license = " Licensed under Apache-2.0 ";
-		writePomWithXmlSteps(
-				"<licenseHeader>",
-				"  <content>",
-				"&lt;!--" + license + "--&gt;",
-				"  </content>",
-				"</licenseHeader>");
-		String path = "src/test.xml";
-		setFile(path).toContent("<a/>");
-		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).hasContent("<!--" + license + "-->\n<a/>");
 	}
 
 	@Test

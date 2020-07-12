@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,20 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
-import java.util.Locale;
 
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.UnexpectedBuildFailure;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
-import com.diffplug.common.base.StandardSystemProperty;
+import com.diffplug.spotless.FileSignature;
 
-public class SpecificFilesTest extends GradleIntegrationTest {
-	private static boolean isWindows() {
-		return StandardSystemProperty.OS_NAME.value().toLowerCase(Locale.US).contains("win");
-	}
+@Category(ExcludeFromPluginGradleModern.class)
+public class SpecificFilesTest extends GradleIntegrationHarness {
 
 	private static String regexWinSafe(String input) {
-		return isWindows() ? input.replace("/", "\\\\") : input;
+		return FileSignature.machineIsWin() ? input.replace("/", "\\\\") : input;
 	}
 
 	private String testFilePath(int number) {
@@ -118,7 +116,7 @@ public class SpecificFilesTest extends GradleIntegrationTest {
 		GradleRunner runner = gradleRunner()
 				.withArguments("spotlessApply", "-PspotlessFiles=" + patterns);
 		if (isKotlin) {
-			runner.withGradleVersion(requestGradleForJre8and11("4.0"));
+			runner.withGradleVersion(GradleVersionSupport.KOTLIN.version);
 		}
 		runner.build();
 

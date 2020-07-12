@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import org.gradle.testkit.runner.GradleRunner;
 import org.junit.Test;
 
 /** Reproduces https://github.com/diffplug/spotless/issues/506 */
-public class MultiProjectAfterEvaluate extends GradleIntegrationTest {
+public class MultiProjectAfterEvaluate extends GradleIntegrationHarness {
 	@Test
 	public void failureDoesntTriggerAll() throws IOException {
 		setFile("settings.gradle").toLines("include 'sub'");
@@ -39,6 +39,6 @@ public class MultiProjectAfterEvaluate extends GradleIntegrationTest {
 	}
 
 	private final GradleRunner gradleRunner6() throws IOException {
-		return gradleRunner().withGradleVersion("6.0");
+		return gradleRunner().withGradleVersion(GradleVersionSupport.MODERN.version);
 	}
 }

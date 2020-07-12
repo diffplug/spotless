@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-public class SpotlessCheckMojoTest extends MavenIntegrationTest {
+public class SpotlessCheckMojoTest extends MavenIntegrationHarness {
 
 	private static final String UNFORMATTED_FILE = "license/MissingLicense.test";
 	private static final String FORMATTED_FILE = "license/HasLicense.test";

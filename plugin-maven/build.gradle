@@ -78,6 +78,7 @@ dependencies {
 
 	implementation "com.diffplug.durian:durian-core:${VER_DURIAN}"
 	implementation "com.diffplug.durian:durian-collect:${VER_DURIAN}"
+	implementation "org.eclipse.jgit:org.eclipse.jgit:${VER_JGIT}"
 
 	testImplementation project(":testlib")
 	testImplementation "junit:junit:${VER_JUNIT}"

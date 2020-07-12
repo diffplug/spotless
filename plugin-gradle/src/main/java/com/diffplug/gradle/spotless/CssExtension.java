@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,15 @@ package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Properties;
+
 import org.gradle.api.Project;
 
-import com.diffplug.spotless.css.CssDefaults;
+import com.diffplug.gradle.spotless.libdeprecated.CssDefaults;
+import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
 
@@ -30,8 +36,8 @@ import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
 public class CssExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "css";
 
-	public CssExtension(SpotlessExtension rootExtension) {
-		super(rootExtension);
+	public CssExtension(SpotlessExtensionBase spotless) {
+		super(spotless);
 	}
 
 	public EclipseConfig eclipse() {
@@ -42,6 +48,28 @@ public class CssExtension extends FormatExtension implements HasBuiltinDelimiter
 		return new EclipseConfig(version);
 	}
 
+	private static EclipseBasedStepBuilder createCssBuilder(Provisioner provisioner) {
+		return new EclipseBasedStepBuilder(NAME, " - css", provisioner, state -> applyWithoutFile("EclipseCssFormatterStepImpl", state));
+	}
+
+	private static FormatterFunc applyWithoutFile(String className, EclipseBasedStepBuilder.State state) throws Exception {
+		Class<?> formatterClazz = state.loadClass(FORMATTER_PACKAGE + className);
+		Object formatter = formatterClazz.getConstructor(Properties.class).newInstance(state.getPreferences());
+		Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
+		return input -> {
+			try {
+				return (String) method.invoke(formatter, input);
+			} catch (InvocationTargetException exceptionWrapper) {
+				Throwable throwable = exceptionWrapper.getTargetException();
+				Exception exception = (throwable instanceof Exception) ? (Exception) throwable : null;
+				throw (null == exception) ? exceptionWrapper : exception;
+			}
+		};
+	}
+
+	private static final String FORMATTER_PACKAGE = "com.diffplug.spotless.extra.eclipse.wtp.";
+	private static final String FORMATTER_METHOD = "format";
+
 	/**
 	 * The CSS Eclipse configuration is deprecated. Use the {@link FormatExtension.EclipseWtpConfig} instead.
 	 */
@@ -50,7 +78,7 @@ public class CssExtension extends FormatExtension implements HasBuiltinDelimiter
 		private final EclipseBasedStepBuilder builder;
 
 		EclipseConfig(String version) {
-			builder = EclipseWtpFormatterStep.createCssBuilder(GradleProvisioner.fromProject(getProject()));
+			builder = createCssBuilder(provisioner());
 			builder.setVersion(version);
 			addStep(builder.build());
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,13 @@
 package com.diffplug.spotless.maven;
 
 import static com.diffplug.common.base.Strings.isNullOrEmpty;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.File;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.Objects;
-import java.util.UUID;
 
 import org.codehaus.plexus.resource.ResourceManager;
 import org.codehaus.plexus.resource.loader.FileResourceCreationException;
@@ -63,16 +66,29 @@ public class FileLocator {
 		}
 	}
 
-	private static String tmpOutputFileName(String path) {
-		String extension = FileUtils.extension(path);
-		return TMP_RESOURCE_FILE_PREFIX + UUID.randomUUID() + '.' + extension;
-	}
-
 	public File getBaseDir() {
 		return baseDir;
 	}
 
 	public File getBuildDir() {
 		return buildDir;
+	}
+
+	private static String tmpOutputFileName(String path) {
+		String extension = FileUtils.extension(path);
+		byte[] pathHash = hash(path);
+		String pathBase64 = Base64.getEncoder().encodeToString(pathHash);
+		return TMP_RESOURCE_FILE_PREFIX + pathBase64 + '.' + extension;
+	}
+
+	private static byte[] hash(String value) {
+		MessageDigest messageDigest;
+		try {
+			messageDigest = MessageDigest.getInstance("SHA-256");
+		} catch (NoSuchAlgorithmException e) {
+			throw new IllegalStateException("SHA-256 digest algorithm not available", e);
+		}
+		messageDigest.update(value.getBytes(UTF_8));
+		return messageDigest.digest();
 	}
 }

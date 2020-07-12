@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,12 +54,6 @@ public final class DiffMessageFormatter {
 		/** "Run 'gradlew spotlessApply' to fix these violations." */
 		public Builder runToFix(String runToFix) {
 			this.runToFix = Objects.requireNonNull(runToFix);
-			return this;
-		}
-
-		@Deprecated
-		public Builder isPaddedCell(boolean isPaddedCell) {
-			System.err.println("PaddedCell is now always on, and cannot be turned off.");
 			return this;
 		}
 

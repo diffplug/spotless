@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,11 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
 import com.diffplug.common.base.Throwables;
 import com.diffplug.common.io.ByteStreams;
+import com.diffplug.spotless.FileSignature;
 
 /**
  * Harness for running a maven build, same idea as the
@@ -128,16 +128,11 @@ public class MavenRunner {
 
 	/** Prepends any arguments necessary to run a console command. */
 	private static List<String> getPlatformCmds(String cmd) {
-		if (isWin()) {
+		if (FileSignature.machineIsWin()) {
 			return Arrays.asList("cmd", "/c", "mvnw " + cmd);
 		} else {
 			return Arrays.asList("/bin/sh", "-c", "./mvnw " + cmd);
 		}
-	}
-
-	private static boolean isWin() {
-		String os_name = System.getProperty("os.name").toLowerCase(Locale.getDefault());
-		return os_name.contains("win");
 	}
 
 	private static class Slurper extends Thread {

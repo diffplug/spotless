@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
@@ -31,12 +30,12 @@ import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 
-import com.diffplug.common.base.StandardSystemProperty;
+import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
 public class SpotlessCheck extends DefaultTask {
-	SpotlessTask source;
+	SpotlessTaskBase source;
 	private File spotlessOutDirectory;
 
 	@PathSensitive(PathSensitivity.RELATIVE)
@@ -82,9 +81,10 @@ public class SpotlessCheck extends DefaultTask {
 			});
 
 			if (!problemFiles.isEmpty()) {
-				Formatter formatter = source.buildFormatter();
-				Collections.sort(problemFiles);
-				throw formatViolationsFor(formatter, problemFiles);
+				try (Formatter formatter = source.buildFormatter()) {
+					Collections.sort(problemFiles);
+					throw formatViolationsFor(formatter, problemFiles);
+				}
 			}
 		}
 	}
@@ -105,8 +105,6 @@ public class SpotlessCheck extends DefaultTask {
 	}
 
 	private static String calculateGradleCommand() {
-		return StandardSystemProperty.OS_NAME.value().toLowerCase(Locale.US).contains("win")
-				? "gradlew.bat"
-				: "./gradlew";
+		return FileSignature.machineIsWin() ? "gradlew.bat" : "./gradlew";
 	}
 }

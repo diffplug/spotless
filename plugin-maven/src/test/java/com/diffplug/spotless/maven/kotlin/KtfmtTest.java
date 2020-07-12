@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@ package com.diffplug.spotless.maven.kotlin;
 import org.junit.Test;
 
 import com.diffplug.spotless.JreVersion;
-import com.diffplug.spotless.maven.MavenIntegrationTest;
+import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
-public class KtfmtTest extends MavenIntegrationTest {
+public class KtfmtTest extends MavenIntegrationHarness {
 	@Test
 	public void testKtfmt() throws Exception {
 		if (JreVersion.thisVm() == JreVersion._8) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,9 @@ import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.Test;
 
-public class ConfigAvoidanceTest extends GradleIntegrationTest {
+public class ConfigAvoidanceTest extends GradleIntegrationHarness {
 	protected final GradleRunner gradleRunnerConfigAvoidance() throws IOException {
-		return gradleRunner().withGradleVersion(SpotlessPluginLegacy.CONFIG_AVOIDANCE_INTRODUCED.getVersion());
+		return gradleRunner().withGradleVersion(GradleVersionSupport.CONFIG_AVOIDANCE.version);
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import com.diffplug.spotless.sql.DBeaverSQLFormatterStep;
 public class SqlExtension extends FormatExtension {
 	static final String NAME = "sql";
 
-	public SqlExtension(SpotlessExtension rootExtension) {
-		super(rootExtension);
+	public SqlExtension(SpotlessExtensionBase spotless) {
+		super(spotless);
 	}
 
 	public DBeaverSQLFormatterConfig dbeaver() {
@@ -57,6 +57,7 @@ public class SqlExtension extends FormatExtension {
 	protected void setupTask(SpotlessTask task) {
 		if (target == null) {
 			target("**/*.sql");
+			noDefaultTarget();
 		}
 		super.setupTask(task);
 	}

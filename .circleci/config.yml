@@ -1,3 +1,7 @@
+version: 2.1
+orbs:
+  win: circleci/windows@2.4.0
+
 anchors:
   env_gradle: &env_gradle
     environment:
@@ -5,13 +9,15 @@ anchors:
       # https://circleci.com/blog/how-to-handle-java-oom-errors/
       # try the experimental JVM option
       _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
-      GRADLE_OPTS: "-Dorg.gradle.workers.max=2" # and we're only allowed to use 2 vCPUs
+       # and we're only allowed to use 2 vCPUs
+      GRADLE_OPTS: "-Dorg.gradle.workers.max=2"
     docker:
       - image: cimg/openjdk:8.0
   env_gradle_large: &env_gradle_large
     << : *env_gradle
     resource_class: large # https://circleci.com/docs/2.0/configuration-reference/#resource_class
-    GRADLE_OPTS: "-Dorg.gradle.workers.max=4"
+    environment:
+      GRADLE_OPTS: "-Dorg.gradle.workers.max=4"
 
   restore_cache_wrapper: &restore_cache_wrapper
     restore_cache:
@@ -40,8 +46,6 @@ anchors:
           path: lib-extra/build/test-results/test
       - store_test_results:
           path: plugin-gradle/build/test-results/test
-
-version: 2
 jobs:
   # gradlew spotlessCheck assemble testClasses
   assemble_testClasses: 
@@ -88,6 +92,17 @@ jobs:
           command: ./gradlew :plugin-maven:check --build-cache
       - store_test_results:
           path: plugin-maven/build/test-results/test
+  test_gradle_modern_8:
+    << : *env_gradle
+    steps:
+      - checkout
+      - *restore_cache_wrapper
+      - *restore_cache_deps
+      - run:
+          name: gradlew :plugin-gradle:modernTest
+          command: ./gradlew :plugin-gradle:modernTest --build-cache
+      - store_test_results:
+          path: plugin-gradle/build/test-results/modernTest
   test_npm_8:
     << : *env_gradle
     docker:
@@ -99,6 +114,35 @@ jobs:
       - run:
           name: gradlew npmTest
           command: ./gradlew npmTest --build-cache
+      - store_test_results:
+          path: testlib/build/test-results/npm
+      - store_test_results:
+          path: plugin-maven/build/test-results/npm
+      - store_test_results:
+          path: plugin-gradle/build/test-results/npm
+  test_windows:
+    executor:
+      name: win/default
+      shell: cmd.exe
+    steps:
+      - checkout
+      - run:
+          name: install 
+          command: choco install ojdkbuild8
+      - run:
+          name: gradlew check
+          command: gradlew check --build-cache
+      - store_test_results:
+          path: testlib/build/test-results/test
+      - store_test_results:
+          path: lib-extra/build/test-results/test
+      - store_test_results:
+          path: plugin-gradle/build/test-results/test
+      - store_test_results:
+          path: plugin-maven/build/test-results/test
+      - run:
+          name: gradlew npmTest
+          command: gradlew npmTest --build-cache
       - store_test_results:
           path: testlib/build/test-results/npm
       - store_test_results:
@@ -123,14 +167,14 @@ jobs:
       - *set_git_origin_to_https
       - run:
           name: gradlew :changelogPush
-          command: ./gradlew :changelogPush -Prelease=true --stacktrace
+          command: ./gradlew :changelogPush -Prelease=true --stacktrace --warning-mode all
       - run:
           name: gradlew :plugin-gradle:changelogPush
-          command: ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${gradle_key} -Pgradle.publish.secret=${gradle_secret} --stacktrace
+          command: ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${gradle_key} -Pgradle.publish.secret=${gradle_secret} --stacktrace --warning-mode all
       - run:
           name: gradlew :plugin-maven:changelogPush
-          command: ./gradlew :plugin-maven:changelogPush -Prelease=true --stacktrace
-  do_release_plugin_gradle:
+          command: ./gradlew :plugin-maven:changelogPush -Prelease=true --stacktrace --warning-mode all
+  do_release_lib:
     << : *env_gradle
     steps:
       - checkout
@@ -139,7 +183,14 @@ jobs:
       - *set_git_origin_to_https
       - run:
           name: gradlew :changelogPush
-          command: ./gradlew :changelogPush -Prelease=true --stacktrace
+          command: ./gradlew :changelogPush -Prelease=true --stacktrace --warning-mode all
+  do_release_plugin_gradle:
+    << : *env_gradle
+    steps:
+      - checkout
+      - *restore_cache_wrapper
+      - *restore_cache_deps
+      - *set_git_origin_to_https
       - run:
           name: gradlew :plugin-gradle:changelogPush
           command: ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${gradle_key} -Pgradle.publish.secret=${gradle_secret} --stacktrace
@@ -158,6 +209,7 @@ workflows:
   version: 2
   assemble_and_test:
     jobs:
+      - test_windows
       - assemble_testClasses
       - test_justmaven_8:
           requires:
@@ -171,12 +223,15 @@ workflows:
       - test_npm_8:
           requires:
             - assemble_testClasses
+      - test_gradle_modern_8:
+          requires:
+            - assemble_testClasses
   deploy:
     jobs:
       - changelog_print:
           filters:
             branches:
-              only: master
+              only: main
       - release_all:
           type: approval
           requires:
@@ -198,3 +253,10 @@ workflows:
       - do_release_plugin_maven:
           requires:
             - release_plugin_maven
+      - release_lib:
+          type: approval
+          requires:
+            - changelog_print
+      - do_release_lib:
+          requires:
+            - release_lib

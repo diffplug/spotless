@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,75 +17,31 @@ package com.diffplug.gradle.spotless;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
-import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.CacheableTask;
 import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Internal;
-import org.gradle.api.tasks.OutputDirectory;
-import org.gradle.api.tasks.PathSensitive;
-import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 
 import com.diffplug.common.base.Errors;
+import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.base.StringPrinter;
-import com.diffplug.spotless.FormatExceptionPolicy;
-import com.diffplug.spotless.FormatExceptionPolicyStrict;
+import com.diffplug.common.base.Throwing;
 import com.diffplug.spotless.Formatter;
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.PaddedCell;
 
 @CacheableTask
-public class SpotlessTask extends DefaultTask {
-	SpotlessApply applyTask;
-
-	/** @deprecated internal use only, allows coordination between check and apply when they are in the same build */
-	@Internal
-	@Deprecated
-	public SpotlessApply getApplyTask() {
-		return applyTask;
-	}
-
-	// set by SpotlessExtension, but possibly overridden by FormatExtension
-	protected String encoding = "UTF-8";
-
-	@Input
-	public String getEncoding() {
-		return encoding;
-	}
-
-	public void setEncoding(String encoding) {
-		this.encoding = Objects.requireNonNull(encoding);
-	}
-
-	protected LineEnding.Policy lineEndingsPolicy = LineEnding.UNIX.createPolicy();
-
-	@Input
-	public LineEnding.Policy getLineEndingsPolicy() {
-		return lineEndingsPolicy;
-	}
-
-	public void setLineEndingsPolicy(LineEnding.Policy lineEndingsPolicy) {
-		this.lineEndingsPolicy = Objects.requireNonNull(lineEndingsPolicy);
-	}
-
+public class SpotlessTask extends SpotlessTaskBase {
 	@Deprecated
 	@Internal
 	public boolean isPaddedCell() {
@@ -94,7 +50,7 @@ public class SpotlessTask extends DefaultTask {
 
 	@Deprecated
 	public void setPaddedCell(boolean paddedCell) {
-		getLogger().warn("PaddedCell is now always on, and cannot be turned off.");
+		getLogger().warn("Spotless warning: Padded Cell is now always on, and cannot be turned off.  Find `paddedCell(` and remove all invocations.");
 	}
 
 	protected String filePatterns = "";
@@ -105,66 +61,10 @@ public class SpotlessTask extends DefaultTask {
 	}
 
 	public void setFilePatterns(String filePatterns) {
+		if (!filePatterns.equals("") && this instanceof SpotlessTaskModern) {
+			throw new IllegalArgumentException("-PspotlessFiles is not supported in the modern plugin");
+		}
 		this.filePatterns = Objects.requireNonNull(filePatterns);
-	}
-
-	protected FormatExceptionPolicy exceptionPolicy = new FormatExceptionPolicyStrict();
-
-	public void setExceptionPolicy(FormatExceptionPolicy exceptionPolicy) {
-		this.exceptionPolicy = Objects.requireNonNull(exceptionPolicy);
-	}
-
-	@Input
-	public FormatExceptionPolicy getExceptionPolicy() {
-		return exceptionPolicy;
-	}
-
-	protected FileCollection target;
-
-	@PathSensitive(PathSensitivity.RELATIVE)
-	@InputFiles
-	public FileCollection getTarget() {
-		return target;
-	}
-
-	public void setTarget(Iterable<File> target) {
-		if (target instanceof FileCollection) {
-			this.target = (FileCollection) target;
-		} else {
-			this.target = getProject().files(target);
-		}
-	}
-
-	private File outputDirectory = new File(getProject().getBuildDir(), "spotless/" + getName());
-
-	@OutputDirectory
-	public File getOutputDirectory() {
-		return outputDirectory;
-	}
-
-	protected List<FormatterStep> steps = new ArrayList<>();
-
-	@Input
-	public List<FormatterStep> getSteps() {
-		return Collections.unmodifiableList(steps);
-	}
-
-	public void setSteps(List<FormatterStep> steps) {
-		this.steps = PluginGradlePreconditions.requireElementsNonNull(steps);
-	}
-
-	public boolean addStep(FormatterStep step) {
-		return this.steps.add(Objects.requireNonNull(step));
-	}
-
-	/** Returns the name of this format. */
-	String formatName() {
-		String name = getName();
-		if (name.startsWith(SpotlessExtension.EXTENSION)) {
-			return name.substring(SpotlessExtension.EXTENSION.length()).toLowerCase(Locale.ROOT);
-		} else {
-			return name;
-		}
 	}
 
 	@TaskAction
@@ -179,10 +79,13 @@ public class SpotlessTask extends DefaultTask {
 			Files.createDirectories(outputDirectory.toPath());
 		}
 
-		Predicate<File> shouldInclude;
+		Throwing.Specific.Predicate<File, IOException> shouldInclude;
 		if (this.filePatterns.isEmpty()) {
 			shouldInclude = file -> true;
 		} else {
+			Preconditions.checkArgument(ratchet == null,
+					"Cannot use 'ratchetFrom' and '-PspotlessFiles' at the same time");
+
 			// a list of files has been passed in via project property
 			final String[] includePatterns = this.filePatterns.split(",");
 			final List<Pattern> compiledIncludePatterns = Arrays.stream(includePatterns)
@@ -197,32 +100,37 @@ public class SpotlessTask extends DefaultTask {
 		try (Formatter formatter = buildFormatter()) {
 			inputs.outOfDate(inputDetails -> {
 				File input = inputDetails.getFile();
-				if (shouldInclude.test(input) && input.isFile()) {
-					try {
+				try {
+					if (shouldInclude.test(input) && input.isFile()) {
 						processInputFile(formatter, input);
-					} catch (IOException e) {
-						throw Errors.asRuntime(e);
 					}
+				} catch (IOException e) {
+					throw Errors.asRuntime(e);
 				}
 			});
 		}
 
 		inputs.removed(removedDetails -> {
 			File input = removedDetails.getFile();
-			if (shouldInclude.test(input)) {
-				try {
+			try {
+				if (shouldInclude.test(input)) {
 					deletePreviousResult(input);
-				} catch (IOException e) {
-					throw Errors.asRuntime(e);
 				}
+			} catch (IOException e) {
+				throw Errors.asRuntime(e);
 			}
 		});
 	}
 
-	private void processInputFile(Formatter formatter, File input) throws IOException {
+	protected void processInputFile(Formatter formatter, File input) throws IOException {
 		File output = getOutputFile(input);
 		getLogger().debug("Applying format to " + input + " and writing to " + output);
-		PaddedCell.DirtyState dirtyState = PaddedCell.calculateDirtyState(formatter, input);
+		PaddedCell.DirtyState dirtyState;
+		if (ratchet != null && ratchet.isClean(getProject(), rootTreeSha, input)) {
+			dirtyState = PaddedCell.isClean();
+		} else {
+			dirtyState = PaddedCell.calculateDirtyState(formatter, input);
+		}
 		if (dirtyState.isClean()) {
 			// Remove previous output if it exists
 			Files.deleteIfExists(output.toPath());
@@ -238,9 +146,16 @@ public class SpotlessTask extends DefaultTask {
 		}
 	}
 
-	private void deletePreviousResult(File input) throws IOException {
+	protected void deletePreviousResult(File input) throws IOException {
 		File output = getOutputFile(input);
-		Files.deleteIfExists(output.toPath());
+		if (output.isDirectory()) {
+			Files.walk(output.toPath())
+					.sorted(Comparator.reverseOrder())
+					.map(Path::toFile)
+					.forEach(File::delete);
+		} else {
+			Files.deleteIfExists(output.toPath());
+		}
 	}
 
 	private File getOutputFile(File input) {
@@ -253,15 +168,5 @@ public class SpotlessTask extends DefaultTask {
 			}));
 		}
 		return new File(outputDirectory, outputFileName);
-	}
-
-	Formatter buildFormatter() {
-		return Formatter.builder()
-				.lineEndingsPolicy(lineEndingsPolicy)
-				.encoding(Charset.forName(encoding))
-				.rootDir(getProject().getRootDir().toPath())
-				.steps(steps)
-				.exceptionPolicy(exceptionPolicy)
-				.build();
 	}
 }

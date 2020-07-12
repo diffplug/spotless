@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,13 @@ package com.diffplug.gradle.spotless;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
-import java.time.YearMonth;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.junit.Test;
 
 import com.diffplug.spotless.JreVersion;
 
-public class KotlinExtensionTest extends GradleIntegrationTest {
+public class KotlinExtensionTest extends GradleIntegrationHarness {
 	private static final String HEADER = "// License Header";
 	private static final String HEADER_WITH_YEAR = "// License Header $YEAR";
 
@@ -193,7 +192,7 @@ public class KotlinExtensionTest extends GradleIntegrationTest {
 			matcher.startsWith("// License Header 2012, 2014");
 		});
 		assertFile("src/main/kotlin/test2.kt").matches(matcher -> {
-			matcher.startsWith(HEADER_WITH_YEAR.replace("$YEAR", String.valueOf(YearMonth.now().getYear())));
+			matcher.startsWith("// License Header 2012, 2014");
 		});
 	}
 
@@ -223,7 +222,7 @@ public class KotlinExtensionTest extends GradleIntegrationTest {
 			matcher.startsWith("// License Header 2012, 2014");
 		});
 		assertFile("src/main/kotlin/test2.kt").matches(matcher -> {
-			matcher.startsWith(HEADER_WITH_YEAR.replace("$YEAR", String.valueOf(YearMonth.now().getYear())));
+			matcher.startsWith("// License Header 2012, 2014");
 		});
 	}
 }

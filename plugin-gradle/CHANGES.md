@@ -2,14 +2,93 @@
 
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
+**5.x preview:** If you are using Gradle 5.4+, you can preview thew upcoming `com.diffplug.spotless` plugin by adding `-PspotlessModern`, see [CHANGES-5.x-PREVIEW.md](CHANGES-5.x-PREVIEW.md) for details.
+
 ## [Unreleased]
+
+## [4.5.1] - 2020-07-04
+### Fixed
+* Git-native handling of line endings was broken, now fixed ([#639](https://github.com/diffplug/spotless/pull/639)).
+
+## [4.5.0] - 2020-07-02
 ### Added
+* Full support for the Gradle buildcache - previously only supported local, now supports remote too. Fixes [#566](https://github.com/diffplug/spotless/issues/566) and [#280](https://github.com/diffplug/spotless/issues/280), via changes in [#621](https://github.com/diffplug/spotless/pull/621) and [#571](https://github.com/diffplug/spotless/pull/571).
+* `prettier` will now autodetect the parser (and formatter) to use based on the filename, unless you override this using `config()` or `configFile()` with the option `parser` or `filepath`. ([#620](https://github.com/diffplug/spotless/pull/620))
+* (user-invisible) moved the deprecated lib code which was only being used in deprecated parts of `plugin-gradle` into the `.libdeprecated` package. ([#630](https://github.com/diffplug/spotless/pull/630))
+* Added ANTLR4 support ([#326](https://github.com/diffplug/spotless/issues/326)).
+### Fixed
+* LineEndings.GIT_ATTRIBUTES is now a bit more efficient, and paves the way for remote build cache support in Gradle. ([#621](https://github.com/diffplug/spotless/pull/621))
+* `ratchetFrom` now ratchets from the merge base of `HEAD` and the specified branch.  This fixes the surprising behavior when a remote branch advanced ([#631](https://github.com/diffplug/spotless/pull/631) fixes [#627](https://github.com/diffplug/spotless/issues/627)).
+### Deprecated
+* The default targets for `C/C++`, `freshmark`, `sql`, and `typescript` now generate a warning, asking the user to specify a target manually. There is no well-established convention for these languages in the gradle ecosystem, and the performance of the default target is far worse than a user-provided one.  If you dislike this change, please complain in [#634](https://github.com/diffplug/spotless/pull/634).
+* `customLazy` and `customLazyGroovy` now generate a warning, asking the user to migrate to `custom`.  There is no longer a performance advantage to `customLazy` in the new modern plugin. See [#635](https://github.com/diffplug/spotless/pull/635/files) for example migrations.
+* inside the `cpp { }` block, the `eclipse` step now generates a warning, asking you to switch to `eclipseCdt`.  It is the same underlying step, but the new name clears up any confusion with the more common Java `eclipse`. [#636](https://github.com/diffplug/spotless/pull/635/files)
+
+## [4.4.0] - 2020-06-19
+### Added
+* It is now possible to have multiple language-specific formats. ([9a02419](https://github.com/diffplug/spotless/pull/618/commits/9a024195982759977108b1d857670459939f4000))
+
+```groovy
+import com.diffplug.gradle.spotless.KotlinExtension
+spotless {
+  kotlin {
+    target 'src/**/*.kt'
+    ktlint()
+  }
+  format 'kotlinScript', KotlinExtension, {
+    target 'src/**/*.kts'
+    ktfmt()
+  }
+}
+```
+
+## [4.3.1] - 2020-06-17
+### Changed
+* Nodejs-based formatters `prettier` and `tsfmt` now use native node instead of the J2V8 approach. ([#606](https://github.com/diffplug/spotless/pull/606))
+  * This removes the dependency to the no-longer-maintained Linux/Windows/macOs variants of J2V8.
+  * This enables spotless to use the latest `prettier` versions (instead of being stuck at prettier version <= `1.19.0`)
+  * Bumped default versions, prettier `1.16.4` -> `2.0.5`, tslint `5.12.1` -> `6.1.2`
+### Fixed
+* Using `ratchetFrom 'origin/main'` on a bare checkout generated a cryptic error, now generates a clear error. ([#608](https://github.com/diffplug/spotless/issues/608))
+* Using `ratchetFrom 'nonexistent-reference` generated a cryptic error, now generates a clear error. ([#612](https://github.com/diffplug/spotless/issues/612))
+
+## [4.3.0] - 2020-06-05
+### Deprecated
+* `-PspotlessFiles` has been deprecated and will be removed.  It is slow and error-prone, especially for win/unix cross-platform, and we have better options available now:
+  * If you are formatting just one file, try the much faster [IDE hook](https://github.com/diffplug/spotless/blob/main/plugin-gradle/IDE_HOOK.md)
+  * If you are integrating with git, try the much easier (and faster) [`ratchetFrom 'origin/main'`](https://github.com/diffplug/spotless/tree/main/plugin-gradle#ratchet)
+  * If neither of these work for you, let us know in [this PR](https://github.com/diffplug/spotless/pull/602).
+### Added
+* If you specify `-PspotlessSetLicenseHeaderYearsFromGitHistory=true`, Spotless will perform an expensive search through git history to determine the oldest and newest commits for each file, and uses that to determine license header years. ([#604](https://github.com/diffplug/spotless/pull/604))
+* It is now possible for individual formats to set their own `ratchetFrom` value, similar to how formats can have their own `encoding`. ([#605](https://github.com/diffplug/spotless/pull/605)).
+* (spotless devs only) if you specify `-PspotlessModern=true` Spotless will run the in-progress Gradle `5.4+` code.  The `modernTest` build task runs our test suite in this way.  It will be weeks/months before this is recommended for end-users. ([#598](https://github.com/diffplug/spotless/pull/598))
+
+## [4.2.1] - 2020-06-04
+### Fixed
+* `ratchetFrom` incorrectly marked every file as though it were clean on Windows. ([#596](https://github.com/diffplug/spotless/pull/596))
+  * Also large [performance improvement (win and unix) for multiproject builds](https://github.com/diffplug/spotless/pull/597/commits/f66dc8de137a34d14768e83ab3cbff5344539b56). ([#597](https://github.com/diffplug/spotless/pull/597))
+* Improved the warning message for `paddedCell` deprecation, along with many API-invisible fixes and cleanup. ([#592](https://github.com/diffplug/spotless/pull/592))
+
+## [4.2.0] - 2020-06-03
+### Added
+* If you use `ratchetFrom` and `licenseHeader`, the year in your license header will now be automatically kept up-to-date for changed files. For example, if the current year is 2020: ([#593](https://github.com/diffplug/spotless/pull/593))
+  * `/** Copyright 2020 */` -> unchanged
+  * `/** Copyright 1990 */` -> `/** Copyright 1990-2020 */`
+  * `/** Copyright 1990-1993 */` -> `/** Copyright 1990-2020 */`
+  * You can disable this behavior with `licenseHeader(...).updateYearWithLatest(false)`, or you can enable it without using `ratchetFrom` by using `updateYearWithLatest(true)` (not recommended).
+### Fixed
+* `ratchetFrom` had a bug (now fixed) such that it reported all files outside the root directory as changed. ([#594](https://github.com/diffplug/spotless/pull/594))
+
+## [4.1.0] - 2020-06-01
+### Added
+* You can now ratchet a project's style by limiting Spotless only to files which have changed since a given [git reference](https://javadoc.io/static/org.eclipse.jgit/org.eclipse.jgit/5.6.1.202002131546-r/org/eclipse/jgit/lib/Repository.html#resolve-java.lang.String-), e.g. `ratchetFrom 'origin/main'`. ([#590](https://github.com/diffplug/spotless/pull/590))
 * Support for ktfmt in KotlinGradleExtension. ([#583](https://github.com/diffplug/spotless/pull/583))
 * Support for Scalafix ([#591](https://github.com/diffplug/spotless/pull/591))
 ### Fixed
 * Users can now run `spotlessCheck` and `spotlessApply` in the same build. ([#584](https://github.com/diffplug/spotless/pull/584))
 * Fixed intermittent `UnsatisfiedLinkError` in nodejs-based steps. ([#586](https://github.com/diffplug/spotless/pull/586))
   * Also, a shared library used by the nodejs steps used to be extracted into the user home directory, but now it is extracted into `{rootProject}/build/spotless-nodejs-cache`.
+* Fixed intermittent `java.nio.file.DirectoryNotEmptyException` on incremental builds where folders had been removed. ([#589](https://github.com/diffplug/spotless/pull/589))
 * Starting in `4.0`, it is no longer possible for a project to format files which are not within its project folder (for example, `:a` can no longer format files in `:b`).  We did not explicitly note this in the changelog entry for `4.0`, and we gave a very confusing error message if users tried.  We now give a more helpful error message, and this breaking change has been retroactively noted in the changelog for `4.0.0`. ([#588](https://github.com/diffplug/spotless/pull/588))
 
 ## [4.0.1] - 2020-05-21
@@ -219,7 +298,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [3.8.0] - 2018-01-02
 * Bugfix: if the specified target of a spotless task was reduced, Spotless could keep giving warnings until the cache file was deleted.
-* LicenseHeader now supports time-aware license headers. ([docs](https://github.com/diffplug/spotless/tree/master/plugin-gradle#license-header), [#179](https://github.com/diffplug/spotless/pull/179), thanks to @baptistemesta)
+* LicenseHeader now supports time-aware license headers. ([docs](https://github.com/diffplug/spotless/tree/main/plugin-gradle#license-header), [#179](https://github.com/diffplug/spotless/pull/179), thanks to @baptistemesta)
 
 ## [3.7.0] - 2017-12-02
 * Updated default eclipse-jdt version to `4.7.1` from `4.6.3`.
@@ -319,7 +398,7 @@ custom 'no swearing', {
 
 ## [2.3.0] - 2016-10-27
 * When `spotlessCheck` fails, the error message now contains a short diff of what is neccessary to fix the issue ([#10](https://github.com/diffplug/spotless/issues/10), thanks to Jonathan Bluett-Duncan).
-* Added a [padded-cell mode](https://github.com/diffplug/spotless/blob/master/PADDEDCELL.md) which allows spotless to band-aid over misbehaving rules, and generate error reports for these rules (See [#37](https://github.com/diffplug/spotless/issues/37) for an example).
+* Added a [padded-cell mode](https://github.com/diffplug/spotless/blob/main/PADDEDCELL.md) which allows spotless to band-aid over misbehaving rules, and generate error reports for these rules (See [#37](https://github.com/diffplug/spotless/issues/37) for an example).
 * Character encoding is now configurable (spotless-global or format-by-format).
 * Line endings were previously only spotless-global, they now also support format-by-format.
 * Upgraded eclipse formatter from 4.6.0 to 4.6.1

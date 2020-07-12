@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package com.diffplug.spotless.extra.wtp;
 
-import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Properties;
@@ -56,51 +55,6 @@ public enum EclipseWtpFormatterStep {
 		return DEFAULT_VERSION;
 	}
 
-	/**
-	 * Provides default configuration for CSSformatter.
-	 * Method is deprecated. Use {@link EclipseWtpFormatterStep#createBuilder(Provisioner)} instead.
-	 */
-	@Deprecated
-	public static EclipseBasedStepBuilder createCssBuilder(Provisioner provisioner) {
-		return new EclipseBasedStepBuilder(NAME, " - css", provisioner, state -> applyWithoutFile("EclipseCssFormatterStepImpl", state));
-	}
-
-	/**
-	 * Provides default configuration for HTML formatter.
-	 * Method is deprecated. Use {@link EclipseWtpFormatterStep#createBuilder(Provisioner)} instead.
-	 */
-	@Deprecated
-	public static EclipseBasedStepBuilder createHtmlBuilder(Provisioner provisioner) {
-		return HTML.createBuilder(provisioner);
-	}
-
-	/**
-	 * Provides default configuration for Java Script formatter.
-	 * Method is deprecated. Use {@link EclipseWtpFormatterStep#createBuilder(Provisioner)} instead.
-	 */
-	@Deprecated
-	public static EclipseBasedStepBuilder createJsBuilder(Provisioner provisioner) {
-		return JS.createBuilder(provisioner);
-	}
-
-	/**
-	 * Provides default configuration for JSON formatter.
-	 * Method is deprecated. Use {@link EclipseWtpFormatterStep#createBuilder(Provisioner)} instead.
-	 */
-	@Deprecated
-	public static EclipseBasedStepBuilder createJsonBuilder(Provisioner provisioner) {
-		return JSON.createBuilder(provisioner);
-	}
-
-	/**
-	 * Provides default configuration for XML formatter.
-	 * Method is deprecated. Use {@link EclipseWtpFormatterStep#createBuilder(Provisioner)} instead.
-	 */
-	@Deprecated
-	public static EclipseBasedStepBuilder createXmlBuilder(Provisioner provisioner) {
-		return XML.createBuilder(provisioner);
-	}
-
 	private static FormatterFunc applyWithoutFile(String className, EclipseBasedStepBuilder.State state) throws Exception {
 		Class<?> formatterClazz = state.loadClass(FORMATTER_PACKAGE + className);
 		Object formatter = formatterClazz.getConstructor(Properties.class).newInstance(state.getPreferences());
@@ -116,27 +70,18 @@ public enum EclipseWtpFormatterStep {
 		};
 	}
 
-	private static FormatterFuncWithFile applyWithFile(String className, EclipseBasedStepBuilder.State state) throws Exception {
+	private static FormatterFunc.NeedsFile applyWithFile(String className, EclipseBasedStepBuilder.State state) throws Exception {
 		Class<?> formatterClazz = state.loadClass(FORMATTER_PACKAGE + className);
 		Object formatter = formatterClazz.getConstructor(Properties.class).newInstance(state.getPreferences());
 		Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class, String.class);
-		return (input, source) -> {
+		return (unixString, file) -> {
 			try {
-				return (String) method.invoke(formatter, input, source.getAbsolutePath());
+				return (String) method.invoke(formatter, unixString, file.getAbsolutePath());
 			} catch (InvocationTargetException exceptionWrapper) {
 				Throwable throwable = exceptionWrapper.getTargetException();
 				Exception exception = (throwable instanceof Exception) ? (Exception) throwable : null;
 				throw (null == exception) ? exceptionWrapper : exception;
 			}
 		};
-	}
-
-	private static interface FormatterFuncWithFile extends FormatterFunc {
-		@Override
-		default String apply(String input) throws Exception {
-			throw new UnsupportedOperationException("Formatter requires file path of source.");
-		}
-
-		public String apply(String input, File source) throws Exception;
 	}
 }

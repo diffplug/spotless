@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,13 @@ import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder.State;
 
-/** Formatter step which calls out to the Eclipse CDT formatter. */
+/**
+ * Formatter step which calls out to the Eclipse CDT formatter.
+ *
+ * Eclipse-CDT <code>org.eclipse.core.contenttype.contentTypes</code>
+ * extension <code>cSource</code>, <code>cHeader</code>, <code>cxxSource</code> and <code>cxxHeader</code>.
+ * can handle: "c", "h", "C", "cpp", "cxx", "cc", "c++", "h", "hpp", "hh", "hxx", "inc"
+ */
 public final class EclipseCdtFormatterStep {
 	// prevent direct instantiation
 	private EclipseCdtFormatterStep() {}

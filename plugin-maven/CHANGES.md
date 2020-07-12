@@ -3,6 +3,37 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.0.1] - 2020-07-04
+### Fixed
+* Git-native handling of line endings was broken, now fixed ([#639](https://github.com/diffplug/spotless/pull/639)).
+
+## [2.0.0] - 2020-07-02
+### Added
+* You can now ratchet a project's style by limiting Spotless only to files which have changed since a given [git reference](https://javadoc.io/static/org.eclipse.jgit/org.eclipse.jgit/5.6.1.202002131546-r/org/eclipse/jgit/lib/Repository.html#resolve-java.lang.String-), e.g. `ratchetFrom 'origin/main'`. ([#590](https://github.com/diffplug/spotless/pull/590))
+* Huge speed improvement for multi-module projects thanks to improved cross-project classloader caching ([#571](https://github.com/diffplug/spotless/pull/571), fixes [#559](https://github.com/diffplug/spotless/issues/559)).
+* If you specify `-DspotlessSetLicenseHeaderYearsFromGitHistory=true`, Spotless will perform an expensive search through git history to determine the oldest and newest commits for each file, and uses that to determine license header years. ([#626](https://github.com/diffplug/spotless/pull/626))
+* `prettier` will now autodetect the parser (and formatter) to use based on the filename, unless you override this using `config` or `configFile` with the option `parser` or `filepath` ([#620](https://github.com/diffplug/spotless/pull/620)).
+* Added ANTLR4 support ([#326](https://github.com/diffplug/spotless/issues/326)).
+### Removed
+* **BREAKING** the default includes for `<typescript>` and `<cpp>` were removed, and will now generate an error if an `<include>` is not specified.  There is no well-established convention for these languages in the maven ecosystem, and the performance of the default includes is far worse than a user-provided one.  If you dislike this change, please complain in [#634](https://github.com/diffplug/spotless/pull/634), it would not be a breaking change to bring the defaults back.
+* **BREAKING** inside the `<cpp>` block, `<eclipse>` has been renamed to `<eclipseCdt>` to avoid any confusion with the java `<eclipse>` ([#636](https://github.com/diffplug/spotless/pull/636)).
+* **BREAKING** the long-deprecated `<xml>` and `<css>` formats have been removed, in favor of the long-available [`<eclipseWtp>`](https://github.com/diffplug/spotless/tree/main/plugin-maven#eclipse-wtp) step which is available in every generic format ([#630](https://github.com/diffplug/spotless/pull/630)).
+  * This probably doesn't affect you, but if it does, you just need to change `<xml>...` into `<formats><format><eclipseWtp><type>XML</type>...`
+  * In [`1.15.0` (released 2018-09-23)](#1150---2018-09-23), we added support for `xml` and `css` formats using the Eclipse WTP.
+  * In [`1.18.0` (released 2019-02-11)](#1180---2019-02-11), we deprecated these, in favor of the generic `eclipseWtp` step which is available for all generic formats.  This allows you to have multiple XML and CSS formats, rather than just one.
+  * And now we removed them entirely.
+
+## [1.31.3] - 2020-06-17
+### Changed
+* Nodejs-based formatters `prettier` and `tsfmt` now use native node instead of the J2V8 approach. ([#606](https://github.com/diffplug/spotless/pull/606))
+  * This removes the dependency to the no-longer-maintained Linux/Windows/macOs variants of J2V8.
+  * This enables spotless to use the latest `prettier` versions (instead of being stuck at prettier version <= `1.19.0`)
+  * Bumped default versions, prettier `1.16.4` -> `2.0.5`, tslint `5.12.1` -> `6.1.2`
+### Fixed
+* `licenseHeader` is now more robust when parsing years from existing license headers. ([#593](https://github.com/diffplug/spotless/pull/593))
+
+## [1.31.2] - 2020-06-01
 ### Fixed
 * Shared library used by the nodejs-based steps used to be extracted into the user home directory, but now it is extracted into a temporary directory and deleted on VM shutdown. ([#586](https://github.com/diffplug/spotless/pull/586))
 * If you specified a config file for a formatter, it used to be needlessly copied to a randomly-named file in the build folder.  This could cause performance to suffer, especially for [large multi-project builds that use eclipse](https://github.com/diffplug/spotless/issues/559). ([#572](https://github.com/diffplug/spotless/pull/572))
@@ -16,7 +47,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Added
 * Support for google-java-format 1.8 (requires build to run on Java 11+) ([#562](https://github.com/diffplug/spotless/issues/562))
 * Support for ktfmt 0.13 (requires build to run on Java 11+) ([#569](https://github.com/diffplug/spotless/pull/569))
-* `mvn spotless:apply` is now guaranteed to be idempotent, even if some of the formatters are not.  See [`PADDEDCELL.md` for details](https://github.com/diffplug/spotless/blob/master/PADDEDCELL.md) if you're curious. ([#565](https://github.com/diffplug/spotless/pull/565))
+* `mvn spotless:apply` is now guaranteed to be idempotent, even if some of the formatters are not.  See [`PADDEDCELL.md` for details](https://github.com/diffplug/spotless/blob/main/PADDEDCELL.md) if you're curious. ([#565](https://github.com/diffplug/spotless/pull/565))
 * Updated a bunch of dependencies, most notably jgit `5.5.0.201909110433-r` -> `5.7.0.202003110725-r`. ([#564](https://github.com/diffplug/spotless/pull/564))
 
 ## [1.30.0] - 2020-04-10
