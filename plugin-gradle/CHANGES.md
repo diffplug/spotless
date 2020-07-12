@@ -4,6 +4,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+## [5.0.0] - 2020-07-12
+
 This release is *exactly* the same as `4.5.1`, except:
 
 - it now has plugin id `com.diffplug.spotless`, rather than `com.diffplug.gradle.spotless` ([why](https://dev.to/nedtwigg/names-in-java-maven-and-gradle-2fm2))
