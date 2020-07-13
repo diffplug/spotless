@@ -18,6 +18,10 @@ javadoc {
 	options.addStringOption('Xwerror', '-quiet')
 	enabled = org.gradle.api.JavaVersion.current() == org.gradle.api.JavaVersion.VERSION_1_8
 }
+// make sure bad javadoc breaks the build
+tasks.named('check') {
+	dependsOn tasks.named('javadoc')
+}
 
 // use markdown in javadoc
 def makeLink = { url, text -> "<a href=\"${url}\" style=\"text-transform: none;\">${text}</a>" }
