@@ -23,6 +23,7 @@ import com.diffplug.common.collect.ImmutableSortedMap;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.kotlin.KtLintStep;
 import com.diffplug.spotless.kotlin.KtfmtStep;
+import com.diffplug.spotless.kotlin.KtfmtStep.Style;
 
 public class KotlinGradleExtension extends FormatExtension {
 	private static final String GRADLE_KOTLIN_DSL_FILE_EXTENSION = "*.gradle.kts";
@@ -80,34 +81,23 @@ public class KotlinGradleExtension extends FormatExtension {
 		return new KtfmtConfig(version);
 	}
 
-	/**
-	 * Uses the given version of [ktfmt](https://github.com/facebookincubator/ktfmt) to format source
-	 * code.
-	 */
-	public KtfmtConfig ktfmt(String version, Boolean withDropboxStyle) {
-		Objects.requireNonNull(version);
-		Objects.requireNonNull(withDropboxStyle);
-		return new KtfmtConfig(version, withDropboxStyle);
-	}
-
 	public class KtfmtConfig {
 		final String version;
-		Boolean withDropboxStyle;
+		Style style;
 
 		KtfmtConfig(String version) {
 			this.version = Objects.requireNonNull(version);
-			this.withDropboxStyle = false;
+			this.style = Style.DEFAULT;
 			addStep(createStep());
 		}
 
-		KtfmtConfig(String version, Boolean withDropboxStyle) {
-			this.version = Objects.requireNonNull(version);
-			this.withDropboxStyle = Objects.requireNonNull(withDropboxStyle);
-			addStep(createStep());
+		public void dropboxStyle() {
+			style = Style.DROPBOX;
+			replaceStep(createStep());
 		}
 
 		private FormatterStep createStep() {
-			return KtfmtStep.create(version, provisioner(), withDropboxStyle);
+			return KtfmtStep.create(version, provisioner(), style);
 		}
 	}
 

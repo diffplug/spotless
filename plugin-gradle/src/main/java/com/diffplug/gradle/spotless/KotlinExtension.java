@@ -29,6 +29,7 @@ import org.gradle.api.tasks.SourceSet;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.kotlin.KtLintStep;
 import com.diffplug.spotless.kotlin.KtfmtStep;
+import com.diffplug.spotless.kotlin.KtfmtStep.Style;
 
 public class KotlinExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "kotlin";
@@ -86,41 +87,31 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 	}
 
 	/**
-	 * Uses the given version of [ktfmt](https://github.com/facebookincubator/ktfmt) to format source
-	 * code.
-	 */
-	public KtfmtConfig ktfmt(String version) {
-		return ktfmt(version, false);
-	}
-
-	/**
 	 * Uses the given version of [ktfmt](https://github.com/facebookincubator/ktfmt) and applies the dropbox style
 	 * option to format source code.
 	 */
-	public KtfmtConfig ktfmt(String version, Boolean withDropboxStyle) {
+	public KtfmtConfig ktfmt(String version) {
 		Objects.requireNonNull(version);
-		Objects.requireNonNull(withDropboxStyle);
-		return new KtfmtConfig(version, withDropboxStyle);
+		return new KtfmtConfig(version);
 	}
 
 	public class KtfmtConfig {
 		final String version;
-		final Boolean withDropboxStyle;
+		Style style;
 
 		KtfmtConfig(String version) {
 			this.version = Objects.requireNonNull(version);
-			this.withDropboxStyle = false;
+			this.style = Style.DEFAULT;
 			addStep(createStep());
 		}
 
-		KtfmtConfig(String version, Boolean withDropBoxStyle) {
-			this.version = Objects.requireNonNull(version);
-			this.withDropboxStyle = withDropBoxStyle;
-			addStep(createStep());
+		public void dropboxStyle() {
+			style = Style.DROPBOX;
+			replaceStep(createStep());
 		}
 
 		private FormatterStep createStep() {
-			return KtfmtStep.create(version, provisioner(), withDropboxStyle);
+			return KtfmtStep.create(version, provisioner(), style);
 		}
 	}
 

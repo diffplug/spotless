@@ -15,6 +15,9 @@
  */
 package com.diffplug.spotless.kotlin;
 
+import static com.diffplug.spotless.kotlin.KtfmtStep.Style.DEFAULT;
+import static com.diffplug.spotless.kotlin.KtfmtStep.Style.DROPBOX;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -34,11 +37,15 @@ public class KtfmtStep {
 	static final String MAVEN_COORDINATE = PACKAGE + ":ktfmt:";
 
 	/**
-	 * Used to allow drpobox style option through formatting options.
+	 * Used to allow dropbox style option through formatting options.
 	 *
 	 * @see:
 	 *     https://github.com/facebookincubator/ktfmt/blob/bfd3f08059eace1562191d542d11c0f9dbd49332/core/src/main/java/com/facebook/ktfmt/Formatter.kt#L47-L73
 	 */
+	public enum Style {
+		DEFAULT, DROPBOX
+	}
+
 	private static final int MAX_WIDTH_LINE = 100;
 	private static final int BLOCK_INDENT = 4;
 	private static final int CONTINUATION_INDENT = 4;
@@ -58,16 +65,16 @@ public class KtfmtStep {
 
 	/** Creates a step which formats everything - code, import order, and unused imports. */
 	public static FormatterStep create(String version, Provisioner provisioner) {
-		return create(version, provisioner, false);
+		return create(version, provisioner, DEFAULT);
 	}
 
 	/** Creates a step which formats everything - code, import order, and unused imports. */
-	public static FormatterStep create(String version, Provisioner provisioner, Boolean withDropboxStyle) {
+	public static FormatterStep create(String version, Provisioner provisioner, Style style) {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(provisioner, "provisioner");
-		Objects.requireNonNull(withDropboxStyle, "withDropboxStyle");
+		Objects.requireNonNull(style, "style");
 		return FormatterStep.createLazy(
-				NAME, () -> new State(version, provisioner, withDropboxStyle), State::createFormat);
+				NAME, () -> new State(version, provisioner, style), State::createFormat);
 	}
 
 	public static String defaultVersion() {
@@ -81,13 +88,13 @@ public class KtfmtStep {
 		/**
 		 * Option that allows to apply formatting options to perform a 4 spaces block and continuation indent.
 		 */
-		private final Boolean withDropboxStyle;
+		private final Style style;
 		/** The jar that contains the eclipse formatter. */
 		final JarState jarState;
 
-		State(String version, Provisioner provisioner, Boolean withDropboxStyle) throws IOException {
+		State(String version, Provisioner provisioner, Style style) throws IOException {
 			this.pkg = PACKAGE;
-			this.withDropboxStyle = withDropboxStyle;
+			this.style = style;
 			this.jarState = JarState.from(MAVEN_COORDINATE + version, provisioner);
 		}
 
@@ -96,7 +103,7 @@ public class KtfmtStep {
 			Class<?> formatterClazz = classLoader.loadClass(pkg + ".ktfmt.FormatterKt");
 			return input -> {
 				try {
-					if (withDropboxStyle) {
+					if (style == DROPBOX) {
 						// we are duplicating the result of this parsing logic from ktfmt 0.15
 						// https://github.com/facebookincubator/ktfmt/blob/59f7ad8d1fde08f3402a013571c9997316083ebf/core/src/main/java/com/facebook/ktfmt/ParsedArgs.kt#L37
 						// if the code above changes in a future version, we will need to change this code
