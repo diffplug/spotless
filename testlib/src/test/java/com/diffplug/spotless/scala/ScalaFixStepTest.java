@@ -31,6 +31,7 @@ import com.diffplug.spotless.*;
 public class ScalaFixStepTest extends ResourceHarness {
 	private ScalaCompiler scalaCompiler;
 	private String originalDir;
+	private File testFile;
 
 	@Before
 	public void before() throws IOException {
@@ -39,6 +40,8 @@ public class ScalaFixStepTest extends ResourceHarness {
 		final File configFile = createTestFile("scala/scalafix/.scalafix.conf");
 		// Scalafix uses "user.dir" as the working directory
 		System.setProperty("user.dir", configFile.getParentFile().getAbsolutePath());
+		testFile = newFile("basic.sc");
+		testFile.createNewFile();
 	}
 
 	@After
@@ -48,25 +51,25 @@ public class ScalaFixStepTest extends ResourceHarness {
 
 	@Test
 	public void behaviorDefaultConfigFilename() throws Exception {
-		StepHarness.forStep(ScalaFixStep.create("0.9.16", "2.12.11", TestProvisioner.mavenCentral(), scalaCompiler, null))
-				.test(createTestFile("scala/scalafix/basic.dirty"), createTestFile("scala/scalafix/basic.clean"));
+		StepHarnessWithFile.forStep(ScalaFixStep.create("0.9.16", "2.12.11", TestProvisioner.mavenCentral(), scalaCompiler, null))
+				.test(testFile, "scala/scalafix/basic.dirty", "scala/scalafix/basic.clean");
 	}
 
 	@Test
 	public void behaviorCustomConfigFilename() throws Exception {
-		StepHarness.forStep(ScalaFixStep.create("0.9.16", "2.12.11", TestProvisioner.mavenCentral(), scalaCompiler, createTestFile("scala/scalafix/.scalafix2.conf")))
-				.test(createTestFile("scala/scalafix/basic.dirty"), createTestFile("scala/scalafix/basic.clean2"));
+		StepHarnessWithFile.forStep(ScalaFixStep.create("0.9.16", "2.12.11", TestProvisioner.mavenCentral(), scalaCompiler, createTestFile("scala/scalafix/.scalafix2.conf")))
+				.test(testFile, "scala/scalafix/basic.dirty", "scala/scalafix/basic.clean2");
 	}
 
 	@Test
 	public void behaviorDefaultConfigFilename_0_9_1() throws Exception {
-		StepHarness.forStep(ScalaFixStep.create("0.9.1", "2.11.12", TestProvisioner.mavenCentral(), scalaCompiler, null))
-				.test(createTestFile("scala/scalafix/basic.dirty"), createTestFile("scala/scalafix/basic.clean"));
+		StepHarnessWithFile.forStep(ScalaFixStep.create("0.9.1", "2.11.12", TestProvisioner.mavenCentral(), scalaCompiler, null))
+				.test(testFile, "scala/scalafix/basic.dirty", "scala/scalafix/basic.clean");
 	}
 
 	@Test
 	public void behaviorCustomConfigFilename_0_9_1() throws Exception {
-		StepHarness.forStep(ScalaFixStep.create("0.9.1", "2.11.12", TestProvisioner.mavenCentral(), scalaCompiler, createTestFile("scala/scalafix/.scalafix2.conf")))
-				.test(createTestFile("scala/scalafix/basic.dirty"), createTestFile("scala/scalafix/basic.clean2"));
+		StepHarnessWithFile.forStep(ScalaFixStep.create("0.9.1", "2.11.12", TestProvisioner.mavenCentral(), scalaCompiler, createTestFile("scala/scalafix/.scalafix2.conf")))
+				.test(testFile, "scala/scalafix/basic.dirty", "scala/scalafix/basic.clean2");
 	}
 }
