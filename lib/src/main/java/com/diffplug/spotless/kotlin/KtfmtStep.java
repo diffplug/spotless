@@ -39,8 +39,7 @@ public class KtfmtStep {
 	/**
 	 * Used to allow dropbox style option through formatting options.
 	 *
-	 * @see:
-	 *     https://github.com/facebookincubator/ktfmt/blob/bfd3f08059eace1562191d542d11c0f9dbd49332/core/src/main/java/com/facebook/ktfmt/Formatter.kt#L47-L73
+	 * @see <a href="https://github.com/facebookincubator/ktfmt/blob/bfd3f08059eace1562191d542d11c0f9dbd49332/core/src/main/java/com/facebook/ktfmt/Formatter.kt#L47-L73">ktfmt source</a>
 	 */
 	public enum Style {
 		DEFAULT, DROPBOX
@@ -53,8 +52,7 @@ public class KtfmtStep {
 	/**
 	 * The <code>format</code> method is available in the link below.
 	 *
-	 * @see:
-	 *     https://github.com/facebookincubator/ktfmt/blob/bfd3f08059eace1562191d542d11c0f9dbd49332/core/src/main/java/com/facebook/ktfmt/Formatter.kt#L75-L92
+	 * @see <a href="https://github.com/facebookincubator/ktfmt/blob/bfd3f08059eace1562191d542d11c0f9dbd49332/core/src/main/java/com/facebook/ktfmt/Formatter.kt#L75-L92">ktfmt source</a>
 	 */
 	static final String FORMATTER_METHOD = "format";
 
