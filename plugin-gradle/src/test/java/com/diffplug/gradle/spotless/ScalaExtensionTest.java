@@ -24,7 +24,7 @@ public class ScalaExtensionTest extends GradleIntegrationHarness {
 	public void integrationScalafmt() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"    id 'scala'",
 				"}",
 				"repositories { mavenCentral() }",

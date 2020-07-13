@@ -36,7 +36,7 @@ public class ErrorShouldRethrowJre11Test extends GradleIntegrationHarness {
 	private void writeBuild(String... toInsert) throws IOException {
 		List<String> lines = new ArrayList<>();
 		lines.add("plugins {");
-		lines.add("    id 'com.diffplug.gradle.spotless'");
+		lines.add("    id 'com.diffplug.spotless'");
 		lines.add("    id 'java'");
 		lines.add("}");
 		lines.add("spotless {");

@@ -38,7 +38,7 @@ public class GroovyGradleExtensionTest extends GradleIntegrationHarness {
 		String target = useDefaultTarget ? "" : "target 'other.gradle'";
 		String buildContent = StringPrinter.buildStringFromLines(
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
 				"spotless {",
 				"    groovyGradle {",

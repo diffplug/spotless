@@ -36,7 +36,7 @@ public class TypescriptExtension extends FormatExtension {
 
 	static final String NAME = "typescript";
 
-	public TypescriptExtension(SpotlessExtensionBase spotless) {
+	public TypescriptExtension(SpotlessExtension spotless) {
 		super(spotless);
 	}
 
@@ -170,8 +170,7 @@ public class TypescriptExtension extends FormatExtension {
 	protected void setupTask(SpotlessTask task) {
 		// defaults to all typescript files
 		if (target == null) {
-			noDefaultTarget();
-			target = parseTarget("**/*.ts");
+			throw noDefaultTargetException();
 		}
 		super.setupTask(task);
 	}

@@ -25,7 +25,7 @@ public class IndependentTaskTest extends GradleIntegrationHarness {
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
 				"",
 				"import com.diffplug.gradle.spotless.JavaExtension",

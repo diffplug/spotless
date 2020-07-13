@@ -27,7 +27,7 @@ public class UpToDateTest extends GradleIntegrationHarness {
 	private void writeBuildFile() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
 				"spotless {",
 				"    format 'misc', {",

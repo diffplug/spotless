@@ -22,10 +22,10 @@ import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 
-public class SpotlessExtensionModern extends SpotlessExtensionBase {
+public class SpotlessExtensionImpl extends SpotlessExtension {
 	private final TaskProvider<RegisterDependenciesTask> registerDependenciesTask;
 
-	public SpotlessExtensionModern(Project project) {
+	public SpotlessExtensionImpl(Project project) {
 		super(project);
 		rootCheckTask = project.getTasks().register(EXTENSION + CHECK, task -> {
 			task.setGroup(TASK_GROUP);
@@ -56,15 +56,8 @@ public class SpotlessExtensionModern extends SpotlessExtensionBase {
 
 	final TaskProvider<?> rootCheckTask, rootApplyTask, rootDiagnoseTask;
 
-	@Override
 	RegisterDependenciesTask getRegisterDependenciesTask() {
 		return registerDependenciesTask.get();
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T extends FormatExtension> void format(String name, Class<T> clazz, Action<T> configure) {
-		maybeCreate(name, clazz).modernLazyActions.add((Action<FormatExtension>) configure);
 	}
 
 	@Override
@@ -75,7 +68,7 @@ public class SpotlessExtensionModern extends SpotlessExtensionBase {
 
 		// create the SpotlessTask
 		String taskName = EXTENSION + SpotlessPlugin.capitalize(name);
-		TaskProvider<SpotlessTaskModern> spotlessTask = tasks.register(taskName, SpotlessTaskModern.class, task -> {
+		TaskProvider<SpotlessTaskImpl> spotlessTask = tasks.register(taskName, SpotlessTaskImpl.class, task -> {
 			task.setEnabled(!isIdeHook);
 			// clean removes the SpotlessCache, so we have to run after clean
 			task.mustRunAfter(cleanTask);
@@ -84,7 +77,7 @@ public class SpotlessExtensionModern extends SpotlessExtensionBase {
 		project.afterEvaluate(unused -> {
 			spotlessTask.configure(task -> {
 				// now that the task is being configured, we execute our actions
-				for (Action<FormatExtension> lazyAction : formatExtension.modernLazyActions) {
+				for (Action<FormatExtension> lazyAction : formatExtension.lazyActions) {
 					lazyAction.execute(formatExtension);
 				}
 				// and now we'll setup the task

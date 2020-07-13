@@ -18,20 +18,15 @@ package com.diffplug.gradle.spotless;
 import java.io.IOException;
 
 import org.assertj.core.api.Assertions;
-import org.gradle.testkit.runner.GradleRunner;
 import org.junit.Test;
 
 public class ConfigAvoidanceTest extends GradleIntegrationHarness {
-	protected final GradleRunner gradleRunnerConfigAvoidance() throws IOException {
-		return gradleRunner().withGradleVersion(GradleVersionSupport.CONFIG_AVOIDANCE.version);
-	}
-
 	@Test
 	public void noConfigOnHelp() throws IOException {
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
 				"apply plugin: 'java'",
 				"spotless {",
@@ -56,9 +51,9 @@ public class ConfigAvoidanceTest extends GradleIntegrationHarness {
 				"}");
 		setFile("src/main/java/test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
 
-		String help_4_9 = gradleRunnerConfigAvoidance().withArguments("help").build().getOutput();
-		Assertions.assertThat(help_4_9).doesNotContain("Canary was configured");
-		String check_4_9 = gradleRunnerConfigAvoidance().withArguments("check").buildAndFail().getOutput();
-		Assertions.assertThat(check_4_9).contains("Canary was configured", "Canary ran", "Execution failed for task ':spotlessJavaCheck'");
+		String help = gradleRunner().withArguments("help").build().getOutput();
+		Assertions.assertThat(help).doesNotContain("Canary was configured");
+		String check = gradleRunner().withArguments("check").buildAndFail().getOutput();
+		Assertions.assertThat(check).contains("Canary was configured", "Canary ran", "Execution failed for task ':spotlessJavaCheck'");
 	}
 }

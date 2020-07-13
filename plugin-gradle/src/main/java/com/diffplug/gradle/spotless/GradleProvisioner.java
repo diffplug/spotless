@@ -33,14 +33,8 @@ import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.spotless.Provisioner;
 
 /** Should be package-private. */
-@Deprecated
-public class GradleProvisioner {
+class GradleProvisioner {
 	private GradleProvisioner() {}
-
-	@Deprecated
-	public static Provisioner fromProject(Project project) {
-		return project.getPlugins().apply(SpotlessPlugin.class).getExtension().getRegisterDependenciesTask().rootProvisioner;
-	}
 
 	/** The provisioner used for the root project. */
 	static class RootProvisioner implements Provisioner {

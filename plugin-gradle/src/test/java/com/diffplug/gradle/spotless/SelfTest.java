@@ -20,7 +20,6 @@ import java.util.function.Consumer;
 
 import org.gradle.api.Project;
 import org.gradle.api.internal.project.ProjectInternal;
-import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 import org.gradle.testkit.runner.GradleRunner;
 
 import com.diffplug.common.base.StandardSystemProperty;
@@ -51,25 +50,23 @@ public class SelfTest {
 			});
 		});
 		project.getBuildscript().getRepositories().mavenCentral();
-		SpotlessTask onlyTask = project.getTasks().stream()
-				.filter(task -> task instanceof SpotlessTask)
-				.map(task -> (SpotlessTask) task)
+		SpotlessTaskImpl onlyTask = project.getTasks().stream()
+				.filter(task -> task instanceof SpotlessTaskImpl)
+				.map(task -> (SpotlessTaskImpl) task)
 				.collect(MoreCollectors.singleOrEmpty()).get();
-
-		IncrementalTaskInputs inputs = Mocks.mockIncrementalTaskInputs(onlyTask.getTarget());
-		onlyTask.performAction(inputs);
+		Tasks.execute(onlyTask);
 		// it will run forever with empty threads, so we have to kill it
 		System.exit(0);
 	}
 
 	/** Creates a Project which has had the SpotlessExtension setup. */
-	private static Project createProject(Consumer<SpotlessExtension> test) throws Exception {
+	private static Project createProject(Consumer<SpotlessExtensionImpl> test) throws Exception {
 		//Project project = Mocks.mockProject(TestProvisioner.gradleProject(new File("").getAbsoluteFile()), afterEvaluate);
 		Project project = TestProvisioner.gradleProject(new File("").getAbsoluteFile());
 		// create the spotless plugin
 		project.getPlugins().apply(SpotlessPlugin.class);
 		// setup the plugin
-		test.accept(project.getExtensions().getByType(SpotlessExtension.class));
+		test.accept(project.getExtensions().getByType(SpotlessExtensionImpl.class));
 		// run the afterEvaluate section
 		((ProjectInternal) project).getProjectEvaluationBroadcaster().afterEvaluate(project, project.getState());
 		// return the configured plugin

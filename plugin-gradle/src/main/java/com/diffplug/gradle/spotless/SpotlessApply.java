@@ -30,10 +30,10 @@ import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 
 public class SpotlessApply extends DefaultTask {
-	private SpotlessTaskBase source;
+	private SpotlessTask source;
 
 	/** Bidirectional link between Apply and Spotless allows check to know if Apply ran or not. */
-	void linkSource(SpotlessTaskBase source) {
+	void linkSource(SpotlessTask source) {
 		this.source = source;
 		source.applyTask = this;
 	}

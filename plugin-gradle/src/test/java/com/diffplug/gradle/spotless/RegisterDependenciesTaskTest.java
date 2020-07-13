@@ -27,9 +27,9 @@ public class RegisterDependenciesTaskTest extends GradleIntegrationHarness {
 				.toLines("include 'sub'");
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
-				"plugins { id 'com.diffplug.gradle.spotless' }");
+				"plugins { id 'com.diffplug.spotless' }");
 		setFile("sub/build.gradle").toLines(
-				"apply plugin: 'com.diffplug.gradle.spotless'",
+				"apply plugin: 'com.diffplug.spotless'",
 				"",
 				"spotless {",
 				"  java {",
@@ -39,8 +39,7 @@ public class RegisterDependenciesTaskTest extends GradleIntegrationHarness {
 				"}");
 
 		setFile("gradle.properties").toLines();
-		String newestSupported = gradleRunner().withGradleVersion(GradleVersionSupport.MODERN.version)
-				.withArguments("spotlessCheck").build().getOutput();
+		String newestSupported = gradleRunner().withArguments("spotlessCheck").build().getOutput();
 		Assertions.assertThat(newestSupported.replace("\r", ""))
 				.startsWith("> Task :spotlessCheck UP-TO-DATE\n" +
 						"> Task :spotlessInternalRegisterDependencies\n")
