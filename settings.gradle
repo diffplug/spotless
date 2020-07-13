@@ -1,10 +1,10 @@
 pluginManagement {
 	plugins {
-		id 'com.diffplug.gradle.spotless' version '4.5.1'
+		id 'com.diffplug.spotless' version '5.0.0'
 	}
 }
 plugins {
-	id 'com.diffplug.gradle.spotless' apply false
+	id 'com.diffplug.spotless' apply false
 }
 if (System.env['CI'] != null) {
 	// use the remote buildcache on all CI builds

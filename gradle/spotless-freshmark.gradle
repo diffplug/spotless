@@ -1,5 +1,5 @@
 
-apply plugin: 'com.diffplug.gradle.spotless'
+apply plugin: 'com.diffplug.spotless'
 
 import com.diffplug.gradle.spotless.FreshMarkExtension
 
