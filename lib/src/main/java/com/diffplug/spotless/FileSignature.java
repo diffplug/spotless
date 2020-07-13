@@ -74,7 +74,7 @@ public final class FileSignature implements Serializable {
 				builder.append("  " + file.getAbsolutePath() + "\n");
 			}
 			builder.append("a caching signature is being generated, which will be based only on their\n");
-			builder.append("names, not their full path (foo.txt, not C:\folder\foo.txt). Unexpectedly,\n");
+			builder.append("names, not their full path (foo.txt, not C:\\folder\\foo.txt). Unexpectedly,\n");
 			builder.append("you have two files with different paths, but the same names.  You must\n");
 			builder.append("rename one of them so that all files have unique names.");
 			throw new IllegalArgumentException(builder.toString());
