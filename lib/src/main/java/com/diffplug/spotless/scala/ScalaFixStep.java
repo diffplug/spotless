@@ -83,7 +83,7 @@ public class ScalaFixStep {
 			this.scalaCompiler = scalaCompiler;
 		}
 
-		FormatterFunc createFormat() throws Exception {
+		FormatterFunc.NeedsFile createFormat() throws Exception {
 			final ClassLoader classLoader = jarState.getClassLoader();
 
 			final Class<?> javaConversionsCls = classLoader.loadClass("scala.collection.JavaConversions");
@@ -103,35 +103,27 @@ public class ScalaFixStep {
 
 			final Method someApply = someCls.getMethod("apply", Object.class);
 
-			return new FormatterFunc() {
-				@Override
-				public String apply(String input) {
-					throw new RuntimeException("This method shouldn't be called.");
+			return (String input, File source) -> {
+				final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+				final PrintStream out = new PrintStream(byteArrayOutputStream);
+				final Object args = argsDefault.invoke(null, workingDirectory, out);
+				setField(args, "stdout", true);
+				setField(args, "scalacOptions", scalacOptions);
+				setField(args, "classpath", classpath);
+				if (!configSignature.files().isEmpty()) {
+					final File file = configSignature.getOnlyFile();
+					final Object config = absolutePathApply.invoke(null, file, workingDirectory);
+					setField(args, "config", someApply.invoke(null, config));
 				}
 
-				@Override
-				public String apply(String input, File source) throws Exception {
-					final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-					final PrintStream out = new PrintStream(byteArrayOutputStream);
-					final Object args = argsDefault.invoke(null, workingDirectory, out);
-					setField(args, "stdout", true);
-					setField(args, "scalacOptions", scalacOptions);
-					setField(args, "classpath", classpath);
-					if (!configSignature.files().isEmpty()) {
-						final File file = configSignature.getOnlyFile();
-						final Object config = absolutePathApply.invoke(null, file, workingDirectory);
-						setField(args, "config", someApply.invoke(null, config));
-					}
-
-					final Object maybeValidatedArgs = argsCls.getMethod("validate").invoke(args);
-					final Object validatedArgs = maybeValidatedArgs.getClass().getMethod("get").invoke(maybeValidatedArgs);
-					final Method handleFile = mainOpsCls.getMethod("handleFile", validatedArgs.getClass(), absolutePathCls);
-					final Object sourcePath = absolutePathApply.invoke(null, source, workingDirectory);
-					handleFile.invoke(null, validatedArgs, sourcePath);
-					final String output = byteArrayOutputStream.toString();
-					// Remove the last new line added by println
-					return output.substring(0, output.length() - 1);
-				}
+				final Object maybeValidatedArgs = argsCls.getMethod("validate").invoke(args);
+				final Object validatedArgs = maybeValidatedArgs.getClass().getMethod("get").invoke(maybeValidatedArgs);
+				final Method handleFile = mainOpsCls.getMethod("handleFile", validatedArgs.getClass(), absolutePathCls);
+				final Object sourcePath = absolutePathApply.invoke(null, source, workingDirectory);
+				handleFile.invoke(null, validatedArgs, sourcePath);
+				final String output = byteArrayOutputStream.toString();
+				// Remove the last new line added by println
+				return output.substring(0, output.length() - 1);
 			};
 		}
 	}
