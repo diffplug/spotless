@@ -46,7 +46,7 @@ public class ScalaExtensionTest extends GradleIntegrationHarness {
 	public void integrationScalafix() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"    id 'scala'",
 				"}",
 				"repositories { mavenCentral() }",
@@ -72,7 +72,7 @@ public class ScalaExtensionTest extends GradleIntegrationHarness {
 	public void integrationScalafix_0_9_1() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"    id 'scala'",
 				"}",
 				"repositories { mavenCentral() }",
@@ -98,7 +98,7 @@ public class ScalaExtensionTest extends GradleIntegrationHarness {
 	public void integrationScalafixTestdir() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"    id 'scala'",
 				"}",
 				"repositories { mavenCentral() }",

@@ -41,7 +41,7 @@ public class ScalaExtension extends FormatExtension {
 
 	private final ScalaCompiler scalaCompiler;
 
-	public ScalaExtension(SpotlessExtensionBase rootExtension) {
+	public ScalaExtension(SpotlessExtension rootExtension) {
 		super(rootExtension);
 
 		final PluginManager pluginManager = getProject().getPluginManager();
@@ -122,7 +122,7 @@ public class ScalaExtension extends FormatExtension {
 
 		private FormatterStep createStep() {
 			File resolvedConfigFile = configFile == null ? null : getProject().file(configFile);
-			return ScalaFixStep.create(version, scalaVersion, GradleProvisioner.fromProject(getProject()), scalaCompiler, resolvedConfigFile);
+			return ScalaFixStep.create(version, scalaVersion, provisioner(), scalaCompiler, resolvedConfigFile);
 		}
 	}
 
