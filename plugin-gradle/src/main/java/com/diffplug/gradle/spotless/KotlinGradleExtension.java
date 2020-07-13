@@ -23,6 +23,7 @@ import com.diffplug.common.collect.ImmutableSortedMap;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.kotlin.KtLintStep;
 import com.diffplug.spotless.kotlin.KtfmtStep;
+import com.diffplug.spotless.kotlin.KtfmtStep.Style;
 
 public class KotlinGradleExtension extends FormatExtension {
 	private static final String GRADLE_KOTLIN_DSL_FILE_EXTENSION = "*.gradle.kts";
@@ -82,14 +83,21 @@ public class KotlinGradleExtension extends FormatExtension {
 
 	public class KtfmtConfig {
 		final String version;
+		Style style;
 
 		KtfmtConfig(String version) {
 			this.version = Objects.requireNonNull(version);
+			this.style = Style.DEFAULT;
 			addStep(createStep());
 		}
 
+		public void dropboxStyle() {
+			style = Style.DROPBOX;
+			replaceStep(createStep());
+		}
+
 		private FormatterStep createStep() {
-			return KtfmtStep.create(version, provisioner());
+			return KtfmtStep.create(version, provisioner(), style);
 		}
 	}
 

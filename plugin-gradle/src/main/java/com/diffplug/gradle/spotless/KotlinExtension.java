@@ -29,6 +29,7 @@ import org.gradle.api.tasks.SourceSet;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.kotlin.KtLintStep;
 import com.diffplug.spotless.kotlin.KtfmtStep;
+import com.diffplug.spotless.kotlin.KtfmtStep.Style;
 
 public class KotlinExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "kotlin";
@@ -86,8 +87,8 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 	}
 
 	/**
-	 * Uses the given version of [ktfmt](https://github.com/facebookincubator/ktfmt) to format source
-	 * code.
+	 * Uses the given version of [ktfmt](https://github.com/facebookincubator/ktfmt) and applies the dropbox style
+	 * option to format source code.
 	 */
 	public KtfmtConfig ktfmt(String version) {
 		Objects.requireNonNull(version);
@@ -96,14 +97,21 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 
 	public class KtfmtConfig {
 		final String version;
+		Style style;
 
 		KtfmtConfig(String version) {
 			this.version = Objects.requireNonNull(version);
+			this.style = Style.DEFAULT;
 			addStep(createStep());
 		}
 
+		public void dropboxStyle() {
+			style = Style.DROPBOX;
+			replaceStep(createStep());
+		}
+
 		private FormatterStep createStep() {
-			return KtfmtStep.create(version, provisioner());
+			return KtfmtStep.create(version, provisioner(), style);
 		}
 	}
 

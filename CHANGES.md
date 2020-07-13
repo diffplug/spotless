@@ -10,6 +10,7 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+* Bump default ktfmt from 0.13 to 0.15, and add support for the --dropbox-style option ([#641](https://github.com/diffplug/spotless/issues/641)).
 
 ## [2.1.0] - 2020-07-04
 ### Added

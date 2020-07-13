@@ -275,7 +275,7 @@ configure<com.diffplug.gradle.spotless.SpotlessExtension> {
 ```kotlin
 configure<com.diffplug.gradle.spotless.SpotlessExtension> {
   kotlin {
-    ktfmt('0.13') // version is optional
+    ktfmt('0.15').dropboxStyle() // version and dropbox style are optional
 ```
 
 <a name="applying-scalafmt-to-scala-files"></a>
