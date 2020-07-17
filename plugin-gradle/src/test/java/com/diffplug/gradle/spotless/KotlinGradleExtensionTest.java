@@ -147,7 +147,7 @@ public class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 				"repositories { mavenCentral() }",
 				"spotless {",
 				"    kotlinGradle {",
-				"        ktfmt('0.15').dropboxStyle()",
+				"        ktfmt().dropboxStyle()",
 				"    }",
 				"}");
 		setFile("configuration.gradle.kts").toResource("kotlin/ktfmt/dropboxstyle.dirty");

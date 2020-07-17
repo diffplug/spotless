@@ -26,12 +26,14 @@ import java.util.Objects;
 
 import com.diffplug.spotless.*;
 
-/** Wraps up [ktfmt](https://github.com/facebookincubator/ktfmt) as a FormatterStep. */
+/**
+ * Wraps up [ktfmt](https://github.com/facebookincubator/ktfmt) as a FormatterStep.
+ */
 public class KtfmtStep {
 	// prevent direct instantiation
 	private KtfmtStep() {}
 
-	private static final String DEFAULT_VERSION = "0.15";
+	private static final String DEFAULT_VERSION = "0.16";
 	static final String NAME = "ktfmt";
 	static final String PACKAGE = "com.facebook";
 	static final String MAVEN_COORDINATE = PACKAGE + ":ktfmt:";
@@ -39,20 +41,18 @@ public class KtfmtStep {
 	/**
 	 * Used to allow dropbox style option through formatting options.
 	 *
-	 * @see <a href="https://github.com/facebookincubator/ktfmt/blob/bfd3f08059eace1562191d542d11c0f9dbd49332/core/src/main/java/com/facebook/ktfmt/Formatter.kt#L47-L73">ktfmt source</a>
+	 * @see <a href="https://github.com/facebookincubator/ktfmt/blob/38486b0fb2edcabeba5540fcb69c6f1fa336c331/core/src/main/java/com/facebook/ktfmt/Formatter.kt#L47-L80">ktfmt source</a>
 	 */
 	public enum Style {
 		DEFAULT, DROPBOX
 	}
 
-	private static final int MAX_WIDTH_LINE = 100;
-	private static final int BLOCK_INDENT = 4;
-	private static final int CONTINUATION_INDENT = 4;
+	private static final String DROPBOX_STYLE_METHOD = "dropboxStyle";
 
 	/**
 	 * The <code>format</code> method is available in the link below.
 	 *
-	 * @see <a href="https://github.com/facebookincubator/ktfmt/blob/bfd3f08059eace1562191d542d11c0f9dbd49332/core/src/main/java/com/facebook/ktfmt/Formatter.kt#L75-L92">ktfmt source</a>
+	 * @see <a href="https://github.com/facebookincubator/ktfmt/blob/38486b0fb2edcabeba5540fcb69c6f1fa336c331/core/src/main/java/com/facebook/ktfmt/Formatter.kt#L82-L99">ktfmt source</a>
 	 */
 	static final String FORMATTER_METHOD = "format";
 
@@ -102,15 +102,10 @@ public class KtfmtStep {
 			return input -> {
 				try {
 					if (style == DROPBOX) {
-						// we are duplicating the result of this parsing logic from ktfmt 0.15
-						// https://github.com/facebookincubator/ktfmt/blob/59f7ad8d1fde08f3402a013571c9997316083ebf/core/src/main/java/com/facebook/ktfmt/ParsedArgs.kt#L37
-						// if the code above changes in a future version, we will need to change this code
 						Class<?> formattingOptionsClazz = classLoader.loadClass(pkg + ".ktfmt.FormattingOptions");
-						Object formattingOptions = formattingOptionsClazz.getConstructor(
-								int.class, int.class, int.class).newInstance(
-										MAX_WIDTH_LINE, BLOCK_INDENT, CONTINUATION_INDENT);
 						Method formatterMethod = formatterClazz.getMethod(FORMATTER_METHOD, formattingOptionsClazz,
 								String.class);
+						Object formattingOptions = getDropboxStyleFormattingOptions(classLoader);
 						return (String) formatterMethod.invoke(formatterClazz, formattingOptions, input);
 					} else {
 						Method formatterMethod = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
@@ -120,6 +115,13 @@ public class KtfmtStep {
 					throw ThrowingEx.unwrapCause(e);
 				}
 			};
+		}
+
+		private Object getDropboxStyleFormattingOptions(ClassLoader classLoader) throws Exception {
+			Class<?> formattingOptionsCompanionClazz = classLoader.loadClass(pkg + ".ktfmt.FormattingOptions$Companion");
+			Object companion = formattingOptionsCompanionClazz.getConstructors()[0].newInstance((Object) null);
+			Method formattingOptionsMethod = formattingOptionsCompanionClazz.getDeclaredMethod(DROPBOX_STYLE_METHOD);
+			return formattingOptionsMethod.invoke(companion);
 		}
 	}
 }
