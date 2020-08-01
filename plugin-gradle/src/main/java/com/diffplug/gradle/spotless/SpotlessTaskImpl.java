@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Comparator;
 
 import org.gradle.api.GradleException;
@@ -80,6 +81,8 @@ public class SpotlessTaskImpl extends SpotlessTask {
 				throw new IllegalStateException("Every file has a parent folder.");
 			}
 			Files.createDirectories(parentDir);
+			// Need to copy the original file to the tmp location just to remember the file attributes
+			Files.copy(input.toPath(), output.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
 			dirtyState.writeCanonicalTo(output);
 		}
 	}
