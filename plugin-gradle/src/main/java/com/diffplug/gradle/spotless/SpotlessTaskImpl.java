@@ -82,7 +82,7 @@ public class SpotlessTaskImpl extends SpotlessTask {
 			}
 			Files.createDirectories(parentDir);
 			// Need to copy the original file to the tmp location just to remember the file attributes
-			Files.copy(input.toPath(), output.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
+			Files.copy(input.toPath(), output.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
 			dirtyState.writeCanonicalTo(output);
 		}
 	}
