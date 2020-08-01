@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.AclEntry;
+import java.nio.file.attribute.AclFileAttributeView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -164,6 +166,13 @@ public class ResourceHarness {
 		// unix-ify the test resource output in case git screwed it up
 		String expected = LineEnding.toUnix(getTestResource(expectedPath)); // unix-ified output
 		Assert.assertEquals(expected, formatted);
+	}
+
+	/** Reads file attributes from the output file and compares it to the attributes from the input file. */
+	protected void assertFileAttributesEqual(File input, File output) throws IOException {
+		List<AclEntry> inputAttributes = Files.getFileAttributeView(input.toPath(), AclFileAttributeView.class).getAcl();
+		List<AclEntry> outputAttributes = Files.getFileAttributeView(output.toPath(), AclFileAttributeView.class).getAcl();
+		Assertions.assertThat(outputAttributes).isEqualTo(inputAttributes);
 	}
 
 	@CheckReturnValue
