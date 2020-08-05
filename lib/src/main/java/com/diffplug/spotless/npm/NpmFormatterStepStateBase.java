@@ -32,6 +32,7 @@ import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
 
+import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterFunc;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -42,7 +43,11 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 
 	private static final long serialVersionUID = 1460749955865959948L;
 
-	private final File buildDir;
+	@SuppressWarnings("unused")
+	private final FileSignature packageJsonSignature;
+
+	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
+	public final transient File nodeModulesDir;
 
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	private final transient File npmExecutable;
@@ -55,11 +60,14 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 			@Nullable File npm) throws IOException {
 		this.stepName = requireNonNull(stepName);
 		this.npmConfig = requireNonNull(npmConfig);
-		this.buildDir = buildDir;
 		this.npmExecutable = resolveNpm(npm);
+
+		NodeServerLayout layout = prepareNodeServer(buildDir);
+		this.nodeModulesDir = layout.nodeModulesDir();
+		this.packageJsonSignature = FileSignature.signAsList(layout.packageJsonFile());
 	}
 
-	private NodeServerLayout prepareNodeServer() throws IOException {
+	private NodeServerLayout prepareNodeServer(File buildDir) throws IOException {
 		NodeServerLayout layout = new NodeServerLayout(buildDir, stepName);
 		NpmResourceHelper.assertDirectoryExists(layout.nodeModulesDir());
 		NpmResourceHelper.writeUtf8StringToFile(layout.packageJsonFile(),
@@ -78,14 +86,12 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 
 	protected ServerProcessInfo npmRunServer() throws ServerStartException {
 		try {
-			FormattedPrinter.SYSOUT.print("preparing node server");
-			final NodeServerLayout nodeServerLayout = prepareNodeServer();
 			// The npm process will output the randomly selected port of the http server process to 'server.port' file
 			// so in order to be safe, remove such a file if it exists before starting.
-			final File serverPortFile = new File(nodeServerLayout.nodeModulesDir(), "server.port");
+			final File serverPortFile = new File(this.nodeModulesDir, "server.port");
 			NpmResourceHelper.deleteFileIfExists(serverPortFile);
 			// start the http server in node
-			Process server = new NpmProcess(nodeServerLayout.nodeModulesDir(), this.npmExecutable).start();
+			Process server = new NpmProcess(this.nodeModulesDir, this.npmExecutable).start();
 
 			// await the readiness of the http server - wait for at most 60 seconds
 			try {
