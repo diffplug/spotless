@@ -237,8 +237,9 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
 - `com.diffplug.gradle.spotless.KotlinExtension` [javadoc](https://javadoc.io/static/com.diffplug.spotless/spotless-plugin-gradle/5.1.0/com/diffplug/gradle/spotless/KotlinExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/KotlinExtension.java)
 - `com.diffplug.gradle.spotless.KotlinGradleExtension` [javadoc](https://javadoc.io/static/com.diffplug.spotless/spotless-plugin-gradle/5.1.0/com/diffplug/gradle/spotless/KotlinGradleExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/KotlinGradleExtension.java)
 
-```kotlin
-configure<com.diffplug.gradle.spotless.SpotlessExtension> {
+```gradle
+spotless { // if you are using build.gradle.kts, instead of 'spotless {' use:
+           // configure<com.diffplug.gradle.spotless.SpotlessExtension> {
   kotlin {
     // by default the target is every '.kt' and '.kts` file in the java sourcesets
     ktlint()   // has its own section below
@@ -260,7 +261,7 @@ configure<com.diffplug.gradle.spotless.SpotlessExtension> {
 [homepage](https://github.com/pinterest/ktlint). [changelog](https://github.com/pinterest/ktlint/releases).  Spotless does not ([yet](https://github.com/diffplug/spotless/issues/142)) respect the `.editorconfig` settings ([ktlint docs](https://github.com/pinterest/ktlint#editorconfig)), but you can provide them manually as `userData`.
 
 ```kotlin
-configure<com.diffplug.gradle.spotless.SpotlessExtension> {
+spotless {
   kotlin {
     // version and userData are both optional
     ktlint('0.37.2').userData(mapOf('indent_size' to '2', 'continuation_indent_size' to '2'])
@@ -273,7 +274,7 @@ configure<com.diffplug.gradle.spotless.SpotlessExtension> {
 [homepage](https://github.com/facebookincubator/ktfmt). [changelog](https://github.com/facebookincubator/ktfmt/releases).
 
 ```kotlin
-configure<com.diffplug.gradle.spotless.SpotlessExtension> {
+spotless {
   kotlin {
     ktfmt('0.15').dropboxStyle() // version and dropbox style are optional
 ```
