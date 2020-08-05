@@ -80,6 +80,7 @@ public class PrettierFormatterStep {
 		@Nonnull
 		public FormatterFunc createFormatterFunc() {
 			try {
+				FormattedPrinter.SYSOUT.print("creating formatter function (starting server)");
 				ServerProcessInfo prettierRestServer = npmRunServer();
 				PrettierRestService restService = new PrettierRestService(prettierRestServer.getBaseUrl());
 				String prettierConfigOptions = restService.resolveConfig(this.prettierConfig.getPrettierConfigPath(), this.prettierConfig.getOptions());
@@ -90,6 +91,7 @@ public class PrettierFormatterStep {
 		}
 
 		private void endServer(PrettierRestService restService, ServerProcessInfo restServer) throws Exception {
+			FormattedPrinter.SYSOUT.print("Closing formatting function (ending server).");
 			try {
 				restService.shutdown();
 			} catch (Throwable t) {
@@ -111,6 +113,8 @@ public class PrettierFormatterStep {
 
 		@Override
 		public String applyWithFile(String unix, File file) throws Exception {
+			FormattedPrinter.SYSOUT.print("formatting String '" + unix.substring(0, 50) + "[...]' in file '" + file + "'");
+
 			final String prettierConfigOptionsWithFilepath = assertFilepathInConfigOptions(file);
 			return restService.format(unix, prettierConfigOptionsWithFilepath);
 		}

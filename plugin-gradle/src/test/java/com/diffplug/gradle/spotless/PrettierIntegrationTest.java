@@ -49,6 +49,30 @@ public class PrettierIntegrationTest extends GradleIntegrationHarness {
 	}
 
 	@Test
+	public void verifyCleanSpotlessCheckWorks() throws IOException {
+		setFile("build.gradle").toLines(
+				"buildscript { repositories { mavenCentral() } }",
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"def prettierConfig = [:]",
+				"prettierConfig['printWidth'] = 50",
+				"prettierConfig['parser'] = 'typescript'",
+				"spotless {",
+				"    format 'mytypescript', {",
+				"        target 'test.ts'",
+				"        prettier().config(prettierConfig)",
+				"    }",
+				"}");
+		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
+		BuildResult spotlessCheckFailsGracefully = gradleRunner().withArguments("--stacktrace", "clean", "spotlessCheck").buildAndFail();
+		Assertions.assertThat(spotlessCheckFailsGracefully.getOutput()).contains("> The following files had format violations:");
+
+		gradleRunner().withArguments("--stacktrace", "clean", "spotlessApply").build();
+		gradleRunner().withArguments("--stacktrace", "clean", "spotlessCheck").build();
+	}
+
+	@Test
 	public void useFileConfig() throws IOException {
 		setFile(".prettierrc.yml").toResource("npm/prettier/config/.prettierrc.yml");
 		setFile("build.gradle").toLines(

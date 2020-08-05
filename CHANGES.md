@@ -10,7 +10,10 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
-* Bump default ktfmt from 0.15 to 0.16, and remove duplicated logic for the --dropbox-style option ([#642](https://github.com/diffplug/spotless/pull/648))
+### Fixed
+* `FormatterFunc.Closeable` had a "use after free" bug which caused errors in the npm-based formatters (e.g. prettier) if `spotlessCheck` was called on dirty files. ([#651](https://github.com/diffplug/spotless/issues/651))
+### Changed
+* Bump default ktfmt from `0.15` to `0.16`, and remove duplicated logic for the `--dropbox-style` option ([#642](https://github.com/diffplug/spotless/pull/648))
 
 ## [2.2.0] - 2020-07-13
 ### Added

@@ -74,7 +74,9 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 				this.npmConfig.getPackageJsonContent());
 		NpmResourceHelper
 				.writeUtf8StringToFile(layout.serveJsFile(), this.npmConfig.getServeScriptContent());
+		FormattedPrinter.SYSOUT.print("running npm install");
 		runNpmInstall(layout.nodeModulesDir());
+		FormattedPrinter.SYSOUT.print("npm install finished");
 		return layout;
 	}
 
