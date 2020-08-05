@@ -3,7 +3,7 @@
 
 <!---freshmark shields
 output = [
-  link(shield('Gradle plugin', 'plugins.gradle.org', 'com.diffplug.gradle.spotless', 'blue'), 'https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless'),
+  link(shield('Gradle plugin', 'plugins.gradle.org', 'com.diffplug.spotless', 'blue'), 'https://plugins.gradle.org/plugin/com.diffplug.spotless'),
   link(shield('Maven central', 'mavencentral', 'yes', 'blue'), 'https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-gradle%22'),
   link(shield('Javadoc', 'javadoc', 'yes', 'blue'), 'https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/{{versionLast}}/index.html'),
   link(shield('License Apache', 'license', 'apache', 'blue'), 'https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)'),
@@ -15,7 +15,7 @@ output = [
   link(shield('VS Code plugin Apache', 'IDE', 'add yours', 'blueviolet'), 'IDE_HOOK.md')
   ].join('\n');
 -->
-[![Gradle plugin](https://img.shields.io/badge/plugins.gradle.org-com.diffplug.gradle.spotless-blue.svg)](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless)
+[![Gradle plugin](https://img.shields.io/badge/plugins.gradle.org-com.diffplug.spotless-blue.svg)](https://plugins.gradle.org/plugin/com.diffplug.spotless)
 [![Maven central](https://img.shields.io/badge/mavencentral-yes-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-gradle%22)
 [![Javadoc](https://img.shields.io/badge/javadoc-yes-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/5.1.0/index.html)
 [![License Apache](https://img.shields.io/badge/license-apache-blue.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
@@ -81,7 +81,7 @@ BUILD SUCCESSFUL
 
 ## Quickstart
 
-To use it in your buildscript, just [add the Spotless dependency](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless), and configure it like so:
+To use it in your buildscript, just [add the Spotless dependency](https://plugins.gradle.org/plugin/com.diffplug.spotless), and configure it like so:
 
 ```gradle
 spotless {
@@ -237,8 +237,9 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
 - `com.diffplug.gradle.spotless.KotlinExtension` [javadoc](https://javadoc.io/static/com.diffplug.spotless/spotless-plugin-gradle/5.1.0/com/diffplug/gradle/spotless/KotlinExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/KotlinExtension.java)
 - `com.diffplug.gradle.spotless.KotlinGradleExtension` [javadoc](https://javadoc.io/static/com.diffplug.spotless/spotless-plugin-gradle/5.1.0/com/diffplug/gradle/spotless/KotlinGradleExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/KotlinGradleExtension.java)
 
-```kotlin
-configure<com.diffplug.gradle.spotless.SpotlessExtension> {
+```gradle
+spotless { // if you are using build.gradle.kts, instead of 'spotless {' use:
+           // configure<com.diffplug.gradle.spotless.SpotlessExtension> {
   kotlin {
     // by default the target is every '.kt' and '.kts` file in the java sourcesets
     ktlint()   // has its own section below
@@ -260,7 +261,7 @@ configure<com.diffplug.gradle.spotless.SpotlessExtension> {
 [homepage](https://github.com/pinterest/ktlint). [changelog](https://github.com/pinterest/ktlint/releases).  Spotless does not ([yet](https://github.com/diffplug/spotless/issues/142)) respect the `.editorconfig` settings ([ktlint docs](https://github.com/pinterest/ktlint#editorconfig)), but you can provide them manually as `userData`.
 
 ```kotlin
-configure<com.diffplug.gradle.spotless.SpotlessExtension> {
+spotless {
   kotlin {
     // version and userData are both optional
     ktlint('0.37.2').userData(mapOf('indent_size' to '2', 'continuation_indent_size' to '2'])
@@ -273,7 +274,7 @@ configure<com.diffplug.gradle.spotless.SpotlessExtension> {
 [homepage](https://github.com/facebookincubator/ktfmt). [changelog](https://github.com/facebookincubator/ktfmt/releases).
 
 ```kotlin
-configure<com.diffplug.gradle.spotless.SpotlessExtension> {
+spotless {
   kotlin {
     ktfmt('0.15').dropboxStyle() // version and dropbox style are optional
 ```
