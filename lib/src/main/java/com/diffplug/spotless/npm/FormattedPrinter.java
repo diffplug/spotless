@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.io.PrintStream;
 import java.time.LocalDateTime;
 
-public enum FormattedPrinter {
+enum FormattedPrinter {
 	SYSOUT(System.out);
 
 	private static final boolean enabled = false;
