@@ -3,7 +3,10 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
-* Bump default ktfmt from 0.15 to 0.16, and remove duplicated logic for the --dropbox-style option ([#642](https://github.com/diffplug/spotless/pull/648))
+### Fixed
+* When using the `prettier` or `tsfmt` steps, if any files were dirty then `spotlessCheck` would fail with `java.net.ConnectException: Connection refused` rather than the proper error message ([#651](https://github.com/diffplug/spotless/issues/651)).
+### Changed
+* Bump default ktfmt from `0.15` to `0.16`, and remove duplicated logic for the `--dropbox-style` option ([#642](https://github.com/diffplug/spotless/pull/648))
 
 ## [5.1.0] - 2020-07-13
 ### Added
