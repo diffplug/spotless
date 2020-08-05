@@ -22,9 +22,10 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.AclEntry;
+import java.nio.file.attribute.AclFileAttributeView;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
@@ -168,15 +169,9 @@ public class ResourceHarness {
 	}
 
 	/** Reads file attributes from the output file and compares it to the attributes from the input file. */
-	protected void assertFileAttributesEqual(File input, File output) {
-		List<Boolean> inputAttributes = new LinkedList<>();
-		List<Boolean> outputAttributes = new LinkedList<>();
-		inputAttributes.add(Files.isReadable(input.toPath()));
-		inputAttributes.add(Files.isWritable(input.toPath()));
-		inputAttributes.add(Files.isExecutable(input.toPath()));
-		outputAttributes.add(Files.isReadable(output.toPath()));
-		outputAttributes.add(Files.isWritable(output.toPath()));
-		outputAttributes.add(Files.isExecutable(output.toPath()));
+	protected void assertFileAttributesEqual(File input, File output) throws IOException {
+		List<AclEntry> inputAttributes = Files.getFileAttributeView(input.toPath(), AclFileAttributeView.class).getAcl();
+		List<AclEntry> outputAttributes = Files.getFileAttributeView(output.toPath(), AclFileAttributeView.class).getAcl();
 		Assertions.assertThat(outputAttributes).isEqualTo(inputAttributes);
 	}
 
