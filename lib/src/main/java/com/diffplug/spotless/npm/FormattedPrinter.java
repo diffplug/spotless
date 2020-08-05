@@ -23,7 +23,8 @@ import java.time.LocalDateTime;
 public enum FormattedPrinter {
 	SYSOUT(System.out);
 
-	final boolean enabled = true;
+	private static final boolean enabled = false;
+
 	private final PrintStream printStream;
 
 	FormattedPrinter(PrintStream printStream) {
