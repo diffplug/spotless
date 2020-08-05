@@ -81,6 +81,7 @@ abstract class FormatterStepImpl<State extends Serializable> extends Strict<Stat
 		void cleanupFormatterFunc() {
 			if (formatter instanceof FormatterFunc.Closeable) {
 				((FormatterFunc.Closeable) formatter).close();
+				formatter = null;
 			}
 		}
 	}
