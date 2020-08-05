@@ -3,7 +3,7 @@
 
 <!---freshmark shields
 output = [
-  link(shield('Gradle plugin', 'plugins.gradle.org', 'com.diffplug.gradle.spotless', 'blue'), 'https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless'),
+  link(shield('Gradle plugin', 'plugins.gradle.org', 'com.diffplug.spotless', 'blue'), 'https://plugins.gradle.org/plugin/com.diffplug.spotless'),
   link(shield('Maven central', 'mavencentral', 'yes', 'blue'), 'https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-gradle%22'),
   link(shield('Javadoc', 'javadoc', 'yes', 'blue'), 'https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/{{versionLast}}/index.html'),
   link(shield('License Apache', 'license', 'apache', 'blue'), 'https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)'),
@@ -15,7 +15,7 @@ output = [
   link(shield('VS Code plugin Apache', 'IDE', 'add yours', 'blueviolet'), 'IDE_HOOK.md')
   ].join('\n');
 -->
-[![Gradle plugin](https://img.shields.io/badge/plugins.gradle.org-com.diffplug.gradle.spotless-blue.svg)](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless)
+[![Gradle plugin](https://img.shields.io/badge/plugins.gradle.org-com.diffplug.spotless-blue.svg)](https://plugins.gradle.org/plugin/com.diffplug.spotless)
 [![Maven central](https://img.shields.io/badge/mavencentral-yes-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-gradle%22)
 [![Javadoc](https://img.shields.io/badge/javadoc-yes-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/5.1.0/index.html)
 [![License Apache](https://img.shields.io/badge/license-apache-blue.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
@@ -81,7 +81,7 @@ BUILD SUCCESSFUL
 
 ## Quickstart
 
-To use it in your buildscript, just [add the Spotless dependency](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless), and configure it like so:
+To use it in your buildscript, just [add the Spotless dependency](https://plugins.gradle.org/plugin/com.diffplug.spotless), and configure it like so:
 
 ```gradle
 spotless {
