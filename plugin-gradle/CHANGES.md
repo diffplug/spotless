@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [5.1.1] - 2020-08-05
 ### Fixed
 * Depending on the file system, executing `gradle spotlessApply` might change permission on the changed files from `644` to `755`; fixes ([#656](https://github.com/diffplug/spotless/pull/656))
 * When using the `prettier` or `tsfmt` steps, if any files were dirty then `spotlessCheck` would fail with `java.net.ConnectException: Connection refused` rather than the proper error message ([#651](https://github.com/diffplug/spotless/issues/651)).
