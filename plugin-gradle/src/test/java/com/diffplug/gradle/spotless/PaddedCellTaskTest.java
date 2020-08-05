@@ -157,8 +157,6 @@ public class PaddedCellTaskTest extends ResourceHarness {
 		assertFile(converge.file).hasContent("");	// converge -> converges
 		assertFile(diverge.file).hasContent("CCC");	// diverge -> no change
 
-		assertFileAttributesEqual(wellbehaved.file, wellbehaved.outputFile);
-
 		// After apply, check should pass
 		wellbehaved.check();
 		cycle.check();
