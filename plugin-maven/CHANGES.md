@@ -6,6 +6,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changes
 *  Bump default ktfmt from 0.13 to 0.16 ([#642](https://github.com/diffplug/spotless/pull/648)).
 
+### Fixed
+* `<importOrder />` was broken (fixes [#663](https://github.com/diffplug/spotless/issues/663)).
+
 ## [2.0.1] - 2020-07-04
 ### Fixed
 * Git-native handling of line endings was broken, now fixed ([#639](https://github.com/diffplug/spotless/pull/639)).

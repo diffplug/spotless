@@ -39,10 +39,20 @@ public class ImportOrderTest extends MavenIntegrationHarness {
 		runTest();
 	}
 
+	@Test
+	public void standard() throws Exception {
+		writePomWithJavaSteps("<importOrder />");
+		runTest("java/importsorter/JavaCodeSortedImportsDefault.test");
+	}
+
 	private void runTest() throws Exception {
+		runTest("java/importsorter/JavaCodeSortedImports.test");
+	}
+
+	private void runTest(String expectedResource) throws Exception {
 		String path = "src/main/java/test.java";
 		setFile(path).toResource("java/importsorter/JavaCodeUnsortedImports.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("java/importsorter/JavaCodeSortedImports.test");
+		assertFile(path).sameAsResource(expectedResource);
 	}
 }
