@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,11 @@ import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
 
 public class ImportOrderStepTest extends ResourceHarness {
+	@Test
+	public void sortImportsDefault() throws Throwable {
+		FormatterStep step = ImportOrderStep.forJava().createFrom();
+		assertOnResources(step, "java/importsorter/JavaCodeUnsortedImports.test", "java/importsorter/JavaCodeSortedImportsDefault.test");
+	}
 
 	@Test
 	public void sortImportsFromArray() throws Throwable {
