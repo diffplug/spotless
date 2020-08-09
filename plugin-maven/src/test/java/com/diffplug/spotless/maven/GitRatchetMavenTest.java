@@ -71,6 +71,16 @@ public class GitRatchetMavenTest extends MavenIntegrationHarness {
 		}
 	}
 
+	@Test
+	public void singleProjectExhaustiveGlobal() throws Exception {
+		try (Git git = initRepo()) {
+			writePom(RATCHET_FROM_POM
+					.replace("<ratchetFrom>baseline</ratchetFrom>", "")
+					.replace("<formats>", "<ratchetFrom>baseline</ratchetFrom>\n<formats>"));
+			checkBehavior(git);
+		}
+	}
+
 	private void checkBehavior(Git git) throws Exception {
 		setFile(TEST_PATH).toContent("HELLO");
 		git.add().addFilepattern(TEST_PATH).call();
