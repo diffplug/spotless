@@ -51,7 +51,7 @@ extra('groovy.GrEclipseFormatterStep')           +'{{yes}}       | {{no}}       
 lib('java.GoogleJavaFormatStep')                 +'{{yes}}       | {{yes}}      | {{no}}  |',
 lib('java.ImportOrderStep')                      +'{{yes}}       | {{yes}}      | {{no}}  |',
 lib('java.RemoveUnusedImportsStep')              +'{{yes}}       | {{yes}}      | {{no}}  |',
-extra('java.EclipseFormatterStep')               +'{{yes}}       | {{yes}}      | {{no}}  |',
+extra('java.EclipseJdtFormatterStep')            +'{{yes}}       | {{yes}}      | {{no}}  |',
 lib('kotlin.KtLintStep')                         +'{{yes}}       | {{yes}}      | {{no}}  |',
 lib('kotlin.KtfmtStep')                          +'{{yes}}       | {{yes}}      | {{no}}  |',
 lib('markdown.FreshMarkStep')                    +'{{yes}}       | {{no}}       | {{no}}  |',
