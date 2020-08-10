@@ -8,6 +8,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ### Fixed
 * `<importOrder />` was broken (fixes [#663](https://github.com/diffplug/spotless/issues/663)).
+* `<ratchetFrom>` was broken when set at global level (fixes [#664](https://github.com/diffplug/spotless/issues/664)).
 
 ## [2.0.1] - 2020-07-04
 ### Fixed

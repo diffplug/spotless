@@ -45,8 +45,8 @@ public abstract class FormatterFactory {
 	/** Sentinel to distinguish between "don't ratchet this format" and "use spotless parent format". */
 	private static final String RATCHETFROM_NOT_SET_AT_FORMAT_LEVEL = " not set at format level ";
 
-	@Parameter(defaultValue = RATCHETFROM_NOT_SET_AT_FORMAT_LEVEL)
-	private String ratchetFrom;
+	@Parameter
+	private String ratchetFrom = RATCHETFROM_NOT_SET_AT_FORMAT_LEVEL;
 
 	@Parameter
 	private String[] includes;
@@ -136,7 +136,7 @@ public abstract class FormatterFactory {
 	}
 
 	Optional<String> ratchetFrom(FormatterConfig config) {
-		if (ratchetFrom == RATCHETFROM_NOT_SET_AT_FORMAT_LEVEL) {
+		if (RATCHETFROM_NOT_SET_AT_FORMAT_LEVEL.equals(ratchetFrom)) {
 			return config.getRatchetFrom();
 		} else {
 			return Optional.ofNullable(ratchetFrom);
