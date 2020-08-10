@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.0.2] - 2020-08-10
 ### Changes
 *  Bump default ktfmt from 0.13 to 0.16 ([#642](https://github.com/diffplug/spotless/pull/648)).
 
