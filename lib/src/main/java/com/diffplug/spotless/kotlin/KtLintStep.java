@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,23 @@ public class KtLintStep {
 	// prevent direct instantiation
 	private KtLintStep() {}
 
-	private static final Pattern VERSION_MATCHER = Pattern.compile("0\\.(\\d+)\\.\\d+");
+	private static int badSemver(String input) {
+		Matcher matcher = BAD_SEMVER.matcher(input);
+		if (!matcher.find() || matcher.start() != 0) {
+			throw new IllegalArgumentException("Version must start with " + BAD_SEMVER.pattern());
+		}
+		String major = matcher.group(1);
+		String minor = matcher.group(2);
+		return badSemver(Integer.parseInt(major), Integer.parseInt(minor));
+	}
+
+	/** Ambiguous after 2147.483647.blah-blah */
+	private static int badSemver(int major, int minor) {
+		return major * 1_000_000 + minor;
+	}
+
+	private static final Pattern BAD_SEMVER = Pattern.compile("(\\d+)\\.(\\d+)\\.");
+
 	private static final String DEFAULT_VERSION = "0.35.0";
 	static final String NAME = "ktlint";
 	static final String PACKAGE_PRE_0_32 = "com.github.shyiko";
@@ -93,16 +109,14 @@ public class KtLintStep {
 		State(String version, Provisioner provisioner, boolean isScript, Map<String, String> userData) throws IOException {
 			this.userData = new TreeMap<>(userData);
 			String coordinate;
-			Matcher matcher = VERSION_MATCHER.matcher(version);
-			boolean matches = matcher.matches();
-			if (matches && Integer.parseInt(matcher.group(1)) < 32) {
+			if (badSemver(version) < badSemver(0, 32)) {
 				coordinate = MAVEN_COORDINATE_PRE_0_32;
 				this.pkg = PACKAGE_PRE_0_32;
 			} else {
 				coordinate = MAVEN_COORDINATE;
 				this.pkg = PACKAGE;
 			}
-			this.useParams = matches && Integer.parseInt(matcher.group(1)) >= 34;
+			this.useParams = badSemver(version) >= badSemver(0, 34);
 			this.jarState = JarState.from(coordinate + version, provisioner);
 			this.isScript = isScript;
 		}
