@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package com.diffplug.spotless.kotlin;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.diffplug.spotless.FormatterStep;
@@ -29,7 +28,6 @@ import com.diffplug.spotless.TestProvisioner;
  * causes these problems. The root is still a gradle bug, but in the meantime we don't
  * need to hold up *every* PR with this: https://github.com/gradle/gradle/issues/11752
  */
-@Ignore
 public class KtLintStepTest extends ResourceHarness {
 	@Test
 	public void behavior() throws Exception {
@@ -74,6 +72,15 @@ public class KtLintStepTest extends ResourceHarness {
 					assertion.hasMessage("Error on line: 1, column: 1\n" +
 							"Wildcard import");
 				});
+	}
+
+	// Regression test to handle alpha and 1.x version numbers
+	// https://github.com/diffplug/spotless/issues/668
+	@Test
+	public void worksAlpha1() throws Exception {
+		FormatterStep step = KtLintStep.create("0.38.0-alpha01", TestProvisioner.jcenter());
+		StepHarness.forStep(step)
+				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean");
 	}
 
 	@Test
