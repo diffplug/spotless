@@ -166,6 +166,11 @@ public abstract class SpotlessExtension {
 		format(Antlr4Extension.NAME, Antlr4Extension.class, closure);
 	}
 
+	/** Configures the special python-specific extension for python files. */
+	public void python(Action<PythonExtension> closure) {
+		format(PythonExtension.NAME, PythonExtension.class, closure);
+	}
+
 	/** Configures a custom extension. */
 	public void format(String name, Action<FormatExtension> closure) {
 		requireNonNull(name, "name");
