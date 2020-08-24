@@ -15,16 +15,15 @@
  */
 package com.diffplug.spotless.python;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
+import com.diffplug.spotless.ForeignExe;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ProcessRunner;
@@ -39,69 +38,28 @@ public class BlackStep {
 	}
 
 	private final String version;
-	private final @Nullable String pathToBlack;
+	private final @Nullable String pathToExe;
 
-	private BlackStep(String version, @Nullable String pathToBlack) {
+	private BlackStep(String version, @Nullable String pathToExe) {
 		this.version = version;
-		this.pathToBlack = pathToBlack;
+		this.pathToExe = pathToExe;
 	}
 
 	public static BlackStep withVersion(String version) {
 		return new BlackStep(version, null);
 	}
 
-	public BlackStep withPathToBlack(String pathToBlack) {
-		return new BlackStep(version, pathToBlack);
+	public BlackStep withPathToExe(String pathToExe) {
+		return new BlackStep(version, pathToExe);
 	}
 
 	public FormatterStep create() {
 		return FormatterStep.createLazy(name(), this::createState, State::toFunc);
 	}
 
-	private State createState() throws BlackException, IOException, InterruptedException {
-		try (ProcessRunner runner = new ProcessRunner()) {
-			String blackExe;
-			if (pathToBlack != null) {
-				blackExe = pathToBlack;
-			} else {
-				ProcessRunner.Result which = runner.shellWinUnix("where black", "which black");
-				if (which.exitCode() != 0) {
-					throw new BlackException(ErrorKind.CANT_FIND_BLACK, which);
-				} else {
-					blackExe = which.assertNoError(Charset.defaultCharset()).trim();
-				}
-			}
-			ProcessRunner.Result blackVersion = runner.exec(blackExe, "--version");
-			if (blackVersion.exitCode() != 0) {
-				throw new BlackException(ErrorKind.CANT_FIND_BLACK, blackVersion);
-			}
-			String versionString = blackVersion.assertNoError(Charset.defaultCharset());
-			Matcher versionMatcher = Pattern.compile("black, version (.*)").matcher(versionString);
-			if (!versionMatcher.find()) {
-				throw new BlackException(ErrorKind.CANT_FIND_BLACK, blackVersion);
-			}
-			String versionParsed = versionMatcher.group(1);
-			if (!versionParsed.equals(version)) {
-				throw new BlackException(ErrorKind.BLACK_WRONG_VERSION, blackVersion);
-			}
-			return new State(version, blackExe);
-		}
-	}
-
-	public enum ErrorKind {
-		CANT_FIND_BLACK, BLACK_WRONG_VERSION
-	}
-
-	public static class BlackException extends Exception {
-		private static final long serialVersionUID = -1310199343691600283L;
-
-		private ErrorKind kind;
-		private ProcessRunner.Result result;
-
-		BlackException(ErrorKind kind, ProcessRunner.Result result) {
-			this.kind = kind;
-			this.result = result;
-		}
+	private State createState() throws ForeignExe.SetupException, IOException, InterruptedException {
+		String exeAbsPath = ForeignExe.named("black").confirmVersionAndGetPath(version, pathToExe);
+		return new State(this, exeAbsPath);
 	}
 
 	static class State implements Serializable {
@@ -109,30 +67,20 @@ public class BlackStep {
 		// used for up-to-date checks and caching
 		final String version;
 		// used for executing
-		final transient String exeAbsPath;
+		final transient List<String> args;
 		final transient ProcessRunner runner = new ProcessRunner();
 
-		State(String version, String exeAbsPath) {
-			this.version = version;
-			this.exeAbsPath = exeAbsPath;
+		State(BlackStep step, String exeAbsPath) {
+			this.version = step.version;
+			this.args = Arrays.asList(exeAbsPath, "-");
 		}
 
 		String format(String input) throws IOException, InterruptedException {
-			return runner.exec(input.getBytes(StandardCharsets.UTF_8), exeAbsPath, "-").assertNoError(StandardCharsets.UTF_8);
+			return runner.exec(input.getBytes(StandardCharsets.UTF_8), args).assertNoError(StandardCharsets.UTF_8);
 		}
 
 		FormatterFunc.Closeable toFunc() {
 			return FormatterFunc.Closeable.of(runner, this::format);
-		}
-	}
-
-	/** Either returns the "black" on the current path, or throws an exception. */
-	public static File findBlackOnPath() throws IOException, InterruptedException {
-		try (ProcessRunner runner = new ProcessRunner()) {
-			ProcessRunner.Result result = runner.shellWinUnix("where black", "which black");
-			return new File(result.assertNoError(Charset.defaultCharset()));
-		} catch (Exception e) {
-			throw new RuntimeException("Could not find 'black' on the path, try `pip install black` or `pip3 install black`", e);
 		}
 	}
 }

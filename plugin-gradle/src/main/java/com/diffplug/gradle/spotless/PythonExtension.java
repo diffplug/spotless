@@ -41,8 +41,8 @@ public class PythonExtension extends FormatExtension {
 			addStep(createStep());
 		}
 
-		public BlackConfig pathToBlack(String pathToBlack) {
-			stepCfg = stepCfg.withPathToBlack(pathToBlack);
+		public BlackConfig pathToExe(String pathToBlack) {
+			stepCfg = stepCfg.withPathToExe(pathToBlack);
 			replaceStep(createStep());
 			return this;
 		}
