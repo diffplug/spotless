@@ -63,6 +63,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Kotlin](#kotlin) ([ktlint](#ktlint), [ktfmt](#ktfmt), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
   - [C/C++](#cc) ([clang-format](#clang-format), [eclipse cdt](#eclipse-cdt))
+  - [Python](#python) ([black](#black))
   - [FreshMark](#freshmark) aka markdown
   - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
   - [SQL](#sql) ([dbeaver](#dbeaver), [prettier](#prettier))
@@ -328,8 +329,8 @@ spotless {
   cpp {
     target 'src/native/**' // you have to set the target manually
 
-    clangFormat() // has its own section below
-    eclipseCdt()  // has its own section below
+    clangFormat()  // has its own section below
+    eclipseCdt()   // has its own section below
 
     licenseHeader '/* (C) $YEAR */' // or licenseHeaderFile
   }
@@ -349,6 +350,38 @@ spotles {
     eclipseCdt('4.13.0').configFile('eclipse-cdt.xml')
   }
 }
+```
+
+## Python
+
+`com.diffplug.gradle.spotless.PythonExtension` [javadoc](https://javadoc.io/static/com.diffplug.spotless/spotless-plugin-gradle/5.1.2/com/diffplug/gradle/spotless/PythonExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/PythonExtension.java)
+
+```gradle
+spotless {
+  python {
+    target 'src/main/**/*.py' // have to set manually
+
+    black()  // has its own section below
+
+    licenseHeader '/* (C) $YEAR */', 'REGEX_TO_DEFINE_TOP_OF_FILE' // or licenseHeaderFile
+  }
+}
+```
+
+### black
+
+[homepage](https://github.com/psf/black). [changelog](https://github.com/psf/black/blob/master/CHANGES.md).
+
+```gradle
+black('19.10b0') // version is optional
+
+// if black is not on your path, you must specify its location manually
+clangFormat().pathToExe('C:/myuser/.pyenv/versions/3.8.0/scripts/black.exe')
+// Spotless always checks the version of the black it is using
+// and will fail with an error if it does not match the expected version
+// (whether manually specified or default). If there is a problem, Spotless
+// will suggest commands to help install the correct version.
+// TODO: handle installation & packaging automatically
 ```
 
 <a name="applying-freshmark-to-markdown-files"></a>
