@@ -80,12 +80,12 @@ public abstract class ForeignExe {
 		CANT_FIND, WRONG_VERSION
 	}
 
-	public class SetupException extends Exception {
+	public static class SetupException extends Exception {
 		private static final long serialVersionUID = -3515370807495069599L;
 
 		private final ErrorKind kind;
 		private final String msg;
-		private final ProcessRunner.Result result;
+		private final transient ProcessRunner.Result result;
 
 		SetupException(ErrorKind kind, String msg, ProcessRunner.Result result) {
 			this.kind = kind;

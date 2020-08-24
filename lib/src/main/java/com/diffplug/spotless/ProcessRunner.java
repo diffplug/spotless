@@ -27,6 +27,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Shelling out to a process is harder than it ought to be in Java.
  * If you don't read stdout and stderr on their own threads, you risk
@@ -113,6 +115,7 @@ public class ProcessRunner implements AutoCloseable {
 		executor.shutdown();
 	}
 
+	@SuppressFBWarnings({"EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 	public static class Result {
 		private final List<String> args;
 		private final int exitCode;

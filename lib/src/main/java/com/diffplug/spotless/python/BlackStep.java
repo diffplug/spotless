@@ -28,6 +28,8 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ProcessRunner;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 public class BlackStep {
 	public static String name() {
 		return "black";
@@ -62,6 +64,7 @@ public class BlackStep {
 		return new State(this, exeAbsPath);
 	}
 
+	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	static class State implements Serializable {
 		private static final long serialVersionUID = -1825662356883926318L;
 		// used for up-to-date checks and caching
