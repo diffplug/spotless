@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.python;
+package com.diffplug.spotless.category;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-
-import com.diffplug.spotless.StepHarness;
-import com.diffplug.spotless.category.BlackTest;
-
-@Category(BlackTest.class)
-public class BlackStepTest {
-	@Test
-	public void test() throws Exception {
-		StepHarness.forStep(BlackStep.withVersion(BlackStep.defaultVersion()).create())
-				.testResource("python/black/black.dirty", "python/black/black.clean")
-				.close();
-	}
-}
+public interface BlackTest {}

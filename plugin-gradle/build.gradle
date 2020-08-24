@@ -29,17 +29,7 @@ dependencies {
 
 test { testLogging.showStandardStreams = true }
 
-test {
-	useJUnit {
-		excludeCategories 'com.diffplug.spotless.category.NpmTest'
-	}
-}
-
-task npmTest(type: Test) {
-	useJUnit {
-		includeCategories 'com.diffplug.spotless.category.NpmTest'
-	}
-}
+apply from: rootProject.file('gradle/special-tests.gradle')
 
 // make it easy for eclipse to run against latest build
 tasks.eclipse.dependsOn(pluginUnderTestMetadata)

@@ -1,0 +1,16 @@
+def special = [
+	'Npm',
+	'Black',
+	'Clang'
+]
+
+tasks.named('test') {
+	useJUnit { excludeCategories special.collect { "com.diffplug.spotless.category.${it}Test" } as String[] }
+}
+
+special.forEach {
+	def category = "com.diffplug.spotless.category.${it}Test"
+	tasks.register("${it}Test", Test) {
+		useJUnit { includeCategories category }
+	}
+}

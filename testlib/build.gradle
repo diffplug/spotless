@@ -20,9 +20,7 @@ dependencies {
 // we'll hold the testlib to a low standard (prize brevity)
 spotbugs { reportLevel = 'high' } // low|medium|high (low = sensitive to even minor mistakes)
 
-test { useJUnit { excludeCategories 'com.diffplug.spotless.category.NpmTest' } }
-
-task npmTest(type: Test) { useJUnit { includeCategories 'com.diffplug.spotless.category.NpmTest' } }
+apply from: rootProject.file('gradle/special-tests.gradle')
 
 javadoc {
 	options.addStringOption('Xdoclint:none', '-quiet')
