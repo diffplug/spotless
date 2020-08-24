@@ -82,7 +82,9 @@ if (version.endsWith('-SNAPSHOT')) {
 			'tsfmt',
 			'prettier',
 			'scalafmt',
-			'scalafix'
+			'scalafix',
+			'black',
+			'clang-format'
 		]
 		plugins {
 			spotlessPlugin {
