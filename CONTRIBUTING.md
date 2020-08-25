@@ -108,8 +108,8 @@ In order for Spotless' model to work, each step needs to look only at the `Strin
 
 There are many great formatters (prettier, clang-format, black, etc.) which live entirely outside the JVM.  We have two main strategies for these:
 
-- shell out to an external command for every file (used by clang-format and black) // TODO: link
-- open a headless server and make http calls to it from Spotless (used by prettier) // TODO: link
+- [shell out to an external command](https://github.com/diffplug/spotless/pull/672) for every file (used by clang-format and black)
+- open a headless server and make http calls to it from Spotless (used by our [npm-based](https://github.com/diffplug/spotless/blob/main/lib/src/main/java/com/diffplug/spotless/npm/NpmFormatterStepStateBase.java) formatters such as prettier)
 
 Because of Spotless' up-to-date checking and [git ratcheting](https://github.com/diffplug/spotless/tree/main/plugin-gradle#ratchet), Spotless actually doesn't have to call formatters very often, so even an expensive shell call for every single invocation isn't that bad.  Anything that works is better than nothing, and we can always speed things up later if it feels too slow (but it probably won't).
 
