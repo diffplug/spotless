@@ -2,26 +2,29 @@
 
 <!---freshmark shields
 output = [
-  link(image('Travis CI', 'https://travis-ci.org/{{org}}/{{name}}.svg?branch=main'), 'https://travis-ci.org/{{org}}/{{name}}'),
+   link(image('Circle CI', 'https://circleci.com/gh/diffplug/spotless/tree/main.svg?style=shield'), 'https://circleci.com/gh/diffplug/spotless/tree/main'),
   link(shield('Live chat', 'gitter', 'chat', 'brightgreen'), 'https://gitter.im/{{org}}/{{name}}'),
   link(shield('License Apache', 'license', 'apache', 'brightgreen'), 'https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)')
   ].join('\n');
 -->
-[![Travis CI](https://travis-ci.org/diffplug/spotless.svg?branch=main)](https://travis-ci.org/diffplug/spotless)
+[![Circle CI](https://circleci.com/gh/diffplug/spotless/tree/main.svg?style=shield)](https://circleci.com/gh/diffplug/spotless/tree/main)
 [![Live chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
 [![License Apache](https://img.shields.io/badge/license-apache-brightgreen.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
 <!---freshmark /shields -->
 
 Spotless can format &lt;antlr | c | c# | c++ | css | flow | graphql | groovy | html | java | javascript | json | jsx | kotlin | less | license headers | markdown | objective-c | protobuf | python | scala | scss | sql | typeScript | vue | yaml | anything> using &lt;gradle | maven | anything>.
 
-- [Spotless for Gradle](plugin-gradle)
-  - [VS Code extension](https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle)
-- [Spotless for Maven](plugin-maven)
-- [Other build systems](CONTRIBUTING.md#how-to-add-a-new-plugin-for-a-build-system)
+You probably want one of the links below:
 
-Ideally, a code formatter can do more than just find formatting errors - it should fix them as well. Such a formatter is really just a `Function<String, String>`, which returns a formatted version of its potentially unformatted input.
+## [❇️ Spotless for Gradle](plugin-gradle) (with [VS Code integration](https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle))
+## [❇️ Spotless for Maven](plugin-maven)
+## [Other build systems](CONTRIBUTING.md#how-to-add-a-new-plugin-for-a-build-system)
 
-It's easy to build such a function, but there are some gotchas and lots of integration work (newlines, character encodings, idempotency, and build-system integration). Spotless tackles those for you so you can focus on just a simple `Function<String, String>` which can compose with any of the other formatters and build tools in Spotless' arsenal.
+## How it works (for potential contributors)
+
+Ideally, a code formatter can do more than just find formatting errors - it should fix them as well. Such a formatter is just a `Function<String, String>`, which returns a formatted version of its potentially unformatted input.
+
+It's easy to build such a function, but there are some gotchas and lots of integration work ([newlines](https://github.com/diffplug/spotless/tree/main/plugin-gradle#line-endings-and-encodings-invisible-stuff), character [encodings](https://github.com/diffplug/spotless/blob/08340a11566cdf56ecf50dbd4d557ed84a70a502/testlib/src/test/java/com/diffplug/spotless/EncodingErrorMsgTest.java#L34-L38), [idempotency](https://github.com/diffplug/spotless/blob/main/PADDEDCELL.md), git [ratcheting](https://github.com/diffplug/spotless/tree/main/plugin-gradle#ratchet), and build-system integration). Spotless tackles those for you **so you can focus on just a simple `Function<String, String>` which can compose with any of the other formatters and build tools in Spotless' arsenal**.
 
 ## Current feature matrix
 
