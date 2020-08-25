@@ -122,13 +122,13 @@ public class ProcessRunner implements AutoCloseable {
 	public static class Result {
 		private final List<String> args;
 		private final int exitCode;
-		private final byte[] output, error;
+		private final byte[] stdOut, stdErr;
 
-		public Result(List<String> args, int exitCode, byte[] output, byte[] error) {
+		public Result(List<String> args, int exitCode, byte[] stdOut, byte[] stdErr) {
 			this.args = args;
 			this.exitCode = exitCode;
-			this.output = output;
-			this.error = error;
+			this.stdOut = stdOut;
+			this.stdErr = stdErr;
 		}
 
 		public List<String> args() {
@@ -139,12 +139,12 @@ public class ProcessRunner implements AutoCloseable {
 			return exitCode;
 		}
 
-		public byte[] output() {
-			return output;
+		public byte[] stdOut() {
+			return stdOut;
 		}
 
-		public byte[] error() {
-			return error;
+		public byte[] stdErr() {
+			return stdErr;
 		}
 
 		/** Returns true if the exit code was not zero. */
@@ -161,7 +161,7 @@ public class ProcessRunner implements AutoCloseable {
 		 */
 		public String assertExitZero(Charset charset) {
 			if (exitCode == 0) {
-				return new String(output, charset);
+				return new String(stdOut, charset);
 			} else {
 				throw new RuntimeException(toString());
 			}
@@ -170,17 +170,28 @@ public class ProcessRunner implements AutoCloseable {
 		@Override
 		public String toString() {
 			StringBuilder builder = new StringBuilder();
-			builder.append("## executed: " + args + "\n");
-			builder.append("## exitCode: " + exitCode + "\n");
+			builder.append("> arguments: " + args + "\n");
+			builder.append("> exit code: " + exitCode + "\n");
 			BiConsumer<String, byte[]> perStream = (name, content) -> {
 				String string = new String(content, Charset.defaultCharset()).trim();
-				builder.append("## " + name + ": (" + (string.isEmpty() ? "empty" : "below") + ")\n");
-				if (!string.isEmpty()) {
-					builder.append(string);
+				if (string.isEmpty()) {
+					builder.append("> " + name + ": (empty)\n");
+				} else {
+					String[] lines = string.replace("\r", "").split("\n");
+					if (lines.length == 1) {
+						builder.append("> " + name + ": " + lines[0] + "\n");
+					} else {
+						builder.append("> " + name + ": (below)\n");
+						for (String line : lines) {
+							builder.append("> ");
+							builder.append(line);
+							builder.append('\n');
+						}
+					}
 				}
 			};
-			perStream.accept("stdout", output);
-			perStream.accept("stderr", error);
+			perStream.accept("   stdout", stdOut);
+			perStream.accept("   stderr", stdErr);
 			return builder.toString();
 		}
 	}
