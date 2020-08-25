@@ -27,83 +27,101 @@ import javax.annotation.Nullable;
  * If either part of that fails, it shows you why
  * and helps you fix it.
  */
-public abstract class ForeignExe {
+public class ForeignExe {
+	private String name;
+	private String versionFlag = "--version";
+	private Pattern versionRegex = Pattern.compile("version (\\S*)");
+	private @Nullable String fixCantFind, fixWrongVersion;
+
+	/** The name of the executable, used by "where" (win) and "which" (unix). */
 	public static ForeignExe named(String exeName) {
-		return new ForeignExe() {
-			@Override
-			protected String name() {
-				return exeName;
-			}
-		};
+		ForeignExe foreign = new ForeignExe();
+		foreign.name = exeName;
+		return foreign;
 	}
 
-	protected abstract String name();
-
-	protected String versionFlag() {
-		return "--version";
+	/** The flag which causes the exe to print its version (defaults to --version). */
+	public ForeignExe versionFlag(String versionFlag) {
+		this.versionFlag = versionFlag;
+		return this;
 	}
 
-	protected Pattern versionRegex() {
-		return Pattern.compile("version (\\S*)");
+	/** A regex which can parse the version out of the output of the {@link #versionFlag(String)} command (defaults to `version (\\S*)`) */
+	public ForeignExe versionRegex(Pattern versionRegex) {
+		this.versionRegex = versionRegex;
+		return this;
 	}
 
-	public String confirmVersionAndGetPath(String versionExpected, @Nullable String pathToExe) throws IOException, InterruptedException, SetupException {
+	/** Use {version} anywhere you would like to inject the actual version string. */
+	public ForeignExe fixCantFind(String msg) {
+		this.fixCantFind = msg;
+		return this;
+	}
+
+	/** Use {version} or {versionActual} anywhere you would like to inject the actual version strings. */
+	public ForeignExe fixWrongVersion(String msg) {
+		this.fixWrongVersion = msg;
+		return this;
+	}
+
+	/**
+	 * Searches for the executable and confirms that it has the expected version.
+	 * If it can't find the executable, or if it doesn't have the correct version,
+	 * throws an exception with a message describing how to fix.
+	 */
+	public String confirmVersionAndGetPath(String version, @Nullable String pathToExe) throws IOException, InterruptedException {
 		try (ProcessRunner runner = new ProcessRunner()) {
 			String exeAbsPath;
 			if (pathToExe != null) {
 				exeAbsPath = pathToExe;
 			} else {
-				ProcessRunner.Result which = runner.shellWinUnix("where " + name(), "which " + name());
-				if (which.exitCode() != 0) {
-					throw new SetupException(ErrorKind.CANT_FIND, "Unable to find " + name() + " on path", which);
+				ProcessRunner.Result cmdWhich = runner.shellWinUnix("where " + name, "which " + name);
+				if (cmdWhich.exitCode() != 0) {
+					throw cantFind("Unable to find " + name + " on path", cmdWhich, version);
 				} else {
-					exeAbsPath = which.assertNoError(Charset.defaultCharset()).trim();
+					exeAbsPath = cmdWhich.assertNoError(Charset.defaultCharset()).trim();
 				}
 			}
-			ProcessRunner.Result version = runner.exec(exeAbsPath, versionFlag());
-			if (version.exitCode() != 0) {
-				throw new SetupException(ErrorKind.CANT_FIND, "Unable to run " + exeAbsPath, version);
+			ProcessRunner.Result cmdVersion = runner.exec(exeAbsPath, versionFlag);
+			if (cmdVersion.exitCode() != 0) {
+				throw cantFind("Unable to run " + exeAbsPath, cmdVersion, version);
 			}
-			Matcher versionMatcher = versionRegex().matcher(version.assertNoError(Charset.defaultCharset()));
+			Matcher versionMatcher = versionRegex.matcher(cmdVersion.assertNoError(Charset.defaultCharset()));
 			if (!versionMatcher.find()) {
-				throw new SetupException(ErrorKind.CANT_FIND, "Unable to parse version with /" + versionRegex() + "/", version);
+				throw cantFind("Unable to parse version with /" + versionRegex + "/", cmdVersion, version);
 			}
-			String versionParsed = versionMatcher.group(1);
-			if (!versionParsed.equals(versionExpected)) {
-				throw new SetupException(ErrorKind.WRONG_VERSION, "You specified version " + versionExpected + ", but your system has " + versionParsed, version);
+			String versionActual = versionMatcher.group(1);
+			if (!versionActual.equals(version)) {
+				throw wrongVersion("You specified version " + version + ", but Spotless found " + versionActual, cmdVersion, version, versionActual);
 			}
 			return exeAbsPath;
 		}
 	}
 
-	public enum ErrorKind {
-		CANT_FIND, WRONG_VERSION
+	private RuntimeException cantFind(String message, ProcessRunner.Result cmd, String versionExpected) {
+		StringBuilder errorMsg = new StringBuilder();
+		errorMsg.append(message);
+		errorMsg.append('\n');
+		if (fixCantFind != null) {
+			errorMsg.append(fixCantFind.replace("{version}", versionExpected));
+			errorMsg.append('\n');
+		}
+		errorMsg.append('\n');
+		errorMsg.append(cmd.toString());
+		throw new RuntimeException(errorMsg.toString());
 	}
 
-	public static class SetupException extends Exception {
-		private static final long serialVersionUID = -3515370807495069599L;
-
-		private final ErrorKind kind;
-		private final String msg;
-		private final transient ProcessRunner.Result result;
-
-		SetupException(ErrorKind kind, String msg, ProcessRunner.Result result) {
-			this.kind = kind;
-			this.msg = msg;
-			this.result = result;
+	private RuntimeException wrongVersion(String message, ProcessRunner.Result cmd, String versionExpected, String versionActual) {
+		StringBuilder errorMsg = new StringBuilder();
+		errorMsg.append(message);
+		errorMsg.append('\n');
+		if (fixCantFind != null) {
+			errorMsg.append(fixCantFind.replace("{version}", versionExpected).replace("{versionActual}", versionActual));
+			errorMsg.append('\n');
 		}
-
-		public ErrorKind getKind() {
-			return kind;
-		}
-
-		public ProcessRunner.Result getProcessResult() {
-			return result;
-		}
-
-		@Override
-		public String toString() {
-			return msg;
-		}
+		errorMsg.append('\n');
+		errorMsg.append(cmd.toString());
+		throw new RuntimeException(errorMsg.toString());
 	}
+
 }

@@ -26,6 +26,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.function.BiConsumer;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -150,6 +151,23 @@ public class ProcessRunner implements AutoCloseable {
 			} else {
 				throw new RuntimeException("exit code: " + exitCode + "\nstderr: " + new String(error, charset));
 			}
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder builder = new StringBuilder();
+			builder.append("## executed: " + args + "\n");
+			builder.append("## exitCode: " + exitCode + "\n");
+			BiConsumer<String, byte[]> perStream = (name, content) -> {
+				String string = new String(content, Charset.defaultCharset()).trim();
+				builder.append("## " + name + ": (" + (string.isEmpty() ? "empty" : "below") + ")\n");
+				if (!string.isEmpty()) {
+					builder.append(string);
+				}
+			};
+			perStream.accept("stdout", output);
+			perStream.accept("stderr", error);
+			return builder.toString();
 		}
 	}
 }

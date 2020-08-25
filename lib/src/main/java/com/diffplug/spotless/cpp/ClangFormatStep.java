@@ -66,8 +66,20 @@ public class ClangFormatStep {
 		return FormatterStep.createLazy(name(), this::createState, State::toFunc);
 	}
 
-	private State createState() throws ForeignExe.SetupException, IOException, InterruptedException {
-		String exeAbsPath = ForeignExe.named("clang-format").confirmVersionAndGetPath(version, pathToExe);
+	private State createState() throws IOException, InterruptedException {
+		String howToInstall = "" +
+				"You can download clang-format from https://releases.llvm.org and " +
+				"then point Spotless to it with `pathToExe('/path/to/clang-format')` " +
+				"or you can use your platform's package manager:" +
+				"\n  win:   choco install llvm --version {version}" +
+				"\n  mac:   brew install clang-format TODO: how to specify version?" +
+				"\n  linux: apt install clang-format  (try clang-format-{version} with dropped minor versions)";
+		String exeAbsPath = ForeignExe.named("clang-format")
+				.fixCantFind(howToInstall)
+				.fixWrongVersion(
+						"You can tell Spotless to use the version you already have with `clangFormat('{versionActual}')`" +
+								"or you can download the currently specified version, {version}.\n\n" + howToInstall)
+				.confirmVersionAndGetPath(version, pathToExe);
 		return new State(this, exeAbsPath);
 	}
 

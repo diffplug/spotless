@@ -59,8 +59,11 @@ public class BlackStep {
 		return FormatterStep.createLazy(name(), this::createState, State::toFunc);
 	}
 
-	private State createState() throws ForeignExe.SetupException, IOException, InterruptedException {
-		String exeAbsPath = ForeignExe.named("black").confirmVersionAndGetPath(version, pathToExe);
+	private State createState() throws IOException, InterruptedException {
+		String exeAbsPath = ForeignExe.named("black")
+				.fixCantFind("Try running `pip install black=={version}`, or else tell Spotless where it is with `black().pathToExe('path/to/executable')`")
+				.fixWrongVersion("Try running `pip install --force-reinstall black=={version}`, or else specify `black('{versionActual}')` to Spotless")
+				.confirmVersionAndGetPath(version, pathToExe);
 		return new State(this, exeAbsPath);
 	}
 
