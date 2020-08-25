@@ -71,15 +71,15 @@ public class ClangFormatStep {
 				"You can download clang-format from https://releases.llvm.org and " +
 				"then point Spotless to it with `pathToExe('/path/to/clang-format')` " +
 				"or you can use your platform's package manager:" +
-				"\n  win:   choco install llvm --version {version}" +
-				"\n  mac:   brew install clang-format TODO: how to specify version?" +
+				"\n  win:   choco install llvm --version {version}  (try dropping version if it fails)" +
+				"\n  mac:   brew install clang-format (TODO: how to specify version?)" +
 				"\n  linux: apt install clang-format  (try clang-format-{version} with dropped minor versions)";
 		String exeAbsPath = ForeignExe.nameAndVersion("clang-format", version)
 				.pathToExe(pathToExe)
 				.fixCantFind(howToInstall)
 				.fixWrongVersion(
 						"You can tell Spotless to use the version you already have with `clangFormat('{versionFound}')`" +
-								"or you can download the currently specified version, {version}.\n\n" + howToInstall)
+								"or you can download the currently specified version, {version}.\n" + howToInstall)
 				.confirmVersionAndGetAbsolutePath();
 		return new State(this, exeAbsPath);
 	}
