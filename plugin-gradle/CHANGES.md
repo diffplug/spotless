@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [5.2.0] - 2020-08-25
 ### Added
 - It is now much easier for Spotless to [integrate formatters with native executables](../../CONTRIBUTING.md#integrating-outside-the-jvm). ([#672](https://github.com/diffplug/spotless/pull/672))
   - Added support for [python](../#python), specifically [black](../#black).
