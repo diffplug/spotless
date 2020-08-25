@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.3.0] - 2020-08-25
 ### Added
 * The ability to shell out to formatters with their own executables. ([#672](https://github.com/diffplug/spotless/pull/672))
   * `ProcessRunner` makes it easy to efficiently and debuggably call foreign executables, and pipe their stdout and stderr to strings.
