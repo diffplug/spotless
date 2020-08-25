@@ -75,19 +75,19 @@ public class BlackStep {
 		final String version;
 		// used for executing
 		final transient List<String> args;
-		final transient ProcessRunner runner = new ProcessRunner();
 
 		State(BlackStep step, String exeAbsPath) {
 			this.version = step.version;
 			this.args = Arrays.asList(exeAbsPath, "-");
 		}
 
-		String format(String input) throws IOException, InterruptedException {
+		String format(ProcessRunner runner, String input) throws IOException, InterruptedException {
 			return runner.exec(input.getBytes(StandardCharsets.UTF_8), args).assertExitZero(StandardCharsets.UTF_8);
 		}
 
 		FormatterFunc.Closeable toFunc() {
-			return FormatterFunc.Closeable.of(runner, this::format);
+			ProcessRunner runner = new ProcessRunner();
+			return FormatterFunc.Closeable.of(runner, input -> format(runner, input));
 		}
 	}
 }

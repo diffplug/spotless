@@ -92,26 +92,27 @@ public class ClangFormatStep {
 		final @Nullable String style;
 		// used for executing
 		final transient List<String> args;
-		final transient ProcessRunner runner = new ProcessRunner();
 
 		State(ClangFormatStep step, String exeAbsPath) {
 			this.version = step.version;
 			this.style = step.style;
-			args = new ArrayList<>(3);
+			args = new ArrayList<>(2);
 			args.add(exeAbsPath);
 			if (style != null) {
 				args.add("--style=" + style);
 			}
-			args.add("--assume-filename=MUTABLE");
 		}
 
-		String format(String input, File file) throws IOException, InterruptedException {
-			args.set(args.size() - 1, "--assume-filename=" + file.getName());
-			return runner.exec(input.getBytes(StandardCharsets.UTF_8), args).assertExitZero(StandardCharsets.UTF_8);
+		String format(ProcessRunner runner, String input, File file) throws IOException, InterruptedException {
+			String[] processArgs = args.toArray(new String[args.size() + 1]);
+			// add an argument to the end
+			processArgs[args.size()] = "--assume-filename=" + file.getName();
+			return runner.exec(input.getBytes(StandardCharsets.UTF_8), processArgs).assertExitZero(StandardCharsets.UTF_8);
 		}
 
 		FormatterFunc.Closeable toFunc() {
-			return FormatterFunc.Closeable.of(runner, FormatterFunc.needsFile(this::format));
+			ProcessRunner runner = new ProcessRunner();
+			return FormatterFunc.Closeable.of(runner, FormatterFunc.needsFile((input, file) -> format(runner, input, file)));
 		}
 	}
 }
