@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.kotlin;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.diffplug.spotless.FormatterStep;
@@ -28,6 +29,7 @@ import com.diffplug.spotless.TestProvisioner;
  * causes these problems. The root is still a gradle bug, but in the meantime we don't
  * need to hold up *every* PR with this: https://github.com/gradle/gradle/issues/11752
  */
+@Ignore
 public class KtLintStepTest extends ResourceHarness {
 	@Test
 	public void behavior() throws Exception {
