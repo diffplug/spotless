@@ -60,10 +60,11 @@ public class BlackStep {
 	}
 
 	private State createState() throws IOException, InterruptedException {
+		String trackingIssue = "\n  github issue to handle this better: https://github.com/diffplug/spotless/issues/674";
 		String exeAbsPath = ForeignExe.nameAndVersion("black", version)
 				.pathToExe(pathToExe)
-				.fixCantFind("Try running `pip install black=={version}`, or else tell Spotless where it is with `black().pathToExe('path/to/executable')`")
-				.fixWrongVersion("Try running `pip install --force-reinstall black=={version}`, or else specify `black('{versionFound}')` to Spotless")
+				.fixCantFind("Try running `pip install black=={version}`, or else tell Spotless where it is with `black().pathToExe('path/to/executable')`" + trackingIssue)
+				.fixWrongVersion("Try running `pip install --force-reinstall black=={version}`, or else specify `black('{versionFound}')` to Spotless" + trackingIssue)
 				.confirmVersionAndGetAbsolutePath();
 		return new State(this, exeAbsPath);
 	}
