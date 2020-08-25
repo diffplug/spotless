@@ -83,7 +83,7 @@ public class BlackStep {
 		}
 
 		String format(String input) throws IOException, InterruptedException {
-			return runner.exec(input.getBytes(StandardCharsets.UTF_8), args).assertNoError(StandardCharsets.UTF_8);
+			return runner.exec(input.getBytes(StandardCharsets.UTF_8), args).assertExitZero(StandardCharsets.UTF_8);
 		}
 
 		FormatterFunc.Closeable toFunc() {

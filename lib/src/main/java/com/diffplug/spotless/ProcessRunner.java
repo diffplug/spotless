@@ -147,11 +147,23 @@ public class ProcessRunner implements AutoCloseable {
 			return error;
 		}
 
-		public String assertNoError(Charset charset) {
+		/** Returns true if the exit code was not zero. */
+		public boolean exitNotZero() {
+			return exitCode != 0;
+		}
+
+		/**
+		 * Asserts that the exit code was zero, and if so, returns
+		 * the content of stdout encoded with the given charset.
+		 *
+		 * If the exit code was not zero, throws an exception
+		 * with useful debugging information.
+		 */
+		public String assertExitZero(Charset charset) {
 			if (exitCode == 0) {
 				return new String(output, charset);
 			} else {
-				throw new RuntimeException("exit code: " + exitCode + "\nstderr: " + new String(error, charset));
+				throw new RuntimeException(toString());
 			}
 		}
 

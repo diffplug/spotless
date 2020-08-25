@@ -91,17 +91,17 @@ public class ForeignExe {
 				exeAbsPath = pathToExe;
 			} else {
 				ProcessRunner.Result cmdWhich = runner.shellWinUnix("where " + name, "which " + name);
-				if (cmdWhich.exitCode() != 0) {
+				if (cmdWhich.exitNotZero()) {
 					throw cantFind("Unable to find " + name + " on path", cmdWhich);
 				} else {
-					exeAbsPath = cmdWhich.assertNoError(Charset.defaultCharset()).trim();
+					exeAbsPath = cmdWhich.assertExitZero(Charset.defaultCharset()).trim();
 				}
 			}
 			ProcessRunner.Result cmdVersion = runner.exec(exeAbsPath, versionFlag);
-			if (cmdVersion.exitCode() != 0) {
+			if (cmdVersion.exitNotZero()) {
 				throw cantFind("Unable to run " + exeAbsPath, cmdVersion);
 			}
-			Matcher versionMatcher = versionRegex.matcher(cmdVersion.assertNoError(Charset.defaultCharset()));
+			Matcher versionMatcher = versionRegex.matcher(cmdVersion.assertExitZero(Charset.defaultCharset()));
 			if (!versionMatcher.find()) {
 				throw cantFind("Unable to parse version with /" + versionRegex + "/", cmdVersion);
 			}

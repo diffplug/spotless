@@ -107,7 +107,7 @@ public class ClangFormatStep {
 
 		String format(String input, File file) throws IOException, InterruptedException {
 			args.set(args.size() - 1, "--assume-filename=" + file.getName());
-			return runner.exec(input.getBytes(StandardCharsets.UTF_8), args).assertNoError(StandardCharsets.UTF_8);
+			return runner.exec(input.getBytes(StandardCharsets.UTF_8), args).assertExitZero(StandardCharsets.UTF_8);
 		}
 
 		FormatterFunc.Closeable toFunc() {
