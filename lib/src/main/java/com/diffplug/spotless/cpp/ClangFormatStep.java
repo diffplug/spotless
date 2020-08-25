@@ -78,7 +78,7 @@ public class ClangFormatStep {
 				.pathToExe(pathToExe)
 				.fixCantFind(howToInstall)
 				.fixWrongVersion(
-						"You can tell Spotless to use the version you already have with `clangFormat('{versionActual}')`" +
+						"You can tell Spotless to use the version you already have with `clangFormat('{versionFound}')`" +
 								"or you can download the currently specified version, {version}.\n\n" + howToInstall)
 				.confirmVersionAndGetAbsolutePath();
 		return new State(this, exeAbsPath);

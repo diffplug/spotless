@@ -63,7 +63,7 @@ public class BlackStep {
 		String exeAbsPath = ForeignExe.nameAndVersion("black", version)
 				.pathToExe(pathToExe)
 				.fixCantFind("Try running `pip install black=={version}`, or else tell Spotless where it is with `black().pathToExe('path/to/executable')`")
-				.fixWrongVersion("Try running `pip install --force-reinstall black=={version}`, or else specify `black('{versionActual}')` to Spotless")
+				.fixWrongVersion("Try running `pip install --force-reinstall black=={version}`, or else specify `black('{versionFound}')` to Spotless")
 				.confirmVersionAndGetAbsolutePath();
 		return new State(this, exeAbsPath);
 	}
