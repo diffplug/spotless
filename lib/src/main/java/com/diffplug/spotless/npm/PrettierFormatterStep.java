@@ -84,7 +84,7 @@ public class PrettierFormatterStep {
 				ServerProcessInfo prettierRestServer = npmRunServer();
 				PrettierRestService restService = new PrettierRestService(prettierRestServer.getBaseUrl());
 				String prettierConfigOptions = restService.resolveConfig(this.prettierConfig.getPrettierConfigPath(), this.prettierConfig.getOptions());
-				return Closeable.of(() -> endServer(restService, prettierRestServer), new PrettierFilePathPassingFormatterFunc(prettierConfigOptions, restService));
+				return Closeable.ofDangerous(() -> endServer(restService, prettierRestServer), new PrettierFilePathPassingFormatterFunc(prettierConfigOptions, restService));
 			} catch (Exception e) {
 				throw ThrowingEx.asRuntime(e);
 			}

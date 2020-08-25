@@ -36,7 +36,7 @@ public class StepHarnessWithFile implements AutoCloseable {
 		// We don't care if an individual FormatterStep is misbehaving on line-endings, because
 		// Formatter fixes that.  No reason to care in tests either.  It's likely to pop up when
 		// running tests on Windows from time-to-time
-		return new StepHarnessWithFile(FormatterFunc.Closeable.of(
+		return new StepHarnessWithFile(FormatterFunc.Closeable.ofDangerous(
 				() -> {
 					if (step instanceof FormatterStepImpl.Standard) {
 						((FormatterStepImpl.Standard<?>) step).cleanupFormatterFunc();
@@ -57,7 +57,7 @@ public class StepHarnessWithFile implements AutoCloseable {
 
 	/** Creates a harness for testing a formatter whose steps do depend on the file. */
 	public static StepHarnessWithFile forFormatter(Formatter formatter) {
-		return new StepHarnessWithFile(FormatterFunc.Closeable.of(
+		return new StepHarnessWithFile(FormatterFunc.Closeable.ofDangerous(
 				formatter::close,
 				input -> formatter.compute(input, new File(""))));
 	}
