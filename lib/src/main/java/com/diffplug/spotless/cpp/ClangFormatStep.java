@@ -73,7 +73,8 @@ public class ClangFormatStep {
 				"or you can use your platform's package manager:" +
 				"\n  win:   choco install llvm --version {version}  (try dropping version if it fails)" +
 				"\n  mac:   brew install clang-format (TODO: how to specify version?)" +
-				"\n  linux: apt install clang-format  (try clang-format-{version} with dropped minor versions)";
+				"\n  linux: apt install clang-format  (try clang-format-{version} with dropped minor versions)" +
+				"\n    github issue to handle this better: https://github.com/diffplug/spotless/issues/673";
 		String exeAbsPath = ForeignExe.nameAndVersion("clang-format", version)
 				.pathToExe(pathToExe)
 				.fixCantFind(howToInstall)
