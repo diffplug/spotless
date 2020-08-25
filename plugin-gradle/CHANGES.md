@@ -3,6 +3,10 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+- It is now much easier for Spotless to [integrate formatters with native executables](../../CONTRIBUTING.md#integrating-outside-the-jvm). ([#672](https://github.com/diffplug/spotless/pull/672))
+  - Added support for [python](../#python), specifically [black](../#black).
+  - Added support for [clang-format](../#clang-format) for all formats.
 ### Fixed
 * If you executed `gradlew spotlessCheck` multiple times within a single second (hard in practice, easy for a unit test) you could sometimes get an erroneous failure message.  Fixed in [#671](https://github.com/diffplug/spotless/pull/671).
 

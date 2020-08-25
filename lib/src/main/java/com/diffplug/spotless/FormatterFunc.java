@@ -40,8 +40,17 @@ public interface FormatterFunc {
 		@Override
 		void close();
 
-		/** Creates a {@link Closeable} from an AutoCloseable and a function. */
-		public static Closeable of(AutoCloseable closeable, FormatterFunc function) {
+		/**
+		 * Dangerous way to create a {@link Closeable} from an AutoCloseable and a function.
+		 *
+		 * It's important for FormatterStep's to allocate their resources as lazily as possible.
+		 * It's easy to create a resource inside the state, and not realize that it may not be
+		 * released.  It's far better to use one of the non-deprecated `of()` methods below.
+		 *
+		 * The bug (and its fix) which is easy to write using this method: https://github.com/diffplug/spotless/commit/7f16ecca031810b5e6e6f647e1f10a6d2152d9f4
+		 * How the `of()` methods below make the correct thing easier to write and safer: https://github.com/diffplug/spotless/commit/18c10f9c93d6f18f753233d0b5f028d5f0961916
+		 */
+		public static Closeable ofDangerous(AutoCloseable closeable, FormatterFunc function) {
 			Objects.requireNonNull(closeable, "closeable");
 			Objects.requireNonNull(function, "function");
 			return new Closeable() {
@@ -52,12 +61,73 @@ public interface FormatterFunc {
 
 				@Override
 				public String apply(String unix, File file) throws Exception {
-					return function.apply(Objects.requireNonNull(unix), Objects.requireNonNull(file));
+					return function.apply(unix, file);
 				}
 
 				@Override
 				public String apply(String unix) throws Exception {
-					return function.apply(Objects.requireNonNull(unix));
+					return function.apply(unix);
+				}
+			};
+		}
+
+		/** @deprecated synonym for {@link #ofDangerous(AutoCloseable, FormatterFunc)} */
+		@Deprecated
+		public static Closeable of(AutoCloseable closeable, FormatterFunc function) {
+			return ofDangerous(closeable, function);
+		}
+
+		@FunctionalInterface
+		interface ResourceFunc<T extends AutoCloseable> {
+			String apply(T resource, String unix) throws Exception;
+		}
+
+		/** Creates a {@link FormatterFunc.Closeable} which uses the given resource to execute the format function. */
+		public static <T extends AutoCloseable> Closeable of(T resource, ResourceFunc<T> function) {
+			Objects.requireNonNull(resource, "resource");
+			Objects.requireNonNull(function, "function");
+			return new Closeable() {
+				@Override
+				public void close() {
+					ThrowingEx.run(resource::close);
+				}
+
+				@Override
+				public String apply(String unix, File file) throws Exception {
+					return function.apply(resource, unix);
+				}
+
+				@Override
+				public String apply(String unix) throws Exception {
+					return function.apply(resource, unix);
+				}
+			};
+		}
+
+		@FunctionalInterface
+		interface ResourceFuncNeedsFile<T extends AutoCloseable> {
+			String apply(T resource, String unix, File file) throws Exception;
+		}
+
+		/** Creates a {@link FormatterFunc.Closeable} which uses the given resource to execute the file-dependent format function. */
+		public static <T extends AutoCloseable> Closeable of(T resource, ResourceFuncNeedsFile<T> function) {
+			Objects.requireNonNull(resource, "resource");
+			Objects.requireNonNull(function, "function");
+			return new Closeable() {
+				@Override
+				public void close() {
+					ThrowingEx.run(resource::close);
+				}
+
+				@Override
+				public String apply(String unix, File file) throws Exception {
+					FormatterStepImpl.checkNotSentinel(file);
+					return function.apply(resource, unix, file);
+				}
+
+				@Override
+				public String apply(String unix) throws Exception {
+					return apply(unix, FormatterStepImpl.SENTINEL);
 				}
 			};
 		}
@@ -80,9 +150,7 @@ public interface FormatterFunc {
 
 		@Override
 		default String apply(String unix, File file) throws Exception {
-			if (file == FormatterStepImpl.SENTINEL) {
-				throw new IllegalArgumentException("This step requires the underlying file. If this is a test, use StepHarnessWithFile");
-			}
+			FormatterStepImpl.checkNotSentinel(file);
 			return applyWithFile(unix, file);
 		}
 

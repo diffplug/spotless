@@ -90,7 +90,7 @@ public class TsFmtFormatterStep {
 				Map<String, Object> tsFmtOptions = unifyOptions();
 				ServerProcessInfo tsfmtRestServer = npmRunServer();
 				TsFmtRestService restService = new TsFmtRestService(tsfmtRestServer.getBaseUrl());
-				return Closeable.of(() -> endServer(restService, tsfmtRestServer), input -> restService.format(input, tsFmtOptions));
+				return Closeable.ofDangerous(() -> endServer(restService, tsfmtRestServer), input -> restService.format(input, tsFmtOptions));
 			} catch (Exception e) {
 				throw ThrowingEx.asRuntime(e);
 			}

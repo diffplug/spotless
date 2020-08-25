@@ -31,7 +31,7 @@ output = [
 output = prefixDelimiterReplace(input, 'https://javadoc.io/static/com.diffplug.spotless/spotless-plugin-gradle/', '/', versionLast)
 -->
 
-Spotless is a general-purpose formatting plugin used by [3,500 projects on GitHub (May 2020)](https://github.com/search?l=gradle&q=spotless&type=Code).  It is completely à la carte, but also includes powerful "batteries-included" if you opt-in.
+Spotless is a general-purpose formatting plugin used by [4,000 projects on GitHub (August 2020)](https://github.com/search?l=gradle&q=spotless&type=Code).  It is completely à la carte, but also includes powerful "batteries-included" if you opt-in.
 
 To people who use your build, it looks like this ([IDE support also available]()):
 
@@ -50,23 +50,31 @@ user@machine repo % ./gradlew build
 BUILD SUCCESSFUL
 ```
 
+Spotless supports all of Gradle's built-in performance features (incremental build, remote and local buildcache, lazy configuration, etc), and also automatically fixes [idempotence issues](https://github.com/diffplug/spotless/blob/main/PADDEDCELL.md), infers [line-endings from git](#line-endings-and-encodings-invisible-stuff), is cautious about [misconfigured encoding](https://github.com/diffplug/spotless/blob/08340a11566cdf56ecf50dbd4d557ed84a70a502/testlib/src/test/java/com/diffplug/spotless/EncodingErrorMsgTest.java#L34-L38) bugs, and can use git to [ratchet formatting](#ratchet) without "format-everything" commits.
+
+
 ### Table of Contents
 
 - [**Quickstart**](#quickstart)
   - [Requirements](#requirements)
 - **Languages**
-  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier))
+  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [clang-format](#clang-format), [prettier](#prettier))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
   - [Kotlin](#kotlin) ([ktlint](#ktlint), [ktfmt](#ktfmt), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
-  - [C/C++](#cc) ([eclipse cdt](#eclipse-cdt))
+  - [C/C++](#cc) ([clang-format](#clang-format), [eclipse cdt](#eclipse-cdt))
+  - [Python](#python) ([black](#black))
   - [FreshMark](#freshmark) aka markdown
   - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
   - [SQL](#sql) ([dbeaver](#dbeaver), [prettier](#prettier))
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier))
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection))
+      - javascript, jsx, angular, vue, flow, typescript, css, less, scss, html, json, graphql, markdown, ymaml
+    - [clang-format](#clang-format)
+      - c, c++, c#, objective-c, protobuf, javascript, java
     - [eclipse web tools platform](#eclipse-web-tools-platform)
+      - css, html, js, json, xml
 - **Language independent**
   - [License header](#license-header) ([slurp year from git](#retroactively-slurp-years-from-git-history))
   - [How can I enforce formatting gradually? (aka "ratchet")](#ratchet)
@@ -116,8 +124,6 @@ Spotless consists of a list of formats (in the example above, `misc` and `java`)
 
 All the generic steps live in [`FormatExtension`](https://javadoc.io/static/com.diffplug.spotless/spotless-plugin-gradle/5.1.2/com/diffplug/gradle/spotless/FormatExtension.html), and there are many language-specific steps which live in its language-specific subclasses, which are described below.
 
-Spotless supports all of Gradle's built-in performance features (incremental build, buildcache, lazy configuration, etc), and also automatically fixes [idempotence issues](https://github.com/diffplug/spotless/blob/main/PADDEDCELL.md), infers [line-endings from git](#line-endings-and-encodings-invisible-stuff), is cautious about [misconfigured encoding](https://github.com/diffplug/spotless/blob/08340a11566cdf56ecf50dbd4d557ed84a70a502/testlib/src/test/java/com/diffplug/spotless/EncodingErrorMsgTest.java#L34-L38) bugs, and can use git to [ratchet formatting](#ratchet) without "format-everything" commits.
-
 ### Requirements
 
 Spotless requires JRE 8+, and Gradle 5.4+.  Some steps require JRE 11+, `Unsupported major.minor version` means you're using a step that needs a newer JRE.
@@ -143,6 +149,7 @@ spotless {
     googleJavaFormat() // has its own section below
     eclipse()          // has its own section below
     prettier()         // has its own section below
+    clangFormat()      // has its own section below
 
     licenseHeader '/* (C) $YEAR */' // or licenseHeaderFile
   }
@@ -322,7 +329,8 @@ spotless {
   cpp {
     target 'src/native/**' // you have to set the target manually
 
-    eclipseCdt() // has its own section below
+    clangFormat()  // has its own section below
+    eclipseCdt()   // has its own section below
 
     licenseHeader '/* (C) $YEAR */' // or licenseHeaderFile
   }
@@ -342,6 +350,38 @@ spotles {
     eclipseCdt('4.13.0').configFile('eclipse-cdt.xml')
   }
 }
+```
+
+## Python
+
+`com.diffplug.gradle.spotless.PythonExtension` [javadoc](https://javadoc.io/static/com.diffplug.spotless/spotless-plugin-gradle/5.1.2/com/diffplug/gradle/spotless/PythonExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/PythonExtension.java)
+
+```gradle
+spotless {
+  python {
+    target 'src/main/**/*.py' // have to set manually
+
+    black()  // has its own section below
+
+    licenseHeader '/* (C) $YEAR */', 'REGEX_TO_DEFINE_TOP_OF_FILE' // or licenseHeaderFile
+  }
+}
+```
+
+### black
+
+[homepage](https://github.com/psf/black). [changelog](https://github.com/psf/black/blob/master/CHANGES.md).
+
+```gradle
+black('19.10b0') // version is optional
+
+// if black is not on your path, you must specify its location manually
+clangFormat().pathToExe('C:/myuser/.pyenv/versions/3.8.0/scripts/black.exe')
+// Spotless always checks the version of the black it is using
+// and will fail with an error if it does not match the expected version
+// (whether manually specified or default). If there is a problem, Spotless
+// will suggest commands to help install the correct version.
+// TODO: handle installation & packaging automatically
 ```
 
 <a name="applying-freshmark-to-markdown-files"></a>
@@ -547,6 +587,33 @@ Spotless will try to auto-discover an npm installation. If that is not working f
 spotless {
   format 'javascript', {
     prettier().npmExecutable('/usr/bin/npm').config(...)
+```
+
+## clang-format
+
+[homepage](https://clang.llvm.org/docs/ClangFormat.html). [changelog](https://releases.llvm.org/download.html). `clang-format` is a formatter for c, c++, c#, objective-c, protobuf, javascript, and java. You can use clang-format in any language-specific format, but usually you will be creating a generic format.
+
+```gradle
+spotless {
+  format 'csharp', {
+    // you have to set the target manually
+    target 'src/**/*.cs'
+
+    clangFormat('10.0.1') // version is optional
+
+    // can also specify a code style
+    clangFormat().style('LLVM') // or Google, Chromium, Mozilla, WebKit
+    // TODO: support arbitrary .clang-format
+
+    // if clang-format is not on your path, you must specify its location manually
+    clangFormat().pathToExe('/usr/local/Cellar/clang-format/10.0.1/bin/clang-format')
+    // Spotless always checks the version of the clang-format it is using
+    // and will fail with an error if it does not match the expected version
+    // (whether manually specified or default). If there is a problem, Spotless
+    // will suggest commands to help install the correct version.
+    // TODO: handle installation & packaging automatically
+  }
+}
 ```
 
 <a name="applying-eclipse-wtp-to-css--html--etc"></a>

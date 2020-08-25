@@ -104,6 +104,15 @@ Here's a checklist for creating a new step for Spotless:
 
 In order for Spotless' model to work, each step needs to look only at the `String` input, otherwise they cannot compose.  However, there are some cases where the source `File` is useful, such as to look at the file extension.  In this case, you can pass a `FormatterFunc.NeedsFile` instead of a `FormatterFunc`.  This should only be used in [rare circumstances](https://github.com/diffplug/spotless/pull/637), be careful that you don't accidentally depend on the bytes inside of the `File`!
 
+### Integrating outside the JVM
+
+There are many great formatters (prettier, clang-format, black, etc.) which live entirely outside the JVM.  We have two main strategies for these:
+
+- shell out to an external command for every file (used by clang-format and black) // TODO: link
+- open a headless server and make http calls to it from Spotless (used by prettier) // TODO: link
+
+Because of Spotless' up-to-date checking and [git ratcheting](https://github.com/diffplug/spotless/tree/main/plugin-gradle#ratchet), Spotless actually doesn't have to call formatters very often, so even an expensive shell call for every single invocation isn't that bad.  Anything that works is better than nothing, and we can always speed things up later if it feels too slow (but it probably won't).
+
 ## How to enable the _ext projects
 
 The `_ext` projects are disabled per default, since:

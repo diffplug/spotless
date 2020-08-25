@@ -46,6 +46,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LazyForwardingEquality;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.cpp.ClangFormatStep;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
 import com.diffplug.spotless.generic.EndWithNewlineStep;
@@ -559,6 +560,42 @@ public class FormatExtension {
 		PrettierConfig prettierConfig = new PrettierConfig(devDependencies);
 		addStep(prettierConfig.createStep());
 		return prettierConfig;
+	}
+
+	/** Uses the default version of clang-format. */
+	public ClangFormatConfig clangFormat() {
+		return clangFormat(ClangFormatStep.defaultVersion());
+	}
+
+	/** Uses the specified version of clang-format. */
+	public ClangFormatConfig clangFormat(String version) {
+		return new ClangFormatConfig(version);
+	}
+
+	public class ClangFormatConfig {
+		ClangFormatStep stepCfg;
+
+		ClangFormatConfig(String version) {
+			this.stepCfg = ClangFormatStep.withVersion(version);
+			addStep(createStep());
+		}
+
+		/** Any of: LLVM, Google, Chromium, Mozilla, WebKit. */
+		public ClangFormatConfig style(String style) {
+			stepCfg = stepCfg.withStyle(style);
+			replaceStep(createStep());
+			return this;
+		}
+
+		public ClangFormatConfig pathToExe(String pathToBlack) {
+			stepCfg = stepCfg.withPathToExe(pathToBlack);
+			replaceStep(createStep());
+			return this;
+		}
+
+		private FormatterStep createStep() {
+			return stepCfg.create();
+		}
 	}
 
 	public class EclipseWtpConfig {

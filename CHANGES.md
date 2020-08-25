@@ -10,6 +10,12 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* The ability to shell out to formatters with their own executables. ([#672](https://github.com/diffplug/spotless/pull/672))
+  * `ProcessRunner` makes it easy to efficiently and debuggably call foreign executables, and pipe their stdout and stderr to strings.
+  * `ForeignExe` finds executables on the path (or other strategies), and confirms that they have the correct version (to facilitate Spotless' caching). If the executable is not present or the wrong version, it points the user towards how to fix the problem.
+  * These classes were used to add support for [python black](https://github.com/psf/black) and [clang-format](https://clang.llvm.org/docs/ClangFormat.html).
+  * Incidental to this effort, `FormatterFunc.Closeable` now has new methods which make resource-handling safer.  The old method is still available as `ofDangerous`, but it should not be used outside of a testing situation. There are some legacy usages of `ofDangerous` in the codebase, and it would be nice to fix them, but the existing usages are using it safely.
 
 ## [2.2.2] - 2020-08-21
 ### Fixed
