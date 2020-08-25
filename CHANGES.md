@@ -11,7 +11,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
-* The ability to shell out to formatters with their own executables.
+* The ability to shell out to formatters with their own executables. ([#672](https://github.com/diffplug/spotless/pull/672))
   * `ProcessRunner` makes it easy to efficiently and debuggably call foreign executables, and pipe their stdout and stderr to strings.
   * `ForeignExe` finds executables on the path (or other strategies), and confirms that they have the correct version (to facilitate Spotless' caching). If the executable is not present or the wrong version, it points the user towards how to fix the problem.
   * These classes were used to add support for [python black](https://github.com/psf/black) and [clang-format](https://clang.llvm.org/docs/ClangFormat.html).

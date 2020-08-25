@@ -4,7 +4,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
-- It is now much easier for Spotless to [integrate formatters with native executables](../../CONTRIBUTING.md#integrating-outside-the-jvm).
+- It is now much easier for Spotless to [integrate formatters with native executables](../../CONTRIBUTING.md#integrating-outside-the-jvm). ([#672](https://github.com/diffplug/spotless/pull/672))
   - Added support for [python](../#python), specifically [black](../#black).
   - Added support for [clang-format](../#clang-format) for all formats.
 ### Fixed
