@@ -15,8 +15,12 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,6 +36,7 @@ import org.gradle.api.tasks.TaskAction;
 
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.Formatter;
+import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
 public class SpotlessCheck extends DefaultTask {
@@ -76,10 +81,33 @@ public class SpotlessCheck extends DefaultTask {
 				public void visitFile(FileVisitDetails fileVisitDetails) {
 					String path = fileVisitDetails.getPath();
 					File originalSource = new File(getProject().getProjectDir(), path);
-					problemFiles.add(originalSource);
+					try {
+						// read the file on disk
+						byte[] userFile = Files.readAllBytes(originalSource.toPath());
+						// and the formatted version from spotlessOutDirectory
+						byte[] formatted;
+						{
+							ByteArrayOutputStream clean = new ByteArrayOutputStream();
+							fileVisitDetails.copyTo(clean);
+							formatted = clean.toByteArray();
+						}
+						// If these two are equal, it means that SpotlessTask left a file
+						// in its output directory which ought to have been removed. As
+						// best I can tell, this is a filesytem race which is very hard
+						// to trigger.  GitRatchetGradleTest can *sometimes* reproduce it
+						// but it's very erratic, and that test writes both to gradle cache
+						// and git cache very quickly.  Either of gradle or jgit might be
+						// caching something wrong because of the fast repeated writes.
+						if (!Arrays.equals(userFile, formatted)) {
+							// If the on-disk content is equal to the formatted content,
+							// just don't add it as a problem file. Easy!
+							problemFiles.add(originalSource);
+						}
+					} catch (IOException e) {
+						throw ThrowingEx.asRuntime(e);
+					}
 				}
 			});
-
 			if (!problemFiles.isEmpty()) {
 				try (Formatter formatter = source.buildFormatter()) {
 					Collections.sort(problemFiles);
