@@ -41,11 +41,12 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * calls to an external process.
  */
 public class ProcessRunner implements AutoCloseable {
-	private ExecutorService executor;
+	private final ExecutorService threadStdOut = Executors.newSingleThreadExecutor();
+	private final ExecutorService threadStdErr = Executors.newSingleThreadExecutor();
+	private final ByteArrayOutputStream bufStdOut = new ByteArrayOutputStream();
+	private final ByteArrayOutputStream bufStdErr = new ByteArrayOutputStream();
 
-	public ProcessRunner() {
-		this.executor = Executors.newFixedThreadPool(2);
-	}
+	public ProcessRunner() {}
 
 	/** Executes the given shell command (using `cmd` on windows and `sh` on unix). */
 	public Result shell(String cmd) throws IOException, InterruptedException {
@@ -82,8 +83,8 @@ public class ProcessRunner implements AutoCloseable {
 	public Result exec(byte[] stdin, List<String> args) throws IOException, InterruptedException {
 		ProcessBuilder builder = new ProcessBuilder(args);
 		Process process = builder.start();
-		Future<byte[]> outputFut = executor.submit(() -> drainToBytes(process.getInputStream()));
-		Future<byte[]> errorFut = executor.submit(() -> drainToBytes(process.getErrorStream()));
+		Future<byte[]> outputFut = threadStdOut.submit(() -> drainToBytes(process.getInputStream(), bufStdOut));
+		Future<byte[]> errorFut = threadStdErr.submit(() -> drainToBytes(process.getErrorStream(), bufStdErr));
 		// write stdin
 		process.getOutputStream().write(stdin);
 		process.getOutputStream().close();
@@ -105,15 +106,16 @@ public class ProcessRunner implements AutoCloseable {
 		}
 	}
 
-	private static byte[] drainToBytes(InputStream input) throws IOException {
-		ByteArrayOutputStream output = new ByteArrayOutputStream();
-		drain(input, output);
-		return output.toByteArray();
+	private static byte[] drainToBytes(InputStream input, ByteArrayOutputStream buffer) throws IOException {
+		buffer.reset();
+		drain(input, buffer);
+		return buffer.toByteArray();
 	}
 
 	@Override
 	public void close() {
-		executor.shutdown();
+		threadStdOut.shutdown();
+		threadStdErr.shutdown();
 	}
 
 	@SuppressFBWarnings({"EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
