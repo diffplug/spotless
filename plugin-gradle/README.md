@@ -376,7 +376,7 @@ spotless {
 black('19.10b0') // version is optional
 
 // if black is not on your path, you must specify its location manually
-clangFormat().pathToExe('C:/myuser/.pyenv/versions/3.8.0/scripts/black.exe')
+black().pathToExe('C:/myuser/.pyenv/versions/3.8.0/scripts/black.exe')
 // Spotless always checks the version of the black it is using
 // and will fail with an error if it does not match the expected version
 // (whether manually specified or default). If there is a problem, Spotless
