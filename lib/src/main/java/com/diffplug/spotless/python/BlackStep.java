@@ -87,7 +87,7 @@ public class BlackStep {
 
 		FormatterFunc.Closeable toFunc() {
 			ProcessRunner runner = new ProcessRunner();
-			return FormatterFunc.Closeable.of(runner, input -> format(runner, input));
+			return FormatterFunc.Closeable.of(runner, this::format);
 		}
 	}
 }

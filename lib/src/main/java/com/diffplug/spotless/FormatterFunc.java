@@ -61,6 +61,61 @@ public interface FormatterFunc {
 				}
 			};
 		}
+
+		@FunctionalInterface
+		interface ResourceFunc<T extends AutoCloseable> {
+			String apply(T resource, String unix) throws Exception;
+		}
+
+		/** Creates a {@link FormatterFunc.Closeable} which uses the given resource to execute the format function. */
+		public static <T extends AutoCloseable> Closeable of(T resource, ResourceFunc<T> function) {
+			Objects.requireNonNull(resource, "resource");
+			Objects.requireNonNull(function, "function");
+			return new Closeable() {
+				@Override
+				public void close() {
+					ThrowingEx.run(resource::close);
+				}
+
+				@Override
+				public String apply(String unix, File file) throws Exception {
+					return function.apply(resource, unix);
+				}
+
+				@Override
+				public String apply(String unix) throws Exception {
+					return function.apply(resource, unix);
+				}
+			};
+		}
+
+		@FunctionalInterface
+		interface ResourceFileFunc<T extends AutoCloseable> {
+			String apply(T resource, String unix, File file) throws Exception;
+		}
+
+		/** Creates a {@link FormatterFunc.Closeable} which uses the given resource to execute the file-dependent format function. */
+		public static <T extends AutoCloseable> Closeable of(T resource, ResourceFileFunc<T> function) {
+			Objects.requireNonNull(resource, "resource");
+			Objects.requireNonNull(function, "function");
+			return new Closeable() {
+				@Override
+				public void close() {
+					ThrowingEx.run(resource::close);
+				}
+
+				@Override
+				public String apply(String unix, File file) throws Exception {
+					FormatterStepImpl.checkNotSentinel(file);
+					return function.apply(resource, unix, file);
+				}
+
+				@Override
+				public String apply(String unix) throws Exception {
+					return apply(unix, FormatterStepImpl.SENTINEL);
+				}
+			};
+		}
 	}
 
 	/**
@@ -80,9 +135,7 @@ public interface FormatterFunc {
 
 		@Override
 		default String apply(String unix, File file) throws Exception {
-			if (file == FormatterStepImpl.SENTINEL) {
-				throw new IllegalArgumentException("This step requires the underlying file. If this is a test, use StepHarnessWithFile");
-			}
+			FormatterStepImpl.checkNotSentinel(file);
 			return applyWithFile(unix, file);
 		}
 

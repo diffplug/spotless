@@ -112,7 +112,7 @@ public class ClangFormatStep {
 
 		FormatterFunc.Closeable toFunc() {
 			ProcessRunner runner = new ProcessRunner();
-			return FormatterFunc.Closeable.of(runner, FormatterFunc.needsFile((input, file) -> format(runner, input, file)));
+			return FormatterFunc.Closeable.of(runner, this::format);
 		}
 	}
 }
