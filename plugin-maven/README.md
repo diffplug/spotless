@@ -198,18 +198,9 @@ Spotless requires Maven to be running on JRE 8+.
       <include>src/test/kotlin/**/*.kt</include>
     </includes>
 
-    <importOrder/> <!-- standard import order -->
-    <importOrder>  <!-- or a custom ordering -->
-      <order>java,javax,org,com,com.diffplug,</order>  <!-- or use <file>${basedir}/eclipse.importorder</file> -->
-      <!-- You probably want an empty string at the end - all of the
-           imports you didn't specify explicitly will go there. -->
-    </importOrder>
-
-    <removeUnusedImports /> <!-- self-explanatory -->
-
     <ktlint />   <!-- has its own section below -->
     <ktfmt />    <!-- has its own section below -->
-    <prettierv/> <!-- has its own section below -->
+    <prettier /> <!-- has its own section below -->
 
     <licenseHeader>
       <content>/* (C)$YEAR */</content>  <!-- or <file>${basedir}/license-header</file> -->
