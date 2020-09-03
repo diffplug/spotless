@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+* Support for Scalafix ([#591](https://github.com/diffplug/spotless/pull/591))
 
 ## [5.1.2] - 2020-08-21
 ### Fixed

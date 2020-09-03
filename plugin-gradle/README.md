@@ -291,6 +291,7 @@ spotless {
     // by default, all `.scala` and `.sc` files in the java sourcesets will be formatted
 
     scalafmt() // has its own section below
+    scalafix() // has its own section below
 
     licenseHeader '/* (C) $YEAR */', 'package ' // or licenseHeaderFile
     // note the 'package ' argument - this is a regex which identifies the top
@@ -309,6 +310,19 @@ spotless {
   scala {
     // version and configFile are both optional
     scalafmt('2.6.1').configFile('scalafmt.conf')
+```
+
+### scalafix
+
+[homepage](https://scalacenter.github.io/scalafix/). [changelog](https://github.com/scalacenter/scalafix/releases). [config docs](https://scalacenter.github.io/scalafix/docs/users/configuration.html).
+
+```gradle
+spotless {
+  scala {
+    scalafix()
+    // optional: you can specify a specific version of scalafix-cli >= 0.9.1 or Scala version suffix depended by it, or config file
+    // default: 0.9.16 (scalafix-cli), 2.12.11 (Scala), .scalafix.conf (config file)
+    scalafix('0.9.1', '2.11.12').configFile('scalafix.conf')
 ```
 
 <a name="applying-to-cc-sources"></a>
