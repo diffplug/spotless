@@ -15,49 +15,116 @@
  */
 package com.diffplug.spotless.generic;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class PipeStep {
-	final String open, close;
-	transient Pattern splitter;
-	transient ArrayList<String> groups = new ArrayList<>();
-	transient StringBuilder builder = new StringBuilder();
+import com.diffplug.spotless.FormatterStep;
 
-	private PipeStep(String open, String close) {
-		this.open = Objects.requireNonNull(open);
-		this.close = Objects.requireNonNull(close);
-		this.splitter = Pattern.compile(open + "(.*?)" + close, Pattern.DOTALL);
+public class PipeStep {
+	/** The two steps will be named `<name>In` and `<name>Out`. */
+	public static Builder named(String name) {
+		return new Builder(name);
 	}
 
-	public String formatIn(String in) {
-		groups.clear();
-		Matcher matcher = splitter.matcher(in);
-		while (matcher.find()) {
-			groups.add(matcher.group(1));
+	public static class Builder {
+		String name;
+		Pattern regex;
+
+		private Builder(String name) {
+			this.name = Objects.requireNonNull(name);
 		}
+
+		/** Defines the opening and closing markers. */
+		public Builder openClose(String open, String close) {
+			return regex(Pattern.quote(open) + "([.\\n]*?)" + Pattern.quote(close));
+		}
+
+		/** Defines the pipe via regex. Must have *exactly one* capturing group. */
+		public Builder regex(String regex) {
+			return regex(Pattern.compile(regex));
+		}
+
+		/** Defines the pipe via regex. Must have *exactly one* capturing group. */
+		public Builder regex(Pattern regex) {
+			this.regex = regex;
+			return this;
+		}
+
+		public PipeStep buildPair() {
+			return new PipeStep(name, regex);
+		}
+	}
+
+	final FormatterStep in, out;
+
+	private PipeStep(String name, Pattern pattern) {
+		StateIn stateIn = new StateIn(pattern);
+		StateOut stateOut = new StateOut(stateIn);
+		in = FormatterStep.create(name + "In", stateIn, state -> state::format);
+		out = FormatterStep.create(name + "Out", stateOut, state -> state::format);
+	}
+
+	public FormatterStep in() {
 		return in;
 	}
 
-	public String formatOut(String in) {
-		if (groups.isEmpty()) {
-			return in;
+	public FormatterStep out() {
+		return out;
+	}
+
+	static class StateIn implements Serializable {
+		private static final long serialVersionUID = -844178006407733370L;
+
+		final Pattern regex;
+
+		public StateIn(Pattern regex) {
+			this.regex = regex;
 		}
-		builder.setLength(0);
-		Matcher matcher = splitter.matcher(in);
-		int lastEnd = 0;
-		int groupIdx = 0;
-		while (matcher.find()) {
-			builder.append(in, lastEnd, matcher.start(1));
-			builder.append(groups.get(groupIdx));
-			lastEnd = matcher.end(1);
+
+		final transient ArrayList<String> groups = new ArrayList<>();
+
+		private String format(String unix) {
+			groups.clear();
+			Matcher matcher = regex.matcher(unix);
+			while (matcher.find()) {
+				groups.add(matcher.group(1));
+			}
+			return unix;
 		}
-		if (groupIdx < groups.size()) {
-			throw new Error("An intermediate step removed a '" + open + "' / '" + close + "' pair.");
+	}
+
+	static class StateOut implements Serializable {
+		private static final long serialVersionUID = -1195263184715054229L;
+
+		final StateIn in;
+
+		StateOut(StateIn in) {
+			this.in = in;
 		}
-		builder.append(in, lastEnd, in.length());
-		return builder.toString();
+
+		final transient StringBuilder builder = new StringBuilder();
+
+		private String format(String unix) {
+			if (in.groups.isEmpty()) {
+				return unix;
+			}
+			builder.setLength(0);
+			Matcher matcher = in.regex.matcher(unix);
+			int lastEnd = 0;
+			int groupIdx = 0;
+			while (matcher.find()) {
+				builder.append(unix, lastEnd, matcher.start(1));
+				builder.append(in.groups.get(groupIdx));
+				lastEnd = matcher.end(1);
+			}
+			if (groupIdx < in.groups.size()) {
+				throw new Error("An intermediate step removed a match of '" + in.regex + "' pair.");
+			}
+			builder.append(unix, lastEnd, unix.length());
+			return builder.toString();
+		}
 	}
 }
