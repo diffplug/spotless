@@ -11,6 +11,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Fixed
+* We now run all tests against JDK 8, JDK 11, and also JDK 14 ([#684](https://github.com/diffplug/spotless/pull/684)).
 * We had test files in `testlib/src/main/resources` named `module-info.java` and `package-info.java`. They cause problems for the Eclipse IDE trying to interpret them literally. Added `.test` suffix to the filenames so that eclipse doesn't barf on them anymore ([#683](https://github.com/diffplug/spotless/pull/683)).
 
 ## [2.4.0] - 2020-08-29
