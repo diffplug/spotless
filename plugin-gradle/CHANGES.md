@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Fixed
+* We did not proactively check to ensure that the Gradle version was modern enough, now we do (fixes [#684](https://github.com/diffplug/spotless/pull/684)).
 
 ## [5.3.0] - 2020-08-29
 ### Added

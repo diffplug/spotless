@@ -38,7 +38,7 @@ import com.diffplug.spotless.ResourceHarness;
 
 public class GradleIntegrationHarness extends ResourceHarness {
 	public enum GradleVersionSupport {
-		MINIMUM(SpotlessPlugin.MINIMUM_GRADLE), SETTINGS_PLUGINS("6.0");
+		JRE_11("5.0"), MINIMUM(SpotlessPlugin.MINIMUM_GRADLE), SETTINGS_PLUGINS("6.0");
 
 		final String version;
 
