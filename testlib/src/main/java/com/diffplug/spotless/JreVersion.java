@@ -15,22 +15,32 @@
  */
 package com.diffplug.spotless;
 
+import java.util.function.IntPredicate;
+
 import com.diffplug.common.base.StandardSystemProperty;
 
-public enum JreVersion {
-	_8, _11;
+public class JreVersion {
+	private JreVersion() {}
 
-	public static JreVersion thisVm() {
+	/** Returns the major version of this VM, e.g. 8, 9, 10, 11, 13, etc. */
+	public static int thisVm() {
 		String jvmVersion = StandardSystemProperty.JAVA_VERSION.value();
 		if (jvmVersion.startsWith("1.8.")) {
-			return _8;
-		} else if (jvmVersion.startsWith("11.")) {
-			return _11;
+			return 8;
 		} else {
-			int version = Integer.parseInt(jvmVersion.substring(0, jvmVersion.indexOf('.')));
-			JreVersion result = version > 11 ? _11 : _8;
-			System.err.println("WARNING: Only JRE 8 and 11 are officially supported, pretending unsupported version " + jvmVersion + " is JDK" + result.name());
-			return result;
+			return Integer.parseInt(jvmVersion.substring(0, jvmVersion.indexOf('.')));
 		}
+	}
+
+	private static void assume(IntPredicate versionTest) {
+		org.junit.Assume.assumeTrue(versionTest.test(thisVm()));
+	}
+
+	public static void assume11OrGreater() {
+		assume(v -> v >= 11);
+	}
+
+	public static void assume11OrLess() {
+		assume(v -> v <= 11);
 	}
 }

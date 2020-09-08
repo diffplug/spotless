@@ -75,10 +75,19 @@ jobs:
     <<: *env_gradle_large
     <<: *test_nomaven
   test_nomaven_11:
+    # latest LTS version
     <<: *env_gradle_large
     docker:
       - image: cimg/openjdk:11.0
     environment: # java 11 does play nice with containers, doesn't need special settings
+      _JAVA_OPTIONS: ""
+    <<: *test_nomaven
+  test_nomaven_14:
+    # latest JDK, replace with 15 when it comes out
+    <<: *env_gradle_large
+    docker:
+      - image: cimg/openjdk:14.0
+    environment: # java 14 does play nice with containers, doesn't need special settings
       _JAVA_OPTIONS: ""
     <<: *test_nomaven
   test_justmaven_8:
@@ -207,6 +216,9 @@ workflows:
           requires:
             - assemble_testClasses
       - test_nomaven_11:
+          requires:
+            - assemble_testClasses
+      - test_nomaven_14:
           requires:
             - assemble_testClasses
       - test_npm_8:

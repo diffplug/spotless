@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,8 @@ import com.diffplug.spotless.*;
 public class KtfmtStepTest extends ResourceHarness {
 	@Test
 	public void behavior() throws Exception {
-		if (JreVersion.thisVm() == JreVersion._8) {
-			// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
-			return;
-		}
+		// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
+		JreVersion.assume11OrGreater();
 		FormatterStep step = KtfmtStep.create(TestProvisioner.mavenCentral());
 		StepHarness.forStep(step).testResource("kotlin/ktfmt/basic.dirty", "kotlin/ktfmt/basic.clean");
 	}

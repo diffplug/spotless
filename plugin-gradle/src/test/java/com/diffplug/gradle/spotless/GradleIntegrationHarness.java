@@ -34,6 +34,7 @@ import com.diffplug.common.base.StringPrinter;
 import com.diffplug.common.tree.TreeDef;
 import com.diffplug.common.tree.TreeStream;
 import com.diffplug.spotless.FileSignature;
+import com.diffplug.spotless.JreVersion;
 import com.diffplug.spotless.ResourceHarness;
 
 public class GradleIntegrationHarness extends ResourceHarness {
@@ -43,7 +44,12 @@ public class GradleIntegrationHarness extends ResourceHarness {
 		final String version;
 
 		GradleVersionSupport(String version) {
-			this.version = version;
+			if (JreVersion.thisVm() >= 14) {
+				// the first version with support for Java 14+
+				this.version = "6.3";
+			} else {
+				this.version = version;
+			}
 		}
 	}
 

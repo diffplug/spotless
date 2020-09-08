@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,8 +64,12 @@ public abstract class EclipseCommonTests extends ResourceHarness {
 	/** Create formatter step for a specific version */
 	protected abstract FormatterStep createStep(String version);
 
+	/** Called before the test, so that clients may call {@link org.junit.Assume}. */
+	protected void makeAssumptions() {}
+
 	@Test
 	public void testSupportedVersions() throws Exception {
+		makeAssumptions();
 		String[] versions = getSupportedVersions();
 		for (String version : versions) {
 			String input = getTestInput(version);
