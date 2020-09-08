@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* `<googleJavaFormat>` default version is now `1.9` on JDK 11+, while continuing to be `1.7` on earlier JDKs. This is especially helpful to `<removeUnusedImports />`, since it always uses the default version of GJF (fixes [#681](https://github.com/diffplug/spotless/issues/681)).
 
 ## [2.1.0] - 2020-08-29
 ### Added
