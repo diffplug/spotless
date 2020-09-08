@@ -38,7 +38,7 @@ public class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 	private void testInDirectory(final String directory) throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'nebula.kotlin' version '1.0.6'",
+				"    id 'nebula.kotlin' version '1.3.72'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
@@ -61,7 +61,7 @@ public class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 	public void integration_default() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'nebula.kotlin' version '1.0.6'",
+				"    id 'nebula.kotlin' version '1.3.72'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
@@ -79,7 +79,7 @@ public class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 	public void integration_pinterest() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'nebula.kotlin' version '1.0.6'",
+				"    id 'nebula.kotlin' version '1.3.72'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
@@ -97,7 +97,7 @@ public class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 	public void indentStep() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'nebula.kotlin' version '1.0.6'",
+				"    id 'nebula.kotlin' version '1.3.72'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
@@ -113,13 +113,11 @@ public class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 
 	@Test
 	public void integration_ktfmt() throws IOException {
-		if (JreVersion.thisVm() == JreVersion._8) {
-			// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
-			return;
-		}
+		// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
+		JreVersion.assume11OrGreater();
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'nebula.kotlin' version '1.0.6'",
+				"    id 'nebula.kotlin' version '1.3.72'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
@@ -135,13 +133,11 @@ public class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 
 	@Test
 	public void integration_ktfmt_with_dropbox_style() throws IOException {
-		if (JreVersion.thisVm() == JreVersion._8) {
-			// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
-			return;
-		}
+		// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
+		JreVersion.assume11OrGreater();
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'nebula.kotlin' version '1.0.6'",
+				"    id 'nebula.kotlin' version '1.3.72'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
@@ -159,7 +155,7 @@ public class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 	public void integration_lint_script_files_without_top_level_declaration() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'nebula.kotlin' version '1.0.6'",
+				"    id 'nebula.kotlin' version '1.3.72'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
