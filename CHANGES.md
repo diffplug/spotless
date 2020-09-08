@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* `GoogleJavaFormatStep.defaultVersion()` now returns `1.9` on JDK 11+, while continuing to return `1.7` on earlier JDKs. This is especially helpful to `RemoveUnusedImportsStep`, since it always uses the default version of GJF (fixes [#681](https://github.com/diffplug/spotless/issues/681)).
 ### Fixed
 * We now run all tests against JDK 8, JDK 11, and also JDK 14 ([#684](https://github.com/diffplug/spotless/pull/684)).
 * We had test files in `testlib/src/main/resources` named `module-info.java` and `package-info.java`. They cause problems for the Eclipse IDE trying to interpret them literally. Added `.test` suffix to the filenames so that eclipse doesn't barf on them anymore ([#683](https://github.com/diffplug/spotless/pull/683)).
