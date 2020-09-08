@@ -141,11 +141,11 @@ public class LicenseHeaderTest extends MavenIntegrationHarness {
 				"</licenseHeader>");
 
 		String path = "src/main/java/com/diffplug/spotless/" + file;
-		setFile(path).toResource("license/" + file);
+		setFile(path).toResource("license/" + file + ".test");
 
 		mavenRunner().withArguments("spotless:apply").runNoError();
 
 		// file should remain the same
-		assertFile(path).sameAsResource("license/" + file);
+		assertFile(path).sameAsResource("license/" + file + ".test");
 	}
 }

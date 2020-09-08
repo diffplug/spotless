@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+* We had test files in `testlib/src/main/resources` named `module-info.java` and `package-info.java`. They cause problems for the Eclipse IDE trying to interpret them literally. Added `.test` suffix to the filenames so that eclipse doesn't barf on them anymore ([#683](https://github.com/diffplug/spotless/pull/683)).
 
 ## [2.4.0] - 2020-08-29
 ### Added
