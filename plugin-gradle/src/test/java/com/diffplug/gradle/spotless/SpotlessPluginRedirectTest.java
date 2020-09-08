@@ -24,7 +24,7 @@ import com.diffplug.common.base.StringPrinter;
 
 public class SpotlessPluginRedirectTest extends GradleIntegrationHarness {
 	@Test
-	public void test() throws IOException {
+	public void redirectPluginModernGradle() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",
@@ -34,6 +34,34 @@ public class SpotlessPluginRedirectTest extends GradleIntegrationHarness {
 						"> Failed to apply plugin [id 'com.diffplug.gradle.spotless']",
 						"   > We have moved from 'com.diffplug.gradle.spotless'",
 						"                     to 'com.diffplug.spotless'",
-						"     To migrate:"));
+						"     To migrate:",
+						"     - Test your build with: id 'com.diffplug.gradle.spotless' version '4.5.1'"));
+	}
+
+	@Test
+	public void redirectPluginOldGradle() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.gradle.spotless'",
+				"}");
+		Assertions.assertThat(gradleRunner().withGradleVersion("2.14").buildAndFail().getOutput().replace("\r", ""))
+				.contains(StringPrinter.buildStringFromLines(
+						"> Failed to apply plugin [id 'com.diffplug.gradle.spotless']",
+						"   > We have moved from 'com.diffplug.gradle.spotless'",
+						"                     to 'com.diffplug.spotless'",
+						"     To migrate:",
+						"     - Upgrade gradle to 5.4 or newer (you're on 2.14)",
+						"     - Test your build with: id 'com.diffplug.gradle.spotless' version '4.5.1'"));
+	}
+
+	@Test
+	public void realPluginOldGradle() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}");
+		Assertions.assertThat(gradleRunner().withGradleVersion("2.14").buildAndFail().getOutput().replace("\r", ""))
+				.contains(StringPrinter.buildStringFromLines(
+						"Spotless requires Gradle 5.4 or newer, this was 2.14"));
 	}
 }
