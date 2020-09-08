@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,10 +29,7 @@ import com.diffplug.spotless.TestProvisioner;
 public class GoogleJavaFormatStepTest extends ResourceHarness {
 	@Test
 	public void behavior18() throws Exception {
-		if (JreVersion.thisVm() == JreVersion._8) {
-			// google-java-format requires JRE 11+
-			return;
-		}
+		JreVersion.assume11OrGreater();
 		FormatterStep step = GoogleJavaFormatStep.create("1.8", TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("java/googlejavaformat/JavaCodeUnformatted.test", "java/googlejavaformat/JavaCodeFormatted18.test")

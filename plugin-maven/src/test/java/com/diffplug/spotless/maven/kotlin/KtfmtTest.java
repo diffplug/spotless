@@ -23,10 +23,8 @@ import com.diffplug.spotless.maven.MavenIntegrationHarness;
 public class KtfmtTest extends MavenIntegrationHarness {
 	@Test
 	public void testKtfmt() throws Exception {
-		if (JreVersion.thisVm() == JreVersion._8) {
-			// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
-			return;
-		}
+		// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
+		JreVersion.assume11OrGreater();
 
 		writePomWithKotlinSteps("<ktfmt/>");
 
