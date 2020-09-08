@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package com.diffplug.spotless.extra.groovy;
 
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.JreVersion;
 import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.eclipse.EclipseCommonTests;
@@ -34,6 +35,30 @@ public class GrEclipseFormatterStepTest extends EclipseCommonTests {
 	@Override
 	protected String getTestExpectation(String version) {
 		return "class F{\n\tdef m(){}\n}";
+	}
+
+	@Override
+	protected void makeAssumptions() {
+		// JRE 11 warns like this:
+		//		WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+		//		WARNING: All illegal access operations will be denied in a future release
+		// And after that it fails like this:
+		//		Caused by: java.lang.NoClassDefFoundError: Could not initialize class org.codehaus.groovy.vmplugin.v7.Java7
+		//		at org.codehaus.groovy.vmplugin.VMPluginFactory.<clinit>(VMPluginFactory.java:39)
+		//		at org.codehaus.groovy.ast.ClassHelper.makeCached(ClassHelper.java:133)
+		//		at org.codehaus.groovy.ast.ClassHelper.<clinit>(ClassHelper.java:67)
+		//		at org.codehaus.groovy.classgen.Verifier.<clinit>(Verifier.java:113)
+		//		at org.codehaus.groovy.control.CompilationUnit.<init>(CompilationUnit.java:158)
+		//		at org.codehaus.jdt.groovy.internal.compiler.ast.GroovyParser.makeCompilationUnit(GroovyParser.java:467)
+		//		at org.codehaus.jdt.groovy.internal.compiler.ast.GroovyParser.<init>(GroovyParser.java:247)
+		//		at org.codehaus.jdt.groovy.internal.compiler.ast.GroovyParser.<init>(GroovyParser.java:216)
+		//		at org.codehaus.groovy.eclipse.core.compiler.GroovySnippetParser.dietParse(GroovySnippetParser.java:105)
+		//		at org.codehaus.groovy.eclipse.core.compiler.GroovySnippetParser.parse(GroovySnippetParser.java:69)
+		//		at org.codehaus.groovy.eclipse.refactoring.core.utils.ASTTools.getASTNodeFromSource(ASTTools.java:204)
+		//		at org.codehaus.groovy.eclipse.refactoring.formatter.DefaultGroovyFormatter.initCodebase(DefaultGroovyFormatter.java:109)
+		//		at org.codehaus.groovy.eclipse.refactoring.formatter.DefaultGroovyFormatter.format(DefaultGroovyFormatter.java:121)
+		//		at com.diffplug.spotless.extra.eclipse.groovy.GrEclipseFormatterStepImpl.format(GrEclipseFormatterStepImpl.java:81)
+		JreVersion.assume11OrLess();
 	}
 
 	@Override
