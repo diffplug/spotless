@@ -28,11 +28,10 @@ import org.junit.Test;
 import com.diffplug.common.base.CharMatcher;
 import com.diffplug.common.base.Splitter;
 import com.diffplug.common.base.StringPrinter;
-import com.diffplug.spotless.JreVersion;
 import com.diffplug.spotless.LineEnding;
 
 /** Tests the desired behavior from https://github.com/diffplug/spotless/issues/46. */
-public class ErrorShouldRethrowJre8Test extends GradleIntegrationHarness {
+public class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 	private void writeBuild(String... toInsert) throws IOException {
 		List<String> lines = new ArrayList<>();
 		lines.add("plugins {");
@@ -68,9 +67,10 @@ public class ErrorShouldRethrowJre8Test extends GradleIntegrationHarness {
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
 		runWithFailure(
-				"> Task :spotlessMisc FAILED",
-				"Step 'no swearing' found problem in 'README.md':",
-				"No swearing!");
+				"> Task :spotlessMisc FAILED\n" +
+						"Step 'no swearing' found problem in 'README.md':\n" +
+						"No swearing!\n" +
+						"java.lang.RuntimeException: No swearing!\n");
 	}
 
 	@Test
@@ -90,7 +90,7 @@ public class ErrorShouldRethrowJre8Test extends GradleIntegrationHarness {
 				"    } // format",
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
-		runWithSuccess("> Task :spotlessMisc",
+		runWithSuccess("> Task :spotlessMisc\n" +
 				"Unable to apply step 'no swearing' to 'README.md'");
 	}
 
@@ -113,25 +113,19 @@ public class ErrorShouldRethrowJre8Test extends GradleIntegrationHarness {
 				"    } // format",
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
-		runWithFailure(
-				"> Task :spotlessMisc FAILED",
-				"Step 'no swearing' found problem in 'README.md':",
-				"No swearing!");
+		runWithFailure("> Task :spotlessMisc FAILED\n" +
+				"Step 'no swearing' found problem in 'README.md':\n" +
+				"No swearing!\n" +
+				"java.lang.RuntimeException: No swearing!\n");
 	}
 
 	private void runWithSuccess(String... messages) throws Exception {
-		if (JreVersion.thisVm() != JreVersion._8) {
-			return;
-		}
-		BuildResult result = gradleRunner().withGradleVersion(GradleVersionSupport.MINIMUM.version).withArguments("check").build();
+		BuildResult result = gradleRunner().withArguments("check").build();
 		assertResultAndMessages(result, TaskOutcome.SUCCESS, messages);
 	}
 
 	private void runWithFailure(String... messages) throws Exception {
-		if (JreVersion.thisVm() != JreVersion._8) {
-			return;
-		}
-		BuildResult result = gradleRunner().withGradleVersion(GradleVersionSupport.MINIMUM.version).withArguments("check").buildAndFail();
+		BuildResult result = gradleRunner().withArguments("check").buildAndFail();
 		assertResultAndMessages(result, TaskOutcome.FAILED, messages);
 	}
 
@@ -141,9 +135,6 @@ public class ErrorShouldRethrowJre8Test extends GradleIntegrationHarness {
 		List<String> actualLines = Splitter.on('\n').splitToList(LineEnding.toUnix(result.getOutput().trim()));
 		String actualStart = String.join("\n", actualLines.subList(0, numNewlines + 1));
 		Assertions.assertThat(actualStart).isEqualTo(expectedToStartWith);
-		//		result.getTasks()
-		//		.stream()
-		//		.forEach(task -> System.out.println("task " + task.getPath() + " " + task.getOutcome()));
 		Assertions.assertThat(result.tasks(outcome).size() + result.tasks(TaskOutcome.UP_TO_DATE).size() + result.tasks(TaskOutcome.NO_SOURCE).size())
 				.isEqualTo(result.getTasks().size());
 	}
