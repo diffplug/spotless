@@ -21,6 +21,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import com.diffplug.common.base.StringPrinter;
+import com.diffplug.spotless.JreVersion;
 
 public class SpotlessPluginRedirectTest extends GradleIntegrationHarness {
 	@Test
@@ -40,6 +41,7 @@ public class SpotlessPluginRedirectTest extends GradleIntegrationHarness {
 
 	@Test
 	public void redirectPluginOldGradle() throws IOException {
+		JreVersion.assume11OrLess();
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",
@@ -57,6 +59,7 @@ public class SpotlessPluginRedirectTest extends GradleIntegrationHarness {
 
 	@Test
 	public void realPluginOldGradle() throws IOException {
+		JreVersion.assume11OrLess();
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
