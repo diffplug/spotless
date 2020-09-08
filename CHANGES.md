@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.5.0] - 2020-09-08
 ### Added
 * `GoogleJavaFormatStep.defaultVersion()` now returns `1.9` on JDK 11+, while continuing to return `1.7` on earlier JDKs. This is especially helpful to `RemoveUnusedImportsStep`, since it always uses the default version of GJF (fixes [#681](https://github.com/diffplug/spotless/issues/681)).
 ### Fixed
