@@ -34,6 +34,17 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 	private static final String HEADER_WITH_$YEAR = "This is a fake license, $YEAR. ACME corp.";
 
 	@Test
+	public void parseExistingYear() throws Exception {
+		StepHarness.forStep(LicenseHeaderStep.headerDelimiter(header(HEADER_WITH_$YEAR), package_).build())
+				// has existing
+				.test(hasHeader("This is a fake license, 2007. ACME corp."), hasHeader("This is a fake license, 2007. ACME corp."))
+				// if prefix changes, the year will get set to today
+				.test(hasHeader("This is a license, 2007. ACME corp."), hasHeader("This is a fake license, " + currentYear() + ". ACME corp."))
+				// if suffix changes, the year will get set to today
+				.test(hasHeader("This is a fake license, 2007. Other corp."), hasHeader("This is a fake license, " + currentYear() + ". ACME corp."));
+	}
+
+	@Test
 	public void fromHeader() throws Throwable {
 		FormatterStep step = LicenseHeaderStep.headerDelimiter(getTestResource("license/TestLicense"), package_).build();
 		StepHarness.forStep(step)
