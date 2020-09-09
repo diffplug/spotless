@@ -39,9 +39,9 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 				// has existing
 				.test(hasHeader("This is a fake license, 2007. ACME corp."), hasHeader("This is a fake license, 2007. ACME corp."))
 				// if prefix changes, the year will get set to today
-				.test(hasHeader("This is a license, 2007. ACME corp."), hasHeader("This is a fake license, " + currentYear() + ". ACME corp."))
+				.test(hasHeader("This is a license, 2007. ACME corp."), hasHeader("This is a fake license, 2007. ACME corp."))
 				// if suffix changes, the year will get set to today
-				.test(hasHeader("This is a fake license, 2007. Other corp."), hasHeader("This is a fake license, " + currentYear() + ". ACME corp."));
+				.test(hasHeader("This is a fake license, 2007. Other corp."), hasHeader("This is a fake license, 2007. ACME corp."));
 	}
 
 	@Test
@@ -58,7 +58,7 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 				.testUnaffected(hasHeaderYear(currentYear()))
 				.testUnaffected(hasHeaderYear("2003"))
 				.testUnaffected(hasHeaderYear("1990-2015"))
-				.test(hasHeaderYear("Something before license.*/\n/* \n * " + HEADER_WITH_$YEAR, "2003"), hasHeaderYear(currentYear()))
+				.test(hasHeaderYear("Something before license.*/\n/* \n * " + HEADER_WITH_$YEAR, "2003"), hasHeaderYear("2003"))
 				.test(hasHeaderYear(HEADER_WITH_$YEAR + "\n **/\n/* Something after license.", "2003"), hasHeaderYear("2003"))
 				.test(hasHeaderYear("not a year"), hasHeaderYear(currentYear()));
 		// Check with variant

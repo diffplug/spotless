@@ -227,8 +227,9 @@ public final class LicenseHeaderStep {
 						}
 						return beforeYear + newYear + afterYear + content;
 					} else {
+						String newYear = calculateYearBySearching(raw.substring(0, contentMatcher.start()));
 						// at worst, we just say that it was made today
-						return beforeYear + yearToday + afterYear + content;
+						return beforeYear + newYear + afterYear + content;
 					}
 				}
 			}
