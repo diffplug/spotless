@@ -47,7 +47,7 @@ public class PipeStepPair {
 
 		/** Defines the opening and closing markers. */
 		public Builder openClose(String open, String close) {
-			return regex(Pattern.quote(open) + "([.\\n]*?)" + Pattern.quote(close));
+			return regex(Pattern.quote(open) + "([\\s\\S]*?)" + Pattern.quote(close));
 		}
 
 		/** Defines the pipe via regex. Must have *exactly one* capturing group. */
@@ -127,9 +127,18 @@ public class PipeStepPair {
 				builder.append(unix, lastEnd, matcher.start(1));
 				builder.append(in.groups.get(groupIdx));
 				lastEnd = matcher.end(1);
+				++groupIdx;
 			}
 			if (groupIdx < in.groups.size()) {
-				throw new Error("An intermediate step removed a match of '" + in.regex + "' pair.");
+				Matcher openClose = Pattern.compile("\\\\Q([\\s\\S]*?)\\\\E" + "\\Q([\\s\\S]*?)\\E" + "\\\\Q([\\s\\S]*?)\\\\E")
+						.matcher(in.regex.pattern());
+				String pattern;
+				if (openClose.matches()) {
+					pattern = openClose.group(1) + " " + openClose.group(2);
+				} else {
+					pattern = in.regex.pattern();
+				}
+				throw new Error("An intermediate step removed a match of " + pattern);
 			}
 			builder.append(unix, lastEnd, unix.length());
 			return builder.toString();
