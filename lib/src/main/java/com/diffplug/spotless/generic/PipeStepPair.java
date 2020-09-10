@@ -23,10 +23,18 @@ import java.util.regex.Pattern;
 
 import com.diffplug.spotless.FormatterStep;
 
-public class PipeStep {
+public class PipeStepPair {
 	/** The two steps will be named `<name>In` and `<name>Out`. */
 	public static Builder named(String name) {
 		return new Builder(name);
+	}
+
+	public static String defaultToggleOff() {
+		return "spotless:off";
+	}
+
+	public static String defaultToggleOn() {
+		return "spotless:on";
 	}
 
 	public static class Builder {
@@ -53,14 +61,14 @@ public class PipeStep {
 			return this;
 		}
 
-		public PipeStep buildPair() {
-			return new PipeStep(name, regex);
+		public PipeStepPair buildPair() {
+			return new PipeStepPair(name, regex);
 		}
 	}
 
 	final FormatterStep in, out;
 
-	private PipeStep(String name, Pattern pattern) {
+	private PipeStepPair(String name, Pattern pattern) {
 		StateIn stateIn = new StateIn(pattern);
 		StateOut stateOut = new StateOut(stateIn);
 		in = FormatterStep.create(name + "In", stateIn, state -> state::format);

@@ -53,6 +53,7 @@ import com.diffplug.spotless.generic.EndWithNewlineStep;
 import com.diffplug.spotless.generic.IndentStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep.YearMode;
+import com.diffplug.spotless.generic.PipeStepPair;
 import com.diffplug.spotless.generic.ReplaceRegexStep;
 import com.diffplug.spotless.generic.ReplaceStep;
 import com.diffplug.spotless.generic.TrimTrailingWhitespaceStep;
@@ -623,12 +624,38 @@ public class FormatExtension {
 		return new EclipseWtpConfig(type, version);
 	}
 
+	private @Nullable String toggleOff, toggleOn;
+
+	public void toggleOffOn(String off, String on) {
+		this.toggleOff = Objects.requireNonNull(off);
+		this.toggleOn = Objects.requireNonNull(on);
+	}
+
+	public void toggleOffOn() {
+		toggleOffOn(PipeStepPair.defaultToggleOff(), PipeStepPair.defaultToggleOn());
+	}
+
+	public void toggleOffOnDisable() {
+		this.toggleOff = null;
+		this.toggleOn = null;
+	}
+
 	/** Sets up a format task according to the values in this extension. */
 	protected void setupTask(SpotlessTask task) {
 		task.setEncoding(getEncoding().name());
 		task.setExceptionPolicy(exceptionPolicy);
 		FileCollection totalTarget = targetExclude == null ? target : target.minus(targetExclude);
 		task.setTarget(totalTarget);
+		List<FormatterStep> steps;
+		if (toggleOff != null) {
+			steps = new ArrayList<>(this.steps.size() + 2);
+			PipeStepPair pair = PipeStepPair.named("toggle").openClose(toggleOff, toggleOn).buildPair();
+			steps.add(pair.in());
+			steps.addAll(this.steps);
+			steps.add(pair.out());
+		} else {
+			steps = this.steps;
+		}
 		task.setSteps(steps);
 		task.setLineEndingsPolicy(getLineEndings().createPolicy(getProject().getProjectDir(), () -> totalTarget));
 		if (spotless.project != spotless.project.getRootProject()) {

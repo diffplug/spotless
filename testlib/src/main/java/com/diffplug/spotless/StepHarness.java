@@ -16,6 +16,9 @@
 package com.diffplug.spotless;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -33,16 +36,17 @@ public class StepHarness implements AutoCloseable {
 
 	/** Creates a harness for testing steps which don't depend on the file. */
 	public static StepHarness forStep(FormatterStep step) {
-		// We don't care if an individual FormatterStep is misbehaving on line-endings, because
-		// Formatter fixes that.  No reason to care in tests either.  It's likely to pop up when
-		// running tests on Windows from time-to-time
-		return new StepHarness(FormatterFunc.Closeable.ofDangerous(
-				() -> {
-					if (step instanceof FormatterStepImpl.Standard) {
-						((FormatterStepImpl.Standard<?>) step).cleanupFormatterFunc();
-					}
-				},
-				input -> LineEnding.toUnix(step.format(input, new File("")))));
+		return forSteps(step);
+	}
+
+	/** Creates a harness for testing steps which don't depend on the file. */
+	public static StepHarness forSteps(FormatterStep... steps) {
+		return forFormatter(Formatter.builder()
+				.steps(Arrays.asList(steps))
+				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
+				.encoding(StandardCharsets.UTF_8)
+				.rootDir(Paths.get(""))
+				.build());
 	}
 
 	/** Creates a harness for testing a formatter whose steps don't depend on the file. */
