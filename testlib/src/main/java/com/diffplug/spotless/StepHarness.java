@@ -84,8 +84,12 @@ public class StepHarness implements AutoCloseable {
 	}
 
 	/** Asserts that the given elements in the resources directory are transformed as expected. */
-	public StepHarness testException(String resourceBefore, Consumer<AbstractThrowableAssert<?, ? extends Throwable>> exceptionAssertion) throws Exception {
-		String before = ResourceHarness.getTestResource(resourceBefore);
+	public StepHarness testResourceException(String resourceBefore, Consumer<AbstractThrowableAssert<?, ? extends Throwable>> exceptionAssertion) throws Exception {
+		return testException(ResourceHarness.getTestResource(resourceBefore), exceptionAssertion);
+	}
+
+	/** Asserts that the given elements in the resources directory are transformed as expected. */
+	public StepHarness testException(String before, Consumer<AbstractThrowableAssert<?, ? extends Throwable>> exceptionAssertion) throws Exception {
 		try {
 			formatter.apply(before);
 			Assert.fail();

@@ -38,7 +38,7 @@ public class KtLintStepTest extends ResourceHarness {
 		FormatterStep step = KtLintStep.create(TestProvisioner.jcenter());
 		StepHarness.forStep(step)
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
-				.testException("kotlin/ktlint/unsolvable.dirty", assertion -> {
+				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
 					assertion.isInstanceOf(AssertionError.class);
 					assertion.hasMessage("Error on line: 1, column: 1\n" +
 							"Wildcard import");
@@ -52,7 +52,7 @@ public class KtLintStepTest extends ResourceHarness {
 		FormatterStep step = KtLintStep.create("0.31.0", TestProvisioner.jcenter());
 		StepHarness.forStep(step)
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
-				.testException("kotlin/ktlint/unsolvable.dirty", assertion -> {
+				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
 					assertion.isInstanceOf(AssertionError.class);
 					assertion.hasMessage("Error on line: 1, column: 1\n" +
 							"Wildcard import");
@@ -69,7 +69,7 @@ public class KtLintStepTest extends ResourceHarness {
 		FormatterStep step = KtLintStep.create("0.32.0", TestProvisioner.jcenter());
 		StepHarness.forStep(step)
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
-				.testException("kotlin/ktlint/unsolvable.dirty", assertion -> {
+				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
 					assertion.isInstanceOf(AssertionError.class);
 					assertion.hasMessage("Error on line: 1, column: 1\n" +
 							"Wildcard import");

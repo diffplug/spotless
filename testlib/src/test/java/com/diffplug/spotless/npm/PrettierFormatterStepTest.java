@@ -116,7 +116,7 @@ public class PrettierFormatterStepTest {
 					npmExecutable(),
 					new PrettierConfig(null, ImmutableMap.of("parser", "postcss")));
 			try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
-				stepHarness.testException("npm/prettier/filetypes/scss/scss.dirty", exception -> {
+				stepHarness.testResourceException("npm/prettier/filetypes/scss/scss.dirty", exception -> {
 					exception.hasMessageContaining("HTTP 501");
 					exception.hasMessageContaining("Couldn't resolve parser \"postcss\"");
 				});
