@@ -624,21 +624,24 @@ public class FormatExtension {
 		return new EclipseWtpConfig(type, version);
 	}
 
-	private @Nullable String toggleOff, toggleOn;
-
+	/** Disables formatting between the given tags. */
 	public void toggleOffOn(String off, String on) {
 		this.toggleOff = Objects.requireNonNull(off);
 		this.toggleOn = Objects.requireNonNull(on);
 	}
 
+	/** Disables formatting between `spotless:off` and `spotless:on`. */
 	public void toggleOffOn() {
 		toggleOffOn(PipeStepPair.defaultToggleOff(), PipeStepPair.defaultToggleOn());
 	}
 
+	/** Undoes all previous calls to {@link #toggleOffOn()} and {@link #toggleOffOn(String, String)}. */
 	public void toggleOffOnDisable() {
 		this.toggleOff = null;
 		this.toggleOn = null;
 	}
+
+	private @Nullable String toggleOff, toggleOn;
 
 	/** Sets up a format task according to the values in this extension. */
 	protected void setupTask(SpotlessTask task) {
