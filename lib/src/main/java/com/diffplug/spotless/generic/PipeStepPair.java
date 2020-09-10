@@ -23,6 +23,8 @@ import java.util.regex.Pattern;
 
 import com.diffplug.spotless.FormatterStep;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 public class PipeStepPair {
 	/** The two steps will be named `<name>In` and `<name>Out`. */
 	public static Builder named(String name) {
@@ -83,6 +85,7 @@ public class PipeStepPair {
 		return out;
 	}
 
+	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	static class StateIn implements Serializable {
 		private static final long serialVersionUID = -844178006407733370L;
 
@@ -104,6 +107,7 @@ public class PipeStepPair {
 		}
 	}
 
+	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	static class StateOut implements Serializable {
 		private static final long serialVersionUID = -1195263184715054229L;
 
