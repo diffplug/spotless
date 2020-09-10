@@ -181,8 +181,6 @@ public final class LicenseHeaderStep {
 			}
 		}
 
-		private static final Pattern patternYearSingle = Pattern.compile("[0-9]{4}");
-
 		/**
 		 * Get the first place holder token being used in the
 		 * license header for specifying the year
@@ -200,6 +198,7 @@ public final class LicenseHeaderStep {
 			if (!contentMatcher.find()) {
 				throw new IllegalArgumentException("Unable to find delimiter regex " + delimiterPattern);
 			} else {
+				String content = raw.substring(contentMatcher.start());
 				if (yearToday == null) {
 					// the no year case is easy
 					if (contentMatcher.start() == yearSepOrFull.length() && raw.startsWith(yearSepOrFull)) {
@@ -208,7 +207,7 @@ public final class LicenseHeaderStep {
 						return raw;
 					} else {
 						// otherwise we'll have to add the header
-						return yearSepOrFull + raw.substring(contentMatcher.start());
+						return yearSepOrFull + content;
 					}
 				} else {
 					// the yes year case is a bit harder
@@ -216,44 +215,62 @@ public final class LicenseHeaderStep {
 					int afterYearIdx = raw.indexOf(afterYear, beforeYearIdx + beforeYear.length() + 1);
 
 					if (beforeYearIdx >= 0 && afterYearIdx >= 0 && afterYearIdx + afterYear.length() <= contentMatcher.start()) {
-						boolean noPadding = beforeYearIdx == 0 && afterYearIdx + afterYear.length() == contentMatcher.start(); // allows fastpath return raw
-						String parsedYear = raw.substring(beforeYearIdx + beforeYear.length(), afterYearIdx);
-						if (parsedYear.equals(yearToday)) {
-							// it's good as is!
-							return noPadding ? raw : beforeYear + yearToday + afterYear + raw.substring(contentMatcher.start());
-						} else if (patternYearSingle.matcher(parsedYear).matches()) {
-							if (updateYearWithLatest) {
-								// expand from `2004` to `2004-2020`
-								return beforeYear + parsedYear + yearSepOrFull + yearToday + afterYear + raw.substring(contentMatcher.start());
-							} else {
-								// it's already good as a single year
-								return noPadding ? raw : beforeYear + parsedYear + afterYear + raw.substring(contentMatcher.start());
-							}
-						} else {
-							Matcher yearMatcher = patternYearSingle.matcher(parsedYear);
-							if (yearMatcher.find()) {
-								String firstYear = yearMatcher.group();
-								String newYear;
-								String secondYear;
-								if (updateYearWithLatest) {
-									secondYear = firstYear.equals(yearToday) ? null : yearToday;
-								} else if (yearMatcher.find(yearMatcher.end() + 1)) {
-									secondYear = yearMatcher.group();
-								} else {
-									secondYear = null;
-								}
-								if (secondYear == null) {
-									newYear = firstYear;
-								} else {
-									newYear = firstYear + yearSepOrFull + secondYear;
-								}
-								return noPadding && newYear.equals(parsedYear) ? raw : beforeYear + newYear + afterYear + raw.substring(contentMatcher.start());
+						// and also ends with exactly the right header, so it's easy to parse the existing year
+						String existingYear = raw.substring(beforeYearIdx + beforeYear.length(), afterYearIdx);
+						String newYear = calculateYearExact(existingYear);
+						if (existingYear.equals(newYear)) {
+							// fastpath where we don't need to make any changes at all
+							boolean noPadding = beforeYearIdx == 0 && afterYearIdx + afterYear.length() == contentMatcher.start(); // allows fastpath return raw
+							if (noPadding) {
+								return raw;
 							}
 						}
+						return beforeYear + newYear + afterYear + content;
+					} else {
+						String newYear = calculateYearBySearching(raw.substring(0, contentMatcher.start()));
+						// at worst, we just say that it was made today
+						return beforeYear + newYear + afterYear + content;
 					}
-					// at worst, we just say that it was made today
-					return beforeYear + yearToday + afterYear + raw.substring(contentMatcher.start());
 				}
+			}
+		}
+
+		private static final Pattern YYYY = Pattern.compile("[0-9]{4}");
+
+		/** Calculates the year to inject. */
+		private String calculateYearExact(String parsedYear) {
+			if (parsedYear.equals(yearToday)) {
+				return parsedYear;
+			} else if (YYYY.matcher(parsedYear).matches()) {
+				if (updateYearWithLatest) {
+					return parsedYear + yearSepOrFull + yearToday;
+				} else {
+					// it's already good as a single year
+					return parsedYear;
+				}
+			} else {
+				return calculateYearBySearching(parsedYear);
+			}
+		}
+
+		/** Searches the given string for YYYY, and uses that to determine the year range. */
+		private String calculateYearBySearching(String content) {
+			Matcher yearMatcher = YYYY.matcher(content);
+			if (yearMatcher.find()) {
+				String firstYear = yearMatcher.group();
+				String secondYear;
+				if (updateYearWithLatest) {
+					secondYear = firstYear.equals(yearToday) ? null : yearToday;
+				} else if (yearMatcher.find(yearMatcher.end() + 1)) {
+					secondYear = yearMatcher.group();
+				} else {
+					secondYear = null;
+				}
+				return secondYear == null ? firstYear : firstYear + yearSepOrFull + secondYear;
+			} else {
+				System.err.println("Can't parse copyright year '" + content + "', defaulting to " + yearToday);
+				// couldn't recognize the year format
+				return yearToday;
 			}
 		}
 
