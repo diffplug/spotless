@@ -59,7 +59,7 @@ user@machine repo % mvn spotless:check
   - [Generic steps](#generic-steps)
   - [License header](#license-header) ([slurp year from git](#retroactively-slurp-years-from-git-history))
   - [How can I enforce formatting gradually? (aka "ratchet")](#ratchet)
-  - [`spotless:off` and `spotless:on`](#TODO)
+  - [`spotless:off` and `spotless:on`](#spotlessoff-and-spotlesson)
   - [Line endings and encodings (invisible stuff)](#line-endings-and-encodings-invisible-stuff)
   - [Disabling warnings and error messages](#disabling-warnings-and-error-messages)
   - [How do I preview what `mvn spotless:apply` will do?](#how-do-i-preview-what-mvn-spotlessapply-will-do)

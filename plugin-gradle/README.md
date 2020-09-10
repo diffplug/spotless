@@ -78,7 +78,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
 - **Language independent**
   - [License header](#license-header) ([slurp year from git](#retroactively-slurp-years-from-git-history))
   - [How can I enforce formatting gradually? (aka "ratchet")](#ratchet)
-  - [`spotless:off` and `spotless:on`](#TODO)
+  - [`spotless:off` and `spotless:on`](#spotlessoff-and-spotlesson)
   - [Line endings and encodings (invisible stuff)](#line-endings-and-encodings-invisible-stuff)
   - [Custom steps](#custom-steps)
   - [Multiple (or custom) language-specific blocks](#multiple-or-custom-language-specific-blocks)
