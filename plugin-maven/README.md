@@ -666,7 +666,7 @@ Sometimes there is a chunk of code  which you have carefully handcrafted, and yo
     ...
 ```
 
-Then whenever Spotless encounters a pair of `spotless:off` / `spotless:on`, it will exclude that subsection of code from formatting. If you want, you can change the tags to be whatever you want, e.g. `<toggleOffOn><off>fmt:off</off><on>fmt:on</on></toggleOffOn>')`. If you change the default, [read this](TODO) for some gotchas.
+Then whenever Spotless encounters a pair of `spotless:off` / `spotless:on`, it will exclude that subsection of code from formatting. If you want, you can change the tags to be whatever you want, e.g. `<toggleOffOn><off>fmt:off</off><on>fmt:on</on></toggleOffOn>')`. If you change the default, [read this](https://github.com/diffplug/spotless/pull/691) for some gotchas.
 
 ## Line endings and encodings (invisible stuff)
 

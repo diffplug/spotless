@@ -705,7 +705,7 @@ spotless {
     toggleOffOn()
 ```
 
-Then whenever Spotless encounters a pair of `spotless:off` / `spotless:on`, it will exclude the code between them from formatting, regardless of all other rules. If you want, you can change the tags to be whatever you want, e.g. `toggleOffOn('fmt:off', 'fmt:on')`. If you decide to change the default, be sure to [read this](TODO) for some gotchas.
+Then whenever Spotless encounters a pair of `spotless:off` / `spotless:on`, it will exclude the code between them from formatting, regardless of all other rules. If you want, you can change the tags to be whatever you want, e.g. `toggleOffOn('fmt:off', 'fmt:on')`. If you decide to change the default, be sure to [read this](https://github.com/diffplug/spotless/pull/691) for some gotchas.
 
 <a name="invisible"></a>
 
