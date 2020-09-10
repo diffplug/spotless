@@ -32,7 +32,6 @@ public class GoogleJavaFormatStep {
 	// prevent direct instantiation
 	private GoogleJavaFormatStep() {}
 
-	private static final String DEFAULT_VERSION = "1.7";
 	private static final String DEFAULT_STYLE = "GOOGLE";
 	static final String NAME = "google-java-format";
 	static final String MAVEN_COORDINATE = "com.google.googlejavaformat:google-java-format:";
@@ -75,9 +74,24 @@ public class GoogleJavaFormatStep {
 				State::createFormat);
 	}
 
-	public static String defaultVersion() {
-		return DEFAULT_VERSION;
+	private static final int JRE_VERSION;
+
+	static {
+		String jre = System.getProperty("java.version");
+		if (jre.startsWith("1.8")) {
+			JRE_VERSION = 8;
+		} else {
+			JRE_VERSION = Integer.parseInt(jre.substring(0, jre.indexOf('.')));
+		}
 	}
+
+	/** On JRE 11+, returns `1.9`. On earlier JREs, returns `1.7`. */
+	public static String defaultVersion() {
+		return JRE_VERSION >= 11 ? LATEST_VERSION_JRE_11 : LATEST_VERSION_JRE_8;
+	}
+
+	private static final String LATEST_VERSION_JRE_8 = "1.7";
+	private static final String LATEST_VERSION_JRE_11 = "1.9";
 
 	public static String defaultStyle() {
 		return DEFAULT_STYLE;
@@ -130,20 +144,18 @@ public class GoogleJavaFormatStep {
 			Class<?> importOrdererClass = classLoader.loadClass(IMPORT_ORDERER_CLASS);
 			Method importOrdererMethod = importOrdererClass.getMethod(IMPORT_ORDERER_METHOD, String.class);
 
-			return input -> {
+			return suggestJre11(input -> {
 				String formatted = (String) formatterMethod.invoke(formatter, input);
 				String removedUnused = removeUnused.apply(formatted);
 				String sortedImports = (String) importOrdererMethod.invoke(null, removedUnused);
 				return fixWindowsBug(sortedImports, version);
-			};
+			});
 		}
 
 		FormatterFunc createRemoveUnusedImportsOnly() throws Exception {
 			ClassLoader classLoader = jarState.getClassLoader();
-
 			Function<String, String> removeUnused = constructRemoveUnusedFunction(classLoader);
-
-			return input -> fixWindowsBug(removeUnused.apply(input), version);
+			return suggestJre11(input -> fixWindowsBug(removeUnused.apply(input), version));
 		}
 
 		private static Function<String, String> constructRemoveUnusedFunction(ClassLoader classLoader)
@@ -203,5 +215,20 @@ public class GoogleJavaFormatStep {
 			}
 		}
 		return input;
+	}
+
+	private static FormatterFunc suggestJre11(FormatterFunc in) {
+		if (JRE_VERSION >= 11) {
+			return in;
+		} else {
+			return unixIn -> {
+				try {
+					return in.apply(unixIn);
+				} catch (Exception e) {
+					throw new Exception("You are running Spotless on JRE " + JRE_VERSION + ", which limits you to google-java-format " + LATEST_VERSION_JRE_8 + "\n"
+							+ "If you upgrade your build JVM to 11+, then you can use google-java-format " + LATEST_VERSION_JRE_11 + ", which may have fixed this problem.", e);
+				}
+			};
+		}
 	}
 }

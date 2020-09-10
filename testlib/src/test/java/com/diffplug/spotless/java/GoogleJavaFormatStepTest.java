@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.java;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -28,11 +30,30 @@ import com.diffplug.spotless.TestProvisioner;
 
 public class GoogleJavaFormatStepTest extends ResourceHarness {
 	@Test
-	public void behavior18() throws Exception {
-		if (JreVersion.thisVm() == JreVersion._8) {
-			// google-java-format requires JRE 11+
-			return;
+	public void suggestJre11() throws Exception {
+		try (StepHarness step = StepHarness.forStep(GoogleJavaFormatStep.create(TestProvisioner.mavenCentral()))) {
+			if (JreVersion.thisVm() < 11) {
+				step.testException("java/googlejavaformat/TextBlock.dirty", throwable -> {
+					throwable.hasMessageStartingWith("You are running Spotless on JRE 8")
+							.hasMessageEndingWith(", which limits you to google-java-format 1.7\n"
+									+ "If you upgrade your build JVM to 11+, then you can use google-java-format 1.9, which may have fixed this problem.");
+				});
+			} else if (JreVersion.thisVm() < 13) {
+				step.testException("java/googlejavaformat/TextBlock.dirty", throwable -> {
+					throwable.isInstanceOf(InvocationTargetException.class)
+							.extracting(exception -> exception.getCause().getMessage()).asString().contains("7:18: error: unclosed string literal");
+				});
+			} else {
+				// JreVersion.thisVm() >= 13
+				step.testResource("java/googlejavaformat/TextBlock.dirty", "java/googlejavaformat/TextBlock.clean");
+			}
 		}
+	}
+
+	@Test
+	public void behavior18() throws Exception {
+		// google-java-format requires JRE 11+
+		JreVersion.assume11OrGreater();
 		FormatterStep step = GoogleJavaFormatStep.create("1.8", TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("java/googlejavaformat/JavaCodeUnformatted.test", "java/googlejavaformat/JavaCodeFormatted18.test")

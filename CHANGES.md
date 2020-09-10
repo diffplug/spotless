@@ -11,6 +11,19 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+## [2.5.0] - 2020-09-08
+### Added
+* `GoogleJavaFormatStep.defaultVersion()` now returns `1.9` on JDK 11+, while continuing to return `1.7` on earlier JDKs. This is especially helpful to `RemoveUnusedImportsStep`, since it always uses the default version of GJF (fixes [#681](https://github.com/diffplug/spotless/issues/681)).
+### Fixed
+* We now run all tests against JDK 8, JDK 11, and also JDK 14 ([#684](https://github.com/diffplug/spotless/pull/684)).
+* We had test files in `testlib/src/main/resources` named `module-info.java` and `package-info.java`. They cause problems for the Eclipse IDE trying to interpret them literally. Added `.test` suffix to the filenames so that eclipse doesn't barf on them anymore ([#683](https://github.com/diffplug/spotless/pull/683)).
+
+## [2.4.0] - 2020-08-29
+### Added
+* Added support for  eclipse-jdt 4.14.0, 4.15.0 and 4.16.0 ([#678](https://github.com/diffplug/spotless/pull/678)).
+### Changed
+* Updated default eclipse-jdt from 4.13.0 to 4.16.0 ([#678](https://github.com/diffplug/spotless/pull/678)).
+
 ## [2.3.0] - 2020-08-25
 ### Added
 * The ability to shell out to formatters with their own executables. ([#672](https://github.com/diffplug/spotless/pull/672))

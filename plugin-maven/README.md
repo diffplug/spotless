@@ -12,8 +12,8 @@ output = [
   ].join('\n');
 -->
 [![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
-[![Javadoc](https://img.shields.io/badge/javadoc-yes-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.0.3/index.html)
-[![Changelog](https://img.shields.io/badge/changelog-2.0.3-brightgreen.svg)](CHANGES.md)
+[![Javadoc](https://img.shields.io/badge/javadoc-yes-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.2.0/index.html)
+[![Changelog](https://img.shields.io/badge/changelog-2.2.0-brightgreen.svg)](CHANGES.md)
 
 [![Circle CI](https://circleci.com/gh/diffplug/spotless/tree/main.svg?style=shield)](https://circleci.com/gh/diffplug/spotless/tree/main)
 [![Live chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
@@ -199,18 +199,9 @@ Spotless requires Maven to be running on JRE 8+.
       <include>src/test/kotlin/**/*.kt</include>
     </includes>
 
-    <importOrder/> <!-- standard import order -->
-    <importOrder>  <!-- or a custom ordering -->
-      <order>java,javax,org,com,com.diffplug,</order>  <!-- or use <file>${basedir}/eclipse.importorder</file> -->
-      <!-- You probably want an empty string at the end - all of the
-           imports you didn't specify explicitly will go there. -->
-    </importOrder>
-
-    <removeUnusedImports /> <!-- self-explanatory -->
-
     <ktlint />   <!-- has its own section below -->
     <ktfmt />    <!-- has its own section below -->
-    <prettierv/> <!-- has its own section below -->
+    <prettier /> <!-- has its own section below -->
 
     <licenseHeader>
       <content>/* (C)$YEAR */</content>  <!-- or <file>${basedir}/license-header</file> -->

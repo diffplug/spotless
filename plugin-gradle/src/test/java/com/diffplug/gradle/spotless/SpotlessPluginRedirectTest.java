@@ -21,10 +21,11 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import com.diffplug.common.base.StringPrinter;
+import com.diffplug.spotless.JreVersion;
 
 public class SpotlessPluginRedirectTest extends GradleIntegrationHarness {
 	@Test
-	public void test() throws IOException {
+	public void redirectPluginModernGradle() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",
@@ -34,6 +35,38 @@ public class SpotlessPluginRedirectTest extends GradleIntegrationHarness {
 						"> Failed to apply plugin [id 'com.diffplug.gradle.spotless']",
 						"   > We have moved from 'com.diffplug.gradle.spotless'",
 						"                     to 'com.diffplug.spotless'",
-						"     To migrate:"));
+						"     To migrate:",
+						"     - Test your build with: id 'com.diffplug.gradle.spotless' version '4.5.1'"));
+	}
+
+	@Test
+	public void redirectPluginOldGradle() throws IOException {
+		JreVersion.assume11OrLess();
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.gradle.spotless'",
+				"}");
+		Assertions.assertThat(gradleRunner().withGradleVersion(GradleVersionSupport.JRE_11.version)
+				.buildAndFail().getOutput().replace("\r", ""))
+				.contains(StringPrinter.buildStringFromLines(
+						"> Failed to apply plugin [id 'com.diffplug.gradle.spotless']",
+						"   > We have moved from 'com.diffplug.gradle.spotless'",
+						"                     to 'com.diffplug.spotless'",
+						"     To migrate:",
+						"     - Upgrade gradle to 5.4 or newer (you're on 5.0)",
+						"     - Test your build with: id 'com.diffplug.gradle.spotless' version '4.5.1'"));
+	}
+
+	@Test
+	public void realPluginOldGradle() throws IOException {
+		JreVersion.assume11OrLess();
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}");
+		Assertions.assertThat(gradleRunner().withGradleVersion(GradleVersionSupport.JRE_11.version)
+				.buildAndFail().getOutput().replace("\r", ""))
+				.contains(StringPrinter.buildStringFromLines(
+						"Spotless requires Gradle 5.4 or newer, this was 5.0"));
 	}
 }

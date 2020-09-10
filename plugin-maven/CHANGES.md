@@ -4,6 +4,16 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+## [2.2.0] - 2020-09-08
+### Added
+* `<googleJavaFormat>` default version is now `1.9` on JDK 11+, while continuing to be `1.7` on earlier JDKs. This is especially helpful to `<removeUnusedImports />`, since it always uses the default version of GJF (fixes [#681](https://github.com/diffplug/spotless/issues/681)).
+
+## [2.1.0] - 2020-08-29
+### Added
+* Added support for  eclipse-jdt 4.14.0, 4.15.0 and 4.16.0 ([#678](https://github.com/diffplug/spotless/pull/678)).
+### Changed
+* Updated default eclipse-jdt from 4.13.0 to 4.16.0 ([#678](https://github.com/diffplug/spotless/pull/678)).
+
 ## [2.0.3] - 2020-08-21
 ### Fixed
 * `<ktlint>` is now more robust when parsing version string for version-dependent implementation details, fixes [#668](https://github.com/diffplug/spotless/issues/668).
