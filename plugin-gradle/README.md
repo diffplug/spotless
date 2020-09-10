@@ -33,7 +33,7 @@ output = prefixDelimiterReplace(input, 'https://javadoc.io/static/com.diffplug.s
 
 Spotless is a general-purpose formatting plugin used by [4,000 projects on GitHub (August 2020)](https://github.com/search?l=gradle&q=spotless&type=Code).  It is completely à la carte, but also includes powerful "batteries-included" if you opt-in.
 
-To people who use your build, it looks like this ([IDE support also available]()):
+To people who use your build, it looks like this ([IDE support also available](IDE_HOOK.md)):
 
 ```console
 user@machine repo % ./gradlew build
