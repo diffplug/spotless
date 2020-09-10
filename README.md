@@ -39,7 +39,7 @@ output = [
 '| --------------------------------------------- | ------------- | ------------ | ------------ | --------|',
 '| Automatic [idempotency safeguard](PADDEDCELL.md) | {{yes}}    | {{yes}}      | {{yes}}      | {{no}}  |',
 '| Misconfigured [encoding safeguard](https://github.com/diffplug/spotless/blob/08340a11566cdf56ecf50dbd4d557ed84a70a502/testlib/src/test/java/com/diffplug/spotless/EncodingErrorMsgTest.java#L34-L38) | {{yes}}    | {{yes}}      | {{yes}}       | {{no}}  |',
-'| [`spotless:off` and `spotless:on`](plugin-gradle/#spotlessoff-and-spotlesson) | {{yes}}    | {{yes}}      | {{no}}       | {{no}}  |',
+'| Toggle with [`spotless:off` and `spotless:on`](plugin-gradle/#spotlessoff-and-spotlesson) | {{yes}}    | {{yes}}      | {{no}}       | {{no}}  |',
 '| [Ratchet from](https://github.com/diffplug/spotless/tree/main/plugin-gradle#ratchet) `origin/main` or other git ref | {{yes}}    | {{yes}}      | {{no}}       | {{no}}  |',
 '| Define [line endings using git](https://github.com/diffplug/spotless/tree/main/plugin-gradle#line-endings-and-encodings-invisible-stuff) | {{yes}}    | {{yes}}      | {{yes}}       | {{no}}  |',
 '| Fast incremental format and up-to-date check   | {{yes}}      | {{no}}       | {{no}}       | {{no}}  |',
@@ -74,7 +74,7 @@ extra('wtp.EclipseWtpFormatterStep')             +'{{yes}}       | {{yes}}      
 | --------------------------------------------- | ------------- | ------------ | ------------ | --------|
 | Automatic [idempotency safeguard](PADDEDCELL.md) | :+1:    | :+1:      | :+1:      | :white_large_square:  |
 | Misconfigured [encoding safeguard](https://github.com/diffplug/spotless/blob/08340a11566cdf56ecf50dbd4d557ed84a70a502/testlib/src/test/java/com/diffplug/spotless/EncodingErrorMsgTest.java#L34-L38) | :+1:    | :+1:      | :+1:       | :white_large_square:  |
-| [`spotless:off` and `spotless:on`](plugin-gradle/#spotlessoff-and-spotlesson) | :+1:    | :+1:      | :white_large_square:       | :white_large_square:  |
+| Toggle with [`spotless:off` and `spotless:on`](plugin-gradle/#spotlessoff-and-spotlesson) | :+1:    | :+1:      | :white_large_square:       | :white_large_square:  |
 | [Ratchet from](https://github.com/diffplug/spotless/tree/main/plugin-gradle#ratchet) `origin/main` or other git ref | :+1:    | :+1:      | :white_large_square:       | :white_large_square:  |
 | Define [line endings using git](https://github.com/diffplug/spotless/tree/main/plugin-gradle#line-endings-and-encodings-invisible-stuff) | :+1:    | :+1:      | :+1:       | :white_large_square:  |
 | Fast incremental format and up-to-date check   | :+1:      | :white_large_square:       | :white_large_square:       | :white_large_square:  |
