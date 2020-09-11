@@ -624,10 +624,17 @@ public class FormatExtension {
 		return new EclipseWtpConfig(type, version);
 	}
 
+	/**
+	 * Given a regex with *exactly one capturing group*, disables formatting
+	 * inside that captured group.
+	 */
+	public void toggleOffOnRegex(String regex) {
+		this.togglePair = PipeStepPair.named(PipeStepPair.defaultToggleName()).regex(regex).buildPair();
+	}
+
 	/** Disables formatting between the given tags. */
 	public void toggleOffOn(String off, String on) {
-		this.toggleOff = Objects.requireNonNull(off);
-		this.toggleOn = Objects.requireNonNull(on);
+		this.togglePair = PipeStepPair.named(PipeStepPair.defaultToggleName()).openClose(off, on).buildPair();
 	}
 
 	/** Disables formatting between `spotless:off` and `spotless:on`. */
@@ -637,11 +644,10 @@ public class FormatExtension {
 
 	/** Undoes all previous calls to {@link #toggleOffOn()} and {@link #toggleOffOn(String, String)}. */
 	public void toggleOffOnDisable() {
-		this.toggleOff = null;
-		this.toggleOn = null;
+		this.togglePair = null;
 	}
 
-	private @Nullable String toggleOff, toggleOn;
+	private @Nullable PipeStepPair togglePair;
 
 	/** Sets up a format task according to the values in this extension. */
 	protected void setupTask(SpotlessTask task) {
@@ -650,12 +656,11 @@ public class FormatExtension {
 		FileCollection totalTarget = targetExclude == null ? target : target.minus(targetExclude);
 		task.setTarget(totalTarget);
 		List<FormatterStep> steps;
-		if (toggleOff != null) {
+		if (togglePair != null) {
 			steps = new ArrayList<>(this.steps.size() + 2);
-			PipeStepPair pair = PipeStepPair.named("toggle").openClose(toggleOff, toggleOn).buildPair();
-			steps.add(pair.in());
+			steps.add(togglePair.in());
 			steps.addAll(this.steps);
-			steps.add(pair.out());
+			steps.add(togglePair.out());
 		} else {
 			steps = this.steps;
 		}

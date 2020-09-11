@@ -84,7 +84,7 @@ public abstract class FormatterFactory {
 				.map(factory -> factory.newFormatterStep(stepConfig))
 				.collect(Collectors.toCollection(() -> new ArrayList<FormatterStep>()));
 		if (toggle != null) {
-			PipeStepPair pair = PipeStepPair.named("toggle").openClose(toggle.off, toggle.on).buildPair();
+			PipeStepPair pair = toggle.createPair();
 			formatterSteps.add(0, pair.in());
 			formatterSteps.add(pair.out());
 		}

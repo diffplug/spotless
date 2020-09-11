@@ -25,4 +25,15 @@ public class ToggleOffOn {
 
 	@Parameter
 	public String on = PipeStepPair.defaultToggleOn();
+
+	@Parameter
+	public String regex;
+
+	public PipeStepPair createPair() {
+		if (regex != null) {
+			return PipeStepPair.named(PipeStepPair.defaultToggleName()).regex(regex).buildPair();
+		} else {
+			return PipeStepPair.named(PipeStepPair.defaultToggleName()).openClose(off, on).buildPair();
+		}
+	}
 }
