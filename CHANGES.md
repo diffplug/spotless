@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.6.0] - 2020-09-11
 ### Added
 * `PipeStepPair` which allows extracting blocks of text in one step, then injecting those blocks back in later. Currently only used for `spotless:off` `spotless:on`, but could also be used to [apply different steps in different places](https://github.com/diffplug/spotless/issues/412) ([#691](https://github.com/diffplug/spotless/pull/691)).
 ### Changed
