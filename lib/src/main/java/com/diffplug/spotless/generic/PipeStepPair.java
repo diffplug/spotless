@@ -31,6 +31,10 @@ public class PipeStepPair {
 		return new Builder(name);
 	}
 
+	public static String defaultToggleName() {
+		return "toggle";
+	}
+
 	public static String defaultToggleOff() {
 		return "spotless:off";
 	}
@@ -133,7 +137,11 @@ public class PipeStepPair {
 				lastEnd = matcher.end(1);
 				++groupIdx;
 			}
-			if (groupIdx < in.groups.size()) {
+			if (groupIdx == in.groups.size()) {
+				builder.append(unix, lastEnd, unix.length());
+				return builder.toString();
+			} else {
+				// throw an error with either the full regex, or the nicer open/close pair
 				Matcher openClose = Pattern.compile("\\\\Q([\\s\\S]*?)\\\\E" + "\\Q([\\s\\S]*?)\\E" + "\\\\Q([\\s\\S]*?)\\\\E")
 						.matcher(in.regex.pattern());
 				String pattern;
@@ -144,8 +152,6 @@ public class PipeStepPair {
 				}
 				throw new Error("An intermediate step removed a match of " + pattern);
 			}
-			builder.append(unix, lastEnd, unix.length());
-			return builder.toString();
 		}
 	}
 }
