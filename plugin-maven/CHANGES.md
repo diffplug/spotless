@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.3.0] - 2020-09-11
 ### Added
 * New option [`<toggleOffOn />`](README.md#spotlessoff-and-spotlesson) which allows the tags `spotless:off` and `spotless:on` to protect sections of code from the rest of the formatters ([#691](https://github.com/diffplug/spotless/pull/691)).
 ### Changed
