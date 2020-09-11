@@ -59,6 +59,7 @@ user@machine repo % mvn spotless:check
   - [Generic steps](#generic-steps)
   - [License header](#license-header) ([slurp year from git](#retroactively-slurp-years-from-git-history))
   - [How can I enforce formatting gradually? (aka "ratchet")](#ratchet)
+  - [`spotless:off` and `spotless:on`](#spotlessoff-and-spotlesson)
   - [Line endings and encodings (invisible stuff)](#line-endings-and-encodings-invisible-stuff)
   - [Disabling warnings and error messages](#disabling-warnings-and-error-messages)
   - [How do I preview what `mvn spotless:apply` will do?](#how-do-i-preview-what-mvn-spotlessapply-will-do)
@@ -654,6 +655,18 @@ However, we strongly recommend that you use a non-local branch, such as a tag or
 
 This is especially helpful for injecting accurate copyright dates using the [license step](#license-header).
 
+## `spotless:off` and `spotless:on`
+
+Sometimes there is a chunk of code  which you have carefully handcrafted, and you would like to exclude just this one little part from getting clobbered by the autoformat. Some formatters have a way to do this, many don't, but who cares. If you setup your spotless like this:
+
+```xml
+<configuration>
+  <java> <!-- or scala, or c, or whatever -->
+    <toggleOffOn />
+    ...
+```
+
+Then whenever Spotless encounters a pair of `spotless:off` / `spotless:on`, it will exclude that subsection of code from formatting. If you want, you can change the tags to be whatever you want, e.g. `<toggleOffOn><off>fmt:off</off><on>fmt:on</on></toggleOffOn>')`. If you change the default, [read this](https://github.com/diffplug/spotless/pull/691) for some gotchas.
 
 ## Line endings and encodings (invisible stuff)
 

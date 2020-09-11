@@ -33,13 +33,13 @@ public class GoogleJavaFormatStepTest extends ResourceHarness {
 	public void suggestJre11() throws Exception {
 		try (StepHarness step = StepHarness.forStep(GoogleJavaFormatStep.create(TestProvisioner.mavenCentral()))) {
 			if (JreVersion.thisVm() < 11) {
-				step.testException("java/googlejavaformat/TextBlock.dirty", throwable -> {
+				step.testResourceException("java/googlejavaformat/TextBlock.dirty", throwable -> {
 					throwable.hasMessageStartingWith("You are running Spotless on JRE 8")
 							.hasMessageEndingWith(", which limits you to google-java-format 1.7\n"
 									+ "If you upgrade your build JVM to 11+, then you can use google-java-format 1.9, which may have fixed this problem.");
 				});
 			} else if (JreVersion.thisVm() < 13) {
-				step.testException("java/googlejavaformat/TextBlock.dirty", throwable -> {
+				step.testResourceException("java/googlejavaformat/TextBlock.dirty", throwable -> {
 					throwable.isInstanceOf(InvocationTargetException.class)
 							.extracting(exception -> exception.getCause().getMessage()).asString().contains("7:18: error: unclosed string literal");
 				});

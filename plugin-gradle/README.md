@@ -33,7 +33,7 @@ output = prefixDelimiterReplace(input, 'https://javadoc.io/static/com.diffplug.s
 
 Spotless is a general-purpose formatting plugin used by [4,000 projects on GitHub (August 2020)](https://github.com/search?l=gradle&q=spotless&type=Code).  It is completely à la carte, but also includes powerful "batteries-included" if you opt-in.
 
-To people who use your build, it looks like this ([IDE support also available]()):
+To people who use your build, it looks like this ([IDE support also available](IDE_HOOK.md)):
 
 ```console
 user@machine repo % ./gradlew build
@@ -78,6 +78,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
 - **Language independent**
   - [License header](#license-header) ([slurp year from git](#retroactively-slurp-years-from-git-history))
   - [How can I enforce formatting gradually? (aka "ratchet")](#ratchet)
+  - [`spotless:off` and `spotless:on`](#spotlessoff-and-spotlesson)
   - [Line endings and encodings (invisible stuff)](#line-endings-and-encodings-invisible-stuff)
   - [Custom steps](#custom-steps)
   - [Multiple (or custom) language-specific blocks](#multiple-or-custom-language-specific-blocks)
@@ -694,11 +695,23 @@ However, we strongly recommend that you use a non-local branch, such as a tag or
 
 This is especially helpful for injecting accurate copyright dates using the [license step](#license-header).
 
+## `spotless:off` and `spotless:on`
+
+Sometimes there is a chunk of code  which you have carefully handcrafted, and you would like to exclude just this one little part from getting clobbered by the autoformat. Some formatters have a way to do this, many don't, but who cares.  If you setup your spotless like this:
+
+```gradle
+spotless {
+  java { // or kotlin, or c, or python, or whatever
+    toggleOffOn()
+```
+
+Then whenever Spotless encounters a pair of `spotless:off` / `spotless:on`, it will exclude the code between them from formatting, regardless of all other rules. If you want, you can change the tags to be whatever you want, e.g. `toggleOffOn('fmt:off', 'fmt:on')`. If you decide to change the default, be sure to [read this](https://github.com/diffplug/spotless/pull/691) for some gotchas.
+
 <a name="invisible"></a>
 
 ## Line endings and encodings (invisible stuff)
 
-Spotless uses UTF-8 by default, but you can use [any encoding which Java supports](https://docs.oracle.com/javase/8/docs/technotes/guides/intl/encoding.doc.html).  You can set it globally, and you can also set it per-format.
+Spotless uses UTF-8 by default, but you can use [any encoding which the JVM supports](https://docs.oracle.com/javase/8/docs/technotes/guides/intl/encoding.doc.html).  You can set it globally, and you can also set it per-format.
 
 ```gradle
 spotless {

@@ -16,6 +16,9 @@
 package com.diffplug.spotless;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -43,6 +46,16 @@ public class StepHarness implements AutoCloseable {
 					}
 				},
 				input -> LineEnding.toUnix(step.format(input, new File("")))));
+	}
+
+	/** Creates a harness for testing steps which don't depend on the file. */
+	public static StepHarness forSteps(FormatterStep... steps) {
+		return forFormatter(Formatter.builder()
+				.steps(Arrays.asList(steps))
+				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
+				.encoding(StandardCharsets.UTF_8)
+				.rootDir(Paths.get(""))
+				.build());
 	}
 
 	/** Creates a harness for testing a formatter whose steps don't depend on the file. */
@@ -80,8 +93,12 @@ public class StepHarness implements AutoCloseable {
 	}
 
 	/** Asserts that the given elements in the resources directory are transformed as expected. */
-	public StepHarness testException(String resourceBefore, Consumer<AbstractThrowableAssert<?, ? extends Throwable>> exceptionAssertion) throws Exception {
-		String before = ResourceHarness.getTestResource(resourceBefore);
+	public StepHarness testResourceException(String resourceBefore, Consumer<AbstractThrowableAssert<?, ? extends Throwable>> exceptionAssertion) throws Exception {
+		return testException(ResourceHarness.getTestResource(resourceBefore), exceptionAssertion);
+	}
+
+	/** Asserts that the given elements in the resources directory are transformed as expected. */
+	public StepHarness testException(String before, Consumer<AbstractThrowableAssert<?, ? extends Throwable>> exceptionAssertion) throws Exception {
 		try {
 			formatter.apply(before);
 			Assert.fail();

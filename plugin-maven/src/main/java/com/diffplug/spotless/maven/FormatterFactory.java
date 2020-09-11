@@ -16,7 +16,6 @@
 package com.diffplug.spotless.maven;
 
 import static java.util.Collections.emptySet;
-import static java.util.stream.Collectors.toList;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -25,6 +24,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
@@ -33,6 +33,7 @@ import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.generic.PipeStepPair;
 import com.diffplug.spotless.maven.generic.*;
 
 public abstract class FormatterFactory {
@@ -55,6 +56,8 @@ public abstract class FormatterFactory {
 	private String[] excludes;
 
 	private final List<FormatterStepFactory> stepFactories = new ArrayList<>();
+
+	private ToggleOffOn toggle;
 
 	public abstract Set<String> defaultIncludes();
 
@@ -79,7 +82,12 @@ public abstract class FormatterFactory {
 		List<FormatterStep> formatterSteps = factories.stream()
 				.filter(Objects::nonNull) // all unrecognized steps from XML config appear as nulls in the list
 				.map(factory -> factory.newFormatterStep(stepConfig))
-				.collect(toList());
+				.collect(Collectors.toCollection(() -> new ArrayList<FormatterStep>()));
+		if (toggle != null) {
+			PipeStepPair pair = toggle.createPair();
+			formatterSteps.add(0, pair.in());
+			formatterSteps.add(pair.out());
+		}
 
 		return Formatter.builder()
 				.encoding(formatterEncoding)
@@ -120,6 +128,10 @@ public abstract class FormatterFactory {
 
 	public final void addPrettier(Prettier prettier) {
 		addStepFactory(prettier);
+	}
+
+	public final void addToggleOffOn(ToggleOffOn toggle) {
+		this.toggle = toggle;
 	}
 
 	protected final void addStepFactory(FormatterStepFactory stepFactory) {

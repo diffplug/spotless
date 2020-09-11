@@ -53,6 +53,7 @@ import com.diffplug.spotless.generic.EndWithNewlineStep;
 import com.diffplug.spotless.generic.IndentStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep.YearMode;
+import com.diffplug.spotless.generic.PipeStepPair;
 import com.diffplug.spotless.generic.ReplaceRegexStep;
 import com.diffplug.spotless.generic.ReplaceStep;
 import com.diffplug.spotless.generic.TrimTrailingWhitespaceStep;
@@ -623,12 +624,46 @@ public class FormatExtension {
 		return new EclipseWtpConfig(type, version);
 	}
 
+	/**
+	 * Given a regex with *exactly one capturing group*, disables formatting
+	 * inside that captured group.
+	 */
+	public void toggleOffOnRegex(String regex) {
+		this.togglePair = PipeStepPair.named(PipeStepPair.defaultToggleName()).regex(regex).buildPair();
+	}
+
+	/** Disables formatting between the given tags. */
+	public void toggleOffOn(String off, String on) {
+		this.togglePair = PipeStepPair.named(PipeStepPair.defaultToggleName()).openClose(off, on).buildPair();
+	}
+
+	/** Disables formatting between `spotless:off` and `spotless:on`. */
+	public void toggleOffOn() {
+		toggleOffOn(PipeStepPair.defaultToggleOff(), PipeStepPair.defaultToggleOn());
+	}
+
+	/** Undoes all previous calls to {@link #toggleOffOn()} and {@link #toggleOffOn(String, String)}. */
+	public void toggleOffOnDisable() {
+		this.togglePair = null;
+	}
+
+	private @Nullable PipeStepPair togglePair;
+
 	/** Sets up a format task according to the values in this extension. */
 	protected void setupTask(SpotlessTask task) {
 		task.setEncoding(getEncoding().name());
 		task.setExceptionPolicy(exceptionPolicy);
 		FileCollection totalTarget = targetExclude == null ? target : target.minus(targetExclude);
 		task.setTarget(totalTarget);
+		List<FormatterStep> steps;
+		if (togglePair != null) {
+			steps = new ArrayList<>(this.steps.size() + 2);
+			steps.add(togglePair.in());
+			steps.addAll(this.steps);
+			steps.add(togglePair.out());
+		} else {
+			steps = this.steps;
+		}
 		task.setSteps(steps);
 		task.setLineEndingsPolicy(getLineEndings().createPolicy(getProject().getProjectDir(), () -> totalTarget));
 		if (spotless.project != spotless.project.getRootProject()) {
