@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
@@ -81,7 +83,14 @@ public class GoogleJavaFormatStep {
 		if (jre.startsWith("1.8")) {
 			JRE_VERSION = 8;
 		} else {
-			JRE_VERSION = Integer.parseInt(jre.substring(0, jre.indexOf('.')));
+			Matcher matcher = Pattern.compile("(\\d+)").matcher(jre);
+			if (!matcher.find()) {
+				throw new IllegalArgumentException("Expected " + jre + " to start with an integer");
+			}
+			JRE_VERSION = Integer.parseInt(matcher.group(1));
+			if (JRE_VERSION <= 8) {
+				throw new IllegalArgumentException("Expected " + jre + " to start with an integer greater than 8");
+			}
 		}
 	}
 
