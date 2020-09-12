@@ -16,19 +16,27 @@
 package com.diffplug.spotless;
 
 import java.util.function.IntPredicate;
-
-import com.diffplug.common.base.StandardSystemProperty;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class JreVersion {
 	private JreVersion() {}
 
 	/** Returns the major version of this VM, e.g. 8, 9, 10, 11, 13, etc. */
 	public static int thisVm() {
-		String jvmVersion = StandardSystemProperty.JAVA_VERSION.value();
-		if (jvmVersion.startsWith("1.8.")) {
+		String jre = System.getProperty("java.version");
+		if (jre.startsWith("1.8")) {
 			return 8;
 		} else {
-			return Integer.parseInt(jvmVersion.substring(0, jvmVersion.indexOf('.')));
+			Matcher matcher = Pattern.compile("(\\d+)").matcher(jre);
+			if (!matcher.find()) {
+				throw new IllegalArgumentException("Expected " + jre + " to start with an integer");
+			}
+			int version = Integer.parseInt(matcher.group(1));
+			if (version <= 8) {
+				throw new IllegalArgumentException("Expected " + jre + " to start with an integer greater than 8");
+			}
+			return version;
 		}
 	}
 
