@@ -63,7 +63,7 @@ public class PipeStepPair {
 
 		/** Defines the pipe via regex. Must have *exactly one* capturing group. */
 		public Builder regex(Pattern regex) {
-			this.regex = regex;
+			this.regex = Objects.requireNonNull(regex);
 			return this;
 		}
 
@@ -96,7 +96,7 @@ public class PipeStepPair {
 		final Pattern regex;
 
 		public StateIn(Pattern regex) {
-			this.regex = regex;
+			this.regex = Objects.requireNonNull(regex);
 		}
 
 		final transient ArrayList<String> groups = new ArrayList<>();
@@ -118,7 +118,7 @@ public class PipeStepPair {
 		final StateIn in;
 
 		StateOut(StateIn in) {
-			this.in = in;
+			this.in = Objects.requireNonNull(in);
 		}
 
 		final transient StringBuilder builder = new StringBuilder();
