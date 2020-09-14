@@ -82,6 +82,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Line endings and encodings (invisible stuff)](#line-endings-and-encodings-invisible-stuff)
   - [Custom steps](#custom-steps)
   - [Multiple (or custom) language-specific blocks](#multiple-or-custom-language-specific-blocks)
+  - [Inception (languages within languages within...)](#inception-languages-within-languages-within)
   - [Disabling warnings and error messages](#disabling-warnings-and-error-messages)
   - [How do I preview what `spotlessApply` will do?](#how-do-i-preview-what-spotlessapply-will-do)
   - [Example configurations (from real-world projects)](#example-configurations-from-real-world-projects)
@@ -773,6 +774,23 @@ spotless {
 ```
 
 If you'd like to create a one-off Spotless task outside of the `check`/`apply` framework, see [`FormatExtension.createIndependentApplyTask`](https://javadoc.io/static/com.diffplug.spotless/spotless-plugin-gradle/5.5.1/com/diffplug/gradle/spotless/FormatExtension.html#createIndependentApplyTask-java.lang.String-).
+
+## Inception (languages within languages within...)
+
+In very rare cases, you might want to format e.g. javascript which is written inside JSP templates, or maybe java within a markdown file, or something wacky like that.  You can specify hunks within a file using either open/close tags or a regex with a single capturing group, and then specify rules within it, like so.  See [javadoc TODO](https://javadoc.io/static/com.diffplug.spotless/spotless-plugin-gradle/5.5.1/com/diffplug/gradle/spotless/FormatExtension.html#target-java.lang.Object...-) for more details.
+
+```gradle
+spotless {
+  format 'templates', {
+    target 'src/templates/**/*.foo.html'
+    prettier().config(['parser': 'html'])
+    withinBlocks 'javascript block', '<script>', '</script>', {
+      prettier().config(['parser': 'javascript'])
+    }
+    withinBlocksRegex 'single-line @(java-expresion)', '@\\((.*?)\\)', com.diffplug.gradle.spotless.JavaExtension, {
+      googleJavaFormat()
+    }
+```
 
 <a name="enforceCheck"></a>
 
