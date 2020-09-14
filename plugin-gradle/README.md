@@ -787,12 +787,10 @@ spotless {
     target 'src/templates/**/*.foo.html'
     prettier().config(['parser': 'html'])
     withinBlocks 'javascript block', '<script>', '</script>', {
-      // note the "it.", otherwise it will apply to the whole file, rather than just <script> tags
-      it.prettier().config(['parser': 'javascript'])
+      prettier().config(['parser': 'javascript'])
     }
     withinBlocksRegex 'single-line @(java-expresion)', '@\\((.*?)\\)', JavaExtension, {
-      // note the "it.", otherwise it will apply to the whole file, rather than just @() tags
-      it.googleJavaFormat()
+      googleJavaFormat()
     }
 ```
 

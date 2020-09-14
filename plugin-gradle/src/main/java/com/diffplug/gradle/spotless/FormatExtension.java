@@ -632,7 +632,7 @@ public class FormatExtension {
 	 *   format 'examples', {
 	 *     target 'src/**\/*.md'
 	 *     withinBlocks 'javascript examples', '\n```javascript\n', '\n```\n`, {
-	 *       it.prettier().config(['parser': 'javascript']) // note the "it."
+	 *       prettier().config(['parser': 'javascript'])
 	 *     }
 	 *     ...
 	 * ```
@@ -650,7 +650,7 @@ public class FormatExtension {
 	 *   format 'examples', {
 	 *     target 'src/**\/*.md'
 	 *     withinBlocks 'java examples', '\n```java\n', '\n```\n`, com.diffplug.spotless.JavaExtension, {
-	 *       it.googleJavaFormat() // note the "it."
+	 *       googleJavaFormat()
 	 *     }
 	 *     ...
 	 * ```

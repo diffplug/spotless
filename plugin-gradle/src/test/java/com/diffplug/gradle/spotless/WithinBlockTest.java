@@ -48,10 +48,10 @@ public class WithinBlockTest extends GradleIntegrationHarness {
 				"  format 'docs', {",
 				"    target '*.md'",
 				"    withinBlocks 'toLower', '\\n```lower\\n', '\\n```\\n', {",
-				"      it.custom 'lowercase', { str -> str.toLowerCase() }",
+				"      custom 'lowercase', { str -> str.toLowerCase() }",
 				"    }",
 				"    withinBlocks 'java only', '\\n```java\\n', '\\n```\\n', JavaExtension, {",
-				"      it.googleJavaFormat()",
+				"      googleJavaFormat()",
 				"    }",
 				"  }",
 				"}");
