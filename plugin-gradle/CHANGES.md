@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+* [`withinBlocks` allows you to apply rules only to specific sections of files](README.md#inception-languages-within-languages-within), for example formatting javascript within html, code examples within markdown, and things like that (implements [#412](https://github.com/diffplug/spotless/issues/412) - formatting inception).
 
 ## [5.5.1] - 2020-09-12
 ### Fixed
