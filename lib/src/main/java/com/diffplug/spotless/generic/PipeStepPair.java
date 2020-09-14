@@ -54,7 +54,6 @@ public class PipeStepPair {
 	public static class Builder {
 		String name;
 		Pattern regex;
-		List<FormatterStep> steps = new ArrayList<>();
 
 		private Builder(String name) {
 			this.name = Objects.requireNonNull(name);
@@ -76,24 +75,25 @@ public class PipeStepPair {
 			return this;
 		}
 
-		/** Sets the steps which will be applied within the extracted blocks. (Optional) */
-		public Builder steps(Path rootPath, Collection<? extends FormatterStep> steps) {
-			this.steps.clear();
-			this.steps.addAll(steps);
-			return this;
+		/** Returns a pair of steps which captures in the first part, then returns in the second. */
+		public PipeStepPair buildPair() {
+			return new PipeStepPair(name, regex);
 		}
 
-		public PipeStepPair buildPair() {
-			return new PipeStepPair(name, regex, steps);
+		/** Returns a single step which will apply the given steps only within the blocks selected by the regex / openClose pair. */
+		public FormatterStep buildStepWhichAppliesSubSteps(Path rootPath, Collection<? extends FormatterStep> steps) {
+			return FormatterStep.createLazy(name,
+					() -> new StateApplyToBlock(regex, steps),
+					state -> FormatterFunc.Closeable.of(state.buildFormatter(rootPath), state::format));
 		}
 	}
 
 	final FormatterStep in, out;
 
-	private PipeStepPair(String name, Pattern pattern, List<FormatterStep> steps) {
-		StateIn stateIn = new StateIn(pattern, steps);
+	private PipeStepPair(String name, Pattern pattern) {
+		StateIn stateIn = new StateIn(pattern);
 		StateOut stateOut = new StateOut(stateIn);
-		in = FormatterStep.createLazy(name + "In", () -> stateIn, s -> FormatterFunc.Closeable.of(s.buildFormatter(), stateIn::format));
+		in = FormatterStep.create(name + "In", stateIn, state -> state::format);
 		out = FormatterStep.create(name + "Out", stateOut, state -> state::format);
 	}
 
@@ -105,40 +105,59 @@ public class PipeStepPair {
 		return out;
 	}
 
+	static class StateApplyToBlock extends StateIn implements Serializable {
+		private static final long serialVersionUID = -844178006407733370L;
+
+		final List<FormatterStep> steps;
+		final transient StringBuilder builder = new StringBuilder();
+
+		StateApplyToBlock(Pattern regex, Collection<? extends FormatterStep> steps) {
+			super(regex);
+			this.steps = new ArrayList<>(steps);
+		}
+
+		Formatter buildFormatter(Path rootDir) {
+			return Formatter.builder()
+					.encoding(StandardCharsets.UTF_8) // can be any UTF, doesn't matter
+					.lineEndingsPolicy(LineEnding.UNIX.createPolicy()) // just internal, won't conflict with user
+					.steps(steps)
+					.rootDir(rootDir)
+					.build();
+		}
+
+		private String format(Formatter formatter, String unix, File file) throws Exception {
+			groups.clear();
+			Matcher matcher = regex.matcher(unix);
+			while (matcher.find()) {
+				// apply the formatter to each group
+				groups.add(formatter.compute(matcher.group(1), file));
+			}
+			// and then assemble the result right away
+			return stateOutCompute(this, builder, unix);
+		}
+	}
+
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	static class StateIn implements Serializable {
 		private static final long serialVersionUID = -844178006407733370L;
 
 		final Pattern regex;
-		final List<FormatterStep> steps;
 
-		public StateIn(Pattern regex, List<FormatterStep> steps) {
+		public StateIn(Pattern regex) {
 			this.regex = Objects.requireNonNull(regex);
-			this.steps = Objects.requireNonNull(steps);
-		}
-
-		Formatter buildFormatter() {
-			return Formatter.builder()
-					.encoding(StandardCharsets.UTF_8) // can be any UTF, doesn't matter
-					.lineEndingsPolicy(LineEnding.UNIX.createPolicy()) // just internal, won't conflict with user
-					.steps(steps)
-					.rootDir(INSIDE_PIPE.toPath())
-					.build();
 		}
 
 		final transient ArrayList<String> groups = new ArrayList<>();
 
-		private String format(Formatter formatter, String unix) throws Exception {
+		private String format(String unix) throws Exception {
 			groups.clear();
 			Matcher matcher = regex.matcher(unix);
 			while (matcher.find()) {
-				groups.add(formatter.compute(matcher.group(1), INSIDE_PIPE));
+				groups.add(matcher.group(1));
 			}
 			return unix;
 		}
 	}
-
-	private static final File INSIDE_PIPE = new File("inside pipe");
 
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	static class StateOut implements Serializable {
@@ -153,34 +172,38 @@ public class PipeStepPair {
 		final transient StringBuilder builder = new StringBuilder();
 
 		private String format(String unix) {
-			if (in.groups.isEmpty()) {
-				return unix;
-			}
-			builder.setLength(0);
-			Matcher matcher = in.regex.matcher(unix);
-			int lastEnd = 0;
-			int groupIdx = 0;
-			while (matcher.find()) {
-				builder.append(unix, lastEnd, matcher.start(1));
-				builder.append(in.groups.get(groupIdx));
-				lastEnd = matcher.end(1);
-				++groupIdx;
-			}
-			if (groupIdx == in.groups.size()) {
-				builder.append(unix, lastEnd, unix.length());
-				return builder.toString();
+			return stateOutCompute(in, builder, unix);
+		}
+	}
+
+	private static String stateOutCompute(StateIn in, StringBuilder builder, String unix) {
+		if (in.groups.isEmpty()) {
+			return unix;
+		}
+		builder.setLength(0);
+		Matcher matcher = in.regex.matcher(unix);
+		int lastEnd = 0;
+		int groupIdx = 0;
+		while (matcher.find()) {
+			builder.append(unix, lastEnd, matcher.start(1));
+			builder.append(in.groups.get(groupIdx));
+			lastEnd = matcher.end(1);
+			++groupIdx;
+		}
+		if (groupIdx == in.groups.size()) {
+			builder.append(unix, lastEnd, unix.length());
+			return builder.toString();
+		} else {
+			// throw an error with either the full regex, or the nicer open/close pair
+			Matcher openClose = Pattern.compile("\\\\Q([\\s\\S]*?)\\\\E" + "\\Q([\\s\\S]*?)\\E" + "\\\\Q([\\s\\S]*?)\\\\E")
+					.matcher(in.regex.pattern());
+			String pattern;
+			if (openClose.matches()) {
+				pattern = openClose.group(1) + " " + openClose.group(2);
 			} else {
-				// throw an error with either the full regex, or the nicer open/close pair
-				Matcher openClose = Pattern.compile("\\\\Q([\\s\\S]*?)\\\\E" + "\\Q([\\s\\S]*?)\\E" + "\\\\Q([\\s\\S]*?)\\\\E")
-						.matcher(in.regex.pattern());
-				String pattern;
-				if (openClose.matches()) {
-					pattern = openClose.group(1) + " " + openClose.group(2);
-				} else {
-					pattern = in.regex.pattern();
-				}
-				throw new Error("An intermediate step removed a match of " + pattern);
+				pattern = in.regex.pattern();
 			}
+			throw new Error("An intermediate step removed a match of " + pattern);
 		}
 	}
 }
