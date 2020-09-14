@@ -17,7 +17,6 @@ package com.diffplug.gradle.spotless;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.reflect.Constructor;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
@@ -29,7 +28,6 @@ import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 
-import com.diffplug.common.base.Errors;
 import com.diffplug.spotless.LineEnding;
 
 public abstract class SpotlessExtension {
@@ -220,17 +218,18 @@ public abstract class SpotlessExtension {
 				return (T) existing;
 			}
 		} else {
-			try {
-				Constructor<T> constructor = clazz.getConstructor(SpotlessExtension.class);
-				T formatExtension = constructor.newInstance(this);
-				formats.put(name, formatExtension);
-				createFormatTasks(name, formatExtension);
-				return formatExtension;
-			} catch (NoSuchMethodException e) {
-				throw new GradleException("Must have a constructor " + clazz.getSimpleName() + "(SpotlessExtension root)", e);
-			} catch (Exception e) {
-				throw Errors.asRuntime(e);
-			}
+			T formatExtension = instantiateFormatExtension(clazz);
+			formats.put(name, formatExtension);
+			createFormatTasks(name, formatExtension);
+			return formatExtension;
+		}
+	}
+
+	<T extends FormatExtension> T instantiateFormatExtension(Class<T> clazz) {
+		try {
+			return project.getObjects().newInstance(clazz, this);
+		} catch (Exception e) {
+			throw new GradleException("Must have a constructor " + clazz.getSimpleName() + "(SpotlessExtension root), annotated with @javax.inject.Inject", e);
 		}
 	}
 

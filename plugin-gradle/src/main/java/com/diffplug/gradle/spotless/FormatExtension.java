@@ -19,7 +19,6 @@ import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElem
 
 import java.io.File;
 import java.io.Serializable;
-import java.lang.reflect.Constructor;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -32,6 +31,7 @@ import java.util.TreeMap;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
@@ -41,7 +41,6 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.tasks.util.PatternFilterable;
 
-import com.diffplug.common.base.Errors;
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
@@ -68,6 +67,7 @@ public class FormatExtension {
 	final SpotlessExtension spotless;
 	final List<Action<FormatExtension>> lazyActions = new ArrayList<>();
 
+	@Inject
 	public FormatExtension(SpotlessExtension spotless) {
 		this.spotless = Objects.requireNonNull(spotless);
 	}
@@ -670,18 +670,13 @@ public class FormatExtension {
 	}
 
 	private <T extends FormatExtension> void withinBlocksHelper(PipeStepPair.Builder builder, Class<T> clazz, Action<T> configure) {
-		try {
-			// create the sub-extension
-			Constructor<T> constructor = clazz.getConstructor(SpotlessExtension.class);
-			T formatExtension = constructor.newInstance(spotless);
-			// configure it
-			configure.execute(formatExtension);
-			// create a step which applies all of those steps as sub-steps
-			FormatterStep step = builder.buildStepWhichAppliesSubSteps(spotless.project.getRootDir().toPath(), formatExtension.steps);
-			addStep(step);
-		} catch (ReflectiveOperationException e) {
-			throw Errors.asRuntime(e);
-		}
+		// create the sub-extension
+		T formatExtension = spotless.instantiateFormatExtension(clazz);
+		// configure it
+		configure.execute(formatExtension);
+		// create a step which applies all of those steps as sub-steps
+		FormatterStep step = builder.buildStepWhichAppliesSubSteps(spotless.project.getRootDir().toPath(), formatExtension.steps);
+		addStep(step);
 	}
 
 	/**
