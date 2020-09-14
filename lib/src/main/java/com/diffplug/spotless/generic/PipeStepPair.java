@@ -15,13 +15,21 @@
  */
 package com.diffplug.spotless.generic;
 
+import java.io.File;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.diffplug.spotless.Formatter;
+import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.LineEnding;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -46,6 +54,7 @@ public class PipeStepPair {
 	public static class Builder {
 		String name;
 		Pattern regex;
+		List<FormatterStep> steps = new ArrayList<>();
 
 		private Builder(String name) {
 			this.name = Objects.requireNonNull(name);
@@ -67,17 +76,24 @@ public class PipeStepPair {
 			return this;
 		}
 
+		/** Sets the steps which will be applied within the extracted blocks. (Optional) */
+		public Builder steps(Path rootPath, Collection<? extends FormatterStep> steps) {
+			this.steps.clear();
+			this.steps.addAll(steps);
+			return this;
+		}
+
 		public PipeStepPair buildPair() {
-			return new PipeStepPair(name, regex);
+			return new PipeStepPair(name, regex, steps);
 		}
 	}
 
 	final FormatterStep in, out;
 
-	private PipeStepPair(String name, Pattern pattern) {
-		StateIn stateIn = new StateIn(pattern);
+	private PipeStepPair(String name, Pattern pattern, List<FormatterStep> steps) {
+		StateIn stateIn = new StateIn(pattern, steps);
 		StateOut stateOut = new StateOut(stateIn);
-		in = FormatterStep.create(name + "In", stateIn, state -> state::format);
+		in = FormatterStep.createLazy(name + "In", () -> stateIn, s -> FormatterFunc.Closeable.of(s.buildFormatter(), stateIn::format));
 		out = FormatterStep.create(name + "Out", stateOut, state -> state::format);
 	}
 
@@ -94,22 +110,35 @@ public class PipeStepPair {
 		private static final long serialVersionUID = -844178006407733370L;
 
 		final Pattern regex;
+		final List<FormatterStep> steps;
 
-		public StateIn(Pattern regex) {
+		public StateIn(Pattern regex, List<FormatterStep> steps) {
 			this.regex = Objects.requireNonNull(regex);
+			this.steps = Objects.requireNonNull(steps);
+		}
+
+		Formatter buildFormatter() {
+			return Formatter.builder()
+					.encoding(StandardCharsets.UTF_8) // can be any UTF, doesn't matter
+					.lineEndingsPolicy(LineEnding.UNIX.createPolicy()) // just internal, won't conflict with user
+					.steps(steps)
+					.rootDir(INSIDE_PIPE.toPath())
+					.build();
 		}
 
 		final transient ArrayList<String> groups = new ArrayList<>();
 
-		private String format(String unix) {
+		private String format(Formatter formatter, String unix) throws Exception {
 			groups.clear();
 			Matcher matcher = regex.matcher(unix);
 			while (matcher.find()) {
-				groups.add(matcher.group(1));
+				groups.add(formatter.compute(matcher.group(1), INSIDE_PIPE));
 			}
 			return unix;
 		}
 	}
+
+	private static final File INSIDE_PIPE = new File("inside pipe");
 
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	static class StateOut implements Serializable {
