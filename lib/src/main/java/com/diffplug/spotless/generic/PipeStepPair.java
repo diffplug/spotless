@@ -105,6 +105,7 @@ public class PipeStepPair {
 		return out;
 	}
 
+	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	static class StateApplyToBlock extends StateIn implements Serializable {
 		private static final long serialVersionUID = -844178006407733370L;
 
