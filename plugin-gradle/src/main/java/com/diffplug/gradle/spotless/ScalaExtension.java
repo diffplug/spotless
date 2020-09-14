@@ -19,6 +19,7 @@ import java.io.File;
 import java.util.Objects;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCollection;
@@ -31,6 +32,7 @@ import com.diffplug.spotless.scala.ScalaFmtStep;
 public class ScalaExtension extends FormatExtension {
 	static final String NAME = "scala";
 
+	@Inject
 	public ScalaExtension(SpotlessExtension spotless) {
 		super(spotless);
 	}

@@ -17,6 +17,8 @@ package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
 
+import javax.inject.Inject;
+
 import org.gradle.api.Project;
 
 import com.diffplug.spotless.cpp.CppDefaults;
@@ -26,6 +28,7 @@ import com.diffplug.spotless.extra.cpp.EclipseCdtFormatterStep;
 public class CppExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "cpp";
 
+	@Inject
 	public CppExtension(SpotlessExtension spotless) {
 		super(spotless);
 	}

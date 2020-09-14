@@ -15,12 +15,15 @@
  */
 package com.diffplug.gradle.spotless;
 
+import javax.inject.Inject;
+
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.python.BlackStep;
 
 public class PythonExtension extends FormatExtension {
 	static final String NAME = "python";
 
+	@Inject
 	public PythonExtension(SpotlessExtension spotless) {
 		super(spotless);
 	}

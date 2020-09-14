@@ -17,6 +17,8 @@ package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
 
+import javax.inject.Inject;
+
 import org.gradle.api.Project;
 
 import com.diffplug.spotless.FormatterStep;
@@ -25,6 +27,7 @@ import com.diffplug.spotless.sql.DBeaverSQLFormatterStep;
 public class SqlExtension extends FormatExtension {
 	static final String NAME = "sql";
 
+	@Inject
 	public SqlExtension(SpotlessExtension spotless) {
 		super(spotless);
 	}

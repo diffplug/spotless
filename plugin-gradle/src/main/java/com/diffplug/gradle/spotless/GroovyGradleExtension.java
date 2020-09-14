@@ -17,6 +17,8 @@ package com.diffplug.gradle.spotless;
 
 import java.util.Objects;
 
+import javax.inject.Inject;
+
 import com.diffplug.spotless.extra.groovy.GrEclipseFormatterStep;
 import com.diffplug.spotless.java.ImportOrderStep;
 
@@ -24,6 +26,7 @@ public class GroovyGradleExtension extends FormatExtension {
 	private static final String GRADLE_FILE_EXTENSION = "*.gradle";
 	static final String NAME = "groovyGradle";
 
+	@Inject
 	public GroovyGradleExtension(SpotlessExtension spotless) {
 		super(spotless);
 	}

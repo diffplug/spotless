@@ -21,6 +21,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.inject.Inject;
+
 import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.JavaPluginConvention;
@@ -34,6 +36,7 @@ import com.diffplug.spotless.kotlin.KtfmtStep.Style;
 public class KotlinExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "kotlin";
 
+	@Inject
 	public KotlinExtension(SpotlessExtension spotless) {
 		super(spotless);
 	}
