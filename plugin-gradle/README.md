@@ -780,15 +780,19 @@ If you'd like to create a one-off Spotless task outside of the `check`/`apply` f
 In very rare cases, you might want to format e.g. javascript which is written inside JSP templates, or maybe java within a markdown file, or something wacky like that.  You can specify hunks within a file using either open/close tags or a regex with a single capturing group, and then specify rules within it, like so.  See [javadoc TODO](https://javadoc.io/static/com.diffplug.spotless/spotless-plugin-gradle/5.5.1/com/diffplug/gradle/spotless/FormatExtension.html#target-java.lang.Object...-) for more details.
 
 ```gradle
+import com.diffplug.gradle.spotless.JavaExtension
+
 spotless {
   format 'templates', {
     target 'src/templates/**/*.foo.html'
     prettier().config(['parser': 'html'])
     withinBlocks 'javascript block', '<script>', '</script>', {
-      prettier().config(['parser': 'javascript'])
+      // note the "it.", otherwise it will apply to the whole file, rather than just <script> tags
+      it.prettier().config(['parser': 'javascript'])
     }
-    withinBlocksRegex 'single-line @(java-expresion)', '@\\((.*?)\\)', com.diffplug.gradle.spotless.JavaExtension, {
-      googleJavaFormat()
+    withinBlocksRegex 'single-line @(java-expresion)', '@\\((.*?)\\)', JavaExtension, {
+      // note the "it.", otherwise it will apply to the whole file, rather than just @() tags
+      it.googleJavaFormat()
     }
 ```
 

@@ -632,12 +632,12 @@ public class FormatExtension {
 	 *   format 'examples', {
 	 *     target 'src/**\/*.md'
 	 *     withinBlocks 'javascript examples', '\n```javascript\n', '\n```\n`, {
-	 *       prettier().config(['parser': 'javascript'])
+	 *       it.prettier().config(['parser': 'javascript']) // note the "it."
 	 *     }
 	 *     ...
 	 * ```
 	 */
-	public <T extends FormatExtension> void withinBlocks(String name, String open, String close, Action<FormatExtension> configure) {
+	public void withinBlocks(String name, String open, String close, Action<FormatExtension> configure) {
 		withinBlocks(name, open, close, FormatExtension.class, configure);
 	}
 
@@ -649,8 +649,8 @@ public class FormatExtension {
 	 * spotless {
 	 *   format 'examples', {
 	 *     target 'src/**\/*.md'
-	 *     withinBlocks 'javascript examples', '\n```java\n', '\n```\n`, com.diffplug.spotless.JavaExtension, {
-	 *       googleJavaFormat()
+	 *     withinBlocks 'java examples', '\n```java\n', '\n```\n`, com.diffplug.spotless.JavaExtension, {
+	 *       it.googleJavaFormat() // note the "it."
 	 *     }
 	 *     ...
 	 * ```
@@ -660,7 +660,7 @@ public class FormatExtension {
 	}
 
 	/** Same as {@link #withinBlocks(String, String, String, Action)}, except instead of an open/close pair, you specify a regex with exactly one capturing group. */
-	public <T extends FormatExtension> void withinBlocksRegex(String name, String regex, Action<FormatExtension> configure) {
+	public void withinBlocksRegex(String name, String regex, Action<FormatExtension> configure) {
 		withinBlocksRegex(name, regex, FormatExtension.class, configure);
 	}
 
@@ -673,7 +673,7 @@ public class FormatExtension {
 		try {
 			// create the sub-extension
 			Constructor<T> constructor = clazz.getConstructor(SpotlessExtension.class);
-			T formatExtension = constructor.newInstance(this);
+			T formatExtension = constructor.newInstance(spotless);
 			// configure it
 			configure.execute(formatExtension);
 			// create a step which applies all of those steps as sub-steps
