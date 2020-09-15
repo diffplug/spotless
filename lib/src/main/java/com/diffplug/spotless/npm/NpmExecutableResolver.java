@@ -18,10 +18,8 @@ package com.diffplug.spotless.npm;
 import static com.diffplug.spotless.npm.PlatformInfo.OS.WINDOWS;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Optional;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
+import java.util.function.Function;
 
 /**
  * Utility class to resolve an npm binary to be used by npm-based steps.
@@ -39,6 +37,14 @@ import java.util.stream.Stream;
  */
 class NpmExecutableResolver {
 
+	private static final FileFinder NPM_EXECUTABLE_FINDER = FileFinder.finderForExecutableFilename(npmExecutableName())
+			.candidateSystemProperty("npm.exec")
+			.candidateEnvironmentPath("NVM_BIN")
+			.candidateEnvironmentPathList("NVM_SYMLINK", resolveParentOfNodeModulesDir())
+			.candidateEnvironmentPathList("NODE_PATH", resolveParentOfNodeModulesDir())
+			.candidateEnvironmentPathList("PATH", resolveParentOfNodeModulesDir())
+			.build();
+
 	private NpmExecutableResolver() {
 		// no instance
 	}
@@ -51,58 +57,23 @@ class NpmExecutableResolver {
 		return npmName;
 	}
 
-	static Supplier<Optional<File>> systemProperty() {
-		return () -> Optional.ofNullable(System.getProperty("npm.exec"))
-				.map(File::new);
+	private static ParentOfNodeModulesDirResolver resolveParentOfNodeModulesDir() {
+		return new ParentOfNodeModulesDirResolver();
 	}
 
-	static Supplier<Optional<File>> environmentNvmBin() {
-		return () -> Optional.ofNullable(System.getenv("NVM_BIN"))
-				.map(File::new)
-				.map(binDir -> new File(binDir, npmExecutableName()))
-				.filter(File::exists)
-				.filter(File::canExecute);
-	}
+	static class ParentOfNodeModulesDirResolver implements Function<File, File> {
 
-	static Supplier<Optional<File>> environmentNvmSymlink() {
-		return pathListFromEnvironment("NVM_SYMLINK");
-	}
-
-	static Supplier<Optional<File>> environmentNodepath() {
-		return pathListFromEnvironment("NODE_PATH");
-	}
-
-	static Supplier<Optional<File>> environmentPath() {
-		return pathListFromEnvironment("PATH");
+		@Override
+		public File apply(File file) {
+			if (file != null && file.isDirectory() && file.getName().equalsIgnoreCase("node_modules")) {
+				return file.getParentFile();
+			}
+			return file;
+		}
 	}
 
 	static Optional<File> tryFind() {
-		return Stream.of(systemProperty(),
-				environmentNvmBin(),
-				environmentNvmSymlink(),
-				environmentNodepath(),
-				environmentPath())
-				.map(Supplier::get)
-				.filter(Optional::isPresent)
-				.map(Optional::get)
-				.findFirst();
-	}
-
-	private static Supplier<Optional<File>> pathListFromEnvironment(String environmentPathListName) {
-		return () -> {
-			String pathList = System.getenv(environmentPathListName);
-			if (pathList != null) {
-				return Arrays.stream(pathList.split(System.getProperty("path.separator", ":")))
-						.map(File::new)
-						.map(dir -> dir.getName().equalsIgnoreCase("node_modules") ? dir.getParentFile() : dir)
-						.map(dir -> new File(dir, npmExecutableName()))
-						.filter(File::exists)
-						.filter(File::canExecute)
-						.findFirst();
-
-			}
-			return Optional.empty();
-		};
+		return NPM_EXECUTABLE_FINDER.tryFind();
 	}
 
 	static String explainMessage() {
