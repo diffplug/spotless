@@ -25,12 +25,9 @@ import java.util.function.Supplier;
 
 class FileFinder {
 
-	private final String fileName;
-
 	private final List<Supplier<Optional<File>>> fileCandidateFinders;
 
 	private FileFinder(Builder builder) {
-		this.fileName = builder.fileName;
 		this.fileCandidateFinders = Collections.unmodifiableList(new ArrayList<>(builder.candidateFinders));
 	}
 
@@ -76,6 +73,11 @@ class FileFinder {
 
 		public Builder candidateSystemProperty(String systemProperty) {
 			candidateFinders.add(new CandidateOnSystemPropertyVar(systemProperty, FileIsExecutableFilter.executable(this.executable)));
+			return this;
+		}
+
+		public Builder candidateFileInFolder(File folder) {
+			candidateFinders.add(new CandidateInFolder(folder, fileName, FileIsExecutableFilter.executable(this.executable)));
 			return this;
 		}
 
@@ -183,6 +185,29 @@ class FileFinder {
 		public Optional<File> get() {
 			return Optional.ofNullable(System.getProperty(this.systemProperty))
 					.map(File::new)
+					.filter(File::exists)
+					.filter(additionalFilter);
+		}
+	}
+
+	private static class CandidateInFolder implements Supplier<Optional<File>> {
+
+		private final File folder;
+		private final String fileName;
+		private final Predicate<File> additionalFilter;
+
+		public CandidateInFolder(File folder, String fileName, Predicate<File> additionalFilter) {
+			this.folder = folder;
+			this.fileName = fileName;
+			this.additionalFilter = additionalFilter == null ? AnyFileFilter.any() : additionalFilter;
+		}
+
+		@Override
+		public Optional<File> get() {
+			return Optional.of(folder)
+					.filter(File::exists)
+					.filter(File::isDirectory)
+					.map(folder -> new File(folder, fileName))
 					.filter(File::exists)
 					.filter(additionalFilter);
 		}
