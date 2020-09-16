@@ -53,7 +53,7 @@ lib('generic.TrimTrailingWhitespaceStep')        +'{{yes}}       | {{yes}}      
 lib('antlr4.Antlr4FormatterStep')                +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('cpp.ClangFormatStep')                       +'{{yes}}       | {{no}}       | {{no}}       | {{no}}  |',
 extra('cpp.EclipseFormatterStep')                +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
-extra('groovy.GrEclipseFormatterStep')           +'{{yes}}       | {{no}}       | {{yes}}      | {{no}}  |',
+extra('groovy.GrEclipseFormatterStep')           +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
 lib('java.GoogleJavaFormatStep')                 +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
 lib('java.ImportOrderStep')                      +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
 lib('java.RemoveUnusedImportsStep')              +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
