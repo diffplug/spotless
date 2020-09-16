@@ -25,12 +25,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
-
-import javax.annotation.Nullable;
 
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterFunc;
@@ -56,11 +53,10 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 
 	private final String stepName;
 
-	protected NpmFormatterStepStateBase(String stepName, NpmConfig npmConfig, File buildDir,
-			@Nullable File npm) throws IOException {
+	protected NpmFormatterStepStateBase(String stepName, NpmConfig npmConfig, File buildDir, File npm) throws IOException {
 		this.stepName = requireNonNull(stepName);
 		this.npmConfig = requireNonNull(npmConfig);
-		this.npmExecutable = resolveNpm(npm);
+		this.npmExecutable = npm;
 
 		NodeServerLayout layout = prepareNodeServer(buildDir);
 		this.nodeModulesDir = layout.nodeModulesDir();
@@ -74,6 +70,11 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 				this.npmConfig.getPackageJsonContent());
 		NpmResourceHelper
 				.writeUtf8StringToFile(layout.serveJsFile(), this.npmConfig.getServeScriptContent());
+		if (this.npmConfig.getNpmrcContent() != null) {
+			NpmResourceHelper.writeUtf8StringToFile(layout.npmrcFile(), this.npmConfig.getNpmrcContent());
+		} else {
+			NpmResourceHelper.deleteFileIfExists(layout.npmrcFile());
+		}
 		FormattedPrinter.SYSOUT.print("running npm install");
 		runNpmInstall(layout.nodeModulesDir());
 		FormattedPrinter.SYSOUT.print("npm install finished");
@@ -114,12 +115,6 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 		} catch (IOException | TimeoutException e) {
 			throw new ServerStartException(e);
 		}
-	}
-
-	private static File resolveNpm(@Nullable File npm) {
-		return Optional.ofNullable(npm)
-				.orElseGet(() -> NpmExecutableResolver.tryFind()
-						.orElseThrow(() -> new IllegalStateException("Can't automatically determine npm executable and none was specifically supplied!\n\n" + NpmExecutableResolver.explainMessage())));
 	}
 
 	protected static String replaceDevDependencies(String template, Map<String, String> devDependencies) {

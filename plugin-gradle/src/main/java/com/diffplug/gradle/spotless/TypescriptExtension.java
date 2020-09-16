@@ -28,6 +28,7 @@ import javax.inject.Inject;
 import org.gradle.api.Project;
 
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.npm.NpmPathResolver;
 import com.diffplug.spotless.npm.PrettierFormatterStep;
 import com.diffplug.spotless.npm.TsConfigFileType;
 import com.diffplug.spotless.npm.TsFmtFormatterStep;
@@ -109,7 +110,7 @@ public class TypescriptExtension extends FormatExtension {
 					devDependencies,
 					provisioner(),
 					project.getBuildDir(),
-					npmFileOrNull(),
+					new NpmPathResolver(npmFileOrNull(), npmrcFileOrNull(), project.getProjectDir(), project.getRootDir()),
 					typedConfigFile(),
 					config);
 		}

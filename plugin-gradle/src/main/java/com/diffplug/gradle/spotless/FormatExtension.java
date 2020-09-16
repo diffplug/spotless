@@ -58,6 +58,7 @@ import com.diffplug.spotless.generic.PipeStepPair;
 import com.diffplug.spotless.generic.ReplaceRegexStep;
 import com.diffplug.spotless.generic.ReplaceStep;
 import com.diffplug.spotless.generic.TrimTrailingWhitespaceStep;
+import com.diffplug.spotless.npm.NpmPathResolver;
 import com.diffplug.spotless.npm.PrettierFormatterStep;
 
 import groovy.lang.Closure;
@@ -494,6 +495,9 @@ public class FormatExtension {
 		@Nullable
 		protected Object npmFile;
 
+		@Nullable
+		protected Object npmrcFile;
+
 		@SuppressWarnings("unchecked")
 		public T npmExecutable(final Object npmFile) {
 			this.npmFile = npmFile;
@@ -501,7 +505,21 @@ public class FormatExtension {
 			return (T) this;
 		}
 
+		public T npmrc(final Object npmrcFile) {
+			this.npmrcFile = npmrcFile;
+			replaceStep(createStep());
+			return (T) this;
+		}
+
 		File npmFileOrNull() {
+			return fileOrNull(npmFile);
+		}
+
+		File npmrcFileOrNull() {
+			return fileOrNull(npmrcFile);
+		}
+
+		private File fileOrNull(Object npmFile) {
 			return npmFile != null ? getProject().file(npmFile) : null;
 		}
 
@@ -541,7 +559,7 @@ public class FormatExtension {
 					devDependencies,
 					provisioner(),
 					project.getBuildDir(),
-					npmFileOrNull(),
+					new NpmPathResolver(npmFileOrNull(), npmrcFileOrNull(), project.getProjectDir(), project.getRootDir()),
 					new com.diffplug.spotless.npm.PrettierConfig(
 							this.prettierConfigFile != null ? project.file(this.prettierConfigFile) : null,
 							this.prettierConfig));

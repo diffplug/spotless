@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
+import com.diffplug.spotless.npm.NpmPathResolver;
 import com.diffplug.spotless.npm.TsConfigFileType;
 import com.diffplug.spotless.npm.TsFmtFormatterStep;
 import com.diffplug.spotless.npm.TypedTsFmtConfigFile;
@@ -55,6 +56,9 @@ public class Tsfmt implements FormatterStepFactory {
 	private String npmExecutable;
 
 	@Parameter
+	private String npmrc;
+
+	@Parameter
 	private Map<String, String> config;
 
 	@Override
@@ -71,6 +75,8 @@ public class Tsfmt implements FormatterStepFactory {
 		}
 
 		File npm = npmExecutable != null ? stepConfig.getFileLocator().locateFile(npmExecutable) : null;
+
+		File npmrcFile = npmrc != null ? stepConfig.getFileLocator().locateFile(npmrc) : null;
 
 		TypedTsFmtConfigFile configFile;
 		Map<String, Object> configInline;
@@ -114,7 +120,8 @@ public class Tsfmt implements FormatterStepFactory {
 		}
 
 		File buildDir = stepConfig.getFileLocator().getBuildDir();
-		return TsFmtFormatterStep.create(devDependencies, stepConfig.getProvisioner(), buildDir, npm, configFile, configInline);
+		NpmPathResolver npmPathResolver = new NpmPathResolver(npm, npmrcFile, stepConfig.getFileLocator().getBaseDir());
+		return TsFmtFormatterStep.create(devDependencies, stepConfig.getProvisioner(), buildDir, npmPathResolver, configFile, configInline);
 	}
 
 	private static IllegalArgumentException onlyOneConfig() {

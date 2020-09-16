@@ -25,7 +25,7 @@ import java.util.function.Function;
  * Utility class to resolve an npm binary to be used by npm-based steps.
  * Tries to find an npm executable in the following order:
  * <ol>
- *     <li>from System-Property {@code npm.exec} (unverified)</li>
+ *     <li>from System-Property {@code npm.exec}</li>
  *     <li>from Environment-Properties in the following order:</li>
  *     	<ol>
  *     	    <li> from NVM_BIN environment variable, if available </li>
