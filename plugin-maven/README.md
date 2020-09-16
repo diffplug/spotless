@@ -51,6 +51,7 @@ user@machine repo % mvn spotless:check
   - [Scala](#scala) ([scalafmt](#scalafmt))
   - [C/C++](#cc) ([eclipse cdt](#eclipse-cdt))
   - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
+  - [Sql](#sql) ([dbeaver](#dbeaver))
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier))
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection))
@@ -339,6 +340,53 @@ Spotless requires Maven to be running on JRE 8+.
 <antlr4formatter>
   <version>1.2.1</version> <!-- optional -->
 </antlr4formatter>
+```
+
+<a name="sql-dbeaver"></a>
+<a name="applying-dbeaver-to-sql-scripts"></a>
+
+## SQL
+
+[code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/sql/Sql.java). [available steps](https://github.com/diffplug/spotless/tree/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/sql).
+
+```xml
+<configuration>
+  <sql>
+    <!-- You have to set the target manually -->
+    <includes>
+      <include>src/main/resources/**/*.sql</include>
+    </includes>
+
+    <dbeaver /> <!-- has its own section below -->
+
+    <licenseHeader>
+      <content>-- (C)$YEAR</content>  <!-- or <file>${basedir}/license-header</file> -->
+    </licenseHeader>
+  </sql>
+</configuration>
+```
+
+### dbeaver
+
+[homepage](https://dbeaver.io/). DBeaver is only distributed as a monolithic jar, so the formatter used here was copy-pasted into Spotless, and thus there is no version to change.
+
+```xml
+<dbveaer>
+    <configFile>dbeaver.props</configFile> <!-- configFile is optional -->
+</dbveaer>
+```
+
+Default configuration file, other options [available here](https://github.com/diffplug/spotless/blob/main/lib/src/main/java/com/diffplug/spotless/sql/dbeaver/DBeaverSQLFormatterConfiguration.java).
+
+```properties
+# case of the keywords (UPPER, LOWER or ORIGINAL)
+sql.formatter.keyword.case=UPPER
+# Statement delimiter
+sql.formatter.statement.delimiter=;
+# Indentation style (space or tab)
+sql.formatter.indent.type=space
+# Number of identation characters
+sql.formatter.indent.size=4
 ```
 
 <a name="applying-to-typescript-source"></a>

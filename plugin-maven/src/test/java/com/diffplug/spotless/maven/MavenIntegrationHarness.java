@@ -122,6 +122,10 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		writePom(groupWithSteps("typescript", including("**/*.ts"), steps));
 	}
 
+	protected void writePomWithSqlSteps(String... steps) throws IOException {
+		writePom(groupWithSteps("sql", including("**/*.sql"), steps));
+	}
+
 	protected void writePomWithPrettierSteps(String includes, String... steps) throws IOException {
 		writePom(formats(groupWithSteps("format", including(includes), steps)));
 	}
