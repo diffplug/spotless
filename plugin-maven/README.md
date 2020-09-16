@@ -342,9 +342,6 @@ Spotless requires Maven to be running on JRE 8+.
 </antlr4formatter>
 ```
 
-<a name="sql-dbeaver"></a>
-<a name="applying-dbeaver-to-sql-scripts"></a>
-
 ## SQL
 
 [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/sql/Sql.java). [available steps](https://github.com/diffplug/spotless/tree/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/sql).
@@ -359,9 +356,7 @@ Spotless requires Maven to be running on JRE 8+.
 
     <dbeaver /> <!-- has its own section below -->
 
-    <licenseHeader>
-      <content>-- (C)$YEAR</content>  <!-- or <file>${basedir}/license-header</file> -->
-    </licenseHeader>
+    <prettier /> <!-- has its own section below -->
   </sql>
 </configuration>
 ```

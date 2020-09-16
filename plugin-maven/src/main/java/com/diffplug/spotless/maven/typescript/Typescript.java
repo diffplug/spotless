@@ -26,8 +26,6 @@ import com.diffplug.spotless.maven.FormatterFactory;
  * It defines a formatter for typescript source files.
  */
 public class Typescript extends FormatterFactory {
-	private static final String LICENSE_HEADER_DELIMITER = null;
-
 	@Override
 	public Set<String> defaultIncludes() {
 		return Collections.emptySet();
@@ -35,7 +33,7 @@ public class Typescript extends FormatterFactory {
 
 	@Override
 	public String licenseHeaderDelimiter() {
-		return LICENSE_HEADER_DELIMITER;
+		return null;
 	}
 
 	public void addTsfmt(Tsfmt tsfmt) {
