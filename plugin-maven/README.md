@@ -207,7 +207,7 @@ Spotless requires Maven to be running on JRE 8+.
            imports you didn't specify explicitly will go there. -->
     </importOrder>
 
-    <eclipse />          <!-- has its own section below -->
+    <greclipse />          <!-- has its own section below -->
 
     <licenseHeader>
       <content>/* (C)$YEAR */</content>  <!-- or <file>${basedir}/license-header</file> -->
@@ -221,10 +221,10 @@ Spotless requires Maven to be running on JRE 8+.
 [homepage](https://github.com/groovy/groovy-eclipse/wiki). [changelog](https://github.com/groovy/groovy-eclipse/releases). [compatible versions](https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/groovy_eclipse_formatter). The Groovy formatter uses some of the [eclipse jdt](#eclipse-jdt) configuration parameters in addition to groovy-specific ones. All parameters can be configured within a single file, like the Java properties file [greclipse.properties](../testlib/src/main/resources/groovy/greclipse/format/greclipse.properties) in the previous example. The formatter step can also load the [exported Eclipse properties](../ECLIPSE_SCREENSHOTS.md) and augment it with the `.metadata/.plugins/org.eclipse.core.runtime/.settings/org.codehaus.groovy.eclipse.ui.prefs` from your Eclipse workspace as shown below.
 
 ```xml
-<eclipse>
+<greclipse>
   <version>4.13.0</version>                     <!-- optional -->
-  <file>${basedir}/eclipse-formatter.xml</file> <!-- optional -->
-</eclipse>
+  <file>${basedir}/greclipse.properties</file> <!-- optional -->
+</greclipse>
 ```
 
 Groovy-Eclipse formatting errors/warnings lead per default to a build failure. This behavior can be changed by adding the property/key value `ignoreFormatterProblems=true` to a configuration file. In this scenario, files causing problems, will not be modified by this formatter step.

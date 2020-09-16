@@ -25,7 +25,7 @@ import com.diffplug.spotless.maven.generic.LicenseHeader;
  * A {@link FormatterFactory} implementation that corresponds to {@code <groovy>...</groovy>} configuration element.
  * <p>
  * It defines a formatter for groovy source files that can execute both language agnostic (e.g. {@link LicenseHeader})
- * and groovy-specific (e.g. {@link Eclipse}) steps.
+ * and groovy-specific (e.g. {@link GrEclipse}) steps.
  */
 public class Groovy extends FormatterFactory {
 
@@ -42,8 +42,8 @@ public class Groovy extends FormatterFactory {
 		return LICENSE_HEADER_DELIMITER;
 	}
 
-	public void addEclipse(Eclipse eclipse) {
-		addStepFactory(eclipse);
+	public void addGreclipse(GrEclipse greclipse) {
+		addStepFactory(greclipse);
 	}
 
 	public void addImportOrder(ImportOrder importOrder) {

@@ -26,7 +26,7 @@ import com.diffplug.spotless.extra.groovy.GrEclipseFormatterStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 
-public class Eclipse implements FormatterStepFactory {
+public class GrEclipse implements FormatterStepFactory {
 
 	@Parameter
 	private String file;
@@ -36,12 +36,12 @@ public class Eclipse implements FormatterStepFactory {
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
-		EclipseBasedStepBuilder eclipseConfig = GrEclipseFormatterStep.createBuilder(stepConfig.getProvisioner());
-		eclipseConfig.setVersion(version == null ? GrEclipseFormatterStep.defaultVersion() : version);
+		EclipseBasedStepBuilder grEclipseConfig = GrEclipseFormatterStep.createBuilder(stepConfig.getProvisioner());
+		grEclipseConfig.setVersion(version == null ? GrEclipseFormatterStep.defaultVersion() : version);
 		if (null != file) {
 			File settingsFile = stepConfig.getFileLocator().locateFile(file);
-			eclipseConfig.setPreferences(Arrays.asList(settingsFile));
+			grEclipseConfig.setPreferences(Arrays.asList(settingsFile));
 		}
-		return eclipseConfig.build();
+		return grEclipseConfig.build();
 	}
 }

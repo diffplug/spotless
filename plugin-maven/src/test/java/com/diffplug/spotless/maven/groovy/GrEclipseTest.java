@@ -19,15 +19,15 @@ import org.junit.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
-public class EclipseFormatStepTest extends MavenIntegrationHarness {
+public class GrEclipseTest extends MavenIntegrationHarness {
 
 	@Test
 	public void testEclipse() throws Exception {
 		writePomWithGroovySteps(
-				"<eclipse>",
+				"<greclipse>",
 				"  <file>${basedir}/greclipse.properties</file>",
 				"  <version>4.12.0</version>",
-				"</eclipse>");
+				"</greclipse>");
 		setFile("greclipse.properties").toResource("groovy/greclipse/format/greclipse.properties");
 
 		String path = "src/main/groovy/test.groovy";
