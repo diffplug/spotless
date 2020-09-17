@@ -47,6 +47,7 @@ user@machine repo % mvn spotless:check
   - [Requirements](#requirements)
 - **Languages**
   - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier))
+  - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
   - [Kotlin](#kotlin) ([ktlint](#ktlint), [ktfmt](#ktfmt), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
   - [C/C++](#cc) ([eclipse cdt](#eclipse-cdt))
@@ -184,6 +185,50 @@ Spotless requires Maven to be running on JRE 8+.
   <file>${basedir}/eclipse-formatter.xml</file> <!-- optional -->
 </eclipse>
 ```
+
+## Groovy
+
+[code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/groovy/Groovy.java). [available steps](https://github.com/diffplug/spotless/tree/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/groovy).
+
+```xml
+<configuration>
+  <groovy>
+    <!-- These are the defaults, you can override if you want -->
+    <includes>
+      <include>src/main/groovy/**/*.groovy</include>
+      <include>src/test/groovy/**/*.groovy</include>
+      <include>src/main/java/**/*.java</include>
+      <include>src/test/java/**/*.java</include>
+    </includes>
+
+    <importOrder /> <!-- standard import order -->
+    <importOrder>  <!-- or a custom ordering -->
+      <order>java,javax,org,com,com.diffplug,</order>  <!-- or use <file>${basedir}/eclipse.importorder</file> -->
+      <!-- You probably want an empty string at the end - all of the
+           imports you didn't specify explicitly will go there. -->
+    </importOrder>
+
+    <greclipse />          <!-- has its own section below -->
+
+    <licenseHeader>
+      <content>/* (C)$YEAR */</content>  <!-- or <file>${basedir}/license-header</file> -->
+    </licenseHeader>
+  </java>
+</configuration>
+```
+
+### eclipse groovy
+
+[homepage](https://github.com/groovy/groovy-eclipse/wiki). [changelog](https://github.com/groovy/groovy-eclipse/releases). [compatible versions](https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/groovy_eclipse_formatter). The Groovy formatter uses some of the [eclipse jdt](#eclipse-jdt) configuration parameters in addition to groovy-specific ones. All parameters can be configured within a single file, like the Java properties file [greclipse.properties](../testlib/src/main/resources/groovy/greclipse/format/greclipse.properties) in the previous example. The formatter step can also load the [exported Eclipse properties](../ECLIPSE_SCREENSHOTS.md) and augment it with the `.metadata/.plugins/org.eclipse.core.runtime/.settings/org.codehaus.groovy.eclipse.ui.prefs` from your Eclipse workspace as shown below.
+
+```xml
+<greclipse>
+  <version>4.13.0</version>                     <!-- optional -->
+  <file>${basedir}/greclipse.properties</file> <!-- optional -->
+</greclipse>
+```
+
+Groovy-Eclipse formatting errors/warnings lead per default to a build failure. This behavior can be changed by adding the property/key value `ignoreFormatterProblems=true` to a configuration file. In this scenario, files causing problems, will not be modified by this formatter step.
 
 <a name="applying-to-kotlin-source"></a>
 
