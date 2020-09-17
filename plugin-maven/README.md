@@ -399,8 +399,7 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
       <include>src/main/resources/**/*.sql</include>
     </includes>
 
-    <dbeaver /> <!-- has its own section below -->
-
+    <dbeaver />  <!-- has its own section below -->
     <prettier /> <!-- has its own section below -->
   </sql>
 </configuration>

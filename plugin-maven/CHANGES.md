@@ -4,7 +4,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
-* Added support for sql formatting ([#698](https://github.com/diffplug/spotless/pull/698))
+* Added support for groovy formatting ([#698](https://github.com/diffplug/spotless/pull/697)).
+* Added support for sql formatting ([#698](https://github.com/diffplug/spotless/pull/698)).
 
 ## [2.3.1] - 2020-09-12
 ### Fixed
