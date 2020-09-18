@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [5.5.2] - 2020-09-18
 ### Fixed
 * Don't assume that file content passed into Prettier is at least 50 characters (https://github.com/diffplug/spotless/pull/699).
 
