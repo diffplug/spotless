@@ -63,8 +63,10 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 	 * could be verrrry slow, so the rest of this is about speeding this up.
 	 */
 	public boolean isClean(Project project, ObjectId treeSha, File file) throws IOException {
+		System.out.println("### Checking isClean " + file + " against " + treeSha);
 		Repository repo = repositoryFor(project);
 		String path = FileSignature.pathNativeToUnix(repo.getWorkTree().toPath().relativize(file.toPath()).toString());
+		System.out.println("path = " + path);
 
 		// TODO: should be cached-per-repo if it is thread-safe, or per-repo-per-thread if it is not
 		DirCache dirCache = repo.readDirCache();
@@ -85,6 +87,10 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 				AbstractTreeIterator treeIterator = treeWalk.getTree(TREE, AbstractTreeIterator.class);
 				DirCacheIterator dirCacheIterator = treeWalk.getTree(INDEX, DirCacheIterator.class);
 				WorkingTreeIterator workingTreeIterator = treeWalk.getTree(WORKDIR, WorkingTreeIterator.class);
+
+				System.out.println("treeIterator = " + treeIterator);
+				System.out.println("dirCacheIterator = " + dirCacheIterator);
+				System.out.println("workingTreeIterator = " + workingTreeIterator);
 
 				boolean hasTree = treeIterator != null;
 				boolean hasDirCache = dirCacheIterator != null;
