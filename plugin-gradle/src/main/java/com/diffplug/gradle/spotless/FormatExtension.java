@@ -649,7 +649,7 @@ public class FormatExtension {
 	 * spotless {
 	 *   format 'examples', {
 	 *     target 'src/**\/*.md'
-	 *     withinBlocks 'java examples', '\n```java\n', '\n```\n`, com.diffplug.spotless.JavaExtension, {
+	 *     withinBlocks 'java examples', '\n```java\n', '\n```\n`, com.diffplug.gradle.spotless.JavaExtension, {
 	 *       googleJavaFormat()
 	 *     }
 	 *     ...
