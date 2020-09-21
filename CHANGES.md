@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.7.0] - 2020-09-21
 ### Added
 * `PipeStepPair.Builder` now has a method `.buildStepWhichAppliesSubSteps(Path rootPath, Collection<FormatterStep> steps)`, which returns a single `FormatterStep` that applies the given steps within the regex defined earlier in the builder. Used for formatting inception (implements [#412](https://github.com/diffplug/spotless/issues/412)).
 
