@@ -211,7 +211,7 @@ public abstract class SpotlessExtension {
 	protected final <T extends FormatExtension> T maybeCreate(String name, Class<T> clazz) {
 		FormatExtension existing = formats.get(name);
 		if (existing != null) {
-			if (!existing.getClass().equals(clazz)) {
+			if (!clazz.isInstance(existing)) {
 				throw new GradleException("Tried to add format named '" + name + "'" +
 						" of type " + clazz + " but one has already been created of type " + existing.getClass());
 			} else {
