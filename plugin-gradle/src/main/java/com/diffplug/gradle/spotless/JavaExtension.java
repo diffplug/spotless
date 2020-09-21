@@ -19,6 +19,8 @@ import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElem
 
 import java.util.Objects;
 
+import javax.inject.Inject;
+
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.file.FileCollection;
@@ -36,6 +38,7 @@ import com.diffplug.spotless.java.RemoveUnusedImportsStep;
 public class JavaExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "java";
 
+	@Inject
 	public JavaExtension(SpotlessExtension spotless) {
 		super(spotless);
 	}

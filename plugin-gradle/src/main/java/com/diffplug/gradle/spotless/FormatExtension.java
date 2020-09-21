@@ -31,6 +31,7 @@ import java.util.TreeMap;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
@@ -66,6 +67,7 @@ public class FormatExtension {
 	final SpotlessExtension spotless;
 	final List<Action<FormatExtension>> lazyActions = new ArrayList<>();
 
+	@Inject
 	public FormatExtension(SpotlessExtension spotless) {
 		this.spotless = Objects.requireNonNull(spotless);
 	}
@@ -622,6 +624,59 @@ public class FormatExtension {
 
 	public EclipseWtpConfig eclipseWtp(EclipseWtpFormatterStep type, String version) {
 		return new EclipseWtpConfig(type, version);
+	}
+
+	/**
+	 * ```gradle
+	 * spotless {
+	 *   format 'examples', {
+	 *     target 'src/**\/*.md'
+	 *     withinBlocks 'javascript examples', '\n```javascript\n', '\n```\n`, {
+	 *       prettier().config(['parser': 'javascript'])
+	 *     }
+	 *     ...
+	 * ```
+	 */
+	public void withinBlocks(String name, String open, String close, Action<FormatExtension> configure) {
+		withinBlocks(name, open, close, FormatExtension.class, configure);
+	}
+
+	/**
+	 * Same as {@link #withinBlocks(String, String, String, Action)}, except you can specify
+	 * any language-specific subclass of {@link FormatExtension} to get language-specific steps.
+	 *
+	 * ```gradle
+	 * spotless {
+	 *   format 'examples', {
+	 *     target 'src/**\/*.md'
+	 *     withinBlocks 'java examples', '\n```java\n', '\n```\n`, com.diffplug.gradle.spotless.JavaExtension, {
+	 *       googleJavaFormat()
+	 *     }
+	 *     ...
+	 * ```
+	 */
+	public <T extends FormatExtension> void withinBlocks(String name, String open, String close, Class<T> clazz, Action<T> configure) {
+		withinBlocksHelper(PipeStepPair.named(name).openClose(open, close), clazz, configure);
+	}
+
+	/** Same as {@link #withinBlocks(String, String, String, Action)}, except instead of an open/close pair, you specify a regex with exactly one capturing group. */
+	public void withinBlocksRegex(String name, String regex, Action<FormatExtension> configure) {
+		withinBlocksRegex(name, regex, FormatExtension.class, configure);
+	}
+
+	/** Same as {@link #withinBlocksRegex(String, String, Action)}, except you can specify any language-specific subclass of {@link FormatExtension} to get language-specific steps. */
+	public <T extends FormatExtension> void withinBlocksRegex(String name, String regex, Class<T> clazz, Action<T> configure) {
+		withinBlocksHelper(PipeStepPair.named(name).regex(regex), clazz, configure);
+	}
+
+	private <T extends FormatExtension> void withinBlocksHelper(PipeStepPair.Builder builder, Class<T> clazz, Action<T> configure) {
+		// create the sub-extension
+		T formatExtension = spotless.instantiateFormatExtension(clazz);
+		// configure it
+		configure.execute(formatExtension);
+		// create a step which applies all of those steps as sub-steps
+		FormatterStep step = builder.buildStepWhichAppliesSubSteps(spotless.project.getRootDir().toPath(), formatExtension.steps);
+		addStep(step);
 	}
 
 	/**

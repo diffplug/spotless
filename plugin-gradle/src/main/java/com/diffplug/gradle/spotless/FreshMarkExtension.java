@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.inject.Inject;
+
 import org.gradle.api.Action;
 
 import com.diffplug.spotless.FormatterProperties;
@@ -33,6 +35,7 @@ public class FreshMarkExtension extends FormatExtension {
 
 	public final List<Action<Map<String, Object>>> propertyActions = new ArrayList<>();
 
+	@Inject
 	public FreshMarkExtension(SpotlessExtension spotless) {
 		super(spotless);
 		addStep(FreshMarkStep.create(() -> {

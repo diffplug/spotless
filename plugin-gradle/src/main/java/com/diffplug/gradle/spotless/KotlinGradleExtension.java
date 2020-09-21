@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.inject.Inject;
+
 import com.diffplug.common.collect.ImmutableSortedMap;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.kotlin.KtLintStep;
@@ -30,6 +32,7 @@ public class KotlinGradleExtension extends FormatExtension {
 
 	static final String NAME = "kotlinGradle";
 
+	@Inject
 	public KotlinGradleExtension(SpotlessExtension spotless) {
 		super(spotless);
 	}

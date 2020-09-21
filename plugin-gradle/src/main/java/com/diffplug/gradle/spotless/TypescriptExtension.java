@@ -23,6 +23,7 @@ import java.util.Objects;
 import java.util.TreeMap;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 
 import org.gradle.api.Project;
 
@@ -36,6 +37,7 @@ public class TypescriptExtension extends FormatExtension {
 
 	static final String NAME = "typescript";
 
+	@Inject
 	public TypescriptExtension(SpotlessExtension spotless) {
 		super(spotless);
 	}

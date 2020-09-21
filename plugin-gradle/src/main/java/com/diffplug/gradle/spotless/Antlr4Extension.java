@@ -17,6 +17,8 @@ package com.diffplug.gradle.spotless;
 
 import java.util.Objects;
 
+import javax.inject.Inject;
+
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.antlr4.Antlr4Defaults;
 import com.diffplug.spotless.antlr4.Antlr4FormatterStep;
@@ -24,6 +26,7 @@ import com.diffplug.spotless.antlr4.Antlr4FormatterStep;
 public class Antlr4Extension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "antlr4";
 
+	@Inject
 	public Antlr4Extension(SpotlessExtension rootExtension) {
 		super(rootExtension);
 	}

@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.generic;
 
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Locale;
 
 import org.junit.Test;
@@ -92,5 +94,25 @@ public class PipeStepPairTest {
 				"G H I"), exception -> {
 					exception.hasMessage("An intermediate step removed a match of spotless:off spotless:on");
 				});
+	}
+
+	@Test
+	public void andApply() throws Exception {
+		FormatterStep lowercase = FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT));
+		FormatterStep lowercaseSometimes = PipeStepPair.named("lowercaseSometimes").openClose("<lower>", "</lower>")
+				.buildStepWhichAppliesSubSteps(Paths.get(""), Arrays.asList(lowercase));
+		StepHarness.forSteps(lowercaseSometimes).test(
+				StringPrinter.buildStringFromLines(
+						"A B C",
+						"<lower>",
+						"D E F",
+						"</lower>",
+						"G H I"),
+				StringPrinter.buildStringFromLines(
+						"A B C",
+						"<lower>",
+						"d e f",
+						"</lower>",
+						"G H I"));
 	}
 }
