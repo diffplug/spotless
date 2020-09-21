@@ -45,4 +45,21 @@ public class JavaDefaultTargetTest extends GradleIntegrationHarness {
 		assertFile("src/main/groovy/test.java").sameAsResource("java/googlejavaformat/JavaCodeFormatted.test");
 		assertFile("src/main/groovy/test.groovy").sameAsResource("java/googlejavaformat/JavaCodeUnformatted.test");
 	}
+
+	@Test
+	public void multipleBlocksShouldWork() throws IOException {
+		setFile("build.gradle").toLines(
+				"buildscript { repositories { mavenCentral() } }",
+				"plugins {",
+				"  id 'com.diffplug.spotless'",
+				"  id 'java'",
+				"}",
+				"",
+				"spotless {",
+				"  java {  googleJavaFormat()  }",
+				"  java {  eclipse()  }",
+				"}");
+		gradleRunner().withArguments("spotlessApply").build();
+		gradleRunner().withArguments("spotlessApply").build();
+	}
 }
