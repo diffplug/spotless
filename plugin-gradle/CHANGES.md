@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [5.6.1] - 2020-09-21
 ### Fixed
 * `5.6.0` introduced a bug where it was no longer possible to configure a single format twice, e.g. to have two `java{}` blocks in a single file. Fixed by [#702](https://github.com/diffplug/spotless/pull/702).
 
