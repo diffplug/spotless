@@ -102,6 +102,10 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		writePom(groupWithSteps("antlr4", steps));
 	}
 
+	protected void writePomWithGroovySteps(String... steps) throws IOException {
+		writePom(groupWithSteps("groovy", steps));
+	}
+
 	protected void writePomWithJavaSteps(String... steps) throws IOException {
 		writePom(groupWithSteps("java", steps));
 	}
@@ -120,6 +124,10 @@ public class MavenIntegrationHarness extends ResourceHarness {
 
 	protected void writePomWithTypescriptSteps(String... steps) throws IOException {
 		writePom(groupWithSteps("typescript", including("**/*.ts"), steps));
+	}
+
+	protected void writePomWithSqlSteps(String... steps) throws IOException {
+		writePom(groupWithSteps("sql", including("**/*.sql"), steps));
 	}
 
 	protected void writePomWithPrettierSteps(String includes, String... steps) throws IOException {

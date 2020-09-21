@@ -163,7 +163,7 @@ pluginManagement {
   }
   resolutionStrategy {
     eachPlugin {
-      if (requested.id.id == 'com.diffplug.gradle.spotless') {
+      if (requested.id.id == 'com.diffplug.spotless') {
         useModule('com.diffplug.spotless:spotless-plugin-gradle:{latest-SNAPSHOT}')
       }
     }
@@ -189,7 +189,7 @@ pluginManagement {
   }
   resolutionStrategy {
     eachPlugin {
-      if (requested.id.id == 'com.diffplug.gradle.spotless') {
+      if (requested.id.id == 'com.diffplug.spotless') {
         useModule('com.github.{{USER_OR_ORG}}.spotless:spotless-plugin-gradle:{{SHA_OF_COMMIT_YOU_WANT}}')
       }
     }

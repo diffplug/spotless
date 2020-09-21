@@ -4,9 +4,19 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+## [2.4.1] - 2020-09-18
+### Fixed
+* Don't assume that file content passed into Prettier is at least 50 characters (https://github.com/diffplug/spotless/pull/699).
+
+## [2.4.0] - 2020-09-17
+### Added
+* Added support for groovy formatting ([#698](https://github.com/diffplug/spotless/pull/697)).
+* Added support for sql formatting ([#698](https://github.com/diffplug/spotless/pull/698)).
+
 ## [2.3.1] - 2020-09-12
 ### Fixed
 * Improved JRE parsing to handle strings like `16-loom` (fixes [#693](https://github.com/diffplug/spotless/issues/693)).
+* Added support for groovy formatting ([#697](https://github.com/diffplug/spotless/pull/697))
 
 ## [2.3.0] - 2020-09-11
 ### Added

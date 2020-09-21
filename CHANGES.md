@@ -13,6 +13,10 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Added
 * `PipeStepPair.Builder` now has a method `.buildStepWhichAppliesSubSteps(Path rootPath, Collection<FormatterStep> steps)`, which returns a single `FormatterStep` that applies the given steps within the regex defined earlier in the builder. Used for formatting inception (implements [#412](https://github.com/diffplug/spotless/issues/412)).
 
+## [2.6.2] - 2020-09-18
+### Fixed
+* Don't assume that file content passed into Prettier is at least 50 characters (https://github.com/diffplug/spotless/pull/699).
+
 ## [2.6.1] - 2020-09-12
 ### Fixed
 * Improved JRE parsing to handle strings like `16-loom` (fixes [#693](https://github.com/diffplug/spotless/issues/693)).
