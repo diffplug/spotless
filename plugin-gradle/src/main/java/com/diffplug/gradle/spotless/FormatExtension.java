@@ -630,8 +630,8 @@ public class FormatExtension {
 	 * ```gradle
 	 * spotless {
 	 *   format 'examples', {
-	 *     target 'src/**\/*.md'
-	 *     withinBlocks 'javascript examples', '\n```javascript\n', '\n```\n`, {
+	 *     target '*.md'
+	 *     withinBlocks 'javascript examples', '\n```javascript\n', '\n```\n', {
 	 *       prettier().config(['parser': 'javascript'])
 	 *     }
 	 *     ...
@@ -648,8 +648,8 @@ public class FormatExtension {
 	 * ```gradle
 	 * spotless {
 	 *   format 'examples', {
-	 *     target 'src/**\/*.md'
-	 *     withinBlocks 'java examples', '\n```java\n', '\n```\n`, com.diffplug.gradle.spotless.JavaExtension, {
+	 *     target '*.md'
+	 *     withinBlocks 'java examples', '\n```java\n', '\n```\n', com.diffplug.gradle.spotless.JavaExtension, {
 	 *       googleJavaFormat()
 	 *     }
 	 *     ...
