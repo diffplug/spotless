@@ -777,7 +777,7 @@ If you'd like to create a one-off Spotless task outside of the `check`/`apply` f
 
 ## Inception (languages within languages within...)
 
-In very rare cases, you might want to format e.g. javascript which is written inside JSP templates, or maybe java within a markdown file, or something wacky like that.  You can specify hunks within a file using either open/close tags or a regex with a single capturing group, and then specify rules within it, like so.  See [javadoc TODO](https://javadoc.io/static/com.diffplug.spotless/spotless-plugin-gradle/5.5.1/com/diffplug/gradle/spotless/FormatExtension.html#target-java.lang.Object...-) for more details.
+In very rare cases, you might want to format e.g. javascript which is written inside JSP templates, or maybe java within a markdown file, or something wacky like that.  You can specify hunks within a file using either open/close tags or a regex with a single capturing group, and then specify rules within it, like so.  See [javadoc TODO](https://javadoc.io/static/com.diffplug.spotless/spotless-plugin-gradle/5.5.2/com/diffplug/gradle/spotless/FormatExtension.html#target-java.lang.Object...-) for more details.
 
 ```gradle
 import com.diffplug.gradle.spotless.JavaExtension
