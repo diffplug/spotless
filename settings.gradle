@@ -50,7 +50,7 @@ if (org.gradle.api.JavaVersion.current() == org.gradle.api.JavaVersion.VERSION_1
 }
 
 def getStartProperty(java.lang.String name) {
-	def value = startParameter.getProjectProperties().get('com.diffplug.spotless.include.ext')
+	def value = startParameter.getProjectProperties().get(name)
 	if(null != value) {
 		return value
 	}
@@ -61,12 +61,22 @@ def getStartProperty(java.lang.String name) {
 		userProperties.load(userPropertiesFile.newReader())
 	}
 	return userProperties.get(name)
+
 }
 
 // include external (_ext) projects from development builds
-if (getStartProperty('com.diffplug.spotless.include_ext') == 'true') {
+if (getStartProperty('com.diffplug.spotless.include.ext') == 'true') {
 	file('_ext').eachDirMatch(~/^(?!(\.|gradle)).*/) { dir ->
 		include dir.name
 		project(":${dir.name}").projectDir = dir
 	}
+}
+
+// include external (_ext) projects from development builds, but only the ones that don't need p2
+if (getStartProperty('com.diffplug.spotless.include.ext.nop2') == 'true') {
+	include 'eclipse-base'
+	project(':eclipse-base').projectDir = file('_ext/eclipse-base')
+
+	include 'eclipse-jdt'
+	project(':eclipse-jdt').projectDir = file('_ext/eclipse-jdt')
 }

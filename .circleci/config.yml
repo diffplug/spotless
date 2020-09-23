@@ -210,8 +210,8 @@ jobs:
       - *restore_cache_deps
       - *set_git_origin_to_https
       - run:
-          name: gradlew -Pcom.diffplug.spotless.include.ext=true changelogPrint
-          command: ./gradlew -Pcom.diffplug.spotless.include.ext=true changelogPrint
+          name: gradlew -Pcom.diffplug.spotless.include.ext.nop2=true changelogPrint
+          command: ./gradlew -Pcom.diffplug.spotless.include.ext.nop2=true changelogPrint
   ext_do_release_base:
     << : *env_gradle
     steps:
@@ -221,7 +221,7 @@ jobs:
       - *set_git_origin_to_https
       - run:
           name: gradlew :eclipse-base:changelogPush
-          command: ./gradlew -Pcom.diffplug.spotless.include.ext=true :eclipse-base:changelogPush -Prelease=true --stacktrace
+          command: ./gradlew -Pcom.diffplug.spotless.include.ext.nop2=true :eclipse-base:changelogPush -Prelease=true --stacktrace
   ext_do_release_jdt:
     << : *env_gradle
     steps:
@@ -231,38 +231,7 @@ jobs:
       - *set_git_origin_to_https
       - run:
           name: gradlew :eclipse-jdt:changelogPush
-          command: ./gradlew -Pcom.diffplug.spotless.include.ext=true :eclipse-jdt:changelogPush -Prelease=true --stacktrace
-  ext_do_release_wtp:
-    << : *env_gradle
-    steps:
-      - checkout
-      - *restore_cache_wrapper
-      - *restore_cache_deps
-      - *set_git_origin_to_https
-      - run:
-          name: gradlew :eclipse-wtp:changelogPush
-          command: ./gradlew -Pcom.diffplug.spotless.include.ext=true :eclipse-wtp:changelogPush -Prelease=true --stacktrace
-  ext_do_release_cdt:
-    << : *env_gradle
-    steps:
-      - checkout
-      - *restore_cache_wrapper
-      - *restore_cache_deps
-      - *set_git_origin_to_https
-      - run:
-          name: gradlew :eclipse-cdt:changelogPush
-          command: ./gradlew -Pcom.diffplug.spotless.include.ext=true :eclipse-cdt:changelogPush -Prelease=true --stacktrace
-  ext_do_release_groovy:
-    << : *env_gradle
-    steps:
-      - checkout
-      - *restore_cache_wrapper
-      - *restore_cache_deps
-      - *set_git_origin_to_https
-      - run:
-          name: gradlew :eclipse-groovy:changelogPush
-          command: ./gradlew -Pcom.diffplug.spotless.include.ext=true :eclipse-groovy:changelogPush -Prelease=true --stacktrace
-
+          command: ./gradlew -Pcom.diffplug.spotless.include.ext.nop2=true :eclipse-jdt:changelogPush -Prelease=true --stacktrace
 workflows:
   version: 2
   assemble_and_test:
@@ -338,24 +307,3 @@ workflows:
       - ext_do_release_jdt:
           requires:
             - ext_release_jdt
-      - ext_release_wtp:
-          type: approval
-          requires:
-            - ext_changelog_print
-      - ext_do_release_wtp:
-          requires:
-            - ext_release_wtp
-      - ext_release_cdt:
-          type: approval
-          requires:
-            - ext_changelog_print
-      - ext_do_release_cdt:
-          requires:
-            - ext_release_cdt
-      - ext_release_groovy:
-          type: approval
-          requires:
-            - ext_changelog_print
-      - ext_do_release_groovy:
-          requires:
-            - ext_release_groovy
