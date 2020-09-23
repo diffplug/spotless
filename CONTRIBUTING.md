@@ -121,7 +121,7 @@ The `_ext` projects are disabled per default, since:
 * the downloaded content may change on server side and break CI builds
 
 
-The `_ext` can be activated via the root project property `com.diffplug.spotless.include_ext`.
+The `_ext` can be activated via the root project property `com.diffplug.spotless.include.ext`.
 
 Activate the the property via command line, like for example:
 
