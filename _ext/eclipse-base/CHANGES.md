@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.2.1`).
 
 ## [Unreleased]
+
+## [3.4.0] - 2020-09-23
 ### Added
 * Upgraded to `org.eclipse.osgi` version `3.16`.
 
