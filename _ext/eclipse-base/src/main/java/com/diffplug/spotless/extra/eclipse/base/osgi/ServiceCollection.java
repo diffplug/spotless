@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,12 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Optional;
 
+import org.eclipse.osgi.internal.framework.DTOBuilder;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Filter;
 import org.osgi.framework.ServiceException;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.dto.ServiceReferenceDTO;
 
 import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseServiceConfig;
 
@@ -146,6 +148,15 @@ public class ServiceCollection implements SpotlessEclipseServiceConfig {
 		@Override
 		public Dictionary<String, Object> getProperties() {
 			return new Hashtable<String, Object>(properties);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <A> A adapt(Class<A> type) {
+			if (ServiceReferenceDTO.class.equals(type)) {
+				return (A) DTOBuilder.newServiceReferenceDTO(this);
+			}
+			return null;
 		}
 
 	}

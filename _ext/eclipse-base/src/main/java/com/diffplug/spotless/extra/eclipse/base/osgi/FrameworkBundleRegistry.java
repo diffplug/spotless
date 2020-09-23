@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,11 @@
  */
 package com.diffplug.spotless.extra.eclipse.base.osgi;
 
-import org.eclipse.osgi.internal.hookregistry.FrameworkUtilHelper;
+import java.util.Optional;
+
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.connect.FrameworkUtilHelper;
 
 /**
  * Framework bundle registry service for bundles which do not come with an activator.
@@ -29,7 +31,7 @@ import org.osgi.framework.BundleException;
  * original resources by providing a resource in the
  * corresponding fat JAR location.
  */
-public class FrameworkBundleRegistry extends FrameworkUtilHelper {
+public class FrameworkBundleRegistry implements FrameworkUtilHelper {
 	static BundleController INSTANCE = null;
 
 	static void initialize(BundleController bundleController) {
@@ -40,12 +42,12 @@ public class FrameworkBundleRegistry extends FrameworkUtilHelper {
 	}
 
 	@Override
-	public Bundle getBundle(Class<?> classFromBundle) {
+	public Optional<Bundle> getBundle(Class<?> classFromBundle) {
 		try {
-			return new SimpleBundle(INSTANCE, classFromBundle);
+			return Optional.of(new SimpleBundle(INSTANCE, classFromBundle));
 		} catch (BundleException e) {
-			//If the class cannot be assoziated to a JAR or fat JAR resource location, just retun null
+			//If the class cannot be associated to a JAR or fat JAR resource location, just retun null
 		}
-		return null;
+		return Optional.empty();
 	}
 }
