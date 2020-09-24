@@ -135,7 +135,7 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 	 * builds and submodules, it's quite possible that a single Gradle project will span across multiple git repositories.
 	 * We cache the Repository for every Project in `gitRoots`, and use dynamic programming to populate it.
 	 */
-	private Repository repositoryFor(Project project) throws IOException {
+	protected Repository repositoryFor(Project project) throws IOException {
 		Repository repo = gitRoots.get(project);
 		if (repo == null) {
 			if (isGitRoot(getDir(project))) {

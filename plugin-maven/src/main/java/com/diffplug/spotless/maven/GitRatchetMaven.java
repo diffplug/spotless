@@ -17,11 +17,19 @@ package com.diffplug.spotless.maven;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.function.Predicate;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectReader;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 
-import com.diffplug.common.base.Errors;
 import com.diffplug.spotless.extra.GitRatchet;
 
 final class GitRatchetMaven extends GitRatchet<File> {
@@ -50,15 +58,28 @@ final class GitRatchetMaven extends GitRatchet<File> {
 		return instance;
 	}
 
-	/** A predicate which returns only the "git dirty" files. */
-	Predicate<File> isGitDirty(File baseDir, String ratchetFrom) {
+	Iterable<String> getDirtyFiles(File baseDir, String ratchetFrom)
+			throws IOException, GitAPIException {
+		Repository repository = repositoryFor(baseDir);
 		ObjectId sha = rootTreeShaOf(baseDir, ratchetFrom);
-		return file -> {
-			try {
-				return !isClean(baseDir, sha, file);
-			} catch (IOException e) {
-				throw Errors.asRuntime(e);
-			}
-		};
+
+		ObjectReader oldReader = repository.newObjectReader();
+		CanonicalTreeParser oldTree = new CanonicalTreeParser();
+		oldTree.reset(oldReader, sha);
+
+		Git git = new Git(repository);
+		List<DiffEntry> diffs = git.diff()
+			.setShowNameAndStatusOnly(true)
+			.setOldTree(oldTree)
+			.call();
+
+		String workTreePath = repository.getWorkTree().getPath();
+		Path baseDirPath = Paths.get(baseDir.getPath());
+
+		return diffs.stream()
+			.map(DiffEntry::getNewPath)
+			.map(path -> Paths.get(workTreePath, path))
+			.map(path -> baseDirPath.relativize(path).toString())
+			.collect(Collectors.toList());
 	}
 }
