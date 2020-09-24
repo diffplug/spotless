@@ -5,14 +5,18 @@ apply from: rootProject.file('gradle/changelog.gradle')
 version = spotlessChangelog.versionNext
 apply from: rootProject.file('gradle/java-setup.gradle')
 
+// Allow declaration of api/compile dependencies
+apply plugin: 'java-library'
+
 // Show warning locations
-tasks.withType(JavaCompile) { 
+tasks.withType(JavaCompile) {
 	options.compilerArgs << "-Xlint:unchecked"
-	options.compilerArgs << "-Xlint:deprecation" 
+	options.compilerArgs << "-Xlint:deprecation"
 }
 
 //Currently testlib is not used by _ext. Hence the external dependencies are added here.
 dependencies {
 	testImplementation "junit:junit:${VER_JUNIT}"
 	testImplementation "org.assertj:assertj-core:${VER_ASSERTJ}"
+	testImplementation project(':testlib')
 }
