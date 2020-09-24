@@ -69,17 +69,17 @@ final class GitRatchetMaven extends GitRatchet<File> {
 
 		Git git = new Git(repository);
 		List<DiffEntry> diffs = git.diff()
-			.setShowNameAndStatusOnly(true)
-			.setOldTree(oldTree)
-			.call();
+				.setShowNameAndStatusOnly(true)
+				.setOldTree(oldTree)
+				.call();
 
 		String workTreePath = repository.getWorkTree().getPath();
 		Path baseDirPath = Paths.get(baseDir.getPath());
 
 		return diffs.stream()
-			.map(DiffEntry::getNewPath)
-			.map(path -> Paths.get(workTreePath, path))
-			.map(path -> baseDirPath.relativize(path).toString())
-			.collect(Collectors.toList());
+				.map(DiffEntry::getNewPath)
+				.map(path -> Paths.get(workTreePath, path))
+				.map(path -> baseDirPath.relativize(path).toString())
+				.collect(Collectors.toList());
 	}
 }

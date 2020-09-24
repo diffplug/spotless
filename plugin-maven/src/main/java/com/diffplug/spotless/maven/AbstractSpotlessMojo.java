@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.maven;
 
+import static java.util.stream.Collectors.toList;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -59,8 +61,6 @@ import com.diffplug.spotless.maven.kotlin.Kotlin;
 import com.diffplug.spotless.maven.scala.Scala;
 import com.diffplug.spotless.maven.sql.Sql;
 import com.diffplug.spotless.maven.typescript.Typescript;
-
-import static java.util.stream.Collectors.toList;
 
 public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
@@ -180,14 +180,14 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	private List<File> collectFilesFromGit(FormatterFactory formatterFactory, String ratchetFrom) throws MojoExecutionException {
 		MatchPatterns includePatterns = MatchPatterns.from(
-			withNormalizedFileSeparators(getIncludes(formatterFactory)));
+				withNormalizedFileSeparators(getIncludes(formatterFactory)));
 		MatchPatterns excludePatterns = MatchPatterns.from(
-			withNormalizedFileSeparators(getExcludes(formatterFactory)));
+				withNormalizedFileSeparators(getExcludes(formatterFactory)));
 
 		Iterable<String> dirtyFiles;
 		try {
 			dirtyFiles = GitRatchetMaven
-				.instance().getDirtyFiles(baseDir, ratchetFrom);
+					.instance().getDirtyFiles(baseDir, ratchetFrom);
 		} catch (IOException e) {
 			throw new MojoExecutionException("Unable to scan file tree rooted at " + baseDir, e);
 		} catch (GitAPIException e) {
@@ -195,7 +195,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		}
 
 		List<File> result = new ArrayList<>();
-		for (String file: withNormalizedFileSeparators(dirtyFiles)) {
+		for (String file : withNormalizedFileSeparators(dirtyFiles)) {
 			if (includePatterns.matches(file, true)) {
 				if (!excludePatterns.matches(file, true)) {
 					result.add(Paths.get(baseDir.getPath(), file).toFile());
@@ -215,9 +215,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	private Iterable<String> withNormalizedFileSeparators(Iterable<String> patterns) {
 		return StreamSupport.stream(patterns.spliterator(), true)
-			.map(pattern -> pattern.replace('/', File.separatorChar))
-			.map(pattern -> pattern.replace('\\', File.separatorChar))
-			.collect(Collectors.toSet());
+				.map(pattern -> pattern.replace('/', File.separatorChar))
+				.map(pattern -> pattern.replace('\\', File.separatorChar))
+				.collect(Collectors.toSet());
 	}
 
 	private static String withTrailingSeparator(String path) {
