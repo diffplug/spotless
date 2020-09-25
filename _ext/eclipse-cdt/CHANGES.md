@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `9.9.0`).
 
 ## [Unreleased]
+
+## [9.10.0] - 2020-09-25
 ### Added
 * Upgraded to `CDT` version `9.10`.
 
