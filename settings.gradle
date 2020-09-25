@@ -72,11 +72,10 @@ if (getStartProperty('com.diffplug.spotless.include.ext') == 'true') {
 	}
 }
 
-// include external (_ext) projects from development builds, but only the ones that don't need p2
+// include external (_ext) projects from development builds, but disable the p2 parts
 if (getStartProperty('com.diffplug.spotless.include.ext.nop2') == 'true') {
-	include 'eclipse-base'
-	project(':eclipse-base').projectDir = file('_ext/eclipse-base')
-
-	include 'eclipse-jdt'
-	project(':eclipse-jdt').projectDir = file('_ext/eclipse-jdt')
+	file('_ext').eachDirMatch(~/^(?!(\.|gradle)).*/) { dir ->
+		include dir.name
+		project(":${dir.name}").projectDir = dir
+	}
 }
