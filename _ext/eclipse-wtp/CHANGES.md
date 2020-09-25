@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.15.1`).
 
 ## [Unreleased]
+### Added
+* Upgraded to `WebTools` version `2019-12`.
 
 ## [3.15.3] - 2020-03-26
 ### Fixed
