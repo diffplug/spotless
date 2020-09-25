@@ -23,7 +23,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [9.4.5] - 2019-02-25
 * Replaced `http` update-site with `https` ([#360](https://github.com/diffplug/spotless/issues/360)).
 
-## [9.4.4] 2018-09-04
+## [9.4.4] - 2018-09-04
 * Added missing log service, which caused exceptions on AST warnings ([#286](https://github.com/diffplug/spotless/pull/286)).
 
 ## [9.4.3] - 2018-08-08
