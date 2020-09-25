@@ -21,6 +21,12 @@ spotlessChangelog {
 	commitMessage "Published ${kind}/{{version}}" // {{version}} will be replaced
 }
 
+if (gradle.startParameter.projectProperties.get('com.diffplug.spotless.include.ext.nop2') == 'true') {
+	tasks.named('changelogPrint') {
+		enabled = kind.startsWith('ext-')
+	}
+}
+
 if (project == rootProject) {
 	gradle.taskGraph.whenReady { taskGraph ->
 		def changelogPushTasks = taskGraph.allTasks.stream()
