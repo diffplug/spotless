@@ -79,3 +79,15 @@ if (getStartProperty('com.diffplug.spotless.include.ext.nop2') == 'true') {
 		project(":${dir.name}").projectDir = dir
 	}
 }
+
+// the p2-based projects are too expensive for routine CI builds, so they have to be invoked explicitly
+for (kind in [
+	'cdt',
+	'groovy',
+	'wtp'
+]) {
+	if (getStartProperty("com.diffplug.spotless.include.ext.${kind}") == 'true') {
+		include "eclipse-${kind}"
+		project(":eclipse-${kind}").projectDir = file("_ext/eclipse-${kind}")
+	}
+}
