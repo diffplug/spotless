@@ -47,20 +47,22 @@ ext {
 	embeddedClassesDir = project.file(embeddedClassesDirName)
 }
 
-// build a maven repo in our build folder containing these artifacts
-p2AsMaven {
-	group 'p2', {
-		repo project.p2Repository
-		p2Dependencies.keySet.each { p2.addIU(it) }
-		p2ant {
-			/*
-			Define p2ant proxy settings as a closure. Refer to the API documents for instructions:
-			https://diffplug.github.io/goomph/javadoc/3.17.4/com/diffplug/gradle/p2/AsMavenPlugin.html
-			*/
-			if (project.hasProperty('setP2AntProxy')) {
-				setP2AntProxy(it)
-			}
- 		}
+if (gradle.startParameter.projectProperties.get('com.diffplug.spotless.include.ext.nop2') != 'true') {
+	// build a maven repo in our build folder containing these artifacts
+	p2AsMaven {
+		group 'p2', {
+			repo project.p2Repository
+			p2Dependencies.keySet.each { p2.addIU(it) }
+			p2ant {
+				/*
+				Define p2ant proxy settings as a closure. Refer to the API documents for instructions:
+				https://diffplug.github.io/goomph/javadoc/3.17.4/com/diffplug/gradle/p2/AsMavenPlugin.html
+				*/
+				if (project.hasProperty('setP2AntProxy')) {
+					setP2AntProxy(it)
+				}
+ 			}
+		}
 	}
 }
 

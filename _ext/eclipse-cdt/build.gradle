@@ -25,7 +25,7 @@ dependencies {
 	// Required to by CCorePlugin calling CDTLogWriter
 	implementation "com.ibm.icu:icu4j:${VER_IBM_ICU}"
 	// Required to by CCorePlugin calling PositionTrackerManager
-	implementation "org.eclipse.platform:org.eclipse.core.filebuffers:${VER_ECLISPE_PLATFORM}"
+	implementation "org.eclipse.platform:org.eclipse.core.filebuffers:${VER_ECLISPE_EFS}"
 
 	testImplementation("org.slf4j:slf4j-simple:${VER_SLF4J}")
 }
