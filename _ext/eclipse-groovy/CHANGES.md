@@ -3,12 +3,14 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.5.0`).
 
 ## [Unreleased]
+### Added
+* Switch to Groovy-Eclipse release 3.6.0 for Eclipse 4.14.
 
 ## [3.5.0] - 2019-09-01
 * Switch to Groovy-Eclipse release 3.5.0 for Eclipse 4.13 ([#480](https://github.com/diffplug/spotless/issues/480)).
 
 ## [3.4.0] - 2019-07-24
-* Switch to Groovy-Eclipse release 3.4.0 for Eclipse 4.12 using Groovy-Indy 3.0.0  ([#423](https://github.com/diffplug/spotless/pull/423)).
+* Switch to Groovy-Eclipse release 3.4.0 for Eclipse 4.12 using Groovy-Indy 3.0.0 ([#423](https://github.com/diffplug/spotless/pull/423)).
 
 ## [3.2.0] - 2019-03-16
 * Switch to Groovy-Eclipse release 3.2.0 for Eclipse 4.10 ([#375](https://github.com/diffplug/spotless/pull/375)).
