@@ -45,7 +45,6 @@ import org.codehaus.plexus.util.MatchPatterns;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.repository.RemoteRepository;
-import org.eclipse.jgit.api.errors.GitAPIException;
 
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.LineEnding;
@@ -190,8 +189,6 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 					.instance().getDirtyFiles(baseDir, ratchetFrom);
 		} catch (IOException e) {
 			throw new MojoExecutionException("Unable to scan file tree rooted at " + baseDir, e);
-		} catch (GitAPIException e) {
-			throw new MojoExecutionException("Error getting diff against 'ratchetFrom' setting '" + ratchetFrom + "'", e);
 		}
 
 		List<File> result = new ArrayList<>();
