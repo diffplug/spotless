@@ -3,10 +3,12 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `9.9.0`).
 
 ## [Unreleased]
+### Added
+* Switch to Eclipse CDT release 9.11.1 for Eclipse 4.16.
 
 ## [9.10.0] - 2020-09-25
 ### Added
-* Upgraded to `CDT` version `9.10`.
+* Switch to Eclipse CDT release 9.10 for Eclipse 4.14.
 
 ## [9.9.0] - 2019-11-01
 * Switch to Eclipse CDT release 9.9 for Eclipse 4.13 ([#480](https://github.com/diffplug/spotless/issues/480)).
