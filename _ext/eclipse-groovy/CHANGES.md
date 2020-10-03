@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.5.0`).
 
 ## [Unreleased]
+
+## [3.7.0] - 2020-10-03
 ### Added
 * Switch to Groovy-Eclipse release 3.7.0 for Eclipse 4.15 using Groovy-Indy 3.0.2.
 
