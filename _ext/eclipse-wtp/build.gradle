@@ -77,7 +77,7 @@ dependencies {
 	// Some WPT plugins use the EFS for storing temporary worspace data
 	implementation "org.eclipse.platform:org.eclipse.core.filesystem:${VER_ECLISPE_EFS}"
 	// Required by org.eclipse.wst.xsd.core
-	implementation "org.eclipse.xsd:org.eclipse.xsd:${VER_ECLISPE_XSD}"
+	implementation "org.eclipse.emf:org.eclipse.xsd:${VER_ECLISPE_XSD}"
 
 	testImplementation("org.slf4j:slf4j-simple:${VER_SLF4J}")
 }

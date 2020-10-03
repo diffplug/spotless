@@ -3,10 +3,12 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.15.1`).
 
 ## [Unreleased]
+### Added
+* Switch to Web Tools Platform release 3.17.0 for Eclipse 4.15.
 
 ## [3.16.0] - 2020-09-26
 ### Added
-* Upgraded to `WebTools` version `2019-12`.
+* Switch to Web Tools Platform release 3.16.0 for Eclipse 4.14.
 
 ## [3.15.3] - 2020-03-26
 ### Fixed
@@ -20,13 +22,13 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Bugfix: Fix NPE in EclipseXmlFormatterStepImpl ([#490](https://github.com/diffplug/spotless/pull/490)).
 
 ## [3.15.0] - 2019-11-06
-* Switch to Eclipse WTP release 3.15.0 for Eclipse 4.13 ([#480](https://github.com/diffplug/spotless/issues/480)).
+* Switch to Web Tools Platform release 3.15.0 for Eclipse 4.13 ([#480](https://github.com/diffplug/spotless/issues/480)).
 
 ## [3.14.0] - 2019-06-24
-* Switch to Eclipse WTP release 3.14.0 for Eclipse 4.12 ([#423](https://github.com/diffplug/spotless/pull/423)).
+* Switch to Web Tools Platform release 3.14.0 for Eclipse 4.12 ([#423](https://github.com/diffplug/spotless/pull/423)).
 
 ## [3.10.0] - 2019-03-17
-* Switch to Eclipse WTP release 3.10.0 for Eclipse 4.8 ([#378](https://github.com/diffplug/spotless/pull/378)).
+* Switch to Web Tools Platform release 3.10.0 for Eclipse 4.8 ([#378](https://github.com/diffplug/spotless/pull/378)).
 * Include Eclipse logging allowing formatter warnings/errors to be logged via SLF4J ([#236](https://github.com/diffplug/spotless/issues/236)).
 
 ## [3.9.8] - 2019-03-10
