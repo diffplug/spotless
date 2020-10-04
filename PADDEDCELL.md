@@ -48,7 +48,7 @@ This is easiest to show in an example:
 * Convergence: `'ATT' 'AT' 'A' 'A'`
   + `F(F('ATT'))` did not equal `F('ATT')`, but there is no cycle.
   + Eventually, the sequence converged on `A`.
-  + As a result, we will use `A` as the canoncial format.
+  + As a result, we will use `A` as the canonical format.
 
 * Divergence: `'1' '12' '123' '1234' '12345' ...`
   + This format does not cycle or converge

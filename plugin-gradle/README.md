@@ -468,7 +468,7 @@ sql.formatter.keyword.case=UPPER
 sql.formatter.statement.delimiter=;
 # Indentation style (space or tab)
 sql.formatter.indent.type=space
-# Number of identation characters
+# Number of indentation characters
 sql.formatter.indent.size=4
 ```
 
