@@ -19,7 +19,6 @@ import static java.util.stream.Collectors.toList;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -195,7 +194,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		for (String file : withNormalizedFileSeparators(dirtyFiles)) {
 			if (includePatterns.matches(file, true)) {
 				if (!excludePatterns.matches(file, true)) {
-					result.add(Paths.get(baseDir.getPath(), file).toFile());
+					result.add(new File(baseDir.getPath(), file));
 				}
 			}
 		}

@@ -69,7 +69,7 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 	 * true if that file is clean relative to that tree.  A naive implementation of this
 	 * could be verrrry slow, so the rest of this is about speeding this up.
 	 */
-	public boolean isClean(Project project, ObjectId treeSha, String relativePath) throws IOException {
+	public boolean isClean(Project project, ObjectId treeSha, String relativePathUnix) throws IOException {
 		Repository repo = repositoryFor(project);
 
 		// TODO: should be cached-per-repo if it is thread-safe, or per-repo-per-thread if it is not
@@ -81,7 +81,7 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 			treeWalk.addTree(new DirCacheIterator(dirCache));
 			treeWalk.addTree(new FileTreeIterator(repo));
 			treeWalk.setFilter(AndTreeFilter.create(
-					PathFilter.create(relativePath),
+					PathFilter.create(relativePathUnix),
 					new IndexDiffFilter(INDEX, WORKDIR)));
 
 			if (!treeWalk.next()) {
@@ -108,7 +108,7 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 						} else if (treeEqualsIndex) {
 							// this means they are all equal to each other, which should never happen
 							// the IndexDiffFilter should keep those out of the TreeWalk entirely
-							throw new IllegalStateException("Index status for " + relativePath + " against treeSha " + treeSha + " is invalid.");
+							throw new IllegalStateException("Index status for " + relativePathUnix + " against treeSha " + treeSha + " is invalid.");
 						} else {
 							// they are all unique
 							// we have to check manually
