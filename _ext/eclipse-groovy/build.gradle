@@ -12,7 +12,7 @@ ext {
 		// the once used during code formatting
 		'org.codehaus.groovy':'+', // Groovy compiler patches supporting use within GrEclipse and Groovy itself
 		'org.codehaus.groovy.eclipse.core':'+', // Groovy core classes (provides central logging used by formatter)
-		'org.eclipse.jdt.core':'+', // Patches org.eclipse.jdt.core classes supporting use within GrEclipse (provides AST generator)
+		'org.eclipse.jdt.core':'3.22.0.v202006301451-e2006-RELEASE', // Patches org.eclipse.jdt.core classes supporting use within GrEclipse (provides AST generator)
 		'org.eclipse.jdt.groovy.core':'+' // Extends org.eclipse.jdt.core for Groovy
 	]
 
