@@ -410,9 +410,9 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
 [homepage](https://dbeaver.io/). DBeaver is only distributed as a monolithic jar, so the formatter used here was copy-pasted into Spotless, and thus there is no version to change.
 
 ```xml
-<dbveaer>
+<dbeaver>
     <configFile>dbeaver.props</configFile> <!-- configFile is optional -->
-</dbveaer>
+</dbeaver>
 ```
 
 Default configuration file, other options [available here](https://github.com/diffplug/spotless/blob/main/lib/src/main/java/com/diffplug/spotless/sql/dbeaver/DBeaverSQLFormatterConfiguration.java).
