@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.8.0] - 2020-10-05
 ### Added
 * Exposed new methods in `GitRatchet` to support faster ratcheting in the maven plugin ([#706](https://github.com/diffplug/spotless/pull/706)).
 
