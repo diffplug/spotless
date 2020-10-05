@@ -4,7 +4,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Fixed
-Improve speed of plugin when using `<ratchetFrom>` ([#701](https://github.com/diffplug/spotless/pull/706)).
+* Improve speed by ~4x when using `<ratchetFrom>` ([#701](https://github.com/diffplug/spotless/pull/706)).
 
 ## [2.4.1] - 2020-09-18
 ### Fixed
