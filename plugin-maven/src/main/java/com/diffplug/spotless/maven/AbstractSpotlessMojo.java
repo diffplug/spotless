@@ -19,6 +19,7 @@ import static java.util.stream.Collectors.toList;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -30,6 +31,7 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -38,11 +40,11 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.resource.ResourceManager;
 import org.codehaus.plexus.resource.loader.FileResourceLoader;
 import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.MatchPatterns;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.repository.RemoteRepository;
 
-import com.diffplug.common.collect.Iterables;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Provisioner;
@@ -137,38 +139,23 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private void execute(FormatterFactory formatterFactory) throws MojoExecutionException {
-		List<File> files = collectFiles(formatterFactory);
 		FormatterConfig config = getFormatterConfig();
-		Optional<String> ratchetFrom = formatterFactory.ratchetFrom(config);
-		Iterable<File> toFormat;
-		if (!ratchetFrom.isPresent()) {
-			toFormat = files;
-		} else {
-			toFormat = Iterables.filter(files, GitRatchetMaven.instance().isGitDirty(baseDir, ratchetFrom.get()));
-		}
+		List<File> files = collectFiles(formatterFactory, config);
+
 		try (Formatter formatter = formatterFactory.newFormatter(files, config)) {
-			process(toFormat, formatter);
+			process(files, formatter);
 		}
 	}
 
-	private List<File> collectFiles(FormatterFactory formatterFactory) throws MojoExecutionException {
-		Set<String> configuredIncludes = formatterFactory.includes();
-		Set<String> configuredExcludes = formatterFactory.excludes();
-
-		Set<String> includes = configuredIncludes.isEmpty() ? formatterFactory.defaultIncludes() : configuredIncludes;
-		if (includes.isEmpty()) {
-			throw new MojoExecutionException("You must specify some files to include, such as '<includes><include>src/**</include></includes>'");
-		}
-
-		Set<String> excludes = new HashSet<>(FileUtils.getDefaultExcludesAsList());
-		excludes.add(withTrailingSeparator(buildDir.toString()));
-		excludes.addAll(configuredExcludes);
-
-		String includesString = String.join(",", includes);
-		String excludesString = String.join(",", excludes);
-
+	private List<File> collectFiles(FormatterFactory formatterFactory, FormatterConfig config) throws MojoExecutionException {
+		Optional<String> ratchetFrom = formatterFactory.ratchetFrom(config);
 		try {
-			final List<File> files = FileUtils.getFiles(baseDir, includesString, excludesString);
+			final List<File> files;
+			if (ratchetFrom.isPresent()) {
+				files = collectFilesFromGit(formatterFactory, ratchetFrom.get());
+			} else {
+				files = collectFilesFromFormatterFactory(formatterFactory);
+			}
 			if (filePatterns == null || filePatterns.isEmpty()) {
 				return files;
 			}
@@ -189,8 +176,66 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		}
 	}
 
+	private List<File> collectFilesFromGit(FormatterFactory formatterFactory, String ratchetFrom) throws MojoExecutionException {
+		MatchPatterns includePatterns = MatchPatterns.from(
+				withNormalizedFileSeparators(getIncludes(formatterFactory)));
+		MatchPatterns excludePatterns = MatchPatterns.from(
+				withNormalizedFileSeparators(getExcludes(formatterFactory)));
+
+		Iterable<String> dirtyFiles;
+		try {
+			dirtyFiles = GitRatchetMaven
+					.instance().getDirtyFiles(baseDir, ratchetFrom);
+		} catch (IOException e) {
+			throw new MojoExecutionException("Unable to scan file tree rooted at " + baseDir, e);
+		}
+
+		List<File> result = new ArrayList<>();
+		for (String file : withNormalizedFileSeparators(dirtyFiles)) {
+			if (includePatterns.matches(file, true)) {
+				if (!excludePatterns.matches(file, true)) {
+					result.add(new File(baseDir.getPath(), file));
+				}
+			}
+		}
+		return result;
+	}
+
+	private List<File> collectFilesFromFormatterFactory(FormatterFactory formatterFactory)
+			throws MojoExecutionException, IOException {
+		String includesString = String.join(",", getIncludes(formatterFactory));
+		String excludesString = String.join(",", getExcludes(formatterFactory));
+
+		return FileUtils.getFiles(baseDir, includesString, excludesString);
+	}
+
+	private Iterable<String> withNormalizedFileSeparators(Iterable<String> patterns) {
+		return StreamSupport.stream(patterns.spliterator(), true)
+				.map(pattern -> pattern.replace('/', File.separatorChar))
+				.map(pattern -> pattern.replace('\\', File.separatorChar))
+				.collect(Collectors.toSet());
+	}
+
 	private static String withTrailingSeparator(String path) {
 		return path.endsWith(File.separator) ? path : path + File.separator;
+	}
+
+	private Set<String> getIncludes(FormatterFactory formatterFactory) throws MojoExecutionException {
+		Set<String> configuredIncludes = formatterFactory.includes();
+		Set<String> includes = configuredIncludes.isEmpty() ? formatterFactory.defaultIncludes() : configuredIncludes;
+		if (includes.isEmpty()) {
+			throw new MojoExecutionException("You must specify some files to include, such as '<includes><include>src/**</include></includes>'");
+		}
+		return includes;
+	}
+
+	private Set<String> getExcludes(FormatterFactory formatterFactory) {
+		Set<String> configuredExcludes = formatterFactory.excludes();
+
+		Set<String> excludes = new HashSet<>(FileUtils.getDefaultExcludesAsList());
+		excludes.add(withTrailingSeparator(buildDir.toString()));
+		excludes.addAll(configuredExcludes);
+		return excludes;
 	}
 
 	private FormatterConfig getFormatterConfig() {

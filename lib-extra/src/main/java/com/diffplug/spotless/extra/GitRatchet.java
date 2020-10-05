@@ -56,15 +56,21 @@ import com.diffplug.spotless.FileSignature;
  * - If you have up-to-date checking and want the best possible performance, use {@link #subtreeShaOf(Object, ObjectId)} to optimize up-to-date checks on a per-project basis.
  */
 public abstract class GitRatchet<Project> implements AutoCloseable {
+
+	public boolean isClean(Project project, ObjectId treeSha, File file) throws IOException {
+		Repository repo = repositoryFor(project);
+		String relativePath = FileSignature.pathNativeToUnix(repo.getWorkTree().toPath().relativize(file.toPath()).toString());
+		return isClean(project, treeSha, relativePath);
+	}
+
 	/**
 	 * This is the highest-level method, which all the others serve.  Given the sha
 	 * of a git tree (not a commit!), and the file in question, this method returns
 	 * true if that file is clean relative to that tree.  A naive implementation of this
 	 * could be verrrry slow, so the rest of this is about speeding this up.
 	 */
-	public boolean isClean(Project project, ObjectId treeSha, File file) throws IOException {
+	public boolean isClean(Project project, ObjectId treeSha, String relativePathUnix) throws IOException {
 		Repository repo = repositoryFor(project);
-		String path = FileSignature.pathNativeToUnix(repo.getWorkTree().toPath().relativize(file.toPath()).toString());
 
 		// TODO: should be cached-per-repo if it is thread-safe, or per-repo-per-thread if it is not
 		DirCache dirCache = repo.readDirCache();
@@ -75,7 +81,7 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 			treeWalk.addTree(new DirCacheIterator(dirCache));
 			treeWalk.addTree(new FileTreeIterator(repo));
 			treeWalk.setFilter(AndTreeFilter.create(
-					PathFilter.create(path),
+					PathFilter.create(relativePathUnix),
 					new IndexDiffFilter(INDEX, WORKDIR)));
 
 			if (!treeWalk.next()) {
@@ -102,7 +108,7 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 						} else if (treeEqualsIndex) {
 							// this means they are all equal to each other, which should never happen
 							// the IndexDiffFilter should keep those out of the TreeWalk entirely
-							throw new IllegalStateException("Index status for " + file + " against treeSha " + treeSha + " is invalid.");
+							throw new IllegalStateException("Index status for " + relativePathUnix + " against treeSha " + treeSha + " is invalid.");
 						} else {
 							// they are all unique
 							// we have to check manually
@@ -135,7 +141,7 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 	 * builds and submodules, it's quite possible that a single Gradle project will span across multiple git repositories.
 	 * We cache the Repository for every Project in `gitRoots`, and use dynamic programming to populate it.
 	 */
-	private Repository repositoryFor(Project project) throws IOException {
+	protected Repository repositoryFor(Project project) throws IOException {
 		Repository repo = gitRoots.get(project);
 		if (repo == null) {
 			if (isGitRoot(getDir(project))) {
