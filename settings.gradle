@@ -42,10 +42,6 @@ include 'testlib'	// library for sharing test infrastructure between the project
 include 'lib-extra'	// reusable library with lots of dependencies
 include 'plugin-gradle'	// gradle-specific glue code
 
-if (System.getenv('SPOTLESS_EXCLUDE_MAVEN') != 'true' && System.getenv('JITPACK') != 'true') {
-	include 'plugin-maven'	// maven-specific glue code
-}
-
 def getStartProperty(java.lang.String name) {
 	def value = startParameter.getProjectProperties().get(name)
 	if(null != value) {
@@ -59,6 +55,10 @@ def getStartProperty(java.lang.String name) {
 	}
 	return userProperties.get(name)
 
+}
+
+if (System.getenv('SPOTLESS_EXCLUDE_MAVEN') != 'true' && getStartProperty('SPOTLESS_EXCLUDE_MAVEN') != 'true' && System.getenv('JITPACK') != 'true') {
+	include 'plugin-maven'	// maven-specific glue code
 }
 
 // include external (_ext) projects from development builds

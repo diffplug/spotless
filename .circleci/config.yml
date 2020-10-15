@@ -122,7 +122,7 @@ jobs:
           command: choco install ojdkbuild8
       - run:
           name: gradlew check
-          command: set SPOTLESS_EXCLUDE_MAVEN=true && gradlew check --build-cache
+          command: gradlew check --build-cache -PSPOTLESS_EXCLUDE_MAVEN=true
       - store_test_results:
           path: testlib/build/test-results/test
       - store_test_results:
@@ -131,7 +131,7 @@ jobs:
           path: plugin-gradle/build/test-results/test
       - run:
           name: gradlew npmTest
-          command: set SPOTLESS_EXCLUDE_MAVEN=true && gradlew npmTest --build-cache
+          command: gradlew npmTest --build-cache -PSPOTLESS_EXCLUDE_MAVEN=true
       - store_test_results:
           path: testlib/build/test-results/npm
       - store_test_results:
