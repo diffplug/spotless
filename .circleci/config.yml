@@ -67,7 +67,6 @@ jobs:
             - ~/project/plugin-maven/build/localMavenRepository
           key: gradle-deps2-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
   test_nomaven_11:
-  # JRE8: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew check
     # latest LTS version
     <<: *env_gradle_large
     docker:
