@@ -8,7 +8,7 @@ anchors:
        # we're only allowed to use 2 vCPUs
       GRADLE_OPTS: "-Dorg.gradle.workers.max=2"
     docker:
-      - image: cimg/opejdk:11.0
+      - image: cimg/openjdk:11.0
   env_gradle_large: &env_gradle_large
     << : *env_gradle
     resource_class: large # https://circleci.com/docs/2.0/configuration-reference/#resource_class
