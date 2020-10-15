@@ -43,14 +43,6 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 
 public class SpotlessTask extends DefaultTask {
-	SpotlessApply applyTask;
-
-	/** Internal use only, allows coordination between check and apply when they are in the same build */
-	@Internal
-	SpotlessApply getApplyTask() {
-		return applyTask;
-	}
-
 	// set by SpotlessExtension, but possibly overridden by FormatExtension
 	protected String encoding = "UTF-8";
 

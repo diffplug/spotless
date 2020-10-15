@@ -35,7 +35,6 @@ public class SpotlessApply extends DefaultTask {
 	/** Bidirectional link between Apply and Spotless allows check to know if Apply ran or not. */
 	void linkSource(SpotlessTask source) {
 		this.source = source;
-		source.applyTask = this;
 	}
 
 	private File spotlessOutDirectory;
