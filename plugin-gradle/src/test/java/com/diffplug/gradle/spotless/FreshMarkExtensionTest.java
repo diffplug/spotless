@@ -19,9 +19,12 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import com.diffplug.spotless.JreVersion;
+
 public class FreshMarkExtensionTest extends GradleIntegrationHarness {
 	@Test
 	public void integration() throws IOException {
+		JreVersion.assumeLessThan15();
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",

@@ -32,7 +32,6 @@ public class SpotlessPluginRedirectTest extends GradleIntegrationHarness {
 				"}");
 		Assertions.assertThat(gradleRunner().buildAndFail().getOutput().replace("\r", ""))
 				.contains(StringPrinter.buildStringFromLines(
-						"> Failed to apply plugin [id 'com.diffplug.gradle.spotless']",
 						"   > We have moved from 'com.diffplug.gradle.spotless'",
 						"                     to 'com.diffplug.spotless'",
 						"     To migrate:",
