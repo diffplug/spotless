@@ -51,4 +51,8 @@ public class JreVersion {
 	public static void assume11OrLess() {
 		assume(v -> v <= 11);
 	}
+
+	public static void assumeLessThan15() {
+		assume(v -> v < 15);
+	}
 }

@@ -5,14 +5,10 @@ orbs:
 anchors:
   env_gradle: &env_gradle
     environment:
-      # java doesn't play nice with containers, it tries to hog the entire machine
-      # https://circleci.com/blog/how-to-handle-java-oom-errors/
-      # try the experimental JVM option
-      _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
-       # and we're only allowed to use 2 vCPUs
+       # we're only allowed to use 2 vCPUs
       GRADLE_OPTS: "-Dorg.gradle.workers.max=2"
     docker:
-      - image: cimg/openjdk:8.0
+      - image: cimg/openjdk:11.0
   env_gradle_large: &env_gradle_large
     << : *env_gradle
     resource_class: large # https://circleci.com/docs/2.0/configuration-reference/#resource_class
@@ -70,27 +66,19 @@ jobs:
             - ~/.m2
             - ~/project/plugin-maven/build/localMavenRepository
           key: gradle-deps2-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
-  # JRE8: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew check
-  test_nomaven_8:
-    <<: *env_gradle_large
-    <<: *test_nomaven
   test_nomaven_11:
     # latest LTS version
     <<: *env_gradle_large
     docker:
       - image: cimg/openjdk:11.0
-    environment: # java 11 does play nice with containers, doesn't need special settings
-      _JAVA_OPTIONS: ""
     <<: *test_nomaven
-  test_nomaven_14:
-    # latest JDK, replace with 15 when it comes out
+  test_nomaven_15:
+    # latest JDK, replace with 16 when it comes out
     <<: *env_gradle_large
     docker:
-      - image: cimg/openjdk:14.0
-    environment: # java 14 does play nice with containers, doesn't need special settings
-      _JAVA_OPTIONS: ""
+      - image: cimg/openjdk:15.0
     <<: *test_nomaven
-  test_justmaven_8:
+  test_justmaven_11:
     << : *env_gradle
     steps:
       - checkout
@@ -103,6 +91,11 @@ jobs:
           path: plugin-maven/build/test-results/test
   test_npm_8:
     << : *env_gradle
+    environment:
+      # java doesn't play nice with containers, it tries to hog the entire machine
+      # https://circleci.com/blog/how-to-handle-java-oom-errors/
+      # try the experimental JVM option
+      _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
     docker:
       - image: cimg/openjdk:8.0-node
     steps:
@@ -129,22 +122,18 @@ jobs:
           command: choco install ojdkbuild8
       - run:
           name: gradlew check
-          command: gradlew check --build-cache
+          command: gradlew check --build-cache -PSPOTLESS_EXCLUDE_MAVEN=true
       - store_test_results:
           path: testlib/build/test-results/test
       - store_test_results:
           path: lib-extra/build/test-results/test
       - store_test_results:
           path: plugin-gradle/build/test-results/test
-      - store_test_results:
-          path: plugin-maven/build/test-results/test
       - run:
           name: gradlew npmTest
-          command: gradlew npmTest --build-cache
+          command: gradlew npmTest --build-cache -PSPOTLESS_EXCLUDE_MAVEN=true
       - store_test_results:
           path: testlib/build/test-results/npm
-      - store_test_results:
-          path: plugin-maven/build/test-results/npm
       - store_test_results:
           path: plugin-gradle/build/test-results/npm
   changelog_print:
@@ -269,16 +258,13 @@ workflows:
     jobs:
       - test_windows
       - assemble_testClasses
-      - test_justmaven_8:
-          requires:
-            - assemble_testClasses
-      - test_nomaven_8:
+      - test_justmaven_11:
           requires:
             - assemble_testClasses
       - test_nomaven_11:
           requires:
             - assemble_testClasses
-      - test_nomaven_14:
+      - test_nomaven_15:
           requires:
             - assemble_testClasses
       - test_npm_8:

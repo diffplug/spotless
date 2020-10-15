@@ -44,7 +44,10 @@ public class GradleIntegrationHarness extends ResourceHarness {
 		final String version;
 
 		GradleVersionSupport(String version) {
-			if (JreVersion.thisVm() >= 14) {
+			if (JreVersion.thisVm() >= 15) {
+				// the first version with support for Java 15+
+				this.version = "6.7";
+			} else if (JreVersion.thisVm() >= 14) {
 				// the first version with support for Java 14+
 				this.version = "6.3";
 			} else {
