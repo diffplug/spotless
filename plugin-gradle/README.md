@@ -547,10 +547,10 @@ spotless {
 
     // you can also set some style options
     // https://prettier.io/docs/en/configuration.html
-    prettier().config(['tabWidth: 4'])
+    prettier().config(['tabWidth': 4])
 
     // you can also slurp from a file or even provide both (inline always takes precedence over file)
-    prettier().config(['tabWidth: 4']).configFile('path-to/.prettierrc.yml')
+    prettier().config(['tabWidth': 4]).configFile('path-to/.prettierrc.yml')
   }
 }
 ```
