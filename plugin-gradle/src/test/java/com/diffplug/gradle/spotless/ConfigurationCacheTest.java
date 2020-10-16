@@ -91,4 +91,29 @@ public class ConfigurationCacheTest extends GradleIntegrationHarness {
 		runTasks("spotlessApply");
 		assertFile("test.txt").hasContent("abc");
 	}
+
+	@Test
+	public void spotlessWorksForComplexStep() throws IOException {
+		setFile("build.gradle").toLines(
+				"buildscript { repositories { mavenCentral() } }",
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"apply plugin: 'java'",
+				"spotless {",
+				"    java {",
+				"        target 'test.java'",
+				"        googleJavaFormat('1.2')",
+				"    }",
+				"}");
+		setFile("test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
+		runTasks("spotlessApply");
+		assertFile("test.java").sameAsResource("java/googlejavaformat/JavaCodeFormatted.test");
+		runTasks("spotlessApply");
+		runTasks("spotlessApply");
+
+		setFile("test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
+		runTasks("spotlessApply");
+		assertFile("test.java").sameAsResource("java/googlejavaformat/JavaCodeFormatted.test");
+	}
 }
