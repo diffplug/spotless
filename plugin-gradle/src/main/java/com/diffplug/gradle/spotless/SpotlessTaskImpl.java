@@ -41,7 +41,6 @@ import com.diffplug.spotless.PaddedCell;
 
 @CacheableTask
 public abstract class SpotlessTaskImpl extends SpotlessTask {
-	SpotlessTaskService taskService;
 	final File projectDir;
 
 	@Internal
@@ -49,19 +48,28 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 		return projectDir;
 	}
 
-	@Internal
-	public SpotlessTaskService getTaskService() {
-		return taskService;
-	}
-
 	Formatter buildFormatter() {
-		return Formatter.builder()
-				.lineEndingsPolicy(lineEndingsPolicy)
-				.encoding(Charset.forName(encoding))
-				.rootDir(getProjectDir().toPath())
-				.steps(steps)
-				.exceptionPolicy(exceptionPolicy)
-				.build();
+		// <sketchy configuration cache trick>
+		SpotlessTaskImpl original = SpotlessTaskService.instance().get(getPath());
+		if (original == this) {
+			// a SpotlessTask is registered with the SpotlessTaskService **only** if configuration ran
+			// so if we're in this block, it means that we were configured
+			return Formatter.builder()
+					.lineEndingsPolicy(lineEndingsPolicy)
+					.encoding(Charset.forName(encoding))
+					.rootDir(getProjectDir().toPath())
+					.steps(steps)
+					.exceptionPolicy(exceptionPolicy)
+					.build();
+		} else {
+			// if we're in this block, it means that configuration did not run, and this
+			// task was deserialized from disk. All of our fields are ".equals" to their
+			// originals, but their transient fields are missing, so we can't actually run
+			// them. Luckily, we saved the task from the original, just so that we could restore
+			// its formatter, whose transient fields are fully populated.
+			return original.buildFormatter();
+		}
+		// </sketchy configuration cache trick>
 	}
 
 	private final FileSystemOperations fileSystemOperations;
@@ -72,6 +80,7 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 		this.fileSystemOperations = fileSystemOperations;
 		this.objectFactory = objectFactory;
 		this.projectDir = getProject().getProjectDir();
+		SpotlessTaskService.instance().put(this);
 	}
 
 	ConfigurableFileTree outputFiles() {

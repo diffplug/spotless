@@ -20,40 +20,42 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.gradle.api.DefaultTask;
-import org.gradle.api.services.BuildService;
-import org.gradle.api.services.BuildServiceParameters;
 import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.Internal;
 
 /** A service which allows looking up a SpotlessTaskImpl from its path. */
-public abstract class SpotlessTaskService implements BuildService<BuildServiceParameters.None> {
-	private Map<String, SpotlessTaskImpl> taskPathToTask = new HashMap<>();
+class SpotlessTaskService {
+	private static final SpotlessTaskService instance = new SpotlessTaskService();
+
+	static SpotlessTaskService instance() {
+		return instance;
+	}
+
+	private SpotlessTaskService() {}
+
+	private Map<String, SpotlessTaskImpl> map = new HashMap<>();
+
+	synchronized void put(SpotlessTaskImpl task) {
+		map.put(task.getPath(), task);
+	}
+
+	synchronized SpotlessTaskImpl get(String taskPath) {
+		return Objects.requireNonNull(map.get(taskPath), taskPath);
+	}
 
 	public static abstract class DependentTask extends DefaultTask {
 		private String sourceTaskPath;
-		private transient SpotlessTaskService taskService;
 
 		@Input
 		public final String getSourceTaskPath() {
 			return sourceTaskPath;
 		}
 
-		@Internal
-		public SpotlessTaskService getTaskService() {
-			return taskService;
-		}
-
 		protected final SpotlessTaskImpl source() {
-			return Objects.requireNonNull(taskService.taskPathToTask.get(sourceTaskPath), sourceTaskPath);
+			return instance().get(sourceTaskPath);
 		}
 
 		public void link(SpotlessTaskImpl task) {
 			sourceTaskPath = task.getPath();
-			taskService = task.getProject().getGradle().getSharedServices()
-					.registerIfAbsent("SpotlessTaskService", SpotlessTaskService.class, unused -> {}).get();
-			if (taskService.taskPathToTask.put(sourceTaskPath, task) == null) {
-				task.taskService = taskService;
-			}
 		}
 	}
 }

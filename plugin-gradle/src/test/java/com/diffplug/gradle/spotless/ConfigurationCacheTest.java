@@ -86,5 +86,9 @@ public class ConfigurationCacheTest extends GradleIntegrationHarness {
 		runTasks("spotlessApply");
 		assertFile("test.txt").hasContent("abc");
 		runTasks("spotlessApply");
+		runTasks("spotlessApply");
+		setFile("test.txt").toContent("ABC");
+		runTasks("spotlessApply");
+		assertFile("test.txt").hasContent("abc");
 	}
 }
