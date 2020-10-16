@@ -17,13 +17,19 @@ package com.diffplug.gradle.spotless;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Comparator;
 
 import org.gradle.api.GradleException;
+import org.gradle.api.Task;
+import org.gradle.api.file.ConfigurableFileTree;
+import org.gradle.api.file.FileSystemOperations;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.tasks.CacheableTask;
+import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.work.ChangeType;
 import org.gradle.work.FileChange;
@@ -34,7 +40,53 @@ import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.PaddedCell;
 
 @CacheableTask
-public class SpotlessTaskImpl extends SpotlessTask {
+public abstract class SpotlessTaskImpl extends SpotlessTask {
+	final File projectDir;
+
+	@Internal
+	public File getProjectDir() {
+		return projectDir;
+	}
+
+	Formatter buildFormatter() {
+		// <sketchy configuration cache trick>
+		SpotlessTaskImpl original = SpotlessTaskService.instance().get(getPath());
+		if (original == this) {
+			// a SpotlessTask is registered with the SpotlessTaskService **only** if configuration ran
+			// so if we're in this block, it means that we were configured
+			return Formatter.builder()
+					.lineEndingsPolicy(lineEndingsPolicy)
+					.encoding(Charset.forName(encoding))
+					.rootDir(getProjectDir().toPath())
+					.steps(steps)
+					.exceptionPolicy(exceptionPolicy)
+					.build();
+		} else {
+			// if we're in this block, it means that configuration did not run, and this
+			// task was deserialized from disk. All of our fields are ".equals" to their
+			// originals, but their transient fields are missing, so we can't actually run
+			// them. Luckily, we saved the task from the original, just so that we could restore
+			// its formatter, whose transient fields are fully populated.
+			return original.buildFormatter();
+		}
+		// </sketchy configuration cache trick>
+	}
+
+	private final FileSystemOperations fileSystemOperations;
+	private final ObjectFactory objectFactory;
+
+	@javax.inject.Inject
+	public SpotlessTaskImpl(FileSystemOperations fileSystemOperations, ObjectFactory objectFactory) {
+		this.fileSystemOperations = fileSystemOperations;
+		this.objectFactory = objectFactory;
+		this.projectDir = getProject().getProjectDir();
+		SpotlessTaskService.instance().put(this);
+	}
+
+	ConfigurableFileTree outputFiles() {
+		return objectFactory.fileTree().from(getOutputDirectory());
+	}
+
 	@TaskAction
 	public void performAction(InputChanges inputs) throws Exception {
 		if (target == null) {
@@ -43,7 +95,7 @@ public class SpotlessTaskImpl extends SpotlessTask {
 
 		if (!inputs.isIncremental()) {
 			getLogger().info("Not incremental: removing prior outputs");
-			getProject().delete(outputDirectory);
+			fileSystemOperations.delete(spec -> spec.delete(outputDirectory));
 			Files.createDirectories(outputDirectory.toPath());
 		}
 
@@ -65,7 +117,7 @@ public class SpotlessTaskImpl extends SpotlessTask {
 		File output = getOutputFile(input);
 		getLogger().debug("Applying format to " + input + " and writing to " + output);
 		PaddedCell.DirtyState dirtyState;
-		if (ratchet != null && ratchet.isClean(getProject(), rootTreeSha, input)) {
+		if (ratchet != null && ratchet.isClean(projectDir, rootTreeSha, input)) {
 			dirtyState = PaddedCell.isClean();
 		} else {
 			dirtyState = PaddedCell.calculateDirtyState(formatter, input);
@@ -100,14 +152,20 @@ public class SpotlessTaskImpl extends SpotlessTask {
 	}
 
 	private File getOutputFile(File input) {
-		String outputFileName = FormatExtension.relativize(getProject().getProjectDir(), input);
+		String outputFileName = FormatExtension.relativize(projectDir, input);
 		if (outputFileName == null) {
 			throw new IllegalArgumentException(StringPrinter.buildString(printer -> {
-				printer.println("Spotless error! All target files must be within the project root. In project " + getProject().getPath());
-				printer.println("  root dir: " + getProject().getProjectDir().getAbsolutePath());
+				printer.println("Spotless error! All target files must be within the project root. In project " + getProjectPath(this));
+				printer.println("  root dir: " + projectDir.getAbsolutePath());
 				printer.println("    target: " + input.getAbsolutePath());
 			}));
 		}
 		return new File(outputDirectory, outputFileName);
+	}
+
+	static String getProjectPath(Task task) {
+		String taskPath = task.getPath();
+		int lastColon = taskPath.lastIndexOf(':');
+		return lastColon == -1 ? ":" : taskPath.substring(0, lastColon + 1);
 	}
 }

@@ -16,7 +16,6 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.File;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,19 +37,10 @@ import org.gradle.work.Incremental;
 
 import com.diffplug.spotless.FormatExceptionPolicy;
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
-import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 
 public class SpotlessTask extends DefaultTask {
-	SpotlessApply applyTask;
-
-	/** Internal use only, allows coordination between check and apply when they are in the same build */
-	@Internal
-	SpotlessApply getApplyTask() {
-		return applyTask;
-	}
-
 	// set by SpotlessExtension, but possibly overridden by FormatExtension
 	protected String encoding = "UTF-8";
 
@@ -88,8 +78,8 @@ public class SpotlessTask extends DefaultTask {
 
 	public void setupRatchet(GitRatchetGradle gitRatchet, String ratchetFrom) {
 		ratchet = gitRatchet;
-		rootTreeSha = gitRatchet.rootTreeShaOf(getProject(), ratchetFrom);
-		subtreeSha = gitRatchet.subtreeShaOf(getProject(), rootTreeSha);
+		rootTreeSha = gitRatchet.rootTreeShaOf(getProject().getProjectDir(), ratchetFrom);
+		subtreeSha = gitRatchet.subtreeShaOf(getProject().getProjectDir(), rootTreeSha);
 	}
 
 	@Internal
@@ -165,15 +155,5 @@ public class SpotlessTask extends DefaultTask {
 		} else {
 			return name;
 		}
-	}
-
-	Formatter buildFormatter() {
-		return Formatter.builder()
-				.lineEndingsPolicy(lineEndingsPolicy)
-				.encoding(Charset.forName(encoding))
-				.rootDir(getProject().getRootDir().toPath())
-				.steps(steps)
-				.exceptionPolicy(exceptionPolicy)
-				.build();
 	}
 }

@@ -62,17 +62,15 @@ public class PaddedCellTaskTest extends ResourceHarness {
 			return task;
 		}
 
-		private SpotlessCheck createCheckTask(String name, SpotlessTask source) {
+		private SpotlessCheck createCheckTask(String name, SpotlessTaskImpl source) {
 			SpotlessCheck task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + "Check", SpotlessCheck.class);
-			task.source = source;
-			task.setSpotlessOutDirectory(source.getOutputDirectory());
+			task.link(source);
 			return task;
 		}
 
-		private SpotlessApply createApplyTask(String name, SpotlessTask source) {
+		private SpotlessApply createApplyTask(String name, SpotlessTaskImpl source) {
 			SpotlessApply task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + "Apply", SpotlessApply.class);
-			task.linkSource(source);
-			task.setSpotlessOutDirectory(source.getOutputDirectory());
+			task.link(source);
 			return task;
 		}
 
@@ -87,7 +85,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 
 		void diagnose() throws IOException {
 			SpotlessDiagnoseTask diagnose = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + "Diagnose", SpotlessDiagnoseTask.class);
-			diagnose.source = task;
+			diagnose.link(task);
 			diagnose.performAction();
 		}
 

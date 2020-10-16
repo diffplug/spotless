@@ -26,6 +26,7 @@ public class ConfigurationCacheTest extends GradleIntegrationHarness {
 	protected void runTasks(String... tasks) throws IOException {
 		setFile("gradle.properties").toContent("org.gradle.unsafe.configuration-cache=true");
 		List<String> args = new ArrayList<>();
+		args.add("--stacktrace");
 		args.addAll(Arrays.asList(tasks));
 		gradleRunner()
 				.withGradleVersion(GradleVersionSupport.CONFIGURATION_CACHE.version)
@@ -65,5 +66,54 @@ public class ConfigurationCacheTest extends GradleIntegrationHarness {
 				"}",
 				"tasks.named('spotlessJavaApply').get()");
 		runTasks("help");
+	}
+
+	@Test
+	public void spotlessWorksForSimpleStep() throws IOException {
+		setFile("build.gradle").toLines(
+				"buildscript { repositories { mavenCentral() } }",
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"spotless {",
+				"    format 'misc', {",
+				"        target '*.txt'",
+				"        custom 'lowercase', { str -> str.toLowerCase() }",
+				"        bumpThisNumberIfACustomStepChanges(1)",
+				"    }",
+				"}");
+		setFile("test.txt").toContent("ABC");
+		runTasks("spotlessApply");
+		assertFile("test.txt").hasContent("abc");
+		runTasks("spotlessApply");
+		runTasks("spotlessApply");
+		setFile("test.txt").toContent("ABC");
+		runTasks("spotlessApply");
+		assertFile("test.txt").hasContent("abc");
+	}
+
+	@Test
+	public void spotlessWorksForComplexStep() throws IOException {
+		setFile("build.gradle").toLines(
+				"buildscript { repositories { mavenCentral() } }",
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"apply plugin: 'java'",
+				"spotless {",
+				"    java {",
+				"        target 'test.java'",
+				"        googleJavaFormat('1.2')",
+				"    }",
+				"}");
+		setFile("test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
+		runTasks("spotlessApply");
+		assertFile("test.java").sameAsResource("java/googlejavaformat/JavaCodeFormatted.test");
+		runTasks("spotlessApply");
+		runTasks("spotlessApply");
+
+		setFile("test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
+		runTasks("spotlessApply");
+		assertFile("test.java").sameAsResource("java/googlejavaformat/JavaCodeFormatted.test");
 	}
 }
