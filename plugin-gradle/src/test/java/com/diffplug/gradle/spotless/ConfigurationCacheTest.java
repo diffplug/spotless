@@ -49,4 +49,21 @@ public class ConfigurationCacheTest extends GradleIntegrationHarness {
 				"}");
 		runTasks("help");
 	}
+
+	@Test
+	public void helpConfiguresIfTasksAreCreated() throws IOException {
+		setFile("build.gradle").toLines(
+				"buildscript { repositories { mavenCentral() } }",
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"apply plugin: 'java'",
+				"spotless {",
+				"    java {",
+				"        googleJavaFormat('1.2')",
+				"    }",
+				"}",
+				"tasks.named('spotlessJavaApply').get()");
+		runTasks("help");
+	}
 }
