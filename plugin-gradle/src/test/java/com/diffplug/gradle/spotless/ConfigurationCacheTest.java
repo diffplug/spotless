@@ -26,6 +26,7 @@ public class ConfigurationCacheTest extends GradleIntegrationHarness {
 	protected void runTasks(String... tasks) throws IOException {
 		setFile("gradle.properties").toContent("org.gradle.unsafe.configuration-cache=true");
 		List<String> args = new ArrayList<>();
+		args.add("--stacktrace");
 		args.addAll(Arrays.asList(tasks));
 		gradleRunner()
 				.withGradleVersion(GradleVersionSupport.CONFIGURATION_CACHE.version)
@@ -65,5 +66,24 @@ public class ConfigurationCacheTest extends GradleIntegrationHarness {
 				"}",
 				"tasks.named('spotlessJavaApply').get()");
 		runTasks("help");
+	}
+
+	@Test
+	public void spotlessConfigures() throws IOException {
+		setFile("build.gradle").toLines(
+				"buildscript { repositories { mavenCentral() } }",
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"spotless {",
+				"    format 'misc', {",
+				"        target '*.txt'",
+				"        custom 'lowercase', { str -> str.toLowerCase() }",
+				"        bumpThisNumberIfACustomStepChanges(1)",
+				"    }",
+				"}");
+		setFile("test.txt").toContent("ABC");
+		runTasks("spotlessApply");
+		assertFile("test.txt").hasContent("abc");
 	}
 }
