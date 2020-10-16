@@ -128,11 +128,11 @@ public class GitRatchetGradleTest extends GradleIntegrationHarness {
 	}
 
 	private BuildResultAssertion assertPass(String... tasks) throws Exception {
-		return new BuildResultAssertion(gradleRunner().withGradleVersion(GradleVersionSupport.SETTINGS_PLUGINS.version).withArguments(tasks).build());
+		return new BuildResultAssertion(gradleRunner().withArguments(tasks).build());
 	}
 
 	private BuildResultAssertion assertFail(String... tasks) throws Exception {
-		return new BuildResultAssertion(gradleRunner().withGradleVersion(GradleVersionSupport.SETTINGS_PLUGINS.version).withArguments(tasks).buildAndFail());
+		return new BuildResultAssertion(gradleRunner().withArguments(tasks).buildAndFail());
 	}
 
 	private static final String BASELINE_ROOT = "cf049829afeba064f27cd67911dc36e585c9d869";
