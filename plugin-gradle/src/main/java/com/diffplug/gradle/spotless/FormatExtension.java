@@ -747,15 +747,14 @@ public class FormatExtension {
 	 */
 	public SpotlessApply createIndependentApplyTask(String taskName) {
 		// create and setup the task
-		SpotlessTask spotlessTask = spotless.project.getTasks().create(taskName + "Helper", SpotlessTaskImpl.class);
+		SpotlessTaskImpl spotlessTask = spotless.project.getTasks().create(taskName + "Helper", SpotlessTaskImpl.class);
 		setupTask(spotlessTask);
 		// enforce the clean ordering
 		Task clean = spotless.project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME);
 		spotlessTask.mustRunAfter(clean);
 		// create the apply task
 		SpotlessApply applyTask = spotless.project.getTasks().create(taskName, SpotlessApply.class);
-		applyTask.setSpotlessOutDirectory(spotlessTask.getOutputDirectory());
-		applyTask.linkSource(spotlessTask);
+		applyTask.link(spotlessTask);
 		applyTask.dependsOn(spotlessTask);
 
 		return applyTask;

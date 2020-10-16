@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Locale;
 
-import org.gradle.api.DefaultTask;
-import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 
 import com.diffplug.spotless.Formatter;
@@ -31,22 +29,16 @@ import com.diffplug.spotless.PaddedCell;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-public class SpotlessDiagnoseTask extends DefaultTask {
-	SpotlessTask source;
-
-	@Internal
-	public SpotlessTask getSource() {
-		return source;
-	}
+public abstract class SpotlessDiagnoseTask extends SpotlessTaskService.DependentTask {
 
 	@TaskAction
 	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 	public void performAction() throws IOException {
 		Path srcRoot = getProject().getProjectDir().toPath();
-		Path diagnoseRoot = getProject().getBuildDir().toPath().resolve("spotless-diagnose-" + source.formatName());
+		Path diagnoseRoot = getProject().getBuildDir().toPath().resolve("spotless-diagnose-" + source().formatName());
 		getProject().delete(diagnoseRoot.toFile());
-		try (Formatter formatter = source.buildFormatter()) {
-			for (File file : source.target) {
+		try (Formatter formatter = source().buildFormatter()) {
+			for (File file : source().target) {
 				getLogger().debug("Running padded cell check on " + file);
 				PaddedCell padded = PaddedCell.check(formatter, file);
 				if (!padded.misbehaved()) {

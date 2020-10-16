@@ -33,7 +33,7 @@ class IdeHook {
 		System.err.println("IS CLEAN");
 	}
 
-	static void performHook(SpotlessTask spotlessTask) {
+	static void performHook(SpotlessTaskImpl spotlessTask) {
 		String path = (String) spotlessTask.getProject().property(PROPERTY);
 		File file = new File(path);
 		if (!file.isAbsolute()) {
@@ -43,7 +43,7 @@ class IdeHook {
 		if (spotlessTask.getTarget().contains(file)) {
 			try (Formatter formatter = spotlessTask.buildFormatter()) {
 				if (spotlessTask.ratchet != null) {
-					if (spotlessTask.ratchet.isClean(spotlessTask.getProject(), spotlessTask.rootTreeSha, file)) {
+					if (spotlessTask.ratchet.isClean(spotlessTask.getProjectDir(), spotlessTask.rootTreeSha, file)) {
 						dumpIsClean();
 						return;
 					}
