@@ -69,7 +69,7 @@ public class ConfigurationCacheTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void spotlessConfigures() throws IOException {
+	public void spotlessWorksForSimpleStep() throws IOException {
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
@@ -85,5 +85,6 @@ public class ConfigurationCacheTest extends GradleIntegrationHarness {
 		setFile("test.txt").toContent("ABC");
 		runTasks("spotlessApply");
 		assertFile("test.txt").hasContent("abc");
+		runTasks("spotlessApply");
 	}
 }
