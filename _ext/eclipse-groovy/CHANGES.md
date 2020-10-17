@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.5.0`).
 
 ## [Unreleased]
+
+## [3.9.0] - 2020-10-17
 ### Added
 * Fixed version number determined by change log.
 
