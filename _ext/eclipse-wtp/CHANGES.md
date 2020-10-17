@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.15.1`).
 
 ## [Unreleased]
+
+## [3.18.1] - 2020-10-17
 ### Changed
 * Switch to Web Tools Platform release 3.19.0 for Eclipse 4.17.
 
