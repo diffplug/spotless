@@ -36,7 +36,7 @@ public enum EclipseWtpFormatterStep {
 
 	private static final String NAME = "eclipse wtp formatters";
 	private static final String FORMATTER_PACKAGE = "com.diffplug.spotless.extra.eclipse.wtp.";
-	private static final String DEFAULT_VERSION = "4.13.0";
+	private static final String DEFAULT_VERSION = "4.17.0";
 	private static final String FORMATTER_METHOD = "format";
 
 	private final String implementationClassName;
