@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package com.diffplug.spotless.extra.cpp;
 
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.JreVersion;
 import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.eclipse.EclipseCommonTests;
@@ -24,7 +25,12 @@ public class EclipseCdtFormatterStepTest extends EclipseCommonTests {
 
 	@Override
 	protected String[] getSupportedVersions() {
-		return new String[]{"4.7.3a", "4.11.0", "4.12.0", "4.13.0"};
+		return new String[]{"4.17.0"};
+	}
+
+	@Override
+	protected void makeAssumptions() {
+		JreVersion.assume11OrGreater();
 	}
 
 	@Override

@@ -1,0 +1,22 @@
+# Spotless formatter based on CDT version 9.11.1 (see https://www.eclipse.org/cdt/)
+com.diffplug.spotless:spotless-eclipse-cdt:9.11.0
+com.diffplug.spotless:spotless-eclipse-base:3.3.0
+com.github.spotbugs:spotbugs-annotations:4.0.2
+com.google.code.findbugs:jsr305:3.0.2
+com.google.j2objc:j2objc-annotations:1.3
+com.ibm.icu:icu4j:64.2
+org.eclipse.platform:org.eclipse.core.commands:3.9.700
+org.eclipse.platform:org.eclipse.core.contenttype:3.7.700
+org.eclipse.platform:org.eclipse.core.filebuffers:3.6.1000
+org.eclipse.platform:org.eclipse.core.filesystem:1.7.700
+org.eclipse.platform:org.eclipse.core.jobs:3.10.800
+org.eclipse.platform:org.eclipse.core.resources:3.13.700
+org.eclipse.platform:org.eclipse.core.runtime:3.18.0
+org.eclipse.platform:org.eclipse.equinox.app:1.4.500
+org.eclipse.platform:org.eclipse.equinox.common:3.12.0
+org.eclipse.platform:org.eclipse.equinox.preferences:3.8.0
+org.eclipse.platform:org.eclipse.equinox.registry:3.8.800
+org.eclipse.platform:org.eclipse.jface.text:3.16.300
+org.eclipse.platform:org.eclipse.jface:3.20.0
+org.eclipse.platform:org.eclipse.osgi:3.15.300
+org.eclipse.platform:org.eclipse.text:3.10.200
