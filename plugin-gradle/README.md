@@ -524,6 +524,19 @@ spotless {
     tsfmt().npmExecutable('/usr/bin/npm').config(...)
 ```
 
+**Configuring npm using `.npmrc` file**
+
+Spotless picks up npm configuration stored in a `.npmrc` file either in the project directory or in your user home.
+Alternatively you can supply spotless with a location of the `.npmrc` file to use. (This can be combined with `npmExecutable`, of course.)
+
+```gradle
+spotless {
+  typescript {
+    tsfmt().npmrc("$projectDir/config/.npmrc").config(...)
+```
+
+
+
 <a name="applying-prettier-to-javascript--flow--typescript--css--scss--less--jsx--graphql--yaml--etc"></a>
 
 ## Prettier
@@ -589,6 +602,17 @@ Spotless will try to auto-discover an npm installation. If that is not working f
 spotless {
   format 'javascript', {
     prettier().npmExecutable('/usr/bin/npm').config(...)
+```
+
+### Configuring npm using `.npmrc` file
+
+Spotless picks up npm configuration stored in a `.npmrc` file either in the project directory or in your user home.
+Alternatively you can supply spotless with a location of the `.npmrc` file to use. (This can be combined with `npmExecutable`, of course.)
+
+```gradle
+spotless {
+  typescript {
+    prettier().npmrc("$projectDir/config/.npmrc").config(...)
 ```
 
 ## clang-format
