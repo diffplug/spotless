@@ -162,7 +162,7 @@ public class PrettierIntegrationTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void useNpmrcFileConfig() throws IOException {
+	public void autodetectNpmrcFileConfig() throws IOException {
 		setFile(".npmrc").toLines(
 				"registry=https://i.do.no.exist.com");
 		setFile("build.gradle").toLines(
@@ -177,6 +177,29 @@ public class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"    format 'mytypescript', {",
 				"        target 'test.ts'",
 				"        prettier().config(prettierConfig)",
+				"    }",
+				"}");
+		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
+		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").buildAndFail();
+		Assertions.assertThat(spotlessApply.getOutput()).containsPattern("Running npm command.*npm install.* failed with exit code: 1");
+	}
+
+	@Test
+	public void pickupNpmrcFileConfig() throws IOException {
+		setFile(".custom_npmrc").toLines(
+				"registry=https://i.do.no.exist.com");
+		setFile("build.gradle").toLines(
+				"buildscript { repositories { mavenCentral() } }",
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"def prettierConfig = [:]",
+				"prettierConfig['printWidth'] = 50",
+				"prettierConfig['parser'] = 'typescript'",
+				"spotless {",
+				"    format 'mytypescript', {",
+				"        target 'test.ts'",
+				"        prettier().npmrc('.custom_npmrc').config(prettierConfig)",
 				"    }",
 				"}");
 		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
