@@ -55,7 +55,7 @@ user@machine repo % mvn spotless:check
   - [Sql](#sql) ([dbeaver](#dbeaver))
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier))
   - Multiple languages
-    - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection))
+    - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection))
     - [eclipse web tools platform](#eclipse-web-tools-platform)
 - **Language independent**
   - [Generic steps](#generic-steps)
@@ -481,25 +481,7 @@ The auto-discovery of config files (up the file tree) will not work when using t
 
 **Prerequisite: tsfmt requires a working NodeJS version**
 
-tsfmt is based on NodeJS, so to use it, a working NodeJS installation (especially npm) is required on the host running spotless.
-Spotless will try to auto-discover an npm installation. If that is not working for you, it is possible to directly configure the npm binary to use.
-
-```xml
-<tsfmt>
-  <npmExecutable>/usr/bin/npm</npmExecutable>
-</tsfmt>
-```
-
-**Configuring npm using `.npmrc` file**
-
-Spotless picks up npm configuration stored in a `.npmrc` file either in the project directory or in your user home.
-Alternatively you can supply spotless with a location of the `.npmrc` file to use. (This can be combined with `npmExecutable`, of course.)
-
-```xml
-<tsfmt>
-  <npmrc>/usr/local/shared/.npmrc</npmrc>
-</tsfmt>
-```
+For details, see the [npm detection](#npm-detection) and [`.npmrc` detection](#npmrc-detection) sections of prettier, which apply also to tsfmt.
 
 <a name="applying-prettier-to-javascript--flow--typescript--css--scss--less--jsx--graphql--yaml--etc"></a>
 
@@ -625,7 +607,7 @@ Spotless will try to auto-discover an npm installation. If that is not working f
   <npmExecutable>/usr/bin/npm</npmExecutable>
 ```
 
-### Configuring npm using `.npmrc` file
+### `.npmrc` detection
 
 Spotless picks up npm configuration stored in a `.npmrc` file either in the project directory or in your user home.
 Alternatively you can supply spotless with a location of the `.npmrc` file to use. (This can be combined with `npmExecutable`, of course.)
