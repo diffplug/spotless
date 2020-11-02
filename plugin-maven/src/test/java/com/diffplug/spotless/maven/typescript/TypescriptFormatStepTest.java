@@ -24,15 +24,25 @@ import org.junit.experimental.categories.Category;
 
 import com.diffplug.spotless.category.NpmTest;
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
-import com.diffplug.spotless.maven.MavenRunner;
+import com.diffplug.spotless.maven.MavenRunner.Result;
 
 @Category(NpmTest.class)
 public class TypescriptFormatStepTest extends MavenIntegrationHarness {
 	private void run(String kind) throws IOException, InterruptedException {
-		String path = "src/main/typescript/test.ts";
-		setFile(path).toResource("npm/tsfmt/" + kind + "/" + kind + ".dirty");
+		String path = prepareRun(kind);
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).sameAsResource("npm/tsfmt/" + kind + "/" + kind + ".clean");
+	}
+
+	private String prepareRun(String kind) throws IOException {
+		String path = "src/main/typescript/test.ts";
+		setFile(path).toResource("npm/tsfmt/" + kind + "/" + kind + ".dirty");
+		return path;
+	}
+
+	private Result runExpectingError(String kind) throws IOException, InterruptedException {
+		prepareRun(kind);
+		return mavenRunner().withArguments("spotless:apply").runHasError();
 	}
 
 	@Test
@@ -99,7 +109,32 @@ public class TypescriptFormatStepTest extends MavenIntegrationHarness {
 
 		String path = "src/main/typescript/test.ts";
 		setFile(path).toResource("npm/tsfmt/tsfmt/tsfmt.dirty");
-		MavenRunner.Result result = mavenRunner().withArguments("spotless:apply").runHasError();
+		Result result = mavenRunner().withArguments("spotless:apply").runHasError();
 		assertThat(result.output()).contains("must specify exactly one configFile or config");
+	}
+
+	@Test
+	public void testNpmrcIsAutoPickedUp() throws Exception {
+		setFile(".npmrc").toLines("registry=https://i.do.no.exist.com");
+		writePomWithTypescriptSteps(
+				"<tsfmt>",
+				"  <tslintFile>${basedir}/tslint.json</tslintFile>",
+				"</tsfmt>");
+		setFile("tslint.json").toResource("npm/tsfmt/tslint/tslint.json");
+		Result result = runExpectingError("tslint");
+		assertThat(result.output()).containsPattern("Running npm command.*npm install.* failed with exit code: 1");
+	}
+
+	@Test
+	public void testNpmrcIsConfigurativelyPickedUp() throws Exception {
+		setFile(".custom_npmrc").toLines("registry=https://i.do.no.exist.com");
+		writePomWithTypescriptSteps(
+				"<tsfmt>",
+				"  <tslintFile>${basedir}/tslint.json</tslintFile>",
+				"  <npmrc>${basedir}/.custom_npmrc</npmrc>",
+				"</tsfmt>");
+		setFile("tslint.json").toResource("npm/tsfmt/tslint/tslint.json");
+		Result result = runExpectingError("tslint");
+		assertThat(result.output()).containsPattern("Running npm command.*npm install.* failed with exit code: 1");
 	}
 }

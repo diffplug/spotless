@@ -69,7 +69,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [SQL](#sql) ([dbeaver](#dbeaver), [prettier](#prettier))
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier))
   - Multiple languages
-    - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection))
+    - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection))
       - javascript, jsx, angular, vue, flow, typescript, css, less, scss, html, json, graphql, markdown, ymaml
     - [clang-format](#clang-format)
       - c, c++, c#, objective-c, protobuf, javascript, java
@@ -515,14 +515,7 @@ spotless {
 
 **Prerequisite: tsfmt requires a working NodeJS version**
 
-tsfmt is based on NodeJS, so to use it, a working NodeJS installation (especially npm) is required on the host running spotless.
-Spotless will try to auto-discover an npm installation. If that is not working for you, it is possible to directly configure the npm binary to use.
-
-```gradle
-spotless {
-  typescript {
-    tsfmt().npmExecutable('/usr/bin/npm').config(...)
-```
+For details, see the [npm detection](#npm-detection) and [`.npmrc` detection](#npmrc-detection) sections of prettier, which apply also to tsfmt.
 
 <a name="applying-prettier-to-javascript--flow--typescript--css--scss--less--jsx--graphql--yaml--etc"></a>
 
@@ -589,6 +582,17 @@ Spotless will try to auto-discover an npm installation. If that is not working f
 spotless {
   format 'javascript', {
     prettier().npmExecutable('/usr/bin/npm').config(...)
+```
+
+### `.npmrc` detection
+
+Spotless picks up npm configuration stored in a `.npmrc` file either in the project directory or in your user home.
+Alternatively you can supply spotless with a location of the `.npmrc` file to use. (This can be combined with `npmExecutable`, of course.)
+
+```gradle
+spotless {
+  typescript {
+    prettier().npmrc("$projectDir/config/.npmrc").config(...)
 ```
 
 ## clang-format

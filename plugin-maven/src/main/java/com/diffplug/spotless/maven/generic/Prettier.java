@@ -24,6 +24,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
+import com.diffplug.spotless.npm.NpmPathResolver;
 import com.diffplug.spotless.npm.PrettierConfig;
 import com.diffplug.spotless.npm.PrettierFormatterStep;
 
@@ -49,6 +50,9 @@ public class Prettier implements FormatterStepFactory {
 	@Parameter
 	private String npmExecutable;
 
+	@Parameter
+	private String npmrc;
+
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
 
@@ -67,6 +71,8 @@ public class Prettier implements FormatterStepFactory {
 		}
 
 		File npm = npmExecutable != null ? stepConfig.getFileLocator().locateFile(npmExecutable) : null;
+
+		File npmrcFile = npmrc != null ? stepConfig.getFileLocator().locateFile(npmrc) : null;
 
 		// process config file or inline config
 		File configFileHandler;
@@ -99,7 +105,8 @@ public class Prettier implements FormatterStepFactory {
 		// create the format step
 		PrettierConfig prettierConfig = new PrettierConfig(configFileHandler, configInline);
 		File buildDir = stepConfig.getFileLocator().getBuildDir();
-		return PrettierFormatterStep.create(devDependencies, stepConfig.getProvisioner(), buildDir, npm, prettierConfig);
+		NpmPathResolver npmPathResolver = new NpmPathResolver(npm, npmrcFile, stepConfig.getFileLocator().getBaseDir());
+		return PrettierFormatterStep.create(devDependencies, stepConfig.getProvisioner(), buildDir, npmPathResolver, prettierConfig);
 	}
 
 	private boolean moreThanOneNonNull(Object... objects) {

@@ -57,7 +57,7 @@ public class PrettierFormatterStepTest {
 					PrettierFormatterStep.defaultDevDependencies(),
 					TestProvisioner.mavenCentral(),
 					buildDir(),
-					npmExecutable(),
+					npmPathResolver(),
 					new PrettierConfig(prettierRc, null));
 
 			try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
@@ -80,7 +80,7 @@ public class PrettierFormatterStepTest {
 					PrettierFormatterStep.defaultDevDependencies(),
 					TestProvisioner.mavenCentral(),
 					buildDir(),
-					npmExecutable(),
+					npmPathResolver(),
 					new PrettierConfig(null, ImmutableMap.of("filepath", "anyname.json"))); // should select parser based on this name
 
 			try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
@@ -99,7 +99,7 @@ public class PrettierFormatterStepTest {
 					PrettierFormatterStep.defaultDevDependencies(),
 					TestProvisioner.mavenCentral(),
 					buildDir(),
-					npmExecutable(),
+					npmPathResolver(),
 					new PrettierConfig(null, Collections.emptyMap()));
 
 			try (StepHarnessWithFile stepHarness = StepHarnessWithFile.forStep(formatterStep)) {
@@ -113,7 +113,7 @@ public class PrettierFormatterStepTest {
 					PrettierFormatterStep.defaultDevDependenciesWithPrettier("2.0.5"),
 					TestProvisioner.mavenCentral(),
 					buildDir(),
-					npmExecutable(),
+					npmPathResolver(),
 					new PrettierConfig(null, ImmutableMap.of("parser", "postcss")));
 			try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
 				stepHarness.testResourceException("npm/prettier/filetypes/scss/scss.dirty", exception -> {
@@ -138,7 +138,7 @@ public class PrettierFormatterStepTest {
 					PrettierFormatterStep.defaultDevDependencies(),
 					TestProvisioner.mavenCentral(),
 					buildDir(),
-					npmExecutable(),
+					npmPathResolver(),
 					config); // should select parser based on this name
 
 			try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {

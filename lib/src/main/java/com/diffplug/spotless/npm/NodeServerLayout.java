@@ -22,11 +22,13 @@ class NodeServerLayout {
 	private final File nodeModulesDir;
 	private final File packageJsonFile;
 	private final File serveJsFile;
+	private final File npmrcFile;
 
 	NodeServerLayout(File buildDir, String stepName) {
 		this.nodeModulesDir = new File(buildDir, "spotless-node-modules-" + stepName);
 		this.packageJsonFile = new File(nodeModulesDir, "package.json");
 		this.serveJsFile = new File(nodeModulesDir, "serve.js");
+		this.npmrcFile = new File(nodeModulesDir, ".npmrc");
 	}
 
 	File nodeModulesDir() {
@@ -39,5 +41,9 @@ class NodeServerLayout {
 
 	File serveJsFile() {
 		return serveJsFile;
+	}
+
+	public File npmrcFile() {
+		return npmrcFile;
 	}
 }
