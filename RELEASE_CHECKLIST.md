@@ -1,4 +1,6 @@
-# Release checklist
+# Manual Release checklist
+
+We now do this automatically in CI.
 
 - [ ] Revise [`CHANGES.md`](CHANGES.md), [`plugin-gradle/CHANGES.md`](plugin-gradle/CHANGES.md), and [`plugin-maven/CHANGES.md`](plugin-maven/CHANGES.md)
 - [ ] If necessary, release lib `./gradlew :changelogPush`
@@ -12,3 +14,13 @@
         - `mvn spotless:apply -U`
         - might take a while for mavencentral to update, the `-U` flag above ensures that it tries again rather than caching a failure
 - [ ] Comment on all released PRs / issues
+
+## Stuck release
+
+Sometimes a release gets stuck. The fix:
+
+- sync mavencentral manually at bintray.com
+- `./gradlew :plugin-gradle:publishPlugins -Prelease=true` if it was a gradle plugin fail
+- update `CHANGES.md` manually
+- `./gradlew spotlessApply`
+- commit, tag, push
