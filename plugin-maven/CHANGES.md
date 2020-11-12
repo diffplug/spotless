@@ -5,6 +5,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * Added support to npm-based steps for picking up `.npmrc` files ([#727](https://github.com/diffplug/spotless/pull/727))
+### Fixed
+* Fixed bug in import order which woudld cause trailing empty strings to get dropped ([731](https://github.com/diffplug/spotless/issues/731))
+  * e.g. `<importorder><order>java,javafx,com.mycompany,</order></importorder>`
 
 ## [2.5.0] - 2020-10-20
 ### Added
