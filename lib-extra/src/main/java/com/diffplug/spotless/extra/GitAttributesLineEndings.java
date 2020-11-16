@@ -108,7 +108,8 @@ public final class GitAttributesLineEndings {
 		final ConcurrentRadixTree<String> hasNonDefaultEnding = new ConcurrentRadixTree<>(new DefaultCharSequenceNodeFactory());
 
 		CachedEndings(File projectDir, Runtime runtime, Iterable<File> toFormat) {
-			rootDir = FileSignature.pathNativeToUnix(projectDir.getAbsolutePath()) + "/";
+			String rootPath = FileSignature.pathNativeToUnix(projectDir.getAbsolutePath());
+			rootDir = rootPath.equals("/") ? rootPath : rootPath + "/";
 			defaultEnding = runtime.defaultEnding;
 			for (File file : toFormat) {
 				String ending = runtime.getEndingFor(file);
