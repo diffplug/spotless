@@ -4,7 +4,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Fixed
-* Upgraded org.codehaus.plexus:plexus-utils to its latest version (3.3.0)  ([#736](https://github.com/diffplug/spotless/pull/736))
+* Fixed a bug which occurred if the root directory of the project was also the filesystem root ([#732](https://github.com/diffplug/spotless/pull/732)).
+* Upgraded org.codehaus.plexus:plexus-utils to its latest version (3.3.0) to improve directory scanning time ([#729](https://github.com/diffplug/spotless/pull/729)).
+  * Whether this helps with the directory scanning time is unconfirmed, please report your experience in the issue above.
 
 ## [2.6.0] - 2020-11-13
 ### Added
