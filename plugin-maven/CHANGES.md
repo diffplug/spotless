@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+* Fix broken test for spotlessFiles parameter on windows ([#737](https://github.com/diffplug/spotless/pull/737))
 
 ## [2.6.0] - 2020-11-13
 ### Added
