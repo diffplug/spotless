@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Changed
+* Update default ktfmt from 0.16 to 0.18 ([#748](https://github.com/diffplug/spotless/issues/748))
 
 ## [2.10.2] - 2020-11-16
 ### Fixed
