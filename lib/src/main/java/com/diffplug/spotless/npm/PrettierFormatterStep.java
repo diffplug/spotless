@@ -113,7 +113,9 @@ public class PrettierFormatterStep {
 
 		@Override
 		public String applyWithFile(String unix, File file) throws Exception {
-			FormattedPrinter.SYSOUT.print("formatting String '" + unix.substring(0, Math.min(50, unix.length() - 1)) + "[...]' in file '" + file + "'");
+            if (unix.length() > 0) {
+			  FormattedPrinter.SYSOUT.print("formatting String '" + unix.substring(0, Math.min(50, unix.length() - 1)) + "[...]' in file '" + file + "'");
+            }
 
 			final String prettierConfigOptionsWithFilepath = assertFilepathInConfigOptions(file);
 			return restService.format(unix, prettierConfigOptionsWithFilepath);
