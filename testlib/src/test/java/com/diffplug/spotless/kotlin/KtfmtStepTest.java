@@ -31,6 +31,22 @@ public class KtfmtStepTest extends ResourceHarness {
 	}
 
 	@Test
+	public void dropboxStyle_0_18() throws Exception {
+		// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
+		JreVersion.assume11OrGreater();
+		FormatterStep step = KtfmtStep.create("0.18", TestProvisioner.mavenCentral(), KtfmtStep.Style.DROPBOX);
+		StepHarness.forStep(step).testResource("kotlin/ktfmt/basic.dirty", "kotlin/ktfmt/basic-dropboxstyle.clean");
+	}
+
+	@Test
+	public void dropboxStyle_0_19() throws Exception {
+		// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
+		JreVersion.assume11OrGreater();
+		FormatterStep step = KtfmtStep.create("0.19", TestProvisioner.mavenCentral(), KtfmtStep.Style.DROPBOX);
+		StepHarness.forStep(step).testResource("kotlin/ktfmt/basic.dirty", "kotlin/ktfmt/basic-dropboxstyle.clean");
+	}
+
+	@Test
 	public void equality() throws Exception {
 		new SerializableEqualityTester() {
 			String version = "0.13";

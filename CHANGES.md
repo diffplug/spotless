@@ -13,6 +13,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changed
 * Update default ktfmt from 0.16 to 0.18 ([#748](https://github.com/diffplug/spotless/issues/748))
 * fix typo in javadoc comment for SQL\_FORMATTER\_INDENT\_TYPE ([#753](https://github.com/diffplug/spotless/pull/753))
+* Unbreak ktfmt v0.19 (https://github.com/facebookincubator/ktfmt/issues/155)
 
 ## [2.10.2] - 2020-11-16
 ### Fixed
