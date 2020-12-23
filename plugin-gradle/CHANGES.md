@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+* Added support for git-submodule with `ratchetFrom` ([#746](https://github.com/diffplug/spotless/issues/746))
 
 ## [5.8.2] - 2020-11-16
 ### Fixed
