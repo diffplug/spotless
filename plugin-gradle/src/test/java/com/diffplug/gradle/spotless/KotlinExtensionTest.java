@@ -67,6 +67,46 @@ public class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
+	public void integrationKtfmt_dropboxStyle_0_18() throws IOException {
+		// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
+		JreVersion.assume11OrGreater();
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'nebula.kotlin' version '1.3.72'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlin {",
+				"        ktfmt('0.18').dropboxStyle()",
+				"    }",
+				"}");
+		setFile("src/main/kotlin/basic.kt").toResource("kotlin/ktfmt/basic.dirty");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/kotlin/basic.kt").sameAsResource("kotlin/ktfmt/basic-dropboxstyle.clean");
+	}
+
+	@Test
+	public void integrationKtfmt_dropboxStyle_0_19() throws IOException {
+		// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
+		JreVersion.assume11OrGreater();
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'nebula.kotlin' version '1.3.72'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlin {",
+				"        ktfmt('0.19').dropboxStyle()",
+				"    }",
+				"}");
+		setFile("src/main/kotlin/basic.kt").toResource("kotlin/ktfmt/basic.dirty");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/kotlin/basic.kt").sameAsResource("kotlin/ktfmt/basic-dropboxstyle.clean");
+	}
+
+	@Test
 	public void testWithIndentation() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
