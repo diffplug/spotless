@@ -58,6 +58,7 @@ user@machine repo % mvn spotless:check
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection))
     - [eclipse web tools platform](#eclipse-web-tools-platform)
 - **Language independent**
+  - [Binding to maven phase](#binding-to-maven-phase)
   - [Generic steps](#generic-steps)
   - [License header](#license-header) ([slurp year from git](#retroactively-slurp-years-from-git-history))
   - [How can I enforce formatting gradually? (aka "ratchet")](#ratchet)
@@ -671,6 +672,35 @@ to true.
 
 <a name="format"></a>
 <a name="custom rules"></a>
+
+## Binding to maven phase
+
+By default, spotless:check is bound to verify maven phase. This means it is not required to
+explicitly bind the plugin execution, and the following will suffice;
+
+```xml
+<executions>
+  <execution>
+    <goals>
+      <goal>check</goal>
+    </goals>
+  </execution>
+</executions>
+```
+
+with this `mvn verify` will run `spotless:check`. If you require the check goal to be run with
+any other maven phase (i.e. compile) then it can be configured as below;
+
+```xml
+<executions>
+  <execution>
+    <goals>
+      <goal>check</goal>
+    </goals>
+    <phase>compile</phase>
+  </execution>
+</executions>
+```
 
 ## Generic steps
 
