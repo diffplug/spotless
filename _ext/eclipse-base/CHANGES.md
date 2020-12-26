@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.2.1`).
 
 ## [Unreleased]
+
+## [3.4.2] - 2020-12-26
 ### Fixed
 * `org.eclipse.osgi` version `3.16.100` does not allow `null` as Debug service for `CloseableBundleFile`.
 
