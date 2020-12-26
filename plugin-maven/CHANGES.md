@@ -3,6 +3,13 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* Added support for eclipse-cdt 4.18.0.
+* Added support for eclipse-jdt 4.18.0.
+* Added support for eclipse-wtp 4.18.0.
+### Changed
+* Updated default eclipse-jdt from 4.17.0 to 4.18.0.
+* Updated default eclipse-wtp from 4.17.0 to 4.18.0.
 ### Fixed
 * Fix broken test for spotlessFiles parameter on windows ([#737](https://github.com/diffplug/spotless/pull/737))
 
