@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import java.util.stream.Stream;
 
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.formatter.CodeFormatter;
-import org.eclipse.core.internal.filebuffers.FileBuffersPlugin;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.text.edits.TextEdit;
@@ -56,7 +55,6 @@ public class EclipseCdtFormatterStepImpl {
 		@Override
 		public void activatePlugins(SpotlessEclipsePluginConfig config) {
 			config.applyDefault();
-			config.add(new FileBuffersPlugin());
 			config.add(new CCorePlugin());
 		}
 	}

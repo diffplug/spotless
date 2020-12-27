@@ -4,7 +4,14 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
-* Added support for git-submodule with `ratchetFrom` ([#746](https://github.com/diffplug/spotless/issues/746))
+* Added support for eclipse-cdt 4.18.0.
+* Added support for eclipse-jdt 4.18.0.
+* Added support for eclipse-wtp 4.18.0.
+### Changed
+* Updated default eclipse-jdt from 4.17.0 to 4.18.0.
+* Updated default eclipse-wtp from 4.17.0 to 4.18.0.
+### Fixed
+* `ratchetFrom` now works with git-submodule ([#746](https://github.com/diffplug/spotless/issues/746))
 
 ## [5.8.2] - 2020-11-16
 ### Fixed

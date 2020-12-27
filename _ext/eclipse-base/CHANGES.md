@@ -4,6 +4,10 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+## [3.4.2] - 2020-12-26
+### Fixed
+* `org.eclipse.osgi` version `3.16.100` does not allow `null` as Debug service for `CloseableBundleFile`.
+
 ## [3.4.1] - 2020-09-24
 ### Fixed
 * Restored scope of transitive dependencies to 'compile'.

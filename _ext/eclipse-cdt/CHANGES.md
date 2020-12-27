@@ -4,6 +4,10 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+## [10.1.0] - 2020-12-26
+### Added
+* Switch to Eclipse CDT release 10.1 for Eclipse 4.18.
+
 ## [10.0.0] - 2020-10-17
 ### Added
 * Switch to Eclipse CDT release 10.0 for Eclipse 4.17.
