@@ -45,6 +45,7 @@ user@machine repo % mvn spotless:check
 
 - [**Quickstart**](#quickstart)
   - [Requirements](#requirements)
+  - [Binding to maven phase](#binding-to-maven-phase)
 - **Languages**
   - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
@@ -130,6 +131,35 @@ Spotless consists of a list of formats (in the example above, `misc` and `java`)
 Spotless requires Maven to be running on JRE 8+.
 
 <a name="applying-to-java-source"></a>
+
+### Binding to maven phase
+
+By default, spotless:check is bound to verify maven phase. This means it is not required to
+explicitly bind the plugin execution, and the following will suffice;
+
+```xml
+<executions>
+  <execution>
+    <goals>
+      <goal>check</goal>
+    </goals>
+  </execution>
+</executions>
+```
+
+with this `mvn verify` will run `spotless:check`. If you require the check goal to be run with
+any other maven phase (i.e. compile) then it can be configured as below;
+
+```xml
+<executions>
+  <execution>
+    <goals>
+      <goal>check</goal>
+    </goals>
+    <phase>compile</phase>
+  </execution>
+</executions>
+```
 
 ## Java
 
