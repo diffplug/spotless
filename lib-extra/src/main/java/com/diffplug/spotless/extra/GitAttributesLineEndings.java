@@ -132,13 +132,17 @@ public final class GitAttributesLineEndings {
 
 	static class RuntimeInit {
 		/** /etc/gitconfig (system-global), ~/.gitconfig, project/.git/config (each might-not exist). */
-		final FileBasedConfig systemConfig, userConfig, repoConfig;
+		final FileBasedConfig systemConfig, userConfig;
+		FileBasedConfig repoConfig;
 
 		/** Global .gitattributes file pointed at by systemConfig or userConfig, and the file in the repo. */
-		final @Nullable File globalAttributesFile, repoAttributesFile;
+		final @Nullable File globalAttributesFile;
+		@Nullable
+		File repoAttributesFile;
 
 		/** git worktree root, might not exist if we're not in a git repo. */
-		final @Nullable File workTree;
+		@Nullable
+		File workTree;
 
 		@SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
 		RuntimeInit(File projectDir, Iterable<File> toFormat) throws IOException {
@@ -168,30 +172,42 @@ public final class GitAttributesLineEndings {
 			//////////////////////////
 			// REPO-SPECIFIC VALUES //
 			//////////////////////////
-			FileRepositoryBuilder builder = new FileRepositoryBuilder();
-			builder.findGitDir(projectDir);
-			if (builder.getGitDir() != null) {
-				workTree = builder.getWorkTree();
-				repoConfig = new FileBasedConfig(userConfig, new File(builder.getGitDir(), Constants.CONFIG), FS.DETECTED);
-				repoAttributesFile = new File(builder.getGitDir(), Constants.INFO_ATTRIBUTES);
-			} else {
+			try {
+				FileRepositoryBuilder builder = new FileRepositoryBuilder();
+				builder.findGitDir(projectDir);
+				if (builder.getGitDir() != null) {
+					workTree = builder.getWorkTree();
+					repoConfig = new FileBasedConfig(userConfig, new File(builder.getGitDir(), Constants.CONFIG), FS.DETECTED);
+					repoAttributesFile = new File(builder.getGitDir(), Constants.INFO_ATTRIBUTES);
+				} else {
+					workTree = null;
+					// null would make repoConfig.getFile() bomb below
+					repoConfig = getEmptyRepoConfig();
+					repoAttributesFile = null;
+				}
+			} catch (final org.eclipse.jgit.errors.NoWorkTreeException ignored) {
+				// jgit does not support worktree yet. https://bugs.eclipse.org/bugs/show_bug.cgi?id=477475
 				workTree = null;
 				// null would make repoConfig.getFile() bomb below
-				repoConfig = new FileBasedConfig(userConfig, null, FS.DETECTED) {
-					@Override
-					public void load() {
-						// empty, do not load
-					}
-
-					@Override
-					public boolean isOutdated() {
-						// regular class would bomb here
-						return false;
-					}
-				};
+				repoConfig = getEmptyRepoConfig();
 				repoAttributesFile = null;
 			}
 			Errors.log().run(repoConfig::load);
+		}
+
+		private FileBasedConfig getEmptyRepoConfig() {
+			return new FileBasedConfig(userConfig, null, FS.DETECTED) {
+				@Override
+				public void load() {
+					// empty, do not load
+				}
+
+				@Override
+				public boolean isOutdated() {
+					// regular class would bomb here
+					return false;
+				}
+			};
 		}
 
 		private Runtime atRuntime() {
