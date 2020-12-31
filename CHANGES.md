@@ -14,6 +14,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Added support for git-submodule with `ratchetFrom` ([#746](https://github.com/diffplug/spotless/issues/746))
 * Update default ktfmt from 0.16 to 0.18 ([#748](https://github.com/diffplug/spotless/issues/748))
 * fix typo in javadoc comment for SQL\_FORMATTER\_INDENT\_TYPE ([#753](https://github.com/diffplug/spotless/pull/753))
+* Allow spotless to run when git worktree is used. It will fallback to the OS default for line endings, rather than what is specified in .gitattributes, but at least it won't crash.
 
 ## [2.10.2] - 2020-11-16
 ### Fixed
