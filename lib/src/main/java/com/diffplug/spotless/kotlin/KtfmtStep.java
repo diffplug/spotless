@@ -79,6 +79,10 @@ public class KtfmtStep {
 		return DEFAULT_VERSION;
 	}
 
+	public static String defaultStyle() {
+		return Style.DEFAULT.name();
+	}
+
 	static final class State implements Serializable {
 		private static final long serialVersionUID = 1L;
 

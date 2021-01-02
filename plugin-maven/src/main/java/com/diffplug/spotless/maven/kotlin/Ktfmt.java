@@ -29,11 +29,12 @@ public class Ktfmt implements FormatterStepFactory {
 	private String version;
 
 	@Parameter
-	private boolean dropboxStyle;
+	private String style;
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
 		String version = this.version != null ? this.version : KtfmtStep.defaultVersion();
-		return KtfmtStep.create(version, config.getProvisioner(), dropboxStyle ? Style.DROPBOX : Style.DEFAULT);
+		String style = this.style != null ? this.style : KtfmtStep.defaultStyle();
+		return KtfmtStep.create(version, config.getProvisioner(), Style.valueOf(style));
 	}
 }

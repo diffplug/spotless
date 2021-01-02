@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,5 +38,17 @@ public class KtfmtTest extends MavenIntegrationHarness {
 
 		assertFile(path1).sameAsResource("kotlin/ktfmt/basic.clean");
 		assertFile(path2).sameAsResource("kotlin/ktfmt/basic.clean");
+	}
+
+	@Test
+	public void testKtfmtStyle() throws Exception {
+		// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
+		JreVersion.assume11OrGreater();
+
+		writePomWithKotlinSteps("<ktfmt><style>DROPBOX</style></ktfmt>");
+
+		setFile("src/main/kotlin/main.kt").toResource("kotlin/ktfmt/basic.dirty");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("src/main/kotlin/main.kt").sameAsResource("kotlin/ktfmt/basic-dropboxstyle.clean");
 	}
 }
