@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -118,6 +118,12 @@ public class KtfmtStep {
 		}
 
 		private Object getDropboxStyleFormattingOptions(ClassLoader classLoader) throws Exception {
+			try {
+				// ktfmt v0.19 and later
+				return classLoader.loadClass(pkg + ".ktfmt.FormatterKt").getField("DROPBOX_FORMAT").get(null);
+			} catch (NoSuchFieldException ignored) {}
+
+			// fallback to old, pre-0.19 ktfmt interface.
 			Class<?> formattingOptionsCompanionClazz = classLoader.loadClass(pkg + ".ktfmt.FormattingOptions$Companion");
 			Object companion = formattingOptionsCompanionClazz.getConstructors()[0].newInstance((Object) null);
 			Method formattingOptionsMethod = formattingOptionsCompanionClazz.getDeclaredMethod(DROPBOX_STYLE_METHOD);
