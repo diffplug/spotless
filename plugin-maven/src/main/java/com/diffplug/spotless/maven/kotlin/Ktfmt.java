@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.kotlin.KtfmtStep;
+import com.diffplug.spotless.kotlin.KtfmtStep.Style;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 
@@ -27,9 +28,13 @@ public class Ktfmt implements FormatterStepFactory {
 	@Parameter
 	private String version;
 
+	@Parameter
+	private String style;
+
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
 		String version = this.version != null ? this.version : KtfmtStep.defaultVersion();
-		return KtfmtStep.create(version, config.getProvisioner());
+		String style = this.style != null ? this.style : KtfmtStep.defaultStyle();
+		return KtfmtStep.create(version, config.getProvisioner(), Style.valueOf(style));
 	}
 }

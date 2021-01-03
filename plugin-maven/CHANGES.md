@@ -7,6 +7,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Added support for eclipse-cdt 4.18.0.
 * Added support for eclipse-jdt 4.18.0.
 * Added support for eclipse-wtp 4.18.0.
+* Added ability to specify dropbox style for ktfmt `<style>DROPBOX</style>` ([#764](https://github.com/diffplug/spotless/pull/764))
 ### Changed
 * Updated default eclipse-jdt from 4.17.0 to 4.18.0.
 * Updated default eclipse-wtp from 4.17.0 to 4.18.0.

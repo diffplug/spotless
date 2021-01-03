@@ -306,7 +306,8 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
 
 ```xml
 <ktfmt>
-  <version>0.13</version> <!-- optional -->
+  <version>0.18</version> <!-- optional -->
+  <style>DEFAULT</style> <!-- optional, other option is DROPBOX -->
 </ktfmt>
 ```
 
