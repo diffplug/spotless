@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,11 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.assertj.core.api.Assertions;
+import org.assertj.core.util.Files;
 import org.junit.Test;
 
 public class RegisterDependenciesTaskTest extends GradleIntegrationHarness {
@@ -48,5 +50,44 @@ public class RegisterDependenciesTaskTest extends GradleIntegrationHarness {
 						"> Task :sub:spotlessCheck\n" +
 						"\n" +
 						"BUILD SUCCESSFUL");
+	}
+
+	@Test
+	public void reproduce_issue_747() throws IOException {
+		setFile("settings.gradle").toLines(
+				"plugins {",
+				"	id 'com.diffplug.spotless' apply false",
+				"}",
+				"include 'sub'");
+		setFile("build.gradle").toLines(
+				"buildscript { repositories { mavenCentral() }}");
+		setFile("sub/build.gradle").toLines(
+				"apply plugin: 'com.diffplug.spotless'",
+				"",
+				"spotless {",
+				"  scala {",
+				"    scalafmt(\"2.0.1\")",
+				"    target 'src/**'",
+				"  }",
+				"}");
+		setFile("sub/src/a.scala").toResource("scala/scalafmt/basic.dirty");
+		gradleRunner()
+				.withGradleVersion("6.7.1")
+				.withArguments("spotlessApply").build();
+		assertFile("sub/src/a.scala").sameAsResource("scala/scalafmt/basic.clean_2.0.1");
+
+		File build = new File(rootFolder(), "build");
+		Files.delete(build);
+		Assertions.assertThat(build.createNewFile()).isTrue();
+
+		String output = gradleRunner()
+				.withGradleVersion("6.7.1")
+				.withArguments("spotlessApply")
+				.buildAndFail()
+				.getOutput();
+		Assertions.assertThat(output).contains(
+				"Cannot write to file '",
+				"spotless-register-dependencies' specified for property 'unitOutput', as ancestor '",
+				"build' is not a directory.");
 	}
 }
