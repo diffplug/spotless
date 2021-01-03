@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,7 +113,7 @@ public class PrettierFormatterStep {
 
 		@Override
 		public String applyWithFile(String unix, File file) throws Exception {
-			FormattedPrinter.SYSOUT.print("formatting String '" + unix.substring(0, Math.min(50, unix.length() - 1)) + "[...]' in file '" + file + "'");
+			FormattedPrinter.SYSOUT.print("formatting String '" + unix.substring(0, Math.min(50, unix.length())) + "[...]' in file '" + file + "'");
 
 			final String prettierConfigOptionsWithFilepath = assertFilepathInConfigOptions(file);
 			return restService.format(unix, prettierConfigOptionsWithFilepath);

@@ -15,6 +15,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * `ratchetFrom` now works with git-submodule ([#746](https://github.com/diffplug/spotless/issues/746))
 * Fix broken test for spotlessFiles parameter on windows ([#737](https://github.com/diffplug/spotless/pull/737))
 * ktfmt v0.19+ with dropbox-style works again ([#765](https://github.com/diffplug/spotless/pull/765)).
+* prettier no longer throws errors on empty files ([#751](https://github.com/diffplug/spotless/pull/751)).
 
 ## [2.6.1] - 2020-11-16
 ### Fixed

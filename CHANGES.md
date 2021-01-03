@@ -22,6 +22,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * fix typo in javadoc comment for SQL\_FORMATTER\_INDENT\_TYPE ([#753](https://github.com/diffplug/spotless/pull/753))
 ### Fixed
 * ktfmt v0.19+ with dropbox-style works again ([#765](https://github.com/diffplug/spotless/pull/765)).
+* prettier no longer throws errors on empty files ([#751](https://github.com/diffplug/spotless/pull/751)).
 
 ## [2.10.2] - 2020-11-16
 ### Fixed

@@ -13,6 +13,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Fixed
 * `ratchetFrom` now works with git-submodule ([#746](https://github.com/diffplug/spotless/issues/746))
 * ktfmt v0.19+ with dropbox-style works again ([#765](https://github.com/diffplug/spotless/pull/765)).
+* prettier no longer throws errors on empty files ([#751](https://github.com/diffplug/spotless/pull/751)).
 
 ## [5.8.2] - 2020-11-16
 ### Fixed
