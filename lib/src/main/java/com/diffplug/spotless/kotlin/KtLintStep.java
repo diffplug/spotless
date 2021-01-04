@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ public class KtLintStep {
 
 	private static final Pattern BAD_SEMVER = Pattern.compile("(\\d+)\\.(\\d+)\\.");
 
-	private static final String DEFAULT_VERSION = "0.35.0";
+	private static final String DEFAULT_VERSION = "0.40.0";
 	static final String NAME = "ktlint";
 	static final String PACKAGE_PRE_0_32 = "com.github.shyiko";
 	static final String PACKAGE = "com.pinterest";
