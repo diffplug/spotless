@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -172,14 +172,11 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 	protected abstract @Nullable Project getParent(Project project);
 
 	private static @Nullable Repository traverseParentsUntil(File startWith, File file) throws IOException {
-		while (startWith != null) {
+		while (startWith != null && !Objects.equals(startWith, file)) {
 			if (isGitRoot(startWith)) {
 				return createRepo(startWith);
 			} else {
 				startWith = startWith.getParentFile();
-				if (Objects.equals(startWith, file)) {
-					return null;
-				}
 			}
 		}
 		return null;
