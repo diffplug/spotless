@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 public class FileSignatureTest extends ResourceHarness {
@@ -78,5 +79,12 @@ public class FileSignatureTest extends ResourceHarness {
 	@Test
 	public void testSubpath() {
 		assertThat(FileSignature.subpath("root/", "root/child")).isEqualTo("child");
+	}
+
+	@Test
+	public void windowsRoot() {
+		org.junit.Assume.assumeTrue(FileSignature.machineIsWin());
+		String subpath = FileSignature.subpath("S://", "S:/build.gradle");
+		Assertions.assertThat(subpath).isEqualTo("build.gradle");
 	}
 }

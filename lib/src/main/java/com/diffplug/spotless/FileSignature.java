@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -200,6 +200,9 @@ public final class FileSignature implements Serializable {
 		if (child.startsWith(root)) {
 			return child.substring(root.length());
 		} else {
+			if (machineIsWin() && root.endsWith("://") && child.startsWith(root.substring(0, root.length() - 1))) {
+				return child.substring(root.length() - 1);
+			}
 			throw new IllegalArgumentException("Expected '" + child + "' to start with '" + root + "'");
 		}
 	}
