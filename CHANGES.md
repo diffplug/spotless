@@ -17,13 +17,14 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changed
 * Updated default eclipse-jdt from 4.17.0 to 4.18.0.
 * Updated default eclipse-wtp from 4.17.0 to 4.18.0.
-* Added support for git-submodule with `ratchetFrom` ([#746](https://github.com/diffplug/spotless/issues/746))
 * Update default ktfmt from 0.16 to 0.18 ([#748](https://github.com/diffplug/spotless/issues/748))
 * fix typo in javadoc comment for SQL\_FORMATTER\_INDENT\_TYPE ([#753](https://github.com/diffplug/spotless/pull/753))
 ### Fixed
-* ktfmt v0.19+ with dropbox-style works again ([#765](https://github.com/diffplug/spotless/pull/765)).
-* prettier no longer throws errors on empty files ([#751](https://github.com/diffplug/spotless/pull/751)).
-* fixed error when running on root of windows mountpoint ([#760](https://github.com/diffplug/spotless/pull/760)).
+* Fixed `ratchetFrom` support for git-submodule ([#746](https://github.com/diffplug/spotless/issues/746)).
+* Fixed `ratchetFrom` excess memory consumption ([#735](https://github.com/diffplug/spotless/issues/735)).
+* `ktfmt` v0.19+ with dropbox-style works again ([#765](https://github.com/diffplug/spotless/pull/765)).
+* `prettier` no longer throws errors on empty files ([#751](https://github.com/diffplug/spotless/pull/751)).
+* Fixed error when running on root of windows mountpoint ([#760](https://github.com/diffplug/spotless/pull/760)).
 
 ## [2.10.2] - 2020-11-16
 ### Fixed
