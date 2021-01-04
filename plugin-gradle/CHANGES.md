@@ -12,9 +12,10 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Updated default eclipse-wtp from 4.17.0 to 4.18.0.
 ### Fixed
 * `ratchetFrom` now works with git-submodule ([#746](https://github.com/diffplug/spotless/issues/746))
-* ktfmt v0.19+ with dropbox-style works again ([#765](https://github.com/diffplug/spotless/pull/765)).
-* prettier no longer throws errors on empty files ([#751](https://github.com/diffplug/spotless/pull/751)).
-* fixed error when running on root of windows mountpoint ([#760](https://github.com/diffplug/spotless/pull/760)).
+* `ktfmt` v0.19+ with dropbox-style works again ([#765](https://github.com/diffplug/spotless/pull/765)).
+* `prettier` no longer throws errors on empty files ([#751](https://github.com/diffplug/spotless/pull/751)).
+* Fixed error when running on root of windows mountpoint ([#760](https://github.com/diffplug/spotless/pull/760)).
+* No longer declare inputs on `SpotlessCheck` and `SpotlessApply` since they don't have any outputs (worker task still does up-to-date and caching) ([#741](https://github.com/diffplug/spotless/issues/741)).
 
 ## [5.8.2] - 2020-11-16
 ### Fixed
