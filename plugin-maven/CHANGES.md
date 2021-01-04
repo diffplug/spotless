@@ -5,12 +5,12 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * Added ability to specify dropbox style for ktfmt `<style>DROPBOX</style>` ([#764](https://github.com/diffplug/spotless/pull/764))
-* Added support for eclipse-cdt 4.18.0.
-* Added support for eclipse-jdt 4.18.0.
-* Added support for eclipse-wtp 4.18.0.
+* Added support for `eclipse-cdt`, `eclipse-jdt`, and `eclipse-wtp` at `4.18.0`.
 ### Changed
-* Updated default eclipse-jdt from 4.17.0 to 4.18.0.
-* Updated default eclipse-wtp from 4.17.0 to 4.18.0.
+* Bump `eclipse-jdt` default version from `4.17.0` to `4.18.0`.
+* Bump `eclipse-wtp` default version from `4.17.0` to `4.18.0`.
+* Bump `ktlint` default version from `0.35.0` to `0.40.0` ([#773](https://github.com/diffplug/spotless/issues/773)).
+* Bump `ktfmt` default version from `0.16` to `0.19` ([#748](https://github.com/diffplug/spotless/issues/748) and [#773](https://github.com/diffplug/spotless/issues/773)).
 ### Fixed
 * Fixed `ratchetFrom` support for git-submodule ([#746](https://github.com/diffplug/spotless/issues/746)).
 * Fixed `ratchetFrom` excess memory consumption ([#735](https://github.com/diffplug/spotless/issues/735)).
