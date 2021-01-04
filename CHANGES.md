@@ -15,7 +15,6 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changed
 * Bump `eclipse-jdt` default version from `4.17.0` to `4.18.0`.
 * Bump `eclipse-wtp` default version from `4.17.0` to `4.18.0`.
-* Bump `ktlint` default version from `0.35.0` to `0.40.0` ([#773](https://github.com/diffplug/spotless/issues/773)).
 * Bump `ktfmt` default version from `0.16` to `0.19` ([#748](https://github.com/diffplug/spotless/issues/748) and [#773](https://github.com/diffplug/spotless/issues/773)).
 * Bump `jgit` from `5.9` to `5.10` ([#773](https://github.com/diffplug/spotless/issues/773)).
 ### Fixed
