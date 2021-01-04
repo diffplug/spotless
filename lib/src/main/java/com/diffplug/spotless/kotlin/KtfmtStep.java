@@ -33,7 +33,7 @@ public class KtfmtStep {
 	// prevent direct instantiation
 	private KtfmtStep() {}
 
-	private static final String DEFAULT_VERSION = "0.18";
+	private static final String DEFAULT_VERSION = "0.19";
 	static final String NAME = "ktfmt";
 	static final String PACKAGE = "com.facebook";
 	static final String MAVEN_COORDINATE = PACKAGE + ":ktfmt:";
