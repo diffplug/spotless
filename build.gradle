@@ -8,7 +8,7 @@ plugins {
 	// https://github.com/mnlipp/jdrupes-mdoclet/releases
 	id 'org.jdrupes.mdoclet' version '1.0.10' apply false
 	// https://github.com/spotbugs/spotbugs-gradle-plugin/releases
-	id "com.github.spotbugs" version "4.3.0" apply false
+	id "com.github.spotbugs" version "4.6.0" apply false
 	//https://github.com/diffplug/goomph
 	id "com.diffplug.p2.asmaven" version "3.22.0" apply false
 	// https://github.com/diffplug/spotless-changelog
