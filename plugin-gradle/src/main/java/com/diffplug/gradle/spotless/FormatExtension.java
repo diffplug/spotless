@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -452,14 +452,20 @@ public class FormatExtension {
 		}
 
 		FormatterStep createStep() {
-			return builder.withYearModeLazy(() -> {
-				if ("true".equals(spotless.project.findProperty(LicenseHeaderStep.FLAG_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY()))) {
-					return YearMode.SET_FROM_GIT;
-				} else {
-					boolean updateYear = updateYearWithLatest == null ? getRatchetFrom() != null : updateYearWithLatest;
-					return updateYear ? YearMode.UPDATE_TO_TODAY : YearMode.PRESERVE;
-				}
-			}).build();
+			final boolean useGitHistory = "true".equals(spotless.project.findProperty(
+					LicenseHeaderStep.FLAG_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY()));
+
+			return builder
+					.withUseGitHistoryLazy(() -> useGitHistory)
+					.withYearModeLazy(() -> {
+						System.out.println("RATCHET FROM: " + getRatchetFrom());
+
+						return (updateYearWithLatest == null ? getRatchetFrom() != null
+								: updateYearWithLatest)
+										? YearMode.UPDATE_TO_TODAY
+										: YearMode.PRESERVE;
+					})
+					.build();
 		}
 	}
 

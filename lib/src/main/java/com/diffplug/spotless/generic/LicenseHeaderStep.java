@@ -46,7 +46,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 /** Prefixes a license header before the package statement. */
 public final class LicenseHeaderStep {
 	public enum YearMode {
-		PRESERVE, UPDATE_TO_TODAY, SET_FROM_GIT
+		PRESERVE, UPDATE_TO_TODAY
 	}
 
 	public static LicenseHeaderStep headerDelimiter(String header, String delimiter) {
@@ -54,19 +54,21 @@ public final class LicenseHeaderStep {
 	}
 
 	public static LicenseHeaderStep headerDelimiter(ThrowingEx.Supplier<String> headerLazy, String delimiter) {
-		return new LicenseHeaderStep(headerLazy, delimiter, DEFAULT_YEAR_DELIMITER, () -> YearMode.PRESERVE);
+		return new LicenseHeaderStep(headerLazy, delimiter, DEFAULT_YEAR_DELIMITER, () -> YearMode.PRESERVE, () -> false);
 	}
 
 	final ThrowingEx.Supplier<String> headerLazy;
 	final String delimiter;
 	final String yearSeparator;
 	final Supplier<YearMode> yearMode;
+	final Supplier<Boolean> useGitHistory;
 
-	private LicenseHeaderStep(ThrowingEx.Supplier<String> headerLazy, String delimiter, String yearSeparator, Supplier<YearMode> yearMode) {
+	private LicenseHeaderStep(ThrowingEx.Supplier<String> headerLazy, String delimiter, String yearSeparator, Supplier<YearMode> yearMode, Supplier<Boolean> useGitHistory) {
 		this.headerLazy = Objects.requireNonNull(headerLazy);
 		this.delimiter = Objects.requireNonNull(delimiter);
 		this.yearSeparator = Objects.requireNonNull(yearSeparator);
 		this.yearMode = Objects.requireNonNull(yearMode);
+		this.useGitHistory = useGitHistory;
 	}
 
 	public LicenseHeaderStep withHeaderString(String header) {
@@ -74,15 +76,15 @@ public final class LicenseHeaderStep {
 	}
 
 	public LicenseHeaderStep withHeaderLazy(ThrowingEx.Supplier<String> headerLazy) {
-		return new LicenseHeaderStep(headerLazy, delimiter, yearSeparator, yearMode);
+		return new LicenseHeaderStep(headerLazy, delimiter, yearSeparator, yearMode, useGitHistory);
 	}
 
 	public LicenseHeaderStep withDelimiter(String delimiter) {
-		return new LicenseHeaderStep(headerLazy, delimiter, yearSeparator, yearMode);
+		return new LicenseHeaderStep(headerLazy, delimiter, yearSeparator, yearMode, useGitHistory);
 	}
 
 	public LicenseHeaderStep withYearSeparator(String yearSeparator) {
-		return new LicenseHeaderStep(headerLazy, delimiter, yearSeparator, yearMode);
+		return new LicenseHeaderStep(headerLazy, delimiter, yearSeparator, yearMode, useGitHistory);
 	}
 
 	public LicenseHeaderStep withYearMode(YearMode yearMode) {
@@ -90,31 +92,29 @@ public final class LicenseHeaderStep {
 	}
 
 	public LicenseHeaderStep withYearModeLazy(Supplier<YearMode> yearMode) {
-		return new LicenseHeaderStep(headerLazy, delimiter, yearSeparator, yearMode);
+		return new LicenseHeaderStep(headerLazy, delimiter, yearSeparator, yearMode, useGitHistory);
+	}
+
+	public LicenseHeaderStep withUseGitHistory(boolean useGitHistory) {
+		return withUseGitHistoryLazy(() -> useGitHistory);
+	}
+
+	public LicenseHeaderStep withUseGitHistoryLazy(Supplier<Boolean> useGitHistory) {
+		return new LicenseHeaderStep(headerLazy, delimiter, yearSeparator, yearMode, useGitHistory);
 	}
 
 	public FormatterStep build() {
-		if (yearMode.get() == YearMode.SET_FROM_GIT) {
+		if (useGitHistory.get()) {
 			return FormatterStep.createNeverUpToDateLazy(LicenseHeaderStep.name(), () -> {
-				boolean updateYear = false; // doesn't matter
+				// by default, we should update the year if the user is using ratchetFrom
+				boolean updateYear = yearMode.get() == YearMode.UPDATE_TO_TODAY;
 				Runtime runtime = new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear);
 				return FormatterFunc.needsFile(runtime::format);
 			});
 		} else {
 			return FormatterStep.createLazy(LicenseHeaderStep.name(), () -> {
 				// by default, we should update the year if the user is using ratchetFrom
-				boolean updateYear;
-				switch (yearMode.get()) {
-				case PRESERVE:
-					updateYear = false;
-					break;
-				case UPDATE_TO_TODAY:
-					updateYear = true;
-					break;
-				case SET_FROM_GIT:
-				default:
-					throw new IllegalStateException(yearMode.toString());
-				}
+				boolean updateYear = yearMode.get() == YearMode.UPDATE_TO_TODAY;
 				return new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear);
 			}, step -> raw -> step.format(raw, null));
 		}

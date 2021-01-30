@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,15 +44,11 @@ public class LicenseHeader implements FormatterStepFactory {
 			throw new IllegalArgumentException("You need to specify 'delimiter'.");
 		}
 		if (file != null ^ content != null) {
-			YearMode yearMode;
-			if ("true".equals(config.spotlessSetLicenseHeaderYearsFromGitHistory().orElse(""))) {
-				yearMode = YearMode.SET_FROM_GIT;
-			} else {
-				boolean updateYear = config.getRatchetFrom().isPresent();
-				yearMode = updateYear ? YearMode.UPDATE_TO_TODAY : YearMode.PRESERVE;
-			}
+			final boolean useGitHistory = "true".equals(config.spotlessSetLicenseHeaderYearsFromGitHistory().orElse(""));
+			boolean updateYear = config.getRatchetFrom().isPresent();
 			return LicenseHeaderStep.headerDelimiter(() -> readFileOrContent(config), delimiterString)
-					.withYearMode(yearMode)
+					.withUseGitHistory(useGitHistory)
+					.withYearMode(updateYear ? YearMode.UPDATE_TO_TODAY : YearMode.PRESERVE)
 					.build()
 					.filterByFile(LicenseHeaderStep.unsupportedJvmFilesFilter());
 		} else {
