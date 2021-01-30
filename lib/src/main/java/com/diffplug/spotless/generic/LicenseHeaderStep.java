@@ -25,6 +25,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -196,32 +199,19 @@ public final class LicenseHeaderStep {
 		private String format(String raw) {
 			Matcher contentMatcher = findContentDelimiter(raw);
 
-			String content = raw.substring(contentMatcher.start());
 			if (yearToday == null) {
 				return formatFixedLicenseHeader(raw, contentMatcher);
 			}
 
-			// the yes year case is a bit harder
-			int beforeYearIdx = raw.indexOf(beforeYear);
-			int afterYearIdx = raw.indexOf(afterYear, beforeYearIdx + beforeYear.length() + 1);
+			SortedSet<String> years = new TreeSet<>();
 
-			if (beforeYearIdx >= 0 && afterYearIdx >= 0 && afterYearIdx + afterYear.length() <= contentMatcher.start()) {
-				// and also ends with exactly the right header, so it's easy to parse the existing year
-				String existingYear = raw.substring(beforeYearIdx + beforeYear.length(), afterYearIdx);
-				String newYear = calculateYearExact(existingYear);
-				if (existingYear.equals(newYear)) {
-					// fastpath where we don't need to make any changes at all
-					boolean noPadding = beforeYearIdx == 0 && afterYearIdx + afterYear.length() == contentMatcher.start(); // allows fastpath return raw
-					if (noPadding) {
-						return raw;
-					}
-				}
-				return beforeYear + newYear + afterYear + content;
-			} else {
-				String newYear = calculateYearBySearching(raw.substring(0, contentMatcher.start()));
-				// at worst, we just say that it was made today
-				return beforeYear + newYear + afterYear + content;
+			extractYearsFromHeader(years::add, raw, contentMatcher);
+
+			if (updateYearWithLatest || years.isEmpty()) {
+				years.add(yearToday);
 			}
+
+			return formatYearRangeLicenseHeader(raw, contentMatcher, years);
 		}
 
 		/**
@@ -256,42 +246,74 @@ public final class LicenseHeaderStep {
 			}
 		}
 
-		private static final Pattern YYYY = Pattern.compile("[0-9]{4}");
-
-		/** Calculates the year to inject. */
-		private String calculateYearExact(String parsedYear) {
-			if (parsedYear.equals(yearToday)) {
-				return parsedYear;
-			} else if (YYYY.matcher(parsedYear).matches()) {
-				if (updateYearWithLatest) {
-					return parsedYear + yearSepOrFull + yearToday;
-				} else {
-					// it's already good as a single year
-					return parsedYear;
-				}
+		/**
+		 * Format the file with a date range license header.
+		 * @param raw            the text of the whole file.
+		 * @param contentMatcher as returned by {@link #findContentDelimiter(String)}.
+		 * @param years 		 the range of years to use.
+		 * @return the file with the full fixed content license header.
+		 */
+		private String formatYearRangeLicenseHeader(String raw, Matcher contentMatcher, SortedSet<String> years) {
+			String header;
+			if (years.size() == 1) {
+				header = beforeYear + years.first() + afterYear;
 			} else {
-				return calculateYearBySearching(parsedYear);
+				header = beforeYear + years.first() + yearSepOrFull + years.last() + afterYear;
+			}
+
+			if (header.length() == contentMatcher.start() && raw.startsWith(header)) {
+				// fast path where we don't need to make any changes at all
+				return raw;
+			} else {
+				return header + raw.substring(contentMatcher.start());
 			}
 		}
 
-		/** Searches the given string for YYYY, and uses that to determine the year range. */
-		private String calculateYearBySearching(String content) {
-			Matcher yearMatcher = YYYY.matcher(content);
-			if (yearMatcher.find()) {
-				String firstYear = yearMatcher.group();
-				String secondYear;
-				if (updateYearWithLatest) {
-					secondYear = firstYear.equals(yearToday) ? null : yearToday;
-				} else if (yearMatcher.find(yearMatcher.end() + 1)) {
-					secondYear = yearMatcher.group();
-				} else {
-					secondYear = null;
-				}
-				return secondYear == null ? firstYear : firstYear + yearSepOrFull + secondYear;
+		/**
+		 * Extract years from the existing license header.
+		 * @param years          a consumer to accept extracted years
+		 * @param raw            the text of the whole file.
+		 * @param contentMatcher as returned by {@link #findContentDelimiter(String)}.
+		 */
+		private void extractYearsFromHeader(Consumer<String> years, String raw, Matcher contentMatcher) {
+			// the yes year case is a bit harder
+			int beforeYearIdx = raw.indexOf(beforeYear);
+			int afterYearIdx = raw.indexOf(afterYear, beforeYearIdx + beforeYear.length() + 1);
+
+			if (beforeYearIdx >= 0 && afterYearIdx >= 0 && afterYearIdx + afterYear.length() <= contentMatcher.start()) {
+				// and also ends with exactly the right header, so it's easy to parse the existing year
+				String existingYear = raw.substring(beforeYearIdx + beforeYear.length(), afterYearIdx);
+				extractYearsFromText(years, existingYear);
 			} else {
-				System.err.println("Can't parse copyright year '" + content + "', defaulting to " + yearToday);
-				// couldn't recognize the year format
-				return yearToday;
+				String existingHeader = raw.substring(0, contentMatcher.start());
+				extractYearsFromText(years, existingHeader);
+			}
+		}
+
+		private static final Pattern YYYY = Pattern.compile("[0-9]{4}");
+
+		/**
+		 * Extract years from the given string using the YYYY pattern.
+		 * @param years a consumer to accept extracted years
+		 * @param text  the text to search within.
+		 */
+		private void extractYearsFromText(Consumer<String> years, String text) {
+			if (text.equals(yearToday)) {
+				// fast path if the text is an exact match
+				years.accept(yearToday);
+				return;
+			}
+
+			Matcher yearMatcher = YYYY.matcher(text);
+			if (yearMatcher.find()) {
+				// extract the first year of the range
+				years.accept(yearMatcher.group());
+
+				// look for an possible second year in the text
+				final int nextStart = yearMatcher.end() + 1;
+				if (nextStart < text.length() && yearMatcher.find(nextStart)) {
+					years.accept(yearMatcher.group());
+				}
 			}
 		}
 
@@ -302,23 +324,27 @@ public final class LicenseHeaderStep {
 				return formatFixedLicenseHeader(raw, contentMatcher);
 			}
 
-			String oldYear;
+			SortedSet<String> years = new TreeSet<>();
+			extractYearsFromGitHistory(years::add, file);
+
+			return formatYearRangeLicenseHeader(raw, contentMatcher, years);
+		}
+
+		/**
+		 * Extract years from the git history by finding the oldest and most recent commits throughout git history.
+		 * @param file  the file to search git for.
+		 * @param years a consumer to accept extracted years
+		 */
+		private void extractYearsFromGitHistory(Consumer<String> years, File file) throws IOException {
 			try {
-				oldYear = parseYear("git log --follow --find-renames=40% --diff-filter=A", file);
+				years.accept(parseYear("git log --follow --find-renames=40% --diff-filter=A", file));
 			} catch (IllegalArgumentException e) {
 				// Ideally, git log would always find the commit where it was added.
 				// For some reason, that is sometimes not possible - in that case,
 				// we'll settle for just the most recent, even if it was just a modification.
-				oldYear = parseYear("git log --follow --find-renames=40% --reverse", file);
+				years.accept(parseYear("git log --follow --find-renames=40% --reverse", file));
 			}
-			String newYear = parseYear("git log --max-count=1", file);
-			String yearRange;
-			if (oldYear.equals(newYear)) {
-				yearRange = oldYear;
-			} else {
-				yearRange = oldYear + yearSepOrFull + newYear;
-			}
-			return beforeYear + yearRange + afterYear + raw.substring(contentMatcher.start());
+			years.accept(parseYear("git log --max-count=1", file));
 		}
 
 		private static String parseYear(String cmd, File file) throws IOException {
