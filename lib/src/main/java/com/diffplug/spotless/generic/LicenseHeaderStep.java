@@ -98,7 +98,7 @@ public final class LicenseHeaderStep {
 			return FormatterStep.createNeverUpToDateLazy(LicenseHeaderStep.name(), () -> {
 				boolean updateYear = false; // doesn't matter
 				Runtime runtime = new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear);
-				return FormatterFunc.needsFile(runtime::setLicenseHeaderYearsFromGitHistory);
+				return FormatterFunc.needsFile(runtime::format);
 			});
 		} else {
 			return FormatterStep.createLazy(LicenseHeaderStep.name(), () -> {
@@ -116,7 +116,7 @@ public final class LicenseHeaderStep {
 					throw new IllegalStateException(yearMode.toString());
 				}
 				return new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear);
-			}, step -> step::format);
+			}, step -> raw -> step.format(raw, null));
 		}
 	}
 
@@ -195,8 +195,14 @@ public final class LicenseHeaderStep {
 			return YEAR_TOKENS.stream().filter(licenseHeader::contains).findFirst();
 		}
 
-		/** Formats the given string. */
-		private String format(String raw) {
+		/**
+		 * Format the file with the a license header.
+		 * @param raw            the text of the whole file.
+		 * @param file           the file being formatted, if git history should be considered
+		 * @return the file with the formatted license header.
+		 * @throws IOException if git history cannot be retrieved.
+		 */
+		private String format(String raw, @Nullable File file) throws IOException {
 			Matcher contentMatcher = findContentDelimiter(raw);
 
 			if (yearToday == null) {
@@ -204,9 +210,10 @@ public final class LicenseHeaderStep {
 			}
 
 			SortedSet<String> years = new TreeSet<>();
-
 			extractYearsFromHeader(years::add, raw, contentMatcher);
-
+			if (file != null) {
+				extractYearsFromGitHistory(years::add, file);
+			}
 			if (updateYearWithLatest || years.isEmpty()) {
 				years.add(yearToday);
 			}
@@ -315,19 +322,6 @@ public final class LicenseHeaderStep {
 					years.accept(yearMatcher.group());
 				}
 			}
-		}
-
-		/** Sets copyright years on the given file by finding the oldest and most recent commits throughout git history. */
-		private String setLicenseHeaderYearsFromGitHistory(String raw, File file) throws IOException {
-			Matcher contentMatcher = findContentDelimiter(raw);
-			if (yearToday == null) {
-				return formatFixedLicenseHeader(raw, contentMatcher);
-			}
-
-			SortedSet<String> years = new TreeSet<>();
-			extractYearsFromGitHistory(years::add, file);
-
-			return formatYearRangeLicenseHeader(raw, contentMatcher, years);
 		}
 
 		/**
