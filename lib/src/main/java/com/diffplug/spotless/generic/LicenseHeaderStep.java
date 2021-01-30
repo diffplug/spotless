@@ -198,37 +198,29 @@ public final class LicenseHeaderStep {
 
 			String content = raw.substring(contentMatcher.start());
 			if (yearToday == null) {
-				// the no year case is easy
-				if (contentMatcher.start() == yearSepOrFull.length() && raw.startsWith(yearSepOrFull)) {
-					// if no change is required, return the raw string without
-					// creating any other new strings for maximum performance
-					return raw;
-				} else {
-					// otherwise we'll have to add the header
-					return yearSepOrFull + content;
-				}
-			} else {
-				// the yes year case is a bit harder
-				int beforeYearIdx = raw.indexOf(beforeYear);
-				int afterYearIdx = raw.indexOf(afterYear, beforeYearIdx + beforeYear.length() + 1);
+				return formatFixedLicenseHeader(raw, contentMatcher);
+			}
 
-				if (beforeYearIdx >= 0 && afterYearIdx >= 0 && afterYearIdx + afterYear.length() <= contentMatcher.start()) {
-					// and also ends with exactly the right header, so it's easy to parse the existing year
-					String existingYear = raw.substring(beforeYearIdx + beforeYear.length(), afterYearIdx);
-					String newYear = calculateYearExact(existingYear);
-					if (existingYear.equals(newYear)) {
-						// fastpath where we don't need to make any changes at all
-						boolean noPadding = beforeYearIdx == 0 && afterYearIdx + afterYear.length() == contentMatcher.start(); // allows fastpath return raw
-						if (noPadding) {
-							return raw;
-						}
+			// the yes year case is a bit harder
+			int beforeYearIdx = raw.indexOf(beforeYear);
+			int afterYearIdx = raw.indexOf(afterYear, beforeYearIdx + beforeYear.length() + 1);
+
+			if (beforeYearIdx >= 0 && afterYearIdx >= 0 && afterYearIdx + afterYear.length() <= contentMatcher.start()) {
+				// and also ends with exactly the right header, so it's easy to parse the existing year
+				String existingYear = raw.substring(beforeYearIdx + beforeYear.length(), afterYearIdx);
+				String newYear = calculateYearExact(existingYear);
+				if (existingYear.equals(newYear)) {
+					// fastpath where we don't need to make any changes at all
+					boolean noPadding = beforeYearIdx == 0 && afterYearIdx + afterYear.length() == contentMatcher.start(); // allows fastpath return raw
+					if (noPadding) {
+						return raw;
 					}
-					return beforeYear + newYear + afterYear + content;
-				} else {
-					String newYear = calculateYearBySearching(raw.substring(0, contentMatcher.start()));
-					// at worst, we just say that it was made today
-					return beforeYear + newYear + afterYear + content;
 				}
+				return beforeYear + newYear + afterYear + content;
+			} else {
+				String newYear = calculateYearBySearching(raw.substring(0, contentMatcher.start()));
+				// at worst, we just say that it was made today
+				return beforeYear + newYear + afterYear + content;
 			}
 		}
 
@@ -244,6 +236,24 @@ public final class LicenseHeaderStep {
 				throw new IllegalArgumentException("Unable to find delimiter regex " + delimiterPattern);
 			}
 			return contentMatcher;
+		}
+
+		/**
+		 * Format the file with the full fixed content license header.
+		 * @param raw            the text of the whole file.
+		 * @param contentMatcher as returned by {@link #findContentDelimiter(String)}.
+		 * @return the file with the full fixed content license header.
+		 */
+		private String formatFixedLicenseHeader(String raw, Matcher contentMatcher) {
+			// the no year case is easy
+			if (contentMatcher.start() == yearSepOrFull.length() && raw.startsWith(yearSepOrFull)) {
+				// if no change is required, return the raw string without
+				// creating any other new strings for maximum performance
+				return raw;
+			} else {
+				// otherwise we'll have to add the header
+				return yearSepOrFull + raw.substring(contentMatcher.start());
+			}
 		}
 
 		private static final Pattern YYYY = Pattern.compile("[0-9]{4}");
@@ -287,10 +297,10 @@ public final class LicenseHeaderStep {
 
 		/** Sets copyright years on the given file by finding the oldest and most recent commits throughout git history. */
 		private String setLicenseHeaderYearsFromGitHistory(String raw, File file) throws IOException {
-			if (yearToday == null) {
-				return raw;
-			}
 			Matcher contentMatcher = findContentDelimiter(raw);
+			if (yearToday == null) {
+				return formatFixedLicenseHeader(raw, contentMatcher);
+			}
 
 			String oldYear;
 			try {
