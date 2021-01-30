@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -194,45 +194,56 @@ public final class LicenseHeaderStep {
 
 		/** Formats the given string. */
 		private String format(String raw) {
+			Matcher contentMatcher = findContentDelimiter(raw);
+
+			String content = raw.substring(contentMatcher.start());
+			if (yearToday == null) {
+				// the no year case is easy
+				if (contentMatcher.start() == yearSepOrFull.length() && raw.startsWith(yearSepOrFull)) {
+					// if no change is required, return the raw string without
+					// creating any other new strings for maximum performance
+					return raw;
+				} else {
+					// otherwise we'll have to add the header
+					return yearSepOrFull + content;
+				}
+			} else {
+				// the yes year case is a bit harder
+				int beforeYearIdx = raw.indexOf(beforeYear);
+				int afterYearIdx = raw.indexOf(afterYear, beforeYearIdx + beforeYear.length() + 1);
+
+				if (beforeYearIdx >= 0 && afterYearIdx >= 0 && afterYearIdx + afterYear.length() <= contentMatcher.start()) {
+					// and also ends with exactly the right header, so it's easy to parse the existing year
+					String existingYear = raw.substring(beforeYearIdx + beforeYear.length(), afterYearIdx);
+					String newYear = calculateYearExact(existingYear);
+					if (existingYear.equals(newYear)) {
+						// fastpath where we don't need to make any changes at all
+						boolean noPadding = beforeYearIdx == 0 && afterYearIdx + afterYear.length() == contentMatcher.start(); // allows fastpath return raw
+						if (noPadding) {
+							return raw;
+						}
+					}
+					return beforeYear + newYear + afterYear + content;
+				} else {
+					String newYear = calculateYearBySearching(raw.substring(0, contentMatcher.start()));
+					// at worst, we just say that it was made today
+					return beforeYear + newYear + afterYear + content;
+				}
+			}
+		}
+
+		/**
+		 * Find the delimiter marking the end of the header and start of the content.
+		 * @param raw the text of the whole file.
+		 * @return a {@link Matcher} instance at the location in the file where the delimiter is.
+		 * @throws IllegalArgumentException if the delimiter cannot be found.
+		 */
+		private Matcher findContentDelimiter(String raw) {
 			Matcher contentMatcher = delimiterPattern.matcher(raw);
 			if (!contentMatcher.find()) {
 				throw new IllegalArgumentException("Unable to find delimiter regex " + delimiterPattern);
-			} else {
-				String content = raw.substring(contentMatcher.start());
-				if (yearToday == null) {
-					// the no year case is easy
-					if (contentMatcher.start() == yearSepOrFull.length() && raw.startsWith(yearSepOrFull)) {
-						// if no change is required, return the raw string without
-						// creating any other new strings for maximum performance
-						return raw;
-					} else {
-						// otherwise we'll have to add the header
-						return yearSepOrFull + content;
-					}
-				} else {
-					// the yes year case is a bit harder
-					int beforeYearIdx = raw.indexOf(beforeYear);
-					int afterYearIdx = raw.indexOf(afterYear, beforeYearIdx + beforeYear.length() + 1);
-
-					if (beforeYearIdx >= 0 && afterYearIdx >= 0 && afterYearIdx + afterYear.length() <= contentMatcher.start()) {
-						// and also ends with exactly the right header, so it's easy to parse the existing year
-						String existingYear = raw.substring(beforeYearIdx + beforeYear.length(), afterYearIdx);
-						String newYear = calculateYearExact(existingYear);
-						if (existingYear.equals(newYear)) {
-							// fastpath where we don't need to make any changes at all
-							boolean noPadding = beforeYearIdx == 0 && afterYearIdx + afterYear.length() == contentMatcher.start(); // allows fastpath return raw
-							if (noPadding) {
-								return raw;
-							}
-						}
-						return beforeYear + newYear + afterYear + content;
-					} else {
-						String newYear = calculateYearBySearching(raw.substring(0, contentMatcher.start()));
-						// at worst, we just say that it was made today
-						return beforeYear + newYear + afterYear + content;
-					}
-				}
 			}
+			return contentMatcher;
 		}
 
 		private static final Pattern YYYY = Pattern.compile("[0-9]{4}");
@@ -279,10 +290,7 @@ public final class LicenseHeaderStep {
 			if (yearToday == null) {
 				return raw;
 			}
-			Matcher contentMatcher = delimiterPattern.matcher(raw);
-			if (!contentMatcher.find()) {
-				throw new IllegalArgumentException("Unable to find delimiter regex " + delimiterPattern);
-			}
+			Matcher contentMatcher = findContentDelimiter(raw);
 
 			String oldYear;
 			try {
