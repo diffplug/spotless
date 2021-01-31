@@ -681,7 +681,13 @@ See the [javadoc](https://javadoc.io/static/com.diffplug.spotless/spotless-plugi
 
 ### Retroactively slurp years from git history
 
-If your project has not been rigorous with copyright headers, and you'd like to use git history to repair this retroactively, you can do so with `-PspotlessSetLicenseHeaderYearsFromGitHistory=true`.  When run in this mode, Spotless will do an expensive search through git history for each file, and set the copyright header based on the oldest and youngest commits for that file.  This is intended to be a one-off sort of thing.
+If your project has not been rigorous with copyright headers, and you'd like to use git history to repair this retroactively, you can do so with `-PspotlessSetLicenseHeaderYearsFromGitHistory=true`.  When run in this mode, Spotless will do an expensive search through git history for each file, and set the copyright header based on the oldest and youngest commits for that file.
+
+If some files have an existing license header claiming a date range then it will be merged with the date range from git history, using the earliest and latest years from either range. This is avoids reducing the copyright claim when some files have history pre-dating the git repository.
+
+If you are using the `ratchet` feature then the date range will also be expanded to include the current year.
+
+This is intended to be a one-off operation.
 
 <a name="ratchet"></a>
 

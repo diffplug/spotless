@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Changed
+* Changed `spotlessSetLicenseHeaderYearsFromGitHistory` to merge with existing date ranges ([#783](https://github.com/diffplug/spotless/issues/783)).
 
 ## [2.11.0] - 2021-01-04
 ### Added
