@@ -1,0 +1,13 @@
+/**
+ * @property main
+ */
+
+fun main() {
+
+   /**
+	* @property name
+	*/
+    fun name() { a(); return b }
+    println(";")
+    println();
+}

@@ -60,7 +60,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
 - **Languages**
   - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [clang-format](#clang-format), [prettier](#prettier))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
-  - [Kotlin](#kotlin) ([ktlint](#ktlint), [ktfmt](#ktfmt), [prettier](#prettier))
+  - [Kotlin](#kotlin) ([ktlint](#ktlint), [ktfmt](#ktfmt), [prettier](#prettier), [diktat](#diktat))
   - [Scala](#scala) ([scalafmt](#scalafmt))
   - [C/C++](#cc) ([clang-format](#clang-format), [eclipse cdt](#eclipse-cdt))
   - [Python](#python) ([black](#black))
@@ -253,6 +253,7 @@ spotless { // if you are using build.gradle.kts, instead of 'spotless {' use:
     // by default the target is every '.kt' and '.kts` file in the java sourcesets
     ktlint()   // has its own section below
     ktfmt()    // has its own section below
+    diktat()   // has its own section below
     prettier() // has its own section below
     licenseHeader '/* (C)$YEAR */' // or licenseHeaderFile
   }
@@ -286,6 +287,19 @@ spotless {
 spotless {
   kotlin {
     ktfmt('0.15').dropboxStyle() // version and dropbox style are optional
+```
+
+<a name="applying-diktat-to-kotlin-files"></a>
+
+### diktat
+
+[homepage](https://github.com/cqfn/diKTat). [changelog](https://github.com/cqfn/diKTat/releases).  You can provide configuration path manually as `configPath`.
+
+```kotlin
+spotless {
+  kotlin {
+    // version and configPath are both optional
+    diktat('0.4.0').configPath("full/path/to/diktat-analysis.yml")
 ```
 
 <a name="applying-scalafmt-to-scala-files"></a>

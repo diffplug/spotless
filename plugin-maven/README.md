@@ -49,7 +49,7 @@ user@machine repo % mvn spotless:check
 - **Languages**
   - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
-  - [Kotlin](#kotlin) ([ktlint](#ktlint), [ktfmt](#ktfmt), [prettier](#prettier))
+  - [Kotlin](#kotlin) ([ktlint](#ktlint), [ktfmt](#ktfmt), [prettier](#prettier), [diktat](#diktat))
   - [Scala](#scala) ([scalafmt](#scalafmt))
   - [C/C++](#cc) ([eclipse cdt](#eclipse-cdt))
   - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
@@ -277,6 +277,7 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
 
     <ktlint />   <!-- has its own section below -->
     <ktfmt />    <!-- has its own section below -->
+    <diktat />   <!-- has its own section below -->
     <prettier /> <!-- has its own section below -->
 
     <licenseHeader>
@@ -309,6 +310,19 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
   <version>0.18</version> <!-- optional -->
   <style>DEFAULT</style> <!-- optional, other option is DROPBOX -->
 </ktfmt>
+```
+
+<a name="applying-diktat-to-kotlin-files"></a>
+
+### diktat
+
+[homepage](https://github.com/cqfn/diKTat). [changelog](https://github.com/cqfn/diKTat/releases). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/kotlin/Diktat.java). You can provide configuration path manually as `configPath`.
+
+```xml
+<diktat>
+  <version>0.4.0</version> <!-- optional -->
+  <configPath>"full/path/to/diktat-analysis.yml"</configPath> <!-- optional, configuration file path -->
+</diktat>
 ```
 
 <a name="applying-to-scala-source"></a>

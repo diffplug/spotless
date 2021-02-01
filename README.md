@@ -60,6 +60,7 @@ lib('java.RemoveUnusedImportsStep')              +'{{yes}}       | {{yes}}      
 extra('java.EclipseJdtFormatterStep')            +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
 lib('kotlin.KtLintStep')                         +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
 lib('kotlin.KtfmtStep')                          +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
+lib('kotlin.DiktatStep')                         +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('markdown.FreshMarkStep')                    +'{{yes}}       | {{no}}       | {{no}}       | {{no}}  |',
 lib('npm.PrettierFormatterStep')                 +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('npm.TsFmtFormatterStep')                    +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
@@ -95,6 +96,7 @@ extra('wtp.EclipseWtpFormatterStep')             +'{{yes}}       | {{yes}}      
 | [`java.EclipseJdtFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/java/EclipseJdtFormatterStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |
 | [`kotlin.KtLintStep`](lib/src/main/java/com/diffplug/spotless/kotlin/KtLintStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |
 | [`kotlin.KtfmtStep`](lib/src/main/java/com/diffplug/spotless/kotlin/KtfmtStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
+| [`kotlin.DiktatStep`](lib/src/main/java/com/diffplug/spotless/kotlin/DiktatStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`markdown.FreshMarkStep`](lib/src/main/java/com/diffplug/spotless/markdown/FreshMarkStep.java) | :+1:       | :white_large_square:       | :white_large_square:       | :white_large_square:  |
 | [`npm.PrettierFormatterStep`](lib/src/main/java/com/diffplug/spotless/npm/PrettierFormatterStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`npm.TsFmtFormatterStep`](lib/src/main/java/com/diffplug/spotless/npm/TsFmtFormatterStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
