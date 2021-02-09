@@ -23,6 +23,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.*;
 
+import javax.annotation.Nullable;
+
 import com.diffplug.spotless.*;
 
 /** Wraps up [diktat](https://github.com/cqfn/diKTat) as a FormatterStep. */
@@ -49,23 +51,23 @@ public class DiktatStep {
 		return create(versionDiktat, provisioner, Collections.emptyMap(), null);
 	}
 
-	public static FormatterStep create(String versionDiktat, Provisioner provisioner, FileSignature config) {
+	public static FormatterStep create(String versionDiktat, Provisioner provisioner, @Nullable FileSignature config) {
 		return create(versionDiktat, provisioner, Collections.emptyMap(), config);
 	}
 
-	public static FormatterStep create(String versionDiktat, Provisioner provisioner, Map<String, String> userData, FileSignature config) {
+	public static FormatterStep create(String versionDiktat, Provisioner provisioner, Map<String, String> userData, @Nullable FileSignature config) {
 		return create(versionDiktat, provisioner, false, userData, config);
 	}
 
-	public static FormatterStep createForScript(String versionDiktat, Provisioner provisioner, FileSignature config) {
+	public static FormatterStep createForScript(String versionDiktat, Provisioner provisioner, @Nullable FileSignature config) {
 		return createForScript(versionDiktat, provisioner, Collections.emptyMap(), config);
 	}
 
-	public static FormatterStep createForScript(String versionDiktat, Provisioner provisioner, Map<String, String> userData, FileSignature config) {
+	public static FormatterStep createForScript(String versionDiktat, Provisioner provisioner, Map<String, String> userData, @Nullable FileSignature config) {
 		return create(versionDiktat, provisioner, true, userData, config);
 	}
 
-	public static FormatterStep create(String versionDiktat, Provisioner provisioner, boolean isScript, Map<String, String> userData, FileSignature config) {
+	public static FormatterStep create(String versionDiktat, Provisioner provisioner, boolean isScript, Map<String, String> userData, @Nullable FileSignature config) {
 		Objects.requireNonNull(versionDiktat, "versionDiktat");
 		Objects.requireNonNull(provisioner, "provisioner");
 		return FormatterStep.createLazy(NAME,
@@ -79,13 +81,13 @@ public class DiktatStep {
 
 		/** Are the files being linted Kotlin script files. */
 		private final boolean isScript;
-		private final FileSignature config;
+		private final @Nullable FileSignature config;
 		private final String pkg;
 		private final String pkgKtlint;
 		final JarState jar;
 		private final TreeMap<String, String> userData;
 
-		State(String versionDiktat, Provisioner provisioner, boolean isScript, Map<String, String> userData, FileSignature config) throws IOException {
+		State(String versionDiktat, Provisioner provisioner, boolean isScript, Map<String, String> userData, @Nullable FileSignature config) throws IOException {
 
 			HashSet<String> pkgSet = new HashSet<>();
 			pkgSet.add(MAVEN_COORDINATE + versionDiktat);

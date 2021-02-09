@@ -51,7 +51,7 @@ public class DiktatTest extends MavenIntegrationHarness {
 
 		String configPath = "src/main/kotlin/diktat-analysis.yml";
 		File conf = setFile(configPath).toResource("kotlin/diktat/diktat-analysis.yml");
-		writePomWithKotlinSteps("<diktat><version>0.4.0</version><configPath>" + conf.getAbsolutePath() + "</configPath></diktat>");
+		writePomWithKotlinSteps("<diktat><version>0.4.0</version><configFile>" + conf.getAbsolutePath() + "</configFile></diktat>");
 
 		String path = "src/main/kotlin/Main.kt";
 		setFile(path).toResource("kotlin/diktat/main.dirty");
