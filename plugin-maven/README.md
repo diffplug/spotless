@@ -49,7 +49,7 @@ user@machine repo % mvn spotless:check
 - **Languages**
   - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
-  - [Kotlin](#kotlin) ([ktlint](#ktlint), [ktfmt](#ktfmt), [prettier](#prettier), [diktat](#diktat))
+  - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
   - [C/C++](#cc) ([eclipse cdt](#eclipse-cdt))
   - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
@@ -275,8 +275,8 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
       <include>src/test/kotlin/**/*.kt</include>
     </includes>
 
-    <ktlint />   <!-- has its own section below -->
     <ktfmt />    <!-- has its own section below -->
+    <ktlint />   <!-- has its own section below -->
     <diktat />   <!-- has its own section below -->
     <prettier /> <!-- has its own section below -->
 
@@ -285,6 +285,17 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
     </licenseHeader>
   </kotlin>
 </configuration>
+```
+
+### ktfmt
+
+[homepage](https://github.com/facebookincubator/ktfmt). [changelog](https://github.com/facebookincubator/ktfmt/releases). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/kotlin/Ktfmt.java).
+
+```xml
+<ktfmt>
+  <version>0.18</version> <!-- optional -->
+  <style>DEFAULT</style> <!-- optional, other option is DROPBOX -->
+</ktfmt>
 ```
 
 <a name="applying-ktlint-to-kotlin-files"></a>
@@ -299,29 +310,14 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
 </ktlint>
 ```
 
-<a name="applying-ktfmt-to-kotlin-files"></a>
-
-### ktfmt
-
-[homepage](https://github.com/facebookincubator/ktfmt). [changelog](https://github.com/facebookincubator/ktfmt/releases). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/kotlin/Ktfmt.java).
-
-```xml
-<ktfmt>
-  <version>0.18</version> <!-- optional -->
-  <style>DEFAULT</style> <!-- optional, other option is DROPBOX -->
-</ktfmt>
-```
-
-<a name="applying-diktat-to-kotlin-files"></a>
-
 ### diktat
 
-[homepage](https://github.com/cqfn/diKTat). [changelog](https://github.com/cqfn/diKTat/releases). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/kotlin/Diktat.java). You can provide configuration path manually as `configPath`.
+[homepage](https://github.com/cqfn/diKTat). [changelog](https://github.com/cqfn/diKTat/releases). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/kotlin/Diktat.java). You can provide configuration path manually as `configFile`.
 
 ```xml
 <diktat>
   <version>0.4.0</version> <!-- optional -->
-  <configPath>"full/path/to/diktat-analysis.yml"</configPath> <!-- optional, configuration file path -->
+  <configFile>full/path/to/diktat-analysis.yml</configFile> <!-- optional, configuration file path -->
 </diktat>
 ```
 
