@@ -15,9 +15,6 @@
  */
 package com.diffplug.gradle.spotless;
 
-import static com.diffplug.spotless.FileSignature.signAsList;
-
-import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
@@ -113,7 +110,7 @@ public class KotlinGradleExtension extends FormatExtension {
 	/** Adds the specified version of [diktat](https://github.com/cqfn/diKTat). */
 	public DiktatFormatExtension diktat(String version) {
 		Objects.requireNonNull(version, "version");
-		return new DiktatFormatExtension(version, null);
+		return new DiktatFormatExtension(version);
 	}
 
 	public DiktatFormatExtension diktat() {
@@ -125,16 +122,20 @@ public class KotlinGradleExtension extends FormatExtension {
 		private final String version;
 		private FileSignature config;
 
-		DiktatFormatExtension(String version, FileSignature config) {
+		DiktatFormatExtension(String version) {
 			this.version = version;
-			this.config = config;
 			addStep(createStep());
 		}
 
-		public void withConfig(String path) throws IOException {
+		public DiktatFormatExtension configFile(Object file) throws IOException {
 			// Specify the path to the configuration file
-			this.config = signAsList(new File(path));
+			if (file == null) {
+				this.config = null;
+			} else {
+				this.config = FileSignature.signAsList(getProject().file(file));
+			}
 			replaceStep(createStep());
+			return this;
 		}
 
 		private FormatterStep createStep() {

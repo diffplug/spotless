@@ -15,16 +15,13 @@
  */
 package com.diffplug.spotless.maven.kotlin;
 
-import static com.diffplug.spotless.FileSignature.signAsList;
-
-import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.kotlin.DiktatStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
@@ -35,25 +32,15 @@ public class Diktat implements FormatterStepFactory {
 	private String version;
 
 	@Parameter
-	private String configPath;
+	private String configFile;
 
 	@Override
-	public FormatterStep newFormatterStep(FormatterStepConfig config) {
-		String diktatConfigPath = configPath != null ? configPath : null;
-		FileSignature configFile = getConfigFile(diktatConfigPath);
-		String diktatVersion = version != null ? version : DiktatStep.defaultVersionDiktat();
-		return DiktatStep.create(diktatVersion, config.getProvisioner(), Collections.emptyMap(), configFile);
-	}
-
-	private FileSignature getConfigFile(String path) {
-		if (path != null) {
-			try {
-				return signAsList(new File(path));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
+		FileSignature config = null;
+		if (configFile != null) {
+			config = ThrowingEx.get(() -> FileSignature.signAsList(stepConfig.getFileLocator().locateFile(configFile)));
 		}
-		return null;
+		String diktatVersion = version != null ? version : DiktatStep.defaultVersionDiktat();
+		return DiktatStep.create(diktatVersion, stepConfig.getProvisioner(), Collections.emptyMap(), config);
 	}
-
 }
