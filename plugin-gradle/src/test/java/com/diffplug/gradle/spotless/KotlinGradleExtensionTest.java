@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,6 +73,25 @@ public class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 		setFile("configuration.gradle.kts").toResource("kotlin/ktlint/basic.dirty");
 		gradleRunner().withArguments("spotlessApply").build();
 		assertFile("configuration.gradle.kts").sameAsResource("kotlin/ktlint/basic.clean");
+	}
+
+	@Test
+	public void integration_default_diktat() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.4.30'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlinGradle {",
+				"        diktat()",
+				"    }",
+				"}");
+		setFile("configuration.gradle.kts").toResource("kotlin/diktat/basic.dirty");
+		BuildResult result = gradleRunner().withArguments("spotlessApply").buildAndFail();
+		assertThat(result.getOutput()).contains("[HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE] files that contain multiple "
+				+ "or no classes should contain description of what is inside of this file: there are 0 declared classes and/or objects");
 	}
 
 	@Test

@@ -69,6 +69,7 @@ if (version.endsWith('-SNAPSHOT')) {
 			'eclipse',
 			'ktlint',
 			'ktfmt',
+			'diktat',
 			'tsfmt',
 			'prettier',
 			'scalafmt',

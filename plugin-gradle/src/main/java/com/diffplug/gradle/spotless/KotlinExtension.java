@@ -17,6 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import static com.diffplug.spotless.kotlin.KotlinConstants.LICENSE_HEADER_DELIMITER;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
@@ -28,7 +29,9 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 
+import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.kotlin.DiktatStep;
 import com.diffplug.spotless.kotlin.KtLintStep;
 import com.diffplug.spotless.kotlin.KtfmtStep;
 import com.diffplug.spotless.kotlin.KtfmtStep.Style;
@@ -119,6 +122,42 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 
 		private FormatterStep createStep() {
 			return KtfmtStep.create(version, provisioner(), style);
+		}
+	}
+
+	/** Adds the specified version of [diktat](https://github.com/cqfn/diKTat). */
+	public DiktatFormatExtension diktat(String version) {
+		Objects.requireNonNull(version);
+		return new DiktatFormatExtension(version);
+	}
+
+	public DiktatFormatExtension diktat() {
+		return diktat(DiktatStep.defaultVersionDiktat());
+	}
+
+	public class DiktatFormatExtension {
+
+		private final String version;
+		private FileSignature config;
+
+		DiktatFormatExtension(String version) {
+			this.version = version;
+			addStep(createStep());
+		}
+
+		public DiktatFormatExtension configFile(Object file) throws IOException {
+			// Specify the path to the configuration file
+			if (file == null) {
+				this.config = null;
+			} else {
+				this.config = FileSignature.signAsList(getProject().file(file));
+			}
+			replaceStep(createStep());
+			return this;
+		}
+
+		private FormatterStep createStep() {
+			return DiktatStep.create(version, provisioner(), config);
 		}
 	}
 

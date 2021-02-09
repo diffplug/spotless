@@ -47,6 +47,24 @@ public class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
+	public void integrationDiktat() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.4.30'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlin {",
+				"        diktat()",
+				"    }",
+				"}");
+		setFile("src/main/kotlin/com/example/Main.kt").toResource("kotlin/diktat/main.dirty");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/kotlin/com/example/Main.kt").sameAsResource("kotlin/diktat/main.clean");
+	}
+
+	@Test
 	public void integrationKtfmt() throws IOException {
 		// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
 		JreVersion.assume11OrGreater();
