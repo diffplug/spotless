@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Fixed
+* Fixed the `clean` task when Gradle's configuration cache is enabled ([#796](https://github.com/diffplug/spotless/issues/796))
 
 ## [5.10.0] - 2021-02-09
 ### Added
