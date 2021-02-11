@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,9 +48,7 @@ public class SpotlessPlugin implements Plugin<Project> {
 		//
 		// we use System.identityHashCode() to avoid a memory leak by hanging on to the reference directly
 		int cacheKey = System.identityHashCode(project.getRootProject());
-		project.getTasks().named(BasePlugin.CLEAN_TASK_NAME).configure(clean ->
-			clean.doLast(unused -> SpotlessCache.clearOnce(cacheKey))
-		);
+		project.getTasks().named(BasePlugin.CLEAN_TASK_NAME).configure(clean -> clean.doLast(unused -> SpotlessCache.clearOnce(cacheKey)));
 	}
 
 	static String capitalize(String input) {
