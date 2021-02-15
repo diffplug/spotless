@@ -10,7 +10,7 @@ plugins {
 	// https://github.com/spotbugs/spotbugs-gradle-plugin/releases
 	id "com.github.spotbugs" version "4.6.0" apply false
 	//https://github.com/diffplug/goomph
-	id "com.diffplug.p2.asmaven" version "3.26.0" apply false
+	id "com.diffplug.p2.asmaven" version "3.28.0" apply false
 	// https://github.com/diffplug/spotless-changelog
 	id "com.diffplug.spotless-changelog" version "2.0.0" apply false
 }
