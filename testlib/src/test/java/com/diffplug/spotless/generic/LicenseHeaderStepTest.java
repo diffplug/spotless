@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -110,6 +110,13 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 				.testUnaffected(hasHeaderYear("2003"))
 				.testUnaffected(hasHeaderYear("1990-2015"))
 				.test(hasHeaderYear("not a year"), hasHeaderYear(currentYear()));
+	}
+
+	@Test
+	public void should_remove_header_when_empty() throws Throwable {
+		StepHarness.forStep(LicenseHeaderStep.headerDelimiter("", package_).build())
+				.testUnaffected(getTestResource("license/MissingLicense.test"))
+				.test(getTestResource("license/HasLicense.test"), getTestResource("license/MissingLicense.test"));
 	}
 
 	private String header(String contents) throws IOException {

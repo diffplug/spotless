@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -159,7 +159,7 @@ public final class LicenseHeaderStep {
 			}
 			// sanitize the input license
 			licenseHeader = LineEnding.toUnix(licenseHeader);
-			if (!licenseHeader.endsWith("\n")) {
+			if (!licenseHeader.isEmpty() && !licenseHeader.endsWith("\n")) {
 				licenseHeader = licenseHeader + "\n";
 			}
 			this.delimiterPattern = Pattern.compile('^' + delimiter, Pattern.UNIX_LINES | Pattern.MULTILINE);
