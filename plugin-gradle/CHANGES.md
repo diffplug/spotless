@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Fixed
+* Allow licence headers to be blank ([#801](https://github.com/diffplug/spotless/pull/801)).
 
 ## [5.10.1] - 2021-02-11
 ### Fixed
