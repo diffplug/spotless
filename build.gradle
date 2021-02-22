@@ -2,7 +2,7 @@ plugins {
 	// https://github.com/diffplug/goomph/blob/main/CHANGES.md
 	id 'com.diffplug.eclipse.resourcefilters' version '3.28.0'
 	// https://plugins.gradle.org/plugin/com.gradle.plugin-publish
-	id 'com.gradle.plugin-publish' version '0.12.0' apply false
+	id 'com.gradle.plugin-publish' version '0.13.0' apply false
 	// https://github.com/bintray/gradle-bintray-plugin/releases
 	id 'com.jfrog.bintray' version '1.8.5' apply false
 	// https://github.com/mnlipp/jdrupes-mdoclet/releases
