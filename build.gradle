@@ -1,6 +1,6 @@
 plugins {
 	// https://github.com/diffplug/goomph/blob/main/CHANGES.md
-	id 'com.diffplug.eclipse.resourcefilters' version '3.28.0'
+	id 'com.diffplug.eclipse.resourcefilters' version '3.28.2'
 	// https://plugins.gradle.org/plugin/com.gradle.plugin-publish
 	id 'com.gradle.plugin-publish' version '0.13.0' apply false
 	// https://github.com/bintray/gradle-bintray-plugin/releases
