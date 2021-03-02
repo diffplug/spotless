@@ -15,9 +15,6 @@
  */
 package com.diffplug.spotless.kotlin;
 
-import static com.diffplug.spotless.kotlin.KtfmtStep.Style.DEFAULT;
-import static com.diffplug.spotless.kotlin.KtfmtStep.Style.DROPBOX;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -26,6 +23,10 @@ import java.util.Objects;
 
 import com.diffplug.spotless.*;
 
+import static com.diffplug.spotless.kotlin.KtfmtStep.Format.*;
+import static com.diffplug.spotless.kotlin.KtfmtStep.Style.*;
+import static com.diffplug.spotless.kotlin.KtfmtStep.StyleMethod.*;
+
 /**
  * Wraps up [ktfmt](https://github.com/facebookincubator/ktfmt) as a FormatterStep.
  */
@@ -33,7 +34,7 @@ public class KtfmtStep {
 	// prevent direct instantiation
 	private KtfmtStep() {}
 
-	private static final String DEFAULT_VERSION = "0.19";
+	private static final String DEFAULT_VERSION = "0.21";
 	static final String NAME = "ktfmt";
 	static final String PACKAGE = "com.facebook";
 	static final String MAVEN_COORDINATE = PACKAGE + ":ktfmt:";
@@ -41,13 +42,27 @@ public class KtfmtStep {
 	/**
 	 * Used to allow dropbox style option through formatting options.
 	 *
-	 * @see <a href="https://github.com/facebookincubator/ktfmt/blob/38486b0fb2edcabeba5540fcb69c6f1fa336c331/core/src/main/java/com/facebook/ktfmt/Formatter.kt#L47-L80">ktfmt source</a>
+	 * @see <a href="https://github.com/facebookincubator/ktfmt/blob/v0.21/core/src/main/java/com/facebook/ktfmt/Formatter.kt#L43-L97">ktfmt source</a>
 	 */
 	public enum Style {
-		DEFAULT, DROPBOX
+		DEFAULT, DROPBOX, GOOGLE, KOTLINLANG
 	}
 
-	private static final String DROPBOX_STYLE_METHOD = "dropboxStyle";
+	public enum StyleMethod {
+		DROPBOX_STYLE_METHOD("dropboxStyle"),
+		GOOGLE_STYLE_METHOD("googleStyle"),
+		KOTLINLANG_STYLE_METHOD("kotlinlangStyle");
+
+		private final String styleMethod;
+
+		StyleMethod(String styleMethod) {
+			this.styleMethod = styleMethod;
+		}
+	}
+
+	public enum Format {
+		DROPBOX_FORMAT, GOOGLE_FORMAT, KOTLINLANG_FORMAT
+	}
 
 	/**
 	 * The <code>format</code> method is available in the link below.
@@ -105,11 +120,25 @@ public class KtfmtStep {
 			Class<?> formatterClazz = classLoader.loadClass(pkg + ".ktfmt.FormatterKt");
 			return input -> {
 				try {
-					if (style == DROPBOX) {
+					if (style != DEFAULT) {
 						Class<?> formattingOptionsClazz = classLoader.loadClass(pkg + ".ktfmt.FormattingOptions");
 						Method formatterMethod = formatterClazz.getMethod(FORMATTER_METHOD, formattingOptionsClazz,
 								String.class);
-						Object formattingOptions = getDropboxStyleFormattingOptions(classLoader);
+
+						Object formattingOptions;
+						if (style == DROPBOX) {
+							// ktfmt v0.19 and later
+							formattingOptions = getCustomFormattingOptions(classLoader, DROPBOX_STYLE_METHOD, DROPBOX_FORMAT);
+						} else if (style == GOOGLE) {
+							// ktfmt v0.19 and later
+							formattingOptions = getCustomFormattingOptions(classLoader, GOOGLE_STYLE_METHOD, GOOGLE_FORMAT);
+						} else if (style == KOTLINLANG) {
+							// ktfmt v0.21 and later
+							formattingOptions = getCustomFormattingOptions(classLoader, KOTLINLANG_STYLE_METHOD, KOTLINLANG_FORMAT);
+						} else {
+							throw new IllegalArgumentException(String.format("The style '%s' is not valid.", style));
+						}
+
 						return (String) formatterMethod.invoke(formatterClazz, formattingOptions, input);
 					} else {
 						Method formatterMethod = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
@@ -121,16 +150,19 @@ public class KtfmtStep {
 			};
 		}
 
-		private Object getDropboxStyleFormattingOptions(ClassLoader classLoader) throws Exception {
+		private Object getCustomFormattingOptions(ClassLoader classLoader, StyleMethod styleMethod, Format format) throws Exception {
 			try {
 				// ktfmt v0.19 and later
-				return classLoader.loadClass(pkg + ".ktfmt.FormatterKt").getField("DROPBOX_FORMAT").get(null);
+				return classLoader.loadClass(pkg + ".ktfmt.FormatterKt").getField(format.name()).get(null);
 			} catch (NoSuchFieldException ignored) {}
+			return fallbackFormattingOptions(classLoader, styleMethod.styleMethod);
+		}
 
-			// fallback to old, pre-0.19 ktfmt interface.
+		private Object fallbackFormattingOptions(ClassLoader classLoader, String method) throws Exception {
+			// fallback to old, pre-0.19 ktfmt interface
 			Class<?> formattingOptionsCompanionClazz = classLoader.loadClass(pkg + ".ktfmt.FormattingOptions$Companion");
 			Object companion = formattingOptionsCompanionClazz.getConstructors()[0].newInstance((Object) null);
-			Method formattingOptionsMethod = formattingOptionsCompanionClazz.getDeclaredMethod(DROPBOX_STYLE_METHOD);
+			Method formattingOptionsMethod = formattingOptionsCompanionClazz.getDeclaredMethod(method);
 			return formattingOptionsMethod.invoke(companion);
 		}
 	}

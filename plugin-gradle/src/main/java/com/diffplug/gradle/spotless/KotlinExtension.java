@@ -115,6 +115,14 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 			style(Style.DROPBOX);
 		}
 
+		public void googleStyle() {
+			style(Style.GOOGLE);
+		}
+
+		public void kotlinlangStyle() {
+			style(Style.KOTLINLANG);
+		}
+
 		public void style(Style style) {
 			this.style = style;
 			replaceStep(createStep());
