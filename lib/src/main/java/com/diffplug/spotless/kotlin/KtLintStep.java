@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
@@ -38,23 +36,6 @@ import com.diffplug.spotless.ThrowingEx;
 public class KtLintStep {
 	// prevent direct instantiation
 	private KtLintStep() {}
-
-	private static int badSemver(String input) {
-		Matcher matcher = BAD_SEMVER.matcher(input);
-		if (!matcher.find() || matcher.start() != 0) {
-			throw new IllegalArgumentException("Version must start with " + BAD_SEMVER.pattern());
-		}
-		String major = matcher.group(1);
-		String minor = matcher.group(2);
-		return badSemver(Integer.parseInt(major), Integer.parseInt(minor));
-	}
-
-	/** Ambiguous after 2147.483647.blah-blah */
-	private static int badSemver(int major, int minor) {
-		return major * 1_000_000 + minor;
-	}
-
-	private static final Pattern BAD_SEMVER = Pattern.compile("(\\d+)\\.(\\d+)\\.");
 
 	private static final String DEFAULT_VERSION = "0.35.0";
 	static final String NAME = "ktlint";
@@ -109,14 +90,14 @@ public class KtLintStep {
 		State(String version, Provisioner provisioner, boolean isScript, Map<String, String> userData) throws IOException {
 			this.userData = new TreeMap<>(userData);
 			String coordinate;
-			if (badSemver(version) < badSemver(0, 32)) {
+			if (BadSemver.version(version) < BadSemver.version(0, 32)) {
 				coordinate = MAVEN_COORDINATE_PRE_0_32;
 				this.pkg = PACKAGE_PRE_0_32;
 			} else {
 				coordinate = MAVEN_COORDINATE;
 				this.pkg = PACKAGE;
 			}
-			this.useParams = badSemver(version) >= badSemver(0, 34);
+			this.useParams = BadSemver.version(version) >= BadSemver.version(0, 34);
 			this.jarState = JarState.from(coordinate + version, provisioner);
 			this.isScript = isScript;
 		}
