@@ -97,9 +97,21 @@ public class KotlinGradleExtension extends FormatExtension {
 			addStep(createStep());
 		}
 
-		public void dropboxStyle() {
-			style = Style.DROPBOX;
+		public void style(Style style) {
+			this.style = style;
 			replaceStep(createStep());
+		}
+
+		public void dropboxStyle() {
+			style(Style.DROPBOX);
+		}
+
+		public void googleStyle() {
+			style(Style.GOOGLE);
+		}
+
+		public void kotlinlangStyle() {
+			style(Style.KOTLINLANG);
 		}
 
 		private FormatterStep createStep() {
