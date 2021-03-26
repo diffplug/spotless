@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [5.11.1] - 2021-03-26
 ### Fixed
 * Ensure consistent ordering of task inputs for `RegisterDependenciesTask`,bso the task is `up-to-date` when the spotless config has not changed.
 
