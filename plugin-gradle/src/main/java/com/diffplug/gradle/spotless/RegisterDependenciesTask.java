@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.execution.TaskExecutionGraph;
@@ -52,11 +54,10 @@ public class RegisterDependenciesTask extends DefaultTask {
 	public List<FormatterStep> getSteps() {
 		List<FormatterStep> allSteps = new ArrayList<>();
 		TaskExecutionGraph taskGraph = getProject().getGradle().getTaskGraph();
-		for (SpotlessTask task : tasks) {
-			if (taskGraph.hasTask(task)) {
-				allSteps.addAll(task.getSteps());
-			}
-		}
+		tasks.stream()
+				.filter(taskGraph::hasTask)
+				.sorted()
+				.forEach(task -> allSteps.addAll(task.getSteps()));
 		return allSteps;
 	}
 
