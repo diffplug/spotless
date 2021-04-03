@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Changed
+* Update default google-java-format from 1.9 to 1.10.0
 
 ## [5.11.1] - 2021-03-26
 ### Fixed
