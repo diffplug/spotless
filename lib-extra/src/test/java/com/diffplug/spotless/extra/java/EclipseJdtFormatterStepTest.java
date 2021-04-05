@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ public class EclipseJdtFormatterStepTest extends EclipseCommonTests {
 	@Override
 	protected String[] getSupportedVersions() {
 		return new String[]{"4.6.1", "4.6.2", "4.6.3", "4.7.0", "4.7.1", "4.7.2", "4.7.3a", "4.8.0", "4.9.0", "4.10.0",
-				"4.11.0", "4.12.0", "4.13.0", "4.14.0", "4.15.0", "4.16.0", "4.17.0", "4.18.0"};
+				"4.11.0", "4.12.0", "4.13.0", "4.14.0", "4.15.0", "4.16.0", "4.17.0", "4.18.0", "4.19.0"};
 	}
 
 	@Override

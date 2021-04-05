@@ -3,8 +3,11 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* Added support for `eclipse-jdt` at `4.19.0`.
 ### Changed
-* Update default google-java-format from 1.9 to 1.10.0
+* Bump `eclipse-jdt` default version from `4.18.0` to `4.19.0`.
+* Bump `google-java-format` default version from `1.9` to `1.10.0`.
 
 ## [2.9.0] - 2021-03-05
 ### Added
