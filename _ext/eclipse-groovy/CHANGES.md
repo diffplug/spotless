@@ -3,6 +3,9 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.5.0`).
 
 ## [Unreleased]
+### Added
+* Switch to Groovy-Eclipse release 4.0.0 for Eclipse 4.18 using Groovy 4.0.0 Alpha 2.
+* **BREAKING** Keep spotless-eclipse-groovy major version in sync with Groovy-Eclipse version.
 
 ## [3.9.0] - 2020-10-17
 ### Added

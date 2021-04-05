@@ -20,7 +20,8 @@ ext {
 		//Jars included by org.codehaus.groovy
 		//////////////////////////////////////////////////////////////////////////
 		// Use Groovy compiler compatible with GrEclipse instead of localGroovy
-		"**/groovy-${VER_GROOVY}-indy",
+		"**/groovy-${VER_GROOVY}",
+		"**/groovy-parser2",
 		// Patches/Overrides some of the Groovy compiler classes
 		'**/groovy-eclipse',
 		// Provides logging capabilities for groovy-eclipse
