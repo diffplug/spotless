@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,7 +100,7 @@ public class GoogleJavaFormatStep {
 	}
 
 	private static final String LATEST_VERSION_JRE_8 = "1.7";
-	private static final String LATEST_VERSION_JRE_11 = "1.9";
+	private static final String LATEST_VERSION_JRE_11 = "1.10.0";
 
 	public static String defaultStyle() {
 		return DEFAULT_STYLE;
