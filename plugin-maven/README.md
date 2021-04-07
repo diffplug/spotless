@@ -679,7 +679,7 @@ Alternatively you can supply spotless with a location of the `.npmrc` file to us
           <file>${basedir}/xml.prefs</file>
           <file>${basedir}/additional.properties</file>
         </files>
-        <version>4.7.3a</version> <!-- optional -->
+        <version>4.13.0</version> <!-- optional -->
       </eclipseWtp>
     </format>
   </formats>

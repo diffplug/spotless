@@ -643,7 +643,7 @@ spotless {
   format 'xml', {
     target 'src/**/*/xml' // must specify target
     eclipseWtp('xml')     // must specify a type (table below)
-    eclipseWtp('xml', '4.7.3a') // optional version
+    eclipseWtp('xml', '4.13.0') // optional version
     // you can also specify an arbitrary number of config files
     eclipseWtp('xml').configFile('spotless.xml.prefs', 'spotless.common.properties'
   }
