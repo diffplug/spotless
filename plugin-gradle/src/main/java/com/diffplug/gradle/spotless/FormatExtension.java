@@ -35,6 +35,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
+import kotlin.jvm.internal.CollectionToArray;
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
@@ -218,7 +219,9 @@ public class FormatExtension {
 	}
 
 	private final FileCollection parseTargetIsExclude(Object target, boolean isExclude) {
-		if (target instanceof FileCollection) {
+		if (target instanceof Collection) {
+			return parseTargetsIsExclude(((Collection) target).toArray(), isExclude);
+		} else if (target instanceof FileCollection) {
 			return (FileCollection) target;
 		} else if (target instanceof String) {
 			File dir = getProject().getProjectDir();
