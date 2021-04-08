@@ -9,6 +9,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Bump `eclipse-jdt` default version from `4.18.0` to `4.19.0`.
 * Bump `google-java-format` default version from `1.9` to `1.10.0`.
 * Expose configuration exceptions from scalafmt ([#837](https://github.com/diffplug/spotless/issues/837))
+### Fixed
+* Exclude `.git`, `.gradle` and `build` directories when multiple targets are specified ([#835](https://github.com/diffplug/spotless/issues/835)).
 
 ## [5.11.1] - 2021-03-26
 ### Fixed
