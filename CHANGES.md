@@ -12,6 +12,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Changed
 * Update default google-java-format from 1.9 to 1.10.0
+* Expose configuration exceptions from scalafmt ([#837](https://github.com/diffplug/spotless/issues/837))
 
 ## [2.13.0] - 2021-03-05
 ### Added

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,18 @@
  */
 package com.diffplug.spotless.scala;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
+
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 import org.junit.Test;
 
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
@@ -83,5 +89,22 @@ public class ScalaFmtStepTest extends ResourceHarness {
 				return ScalaFmtStep.create(version, TestProvisioner.mavenCentral(), configFile);
 			}
 		}.testEquals();
+	}
+
+	@Test
+	public void invalidConfiguration() throws Exception {
+		File invalidConfFile = createTestFile("scala/scalafmt/scalafmt.invalid.conf");
+		Provisioner provisioner = TestProvisioner.mavenCentral();
+
+		InvocationTargetException exception;
+
+		exception = assertThrows(InvocationTargetException.class,
+				() -> StepHarness.forStep(ScalaFmtStep.create("1.1.0", provisioner, invalidConfFile)).test("", ""));
+		assertThat(exception.getTargetException().getMessage(), containsString("Invalid fields: invalidScalaFmtConfigField"));
+		exception.printStackTrace();
+
+		exception = assertThrows(InvocationTargetException.class,
+				() -> StepHarness.forStep(ScalaFmtStep.create("2.0.1", provisioner, invalidConfFile)).test("", ""));
+		assertThat(exception.getTargetException().getMessage(), containsString("Invalid field: invalidScalaFmtConfigField"));
 	}
 }
