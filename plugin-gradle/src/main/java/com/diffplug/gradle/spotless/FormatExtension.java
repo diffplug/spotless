@@ -233,7 +233,7 @@ public class FormatExtension {
 			if (isExclude) {
 				return matchedFiles;
 			}
-			if (targetString.startsWith("**/*") || targetString.startsWith("**\\*")) {
+			if (targetString.startsWith("**/") || targetString.startsWith("**\\")) {
 				List<String> excludes = new ArrayList<>();
 				// no git
 				excludes.add(".git");
