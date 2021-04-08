@@ -23,6 +23,8 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -37,6 +39,7 @@ import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.tasks.util.PatternFilterable;
@@ -196,15 +199,11 @@ public class FormatExtension {
 		} else if (targets.length == 1) {
 			return parseTargetIsExclude(targets[0], isExclude);
 		} else {
-			if (Stream.of(targets).allMatch(o -> o instanceof String)) {
-				return parseTargetIsExclude(Arrays.asList(targets), isExclude);
-			} else {
-				FileCollection union = getProject().files();
-				for (Object target : targets) {
-					union = union.plus(parseTargetIsExclude(target, isExclude));
-				}
-				return union;
+			FileCollection union = getProject().files();
+			for (Object target : targets) {
+				union = union.plus(parseTargetIsExclude(target, isExclude));
 			}
+			return union;
 		}
 	}
 
@@ -221,30 +220,20 @@ public class FormatExtension {
 	private final FileCollection parseTargetIsExclude(Object target, boolean isExclude) {
 		if (target instanceof FileCollection) {
 			return (FileCollection) target;
-		} else if (target instanceof String ||
-				(target instanceof List && ((List<?>) target).stream().allMatch(o -> o instanceof String))) {
+		} else if (target instanceof String) {
 			File dir = getProject().getProjectDir();
-			PatternFilterable userExact; // exactly the collection that the user specified
-			if (target instanceof String) {
-				userExact = getProject().fileTree(dir).include((String) target);
-			} else {
-				// target can only be a List<String> at this point
-				@SuppressWarnings("unchecked")
-				List<String> targetList = (List<String>) target;
-				userExact = getProject().fileTree(dir).include(targetList);
-			}
-			boolean filterOutGitAndGradle;
+			ConfigurableFileTree matchedFiles = getProject().fileTree(dir);
+			String targetString = (String) target;
+			matchedFiles.include(targetString);
+
 			// since people are likely to do '**/*.md', we want to make sure to exclude folders
 			// they don't want to format which will slow down the operation greatly
 			// but we only want to do that if they are *including* - if they are specifying
 			// what they want to exclude, we shouldn't filter at all
-			if (target instanceof String && !isExclude) {
-				String str = (String) target;
-				filterOutGitAndGradle = str.startsWith("**/*") || str.startsWith("**\\*");
-			} else {
-				filterOutGitAndGradle = false;
+			if (isExclude) {
+				return matchedFiles;
 			}
-			if (filterOutGitAndGradle) {
+			if (targetString.startsWith("**/*") || targetString.startsWith("**\\*")) {
 				List<String> excludes = new ArrayList<>();
 				// no git
 				excludes.add(".git");
@@ -257,9 +246,9 @@ public class FormatExtension {
 				for (Project subproject : getProject().getSubprojects()) {
 					relativizeIfSubdir(excludes, dir, subproject.getBuildDir());
 				}
-				userExact = userExact.exclude(excludes);
+				matchedFiles.exclude(excludes);
 			}
-			return (FileCollection) userExact;
+			return matchedFiles;
 		} else {
 			return getProject().files(target);
 		}
