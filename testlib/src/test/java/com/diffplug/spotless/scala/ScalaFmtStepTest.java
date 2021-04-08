@@ -17,6 +17,9 @@ package com.diffplug.spotless.scala;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+
+import com.diffplug.spotless.Provisioner;
 
 import org.junit.Test;
 
@@ -25,6 +28,12 @@ import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
+
+import org.junit.function.ThrowingRunnable;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 
 public class ScalaFmtStepTest extends ResourceHarness {
 	@Test
@@ -83,5 +92,21 @@ public class ScalaFmtStepTest extends ResourceHarness {
 				return ScalaFmtStep.create(version, TestProvisioner.mavenCentral(), configFile);
 			}
 		}.testEquals();
+	}
+
+	@Test
+	public void invalidConfiguration() throws Exception {
+		File invalidConfFile = createTestFile( "scala/scalafmt/scalafmt.invalid.conf" );
+		Provisioner provisioner = TestProvisioner.mavenCentral();
+
+		InvocationTargetException exception;
+
+		exception = assertThrows( InvocationTargetException.class,
+				() -> StepHarness.forStep(ScalaFmtStep.create("1.1.0", provisioner, invalidConfFile)).test( "", "" ) );
+		assertThat(exception.getTargetException().getMessage(), containsString("Invalid fields: invalidScalaFmtConfigField") );
+
+		exception = assertThrows( InvocationTargetException.class,
+				() -> StepHarness.forStep(ScalaFmtStep.create("2.0.1", provisioner, invalidConfFile)).test( "", "" ) );
+		assertThat(exception.getTargetException().getMessage(), containsString("Invalid fields: invalidScalaFmtConfigField") );
 	}
 }

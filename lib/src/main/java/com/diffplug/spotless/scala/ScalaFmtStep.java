@@ -106,7 +106,7 @@ public class ScalaFmtStep {
 				Class<?> configCls = classLoader.loadClass("org.scalafmt.config.Config");
 				Class<?> scalafmtCls = classLoader.loadClass("org.scalafmt.Scalafmt");
 
-				Object either;
+				Object configured;
 
 				try {
 					// scalafmt >= 1.6.0
@@ -114,8 +114,7 @@ public class ScalaFmtStep {
 
 					String configStr = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
 
-					Object configured = parseHoconConfig.invoke(null, configStr);
-					either = invokeNoArg(configured, "toEither");
+					configured = parseHoconConfig.invoke(null, configStr);
 				} catch (NoSuchMethodException e) {
 					// scalafmt >= v0.7.0-RC1 && scalafmt < 1.6.0
 					Method fromHocon = configCls.getMethod("fromHoconString", String.class, optionCls);
@@ -123,11 +122,10 @@ public class ScalaFmtStep {
 
 					String configStr = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
 
-					Object configured = fromHocon.invoke(null, configStr, fromHoconEmptyPath);
-					either = invokeNoArg(configured, "toEither");
+					configured = fromHocon.invoke(null, configStr, fromHoconEmptyPath);
 				}
 
-				config = invokeNoArg(invokeNoArg(either, "right"), "get");
+				config = invokeNoArg(configured, "get");
 			}
 			return input -> {
 				Object resultInsideFormatted = formatMethod.invoke(null, input, config, emptyRange);
