@@ -104,6 +104,7 @@ public class ScalaFmtStepTest extends ResourceHarness {
 		exception = assertThrows( InvocationTargetException.class,
 				() -> StepHarness.forStep(ScalaFmtStep.create("1.1.0", provisioner, invalidConfFile)).test( "", "" ) );
 		assertThat(exception.getTargetException().getMessage(), containsString("Invalid fields: invalidScalaFmtConfigField") );
+		exception.printStackTrace();
 
 		exception = assertThrows( InvocationTargetException.class,
 				() -> StepHarness.forStep(ScalaFmtStep.create("2.0.1", provisioner, invalidConfFile)).test( "", "" ) );
