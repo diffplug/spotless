@@ -1,10 +1,28 @@
 pluginManagement {
 	plugins {
-		id 'com.diffplug.spotless' version '5.0.0'
+		id 'com.diffplug.spotless'                 version '5.0.0'
+		// https://github.com/diffplug/goomph/blob/main/CHANGES.md
+		id 'com.diffplug.eclipse.resourcefilters'  version '3.29.1'
+		// https://plugins.gradle.org/plugin/com.gradle.plugin-publish
+		id 'com.gradle.plugin-publish'             version '0.14.0'
+		// https://github.com/gradle-nexus/publish-plugin/releases
+		id 'io.github.gradle-nexus.publish-plugin' version '1.0.0'
+		// https://github.com/mnlipp/jdrupes-mdoclet/releases
+		id 'org.jdrupes.mdoclet'                   version '1.0.10'
+		// https://github.com/spotbugs/spotbugs-gradle-plugin/releases
+		id 'com.github.spotbugs'                   version '4.7.0'
+		// https://github.com/diffplug/spotless-changelog
+		id 'com.diffplug.spotless-changelog'       version '2.1.0'
 	}
 }
 plugins {
-	id 'com.diffplug.spotless' apply false
+	id 'com.diffplug.spotless'                 apply false
+	id 'com.diffplug.eclipse.resourcefilters'  apply false
+	id 'com.gradle.plugin-publish'             apply false
+	id 'io.github.gradle-nexus.publish-plugin' apply false
+	id 'org.jdrupes.mdoclet'                   apply false
+	id 'com.github.spotbugs'                   apply false
+	id 'com.diffplug.spotless-changelog'       apply false
 }
 if (System.env['CI'] != null) {
 	// use the remote buildcache on all CI builds
