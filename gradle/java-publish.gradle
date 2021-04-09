@@ -1,8 +1,29 @@
+
+if (project.parent == null) {
+	// it's the root project
+	apply plugin: 'io.github.gradle-nexus.publish-plugin'
+	nexusPublishing {
+		repositories {
+			sonatype {
+				username = System.env['nexus_user']
+				password = System.env['nexus_pass']
+			}
+		}
+	}
+	def initTask = tasks.named('initializeSonatypeStagingRepository')
+	allprojects {
+		initTask.configure {
+			shouldRunAfter(tasks.withType(Sign))
+		}
+	}
+	return
+}
+
 ///////////
 // MAVEN //
 ///////////
 apply plugin: 'maven-publish'
-apply plugin: 'com.jfrog.bintray'
+apply plugin: 'signing'
 
 task sourcesJar(type: Jar) {
 	classifier = 'sources'
@@ -138,35 +159,10 @@ model {
 }
 
 if (!version.endsWith('-SNAPSHOT')) {
-	// upload releases to bintray and then mavenCentral
-	bintray {
-		user = System.env['bintray_user']
-		key = System.env['bintray_pass']
-		publications = [
-			'pluginMaven'
-		]
-		publish = true
-		pkg {
-			repo = 'opensource'
-			name = project.ext.artifactId
-			userOrg = project.org
-			version {
-				name = project.version
-				mavenCentralSync {
-					user = System.env['nexus_user']
-					password = System.env['nexus_pass']
-				}
-			}
-		}
+	signing {
+		useInMemoryPgpKeys(System.env['gpg_key'], System.env['gpg_passphrase'])
+		sign(publishing.publications)
 	}
-
-	publish.dependsOn(bintrayUpload)
-	bintrayUpload.dependsOn([
-		'generatePomFileForPluginMavenPublication',
-		jar,
-		sourcesJar,
-		javadocJar
-	])
 
 	// find the project with the changelog (this project for plugins, root project for libs)
 	def changelogTasks = (tasks.names.contains('changelogBump') ? project : rootProject).tasks
@@ -177,10 +173,9 @@ if (!version.endsWith('-SNAPSHOT')) {
 	}
 	// ensures that changelog bump and push only happens if the publish was successful
 	changelogTasks.named('changelogBump').configure {
-		dependsOn tasks.named('bintrayUpload')
-		// only the root project has bintrayPublish, and it finalizes all bintrayUpload tasks
-		// https://github.com/bintray/gradle-bintray-plugin/blob/3fe02dfdae3e807afba57e0140a0d4c2424674e1/src/main/groovy/com/jfrog/bintray/gradle/ProjectsEvaluatedBuildListener.groovy#L37-L41
-		dependsOn rootProject.tasks.named('bintrayPublish')
+		String pubName = plugins.hasPlugin('java-gradle-plugin') ? 'PluginMaven' : 'MavenJava'
+		dependsOn tasks.named("publish${pubName}PublicationToSonatypeRepository")
+		dependsOn rootProject.tasks.named('closeAndReleaseSonatypeStagingRepository')
 		// if we have a gradle plugin, we need to push it up to the plugin portal too
 		if (tasks.names.contains('publishPlugins')) {
 			dependsOn tasks.named('publishPlugins')

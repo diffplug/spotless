@@ -3,8 +3,8 @@ plugins {
 	id 'com.diffplug.eclipse.resourcefilters' version '3.27.0'
 	// https://plugins.gradle.org/plugin/com.gradle.plugin-publish
 	id 'com.gradle.plugin-publish' version '0.14.0' apply false
-	// https://github.com/bintray/gradle-bintray-plugin/releases
-	id 'com.jfrog.bintray' version '1.8.5' apply false
+	// https://github.com/gradle-nexus/publish-plugin/releases
+	id 'io.github.gradle-nexus.publish-plugin' version '1.0.0' apply false
 	// https://github.com/mnlipp/jdrupes-mdoclet/releases
 	id 'org.jdrupes.mdoclet' version '1.0.10' apply false
 	// https://github.com/spotbugs/spotbugs-gradle-plugin/releases
@@ -15,6 +15,7 @@ plugins {
 	id "com.diffplug.spotless-changelog" version "2.1.0" apply false
 }
 
+apply from: rootProject.file('gradle/java-publish.gradle')
 apply from: rootProject.file('gradle/changelog.gradle')
 allprojects {
 	apply from: rootProject.file('gradle/spotless.gradle')
