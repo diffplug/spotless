@@ -1,6 +1,6 @@
 pluginManagement {
 	plugins {
-		id 'com.diffplug.spotless'                 version '5.0.0'
+		id 'com.diffplug.spotless'                 version '5.11.1'
 		// https://github.com/diffplug/goomph/blob/main/CHANGES.md
 		id 'com.diffplug.eclipse.resourcefilters'  version '3.29.1'
 		// https://plugins.gradle.org/plugin/com.gradle.plugin-publish
