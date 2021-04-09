@@ -1,5 +1,6 @@
 
 if (project.parent == null) {
+	group = 'com.diffplug.spotless'
 	// it's the root project
 	apply plugin: 'io.github.gradle-nexus.publish-plugin'
 	nexusPublishing {
@@ -173,8 +174,7 @@ if (!version.endsWith('-SNAPSHOT')) {
 	}
 	// ensures that changelog bump and push only happens if the publish was successful
 	changelogTasks.named('changelogBump').configure {
-		String pubName = plugins.hasPlugin('java-gradle-plugin') ? 'PluginMaven' : 'MavenJava'
-		dependsOn tasks.named("publish${pubName}PublicationToSonatypeRepository")
+		dependsOn 'publishPluginMavenPublicationToSonatypeRepository'
 		dependsOn rootProject.tasks.named('closeAndReleaseSonatypeStagingRepository')
 		// if we have a gradle plugin, we need to push it up to the plugin portal too
 		if (tasks.names.contains('publishPlugins')) {
