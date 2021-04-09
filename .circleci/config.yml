@@ -223,6 +223,8 @@ jobs:
           command: ./gradlew -Pcom.diffplug.spotless.include.ext.nop2=true :eclipse-jdt:changelogPush -Prelease=true --stacktrace
   ext_do_release_cdt:
     << : *env_gradle
+    docker:
+      - image: cimg/openjdk:8.0
     steps:
       - checkout
       - *restore_cache_wrapper
@@ -233,6 +235,8 @@ jobs:
           command: ./gradlew -Pcom.diffplug.spotless.include.ext.cdt=true :eclipse-cdt:changelogPush -Prelease=true --stacktrace
   ext_do_release_groovy:
     << : *env_gradle
+    docker:
+      - image: cimg/openjdk:8.0
     steps:
       - checkout
       - *restore_cache_wrapper
@@ -243,6 +247,8 @@ jobs:
           command: ./gradlew -Pcom.diffplug.spotless.include.ext.groovy=true :eclipse-groovy:changelogPush -Prelease=true --stacktrace
   ext_do_release_wtp:
     << : *env_gradle
+    docker:
+      - image: cimg/openjdk:8.0
     steps:
       - checkout
       - *restore_cache_wrapper
