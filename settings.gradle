@@ -55,7 +55,10 @@ if (System.env['CI'] != null) {
 	}
 }
 
-include 'ide'				// easy dev setup
+if (startParameter.getProjectProperties().get('release') != 'true') {
+	// the ide project screws up the release tasks
+	include 'ide'
+}
 
 include 'lib'		// reusable library with no dependencies
 include 'testlib'	// library for sharing test infrastructure between the projects below
