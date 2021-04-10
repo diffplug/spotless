@@ -289,6 +289,8 @@ workflows:
       - do_release_all:
           requires:
             - release_all
+          context:
+            - SonatypeDeploy
       - release_plugin_gradle:
           type: approval
           requires:
@@ -296,6 +298,8 @@ workflows:
       - do_release_plugin_gradle:
           requires:
             - release_plugin_gradle
+          context:
+            - SonatypeDeploy
       - release_plugin_maven:
           type: approval
           requires:
@@ -303,6 +307,8 @@ workflows:
       - do_release_plugin_maven:
           requires:
             - release_plugin_maven
+          context:
+            - SonatypeDeploy
       - release_lib:
           type: approval
           requires:
@@ -310,6 +316,8 @@ workflows:
       - do_release_lib:
           requires:
             - release_lib
+          context:
+            - SonatypeDeploy
   ext_deploy:
     jobs:
       - ext_changelog_print:
@@ -323,6 +331,8 @@ workflows:
       - ext_do_release_base:
           requires:
             - ext_release_base
+          context:
+            - SonatypeDeploy
       - ext_release_jdt:
           type: approval
           requires:
@@ -330,6 +340,8 @@ workflows:
       - ext_do_release_jdt:
           requires:
             - ext_release_jdt
+          context:
+            - SonatypeDeploy
       - ext_release_cdt:
           type: approval
           requires:
@@ -340,6 +352,8 @@ workflows:
               only: main
           requires:
             - ext_release_cdt
+          context:
+            - SonatypeDeploy
       - ext_release_groovy:
           type: approval
           requires:
@@ -350,6 +364,8 @@ workflows:
               only: main
           requires:
             - ext_release_groovy
+          context:
+            - SonatypeDeploy
       - ext_release_wtp:
           type: approval
           requires:
@@ -360,3 +376,5 @@ workflows:
               only: main
           requires:
             - ext_release_wtp
+          context:
+            - SonatypeDeploy
