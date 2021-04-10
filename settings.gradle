@@ -1,6 +1,9 @@
 pluginManagement {
 	plugins {
-		id 'com.diffplug.spotless'                 version '5.11.1'
+		// We are stuck dogfooding at 5.5.0 for a very strange reason:
+		//   5.8.0+ Cannot get property 'versionLast' on null object @ spotless-freshmark.gradle:58
+		//   5.6.0+ Tried to add format named 'freshmark' of type class @ spotless-freshmark.gradle:55
+		id 'com.diffplug.spotless'                 version '5.5.0'
 		// https://github.com/diffplug/goomph/blob/main/CHANGES.md
 		id 'com.diffplug.eclipse.resourcefilters'  version '3.29.1'
 		// https://plugins.gradle.org/plugin/com.gradle.plugin-publish
