@@ -11,6 +11,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Expose configuration exceptions from scalafmt ([#837](https://github.com/diffplug/spotless/issues/837))
 ### Fixed
 * Exclude `.git`, `.gradle` and `build` directories when multiple targets are specified ([#835](https://github.com/diffplug/spotless/issues/835)).
+  * As part of this fix, `**/blah.txt` is now handled the same as `**/*.txt`, which was always the expected behavior. Very unlikely to cause any user-visible changes in behavior.
 
 ## [5.11.1] - 2021-03-26
 ### Fixed
