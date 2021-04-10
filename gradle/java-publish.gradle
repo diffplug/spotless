@@ -174,12 +174,13 @@ if (!version.endsWith('-SNAPSHOT')) {
 		dependsOn changelogTasks.named('changelogCheck')
 	}
 	// ensures that changelog bump and push only happens if the publish was successful
+	def thisProj = project
 	changelogTasks.named('changelogBump').configure {
-		dependsOn 'publishPluginMavenPublicationToSonatypeRepository'
+		dependsOn thisProj.tasks.named('publishPluginMavenPublicationToSonatypeRepository')
 		dependsOn rootProject.tasks.named('closeAndReleaseSonatypeStagingRepository')
 		// if we have a gradle plugin, we need to push it up to the plugin portal too
-		if (tasks.names.contains('publishPlugins')) {
-			dependsOn tasks.named('publishPlugins')
+		if (thisProj.tasks.names.contains('publishPlugins')) {
+			dependsOn thisProj.tasks.named('publishPlugins')
 		}
 	}
 }
