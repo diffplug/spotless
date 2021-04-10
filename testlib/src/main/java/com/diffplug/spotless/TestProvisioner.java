@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -128,15 +128,6 @@ public class TestProvisioner {
 			}
 		};
 	}
-
-	/** Creates a Provisioner for the jcenter repo. */
-	public static Provisioner jcenter() {
-		return jcenter.get();
-	}
-
-	private static final Supplier<Provisioner> jcenter = Suppliers.memoize(() -> {
-		return caching("jcenter", () -> createWithRepositories(repo -> repo.jcenter()));
-	});
 
 	/** Creates a Provisioner for the mavenCentral repo. */
 	public static Provisioner mavenCentral() {
