@@ -161,7 +161,8 @@ model {
 
 if (!version.endsWith('-SNAPSHOT')) {
 	signing {
-		useInMemoryPgpKeys(System.env['gpg_key'], System.env['gpg_passphrase'])
+		String gpg_key = new String(System.env['gpg_key64'].decodeBase64())
+		useInMemoryPgpKeys(gpg_key, System.env['gpg_passphrase'])
 		sign(publishing.publications)
 	}
 
