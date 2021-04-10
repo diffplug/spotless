@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [5.12.0] - 2021-04-10
 ### Added
 * Added support for `eclipse-jdt` at `4.19.0`.
 ### Changed
