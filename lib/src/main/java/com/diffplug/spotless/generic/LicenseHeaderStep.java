@@ -175,11 +175,10 @@ public final class LicenseHeaderStep {
 				this.updateYearWithLatest = updateYearWithLatest;
 
 				boolean hasHeaderWithRange = false;
-				// year plus separator
-				int lastChars = 4 + yearSeparator.length();
-				if (beforeYear.endsWith(yearSeparator) && yearTokenIndex > lastChars) {
+				int yearPlusSep = 4 + yearSeparator.length();
+				if (beforeYear.endsWith(yearSeparator) && yearTokenIndex > yearPlusSep) {
 					// year from in range
-					String yearFrom = licenseHeader.substring(yearTokenIndex - lastChars, yearTokenIndex).substring(0, 4);
+					String yearFrom = licenseHeader.substring(yearTokenIndex - yearPlusSep, yearTokenIndex).substring(0, 4);
 					hasHeaderWithRange = YYYY.matcher(yearFrom).matches();
 				}
 				this.licenseHeaderWithRange = hasHeaderWithRange;
