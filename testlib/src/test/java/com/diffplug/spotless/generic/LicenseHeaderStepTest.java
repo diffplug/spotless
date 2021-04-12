@@ -32,6 +32,7 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 	private static final String FILE_NO_LICENSE = "license/FileWithoutLicenseHeader.test";
 	private static final String package_ = "package ";
 	private static final String HEADER_WITH_$YEAR = "This is a fake license, $YEAR. ACME corp.";
+	private static final String HEADER_WITH_RANGE_TO_$YEAR = "This is a fake license with range, 2009-$YEAR. ACME corp.";
 
 	@Test
 	public void parseExistingYear() throws Exception {
@@ -137,6 +138,10 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 		return hasHeaderYear(HEADER_WITH_$YEAR, years);
 	}
 
+	private String hasHeaderWithRangeAndWithYearTo(String toYear) throws IOException {
+		return hasHeaderYear(HEADER_WITH_RANGE_TO_$YEAR, toYear);
+	}
+
 	private static String currentYear() {
 		return String.valueOf(YearMonth.now().getYear());
 	}
@@ -200,5 +205,11 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 				return builder.build();
 			}
 		}.testEquals();
+	}
+
+	@Test
+	public void should_apply_license_containing_YEAR_token_in_range() throws Throwable {
+		FormatterStep step = LicenseHeaderStep.headerDelimiter(header(HEADER_WITH_RANGE_TO_$YEAR), package_).withYearMode(YearMode.UPDATE_TO_TODAY).build();
+		StepHarness.forStep(step).test(hasHeaderWithRangeAndWithYearTo("2015"), hasHeaderWithRangeAndWithYearTo(currentYear()));
 	}
 }
