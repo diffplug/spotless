@@ -273,14 +273,22 @@ public final class LicenseHeaderStep {
 			Matcher yearMatcher = YYYY.matcher(content);
 			if (yearMatcher.find()) {
 				String firstYear = yearMatcher.group();
-				String secondYear;
+
+				String secondYear = null;
 				if (updateYearWithLatest) {
 					secondYear = firstYear.equals(yearToday) ? null : yearToday;
-				} else if (yearMatcher.find(yearMatcher.end() + 1)) {
-					secondYear = yearMatcher.group();
 				} else {
-					secondYear = null;
+					String contentWithSecondYear = content.substring(yearMatcher.end() + 1);
+					int endOfLine = contentWithSecondYear.indexOf('\n');
+					if (endOfLine != -1) {
+						contentWithSecondYear = contentWithSecondYear.substring(0, endOfLine);
+					}
+					Matcher secondYearMatcher = YYYY.matcher(contentWithSecondYear);
+					if (secondYearMatcher.find()) {
+						secondYear = secondYearMatcher.group();
+					}
 				}
+
 				if (secondYear == null) {
 					return firstYear;
 				} else {
