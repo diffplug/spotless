@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Fixed
+* LicenseHeaderStep treats address as copyright year ([#716](https://github.com/diffplug/spotless/issues/716))
 
 ## [5.12.1] - 2021-04-13
 ### Fixed
