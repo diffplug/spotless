@@ -120,6 +120,18 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 				.test(getTestResource("license/HasLicense.test"), getTestResource("license/MissingLicense.test"));
 	}
 
+	private String licenceWithAddress() {
+		return "Copyright &#169; $YEAR FooBar Inc. All Rights Reserved.\n" +
+				" *\n" +
+				" * Use of this software is covered by inscrutable legal protection and\n" +
+				" * complex automation. Violaters of undisclosed terms must expect\n" +
+				" * unforeseen consequences.\n" +
+				" *\n" +
+				" * FooBar, Inc.\n" +
+				" * 9 Food Truck\n" +
+				" * Perry Derry, TX 55656 USA";
+	}
+
 	private String header(String contents) throws IOException {
 		return "/*\n" +
 				" * " + contents + "\n" +
@@ -211,5 +223,21 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 	public void should_apply_license_containing_YEAR_token_in_range() throws Throwable {
 		FormatterStep step = LicenseHeaderStep.headerDelimiter(header(HEADER_WITH_RANGE_TO_$YEAR), package_).withYearMode(YearMode.UPDATE_TO_TODAY).build();
 		StepHarness.forStep(step).test(hasHeaderWithRangeAndWithYearTo("2015"), hasHeaderWithRangeAndWithYearTo(currentYear()));
+	}
+
+	@Test
+	public void should_update_year_for_license_with_address() throws Throwable {
+		FormatterStep step = LicenseHeaderStep.headerDelimiter(header(licenceWithAddress()), package_).withYearMode(YearMode.UPDATE_TO_TODAY).build();
+		StepHarness.forStep(step).test(
+				hasHeader(licenceWithAddress().replace("$YEAR", "2015")),
+				hasHeader(licenceWithAddress().replace("$YEAR", "2015-2021")));
+	}
+
+	@Test
+	public void should_preserve_year_for_license_with_address() throws Throwable {
+		FormatterStep step = LicenseHeaderStep.headerDelimiter(header(licenceWithAddress()), package_).withYearMode(YearMode.PRESERVE).build();
+		StepHarness.forStep(step).test(
+				hasHeader(licenceWithAddress().replace("$YEAR", "2015").replace("FooBar Inc. All", "FooBar Inc.  All")),
+				hasHeader(licenceWithAddress().replace("$YEAR", "2015")));
 	}
 }
