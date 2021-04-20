@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package com.diffplug.gradle.spotless;
+
+import java.time.Instant;
 
 import org.gradle.api.Action;
 import org.gradle.api.Project;
@@ -41,9 +43,13 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 
 		TaskContainer rootProjectTasks = project.getRootProject().getTasks();
 		if (!rootProjectTasks.getNames().contains(RegisterDependenciesTask.TASK_NAME)) {
+			System.out.println("not found start: " + Instant.now());
 			this.registerDependenciesTask = rootProjectTasks.register(RegisterDependenciesTask.TASK_NAME, RegisterDependenciesTask.class, RegisterDependenciesTask::setup);
+			System.out.println("not found end: " + Instant.now());
 		} else {
+			System.out.println("found start: " + Instant.now());
 			this.registerDependenciesTask = rootProjectTasks.named(RegisterDependenciesTask.TASK_NAME, RegisterDependenciesTask.class);
+			System.out.println("found end: " + Instant.now());
 		}
 
 		project.afterEvaluate(unused -> {
@@ -57,7 +63,10 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 	final TaskProvider<?> rootCheckTask, rootApplyTask, rootDiagnoseTask;
 
 	RegisterDependenciesTask getRegisterDependenciesTask() {
-		return registerDependenciesTask.get();
+		System.out.println("impl#getRegisterDependenciesTask start: " + Instant.now());
+		final RegisterDependenciesTask registerDependenciesTask = this.registerDependenciesTask.get();
+		System.out.println("impl#getRegisterDependenciesTask start: " + Instant.now());
+		return registerDependenciesTask;
 	}
 
 	@Override

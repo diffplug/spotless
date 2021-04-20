@@ -17,10 +17,13 @@ package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
 
+import com.diffplug.gradle.spotless.GradleProvisioner.RootProvisioner;
+
 import java.io.File;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -73,7 +76,13 @@ public class FormatExtension {
 	}
 
 	protected final Provisioner provisioner() {
-		return spotless.getRegisterDependenciesTask().rootProvisioner;
+		System.out.println("formatextension#provisiioner (start): " + Instant.now());
+		final RegisterDependenciesTask registerDependenciesTask = spotless.getRegisterDependenciesTask();
+		System.out.println("formatextension#provisiioner (part1): " + Instant.now());
+		final RootProvisioner rootProvisioner = registerDependenciesTask.rootProvisioner;
+		System.out.println("formatextension#provisiioner (end): " + Instant.now());
+		return rootProvisioner;
+
 	}
 
 	private String formatName() {
@@ -726,12 +735,16 @@ public class FormatExtension {
 		}
 		task.setSteps(steps);
 		task.setLineEndingsPolicy(getLineEndings().createPolicy(getProject().getProjectDir(), () -> totalTarget));
+		System.out.println("format extension start: " + Instant.now());
 		if (spotless.project != spotless.project.getRootProject()) {
 			spotless.getRegisterDependenciesTask().hookSubprojectTask(task);
+			System.out.println("format extension (non root): " + Instant.now());
 		}
 		if (getRatchetFrom() != null) {
 			task.setupRatchet(spotless.getRegisterDependenciesTask().gitRatchet, getRatchetFrom());
+			System.out.println("format extension (non null ratchet) start: " + Instant.now());
 		}
+		System.out.println("format extension end: " + Instant.now());
 	}
 
 	/** Returns the project that this extension is attached to. */

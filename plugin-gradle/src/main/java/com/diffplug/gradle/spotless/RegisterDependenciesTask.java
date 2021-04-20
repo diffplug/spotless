@@ -18,6 +18,7 @@ package com.diffplug.gradle.spotless;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -52,12 +53,15 @@ public class RegisterDependenciesTask extends DefaultTask {
 
 	@Input
 	public List<FormatterStep> getSteps() {
+		System.out.println("getSteps start: " + Instant.now());
+
 		List<FormatterStep> allSteps = new ArrayList<>();
 		TaskExecutionGraph taskGraph = getProject().getGradle().getTaskGraph();
 		tasks.stream()
 				.filter(taskGraph::hasTask)
 				.sorted()
 				.forEach(task -> allSteps.addAll(task.getSteps()));
+		System.out.println("getSteps end: " + Instant.now());
 		return allSteps;
 	}
 
@@ -69,8 +73,10 @@ public class RegisterDependenciesTask extends DefaultTask {
 	}
 
 	void hookSubprojectTask(SpotlessTask task) {
+		System.out.println("hookSubprojectTask start: " + Instant.now());
 		tasks.add(task);
 		task.dependsOn(this);
+		System.out.println("hookSubprojectTask end: " + Instant.now());
 	}
 
 	File unitOutput;
@@ -89,22 +95,27 @@ public class RegisterDependenciesTask extends DefaultTask {
 
 	@SuppressWarnings({"rawtypes", "serial"})
 	void setup() {
+		System.out.println("setup start: " + Instant.now());
 		Preconditions.checkArgument(getProject().getRootProject() == getProject(), "Can only be used on the root project");
 		unitOutput = new File(getProject().getBuildDir(), "tmp/spotless-register-dependencies");
 		rootProvisioner = new GradleProvisioner.RootProvisioner(getProject());
 		getProject().getGradle().buildFinished(new Closure(null) {
 			@SuppressFBWarnings("UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS")
 			public Object doCall() {
+				System.out.println("gitratchet closed: " + Instant.now());
 				gitRatchet.close();
 				return null;
 			}
 		});
+		System.out.println("setup end: " + Instant.now());
 	}
 
 	@TaskAction
 	public void trivialFunction() throws IOException {
+		System.out.println("trivialFunction start: " + Instant.now());
 		Files.createParentDirs(unitOutput);
 		Files.write(Integer.toString(getSteps().size()), unitOutput, StandardCharsets.UTF_8);
+		System.out.println("trivialFunction end: " + Instant.now());
 	}
 
 	GitRatchetGradle gitRatchet = new GitRatchetGradle();
