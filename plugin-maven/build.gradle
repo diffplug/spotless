@@ -61,7 +61,7 @@ String libVersion = version.endsWith('-SNAPSHOT') ?
 		rootProject.spotlessChangelog.versionNext :
 		rootProject.spotlessChangelog.versionLast
 dependencies {
-	if (version.endsWith('-SNAPSHOT') || (rootProject.versionNext == rootProject.versionLast)) {
+	if (version.endsWith('-SNAPSHOT') || (rootProject.spotlessChangelog.versionNext == rootProject.spotlessChangelog.versionLast)) {
 		implementation project(':lib')
 		implementation project(':lib-extra')
 	} else {

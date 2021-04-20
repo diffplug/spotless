@@ -9,7 +9,7 @@ apply plugin: 'com.gradle.plugin-publish'
 apply plugin: 'java-gradle-plugin'
 
 dependencies {
-	if (version.endsWith('-SNAPSHOT') || (rootProject.versionNext == rootProject.versionLast)) {
+	if (version.endsWith('-SNAPSHOT') || (rootProject.spotlessChangelog.versionNext == rootProject.spotlessChangelog.versionLast)) {
 		api project(':lib')
 		api project(':lib-extra')
 	} else {
