@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Fixed
+* Dependency configurations are now named rather than detached, attempt to fix #815.
 
 ## [5.12.2] - 2021-04-20
 ### Fixed
