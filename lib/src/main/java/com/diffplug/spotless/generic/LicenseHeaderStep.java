@@ -335,7 +335,7 @@ public final class LicenseHeaderStep {
 		}
 
 		private static String parseYear(String cmd, File file) throws IOException {
-			String fullCmd = cmd + " " + file.getAbsolutePath();
+			String fullCmd = cmd + " -- " + file.getAbsolutePath();
 			ProcessBuilder builder = new ProcessBuilder().directory(file.getParentFile());
 			if (FileSignature.machineIsWin()) {
 				builder.command("cmd", "/c", fullCmd);
