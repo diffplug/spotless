@@ -60,6 +60,8 @@ if (startParameter.getProjectProperties().get('release') != 'true') {
 	include 'ide'
 }
 
+rootProject.name = 'spotless'
+
 include 'lib'		// reusable library with no dependencies
 include 'testlib'	// library for sharing test infrastructure between the projects below
 
