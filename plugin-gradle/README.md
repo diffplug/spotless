@@ -68,6 +68,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
   - [SQL](#sql) ([dbeaver](#dbeaver), [prettier](#prettier))
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier))
+  - [JSON](#json)
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection))
       - javascript, jsx, angular, vue, flow, typescript, css, less, scss, html, json, graphql, markdown, ymaml
@@ -526,6 +527,36 @@ spotless {
 **Prerequisite: tsfmt requires a working NodeJS version**
 
 For details, see the [npm detection](#npm-detection) and [`.npmrc` detection](#npmrc-detection) sections of prettier, which apply also to tsfmt.
+
+## JSON
+
+- `com.diffplug.gradle.spotless.JsonExtension` [javadoc](https://javadoc.io/static/com.diffplug.spotless/spotless-plugin-gradle/5.13.0/com/diffplug/gradle/spotless/JsonExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/JsonExtension.java)
+
+```gradle
+spotless {
+  json {
+    target 'src/**/*.json' // you have to set the target manually
+    simple() // has its own section below
+    prettier().config(['parser': 'json']) // see Prettier section below
+    eclipseWtp('json') // see Eclipse web tools platform section
+  }
+}
+```
+
+### simple
+
+Uses a JSON pretty-printer that optionally allows configuring the number of spaces that are used to pretty print objects:
+
+```gradle
+spotless {
+  json {
+    target 'src/**/*.json'
+    simple()
+    // optional: specify the number of spaces to use
+    simple().indentWithSpaces(6)
+  }
+}
+```
 
 <a name="applying-prettier-to-javascript--flow--typescript--css--scss--less--jsx--graphql--yaml--etc"></a>
 
