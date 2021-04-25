@@ -11,6 +11,10 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+### Added
+* Added formatter for [JVM-based JSON formatting](https://github.com/diffplug/spotless/issues/850)
+* Added Gradle configuration JVM-based JSON formatting
+
 ## [2.14.0] - 2021-06-10
 ### Added
 * Added support for `eclipse-cdt` at `4.19.0`. Note that version requires Java 11 or higher.
