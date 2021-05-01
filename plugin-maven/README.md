@@ -52,6 +52,7 @@ user@machine repo % mvn spotless:check
   - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
   - [C/C++](#cc) ([eclipse cdt](#eclipse-cdt))
+  - [Python](#python) ([black](#black))
   - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
   - [Sql](#sql) ([dbeaver](#dbeaver))
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier))
@@ -395,6 +396,42 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
   <version>4.13.0</version>               <!-- optional -->
   <file>${basedir}/eclipse-cdt.xml</file> <!-- optional -->
 </eclipseCdt>
+```
+
+## Python
+
+[code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/python/Python.java). [available steps](https://github.com/diffplug/spotless/tree/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/python/Black.java).
+
+```xml
+<configuration>
+  <python>
+    <!-- You have to set the target manually -->
+    <includes>
+      <include>src/main/**/*.py</include>
+    </includes>
+
+    <black />  <!-- has its own section below -->
+  </python>
+</configuration>
+```
+
+### black
+
+[homepage](https://github.com/psf/black). [changelog](https://github.com/psf/black/blob/master/CHANGES.md).
+
+```xml
+<black>
+  <version>19.10b0</version> <!-- optional -->
+  <!-- if black is not on your path, you must specify its location manually -->
+  <pathToExe>C:/myuser/.pyenv/versions/3.8.0/scripts/black.exe</pathToExe>
+  <!--
+    Spotless always checks the version of the black it is using
+    and will fail with an error if it does not match the expected version
+    (whether manually specified or default). If there is a problem, Spotless
+    will suggest commands to help install the correct version.
+    TODO: handle installation & packaging automatically - https://github.com/diffplug/spotless/issues/674
+  -->
+</black>
 ```
 
 ## Antlr4
