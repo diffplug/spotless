@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.11.0] - 2021-05-03
 ### Added
 * Added support for [python](README.md#python), specifically [black](README.md#black).
 ### Changed
