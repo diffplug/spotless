@@ -18,10 +18,7 @@ package com.diffplug.spotless.maven.python;
 import java.util.Collections;
 import java.util.Set;
 
-import com.diffplug.common.collect.ImmutableSet;
-import com.diffplug.spotless.cpp.CppDefaults;
 import com.diffplug.spotless.maven.FormatterFactory;
-import com.diffplug.spotless.maven.cpp.EclipseCdt;
 import com.diffplug.spotless.maven.generic.LicenseHeader;
 
 /**
@@ -31,7 +28,7 @@ import com.diffplug.spotless.maven.generic.LicenseHeader;
  * and python-specific (e.g. {@link Black}) steps.
  */
 public class Python extends FormatterFactory {
-		
+
 	@Override
 	public Set<String> defaultIncludes() {
 		return Collections.emptySet();

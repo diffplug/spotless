@@ -125,7 +125,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	@Parameter
 	private Python python;
-	
+
 	@Parameter(property = "spotlessFiles")
 	private String filePatterns;
 
