@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,7 +85,11 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 		new NpmProcess(npmProjectDir, this.npmExecutable).install();
 	}
 
-	protected ServerProcessInfo npmRunServer() throws ServerStartException {
+	protected ServerProcessInfo npmRunServer() throws ServerStartException, IOException {
+		if (!this.nodeModulesDir.exists()) {
+			prepareNodeServer(NodeServerLayout.getBuildDirFromNodeModulesDir(this.nodeModulesDir));
+		}
+
 		try {
 			// The npm process will output the randomly selected port of the http server process to 'server.port' file
 			// so in order to be safe, remove such a file if it exists before starting.
