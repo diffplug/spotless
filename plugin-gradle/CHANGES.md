@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [5.12.5] - 2021-05-13
 ### Changed
 * Update ktfmt from 0.21 to 0.24
 ### Fixed
