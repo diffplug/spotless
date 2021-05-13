@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.11.1] - 2021-05-13
 ### Fixed
 * Node is re-installed if some other build step removed it ([#863](https://github.com/diffplug/spotless/issues/863))
 
