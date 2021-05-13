@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,5 +45,9 @@ class NodeServerLayout {
 
 	public File npmrcFile() {
 		return npmrcFile;
+	}
+
+	static File getBuildDirFromNodeModulesDir(File nodeModulesDir) {
+		return nodeModulesDir.getParentFile();
 	}
 }
