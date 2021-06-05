@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.5.0`).
 
 ## [Unreleased]
+### Added
+* Switch to Groovy-Eclipse release 4.1.0 for Eclipse 4.19 using Groovy 4.0.0 Alpha 2.
 
 ## [4.0.0] - 2021-04-10
 ### Added
