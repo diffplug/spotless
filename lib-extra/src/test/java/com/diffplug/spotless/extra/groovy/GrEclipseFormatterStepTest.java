@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import com.diffplug.spotless.extra.eclipse.EclipseCommonTests;
 public class GrEclipseFormatterStepTest extends EclipseCommonTests {
 	@Override
 	protected String[] getSupportedVersions() {
-		return new String[]{"4.17.0"};
+		return new String[]{"4.17.0", "4.18.0", "4.19.0"};
 	}
 
 	@Override

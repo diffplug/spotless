@@ -3,6 +3,12 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* Added support for `eclipse-cdt` at `4.19.0`. Note that version requires Java 11 or higher.
+* Added support for `eclipse-groovy` at `4.18.0` and `4.19.0`.
+* Added support for `eclipse-wtp` at `4.19.0`. Note that version requires Java 11 or higher.
+### Changed
+* Bump `eclipse-groovy` default version from `4.17.0` to `4.19.0`.
 
 ## [2.11.1] - 2021-05-13
 ### Fixed
