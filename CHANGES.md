@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.14.0] - 2021-06-10
 ### Added
 * Added support for `eclipse-cdt` at `4.19.0`. Note that version requires Java 11 or higher.
 * Added support for `eclipse-groovy` at `4.18.0` and `4.19.0`.
