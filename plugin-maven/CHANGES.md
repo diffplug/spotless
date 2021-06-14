@@ -4,6 +4,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+### Fixed
+* Fixed IndexOutOfBoundsException in parallel execution of `eclipse-groovy` formatter ([#877](https://github.com/diffplug/spotless/issues/877))
+
 ## [2.12.0] - 2021-06-10
 ### Added
 * Added support for `eclipse-cdt` at `4.19.0`. Note that version requires Java 11 or higher.
