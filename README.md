@@ -153,6 +153,7 @@ Once someone has filled in one square of the formatter/build system matrix, it's
 - Thanks to [Oliver Szymanski](https://github.com/source-knights) for porting [tsfmt](https://github.com/diffplug/spotless/pull/553) and [prettier](https://github.com/diffplug/spotless/pull/555) to maven.
 - Thanks to Andrew Oberstar for improvements to formatting java source in non-java source sets. [PR #60](https://github.com/diffplug/spotless/pull/60).
 - Thanks to [Sameer Balasubrahmanyam](https://github.com/sameer-b) for [adding support for IntelliJ-style year placeholders](https://github.com/diffplug/spotless/pull/542).
+- Thanks to [Jamie Tanna](https://github.com/jamietanna) for [adding a simple JSON formatter](https://github.com/diffplug/spotless/pull/853).
 - Thanks to [Adib Saikali](https://github.com/asaikali) and [Paul Merlin](https://github.com/eskatos) for tracking down the tricky cause of [#506](https://github.com/diffplug/spotless/issues/506).
 - Import ordering from [EclipseCodeFormatter](https://github.com/krasa/EclipseCodeFormatter).
 - Built by [gradle](https://gradle.org/).
