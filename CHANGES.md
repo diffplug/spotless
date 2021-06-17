@@ -11,6 +11,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+## [2.15.0] - 2021-06-17
+
 ### Added
 * Added formatter for [JVM-based JSON formatting](https://github.com/diffplug/spotless/issues/850)
 * Added Gradle configuration JVM-based JSON formatting
