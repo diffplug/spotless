@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -167,6 +167,12 @@ public abstract class SpotlessExtension {
 	/** Configures the special python-specific extension for python files. */
 	public void python(Action<PythonExtension> closure) {
 		format(PythonExtension.NAME, PythonExtension.class, closure);
+	}
+
+	/** Configures the special JSON-specific extension. */
+	public void json(Action<JsonExtension> closure) {
+		requireNonNull(closure);
+		format(JsonExtension.NAME, JsonExtension.class, closure);
 	}
 
 	/** Configures a custom extension. */
