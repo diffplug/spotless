@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.2.1`).
 
 ## [Unreleased]
+
+## [3.5.0] - 2021-06-20
 ### Added
 * Support of `org.eclipse.core.resources` version `3.15.0` required by Eclipse `4.20`.
 * Minimum required Java version changed from 8 to 11.
