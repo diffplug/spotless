@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,7 +79,7 @@ class ResourceAccessor {
 			throw new BundleException(String.format("Path '%s' for '%s' is not accessible exist on local file system.", objUri, clazz.getName()), BundleException.READ_ERROR);
 		}
 		try {
-			return jarOrDirectory.isDirectory() ? new DirBundleFile(jarOrDirectory, false) : new ZipBundleFile(jarOrDirectory, null, null, NO_DEBUGGING);
+			return jarOrDirectory.isDirectory() ? new DirBundleFile(jarOrDirectory, false) : new ZipBundleFile(jarOrDirectory, null, null, NO_DEBUGGING, false);
 		} catch (IOException e) {
 			throw new BundleException(String.format("Cannot access bundle at '%s'.", jarOrDirectory), BundleException.READ_ERROR, e);
 		}
