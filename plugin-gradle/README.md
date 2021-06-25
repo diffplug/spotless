@@ -285,7 +285,7 @@ spotless {
 spotless {
   kotlin {
     // version and userData are both optional
-    ktlint('0.37.2').userData(mapOf('indent_size' to '2', 'continuation_indent_size' to '2'])
+    ktlint('0.37.2').userData(mapOf('indent_size' to '2', 'continuation_indent_size' to '2'))
 ```
 
 ### diktat
