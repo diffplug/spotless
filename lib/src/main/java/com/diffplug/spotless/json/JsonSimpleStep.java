@@ -70,33 +70,28 @@ public final class JsonSimpleStep {
 			}
 
 			return s -> {
-				String prettyPrinted = null;
 				if (s.isEmpty()) {
-					prettyPrinted = s;
+					return s;
 				}
-				if (s.startsWith("{")) {
-					try {
-						Object parsed = objectConstructor.newInstance(s);
-						prettyPrinted = objectToString.invoke(parsed, indentSpaces) + "\n";
-					} catch (InvocationTargetException ignored) {
-						// ignore if we cannot convert to JSON string
-					}
+				char first = s.charAt(0);
+				if (first == '{') {
+					return format(objectConstructor, objectToString, s);
 				}
-				if (s.startsWith("[")) {
-					try {
-						Object parsed = arrayConstructor.newInstance(s);
-						prettyPrinted = arrayToString.invoke(parsed, indentSpaces) + "\n";
-					} catch (InvocationTargetException ignored) {
-						// ignore if we cannot convert to JSON string
-					}
+				if (first == '[') {
+					return format(arrayConstructor, arrayToString, s);
 				}
 
-				if (prettyPrinted == null) {
-					throw new AssertionError("Invalid JSON file provided");
-				}
-
-				return prettyPrinted;
+				throw new AssertionError(String.format("Unable to determine JSON type, expected a '{' or '[' but found '%s'", first));
 			};
+		}
+
+		private String format(Constructor<?> constructor, Method toString, String input) throws Exception {
+			try {
+				Object parsed = constructor.newInstance(input);
+				return toString.invoke(parsed, indentSpaces) + "\n";
+			} catch (InvocationTargetException ex) {
+				throw new AssertionError("Unable to format JSON", ex.getCause());
+			}
 		}
 	}
 
