@@ -73,12 +73,18 @@ public class JsonSimpleStepTest {
 
 	@Test
 	public void handlesInvalidJson() {
-		assertThatThrownBy(() -> doWithResource(stepHarness, "invalidJson")).isInstanceOf(AssertionError.class).hasMessage("Invalid JSON file provided");
+		assertThatThrownBy(() -> doWithResource(stepHarness, "invalidJson"))
+				.isInstanceOf(AssertionError.class)
+				.hasMessage("Unable to format JSON")
+				.hasRootCauseMessage("Expected a ',' or '}' at 9 [character 0 line 3]");
 	}
 
 	@Test
 	public void handlesNotJson() {
-		assertThatThrownBy(() -> doWithResource(stepHarness, "notJson")).isInstanceOf(AssertionError.class).hasMessage("Invalid JSON file provided");
+		assertThatThrownBy(() -> doWithResource(stepHarness, "notJson"))
+				.isInstanceOf(AssertionError.class)
+				.hasMessage("Unable to determine JSON type, expected a '{' or '[' but found '#'")
+				.hasNoCause();
 	}
 
 	@Test
