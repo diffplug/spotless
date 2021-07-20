@@ -1,13 +1,12 @@
 --- Account management
- CREATE
+CREATE
     TABLE
         account(
             id serial PRIMARY KEY,
             username VARCHAR(60) NOT NULL UNIQUE,
             email VARCHAR(513) NOT NULL UNIQUE,
-            name VARCHAR(255),
-            --NULLABLE
- created_at TIMESTAMP NOT NULL,
+            name VARCHAR(255), --NULLABLE
+            created_at TIMESTAMP NOT NULL,
             created_ip inet NOT NULL,
             updated_at TIMESTAMP NOT NULL,
             updated_ip inet NOT NULL,
@@ -38,13 +37,12 @@ CREATE
         );
 
 --- Takes
- CREATE
+CREATE
     TABLE
         takerevision(
             id serial PRIMARY KEY,
-            parent_id INT REFERENCES takerevision(id),
-            --NULLABLE (null for root)
- created_at TIMESTAMP NOT NULL,
+            parent_id INT REFERENCES takerevision(id), --NULLABLE (null for root)
+            created_at TIMESTAMP NOT NULL,
             created_ip inet NOT NULL,
             title VARCHAR(255) NOT NULL,
             blocks jsonb NOT NULL
@@ -68,11 +66,9 @@ CREATE
             blocks jsonb NOT NULL,
             published_at TIMESTAMP NOT NULL,
             published_ip inet NOT NULL,
-            deleted_at TIMESTAMP,
-            --NULLABLE
- deleted_ip inet,
-            --NULLABLE
- count_view INT NOT NULL DEFAULT 0,
+            deleted_at TIMESTAMP, --NULLABLE
+            deleted_ip inet, --NULLABLE
+            count_view INT NOT NULL DEFAULT 0,
             count_like INT NOT NULL DEFAULT 0,
             count_bookmark INT NOT NULL DEFAULT 0,
             count_spam INT NOT NULL DEFAULT 0,
@@ -80,7 +76,7 @@ CREATE
         );
 
 -- /user/title must be unique, and fast to lookup
- CREATE
+CREATE
     UNIQUE INDEX takepublished_title_user ON
     takepublished(
         title_slug,
@@ -105,8 +101,7 @@ CREATE
                 take_id,
                 user_id,
                 kind
-            ),
-            --user can only have one of each kind of reaction per take
- reacted_at TIMESTAMP NOT NULL,
+            ), --user can only have one of each kind of reaction per take
+            reacted_at TIMESTAMP NOT NULL,
             reacted_ip inet NOT NULL
         );
