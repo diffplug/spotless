@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [5.14.2] - 2021-07-20
 ### Fixed
  * Improved [SQL formatting](https://github.com/diffplug/spotless/pull/897) with respect to comments
 
