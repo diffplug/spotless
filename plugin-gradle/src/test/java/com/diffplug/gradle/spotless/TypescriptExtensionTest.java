@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,14 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Test;
 
-import com.diffplug.spotless.category.NpmTest;
+import com.diffplug.spotless.tag.NpmTest;
 
-@Category(NpmTest.class)
-public class TypescriptExtensionTest extends GradleIntegrationHarness {
+@NpmTest
+class TypescriptExtensionTest extends GradleIntegrationHarness {
 	@Test
-	public void allowToSpecifyFormatterVersion() throws IOException {
+	void allowToSpecifyFormatterVersion() throws IOException {
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
@@ -46,7 +45,7 @@ public class TypescriptExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void allowToSpecifyMultipleVersionStrings() throws IOException {
+	void allowToSpecifyMultipleVersionStrings() throws IOException {
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
@@ -67,7 +66,7 @@ public class TypescriptExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void useTsfmtInlineConfig() throws IOException {
+	void useTsfmtInlineConfig() throws IOException {
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
@@ -88,7 +87,7 @@ public class TypescriptExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void useTsfmtFileConfig() throws IOException {
+	void useTsfmtFileConfig() throws IOException {
 		setFile("tsfmt.json").toResource("npm/tsfmt/tsfmt/tsfmt.json");
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
@@ -107,7 +106,7 @@ public class TypescriptExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void useTsConfigFileConfig() throws IOException {
+	void useTsConfigFileConfig() throws IOException {
 		setFile("tsconfig.json").toResource("npm/tsfmt/tsconfig/tsconfig.json");
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
@@ -126,7 +125,7 @@ public class TypescriptExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void usePrettier() throws IOException {
+	void usePrettier() throws IOException {
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",

@@ -16,7 +16,9 @@ tasks.withType(JavaCompile) {
 
 //Currently testlib is not used by _ext. Hence the external dependencies are added here.
 dependencies {
-	testImplementation "junit:junit:${VER_JUNIT}"
+	testImplementation "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"
 	testImplementation "org.assertj:assertj-core:${VER_ASSERTJ}"
 	testImplementation project(':testlib')
 }
+
+test { useJUnitPlatform() }

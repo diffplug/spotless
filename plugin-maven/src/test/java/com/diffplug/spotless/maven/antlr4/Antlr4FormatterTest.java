@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,14 @@
  */
 package com.diffplug.spotless.maven.antlr4;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
-public class Antlr4FormatterTest extends MavenIntegrationHarness {
+class Antlr4FormatterTest extends MavenIntegrationHarness {
 
 	@Test
-	public void applyUsingCustomVersion() throws Exception {
+	void applyUsingCustomVersion() throws Exception {
 		writePomWithAntlr4Steps(
 				"<antlr4Formatter>",
 				"  <version>1.2.1</version>",
@@ -31,7 +31,7 @@ public class Antlr4FormatterTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void applyUsingDefaultVersion() throws Exception {
+	void applyUsingDefaultVersion() throws Exception {
 		writePomWithAntlr4Steps(
 				"<antlr4Formatter>",
 				"</antlr4Formatter>");
@@ -39,7 +39,7 @@ public class Antlr4FormatterTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void applyUsingDefaultVersionSelfclosing() throws Exception {
+	void applyUsingDefaultVersionSelfclosing() throws Exception {
 		writePomWithAntlr4Steps(
 				"<antlr4Formatter />");
 		runTest();

@@ -17,12 +17,12 @@ package com.diffplug.spotless.maven;
 
 import static com.diffplug.spotless.maven.MavenIntegrationHarness.SubProjectFile.file;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class MultiModuleProjectTest extends MavenIntegrationHarness {
+class MultiModuleProjectTest extends MavenIntegrationHarness {
 
 	@Test
-	public void testConfigurationDependency() throws Exception {
+	void testConfigurationDependency() throws Exception {
 		/*
 		create a multi-module project with the following stucture:
 

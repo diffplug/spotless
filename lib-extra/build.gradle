@@ -19,10 +19,12 @@ dependencies {
 
 	// testing
 	testImplementation project(':testlib')
-	testImplementation "junit:junit:${VER_JUNIT}"
+	testImplementation "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"
 	testImplementation "org.assertj:assertj-core:${VER_ASSERTJ}"
 	testImplementation "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
 }
 
 // we'll hold the core lib to a high standard
 spotbugs { reportLevel = 'low' } // low|medium|high (low = sensitive to even minor mistakes)
+
+test { useJUnitPlatform() }

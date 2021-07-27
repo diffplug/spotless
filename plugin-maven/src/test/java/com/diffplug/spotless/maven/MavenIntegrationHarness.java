@@ -21,7 +21,7 @@ import static java.util.Arrays.stream;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.toList;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -33,7 +33,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
@@ -76,8 +76,8 @@ public class MavenIntegrationHarness extends ResourceHarness {
 	 * GIT_ATTRIBUTES will use \n, so that tests match the test
 	 * resources on win and linux.
 	 */
-	@Before
-	public void gitAttributes() throws IOException {
+	@BeforeEach
+	void gitAttributes() throws IOException {
 		setFile(".gitattributes").toContent("* text eol=lf");
 		// copy the mvnw resources
 		copy("mvnw").setExecutable(true);

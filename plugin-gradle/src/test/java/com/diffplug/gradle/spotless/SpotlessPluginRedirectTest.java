@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,19 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static org.junit.jupiter.api.condition.JRE.JAVA_11;
+
 import java.io.IOException;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
 
 import com.diffplug.common.base.StringPrinter;
-import com.diffplug.spotless.JreVersion;
 
-public class SpotlessPluginRedirectTest extends GradleIntegrationHarness {
+class SpotlessPluginRedirectTest extends GradleIntegrationHarness {
 	@Test
-	public void redirectPluginModernGradle() throws IOException {
+	void redirectPluginModernGradle() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",
@@ -39,8 +41,8 @@ public class SpotlessPluginRedirectTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void redirectPluginOldGradle() throws IOException {
-		JreVersion.assume11OrLess();
+	@EnabledForJreRange(max = JAVA_11)
+	void redirectPluginOldGradle() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",
@@ -57,8 +59,8 @@ public class SpotlessPluginRedirectTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void realPluginOldGradle() throws IOException {
-		JreVersion.assume11OrLess();
+	@EnabledForJreRange(max = JAVA_11)
+	void realPluginOldGradle() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.spotless'",

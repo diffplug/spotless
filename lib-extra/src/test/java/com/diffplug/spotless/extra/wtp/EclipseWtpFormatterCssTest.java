@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.category;
+package com.diffplug.spotless.extra.wtp;
 
-public interface BlackTest {}
+import com.diffplug.spotless.TestProvisioner;
+import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
+
+class EclipseWtpFormatterCssTest extends EclipseWtpFormatterCommonTests {
+
+	@Override
+	EclipseBasedStepBuilder createBuilder() {
+		return EclipseWtpFormatterStep.CSS.createBuilder(TestProvisioner.mavenCentral());
+	}
+
+	@Override
+	String getTestInput() {
+		return "body {\na: v;   b:   \nv;\n}  \n";
+	}
+
+	@Override
+	String getTestExpectation() {
+		return "body {\n\ta: v;\n\tb: v;\n}";
+	}
+}

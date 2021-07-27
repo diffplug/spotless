@@ -16,20 +16,20 @@
 package com.diffplug.gradle.spotless;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.condition.JRE.JAVA_11;
 
 import java.io.IOException;
 
 import org.gradle.testkit.runner.BuildResult;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
 
-import com.diffplug.spotless.JreVersion;
-
-public class KotlinExtensionTest extends GradleIntegrationHarness {
+class KotlinExtensionTest extends GradleIntegrationHarness {
 	private static final String HEADER = "// License Header";
 	private static final String HEADER_WITH_YEAR = "// License Header $YEAR";
 
 	@Test
-	public void integration() throws IOException {
+	void integration() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'nebula.kotlin' version '1.3.72'",
@@ -47,7 +47,7 @@ public class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void integrationDiktat() throws IOException {
+	void integrationDiktat() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'org.jetbrains.kotlin.jvm' version '1.4.30'",
@@ -65,9 +65,8 @@ public class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void integrationKtfmt() throws IOException {
-		// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
-		JreVersion.assume11OrGreater();
+	@EnabledForJreRange(min = JAVA_11) // ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
+	void integrationKtfmt() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'nebula.kotlin' version '1.3.72'",
@@ -85,9 +84,8 @@ public class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void integrationKtfmt_dropboxStyle_0_18() throws IOException {
-		// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
-		JreVersion.assume11OrGreater();
+	@EnabledForJreRange(min = JAVA_11) // ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
+	void integrationKtfmt_dropboxStyle_0_18() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'nebula.kotlin' version '1.3.72'",
@@ -105,9 +103,8 @@ public class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void integrationKtfmt_dropboxStyle_0_19() throws IOException {
-		// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
-		JreVersion.assume11OrGreater();
+	@EnabledForJreRange(min = JAVA_11) // ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
+	void integrationKtfmt_dropboxStyle_0_19() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'nebula.kotlin' version '1.3.72'",
@@ -125,7 +122,7 @@ public class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void testWithIndentation() throws IOException {
+	void testWithIndentation() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'nebula.kotlin' version '1.3.72'",
@@ -143,7 +140,7 @@ public class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void testWithHeader() throws IOException {
+	void testWithHeader() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'nebula.kotlin' version '1.3.72'",
@@ -162,9 +159,8 @@ public class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void testWithHeaderKtfmt() throws IOException {
-		// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
-		JreVersion.assume11OrGreater();
+	@EnabledForJreRange(min = JAVA_11) // ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
+	void testWithHeaderKtfmt() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'nebula.kotlin' version '1.3.72'",
@@ -183,7 +179,7 @@ public class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void testWithCustomHeaderSeparator() throws IOException {
+	void testWithCustomHeaderSeparator() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'nebula.kotlin' version '1.3.72'",
@@ -202,9 +198,8 @@ public class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void testWithCustomHeaderSeparatorKtfmt() throws IOException {
-		// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
-		JreVersion.assume11OrGreater();
+	@EnabledForJreRange(min = JAVA_11) // ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
+	void testWithCustomHeaderSeparatorKtfmt() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'nebula.kotlin' version '1.3.72'",
@@ -223,7 +218,7 @@ public class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void testWithNonStandardYearSeparator() throws IOException {
+	void testWithNonStandardYearSeparator() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'nebula.kotlin' version '1.3.72'",
@@ -249,9 +244,8 @@ public class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void testWithNonStandardYearSeparatorKtfmt() throws IOException {
-		// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
-		JreVersion.assume11OrGreater();
+	@EnabledForJreRange(min = JAVA_11) // ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
+	void testWithNonStandardYearSeparatorKtfmt() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'nebula.kotlin' version '1.3.72'",

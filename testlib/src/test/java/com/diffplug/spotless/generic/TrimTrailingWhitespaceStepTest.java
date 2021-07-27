@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,16 @@
  */
 package com.diffplug.spotless.generic;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 
-public class TrimTrailingWhitespaceStepTest extends ResourceHarness {
+class TrimTrailingWhitespaceStepTest extends ResourceHarness {
 	@Test
-	public void trimTrailingWhitespace() throws Exception {
+	void trimTrailingWhitespace() throws Exception {
 		StepHarness step = StepHarness.forStep(TrimTrailingWhitespaceStep.create());
 		step.testUnaffected("");
 		step.testUnaffected("\n");
@@ -50,7 +50,7 @@ public class TrimTrailingWhitespaceStepTest extends ResourceHarness {
 	}
 
 	@Test
-	public void equality() throws Exception {
+	void equality() throws Exception {
 		new SerializableEqualityTester() {
 			@Override
 			protected void setupTest(API api) {

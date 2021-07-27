@@ -15,17 +15,17 @@
  */
 package com.diffplug.spotless.maven.kotlin;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.condition.JRE.JAVA_11;
 
-import com.diffplug.spotless.JreVersion;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
-public class KtfmtTest extends MavenIntegrationHarness {
+@EnabledForJreRange(min = JAVA_11) // ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
+class KtfmtTest extends MavenIntegrationHarness {
 	@Test
-	public void testKtfmt() throws Exception {
-		// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
-		JreVersion.assume11OrGreater();
-
+	void testKtfmt() throws Exception {
 		writePomWithKotlinSteps("<ktfmt/>");
 
 		String path1 = "src/main/kotlin/main1.kt";
@@ -41,10 +41,7 @@ public class KtfmtTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void testKtfmtStyle() throws Exception {
-		// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
-		JreVersion.assume11OrGreater();
-
+	void testKtfmtStyle() throws Exception {
 		writePomWithKotlinSteps("<ktfmt><style>DROPBOX</style></ktfmt>");
 
 		setFile("src/main/kotlin/main.kt").toResource("kotlin/ktfmt/basic.dirty");

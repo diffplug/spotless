@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,16 +18,15 @@ package com.diffplug.spotless.cpp;
 import java.io.File;
 import java.util.Arrays;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.StepHarnessWithFile;
-import com.diffplug.spotless.category.ClangTest;
+import com.diffplug.spotless.tag.ClangTest;
 
-@Category(ClangTest.class)
-public class ClangFormatStepTest {
+@ClangTest
+class ClangFormatStepTest {
 	@Test
-	public void test() throws Exception {
+	void test() throws Exception {
 		try (StepHarnessWithFile harness = StepHarnessWithFile.forStep(ClangFormatStep.withVersion(ClangFormatStep.defaultVersion()).create())) {
 			// can't be named java or it gets compiled into .class file
 			harness.testResource(new File("example.java"), "clang/example.java.dirty", "clang/example.java.clean");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,15 +22,15 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.StandardSystemProperty;
 import com.diffplug.spotless.generic.EndWithNewlineStep;
 
-public class FormatterTest {
+class FormatterTest {
 	// Formatter normally needs to be closed, but no resources will be leaked in this special case
 	@Test
-	public void equality() {
+	void equality() {
 		new SerializableEqualityTester() {
 			private LineEnding.Policy lineEndingsPolicy = LineEnding.UNIX.createPolicy();
 			private Charset encoding = StandardCharsets.UTF_8;

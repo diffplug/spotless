@@ -19,51 +19,51 @@ import java.io.IOException;
 import java.util.List;
 
 import org.gradle.testkit.runner.BuildResult;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.collect.Lists;
 
-public class MultipleTargetsTest extends GradleIntegrationHarness {
+class MultipleTargetsTest extends GradleIntegrationHarness {
 	private static final List<String> TARGET_FILES = Lists.newArrayList("src/test.md", "src/test.1.txt", "src/test.2.txt");
 	private static final List<String> NON_TARGET_FILES = Lists.newArrayList(".git/test.1.txt", ".gradle/test.1.txt", "build/test.1.txt");
 
 	@Test
-	public void testSingleRecursiveTargetMatchingSuffix() throws IOException {
+	void testSingleRecursiveTargetMatchingSuffix() throws IOException {
 		runTest("target '**/*.txt'");
 	}
 
 	@Test
-	public void testSingleRecursiveTargetMatchingPrefix() throws IOException {
+	void testSingleRecursiveTargetMatchingPrefix() throws IOException {
 		runTest("target '**/test.*'");
 	}
 
 	@Test
-	public void testSingleRecursiveTargetMatchingSubdirectory() throws IOException {
+	void testSingleRecursiveTargetMatchingSubdirectory() throws IOException {
 		runTest("target 'src/**/*.txt'");
 	}
 
 	@Test
-	public void testExplicitTargets() throws IOException {
+	void testExplicitTargets() throws IOException {
 		runTest("target('src/test.1.txt', 'src/test.2.txt')");
 	}
 
 	@Test
-	public void testNonRecursiveTargets() throws IOException {
+	void testNonRecursiveTargets() throws IOException {
 		runTest("target('src/*.1.txt', 'src/*.2.txt')");
 	}
 
 	@Test
-	public void testTwoRecursiveTargetsMatchingDifferentFiles() throws IOException {
+	void testTwoRecursiveTargetsMatchingDifferentFiles() throws IOException {
 		runTest("target('**/*.1.txt', '**/*.2.txt')");
 	}
 
 	@Test
-	public void testTwoRecursiveTargetsMatchingIdenticalFiles() throws IOException {
+	void testTwoRecursiveTargetsMatchingIdenticalFiles() throws IOException {
 		runTest("target('**/*.txt', '**/test.*')");
 	}
 
 	@Test
-	public void testTwoRecursiveTargetsProvidedAsList() throws IOException {
+	void testTwoRecursiveTargetsProvidedAsList() throws IOException {
 		runTest("target(['**/*.1.txt', '**/*.2.txt'])");
 	}
 

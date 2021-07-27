@@ -15,8 +15,6 @@
  */
 package com.diffplug.spotless;
 
-import static org.junit.Assume.assumeTrue;
-
 public class JreVersion {
 	private JreVersion() {}
 
@@ -26,17 +24,5 @@ public class JreVersion {
 	 */
 	public static int thisVm() {
 		return Jvm.version();
-	}
-
-	public static void assume11OrGreater() {
-		assumeTrue(Jvm.version() >= 11);
-	}
-
-	public static void assume11OrLess() {
-		assumeTrue(Jvm.version() <= 11);
-	}
-
-	public static void assumeLessThan15() {
-		assumeTrue(Jvm.version() < 15);
 	}
 }

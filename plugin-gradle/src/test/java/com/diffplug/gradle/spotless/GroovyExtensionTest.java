@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,23 +15,24 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.io.IOException;
 
-import org.assertj.core.api.Assertions;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class GroovyExtensionTest extends GradleIntegrationHarness {
+class GroovyExtensionTest extends GradleIntegrationHarness {
 
 	private static final String HEADER = "//My tests header";
 
 	@Test
-	public void includeJava() throws IOException {
+	void includeJava() throws IOException {
 		testIncludeExcludeOption(false);
 	}
 
 	@Test
-	public void excludeJava() throws IOException {
+	void excludeJava() throws IOException {
 		testIncludeExcludeOption(true);
 	}
 
@@ -68,7 +69,7 @@ public class GroovyExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void excludeJavaWithCustomTarget() throws IOException {
+	void excludeJavaWithCustomTarget() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
@@ -82,16 +83,13 @@ public class GroovyExtensionTest extends GradleIntegrationHarness {
 				"    }",
 				"}");
 
-		try {
-			gradleRunner().withArguments("spotlessApply").build();
-			Assert.fail("Exception expected when running 'excludeJava' in combination with 'target'.");
-		} catch (Throwable t) {
-			Assertions.assertThat(t).hasMessageContaining("'excludeJava' is not supported");
-		}
+		Throwable error = assertThrows(Throwable.class,
+				() -> gradleRunner().withArguments("spotlessApply").build());
+		assertThat(error).hasMessageContaining("'excludeJava' is not supported");
 	}
 
 	@Test
-	public void groovyPluginMissingCheck() throws IOException {
+	void groovyPluginMissingCheck() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
@@ -103,12 +101,9 @@ public class GroovyExtensionTest extends GradleIntegrationHarness {
 				"    }",
 				"}");
 
-		try {
-			gradleRunner().withArguments("spotlessApply").build();
-			Assert.fail("Exception expected when using 'groovy' without 'target' if groovy-plugin is not applied.");
-		} catch (Throwable t) {
-			Assertions.assertThat(t).hasMessageContaining("must apply the groovy plugin before");
-		}
+		Throwable error = assertThrows(Throwable.class,
+				() -> gradleRunner().withArguments("spotlessApply").build());
+		assertThat(error).hasMessageContaining("must apply the groovy plugin before");
 	}
 
 }

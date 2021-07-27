@@ -9,7 +9,7 @@ dependencies {
 	api project(':lib')
 	api "com.diffplug.durian:durian-core:${VER_DURIAN}"
 	api "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
-	api "junit:junit:${VER_JUNIT}"
+	api "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"
 	api "org.assertj:assertj-core:${VER_ASSERTJ}"
 
 	implementation "com.diffplug.durian:durian-io:${VER_DURIAN}"
@@ -20,9 +20,12 @@ dependencies {
 // we'll hold the testlib to a low standard (prize brevity)
 spotbugs { reportLevel = 'high' } // low|medium|high (low = sensitive to even minor mistakes)
 
+test { useJUnitPlatform() }
+
 apply from: rootProject.file('gradle/special-tests.gradle')
 
 javadoc {
 	options.addStringOption('Xdoclint:none', '-quiet')
 	options.addStringOption('Xwerror', '-quiet')
 }
+

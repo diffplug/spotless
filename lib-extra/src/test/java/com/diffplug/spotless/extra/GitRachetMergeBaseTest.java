@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,13 +25,13 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.RefDatabase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.ResourceHarness;
 
-public class GitRachetMergeBaseTest extends ResourceHarness {
+class GitRachetMergeBaseTest extends ResourceHarness {
 	@Test
-	public void test() throws IllegalStateException, GitAPIException, IOException {
+	void test() throws IllegalStateException, GitAPIException, IOException {
 		try (Git git = initRepo()) {
 			setFile("mine.txt").toContent("init");
 			setFile("untouched.txt").toContent("init");

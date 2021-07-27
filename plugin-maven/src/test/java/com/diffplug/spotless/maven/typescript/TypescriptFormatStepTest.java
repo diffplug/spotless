@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +19,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Test;
 
-import com.diffplug.spotless.category.NpmTest;
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 import com.diffplug.spotless.maven.MavenRunner.Result;
+import com.diffplug.spotless.tag.NpmTest;
 
-@Category(NpmTest.class)
-public class TypescriptFormatStepTest extends MavenIntegrationHarness {
+@NpmTest
+class TypescriptFormatStepTest extends MavenIntegrationHarness {
 	private void run(String kind) throws IOException, InterruptedException {
 		String path = prepareRun(kind);
 		mavenRunner().withArguments("spotless:apply").runNoError();
@@ -46,7 +45,7 @@ public class TypescriptFormatStepTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void tslint() throws Exception {
+	void tslint() throws Exception {
 		writePomWithTypescriptSteps(
 				"<tsfmt>",
 				"  <tslintFile>${basedir}/tslint.json</tslintFile>",
@@ -56,7 +55,7 @@ public class TypescriptFormatStepTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void vscode() throws Exception {
+	void vscode() throws Exception {
 		writePomWithTypescriptSteps(
 				"<tsfmt>",
 				"  <vscodeFile>${basedir}/vscode.json</vscodeFile>",
@@ -66,7 +65,7 @@ public class TypescriptFormatStepTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void tsfmt() throws Exception {
+	void tsfmt() throws Exception {
 		writePomWithTypescriptSteps(
 				"<tsfmt>",
 				"  <tsfmtFile>${basedir}/tsfmt.json</tsfmtFile>",
@@ -76,7 +75,7 @@ public class TypescriptFormatStepTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void tsfmtInline() throws Exception {
+	void tsfmtInline() throws Exception {
 		writePomWithTypescriptSteps(
 				"<tsfmt>",
 				"  <config>",
@@ -88,7 +87,7 @@ public class TypescriptFormatStepTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void tsconfig() throws Exception {
+	void tsconfig() throws Exception {
 		writePomWithTypescriptSteps(
 				"<tsfmt>",
 				"  <tsconfigFile>${project.basedir}/tsconfig.json</tsconfigFile>",
@@ -98,7 +97,7 @@ public class TypescriptFormatStepTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void testTypescript_2_Configs() throws Exception {
+	void testTypescript_2_Configs() throws Exception {
 		writePomWithTypescriptSteps(
 				"<tsfmt>",
 				"  <vscodeFile>${basedir}/tslint.json</vscodeFile>",
@@ -114,7 +113,7 @@ public class TypescriptFormatStepTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void testNpmrcIsAutoPickedUp() throws Exception {
+	void testNpmrcIsAutoPickedUp() throws Exception {
 		setFile(".npmrc").toLines("registry=https://i.do.no.exist.com");
 		writePomWithTypescriptSteps(
 				"<tsfmt>",
@@ -126,7 +125,7 @@ public class TypescriptFormatStepTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void testNpmrcIsConfigurativelyPickedUp() throws Exception {
+	void testNpmrcIsConfigurativelyPickedUp() throws Exception {
 		setFile(".custom_npmrc").toLines("registry=https://i.do.no.exist.com");
 		writePomWithTypescriptSteps(
 				"<tsfmt>",

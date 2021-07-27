@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 DiffPlug
+ * Copyright 2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.python;
+package com.diffplug.spotless.tag;
 
-import org.junit.jupiter.api.Test;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import com.diffplug.spotless.StepHarness;
-import com.diffplug.spotless.tag.BlackTest;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-@BlackTest
-class BlackStepTest {
-	@Test
-	void test() throws Exception {
-		StepHarness.forStep(BlackStep.withVersion(BlackStep.defaultVersion()).create())
-				.testResource("python/black/black.dirty", "python/black/black.clean")
-				.close();
-	}
-}
+import org.junit.jupiter.api.Tag;
+
+@Target({TYPE, METHOD})
+@Retention(RUNTIME)
+@Tag("Npm")
+public @interface NpmTest {}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,21 +15,23 @@
  */
 package com.diffplug.spotless.markdown;
 
+import static org.junit.jupiter.api.condition.JRE.JAVA_14;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.JreVersion;
 import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
-public class FreshMarkStepTest {
+@EnabledForJreRange(max = JAVA_14)
+class FreshMarkStepTest {
 	@Test
-	public void behavior() throws Exception {
-		JreVersion.assumeLessThan15();
+	void behavior() throws Exception {
 		HashMap<String, String> map = new HashMap<>();
 		map.put("lib", "MyLib");
 		map.put("author", "Me");
@@ -38,8 +40,7 @@ public class FreshMarkStepTest {
 	}
 
 	@Test
-	public void equality() throws Exception {
-		JreVersion.assumeLessThan15();
+	void equality() throws Exception {
 		new SerializableEqualityTester() {
 			String version = "1.3.1";
 			Map<String, Object> props = new HashMap<>();

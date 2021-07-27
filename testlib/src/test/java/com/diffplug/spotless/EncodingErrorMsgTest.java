@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +22,11 @@ import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class EncodingErrorMsgTest {
+class EncodingErrorMsgTest {
 	@Test
-	public void cp1252asUtf8() throws UnsupportedEncodingException {
+	void cp1252asUtf8() throws UnsupportedEncodingException {
 		// empty case
 		cp1252asUtf8("", null);
 		// single char
@@ -53,7 +53,7 @@ public class EncodingErrorMsgTest {
 	}
 
 	@Test
-	public void utf8asCP1252() throws UnsupportedEncodingException {
+	void utf8asCP1252() throws UnsupportedEncodingException {
 		// unfortunately, if you treat UTF8 as Cp1252, it looks weird, but it usually roundtrips faithfully
 		// which makes it hard to detect
 
@@ -89,7 +89,7 @@ public class EncodingErrorMsgTest {
 	}
 
 	@Test
-	public void canUseUnrepresentableOnPurpose() throws UnsupportedEncodingException {
+	void canUseUnrepresentableOnPurpose() throws UnsupportedEncodingException {
 		String pathologic = new String(new char[]{EncodingErrorMsg.UNREPRESENTABLE});
 		byte[] pathologicBytes = pathologic.getBytes(StandardCharsets.UTF_8);
 		String pathologicMsg = EncodingErrorMsg.msg(pathologic, pathologicBytes, StandardCharsets.UTF_8);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 
 import org.assertj.core.api.Assertions;
 import org.gradle.api.Project;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FileSignature;
@@ -35,7 +35,7 @@ import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
-public class DiffMessageFormatterTest extends ResourceHarness {
+class DiffMessageFormatterTest extends ResourceHarness {
 
 	private class Bundle {
 		Project project = TestProvisioner.gradleProject(rootFolder());
@@ -114,7 +114,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 			: "Run './gradlew :spotlessApply' to fix these violations.";
 
 	@Test
-	public void lineEndingProblem() throws Exception {
+	void lineEndingProblem() throws Exception {
 		Bundle task = create(setFile("testFile").toContent("A\r\nB\r\nC\r\n"));
 		assertCheckFailure(task,
 				"    testFile",
@@ -128,7 +128,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 	}
 
 	@Test
-	public void whitespaceProblem() throws Exception {
+	void whitespaceProblem() throws Exception {
 		Bundle spotless = create(setFile("testFile").toContent("A \nB\t\nC  \n"));
 		spotless.task.addStep(FormatterStep.createNeverUpToDate("trimTrailing", input -> {
 			Pattern pattern = Pattern.compile("[ \t]+$", Pattern.UNIX_LINES | Pattern.MULTILINE);
@@ -146,7 +146,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 	}
 
 	@Test
-	public void multipleFiles() throws Exception {
+	void multipleFiles() throws Exception {
 		Bundle spotless = create(
 				setFile("A").toContent("1\r\n2\r\n"),
 				setFile("B").toContent("3\n4\r\n"));
@@ -165,7 +165,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 	}
 
 	@Test
-	public void manyFiles() throws Exception {
+	void manyFiles() throws Exception {
 		List<File> testFiles = new ArrayList<>();
 		for (int i = 0; i < 9 + DiffMessageFormatter.MAX_FILES_TO_LIST - 1; ++i) {
 			String fileName = String.format("%02d", i) + ".txt";
@@ -239,7 +239,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 	}
 
 	@Test
-	public void manyManyFiles() throws Exception {
+	void manyManyFiles() throws Exception {
 		List<File> testFiles = new ArrayList<>();
 		for (int i = 0; i < 9 + DiffMessageFormatter.MAX_FILES_TO_LIST; ++i) {
 			String fileName = String.format("%02d", i) + ".txt";
@@ -304,7 +304,7 @@ public class DiffMessageFormatterTest extends ResourceHarness {
 	}
 
 	@Test
-	public void longFile() throws Exception {
+	void longFile() throws Exception {
 		StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < 1000; ++i) {
 			builder.append(i);

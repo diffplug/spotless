@@ -15,38 +15,37 @@
  */
 package com.diffplug.spotless;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
 import java.util.function.Consumer;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class JvmTest {
+class JvmTest {
 
 	private static final String TEST_NAME = "My Test Formatter";
 	private Jvm.Support<String> testSupport;
 
-	@Before
-	public void initialize() {
+	@BeforeEach
+	void initialize() {
 		testSupport = Jvm.support(TEST_NAME);
 	}
 
 	@Test
-	public void supportAdd() {
+	void supportAdd() {
 		Integer differentVersions[] = {0, 1, 2};
 		Arrays.asList(differentVersions).stream().forEach(v -> testSupport.add(v + Jvm.version(), v.toString()));
-		Arrays.asList(differentVersions).stream().forEach(v -> assertThat(testSupport.toString(), containsString(String.format("Version %d", v))));
-		assertThat(testSupport.toString(), containsString(String.format("%s alternatives", TEST_NAME)));
+		Arrays.asList(differentVersions).stream().forEach(v -> assertThat(testSupport.toString()).contains(String.format("Version %d", v)));
+		assertThat(testSupport.toString()).contains(String.format("%s alternatives", TEST_NAME));
 	}
 
 	@Test
-	public void supportAddVerification() {
+	void supportAddVerification() {
 		Arrays.<Consumer<Jvm.Support<String>>> asList(
 				s -> {
 					s.add(1, "1.a");
@@ -72,8 +71,8 @@ public class JvmTest {
 	}
 
 	@Test
-	public void supportEmptyConfiguration() {
-		assertNull("No formatter version is configured", testSupport.getRecommendedFormatterVersion());
+	void supportEmptyConfiguration() {
+		assertNull(testSupport.getRecommendedFormatterVersion(), "No formatter version is configured");
 
 		testSupport.assertFormatterSupported("0.1");
 
@@ -87,49 +86,49 @@ public class JvmTest {
 	}
 
 	@Test
-	public void supportListsMinimumJvmIfOnlyHigherJvmSupported() {
+	void supportListsMinimumJvmIfOnlyHigherJvmSupported() {
 		int higherJvmVersion = Jvm.version() + 1;
 		Exception testException = new Exception("Some test exception");
 		testSupport.add(higherJvmVersion, "1.2.3");
 		testSupport.add(higherJvmVersion + 1, "2.2.3");
 
-		assertNull("No formatter version is supported", testSupport.getRecommendedFormatterVersion());
+		assertNull(testSupport.getRecommendedFormatterVersion(), "No formatter version is supported");
 
 		for (String fmtVersion : Arrays.asList("1.2", "1.2.3")) {
 			String proposal = assertThrows(Exception.class, () -> {
 				testSupport.assertFormatterSupported(fmtVersion);
 			}).getMessage();
-			assertThat(proposal, containsString(String.format("on JVM %d", Jvm.version())));
-			assertThat(proposal, containsString(String.format("%s %s requires JVM %d+", TEST_NAME, fmtVersion, higherJvmVersion)));
-			assertThat(proposal, containsString(String.format("try %s alternatives", TEST_NAME)));
+			assertThat(proposal).contains(String.format("on JVM %d", Jvm.version()));
+			assertThat(proposal).contains(String.format("%s %s requires JVM %d+", TEST_NAME, fmtVersion, higherJvmVersion));
+			assertThat(proposal).contains(String.format("try %s alternatives", TEST_NAME));
 
 			proposal = assertThrows(Exception.class, () -> {
 				testSupport.suggestLaterVersionOnError(fmtVersion, unused -> {
 					throw testException;
 				}).apply("");
 			}).getMessage();
-			assertThat(proposal, containsString(String.format("on JVM %d", Jvm.version())));
-			assertThat(proposal, containsString(String.format("%s %s requires JVM %d+", TEST_NAME, fmtVersion, higherJvmVersion)));
-			assertThat(proposal, containsString(String.format("try %s alternatives", TEST_NAME)));
+			assertThat(proposal).contains(String.format("on JVM %d", Jvm.version()));
+			assertThat(proposal).contains(String.format("%s %s requires JVM %d+", TEST_NAME, fmtVersion, higherJvmVersion));
+			assertThat(proposal).contains(String.format("try %s alternatives", TEST_NAME));
 		}
 
 		for (String fmtVersion : Arrays.asList("1.2.4", "2")) {
 			String proposal = assertThrows(Exception.class, () -> {
 				testSupport.assertFormatterSupported(fmtVersion);
 			}).getMessage();
-			assertThat(proposal, containsString(String.format("%s %s requires JVM %d+", TEST_NAME, fmtVersion, higherJvmVersion + 1)));
+			assertThat(proposal).contains(String.format("%s %s requires JVM %d+", TEST_NAME, fmtVersion, higherJvmVersion + 1));
 
 			proposal = assertThrows(Exception.class, () -> {
 				testSupport.suggestLaterVersionOnError(fmtVersion, unused -> {
 					throw testException;
 				}).apply("");
 			}).getMessage();
-			assertThat(proposal, containsString(String.format("%s %s requires JVM %d+", TEST_NAME, fmtVersion, higherJvmVersion + 1)));
+			assertThat(proposal).contains(String.format("%s %s requires JVM %d+", TEST_NAME, fmtVersion, higherJvmVersion + 1));
 		}
 	}
 
 	@Test
-	public void supportProposesFormatterUpgrade() {
+	void supportProposesFormatterUpgrade() {
 		int requiredJvm = Jvm.version() - 1;
 		testSupport.add(Jvm.version() - 2, "1");
 		testSupport.add(requiredJvm, "2");
@@ -142,14 +141,14 @@ public class JvmTest {
 					throw new Exception("Some test exception");
 				}).apply("");
 			}).getMessage();
-			assertThat(proposal, containsString("not using latest version"));
-			assertThat(proposal, containsString(String.format("on JVM %d+", requiredJvm)));
-			assertThat(proposal, containsString(String.format("upgrade to %s %s", TEST_NAME, "2")));
+			assertThat(proposal).contains("not using latest version");
+			assertThat(proposal).contains(String.format("on JVM %d+", requiredJvm));
+			assertThat(proposal).contains(String.format("upgrade to %s %s", TEST_NAME, "2"));
 		}
 	}
 
 	@Test
-	public void supportProposesJvmUpgrade() {
+	void supportProposesJvmUpgrade() {
 		testSupport.add(Jvm.version(), "1");
 		int higherJvm = Jvm.version() + 3;
 		testSupport.add(higherJvm, "2");
@@ -160,15 +159,15 @@ public class JvmTest {
 					throw new Exception("Some test exception");
 				}).apply("");
 			}).getMessage();
-			assertThat(proposal, containsString(String.format("on JVM %d", Jvm.version())));
-			assertThat(proposal, containsString(String.format("limits you to %s %s", TEST_NAME, "1")));
-			assertThat(proposal, containsString(String.format("upgrade your JVM to %d+", higherJvm)));
-			assertThat(proposal, containsString(String.format("then you can use %s %s", TEST_NAME, "2")));
+			assertThat(proposal).contains(String.format("on JVM %d", Jvm.version()));
+			assertThat(proposal).contains(String.format("limits you to %s %s", TEST_NAME, "1"));
+			assertThat(proposal).contains(String.format("upgrade your JVM to %d+", higherJvm));
+			assertThat(proposal).contains(String.format("then you can use %s %s", TEST_NAME, "2"));
 		}
 	}
 
 	@Test
-	public void supportAllowsExperimentalVersions() {
+	void supportAllowsExperimentalVersions() {
 		testSupport.add(Jvm.version(), "1.0");
 		for (String fmtVersion : Arrays.asList("1", "2.0")) {
 			testSupport.assertFormatterSupported(fmtVersion);

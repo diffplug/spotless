@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +19,15 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Locale;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.StepHarness;
 
-public class PipeStepPairTest {
+class PipeStepPairTest {
 	@Test
-	public void single() throws Exception {
+	void single() throws Exception {
 		PipeStepPair pair = PipeStepPair.named("underTest").openClose("spotless:off", "spotless:on").buildPair();
 		FormatterStep lowercase = FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT));
 		StepHarness harness = StepHarness.forSteps(pair.in(), lowercase, pair.out());
@@ -47,7 +47,7 @@ public class PipeStepPairTest {
 	}
 
 	@Test
-	public void multiple() throws Exception {
+	void multiple() throws Exception {
 		PipeStepPair pair = PipeStepPair.named("underTest").openClose("spotless:off", "spotless:on").buildPair();
 		FormatterStep lowercase = FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT));
 		StepHarness harness = StepHarness.forSteps(pair.in(), lowercase, pair.out());
@@ -81,7 +81,7 @@ public class PipeStepPairTest {
 	}
 
 	@Test
-	public void broken() throws Exception {
+	void broken() throws Exception {
 		PipeStepPair pair = PipeStepPair.named("underTest").openClose("spotless:off", "spotless:on").buildPair();
 		FormatterStep uppercase = FormatterStep.createNeverUpToDate("uppercase", str -> str.toUpperCase(Locale.ROOT));
 		StepHarness harness = StepHarness.forSteps(pair.in(), uppercase, pair.out());
@@ -97,7 +97,7 @@ public class PipeStepPairTest {
 	}
 
 	@Test
-	public void andApply() throws Exception {
+	void andApply() throws Exception {
 		FormatterStep lowercase = FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT));
 		FormatterStep lowercaseSometimes = PipeStepPair.named("lowercaseSometimes").openClose("<lower>", "</lower>")
 				.buildStepWhichAppliesSubSteps(Paths.get(""), Arrays.asList(lowercase));

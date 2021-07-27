@@ -15,13 +15,10 @@
  */
 package com.diffplug.spotless;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.File;
 import java.util.Objects;
-import java.util.function.Consumer;
-
-import org.assertj.core.api.AbstractThrowableAssert;
-import org.assertj.core.api.Assertions;
-import org.junit.Assert;
 
 /** An api for testing a {@code FormatterStep} that depends on the File path. */
 public class StepHarnessWithFile implements AutoCloseable {
@@ -65,14 +62,14 @@ public class StepHarnessWithFile implements AutoCloseable {
 	/** Asserts that the given element is transformed as expected, and that the result is idempotent. */
 	public StepHarnessWithFile test(File file, String before, String after) throws Exception {
 		String actual = formatter.apply(before, file);
-		Assert.assertEquals("Step application failed", after, actual);
+		assertEquals(after, actual, "Step application failed");
 		return testUnaffected(file, after);
 	}
 
 	/** Asserts that the given element is idempotent w.r.t the step under test. */
 	public StepHarnessWithFile testUnaffected(File file, String idempotentElement) throws Exception {
 		String actual = formatter.apply(idempotentElement, file);
-		Assert.assertEquals("Step is not idempotent", idempotentElement, actual);
+		assertEquals(idempotentElement, actual, "Step is not idempotent");
 		return this;
 	}
 
@@ -87,19 +84,6 @@ public class StepHarnessWithFile implements AutoCloseable {
 	public StepHarnessWithFile testResourceUnaffected(File file, String resourceIdempotent) throws Exception {
 		String idempotentElement = ResourceHarness.getTestResource(resourceIdempotent);
 		return testUnaffected(file, idempotentElement);
-	}
-
-	/** Asserts that the given elements in the resources directory are transformed as expected. */
-	public StepHarnessWithFile testException(File file, String resourceBefore, Consumer<AbstractThrowableAssert<?, ? extends Throwable>> exceptionAssertion) throws Exception {
-		String before = ResourceHarness.getTestResource(resourceBefore);
-		try {
-			formatter.apply(before, file);
-			Assert.fail();
-		} catch (Throwable t) {
-			AbstractThrowableAssert<?, ? extends Throwable> abstractAssert = Assertions.assertThat(t);
-			exceptionAssertion.accept(abstractAssert);
-		}
-		return this;
 	}
 
 	@Override

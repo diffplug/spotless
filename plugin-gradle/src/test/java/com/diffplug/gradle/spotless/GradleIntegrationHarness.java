@@ -15,6 +15,8 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -26,8 +28,7 @@ import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.BuildTask;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StringPrinter;
@@ -70,8 +71,8 @@ public class GradleIntegrationHarness extends ResourceHarness {
 	 * GIT_ATTRIBUTES will use \n, so that tests match the test
 	 * resources on win and linux.
 	 */
-	@Before
-	public void gitAttributes() throws IOException {
+	@BeforeEach
+	void gitAttributes() throws IOException {
 		setFile(".gitattributes").toContent("* text eol=lf");
 	}
 
@@ -137,7 +138,7 @@ public class GradleIntegrationHarness extends ResourceHarness {
 				buildResult.tasks(notExpected).isEmpty() &&
 				buildResult.getTasks().size() == buildResult.tasks(expected).size();
 		if (!everythingAsExpected) {
-			Assert.fail("Expected all tasks to be " + expected + ", but instead was\n" + buildResultToString(buildResult));
+			fail("Expected all tasks to be " + expected + ", but instead was\n" + buildResultToString(buildResult));
 		}
 	}
 

@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
@@ -24,7 +26,6 @@ import java.util.function.Consumer;
 
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.assertj.core.api.Assertions;
-import org.junit.Assert;
 
 /** An api for testing a {@code FormatterStep} that doesn't depend on the File path. DO NOT ADD FILE SUPPORT TO THIS, use {@link StepHarnessWithFile} if you need that. */
 public class StepHarness implements AutoCloseable {
@@ -68,14 +69,14 @@ public class StepHarness implements AutoCloseable {
 	/** Asserts that the given element is transformed as expected, and that the result is idempotent. */
 	public StepHarness test(String before, String after) throws Exception {
 		String actual = formatter.apply(before);
-		Assert.assertEquals("Step application failed", after, actual);
+		assertEquals(after, actual, "Step application failed");
 		return testUnaffected(after);
 	}
 
 	/** Asserts that the given element is idempotent w.r.t the step under test. */
 	public StepHarness testUnaffected(String idempotentElement) throws Exception {
 		String actual = formatter.apply(idempotentElement);
-		Assert.assertEquals("Step is not idempotent", idempotentElement, actual);
+		assertEquals(idempotentElement, actual, "Step is not idempotent");
 		return this;
 	}
 
@@ -99,13 +100,9 @@ public class StepHarness implements AutoCloseable {
 
 	/** Asserts that the given elements in the resources directory are transformed as expected. */
 	public StepHarness testException(String before, Consumer<AbstractThrowableAssert<?, ? extends Throwable>> exceptionAssertion) throws Exception {
-		try {
-			formatter.apply(before);
-			Assert.fail();
-		} catch (Throwable t) {
-			AbstractThrowableAssert<?, ? extends Throwable> abstractAssert = Assertions.assertThat(t);
-			exceptionAssertion.accept(abstractAssert);
-		}
+		Throwable t = assertThrows(Throwable.class, () -> formatter.apply(before));
+		AbstractThrowableAssert<?, ? extends Throwable> abstractAssert = Assertions.assertThat(t);
+		exceptionAssertion.accept(abstractAssert);
 		return this;
 	}
 

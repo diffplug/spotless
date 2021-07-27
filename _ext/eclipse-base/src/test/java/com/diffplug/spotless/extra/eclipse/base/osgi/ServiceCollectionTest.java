@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,28 +16,29 @@
 package com.diffplug.spotless.extra.eclipse.base.osgi;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashMap;
 
 import org.assertj.core.api.AbstractAssert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceException;
 import org.osgi.framework.ServiceReference;
 
-public class ServiceCollectionTest {
+class ServiceCollectionTest {
 
 	ServiceCollection instance;
 
-	@Before
-	public void initialize() {
+	@BeforeEach
+	void initialize() {
 		Bundle systemBundle = new TestBundle(0, "test.system");
 		instance = new ServiceCollection(systemBundle, new HashMap<String, String>());
 	}
 
 	@Test
-	public void testAddGet() {
+	void testAddGet() {
 		Service1 service1 = new Service1();
 		Service2 service2 = new Service2();
 		instance.add(Interf1.class, service1);
@@ -49,19 +50,12 @@ public class ServiceCollectionTest {
 	}
 
 	@Test
-	public void testMultipleServicesPerInterface() {
+	void testMultipleServicesPerInterface() {
 		Service1 serviceX = new Service1();
 		Service1 serviceY = new Service1();
 		instance.add(Interf1.class, serviceX);
-		boolean exceptionCaught = false;
-		try {
-			instance.add(Interf1.class, serviceY);
-		} catch (ServiceException e) {
-			exceptionCaught = true;
-			assertThat(e.getMessage()).as("ServiceException does not contain interface class name.").contains(Interf1.class.getName());
-		}
-		assertThat(exceptionCaught).as("No ServiceException thrown for duplicate interfaces.").isTrue();
-
+		ServiceException e = assertThrows(ServiceException.class, () -> instance.add(Interf1.class, serviceY));
+		assertThat(e.getMessage()).as("ServiceException does not contain interface class name.").contains(Interf1.class.getName());
 	}
 
 	private static class ServiceReferenceAssert extends AbstractAssert<ServiceReferenceAssert, ServiceCollection> {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,15 @@
  */
 package com.diffplug.spotless.generic;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 
-public class EndWithNewlineStepTest {
+class EndWithNewlineStepTest {
 	@Test
-	public void behavior() throws Exception {
+	void behavior() throws Exception {
 		StepHarness harness = StepHarness.forStep(EndWithNewlineStep.create());
 		harness.test("", "\n");
 		harness.test("\n\n\n\n", "\n");
@@ -34,7 +34,7 @@ public class EndWithNewlineStepTest {
 	}
 
 	@Test
-	public void equality() throws Exception {
+	void equality() throws Exception {
 		new SerializableEqualityTester() {
 			@Override
 			protected void setupTest(API api) {

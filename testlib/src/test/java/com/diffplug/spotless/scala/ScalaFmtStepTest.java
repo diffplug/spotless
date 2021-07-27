@@ -15,15 +15,14 @@
  */
 package com.diffplug.spotless.scala;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.Provisioner;
@@ -32,9 +31,9 @@ import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
-public class ScalaFmtStepTest extends ResourceHarness {
+class ScalaFmtStepTest extends ResourceHarness {
 	@Test
-	public void behaviorDefaultConfig() throws Exception {
+	void behaviorDefaultConfig() throws Exception {
 		StepHarness.forStep(ScalaFmtStep.create("1.1.0", TestProvisioner.mavenCentral(), null))
 				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basic.clean_1.1.0");
 		StepHarness.forStep(ScalaFmtStep.create("2.0.1", TestProvisioner.mavenCentral(), null))
@@ -44,7 +43,7 @@ public class ScalaFmtStepTest extends ResourceHarness {
 	}
 
 	@Test
-	public void behaviorCustomConfig() throws Exception {
+	void behaviorCustomConfig() throws Exception {
 		StepHarness.forStep(ScalaFmtStep.create("1.1.0", TestProvisioner.mavenCentral(), createTestFile("scala/scalafmt/scalafmt.conf")))
 				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basic.cleanWithCustomConf_1.1.0");
 		StepHarness.forStep(ScalaFmtStep.create("2.0.1", TestProvisioner.mavenCentral(), createTestFile("scala/scalafmt/scalafmt.conf")))
@@ -54,35 +53,35 @@ public class ScalaFmtStepTest extends ResourceHarness {
 	}
 
 	@Test
-	public void behaviorDefaultConfigVersion_2_0_0() throws Exception {
+	void behaviorDefaultConfigVersion_2_0_0() throws Exception {
 		FormatterStep step = ScalaFmtStep.create("2.0.0", TestProvisioner.mavenCentral(), null);
 		StepHarness.forStep(step)
 				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basicPost2.0.0.clean");
 	}
 
 	@Test
-	public void behaviorCustomConfigVersion_2_0_0() throws Exception {
+	void behaviorCustomConfigVersion_2_0_0() throws Exception {
 		FormatterStep step = ScalaFmtStep.create("2.0.0", TestProvisioner.mavenCentral(), createTestFile("scala/scalafmt/scalafmt.conf"));
 		StepHarness.forStep(step)
 				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basicPost2.0.0.cleanWithCustomConf");
 	}
 
 	@Test
-	public void behaviorDefaultConfigVersion_3_0_0() throws Exception {
+	void behaviorDefaultConfigVersion_3_0_0() throws Exception {
 		FormatterStep step = ScalaFmtStep.create("3.0.0", TestProvisioner.mavenCentral(), null);
 		StepHarness.forStep(step)
 				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basicPost3.0.0.clean");
 	}
 
 	@Test
-	public void behaviorCustomConfigVersion_3_0_0() throws Exception {
+	void behaviorCustomConfigVersion_3_0_0() throws Exception {
 		FormatterStep step = ScalaFmtStep.create("3.0.0", TestProvisioner.mavenCentral(), createTestFile("scala/scalafmt/scalafmt.conf"));
 		StepHarness.forStep(step)
 				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basicPost3.0.0.cleanWithCustomConf");
 	}
 
 	@Test
-	public void equality() throws Exception {
+	void equality() throws Exception {
 		new SerializableEqualityTester() {
 			String version = "0.5.1";
 			File configFile = null;
@@ -110,7 +109,7 @@ public class ScalaFmtStepTest extends ResourceHarness {
 	}
 
 	@Test
-	public void invalidConfiguration() throws Exception {
+	void invalidConfiguration() throws Exception {
 		File invalidConfFile = createTestFile("scala/scalafmt/scalafmt.invalid.conf");
 		Provisioner provisioner = TestProvisioner.mavenCentral();
 
@@ -118,15 +117,14 @@ public class ScalaFmtStepTest extends ResourceHarness {
 
 		exception = assertThrows(InvocationTargetException.class,
 				() -> StepHarness.forStep(ScalaFmtStep.create("1.1.0", provisioner, invalidConfFile)).test("", ""));
-		assertThat(exception.getTargetException().getMessage(), containsString("Invalid fields: invalidScalaFmtConfigField"));
-		exception.printStackTrace();
+		assertThat(exception.getTargetException().getMessage()).contains("Invalid fields: invalidScalaFmtConfigField");
 
 		exception = assertThrows(InvocationTargetException.class,
 				() -> StepHarness.forStep(ScalaFmtStep.create("2.0.1", provisioner, invalidConfFile)).test("", ""));
-		assertThat(exception.getTargetException().getMessage(), containsString("Invalid field: invalidScalaFmtConfigField"));
+		assertThat(exception.getTargetException().getMessage()).contains("Invalid field: invalidScalaFmtConfigField");
 
 		exception = assertThrows(InvocationTargetException.class,
 				() -> StepHarness.forStep(ScalaFmtStep.create("3.0.0", provisioner, invalidConfFile)).test("", ""));
-		assertThat(exception.getTargetException().getMessage(), containsString("found option 'invalidScalaFmtConfigField' which wasn't expected"));
+		assertThat(exception.getTargetException().getMessage()).contains("found option 'invalidScalaFmtConfigField' which wasn't expected");
 	}
 }
