@@ -71,7 +71,7 @@ dependencies {
 
 	implementation "org.codehaus.plexus:plexus-resources:${VER_PLEXUS_RESOURCES}"
 	constraints {
-		implementation("org.codehaus.plexus:plexus-utils:3.3.0") {
+		implementation("org.codehaus.plexus:plexus-utils:3.4.0") {
 			because("version pulled by plexus-resources has a functional-bug affecting " +
 					"directory scanning times")
 		}
