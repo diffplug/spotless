@@ -40,10 +40,12 @@ public class ScalaFmtStep {
 	private ScalaFmtStep() {}
 
 	private static final Pattern VERSION_PRE_2_0 = Pattern.compile("[10]\\.(\\d+)\\.\\d+");
+	private static final Pattern VERSION_PRE_3_0 = Pattern.compile("2\\.(\\d+)\\.\\d+");
 	private static final String DEFAULT_VERSION = "2.0.1";
 	static final String NAME = "scalafmt";
 	static final String MAVEN_COORDINATE_PRE_2_0 = "com.geirsson:scalafmt-core_2.11:";
-	static final String MAVEN_COORDINATE = "org.scalameta:scalafmt-core_2.11:";
+	static final String MAVEN_COORDINATE_PRE_3_0 = "org.scalameta:scalafmt-core_2.11:";
+	static final String MAVEN_COORDINATE = "org.scalameta:scalafmt-core_2.13:";
 
 	public static FormatterStep create(Provisioner provisioner) {
 		return create(defaultVersion(), provisioner, null);
@@ -69,9 +71,11 @@ public class ScalaFmtStep {
 
 		State(String version, Provisioner provisioner, @Nullable File configFile) throws IOException {
 			String mavenCoordinate;
-			Matcher versionMatcher = VERSION_PRE_2_0.matcher(version);
-			if (versionMatcher.matches()) {
+			Matcher versionMatcher;
+			if ((versionMatcher = VERSION_PRE_2_0.matcher(version)).matches()) {
 				mavenCoordinate = MAVEN_COORDINATE_PRE_2_0;
+			} else if ((versionMatcher = VERSION_PRE_3_0.matcher(version)).matches()) {
+				mavenCoordinate = MAVEN_COORDINATE_PRE_3_0;
 			} else {
 				mavenCoordinate = MAVEN_COORDINATE;
 			}
