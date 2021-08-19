@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ public class MultiModuleProjectTest extends MavenIntegrationHarness {
 		assertFile("two/src/main/java/test1.java").sameAsResource("java/eclipse/JavaCodeFormatted.test");
 		assertFile("two/src/test/java/test2.java").sameAsResource("java/eclipse/JavaCodeFormatted.test");
 
-		assertFile("three/src/main/scala/test1.scala").sameAsResource("scala/scalafmt/basic.cleanWithCustomConf_2.0.1");
-		assertFile("three/src/test/scala/test2.scala").sameAsResource("scala/scalafmt/basic.cleanWithCustomConf_2.0.1");
+		assertFile("three/src/main/scala/test1.scala").sameAsResource("scala/scalafmt/basic.cleanWithCustomConf_3.0.0");
+		assertFile("three/src/test/scala/test2.scala").sameAsResource("scala/scalafmt/basic.cleanWithCustomConf_3.0.0");
 	}
 }

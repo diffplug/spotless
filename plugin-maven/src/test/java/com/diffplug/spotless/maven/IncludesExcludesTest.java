@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ public class IncludesExcludesTest extends MavenIntegrationHarness {
 	private static final String JAVA_FORMATTED = "java/eclipse/JavaCodeFormatted.test";
 	private static final String JAVA_UNFORMATTED = "java/eclipse/JavaCodeUnformatted.test";
 	private static final String SCALA_UNFORMATTED = "scala/scalafmt/basic.dirty";
-	private static final String SCALA_FORMATTED = "scala/scalafmt/basic.clean_2.0.1";
+	private static final String SCALA_FORMATTED = "scala/scalafmt/basic.clean_3.0.0";
 
 	@Test
 	public void testDefaultIncludesJava() throws Exception {
