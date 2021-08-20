@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
  * If either part of that fails, it shows you why
  * and helps you fix it.
  *
- * Usage: `ForeignExe.nameAndVersion("grep", "2.5.7").confirmVersionAndGetAbsolutePath()`
+ * Usage: {@code ForeignExe.nameAndVersion("grep", "2.5.7").confirmVersionAndGetAbsolutePath()}
  * will find grep, confirm that it is version 2.5.7, and then return.
  */
 public class ForeignExe {
@@ -55,7 +55,7 @@ public class ForeignExe {
 		return this;
 	}
 
-	/** A regex which can parse the version out of the output of the {@link #versionFlag(String)} command (defaults to `version (\\S*)`) */
+	/** A regex which can parse the version out of the output of the {@link #versionFlag(String)} command (defaults to {@code version (\\S*)}) */
 	public ForeignExe versionRegex(Pattern versionRegex) {
 		this.versionRegex = Objects.requireNonNull(versionRegex);
 		return this;

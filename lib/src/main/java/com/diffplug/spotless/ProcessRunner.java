@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,12 +48,12 @@ public class ProcessRunner implements AutoCloseable {
 
 	public ProcessRunner() {}
 
-	/** Executes the given shell command (using `cmd` on windows and `sh` on unix). */
+	/** Executes the given shell command (using {@code cmd} on windows and {@code sh} on unix). */
 	public Result shell(String cmd) throws IOException, InterruptedException {
 		return shellWinUnix(cmd, cmd);
 	}
 
-	/** Executes the given shell command (using `cmd` on windows and `sh` on unix). */
+	/** Executes the given shell command (using {@code cmd} on windows and {@code sh} on unix). */
 	public Result shellWinUnix(String cmdWin, String cmdUnix) throws IOException, InterruptedException {
 		List<String> args;
 		if (FileSignature.machineIsWin()) {

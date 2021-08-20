@@ -62,7 +62,7 @@ import com.diffplug.spotless.npm.PrettierFormatterStep;
 
 import groovy.lang.Closure;
 
-/** Adds a `spotless{Name}Check` and `spotless{Name}Apply` task. */
+/** Adds a {@code spotless{Name}Check} and {@code spotless{Name}Apply} task. */
 public class FormatExtension {
 	final SpotlessExtension spotless;
 	final List<Action<FormatExtension>> lazyActions = new ArrayList<>();
@@ -311,17 +311,17 @@ public class FormatExtension {
 	}
 
 	/**
-	 * An optional performance optimization if you are using any of the `custom`
-	 * methods.  If you aren't explicitly calling `custom`, then this method
+	 * An optional performance optimization if you are using any of the {@code custom}
+	 * methods.  If you aren't explicitly calling {@code custom}, then this method
 	 * has no effect.
 	 *
 	 * Spotless tracks what files have changed from run to run, so that it can run faster
 	 * by only checking files which have changed, or whose formatting steps have changed.
-	 * If you use the `custom` methods, then gradle can never mark
-	 * your files as `up-to-date`, because it can't know if perhaps the behavior of your
+	 * If you use the {@code custom} methods, then gradle can never mark
+	 * your files as {@code up-to-date}, because it can't know if perhaps the behavior of your
 	 * custom function has changed.
 	 *
-	 * If you set `bumpThisNumberIfACustomStepChanges( <some number> )`, then spotless will
+	 * If you set {@code bumpThisNumberIfACustomStepChanges( <some number> )}, then spotless will
 	 * assume that the custom rules have not changed if the number has not changed.  If a
 	 * custom rule does change, then you must bump the number so that spotless will know
 	 * that it must recheck the files it has already checked.
@@ -396,7 +396,7 @@ public class FormatExtension {
 
 	/**
 	 * Created by {@link FormatExtension#licenseHeader(String, String)} or {@link FormatExtension#licenseHeaderFile(Object, String)}.
-	 * For most language-specific formats (e.g. java, scala, etc.) you can omit the second `delimiter` argument, because it is supplied
+	 * For most language-specific formats (e.g. java, scala, etc.) you can omit the second {@code delimiter} argument, because it is supplied
 	 * automatically ({@link HasBuiltinDelimiterForLicense}).
 	 */
 	public class LicenseHeaderConfig {
@@ -429,7 +429,7 @@ public class FormatExtension {
 
 		/**
 		 * @param updateYearWithLatest
-		 *           Will turn `2004` into `2004-2020`, and `2004-2019` into `2004-2020`
+		 *           Will turn {@code 2004} into {@code 2004-2020}, and {@code 2004-2019} into {@code 2004-2020}
 		 *           Default value is false, unless {@link SpotlessExtensionImpl#ratchetFrom(String)} is used, in which case default value is true.
 		 */
 		public LicenseHeaderConfig updateYearWithLatest(boolean updateYearWithLatest) {
@@ -632,7 +632,7 @@ public class FormatExtension {
 	}
 
 	/**
-	 * ```gradle
+	 * <pre>
 	 * spotless {
 	 *   format 'examples', {
 	 *     target '*.md'
@@ -640,7 +640,7 @@ public class FormatExtension {
 	 *       prettier().config(['parser': 'javascript'])
 	 *     }
 	 *     ...
-	 * ```
+	 * </pre>
 	 */
 	public void withinBlocks(String name, String open, String close, Action<FormatExtension> configure) {
 		withinBlocks(name, open, close, FormatExtension.class, configure);
@@ -650,7 +650,7 @@ public class FormatExtension {
 	 * Same as {@link #withinBlocks(String, String, String, Action)}, except you can specify
 	 * any language-specific subclass of {@link FormatExtension} to get language-specific steps.
 	 *
-	 * ```gradle
+	 * <pre>
 	 * spotless {
 	 *   format 'examples', {
 	 *     target '*.md'
@@ -658,7 +658,7 @@ public class FormatExtension {
 	 *       googleJavaFormat()
 	 *     }
 	 *     ...
-	 * ```
+	 * </pre>
 	 */
 	public <T extends FormatExtension> void withinBlocks(String name, String open, String close, Class<T> clazz, Action<T> configure) {
 		withinBlocksHelper(PipeStepPair.named(name).openClose(open, close), clazz, configure);
@@ -697,7 +697,7 @@ public class FormatExtension {
 		this.togglePair = PipeStepPair.named(PipeStepPair.defaultToggleName()).openClose(off, on).buildPair();
 	}
 
-	/** Disables formatting between `spotless:off` and `spotless:on`. */
+	/** Disables formatting between {@code spotless:off} and {@code spotless:on}. */
 	public void toggleOffOn() {
 		toggleOffOn(PipeStepPair.defaultToggleOff(), PipeStepPair.defaultToggleOn());
 	}
@@ -743,12 +743,12 @@ public class FormatExtension {
 	 * Creates an independent {@link SpotlessApply} for (very) unusual circumstances.
 	 *
 	 * Most users will not want this method.  In the rare case that you want to create
-	 * a `SpotlessApply` which is independent of the normal Spotless machinery, this will
+	 * a {@code SpotlessApply} which is independent of the normal Spotless machinery, this will
 	 * let you do that.
 	 *
-	 * The returned task will not be hooked up to the global `spotlessApply`, and there will be no corresponding `check` task.
+	 * The returned task will not be hooked up to the global {@code spotlessApply}, and there will be no corresponding {@code check} task.
 	 *
-	 * NOTE: does not respect the rarely-used [`spotlessFiles` property](https://github.com/diffplug/spotless/blob/b7f8c551a97dcb92cc4b0ee665448da5013b30a3/plugin-gradle/README.md#can-i-apply-spotless-to-specific-files).
+	 * NOTE: does not respect the rarely-used [{@code spotlessFiles} property](https://github.com/diffplug/spotless/blob/b7f8c551a97dcb92cc4b0ee665448da5013b30a3/plugin-gradle/README.md#can-i-apply-spotless-to-specific-files).
 	 */
 	public SpotlessApply createIndependentApplyTask(String taskName) {
 		// create and setup the task

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Uses [.gitattributes](https://git-scm.com/docs/gitattributes) to determine
- * the appropriate line ending. Falls back to the `core.eol` property in the
+ * the appropriate line ending. Falls back to the {@code core.eol} property in the
  * git config if there are no applicable git attributes, then finally falls
  * back to the platform native.
  */

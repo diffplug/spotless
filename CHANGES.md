@@ -16,6 +16,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   * `ktfmt` from `0.24` to `0.27`
   * `ktlint` from `0.35.0` to `0.42.1`
   * `google-java-format` from `1.10.0` to `1.11.0`
+* Fix javadoc publishing ([#916](https://github.com/diffplug/spotless/pull/916) fixes [#775](https://github.com/diffplug/spotless/issues/775)).
 
 ## [2.15.2] - 2021-07-20
 ### Fixed

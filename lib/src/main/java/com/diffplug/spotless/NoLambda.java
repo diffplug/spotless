@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,11 +33,11 @@ import java.util.Arrays;
  */
 public interface NoLambda extends Serializable {
 	/**
-	 * Returns a byte array representation of everything inside this `SerializableFileFilter`.
+	 * Returns a byte array representation of everything inside this {@code SerializableFileFilter}.
 	 *
 	 * The main purpose of this method is to ensure one can't instantiate this class with lambda
 	 * expressions, which are notoriously difficult to serialize and deserialize properly. (See
-	 * `SerializableFileFilterImpl.SkipFilesNamed` for an example of how to make a serializable
+	 * {@code SerializableFileFilterImpl.SkipFilesNamed} for an example of how to make a serializable
 	 * subclass.)
 	 */
 	public byte[] toBytes();
