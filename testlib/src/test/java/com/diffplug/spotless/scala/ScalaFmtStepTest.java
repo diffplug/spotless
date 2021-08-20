@@ -39,6 +39,8 @@ public class ScalaFmtStepTest extends ResourceHarness {
 				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basic.clean_1.1.0");
 		StepHarness.forStep(ScalaFmtStep.create("2.0.1", TestProvisioner.mavenCentral(), null))
 				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basic.clean_2.0.1");
+		StepHarness.forStep(ScalaFmtStep.create("3.0.0", TestProvisioner.mavenCentral(), null))
+				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basic.clean_3.0.0");
 	}
 
 	@Test
@@ -47,6 +49,8 @@ public class ScalaFmtStepTest extends ResourceHarness {
 				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basic.cleanWithCustomConf_1.1.0");
 		StepHarness.forStep(ScalaFmtStep.create("2.0.1", TestProvisioner.mavenCentral(), createTestFile("scala/scalafmt/scalafmt.conf")))
 				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basic.cleanWithCustomConf_2.0.1");
+		StepHarness.forStep(ScalaFmtStep.create("3.0.0", TestProvisioner.mavenCentral(), createTestFile("scala/scalafmt/scalafmt.conf")))
+				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basic.cleanWithCustomConf_3.0.0");
 	}
 
 	@Test
@@ -61,6 +65,20 @@ public class ScalaFmtStepTest extends ResourceHarness {
 		FormatterStep step = ScalaFmtStep.create("2.0.0", TestProvisioner.mavenCentral(), createTestFile("scala/scalafmt/scalafmt.conf"));
 		StepHarness.forStep(step)
 				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basicPost2.0.0.cleanWithCustomConf");
+	}
+
+	@Test
+	public void behaviorDefaultConfigVersion_3_0_0() throws Exception {
+		FormatterStep step = ScalaFmtStep.create("3.0.0", TestProvisioner.mavenCentral(), null);
+		StepHarness.forStep(step)
+				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basicPost3.0.0.clean");
+	}
+
+	@Test
+	public void behaviorCustomConfigVersion_3_0_0() throws Exception {
+		FormatterStep step = ScalaFmtStep.create("3.0.0", TestProvisioner.mavenCentral(), createTestFile("scala/scalafmt/scalafmt.conf"));
+		StepHarness.forStep(step)
+				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basicPost3.0.0.cleanWithCustomConf");
 	}
 
 	@Test
@@ -106,5 +124,9 @@ public class ScalaFmtStepTest extends ResourceHarness {
 		exception = assertThrows(InvocationTargetException.class,
 				() -> StepHarness.forStep(ScalaFmtStep.create("2.0.1", provisioner, invalidConfFile)).test("", ""));
 		assertThat(exception.getTargetException().getMessage(), containsString("Invalid field: invalidScalaFmtConfigField"));
+
+		exception = assertThrows(InvocationTargetException.class,
+				() -> StepHarness.forStep(ScalaFmtStep.create("3.0.0", provisioner, invalidConfFile)).test("", ""));
+		assertThat(exception.getTargetException().getMessage(), containsString("found option 'invalidScalaFmtConfigField' which wasn't expected"));
 	}
 }
