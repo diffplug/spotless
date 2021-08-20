@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,10 +45,10 @@ import com.diffplug.spotless.ResourceHarness;
 
 public class MavenIntegrationHarness extends ResourceHarness {
 	/**
-	 * To run tests in the IDE, run `gradlew :plugin-maven:changelogPrint`, then
-	 * put the last version it prints into `SPOTLESS_MAVEN_VERSION_IDE`.  From now
-	 * on, if you run `gradlew :plugin-maven:runMavenBuild`, then you can run tests
-	 * in the IDE and they will run against the results of the last `runMavenBuild`
+	 * To run tests in the IDE, run {@code gradlew :plugin-maven:changelogPrint}, then
+	 * put the last version it prints into {@code SPOTLESS_MAVEN_VERSION_IDE}.  From now
+	 * on, if you run {@code gradlew :plugin-maven:runMavenBuild}, then you can run tests
+	 * in the IDE and they will run against the results of the last {@code runMavenBuild}
 	 */
 	private static final String SPOTLESS_MAVEN_VERSION_IDE = null;
 

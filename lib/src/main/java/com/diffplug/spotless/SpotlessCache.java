@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,8 +96,8 @@ public final class SpotlessCache {
 	private static volatile Object lastClear;
 
 	/**
-	 * Closes all cached classloaders iff `key` is not `.equals()` to the last call to `clearOnce()`.
-	 * If `key` is null, the clear will always happen (as though null != null).
+	 * Closes all cached classloaders iff {@code key} is not {@code .equals()} to the last call to {@code clearOnce()}.
+	 * If {@code key} is null, the clear will always happen (as though null != null).
 	 */
 	public static boolean clearOnce(@Nullable Object key) {
 		synchronized (instance) {

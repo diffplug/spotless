@@ -33,7 +33,7 @@ public interface FormatterFunc {
 	}
 
 	/**
-	 * `Function<String, String>` and `BiFunction<String, File, String>` whose implementation
+	 * {@code Function<String, String>} and {@code BiFunction<String, File, String>} whose implementation
 	 * requires a resource which should be released when the function is no longer needed.
 	 */
 	interface Closeable extends FormatterFunc, AutoCloseable {
@@ -45,10 +45,10 @@ public interface FormatterFunc {
 		 *
 		 * It's important for FormatterStep's to allocate their resources as lazily as possible.
 		 * It's easy to create a resource inside the state, and not realize that it may not be
-		 * released.  It's far better to use one of the non-deprecated `of()` methods below.
+		 * released.  It's far better to use one of the non-deprecated {@code of()} methods below.
 		 *
 		 * The bug (and its fix) which is easy to write using this method: https://github.com/diffplug/spotless/commit/7f16ecca031810b5e6e6f647e1f10a6d2152d9f4
-		 * How the `of()` methods below make the correct thing easier to write and safer: https://github.com/diffplug/spotless/commit/18c10f9c93d6f18f753233d0b5f028d5f0961916
+		 * How the {@code of()} methods below make the correct thing easier to write and safer: https://github.com/diffplug/spotless/commit/18c10f9c93d6f18f753233d0b5f028d5f0961916
 		 */
 		public static Closeable ofDangerous(AutoCloseable closeable, FormatterFunc function) {
 			Objects.requireNonNull(closeable, "closeable");
@@ -135,7 +135,7 @@ public interface FormatterFunc {
 
 	/**
 	 * Ideally, formatters don't need the underlying file. But in case they do, they should only use it's path,
-	 * and should never read the content inside the file, because that breaks the `Function<String, String>` composition
+	 * and should never read the content inside the file, because that breaks the {@code Function<String, String>} composition
 	 * that Spotless is based on.  For the rare case that you need access to the file, use this method
 	 * or {@link NeedsFile} to create a {@link FormatterFunc} which needs the File.
 	 */

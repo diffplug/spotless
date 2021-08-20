@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,7 +74,7 @@ public class SpotlessTaskImpl extends SpotlessTask {
 			// Remove previous output if it exists
 			Files.deleteIfExists(output.toPath());
 		} else if (dirtyState.didNotConverge()) {
-			getLogger().warn("Skipping '" + input + "' because it does not converge.  Run `spotlessDiagnose` to understand why");
+			getLogger().warn("Skipping '" + input + "' because it does not converge.  Run {@code spotlessDiagnose} to understand why");
 		} else {
 			Path parentDir = output.toPath().getParent();
 			if (parentDir == null) {

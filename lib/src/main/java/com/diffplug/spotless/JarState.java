@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,7 +79,7 @@ public final class JarState implements Serializable {
 
 	/**
 	 * Returns a classloader containing the only jars in this JarState.
-	 * Look-up of classes in the `org.slf4j` package
+	 * Look-up of classes in the {@code org.slf4j} package
 	 * are not taken from the JarState, but instead redirected to the class loader of this class to enable
 	 * passthrough logging.
 	 * <br/>
@@ -91,7 +91,7 @@ public final class JarState implements Serializable {
 
 	/**
 	 * Returns a classloader containing the only jars in this JarState.
-	 * Look-up of classes in the `org.slf4j` package
+	 * Look-up of classes in the {@code org.slf4j} package
 	 * are not taken from the JarState, but instead redirected to the class loader of this class to enable
 	 * passthrough logging.
 	 * <br/>

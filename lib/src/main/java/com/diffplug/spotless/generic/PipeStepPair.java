@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import com.diffplug.spotless.LineEnding;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public class PipeStepPair {
-	/** The two steps will be named `<name>In` and `<name>Out`. */
+	/** The two steps will be named {@code <name>In} and {@code <name>Out}. */
 	public static Builder named(String name) {
 		return new Builder(name);
 	}

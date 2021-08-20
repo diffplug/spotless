@@ -53,7 +53,7 @@ import com.diffplug.spotless.FileSignature;
 /**
  * How to use:
  * - For best performance, you should have one instance of GitRatchet, shared by all projects.
- * - Use {@link #rootTreeShaOf(Object, String)} to turn `origin/master` into the SHA of the tree object at that reference
+ * - Use {@link #rootTreeShaOf(Object, String)} to turn {@code origin/master} into the SHA of the tree object at that reference
  * - Use {@link #isClean(Object, ObjectId, File)} to see if the given file is "git clean" relative to that tree
  * - If you have up-to-date checking and want the best possible performance, use {@link #subtreeShaOf(Object, ObjectId)} to optimize up-to-date checks on a per-project basis.
  */
@@ -141,7 +141,7 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 	/**
 	 * The first part of making this fast is finding the appropriate git repository quickly.  Because of composite
 	 * builds and submodules, it's quite possible that a single Gradle project will span across multiple git repositories.
-	 * We cache the Repository for every Project in `gitRoots`, and use dynamic programming to populate it.
+	 * We cache the Repository for every Project in {@code gitRoots}, and use dynamic programming to populate it.
 	 */
 	protected Repository repositoryFor(Project project) throws IOException {
 		Repository repo = gitRoots.get(project);

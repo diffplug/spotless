@@ -193,16 +193,16 @@ public abstract class SpotlessExtension {
 
 	boolean enforceCheck = true;
 
-	/** Returns `true` if Gradle's `check` task should run `spotlessCheck`; `false` otherwise. */
+	/** Returns {@code true} if Gradle's {@code check} task should run {@code spotlessCheck}; {@code false} otherwise. */
 	public boolean isEnforceCheck() {
 		return enforceCheck;
 	}
 
 	/**
-	 * Configures Gradle's `check` task to run `spotlessCheck` if `true`,
-	 * but to not do so if `false`.
+	 * Configures Gradle's {@code check} task to run {@code spotlessCheck} if {@code true},
+	 * but to not do so if {@code false}.
 	 *
-	 * `true` by default.
+	 * {@code true} by default.
 	 */
 	public void setEnforceCheck(boolean enforceCheck) {
 		this.enforceCheck = enforceCheck;

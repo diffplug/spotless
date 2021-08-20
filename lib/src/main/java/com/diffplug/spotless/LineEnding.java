@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import javax.annotation.Nullable;
  */
 public enum LineEnding {
 	// @formatter:off
-	/** Uses the same line endings as Git, using `.gitattributes` and the `core.eol` property. */
+	/** Uses the same line endings as Git, using {@code .gitattributes} and the {@code core.eol} property. */
 	GIT_ATTRIBUTES {
 		/** .gitattributes is path-specific, so you must use {@link LineEnding#createPolicy(File, Supplier)}. */
 		@Override @Deprecated
@@ -37,11 +37,11 @@ public enum LineEnding {
 			return super.createPolicy();
 		}
 	},
-	/** `\n` on unix systems, `\r\n` on windows systems. */
+	/** {@code \n} on unix systems, {@code \r\n} on windows systems. */
 	PLATFORM_NATIVE,
-	/** `\r\n` */
+	/** {@code \r\n} */
 	WINDOWS,
-	/** `\n` */
+	/** {@code \n} */
 	UNIX;
 	// @formatter:on
 

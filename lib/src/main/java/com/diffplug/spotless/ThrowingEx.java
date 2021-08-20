@@ -116,14 +116,14 @@ public final class ThrowingEx {
 	/**
 	 * Rethrows errors, wraps and returns everything else as a runtime exception.
 	 *
+	 * <pre>{@code
 	 * try {
 	 *     doSomething();
 	 * } catch (Throwable e) {
 	 *     throw asRuntimeRethrowError(e);
 	 * }
-	 * ```
-	 *
-	 * */
+	 * }</pre>
+	 */
 	static RuntimeException asRuntimeRethrowError(Throwable e) {
 		if (e instanceof Error) {
 			throw (Error) e;

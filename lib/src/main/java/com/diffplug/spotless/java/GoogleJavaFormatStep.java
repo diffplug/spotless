@@ -94,7 +94,7 @@ public class GoogleJavaFormatStep {
 		}
 	}
 
-	/** On JRE 11+, returns `1.9`. On earlier JREs, returns `1.7`. */
+	/** On JRE 11+, returns {@code 1.9}. On earlier JREs, returns {@code 1.7}. */
 	public static String defaultVersion() {
 		return JRE_VERSION >= 11 ? LATEST_VERSION_JRE_11 : LATEST_VERSION_JRE_8;
 	}
