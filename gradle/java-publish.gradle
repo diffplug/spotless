@@ -88,8 +88,6 @@ model {
 				if (project.ext.artifactId != 'spotless-plugin-gradle') {
 					from components.java
 				}
-				artifact sourcesJar
-				artifact javadocJar
 
 				groupId project.group
 				artifactId project.ext.artifactId
