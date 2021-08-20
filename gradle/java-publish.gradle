@@ -23,13 +23,17 @@ if (project.parent == null) {
 ///////////
 // MAVEN //
 ///////////
+java {
+	withJavadocJar()
+	withSourcesJar()
+}
+
+tasks.named('sourcesJar') {
+	dependsOn 'jar'
+}
+
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
-
-task sourcesJar(type: Jar) {
-	classifier = 'sources'
-	from sourceSets.main.allJava
-}
 
 // Where it's possible to name parameters and methods clearly enough
 // that javadoc is not necessary, why make the code bigger?
@@ -38,7 +42,6 @@ task sourcesJar(type: Jar) {
 javadoc {
 	options.addStringOption('Xdoclint:none', '-quiet')
 	options.addStringOption('Xwerror', '-quiet')
-	enabled = org.gradle.api.JavaVersion.current() == org.gradle.api.JavaVersion.VERSION_1_8
 }
 // make sure bad javadoc breaks the build
 tasks.named('check') {
@@ -51,7 +54,6 @@ def javadocInfo = '<h2>' + makeLink("https://github.com/${org}/${name}", "${grou
 		' by ' + makeLink('https://www.diffplug.com', 'DiffPlug') + '</h2>'
 
 String dotdotGradle = project.name.startsWith('eclipse-') ? '../../gradle' : '../gradle'
-apply plugin: 'org.jdrupes.mdoclet'
 javadoc {
 	options.encoding = 'UTF-8'
 	// Where it's possible to name parameters and methods clearly enough
@@ -59,6 +61,7 @@ javadoc {
 	//
 	// Thus, no javadoc warnings.
 	options.addStringOption('Xdoclint:none', '-quiet')
+	options.addStringOption('source', '8')
 	// setup the header
 	options.header javadocInfo
 	options.footer javadocInfo
@@ -69,11 +72,6 @@ javadoc {
 	// links to javadoc from the other versions
 	options.linksOffline("https://javadoc.io/static/com.diffplug.spotless/spotless-lib/${rootProject.spotlessChangelog.versionLast}", "${dotdotGradle}/javadoc/spotless-lib")
 	options.linksOffline("https://javadoc.io/static/com.diffplug.spotless/spotless-lib-extra/${rootProject.spotlessChangelog.versionLast}", "${dotdotGradle}/javadoc/spotless-lib-extra")
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-	classifier = 'javadoc'
-	from javadoc.destinationDir
 }
 
 ////////////////
