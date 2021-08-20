@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [5.14.3] - 2021-08-20
 ### Changed
 * Added support for [scalafmt 3.0.0](https://github.com/scalameta/scalafmt/releases/tag/v3.0.0) and bump default scalafmt version to `3.0.0` ([#913](https://github.com/diffplug/spotless/pull/913)).
 * Bump default versions ([#915](https://github.com/diffplug/spotless/pull/915))
