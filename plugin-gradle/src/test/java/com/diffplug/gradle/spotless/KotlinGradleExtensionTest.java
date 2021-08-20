@@ -126,8 +126,7 @@ public class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 				"    }",
 				"}");
 		setFile("configuration.gradle.kts").toResource("kotlin/ktlint/basic.dirty");
-		BuildResult result = gradleRunner().withArguments("spotlessApply").buildAndFail();
-		assertThat(result.getOutput()).contains("Unexpected indentation (4) (it should be 6)");
+		gradleRunner().withArguments("spotlessCheck").buildAndFail();
 	}
 
 	@Test
