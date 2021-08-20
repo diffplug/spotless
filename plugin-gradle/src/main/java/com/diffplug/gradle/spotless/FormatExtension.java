@@ -632,7 +632,7 @@ public class FormatExtension {
 	}
 
 	/**
-	 * ```gradle
+	 * <pre>{@code
 	 * spotless {
 	 *   format 'examples', {
 	 *     target '*.md'
@@ -640,7 +640,7 @@ public class FormatExtension {
 	 *       prettier().config(['parser': 'javascript'])
 	 *     }
 	 *     ...
-	 * ```
+	 * }</pre>
 	 */
 	public void withinBlocks(String name, String open, String close, Action<FormatExtension> configure) {
 		withinBlocks(name, open, close, FormatExtension.class, configure);
@@ -650,7 +650,7 @@ public class FormatExtension {
 	 * Same as {@link #withinBlocks(String, String, String, Action)}, except you can specify
 	 * any language-specific subclass of {@link FormatExtension} to get language-specific steps.
 	 *
-	 * ```gradle
+	 * <pre>{@code
 	 * spotless {
 	 *   format 'examples', {
 	 *     target '*.md'
@@ -658,7 +658,7 @@ public class FormatExtension {
 	 *       googleJavaFormat()
 	 *     }
 	 *     ...
-	 * ```
+	 * }</pre>
 	 */
 	public <T extends FormatExtension> void withinBlocks(String name, String open, String close, Class<T> clazz, Action<T> configure) {
 		withinBlocksHelper(PipeStepPair.named(name).openClose(open, close), clazz, configure);

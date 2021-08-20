@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,13 +96,13 @@ public final class ThrowingEx {
 	/**
 	 * Utility method for rethrowing an exception's cause with as few wrappers as possible.
 	 *
-	 * ```java
+	 * <pre>{@code
 	 * try {
 	 *     doSomething();
 	 * } catch (Throwable e) {
 	 *     throw unwrapCause(e);
 	 * }
-	 * ```
+	 * }</pre>
 	 */
 	public static RuntimeException unwrapCause(Throwable e) {
 		Throwable cause = e.getCause();

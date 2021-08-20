@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ import java.io.File;
 import java.util.Objects;
 
 /**
- * A `Function<String, String>` which can throw an exception.  Technically, there
- * is also a `File` argument which gets passed around as well, but that is invisible
+ * A {@code Function<String, String>} which can throw an exception.  Technically, there
+ * is also a {@code File} argument which gets passed around as well, but that is invisible
  * to formatters.  If you need the File, see {@link NeedsFile}.
  */
 @FunctionalInterface
