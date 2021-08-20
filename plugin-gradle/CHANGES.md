@@ -5,6 +5,10 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Changed
 * Added support for [scalafmt 3.0.0](https://github.com/scalameta/scalafmt/releases/tag/v3.0.0) and bump default scalafmt version to `3.0.0` ([#913](https://github.com/diffplug/spotless/pull/913)).
+* Bump default versions ([#915](https://github.com/diffplug/spotless/pull/915))
+  * `ktfmt` from `0.24` to `0.27`
+  * `ktlint` from `0.35.0` to `0.42.1`
+  * `google-java-format` from `1.10.0` to `1.11.0`
 
 ## [5.14.2] - 2021-07-20
 ### Fixed

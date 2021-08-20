@@ -100,7 +100,7 @@ public class GoogleJavaFormatStep {
 	}
 
 	private static final String LATEST_VERSION_JRE_8 = "1.7";
-	private static final String LATEST_VERSION_JRE_11 = "1.10.0";
+	private static final String LATEST_VERSION_JRE_11 = "1.11.0";
 
 	public static String defaultStyle() {
 		return DEFAULT_STYLE;
