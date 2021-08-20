@@ -55,7 +55,7 @@ import com.diffplug.spotless.LineEnding;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- * Uses [.gitattributes](https://git-scm.com/docs/gitattributes) to determine
+ * Uses <a href="https://git-scm.com/docs/gitattributes">.gitattributes</a> to determine
  * the appropriate line ending. Falls back to the {@code core.eol} property in the
  * git config if there are no applicable git attributes, then finally falls
  * back to the platform native.

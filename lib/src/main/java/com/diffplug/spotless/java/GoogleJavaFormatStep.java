@@ -29,7 +29,7 @@ import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx.Function;
 
-/** Wraps up [google-java-format](https://github.com/google/google-java-format) as a FormatterStep. */
+/** Wraps up <a href="https://github.com/google/google-java-format">google-java-format</a> as a FormatterStep. */
 public class GoogleJavaFormatStep {
 	// prevent direct instantiation
 	private GoogleJavaFormatStep() {}

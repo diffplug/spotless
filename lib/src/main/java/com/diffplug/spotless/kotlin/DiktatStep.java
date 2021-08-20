@@ -27,7 +27,7 @@ import javax.annotation.Nullable;
 
 import com.diffplug.spotless.*;
 
-/** Wraps up [diktat](https://github.com/cqfn/diKTat) as a FormatterStep. */
+/** Wraps up <a href="https://github.com/cqfn/diKTat">diktat</a> as a FormatterStep. */
 public class DiktatStep {
 
 	// prevent direct instantiation

@@ -26,7 +26,7 @@ import java.util.Objects;
 import com.diffplug.spotless.*;
 
 /**
- * Wraps up [ktfmt](https://github.com/facebookincubator/ktfmt) as a FormatterStep.
+ * Wraps up <a href="https://github.com/facebookincubator/ktfmt">ktfmt</a> as a FormatterStep.
  */
 public class KtfmtStep {
 	// prevent direct instantiation

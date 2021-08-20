@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import com.diffplug.spotless.FileSignature;
 
 /**
  * Harness for running a maven build, same idea as the
- * [GradleRunner from the gradle testkit](https://docs.gradle.org/current/javadoc/org/gradle/testkit/runner/GradleRunner.html).
+ * <a href="https://docs.gradle.org/current/javadoc/org/gradle/testkit/runner/GradleRunner.html">GradleRunner from the gradle testkit</a>.
  */
 public class MavenRunner {
 	public static MavenRunner create() {
