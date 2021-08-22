@@ -748,7 +748,7 @@ public class FormatExtension {
 	 *
 	 * The returned task will not be hooked up to the global {@code spotlessApply}, and there will be no corresponding {@code check} task.
 	 *
-	 * NOTE: does not respect the rarely-used [{@code spotlessFiles} property](https://github.com/diffplug/spotless/blob/b7f8c551a97dcb92cc4b0ee665448da5013b30a3/plugin-gradle/README.md#can-i-apply-spotless-to-specific-files).
+	 * NOTE: does not respect the rarely-used <a href="https://github.com/diffplug/spotless/blob/b7f8c551a97dcb92cc4b0ee665448da5013b30a3/plugin-gradle/README.md#can-i-apply-spotless-to-specific-files">{@code spotlessFiles} property</a>.
 	 */
 	public SpotlessApply createIndependentApplyTask(String taskName) {
 		// create and setup the task

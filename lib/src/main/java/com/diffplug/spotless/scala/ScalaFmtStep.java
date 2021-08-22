@@ -34,7 +34,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
-/** Wraps up [scalafmt](https://github.com/scalameta/scalafmt) as a FormatterStep. */
+/** Wraps up <a href="https://github.com/scalameta/scalafmt">scalafmt</a> as a FormatterStep. */
 public class ScalaFmtStep {
 	// prevent direct instantiation
 	private ScalaFmtStep() {}

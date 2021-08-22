@@ -54,7 +54,7 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 		return licenseHeaderFile(licenseHeaderFile, LICENSE_HEADER_DELIMITER);
 	}
 
-	/** Adds the specified version of [ktlint](https://github.com/pinterest/ktlint). */
+	/** Adds the specified version of <a href="https://github.com/pinterest/ktlint">ktlint</a>. */
 	public KotlinFormatExtension ktlint(String version) {
 		Objects.requireNonNull(version);
 		return new KotlinFormatExtension(version, Collections.emptyMap());
@@ -87,13 +87,13 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 		}
 	}
 
-	/** Uses the [ktfmt](https://github.com/facebookincubator/ktfmt) jar to format source code. */
+	/** Uses the <a href="https://github.com/facebookincubator/ktfmt">ktfmt</a> jar to format source code. */
 	public KtfmtConfig ktfmt() {
 		return ktfmt(KtfmtStep.defaultVersion());
 	}
 
 	/**
-	 * Uses the given version of [ktfmt](https://github.com/facebookincubator/ktfmt) and applies the dropbox style
+	 * Uses the given version of <a href="https://github.com/facebookincubator/ktfmt">ktfmt</a> and applies the dropbox style
 	 * option to format source code.
 	 */
 	public KtfmtConfig ktfmt(String version) {
@@ -133,7 +133,7 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 		}
 	}
 
-	/** Adds the specified version of [diktat](https://github.com/cqfn/diKTat). */
+	/** Adds the specified version of <a href="https://github.com/cqfn/diKTat">diktat</a>. */
 	public DiktatFormatExtension diktat(String version) {
 		Objects.requireNonNull(version);
 		return new DiktatFormatExtension(version);
