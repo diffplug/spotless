@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.junit.Test;
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JreVersion;
+import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
@@ -32,19 +33,18 @@ public class GoogleJavaFormatStepTest extends ResourceHarness {
 	@Test
 	public void suggestJre11() throws Exception {
 		try (StepHarness step = StepHarness.forStep(GoogleJavaFormatStep.create(TestProvisioner.mavenCentral()))) {
-			if (JreVersion.thisVm() < 11) {
+			if (Jvm.version() < 11) {
 				step.testResourceException("java/googlejavaformat/TextBlock.dirty", throwable -> {
-					throwable.hasMessageStartingWith("You are running Spotless on JRE 8")
-							.hasMessageEndingWith(", which limits you to google-java-format 1.7\n"
-									+ "If you upgrade your build JVM to 11+, then you can use google-java-format 1.9, which may have fixed this problem.");
+					throwable.hasMessageStartingWith("You are running Spotless on JRE 8, which limits you to google-java-format 1.7.")
+							.hasMessageEndingWith("If you upgrade your build JVM to 11+, then you can use google-java-format 1.11.0, which may have fixed this problem.");
 				});
-			} else if (JreVersion.thisVm() < 13) {
+			} else if (Jvm.version() < 13) {
 				step.testResourceException("java/googlejavaformat/TextBlock.dirty", throwable -> {
 					throwable.isInstanceOf(InvocationTargetException.class)
 							.extracting(exception -> exception.getCause().getMessage()).asString().contains("7:18: error: unclosed string literal");
 				});
 			} else {
-				// JreVersion.thisVm() >= 13
+				// Jvm.version() >= 13
 				step.testResource("java/googlejavaformat/TextBlock.dirty", "java/googlejavaformat/TextBlock.clean");
 			}
 		}
