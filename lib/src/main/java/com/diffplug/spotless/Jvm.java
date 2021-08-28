@@ -63,6 +63,7 @@ public final class Jvm {
 		private final String formatterName;
 		private final Comparator<? super V> formatterVersionComparator;
 		private Integer requiredJavaVersion;
+		private boolean usingLatestJavaVersion;
 
 		private Support(String fromatterName) {
 			this(fromatterName, null);
@@ -77,6 +78,7 @@ public final class Jvm {
 				this.formatterVersionComparator = formatterVersionComparator;
 			}
 			requiredJavaVersion = 0;
+			usingLatestJavaVersion = true;
 		}
 
 		/**
@@ -89,16 +91,13 @@ public final class Jvm {
 			Objects.requireNonNull(maxFormatterVersion);
 			java2formatterVersion.put(minimumJavaVersion, maxFormatterVersion);
 			requiredJavaVersion = java2formatterVersion.floorKey(Jvm.version());
+			usingLatestJavaVersion &= minimumJavaVersion < Jvm.version();
 			return this;
 		}
 
 		/** @return Latest formatter version supported by this JVM */
 		public V getLatestFormatterVersion() {
-			V latestFormatterVersion = java2formatterVersion.get(requiredJavaVersion);
-			if (null == latestFormatterVersion) {
-				throw new UnsupportedClassVersionError("Unsupported JVM: " + toString());
-			}
-			return latestFormatterVersion;
+			return java2formatterVersion.get(requiredJavaVersion);
 		}
 
 		/**
@@ -107,7 +106,8 @@ public final class Jvm {
 		 */
 		public void assertFormatterSupported(V formatterVersion) throws Exception {
 			Objects.requireNonNull(formatterVersion);
-			if (formatterVersionComparator.compare(formatterVersion, getLatestFormatterVersion()) > 0) {
+			if (!usingLatestJavaVersion && (0 < formatterVersionComparator.compare(formatterVersion, getLatestFormatterVersion()))) {
+
 				throw new UnsupportedClassVersionError(String.format("Unsupported formatter version %s: %s", formatterVersion, toString()));
 			}
 		}
@@ -140,7 +140,7 @@ public final class Jvm {
 		private static class SemanticVersionComparator<V> implements Comparator<V> {
 
 			@Override
-			public int compare(V version0, V version1) {
+			public int compare(@Nullable V version0, @Nullable V version1) {
 				Integer[] version0Items = convert(version0);
 				Integer[] version1Items = convert(version1);
 				int numberOfElements = version0Items.length > version1Items.length ? version0Items.length : version1Items.length;
@@ -156,9 +156,11 @@ public final class Jvm {
 				return 0;
 			}
 
-			private static <V> Integer[] convert(V versionObject) {
+			private static <V> Integer[] convert(@Nullable V versionObject) {
 				try {
-					Objects.requireNonNull(versionObject);
+					if (null == versionObject) {
+						return new Integer[0];
+					}
 					return Arrays.asList(versionObject.toString().split("\\.")).stream().map(s -> Integer.valueOf(s)).toArray(Integer[]::new);
 				} catch (Exception e) {
 					throw new IllegalArgumentException(String.format("Not a semantic version: %s", versionObject), e);
