@@ -143,9 +143,10 @@ If you're stuck on an older version of Gradle, `id 'com.diffplug.gradle.spotless
 spotless {
   java {
     importOrder() // standard import order
-    importOrder('java', 'javax', 'com.acme', '') // or importOrderFile
+    importOrder('java', 'javax', 'com.acme', '')
     // You probably want an empty string at the end - all of the
     // imports you didn't specify explicitly will go there.
+    importOrderFile(eclipse-import-order.txt) // import order file as exported from eclipse
 
     removeUnusedImports()
 
@@ -210,7 +211,10 @@ apply plugin: 'groovy'
 spotless {
   groovy {
     importOrder() // standard import order
-    importOrder('java', 'javax', 'com.acme', '') // or importOrderFile
+    importOrder('java', 'javax', 'com.acme', '')
+    // You probably want an empty string at the end - all of the
+    // imports you didn't specify explicitly will go there.
+    importOrderFile(eclipse-import-order.txt) // import order file as exported from eclipse
 
     excludeJava() // excludes all Java sources within the Groovy source dirs from formatting
     // the Groovy Eclipse formatter extends the Java Eclipse formatter,
