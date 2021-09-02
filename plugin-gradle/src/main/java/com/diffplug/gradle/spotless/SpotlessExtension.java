@@ -175,6 +175,12 @@ public abstract class SpotlessExtension {
 		format(JsonExtension.NAME, JsonExtension.class, closure);
 	}
 
+	/** Configures the special Gherkin-specific extension. */
+	public void gherkin(Action<GherkinExtension> closure) {
+		requireNonNull(closure);
+		format(GherkinExtension.NAME, GherkinExtension.class, closure);
+	}
+
 	/** Configures a custom extension. */
 	public void format(String name, Action<FormatExtension> closure) {
 		requireNonNull(name, "name");

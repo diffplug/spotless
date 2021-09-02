@@ -69,6 +69,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [SQL](#sql) ([dbeaver](#dbeaver), [prettier](#prettier))
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier))
   - [JSON](#json)
+  - [Gherkin](#gherkin)
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection))
       - javascript, jsx, angular, vue, flow, typescript, css, less, scss, html, json, graphql, markdown, ymaml
@@ -551,6 +552,34 @@ Uses a JSON pretty-printer that optionally allows configuring the number of spac
 spotless {
   json {
     target 'src/**/*.json'
+    simple()
+    // optional: specify the number of spaces to use
+    simple().indentWithSpaces(6)
+  }
+}
+```
+
+## Gherkin
+
+- `com.diffplug.gradle.spotless.GherkinExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/5.15.0/com/diffplug/gradle/spotless/GherkinExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/GherkinExtension.java)
+
+```gradle
+spotless {
+  gherkin {
+    target 'src/**/*.feature' // you have to set the target manually
+    simple() // has its own section below
+  }
+}
+```
+
+### simple
+
+Uses a Gherkin pretty-printer that optionally allows configuring the number of spaces that are used to pretty print objects:
+
+```gradle
+spotless {
+  gherkin {
+    target 'src/**/*.feature'
     simple()
     // optional: specify the number of spaces to use
     simple().indentWithSpaces(6)
