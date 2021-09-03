@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,8 +63,8 @@ public class BlackStep {
 		String trackingIssue = "\n  github issue to handle this better: https://github.com/diffplug/spotless/issues/674";
 		String exeAbsPath = ForeignExe.nameAndVersion("black", version)
 				.pathToExe(pathToExe)
-				.fixCantFind("Try running `pip install black=={version}`, or else tell Spotless where it is with `black().pathToExe('path/to/executable')`" + trackingIssue)
-				.fixWrongVersion("Try running `pip install --force-reinstall black=={version}`, or else specify `black('{versionFound}')` to Spotless" + trackingIssue)
+				.fixCantFind("Try running {@code pip install black=={version}}, or else tell Spotless where it is with {@code black().pathToExe('path/to/executable')}" + trackingIssue)
+				.fixWrongVersion("Try running {@code pip install --force-reinstall black=={version}}, or else specify {@code black('{versionFound}')} to Spotless" + trackingIssue)
 				.confirmVersionAndGetAbsolutePath();
 		return new State(this, exeAbsPath);
 	}

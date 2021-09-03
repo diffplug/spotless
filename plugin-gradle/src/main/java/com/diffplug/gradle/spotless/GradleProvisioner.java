@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import java.util.logging.Logger;
 
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.artifacts.Dependency;
 
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.collect.ImmutableList;
@@ -64,11 +63,11 @@ class GradleProvisioner {
 		Objects.requireNonNull(project);
 		return (withTransitives, mavenCoords) -> {
 			try {
-				Dependency[] deps = mavenCoords.stream()
+				Configuration config = project.getRootProject().getBuildscript().getConfigurations().create("spotless"
+						+ new Request(withTransitives, mavenCoords).hashCode());
+				mavenCoords.stream()
 						.map(project.getBuildscript().getDependencies()::create)
-						.toArray(Dependency[]::new);
-
-				Configuration config = project.getRootProject().getBuildscript().getConfigurations().detachedConfiguration(deps);
+						.forEach(config.getDependencies()::add);
 				config.setDescription(mavenCoords.toString());
 				config.setTransitive(withTransitives);
 				return config.resolve();

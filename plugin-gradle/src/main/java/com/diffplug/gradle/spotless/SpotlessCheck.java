@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,9 +29,7 @@ import org.gradle.api.GradleException;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileVisitDetails;
 import org.gradle.api.file.FileVisitor;
-import org.gradle.api.tasks.InputDirectory;
-import org.gradle.api.tasks.PathSensitive;
-import org.gradle.api.tasks.PathSensitivity;
+import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 
 import com.diffplug.spotless.FileSignature;
@@ -43,8 +41,7 @@ public class SpotlessCheck extends DefaultTask {
 	SpotlessTask source;
 	private File spotlessOutDirectory;
 
-	@PathSensitive(PathSensitivity.RELATIVE)
-	@InputDirectory
+	@Internal
 	public File getSpotlessOutDirectory() {
 		return spotlessOutDirectory;
 	}

@@ -1,7 +1,7 @@
 //////////
 // JAVA //
 //////////
-repositories { jcenter() }
+repositories { mavenCentral() }
 
 // setup java
 apply plugin: 'java'

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +22,12 @@ import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.TreeMap;
-import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -37,9 +36,9 @@ import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.BasePlugin;
-import org.gradle.api.tasks.util.PatternFilterable;
 
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.FormatterFunc;
@@ -58,11 +57,12 @@ import com.diffplug.spotless.generic.PipeStepPair;
 import com.diffplug.spotless.generic.ReplaceRegexStep;
 import com.diffplug.spotless.generic.ReplaceStep;
 import com.diffplug.spotless.generic.TrimTrailingWhitespaceStep;
+import com.diffplug.spotless.npm.NpmPathResolver;
 import com.diffplug.spotless.npm.PrettierFormatterStep;
 
 import groovy.lang.Closure;
 
-/** Adds a `spotless{Name}Check` and `spotless{Name}Apply` task. */
+/** Adds a {@code spotless{Name}Check} and {@code spotless{Name}Apply} task. */
 public class FormatExtension {
 	final SpotlessExtension spotless;
 	final List<Action<FormatExtension>> lazyActions = new ArrayList<>();
@@ -195,15 +195,11 @@ public class FormatExtension {
 		} else if (targets.length == 1) {
 			return parseTargetIsExclude(targets[0], isExclude);
 		} else {
-			if (Stream.of(targets).allMatch(o -> o instanceof String)) {
-				return parseTargetIsExclude(Arrays.asList(targets), isExclude);
-			} else {
-				FileCollection union = getProject().files();
-				for (Object target : targets) {
-					union = union.plus(parseTargetIsExclude(target, isExclude));
-				}
-				return union;
+			FileCollection union = getProject().files();
+			for (Object target : targets) {
+				union = union.plus(parseTargetIsExclude(target, isExclude));
 			}
+			return union;
 		}
 	}
 
@@ -218,32 +214,24 @@ public class FormatExtension {
 	}
 
 	private final FileCollection parseTargetIsExclude(Object target, boolean isExclude) {
-		if (target instanceof FileCollection) {
+		if (target instanceof Collection) {
+			return parseTargetsIsExclude(((Collection) target).toArray(), isExclude);
+		} else if (target instanceof FileCollection) {
 			return (FileCollection) target;
-		} else if (target instanceof String ||
-				(target instanceof List && ((List<?>) target).stream().allMatch(o -> o instanceof String))) {
+		} else if (target instanceof String) {
 			File dir = getProject().getProjectDir();
-			PatternFilterable userExact; // exactly the collection that the user specified
-			if (target instanceof String) {
-				userExact = getProject().fileTree(dir).include((String) target);
-			} else {
-				// target can only be a List<String> at this point
-				@SuppressWarnings("unchecked")
-				List<String> targetList = (List<String>) target;
-				userExact = getProject().fileTree(dir).include(targetList);
-			}
-			boolean filterOutGitAndGradle;
+			ConfigurableFileTree matchedFiles = getProject().fileTree(dir);
+			String targetString = (String) target;
+			matchedFiles.include(targetString);
+
 			// since people are likely to do '**/*.md', we want to make sure to exclude folders
 			// they don't want to format which will slow down the operation greatly
 			// but we only want to do that if they are *including* - if they are specifying
 			// what they want to exclude, we shouldn't filter at all
-			if (target instanceof String && !isExclude) {
-				String str = (String) target;
-				filterOutGitAndGradle = str.startsWith("**/*") || str.startsWith("**\\*");
-			} else {
-				filterOutGitAndGradle = false;
+			if (isExclude) {
+				return matchedFiles;
 			}
-			if (filterOutGitAndGradle) {
+			if (targetString.startsWith("**/") || targetString.startsWith("**\\")) {
 				List<String> excludes = new ArrayList<>();
 				// no git
 				excludes.add(".git");
@@ -256,9 +244,9 @@ public class FormatExtension {
 				for (Project subproject : getProject().getSubprojects()) {
 					relativizeIfSubdir(excludes, dir, subproject.getBuildDir());
 				}
-				userExact = userExact.exclude(excludes);
+				matchedFiles.exclude(excludes);
 			}
-			return (FileCollection) userExact;
+			return matchedFiles;
 		} else {
 			return getProject().files(target);
 		}
@@ -323,17 +311,17 @@ public class FormatExtension {
 	}
 
 	/**
-	 * An optional performance optimization if you are using any of the `custom`
-	 * methods.  If you aren't explicitly calling `custom`, then this method
+	 * An optional performance optimization if you are using any of the {@code custom}
+	 * methods.  If you aren't explicitly calling {@code custom}, then this method
 	 * has no effect.
 	 *
 	 * Spotless tracks what files have changed from run to run, so that it can run faster
 	 * by only checking files which have changed, or whose formatting steps have changed.
-	 * If you use the `custom` methods, then gradle can never mark
-	 * your files as `up-to-date`, because it can't know if perhaps the behavior of your
+	 * If you use the {@code custom} methods, then gradle can never mark
+	 * your files as {@code up-to-date}, because it can't know if perhaps the behavior of your
 	 * custom function has changed.
 	 *
-	 * If you set `bumpThisNumberIfACustomStepChanges( <some number> )`, then spotless will
+	 * If you set {@code bumpThisNumberIfACustomStepChanges( <some number> )}, then spotless will
 	 * assume that the custom rules have not changed if the number has not changed.  If a
 	 * custom rule does change, then you must bump the number so that spotless will know
 	 * that it must recheck the files it has already checked.
@@ -408,7 +396,7 @@ public class FormatExtension {
 
 	/**
 	 * Created by {@link FormatExtension#licenseHeader(String, String)} or {@link FormatExtension#licenseHeaderFile(Object, String)}.
-	 * For most language-specific formats (e.g. java, scala, etc.) you can omit the second `delimiter` argument, because it is supplied
+	 * For most language-specific formats (e.g. java, scala, etc.) you can omit the second {@code delimiter} argument, because it is supplied
 	 * automatically ({@link HasBuiltinDelimiterForLicense}).
 	 */
 	public class LicenseHeaderConfig {
@@ -441,7 +429,7 @@ public class FormatExtension {
 
 		/**
 		 * @param updateYearWithLatest
-		 *           Will turn `2004` into `2004-2020`, and `2004-2019` into `2004-2020`
+		 *           Will turn {@code 2004} into {@code 2004-2020}, and {@code 2004-2019} into {@code 2004-2020}
 		 *           Default value is false, unless {@link SpotlessExtensionImpl#ratchetFrom(String)} is used, in which case default value is true.
 		 */
 		public LicenseHeaderConfig updateYearWithLatest(boolean updateYearWithLatest) {
@@ -494,6 +482,9 @@ public class FormatExtension {
 		@Nullable
 		protected Object npmFile;
 
+		@Nullable
+		protected Object npmrcFile;
+
 		@SuppressWarnings("unchecked")
 		public T npmExecutable(final Object npmFile) {
 			this.npmFile = npmFile;
@@ -501,7 +492,21 @@ public class FormatExtension {
 			return (T) this;
 		}
 
+		public T npmrc(final Object npmrcFile) {
+			this.npmrcFile = npmrcFile;
+			replaceStep(createStep());
+			return (T) this;
+		}
+
 		File npmFileOrNull() {
+			return fileOrNull(npmFile);
+		}
+
+		File npmrcFileOrNull() {
+			return fileOrNull(npmrcFile);
+		}
+
+		private File fileOrNull(Object npmFile) {
 			return npmFile != null ? getProject().file(npmFile) : null;
 		}
 
@@ -541,7 +546,7 @@ public class FormatExtension {
 					devDependencies,
 					provisioner(),
 					project.getBuildDir(),
-					npmFileOrNull(),
+					new NpmPathResolver(npmFileOrNull(), npmrcFileOrNull(), project.getProjectDir(), project.getRootDir()),
 					new com.diffplug.spotless.npm.PrettierConfig(
 							this.prettierConfigFile != null ? project.file(this.prettierConfigFile) : null,
 							this.prettierConfig));
@@ -627,7 +632,7 @@ public class FormatExtension {
 	}
 
 	/**
-	 * ```gradle
+	 * <pre>
 	 * spotless {
 	 *   format 'examples', {
 	 *     target '*.md'
@@ -635,7 +640,7 @@ public class FormatExtension {
 	 *       prettier().config(['parser': 'javascript'])
 	 *     }
 	 *     ...
-	 * ```
+	 * </pre>
 	 */
 	public void withinBlocks(String name, String open, String close, Action<FormatExtension> configure) {
 		withinBlocks(name, open, close, FormatExtension.class, configure);
@@ -645,7 +650,7 @@ public class FormatExtension {
 	 * Same as {@link #withinBlocks(String, String, String, Action)}, except you can specify
 	 * any language-specific subclass of {@link FormatExtension} to get language-specific steps.
 	 *
-	 * ```gradle
+	 * <pre>
 	 * spotless {
 	 *   format 'examples', {
 	 *     target '*.md'
@@ -653,7 +658,7 @@ public class FormatExtension {
 	 *       googleJavaFormat()
 	 *     }
 	 *     ...
-	 * ```
+	 * </pre>
 	 */
 	public <T extends FormatExtension> void withinBlocks(String name, String open, String close, Class<T> clazz, Action<T> configure) {
 		withinBlocksHelper(PipeStepPair.named(name).openClose(open, close), clazz, configure);
@@ -692,7 +697,7 @@ public class FormatExtension {
 		this.togglePair = PipeStepPair.named(PipeStepPair.defaultToggleName()).openClose(off, on).buildPair();
 	}
 
-	/** Disables formatting between `spotless:off` and `spotless:on`. */
+	/** Disables formatting between {@code spotless:off} and {@code spotless:on}. */
 	public void toggleOffOn() {
 		toggleOffOn(PipeStepPair.defaultToggleOff(), PipeStepPair.defaultToggleOn());
 	}
@@ -738,12 +743,12 @@ public class FormatExtension {
 	 * Creates an independent {@link SpotlessApply} for (very) unusual circumstances.
 	 *
 	 * Most users will not want this method.  In the rare case that you want to create
-	 * a `SpotlessApply` which is independent of the normal Spotless machinery, this will
+	 * a {@code SpotlessApply} which is independent of the normal Spotless machinery, this will
 	 * let you do that.
 	 *
-	 * The returned task will not be hooked up to the global `spotlessApply`, and there will be no corresponding `check` task.
+	 * The returned task will not be hooked up to the global {@code spotlessApply}, and there will be no corresponding {@code check} task.
 	 *
-	 * NOTE: does not respect the rarely-used [`spotlessFiles` property](https://github.com/diffplug/spotless/blob/b7f8c551a97dcb92cc4b0ee665448da5013b30a3/plugin-gradle/README.md#can-i-apply-spotless-to-specific-files).
+	 * NOTE: does not respect the rarely-used <a href="https://github.com/diffplug/spotless/blob/b7f8c551a97dcb92cc4b0ee665448da5013b30a3/plugin-gradle/README.md#can-i-apply-spotless-to-specific-files">{@code spotlessFiles} property</a>.
 	 */
 	public SpotlessApply createIndependentApplyTask(String taskName) {
 		// create and setup the task

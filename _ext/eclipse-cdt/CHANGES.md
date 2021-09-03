@@ -3,16 +3,30 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `9.9.0`).
 
 ## [Unreleased]
-### Changed
+
+## [10.3.0] - 2021-06-27
+### Added
+* Switch to Eclipse CDT release 10.3 for Eclipse 4.20.
+
+## [10.2.0] - 2021-06-07
+### Added
+* Switch to Eclipse CDT release 10.2 for Eclipse 4.19.
+
+## [10.1.0] - 2020-12-26
+### Added
+* Switch to Eclipse CDT release 10.1 for Eclipse 4.18.
+
+## [10.0.0] - 2020-10-17
+### Added
 * Switch to Eclipse CDT release 10.0 for Eclipse 4.17.
-* Minimum required Java version changed from 8 to 11.
+* **BREAKING** Minimum required Java version changed from 8 to 11.
 
 ## [9.11.0] - 2020-10-03
-### Changed
+### Added
 * Switch to Eclipse CDT release 9.11.1 for Eclipse 4.16.
 
 ## [9.10.0] - 2020-09-25
-### Changed
+### Added
 * Switch to Eclipse CDT release 9.10 for Eclipse 4.14.
 
 ## [9.9.0] - 2019-11-01

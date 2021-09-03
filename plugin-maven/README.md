@@ -12,8 +12,8 @@ output = [
   ].join('\n');
 -->
 [![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
-[![Javadoc](https://img.shields.io/badge/javadoc-yes-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.4.2/index.html)
-[![Changelog](https://img.shields.io/badge/changelog-2.4.2-brightgreen.svg)](CHANGES.md)
+[![Javadoc](https://img.shields.io/badge/javadoc-yes-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.12.3/index.html)
+[![Changelog](https://img.shields.io/badge/changelog-2.12.3-brightgreen.svg)](CHANGES.md)
 
 [![Circle CI](https://circleci.com/gh/diffplug/spotless/tree/main.svg?style=shield)](https://circleci.com/gh/diffplug/spotless/tree/main)
 [![Live chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
@@ -45,17 +45,19 @@ user@machine repo % mvn spotless:check
 
 - [**Quickstart**](#quickstart)
   - [Requirements](#requirements)
+  - [Binding to maven phase](#binding-to-maven-phase)
 - **Languages**
   - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
-  - [Kotlin](#kotlin) ([ktlint](#ktlint), [ktfmt](#ktfmt), [prettier](#prettier))
+  - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
   - [C/C++](#cc) ([eclipse cdt](#eclipse-cdt))
+  - [Python](#python) ([black](#black))
   - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
   - [Sql](#sql) ([dbeaver](#dbeaver))
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier))
   - Multiple languages
-    - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection))
+    - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection))
     - [eclipse web tools platform](#eclipse-web-tools-platform)
 - **Language independent**
   - [Generic steps](#generic-steps)
@@ -130,6 +132,35 @@ Spotless consists of a list of formats (in the example above, `misc` and `java`)
 Spotless requires Maven to be running on JRE 8+.
 
 <a name="applying-to-java-source"></a>
+
+### Binding to maven phase
+
+By default, spotless:check is bound to verify maven phase. This means it is not required to
+explicitly bind the plugin execution, and the following will suffice;
+
+```xml
+<executions>
+  <execution>
+    <goals>
+      <goal>check</goal>
+    </goals>
+  </execution>
+</executions>
+```
+
+with this `mvn verify` will run `spotless:check`. If you require the check goal to be run with
+any other maven phase (i.e. compile) then it can be configured as below;
+
+```xml
+<executions>
+  <execution>
+    <goals>
+      <goal>check</goal>
+    </goals>
+    <phase>compile</phase>
+  </execution>
+</executions>
+```
 
 ## Java
 
@@ -245,8 +276,9 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
       <include>src/test/kotlin/**/*.kt</include>
     </includes>
 
-    <ktlint />   <!-- has its own section below -->
     <ktfmt />    <!-- has its own section below -->
+    <ktlint />   <!-- has its own section below -->
+    <diktat />   <!-- has its own section below -->
     <prettier /> <!-- has its own section below -->
 
     <licenseHeader>
@@ -254,6 +286,17 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
     </licenseHeader>
   </kotlin>
 </configuration>
+```
+
+### ktfmt
+
+[homepage](https://github.com/facebookincubator/ktfmt). [changelog](https://github.com/facebookincubator/ktfmt/releases). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/kotlin/Ktfmt.java).
+
+```xml
+<ktfmt>
+  <version>0.18</version> <!-- optional -->
+  <style>DEFAULT</style> <!-- optional, other option is DROPBOX -->
+</ktfmt>
 ```
 
 <a name="applying-ktlint-to-kotlin-files"></a>
@@ -268,16 +311,15 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
 </ktlint>
 ```
 
-<a name="applying-ktfmt-to-kotlin-files"></a>
+### diktat
 
-### ktfmt
-
-[homepage](https://github.com/facebookincubator/ktfmt). [changelog](https://github.com/facebookincubator/ktfmt/releases). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/kotlin/Ktfmt.java).
+[homepage](https://github.com/cqfn/diKTat). [changelog](https://github.com/cqfn/diKTat/releases). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/kotlin/Diktat.java). You can provide configuration path manually as `configFile`.
 
 ```xml
-<ktfmt>
-  <version>0.13</version> <!-- optional -->
-</ktfmt>
+<diktat>
+  <version>0.4.0</version> <!-- optional -->
+  <configFile>full/path/to/diktat-analysis.yml</configFile> <!-- optional, configuration file path -->
+</diktat>
 ```
 
 <a name="applying-to-scala-source"></a>
@@ -354,6 +396,42 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
   <version>4.13.0</version>               <!-- optional -->
   <file>${basedir}/eclipse-cdt.xml</file> <!-- optional -->
 </eclipseCdt>
+```
+
+## Python
+
+[code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/python/Python.java). [available steps](https://github.com/diffplug/spotless/tree/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/python/Black.java).
+
+```xml
+<configuration>
+  <python>
+    <!-- You have to set the target manually -->
+    <includes>
+      <include>src/main/**/*.py</include>
+    </includes>
+
+    <black />  <!-- has its own section below -->
+  </python>
+</configuration>
+```
+
+### black
+
+[homepage](https://github.com/psf/black). [changelog](https://github.com/psf/black/blob/master/CHANGES.md).
+
+```xml
+<black>
+  <version>19.10b0</version> <!-- optional -->
+  <!-- if black is not on your path, you must specify its location manually -->
+  <pathToExe>C:/myuser/.pyenv/versions/3.8.0/scripts/black.exe</pathToExe>
+  <!--
+    Spotless always checks the version of the black it is using
+    and will fail with an error if it does not match the expected version
+    (whether manually specified or default). If there is a problem, Spotless
+    will suggest commands to help install the correct version.
+    TODO: handle installation & packaging automatically - https://github.com/diffplug/spotless/issues/674
+  -->
+</black>
 ```
 
 ## Antlr4
@@ -481,14 +559,7 @@ The auto-discovery of config files (up the file tree) will not work when using t
 
 **Prerequisite: tsfmt requires a working NodeJS version**
 
-tsfmt is based on NodeJS, so to use it, a working NodeJS installation (especially npm) is required on the host running spotless.
-Spotless will try to auto-discover an npm installation. If that is not working for you, it is possible to directly configure the npm binary to use.
-
-```xml
-<tsfmt>
-  <npmExecutable>/usr/bin/npm</npmExecutable>
-</tsfmt>
-```
+For details, see the [npm detection](#npm-detection) and [`.npmrc` detection](#npmrc-detection) sections of prettier, which apply also to tsfmt.
 
 <a name="applying-prettier-to-javascript--flow--typescript--css--scss--less--jsx--graphql--yaml--etc"></a>
 
@@ -614,6 +685,16 @@ Spotless will try to auto-discover an npm installation. If that is not working f
   <npmExecutable>/usr/bin/npm</npmExecutable>
 ```
 
+### `.npmrc` detection
+
+Spotless picks up npm configuration stored in a `.npmrc` file either in the project directory or in your user home.
+Alternatively you can supply spotless with a location of the `.npmrc` file to use. (This can be combined with `npmExecutable`, of course.)
+
+```xml
+<prettier>
+  <npmrc>/usr/local/shared/.npmrc</npmrc>
+```
+
 <a name="applying-eclipse-wtp-to-css--html--etc"></a>
 
 ## Eclipse web tools platform
@@ -635,7 +716,7 @@ Spotless will try to auto-discover an npm installation. If that is not working f
           <file>${basedir}/xml.prefs</file>
           <file>${basedir}/additional.properties</file>
         </files>
-        <version>4.7.3a</version> <!-- optional -->
+        <version>4.13.0</version> <!-- optional -->
       </eclipseWtp>
     </format>
   </formats>
@@ -736,7 +817,7 @@ If your project is not currently enforcing formatting, then it can be a noisy tr
 </configuration>
 ```
 
-In this mode, Spotless will apply only to files which have changed since `origin/main`.  You can ratchet from [any point you want](https://javadoc.io/static/org.eclipse.jgit/org.eclipse.jgit/5.6.1.202002131546-r/org/eclipse/jgit/lib/Repository.html#resolve-java.lang.String-), even `HEAD`.  You can also set `ratchetFrom` per-format if you prefer (e.g. `<configuration><java><ratchetFrom>...`).
+In this mode, Spotless will apply only to files which have changed since `origin/main`.  You can ratchet from [any point you want](https://javadoc.io/doc/org.eclipse.jgit/org.eclipse.jgit/5.6.1.202002131546-r/org/eclipse/jgit/lib/Repository.html#resolve-java.lang.String-), even `HEAD`.  You can also set `ratchetFrom` per-format if you prefer (e.g. `<configuration><java><ratchetFrom>...`).
 
 However, we strongly recommend that you use a non-local branch, such as a tag or `origin/main`.  The problem with `HEAD` or any local branch is that as soon as you commit a file, that is now the canonical formatting, even if it was formatted incorrectly.  By instead specifying `origin/main` or a tag, your CI server will fail unless every changed file is at least as good or better than it was before the change.
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 	private static final String FILE_NO_LICENSE = "license/FileWithoutLicenseHeader.test";
 	private static final String package_ = "package ";
 	private static final String HEADER_WITH_$YEAR = "This is a fake license, $YEAR. ACME corp.";
+	private static final String HEADER_WITH_RANGE_TO_$YEAR = "This is a fake license with range, 2009-$YEAR. ACME corp.";
 
 	@Test
 	public void parseExistingYear() throws Exception {
@@ -112,6 +113,25 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 				.test(hasHeaderYear("not a year"), hasHeaderYear(currentYear()));
 	}
 
+	@Test
+	public void should_remove_header_when_empty() throws Throwable {
+		StepHarness.forStep(LicenseHeaderStep.headerDelimiter("", package_).build())
+				.testUnaffected(getTestResource("license/MissingLicense.test"))
+				.test(getTestResource("license/HasLicense.test"), getTestResource("license/MissingLicense.test"));
+	}
+
+	private String licenceWithAddress() {
+		return "Copyright &#169; $YEAR FooBar Inc. All Rights Reserved.\n" +
+				" *\n" +
+				" * Use of this software is covered by inscrutable legal protection and\n" +
+				" * complex automation. Violaters of undisclosed terms must expect\n" +
+				" * unforeseen consequences.\n" +
+				" *\n" +
+				" * FooBar, Inc.\n" +
+				" * 9 Food Truck\n" +
+				" * Perry Derry, TX 55656 USA";
+	}
+
 	private String header(String contents) throws IOException {
 		return "/*\n" +
 				" * " + contents + "\n" +
@@ -128,6 +148,10 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 
 	private String hasHeaderYear(String years) throws IOException {
 		return hasHeaderYear(HEADER_WITH_$YEAR, years);
+	}
+
+	private String hasHeaderWithRangeAndWithYearTo(String toYear) throws IOException {
+		return hasHeaderYear(HEADER_WITH_RANGE_TO_$YEAR, toYear);
 	}
 
 	private static String currentYear() {
@@ -193,5 +217,27 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 				return builder.build();
 			}
 		}.testEquals();
+	}
+
+	@Test
+	public void should_apply_license_containing_YEAR_token_in_range() throws Throwable {
+		FormatterStep step = LicenseHeaderStep.headerDelimiter(header(HEADER_WITH_RANGE_TO_$YEAR), package_).withYearMode(YearMode.UPDATE_TO_TODAY).build();
+		StepHarness.forStep(step).test(hasHeaderWithRangeAndWithYearTo("2015"), hasHeaderWithRangeAndWithYearTo(currentYear()));
+	}
+
+	@Test
+	public void should_update_year_for_license_with_address() throws Throwable {
+		FormatterStep step = LicenseHeaderStep.headerDelimiter(header(licenceWithAddress()), package_).withYearMode(YearMode.UPDATE_TO_TODAY).build();
+		StepHarness.forStep(step).test(
+				hasHeader(licenceWithAddress().replace("$YEAR", "2015")),
+				hasHeader(licenceWithAddress().replace("$YEAR", "2015-2021")));
+	}
+
+	@Test
+	public void should_preserve_year_for_license_with_address() throws Throwable {
+		FormatterStep step = LicenseHeaderStep.headerDelimiter(header(licenceWithAddress()), package_).withYearMode(YearMode.PRESERVE).build();
+		StepHarness.forStep(step).test(
+				hasHeader(licenceWithAddress().replace("$YEAR", "2015").replace("FooBar Inc. All", "FooBar Inc.  All")),
+				hasHeader(licenceWithAddress().replace("$YEAR", "2015")));
 	}
 }

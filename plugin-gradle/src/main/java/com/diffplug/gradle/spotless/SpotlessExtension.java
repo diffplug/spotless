@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,7 +86,7 @@ public abstract class SpotlessExtension {
 
 	/**
 	 * Limits the target to only the files which have changed since the given git reference,
-	 * which is resolved according to [this](https://javadoc.io/static/org.eclipse.jgit/org.eclipse.jgit/5.6.1.202002131546-r/org/eclipse/jgit/lib/Repository.html#resolve-java.lang.String-)
+	 * which is resolved according to <a href="https://javadoc.io/static/org.eclipse.jgit/org.eclipse.jgit/5.6.1.202002131546-r/org/eclipse/jgit/lib/Repository.html#resolve-java.lang.String-">this</a>
 	 */
 	public void setRatchetFrom(String ratchetFrom) {
 		this.ratchetFrom = ratchetFrom;
@@ -169,6 +169,12 @@ public abstract class SpotlessExtension {
 		format(PythonExtension.NAME, PythonExtension.class, closure);
 	}
 
+	/** Configures the special JSON-specific extension. */
+	public void json(Action<JsonExtension> closure) {
+		requireNonNull(closure);
+		format(JsonExtension.NAME, JsonExtension.class, closure);
+	}
+
 	/** Configures a custom extension. */
 	public void format(String name, Action<FormatExtension> closure) {
 		requireNonNull(name, "name");
@@ -187,16 +193,16 @@ public abstract class SpotlessExtension {
 
 	boolean enforceCheck = true;
 
-	/** Returns `true` if Gradle's `check` task should run `spotlessCheck`; `false` otherwise. */
+	/** Returns {@code true} if Gradle's {@code check} task should run {@code spotlessCheck}; {@code false} otherwise. */
 	public boolean isEnforceCheck() {
 		return enforceCheck;
 	}
 
 	/**
-	 * Configures Gradle's `check` task to run `spotlessCheck` if `true`,
-	 * but to not do so if `false`.
+	 * Configures Gradle's {@code check} task to run {@code spotlessCheck} if {@code true},
+	 * but to not do so if {@code false}.
 	 *
-	 * `true` by default.
+	 * {@code true} by default.
 	 */
 	public void setEnforceCheck(boolean enforceCheck) {
 		this.enforceCheck = enforceCheck;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,15 +71,15 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 		addStep(RemoveUnusedImportsStep.create(provisioner()));
 	}
 
-	/** Uses the [google-java-format](https://github.com/google/google-java-format) jar to format source code. */
+	/** Uses the <a href="https://github.com/google/google-java-format">google-java-format</a> jar to format source code. */
 	public GoogleJavaFormatConfig googleJavaFormat() {
 		return googleJavaFormat(GoogleJavaFormatStep.defaultVersion());
 	}
 
 	/**
-	 * Uses the given version of [google-java-format](https://github.com/google/google-java-format) to format source code.
+	 * Uses the given version of <a href="https://github.com/google/google-java-format">google-java-format</a> to format source code.
 	 *
-	 * Limited to published versions.  See [issue #33](https://github.com/diffplug/spotless/issues/33#issuecomment-252315095)
+	 * Limited to published versions.  See <a href="https://github.com/diffplug/spotless/issues/33#issuecomment-252315095">issue #33</a>
 	 * for an workaround for using snapshot versions.
 	 */
 	public GoogleJavaFormatConfig googleJavaFormat(String version) {

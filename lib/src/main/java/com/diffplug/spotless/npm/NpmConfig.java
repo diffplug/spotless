@@ -21,7 +21,7 @@ import javax.annotation.Nonnull;
 
 class NpmConfig implements Serializable {
 
-	private static final long serialVersionUID = -7660089232952131272L;
+	private static final long serialVersionUID = 684264546497914877L;
 
 	private final String packageJsonContent;
 
@@ -29,10 +29,13 @@ class NpmConfig implements Serializable {
 
 	private final String serveScriptContent;
 
-	public NpmConfig(String packageJsonContent, String npmModule, String serveScriptContent) {
+	private final String npmrcContent;
+
+	public NpmConfig(String packageJsonContent, String npmModule, String serveScriptContent, String npmrcContent) {
 		this.packageJsonContent = packageJsonContent;
 		this.npmModule = npmModule;
 		this.serveScriptContent = serveScriptContent;
+		this.npmrcContent = npmrcContent;
 	}
 
 	public String getPackageJsonContent() {
@@ -46,5 +49,9 @@ class NpmConfig implements Serializable {
 	@Nonnull
 	public String getServeScriptContent() {
 		return serveScriptContent;
+	}
+
+	public String getNpmrcContent() {
+		return npmrcContent;
 	}
 }

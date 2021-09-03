@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,7 +73,7 @@ public class SelfTest {
 		return project;
 	}
 
-	/** Runs against the `spotlessSelfApply.gradle` file. */
+	/** Runs against the {@code spotlessSelfApply.gradle} file. */
 	static void runWithTestKit(String taskType) throws Exception {
 		GradleRunner.create()
 				.withPluginClasspath()

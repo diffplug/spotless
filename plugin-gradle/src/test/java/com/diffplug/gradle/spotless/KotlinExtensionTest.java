@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,24 @@ public class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
+	public void integrationDiktat() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.4.30'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlin {",
+				"        diktat()",
+				"    }",
+				"}");
+		setFile("src/main/kotlin/com/example/Main.kt").toResource("kotlin/diktat/main.dirty");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/kotlin/com/example/Main.kt").sameAsResource("kotlin/diktat/main.clean");
+	}
+
+	@Test
 	public void integrationKtfmt() throws IOException {
 		// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
 		JreVersion.assume11OrGreater();
@@ -64,6 +82,46 @@ public class KotlinExtensionTest extends GradleIntegrationHarness {
 		setFile("src/main/kotlin/basic.kt").toResource("kotlin/ktfmt/basic.dirty");
 		gradleRunner().withArguments("spotlessApply").build();
 		assertFile("src/main/kotlin/basic.kt").sameAsResource("kotlin/ktfmt/basic.clean");
+	}
+
+	@Test
+	public void integrationKtfmt_dropboxStyle_0_18() throws IOException {
+		// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
+		JreVersion.assume11OrGreater();
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'nebula.kotlin' version '1.3.72'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlin {",
+				"        ktfmt('0.18').dropboxStyle()",
+				"    }",
+				"}");
+		setFile("src/main/kotlin/basic.kt").toResource("kotlin/ktfmt/basic.dirty");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/kotlin/basic.kt").sameAsResource("kotlin/ktfmt/basic-dropboxstyle.clean");
+	}
+
+	@Test
+	public void integrationKtfmt_dropboxStyle_0_19() throws IOException {
+		// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
+		JreVersion.assume11OrGreater();
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'nebula.kotlin' version '1.3.72'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlin {",
+				"        ktfmt('0.19').dropboxStyle()",
+				"    }",
+				"}");
+		setFile("src/main/kotlin/basic.kt").toResource("kotlin/ktfmt/basic.dirty");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/kotlin/basic.kt").sameAsResource("kotlin/ktfmt/basic-dropboxstyle.clean");
 	}
 
 	@Test

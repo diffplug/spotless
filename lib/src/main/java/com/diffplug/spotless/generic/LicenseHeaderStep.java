@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -151,6 +151,7 @@ public final class LicenseHeaderStep {
 		private final @Nullable String beforeYear;
 		private final @Nullable String afterYear;
 		private final boolean updateYearWithLatest;
+		private final boolean licenseHeaderWithRange;
 
 		/** The license that we'd like enforced. */
 		private Runtime(String licenseHeader, String delimiter, String yearSeparator, boolean updateYearWithLatest) {
@@ -159,25 +160,35 @@ public final class LicenseHeaderStep {
 			}
 			// sanitize the input license
 			licenseHeader = LineEnding.toUnix(licenseHeader);
-			if (!licenseHeader.endsWith("\n")) {
+			if (!licenseHeader.isEmpty() && !licenseHeader.endsWith("\n")) {
 				licenseHeader = licenseHeader + "\n";
 			}
 			this.delimiterPattern = Pattern.compile('^' + delimiter, Pattern.UNIX_LINES | Pattern.MULTILINE);
 
 			Optional<String> yearToken = getYearToken(licenseHeader);
 			if (yearToken.isPresent()) {
-				yearToday = String.valueOf(YearMonth.now().getYear());
+				this.yearToday = String.valueOf(YearMonth.now().getYear());
 				int yearTokenIndex = licenseHeader.indexOf(yearToken.get());
-				beforeYear = licenseHeader.substring(0, yearTokenIndex);
-				afterYear = licenseHeader.substring(yearTokenIndex + yearToken.get().length());
-				yearSepOrFull = yearSeparator;
+				this.beforeYear = licenseHeader.substring(0, yearTokenIndex);
+				this.afterYear = licenseHeader.substring(yearTokenIndex + yearToken.get().length());
+				this.yearSepOrFull = yearSeparator;
 				this.updateYearWithLatest = updateYearWithLatest;
+
+				boolean hasHeaderWithRange = false;
+				int yearPlusSep = 4 + yearSeparator.length();
+				if (beforeYear.endsWith(yearSeparator) && yearTokenIndex > yearPlusSep) {
+					// year from in range
+					String yearFrom = licenseHeader.substring(yearTokenIndex - yearPlusSep, yearTokenIndex).substring(0, 4);
+					hasHeaderWithRange = YYYY.matcher(yearFrom).matches();
+				}
+				this.licenseHeaderWithRange = hasHeaderWithRange;
 			} else {
-				yearToday = null;
-				beforeYear = null;
-				afterYear = null;
+				this.yearToday = null;
+				this.beforeYear = null;
+				this.afterYear = null;
 				this.yearSepOrFull = licenseHeader;
 				this.updateYearWithLatest = false;
+				this.licenseHeaderWithRange = false;
 			}
 		}
 
@@ -243,7 +254,11 @@ public final class LicenseHeaderStep {
 				return parsedYear;
 			} else if (YYYY.matcher(parsedYear).matches()) {
 				if (updateYearWithLatest) {
-					return parsedYear + yearSepOrFull + yearToday;
+					if (licenseHeaderWithRange) {
+						return yearToday;
+					} else {
+						return parsedYear + yearSepOrFull + yearToday;
+					}
 				} else {
 					// it's already good as a single year
 					return parsedYear;
@@ -258,15 +273,31 @@ public final class LicenseHeaderStep {
 			Matcher yearMatcher = YYYY.matcher(content);
 			if (yearMatcher.find()) {
 				String firstYear = yearMatcher.group();
-				String secondYear;
+
+				String secondYear = null;
 				if (updateYearWithLatest) {
 					secondYear = firstYear.equals(yearToday) ? null : yearToday;
-				} else if (yearMatcher.find(yearMatcher.end() + 1)) {
-					secondYear = yearMatcher.group();
 				} else {
-					secondYear = null;
+					String contentWithSecondYear = content.substring(yearMatcher.end() + 1);
+					int endOfLine = contentWithSecondYear.indexOf('\n');
+					if (endOfLine != -1) {
+						contentWithSecondYear = contentWithSecondYear.substring(0, endOfLine);
+					}
+					Matcher secondYearMatcher = YYYY.matcher(contentWithSecondYear);
+					if (secondYearMatcher.find()) {
+						secondYear = secondYearMatcher.group();
+					}
 				}
-				return secondYear == null ? firstYear : firstYear + yearSepOrFull + secondYear;
+
+				if (secondYear == null) {
+					return firstYear;
+				} else {
+					if (licenseHeaderWithRange) {
+						return secondYear;
+					} else {
+						return firstYear + yearSepOrFull + secondYear;
+					}
+				}
 			} else {
 				System.err.println("Can't parse copyright year '" + content + "', defaulting to " + yearToday);
 				// couldn't recognize the year format
@@ -304,7 +335,7 @@ public final class LicenseHeaderStep {
 		}
 
 		private static String parseYear(String cmd, File file) throws IOException {
-			String fullCmd = cmd + " " + file.getAbsolutePath();
+			String fullCmd = cmd + " -- " + file.getAbsolutePath();
 			ProcessBuilder builder = new ProcessBuilder().directory(file.getParentFile());
 			if (FileSignature.machineIsWin()) {
 				builder.command("cmd", "/c", fullCmd);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 package com.diffplug.spotless.kotlin;
 
 import static com.diffplug.spotless.kotlin.KtfmtStep.Style.DEFAULT;
-import static com.diffplug.spotless.kotlin.KtfmtStep.Style.DROPBOX;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -27,24 +26,40 @@ import java.util.Objects;
 import com.diffplug.spotless.*;
 
 /**
- * Wraps up [ktfmt](https://github.com/facebookincubator/ktfmt) as a FormatterStep.
+ * Wraps up <a href="https://github.com/facebookincubator/ktfmt">ktfmt</a> as a FormatterStep.
  */
 public class KtfmtStep {
 	// prevent direct instantiation
 	private KtfmtStep() {}
 
-	private static final String DEFAULT_VERSION = "0.16";
+	private static final String DEFAULT_VERSION = "0.27";
 	static final String NAME = "ktfmt";
 	static final String PACKAGE = "com.facebook";
 	static final String MAVEN_COORDINATE = PACKAGE + ":ktfmt:";
 
 	/**
-	 * Used to allow dropbox style option through formatting options.
+	 * Used to allow multiple style option through formatting options and since when is each of them available.
 	 *
 	 * @see <a href="https://github.com/facebookincubator/ktfmt/blob/38486b0fb2edcabeba5540fcb69c6f1fa336c331/core/src/main/java/com/facebook/ktfmt/Formatter.kt#L47-L80">ktfmt source</a>
 	 */
 	public enum Style {
-		DEFAULT, DROPBOX
+		DEFAULT("DEFAULT_FORMAT", "0.0"), DROPBOX("DROPBOX_FORMAT", "0.11"), GOOGLE("GOOGLE_FORMAT", "0.21"), KOTLINLANG("KOTLINLANG_FORMAT", "0.21");
+
+		final private String format;
+		final private String since;
+
+		Style(String format, String since) {
+			this.format = format;
+			this.since = since;
+		}
+
+		String getFormat() {
+			return format;
+		}
+
+		String getSince() {
+			return since;
+		}
 	}
 
 	private static final String DROPBOX_STYLE_METHOD = "dropboxStyle";
@@ -79,8 +94,14 @@ public class KtfmtStep {
 		return DEFAULT_VERSION;
 	}
 
+	public static String defaultStyle() {
+		return Style.DEFAULT.name();
+	}
+
 	static final class State implements Serializable {
 		private static final long serialVersionUID = 1L;
+
+		private final String version;
 
 		private final String pkg;
 		/**
@@ -91,6 +112,7 @@ public class KtfmtStep {
 		final JarState jarState;
 
 		State(String version, Provisioner provisioner, Style style) throws IOException {
+			this.version = version;
 			this.pkg = PACKAGE;
 			this.style = style;
 			this.jarState = JarState.from(MAVEN_COORDINATE + version, provisioner);
@@ -101,15 +123,15 @@ public class KtfmtStep {
 			Class<?> formatterClazz = classLoader.loadClass(pkg + ".ktfmt.FormatterKt");
 			return input -> {
 				try {
-					if (style == DROPBOX) {
+					if (style == DEFAULT) {
+						Method formatterMethod = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
+						return (String) formatterMethod.invoke(formatterClazz, input);
+					} else {
 						Class<?> formattingOptionsClazz = classLoader.loadClass(pkg + ".ktfmt.FormattingOptions");
 						Method formatterMethod = formatterClazz.getMethod(FORMATTER_METHOD, formattingOptionsClazz,
 								String.class);
-						Object formattingOptions = getDropboxStyleFormattingOptions(classLoader);
+						Object formattingOptions = getCustomFormattingOptions(classLoader, style);
 						return (String) formatterMethod.invoke(formatterClazz, formattingOptions, input);
-					} else {
-						Method formatterMethod = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
-						return (String) formatterMethod.invoke(formatterClazz, input);
 					}
 				} catch (InvocationTargetException e) {
 					throw ThrowingEx.unwrapCause(e);
@@ -117,11 +139,25 @@ public class KtfmtStep {
 			};
 		}
 
-		private Object getDropboxStyleFormattingOptions(ClassLoader classLoader) throws Exception {
-			Class<?> formattingOptionsCompanionClazz = classLoader.loadClass(pkg + ".ktfmt.FormattingOptions$Companion");
-			Object companion = formattingOptionsCompanionClazz.getConstructors()[0].newInstance((Object) null);
-			Method formattingOptionsMethod = formattingOptionsCompanionClazz.getDeclaredMethod(DROPBOX_STYLE_METHOD);
-			return formattingOptionsMethod.invoke(companion);
+		private Object getCustomFormattingOptions(ClassLoader classLoader, Style style) throws Exception {
+			if (BadSemver.version(version) < BadSemver.version(style.since)) {
+				throw new IllegalStateException(String.format("The style %s is available from version %s (current version: %s)", style.name(), style.since, version));
+			}
+
+			try {
+				// ktfmt v0.19 and later
+				return classLoader.loadClass(pkg + ".ktfmt.FormatterKt").getField(style.getFormat()).get(null);
+			} catch (NoSuchFieldException ignored) {}
+
+			// fallback to old, pre-0.19 ktfmt interface.
+			if (style == Style.DEFAULT || style == Style.DROPBOX) {
+				Class<?> formattingOptionsCompanionClazz = classLoader.loadClass(pkg + ".ktfmt.FormattingOptions$Companion");
+				Object companion = formattingOptionsCompanionClazz.getConstructors()[0].newInstance((Object) null);
+				Method formattingOptionsMethod = formattingOptionsCompanionClazz.getDeclaredMethod(DROPBOX_STYLE_METHOD);
+				return formattingOptionsMethod.invoke(companion);
+			} else {
+				throw new IllegalStateException("Versions pre-0.19 can only use Default and Dropbox styles");
+			}
 		}
 	}
 }

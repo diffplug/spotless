@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
@@ -22,7 +23,9 @@ import java.util.Objects;
 import javax.inject.Inject;
 
 import com.diffplug.common.collect.ImmutableSortedMap;
+import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.kotlin.DiktatStep;
 import com.diffplug.spotless.kotlin.KtLintStep;
 import com.diffplug.spotless.kotlin.KtfmtStep;
 import com.diffplug.spotless.kotlin.KtfmtStep.Style;
@@ -37,7 +40,7 @@ public class KotlinGradleExtension extends FormatExtension {
 		super(spotless);
 	}
 
-	/** Adds the specified version of [ktlint](https://github.com/pinterest/ktlint). */
+	/** Adds the specified version of <a href="https://github.com/pinterest/ktlint">ktlint</a>. */
 	public KotlinFormatExtension ktlint(String version) {
 		Objects.requireNonNull(version, "version");
 		return new KotlinFormatExtension(version, Collections.emptyMap());
@@ -70,13 +73,13 @@ public class KotlinGradleExtension extends FormatExtension {
 		}
 	}
 
-	/** Uses the [ktfmt](https://github.com/facebookincubator/ktfmt) jar to format source code. */
+	/** Uses the <a href="https://github.com/facebookincubator/ktfmt">ktfmt</a> jar to format source code. */
 	public KtfmtConfig ktfmt() {
 		return ktfmt(KtfmtStep.defaultVersion());
 	}
 
 	/**
-	 * Uses the given version of [ktfmt](https://github.com/facebookincubator/ktfmt) to format source
+	 * Uses the given version of <a href="https://github.com/facebookincubator/ktfmt">ktfmt</a> to format source
 	 * code.
 	 */
 	public KtfmtConfig ktfmt(String version) {
@@ -94,13 +97,61 @@ public class KotlinGradleExtension extends FormatExtension {
 			addStep(createStep());
 		}
 
-		public void dropboxStyle() {
-			style = Style.DROPBOX;
+		public void style(Style style) {
+			this.style = style;
 			replaceStep(createStep());
+		}
+
+		public void dropboxStyle() {
+			style(Style.DROPBOX);
+		}
+
+		public void googleStyle() {
+			style(Style.GOOGLE);
+		}
+
+		public void kotlinlangStyle() {
+			style(Style.KOTLINLANG);
 		}
 
 		private FormatterStep createStep() {
 			return KtfmtStep.create(version, provisioner(), style);
+		}
+	}
+
+	/** Adds the specified version of <a href="https://github.com/cqfn/diKTat">diktat</a>. */
+	public DiktatFormatExtension diktat(String version) {
+		Objects.requireNonNull(version, "version");
+		return new DiktatFormatExtension(version);
+	}
+
+	public DiktatFormatExtension diktat() {
+		return diktat(DiktatStep.defaultVersionDiktat());
+	}
+
+	public class DiktatFormatExtension {
+
+		private final String version;
+		private FileSignature config;
+
+		DiktatFormatExtension(String version) {
+			this.version = version;
+			addStep(createStep());
+		}
+
+		public DiktatFormatExtension configFile(Object file) throws IOException {
+			// Specify the path to the configuration file
+			if (file == null) {
+				this.config = null;
+			} else {
+				this.config = FileSignature.signAsList(getProject().file(file));
+			}
+			replaceStep(createStep());
+			return this;
+		}
+
+		private FormatterStep createStep() {
+			return DiktatStep.createForScript(version, provisioner(), config);
 		}
 	}
 

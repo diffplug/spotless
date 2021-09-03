@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.JreVersion;
 import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.eclipse.EclipseCommonTests;
@@ -66,6 +67,11 @@ public class EclipseWtpFormatterStepTest extends EclipseCommonTests {
 		}
 	}
 
+	@Override
+	protected void makeAssumptions() {
+		JreVersion.assume11OrGreater();
+	}
+
 	@Parameters(name = "{0}")
 	public static Iterable<WTP> data() {
 		return Arrays.asList(WTP.values());
@@ -76,7 +82,7 @@ public class EclipseWtpFormatterStepTest extends EclipseCommonTests {
 
 	@Override
 	protected String[] getSupportedVersions() {
-		return new String[]{"4.7.3a", "4.7.3b", "4.8.0", "4.12.0", "4.13.0"};
+		return new String[]{"4.19.0"};
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ public class ScalafmtTest extends MavenIntegrationHarness {
 	public void testScalafmtWithDefaultConfig() throws Exception {
 		writePomWithScalaSteps("<scalafmt/>");
 
-		runTest("scala/scalafmt/basic.clean_2.0.1");
+		runTest("scala/scalafmt/basic.clean_3.0.0");
 	}
 
 	@Test
@@ -36,7 +36,7 @@ public class ScalafmtTest extends MavenIntegrationHarness {
 				"  <file>${project.basedir}/scalafmt.conf</file>",
 				"</scalafmt>");
 
-		runTest("scala/scalafmt/basic.cleanWithCustomConf_2.0.1");
+		runTest("scala/scalafmt/basic.cleanWithCustomConf_3.0.0");
 	}
 
 	private void runTest(String s) throws Exception {

@@ -4,6 +4,26 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+### Fixed
+* Fixed IndexOutOfBoundsException in parallel execution of `eclipse-groovy` formatter ([#877](https://github.com/diffplug/spotless/issues/877))
+
+## [4.1.0] - 2021-06-05
+### Added
+* Switch to Groovy-Eclipse release 4.1.0 for Eclipse 4.19 using Groovy 4.0.0 Alpha 2.
+
+## [4.0.0] - 2021-04-10
+### Added
+* Switch to Groovy-Eclipse release 4.0.0 for Eclipse 4.18 using Groovy 4.0.0 Alpha 2.
+* **BREAKING** Keep spotless-eclipse-groovy major version in sync with Groovy-Eclipse version.
+
+## [3.9.0] - 2020-10-17
+### Added
+* Fixed version number determined by change log.
+
+## [3.8.1] - 2020-10-17
+### Added
+* Switch to Groovy-Eclipse release 3.9.0 for Eclipse 4.17 using Groovy-Indy 3.0.6.
+
 ## [3.8.0] - 2020-10-04
 ### Added
 * Switch to Groovy-Eclipse release 3.8.0 for Eclipse 4.16 using Groovy-Indy 3.0.4.

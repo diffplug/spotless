@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import static com.diffplug.spotless.kotlin.KotlinConstants.LICENSE_HEADER_DELIMITER;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
@@ -28,7 +29,9 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 
+import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.kotlin.DiktatStep;
 import com.diffplug.spotless.kotlin.KtLintStep;
 import com.diffplug.spotless.kotlin.KtfmtStep;
 import com.diffplug.spotless.kotlin.KtfmtStep.Style;
@@ -51,7 +54,7 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 		return licenseHeaderFile(licenseHeaderFile, LICENSE_HEADER_DELIMITER);
 	}
 
-	/** Adds the specified version of [ktlint](https://github.com/pinterest/ktlint). */
+	/** Adds the specified version of <a href="https://github.com/pinterest/ktlint">ktlint</a>. */
 	public KotlinFormatExtension ktlint(String version) {
 		Objects.requireNonNull(version);
 		return new KotlinFormatExtension(version, Collections.emptyMap());
@@ -84,13 +87,13 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 		}
 	}
 
-	/** Uses the [ktfmt](https://github.com/facebookincubator/ktfmt) jar to format source code. */
+	/** Uses the <a href="https://github.com/facebookincubator/ktfmt">ktfmt</a> jar to format source code. */
 	public KtfmtConfig ktfmt() {
 		return ktfmt(KtfmtStep.defaultVersion());
 	}
 
 	/**
-	 * Uses the given version of [ktfmt](https://github.com/facebookincubator/ktfmt) and applies the dropbox style
+	 * Uses the given version of <a href="https://github.com/facebookincubator/ktfmt">ktfmt</a> and applies the dropbox style
 	 * option to format source code.
 	 */
 	public KtfmtConfig ktfmt(String version) {
@@ -109,12 +112,60 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 		}
 
 		public void dropboxStyle() {
-			style = Style.DROPBOX;
+			style(Style.DROPBOX);
+		}
+
+		public void googleStyle() {
+			style(Style.GOOGLE);
+		}
+
+		public void kotlinlangStyle() {
+			style(Style.KOTLINLANG);
+		}
+
+		public void style(Style style) {
+			this.style = style;
 			replaceStep(createStep());
 		}
 
 		private FormatterStep createStep() {
 			return KtfmtStep.create(version, provisioner(), style);
+		}
+	}
+
+	/** Adds the specified version of <a href="https://github.com/cqfn/diKTat">diktat</a>. */
+	public DiktatFormatExtension diktat(String version) {
+		Objects.requireNonNull(version);
+		return new DiktatFormatExtension(version);
+	}
+
+	public DiktatFormatExtension diktat() {
+		return diktat(DiktatStep.defaultVersionDiktat());
+	}
+
+	public class DiktatFormatExtension {
+
+		private final String version;
+		private FileSignature config;
+
+		DiktatFormatExtension(String version) {
+			this.version = version;
+			addStep(createStep());
+		}
+
+		public DiktatFormatExtension configFile(Object file) throws IOException {
+			// Specify the path to the configuration file
+			if (file == null) {
+				this.config = null;
+			} else {
+				this.config = FileSignature.signAsList(getProject().file(file));
+			}
+			replaceStep(createStep());
+			return this;
+		}
+
+		private FormatterStep createStep() {
+			return DiktatStep.create(version, provisioner(), config);
 		}
 	}
 

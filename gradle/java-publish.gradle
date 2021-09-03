@@ -1,13 +1,39 @@
+
+if (project.parent == null) {
+	group = 'com.diffplug.spotless'
+	// it's the root project
+	apply plugin: 'io.github.gradle-nexus.publish-plugin'
+	nexusPublishing {
+		repositories {
+			sonatype {
+				username = System.env['nexus_user']
+				password = System.env['nexus_pass']
+			}
+		}
+	}
+	def initTask = tasks.named('initializeSonatypeStagingRepository')
+	allprojects {
+		initTask.configure {
+			shouldRunAfter(tasks.withType(Sign))
+		}
+	}
+	return
+}
+
 ///////////
 // MAVEN //
 ///////////
-apply plugin: 'maven-publish'
-apply plugin: 'com.jfrog.bintray'
-
-task sourcesJar(type: Jar) {
-	classifier = 'sources'
-	from sourceSets.main.allJava
+java {
+	withJavadocJar()
+	withSourcesJar()
 }
+
+tasks.named('sourcesJar') {
+	dependsOn 'jar'
+}
+
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
 
 // Where it's possible to name parameters and methods clearly enough
 // that javadoc is not necessary, why make the code bigger?
@@ -16,7 +42,6 @@ task sourcesJar(type: Jar) {
 javadoc {
 	options.addStringOption('Xdoclint:none', '-quiet')
 	options.addStringOption('Xwerror', '-quiet')
-	enabled = org.gradle.api.JavaVersion.current() == org.gradle.api.JavaVersion.VERSION_1_8
 }
 // make sure bad javadoc breaks the build
 tasks.named('check') {
@@ -29,7 +54,6 @@ def javadocInfo = '<h2>' + makeLink("https://github.com/${org}/${name}", "${grou
 		' by ' + makeLink('https://www.diffplug.com', 'DiffPlug') + '</h2>'
 
 String dotdotGradle = project.name.startsWith('eclipse-') ? '../../gradle' : '../gradle'
-apply plugin: 'org.jdrupes.mdoclet'
 javadoc {
 	options.encoding = 'UTF-8'
 	// Where it's possible to name parameters and methods clearly enough
@@ -37,6 +61,7 @@ javadoc {
 	//
 	// Thus, no javadoc warnings.
 	options.addStringOption('Xdoclint:none', '-quiet')
+	options.addStringOption('source', '8')
 	// setup the header
 	options.header javadocInfo
 	options.footer javadocInfo
@@ -47,11 +72,6 @@ javadoc {
 	// links to javadoc from the other versions
 	options.linksOffline("https://javadoc.io/static/com.diffplug.spotless/spotless-lib/${rootProject.spotlessChangelog.versionLast}", "${dotdotGradle}/javadoc/spotless-lib")
 	options.linksOffline("https://javadoc.io/static/com.diffplug.spotless/spotless-lib-extra/${rootProject.spotlessChangelog.versionLast}", "${dotdotGradle}/javadoc/spotless-lib-extra")
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-	classifier = 'javadoc'
-	from javadoc.destinationDir
 }
 
 ////////////////
@@ -68,8 +88,6 @@ model {
 				if (project.ext.artifactId != 'spotless-plugin-gradle') {
 					from components.java
 				}
-				artifact sourcesJar
-				artifact javadocJar
 
 				groupId project.group
 				artifactId project.ext.artifactId
@@ -138,35 +156,11 @@ model {
 }
 
 if (!version.endsWith('-SNAPSHOT')) {
-	// upload releases to bintray and then mavenCentral
-	bintray {
-		user = System.env['bintray_user']
-		key = System.env['bintray_pass']
-		publications = [
-			'pluginMaven'
-		]
-		publish = true
-		pkg {
-			repo = 'opensource'
-			name = project.ext.artifactId
-			userOrg = project.org
-			version {
-				name = project.version
-				mavenCentralSync {
-					user = System.env['nexus_user']
-					password = System.env['nexus_pass']
-				}
-			}
-		}
+	signing {
+		String gpg_key = new String(System.env['gpg_key64'].decodeBase64())
+		useInMemoryPgpKeys(gpg_key, System.env['gpg_passphrase'])
+		sign(publishing.publications)
 	}
-
-	publish.dependsOn(bintrayUpload)
-	bintrayUpload.dependsOn([
-		'generatePomFileForPluginMavenPublication',
-		jar,
-		sourcesJar,
-		javadocJar
-	])
 
 	// find the project with the changelog (this project for plugins, root project for libs)
 	def changelogTasks = (tasks.names.contains('changelogBump') ? project : rootProject).tasks
@@ -176,14 +170,15 @@ if (!version.endsWith('-SNAPSHOT')) {
 		dependsOn changelogTasks.named('changelogCheck')
 	}
 	// ensures that changelog bump and push only happens if the publish was successful
-	changelogTasks.named('changelogBump').configure {
-		dependsOn tasks.named('bintrayUpload')
-		// only the root project has bintrayPublish, and it finalizes all bintrayUpload tasks
-		// https://github.com/bintray/gradle-bintray-plugin/blob/3fe02dfdae3e807afba57e0140a0d4c2424674e1/src/main/groovy/com/jfrog/bintray/gradle/ProjectsEvaluatedBuildListener.groovy#L37-L41
-		dependsOn rootProject.tasks.named('bintrayPublish')
-		// if we have a gradle plugin, we need to push it up to the plugin portal too
-		if (tasks.names.contains('publishPlugins')) {
-			dependsOn tasks.named('publishPlugins')
+	def thisProj = project
+	afterEvaluate {
+		changelogTasks.named('changelogBump').configure {
+			dependsOn thisProj.tasks.named('publishPluginMavenPublicationToSonatypeRepository')
+			dependsOn rootProject.tasks.named('closeAndReleaseSonatypeStagingRepository')
+			// if we have a gradle plugin, we need to push it up to the plugin portal too
+			if (thisProj.tasks.names.contains('publishPlugins')) {
+				dependsOn thisProj.tasks.named('publishPlugins')
+			}
 		}
 	}
 }

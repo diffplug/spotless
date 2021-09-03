@@ -1,4 +1,6 @@
-# Release checklist
+# Manual Release checklist
+
+We now do this automatically in CI.
 
 - [ ] Revise [`CHANGES.md`](CHANGES.md), [`plugin-gradle/CHANGES.md`](plugin-gradle/CHANGES.md), and [`plugin-maven/CHANGES.md`](plugin-maven/CHANGES.md)
 - [ ] If necessary, release lib `./gradlew :changelogPush`

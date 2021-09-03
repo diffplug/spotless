@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -256,7 +256,7 @@ public final class PaddedCell {
 
 		private byte[] canonicalBytes() {
 			if (canonicalBytes == null) {
-				throw new IllegalStateException("First make sure that `!isClean()` and `!didNotConverge()`");
+				throw new IllegalStateException("First make sure that {@code !isClean()} and {@code !didNotConverge()}");
 			}
 			return canonicalBytes;
 		}
@@ -270,7 +270,7 @@ public final class PaddedCell {
 		}
 	}
 
-	/** Returns the DirtyState which corresponds to `isClean()`. */
+	/** Returns the DirtyState which corresponds to {@code isClean()}. */
 	public static DirtyState isClean() {
 		return isClean;
 	}

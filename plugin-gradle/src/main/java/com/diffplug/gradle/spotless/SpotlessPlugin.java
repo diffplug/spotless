@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,23 +35,20 @@ public class SpotlessPlugin implements Plugin<Project> {
 		if (project.hasProperty(SPOTLESS_MODERN)) {
 			project.getLogger().warn("'spotlessModern' has no effect as of Spotless 5.0, recommend removing it.");
 		}
-		// make sure there's a `clean` task
+		// make sure there's a {@code clean} task
 		project.getPlugins().apply(BasePlugin.class);
 
 		// setup the extension
 		project.getExtensions().create(SpotlessExtension.class, SpotlessExtension.EXTENSION, SpotlessExtensionImpl.class, project);
 
 		// clear spotless' cache when the user does a clean
-		project.getTasks().named(BasePlugin.CLEAN_TASK_NAME).configure(clean -> {
-			clean.doLast(unused -> {
-				// resolution for: https://github.com/diffplug/spotless/issues/243#issuecomment-564323856
-				// project.getRootProject() is consistent across every project, so only of one the clears will
-				// actually happen (as desired)
-				//
-				// we use System.identityHashCode() to avoid a memory leak by hanging on to the reference directly
-				SpotlessCache.clearOnce(System.identityHashCode(project.getRootProject()));
-			});
-		});
+		// resolution for: https://github.com/diffplug/spotless/issues/243#issuecomment-564323856
+		// project.getRootProject() is consistent across every project, so only of one the clears will
+		// actually happen (as desired)
+		//
+		// we use System.identityHashCode() to avoid a memory leak by hanging on to the reference directly
+		int cacheKey = System.identityHashCode(project.getRootProject());
+		project.getTasks().named(BasePlugin.CLEAN_TASK_NAME).configure(clean -> clean.doLast(unused -> SpotlessCache.clearOnce(cacheKey)));
 	}
 
 	static String capitalize(String input) {

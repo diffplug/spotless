@@ -4,6 +4,117 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+## [2.12.3] - 2021-08-20
+### Changed
+* Added support for [scalafmt 3.0.0](https://github.com/scalameta/scalafmt/releases/tag/v3.0.0) and bump default scalafmt version to `3.0.0` ([#913](https://github.com/diffplug/spotless/pull/913)).
+* Bump default versions ([#915](https://github.com/diffplug/spotless/pull/915))
+  * `ktfmt` from `0.24` to `0.27`
+  * `ktlint` from `0.35.0` to `0.42.1`
+  * `google-java-format` from `1.10.0` to `1.11.0`
+
+## [2.12.2] - 2021-07-20
+### Fixed
+ * Improved [SQL formatting](https://github.com/diffplug/spotless/pull/897) with respect to comments
+
+## [2.12.1] - 2021-06-17
+
+### Fixed
+* Fixed IndexOutOfBoundsException in parallel execution of `eclipse-groovy` formatter ([#877](https://github.com/diffplug/spotless/issues/877))
+
+## [2.12.0] - 2021-06-10
+### Added
+* Added support for `eclipse-cdt` at `4.19.0`. Note that version requires Java 11 or higher.
+* Added support for `eclipse-groovy` at `4.18.0` and `4.19.0`.
+* Added support for `eclipse-wtp` at `4.19.0`. Note that version requires Java 11 or higher.
+### Changed
+* Bump `eclipse-groovy` default version from `4.17.0` to `4.19.0`.
+
+## [2.11.1] - 2021-05-13
+### Fixed
+* Node is re-installed if some other build step removed it ([#863](https://github.com/diffplug/spotless/issues/863))
+
+## [2.11.0] - 2021-05-03
+### Added
+* Added support for [python](README.md#python), specifically [black](README.md#black).
+### Changed
+* Update ktfmt from 0.21 to 0.24
+### Fixed
+* The `<url>` field in the maven POM is now set correctly ([#798](https://github.com/diffplug/spotless/issues/798))
+
+## [2.10.3] - 2021-04-21
+### Fixed
+* Explicitly separate target file from git arguments when parsing year for license header to prevent command from failing on argument-like paths ([#847](https://github.com/diffplug/spotless/pull/847))
+
+## [2.10.2] - 2021-04-20
+### Fixed
+* LicenseHeaderStep treats address as copyright year ([#716](https://github.com/diffplug/spotless/issues/716))
+
+## [2.10.1] - 2021-04-13
+### Fixed
+* Fix license header bug for years in range ([#840](https://github.com/diffplug/spotless/pull/840)).
+
+## [2.10.0] - 2021-04-10
+### Added
+* Added support for `eclipse-jdt` at `4.19.0`.
+### Changed
+* Bump `eclipse-jdt` default version from `4.18.0` to `4.19.0`.
+* Bump `google-java-format` default version from `1.9` to `1.10.0`.
+* Expose configuration exceptions from scalafmt ([#837](https://github.com/diffplug/spotless/issues/837))
+
+## [2.9.0] - 2021-03-05
+### Added
+* Bump ktfmt to 0.21 and add support to Google and Kotlinlang formats ([#812](https://github.com/diffplug/spotless/pull/812))
+
+## [2.8.1] - 2021-02-16
+### Fixed
+* Allow licence headers to be blank ([#801](https://github.com/diffplug/spotless/pull/801)).
+
+## [2.8.0] - 2021-02-09
+### Added
+* Support for diktat ([#789](https://github.com/diffplug/spotless/pull/789))
+
+## [2.7.0] - 2021-01-04
+### Added
+* Added ability to specify dropbox style for ktfmt `<style>DROPBOX</style>` ([#764](https://github.com/diffplug/spotless/pull/764))
+* Added support for `eclipse-cdt`, `eclipse-jdt`, and `eclipse-wtp` at `4.18.0`.
+### Changed
+* Bump `eclipse-jdt` default version from `4.17.0` to `4.18.0`.
+* Bump `eclipse-wtp` default version from `4.17.0` to `4.18.0`.
+* Bump `ktfmt` default version from `0.16` to `0.19` ([#748](https://github.com/diffplug/spotless/issues/748) and [#773](https://github.com/diffplug/spotless/issues/773)).
+### Fixed
+* Fixed `ratchetFrom` support for git-submodule ([#746](https://github.com/diffplug/spotless/issues/746)).
+* Fixed `ratchetFrom` excess memory consumption ([#735](https://github.com/diffplug/spotless/issues/735)).
+* `ktfmt` v0.19+ with dropbox-style works again ([#765](https://github.com/diffplug/spotless/pull/765)).
+* `prettier` no longer throws errors on empty files ([#751](https://github.com/diffplug/spotless/pull/751)).
+* Fixed error when running on root of windows mountpoint ([#760](https://github.com/diffplug/spotless/pull/760)).
+* Fix broken test for spotlessFiles parameter on windows ([#737](https://github.com/diffplug/spotless/pull/737)).
+
+## [2.6.1] - 2020-11-16
+### Fixed
+* Fixed a bug which occurred if the root directory of the project was also the filesystem root ([#732](https://github.com/diffplug/spotless/pull/732)).
+* Upgraded org.codehaus.plexus:plexus-utils to its latest version (3.3.0) to improve directory scanning time ([#729](https://github.com/diffplug/spotless/pull/729)).
+  * Whether this helps with the directory scanning time is unconfirmed, please report your experience in the issue above.
+
+## [2.6.0] - 2020-11-13
+### Added
+* Added support to npm-based steps for picking up `.npmrc` files ([#727](https://github.com/diffplug/spotless/pull/727))
+### Fixed
+* Fixed bug in import order which woudld cause trailing empty strings to get dropped ([731](https://github.com/diffplug/spotless/issues/731))
+  * e.g. `<importorder><order>java,javafx,com.mycompany,</order></importorder>`
+* Bump JGit from `5.8.0` to `5.9.0` to improve performance ([#726](https://github.com/diffplug/spotless/issues/726))
+
+## [2.5.0] - 2020-10-20
+### Added
+* Added support for eclipse-cdt 4.14.0, 4.16.0 and 4.17.0 ([#722](https://github.com/diffplug/spotless/pull/722)).
+* Added support for eclipse-groovy 4.14.0, 4.15.0, 4.16.0 and 4.17.0 ([#722](https://github.com/diffplug/spotless/pull/722)).
+* Added support for eclipse-jdt 4.17.0 ([#722](https://github.com/diffplug/spotless/pull/722)).
+* Added support for eclipse-wtp 4.14.0, 4.15.0, 4.16.0 and 4.17.0 ([#722](https://github.com/diffplug/spotless/pull/722)).
+### Changed
+* Updated default eclipse-cdt from 4.13.0 to 4.16.0 ([#722](https://github.com/diffplug/spotless/pull/722)). Note that version 4.17.0 is supported, but requires Java 11 or higher.
+* Updated default eclipse-groovy from 4.13.0 to 4.17.0 ([#722](https://github.com/diffplug/spotless/pull/722)).
+* Updated default eclipse-jdt from 4.16.0 to 4.17.0 ([#722](https://github.com/diffplug/spotless/pull/722)).
+* Updated default eclipse-wtp from 4.13.0 to 4.17.0 ([#722](https://github.com/diffplug/spotless/pull/722)).
+
 ## [2.4.2] - 2020-10-05
 ### Fixed
 * Improve speed by ~4x when using `<ratchetFrom>` ([#701](https://github.com/diffplug/spotless/pull/706)).
@@ -56,7 +167,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [2.0.0] - 2020-07-02
 ### Added
-* You can now ratchet a project's style by limiting Spotless only to files which have changed since a given [git reference](https://javadoc.io/static/org.eclipse.jgit/org.eclipse.jgit/5.6.1.202002131546-r/org/eclipse/jgit/lib/Repository.html#resolve-java.lang.String-), e.g. `ratchetFrom 'origin/main'`. ([#590](https://github.com/diffplug/spotless/pull/590))
+* You can now ratchet a project's style by limiting Spotless only to files which have changed since a given [git reference](https://javadoc.io/doc/org.eclipse.jgit/org.eclipse.jgit/5.6.1.202002131546-r/org/eclipse/jgit/lib/Repository.html#resolve-java.lang.String-), e.g. `ratchetFrom 'origin/main'`. ([#590](https://github.com/diffplug/spotless/pull/590))
 * Huge speed improvement for multi-module projects thanks to improved cross-project classloader caching ([#571](https://github.com/diffplug/spotless/pull/571), fixes [#559](https://github.com/diffplug/spotless/issues/559)).
 * If you specify `-DspotlessSetLicenseHeaderYearsFromGitHistory=true`, Spotless will perform an expensive search through git history to determine the oldest and newest commits for each file, and uses that to determine license header years. ([#626](https://github.com/diffplug/spotless/pull/626))
 * `prettier` will now autodetect the parser (and formatter) to use based on the filename, unless you override this using `config` or `configFile` with the option `parser` or `filepath` ([#620](https://github.com/diffplug/spotless/pull/620)).

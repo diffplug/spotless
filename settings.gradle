@@ -1,10 +1,28 @@
 pluginManagement {
 	plugins {
-		id 'com.diffplug.spotless' version '5.0.0'
+		// We are stuck dogfooding at 5.5.0 for a very strange reason:
+		//   5.8.0+ Cannot get property 'versionLast' on null object @ spotless-freshmark.gradle:58
+		//   5.6.0+ Tried to add format named 'freshmark' of type class @ spotless-freshmark.gradle:55
+		id 'com.diffplug.spotless'                 version '5.5.0'
+		// https://github.com/diffplug/goomph/blob/main/CHANGES.md
+		id 'com.diffplug.eclipse.resourcefilters'  version '3.27.0'
+		// https://plugins.gradle.org/plugin/com.gradle.plugin-publish
+		id 'com.gradle.plugin-publish'             version '0.14.0'
+		// https://github.com/gradle-nexus/publish-plugin/releases
+		id 'io.github.gradle-nexus.publish-plugin' version '1.0.0'
+		// https://github.com/spotbugs/spotbugs-gradle-plugin/releases
+		id 'com.github.spotbugs'                   version '4.7.0'
+		// https://github.com/diffplug/spotless-changelog
+		id 'com.diffplug.spotless-changelog'       version '2.1.2'
 	}
 }
 plugins {
-	id 'com.diffplug.spotless' apply false
+	id 'com.diffplug.spotless'                 apply false
+	id 'com.diffplug.eclipse.resourcefilters'  apply false
+	id 'com.gradle.plugin-publish'             apply false
+	id 'io.github.gradle-nexus.publish-plugin' apply false
+	id 'com.github.spotbugs'                   apply false
+	id 'com.diffplug.spotless-changelog'       apply false
 }
 if (System.env['CI'] != null) {
 	// use the remote buildcache on all CI builds
@@ -34,7 +52,12 @@ if (System.env['CI'] != null) {
 	}
 }
 
-include 'ide'				// easy dev setup
+if (startParameter.getProjectProperties().get('release') != 'true') {
+	// the ide project screws up the release tasks
+	include 'ide'
+}
+
+rootProject.name = 'spotless'
 
 include 'lib'		// reusable library with no dependencies
 include 'testlib'	// library for sharing test infrastructure between the projects below

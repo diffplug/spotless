@@ -38,7 +38,7 @@ public class ImportOrder implements FormatterStepFactory {
 				File importsFile = config.getFileLocator().locateFile(file);
 				return ImportOrderStep.forGroovy().createFrom(importsFile);
 			} else {
-				return ImportOrderStep.forGroovy().createFrom(order.split(","));
+				return ImportOrderStep.forGroovy().createFrom(order.split(",", -1));
 			}
 		} else if (file == null && order == null) {
 			return ImportOrderStep.forGroovy().createFrom();

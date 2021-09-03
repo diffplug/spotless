@@ -106,7 +106,9 @@ public class GrEclipseFormatterStepImpl {
 			errors = Collections.synchronizedList(new ArrayList<String>());
 			ILog groovyLogger = GroovyCoreActivator.getDefault().getLog();
 			groovyLogger.addLogListener(this);
-			GroovyLogManager.manager.addLogger(this);
+			synchronized(GroovyLogManager.manager) {
+				GroovyLogManager.manager.addLogger(this);
+			}
 		}
 
 		@Override
@@ -117,7 +119,9 @@ public class GrEclipseFormatterStepImpl {
 		public boolean errorsDetected() {
 			ILog groovyLogger = GroovyCoreActivator.getDefault().getLog();
 			groovyLogger.removeLogListener(this);
-			GroovyLogManager.manager.removeLogger(this);
+			synchronized(GroovyLogManager.manager) {
+				GroovyLogManager.manager.removeLogger(this);
+			}
 			return 0 != errors.size();
 		}
 

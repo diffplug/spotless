@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,16 +34,18 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
-/** Wraps up [scalafmt](https://github.com/olafurpg/scalafmt) as a FormatterStep. */
+/** Wraps up <a href="https://github.com/scalameta/scalafmt">scalafmt</a> as a FormatterStep. */
 public class ScalaFmtStep {
 	// prevent direct instantiation
 	private ScalaFmtStep() {}
 
 	private static final Pattern VERSION_PRE_2_0 = Pattern.compile("[10]\\.(\\d+)\\.\\d+");
-	private static final String DEFAULT_VERSION = "2.0.1";
+	private static final Pattern VERSION_PRE_3_0 = Pattern.compile("2\\.(\\d+)\\.\\d+");
+	private static final String DEFAULT_VERSION = "3.0.0";
 	static final String NAME = "scalafmt";
 	static final String MAVEN_COORDINATE_PRE_2_0 = "com.geirsson:scalafmt-core_2.11:";
-	static final String MAVEN_COORDINATE = "org.scalameta:scalafmt-core_2.11:";
+	static final String MAVEN_COORDINATE_PRE_3_0 = "org.scalameta:scalafmt-core_2.11:";
+	static final String MAVEN_COORDINATE = "org.scalameta:scalafmt-core_2.13:";
 
 	public static FormatterStep create(Provisioner provisioner) {
 		return create(defaultVersion(), provisioner, null);
@@ -69,9 +71,11 @@ public class ScalaFmtStep {
 
 		State(String version, Provisioner provisioner, @Nullable File configFile) throws IOException {
 			String mavenCoordinate;
-			Matcher versionMatcher = VERSION_PRE_2_0.matcher(version);
-			if (versionMatcher.matches()) {
+			Matcher versionMatcher;
+			if ((versionMatcher = VERSION_PRE_2_0.matcher(version)).matches()) {
 				mavenCoordinate = MAVEN_COORDINATE_PRE_2_0;
+			} else if ((versionMatcher = VERSION_PRE_3_0.matcher(version)).matches()) {
+				mavenCoordinate = MAVEN_COORDINATE_PRE_3_0;
 			} else {
 				mavenCoordinate = MAVEN_COORDINATE;
 			}
@@ -106,7 +110,7 @@ public class ScalaFmtStep {
 				Class<?> configCls = classLoader.loadClass("org.scalafmt.config.Config");
 				Class<?> scalafmtCls = classLoader.loadClass("org.scalafmt.Scalafmt");
 
-				Object either;
+				Object configured;
 
 				try {
 					// scalafmt >= 1.6.0
@@ -114,8 +118,7 @@ public class ScalaFmtStep {
 
 					String configStr = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
 
-					Object configured = parseHoconConfig.invoke(null, configStr);
-					either = invokeNoArg(configured, "toEither");
+					configured = parseHoconConfig.invoke(null, configStr);
 				} catch (NoSuchMethodException e) {
 					// scalafmt >= v0.7.0-RC1 && scalafmt < 1.6.0
 					Method fromHocon = configCls.getMethod("fromHoconString", String.class, optionCls);
@@ -123,11 +126,10 @@ public class ScalaFmtStep {
 
 					String configStr = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
 
-					Object configured = fromHocon.invoke(null, configStr, fromHoconEmptyPath);
-					either = invokeNoArg(configured, "toEither");
+					configured = fromHocon.invoke(null, configStr, fromHoconEmptyPath);
 				}
 
-				config = invokeNoArg(invokeNoArg(either, "right"), "get");
+				config = invokeNoArg(configured, "get");
 			}
 			return input -> {
 				Object resultInsideFormatted = formatMethod.invoke(null, input, config, emptyRange);

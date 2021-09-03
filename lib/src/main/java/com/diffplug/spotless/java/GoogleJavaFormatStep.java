@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx.Function;
 
-/** Wraps up [google-java-format](https://github.com/google/google-java-format) as a FormatterStep. */
+/** Wraps up <a href="https://github.com/google/google-java-format">google-java-format</a> as a FormatterStep. */
 public class GoogleJavaFormatStep {
 	// prevent direct instantiation
 	private GoogleJavaFormatStep() {}
@@ -94,13 +94,13 @@ public class GoogleJavaFormatStep {
 		}
 	}
 
-	/** On JRE 11+, returns `1.9`. On earlier JREs, returns `1.7`. */
+	/** On JRE 11+, returns {@code 1.9}. On earlier JREs, returns {@code 1.7}. */
 	public static String defaultVersion() {
 		return JRE_VERSION >= 11 ? LATEST_VERSION_JRE_11 : LATEST_VERSION_JRE_8;
 	}
 
 	private static final String LATEST_VERSION_JRE_8 = "1.7";
-	private static final String LATEST_VERSION_JRE_11 = "1.9";
+	private static final String LATEST_VERSION_JRE_11 = "1.11.0";
 
 	public static String defaultStyle() {
 		return DEFAULT_STYLE;

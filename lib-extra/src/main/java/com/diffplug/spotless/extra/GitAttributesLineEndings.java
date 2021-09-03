@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,8 +55,8 @@ import com.diffplug.spotless.LineEnding;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- * Uses [.gitattributes](https://git-scm.com/docs/gitattributes) to determine
- * the appropriate line ending. Falls back to the `core.eol` property in the
+ * Uses <a href="https://git-scm.com/docs/gitattributes">.gitattributes</a> to determine
+ * the appropriate line ending. Falls back to the {@code core.eol} property in the
  * git config if there are no applicable git attributes, then finally falls
  * back to the platform native.
  */
@@ -108,7 +108,8 @@ public final class GitAttributesLineEndings {
 		final ConcurrentRadixTree<String> hasNonDefaultEnding = new ConcurrentRadixTree<>(new DefaultCharSequenceNodeFactory());
 
 		CachedEndings(File projectDir, Runtime runtime, Iterable<File> toFormat) {
-			rootDir = FileSignature.pathNativeToUnix(projectDir.getAbsolutePath()) + "/";
+			String rootPath = FileSignature.pathNativeToUnix(projectDir.getAbsolutePath());
+			rootDir = rootPath.equals("/") ? rootPath : rootPath + "/";
 			defaultEnding = runtime.defaultEnding;
 			for (File file : toFormat) {
 				String ending = runtime.getEndingFor(file);

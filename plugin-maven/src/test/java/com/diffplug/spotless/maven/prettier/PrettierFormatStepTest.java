@@ -24,19 +24,29 @@ import org.junit.experimental.categories.Category;
 
 import com.diffplug.spotless.category.NpmTest;
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
-import com.diffplug.spotless.maven.MavenRunner;
+import com.diffplug.spotless.maven.MavenRunner.Result;
 import com.diffplug.spotless.maven.generic.Prettier;
 
 @Category(NpmTest.class)
 public class PrettierFormatStepTest extends MavenIntegrationHarness {
 
 	private void run(String kind, String suffix) throws IOException, InterruptedException {
+		String path = prepareRun(kind, suffix);
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile(path).sameAsResource("npm/prettier/filetypes/" + kind + "/" + kind + ".clean");
+	}
+
+	private String prepareRun(String kind, String suffix) throws IOException {
 		String configPath = ".prettierrc.yml";
 		setFile(configPath).toResource("npm/prettier/filetypes/" + kind + "/" + ".prettierrc.yml");
 		String path = "src/main/" + kind + "/test." + suffix;
 		setFile(path).toResource("npm/prettier/filetypes/" + kind + "/" + kind + ".dirty");
-		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("npm/prettier/filetypes/" + kind + "/" + kind + ".clean");
+		return path;
+	}
+
+	private Result runExpectingError(String kind, String suffix) throws IOException, InterruptedException {
+		String path = prepareRun(kind, suffix);
+		return mavenRunner().withArguments("spotless:apply").runHasError();
 	}
 
 	@Test
@@ -93,7 +103,7 @@ public class PrettierFormatStepTest extends MavenIntegrationHarness {
 				"  <devDependencies><prettier>1.16.4</prettier></devDependencies>",
 				"</prettier>");
 
-		MavenRunner.Result result = mavenRunner().withArguments("spotless:apply").runHasError();
+		Result result = mavenRunner().withArguments("spotless:apply").runHasError();
 		assertThat(result.output()).contains(Prettier.ERROR_MESSAGE_ONLY_ONE_CONFIG);
 	}
 
@@ -134,4 +144,30 @@ public class PrettierFormatStepTest extends MavenIntegrationHarness {
 		assertFile("dirty.json").sameAsResource("npm/prettier/filename/clean.json");
 	}
 
+	@Test
+	public void autodetect_npmrc_file() throws Exception {
+		setFile(".npmrc").toLines("registry=https://i.do.no.exist.com");
+		String suffix = "ts";
+		writePomWithPrettierSteps("**/*." + suffix,
+				"<prettier>",
+				"  <prettierVersion>1.16.4</prettierVersion>",
+				"  <configFile>.prettierrc.yml</configFile>",
+				"</prettier>");
+		Result result = runExpectingError("typescript", suffix);
+		assertThat(result.output()).containsPattern("Running npm command.*npm install.* failed with exit code: 1");
+	}
+
+	@Test
+	public void select_configured_npmrc_file() throws Exception {
+		setFile(".custom_npmrc").toLines("registry=https://i.do.no.exist.com");
+		String suffix = "ts";
+		writePomWithPrettierSteps("**/*." + suffix,
+				"<prettier>",
+				"  <prettierVersion>1.16.4</prettierVersion>",
+				"  <configFile>.prettierrc.yml</configFile>",
+				"  <npmrc>${basedir}/.custom_npmrc</npmrc>",
+				"</prettier>");
+		Result result = runExpectingError("typescript", suffix);
+		assertThat(result.output()).containsPattern("Running npm command.*npm install.* failed with exit code: 1");
+	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,16 @@ import com.diffplug.spotless.ResourceHarness;
 
 public abstract class NpmFormatterStepCommonTests extends ResourceHarness {
 
-	protected File npmExecutable() {
+	protected NpmPathResolver npmPathResolver() {
+		return new NpmPathResolver(npmExecutable(), npmrc());
+	}
+
+	private File npmExecutable() {
 		return NpmExecutableResolver.tryFind().orElseThrow(() -> new IllegalStateException("cannot detect node binary"));
+	}
+
+	private File npmrc() {
+		return new NpmrcResolver().tryFind().orElse(null);
 	}
 
 	private File buildDir = null;
