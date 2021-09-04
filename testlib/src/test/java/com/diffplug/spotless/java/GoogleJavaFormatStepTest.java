@@ -36,7 +36,7 @@ public class GoogleJavaFormatStepTest extends ResourceHarness {
 				step.testResourceException("java/googlejavaformat/TextBlock.dirty", throwable -> {
 					throwable.hasMessageStartingWith("You are running Spotless on JRE 8")
 							.hasMessageEndingWith(", which limits you to google-java-format 1.7\n"
-									+ "If you upgrade your build JVM to 11+, then you can use google-java-format 1.9, which may have fixed this problem.");
+									+ "If you upgrade your build JVM to 11+, then you can use google-java-format 1.11.0, which may have fixed this problem.");
 				});
 			} else if (JreVersion.thisVm() < 13) {
 				step.testResourceException("java/googlejavaformat/TextBlock.dirty", throwable -> {
