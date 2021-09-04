@@ -112,7 +112,7 @@ spotless {
     // don't need to set target, it is inferred from java
 
     // apply a specific flavor of google-java-format
-    googleJavaFormat('1.8').aosp()
+    googleJavaFormat('1.8').aosp().reflowLongStrings()
     // make sure every file has the following copyright header.
     // optionally, Spotless can set copyright years by digging
     // through git history (see "license" section below)
@@ -176,9 +176,9 @@ spotless {
 spotless {
   java {
     googleJavaFormat()
-    // optional: you can specify a specific version and/or switch to AOSP style
+    // optional: you can specify a specific version and/or switch to AOSP style and/or reflow long strings (requires at least 1.8)
     //
-    googleJavaFormat('1.7').aosp()
+    googleJavaFormat('1.8').aosp().reflowLongStrings()
 ```
 
 ### eclipse jdt

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ public class GoogleJavaFormatStepTest extends ResourceHarness {
 				step.testResourceException("java/googlejavaformat/TextBlock.dirty", throwable -> {
 					throwable.hasMessageStartingWith("You are running Spotless on JRE 8")
 							.hasMessageEndingWith(", which limits you to google-java-format 1.7\n"
-									+ "If you upgrade your build JVM to 11+, then you can use google-java-format 1.9, which may have fixed this problem.");
+									+ "If you upgrade your build JVM to 11+, then you can use google-java-format 1.11.0, which may have fixed this problem.");
 				});
 			} else if (JreVersion.thisVm() < 13) {
 				step.testResourceException("java/googlejavaformat/TextBlock.dirty", throwable -> {
@@ -83,10 +83,29 @@ public class GoogleJavaFormatStepTest extends ResourceHarness {
 	}
 
 	@Test
+	public void behaviorWithReflowLongStrings() throws Exception {
+		try (StepHarness step = StepHarness.forStep(GoogleJavaFormatStep.create(GoogleJavaFormatStep.defaultVersion(), GoogleJavaFormatStep.defaultStyle(), TestProvisioner.mavenCentral(), true))) {
+			if (JreVersion.thisVm() < 11) {
+				step.testResourceException("java/googlejavaformat/JavaCodeUnformatted.test", throwable -> {
+					throwable.hasMessageStartingWith("You are running Spotless on JRE 8")
+							.hasMessageEndingWith(", which limits you to google-java-format 1.7\n"
+									+ "If you upgrade your build JVM to 11+, then you can use google-java-format 1.11.0, which may have fixed this problem.");
+				});
+			} else {
+				step.testResource("java/googlejavaformat/JavaCodeUnformatted.test", "java/googlejavaformat/JavaCodeFormattedReflowLongStrings.test")
+						.testResource("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test", "java/googlejavaformat/JavaCodeWithLicenseFormattedReflowLongStrings.test")
+						.testResource("java/googlejavaformat/JavaCodeWithLicensePackageUnformatted.test", "java/googlejavaformat/JavaCodeWithLicensePackageFormattedReflowLongStrings.test")
+						.testResource("java/googlejavaformat/JavaCodeWithPackageUnformatted.test", "java/googlejavaformat/JavaCodeWithPackageFormattedReflowLongStrings.test");
+			}
+		}
+	}
+
+	@Test
 	public void equality() throws Exception {
 		new SerializableEqualityTester() {
 			String version = "1.2";
 			String style = "";
+			boolean reflowLongStrings = false;
 
 			@Override
 			protected void setupTest(API api) {
@@ -98,12 +117,15 @@ public class GoogleJavaFormatStepTest extends ResourceHarness {
 				// change the style, and it's different
 				style = "AOSP";
 				api.areDifferentThan();
+				// change the reflowLongStrings flag, and it's different
+				reflowLongStrings = true;
+				api.areDifferentThan();
 			}
 
 			@Override
 			protected FormatterStep create() {
 				String finalVersion = this.version;
-				return GoogleJavaFormatStep.create(finalVersion, style, TestProvisioner.mavenCentral());
+				return GoogleJavaFormatStep.create(finalVersion, style, TestProvisioner.mavenCentral(), reflowLongStrings);
 			}
 		}.testEquals();
 	}

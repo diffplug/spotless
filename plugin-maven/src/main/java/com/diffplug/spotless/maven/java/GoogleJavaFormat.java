@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,10 +29,14 @@ public class GoogleJavaFormat implements FormatterStepFactory {
 	@Parameter
 	private String style;
 
+	@Parameter
+	private Boolean reflowLongStrings;
+
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
 		String version = this.version != null ? this.version : GoogleJavaFormatStep.defaultVersion();
 		String style = this.style != null ? this.style : GoogleJavaFormatStep.defaultStyle();
-		return GoogleJavaFormatStep.create(version, style, config.getProvisioner());
+		boolean reflowLongStrings = this.reflowLongStrings != null ? this.reflowLongStrings : GoogleJavaFormatStep.defaultReflowLongStrings();
+		return GoogleJavaFormatStep.create(version, style, config.getProvisioner(), reflowLongStrings);
 	}
 }
