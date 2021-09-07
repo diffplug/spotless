@@ -142,11 +142,14 @@ If you're stuck on an older version of Gradle, `id 'com.diffplug.gradle.spotless
 ```gradle
 spotless {
   java {
-    importOrder() // standard import order
+    // Use the default importOrder configuration
+    importOrder()
+    // optional: you can specify import groups directly
+    // note: You probably want an empty string at the end - all of the imports you didn't specify explicitly will go there.
     importOrder('java', 'javax', 'com.acme', '')
-    // You probably want an empty string at the end - all of the
-    // imports you didn't specify explicitly will go there.
-    importOrderFile(eclipse-import-order.txt) // import order file as exported from eclipse
+    // optional: instead of specifying import groups directly you can specify a config file
+    // export config file: https://github.com/diffplug/spotless/blob/main/ECLIPSE_SCREENSHOTS.md#creating-spotlessimportorder
+    importOrderFile('eclipse-import-order.txt') // import order file as exported from eclipse
 
     removeUnusedImports()
 
@@ -210,11 +213,14 @@ The groovy formatter's default behavior is to format all `.groovy` and `.java` f
 apply plugin: 'groovy'
 spotless {
   groovy {
-    importOrder() // standard import order
+    // Use the default importOrder configuration
+    importOrder()
+    // optional: you can specify import groups directly
+    // note: You probably want an empty string at the end - all of the imports you didn't specify explicitly will go there.
     importOrder('java', 'javax', 'com.acme', '')
-    // You probably want an empty string at the end - all of the
-    // imports you didn't specify explicitly will go there.
-    importOrderFile(eclipse-import-order.txt) // import order file as exported from eclipse
+    // optional: instead of specifying import groups directly you can specify a config file
+    // export config file: https://github.com/diffplug/spotless/blob/main/ECLIPSE_SCREENSHOTS.md#creating-spotlessimportorder
+    importOrderFile('eclipse-import-order.txt') // import order file as exported from eclipse
 
     excludeJava() // excludes all Java sources within the Groovy source dirs from formatting
     // the Groovy Eclipse formatter extends the Java Eclipse formatter,
