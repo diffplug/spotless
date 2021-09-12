@@ -78,7 +78,7 @@ public class GoogleJavaFormatStep {
 
 	/** Get default formatter version */
 	public static String defaultVersion() {
-		return JVM_SUPPORT.getLatestFormatterVersion();
+		return JVM_SUPPORT.getRecommendedFormatterVersion();
 	}
 
 	public static String defaultStyle() {

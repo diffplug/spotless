@@ -35,8 +35,8 @@ public class GoogleJavaFormatStepTest extends ResourceHarness {
 		try (StepHarness step = StepHarness.forStep(GoogleJavaFormatStep.create(TestProvisioner.mavenCentral()))) {
 			if (Jvm.version() < 11) {
 				step.testResourceException("java/googlejavaformat/TextBlock.dirty", throwable -> {
-					throwable.hasMessageStartingWith("You are running Spotless on JRE 8, which limits you to google-java-format 1.7.")
-							.hasMessageEndingWith("If you upgrade your build JVM to 11+, then you can use google-java-format 1.11.0, which may have fixed this problem.");
+					throwable.hasMessageStartingWith("You are running Spotless on JVM 8, which limits you to google-java-format 1.7.")
+							.hasMessageEndingWith("If you upgrade your JVM to 11+, then you can use google-java-format 1.11.0, which may have fixed this problem.");
 				});
 			} else if (Jvm.version() < 13) {
 				step.testResourceException("java/googlejavaformat/TextBlock.dirty", throwable -> {

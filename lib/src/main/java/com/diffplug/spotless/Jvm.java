@@ -18,6 +18,8 @@ package com.diffplug.spotless;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.Objects;
 import java.util.TreeMap;
@@ -31,19 +33,19 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /** Java virtual machine helper */
 public final class Jvm {
-	private static final int JAVA_VERSION;
+	private static final int VERSION;
 
 	static {
 		String jre = System.getProperty("java.version");
 		if (jre.startsWith("1.8")) {
-			JAVA_VERSION = 8;
+			VERSION = 8;
 		} else {
 			Matcher matcher = Pattern.compile("(\\d+)").matcher(jre);
 			if (!matcher.find()) {
 				throw new IllegalArgumentException("Expected " + jre + " to start with an integer");
 			}
-			JAVA_VERSION = Integer.parseInt(matcher.group(1));
-			if (JAVA_VERSION <= 8) {
+			VERSION = Integer.parseInt(matcher.group(1));
+			if (VERSION <= 8) {
 				throw new IllegalArgumentException("Expected " + jre + " to start with an integer greater than 8");
 			}
 		}
@@ -51,7 +53,7 @@ public final class Jvm {
 
 	/** @return the major version of this VM, e.g. 8, 9, 10, 11, 13, etc. */
 	public static int version() {
-		return JAVA_VERSION;
+		return VERSION;
 	}
 
 	/**
@@ -59,90 +61,180 @@ public final class Jvm {
 	 * @param <V> Version type of formatter
 	 */
 	public static class Support<V> {
-		private final NavigableMap<Integer, V> java2formatterVersion;
-		private final String formatterName;
-		private final Comparator<? super V> formatterVersionComparator;
-		private Integer requiredJavaVersion;
-		private boolean usingLatestJavaVersion;
+		private final String fmtName;
+		private final Comparator<? super V> fmtVersionComparator;
+		private final NavigableMap<Integer, V> jvm2fmtVersion;
+		private final NavigableMap<V, Integer> fmt2jvmVersion;
 
 		private Support(String fromatterName) {
-			this(fromatterName, null);
+			this(fromatterName, new SemanticVersionComparator<V>());
 		}
 
-		private Support(String formatterName, @Nullable Comparator<? super V> formatterVersionComparator) {
-			java2formatterVersion = new TreeMap<Integer, V>();
-			this.formatterName = formatterName;
-			if (null == formatterVersionComparator) {
-				this.formatterVersionComparator = new SemanticVersionComparator<V>();
-			} else {
-				this.formatterVersionComparator = formatterVersionComparator;
-			}
-			requiredJavaVersion = 0;
-			usingLatestJavaVersion = true;
+		private Support(String formatterName, Comparator<? super V> formatterVersionComparator) {
+			fmtName = formatterName;
+			fmtVersionComparator = formatterVersionComparator;
+			jvm2fmtVersion = new TreeMap<Integer, V>();
+			fmt2jvmVersion = new TreeMap<V, Integer>(formatterVersionComparator);
 		}
 
 		/**
 		 * Add supported formatter version
-		 * @param minimumJavaVersion Minimum Java version required
+		 * @param minimumJvmVersion Minimum Java version required
 		 * @param maxFormatterVersion Maximum formatter version supported by the Java version
 		 * @return this
 		 */
-		public Support<V> add(int minimumJavaVersion, V maxFormatterVersion) {
+		public Support<V> add(int minimumJvmVersion, V maxFormatterVersion) {
 			Objects.requireNonNull(maxFormatterVersion);
-			java2formatterVersion.put(minimumJavaVersion, maxFormatterVersion);
-			requiredJavaVersion = java2formatterVersion.floorKey(Jvm.version());
-			usingLatestJavaVersion &= minimumJavaVersion < Jvm.version();
+			jvm2fmtVersion.put(minimumJvmVersion, maxFormatterVersion);
+			fmt2jvmVersion.put(maxFormatterVersion, minimumJvmVersion);
 			return this;
 		}
 
-		/** @return Latest formatter version supported by this JVM */
-		public V getLatestFormatterVersion() {
-			return java2formatterVersion.get(requiredJavaVersion);
+		/** @throws AssertionError in case the added support entries are illogical */
+		public void verifyConfiguration() {
+			if (jvm2fmtVersion.size() > fmt2jvmVersion.size()) {
+				throw new AssertionError("The added support information contains duplicated formatter versions.");
+			}
+			if (jvm2fmtVersion.size() < fmt2jvmVersion.size()) {
+				throw new AssertionError("The added support information contains duplicated JVM versions.");
+			}
+			jvm2fmtVersion.forEach((jvmVersion, fmtVersion) -> {
+				Map.Entry<Integer, V> lower = jvm2fmtVersion.lowerEntry(jvmVersion);
+				if ((null != lower) && (fmtVersionComparator.compare(fmtVersion, lower.getValue()) <= 0)) {
+					throw new AssertionError(String.format("%d/%s should be lower than %d/%s", jvmVersion, fmtVersion, lower.getKey(), lower.getValue()));
+				}
+				Map.Entry<Integer, V> higher = jvm2fmtVersion.higherEntry(jvmVersion);
+				if ((null != higher) && (fmtVersionComparator.compare(fmtVersion, higher.getValue()) >= 0)) {
+					throw new AssertionError(String.format("%d/%s should be higher than %d/%s", jvmVersion, fmtVersion, higher.getKey(), higher.getValue()));
+				}
+			});
+		}
+
+		/** @return Highest formatter version recommended for this JVM (null, if JVM not supported) */
+		@Nullable
+		public V getRecommendedFormatterVersion() {
+			Integer configuredJvmVersionOrNull = jvm2fmtVersion.floorKey(Jvm.version());
+			return (null == configuredJvmVersionOrNull) ? null : jvm2fmtVersion.get(configuredJvmVersionOrNull);
 		}
 
 		/**
 		 * Assert the formatter is supported
 		 * @param formatterVersion Formatter version
+		 * @throws IllegalArgumentException if {@code formatterVersion} not supported
 		 */
-		public void assertFormatterSupported(V formatterVersion) throws Exception {
+		public void assertFormatterSupported(V formatterVersion) {
 			Objects.requireNonNull(formatterVersion);
-			if (!usingLatestJavaVersion && (0 < formatterVersionComparator.compare(formatterVersion, getLatestFormatterVersion()))) {
-
-				throw new UnsupportedClassVersionError(String.format("Unsupported formatter version %s: %s", formatterVersion, toString()));
+			String error = buildUnsupportedFormatterMessage(formatterVersion);
+			if (!error.isEmpty()) {
+				throw new IllegalArgumentException(error);
 			}
 		}
 
+		private String buildUnsupportedFormatterMessage(V fmtVersion) {
+			int requiredJvmVersion = getRequiredJvmVersion(fmtVersion);
+			if (Jvm.version() < requiredJvmVersion) {
+				return buildUpgradeJvmMessage(fmtVersion) + "Upgrade your JVM or try " + toString();
+			}
+			return "";
+		}
+
+		private String buildUpgradeJvmMessage(V fmtVersion) {
+			StringBuilder builder = new StringBuilder();
+			builder.append(String.format("You are running Spotless on JVM %d", Jvm.version()));
+			V recommendedFmtVersionOrNull = getRecommendedFormatterVersion();
+			if (null != recommendedFmtVersionOrNull) {
+				builder.append(String.format(", which limits you to %s %s.%n", fmtName, recommendedFmtVersionOrNull));
+			} else {
+				Entry<V, Integer> nextFmtVersionOrNull = fmt2jvmVersion.ceilingEntry(fmtVersion);
+				if (null != nextFmtVersionOrNull) {
+					builder.append(String.format(". %s %s requires JVM %d+", fmtName, fmtVersion, nextFmtVersionOrNull.getValue()));
+				}
+				builder.append(String.format(".%n"));
+			}
+			return builder.toString();
+		}
+
+		private int getRequiredJvmVersion(V fmtVersion) {
+			Entry<V, Integer> entry = fmt2jvmVersion.ceilingEntry(fmtVersion);
+			if (null == entry) {
+				entry = fmt2jvmVersion.lastEntry();
+			}
+			if (null != entry) {
+				V maxKnownFmtVersion = jvm2fmtVersion.get(entry.getValue());
+				if (fmtVersionComparator.compare(fmtVersion, maxKnownFmtVersion) <= 0) {
+					return entry.getValue();
+				}
+			}
+			return 0;
+		}
+
 		/**
-		 * Suggest to use a later formatter version if formatting fails
+		 * Suggest to use a different formatter version if formatting fails
 		 * @param formatterVersion Formatter version
 		 * @param originalFunc Formatter function
 		 * @return Wrapped formatter function. Adding hint about later versions to exceptions.
 		 */
 		public FormatterFunc suggestLaterVersionOnError(V formatterVersion, FormatterFunc originalFunc) {
-			if (formatterVersionComparator.compare(formatterVersion, getLatestFormatterVersion()) < 0) {
-				return new FormatterFuncWrapper(String.format("You are not using latest version for Java %d and later. Try to upgrade to %s version %s, which may have fixed this problem.", requiredJavaVersion, formatterName, getLatestFormatterVersion()), originalFunc);
-			} else if (java2formatterVersion.lastKey() > Jvm.version()) {
-				Integer nextJavaVersion = java2formatterVersion.higherKey(Jvm.version());
-				V nextFormatterVersion = java2formatterVersion.get(nextJavaVersion);
-				return new FormatterFuncWrapper(String.format("You are running Spotless on JRE %1$d, which limits you to %2$s %3$s.%nIf you upgrade your build JVM to %4$d+, then you can use %2$s %5$s, which may have fixed this problem.", Jvm.version(), formatterName, formatterVersion, nextJavaVersion, nextFormatterVersion), originalFunc);
+			Objects.requireNonNull(formatterVersion);
+			Objects.requireNonNull(originalFunc);
+			final String hintUnsupportedProblem = buildUnsupportedFormatterMessage(formatterVersion);
+			final String proposeDiffererntFormatter = hintUnsupportedProblem.isEmpty() ? buildUpgradeFormatterMessage(formatterVersion) : hintUnsupportedProblem;
+			return proposeDiffererntFormatter.isEmpty() ? originalFunc : new FormatterFunc() {
+
+				@Override
+				public String apply(String unix, File file) throws Exception {
+					try {
+						return originalFunc.apply(unix, file);
+					} catch (Exception e) {
+						throw new Exception(proposeDiffererntFormatter, e);
+					}
+				}
+
+				@Override
+				public String apply(String input) throws Exception {
+					try {
+						return originalFunc.apply(input);
+					} catch (Exception e) {
+						throw new Exception(proposeDiffererntFormatter, e);
+					}
+				}
+
+			};
+		}
+
+		private String buildUpgradeFormatterMessage(V fmtVersion) {
+			StringBuilder builder = new StringBuilder();
+			V recommendedFmtVersionOrNull = getRecommendedFormatterVersion();
+			if (null != recommendedFmtVersionOrNull && (fmtVersionComparator.compare(fmtVersion, recommendedFmtVersionOrNull) < 0)) {
+				builder.append(String.format("You are not using latest version on JVM %d+.%n", getRequiredJvmVersion(recommendedFmtVersionOrNull)));
+				builder.append(String.format("Try to upgrade to %s %s, which may have fixed this problem.", fmtName, getRecommendedFormatterVersion()));
+			} else {
+				V higherFormatterVersionOrNull = fmt2jvmVersion.higherKey(fmtVersion);
+				if (null != higherFormatterVersionOrNull) {
+					builder.append(buildUpgradeJvmMessage(fmtVersion));
+					Integer higherJvmVersion = fmt2jvmVersion.get(higherFormatterVersionOrNull);
+					builder.append(String.format("If you upgrade your JVM to %d+, then you can use %s %s, which may have fixed this problem.", higherJvmVersion, fmtName, higherFormatterVersionOrNull));
+				}
 			}
-			return originalFunc;
+			return builder.toString();
 		}
 
 		@Override
 		public String toString() {
-			return String.format("Java version %d not supported by %s %s.%n", Jvm.version(), formatterName) +
-					java2formatterVersion.entrySet().stream().map(
-							entry -> String.format("- Version %s requires Java version %d", entry.getValue().toString(), entry.getKey())).collect(Collectors.joining(System.lineSeparator()));
+			return String.format("%s alternatives:%n", fmtName) +
+					jvm2fmtVersion.entrySet().stream().map(
+							e -> String.format("- Version %s requires JVM %d+", e.getValue(), e.getKey())).collect(Collectors.joining(System.lineSeparator()));
 		}
 
 		@SuppressFBWarnings("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE")
 		private static class SemanticVersionComparator<V> implements Comparator<V> {
 
 			@Override
-			public int compare(@Nullable V version0, @Nullable V version1) {
-				Integer[] version0Items = convert(version0);
-				Integer[] version1Items = convert(version1);
+			public int compare(V version0, V version1) {
+				Objects.requireNonNull(version0);
+				Objects.requireNonNull(version1);
+				int[] version0Items = convert(version0);
+				int[] version1Items = convert(version1);
 				int numberOfElements = version0Items.length > version1Items.length ? version0Items.length : version1Items.length;
 				version0Items = Arrays.copyOf(version0Items, numberOfElements);
 				version1Items = Arrays.copyOf(version1Items, numberOfElements);
@@ -156,47 +248,14 @@ public final class Jvm {
 				return 0;
 			}
 
-			private static <V> Integer[] convert(@Nullable V versionObject) {
+			private static <V> int[] convert(V versionObject) {
 				try {
-					if (null == versionObject) {
-						return new Integer[0];
-					}
-					return Arrays.asList(versionObject.toString().split("\\.")).stream().map(s -> Integer.valueOf(s)).toArray(Integer[]::new);
+					return Arrays.asList(versionObject.toString().split("\\.")).stream().mapToInt(s -> Integer.valueOf(s)).toArray();
 				} catch (Exception e) {
 					throw new IllegalArgumentException(String.format("Not a semantic version: %s", versionObject), e);
 				}
 			}
 		};
-
-		private static class FormatterFuncWrapper implements FormatterFunc {
-			private final String hintLaterVersion;
-			private final FormatterFunc originalFunc;
-
-			FormatterFuncWrapper(String hintLaterVersion, FormatterFunc originalFunc) {
-				this.hintLaterVersion = hintLaterVersion;
-				this.originalFunc = originalFunc;
-			}
-
-			@Override
-			public String apply(String unix, File file) throws Exception {
-				try {
-					return originalFunc.apply(unix, file);
-				} catch (Exception e) {
-					throw new Exception(hintLaterVersion, e);
-				}
-			}
-
-			@Override
-			public String apply(String input) throws Exception {
-				try {
-					return originalFunc.apply(input);
-				} catch (Exception e) {
-					throw new Exception(hintLaterVersion, e);
-				}
-			}
-
-		};
-
 	}
 
 	/**
@@ -206,6 +265,7 @@ public final class Jvm {
 	 * @return Empty map of supported formatters
 	 */
 	public static <V> Support<V> support(String formatterName) {
+		Objects.requireNonNull(formatterName);
 		return new Support<V>(formatterName);
 	}
 }
