@@ -113,7 +113,7 @@ To use it in your pom, just [add the Spotless dependency](https://search.maven.o
         optionally, Spotless can set copyright years by digging
         through git history (see "license" section below) -->
       <licenseHeader>
-        <content>/* (C)$YEAR */</content>  <!-- or <file>${basedir}/license-header</file> -->
+        <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
       </licenseHeader>
     </java>
   </configuration>
@@ -146,7 +146,7 @@ Spotless requires Maven to be running on JRE 8+.
 
     <importOrder /> <!-- standard import order -->
     <importOrder>  <!-- or a custom ordering -->
-      <order>java,javax,org,com,com.diffplug,</order>  <!-- or use <file>${basedir}/eclipse.importorder</file> -->
+      <order>java,javax,org,com,com.diffplug,</order>  <!-- or use <file>${project.basedir}/eclipse.importorder</file> -->
       <!-- You probably want an empty string at the end - all of the
            imports you didn't specify explicitly will go there. -->
     </importOrder>
@@ -158,7 +158,7 @@ Spotless requires Maven to be running on JRE 8+.
     <prettier />         <!-- has its own section below -->
 
     <licenseHeader>
-      <content>/* (C)$YEAR */</content>  <!-- or <file>${basedir}/license-header</file> -->
+      <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
     </licenseHeader>
   </java>
 </configuration>
@@ -182,7 +182,7 @@ Spotless requires Maven to be running on JRE 8+.
 ```xml
 <eclipse>
   <version>4.13.0</version>                     <!-- optional -->
-  <file>${basedir}/eclipse-formatter.xml</file> <!-- optional -->
+  <file>${project.basedir}/eclipse-formatter.xml</file> <!-- optional -->
 </eclipse>
 ```
 
@@ -203,7 +203,8 @@ Spotless requires Maven to be running on JRE 8+.
 
     <importOrder /> <!-- standard import order -->
     <importOrder>  <!-- or a custom ordering -->
-      <order>java,javax,org,com,com.diffplug,</order>  <!-- or use <file>${basedir}/eclipse.importorder</file> -->
+      <order>java,javax,org,com,com.diffplug,</order>  <!-- or use <file>
+/eclipse.importorder</file> -->
       <!-- You probably want an empty string at the end - all of the
            imports you didn't specify explicitly will go there. -->
     </importOrder>
@@ -211,7 +212,7 @@ Spotless requires Maven to be running on JRE 8+.
     <greclipse />          <!-- has its own section below -->
 
     <licenseHeader>
-      <content>/* (C)$YEAR */</content>  <!-- or <file>${basedir}/license-header</file> -->
+      <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
     </licenseHeader>
   </java>
 </configuration>
@@ -224,7 +225,7 @@ Spotless requires Maven to be running on JRE 8+.
 ```xml
 <greclipse>
   <version>4.13.0</version>                     <!-- optional -->
-  <file>${basedir}/greclipse.properties</file> <!-- optional -->
+  <file>${project.basedir}/greclipse.properties</file> <!-- optional -->
 </greclipse>
 ```
 
@@ -250,7 +251,7 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
     <prettier /> <!-- has its own section below -->
 
     <licenseHeader>
-      <content>/* (C)$YEAR */</content>  <!-- or <file>${basedir}/license-header</file> -->
+      <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
     </licenseHeader>
   </kotlin>
 </configuration>
@@ -300,7 +301,7 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
     <scalafmt /> <!-- has its own section below -->
 
     <licenseHeader>
-      <content>/* (C)$YEAR */</content>  <!-- or <file>${basedir}/license-header</file> -->
+      <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
       <delimiter>package </delimiter> <!--
         note the 'package ' argument - this is a regex which identifies the top
         of the file, be careful that all of your sources have a package declaration,
@@ -317,7 +318,7 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
 ```xml
 <scalafmt>
   <version>2.0.1</version>              <!-- optional -->
-  <file>${basedir}/scalafmt.conf</file> <!-- optional -->
+  <file>${project.basedir}/scalafmt.conf</file> <!-- optional -->
 </scalafmt>
 ```
 
@@ -339,7 +340,7 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
     <eclipseCdt /> <!-- has its own section below -->
 
     <licenseHeader>
-      <content>/* (C)$YEAR */</content>  <!-- or <file>${basedir}/license-header</file> -->
+      <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
     </licenseHeader>
   </cpp>
 </configuration>
@@ -352,7 +353,7 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
 ```xml
 <eclipseCdt>
   <version>4.13.0</version>               <!-- optional -->
-  <file>${basedir}/eclipse-cdt.xml</file> <!-- optional -->
+  <file>${project.basedir}/eclipse-cdt.xml</file> <!-- optional -->
 </eclipseCdt>
 ```
 
@@ -371,7 +372,7 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
     <antlr4formatter /> <!-- has its own section below -->
 
     <licenseHeader>
-      <content>/* (C)$YEAR */</content>  <!-- or <file>${basedir}/license-header</file> -->
+      <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
     </licenseHeader>
   </antlr4>
 </configuration>
@@ -445,7 +446,7 @@ sql.formatter.indent.size=4
     <prettier/> <!-- has its own section below -->
 
     <licenseHeader>
-      <content>/* (C)$YEAR */</content>  <!-- or <file>${basedir}/license-header</file> -->
+      <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
       <delimiter>(import|const|declare|export|var) </delimiter> <!--
         note the '(import|const|...' argument - this is a regex which identifies the top
         of the file, be careful that all of your sources have a suitable top-level declaration,
@@ -472,10 +473,10 @@ The auto-discovery of config files (up the file tree) will not work when using t
     <convertTabsToSpaces>true</convertTabsToSpaces>
   </config>
   <!-- // or according to tsfmt-parameters: https://github.com/vvakame/typescript-formatter/blob/7764258ad42ac65071399840d1b8701868510ca7/lib/index.ts#L27L34 -->
-  <tsconfigFile>${basedir}/tsconfig.json</tsconfigFile>
-  <tslintFile>${basedir}/tslint.json</tslintFile>
-  <vscodeFile>${basedir}/vscode.json</vscodeFile>
-  <tsfmtFile>${basedir}/tsfmt.json</tsfmtFile>
+  <tsconfigFile>${project.basedir}/tsconfig.json</tsconfigFile>
+  <tslintFile>${project.basedir}/tslint.json</tslintFile>
+  <vscodeFile>${project.basedir}/vscode.json</vscodeFile>
+  <tsfmtFile>${project.basedir}/tsfmt.json</tsfmtFile>
 </tsfmt>
 ```
 
@@ -523,7 +524,7 @@ You can use prettier in any language-specific format, but usually you will be cr
           </property>
         </devDependencyProperties>
         <!-- Specify config file and/or inline config, the inline always trumps file -->
-        <configFile>${basedir}/path/to/configfile</configFile>
+        <configFile>${project.basedir}/path/to/configfile</configFile>
         <config>
             <useTabs>true</useTabs>
         </config>
@@ -632,8 +633,8 @@ Spotless will try to auto-discover an npm installation. If that is not working f
       <eclipseWtp>
         <type>XML</type> <!-- specify the WTP formatter type (XML, JS, ...) -->
         <files> <!-- specify the configuration for the selected type -->
-          <file>${basedir}/xml.prefs</file>
-          <file>${basedir}/additional.properties</file>
+          <file>${project.basedir}/xml.prefs</file>
+          <file>${project.basedir}/additional.properties</file>
         </files>
         <version>4.7.3a</version> <!-- optional -->
       </eclipseWtp>
@@ -704,7 +705,7 @@ Spotless can inject a license header into your files, including populating an ac
 
 ```xml
 <licenseHeader> <!-- specify either content or file, but not both -->
-  <content>/* (C)$YEAR */</content>  <!-- or <file>${basedir}/license-header</file> -->
+  <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
   <delimiter>#</delimiter>  <!-- content until first occurrence of the delimiter regex will be interpreted as header section -->
 </licenseHeader>
 ```
