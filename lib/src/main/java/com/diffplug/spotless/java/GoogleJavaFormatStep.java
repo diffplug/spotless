@@ -84,7 +84,7 @@ public class GoogleJavaFormatStep {
 				State::createFormat);
 	}
 
-	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(8, "1.7").add(11, "1.11.0");
+	static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(8, "1.7").add(11, "1.11.0");
 
 	/** Get default formatter version */
 	public static String defaultVersion() {
