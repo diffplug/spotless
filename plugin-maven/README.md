@@ -12,8 +12,8 @@ output = [
   ].join('\n');
 -->
 [![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
-[![Javadoc](https://img.shields.io/badge/javadoc-yes-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.12.3/index.html)
-[![Changelog](https://img.shields.io/badge/changelog-2.12.3-brightgreen.svg)](CHANGES.md)
+[![Javadoc](https://img.shields.io/badge/javadoc-yes-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.13.0/index.html)
+[![Changelog](https://img.shields.io/badge/changelog-2.13.0-brightgreen.svg)](CHANGES.md)
 
 [![Circle CI](https://circleci.com/gh/diffplug/spotless/tree/main.svg?style=shield)](https://circleci.com/gh/diffplug/spotless/tree/main)
 [![Live chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
@@ -105,10 +105,11 @@ To use it in your pom, just [add the Spotless dependency](https://search.maven.o
     <java>
       <!-- no need to specify files, inferred automatically, but you can if you want -->
 
-      <!-- apply a specific flavor of google-java-format -->
+      <!-- apply a specific flavor of google-java-format and reflow long strings -->
       <googleJavaFormat>
         <version>1.8</version>
         <style>AOSP</style>
+        <reflowLongStrings>true</reflowLongStrings>
       </googleJavaFormat>
 
       <!-- make sure every file has the following copyright header.
@@ -201,8 +202,9 @@ any other maven phase (i.e. compile) then it can be configured as below;
 
 ```xml
 <googleJavaFormat>
-  <version>1.7</version> <!-- optional -->
-  <style>GOOGLE</style>  <!-- or AOSP (optional) -->
+  <version>1.8</version>                      <!-- optional -->
+  <style>GOOGLE</style>                       <!-- or AOSP (optional) -->
+  <reflowLongStrings>true</reflowLongStrings> <!-- optional (requires at least 1.8) -->
 </googleJavaFormat>
 ```
 

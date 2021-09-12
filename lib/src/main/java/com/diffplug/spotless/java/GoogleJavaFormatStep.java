@@ -25,6 +25,7 @@ import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.ThrowingEx.BiFunction;
 import com.diffplug.spotless.ThrowingEx.Function;
 
 /** Wraps up <a href="https://github.com/google/google-java-format">google-java-format</a> as a FormatterStep. */
@@ -33,6 +34,7 @@ public class GoogleJavaFormatStep {
 	private GoogleJavaFormatStep() {}
 
 	private static final String DEFAULT_STYLE = "GOOGLE";
+	private static final boolean DEFAULT_REFLOW_LONG_STRINGS = false;
 	static final String NAME = "google-java-format";
 	static final String MAVEN_COORDINATE = "com.google.googlejavaformat:google-java-format:";
 	static final String FORMATTER_CLASS = "com.google.googlejavaformat.java.Formatter";
@@ -54,6 +56,9 @@ public class GoogleJavaFormatStep {
 	private static final String IMPORT_ORDERER_CLASS = "com.google.googlejavaformat.java.ImportOrderer";
 	private static final String IMPORT_ORDERER_METHOD = "reorderImports";
 
+	private static final String STRING_WRAPPER_CLASS = "com.google.googlejavaformat.java.StringWrapper";
+	private static final String STRING_WRAPPER_METHOD = "wrap";
+
 	/** Creates a step which formats everything - code, import order, and unused imports. */
 	public static FormatterStep create(Provisioner provisioner) {
 		return create(defaultVersion(), provisioner);
@@ -66,11 +71,16 @@ public class GoogleJavaFormatStep {
 
 	/** Creates a step which formats everything - code, import order, and unused imports. */
 	public static FormatterStep create(String version, String style, Provisioner provisioner) {
+		return create(version, style, provisioner, DEFAULT_REFLOW_LONG_STRINGS);
+	}
+
+	/** Creates a step which formats everything - code, import order, and unused imports - and optionally reflows long strings. */
+	public static FormatterStep create(String version, String style, Provisioner provisioner, boolean reflowLongStrings) {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(style, "style");
 		Objects.requireNonNull(provisioner, "provisioner");
 		return FormatterStep.createLazy(NAME,
-				() -> new State(NAME, version, style, provisioner),
+				() -> new State(NAME, version, style, provisioner, reflowLongStrings),
 				State::createFormat);
 	}
 
@@ -85,6 +95,10 @@ public class GoogleJavaFormatStep {
 		return DEFAULT_STYLE;
 	}
 
+	public static boolean defaultReflowLongStrings() {
+		return DEFAULT_REFLOW_LONG_STRINGS;
+	}
+
 	static final class State implements Serializable {
 		private static final long serialVersionUID = 1L;
 
@@ -93,17 +107,23 @@ public class GoogleJavaFormatStep {
 		final String stepName;
 		final String version;
 		final String style;
+		final boolean reflowLongStrings;
 
 		State(String stepName, String version, Provisioner provisioner) throws Exception {
 			this(stepName, version, DEFAULT_STYLE, provisioner);
 		}
 
 		State(String stepName, String version, String style, Provisioner provisioner) throws Exception {
+			this(stepName, version, style, provisioner, DEFAULT_REFLOW_LONG_STRINGS);
+		}
+
+		State(String stepName, String version, String style, Provisioner provisioner, boolean reflowLongStrings) throws Exception {
 			JVM_SUPPORT.assertFormatterSupported(version);
 			this.jarState = JarState.from(MAVEN_COORDINATE + version, provisioner);
 			this.stepName = stepName;
 			this.version = version;
 			this.style = style;
+			this.reflowLongStrings = reflowLongStrings;
 		}
 
 		@SuppressWarnings({"unchecked", "rawtypes"})
@@ -133,11 +153,14 @@ public class GoogleJavaFormatStep {
 			Class<?> importOrdererClass = classLoader.loadClass(IMPORT_ORDERER_CLASS);
 			Method importOrdererMethod = importOrdererClass.getMethod(IMPORT_ORDERER_METHOD, String.class);
 
+			BiFunction<String, Object, String> reflowLongStrings = this.reflowLongStrings ? constructReflowLongStringsFunction(classLoader, formatterClazz) : (s, f) -> s;
+
 			return JVM_SUPPORT.suggestLaterVersionOnError(version, (input -> {
 				String formatted = (String) formatterMethod.invoke(formatter, input);
 				String removedUnused = removeUnused.apply(formatted);
 				String sortedImports = (String) importOrdererMethod.invoke(null, removedUnused);
-				return fixWindowsBug(sortedImports, version);
+				String reflowedLongStrings = reflowLongStrings.apply(sortedImports, formatter);
+				return fixWindowsBug(reflowedLongStrings, version);
 			}));
 		}
 
@@ -170,6 +193,20 @@ public class GoogleJavaFormatStep {
 				removeUnused = (x) -> (String) removeUnusedMethod.invoke(null, x);
 			}
 			return removeUnused;
+		}
+
+		private static BiFunction<String, Object, String> constructReflowLongStringsFunction(ClassLoader classLoader, Class<?> formatterClazz) throws NoSuchMethodException {
+			Class<?> stringWrapperClass;
+			try {
+				stringWrapperClass = classLoader.loadClass(STRING_WRAPPER_CLASS);
+			} catch (ClassNotFoundException e) {
+				// google-java-format 1.7 or lower, which happen to be LATEST_VERSION_JRE_8, so rely on suggestJre11 for the error
+				return (s, f) -> {
+					throw e;
+				};
+			}
+			Method stringWrapperMethod = stringWrapperClass.getMethod(STRING_WRAPPER_METHOD, String.class, formatterClazz);
+			return (s, f) -> (String) stringWrapperMethod.invoke(null, s, f);
 		}
 	}
 
