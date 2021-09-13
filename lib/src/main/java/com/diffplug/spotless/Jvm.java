@@ -85,29 +85,21 @@ public final class Jvm {
 		 */
 		public Support<V> add(int minimumJvmVersion, V maxFormatterVersion) {
 			Objects.requireNonNull(maxFormatterVersion);
-			jvm2fmtVersion.put(minimumJvmVersion, maxFormatterVersion);
-			fmt2jvmVersion.put(maxFormatterVersion, minimumJvmVersion);
+			if (null != jvm2fmtVersion.put(minimumJvmVersion, maxFormatterVersion)) {
+				throw new IllegalArgumentException(String.format("Added duplicate entry for JVM %d+.", minimumJvmVersion));
+			}
+			if (null != fmt2jvmVersion.put(maxFormatterVersion, minimumJvmVersion)) {
+				throw new IllegalArgumentException(String.format("Added duplicate entry for formatter version %s.", maxFormatterVersion));
+			}
+			Map.Entry<Integer, V> lower = jvm2fmtVersion.lowerEntry(minimumJvmVersion);
+			if ((null != lower) && (fmtVersionComparator.compare(maxFormatterVersion, lower.getValue()) <= 0)) {
+				throw new IllegalArgumentException(String.format("%d/%s should be lower than %d/%s", minimumJvmVersion, maxFormatterVersion, lower.getKey(), lower.getValue()));
+			}
+			Map.Entry<Integer, V> higher = jvm2fmtVersion.higherEntry(minimumJvmVersion);
+			if ((null != higher) && (fmtVersionComparator.compare(maxFormatterVersion, higher.getValue()) >= 0)) {
+				throw new IllegalArgumentException(String.format("%d/%s should be higher than %d/%s", minimumJvmVersion, maxFormatterVersion, higher.getKey(), higher.getValue()));
+			}
 			return this;
-		}
-
-		/** @throws AssertionError in case the added support entries are illogical */
-		public void verifyConfiguration() {
-			if (jvm2fmtVersion.size() > fmt2jvmVersion.size()) {
-				throw new AssertionError("The added support information contains duplicated formatter versions.");
-			}
-			if (jvm2fmtVersion.size() < fmt2jvmVersion.size()) {
-				throw new AssertionError("The added support information contains duplicated JVM versions.");
-			}
-			jvm2fmtVersion.forEach((jvmVersion, fmtVersion) -> {
-				Map.Entry<Integer, V> lower = jvm2fmtVersion.lowerEntry(jvmVersion);
-				if ((null != lower) && (fmtVersionComparator.compare(fmtVersion, lower.getValue()) <= 0)) {
-					throw new AssertionError(String.format("%d/%s should be lower than %d/%s", jvmVersion, fmtVersion, lower.getKey(), lower.getValue()));
-				}
-				Map.Entry<Integer, V> higher = jvm2fmtVersion.higherEntry(jvmVersion);
-				if ((null != higher) && (fmtVersionComparator.compare(fmtVersion, higher.getValue()) >= 0)) {
-					throw new AssertionError(String.format("%d/%s should be higher than %d/%s", jvmVersion, fmtVersion, higher.getKey(), higher.getValue()));
-				}
-			});
 		}
 
 		/** @return Highest formatter version recommended for this JVM (null, if JVM not supported) */

@@ -32,11 +32,6 @@ import com.diffplug.spotless.TestProvisioner;
 public class GoogleJavaFormatStepTest extends ResourceHarness {
 
 	@Test
-	public void verifyJvmSupport() {
-		GoogleJavaFormatStep.JVM_SUPPORT.verifyConfiguration();
-	}
-
-	@Test
 	public void jvm13Features() throws Exception {
 		assumeTrue(Jvm.version() >= 13);
 		try (StepHarness step = StepHarness.forStep(GoogleJavaFormatStep.create(TestProvisioner.mavenCentral()))) {

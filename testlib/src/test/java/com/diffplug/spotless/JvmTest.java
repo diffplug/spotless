@@ -20,7 +20,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.function.Consumer;
@@ -39,22 +38,19 @@ public class JvmTest {
 	}
 
 	@Test
-	public void supportAddConfig() {
+	public void supportAdd() {
 		Integer differentVersions[] = {0, 1, 2};
 		Arrays.asList(differentVersions).stream().forEach(v -> testSupport.add(v + Jvm.version(), v.toString()));
 		Arrays.asList(differentVersions).stream().forEach(v -> assertThat(testSupport.toString(), containsString(String.format("Version %d", v))));
 		assertThat(testSupport.toString(), containsString(String.format("%s alternatives", TEST_NAME)));
-		testSupport.verifyConfiguration();
 	}
 
 	@Test
-	public void supportConfigChecks() {
-		assertThrows(IllegalArgumentException.class, () -> {
-			testSupport.add(1, "Not a semantic version");
-		});
-
-		testSupport.add(1, "0.1").add(2, "1").verifyConfiguration(); //correct behavior
+	public void supportAddVerification() {
 		Arrays.<Consumer<Jvm.Support<String>>> asList(
+				s -> {
+					s.add(1, "1.a");
+				}, //Not a semantic version
 				s -> {
 					s.add(1, "0.1").add(1, "1.0");
 				}, //forgot to adapt JVM version
@@ -69,21 +65,14 @@ public class JvmTest {
 				} //lower formatter version requires higher Java version
 		).stream().forEach(configuration -> {
 			Jvm.Support<String> support = Jvm.support(TEST_NAME);
-			configuration.accept(support);
-			assertThrows(AssertionError.class, () -> {
-				support.verifyConfiguration();
+			assertThrows(IllegalArgumentException.class, () -> {
+				configuration.accept(support);
 			});
 		});
 	}
 
 	@Test
 	public void supportEmptyConfiguration() {
-		try {
-			testSupport.verifyConfiguration();
-		} catch (AssertionError e) {
-			fail("Empty configuration should be valid: " + e.toString());
-		}
-
 		assertNull("No formatter version is configured", testSupport.getRecommendedFormatterVersion());
 
 		testSupport.assertFormatterSupported("0.1");
