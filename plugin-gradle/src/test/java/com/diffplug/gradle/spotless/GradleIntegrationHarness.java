@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import com.diffplug.common.base.StringPrinter;
 import com.diffplug.common.tree.TreeDef;
 import com.diffplug.common.tree.TreeStream;
 import com.diffplug.spotless.FileSignature;
-import com.diffplug.spotless.JreVersion;
+import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.ResourceHarness;
 
 public class GradleIntegrationHarness extends ResourceHarness {
@@ -44,10 +44,10 @@ public class GradleIntegrationHarness extends ResourceHarness {
 		final String version;
 
 		GradleVersionSupport(String version) {
-			if (JreVersion.thisVm() >= 15) {
+			if (Jvm.version() >= 15) {
 				// the first version with support for Java 15+
 				this.version = "6.7";
-			} else if (JreVersion.thisVm() >= 14) {
+			} else if (Jvm.version() >= 14) {
 				// the first version with support for Java 14+
 				this.version = "6.3";
 			} else {

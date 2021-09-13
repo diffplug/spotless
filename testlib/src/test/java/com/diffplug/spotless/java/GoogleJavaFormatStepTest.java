@@ -15,7 +15,7 @@
  */
 package com.diffplug.spotless.java;
 
-import java.lang.reflect.InvocationTargetException;
+import static org.junit.Assume.assumeTrue;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,30 +23,19 @@ import org.junit.Test;
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JreVersion;
+import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
 public class GoogleJavaFormatStepTest extends ResourceHarness {
+
 	@Test
-	public void suggestJre11() throws Exception {
+	public void jvm13Features() throws Exception {
+		assumeTrue(Jvm.version() >= 13);
 		try (StepHarness step = StepHarness.forStep(GoogleJavaFormatStep.create(TestProvisioner.mavenCentral()))) {
-			if (JreVersion.thisVm() < 11) {
-				step.testResourceException("java/googlejavaformat/TextBlock.dirty", throwable -> {
-					throwable.hasMessageStartingWith("You are running Spotless on JRE 8")
-							.hasMessageEndingWith(", which limits you to google-java-format 1.7\n"
-									+ "If you upgrade your build JVM to 11+, then you can use google-java-format 1.11.0, which may have fixed this problem.");
-				});
-			} else if (JreVersion.thisVm() < 13) {
-				step.testResourceException("java/googlejavaformat/TextBlock.dirty", throwable -> {
-					throwable.isInstanceOf(InvocationTargetException.class)
-							.extracting(exception -> exception.getCause().getMessage()).asString().contains("7:18: error: unclosed string literal");
-				});
-			} else {
-				// JreVersion.thisVm() >= 13
-				step.testResource("java/googlejavaformat/TextBlock.dirty", "java/googlejavaformat/TextBlock.clean");
-			}
+			step.testResource("java/googlejavaformat/TextBlock.dirty", "java/googlejavaformat/TextBlock.clean");
 		}
 	}
 
@@ -85,13 +74,7 @@ public class GoogleJavaFormatStepTest extends ResourceHarness {
 	@Test
 	public void behaviorWithReflowLongStrings() throws Exception {
 		try (StepHarness step = StepHarness.forStep(GoogleJavaFormatStep.create(GoogleJavaFormatStep.defaultVersion(), GoogleJavaFormatStep.defaultStyle(), TestProvisioner.mavenCentral(), true))) {
-			if (JreVersion.thisVm() < 11) {
-				step.testResourceException("java/googlejavaformat/JavaCodeUnformatted.test", throwable -> {
-					throwable.hasMessageStartingWith("You are running Spotless on JRE 8")
-							.hasMessageEndingWith(", which limits you to google-java-format 1.7\n"
-									+ "If you upgrade your build JVM to 11+, then you can use google-java-format 1.11.0, which may have fixed this problem.");
-				});
-			} else {
+			if (Jvm.version() >= 11) {
 				step.testResource("java/googlejavaformat/JavaCodeUnformatted.test", "java/googlejavaformat/JavaCodeFormattedReflowLongStrings.test")
 						.testResource("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test", "java/googlejavaformat/JavaCodeWithLicenseFormattedReflowLongStrings.test")
 						.testResource("java/googlejavaformat/JavaCodeWithLicensePackageUnformatted.test", "java/googlejavaformat/JavaCodeWithLicensePackageFormattedReflowLongStrings.test")

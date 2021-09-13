@@ -15,16 +15,14 @@
  */
 package com.diffplug.spotless.java;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
+import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx.BiFunction;
@@ -86,31 +84,12 @@ public class GoogleJavaFormatStep {
 				State::createFormat);
 	}
 
-	private static final int JRE_VERSION;
+	static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(8, "1.7").add(11, "1.11.0");
 
-	static {
-		String jre = System.getProperty("java.version");
-		if (jre.startsWith("1.8")) {
-			JRE_VERSION = 8;
-		} else {
-			Matcher matcher = Pattern.compile("(\\d+)").matcher(jre);
-			if (!matcher.find()) {
-				throw new IllegalArgumentException("Expected " + jre + " to start with an integer");
-			}
-			JRE_VERSION = Integer.parseInt(matcher.group(1));
-			if (JRE_VERSION <= 8) {
-				throw new IllegalArgumentException("Expected " + jre + " to start with an integer greater than 8");
-			}
-		}
-	}
-
-	/** On JRE 11+, returns {@code 1.9}. On earlier JREs, returns {@code 1.7}. */
+	/** Get default formatter version */
 	public static String defaultVersion() {
-		return JRE_VERSION >= 11 ? LATEST_VERSION_JRE_11 : LATEST_VERSION_JRE_8;
+		return JVM_SUPPORT.getRecommendedFormatterVersion();
 	}
-
-	private static final String LATEST_VERSION_JRE_8 = "1.7";
-	private static final String LATEST_VERSION_JRE_11 = "1.11.0";
 
 	public static String defaultStyle() {
 		return DEFAULT_STYLE;
@@ -130,15 +109,16 @@ public class GoogleJavaFormatStep {
 		final String style;
 		final boolean reflowLongStrings;
 
-		State(String stepName, String version, Provisioner provisioner) throws IOException {
+		State(String stepName, String version, Provisioner provisioner) throws Exception {
 			this(stepName, version, DEFAULT_STYLE, provisioner);
 		}
 
-		State(String stepName, String version, String style, Provisioner provisioner) throws IOException {
+		State(String stepName, String version, String style, Provisioner provisioner) throws Exception {
 			this(stepName, version, style, provisioner, DEFAULT_REFLOW_LONG_STRINGS);
 		}
 
-		State(String stepName, String version, String style, Provisioner provisioner, boolean reflowLongStrings) throws IOException {
+		State(String stepName, String version, String style, Provisioner provisioner, boolean reflowLongStrings) throws Exception {
+			JVM_SUPPORT.assertFormatterSupported(version);
 			this.jarState = JarState.from(MAVEN_COORDINATE + version, provisioner);
 			this.stepName = stepName;
 			this.version = version;
@@ -175,19 +155,19 @@ public class GoogleJavaFormatStep {
 
 			BiFunction<String, Object, String> reflowLongStrings = this.reflowLongStrings ? constructReflowLongStringsFunction(classLoader, formatterClazz) : (s, f) -> s;
 
-			return suggestJre11(input -> {
+			return JVM_SUPPORT.suggestLaterVersionOnError(version, (input -> {
 				String formatted = (String) formatterMethod.invoke(formatter, input);
 				String removedUnused = removeUnused.apply(formatted);
 				String sortedImports = (String) importOrdererMethod.invoke(null, removedUnused);
 				String reflowedLongStrings = reflowLongStrings.apply(sortedImports, formatter);
 				return fixWindowsBug(reflowedLongStrings, version);
-			});
+			}));
 		}
 
 		FormatterFunc createRemoveUnusedImportsOnly() throws Exception {
 			ClassLoader classLoader = jarState.getClassLoader();
 			Function<String, String> removeUnused = constructRemoveUnusedFunction(classLoader);
-			return suggestJre11(input -> fixWindowsBug(removeUnused.apply(input), version));
+			return JVM_SUPPORT.suggestLaterVersionOnError(version, (input -> fixWindowsBug(removeUnused.apply(input), version)));
 		}
 
 		private static Function<String, String> constructRemoveUnusedFunction(ClassLoader classLoader)
@@ -261,20 +241,5 @@ public class GoogleJavaFormatStep {
 			}
 		}
 		return input;
-	}
-
-	private static FormatterFunc suggestJre11(FormatterFunc in) {
-		if (JRE_VERSION >= 11) {
-			return in;
-		} else {
-			return unixIn -> {
-				try {
-					return in.apply(unixIn);
-				} catch (Exception e) {
-					throw new Exception("You are running Spotless on JRE " + JRE_VERSION + ", which limits you to google-java-format " + LATEST_VERSION_JRE_8 + "\n"
-							+ "If you upgrade your build JVM to 11+, then you can use google-java-format " + LATEST_VERSION_JRE_11 + ", which may have fixed this problem.", e);
-				}
-			};
-		}
 	}
 }
