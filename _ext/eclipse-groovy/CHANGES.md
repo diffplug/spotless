@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.5.0`).
 
 ## [Unreleased]
+### Added
+* Switch to Groovy-Eclipse release 4.2.0 for Eclipse 4.20 using Groovy 4.0.0 Alpha 3.
 
 ### Fixed
 * Fixed IndexOutOfBoundsException in parallel execution of `eclipse-groovy` formatter ([#877](https://github.com/diffplug/spotless/issues/877))
