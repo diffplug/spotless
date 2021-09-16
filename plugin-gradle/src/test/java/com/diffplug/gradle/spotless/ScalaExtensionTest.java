@@ -17,11 +17,11 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class ScalaExtensionTest extends GradleIntegrationHarness {
+class ScalaExtensionTest extends GradleIntegrationHarness {
 	@Test
-	public void integration() throws IOException {
+	void integration() throws IOException {
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",

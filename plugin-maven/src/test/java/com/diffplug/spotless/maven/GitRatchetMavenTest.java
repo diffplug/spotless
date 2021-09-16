@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +22,11 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.RefDatabase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.StringPrinter;
 
-public class GitRatchetMavenTest extends MavenIntegrationHarness {
+class GitRatchetMavenTest extends MavenIntegrationHarness {
 	private static final String TEST_PATH = "src/markdown/test.md";
 
 	private Git initRepo() throws IllegalStateException, GitAPIException, IOException {
@@ -64,7 +64,7 @@ public class GitRatchetMavenTest extends MavenIntegrationHarness {
 			"</formats>");
 
 	@Test
-	public void singleProjectExhaustive() throws Exception {
+	void singleProjectExhaustive() throws Exception {
 		try (Git git = initRepo()) {
 			writePom(RATCHET_FROM_POM);
 			checkBehavior(git);
@@ -72,7 +72,7 @@ public class GitRatchetMavenTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void singleProjectExhaustiveGlobal() throws Exception {
+	void singleProjectExhaustiveGlobal() throws Exception {
 		try (Git git = initRepo()) {
 			writePom(RATCHET_FROM_POM
 					.replace("<ratchetFrom>baseline</ratchetFrom>", "")

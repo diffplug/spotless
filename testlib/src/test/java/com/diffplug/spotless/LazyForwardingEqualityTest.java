@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,12 @@ package com.diffplug.spotless;
 
 import static com.diffplug.common.testing.SerializableTester.reserializeAndAssert;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.testing.EqualsTester;
 
 @SuppressWarnings("serial")
-public class LazyForwardingEqualityTest {
+class LazyForwardingEqualityTest {
 	static Str s(String state) {
 		return new Str(state);
 	}
@@ -51,7 +51,7 @@ public class LazyForwardingEqualityTest {
 	}
 
 	@Test
-	public void testEquality() {
+	void testEquality() {
 		new EqualsTester()
 				.addEqualityGroup(s("hello"), reserializeAndAssert(s("hello")))
 				.addEqualityGroup(s("world"), reserializeAndAssert(s("world")))

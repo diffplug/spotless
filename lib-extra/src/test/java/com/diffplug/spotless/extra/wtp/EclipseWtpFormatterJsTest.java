@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 DiffPlug
+ * Copyright 2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.python;
+package com.diffplug.spotless.extra.wtp;
 
-import org.junit.jupiter.api.Test;
+import com.diffplug.spotless.TestProvisioner;
+import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 
-import com.diffplug.spotless.StepHarness;
-import com.diffplug.spotless.tag.BlackTest;
+class EclipseWtpFormatterJsTest extends EclipseWtpFormatterCommonTests {
 
-@BlackTest
-class BlackStepTest {
-	@Test
-	void test() throws Exception {
-		StepHarness.forStep(BlackStep.withVersion(BlackStep.defaultVersion()).create())
-				.testResource("python/black/black.dirty", "python/black/black.clean")
-				.close();
+	@Override
+	EclipseBasedStepBuilder createBuilder() {
+		return EclipseWtpFormatterStep.JS.createBuilder(TestProvisioner.mavenCentral());
+	}
+
+	@Override
+	String getTestInput() {
+		return "function f(  )   {\na.b(1,\n2);}";
+	}
+
+	@Override
+	String getTestExpectation() {
+		return "function f() {\n    a.b(1, 2);\n}";
 	}
 }

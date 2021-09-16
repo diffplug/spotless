@@ -17,14 +17,14 @@ package com.diffplug.spotless.maven.kotlin;
 
 import java.io.File;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
-public class DiktatTest extends MavenIntegrationHarness {
+class DiktatTest extends MavenIntegrationHarness {
 
 	@Test
-	public void testDiktat() throws Exception {
+	void testDiktat() throws Exception {
 
 		writePomWithKotlinSteps("<diktat/>");
 
@@ -36,7 +36,7 @@ public class DiktatTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void testDiktatWithVersion() throws Exception {
+	void testDiktatWithVersion() throws Exception {
 
 		writePomWithKotlinSteps("<diktat><version>0.4.0</version></diktat>");
 
@@ -47,7 +47,7 @@ public class DiktatTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void testDiktatConfig() throws Exception {
+	void testDiktatConfig() throws Exception {
 
 		String configPath = "src/main/kotlin/diktat-analysis.yml";
 		File conf = setFile(configPath).toResource("kotlin/diktat/diktat-analysis.yml");

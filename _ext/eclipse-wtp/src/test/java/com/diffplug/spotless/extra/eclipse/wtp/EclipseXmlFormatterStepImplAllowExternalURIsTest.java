@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,22 +18,22 @@ package com.diffplug.spotless.extra.eclipse.wtp;
 import static org.eclipse.wst.xml.core.internal.preferences.XMLCorePreferenceNames.INDENTATION_CHAR;
 import static org.eclipse.wst.xml.core.internal.preferences.XMLCorePreferenceNames.INDENTATION_SIZE;
 import static org.eclipse.wst.xml.core.internal.preferences.XMLCorePreferenceNames.SPACE;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Properties;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.extra.eclipse.wtp.sse.PluginPreferences;
 
 /** Test configuration allowExternalURI=false */
-public class EclipseXmlFormatterStepImplAllowExternalURIsTest {
+class EclipseXmlFormatterStepImplAllowExternalURIsTest {
 	private TestData testData = null;
 	private EclipseXmlFormatterStepImpl formatter;
 
-	@Before
-	public void initializeStatic() throws Exception {
+	@BeforeEach
+	void initializeStatic() throws Exception {
 		testData = TestData.getTestDataOnFileSystem("xml");
 		/*
 		 * The instantiation can be repeated for each step, but only with the same configuration
@@ -49,18 +49,18 @@ public class EclipseXmlFormatterStepImplAllowExternalURIsTest {
 	}
 
 	@Test
-	public void dtdExternalPath() throws Throwable {
+	void dtdExternalPath() throws Throwable {
 		String[] input = testData.input("dtd_external.test");
 		String output = formatter.format(input[0], input[1]);
-		assertEquals("External DTD not resolved. Restrictions are not applied by formatter.",
-				testData.expected("dtd_external.test"), output);
+		assertEquals(testData.expected("dtd_external.test"),
+				output, "External DTD not resolved. Restrictions are not applied by formatter.");
 	}
 
 	@Test
-	public void xsdExternalPath() throws Throwable {
+	void xsdExternalPath() throws Throwable {
 		String[] input = testData.input("xsd_external.test");
 		String output = formatter.format(input[0], input[1]);
-		assertEquals("External XSD not resolved. Restrictions are not applied by formatter.",
-				testData.expected("xsd_external.test"), output);
+		assertEquals(testData.expected("xsd_external.test"),
+				output, "External XSD not resolved. Restrictions are not applied by formatter.");
 	}
 }

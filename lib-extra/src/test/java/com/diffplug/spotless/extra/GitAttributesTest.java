@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,14 +22,14 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ResourceHarness;
 
-public class GitAttributesTest extends ResourceHarness {
+class GitAttributesTest extends ResourceHarness {
 	private List<File> testFiles() {
 		try {
 			List<File> result = new ArrayList<>();
@@ -46,7 +46,7 @@ public class GitAttributesTest extends ResourceHarness {
 	private static List<String> TEST_PATHS = Arrays.asList("someFile", "subfolder/someFile", "MANIFEST.MF", "subfolder/MANIFEST.MF");
 
 	@Test
-	public void cacheTest() throws IOException {
+	void cacheTest() throws IOException {
 		setFile(".gitattributes").toContent(StringPrinter.buildStringFromLines(
 				"* eol=lf",
 				"*.MF eol=crlf"));
@@ -77,7 +77,7 @@ public class GitAttributesTest extends ResourceHarness {
 	}
 
 	@Test
-	public void policyTest() throws IOException {
+	void policyTest() throws IOException {
 		setFile(".gitattributes").toContent(StringPrinter.buildStringFromLines(
 				"* eol=lf",
 				"*.MF eol=crlf"));

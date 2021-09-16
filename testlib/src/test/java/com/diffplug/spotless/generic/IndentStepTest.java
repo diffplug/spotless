@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,47 +17,47 @@ package com.diffplug.spotless.generic;
 
 import java.io.File;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
 
-public class IndentStepTest extends ResourceHarness {
+class IndentStepTest extends ResourceHarness {
 	@Test
-	public void tabToTab() throws Throwable {
+	void tabToTab() throws Throwable {
 		FormatterStep indent = IndentStep.Type.TAB.create(4);
 		assertOnResources(indent, "indent/IndentedWithTab.test", "indent/IndentedWithTab.test");
 	}
 
 	@Test
-	public void spaceToSpace() throws Throwable {
+	void spaceToSpace() throws Throwable {
 		FormatterStep indent = IndentStep.Type.SPACE.create(4);
 		assertOnResources(indent, "indent/IndentedWithSpace.test", "indent/IndentedWithSpace.test");
 	}
 
 	@Test
-	public void spaceToTab() throws Throwable {
+	void spaceToTab() throws Throwable {
 		FormatterStep indent = IndentStep.Type.TAB.create(4);
 		assertOnResources(indent, "indent/IndentedWithSpace.test", "indent/IndentedWithTab.test");
 	}
 
 	@Test
-	public void tabToSpace() throws Throwable {
+	void tabToSpace() throws Throwable {
 		FormatterStep indent = IndentStep.Type.SPACE.create(4);
 		assertOnResources(indent, "indent/IndentedWithTab.test", "indent/IndentedWithSpace.test");
 	}
 
 	@Test
-	public void doesntClipNewlines() throws Throwable {
+	void doesntClipNewlines() throws Throwable {
 		FormatterStep indent = IndentStep.Type.SPACE.create(4);
 		String blankNewlines = "\n\n\n\n";
-		Assert.assertEquals(blankNewlines, indent.format(blankNewlines, new File("")));
+		Assertions.assertEquals(blankNewlines, indent.format(blankNewlines, new File("")));
 	}
 
 	@Test
-	public void equality() {
+	void equality() {
 		new SerializableEqualityTester() {
 			IndentStep.Type type = IndentStep.Type.SPACE;
 			int numSpacesPerTab = 2;

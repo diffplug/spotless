@@ -16,22 +16,22 @@
 package com.diffplug.gradle.spotless;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.condition.JRE.JAVA_11;
 
 import java.io.IOException;
 
 import org.gradle.testkit.runner.BuildResult;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
 
-import com.diffplug.spotless.JreVersion;
-
-public class KotlinGradleExtensionTest extends GradleIntegrationHarness {
+class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 	@Test
-	public void integration() throws IOException {
+	void integration() throws IOException {
 		testInDirectory(null);
 	}
 
 	@Test
-	public void integration_script_in_subdir() throws IOException {
+	void integration_script_in_subdir() throws IOException {
 		testInDirectory("companionScripts");
 	}
 
@@ -58,7 +58,7 @@ public class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void integration_default() throws IOException {
+	void integration_default() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'nebula.kotlin' version '1.3.72'",
@@ -76,7 +76,7 @@ public class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void integration_default_diktat() throws IOException {
+	void integration_default_diktat() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'org.jetbrains.kotlin.jvm' version '1.4.30'",
@@ -95,7 +95,7 @@ public class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void integration_pinterest() throws IOException {
+	void integration_pinterest() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'nebula.kotlin' version '1.3.72'",
@@ -113,7 +113,7 @@ public class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void indentStep() throws IOException {
+	void indentStep() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'nebula.kotlin' version '1.3.72'",
@@ -130,9 +130,8 @@ public class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void integration_ktfmt() throws IOException {
-		// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
-		JreVersion.assume11OrGreater();
+	@EnabledForJreRange(min = JAVA_11) // ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
+	void integration_ktfmt() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'nebula.kotlin' version '1.3.72'",
@@ -150,9 +149,8 @@ public class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void integration_ktfmt_with_dropbox_style() throws IOException {
-		// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
-		JreVersion.assume11OrGreater();
+	@EnabledForJreRange(min = JAVA_11) // ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
+	void integration_ktfmt_with_dropbox_style() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'nebula.kotlin' version '1.3.72'",
@@ -170,7 +168,7 @@ public class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void integration_lint_script_files_without_top_level_declaration() throws IOException {
+	void integration_lint_script_files_without_top_level_declaration() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'nebula.kotlin' version '1.3.72'",

@@ -16,6 +16,7 @@
 package com.diffplug.spotless.extra.wtp;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.condition.JRE.JAVA_11;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -25,79 +26,46 @@ import java.util.Arrays;
 import java.util.Properties;
 import java.util.function.Consumer;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.JreVersion;
-import com.diffplug.spotless.TestProvisioner;
+import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.eclipse.EclipseCommonTests;
 
-@RunWith(value = Parameterized.class)
-public class EclipseWtpFormatterStepTest extends EclipseCommonTests {
+@EnabledForJreRange(min = JAVA_11)
+abstract class EclipseWtpFormatterCommonTests extends EclipseCommonTests {
 
-	private enum WTP {
-		// @formatter:off
-		CSS(	"body {\na: v;   b:   \nv;\n}  \n",
-				"body {\n\ta: v;\n\tb: v;\n}"),
-		HTML(	"<!DOCTYPE html> <html>\t<head> <meta   charset=\"UTF-8\"></head>\n</html>  ",
-				"<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"UTF-8\">\n</head>\n</html>\n"),
-		JS(		"function f(  )   {\na.b(1,\n2);}",
-				"function f() {\n    a.b(1, 2);\n}"),
-		JSON(	"{\"a\": \"b\",	\"c\":   { \"d\": \"e\",\"f\": \"g\"}}",
-				"{\n\t\"a\": \"b\",\n\t\"c\": {\n\t\t\"d\": \"e\",\n\t\t\"f\": \"g\"\n\t}\n}"),
-		XML(	"<a><b>   c</b></a>", "<a>\n\t<b> c</b>\n</a>");
-		// @formatter:on
+	abstract EclipseBasedStepBuilder createBuilder();
 
-		public final String input;
-		public final String expectation;
+	abstract String getTestInput();
 
-		private WTP(String input, final String expectation) {
-			this.input = input;
-			this.expectation = expectation;
-		}
-
-		public EclipseBasedStepBuilder createBuilder() {
-			EclipseWtpFormatterStep stepType = EclipseWtpFormatterStep.valueOf(this.toString());
-			return stepType.createBuilder(TestProvisioner.mavenCentral());
-		}
-	}
-
-	@Override
-	protected void makeAssumptions() {
-		JreVersion.assume11OrGreater();
-	}
-
-	@Parameters(name = "{0}")
-	public static Iterable<WTP> data() {
-		return Arrays.asList(WTP.values());
-	}
-
-	@Parameter(0)
-	public WTP wtp;
+	abstract String getTestExpectation();
 
 	@Override
 	protected String[] getSupportedVersions() {
-		return new String[]{"4.19.0"};
+		if (Jvm.version() >= 11) {
+			return new String[]{"4.19.0"};
+		} else {
+			return new String[]{"4.7.3a", "4.7.3b", "4.8.0", "4.12.0", "4.13.0", "4.14.0", "4.15.0",
+					"4.16.0", "4.17.0", "4.18.0"};
+		}
 	}
 
 	@Override
 	protected String getTestInput(String version) {
-		return wtp.input;
+		return getTestInput();
 	}
 
 	@Override
 	protected String getTestExpectation(String version) {
-		return wtp.expectation;
+		return getTestExpectation();
 	}
 
 	@Override
 	protected FormatterStep createStep(String version) {
-		EclipseBasedStepBuilder builder = wtp.createBuilder();
+		EclipseBasedStepBuilder builder = createBuilder();
 		builder.setVersion(version);
 		return builder.build();
 	}
@@ -108,7 +76,7 @@ public class EclipseWtpFormatterStepTest extends EclipseCommonTests {
 	 * Hence separated class loaders are required for different configurations.
 	 */
 	@Test
-	public void multipleConfigurations() throws Exception {
+	void multipleConfigurations() throws Exception {
 		FormatterStep tabFormatter = createStepForDefaultVersion(config -> {
 			config.setProperty("indentationChar", "tab");
 			config.setProperty("indentationSize", "1");
@@ -118,13 +86,13 @@ public class EclipseWtpFormatterStepTest extends EclipseCommonTests {
 			config.setProperty("indentationSize", "5");
 		});
 
-		assertThat(formatWith(tabFormatter)).as("Tab formatting output unexpected").isEqualTo(wtp.expectation); //This is the default configuration
-		assertThat(formatWith(spaceFormatter)).as("Space formatting output unexpected").isEqualTo(wtp.expectation.replace("\t", "     "));
+		assertThat(formatWith(tabFormatter)).as("Tab formatting output unexpected").isEqualTo(getTestExpectation()); //This is the default configuration
+		assertThat(formatWith(spaceFormatter)).as("Space formatting output unexpected").isEqualTo(getTestExpectation().replace("\t", "     "));
 	}
 
 	private String formatWith(FormatterStep formatter) throws Exception {
 		File baseLocation = File.createTempFile("EclipseWtpFormatterStepTest-", ".xml"); //Only required for relative path lookup
-		return formatter.format(wtp.input, baseLocation);
+		return formatter.format(getTestInput(), baseLocation);
 	}
 
 	private FormatterStep createStepForDefaultVersion(Consumer<Properties> config) throws IOException {
@@ -133,7 +101,7 @@ public class EclipseWtpFormatterStepTest extends EclipseCommonTests {
 		File tempFile = File.createTempFile("EclipseWtpFormatterStepTest-", ".properties");
 		OutputStream tempOut = new FileOutputStream(tempFile);
 		configProps.store(tempOut, "test properties");
-		EclipseBasedStepBuilder builder = wtp.createBuilder();
+		EclipseBasedStepBuilder builder = createBuilder();
 		builder.setVersion(EclipseWtpFormatterStep.defaultVersion());
 		builder.setPreferences(Arrays.asList(tempFile));
 		return builder.build();

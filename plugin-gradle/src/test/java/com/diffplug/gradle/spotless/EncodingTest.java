@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,11 @@ package com.diffplug.gradle.spotless;
 
 import java.nio.charset.Charset;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class EncodingTest extends GradleIntegrationHarness {
+class EncodingTest extends GradleIntegrationHarness {
 	@Test
-	public void defaultIsUtf8() throws Exception {
+	void defaultIsUtf8() throws Exception {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
@@ -38,7 +38,7 @@ public class EncodingTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void globalIsRespected() throws Exception {
+	void globalIsRespected() throws Exception {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
@@ -56,7 +56,7 @@ public class EncodingTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void globalIsRespectedButCanBeOverridden() throws Exception {
+	void globalIsRespectedButCanBeOverridden() throws Exception {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.spotless'",

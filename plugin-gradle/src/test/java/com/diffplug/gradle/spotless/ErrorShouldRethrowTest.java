@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.CharMatcher;
 import com.diffplug.common.base.Splitter;
@@ -31,7 +31,7 @@ import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.LineEnding;
 
 /** Tests the desired behavior from https://github.com/diffplug/spotless/issues/46. */
-public class ErrorShouldRethrowTest extends GradleIntegrationHarness {
+class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 	private void writeBuild(String... toInsert) throws IOException {
 		List<String> lines = new ArrayList<>();
 		lines.add("plugins {");
@@ -52,7 +52,7 @@ public class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void passesIfNoException() throws Exception {
+	void passesIfNoException() throws Exception {
 		writeBuild(
 				"    } // format",
 				"}     // spotless");
@@ -61,7 +61,7 @@ public class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void anyExceptionShouldFail() throws Exception {
+	void anyExceptionShouldFail() throws Exception {
 		writeBuild(
 				"    } // format",
 				"}     // spotless");
@@ -74,7 +74,7 @@ public class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void unlessEnforceCheckIsFalse() throws Exception {
+	void unlessEnforceCheckIsFalse() throws Exception {
 		writeBuild(
 				"    } // format",
 				"    enforceCheck false",
@@ -84,7 +84,7 @@ public class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void unlessExemptedByStep() throws Exception {
+	void unlessExemptedByStep() throws Exception {
 		writeBuild(
 				"        ignoreErrorForStep 'no swearing'",
 				"    } // format",
@@ -95,7 +95,7 @@ public class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void unlessExemptedByPath() throws Exception {
+	void unlessExemptedByPath() throws Exception {
 		writeBuild(
 				"        ignoreErrorForPath 'README.md'",
 				"    } // format",
@@ -106,7 +106,7 @@ public class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void failsIfNeitherStepNorFileExempted() throws Exception {
+	void failsIfNeitherStepNorFileExempted() throws Exception {
 		writeBuild(
 				"        ignoreErrorForStep 'nope'",
 				"        ignoreErrorForPath 'nope'",

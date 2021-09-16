@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,16 +19,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Test;
 
-import com.diffplug.spotless.category.NpmTest;
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 import com.diffplug.spotless.maven.MavenRunner.Result;
 import com.diffplug.spotless.maven.generic.Prettier;
+import com.diffplug.spotless.tag.NpmTest;
 
-@Category(NpmTest.class)
-public class PrettierFormatStepTest extends MavenIntegrationHarness {
+@NpmTest
+class PrettierFormatStepTest extends MavenIntegrationHarness {
 
 	private void run(String kind, String suffix) throws IOException, InterruptedException {
 		String path = prepareRun(kind, suffix);
@@ -50,7 +49,7 @@ public class PrettierFormatStepTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void prettier_typescript() throws Exception {
+	void prettier_typescript() throws Exception {
 		String suffix = "ts";
 		writePomWithPrettierSteps("**/*." + suffix,
 				"<prettier>",
@@ -61,7 +60,7 @@ public class PrettierFormatStepTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void prettier_html() throws Exception {
+	void prettier_html() throws Exception {
 		String suffix = "html";
 		writePomWithPrettierSteps("**/*." + suffix,
 				"<prettier>",
@@ -72,7 +71,7 @@ public class PrettierFormatStepTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void prettier_tsx() throws Exception {
+	void prettier_tsx() throws Exception {
 		String suffix = "tsx";
 		writePomWithPrettierSteps("src/main/**/*." + suffix,
 				"<includes><include>src/**/*.tsx</include></includes>",
@@ -84,7 +83,7 @@ public class PrettierFormatStepTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void prettier_tsx_inline_config() throws Exception {
+	void prettier_tsx_inline_config() throws Exception {
 		String suffix = "tsx";
 		writePomWithPrettierSteps("src/main/**/*." + suffix,
 				"<prettier>",
@@ -95,7 +94,7 @@ public class PrettierFormatStepTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void unique_dependency_config() throws Exception {
+	void unique_dependency_config() throws Exception {
 		writePomWithFormatSteps(
 				"<includes><include>**/*.ts</include></includes>",
 				"<prettier>",
@@ -108,7 +107,7 @@ public class PrettierFormatStepTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void custom_plugin() throws Exception {
+	void custom_plugin() throws Exception {
 		writePomWithFormatSteps(
 				"<includes><include>php-example.php</include></includes>",
 				"<prettier>",
@@ -134,7 +133,7 @@ public class PrettierFormatStepTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void autodetect_parser_based_on_filename() throws Exception {
+	void autodetect_parser_based_on_filename() throws Exception {
 		writePomWithFormatSteps(
 				"<includes><include>dirty.json</include></includes>",
 				"<prettier/>");
@@ -145,7 +144,7 @@ public class PrettierFormatStepTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void autodetect_npmrc_file() throws Exception {
+	void autodetect_npmrc_file() throws Exception {
 		setFile(".npmrc").toLines("registry=https://i.do.no.exist.com");
 		String suffix = "ts";
 		writePomWithPrettierSteps("**/*." + suffix,
@@ -158,7 +157,7 @@ public class PrettierFormatStepTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void select_configured_npmrc_file() throws Exception {
+	void select_configured_npmrc_file() throws Exception {
 		setFile(".custom_npmrc").toLines("registry=https://i.do.no.exist.com");
 		String suffix = "ts";
 		writePomWithPrettierSteps("**/*." + suffix,

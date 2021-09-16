@@ -15,14 +15,16 @@
  */
 package com.diffplug.spotless.maven.java;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.condition.JRE.JAVA_11;
 
-import com.diffplug.spotless.JreVersion;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
-public class GoogleJavaFormatTest extends MavenIntegrationHarness {
+class GoogleJavaFormatTest extends MavenIntegrationHarness {
 	@Test
-	public void specificVersionDefaultStyle() throws Exception {
+	void specificVersionDefaultStyle() throws Exception {
 		writePomWithJavaSteps(
 				"<googleJavaFormat>",
 				"  <version>1.2</version>",
@@ -32,7 +34,7 @@ public class GoogleJavaFormatTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void specificVersionSpecificStyle() throws Exception {
+	void specificVersionSpecificStyle() throws Exception {
 		writePomWithJavaSteps(
 				"<googleJavaFormat>",
 				"  <version>1.2</version>",
@@ -43,8 +45,8 @@ public class GoogleJavaFormatTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void specificVersionReflowLongStrings() throws Exception {
-		JreVersion.assume11OrGreater();
+	@EnabledForJreRange(min = JAVA_11)
+	void specificVersionReflowLongStrings() throws Exception {
 		writePomWithJavaSteps(
 				"<googleJavaFormat>",
 				"  <version>1.8</version>",

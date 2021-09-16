@@ -17,11 +17,11 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class JsonExtensionTest extends GradleIntegrationHarness {
+class JsonExtensionTest extends GradleIntegrationHarness {
 	@Test
-	public void defaultFormatting() throws IOException {
+	void defaultFormatting() throws IOException {
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
@@ -42,7 +42,7 @@ public class JsonExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void formattingWithCustomNumberOfSpaces() throws IOException {
+	void formattingWithCustomNumberOfSpaces() throws IOException {
 		setFile("build.gradle").toLines(
 				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",

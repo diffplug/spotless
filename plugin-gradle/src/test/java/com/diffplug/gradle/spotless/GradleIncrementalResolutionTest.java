@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -22,15 +24,14 @@ import java.util.Locale;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StringPrinter;
 
-public class GradleIncrementalResolutionTest extends GradleIntegrationHarness {
+class GradleIncrementalResolutionTest extends GradleIntegrationHarness {
 	@Test
-	public void failureDoesntTriggerAll() throws IOException {
+	void failureDoesntTriggerAll() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
@@ -96,9 +97,9 @@ public class GradleIncrementalResolutionTest extends GradleIntegrationHarness {
 		for (char c : state.toCharArray()) {
 			String letter = new String(new char[]{c});
 			if (Character.isLowerCase(c)) {
-				Assert.assertEquals(letter.toLowerCase(Locale.ROOT), read(filename(letter)).trim());
+				assertEquals(letter.toLowerCase(Locale.ROOT), read(filename(letter)).trim());
 			} else {
-				Assert.assertEquals(letter.toUpperCase(Locale.ROOT), read(filename(letter)).trim());
+				assertEquals(letter.toUpperCase(Locale.ROOT), read(filename(letter)).trim());
 			}
 		}
 	}
@@ -128,7 +129,7 @@ public class GradleIncrementalResolutionTest extends GradleIntegrationHarness {
 				added.add(trimmed.substring(1, trimmed.length() - 1));
 			}
 		}
-		Assert.assertEquals(concat(Arrays.asList(ranAgainst)), concat(added));
+		assertEquals(concat(Arrays.asList(ranAgainst)), concat(added));
 	}
 
 	private String concat(Iterable<String> iterable) {

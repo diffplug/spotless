@@ -15,34 +15,34 @@
  */
 package com.diffplug.spotless.java;
 
-import static org.junit.Assume.assumeTrue;
+import static org.junit.jupiter.api.condition.JRE.JAVA_11;
+import static org.junit.jupiter.api.condition.JRE.JAVA_13;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
 
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.JreVersion;
 import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
-public class GoogleJavaFormatStepTest extends ResourceHarness {
+class GoogleJavaFormatStepTest extends ResourceHarness {
 
 	@Test
-	public void jvm13Features() throws Exception {
-		assumeTrue(Jvm.version() >= 13);
+	@EnabledForJreRange(min = JAVA_13)
+	void jvm13Features() throws Exception {
 		try (StepHarness step = StepHarness.forStep(GoogleJavaFormatStep.create(TestProvisioner.mavenCentral()))) {
 			step.testResource("java/googlejavaformat/TextBlock.dirty", "java/googlejavaformat/TextBlock.clean");
 		}
 	}
 
 	@Test
-	public void behavior18() throws Exception {
-		// google-java-format requires JRE 11+
-		JreVersion.assume11OrGreater();
+	@EnabledForJreRange(min = JAVA_11) // google-java-format requires JRE 11+
+	void behavior18() throws Exception {
 		FormatterStep step = GoogleJavaFormatStep.create("1.8", TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("java/googlejavaformat/JavaCodeUnformatted.test", "java/googlejavaformat/JavaCodeFormatted18.test")
@@ -52,7 +52,7 @@ public class GoogleJavaFormatStepTest extends ResourceHarness {
 	}
 
 	@Test
-	public void behavior() throws Exception {
+	void behavior() throws Exception {
 		FormatterStep step = GoogleJavaFormatStep.create("1.2", TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("java/googlejavaformat/JavaCodeUnformatted.test", "java/googlejavaformat/JavaCodeFormatted.test")
@@ -62,7 +62,7 @@ public class GoogleJavaFormatStepTest extends ResourceHarness {
 	}
 
 	@Test
-	public void behaviorWithAospStyle() throws Exception {
+	void behaviorWithAospStyle() throws Exception {
 		FormatterStep step = GoogleJavaFormatStep.create("1.2", "AOSP", TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("java/googlejavaformat/JavaCodeUnformatted.test", "java/googlejavaformat/JavaCodeFormattedAOSP.test")
@@ -72,7 +72,7 @@ public class GoogleJavaFormatStepTest extends ResourceHarness {
 	}
 
 	@Test
-	public void behaviorWithReflowLongStrings() throws Exception {
+	void behaviorWithReflowLongStrings() throws Exception {
 		try (StepHarness step = StepHarness.forStep(GoogleJavaFormatStep.create(GoogleJavaFormatStep.defaultVersion(), GoogleJavaFormatStep.defaultStyle(), TestProvisioner.mavenCentral(), true))) {
 			if (Jvm.version() >= 11) {
 				step.testResource("java/googlejavaformat/JavaCodeUnformatted.test", "java/googlejavaformat/JavaCodeFormattedReflowLongStrings.test")
@@ -84,7 +84,7 @@ public class GoogleJavaFormatStepTest extends ResourceHarness {
 	}
 
 	@Test
-	public void equality() throws Exception {
+	void equality() throws Exception {
 		new SerializableEqualityTester() {
 			String version = "1.2";
 			String style = "";
@@ -114,7 +114,7 @@ public class GoogleJavaFormatStepTest extends ResourceHarness {
 	}
 
 	@Test
-	public void fixWindowsBugForGfj1Point1() {
+	void fixWindowsBugForGfj1Point1() {
 		fixWindowsBugTestcase("");
 		fixWindowsBugTestcase(
 				"",
@@ -149,6 +149,6 @@ public class GoogleJavaFormatStepTest extends ResourceHarness {
 
 	private void fixWindowsBugTestcase(String... lines) {
 		String input = StringPrinter.buildStringFromLines(lines);
-		Assert.assertEquals(input, GoogleJavaFormatStep.fixWindowsBug(input, "1.1"));
+		Assertions.assertEquals(input, GoogleJavaFormatStep.fixWindowsBug(input, "1.1"));
 	}
 }

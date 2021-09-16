@@ -17,14 +17,14 @@ package com.diffplug.spotless.json;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
-public class JsonSimpleStepTest {
+class JsonSimpleStepTest {
 
 	private static final int INDENT = 4;
 
@@ -32,47 +32,47 @@ public class JsonSimpleStepTest {
 	private final StepHarness stepHarness = StepHarness.forStep(step);
 
 	@Test
-	public void cannotProvidedNullProvisioner() {
+	void cannotProvidedNullProvisioner() {
 		assertThatThrownBy(() -> JsonSimpleStep.create(INDENT, null)).isInstanceOf(NullPointerException.class).hasMessage("provisioner cannot be null");
 	}
 
 	@Test
-	public void handlesSingletonObject() throws Exception {
+	void handlesSingletonObject() throws Exception {
 		doWithResource(stepHarness, "singletonObject");
 	}
 
 	@Test
-	public void handlesSingletonObjectWithArray() throws Exception {
+	void handlesSingletonObjectWithArray() throws Exception {
 		doWithResource(stepHarness, "singletonObjectWithArray");
 	}
 
 	@Test
-	public void handlesNestedObject() throws Exception {
+	void handlesNestedObject() throws Exception {
 		doWithResource(stepHarness, "nestedObject");
 	}
 
 	@Test
-	public void handlesSingletonArray() throws Exception {
+	void handlesSingletonArray() throws Exception {
 		doWithResource(stepHarness, "singletonArray");
 	}
 
 	@Test
-	public void handlesEmptyFile() throws Exception {
+	void handlesEmptyFile() throws Exception {
 		doWithResource(stepHarness, "empty");
 	}
 
 	@Test
-	public void handlesComplexNestedObject() throws Exception {
+	void handlesComplexNestedObject() throws Exception {
 		doWithResource(stepHarness, "cucumberJsonSample");
 	}
 
 	@Test
-	public void handlesObjectWithNull() throws Exception {
+	void handlesObjectWithNull() throws Exception {
 		doWithResource(stepHarness, "objectWithNull");
 	}
 
 	@Test
-	public void handlesInvalidJson() {
+	void handlesInvalidJson() {
 		assertThatThrownBy(() -> doWithResource(stepHarness, "invalidJson"))
 				.isInstanceOf(AssertionError.class)
 				.hasMessage("Unable to format JSON")
@@ -80,7 +80,7 @@ public class JsonSimpleStepTest {
 	}
 
 	@Test
-	public void handlesNotJson() {
+	void handlesNotJson() {
 		assertThatThrownBy(() -> doWithResource(stepHarness, "notJson"))
 				.isInstanceOf(AssertionError.class)
 				.hasMessage("Unable to determine JSON type, expected a '{' or '[' but found '#'")
@@ -88,7 +88,7 @@ public class JsonSimpleStepTest {
 	}
 
 	@Test
-	public void canSetCustomIndentationLevel() throws Exception {
+	void canSetCustomIndentationLevel() throws Exception {
 		FormatterStep step = JsonSimpleStep.create(6, TestProvisioner.mavenCentral());
 		StepHarness stepHarness = StepHarness.forStep(step);
 
@@ -98,7 +98,7 @@ public class JsonSimpleStepTest {
 	}
 
 	@Test
-	public void canSetIndentationLevelTo0() throws Exception {
+	void canSetIndentationLevelTo0() throws Exception {
 		FormatterStep step = JsonSimpleStep.create(0, TestProvisioner.mavenCentral());
 		StepHarness stepHarness = StepHarness.forStep(step);
 
@@ -108,7 +108,7 @@ public class JsonSimpleStepTest {
 	}
 
 	@Test
-	public void equality() {
+	void equality() {
 		new SerializableEqualityTester() {
 			int spaces = 0;
 

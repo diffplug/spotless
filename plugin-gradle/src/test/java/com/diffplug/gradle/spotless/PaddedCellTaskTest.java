@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import org.gradle.api.Project;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FileSignature;
@@ -34,7 +34,7 @@ import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.TestProvisioner;
 
-public class PaddedCellTaskTest extends ResourceHarness {
+class PaddedCellTaskTest extends ResourceHarness {
 	private class Bundle {
 		String name;
 		Project project = TestProvisioner.gradleProject(rootFolder());
@@ -123,7 +123,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 	}
 
 	@Test
-	public void paddedCellFormat() throws Exception {
+	void paddedCellFormat() throws Exception {
 		Bundle wellbehaved = wellbehaved();
 		Bundle cycle = cycle();
 		Bundle converge = converge();
@@ -141,7 +141,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 	}
 
 	@Test
-	public void paddedCellApplyCheck() throws Exception {
+	void paddedCellApplyCheck() throws Exception {
 		Bundle wellbehaved = wellbehaved();
 		Bundle cycle = cycle();
 		Bundle converge = converge();
@@ -165,7 +165,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 	}
 
 	@Test
-	public void diagnose() throws Exception {
+	void diagnose() throws Exception {
 		wellbehaved().diagnose();
 		cycle().diagnose();
 		converge().diagnose();
@@ -197,13 +197,13 @@ public class PaddedCellTaskTest extends ResourceHarness {
 
 	private void assertFolderContents(String subfolderName, String... files) throws IOException {
 		File subfolder = new File(rootFolder(), subfolderName);
-		Assert.assertTrue(subfolder.isDirectory());
+		Assertions.assertTrue(subfolder.isDirectory());
 		String asList = String.join("\n", Arrays.asList(files));
-		Assert.assertEquals(StringPrinter.buildStringFromLines(files).trim(), asList);
+		Assertions.assertEquals(StringPrinter.buildStringFromLines(files).trim(), asList);
 	}
 
 	@Test
-	public void paddedCellCheckCycleFailureMsg() throws IOException {
+	void paddedCellCheckCycleFailureMsg() throws IOException {
 		assertFailureMessage(cycle(),
 				"The following files had format violations:",
 				FileSignature.pathUnixToNative("    src/test.cycle"),
@@ -214,7 +214,7 @@ public class PaddedCellTaskTest extends ResourceHarness {
 	}
 
 	@Test
-	public void paddedCellCheckConvergeFailureMsg() throws IOException {
+	void paddedCellCheckConvergeFailureMsg() throws IOException {
 		assertFailureMessage(converge(),
 				"The following files had format violations:",
 				FileSignature.pathUnixToNative("    src/test.converge"),
@@ -226,6 +226,6 @@ public class PaddedCellTaskTest extends ResourceHarness {
 	private void assertFailureMessage(Bundle bundle, String... expectedOutput) {
 		String msg = bundle.checkFailureMsg();
 		String expected = StringPrinter.buildStringFromLines(expectedOutput).trim();
-		Assert.assertEquals(expected, msg);
+		Assertions.assertEquals(expected, msg);
 	}
 }

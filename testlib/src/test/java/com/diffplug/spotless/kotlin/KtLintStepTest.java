@@ -15,8 +15,8 @@
  */
 package com.diffplug.spotless.kotlin;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
@@ -29,11 +29,10 @@ import com.diffplug.spotless.TestProvisioner;
  * causes these problems. The root is still a gradle bug, but in the meantime we don't
  * need to hold up *every* PR with this: https://github.com/gradle/gradle/issues/11752
  */
-@Ignore
-public class KtLintStepTest extends ResourceHarness {
+@Disabled
+class KtLintStepTest extends ResourceHarness {
 	@Test
-	@Ignore
-	public void behavior() throws Exception {
+	void behavior() throws Exception {
 		// Must use jcenter (GONE) because `com.andreapivetta.kolor:kolor:0.0.2` isn't available on mavenCentral.
 		// It is a dependency of ktlint.
 		FormatterStep step = KtLintStep.create(TestProvisioner.mavenCentral());
@@ -47,8 +46,7 @@ public class KtLintStepTest extends ResourceHarness {
 	}
 
 	@Test
-	@Ignore
-	public void worksShyiko() throws Exception {
+	void worksShyiko() throws Exception {
 		// Must use jcenter (GONE) because `com.andreapivetta.kolor:kolor:0.0.2` isn't available on mavenCentral.
 		// It is a dependency of ktlint.
 		FormatterStep step = KtLintStep.create("0.31.0", TestProvisioner.mavenCentral());
@@ -65,8 +63,7 @@ public class KtLintStepTest extends ResourceHarness {
 	// but before 0.34.
 	// https://github.com/diffplug/spotless/issues/419
 	@Test
-	@Ignore
-	public void worksPinterestAndPre034() throws Exception {
+	void worksPinterestAndPre034() throws Exception {
 		// Must use jcenter (GONE) because `com.andreapivetta.kolor:kolor:0.0.2` isn't available on mavenCentral.
 		// It is a dependency of ktlint.
 		FormatterStep step = KtLintStep.create("0.32.0", TestProvisioner.mavenCentral());
@@ -82,14 +79,14 @@ public class KtLintStepTest extends ResourceHarness {
 	// Regression test to handle alpha and 1.x version numbers
 	// https://github.com/diffplug/spotless/issues/668
 	@Test
-	public void worksAlpha1() throws Exception {
+	void worksAlpha1() throws Exception {
 		FormatterStep step = KtLintStep.create("0.38.0-alpha01", TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean");
 	}
 
 	@Test
-	public void equality() throws Exception {
+	void equality() throws Exception {
 		new SerializableEqualityTester() {
 			String version = "0.2.2";
 

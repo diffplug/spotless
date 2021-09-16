@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,18 +21,18 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.common.io.Files;
 
-public class IdeHookTest extends GradleIntegrationHarness {
+class IdeHookTest extends GradleIntegrationHarness {
 	private String output, error;
 	private File dirty, clean, diverge, outofbounds;
 
-	@Before
-	public void before() throws IOException {
+	@BeforeEach
+	void before() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"  id 'com.diffplug.spotless'",
@@ -73,35 +73,35 @@ public class IdeHookTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void dirty() throws IOException {
+	void dirty() throws IOException {
 		runWith("spotlessApply", "--quiet", "-PspotlessIdeHook=" + dirty.getAbsolutePath(), "-PspotlessIdeHookUseStdOut");
 		Assertions.assertThat(output).isEqualTo("abc");
 		Assertions.assertThat(error).startsWith("IS DIRTY");
 	}
 
 	@Test
-	public void clean() throws IOException {
+	void clean() throws IOException {
 		runWith("spotlessApply", "--quiet", "-PspotlessIdeHook=" + clean.getAbsolutePath(), "-PspotlessIdeHookUseStdOut");
 		Assertions.assertThat(output).isEmpty();
 		Assertions.assertThat(error).startsWith("IS CLEAN");
 	}
 
 	@Test
-	public void diverge() throws IOException {
+	void diverge() throws IOException {
 		runWith("spotlessApply", "--quiet", "-PspotlessIdeHook=" + diverge.getAbsolutePath(), "-PspotlessIdeHookUseStdOut");
 		Assertions.assertThat(output).isEmpty();
 		Assertions.assertThat(error).startsWith("DID NOT CONVERGE");
 	}
 
 	@Test
-	public void outofbounds() throws IOException {
+	void outofbounds() throws IOException {
 		runWith("spotlessApply", "--quiet", "-PspotlessIdeHook=" + outofbounds.getAbsolutePath(), "-PspotlessIdeHookUseStdOut");
 		Assertions.assertThat(output).isEmpty();
 		Assertions.assertThat(error).isEmpty();
 	}
 
 	@Test
-	public void notAbsolute() throws IOException {
+	void notAbsolute() throws IOException {
 		runWith("spotlessApply", "--quiet", "-PspotlessIdeHook=build.gradle", "-PspotlessIdeHookUseStdOut");
 		Assertions.assertThat(output).isEmpty();
 		Assertions.assertThat(error).contains("Argument passed to spotlessIdeHook must be an absolute path");

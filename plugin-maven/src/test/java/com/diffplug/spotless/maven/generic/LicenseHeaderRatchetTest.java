@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,11 @@ import java.io.IOException;
 import java.time.YearMonth;
 
 import org.eclipse.jgit.api.Git;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
-public class LicenseHeaderRatchetTest extends MavenIntegrationHarness {
+class LicenseHeaderRatchetTest extends MavenIntegrationHarness {
 	private static final String NOW = String.valueOf(YearMonth.now().getYear());
 
 	private static final String TEST_JAVA = "src/main/java/pkg/Test.java";
@@ -60,13 +60,13 @@ public class LicenseHeaderRatchetTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void normal() throws Exception {
+	void normal() throws Exception {
 		setRatchetFrom("");
 		testSuiteUpdateWithLatest(false);
 	}
 
 	@Test
-	public void ratchetFrom() throws Exception {
+	void ratchetFrom() throws Exception {
 		try (Git git = Git.init().setDirectory(rootFolder()).call()) {
 			git.commit().setMessage("First commit").call();
 		}

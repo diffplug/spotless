@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,9 +32,9 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class GitRatchetGradleTest extends GradleIntegrationHarness {
+class GitRatchetGradleTest extends GradleIntegrationHarness {
 	private static final String TEST_PATH = "src/markdown/test.md";
 
 	private Git initRepo() throws IllegalStateException, GitAPIException, IOException {
@@ -47,7 +47,7 @@ public class GitRatchetGradleTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void singleProjectExhaustive() throws Exception {
+	void singleProjectExhaustive() throws Exception {
 		try (Git git = initRepo()) {
 			setFile("build.gradle").toLines(
 					"plugins { id 'com.diffplug.spotless' }",
@@ -140,7 +140,7 @@ public class GitRatchetGradleTest extends GradleIntegrationHarness {
 	private static final String BASELINE_DIRTY = "4cfc3358ccbf186738b82a60276b1e5306bc3870";
 
 	@Test
-	public void multiProject() throws Exception {
+	void multiProject() throws Exception {
 		try (Git git = initRepo()) {
 			setFile("settings.gradle").toLines(
 					"plugins {",

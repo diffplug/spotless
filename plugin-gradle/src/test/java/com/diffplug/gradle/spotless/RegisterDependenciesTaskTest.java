@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,11 @@ package com.diffplug.gradle.spotless;
 import java.io.IOException;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class RegisterDependenciesTaskTest extends GradleIntegrationHarness {
+class RegisterDependenciesTaskTest extends GradleIntegrationHarness {
 	@Test
-	public void registerDependencies() throws IOException {
+	void registerDependencies() throws IOException {
 		setFile("settings.gradle")
 				.toLines("include 'sub'");
 		setFile("build.gradle").toLines(

@@ -20,7 +20,7 @@ import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.eclipse.EclipseCommonTests;
 
-public class EclipseJdtFormatterStepTest extends EclipseCommonTests {
+class EclipseJdtFormatterStepTest extends EclipseCommonTests {
 
 	@Override
 	protected String[] getSupportedVersions() {

@@ -20,14 +20,18 @@ import static com.diffplug.spotless.FileSignature.signAsList;
 import java.io.File;
 import java.util.Collections;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import com.diffplug.spotless.*;
+import com.diffplug.spotless.FileSignature;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.ResourceHarness;
+import com.diffplug.spotless.StepHarness;
+import com.diffplug.spotless.TestProvisioner;
 
-public class DiktatStepTest extends ResourceHarness {
+class DiktatStepTest extends ResourceHarness {
 
 	@Test
-	public void behavior() throws Exception {
+	void behavior() throws Exception {
 		FormatterStep step = DiktatStep.create(TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResourceException("kotlin/diktat/Unsolvable.kt", assertion -> {
@@ -41,7 +45,7 @@ public class DiktatStepTest extends ResourceHarness {
 	}
 
 	@Test
-	public void behaviorConf() throws Exception {
+	void behaviorConf() throws Exception {
 
 		String configPath = "src/main/kotlin/diktat-analysis.yml";
 		File conf = setFile(configPath).toResource("kotlin/diktat/diktat-analysis.yml");

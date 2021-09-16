@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,16 @@
  */
 package com.diffplug.spotless.java;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
-public class RemoveUnusedImportsStepTest {
+class RemoveUnusedImportsStepTest {
 	@Test
-	public void behavior() throws Exception {
+	void behavior() throws Exception {
 		FormatterStep step = RemoveUnusedImportsStep.create(TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("java/removeunusedimports/JavaCodeUnformatted.test", "java/removeunusedimports/JavaCodeFormatted.test")
@@ -34,7 +34,7 @@ public class RemoveUnusedImportsStepTest {
 	}
 
 	@Test
-	public void equality() throws Exception {
+	void equality() throws Exception {
 		new SerializableEqualityTester() {
 			@Override
 			protected void setupTest(API api) {

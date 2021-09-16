@@ -20,7 +20,7 @@ import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.eclipse.EclipseCommonTests;
 
-public class GrEclipseFormatterStepTest extends EclipseCommonTests {
+class GrEclipseFormatterStepTest extends EclipseCommonTests {
 	@Override
 	protected String[] getSupportedVersions() {
 		return new String[]{"4.17.0", "4.18.0", "4.19.0"};

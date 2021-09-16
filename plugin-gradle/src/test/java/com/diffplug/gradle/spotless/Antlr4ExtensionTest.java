@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,12 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class Antlr4ExtensionTest extends GradleIntegrationHarness {
+class Antlr4ExtensionTest extends GradleIntegrationHarness {
 
 	@Test
-	public void applyUsingDefaultVersion() throws IOException {
+	void applyUsingDefaultVersion() throws IOException {
 		String[] buildScript = {
 				"buildscript {",
 				"    repositories {",
@@ -43,7 +43,7 @@ public class Antlr4ExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void applyUsingCustomVersion() throws IOException {
+	void applyUsingCustomVersion() throws IOException {
 		String[] buildScript = {
 				"buildscript {",
 				"    repositories {",

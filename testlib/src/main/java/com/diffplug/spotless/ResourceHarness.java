@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -27,17 +29,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
-import java.util.logging.Logger;
 
 import org.assertj.core.api.AbstractCharSequenceAssert;
-import org.assertj.core.api.Assertions;
 import org.assertj.core.util.CheckReturnValue;
-import org.junit.Assert;
-import org.junit.ComparisonFailure;
-import org.junit.Rule;
-import org.junit.rules.TemporaryFolder;
-import org.junit.rules.TestWatcher;
-import org.junit.runner.Description;
+import org.junit.jupiter.api.io.TempDir;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.io.Resources;
@@ -50,36 +45,12 @@ public class ResourceHarness {
 	 * and {@link #newFile(String)} apis, we can guarantee there
 	 * will be no symlink problems.
 	 */
-	@Rule
-	public TemporaryFolder folderDontUseDirectly = new TemporaryFolder();
-
-	/** Log nontruncated diff in case of a comparison failure to ease test development.*/
-	@Rule
-	public TestWatcher logComparisonFailureDiff = new TestWatcher() {
-		private static final String COMPARISON_SEPARATOR = "------------------------------------";
-
-		@Override
-		protected void failed(Throwable e, Description description) {
-			if (e instanceof ComparisonFailure) {
-				ComparisonFailure failure = (ComparisonFailure) e;
-				String msg = "";
-				msg += String.format("Output:  %n%1$s%n%2$s%n%1$s%n", COMPARISON_SEPARATOR, failure.getActual());
-				msg += String.format("Expected:%n%1$s%n%2$s%n%1$s%n", COMPARISON_SEPARATOR, failure.getExpected());
-				logFailure(msg, description);
-			}
-
-		}
-
-		private void logFailure(String message, Description description) {
-			Logger log = Logger.getLogger(description.getClassName());
-			log.warning(String.format("Step '%s' failed.%n%s", description.getDisplayName(), message));
-		}
-
-	};
+	@TempDir
+	File folderDontUseDirectly;
 
 	/** Returns the root folder (canonicalized to fix OS X issue) */
 	protected File rootFolder() {
-		return Errors.rethrow().get(() -> folderDontUseDirectly.getRoot().getCanonicalFile());
+		return Errors.rethrow().get(() -> folderDontUseDirectly.getCanonicalFile());
 	}
 
 	/** Returns a new child of the root folder. */
@@ -159,11 +130,11 @@ public class ResourceHarness {
 		String unformatted = LineEnding.toUnix(getTestResource(unformattedPath)); // unix-ified input
 		String formatted = step.apply(unformatted);
 		// no windows newlines
-		Assert.assertEquals(-1, formatted.indexOf('\r'));
+		assertThat(formatted).doesNotContain("\r");
 
 		// unix-ify the test resource output in case git screwed it up
 		String expected = LineEnding.toUnix(getTestResource(expectedPath)); // unix-ified output
-		Assert.assertEquals(expected, formatted);
+		assertThat(formatted).isEqualTo(expected);
 	}
 
 	@CheckReturnValue
@@ -188,7 +159,7 @@ public class ResourceHarness {
 		}
 
 		public void hasContent(String expected, Charset charset) {
-			Assertions.assertThat(file).usingCharset(charset).hasContent(expected);
+			assertThat(file).usingCharset(charset).hasContent(expected);
 		}
 
 		public void hasLines(String... lines) {
@@ -201,7 +172,7 @@ public class ResourceHarness {
 
 		public void matches(Consumer<AbstractCharSequenceAssert<?, String>> conditions) throws IOException {
 			String content = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
-			conditions.accept(Assertions.assertThat(content));
+			conditions.accept(assertThat(content));
 		}
 	}
 

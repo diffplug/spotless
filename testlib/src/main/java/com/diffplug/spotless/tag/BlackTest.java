@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.wtp;
+package com.diffplug.spotless.tag;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-@RunWith(value = Parameterized.class)
-public class EclipseWtpFormatterStepTestOld extends EclipseWtpFormatterStepTest {
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-	@Override
-	protected String[] getSupportedVersions() {
-		return new String[]{"4.7.3a", "4.7.3b", "4.8.0", "4.12.0", "4.13.0", "4.14.0", "4.15.0", "4.16.0", "4.17.0", "4.18.0"};
-	}
+import org.junit.jupiter.api.Tag;
 
-	@Override
-	protected void makeAssumptions() {}
-}
+@Target({TYPE, METHOD})
+@Retention(RUNTIME)
+@Tag("Black")
+public @interface BlackTest {}

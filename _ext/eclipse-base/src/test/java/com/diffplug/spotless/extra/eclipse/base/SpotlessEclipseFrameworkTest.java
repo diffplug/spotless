@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,11 +35,11 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.equinox.log.ExtendedLogReaderService;
 import org.eclipse.equinox.log.ExtendedLogService;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -52,7 +52,7 @@ import org.slf4j.simple.SimpleLogger;
 import com.diffplug.spotless.extra.eclipse.base.service.SingleSlf4JService;
 
 /** Integration tests */
-public class SpotlessEclipseFrameworkTest {
+class SpotlessEclipseFrameworkTest {
 
 	private final static String TEST_LOGGER_NAME = SpotlessEclipseFrameworkTest.class.getSimpleName();
 	private final static String CUSTOM_PREFIX = "prefix\t";
@@ -62,8 +62,8 @@ public class SpotlessEclipseFrameworkTest {
 
 	private static boolean TREAT_ERROR_AS_EXCEPTION = false;
 
-	@BeforeClass
-	public static void frameworkTestSetup() throws BundleException {
+	@BeforeAll
+	static void frameworkTestSetup() throws BundleException {
 		//Prepare interception of SLF4J messages to System.out
 		SLF4J_RECEIVER = new Slf4JMesssageListener();
 
@@ -87,29 +87,29 @@ public class SpotlessEclipseFrameworkTest {
 		});
 	}
 
-	@AfterClass
-	public static void deregisterSlf4JReceiver() {
+	@AfterAll
+	static void deregisterSlf4JReceiver() {
 		SLF4J_RECEIVER.deregister();
 	}
 
 	private EclipseMessageListener eclipseMessageListener;
 
-	@Before
-	public void eclipseReceiverSetup() {
+	@BeforeEach
+	void eclipseReceiverSetup() {
 		ExtendedLogReaderService service = getService(ExtendedLogReaderService.class);
 		eclipseMessageListener = new EclipseMessageListener();
 		service.addLogListener(eclipseMessageListener);
 		SLF4J_RECEIVER.clear();
 	}
 
-	@After
-	public void logReceiverTearDown() {
+	@AfterEach
+	void logReceiverTearDown() {
 		ExtendedLogReaderService service = getService(ExtendedLogReaderService.class);
 		service.removeLogListener(eclipseMessageListener);
 	}
 
 	@Test
-	public void testCustomizedLogMessage() {
+	void testCustomizedLogMessage() {
 		ResourcesPlugin.getPlugin().getLog().log(new Status(IStatus.ERROR, "Some plugin", "Hello World!"));
 		assertSlf4J()
 				.as("Error message logged.").received("Hello World!").contains(TEST_LOGGER_NAME)
@@ -121,7 +121,7 @@ public class SpotlessEclipseFrameworkTest {
 	}
 
 	@Test
-	public void testCustomizedLogException() {
+	void testCustomizedLogException() {
 		assertThatExceptionOfType(IllegalArgumentException.class)
 				.isThrownBy(() -> {
 					try {
@@ -135,7 +135,7 @@ public class SpotlessEclipseFrameworkTest {
 	}
 
 	@Test
-	public void testPluginLog() {
+	void testPluginLog() {
 		List<Integer> logLevels = Arrays.asList(IStatus.CANCEL, IStatus.ERROR, IStatus.INFO, IStatus.OK, IStatus.WARNING);
 		List<Integer> enabledLogLevels = Arrays.asList(IStatus.ERROR, IStatus.WARNING);
 		List<Integer> disabledLogLevels = logLevels.stream().filter(level -> !enabledLogLevels.contains(level)).collect(Collectors.toList());
@@ -153,7 +153,7 @@ public class SpotlessEclipseFrameworkTest {
 	}
 
 	@Test
-	public void testLogServiceLevel() {
+	void testLogServiceLevel() {
 		ExtendedLogService service = getService(ExtendedLogService.class);
 		assertThat(service.isErrorEnabled()).as("Error log level is enabled").isTrue();
 		assertThat(service.isWarnEnabled()).as("Warning log level is enabled").isTrue();
@@ -163,7 +163,7 @@ public class SpotlessEclipseFrameworkTest {
 	}
 
 	@Test
-	public void testLogServiceLog() {
+	void testLogServiceLog() {
 		ExtendedLogService service = getService(ExtendedLogService.class);
 		service.info("Log Info");
 		service.warn("Log Warn");
@@ -174,7 +174,7 @@ public class SpotlessEclipseFrameworkTest {
 
 	@Test
 	@Deprecated
-	public void testLogServiceLog_3_12() {
+	void testLogServiceLog_3_12() {
 		ExtendedLogService service = getService(ExtendedLogService.class);
 		service.log(SingleSlf4JService.LOG_INFO, "Log Info");
 		try {

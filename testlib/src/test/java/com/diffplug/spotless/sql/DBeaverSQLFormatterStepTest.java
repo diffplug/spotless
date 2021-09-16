@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,17 +19,17 @@ import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 
-public class DBeaverSQLFormatterStepTest extends ResourceHarness {
+class DBeaverSQLFormatterStepTest extends ResourceHarness {
 
 	@Test
-	public void behavior() throws Exception {
+	void behavior() throws Exception {
 		FormatterStep step = DBeaverSQLFormatterStep.create(Collections.emptySet());
 		StepHarness.forStep(step)
 				.testResource("sql/dbeaver/full.dirty", "sql/dbeaver/full.clean")
@@ -39,21 +39,21 @@ public class DBeaverSQLFormatterStepTest extends ResourceHarness {
 	}
 
 	@Test
-	public void behaviorWithConfigFile() throws Exception {
+	void behaviorWithConfigFile() throws Exception {
 		FormatterStep step = DBeaverSQLFormatterStep.create(createTestFiles("sql/dbeaver/sqlConfig.properties"));
 		StepHarness.forStep(step)
 				.testResource("sql/dbeaver/create.dirty", "sql/dbeaver/create.clean");
 	}
 
 	@Test
-	public void behaviorWithAlternativeConfigFile() throws Exception {
+	void behaviorWithAlternativeConfigFile() throws Exception {
 		FormatterStep step = DBeaverSQLFormatterStep.create(createTestFiles("sql/dbeaver/sqlConfig2.properties"));
 		StepHarness.forStep(step)
 				.testResource("sql/dbeaver/create.dirty", "sql/dbeaver/create.clean.alternative");
 	}
 
 	@Test
-	public void equality() throws Exception {
+	void equality() throws Exception {
 		List<File> sqlConfig1 = createTestFiles("sql/dbeaver/sqlConfig.properties");
 		List<File> sqlConfig2 = createTestFiles("sql/dbeaver/sqlConfig2.properties");
 		new SerializableEqualityTester() {

@@ -15,20 +15,20 @@
  */
 package com.diffplug.spotless.maven.scala;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
-public class ScalafmtTest extends MavenIntegrationHarness {
+class ScalafmtTest extends MavenIntegrationHarness {
 	@Test
-	public void testScalafmtWithDefaultConfig() throws Exception {
+	void testScalafmtWithDefaultConfig() throws Exception {
 		writePomWithScalaSteps("<scalafmt/>");
 
 		runTest("scala/scalafmt/basic.clean_3.0.0");
 	}
 
 	@Test
-	public void testScalafmtWithCustomConfig() throws Exception {
+	void testScalafmtWithCustomConfig() throws Exception {
 		setFile("scalafmt.conf").toResource("scala/scalafmt/scalafmt.conf");
 
 		writePomWithScalaSteps(

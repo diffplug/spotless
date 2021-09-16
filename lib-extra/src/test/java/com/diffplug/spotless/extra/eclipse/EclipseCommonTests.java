@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.io.File;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
@@ -64,12 +64,8 @@ public abstract class EclipseCommonTests extends ResourceHarness {
 	/** Create formatter step for a specific version */
 	protected abstract FormatterStep createStep(String version);
 
-	/** Called before the test, so that clients may call {@link org.junit.Assume}. */
-	protected void makeAssumptions() {}
-
 	@Test
-	public void testSupportedVersions() throws Exception {
-		makeAssumptions();
+	void testSupportedVersions() throws Exception {
 		String[] versions = getSupportedVersions();
 		for (String version : versions) {
 			String input = getTestInput(version);

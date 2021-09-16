@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,74 +15,74 @@
  */
 package com.diffplug.spotless.java;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
 
-public class ImportOrderStepTest extends ResourceHarness {
+class ImportOrderStepTest extends ResourceHarness {
 	@Test
-	public void sortImportsDefault() throws Throwable {
+	void sortImportsDefault() throws Throwable {
 		FormatterStep step = ImportOrderStep.forJava().createFrom();
 		assertOnResources(step, "java/importsorter/JavaCodeUnsortedImports.test", "java/importsorter/JavaCodeSortedImportsDefault.test");
 	}
 
 	@Test
-	public void sortImportsFromArray() throws Throwable {
+	void sortImportsFromArray() throws Throwable {
 		FormatterStep step = ImportOrderStep.forJava().createFrom("java", "javax", "org", "\\#com");
 		assertOnResources(step, "java/importsorter/JavaCodeUnsortedImports.test", "java/importsorter/JavaCodeSortedImports.test");
 	}
 
 	@Test
-	public void sortImportsFromFile() throws Throwable {
+	void sortImportsFromFile() throws Throwable {
 		FormatterStep step = ImportOrderStep.forJava().createFrom(createTestFile("java/importsorter/import.properties"));
 		assertOnResources(step, "java/importsorter/JavaCodeUnsortedImports.test", "java/importsorter/JavaCodeSortedImports.test");
 	}
 
 	@Test
-	public void sortImportsUnmatched() throws Throwable {
+	void sortImportsUnmatched() throws Throwable {
 		FormatterStep step = ImportOrderStep.forJava().createFrom(createTestFile("java/importsorter/import_unmatched.properties"));
 		assertOnResources(step, "java/importsorter/JavaCodeUnsortedImportsUnmatched.test", "java/importsorter/JavaCodeSortedImportsUnmatched.test");
 	}
 
 	@Test
-	public void removeDuplicates() throws Throwable {
+	void removeDuplicates() throws Throwable {
 		FormatterStep step = ImportOrderStep.forJava().createFrom(createTestFile("java/importsorter/import_unmatched.properties"));
 		assertOnResources(step, "java/importsorter/JavaCodeSortedDuplicateImportsUnmatched.test", "java/importsorter/JavaCodeSortedImportsUnmatched.test");
 	}
 
 	@Test
-	public void removeComments() throws Throwable {
+	void removeComments() throws Throwable {
 		FormatterStep step = ImportOrderStep.forJava().createFrom(createTestFile("java/importsorter/import.properties"));
 		assertOnResources(step, "java/importsorter/JavaCodeImportComments.test", "java/importsorter/JavaCodeSortedImports.test");
 	}
 
 	@Test
-	public void misplacedImports() throws Throwable {
+	void misplacedImports() throws Throwable {
 		FormatterStep step = ImportOrderStep.forJava().createFrom(createTestFile("java/importsorter/import.properties"));
 		assertOnResources(step, "java/importsorter/JavaCodeUnsortedMisplacedImports.test", "java/importsorter/JavaCodeSortedMisplacedImports.test");
 	}
 
 	@Test
-	public void empty() throws Throwable {
+	void empty() throws Throwable {
 		FormatterStep step = ImportOrderStep.forJava().createFrom(createTestFile("java/importsorter/import.properties"));
 		assertOnResources(step, "java/importsorter/JavaCodeEmptyFile.test", "java/importsorter/JavaCodeEmptyFile.test");
 	}
 
 	@Test
-	public void groovyImports() throws Throwable {
+	void groovyImports() throws Throwable {
 		FormatterStep step = ImportOrderStep.forGroovy().createFrom(createTestFile("java/importsorter/import.properties"));
 		assertOnResources(step, "java/importsorter/GroovyCodeUnsortedMisplacedImports.test", "java/importsorter/GroovyCodeSortedMisplacedImports.test");
 	}
 
 	@Test
-	public void doesntThrowIfImportOrderIsntSerializable() {
+	void doesntThrowIfImportOrderIsntSerializable() {
 		ImportOrderStep.forJava().createFrom("java", "javax", "org", "\\#com");
 	}
 
 	@Test
-	public void equality() throws Exception {
+	void equality() throws Exception {
 		new SerializableEqualityTester() {
 			String[] imports = {};
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,11 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class WithinBlockTest extends GradleIntegrationHarness {
+class WithinBlockTest extends GradleIntegrationHarness {
 	@Test
-	public void genericFormatTest() throws IOException {
+	void genericFormatTest() throws IOException {
 		// make sure that the "typed-generic" closure works
 		// it does, and it doesn't need `it`
 		setFile("build.gradle").toLines(
@@ -39,7 +39,7 @@ public class WithinBlockTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void withinBlocksTourDeForce() throws IOException {
+	void withinBlocksTourDeForce() throws IOException {
 		// but down here, we need `it`, or it will bind to the parent context, why?
 		setFile("build.gradle").toLines(
 				"plugins { id 'com.diffplug.spotless' }",

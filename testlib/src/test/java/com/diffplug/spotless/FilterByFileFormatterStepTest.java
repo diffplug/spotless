@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.generic.ReplaceStep;
 
-public class FilterByFileFormatterStepTest extends ResourceHarness {
+class FilterByFileFormatterStepTest extends ResourceHarness {
 	@Test
-	public void behavior() throws Exception {
+	void behavior() throws Exception {
 		FormatterStep underTest = ReplaceStep.create("makeSpaceA", " ", "a")
 				.filterByFile(SerializableFileFilter.skipFilesNamed("dontFormat"));
 		assertThat(underTest.format(" ", new File("someFileName"))).isEqualTo("a");
@@ -33,7 +33,7 @@ public class FilterByFileFormatterStepTest extends ResourceHarness {
 	}
 
 	@Test
-	public void equality() throws Exception {
+	void equality() throws Exception {
 		new SerializableEqualityTester() {
 			String state;
 			String filter;
