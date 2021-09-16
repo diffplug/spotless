@@ -37,6 +37,7 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.resource.ResourceManager;
 import org.codehaus.plexus.resource.loader.FileResourceLoader;
 import org.codehaus.plexus.util.FileUtils;
@@ -54,6 +55,7 @@ import com.diffplug.spotless.maven.cpp.Cpp;
 import com.diffplug.spotless.maven.generic.Format;
 import com.diffplug.spotless.maven.generic.LicenseHeader;
 import com.diffplug.spotless.maven.groovy.Groovy;
+import com.diffplug.spotless.maven.incremental.UpToDateChecker;
 import com.diffplug.spotless.maven.java.Java;
 import com.diffplug.spotless.maven.kotlin.Kotlin;
 import com.diffplug.spotless.maven.pom.Pom;
@@ -83,6 +85,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	@Parameter(property = "spotless.check.skip", defaultValue = "false")
 	private boolean checkSkip;
+
+	@Parameter(defaultValue = "${project}", required = true, readonly = true)
+	private MavenProject project;
 
 	@Parameter(defaultValue = "${repositorySystemSession}", required = true, readonly = true)
 	private RepositorySystemSession repositorySystemSession;
@@ -147,6 +152,10 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Parameter(property = LicenseHeaderStep.spotlessSetLicenseHeaderYearsFromGitHistory)
 	private String setLicenseHeaderYearsFromGitHistory;
 
+	// todo: check naming convensions for plugin properties
+	@Parameter(property = "spotless.upToDateCheckingEnabled", defaultValue = "false")
+	private boolean upToDateCheckingEnabled;
+
 	protected abstract void process(Iterable<File> files, Formatter formatter) throws MojoExecutionException;
 
 	@Override
@@ -155,6 +164,13 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		for (FormatterFactory formatterFactory : formatterFactories) {
 			execute(formatterFactory);
 		}
+	}
+
+	final UpToDateChecker createUpToDateChecker() {
+		if (upToDateCheckingEnabled) {
+			return UpToDateChecker.forProject(project, getLog());
+		}
+		return UpToDateChecker.noop();
 	}
 
 	private boolean shouldSkip() {

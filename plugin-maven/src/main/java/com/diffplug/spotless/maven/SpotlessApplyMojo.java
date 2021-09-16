@@ -23,6 +23,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.PaddedCell;
+import com.diffplug.spotless.maven.incremental.UpToDateChecker;
 
 /**
  * Performs formatting of all source files according to configured formatters.
@@ -32,14 +33,22 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 
 	@Override
 	protected void process(Iterable<File> files, Formatter formatter) throws MojoExecutionException {
-		for (File file : files) {
-			try {
-				PaddedCell.DirtyState dirtyState = PaddedCell.calculateDirtyState(formatter, file);
-				if (!dirtyState.isClean() && !dirtyState.didNotConverge()) {
-					dirtyState.writeCanonicalTo(file);
+		try (UpToDateChecker upToDateChecker = createUpToDateChecker()) {
+			for (File file : files) {
+				if (upToDateChecker.isUpToDate(file)) {
+					continue;
 				}
-			} catch (IOException e) {
-				throw new MojoExecutionException("Unable to format file " + file, e);
+
+				try {
+					PaddedCell.DirtyState dirtyState = PaddedCell.calculateDirtyState(formatter, file);
+					if (!dirtyState.isClean() && !dirtyState.didNotConverge()) {
+						dirtyState.writeCanonicalTo(file);
+					}
+				} catch (IOException e) {
+					throw new MojoExecutionException("Unable to format file " + file, e);
+				}
+
+				upToDateChecker.setUpToDate(file);
 			}
 		}
 	}
