@@ -25,12 +25,12 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.eclipse.EclipseCommonTests;
 
@@ -45,10 +45,12 @@ abstract class EclipseWtpFormatterCommonTests extends EclipseCommonTests {
 
 	@Override
 	protected String[] getSupportedVersions() {
-		String[] oldVersions = {"4.7.3a", "4.7.3b", "4.8.0", "4.12.0", "4.13.0", "4.14.0", "4.15.0",
-				"4.16.0", "4.17.0", "4.18.0"};
-		String[] newVersions = {"4.19.0"};
-		return Stream.concat(Stream.of(oldVersions), Stream.of(newVersions)).toArray(String[]::new);
+		if (Jvm.version() >= 11) {
+			return new String[]{"4.19.0"};
+		} else {
+			return new String[]{"4.7.3a", "4.7.3b", "4.8.0", "4.12.0", "4.13.0", "4.14.0", "4.15.0",
+					"4.16.0", "4.17.0", "4.18.0"};
+		}
 	}
 
 	@Override
