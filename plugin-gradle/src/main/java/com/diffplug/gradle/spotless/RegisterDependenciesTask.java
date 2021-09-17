@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.execution.TaskExecutionGraph;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputFile;
@@ -42,7 +43,7 @@ import com.diffplug.spotless.FormatterStep;
  * - When this "registerDependencies" task does its up-to-date check, it queries the task execution graph to see which
  *   SpotlessTasks are at risk of being executed, and causes them all to be evaluated safely in the root buildscript.
  */
-public class RegisterDependenciesTask extends DefaultTask {
+public abstract class RegisterDependenciesTask extends DefaultTask {
 	static final String TASK_NAME = "spotlessInternalRegisterDependencies";
 
 	@Input
@@ -87,7 +88,7 @@ public class RegisterDependenciesTask extends DefaultTask {
 		Preconditions.checkArgument(getProject().getRootProject() == getProject(), "Can only be used on the root project");
 		unitOutput = new File(getProject().getBuildDir(), "tmp/spotless-register-dependencies");
 		rootProvisioner = new GradleProvisioner.RootProvisioner(getProject());
-		gitRatchet = getProject().getGradle().getSharedServices().registerIfAbsent("GitRatchetGradle", GitRatchetGradle.class, unused -> {}).get();
+		getGitRatchet().set(getProject().getGradle().getSharedServices().registerIfAbsent("GitRatchetGradle", GitRatchetGradle.class, unused -> {}));
 	}
 
 	@TaskAction
@@ -96,10 +97,6 @@ public class RegisterDependenciesTask extends DefaultTask {
 		Files.write(Integer.toString(getSteps().size()), unitOutput, StandardCharsets.UTF_8);
 	}
 
-	GitRatchetGradle gitRatchet;
-
 	@Internal
-	GitRatchetGradle getGitRatchet() {
-		return gitRatchet;
-	}
+	public abstract Property<GitRatchetGradle> getGitRatchet();
 }
