@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.gradle.api.DefaultTask;
 import org.gradle.api.execution.TaskExecutionGraph;
 import org.gradle.api.provider.Property;
@@ -34,8 +36,6 @@ import org.gradle.build.event.BuildEventsListenerRegistry;
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.io.Files;
 import com.diffplug.spotless.FormatterStep;
-
-import javax.inject.Inject;
 
 /**
  * NOT AN END-USER TASK, DO NOT USE FOR ANYTHING!
