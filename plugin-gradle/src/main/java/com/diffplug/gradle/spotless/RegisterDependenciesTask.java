@@ -24,14 +24,18 @@ import java.util.List;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.execution.TaskExecutionGraph;
 import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.build.event.BuildEventsListenerRegistry;
 
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.io.Files;
 import com.diffplug.spotless.FormatterStep;
+
+import javax.inject.Inject;
 
 /**
  * NOT AN END-USER TASK, DO NOT USE FOR ANYTHING!
@@ -88,7 +92,9 @@ public abstract class RegisterDependenciesTask extends DefaultTask {
 		Preconditions.checkArgument(getProject().getRootProject() == getProject(), "Can only be used on the root project");
 		unitOutput = new File(getProject().getBuildDir(), "tmp/spotless-register-dependencies");
 		rootProvisioner = new GradleProvisioner.RootProvisioner(getProject());
-		getGitRatchet().set(getProject().getGradle().getSharedServices().registerIfAbsent("GitRatchetGradle", GitRatchetGradle.class, unused -> {}));
+		Provider<GitRatchetGradle> gitRatchetProvider = getProject().getGradle().getSharedServices().registerIfAbsent("GitRatchetGradle", GitRatchetGradle.class, unused -> {});
+		getBuildEventsListenerRegistry().onTaskCompletion(gitRatchetProvider);
+		getGitRatchet().set(gitRatchetProvider);
 	}
 
 	@TaskAction
@@ -99,4 +105,7 @@ public abstract class RegisterDependenciesTask extends DefaultTask {
 
 	@Internal
 	public abstract Property<GitRatchetGradle> getGitRatchet();
+
+	@Inject
+	protected abstract BuildEventsListenerRegistry getBuildEventsListenerRegistry();
 }
