@@ -15,15 +15,28 @@
  */
 package com.diffplug.spotless.extra.groovy;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.eclipse.EclipseCommonTests;
 
 class GrEclipseFormatterStepTest extends EclipseCommonTests {
+
 	@Override
 	protected String[] getSupportedVersions() {
-		return new String[]{"4.17.0", "4.18.0", "4.19.0"};
+		List<String> version = new ArrayList<String>();
+		if (Jvm.version() >= 11) {
+			version.add("4.20.0");
+		} else {
+			version.addAll(Arrays.asList("2.3.0", "4.6.3", "4.8.0", "4.8.1", "4.10.0", "4.12.0", "4.13.0", "4.14.0", "4.15.0", "4.16.0"));
+		}
+		version.addAll(Arrays.asList("4.17.0", "4.18.0", "4.19.0"));
+		return version.toArray(new String[version.size()]);
 	}
 
 	@Override

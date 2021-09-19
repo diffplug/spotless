@@ -16,25 +16,24 @@
 package com.diffplug.spotless.extra.wtp;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.condition.JRE.JAVA_11;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.eclipse.EclipseCommonTests;
 
-@EnabledForJreRange(min = JAVA_11)
 abstract class EclipseWtpFormatterCommonTests extends EclipseCommonTests {
 
 	abstract EclipseBasedStepBuilder createBuilder();
@@ -45,12 +44,13 @@ abstract class EclipseWtpFormatterCommonTests extends EclipseCommonTests {
 
 	@Override
 	protected String[] getSupportedVersions() {
+		List<String> version = new ArrayList<String>();
 		if (Jvm.version() >= 11) {
-			return new String[]{"4.19.0"};
-		} else {
-			return new String[]{"4.7.3a", "4.7.3b", "4.8.0", "4.12.0", "4.13.0", "4.14.0", "4.15.0",
-					"4.16.0", "4.17.0", "4.18.0"};
+			version.addAll(Arrays.asList("4.19.0", "4.20.0"));
 		}
+		version.addAll(Arrays.asList("4.7.3a", "4.7.3b", "4.8.0", "4.12.0", "4.13.0", "4.14.0", "4.15.0",
+				"4.16.0", "4.17.0", "4.18.0"));
+		return version.toArray(new String[version.size()]);
 	}
 
 	@Override

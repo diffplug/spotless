@@ -15,21 +15,26 @@
  */
 package com.diffplug.spotless.extra.cpp;
 
-import static org.junit.jupiter.api.condition.JRE.JAVA_11;
-
-import org.junit.jupiter.api.condition.EnabledForJreRange;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.eclipse.EclipseCommonTests;
 
-@EnabledForJreRange(min = JAVA_11)
 class EclipseCdtFormatterStepTest extends EclipseCommonTests {
 
 	@Override
 	protected String[] getSupportedVersions() {
-		return new String[]{"4.17.0", "4.18.0", "4.19.0"};
+		List<String> version = new ArrayList<String>();
+		if (Jvm.version() >= 11) {
+			version.addAll(Arrays.asList("4.17.0", "4.18.0", "4.19.0", "4.20.0"));
+		}
+		version.addAll(Arrays.asList("4.7.3a", "4.11.0", "4.12.0", "4.13.0", "4.14.0", "4.16.0"));
+		return version.toArray(new String[version.size()]);
 	}
 
 	@Override

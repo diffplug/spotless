@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ public class EclipseBasedStepBuilder {
 	private final String formatterStepExt;
 	private final ThrowingEx.Function<State, FormatterFunc> stateToFormatter;
 	private final Provisioner jarProvisioner;
+	private String formatterVersion;
 
 	/**
 	 * Resource location of Spotless Eclipse Formatter Maven coordinate lists.
@@ -73,6 +74,7 @@ public class EclipseBasedStepBuilder {
 		this.formatterStepExt = Objects.requireNonNull(formatterStepExt, "formatterStepExt");
 		this.jarProvisioner = Objects.requireNonNull(jarProvisioner, "jarProvisioner");
 		this.stateToFormatter = Objects.requireNonNull(stateToFormatter, "stateToFormatter");
+		formatterVersion = "No version set"; //Will fail creation
 	}
 
 	/** Returns the FormatterStep (whose state will be calculated lazily). */
@@ -96,6 +98,7 @@ public class EclipseBasedStepBuilder {
 				dependencies.add(line);
 			}
 		}
+		formatterVersion = version;
 	}
 
 	private static byte[] toByteArray(InputStream in) {
@@ -130,6 +133,7 @@ public class EclipseBasedStepBuilder {
 		 * Hence a lazy construction is not required.
 		 */
 		return new State(
+				formatterVersion,
 				formatterStepExt,
 				jarProvisioner,
 				dependencies,
@@ -145,16 +149,35 @@ public class EclipseBasedStepBuilder {
 		private static final long serialVersionUID = 1L;
 
 		private final JarState jarState;
+		private final String semanticVersion;
 		//The formatterStepExt assures that different class loaders are used for different step types
 		@SuppressWarnings("unused")
 		private final String formatterStepExt;
 		private final FileSignature settingsFiles;
 
 		/** State constructor expects that all passed items are not modified afterwards */
-		protected State(String formatterStepExt, Provisioner jarProvisioner, List<String> dependencies, Iterable<File> settingsFiles) throws IOException {
+		protected State(String formatterVersion, String formatterStepExt, Provisioner jarProvisioner, List<String> dependencies, Iterable<File> settingsFiles) throws IOException {
 			this.jarState = JarState.withoutTransitives(dependencies, jarProvisioner);
 			this.settingsFiles = FileSignature.signAsList(settingsFiles);
 			this.formatterStepExt = formatterStepExt;
+			semanticVersion = convertEclipseVersion(formatterVersion);
+		}
+
+		private static String convertEclipseVersion(String version) {
+			String semanticVersion = version;
+			//Old Eclipse versions used a character at the end. For example '4.7.3a'.
+			if (1 < version.length()) {
+				char lastChar = version.charAt(version.length() - 1);
+				if ('.' != lastChar && 'a' <= lastChar) {
+					semanticVersion = version.substring(0, version.length() - 1);
+					semanticVersion += String.format(".%d", (int) lastChar);
+				}
+			}
+			return semanticVersion;
+		}
+
+		public String getSemanticVersion() {
+			return semanticVersion;
 		}
 
 		/** Get formatter preferences */

@@ -3,6 +3,12 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Changed
+* Added support and bump Eclipse formatter default versions for JVM 11+. For older JVMs the previous defaults remain.
+  * `eclipse-cdt` from `4.16` to `4.20`
+  * `eclipse-groovy` from `4.19` to `4.20`
+  * `eclipse-jdt` from `4.19` to `4.20`
+  * `eclipse-wtp` from `4.18` to `4.20`
 
 ## [2.13.0] - 2021-09-04
 ### Added
