@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import java.util.Properties;
 
 import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder.State;
@@ -33,11 +34,11 @@ public final class GrEclipseFormatterStep {
 	private static final String FORMATTER_CLASS = "com.diffplug.spotless.extra.eclipse.groovy.GrEclipseFormatterStepImpl";
 	private static final String FORMATTER_CLASS_OLD = "com.diffplug.gradle.spotless.groovy.eclipse.GrEclipseFormatterStepImpl";
 	private static final String MAVEN_GROUP_ARTIFACT = "com.diffplug.spotless:spotless-eclipse-groovy";
-	private static final String DEFAULT_VERSION = "4.19.0";
+	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(8, "4.19.0").add(11, "4.20.0");
 	private static final String FORMATTER_METHOD = "format";
 
 	public static String defaultVersion() {
-		return DEFAULT_VERSION;
+		return JVM_SUPPORT.getRecommendedFormatterVersion();
 	}
 
 	/** Provides default configuration */
@@ -46,18 +47,20 @@ public final class GrEclipseFormatterStep {
 	}
 
 	private static FormatterFunc apply(EclipseBasedStepBuilder.State state) throws Exception {
+		JVM_SUPPORT.assertFormatterSupported(state.getSemanticVersion());
 		Class<?> formatterClazz = getClass(state);
 		Object formatter = formatterClazz.getConstructor(Properties.class).newInstance(state.getPreferences());
 		Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
-		return input -> {
-			try {
-				return (String) method.invoke(formatter, input);
-			} catch (InvocationTargetException exceptionWrapper) {
-				Throwable throwable = exceptionWrapper.getTargetException();
-				Exception exception = (throwable instanceof Exception) ? (Exception) throwable : null;
-				throw (null == exception) ? exceptionWrapper : exception;
-			}
-		};
+		return JVM_SUPPORT.suggestLaterVersionOnError(state.getSemanticVersion(),
+				input -> {
+					try {
+						return (String) method.invoke(formatter, input);
+					} catch (InvocationTargetException exceptionWrapper) {
+						Throwable throwable = exceptionWrapper.getTargetException();
+						Exception exception = (throwable instanceof Exception) ? (Exception) throwable : null;
+						throw (null == exception) ? exceptionWrapper : exception;
+					}
+				});
 	}
 
 	private static Class<?> getClass(State state) {
