@@ -10,6 +10,12 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   * `eclipse-jdt` from `4.19` to `4.20`
   * `eclipse-wtp` from `4.18` to `4.20`
 
+### Fixed
+* Large parallel multiproject builds could sometimes generate hard-to-reproduce errors below (reported in [#941](https://github.com/diffplug/spotless/pull/942), attempted fix in [#942](https://github.com/diffplug/spotless/pull/942)).
+  * `:spotlessInternalRegisterDependencies task failed.`
+  * `Cannot add a configuration with name 'spotless-1911100560'`
+* Spotless does not [yet](https://github.com/diffplug/spotless/pull/721) support configuration-cache, but now it can never interfere with configuration-cache for other tasks. ([#720](https://github.com/diffplug/spotless/pull/720))
+
 ## [5.15.0] - 2021-09-04
 ### Added
 * Added support for `google-java-format`'s `skip-reflowing-long-strings` option ([#929](https://github.com/diffplug/spotless/pull/929))
