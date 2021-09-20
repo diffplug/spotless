@@ -54,7 +54,7 @@ class SpotlessPluginRedirectTest extends GradleIntegrationHarness {
 						"   > We have moved from 'com.diffplug.gradle.spotless'",
 						"                     to 'com.diffplug.spotless'",
 						"     To migrate:",
-						"     - Upgrade gradle to 5.4 or newer (you're on 5.0)",
+						"     - Upgrade gradle to 6.1 or newer (you're on 5.0)",
 						"     - Test your build with: id 'com.diffplug.gradle.spotless' version '4.5.1'"));
 	}
 
@@ -68,6 +68,6 @@ class SpotlessPluginRedirectTest extends GradleIntegrationHarness {
 		Assertions.assertThat(gradleRunner().withGradleVersion(GradleVersionSupport.JRE_11.version)
 				.buildAndFail().getOutput().replace("\r", ""))
 				.contains(StringPrinter.buildStringFromLines(
-						"Spotless requires Gradle 5.4 or newer, this was 5.0"));
+						"Spotless requires Gradle 6.1 or newer, this was 5.0"));
 	}
 }

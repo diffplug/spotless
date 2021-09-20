@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,22 +20,22 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Stream;
+
+import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.execution.TaskExecutionGraph;
+import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.build.event.BuildEventsListenerRegistry;
 
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.io.Files;
 import com.diffplug.spotless.FormatterStep;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import groovy.lang.Closure;
 
 /**
  * NOT AN END-USER TASK, DO NOT USE FOR ANYTHING!
@@ -47,7 +47,7 @@ import groovy.lang.Closure;
  * - When this "registerDependencies" task does its up-to-date check, it queries the task execution graph to see which
  *   SpotlessTasks are at risk of being executed, and causes them all to be evaluated safely in the root buildscript.
  */
-public class RegisterDependenciesTask extends DefaultTask {
+public abstract class RegisterDependenciesTask extends DefaultTask {
 	static final String TASK_NAME = "spotlessInternalRegisterDependencies";
 
 	@Input
@@ -87,18 +87,13 @@ public class RegisterDependenciesTask extends DefaultTask {
 		return rootProvisioner;
 	}
 
-	@SuppressWarnings({"rawtypes", "serial"})
 	void setup() {
 		Preconditions.checkArgument(getProject().getRootProject() == getProject(), "Can only be used on the root project");
 		unitOutput = new File(getProject().getBuildDir(), "tmp/spotless-register-dependencies");
 		rootProvisioner = new GradleProvisioner.RootProvisioner(getProject());
-		getProject().getGradle().buildFinished(new Closure(null) {
-			@SuppressFBWarnings("UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS")
-			public Object doCall() {
-				gitRatchet.close();
-				return null;
-			}
-		});
+		Provider<GitRatchetGradle> gitRatchetProvider = getProject().getGradle().getSharedServices().registerIfAbsent("GitRatchetGradle", GitRatchetGradle.class, unused -> {});
+		getBuildEventsListenerRegistry().onTaskCompletion(gitRatchetProvider);
+		getGitRatchet().set(gitRatchetProvider);
 	}
 
 	@TaskAction
@@ -107,10 +102,9 @@ public class RegisterDependenciesTask extends DefaultTask {
 		Files.write(Integer.toString(getSteps().size()), unitOutput, StandardCharsets.UTF_8);
 	}
 
-	GitRatchetGradle gitRatchet = new GitRatchetGradle();
-
 	@Internal
-	GitRatchetGradle getGitRatchet() {
-		return gitRatchet;
-	}
+	public abstract Property<GitRatchetGradle> getGitRatchet();
+
+	@Inject
+	protected abstract BuildEventsListenerRegistry getBuildEventsListenerRegistry();
 }
