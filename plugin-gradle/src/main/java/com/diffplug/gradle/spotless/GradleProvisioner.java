@@ -48,13 +48,23 @@ class GradleProvisioner {
 		@Override
 		public Set<File> provisionWithTransitives(boolean withTransitives, Collection<String> mavenCoordinates) {
 			Request req = new Request(withTransitives, mavenCoordinates);
-			Set<File> result = cache.get(req);
+			Set<File> result;
+			synchronized (cache) {
+				result = cache.get(req);
+			}
 			if (result != null) {
 				return result;
 			} else {
-				result = GradleProvisioner.fromRootBuildscript(rootProject).provisionWithTransitives(req.withTransitives, req.mavenCoords);
-				cache.put(req, result);
-				return result;
+				synchronized (cache) {
+					result = cache.get(req);
+					if (result != null) {
+						return result;
+					} else {
+						result = GradleProvisioner.fromRootBuildscript(rootProject).provisionWithTransitives(req.withTransitives, req.mavenCoords);
+						cache.put(req, result);
+						return result;
+					}
+				}
 			}
 		}
 	}
