@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.16.1] - 2021-09-20
 ### Changed
 * Added support and bump Eclipse formatter default versions for JVM 11+. For older JVMs the previous defaults remain.
   * `eclipse-cdt` from `4.16` to `4.20`
