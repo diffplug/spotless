@@ -15,45 +15,31 @@
  */
 package com.diffplug.spotless.extra.groovy;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.stream.Stream;
 
-import com.diffplug.spotless.FormatterStep;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
 import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.TestProvisioner;
-import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
-import com.diffplug.spotless.extra.eclipse.EclipseCommonTests;
+import com.diffplug.spotless.extra.eclipse.EclipseResourceHarness;
 
-class GrEclipseFormatterStepTest extends EclipseCommonTests {
+class GrEclipseFormatterStepTest extends EclipseResourceHarness {
+	private final static Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support("Oldest Version").add(8, "2.3.0").add(11, "4.17.0");
+	private final static String INPUT = "class F{ def m(){} }";
+	private final static String EXPECTED = "class F{\n\tdef m(){}\n}";
 
-	@Override
-	protected String[] getSupportedVersions() {
-		List<String> version = new ArrayList<String>();
-		if (Jvm.version() >= 11) {
-			version.add("4.20.0");
-		} else {
-			version.addAll(Arrays.asList("2.3.0", "4.6.3", "4.8.0", "4.8.1", "4.10.0", "4.12.0", "4.13.0", "4.14.0", "4.15.0", "4.16.0"));
-		}
-		version.addAll(Arrays.asList("4.17.0", "4.18.0", "4.19.0"));
-		return version.toArray(new String[version.size()]);
+	public GrEclipseFormatterStepTest() {
+		super(GrEclipseFormatterStep.createBuilder(TestProvisioner.mavenCentral()), INPUT, EXPECTED);
 	}
 
-	@Override
-	protected String getTestInput(String version) {
-		return "class F{ def m(){} }";
+	@ParameterizedTest
+	@MethodSource
+	void formatWithVersion(String version) throws Exception {
+		assertFormatted(version);
 	}
 
-	@Override
-	protected String getTestExpectation(String version) {
-		return "class F{\n\tdef m(){}\n}";
+	private static Stream<String> formatWithVersion() {
+		return Stream.of(JVM_SUPPORT.getRecommendedFormatterVersion(), GrEclipseFormatterStep.defaultVersion());
 	}
-
-	@Override
-	protected FormatterStep createStep(String version) {
-		EclipseBasedStepBuilder builder = GrEclipseFormatterStep.createBuilder(TestProvisioner.mavenCentral());
-		builder.setVersion(version);
-		return builder.build();
-	}
-
 }
