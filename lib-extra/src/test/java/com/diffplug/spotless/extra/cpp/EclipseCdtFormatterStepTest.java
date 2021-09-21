@@ -15,43 +15,31 @@
  */
 package com.diffplug.spotless.extra.cpp;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.stream.Stream;
 
-import com.diffplug.spotless.FormatterStep;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
 import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.TestProvisioner;
-import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
-import com.diffplug.spotless.extra.eclipse.EclipseCommonTests;
+import com.diffplug.spotless.extra.eclipse.EclipseResourceHarness;
 
-class EclipseCdtFormatterStepTest extends EclipseCommonTests {
+class EclipseCdtFormatterStepTest extends EclipseResourceHarness {
+	private final static Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support("Oldest Version").add(8, "4.11.0");
+	private final static String INPUT = "#include <a.h>;\nint main(int argc,   \nchar *argv[]) {}";
+	private final static String EXPECTED = "#include <a.h>;\nint main(int argc, char *argv[]) {\n}\n";
 
-	@Override
-	protected String[] getSupportedVersions() {
-		List<String> version = new ArrayList<String>();
-		if (Jvm.version() >= 11) {
-			version.addAll(Arrays.asList("4.17.0", "4.18.0", "4.19.0", "4.20.0", "4.21.0"));
-		}
-		version.addAll(Arrays.asList("4.7.3a", "4.11.0", "4.12.0", "4.13.0", "4.14.0", "4.16.0"));
-		return version.toArray(new String[version.size()]);
+	public EclipseCdtFormatterStepTest() {
+		super(EclipseCdtFormatterStep.createBuilder(TestProvisioner.mavenCentral()), INPUT, EXPECTED);
 	}
 
-	@Override
-	protected String getTestInput(String version) {
-		return "#include <a.h>;\nint main(int argc,   \nchar *argv[]) {}";
+	@ParameterizedTest
+	@MethodSource
+	void formatWithVersion(String version) throws Exception {
+		assertFormatted(version);
 	}
 
-	@Override
-	protected String getTestExpectation(String version) {
-		return "#include <a.h>;\nint main(int argc, char *argv[]) {\n}\n";
+	private static Stream<String> formatWithVersion() {
+		return Stream.of(JVM_SUPPORT.getRecommendedFormatterVersion(), EclipseCdtFormatterStep.defaultVersion());
 	}
-
-	@Override
-	protected FormatterStep createStep(String version) {
-		EclipseBasedStepBuilder builder = EclipseCdtFormatterStep.createBuilder(TestProvisioner.mavenCentral());
-		builder.setVersion(version);
-		return builder.build();
-	}
-
 }
