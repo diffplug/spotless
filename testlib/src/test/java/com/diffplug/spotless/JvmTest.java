@@ -22,9 +22,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class JvmTest {
 
@@ -44,30 +48,25 @@ class JvmTest {
 		assertThat(testSupport.toString()).contains(String.format("%s alternatives", TEST_NAME));
 	}
 
-	@Test
-	void supportAddVerification() {
-		Arrays.<Consumer<Jvm.Support<String>>> asList(
-				s -> {
-					s.add(1, "1.a");
-				}, //Not a semantic version
-				s -> {
-					s.add(1, "0.1").add(1, "1.0");
-				}, //forgot to adapt JVM version
-				s -> {
-					s.add(1, "0.1").add(2, "0.1");
-				}, //forgot to adapt formatter version
-				s -> {
-					s.add(1, "1.0").add(2, "0.1");
-				}, //higher formatter version requires lower Java version
-				s -> {
-					s.add(2, "0.1").add(1, "1.0");
-				} //lower formatter version requires higher Java version
-		).stream().forEach(configuration -> {
-			Jvm.Support<String> support = Jvm.support(TEST_NAME);
-			assertThrows(IllegalArgumentException.class, () -> {
-				configuration.accept(support);
-			});
+	@ParameterizedTest(name = "{index} {1}")
+	@MethodSource
+	void supportAddFailsFor(Consumer<Jvm.Support<String>> configuration, String nameNotUsed) {
+		assertThrows(IllegalArgumentException.class, () -> {
+			configuration.accept(testSupport);
 		});
+	}
+
+	private static Stream<Arguments> supportAddFailsFor() {
+		return Stream.of(
+				testCase(s -> s.add(1, "1.a"), "Non-semantic version"),
+				testCase(s -> s.add(1, "1").add(1, "2"), "Duplicated JVM version"),
+				testCase(s -> s.add(1, "1").add(2, "1"), "Duplicated formatter version"),
+				testCase(s -> s.add(1, "1").add(2, "0"), "Higher JVM for lower formatter version"),
+				testCase(s -> s.add(2, "0").add(1, "1"), "Lower JVM for higher formatter version"));
+	}
+
+	private static Arguments testCase(Consumer<Jvm.Support<String>> config, String name) {
+		return Arguments.of(config, name);
 	}
 
 	@Test
