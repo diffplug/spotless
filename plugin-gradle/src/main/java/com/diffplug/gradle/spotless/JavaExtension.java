@@ -89,13 +89,21 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 
 	public class GoogleJavaFormatConfig {
 		final String version;
+		String groupArtifact;
 		String style;
 		boolean reflowLongStrings;
 
 		GoogleJavaFormatConfig(String version) {
 			this.version = Objects.requireNonNull(version);
+			this.groupArtifact = GoogleJavaFormatStep.defaultGroupArtifact();
 			this.style = GoogleJavaFormatStep.defaultStyle();
 			addStep(createStep());
+		}
+
+		public GoogleJavaFormatConfig groupArtifact(String groupArtifact) {
+			this.groupArtifact = Objects.requireNonNull(groupArtifact);
+			replaceStep(createStep());
+			return this;
 		}
 
 		public GoogleJavaFormatConfig style(String style) {
@@ -119,7 +127,9 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 		}
 
 		private FormatterStep createStep() {
-			return GoogleJavaFormatStep.create(version,
+			return GoogleJavaFormatStep.create(
+					groupArtifact,
+					version,
 					style,
 					provisioner(),
 					reflowLongStrings);

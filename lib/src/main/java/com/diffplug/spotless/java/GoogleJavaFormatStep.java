@@ -36,7 +36,7 @@ public class GoogleJavaFormatStep {
 	private static final String DEFAULT_STYLE = "GOOGLE";
 	private static final boolean DEFAULT_REFLOW_LONG_STRINGS = false;
 	static final String NAME = "google-java-format";
-	static final String MAVEN_COORDINATE = "com.google.googlejavaformat:google-java-format:";
+	static final String MAVEN_COORDINATE = "com.google.googlejavaformat:google-java-format";
 	static final String FORMATTER_CLASS = "com.google.googlejavaformat.java.Formatter";
 	static final String FORMATTER_METHOD = "formatSource";
 
@@ -76,15 +76,28 @@ public class GoogleJavaFormatStep {
 
 	/** Creates a step which formats everything - code, import order, and unused imports - and optionally reflows long strings. */
 	public static FormatterStep create(String version, String style, Provisioner provisioner, boolean reflowLongStrings) {
+		return create(MAVEN_COORDINATE, version, style, provisioner, reflowLongStrings);
+	}
+
+	/** Creates a step which formats everything - groupArtifact, code, import order, and unused imports - and optionally reflows long strings. */
+	public static FormatterStep create(String groupArtifact, String version, String style, Provisioner provisioner, boolean reflowLongStrings) {
+		Objects.requireNonNull(groupArtifact, "groupArtifact");
+		if (groupArtifact.chars().filter(ch -> ch == ':').count() != 1) {
+			throw new IllegalArgumentException("groupArtifact must be in the form 'groupId:artifactId'");
+		}
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(style, "style");
 		Objects.requireNonNull(provisioner, "provisioner");
 		return FormatterStep.createLazy(NAME,
-				() -> new State(NAME, version, style, provisioner, reflowLongStrings),
+				() -> new State(NAME, groupArtifact, version, style, provisioner, reflowLongStrings),
 				State::createFormat);
 	}
 
 	static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(8, "1.7").add(11, "1.11.0");
+
+	public static String defaultGroupArtifact() {
+		return MAVEN_COORDINATE;
+	}
 
 	/** Get default formatter version */
 	public static String defaultVersion() {
@@ -118,8 +131,12 @@ public class GoogleJavaFormatStep {
 		}
 
 		State(String stepName, String version, String style, Provisioner provisioner, boolean reflowLongStrings) throws Exception {
+			this(stepName, MAVEN_COORDINATE, version, style, provisioner, reflowLongStrings);
+		}
+
+		State(String stepName, String groupArtifact, String version, String style, Provisioner provisioner, boolean reflowLongStrings) throws Exception {
 			JVM_SUPPORT.assertFormatterSupported(version);
-			this.jarState = JarState.from(MAVEN_COORDINATE + version, provisioner);
+			this.jarState = JarState.from(groupArtifact + ":" + version, provisioner);
 			this.stepName = stepName;
 			this.version = version;
 			this.style = style;

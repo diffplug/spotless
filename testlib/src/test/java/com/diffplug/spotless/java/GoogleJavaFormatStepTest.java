@@ -84,6 +84,16 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 	}
 
 	@Test
+	void behaviorWithCustomGroupArtifact() throws Exception {
+		FormatterStep step = GoogleJavaFormatStep.create(GoogleJavaFormatStep.defaultGroupArtifact(), "1.2", GoogleJavaFormatStep.defaultStyle(), TestProvisioner.mavenCentral(), false);
+		StepHarness.forStep(step)
+				.testResource("java/googlejavaformat/JavaCodeUnformatted.test", "java/googlejavaformat/JavaCodeFormatted.test")
+				.testResource("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test", "java/googlejavaformat/JavaCodeWithLicenseFormatted.test")
+				.testResource("java/googlejavaformat/JavaCodeWithLicensePackageUnformatted.test", "java/googlejavaformat/JavaCodeWithLicensePackageFormatted.test")
+				.testResource("java/googlejavaformat/JavaCodeWithPackageUnformatted.test", "java/googlejavaformat/JavaCodeWithPackageFormatted.test");
+	}
+
+	@Test
 	void equality() throws Exception {
 		new SerializableEqualityTester() {
 			String version = "1.2";
@@ -109,6 +119,30 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 			protected FormatterStep create() {
 				String finalVersion = this.version;
 				return GoogleJavaFormatStep.create(finalVersion, style, TestProvisioner.mavenCentral(), reflowLongStrings);
+			}
+		}.testEquals();
+	}
+
+	@Test
+	void equalityGroupArtifact() throws Exception {
+		new SerializableEqualityTester() {
+			String groupArtifact = GoogleJavaFormatStep.defaultGroupArtifact();
+			String version = "1.11.0";
+			String style = "";
+			boolean reflowLongStrings = false;
+
+			@Override
+			protected void setupTest(API api) {
+				// same version == same
+				api.areDifferentThan();
+				// change the groupArtifact, and it's different
+				groupArtifact = "io.opil:google-java-format";
+				api.areDifferentThan();
+			}
+
+			@Override
+			protected FormatterStep create() {
+				return GoogleJavaFormatStep.create(groupArtifact, version, style, TestProvisioner.mavenCentral(), reflowLongStrings);
 			}
 		}.testEquals();
 	}
