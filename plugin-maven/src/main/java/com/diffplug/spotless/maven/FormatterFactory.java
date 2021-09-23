@@ -110,6 +110,10 @@ public abstract class FormatterFactory {
 		addStepFactory(indent);
 	}
 
+	public final void addJsr223(Jsr223 jsr223) {
+		addStepFactory(jsr223);
+	}
+
 	public final void addTrimTrailingWhitespace(TrimTrailingWhitespace trimTrailingWhitespace) {
 		addStepFactory(trimTrailingWhitespace);
 	}
