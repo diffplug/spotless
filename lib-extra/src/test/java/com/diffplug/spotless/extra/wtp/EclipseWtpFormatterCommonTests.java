@@ -46,7 +46,7 @@ abstract class EclipseWtpFormatterCommonTests extends EclipseCommonTests {
 	protected String[] getSupportedVersions() {
 		List<String> version = new ArrayList<String>();
 		if (Jvm.version() >= 11) {
-			version.addAll(Arrays.asList("4.19.0", "4.20.0"));
+			version.addAll(Arrays.asList("4.19.0", "4.20.0", "4.21.0"));
 		}
 		version.addAll(Arrays.asList("4.7.3a", "4.7.3b", "4.8.0", "4.12.0", "4.13.0", "4.14.0", "4.15.0",
 				"4.16.0", "4.17.0", "4.18.0"));

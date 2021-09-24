@@ -31,7 +31,7 @@ class EclipseCdtFormatterStepTest extends EclipseCommonTests {
 	protected String[] getSupportedVersions() {
 		List<String> version = new ArrayList<String>();
 		if (Jvm.version() >= 11) {
-			version.addAll(Arrays.asList("4.17.0", "4.18.0", "4.19.0", "4.20.0"));
+			version.addAll(Arrays.asList("4.17.0", "4.18.0", "4.19.0", "4.20.0", "4.21.0"));
 		}
 		version.addAll(Arrays.asList("4.7.3a", "4.11.0", "4.12.0", "4.13.0", "4.14.0", "4.16.0"));
 		return version.toArray(new String[version.size()]);

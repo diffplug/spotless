@@ -38,7 +38,7 @@ public final class EclipseCdtFormatterStep {
 	private static final String NAME = "eclipse cdt formatter";
 	private static final String FORMATTER_CLASS = "com.diffplug.spotless.extra.eclipse.cdt.EclipseCdtFormatterStepImpl";
 	private static final String FORMATTER_METHOD = "format";
-	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(8, "4.16.0").add(11, "4.20.0");
+	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(8, "4.16.0").add(11, "4.21.0");
 
 	public static String defaultVersion() {
 		return JVM_SUPPORT.getRecommendedFormatterVersion();
