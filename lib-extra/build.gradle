@@ -16,6 +16,8 @@ dependencies {
 	implementation "com.googlecode.concurrent-trees:concurrent-trees:2.6.1"
 	// used for xml parsing in EclipseFormatter
 	implementation "org.codehaus.groovy:groovy-xml:3.0.9"
+	// used for pom sorting
+	implementation 'com.github.ekryd.sortpom:sortpom-sorter:3.0.0'
 
 	// testing
 	testImplementation project(':testlib')

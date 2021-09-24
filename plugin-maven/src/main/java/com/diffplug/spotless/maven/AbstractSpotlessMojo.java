@@ -56,6 +56,7 @@ import com.diffplug.spotless.maven.generic.LicenseHeader;
 import com.diffplug.spotless.maven.groovy.Groovy;
 import com.diffplug.spotless.maven.java.Java;
 import com.diffplug.spotless.maven.kotlin.Kotlin;
+import com.diffplug.spotless.maven.pom.Pom;
 import com.diffplug.spotless.maven.python.Python;
 import com.diffplug.spotless.maven.scala.Scala;
 import com.diffplug.spotless.maven.sql.Sql;
@@ -119,6 +120,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	@Parameter
 	private Antlr4 antlr4;
+
+	@Parameter
+	private Pom pom;
 
 	@Parameter
 	private Sql sql;
@@ -258,7 +262,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private List<FormatterFactory> getFormatterFactories() {
-		return Stream.concat(formats.stream(), Stream.of(groovy, java, scala, kotlin, cpp, typescript, antlr4, sql, python))
+		return Stream.concat(formats.stream(), Stream.of(groovy, java, scala, kotlin, cpp, typescript, antlr4, pom, sql, python))
 				.filter(Objects::nonNull)
 				.collect(toList());
 	}
