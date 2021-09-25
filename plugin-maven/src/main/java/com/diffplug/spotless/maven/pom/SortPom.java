@@ -18,9 +18,9 @@ package com.diffplug.spotless.maven.pom;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.extra.pom.SortPomStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
+import com.diffplug.spotless.pom.SortPomStep;
 
 public class SortPom implements FormatterStepFactory {
 	@Parameter
@@ -73,6 +73,6 @@ public class SortPom implements FormatterStepFactory {
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
-		return SortPomStep.create(encoding, lineSeparator, expandEmptyElements, spaceBeforeCloseEmptyElement, keepBlankLines, nrOfIndentSpace, indentBlankLines, indentSchemaLocation, predefinedSortOrder, sortOrderFile, sortDependencies, sortDependencyExclusions, sortPlugins, sortProperties, sortModules, sortExecutions);
+		return SortPomStep.create(encoding, lineSeparator, expandEmptyElements, spaceBeforeCloseEmptyElement, keepBlankLines, nrOfIndentSpace, indentBlankLines, indentSchemaLocation, predefinedSortOrder, sortOrderFile, sortDependencies, sortDependencyExclusions, sortPlugins, sortProperties, sortModules, sortExecutions, stepConfig.getProvisioner());
 	}
 }

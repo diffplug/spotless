@@ -15,9 +15,9 @@
  */
 package com.diffplug.spotless.maven.pom;
 
-import com.diffplug.spotless.maven.MavenIntegrationHarness;
-
 import org.junit.jupiter.api.Test;
+
+import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
 public class SortPomTest extends MavenIntegrationHarness {
 	@Test

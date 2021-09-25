@@ -63,6 +63,7 @@ String libVersion = version.endsWith('-SNAPSHOT') ?
 dependencies {
 	if (version.endsWith('-SNAPSHOT') || (rootProject.spotlessChangelog.versionNext == rootProject.spotlessChangelog.versionLast)) {
 		implementation project(':lib')
+		implementation project(':lib').sourceSets.sortPom.output
 		implementation project(':lib-extra')
 	} else {
 		implementation "com.diffplug.spotless:spotless-lib:${libVersion}"
