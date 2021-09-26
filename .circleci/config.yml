@@ -17,12 +17,12 @@ anchors:
 
   restore_cache_wrapper: &restore_cache_wrapper
     restore_cache:
-      key: gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+      key: gradle-wrapper2-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
   restore_cache_deps: &restore_cache_deps
     restore_cache:
       keys:
-        - gradle-deps2-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
-        - gradle-deps2-
+        - gradle-deps3-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
+        - gradle-deps3-
   set_git_origin_to_https: &set_git_origin_to_https
     run:
       name: set git origin to https
@@ -53,19 +53,15 @@ jobs:
       - run:
           name: gradlew spotlessCheck assemble testClasses
           command: ./gradlew spotlessCheck assemble testClasses --build-cache
-      - run:
-          name: prepare to cache
-          command: rm -rf ~/project/plugin-maven/build/localMavenRepository/com/diffplug/spotless/
       - save_cache:
           paths:
             - ~/.gradle/wrapper
-          key: gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+          key: gradle-wrapper2-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
       - save_cache:
           paths:
             - ~/.gradle/caches
             - ~/.m2
-            - ~/project/plugin-maven/build/localMavenRepository
-          key: gradle-deps2-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
+          key: gradle-deps3-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
   test_nomaven_11:
     # latest LTS version
     <<: *env_gradle_large
