@@ -35,12 +35,7 @@ public class NativeCmdStep {
 	public static FormatterStep create(String name, File pathToExe, List<String> arguments) {
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(pathToExe, "pathToExe");
-		List<String> argumentsWithPathToExe = new ArrayList<>();
-		argumentsWithPathToExe.add(pathToExe.getAbsolutePath());
-		if (arguments != null) {
-			argumentsWithPathToExe.addAll(arguments);
-		}
-		return FormatterStep.createLazy(name, () -> new State(FileSignature.signAsList(pathToExe), argumentsWithPathToExe), State::toFunc);
+		return FormatterStep.createLazy(name, () -> new State(FileSignature.signAsList(pathToExe), arguments), State::toFunc);
 	}
 
 	static class State implements Serializable {
@@ -56,7 +51,12 @@ public class NativeCmdStep {
 		}
 
 		String format(ProcessRunner runner, String input) throws IOException, InterruptedException {
-			return runner.exec(input.getBytes(StandardCharsets.UTF_8), arguments).assertExitZero(StandardCharsets.UTF_8);
+			List<String> argumentsWithPathToExe = new ArrayList<>();
+			argumentsWithPathToExe.add(pathToExe.getOnlyFile().getAbsolutePath());
+			if (arguments != null) {
+				argumentsWithPathToExe.addAll(arguments);
+			}
+			return runner.exec(input.getBytes(StandardCharsets.UTF_8), argumentsWithPathToExe).assertExitZero(StandardCharsets.UTF_8);
 		}
 
 		FormatterFunc.Closeable toFunc() {
