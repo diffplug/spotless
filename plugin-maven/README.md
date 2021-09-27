@@ -205,6 +205,8 @@ any other maven phase (i.e. compile) then it can be configured as below;
   <version>1.8</version>                      <!-- optional -->
   <style>GOOGLE</style>                       <!-- or AOSP (optional) -->
   <reflowLongStrings>true</reflowLongStrings> <!-- optional (requires at least 1.8) -->
+  <!-- optional: custom group artifact (you probably don't need this) -->
+  <groupArtifact>com.google.googlejavaformat:google-java-format</groupArtifact>
 </googleJavaFormat>
 ```
 
