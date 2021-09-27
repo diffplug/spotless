@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* Added support for calling local binary formatters ([#949](https://github.com/diffplug/spotless/pull/949))
 ### Changed
 * Added support and bump Eclipse formatter default versions to `4.21` for `eclipse-cdt`, `eclipse-jdt`, `eclipse-wtp`. Change is only applied for JVM 11+.
 * Added `groupArtifact` option for `google-java-format` ([#944](https://github.com/diffplug/spotless/pull/944))

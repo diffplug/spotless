@@ -47,6 +47,7 @@ output = [
 lib('generic.EndWithNewlineStep')                +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('generic.IndentStep')                        +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('generic.LicenseHeaderStep')                 +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
+lib('generic.NativeCmdStep')                     +'{{no}}        | {{yes}}      | {{no}}      | {{no}}  |',
 lib('generic.ReplaceRegexStep')                  +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('generic.ReplaceStep')                       +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('generic.TrimTrailingWhitespaceStep')        +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
@@ -83,6 +84,7 @@ extra('wtp.EclipseWtpFormatterStep')             +'{{yes}}       | {{yes}}      
 | [`generic.EndWithNewlineStep`](lib/src/main/java/com/diffplug/spotless/generic/EndWithNewlineStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`generic.IndentStep`](lib/src/main/java/com/diffplug/spotless/generic/IndentStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`generic.LicenseHeaderStep`](lib/src/main/java/com/diffplug/spotless/generic/LicenseHeaderStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |
+| [`generic.NativeCmdStep`](lib/src/main/java/com/diffplug/spotless/generic/NativeCmdStep.java) | :white_large_square:        | :+1:      | :white_large_square:      | :white_large_square:  |
 | [`generic.ReplaceRegexStep`](lib/src/main/java/com/diffplug/spotless/generic/ReplaceRegexStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`generic.ReplaceStep`](lib/src/main/java/com/diffplug/spotless/generic/ReplaceStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`generic.TrimTrailingWhitespaceStep`](lib/src/main/java/com/diffplug/spotless/generic/TrimTrailingWhitespaceStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |

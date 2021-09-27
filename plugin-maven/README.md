@@ -769,6 +769,14 @@ to true.
   <spacesPerTab>4</spacesPerTab> <!-- optional, default is 4 -->
 </indent>
 
+<nativeCmd> <!-- run a native binary -->
+  <name>Greetings to Mars from sed</name>
+  <pathToExe>/usr/bin/sed</pathToExe> <!-- path to the binary, unformatted code is send via StdIn, formatted code is expected on StdOut -->
+  <arguments> <!-- optional, list with arguments for the binary call-->
+    <argument>s/World/Mars/g</argument>
+  </arguments>
+</nativeCmd>
+
 <replace> <!-- specify replacements using search and replace -->
   <name>Say Hello to Mars</name>
   <search>World</search>
