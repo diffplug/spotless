@@ -769,6 +769,13 @@ to true.
   <spacesPerTab>4</spacesPerTab> <!-- optional, default is 4 -->
 </indent>
 
+<jsr223> <!-- specify replacements using JSR223 scripting -->
+  <name>Greetings to Mars</name>
+  <dependency>org.codehaus.groovy:groovy-jsr223:3.0.9</dependency> <!-- optional, maven dependency, containing the jsr223 compatible scripting engine-->
+  <engine>groovy</engine> <!-- nashorn is provided by JDK 8-14, other engines can be loaded from the given dependency -->
+  <script>source.replace('World','Mars');</script> <!-- the source variable contains the unformatted code, the returned value of the script is the formatted code -->
+</jsr223>
+
 <nativeCmd> <!-- run a native binary -->
   <name>Greetings to Mars from sed</name>
   <pathToExe>/usr/bin/sed</pathToExe> <!-- path to the binary, unformatted code is send via StdIn, formatted code is expected on StdOut -->
