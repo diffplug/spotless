@@ -20,8 +20,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Vector;
+import java.util.LinkedList;
+import java.util.List;
+
+import com.diffplug.spotless.FormatterFunc;
 
 public class DelegatingClassLoader extends ClassLoader {
 
@@ -32,15 +36,23 @@ public class DelegatingClassLoader extends ClassLoader {
 		this.delegateClassLoaders = delegateClassLoaders;
 	}
 
+	@Override
 	protected Class<?> findClass(String name) throws ClassNotFoundException {
+		// these classes need to be loaded from the current classloader, since they may not be attached to this classloader
+		if (name.equals(FormatterFunc.class.getName())) {
+			return FormatterFunc.class;
+		}
+		if (name.equals(SortPomState.class.getName())) {
+			return SortPomState.class;
+		}
+		// all other loaded classes need to be associated with this classloader, so we need to load them as resources
 		String path = name.replace('.', '/') + ".class";
 		URL url = findResource(path);
 		if (url == null) {
 			throw new ClassNotFoundException(name);
 		}
 		try {
-			ByteBuffer byteCode = loadResource(url);
-			return defineClass(name, byteCode, null);
+			return defineClass(name, loadResource(url), null);
 		} catch (IOException e) {
 			throw new ClassNotFoundException(name, e);
 		}
@@ -52,9 +64,10 @@ public class DelegatingClassLoader extends ClassLoader {
 		int nRead;
 		byte[] data = new byte[1024];
 
-		InputStream inputStream = url.openStream();
-		while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
-			buffer.write(data, 0, nRead);
+		try (InputStream inputStream = url.openStream()) {
+			while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+				buffer.write(data, 0, nRead);
+			}
 		}
 
 		buffer.flush();
@@ -62,6 +75,7 @@ public class DelegatingClassLoader extends ClassLoader {
 		return ByteBuffer.wrap(buffer.toByteArray());
 	}
 
+	@Override
 	protected URL findResource(String name) {
 		for (ClassLoader delegate : delegateClassLoaders) {
 			URL resource = delegate.getResource(name);
@@ -73,14 +87,14 @@ public class DelegatingClassLoader extends ClassLoader {
 	}
 
 	protected Enumeration<URL> findResources(String name) throws IOException {
-		Vector<URL> vector = new Vector<>();
+		List<URL> resources = new LinkedList<>();
 		for (ClassLoader delegate : delegateClassLoaders) {
 			Enumeration<URL> enumeration = delegate.getResources(name);
 			while (enumeration.hasMoreElements()) {
-				vector.add(enumeration.nextElement());
+				resources.add(enumeration.nextElement());
 			}
 		}
-		return vector.elements();
+		return Collections.enumeration(resources);
 	}
 
 }

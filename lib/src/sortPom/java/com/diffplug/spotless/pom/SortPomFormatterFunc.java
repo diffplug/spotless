@@ -30,9 +30,9 @@ import sortpom.parameter.PluginParameters;
 
 class SortPomFormatterFunc implements FormatterFunc {
 	private static final Logger logger = Logger.getLogger(SortPomStep.class.getName());
-	private final SortPomStep.InternalState state;
+	private final SortPomState state;
 
-	public SortPomFormatterFunc(SortPomStep.InternalState state) {
+	public SortPomFormatterFunc(SortPomState state) {
 		this.state = state;
 	}
 
