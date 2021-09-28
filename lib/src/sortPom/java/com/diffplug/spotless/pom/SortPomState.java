@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.JarState;
@@ -83,7 +85,7 @@ public final class SortPomState implements Serializable {
 	}
 
 	FormatterFunc createFormat() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, IOException {
-		ClassLoader classLoader = new DelegatingClassLoader(this.getClass().getClassLoader(), jarState.getClassLoader());
+		ClassLoader classLoader = AccessController.doPrivileged((PrivilegedAction<DelegatingClassLoader>) () -> new DelegatingClassLoader(this.getClass().getClassLoader(), jarState.getClassLoader()));
 		Constructor<?> constructor = classLoader.loadClass(SortPomFormatterFunc.class.getName()).getConstructor(classLoader.loadClass(SortPomState.class.getName()));
 		constructor.setAccessible(true);
 		return (FormatterFunc) constructor.newInstance(this);

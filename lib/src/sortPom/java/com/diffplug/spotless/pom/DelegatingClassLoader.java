@@ -64,10 +64,9 @@ public class DelegatingClassLoader extends ClassLoader {
 		int nRead;
 		byte[] data = new byte[1024];
 
-		try (InputStream inputStream = url.openStream()) {
-			while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
-				buffer.write(data, 0, nRead);
-			}
+		InputStream inputStream = url.openStream();
+		while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+			buffer.write(data, 0, nRead);
 		}
 
 		buffer.flush();

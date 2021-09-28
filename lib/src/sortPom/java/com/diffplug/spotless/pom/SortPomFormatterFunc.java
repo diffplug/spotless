@@ -16,8 +16,8 @@
 package com.diffplug.spotless.pom;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
@@ -29,7 +29,7 @@ import sortpom.logger.SortPomLogger;
 import sortpom.parameter.PluginParameters;
 
 class SortPomFormatterFunc implements FormatterFunc {
-	private static final Logger logger = Logger.getLogger(SortPomStep.class.getName());
+	private static final Logger logger = Logger.getLogger(SortPomFormatterFunc.class.getName());
 	private final SortPomState state;
 
 	public SortPomFormatterFunc(SortPomState state) {
@@ -41,26 +41,9 @@ class SortPomFormatterFunc implements FormatterFunc {
 		// SortPom expects a file to sort, so we write the inpout into a temporary file
 		File pom = File.createTempFile("pom", ".xml");
 		pom.deleteOnExit();
-		try (FileWriter fw = new FileWriter(pom)) {
-			fw.write(input);
-		}
+		IOUtils.write(input, new FileOutputStream(pom), state.encoding);
 		SortPomImpl sortPom = new SortPomImpl();
-		sortPom.setup(new SortPomLogger() {
-			@Override
-			public void warn(String content) {
-				logger.warning(content);
-			}
-
-			@Override
-			public void info(String content) {
-				logger.info(content);
-			}
-
-			@Override
-			public void error(String content) {
-				logger.severe(content);
-			}
-		}, PluginParameters.builder()
+		sortPom.setup(new MySortPomLogger(), PluginParameters.builder()
 				.setPomFile(pom)
 				.setFileOutput(false, null, null, false)
 				.setEncoding(state.encoding)
@@ -71,6 +54,23 @@ class SortPomFormatterFunc implements FormatterFunc {
 				.setTriggers(false)
 				.build());
 		sortPom.sortPom();
-		return IOUtils.toString(new FileReader(pom));
+		return IOUtils.toString(new FileInputStream(pom), state.encoding);
+	}
+
+	private static class MySortPomLogger implements SortPomLogger {
+		@Override
+		public void warn(String content) {
+			logger.warning(content);
+		}
+
+		@Override
+		public void info(String content) {
+			logger.info(content);
+		}
+
+		@Override
+		public void error(String content) {
+			logger.severe(content);
+		}
 	}
 }
