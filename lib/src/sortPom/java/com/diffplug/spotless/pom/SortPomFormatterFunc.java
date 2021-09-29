@@ -30,10 +30,10 @@ import sortpom.parameter.PluginParameters;
 
 class SortPomFormatterFunc implements FormatterFunc {
 	private static final Logger logger = Logger.getLogger(SortPomFormatterFunc.class.getName());
-	private final SortPomState state;
+	private final SortPomCfg cfg;
 
-	public SortPomFormatterFunc(SortPomState state) {
-		this.state = state;
+	public SortPomFormatterFunc(SortPomCfg cfg) {
+		this.cfg = cfg;
 	}
 
 	@Override
@@ -41,20 +41,20 @@ class SortPomFormatterFunc implements FormatterFunc {
 		// SortPom expects a file to sort, so we write the inpout into a temporary file
 		File pom = File.createTempFile("pom", ".xml");
 		pom.deleteOnExit();
-		IOUtils.write(input, new FileOutputStream(pom), state.encoding);
+		IOUtils.write(input, new FileOutputStream(pom), cfg.encoding);
 		SortPomImpl sortPom = new SortPomImpl();
 		sortPom.setup(new MySortPomLogger(), PluginParameters.builder()
 				.setPomFile(pom)
 				.setFileOutput(false, null, null, false)
-				.setEncoding(state.encoding)
-				.setFormatting(state.lineSeparator, state.expandEmptyElements, state.spaceBeforeCloseEmptyElement, state.keepBlankLines)
-				.setIndent(state.nrOfIndentSpace, state.indentBlankLines, state.indentSchemaLocation)
-				.setSortOrder(state.sortOrderFile, state.predefinedSortOrder)
-				.setSortEntities(state.sortDependencies, state.sortDependencyExclusions, state.sortPlugins, state.sortProperties, state.sortModules, state.sortExecutions)
+				.setEncoding(cfg.encoding)
+				.setFormatting(cfg.lineSeparator, cfg.expandEmptyElements, cfg.spaceBeforeCloseEmptyElement, cfg.keepBlankLines)
+				.setIndent(cfg.nrOfIndentSpace, cfg.indentBlankLines, cfg.indentSchemaLocation)
+				.setSortOrder(cfg.sortOrderFile, cfg.predefinedSortOrder)
+				.setSortEntities(cfg.sortDependencies, cfg.sortDependencyExclusions, cfg.sortPlugins, cfg.sortProperties, cfg.sortModules, cfg.sortExecutions)
 				.setTriggers(false)
 				.build());
 		sortPom.sortPom();
-		return IOUtils.toString(new FileInputStream(pom), state.encoding);
+		return IOUtils.toString(new FileInputStream(pom), cfg.encoding);
 	}
 
 	private static class MySortPomLogger implements SortPomLogger {

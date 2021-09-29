@@ -42,8 +42,8 @@ public class DelegatingClassLoader extends ClassLoader {
 		if (name.equals(FormatterFunc.class.getName())) {
 			return FormatterFunc.class;
 		}
-		if (name.equals(SortPomState.class.getName())) {
-			return SortPomState.class;
+		if (name.equals(SortPomCfg.class.getName())) {
+			return SortPomCfg.class;
 		}
 		// all other loaded classes need to be associated with this classloader, so we need to load them as resources
 		String path = name.replace('.', '/') + ".class";

@@ -20,59 +20,79 @@ import org.apache.maven.plugins.annotations.Parameter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
+import com.diffplug.spotless.pom.SortPomCfg;
 import com.diffplug.spotless.pom.SortPomStep;
 
 public class SortPom implements FormatterStepFactory {
-	@Parameter
-	String encoding = "UTF-8";
+	private final SortPomCfg defaultValues = new SortPomCfg();
 
 	@Parameter
-	String lineSeparator = System.getProperty("line.separator");
+	String encoding = defaultValues.encoding;
 
 	@Parameter
-	boolean expandEmptyElements = true;
+	String lineSeparator = defaultValues.lineSeparator;
 
 	@Parameter
-	boolean spaceBeforeCloseEmptyElement = false;
+	boolean expandEmptyElements = defaultValues.expandEmptyElements;
 
 	@Parameter
-	boolean keepBlankLines = true;
+	boolean spaceBeforeCloseEmptyElement = defaultValues.spaceBeforeCloseEmptyElement;
 
 	@Parameter
-	int nrOfIndentSpace = 2;
+	boolean keepBlankLines = defaultValues.keepBlankLines;
 
 	@Parameter
-	boolean indentBlankLines = false;
+	int nrOfIndentSpace = defaultValues.nrOfIndentSpace;
 
 	@Parameter
-	boolean indentSchemaLocation = false;
+	boolean indentBlankLines = defaultValues.indentBlankLines;
 
 	@Parameter
-	String predefinedSortOrder = "recommended_2008_06";
+	boolean indentSchemaLocation = defaultValues.indentSchemaLocation;
 
 	@Parameter
-	String sortOrderFile;
+	String predefinedSortOrder = defaultValues.predefinedSortOrder;
 
 	@Parameter
-	String sortDependencies;
+	String sortOrderFile = defaultValues.sortOrderFile;
 
 	@Parameter
-	String sortDependencyExclusions;
+	String sortDependencies = defaultValues.sortDependencies;
 
 	@Parameter
-	String sortPlugins;
+	String sortDependencyExclusions = defaultValues.sortDependencyExclusions;
 
 	@Parameter
-	boolean sortProperties = false;
+	String sortPlugins = defaultValues.sortPlugins;
 
 	@Parameter
-	boolean sortModules = false;
+	boolean sortProperties = defaultValues.sortProperties;
 
 	@Parameter
-	boolean sortExecutions = false;
+	boolean sortModules = defaultValues.sortModules;
+
+	@Parameter
+	boolean sortExecutions = defaultValues.sortExecutions;
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
-		return SortPomStep.create(encoding, lineSeparator, expandEmptyElements, spaceBeforeCloseEmptyElement, keepBlankLines, nrOfIndentSpace, indentBlankLines, indentSchemaLocation, predefinedSortOrder, sortOrderFile, sortDependencies, sortDependencyExclusions, sortPlugins, sortProperties, sortModules, sortExecutions, stepConfig.getProvisioner());
+		SortPomCfg cfg = new SortPomCfg();
+		cfg.encoding = encoding;
+		cfg.lineSeparator = lineSeparator;
+		cfg.expandEmptyElements = expandEmptyElements;
+		cfg.spaceBeforeCloseEmptyElement = spaceBeforeCloseEmptyElement;
+		cfg.keepBlankLines = keepBlankLines;
+		cfg.nrOfIndentSpace = nrOfIndentSpace;
+		cfg.indentBlankLines = indentBlankLines;
+		cfg.indentSchemaLocation = indentSchemaLocation;
+		cfg.predefinedSortOrder = predefinedSortOrder;
+		cfg.sortOrderFile = sortOrderFile;
+		cfg.sortDependencies = sortDependencies;
+		cfg.sortDependencyExclusions = sortDependencyExclusions;
+		cfg.sortPlugins = sortPlugins;
+		cfg.sortProperties = sortProperties;
+		cfg.sortModules = sortModules;
+		cfg.sortExecutions = sortExecutions;
+		return SortPomStep.create(cfg, stepConfig.getProvisioner());
 	}
 }

@@ -15,7 +15,16 @@
  */
 package com.diffplug.spotless.pom;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+
+import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
 public class SortPomStep {
@@ -24,7 +33,26 @@ public class SortPomStep {
 
 	private SortPomStep() {}
 
-	public static FormatterStep create(String encoding, String lineSeparator, boolean expandEmptyElements, boolean spaceBeforeCloseEmptyElement, boolean keepBlankLines, int nrOfIndentSpace, boolean indentBlankLines, boolean indentSchemaLocation, String predefinedSortOrder, String sortOrderFile, String sortDependencies, String sortDependencyExclusions, String sortPlugins, boolean sortProperties, boolean sortModules, boolean sortExecutions, Provisioner provisioner) {
-		return FormatterStep.createLazy(NAME, () -> new SortPomState(encoding, lineSeparator, expandEmptyElements, spaceBeforeCloseEmptyElement, keepBlankLines, nrOfIndentSpace, indentBlankLines, indentSchemaLocation, predefinedSortOrder, sortOrderFile, sortDependencies, sortDependencyExclusions, sortPlugins, sortProperties, sortModules, sortExecutions, provisioner), SortPomState::createFormat);
+	private SortPomCfg cfg;
+
+	public static FormatterStep create(SortPomCfg cfg, Provisioner provisioner) {
+		return FormatterStep.createLazy(NAME, () -> new State(cfg, provisioner), State::createFormat);
+	}
+
+	static class State implements Serializable {
+		SortPomCfg cfg;
+		JarState jarState;
+
+		public State(SortPomCfg cfg, Provisioner provisioner) throws IOException {
+			this.cfg = cfg;
+			this.jarState = JarState.from("com.github.ekryd.sortpom:sortpom-sorter:3.0.0", provisioner);
+		}
+
+		FormatterFunc createFormat() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, IOException {
+			ClassLoader classLoader = AccessController.doPrivileged((PrivilegedAction<DelegatingClassLoader>) () -> new DelegatingClassLoader(this.getClass().getClassLoader(), jarState.getClassLoader()));
+			Constructor<?> constructor = classLoader.loadClass(SortPomFormatterFunc.class.getName()).getConstructor(classLoader.loadClass(SortPomCfg.class.getName()));
+			constructor.setAccessible(true);
+			return (FormatterFunc) constructor.newInstance(cfg);
+		}
 	}
 }

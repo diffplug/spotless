@@ -24,28 +24,9 @@ import com.diffplug.spotless.TestProvisioner;
 public class SortPomTest {
 	@Test
 	public void testSortPomWithDefaultConfig() throws Exception {
-		String encoding = "UTF-8";
-		String lineSeparator = System.getProperty("line.separator");
-		boolean expandEmptyElements = true;
-		boolean spaceBeforeCloseEmptyElement = false;
-		boolean keepBlankLines = true;
-		int nrOfIndentSpace = 2;
-		boolean indentBlankLines = false;
-		boolean indentSchemaLocation = false;
-		String predefinedSortOrder = "recommended_2008_06";
-		String sortOrderFile = null;
-		String sortDependencies = null;
-		String sortDependencyExclusions = null;
-		String sortPlugins = null;
-		boolean sortProperties = false;
-		boolean sortModules = false;
-		boolean sortExecutions = false;
+		SortPomCfg cfg = new SortPomCfg();
 		Provisioner provisioner = TestProvisioner.mavenCentral();
-		StepHarness harness = StepHarness.forStep(SortPomStep.create(encoding, lineSeparator, expandEmptyElements, spaceBeforeCloseEmptyElement,
-				keepBlankLines, nrOfIndentSpace, indentBlankLines, indentSchemaLocation,
-				predefinedSortOrder, sortOrderFile, sortDependencies, sortDependencyExclusions, sortPlugins,
-				sortProperties, sortModules, sortExecutions,
-				provisioner));
+		StepHarness harness = StepHarness.forStep(SortPomStep.create(cfg, provisioner));
 		harness.testResource("pom/pom_dirty.xml", "pom/pom_clean_default.xml");
 	}
 }
