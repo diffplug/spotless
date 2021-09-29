@@ -46,7 +46,7 @@ public class SortPomStep {
 		}
 
 		FormatterFunc createFormat() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-			Class<?> formatterFunc = jarState.getClassLoader().loadClass("com.diffplug.spotless.ext.pom.SortPomFormatterFunc");
+			Class<?> formatterFunc = jarState.getClassLoader().loadClass("com.diffplug.spotless.glue.pom.SortPomFormatterFunc");
 			Constructor<?> constructor = formatterFunc.getConstructor(SortPomCfg.class);
 			return (FormatterFunc) constructor.newInstance(cfg);
 		}
