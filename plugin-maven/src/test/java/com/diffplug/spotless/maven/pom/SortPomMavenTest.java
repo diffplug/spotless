@@ -19,13 +19,13 @@ import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
-public class SortPomTest extends MavenIntegrationHarness {
+public class SortPomMavenTest extends MavenIntegrationHarness {
 	@Test
 	public void testSortPomWithDefaultConfig() throws Exception {
 		writePomWithPomSteps("<sortPom/>");
 
 		setFile("pom_test.xml").toResource("pom/pom_dirty.xml");
-		System.out.println(mavenRunner().withArguments("spotless:apply").runNoError().error());
+		mavenRunner().withArguments("spotless:apply").runNoError().error();
 		assertFile("pom_test.xml").sameAsResource("pom/pom_clean_default.xml");
 	}
 }
