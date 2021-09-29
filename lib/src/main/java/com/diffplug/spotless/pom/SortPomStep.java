@@ -19,8 +19,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
@@ -28,7 +26,6 @@ import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
 public class SortPomStep {
-
 	public static final String NAME = "sortPom";
 
 	private SortPomStep() {}
@@ -48,10 +45,9 @@ public class SortPomStep {
 			this.jarState = JarState.from("com.github.ekryd.sortpom:sortpom-sorter:3.0.0", provisioner);
 		}
 
-		FormatterFunc createFormat() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, IOException {
-			ClassLoader classLoader = AccessController.doPrivileged((PrivilegedAction<DelegatingClassLoader>) () -> new DelegatingClassLoader(this.getClass().getClassLoader(), jarState.getClassLoader()));
-			Constructor<?> constructor = classLoader.loadClass(SortPomFormatterFunc.class.getName()).getConstructor(classLoader.loadClass(SortPomCfg.class.getName()));
-			constructor.setAccessible(true);
+		FormatterFunc createFormat() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+			Class<?> formatterFunc = jarState.getClassLoader().loadClass("com.diffplug.spotless.ext.pom.SortPomFormatterFunc");
+			Constructor<?> constructor = formatterFunc.getConstructor(SortPomCfg.class);
 			return (FormatterFunc) constructor.newInstance(cfg);
 		}
 	}

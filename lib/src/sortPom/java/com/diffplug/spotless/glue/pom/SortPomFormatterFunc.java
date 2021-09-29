@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.pom;
+package com.diffplug.spotless.glue.pom;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,12 +23,13 @@ import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
 
 import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.pom.SortPomCfg;
 
 import sortpom.SortPomImpl;
 import sortpom.logger.SortPomLogger;
 import sortpom.parameter.PluginParameters;
 
-class SortPomFormatterFunc implements FormatterFunc {
+public class SortPomFormatterFunc implements FormatterFunc {
 	private static final Logger logger = Logger.getLogger(SortPomFormatterFunc.class.getName());
 	private final SortPomCfg cfg;
 
