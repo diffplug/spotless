@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,13 @@
  */
 package com.diffplug.spotless;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.ByteBuffer;
+import java.security.ProtectionDomain;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -73,7 +78,43 @@ class FeatureClassLoader extends URLClassLoader {
 				return buildToolClassLoader.loadClass(name);
 			}
 		}
-		return super.findClass(name);
+		if (name.startsWith("com.diffplug.spotless.glue.")) {
+			String path = name.replace('.', '/') + ".class";
+			URL url = findResource(path);
+			if (url == null) {
+				throw new ClassNotFoundException(name);
+			}
+			try {
+				return defineClass(name, urlToByteBuffer(url), (ProtectionDomain) null);
+			} catch (IOException e) {
+				throw new ClassNotFoundException(name, e);
+			}
+		} else if (name.startsWith("com.diffplug.spotless.")) {
+			return buildToolClassLoader.loadClass(name);
+		} else {
+			return super.findClass(name);
+		}
+	}
+
+	@Override
+	public URL findResource(String name) {
+		URL resource = super.findResource(name);
+		if (resource != null) {
+			return resource;
+		}
+		return buildToolClassLoader.getResource(name);
+	}
+
+	private static ByteBuffer urlToByteBuffer(URL url) throws IOException {
+		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+		int nRead;
+		byte[] data = new byte[1024];
+		InputStream inputStream = url.openStream();
+		while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+			buffer.write(data, 0, nRead);
+		}
+		buffer.flush();
+		return ByteBuffer.wrap(buffer.toByteArray());
 	}
 
 	/**
