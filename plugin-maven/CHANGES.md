@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.15.0] - 2021-09-30
 ### Added
 * Added support for custom JSR223 formatters ([#945](https://github.com/diffplug/spotless/pull/945))
 * Added support for formating and sorting Maven POMs ([#946](https://github.com/diffplug/spotless/pull/946))
