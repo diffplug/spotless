@@ -134,6 +134,10 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		writePom(formats(groupWithSteps("format", including(includes), steps)));
 	}
 
+	protected void writePomWithPomSteps(String... steps) throws IOException {
+		writePom(groupWithSteps("pom", including("pom_test.xml"), steps));
+	}
+
 	protected void writePom(String... configuration) throws IOException {
 		writePom(null, configuration);
 	}

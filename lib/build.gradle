@@ -6,15 +6,35 @@ version = rootProject.spotlessChangelog.versionNext
 apply from: rootProject.file('gradle/java-setup.gradle')
 apply from: rootProject.file('gradle/java-publish.gradle')
 
+def NEEDS_GLUE = [
+	'sortPom'
+]
+for (glue in NEEDS_GLUE) {
+	sourceSets.register(glue) {
+		compileClasspath += sourceSets.main.output
+		runtimeClasspath += sourceSets.main.output
+		java {}
+	}
+}
+
 dependencies {
 	// zero runtime reqs is a hard requirements for spotless-lib
 	// if you need a dep, put it in lib-extra
 	testImplementation "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"
 	testImplementation "org.assertj:assertj-core:${VER_ASSERTJ}"
 	testImplementation "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
+
+	// used for pom sorting
+	sortPomCompileOnly 'com.github.ekryd.sortpom:sortpom-sorter:3.0.0'
 }
 
 // we'll hold the core lib to a high standard
 spotbugs { reportLevel = 'low' } // low|medium|high (low = sensitive to even minor mistakes)
 
 test { useJUnitPlatform() }
+
+jar {
+	for (glue in NEEDS_GLUE) {
+		from sourceSets.getByName(glue).output.classesDirs
+	}
+}

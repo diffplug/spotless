@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,13 @@
  */
 package com.diffplug.spotless;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.nio.ByteBuffer;
+import java.security.ProtectionDomain;
 import java.util.Objects;
 
 import javax.annotation.Nullable;
@@ -29,37 +31,31 @@ import javax.annotation.Nullable;
  * path of URLs.<br/>
  * Features shall be independent from build tools. Hence the class loader of the
  * underlying build tool is e.g. skipped during the the search for classes.<br/>
- * Only {@link #BUILD_TOOLS_PACKAGES } are explicitly looked up from the class loader of
- * the build tool and the provided URLs are ignored. This allows the feature to use
- * distinct functionality of the build tool.
+ *
+ * For `com.diffplug.spotless.glue.`, classes are redefined from within the lib jar
+ * but linked against the `Url[]`. This allows us to ship classfiles which function as glue
+ * code but delay linking/definition to runtime after the user has specified which version
+ * of the formatter they want.
+ *
+ *  For `"org.slf4j.` and (`com.diffplug.spotless.` but not `com.diffplug.spotless.extra.`)
+ * 	the classes are loaded from the buildToolClassLoader.
  */
 class FeatureClassLoader extends URLClassLoader {
 	static {
 		ClassLoader.registerAsParallelCapable();
 	}
 
-	/**
-	 * The following packages must be provided by the build tool or the corresponding Spotless plugin:
-	 * <ul>
-	 *   <li>org.slf4j - SLF4J API must be provided. If no SLF4J binding is provided, log messages are dropped.</li>
-	 * </ul>
-	 */
-	static final List<String> BUILD_TOOLS_PACKAGES = Collections.unmodifiableList(Arrays.asList("org.slf4j."));
-	// NOTE: if this changes, you need to also update the `JarState.getClassLoader` methods.
-
 	private final ClassLoader buildToolClassLoader;
 
 	/**
 	 * Constructs a new FeatureClassLoader for the given URLs, based on an {@code URLClassLoader},
-	 * using the system class loader as parent. For {@link #BUILD_TOOLS_PACKAGES }, the build
-	 * tool class loader is used.
+	 * using the system class loader as parent.
 	 *
 	 * @param urls the URLs from which to load classes and resources
 	 * @param buildToolClassLoader The build tool class loader
 	 * @exception  SecurityException  If a security manager exists and prevents the creation of a class loader.
 	 * @exception  NullPointerException if {@code urls} is {@code null}.
 	 */
-
 	FeatureClassLoader(URL[] urls, ClassLoader buildToolClassLoader) {
 		super(urls, getParentClassLoader());
 		Objects.requireNonNull(buildToolClassLoader);
@@ -68,12 +64,53 @@ class FeatureClassLoader extends URLClassLoader {
 
 	@Override
 	protected Class<?> findClass(String name) throws ClassNotFoundException {
-		for (String buildToolPackage : BUILD_TOOLS_PACKAGES) {
-			if (name.startsWith(buildToolPackage)) {
-				return buildToolClassLoader.loadClass(name);
+		if (name.startsWith("com.diffplug.spotless.glue.")) {
+			String path = name.replace('.', '/') + ".class";
+			URL url = findResource(path);
+			if (url == null) {
+				throw new ClassNotFoundException(name);
 			}
+			try {
+				return defineClass(name, urlToByteBuffer(url), (ProtectionDomain) null);
+			} catch (IOException e) {
+				throw new ClassNotFoundException(name, e);
+			}
+		} else if (useBuildToolClassLoader(name)) {
+			return buildToolClassLoader.loadClass(name);
+		} else {
+			return super.findClass(name);
 		}
-		return super.findClass(name);
+	}
+
+	private static boolean useBuildToolClassLoader(String name) {
+		if (name.startsWith("org.slf4j.")) {
+			return true;
+		} else if (!name.startsWith("com.diffplug.spotless.extra") && name.startsWith("com.diffplug.spotless.")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public URL findResource(String name) {
+		URL resource = super.findResource(name);
+		if (resource != null) {
+			return resource;
+		}
+		return buildToolClassLoader.getResource(name);
+	}
+
+	private static ByteBuffer urlToByteBuffer(URL url) throws IOException {
+		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+		int nRead;
+		byte[] data = new byte[1024];
+		InputStream inputStream = url.openStream();
+		while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+			buffer.write(data, 0, nRead);
+		}
+		buffer.flush();
+		return ByteBuffer.wrap(buffer.toByteArray());
 	}
 
 	/**
