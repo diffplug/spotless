@@ -6,13 +6,14 @@ version = rootProject.spotlessChangelog.versionNext
 apply from: rootProject.file('gradle/java-setup.gradle')
 apply from: rootProject.file('gradle/java-publish.gradle')
 
-sourceSets {
-	sortPom {
+def NEEDS_GLUE = [
+	'sortPom'
+]
+for (glue in NEEDS_GLUE) {
+	sourceSets.register(glue) {
 		compileClasspath += sourceSets.main.output
 		runtimeClasspath += sourceSets.main.output
-
-		java {
-		}
+		java {}
 	}
 }
 
@@ -33,8 +34,7 @@ spotbugs { reportLevel = 'low' } // low|medium|high (low = sensitive to even min
 test { useJUnitPlatform() }
 
 jar {
-	// Add directories with generated sources (might be several - one for every supported language).
-	from sourceSets.sortPom.output.classesDirs
-	// Add output directories of the sourceset's resources.
-	from sourceSets.sortPom.output.resourcesDir
+	for (glue in NEEDS_GLUE) {
+		from sourceSets.getByName(glue).output.classesDirs
+	}
 }
