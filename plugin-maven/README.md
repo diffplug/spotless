@@ -55,6 +55,7 @@ user@machine repo % mvn spotless:check
   - [Python](#python) ([black](#black))
   - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
   - [Sql](#sql) ([dbeaver](#dbeaver))
+  - [Maven Pom](#maven-pom) ([sortPom](#sortpom))
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier))
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection))
@@ -509,6 +510,67 @@ sql.formatter.statement.delimiter=;
 sql.formatter.indent.type=space
 # Number of identation characters
 sql.formatter.indent.size=4
+```
+
+## Maven POM
+
+[code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/pom/Pom.java). [available steps](https://github.com/diffplug/spotless/tree/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/pom/SortPom.java).
+
+```xml
+<configuration>
+  <pom>
+    <!-- These are the defaults, you can override if you want -->
+    <includes>
+      <include>pom.xml</include>
+    </includes>
+
+    <sortPom /> <!-- has its own section below -->
+
+  </pom>
+</configuration>
+```
+
+### sortPom
+
+[homepage](https://github.com/Ekryd/sortpom). [code](https://github.com/diffplug/spotless/tree/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/pom/SortPom.java).
+
+All configuration settings are optional, they are described in detail [here](https://github.com/Ekryd/sortpom/wiki/Parameters).
+
+```xml
+<sortPom>
+
+  <encoding>UTF-8</encoding> <!-- The encoding of the pom files -->
+
+  <lineSeparator>${line.separator}</lineSeparator> <!-- line separator to use -->
+
+  <expandEmptyElements>true</expandEmptyElements> <!-- Should empty elements be expanded-->
+
+  <spaceBeforeCloseEmptyElement>false</spaceBeforeCloseEmptyElement> <!-- Should a space be added inside self-closing elements-->
+
+  <keepBlankLines>true</keepBlankLines> <!-- Keep empty lines -->
+
+  <nrOfIndentSpace>2</nrOfIndentSpace> <!-- Indentation -->
+
+  <indentBlankLines>false</indentBlankLines> <!-- Should empty lines be indented -->
+
+  <indentSchemaLocation>false</indentSchemaLocation> <!-- Should schema locations be indended -->
+
+  <predefinedSortOrder>recommended_2008_06</predefinedSortOrder> <!-- Sort order of elements: https://github.com/Ekryd/sortpom/wiki/PredefinedSortOrderProfiles-->
+
+  <sortOrderFile></sortOrderFile> <!-- Custom sort order of elements: https://raw.githubusercontent.com/Ekryd/sortpom/master/sorter/src/main/resources/custom_1.xml -->
+
+  <sortDependencies></sortDependencies> <!-- Sort dependencies: https://github.com/Ekryd/sortpom/wiki/SortDependencies-->
+
+  <sortDependencyExclusions></sortDependencyExclusions> <!-- Sort dependency exclusions: https://github.com/Ekryd/sortpom/wiki/SortDependencies-->
+
+  <sortPlugins></sortPlugins> <!-- Sort plugins: https://github.com/Ekryd/sortpom/wiki/SortPlugins -->
+
+  <sortProperties>false</sortProperties> <!-- Sort properties -->
+
+  <sortModules>false</sortModules> <!-- Sort modules -->
+
+  <sortExecutions>false</sortExecutions> <!-- Sort plugin executions -->
+</sortPom>
 ```
 
 <a name="applying-to-typescript-source"></a>
