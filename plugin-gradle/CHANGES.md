@@ -3,6 +3,7 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+* Added `wildcardsLast()` option for Java `importOrder` ([#954](https://github.com/diffplug/spotless/pull/954))
 
 ## [5.15.2] - 2021-09-27
 ### Changed
