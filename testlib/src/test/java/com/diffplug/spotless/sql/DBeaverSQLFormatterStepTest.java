@@ -35,7 +35,8 @@ class DBeaverSQLFormatterStepTest extends ResourceHarness {
 				.testResource("sql/dbeaver/full.dirty", "sql/dbeaver/full.clean")
 				.testResource("sql/dbeaver/V1_initial.sql.dirty", "sql/dbeaver/V1_initial.sql.clean")
 				.testResource("sql/dbeaver/alter-table.dirty", "sql/dbeaver/alter-table.clean")
-				.testResource("sql/dbeaver/create.dirty", "sql/dbeaver/create.clean");
+				.testResource("sql/dbeaver/create.dirty", "sql/dbeaver/create.clean")
+			    .testResource("sql/dbeaver/jdbi-params.dirty", "sql/dbeaver/jdbi-params.clean");
 	}
 
 	@Test

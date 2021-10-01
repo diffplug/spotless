@@ -138,6 +138,13 @@ public class SQLTokenizedFormatter {
 				argList.remove(index + 1);
 				argList.remove(index + 1);
 			}
+
+			// JDBI bind list
+			if (tokenString.equals("<") && t1.getType() == TokenType.NAME && token2String.equals(">")) {
+				t0.setString(t0.getString() + t1.getString() + t2.getString());
+				argList.remove(index + 1);
+				argList.remove(index + 1);
+			}
 		}
 
 		int indent = 0;
