@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,9 +29,11 @@ final class ImportSorter {
 	static final String N = "\n";
 
 	private final List<String> importsOrder;
+	private final boolean wildcardsLast;
 
-	ImportSorter(List<String> importsOrder) {
+	ImportSorter(List<String> importsOrder, boolean wildcardsLast) {
 		this.importsOrder = new ArrayList<>(importsOrder);
+		this.wildcardsLast = wildcardsLast;
 	}
 
 	String format(String raw, String lineFormat) {
@@ -79,7 +81,7 @@ final class ImportSorter {
 		}
 		scanner.close();
 
-		List<String> sortedImports = ImportSorterImpl.sort(imports, importsOrder, lineFormat);
+		List<String> sortedImports = ImportSorterImpl.sort(imports, importsOrder, wildcardsLast, lineFormat);
 		return applyImportsToDocument(raw, firstImportLine, lastImportLine, sortedImports);
 	}
 
