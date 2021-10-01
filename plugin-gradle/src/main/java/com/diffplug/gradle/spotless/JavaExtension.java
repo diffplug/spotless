@@ -87,7 +87,11 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 
 		/** Sorts wildcard imports after non-wildcard imports, instead of before. */
 		public ImportOrderConfig wildcardsLast() {
-			wildcardsLast = true;
+			return wildcardsLast(true);
+		}
+
+		public ImportOrderConfig wildcardsLast(boolean wildcardsLast) {
+			this.wildcardsLast = wildcardsLast;
 			replaceStep(createStep());
 			return this;
 		}

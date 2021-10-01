@@ -36,6 +36,8 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 
 public final class ImportOrderStep {
+	private static final boolean WILDCARDS_LAST_DEFAULT = false;
+
 	private final String lineFormat;
 
 	public static ImportOrderStep forGroovy() {
@@ -51,7 +53,7 @@ public final class ImportOrderStep {
 	}
 
 	public FormatterStep createFrom(String... importOrder) {
-		return createFrom(false, importOrder);
+		return createFrom(WILDCARDS_LAST_DEFAULT, importOrder);
 	}
 
 	public FormatterStep createFrom(boolean wildcardsLast, String... importOrder) {
@@ -61,7 +63,7 @@ public final class ImportOrderStep {
 	}
 
 	public FormatterStep createFrom(File importsFile) {
-		return createFrom(false, importsFile);
+		return createFrom(WILDCARDS_LAST_DEFAULT, importsFile);
 	}
 
 	public FormatterStep createFrom(boolean wildcardsLast, File importsFile) {
