@@ -47,6 +47,12 @@ class ImportOrderStepTest extends ResourceHarness {
 	}
 
 	@Test
+	void sortImportsWildcardsLast() throws Throwable {
+		FormatterStep step = ImportOrderStep.forJava().createFrom(true);
+		assertOnResources(step, "java/importsorter/JavaCodeUnsortedImports.test", "java/importsorter/JavaCodeSortedImportsWildcardsLast.test");
+	}
+
+	@Test
 	void removeDuplicates() throws Throwable {
 		FormatterStep step = ImportOrderStep.forJava().createFrom(createTestFile("java/importsorter/import_unmatched.properties"));
 		assertOnResources(step, "java/importsorter/JavaCodeSortedDuplicateImportsUnmatched.test", "java/importsorter/JavaCodeSortedImportsUnmatched.test");

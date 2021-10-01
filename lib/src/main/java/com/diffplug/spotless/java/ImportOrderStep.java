@@ -51,20 +51,28 @@ public final class ImportOrderStep {
 	}
 
 	public FormatterStep createFrom(String... importOrder) {
+		return createFrom(false, importOrder);
+	}
+
+	public FormatterStep createFrom(boolean wildcardsLast, String... importOrder) {
 		// defensive copying and null checking
 		List<String> importOrderList = requireElementsNonNull(Arrays.asList(importOrder));
-		return createFrom(() -> importOrderList);
+		return createFrom(wildcardsLast, () -> importOrderList);
 	}
 
 	public FormatterStep createFrom(File importsFile) {
-		Objects.requireNonNull(importsFile);
-		return createFrom(() -> getImportOrder(importsFile));
+		return createFrom(false, importsFile);
 	}
 
-	private FormatterStep createFrom(Supplier<List<String>> importOrder) {
+	public FormatterStep createFrom(boolean wildcardsLast, File importsFile) {
+		Objects.requireNonNull(importsFile);
+		return createFrom(wildcardsLast, () -> getImportOrder(importsFile));
+	}
+
+	private FormatterStep createFrom(boolean wildcardsLast, Supplier<List<String>> importOrder) {
 		return FormatterStep.createLazy("importOrder",
-				() -> new State(importOrder.get(), lineFormat),
-				State::toFormatter);
+			() -> new State(importOrder.get(), lineFormat, wildcardsLast),
+			State::toFormatter);
 	}
 
 	private static List<String> getImportOrder(File importsFile) {
@@ -92,14 +100,16 @@ public final class ImportOrderStep {
 
 		private final List<String> importOrder;
 		private final String lineFormat;
+		private final boolean wildcardsLast;
 
-		State(List<String> importOrder, String lineFormat) {
+		State(List<String> importOrder, String lineFormat, boolean wildcardsLast) {
 			this.importOrder = importOrder;
 			this.lineFormat = lineFormat;
+			this.wildcardsLast = wildcardsLast;
 		}
 
 		FormatterFunc toFormatter() {
-			return raw -> new ImportSorter(importOrder).format(raw, lineFormat);
+			return raw -> new ImportSorter(importOrder, wildcardsLast).format(raw, lineFormat);
 		}
 	}
 }

@@ -29,9 +29,11 @@ final class ImportSorter {
 	static final String N = "\n";
 
 	private final List<String> importsOrder;
+	private final boolean wildcardsLast;
 
-	ImportSorter(List<String> importsOrder) {
+	ImportSorter(List<String> importsOrder, boolean wildcardsLast) {
 		this.importsOrder = new ArrayList<>(importsOrder);
+		this.wildcardsLast = wildcardsLast;
 	}
 
 	String format(String raw, String lineFormat) {
@@ -79,7 +81,7 @@ final class ImportSorter {
 		}
 		scanner.close();
 
-		List<String> sortedImports = ImportSorterImpl.sort(imports, importsOrder, lineFormat);
+		List<String> sortedImports = ImportSorterImpl.sort(imports, importsOrder, wildcardsLast, lineFormat);
 		return applyImportsToDocument(raw, firstImportLine, lastImportLine, sortedImports);
 	}
 

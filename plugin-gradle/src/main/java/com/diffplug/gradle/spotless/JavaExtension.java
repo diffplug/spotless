@@ -17,6 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
 
+import java.io.File;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -57,13 +58,47 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 		return licenseHeaderFile(licenseHeaderFile, LICENSE_HEADER_DELIMITER);
 	}
 
-	public void importOrder(String... importOrder) {
-		addStep(ImportOrderStep.forJava().createFrom(importOrder));
+	public ImportOrderConfig importOrder(String... importOrder) {
+		return new ImportOrderConfig(importOrder);
 	}
 
-	public void importOrderFile(Object importOrderFile) {
+	public ImportOrderConfig importOrderFile(Object importOrderFile) {
 		Objects.requireNonNull(importOrderFile);
-		addStep(ImportOrderStep.forJava().createFrom(getProject().file(importOrderFile)));
+		return new ImportOrderConfig(getProject().file(importOrderFile));
+	}
+
+	public class ImportOrderConfig {
+		final String[] importOrder;
+		final File importOrderFile;
+
+		boolean wildcardsLast = false;
+
+		ImportOrderConfig(String[] importOrder) {
+			this.importOrder = importOrder;
+			importOrderFile = null;
+			addStep(createStep());
+		}
+
+		ImportOrderConfig(File importOrderFile) {
+			importOrder = null;
+			this.importOrderFile = importOrderFile;
+			addStep(createStep());
+		}
+
+		/** Sorts wildcard imports after non-wildcard imports, instead of before. */
+		public ImportOrderConfig wildcardsLast() {
+			wildcardsLast = true;
+			replaceStep(createStep());
+			return this;
+		}
+
+		private FormatterStep createStep() {
+			ImportOrderStep importOrderStep = ImportOrderStep.forJava();
+
+			return importOrderFile != null
+				? importOrderStep.createFrom(wildcardsLast, getProject().file(importOrderFile))
+				: importOrderStep.createFrom(wildcardsLast, importOrder);
+		}
 	}
 
 	/** Removes any unused imports. */

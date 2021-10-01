@@ -15,13 +15,7 @@
  */
 package com.diffplug.spotless.java;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.annotation.Nullable;
 
@@ -34,9 +28,10 @@ final class ImportSorterImpl {
 	private final Map<String, List<String>> matchingImports = new HashMap<>();
 	private final List<String> notMatching = new ArrayList<>();
 	private final Set<String> allImportOrderItems = new HashSet<>();
+	private final Comparator<String> ordering;
 
-	static List<String> sort(List<String> imports, List<String> importsOrder, String lineFormat) {
-		ImportSorterImpl importsSorter = new ImportSorterImpl(importsOrder);
+	static List<String> sort(List<String> imports, List<String> importsOrder, boolean wildcardsLast, String lineFormat) {
+		ImportSorterImpl importsSorter = new ImportSorterImpl(importsOrder, wildcardsLast);
 		return importsSorter.sort(imports, lineFormat);
 	}
 
@@ -49,11 +44,12 @@ final class ImportSorterImpl {
 		return getResult(lineFormat);
 	}
 
-	private ImportSorterImpl(List<String> importOrder) {
+	private ImportSorterImpl(List<String> importOrder, boolean wildcardsLast) {
 		List<String> importOrderCopy = new ArrayList<>(importOrder);
 		normalizeStaticOrderItems(importOrderCopy);
 		putStaticItemIfNotExists(importOrderCopy);
 		template.addAll(importOrderCopy);
+		ordering = new OrderingComparator(wildcardsLast);
 		this.allImportOrderItems.addAll(importOrderCopy);
 	}
 
@@ -119,7 +115,7 @@ final class ImportSorterImpl {
 	 * not matching means it does not match any order item, so it will be appended before or after order items
 	 */
 	private void mergeNotMatchingItems(boolean staticItems) {
-		Collections.sort(notMatching);
+		sort(notMatching);
 
 		int firstIndexOfOrderItem = getFirstIndexOfOrderItem(notMatching, staticItems);
 		int indexOfOrderItem = 0;
@@ -192,7 +188,7 @@ final class ImportSorterImpl {
 					continue;
 				}
 				List<String> matchingItems = new ArrayList<>(strings);
-				Collections.sort(matchingItems);
+				sort(matchingItems);
 
 				// replace order item by matching import statements
 				// this is a mess and it is only a luck that it works :-]
@@ -216,6 +212,10 @@ final class ImportSorterImpl {
 		if (template.size() > 0 && template.get(template.size() - 1).equals(ImportSorter.N)) {
 			template.remove(template.size() - 1);
 		}
+	}
+
+	private void sort(List<String> items) {
+		items.sort(ordering);
 	}
 
 	private List<String> getResult(String lineFormat) {
@@ -256,4 +256,28 @@ final class ImportSorterImpl {
 		return null;
 	}
 
+	private static class OrderingComparator implements Comparator<String> {
+		private final boolean wildcardsLast;
+
+		private OrderingComparator(boolean wildcardsLast) {
+			this.wildcardsLast = wildcardsLast;
+		}
+
+		@Override
+		public int compare(String string1, String string2) {
+			int string1WildcardIndex = string1.indexOf('*');
+			int string2WildcardIndex = string2.indexOf('*');
+			boolean string1IsWildcard = string1WildcardIndex >= 0;
+			boolean string2IsWildcard = string2WildcardIndex >= 0;
+			if (string1IsWildcard == string2IsWildcard) {
+				return string1.compareTo(string2);
+			}
+			int prefixLength = string1IsWildcard ? string1WildcardIndex : string2WildcardIndex;
+			boolean samePrefix = string1.regionMatches(0, string2, 0, prefixLength);
+			if (!samePrefix) {
+				return string1.compareTo(string2);
+			}
+			return (string1IsWildcard == wildcardsLast) ? 1 : -1;
+		}
+	}
 }

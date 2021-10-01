@@ -1,9 +1,15 @@
+import java.awt.*;
 import java.lang.Runnable;
 import java.lang.Thread;
+import java.util.*;
+import java.util.List;
 
 import org.dooda.Didoo;
 
 import static java.lang.Exception.*;
 import static java.lang.Runnable.*;
+import static org.hamcrest.Matchers.*;
 
 import static com.foo.Bar;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
