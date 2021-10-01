@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,8 +73,8 @@ public final class ImportOrderStep {
 
 	private FormatterStep createFrom(boolean wildcardsLast, Supplier<List<String>> importOrder) {
 		return FormatterStep.createLazy("importOrder",
-			() -> new State(importOrder.get(), lineFormat, wildcardsLast),
-			State::toFormatter);
+				() -> new State(importOrder.get(), lineFormat, wildcardsLast),
+				State::toFormatter);
 	}
 
 	private static List<String> getImportOrder(File importsFile) {

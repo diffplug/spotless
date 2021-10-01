@@ -100,8 +100,8 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 			ImportOrderStep importOrderStep = ImportOrderStep.forJava();
 
 			return importOrderFile != null
-				? importOrderStep.createFrom(wildcardsLast, getProject().file(importOrderFile))
-				: importOrderStep.createFrom(wildcardsLast, importOrder);
+					? importOrderStep.createFrom(wildcardsLast, getProject().file(importOrderFile))
+					: importOrderStep.createFrom(wildcardsLast, importOrder);
 		}
 	}
 
