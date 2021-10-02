@@ -5,6 +5,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 * Added `wildcardsLast()` option for Java `importOrder` ([#954](https://github.com/diffplug/spotless/pull/954))
 
+### Added
+* Added support for JBDI bind list params in sql formatter ([#955](https://github.com/diffplug/spotless/pull/955))
+
 ## [5.15.2] - 2021-09-27
 ### Changed
 * Added support and bump Eclipse formatter default versions to `4.21` for `eclipse-cdt`, `eclipse-jdt`, `eclipse-wtp`. Change is only applied for JVM 11+.

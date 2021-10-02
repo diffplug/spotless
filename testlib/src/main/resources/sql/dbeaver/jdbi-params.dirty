@@ -1,0 +1,1 @@
+SELECT * FROM table WHERE id IN (<ids>) AND user_id = :user_id;
