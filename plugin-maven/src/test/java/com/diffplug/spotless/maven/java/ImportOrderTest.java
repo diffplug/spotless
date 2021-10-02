@@ -45,6 +45,15 @@ class ImportOrderTest extends MavenIntegrationHarness {
 		runTest("java/importsorter/JavaCodeSortedImportsDefault.test");
 	}
 
+	@Test
+	void wildcardsLast() throws Exception {
+		writePomWithJavaSteps(
+				"<importOrder>",
+				"  <wildcardsLast>true</wildcardsLast>",
+				"</importOrder>");
+		runTest("java/importsorter/JavaCodeSortedImportsWildcardsLast.test");
+	}
+
 	private void runTest() throws Exception {
 		runTest("java/importsorter/JavaCodeSortedImports.test");
 	}

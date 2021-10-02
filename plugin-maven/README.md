@@ -179,6 +179,7 @@ any other maven phase (i.e. compile) then it can be configured as below;
 
     <importOrder /> <!-- standard import order -->
     <importOrder>  <!-- or a custom ordering -->
+      <wildcardsLast>false</wildcardsLast> <!-- Optional, default false. Sort wildcard import after specific imports -->
       <order>java,javax,org,com,com.diffplug,</order>  <!-- or use <file>${project.basedir}/eclipse.importorder</file> -->
       <!-- You probably want an empty string at the end - all of the
            imports you didn't specify explicitly will go there. -->
