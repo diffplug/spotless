@@ -4,6 +4,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+## [2.16.0] - 2021-10-02
+
 ### Added
 * Added support for JBDI bind list params in sql formatter ([#955](https://github.com/diffplug/spotless/pull/955))
 
