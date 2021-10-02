@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.19.0] - 2021-10-02
 * Added `wildcardsLast` option for Java `ImportOrderStep` ([#954](https://github.com/diffplug/spotless/pull/954))
 
 ### Added
