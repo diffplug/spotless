@@ -95,6 +95,17 @@ class EclipseJdtFormatterStepImplTest extends ResourceHarness {
 		assertEquals(formatted, format(unformatted), "Failed to create internal code formatter. See Spotless issue #191");
 	}
 
+	@Test
+	void records() throws Throwable {
+		config.clear();
+		config.setProperty(
+				DefaultCodeFormatterConstants.FORMATTER_KEEP_RECORD_DECLARATION_ON_ONE_LINE,
+				DefaultCodeFormatterConstants.ONE_LINE_IF_EMPTY);
+		String formatted = getTestResource("java/eclipse/RecordsFormatted.test");
+		String unformatted = getTestResource("java/eclipse/RecordsUnformatted.test");
+		assertEquals(formatted, format(unformatted), "Jvm14 records not formatted. See Spotless issue #951");
+	}
+
 	private String format(final String input) throws Exception {
 		EclipseJdtFormatterStepImpl formatter = new EclipseJdtFormatterStepImpl(config);
 		return formatter.format(input);

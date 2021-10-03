@@ -1,0 +1,7 @@
+public class Records {
+	public record EmptyRecordInOneLine(int a, int b) {
+	}
+	public record CtorMultipleLines(int a, int b) {
+		public CtorMultipleLines(int a, int b) { this.a = a; this.b = b; }
+	}
+}
