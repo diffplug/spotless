@@ -1,0 +1,6 @@
+module foo.bar {
+	provides test.Service
+		with
+		foo.bar.Service1,
+		foo.bar.Service2;
+}
