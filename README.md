@@ -136,6 +136,7 @@ Once someone has filled in one square of the formatter/build system matrix, it's
 - Thanks to [Ranadeep Polavarapu](https://github.com/RanadeepPolavarapu) for adding support for ktfmt ([#569](https://github.com/diffplug/spotless/pull/569))
 - Thanks to [Simon Gamma](https://github.com/simschla) for [adding support for npm-based formatters](https://github.com/diffplug/spotless/pull/283), [twice](https://github.com/diffplug/spotless/pull/606) including `prettier` and `tsfmt`.
 - Thanks to [Kevin Brooks](https://github.com/k-brooks) for [updating all eclipse-based formatters to 4.13](https://github.com/diffplug/spotless/pull/482) and [fixing Groovy for multiproject](https://github.com/diffplug/spotless/issues/877).
+- Thanks to [Dylan Baroody](https://github.com/dylanbaroody) for fixing [sql formatting support for JDBI bind list params](https://github.com/diffplug/spotless/pull/955).
 - Thanks to [figroc](https://github.com/figroc) for adding [custom mavenCoordinate support to google-java-format](https://github.com/diffplug/spotless/pull/944#issuecomment-927565149).
 - Thanks to [Thomas Glaeser](https://github.com/tglaeser) for [finding](https://github.com/diffplug/spotless/issues/654) and [fixing](https://github.com/diffplug/spotless/pull/656) a file-permissions-clobbering bug.
 - Thanks to [Joan Goyeau](https://github.com/joan38) for [fixing scalafmt integration](https://github.com/diffplug/spotless/pull/260).
