@@ -95,9 +95,24 @@ class EclipseJdtFormatterStepImplTest extends ResourceHarness {
 		assertEquals(formatted, format(unformatted), "Failed to create internal code formatter. See Spotless issue #191");
 	}
 
+	@Test
+	void moduleInfo() throws Throwable {
+		config.clear();
+		config.setProperty(
+				DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_MODULE_STATEMENTS,
+				DefaultCodeFormatterConstants.createAlignmentValue(true, DefaultCodeFormatterConstants.WRAP_ONE_PER_LINE, DefaultCodeFormatterConstants.INDENT_BY_ONE));
+		String formatted = getTestResource("java/eclipse/ModuleInfoFormatted.test");
+		String unformatted = getTestResource("java/eclipse/ModuleInfoUnformatted.test");
+		assertEquals(formatted, format(unformatted, "whatever/module-info.java"), "Jvm9 module info not formatted.");
+	}
+
 	private String format(final String input) throws Exception {
+		return format(input, "");
+	}
+
+	private String format(final String input, final String fileName) throws Exception {
 		EclipseJdtFormatterStepImpl formatter = new EclipseJdtFormatterStepImpl(config);
-		return formatter.format(input);
+		return formatter.format(input, new File(fileName));
 	}
 
 }
