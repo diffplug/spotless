@@ -175,6 +175,11 @@ public abstract class SpotlessExtension {
 		format(JsonExtension.NAME, JsonExtension.class, closure);
 	}
 
+	/** Configures the special terraform-specific extension for terraform files. */
+	public void terraform(Action<TerraformExtension> closure) {
+		format(TerraformExtension.NAME, TerraformExtension.class, closure);
+	}
+
 	/** Configures a custom extension. */
 	public void format(String name, Action<FormatExtension> closure) {
 		requireNonNull(name, "name");

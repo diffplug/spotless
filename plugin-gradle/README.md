@@ -69,6 +69,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [SQL](#sql) ([dbeaver](#dbeaver), [prettier](#prettier))
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier))
   - [JSON](#json)
+  - [Terraform](#terraform)
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection))
       - javascript, jsx, angular, vue, flow, typescript, css, less, scss, html, json, graphql, markdown, ymaml
@@ -567,6 +568,36 @@ spotless {
     simple().indentWithSpaces(6)
   }
 }
+```
+
+## Terraform
+
+- `com.diffplug.gradle.spotless.TerraformExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/5.15.2/com/diffplug/gradle/spotless/TerraformExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/TerraformExtension.java)
+
+```gradle
+spotless {
+  terraform {
+    target 'src/**/*.tf', 'src/**/*.tfvars' // you have to set the target manually
+
+    fmt()  // has its own section below
+  }
+}
+```
+
+### fmt
+
+[homepage](https://www.terraform.io/docs/cli/commands/fmt.html). [changelog](https://github.com/hashicorp/terraform/blob/main/CHANGELOG.md).
+
+```gradle
+fmt('1.0.5') // version is optional
+
+// if the terraform cli is not on your path, you must specify its location manually
+fmt().pathToExe('/opt/homebrew/bin/terraform')
+// Spotless always checks the version of the terraform cli it is using
+// and will fail with an error if it does not match the expected version
+// (whether manually specified or default). If there is a problem, Spotless
+// will suggest commands to help install the correct version.
+//   TODO: handle installation & packaging automatically - https://github.com/diffplug/spotless/issues/674
 ```
 
 <a name="applying-prettier-to-javascript--flow--typescript--css--scss--less--jsx--graphql--yaml--etc"></a>
