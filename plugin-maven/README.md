@@ -57,6 +57,7 @@ user@machine repo % mvn spotless:check
   - [Sql](#sql) ([dbeaver](#dbeaver))
   - [Maven Pom](#maven-pom) ([sortPom](#sortpom))
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier))
+  - [Terraform](#terraform)
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection))
     - [eclipse web tools platform](#eclipse-web-tools-platform)
@@ -627,6 +628,43 @@ The auto-discovery of config files (up the file tree) will not work when using t
 **Prerequisite: tsfmt requires a working NodeJS version**
 
 For details, see the [npm detection](#npm-detection) and [`.npmrc` detection](#npmrc-detection) sections of prettier, which apply also to tsfmt.
+
+## Terraform
+
+[code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/terraform/Terraform.java). [available steps](https://github.com/diffplug/spotless/tree/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/terraform/TerraformFmt.java).
+
+```xml
+<configuration>
+  <terraform>
+    <!-- You have to set the target manually -->
+    <includes>
+      <include>src/**/*.tf</include>
+      <include>src/**/*.tfvars</include>
+    </includes>
+
+    <fmt />  <!-- has its own section below -->
+  </terraform>
+</configuration>
+```
+
+### fmt
+
+[homepage](https://www.terraform.io/docs/cli/commands/fmt.html). [changelog](https://github.com/hashicorp/terraform/blob/main/CHANGELOG.md).
+
+```xml
+<fmt>
+  <version>1.0.5</version> <!-- version is optional -->
+  <!-- if the terraform cli is not on your path, you must specify its location manually -->
+  <pathToExe>/opt/homebrew/bin/terraform</pathToExe>
+  <!--
+    Spotless always checks the version of the terraform cli it is using
+    and will fail with an error if it does not match the expected version
+    (whether manually specified or default). If there is a problem, Spotless
+    will suggest commands to help install the correct version.
+    TODO: handle installation & packaging automatically - https://github.com/diffplug/spotless/issues/674
+  -->
+</fmt>
+```
 
 <a name="applying-prettier-to-javascript--flow--typescript--css--scss--less--jsx--graphql--yaml--etc"></a>
 
