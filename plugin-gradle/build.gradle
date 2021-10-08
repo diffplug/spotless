@@ -78,7 +78,8 @@ if (version.endsWith('-SNAPSHOT')) {
 			'scalafmt',
 			'scalafix',
 			'black',
-			'clang-format'
+			'clang-format',
+			'terraform'
 		]
 		plugins {
 			spotlessPlugin {
