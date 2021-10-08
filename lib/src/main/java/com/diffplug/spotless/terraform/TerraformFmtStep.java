@@ -33,7 +33,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public class TerraformFmtStep {
 	public static String name() {
-		return "clang";
+		return "terraformfmt";
 	}
 
 	public static String defaultVersion() {
