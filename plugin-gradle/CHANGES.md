@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+* Added formatter for [Terraform files](https://www.terraform.io/docs/cli/commands/fmt.html) ([#959](https://github.com/diffplug/spotless/pull/959))
 
 ## [5.15.2] - 2021-09-27
 ### Changed

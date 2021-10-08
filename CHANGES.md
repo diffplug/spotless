@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* Added formatter for [Terraform files](https://www.terraform.io/docs/cli/commands/fmt.html) ([#959](https://github.com/diffplug/spotless/pull/959))
 
 ## [2.18.0] - 2021-09-30
 ### Added
