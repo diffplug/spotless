@@ -1,7 +1,8 @@
 def special = [
 	'Npm',
 	'Black',
-	'Clang'
+	'Clang',
+	'TerraformFmt'
 ]
 
 tasks.named('test') {
