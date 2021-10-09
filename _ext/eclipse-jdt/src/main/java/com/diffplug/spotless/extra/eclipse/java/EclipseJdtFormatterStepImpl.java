@@ -56,6 +56,7 @@ public class EclipseJdtFormatterStepImpl {
 	}
 
 	/** @deprecated  Use {@link #format(String, File)} instead. */
+	@Deprecated
 	public String format(String raw) throws Exception {
 		return format(raw, new File(""));
 	}
