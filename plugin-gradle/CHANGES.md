@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Fixed
+ * [module-info formatting](https://github.com/diffplug/spotless/pull/958) in `eclipse-jdt` versions `4.20` and `4.21`. Note that the problem also affects older versions.
 
 ## [5.16.0] - 2021-10-02
 * Added `wildcardsLast()` option for Java `importOrder` ([#954](https://github.com/diffplug/spotless/pull/954))
