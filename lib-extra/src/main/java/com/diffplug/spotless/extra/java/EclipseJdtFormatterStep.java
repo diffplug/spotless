@@ -50,7 +50,8 @@ public final class EclipseJdtFormatterStep {
 		Class<?> formatterClazz = getClass(state);
 		Object formatter = formatterClazz.getConstructor(Properties.class).newInstance(state.getPreferences());
 		Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
-		return JVM_SUPPORT.suggestLaterVersionOnError(state.getSemanticVersion(), input -> (String) method.invoke(formatter, input));
+		FormatterFunc formatterFunc = getFormatterFunc(formatter, method);
+		return JVM_SUPPORT.suggestLaterVersionOnError(state.getSemanticVersion(), formatterFunc);
 	}
 
 	private static Class<?> getClass(State state) {
@@ -58,5 +59,12 @@ public final class EclipseJdtFormatterStep {
 			return state.loadClass(FORMATTER_CLASS);
 		}
 		return state.loadClass(FORMATTER_CLASS_OLD);
+	}
+
+	private static FormatterFunc getFormatterFunc(Object formatter, Method method) {
+		if (1 == method.getParameterCount()) {
+			return input -> (String) method.invoke(formatter, input);
+		}
+		return (FormatterFunc.NeedsFile) (input, file) -> (String) method.invoke(formatter, input, file);
 	}
 }
