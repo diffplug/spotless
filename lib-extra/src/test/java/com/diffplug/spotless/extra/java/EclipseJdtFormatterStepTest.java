@@ -15,13 +15,20 @@
  */
 package com.diffplug.spotless.extra.java;
 
+import static org.junit.jupiter.api.condition.JRE.JAVA_11;
+
+import java.io.File;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.TestProvisioner;
+import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.eclipse.EclipseResourceHarness;
 
 class EclipseJdtFormatterStepTest extends EclipseResourceHarness {
@@ -30,8 +37,12 @@ class EclipseJdtFormatterStepTest extends EclipseResourceHarness {
 	private final static String INPUT = "package p; class C{}";
 	private final static String EXPECTED = "package p;\nclass C {\n}";
 
+	private static EclipseBasedStepBuilder createBuilder() {
+		return EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral());
+	}
+
 	public EclipseJdtFormatterStepTest() {
-		super(EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral()), INPUT, EXPECTED);
+		super(createBuilder(), INPUT, EXPECTED);
 	}
 
 	@ParameterizedTest
@@ -42,5 +53,20 @@ class EclipseJdtFormatterStepTest extends EclipseResourceHarness {
 
 	private static Stream<String> formatWithVersion() {
 		return Stream.of(NON_SEMANTIC_ECLIPSE_VERSION, JVM_SUPPORT.getRecommendedFormatterVersion(), EclipseJdtFormatterStep.defaultVersion());
+	}
+
+	/** New format interface requires source file information to distinguish module-info from compilation unit */
+	@Nested
+	@EnabledForJreRange(min = JAVA_11)
+	class NewFormatInterface extends EclipseResourceHarness {
+		public NewFormatInterface() throws Exception {
+			super(createBuilder(), "module-info.java", getTestResource("java/eclipse/ModuleInfoUnformatted.test"), getTestResource("java/eclipse/ModuleInfoFormatted.test"));
+		}
+
+		@Test
+		void formatModuleInfo() throws Exception {
+			File settingsFile = createTestFile("java/eclipse/ModuleInfo.prefs");
+			assertFormatted(JVM_SUPPORT.getRecommendedFormatterVersion(), settingsFile);
+		}
 	}
 }
