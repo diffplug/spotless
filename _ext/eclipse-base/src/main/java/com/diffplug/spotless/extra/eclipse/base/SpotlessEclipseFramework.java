@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -146,6 +146,7 @@ public final class SpotlessEclipseFramework {
 	 * @throws BundleException Throws exception in case the setup failed.
 	 * @deprecated  Use {@link #setup(SpotlessEclipseConfig)} instead.
 	 */
+	@Deprecated
 	public synchronized static boolean setup() throws BundleException {
 		return setup(plugins -> plugins.applyDefault());
 	}
@@ -159,6 +160,7 @@ public final class SpotlessEclipseFramework {
 	 * @throws BundleException Throws exception in case the setup failed.
 	 * @deprecated  Use {@link #setup(SpotlessEclipseConfig)} instead.
 	 */
+	@Deprecated
 	public synchronized static boolean setup(Consumer<SpotlessEclipsePluginConfig> plugins) throws BundleException {
 		return setup(config -> config.applyDefault(), plugins);
 	}
@@ -172,6 +174,7 @@ public final class SpotlessEclipseFramework {
 	 * @throws BundleException Throws exception in case the setup failed.
 	 * @deprecated  Use {@link #setup(SpotlessEclipseConfig)} instead.
 	 */
+	@Deprecated
 	public synchronized static boolean setup(Consumer<SpotlessEclipseServiceConfig> config, Consumer<SpotlessEclipsePluginConfig> plugins) throws BundleException {
 		return setup(core -> core.applyDefault(), config, plugins);
 	}
@@ -186,6 +189,7 @@ public final class SpotlessEclipseFramework {
 	 * @throws BundleException Throws exception in case the setup failed.
 	 * @deprecated  Use {@link #setup(SpotlessEclipseConfig)} instead.
 	 */
+	@Deprecated
 	public synchronized static boolean setup(Consumer<SpotlessEclipseCoreConfig> core, Consumer<SpotlessEclipseServiceConfig> services, Consumer<SpotlessEclipsePluginConfig> plugins) throws BundleException {
 		if (null != INSTANCE) {
 			return false;
