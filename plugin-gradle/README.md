@@ -77,6 +77,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
     - [eclipse web tools platform](#eclipse-web-tools-platform)
       - css, html, js, json, xml
 - **Language independent**
+  - [Generic steps](#generic-steps)
   - [License header](#license-header) ([slurp year from git](#retroactively-slurp-years-from-git-history))
   - [How can I enforce formatting gradually? (aka "ratchet")](#ratchet)
   - [`spotless:off` and `spotless:on`](#spotlessoff-and-spotlesson)
@@ -714,6 +715,20 @@ user defined catalog file can be specified using the property `userCatalog`. Cat
 Unlike Eclipse, Spotless WTP ignores per default external URIs in schema location hints and
 external entities. To allow the access of external URIs, set the property `resolveExternalURI`
 to true.
+
+## Generic steps
+
+[Prettier](#prettier), [eclipse wtp](#eclipse-web-tools-platform), and [license header](#license-header) are available in every format, and they each have their own section. As mentioned in the [quickstart](#quickstart), there are a variety of simple generic steps which are also available in every format, here are examples of these:
+
+```gradle
+spotless {
+  // run a native binary
+  format 'terraform', {
+    target 'src/**/*.tf', 'src/**/*.tfvars' // you have to set the target manually
+    nativeCmd('terraform', '/opt/homebrew/bin/terraform', ['fmt', '-']) // name, path to binary, additional arguments
+  }
+}
+```
 
 <a name="license-header-options"></a>
 
