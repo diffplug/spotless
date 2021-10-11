@@ -53,6 +53,7 @@ import com.diffplug.spotless.generic.EndWithNewlineStep;
 import com.diffplug.spotless.generic.IndentStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep.YearMode;
+import com.diffplug.spotless.generic.NativeCmdStep;
 import com.diffplug.spotless.generic.PipeStepPair;
 import com.diffplug.spotless.generic.ReplaceRegexStep;
 import com.diffplug.spotless.generic.ReplaceStep;
@@ -392,6 +393,11 @@ public class FormatExtension {
 	/** Ensures that the files are indented using tabs. */
 	public void indentWithTabs() {
 		addStep(IndentStep.Type.TAB.create());
+	}
+
+	/** Ensures formatting of files via native binary. */
+	public void nativeCmd(String name, String pathToExe, List<String> arguments) {
+		addStep(NativeCmdStep.create(name, new File(pathToExe), arguments));
 	}
 
 	/**
