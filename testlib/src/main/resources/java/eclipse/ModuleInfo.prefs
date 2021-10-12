@@ -1,0 +1,3 @@
+eclipse.preferences.version=1
+#DefaultCodeFormatterConstants.createAlignmentValue(true, DefaultCodeFormatterConstants.WRAP_ONE_PER_LINE, DefaultCodeFormatterConstants.INDENT_BY_ONE)
+org.eclipse.jdt.core.formatter.alignment_for_module_statements=53

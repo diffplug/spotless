@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.extra.java;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.Properties;
 
@@ -49,8 +50,7 @@ public final class EclipseJdtFormatterStep {
 		JVM_SUPPORT.assertFormatterSupported(state.getSemanticVersion());
 		Class<?> formatterClazz = getClass(state);
 		Object formatter = formatterClazz.getConstructor(Properties.class).newInstance(state.getPreferences());
-		Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
-		FormatterFunc formatterFunc = getFormatterFunc(formatter, method);
+		FormatterFunc formatterFunc = getFormatterFunc(formatter, formatterClazz);
 		return JVM_SUPPORT.suggestLaterVersionOnError(state.getSemanticVersion(), formatterFunc);
 	}
 
@@ -61,10 +61,13 @@ public final class EclipseJdtFormatterStep {
 		return state.loadClass(FORMATTER_CLASS_OLD);
 	}
 
-	private static FormatterFunc getFormatterFunc(Object formatter, Method method) {
-		if (1 == method.getParameterCount()) {
+	private static FormatterFunc getFormatterFunc(Object formatter, Class<?> formatterClazz) throws NoSuchMethodException, SecurityException {
+		try {
+			Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class, File.class);
+			return (FormatterFunc.NeedsFile) (input, file) -> (String) method.invoke(formatter, input, file);
+		} catch (NoSuchMethodException e) {
+			Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
 			return input -> (String) method.invoke(formatter, input);
 		}
-		return (FormatterFunc.NeedsFile) (input, file) -> (String) method.invoke(formatter, input, file);
 	}
 }

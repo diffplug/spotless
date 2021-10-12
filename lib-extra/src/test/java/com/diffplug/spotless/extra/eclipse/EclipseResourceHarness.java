@@ -43,6 +43,7 @@ import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
  */
 public class EclipseResourceHarness extends ResourceHarness {
 	private final EclipseBasedStepBuilder stepBuilder;
+	private final String fileName;
 	private final String input;
 	private final String expected;
 
@@ -50,10 +51,22 @@ public class EclipseResourceHarness extends ResourceHarness {
 	 * Create harness to be used for several versions of the formatter step
 	 * @param builder Eclipse Formatter step builder
 	 * @param unformatted Simple unformatted input
-	 * @param formatted
+	 * @param formatted Expected formatted output
 	 */
 	public EclipseResourceHarness(EclipseBasedStepBuilder builder, String unformatted, String formatted) {
+		this(builder, "someSourceFile", unformatted, formatted);
+	}
+
+	/**
+	 * Create harness to be used for several versions of the formatter step
+	 * @param builder Eclipse Formatter step builder
+	 * @param sourceFileName File name of the source file
+	 * @param unformatted Simple unformatted input
+	 * @param formatted Expected formatted output
+	 */
+	public EclipseResourceHarness(EclipseBasedStepBuilder builder, String sourceFileName, String unformatted, String formatted) {
 		stepBuilder = builder;
+		fileName = sourceFileName;
 		input = unformatted;
 		expected = formatted;
 	}
@@ -77,7 +90,7 @@ public class EclipseResourceHarness extends ResourceHarness {
 	 * @return Formatted string
 	 */
 	protected String format(String formatterVersion, File... settingsFiles) throws Exception {
-		File inputFile = setFile("someInputFile").toContent(input);
+		File inputFile = setFile(fileName).toContent(input);
 		stepBuilder.setVersion(formatterVersion);
 		stepBuilder.setPreferences(Arrays.asList(settingsFiles));
 		FormatterStep step = stepBuilder.build();

@@ -46,8 +46,8 @@ class EclipseJdtFormatterStepImplTest extends ResourceHarness {
 
 	@BeforeEach
 	void beforeEach() throws IOException {
-		File sttingsFile = createTestFile("java/eclipse/formatter.xml");
-		config = FormatterProperties.from(sttingsFile).getProperties();
+		File settingsFile = createTestFile("java/eclipse/formatter.xml");
+		config = FormatterProperties.from(settingsFile).getProperties();
 	}
 
 	private final static String ILLEGAL_CHAR = Character.toString((char) 254);
@@ -97,10 +97,8 @@ class EclipseJdtFormatterStepImplTest extends ResourceHarness {
 
 	@Test
 	void moduleInfo() throws Throwable {
-		config.clear();
-		config.setProperty(
-				DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_MODULE_STATEMENTS,
-				DefaultCodeFormatterConstants.createAlignmentValue(true, DefaultCodeFormatterConstants.WRAP_ONE_PER_LINE, DefaultCodeFormatterConstants.INDENT_BY_ONE));
+		File settingsFile = createTestFile("java/eclipse/ModuleInfo.prefs");
+		config = FormatterProperties.from(settingsFile).getProperties();
 		String formatted = getTestResource("java/eclipse/ModuleInfoFormatted.test");
 		String unformatted = getTestResource("java/eclipse/ModuleInfoUnformatted.test");
 		assertEquals(formatted, format(unformatted, "whatever/module-info.java"), "Jvm9 module info not formatted.");
