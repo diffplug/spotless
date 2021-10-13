@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+ * [skip bug](https://github.com/diffplug/spotless/issues/968) if ratchetFrom is specified, the build will still fail in if no Git repository is found, even if `skip` is true.
 
 ## [2.17.1] - 2021-10-13
 ### Fixed

@@ -73,6 +73,12 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Component
 	private ResourceManager resourceManager;
 
+	@Parameter(defaultValue = "${mojoExecution.goal}", required = true, readonly = true)
+	private String goal;
+
+	@Parameter(property = "spotless.check.skip", defaultValue = "false")
+	private boolean skip;
+
 	@Parameter(defaultValue = "${repositorySystemSession}", required = true, readonly = true)
 	private RepositorySystemSession repositorySystemSession;
 
@@ -147,6 +153,11 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private void execute(FormatterFactory formatterFactory) throws MojoExecutionException {
+		if (skip) {
+			getLog().info(String.format("Spotless %s skipped", goal));
+			return;
+		}
+
 		FormatterConfig config = getFormatterConfig();
 		List<File> files = collectFiles(formatterFactory, config);
 

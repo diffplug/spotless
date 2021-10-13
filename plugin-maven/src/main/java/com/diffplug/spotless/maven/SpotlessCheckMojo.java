@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import java.util.List;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.PaddedCell;
@@ -36,16 +35,8 @@ import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 @Mojo(name = "check", defaultPhase = LifecyclePhase.VERIFY, threadSafe = true)
 public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 
-	@Parameter(property = "spotless.check.skip", defaultValue = "false")
-	private boolean skip;
-
 	@Override
 	protected void process(Iterable<File> files, Formatter formatter) throws MojoExecutionException {
-		if (skip) {
-			getLog().info("Spotless check skipped");
-			return;
-		}
-
 		List<File> problemFiles = new ArrayList<>();
 		for (File file : files) {
 			try {
