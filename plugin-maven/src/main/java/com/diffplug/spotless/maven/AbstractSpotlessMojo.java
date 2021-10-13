@@ -66,12 +66,23 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	private static final String DEFAULT_ENCODING = "UTF-8";
 	private static final String DEFAULT_LINE_ENDINGS = "GIT_ATTRIBUTES";
+	public static final String GOAL_CHECK = "check";
+	public static final String GOAL_APPLY = "apply";
 
 	@Component
 	private RepositorySystem repositorySystem;
 
 	@Component
 	private ResourceManager resourceManager;
+
+	@Parameter(defaultValue = "${mojoExecution.goal}", required = true, readonly = true)
+	private String goal;
+
+	@Parameter(property = "spotless.apply.skip", defaultValue = "false")
+	private boolean applySkip;
+
+	@Parameter(property = "spotless.check.skip", defaultValue = "false")
+	private boolean checkSkip;
 
 	@Parameter(defaultValue = "${repositorySystemSession}", required = true, readonly = true)
 	private RepositorySystemSession repositorySystemSession;
@@ -146,7 +157,24 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		}
 	}
 
+	private boolean shouldSkip() {
+		switch (goal) {
+		case GOAL_CHECK:
+			return checkSkip;
+		case GOAL_APPLY:
+			return applySkip;
+		default:
+			break;
+		}
+		return false;
+	}
+
 	private void execute(FormatterFactory formatterFactory) throws MojoExecutionException {
+		if (shouldSkip()) {
+			getLog().info(String.format("Spotless %s skipped", goal));
+			return;
+		}
+
 		FormatterConfig config = getFormatterConfig();
 		List<File> files = collectFiles(formatterFactory, config);
 
