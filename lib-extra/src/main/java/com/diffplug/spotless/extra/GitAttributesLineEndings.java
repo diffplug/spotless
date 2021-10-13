@@ -168,8 +168,7 @@ public final class GitAttributesLineEndings {
 			//////////////////////////
 			// REPO-SPECIFIC VALUES //
 			//////////////////////////
-			FileRepositoryBuilder builder = new FileRepositoryBuilder();
-			builder.findGitDir(projectDir);
+			FileRepositoryBuilder builder = GitWorkarounds.fileRepositoryBuilderForProject(projectDir);
 			if (builder.getGitDir() != null) {
 				workTree = builder.getWorkTree();
 				repoConfig = new FileBasedConfig(userConfig, new File(builder.getGitDir(), Constants.CONFIG), FS.DETECTED);

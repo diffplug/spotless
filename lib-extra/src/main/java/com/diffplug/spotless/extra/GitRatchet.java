@@ -17,8 +17,6 @@ package com.diffplug.spotless.extra;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -182,37 +180,13 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 		return null;
 	}
 
-	/**
-	 * When populating a new submodule directory with "git submodule init", the $GIT_DIR meta-information directory
-	 * for submodules is created inside $GIT_DIR/modules// directory of the super-project
-	 * and referenced via the git-file mechanism.
-	 */
-	private static @Nullable File getDotGitDir(File dir, String dotGit) {
-		File dotGitPath = new File(dir, dotGit);
-
-		if (dotGitPath.isDirectory()) {
-			return dotGitPath;
-		} else if (dotGitPath.isFile()) {
-			try {
-				String relativePath = new String(Files.readAllBytes(dotGitPath.toPath()), StandardCharsets.UTF_8)
-						.split(":")[1].trim();
-				return getDotGitDir(dir, relativePath);
-			} catch (IOException e) {
-				System.err.println("failed to parse git meta: " + e.getMessage());
-				return null;
-			}
-		} else {
-			return null;
-		}
-	}
-
 	private static boolean isGitRoot(File dir) {
-		File dotGit = getDotGitDir(dir, Constants.DOT_GIT);
+		File dotGit = GitWorkarounds.getDotGitDir(dir);
 		return dotGit != null && RepositoryCache.FileKey.isGitRepository(dotGit, FS.DETECTED);
 	}
 
 	static Repository createRepo(File dir) throws IOException {
-		return FileRepositoryBuilder.create(getDotGitDir(dir, Constants.DOT_GIT));
+		return FileRepositoryBuilder.create(GitWorkarounds.getDotGitDir(dir));
 	}
 
 	/**
