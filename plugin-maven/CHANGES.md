@@ -5,6 +5,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Fixed
  * [module-info formatting](https://github.com/diffplug/spotless/pull/958) in `eclipse-jdt` versions `4.20` and `4.21`. Note that the problem also affects older versions.
+ * Added workaround to support projects using git worktrees ([#965](https://github.com/diffplug/spotless/pull/965))
 
 ## [2.17.0] - 2021-10-04
 ### Added
@@ -17,7 +18,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [2.15.0] - 2021-09-30
 ### Added
 * Added support for custom JSR223 formatters ([#945](https://github.com/diffplug/spotless/pull/945))
-* Added support for formating and sorting Maven POMs ([#946](https://github.com/diffplug/spotless/pull/946))
+* Added support for formatting and sorting Maven POMs ([#946](https://github.com/diffplug/spotless/pull/946))
 
 ## [2.14.0] - 2021-09-27
 ### Added
