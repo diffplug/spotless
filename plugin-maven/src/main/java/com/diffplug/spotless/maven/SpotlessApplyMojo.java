@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.io.IOException;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.PaddedCell;
@@ -30,16 +29,9 @@ import com.diffplug.spotless.PaddedCell;
  */
 @Mojo(name = "apply", threadSafe = true)
 public class SpotlessApplyMojo extends AbstractSpotlessMojo {
-	@Parameter(property = "spotless.apply.skip", defaultValue = "false")
-	private boolean skip;
 
 	@Override
 	protected void process(Iterable<File> files, Formatter formatter) throws MojoExecutionException {
-		if (skip) {
-			getLog().info("Spotless apply skipped");
-			return;
-		}
-
 		for (File file : files) {
 			try {
 				PaddedCell.DirtyState dirtyState = PaddedCell.calculateDirtyState(formatter, file);
