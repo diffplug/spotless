@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Changed
+* Added support and bump Eclipse formatter default versions to `4.21` for `eclipse-groovy`. Change is only applied for JVM 11+.
 
 ## [2.17.2] - 2021-10-14
 ### Fixed
