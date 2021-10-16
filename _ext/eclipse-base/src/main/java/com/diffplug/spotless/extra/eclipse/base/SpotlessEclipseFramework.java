@@ -222,6 +222,14 @@ public final class SpotlessEclipseFramework {
 	public synchronized static void setup(SpotlessEclipseConfig config) throws BundleException {
 		if (null == INSTANCE) {
 			INSTANCE = new SpotlessEclipseFramework();
+			Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+				try {
+					INSTANCE.shutdown();
+				} catch (Exception e) {
+					//At shutdown everything is just done on best-efforts basis
+				}
+			}));
+
 			config.registerServices(INSTANCE.getServiceConfig());
 
 			SpotlessEclipseCoreConfig coreConfig = new SpotlessEclipseCoreConfig();
@@ -250,6 +258,10 @@ public final class SpotlessEclipseFramework {
 		registry = (pluginBundle) -> {
 			return PluginRegistrar.register(pluginBundle);
 		};
+	}
+
+	void shutdown() {
+		controller.shutdown();
 	}
 
 	private SpotlessEclipseServiceConfig getServiceConfig() {

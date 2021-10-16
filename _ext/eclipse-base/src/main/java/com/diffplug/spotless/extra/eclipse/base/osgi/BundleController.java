@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,6 +78,17 @@ public final class BundleController implements StaticBundleContext {
 		//Redirect framework activator requests to the the org.eclipse.osgi bundle to this instance.
 		bundles.add(new SimpleBundle(systemBundle, ECLIPSE_LAUNCHER_SYMBOLIC_NAME, Bundle.ACTIVE));
 		FrameworkBundleRegistry.initialize(this);
+	}
+
+	public void shutdown() {
+		bundles.getAll().forEach(b -> {
+			try {
+				b.stop();
+			} catch (IllegalStateException | BundleException e) {
+				//Stop on best effort basis
+			}
+		});
+		services.stop();
 	}
 
 	public ServiceCollection getServices() {

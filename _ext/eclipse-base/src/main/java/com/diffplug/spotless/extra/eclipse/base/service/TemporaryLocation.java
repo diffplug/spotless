@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import java.util.Comparator;
 import org.eclipse.osgi.service.datalocation.Location;
 
 /** All files generated at runtime are stored in a temporary location. */
-public class TemporaryLocation implements Location {
+public class TemporaryLocation implements Location, AutoCloseable {
 	private static final String TEMP_PREFIX = "com_diffplug_spotless_extra_eclipse";
 	private final URL location;
 	private Location parent;
@@ -45,25 +45,10 @@ public class TemporaryLocation implements Location {
 	private static URL createTemporaryDirectory() {
 		try {
 			Path location = Files.createTempDirectory(TEMP_PREFIX);
-			deleteDirectoryRecursivelyOnExit(location);
-			location.toFile().deleteOnExit();
 			return location.toUri().toURL();
 		} catch (IOException e) {
 			throw new IOError(e);
 		}
-	}
-
-	private static void deleteDirectoryRecursivelyOnExit(Path location) {
-		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-			try {
-				Files.walk(location)
-						.sorted(Comparator.reverseOrder())
-						.map(Path::toFile)
-						.forEach(File::delete);
-			} catch (IOException e) {
-				//At shutdown everything is just done on best-efforts basis
-			}
-		}));
 	}
 
 	@Override
@@ -139,6 +124,20 @@ public class TemporaryLocation implements Location {
 			return locationPath.resolve(path).toUri().toURL();
 		} catch (URISyntaxException e) {
 			throw new IOException("Location not correctly formatted.", e);
+		}
+	}
+
+	@Override
+	public void close() throws Exception {
+		try {
+			Path path = Path.of(location.toURI());
+			Files.walk(path)
+					.sorted(Comparator.reverseOrder())
+					.map(Path::toFile)
+					.forEach(File::delete);
+			path.toFile().delete();
+		} catch (IOException e) {
+			//At shutdown everything is just done on best-efforts basis
 		}
 	}
 

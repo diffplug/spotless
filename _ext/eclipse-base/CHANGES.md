@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.2.1`).
 
 ## [Unreleased]
+### Fixed
+* Racing condition when cleaning up temporary workspace on JVM runtime shutdown (see [#967](https://github.com/diffplug/spotless/issues/967)). Can lead to error logs and remaining files in workspace.
 
 ## [3.5.0] - 2021-06-20
 ### Added
