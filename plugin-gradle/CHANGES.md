@@ -6,6 +6,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changed
 * Added support and bump Eclipse formatter default versions to `4.21` for `eclipse-groovy`. Change is only applied for JVM 11+.
 
+### Fixed
+ * Temporary workspace deletion for Eclipse based formatters on JVM shutdown ([#967](https://github.com/diffplug/spotless/issues/967)). Change is only applied for Eclipse versions using JVM 11+, no back-port to older versions is planned.
+
 ## [5.17.0] - 2021-10-13
 ### Added
 * Added support for calling local binary formatters ([#963](https://github.com/diffplug/spotless/pull/963))
