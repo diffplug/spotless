@@ -1,6 +1,6 @@
 # Spotless formatter based on Groovy-Eclipse version 4.3.0 (see https://github.com/groovy/groovy-eclipse/releases)
 com.diffplug.spotless:spotless-eclipse-groovy:4.3.0
-com.diffplug.spotless:spotless-eclipse-base:3.5.0
+com.diffplug.spotless:spotless-eclipse-base:3.5.2
 com.github.spotbugs:spotbugs-annotations:4.0.2
 com.google.code.findbugs:jsr305:3.0.2
 net.jcip:jcip-annotations:1.0
