@@ -66,8 +66,8 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	private static final String DEFAULT_ENCODING = "UTF-8";
 	private static final String DEFAULT_LINE_ENDINGS = "GIT_ATTRIBUTES";
-	public static final String GOAL_CHECK = "check";
-	public static final String GOAL_APPLY = "apply";
+	static final String GOAL_CHECK = "check";
+	static final String GOAL_APPLY = "apply";
 
 	@Component
 	private RepositorySystem repositorySystem;
