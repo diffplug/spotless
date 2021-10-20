@@ -20,7 +20,6 @@ import java.io.IOException;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.PaddedCell;
@@ -28,18 +27,11 @@ import com.diffplug.spotless.PaddedCell;
 /**
  * Performs formatting of all source files according to configured formatters.
  */
-@Mojo(name = "apply", threadSafe = true)
+@Mojo(name = AbstractSpotlessMojo.GOAL_APPLY, threadSafe = true)
 public class SpotlessApplyMojo extends AbstractSpotlessMojo {
-	@Parameter(property = "spotless.apply.skip", defaultValue = "false")
-	private boolean skip;
 
 	@Override
 	protected void process(Iterable<File> files, Formatter formatter) throws MojoExecutionException {
-		if (skip) {
-			getLog().info("Spotless apply skipped");
-			return;
-		}
-
 		for (File file : files) {
 			try {
 				PaddedCell.DirtyState dirtyState = PaddedCell.calculateDirtyState(formatter, file);

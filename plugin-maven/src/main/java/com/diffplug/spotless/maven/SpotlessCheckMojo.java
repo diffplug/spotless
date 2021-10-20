@@ -23,7 +23,6 @@ import java.util.List;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.PaddedCell;
@@ -33,19 +32,11 @@ import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
  * Performs code formatting analysis and prints all violations to the console.
  * Fails the build if violations are discovered.
  */
-@Mojo(name = "check", defaultPhase = LifecyclePhase.VERIFY, threadSafe = true)
+@Mojo(name = AbstractSpotlessMojo.GOAL_CHECK, defaultPhase = LifecyclePhase.VERIFY, threadSafe = true)
 public class SpotlessCheckMojo extends AbstractSpotlessMojo {
-
-	@Parameter(property = "spotless.check.skip", defaultValue = "false")
-	private boolean skip;
 
 	@Override
 	protected void process(Iterable<File> files, Formatter formatter) throws MojoExecutionException {
-		if (skip) {
-			getLog().info("Spotless check skipped");
-			return;
-		}
-
 		List<File> problemFiles = new ArrayList<>();
 		for (File file : files) {
 			try {

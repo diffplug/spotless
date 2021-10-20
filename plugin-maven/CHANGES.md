@@ -7,6 +7,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Added support and bump Eclipse formatter default versions to `4.21` for `eclipse-groovy`. Change is only applied for JVM 11+.
 ### Fixed
  * Revert change from 2.17.2 regarding [skip bug](https://github.com/diffplug/spotless/pull/969) because fixing the skip bug caused inconsistent behavior between `check.skip` and `apply.skip`.
+ * [skip bug](https://github.com/diffplug/spotless/issues/968) if ratchetFrom is specified, the build will still fail in if no Git repository is found, even if `skip` is true (new fix).
 
 ## [2.17.2] - 2021-10-14
 ### Fixed
