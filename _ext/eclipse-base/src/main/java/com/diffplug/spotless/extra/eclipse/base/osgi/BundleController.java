@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.eclipse.core.internal.jobs.JobManager;
 import org.eclipse.osgi.internal.location.LocationHelper;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
@@ -80,7 +81,16 @@ public final class BundleController implements StaticBundleContext {
 		FrameworkBundleRegistry.initialize(this);
 	}
 
+	/**
+	 * Stop {@link org.eclipse.core.internal.jobs.JobManager} worker pool
+	 * and clean up resources of Spotless bundles and services.
+	 *
+	 * @implNote The {@link org.osgi.framework.BundleActivator}s
+	 * are not stopped, since they are not completely started.
+	 * For example services are suppressed by {@link StaticBundleContext}.
+	 */
 	public void shutdown() {
+		JobManager.shutdown();
 		bundles.getAll().forEach(b -> {
 			try {
 				b.stop();
@@ -109,7 +119,7 @@ public final class BundleController implements StaticBundleContext {
 		}
 	}
 
-	/** Adds new bundel whithout activator (e.g. used for ony for extensions) */
+	/** Adds new bundel whithout activator (e.g. used for only for extensions) */
 	public void addBundle(Class<?> clazzInBundleJar, Function<Bundle, BundleException> register) throws BundleException {
 		BundleContext contextFacade = new BundleControllerContextFacade(this, clazzInBundleJar);
 		bundles.add(contextFacade.getBundle());
