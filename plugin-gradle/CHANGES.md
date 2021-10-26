@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [5.17.1] - 2021-10-26
 ### Changed
 * Added support and bump Eclipse formatter default versions to `4.21` for `eclipse-groovy`. Change is only applied for JVM 11+.
 * Added support for ktlint's FilenameRule ([#974](https://github.com/diffplug/spotless/pull/974)).
