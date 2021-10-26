@@ -154,10 +154,10 @@ public class KtLintStep {
 						/* editorConfigPath, nullable */ String.class,
 						/* debug */ boolean.class);
 				Method formatterMethod = ktlintClass.getMethod("format", paramsClass);
-				formatterFunc = input -> {
+				FormatterFunc.NeedsFile needsFile = (input, file) -> {
 					try {
 						Object params = constructor.newInstance(
-								/* fileName, nullable */ null,
+								/* fileName, nullable */ file.getName(),
 								/* text */ input,
 								/* ruleSets */ ruleSets,
 								/* userData */ userData,
@@ -170,6 +170,7 @@ public class KtLintStep {
 						throw ThrowingEx.unwrapCause(e);
 					}
 				};
+				formatterFunc = FormatterFunc.needsFile(needsFile);
 			} else {
 				// and its format method
 				String formatterMethodName = isScript ? "formatScript" : "format";

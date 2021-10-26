@@ -153,9 +153,9 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 				"        ktlint()",
 				"    }",
 				"}");
-		setFile("src/main/kotlin/test.kt").toResource("kotlin/licenseheader/KotlinCodeWithoutHeader.test");
+		setFile("src/main/kotlin/AnObject.kt").toResource("kotlin/licenseheader/KotlinCodeWithoutHeader.test");
 		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("src/main/kotlin/test.kt").hasContent(HEADER + "\n" + getTestResource("kotlin/licenseheader/KotlinCodeWithoutHeader.test"));
+		assertFile("src/main/kotlin/AnObject.kt").hasContent(HEADER + "\n" + getTestResource("kotlin/licenseheader/KotlinCodeWithoutHeader.test"));
 	}
 
 	@Test
@@ -173,9 +173,9 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 				"        ktfmt()",
 				"    }",
 				"}");
-		setFile("src/main/kotlin/test.kt").toResource("kotlin/licenseheader/KotlinCodeWithoutHeader.test");
+		setFile("src/main/kotlin/AnObject.kt").toResource("kotlin/licenseheader/KotlinCodeWithoutHeader.test");
 		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("src/main/kotlin/test.kt").hasContent(HEADER + "\n" + getTestResource("kotlin/licenseheader/KotlinCodeWithoutHeaderKtfmt.test"));
+		assertFile("src/main/kotlin/AnObject.kt").hasContent(HEADER + "\n" + getTestResource("kotlin/licenseheader/KotlinCodeWithoutHeaderKtfmt.test"));
 	}
 
 	@Test
@@ -192,9 +192,9 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 				"        ktlint()",
 				"    }",
 				"}");
-		setFile("src/main/kotlin/test.kt").toResource("kotlin/licenseheader/KotlinCodeWithoutHeader.test");
+		setFile("src/main/kotlin/AnObject.kt").toResource("kotlin/licenseheader/KotlinCodeWithoutHeader.test");
 		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("src/main/kotlin/test.kt").hasContent(HEADER + "\n" + getTestResource("kotlin/licenseheader/KotlinCodeWithoutHeader.test"));
+		assertFile("src/main/kotlin/AnObject.kt").hasContent(HEADER + "\n" + getTestResource("kotlin/licenseheader/KotlinCodeWithoutHeader.test"));
 	}
 
 	@Test
@@ -212,9 +212,9 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 				"        ktfmt()",
 				"    }",
 				"}");
-		setFile("src/main/kotlin/test.kt").toResource("kotlin/licenseheader/KotlinCodeWithoutHeader.test");
+		setFile("src/main/kotlin/AnObject.kt").toResource("kotlin/licenseheader/KotlinCodeWithoutHeader.test");
 		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("src/main/kotlin/test.kt").hasContent(HEADER + "\n" + getTestResource("kotlin/licenseheader/KotlinCodeWithoutHeaderKtfmt.test"));
+		assertFile("src/main/kotlin/AnObject.kt").hasContent(HEADER + "\n" + getTestResource("kotlin/licenseheader/KotlinCodeWithoutHeaderKtfmt.test"));
 	}
 
 	@Test
@@ -232,13 +232,13 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 				"    }",
 				"}");
 
-		setFile("src/main/kotlin/test.kt").toResource("kotlin/licenseheader/KotlinCodeWithMultiYearHeader.test");
-		setFile("src/main/kotlin/test2.kt").toResource("kotlin/licenseheader/KotlinCodeWithMultiYearHeader2.test");
+		setFile("src/main/kotlin/AnObject.kt").toResource("kotlin/licenseheader/KotlinCodeWithMultiYearHeader.test");
+		setFile("src/main/kotlin/AnObject2.kt").toResource("kotlin/licenseheader/KotlinCodeWithMultiYearHeader2.test");
 		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("src/main/kotlin/test.kt").matches(matcher -> {
+		assertFile("src/main/kotlin/AnObject.kt").matches(matcher -> {
 			matcher.startsWith("// License Header 2012, 2014");
 		});
-		assertFile("src/main/kotlin/test2.kt").matches(matcher -> {
+		assertFile("src/main/kotlin/AnObject2.kt").matches(matcher -> {
 			matcher.startsWith("// License Header 2012, 2014");
 		});
 	}
@@ -259,13 +259,13 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 				"    }",
 				"}");
 
-		setFile("src/main/kotlin/test.kt").toResource("kotlin/licenseheader/KotlinCodeWithMultiYearHeader.test");
-		setFile("src/main/kotlin/test2.kt").toResource("kotlin/licenseheader/KotlinCodeWithMultiYearHeader2.test");
+		setFile("src/main/kotlin/AnObject.kt").toResource("kotlin/licenseheader/KotlinCodeWithMultiYearHeader.test");
+		setFile("src/main/kotlin/AnObject2.kt").toResource("kotlin/licenseheader/KotlinCodeWithMultiYearHeader2.test");
 		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("src/main/kotlin/test.kt").matches(matcher -> {
+		assertFile("src/main/kotlin/AnObject.kt").matches(matcher -> {
 			matcher.startsWith("// License Header 2012, 2014");
 		});
-		assertFile("src/main/kotlin/test2.kt").matches(matcher -> {
+		assertFile("src/main/kotlin/AnObject2.kt").matches(matcher -> {
 			matcher.startsWith("// License Header 2012, 2014");
 		});
 	}
