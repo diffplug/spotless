@@ -69,22 +69,14 @@ dependencies {
 		implementation "com.diffplug.spotless:spotless-lib-extra:${libVersion}"
 	}
 
-	implementation "org.codehaus.plexus:plexus-resources:${VER_PLEXUS_RESOURCES}"
-	constraints {
-		implementation("org.codehaus.plexus:plexus-utils:3.4.1") {
-			because("version pulled by plexus-resources has a functional-bug affecting " +
-					"directory scanning times")
-		}
-	}
-
 	compileOnly "org.apache.maven:maven-plugin-api:${VER_MAVEN_API}"
 	compileOnly "org.apache.maven.plugin-tools:maven-plugin-annotations:${VER_MAVEN_API}"
 	compileOnly "org.apache.maven:maven-core:${VER_MAVEN_API}"
 	compileOnly "org.eclipse.aether:aether-api:${VER_ECLIPSE_AETHER}"
-	compileOnly "org.eclipse.aether:aether-util:${VER_ECLIPSE_AETHER}"
 
 	implementation "com.diffplug.durian:durian-core:${VER_DURIAN}"
 	implementation "com.diffplug.durian:durian-collect:${VER_DURIAN}"
+	implementation("org.codehaus.plexus:plexus-resources:${VER_PLEXUS_RESOURCES}")
 	implementation "org.eclipse.jgit:org.eclipse.jgit:${VER_JGIT}"
 
 	testImplementation project(":testlib")
