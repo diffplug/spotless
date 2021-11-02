@@ -37,22 +37,20 @@ import com.diffplug.spotless.maven.incremental.UpToDateChecker;
 public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 
 	@Override
-	protected void process(Iterable<File> files, Formatter formatter) throws MojoExecutionException {
+	protected void process(Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException {
 		List<File> problemFiles = new ArrayList<>();
-		try (UpToDateChecker upToDateChecker = createUpToDateChecker()) {
-			for (File file : files) {
-				if (upToDateChecker.isUpToDate(file)) {
-					continue;
-				}
+		for (File file : files) {
+			if (upToDateChecker.isUpToDate(file)) {
+				continue;
+			}
 
-				try {
-					PaddedCell.DirtyState dirtyState = PaddedCell.calculateDirtyState(formatter, file);
-					if (!dirtyState.isClean() && !dirtyState.didNotConverge()) {
-						problemFiles.add(file);
-					}
-				} catch (IOException e) {
-					throw new MojoExecutionException("Unable to format file " + file, e);
+			try {
+				PaddedCell.DirtyState dirtyState = PaddedCell.calculateDirtyState(formatter, file);
+				if (!dirtyState.isClean() && !dirtyState.didNotConverge()) {
+					problemFiles.add(file);
 				}
+			} catch (IOException e) {
+				throw new MojoExecutionException("Unable to format file " + file, e);
 			}
 		}
 

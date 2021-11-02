@@ -156,21 +156,16 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Parameter(property = "spotless.upToDateCheckingEnabled", defaultValue = "false")
 	private boolean upToDateCheckingEnabled;
 
-	protected abstract void process(Iterable<File> files, Formatter formatter) throws MojoExecutionException;
+	protected abstract void process(Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException;
 
 	@Override
 	public final void execute() throws MojoExecutionException {
 		List<FormatterFactory> formatterFactories = getFormatterFactories();
-		for (FormatterFactory formatterFactory : formatterFactories) {
-			execute(formatterFactory);
+		try (UpToDateChecker upToDateChecker = createUpToDateChecker()) {
+			for (FormatterFactory formatterFactory : formatterFactories) {
+				execute(formatterFactory, upToDateChecker);
+			}
 		}
-	}
-
-	final UpToDateChecker createUpToDateChecker() {
-		if (upToDateCheckingEnabled) {
-			return UpToDateChecker.forProject(project, getLog());
-		}
-		return UpToDateChecker.noop();
 	}
 
 	private boolean shouldSkip() {
@@ -185,7 +180,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		return false;
 	}
 
-	private void execute(FormatterFactory formatterFactory) throws MojoExecutionException {
+	private void execute(FormatterFactory formatterFactory, UpToDateChecker upToDateChecker) throws MojoExecutionException {
 		if (shouldSkip()) {
 			getLog().info(String.format("Spotless %s skipped", goal));
 			return;
@@ -195,7 +190,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		List<File> files = collectFiles(formatterFactory, config);
 
 		try (Formatter formatter = formatterFactory.newFormatter(files, config)) {
-			process(files, formatter);
+			process(files, formatter, upToDateChecker);
 		}
 	}
 
@@ -315,5 +310,12 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		return Stream.of(licenseHeader)
 				.filter(Objects::nonNull)
 				.collect(toList());
+	}
+
+	private UpToDateChecker createUpToDateChecker() {
+		if (upToDateCheckingEnabled) {
+			return UpToDateChecker.forProject(project, getLog());
+		}
+		return UpToDateChecker.noop();
 	}
 }
