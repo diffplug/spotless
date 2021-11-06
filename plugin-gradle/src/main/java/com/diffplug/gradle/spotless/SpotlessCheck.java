@@ -29,16 +29,30 @@ import org.gradle.api.GradleException;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileVisitDetails;
 import org.gradle.api.file.FileVisitor;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 
+import com.diffplug.common.base.Preconditions;
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
-public class SpotlessCheck extends DefaultTask {
-	SpotlessTask source;
+public abstract class SpotlessCheck extends DefaultTask {
+	@Internal
+	abstract Property<SpotlessTaskService> getTaskService();
+
+	private String getSourceTaskPath() {
+		String path = getPath();
+		Preconditions.checkArgument(path.endsWith(SpotlessExtension.CHECK));
+		return path.substring(0, path.length() - SpotlessExtension.CHECK.length());
+	}
+
+	private String getApplyTaskPath() {
+		return getSourceTaskPath() + SpotlessExtension.APPLY;
+	}
+
 	private File spotlessOutDirectory;
 
 	@Internal
@@ -50,20 +64,20 @@ public class SpotlessCheck extends DefaultTask {
 		this.spotlessOutDirectory = spotlessOutDirectory;
 	}
 
-	public void performActionTest() throws Exception {
+	public void performActionTest() {
 		performAction(true);
 	}
 
 	@TaskAction
-	public void performAction() throws Exception {
+	public void performAction() {
 		performAction(false);
 	}
 
 	private void performAction(boolean isTest) {
 		ConfigurableFileTree files = getProject().fileTree(spotlessOutDirectory);
 		if (files.isEmpty()) {
-			getState().setDidWork(source.getDidWork());
-		} else if (!isTest && getProject().getGradle().getTaskGraph().hasTask(source.applyTask)) {
+			getState().setDidWork(getTaskService().get().getApplyDidWork(getApplyTaskPath()));
+		} else if (!isTest && getTaskService().get().applyWasInGraph(getApplyTaskPath())) {
 			// if our matching apply has already run, then we don't need to do anything
 			getState().setDidWork(false);
 		} else {
@@ -106,8 +120,8 @@ public class SpotlessCheck extends DefaultTask {
 				}
 			});
 			if (!problemFiles.isEmpty()) {
-				try (Formatter formatter = source.buildFormatter()) {
-					Collections.sort(problemFiles);
+				Collections.sort(problemFiles);
+				try (Formatter formatter = getTaskService().get().buildFormatter(getSourceTaskPath())) {
 					throw formatViolationsFor(formatter, problemFiles);
 				}
 			}

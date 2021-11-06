@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,14 +43,6 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 
 public class SpotlessTask extends DefaultTask {
-	SpotlessApply applyTask;
-
-	/** Internal use only, allows coordination between check and apply when they are in the same build */
-	@Internal
-	SpotlessApply getApplyTask() {
-		return applyTask;
-	}
-
 	// set by SpotlessExtension, but possibly overridden by FormatExtension
 	protected String encoding = "UTF-8";
 

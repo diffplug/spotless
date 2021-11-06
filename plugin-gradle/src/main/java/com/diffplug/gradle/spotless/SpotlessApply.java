@@ -24,16 +24,20 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileVisitDetails;
 import org.gradle.api.file.FileVisitor;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 
-public class SpotlessApply extends DefaultTask {
-	private SpotlessTask source;
+import com.diffplug.common.base.Preconditions;
 
-	/** Bidirectional link between Apply and Spotless allows check to know if Apply ran or not. */
-	void linkSource(SpotlessTask source) {
-		this.source = source;
-		source.applyTask = this;
+public abstract class SpotlessApply extends DefaultTask {
+	@Internal
+	abstract Property<SpotlessTaskService> getTaskService();
+
+	private String getSourceTaskPath() {
+		String path = getPath();
+		Preconditions.checkArgument(path.endsWith(SpotlessExtension.APPLY));
+		return path.substring(0, path.length() - SpotlessExtension.APPLY.length());
 	}
 
 	private File spotlessOutDirectory;
@@ -49,9 +53,10 @@ public class SpotlessApply extends DefaultTask {
 
 	@TaskAction
 	public void performAction() {
+		getTaskService().get().registerApply(this);
 		ConfigurableFileTree files = getProject().fileTree(spotlessOutDirectory);
 		if (files.isEmpty()) {
-			getState().setDidWork(source.getDidWork());
+			getState().setDidWork(getTaskService().get().getSourceDidWork(getSourceTaskPath()));
 		} else {
 			files.visit(new FileVisitor() {
 				@Override
