@@ -48,6 +48,8 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 		apply.put(task.getSourceTaskPath(), task);
 	}
 
+	static String INDEPENDENT_HELPER = "Helper";
+
 	public static abstract class ClientTask extends DefaultTask {
 		@Internal
 		abstract Property<SpotlessTaskService> getTaskService();
@@ -55,8 +57,11 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 		String getSourceTaskPath() {
 			String path = getPath();
 			if (this instanceof SpotlessApply) {
-				Preconditions.checkArgument(path.endsWith(SpotlessExtension.APPLY));
-				return path.substring(0, path.length() - SpotlessExtension.APPLY.length());
+				if (path.endsWith(SpotlessExtension.APPLY)) {
+					return path.substring(0, path.length() - SpotlessExtension.APPLY.length());
+				} else {
+					return path + INDEPENDENT_HELPER;
+				}
 			} else if (this instanceof SpotlessCheck) {
 				Preconditions.checkArgument(path.endsWith(SpotlessExtension.CHECK));
 				return path.substring(0, path.length() - SpotlessExtension.CHECK.length());
