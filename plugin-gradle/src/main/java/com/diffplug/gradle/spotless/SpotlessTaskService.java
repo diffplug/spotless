@@ -15,51 +15,85 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.gradle.api.DefaultTask;
+import org.gradle.api.provider.Property;
 import org.gradle.api.services.BuildService;
 import org.gradle.api.services.BuildServiceParameters;
+import org.gradle.api.tasks.Internal;
 
+import com.diffplug.common.base.Preconditions;
+import com.diffplug.common.base.Unhandled;
 import com.diffplug.spotless.Formatter;
 
+/**
+ * Allows the check and apply tasks to coordinate
+ * with each other (and the source task) to reduce
+ * duplicated work (e.g. no need for check to run if
+ * apply already did).
+ */
 public abstract class SpotlessTaskService implements BuildService<BuildServiceParameters.None> {
-	private Map<String, SpotlessApply> apply = new HashMap<>();
-	private Map<String, SpotlessTask> source = new HashMap<>();
+	private Map<String, SpotlessApply> apply = Collections.synchronizedMap(new HashMap<>());
+	private Map<String, SpotlessTask> source = Collections.synchronizedMap(new HashMap<>());
 
 	public void registerSource(SpotlessTask task) {
 		source.put(task.getPath(), task);
 	}
 
 	public void registerApply(SpotlessApply task) {
-		apply.put(task.getPath(), task);
+		apply.put(task.getSourceTaskPath(), task);
 	}
 
-	public boolean getSourceDidWork(String sourceTaskPath) {
-		SpotlessTask sourceTask = source.get(sourceTaskPath);
-		if (sourceTask != null) {
-			return sourceTask.getDidWork();
-		} else {
-			return false;
+	public static abstract class ClientTask extends DefaultTask {
+		@Internal
+		abstract Property<SpotlessTaskService> getTaskService();
+
+		String getSourceTaskPath() {
+			String path = getPath();
+			if (this instanceof SpotlessApply) {
+				Preconditions.checkArgument(path.endsWith(SpotlessExtension.APPLY));
+				return path.substring(0, path.length() - SpotlessExtension.APPLY.length());
+			} else if (this instanceof SpotlessCheck) {
+				Preconditions.checkArgument(path.endsWith(SpotlessExtension.CHECK));
+				return path.substring(0, path.length() - SpotlessExtension.CHECK.length());
+			} else {
+				throw Unhandled.classException(this);
+			}
 		}
-	}
 
-	public boolean getApplyDidWork(String applyTaskPath) {
-		SpotlessApply applyTask = apply.get(applyTaskPath);
-		if (applyTask != null) {
-			return applyTask.getDidWork();
-		} else {
-			return false;
+		private SpotlessTaskService service() {
+			return getTaskService().get();
 		}
-	}
 
-	public boolean applyWasInGraph(String applyTaskPath) {
-		return apply.containsKey(applyTaskPath);
-	}
+		public boolean getSourceDidWork() {
+			SpotlessTask sourceTask = service().source.get(getSourceTaskPath());
+			if (sourceTask != null) {
+				return sourceTask.getDidWork();
+			} else {
+				return false;
+			}
+		}
 
-	public Formatter buildFormatter(String sourceTaskPath) {
-		SpotlessTask task = Objects.requireNonNull(source.get(sourceTaskPath));
-		return task.buildFormatter();
+		public boolean getApplyDidWork() {
+			SpotlessApply applyTask = service().apply.get(getSourceTaskPath());
+			if (applyTask != null) {
+				return applyTask.getDidWork();
+			} else {
+				return false;
+			}
+		}
+
+		public boolean applyWasInGraph() {
+			return service().apply.containsKey(getSourceTaskPath());
+		}
+
+		public Formatter buildFormatter() {
+			SpotlessTask task = Objects.requireNonNull(service().source.get(getSourceTaskPath()));
+			return task.buildFormatter();
+		}
 	}
 }

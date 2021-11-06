@@ -24,35 +24,19 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileVisitDetails;
 import org.gradle.api.file.FileVisitor;
-import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 
-import com.diffplug.common.base.Preconditions;
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
-public abstract class SpotlessCheck extends DefaultTask {
-	@Internal
-	abstract Property<SpotlessTaskService> getTaskService();
-
-	private String getSourceTaskPath() {
-		String path = getPath();
-		Preconditions.checkArgument(path.endsWith(SpotlessExtension.CHECK));
-		return path.substring(0, path.length() - SpotlessExtension.CHECK.length());
-	}
-
-	private String getApplyTaskPath() {
-		return getSourceTaskPath() + SpotlessExtension.APPLY;
-	}
-
+public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 	private File spotlessOutDirectory;
 
 	@Internal
@@ -76,8 +60,8 @@ public abstract class SpotlessCheck extends DefaultTask {
 	private void performAction(boolean isTest) {
 		ConfigurableFileTree files = getProject().fileTree(spotlessOutDirectory);
 		if (files.isEmpty()) {
-			getState().setDidWork(getTaskService().get().getApplyDidWork(getApplyTaskPath()));
-		} else if (!isTest && getTaskService().get().applyWasInGraph(getApplyTaskPath())) {
+			getState().setDidWork(getApplyDidWork());
+		} else if (!isTest && applyWasInGraph()) {
 			// if our matching apply has already run, then we don't need to do anything
 			getState().setDidWork(false);
 		} else {
@@ -121,7 +105,7 @@ public abstract class SpotlessCheck extends DefaultTask {
 			});
 			if (!problemFiles.isEmpty()) {
 				Collections.sort(problemFiles);
-				try (Formatter formatter = getTaskService().get().buildFormatter(getSourceTaskPath())) {
+				try (Formatter formatter = buildFormatter()) {
 					throw formatViolationsFor(formatter, problemFiles);
 				}
 			}
