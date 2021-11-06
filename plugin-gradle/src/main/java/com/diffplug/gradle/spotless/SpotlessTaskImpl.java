@@ -42,7 +42,7 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 
 	@TaskAction
 	public void performAction(InputChanges inputs) throws Exception {
-		getTaskService().get().registerSource(this);
+		getTaskService().get().registerSourceAlreadyRan(this);
 		if (target == null) {
 			throw new GradleException("You must specify 'Iterable<File> target'");
 		}

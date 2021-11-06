@@ -40,7 +40,7 @@ public abstract class SpotlessApply extends SpotlessTaskService.ClientTask {
 
 	@TaskAction
 	public void performAction() {
-		getTaskService().get().registerApply(this);
+		getTaskService().get().registerApplyAlreadyRan(this);
 		ConfigurableFileTree files = getProject().fileTree(spotlessOutDirectory);
 		if (files.isEmpty()) {
 			getState().setDidWork(getSourceDidWork());

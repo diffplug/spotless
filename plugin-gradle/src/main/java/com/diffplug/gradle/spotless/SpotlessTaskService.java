@@ -18,7 +18,6 @@ package com.diffplug.gradle.spotless;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.provider.Property;
@@ -37,14 +36,14 @@ import com.diffplug.spotless.Formatter;
  * apply already did).
  */
 public abstract class SpotlessTaskService implements BuildService<BuildServiceParameters.None> {
-	private Map<String, SpotlessApply> apply = Collections.synchronizedMap(new HashMap<>());
-	private Map<String, SpotlessTask> source = Collections.synchronizedMap(new HashMap<>());
+	private final Map<String, SpotlessApply> apply = Collections.synchronizedMap(new HashMap<>());
+	private final Map<String, SpotlessTask> source = Collections.synchronizedMap(new HashMap<>());
 
-	public void registerSource(SpotlessTask task) {
+	public void registerSourceAlreadyRan(SpotlessTask task) {
 		source.put(task.getPath(), task);
 	}
 
-	public void registerApply(SpotlessApply task) {
+	public void registerApplyAlreadyRan(SpotlessApply task) {
 		apply.put(task.getSourceTaskPath(), task);
 	}
 
@@ -92,12 +91,15 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 			}
 		}
 
-		public boolean applyWasInGraph() {
+		public boolean applyHasRun() {
 			return service().apply.containsKey(getSourceTaskPath());
 		}
 
-		public Formatter buildFormatter() {
-			SpotlessTask task = Objects.requireNonNull(service().source.get(getSourceTaskPath()));
+		public Formatter buildFormatterForCheck() {
+			SpotlessTask task = service().source.get(getSourceTaskPath());
+			if (task == null) {
+				throw new IllegalStateException(getPath() + " is running but " + getSourceTaskPath() + " was up-to-date and didn't run");
+			}
 			return task.buildFormatter();
 		}
 	}

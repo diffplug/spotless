@@ -61,7 +61,7 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 		ConfigurableFileTree files = getProject().fileTree(spotlessOutDirectory);
 		if (files.isEmpty()) {
 			getState().setDidWork(getApplyDidWork());
-		} else if (!isTest && applyWasInGraph()) {
+		} else if (!isTest && applyHasRun()) {
 			// if our matching apply has already run, then we don't need to do anything
 			getState().setDidWork(false);
 		} else {
@@ -105,7 +105,7 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 			});
 			if (!problemFiles.isEmpty()) {
 				Collections.sort(problemFiles);
-				try (Formatter formatter = buildFormatter()) {
+				try (Formatter formatter = buildFormatterForCheck()) {
 					throw formatViolationsFor(formatter, problemFiles);
 				}
 			}
