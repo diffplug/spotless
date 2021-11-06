@@ -49,13 +49,16 @@ spotless {
 	}
 }
 
+def versionLast = spotlessChangelog.versionLast
+def versionNext = spotlessChangelog.versionNext
+
 // if this freshmark has a changelog file, then it has version-sensitive content
 if (tasks.names.contains('changelogCheck')) {
 	// normally we use versionLast for our freshmark
 	spotless {
 		freshmark {
 			properties {
-				it.put('versionLast', spotlessChangelog.versionLast)
+				it.put('versionLast', versionLast)
 			}
 		}
 	}
@@ -65,7 +68,7 @@ if (tasks.names.contains('changelogCheck')) {
 	freshmarkSetup.execute(freshmark)
 	freshmark.properties {
 		// that uses versionNext as versionLast
-		it.put('versionLast', spotlessChangelog.versionNext)
+		it.put('versionLast', versionNext)
 	}
 	def changelogBumpFreshmark = freshmark.createIndependentApplyTask('changelogBumpFreshmark')
 	// freshmark should run after the changelog bump

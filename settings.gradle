@@ -1,9 +1,6 @@
 pluginManagement {
 	plugins {
-		// We are stuck dogfooding at 5.5.0 for a very strange reason:
-		//   5.8.0+ Cannot get property 'versionLast' on null object @ spotless-freshmark.gradle:58
-		//   5.6.0+ Tried to add format named 'freshmark' of type class @ spotless-freshmark.gradle:55
-		id 'com.diffplug.spotless'                 version '5.5.1'
+		id 'com.diffplug.spotless'                 version '5.17.1'
 		// https://github.com/diffplug/goomph/blob/main/CHANGES.md
 		id 'com.diffplug.eclipse.resourcefilters'  version '3.33.2'
 		// https://plugins.gradle.org/plugin/com.gradle.plugin-publish
@@ -102,10 +99,10 @@ if (getStartProperty('com.diffplug.spotless.include.ext.nop2') == 'true') {
 
 // the p2-based projects are too expensive for routine CI builds, so they have to be invoked explicitly
 for (kind in [
-	'cdt',
-	'groovy',
-	'wtp'
-]) {
+			'cdt',
+			'groovy',
+			'wtp'
+		]) {
 	if (getStartProperty("com.diffplug.spotless.include.ext.${kind}") == 'true') {
 		include "eclipse-${kind}"
 		project(":eclipse-${kind}").projectDir = file("_ext/eclipse-${kind}")
