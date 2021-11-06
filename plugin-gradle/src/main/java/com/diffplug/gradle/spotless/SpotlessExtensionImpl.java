@@ -112,8 +112,10 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 		});
 
 		TaskProvider<SpotlessCheck> checkTask = tasks.register(taskName + CHECK, SpotlessCheck.class, task -> {
-			task.getSpotlessOutDirectory().set(spotlessTask.get().getOutputDirectory());
+			SpotlessTask source = spotlessTask.get();
+			task.getSpotlessOutDirectory().set(source.getOutputDirectory());
 			task.getTaskService().set(taskService);
+			task.getEncoding().set(source.getEncoding());
 			task.setEnabled(!isIdeHook);
 			task.dependsOn(spotlessTask);
 

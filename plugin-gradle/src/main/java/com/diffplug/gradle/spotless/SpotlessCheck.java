@@ -18,7 +18,6 @@ package com.diffplug.gradle.spotless;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +28,8 @@ import org.gradle.api.GradleException;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileVisitDetails;
 import org.gradle.api.file.FileVisitor;
+import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 
 import com.diffplug.spotless.FileSignature;
@@ -36,6 +37,9 @@ import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
 public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
+	@Internal
+	public abstract Property<String> getEncoding();
+
 	public void performActionTest() throws IOException {
 		performAction(true);
 	}
@@ -98,7 +102,7 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 						.formatterFolder(
 								getProject().getRootDir().toPath(),
 								getSpotlessOutDirectory().get().toPath(),
-								StandardCharsets.UTF_8.name())
+								getEncoding().get())
 						.problemFiles(problemFiles)
 						.getMessage());
 			}

@@ -42,7 +42,7 @@ import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 
-public class SpotlessTask extends DefaultTask {
+public abstract class SpotlessTask extends DefaultTask {
 	// set by SpotlessExtension, but possibly overridden by FormatExtension
 	protected String encoding = "UTF-8";
 

@@ -17,6 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -70,6 +71,7 @@ class DiffMessageFormatterTest extends ResourceHarness {
 			SpotlessCheck task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + "Check", SpotlessCheck.class);
 			task.getSpotlessOutDirectory().set(source.getOutputDirectory());
 			task.getTaskService().set(taskService);
+			task.getEncoding().set(StandardCharsets.UTF_8.name());
 			return task;
 		}
 

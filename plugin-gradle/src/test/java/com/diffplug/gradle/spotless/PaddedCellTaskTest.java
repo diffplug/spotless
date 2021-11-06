@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -74,6 +75,7 @@ class PaddedCellTaskTest extends ResourceHarness {
 			SpotlessCheck task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + "Check", SpotlessCheck.class);
 			task.getTaskService().set(taskService);
 			task.getSpotlessOutDirectory().set(source.getOutputDirectory());
+			task.getEncoding().set(StandardCharsets.UTF_8.name());
 			return task;
 		}
 
