@@ -16,8 +16,11 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.gradle.api.DefaultTask;
@@ -28,7 +31,10 @@ import org.gradle.api.tasks.Internal;
 
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.base.Unhandled;
+import com.diffplug.common.collect.Maps;
+import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.Formatter;
+import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
 /**
  * Allows the check and apply tasks to coordinate
@@ -41,6 +47,8 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 	private final Map<String, SpotlessTask> source = Collections.synchronizedMap(new HashMap<>());
 
 	public void registerSourceAlreadyRan(SpotlessTask task) {
+		// if there's a registered source, we can wipe the cache
+		cachePut(task.getOutputDirectory(), null, null);
 		source.put(task.getPath(), task);
 	}
 
@@ -90,12 +98,49 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 			return service().apply.containsKey(getSourceTaskPath());
 		}
 
-		public Formatter buildFormatterForCheck() {
+		String errorMsgForCheck(List<File> problemFiles, String runToFix) throws IOException {
 			SpotlessTask task = service().source.get(getSourceTaskPath());
-			if (task == null) {
+			((SpotlessCheck) this).getSpotlessOutDirectory();
+			if (task != null) {
+				try (Formatter formatter = task.buildFormatter()) {
+					String msg = DiffMessageFormatter.builder()
+							.runToFix(runToFix)
+							.formatter(formatter)
+							.problemFiles(problemFiles)
+							.getMessage();
+					cachePut(FileSignature.signAsList(problemFiles), msg);
+					return msg;
+				}
+			} else {
+				return cacheGet(FileSignature.signAsList(problemFiles));
+			}
+		}
+
+		private void cachePut(FileSignature key, String msg) {
+			SpotlessTaskService.cachePut(getSpotlessOutDirectory().get(), key, msg);
+		}
+
+		private String cacheGet(FileSignature key) {
+			Map.Entry<FileSignature, String> cached = SerializableMisc.fromFile(Map.Entry.class, getCacheFile(getSpotlessOutDirectory().get()));
+			if (cached != null && cached.getKey().equals(key)) {
+				return cached.getValue();
+			} else {
 				throw new IllegalStateException(getPath() + " is running but " + getSourceTaskPath() + " was up-to-date and didn't run");
 			}
-			return task.buildFormatter();
 		}
+	}
+
+	private static void cachePut(File spotlessOut, FileSignature key, String msg) {
+		File cacheFile = getCacheFile(spotlessOut);
+		if (key == null) {
+			cacheFile.delete();
+		} else {
+			SerializableMisc.toFile((Serializable) Maps.immutableEntry(key, msg), cacheFile);
+		}
+	}
+
+	private static File getCacheFile(File spotlessOut) {
+		File parent = spotlessOut.getParentFile();
+		return new File(parent, spotlessOut.getName() + "-errorMsg");
 	}
 }

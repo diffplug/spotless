@@ -31,21 +31,19 @@ import org.gradle.api.file.FileVisitor;
 import org.gradle.api.tasks.TaskAction;
 
 import com.diffplug.spotless.FileSignature;
-import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.ThrowingEx;
-import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
 public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
-	public void performActionTest() {
+	public void performActionTest() throws IOException {
 		performAction(true);
 	}
 
 	@TaskAction
-	public void performAction() {
+	public void performAction() throws IOException {
 		performAction(false);
 	}
 
-	private void performAction(boolean isTest) {
+	private void performAction(boolean isTest) throws IOException {
 		ConfigurableFileTree files = getProject().fileTree(getSpotlessOutDirectory().get());
 		if (files.isEmpty()) {
 			getState().setDidWork(getSourceDidWork());
@@ -93,20 +91,11 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 			});
 			if (!problemFiles.isEmpty()) {
 				Collections.sort(problemFiles);
-				try (Formatter formatter = buildFormatterForCheck()) {
-					throw formatViolationsFor(formatter, problemFiles);
-				}
+				String errMsg = errorMsgForCheck(problemFiles, "Run '" + calculateGradleCommand() + " " + getTaskPathPrefix() + "spotlessApply' to fix these violations.");
+				throw new GradleException(errMsg);
+
 			}
 		}
-	}
-
-	/** Returns an exception which indicates problem files nicely. */
-	private GradleException formatViolationsFor(Formatter formatter, List<File> problemFiles) {
-		return new GradleException(DiffMessageFormatter.builder()
-				.runToFix("Run '" + calculateGradleCommand() + " " + getTaskPathPrefix() + "spotlessApply' to fix these violations.")
-				.formatter(formatter)
-				.problemFiles(problemFiles)
-				.getMessage());
 	}
 
 	private String getTaskPathPrefix() {
