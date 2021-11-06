@@ -79,6 +79,36 @@ public final class DiffMessageFormatter {
 		}
 	}
 
+	private static class CleanProviderFolder implements CleanProvider {
+		private final Path rootDir;
+		private final Path cleanDir;
+		private final Charset encoding;
+
+		CleanProviderFolder(Path rootDir, Path cleanDir, String encoding) {
+			this.rootDir = rootDir;
+			this.cleanDir = cleanDir;
+			this.encoding = Charset.forName(encoding);
+		}
+
+		@Override
+		public Path getRootDir() {
+			return rootDir;
+		}
+
+		@Override
+		public Charset getEncoding() {
+			return encoding;
+		}
+
+		@Override
+		public String getFormatted(File file, String rawUnix) {
+			Path relative = rootDir.relativize(file.toPath());
+			Path clean = cleanDir.resolve(rootDir.relativize(file.toPath()));
+			byte[] content = Errors.rethrow().get(() -> Files.readAllBytes(clean));
+			return new String(content, encoding);
+		}
+	}
+
 	public static class Builder {
 		private Builder() {}
 
@@ -94,6 +124,11 @@ public final class DiffMessageFormatter {
 
 		public Builder formatter(Formatter formatter) {
 			this.formatter = new CleanProviderFormatter(formatter);
+			return this;
+		}
+
+		public Builder formatterFolder(Path rootDir, Path cleanDir, String encoding) {
+			this.formatter = new CleanProviderFolder(rootDir, cleanDir, encoding);
 			return this;
 		}
 
