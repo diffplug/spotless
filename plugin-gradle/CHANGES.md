@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Changed
+* **BREAKING** Previously, many projects required `buildscript { repositories { mavenCentral() }}` at the top of their root project, because Spotless resolved its dependencies using the buildscript repositories. Spotless now resolves its dependencies from the normal project repositories of the root project, which means that you can remove the `buildscript {}` block, but you still need `repositories { mavenCentral() }` (or similar) in the root project.
 
 ## [5.17.1] - 2021-10-26
 ### Changed

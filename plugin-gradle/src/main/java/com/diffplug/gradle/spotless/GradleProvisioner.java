@@ -73,7 +73,7 @@ class GradleProvisioner {
 		Objects.requireNonNull(project);
 		return (withTransitives, mavenCoords) -> {
 			try {
-				Configuration config = project.getRootProject().getBuildscript().getConfigurations().create("spotless"
+				Configuration config = project.getRootProject().getConfigurations().create("spotless"
 						+ new Request(withTransitives, mavenCoords).hashCode());
 				mavenCoords.stream()
 						.map(project.getBuildscript().getDependencies()::create)
@@ -85,7 +85,7 @@ class GradleProvisioner {
 				logger.log(
 						Level.SEVERE,
 						"You probably need to add a repository containing the '" + mavenCoords + "' artifact in the 'build.gradle' of your root project.\n" +
-								"E.g.: 'buildscript { repositories { mavenCentral() }}'",
+								"E.g.: 'repositories { mavenCentral() }'",
 						e);
 				throw e;
 			}
@@ -125,7 +125,7 @@ class GradleProvisioner {
 		public String toString() {
 			String coords = mavenCoords.toString();
 			StringBuilder builder = new StringBuilder();
-			builder.append(coords.substring(1, coords.length() - 1)); // strip off []
+			builder.append(coords, 1, coords.length() - 1); // strip off []
 			if (withTransitives) {
 				builder.append(" with transitives");
 			} else {
