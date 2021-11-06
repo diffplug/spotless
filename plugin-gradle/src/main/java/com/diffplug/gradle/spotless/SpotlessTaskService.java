@@ -53,7 +53,7 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 	}
 
 	public void registerApplyAlreadyRan(SpotlessApply task) {
-		apply.put(task.getSourceTaskPath(), task);
+		apply.put(task.sourceTaskPath(), task);
 	}
 
 	static String INDEPENDENT_HELPER = "Helper";
@@ -65,7 +65,7 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 		@Internal
 		abstract Property<SpotlessTaskService> getTaskService();
 
-		String getSourceTaskPath() {
+		String sourceTaskPath() {
 			String path = getPath();
 			if (this instanceof SpotlessApply) {
 				if (path.endsWith(SpotlessExtension.APPLY)) {
@@ -85,8 +85,8 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 			return getTaskService().get();
 		}
 
-		public boolean getSourceDidWork() {
-			SpotlessTask sourceTask = service().source.get(getSourceTaskPath());
+		protected boolean sourceDidWork() {
+			SpotlessTask sourceTask = service().source.get(sourceTaskPath());
 			if (sourceTask != null) {
 				return sourceTask.getDidWork();
 			} else {
@@ -94,12 +94,12 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 			}
 		}
 
-		public boolean applyHasRun() {
-			return service().apply.containsKey(getSourceTaskPath());
+		protected boolean applyHasRun() {
+			return service().apply.containsKey(sourceTaskPath());
 		}
 
-		String errorMsgForCheck(List<File> problemFiles, String runToFix) throws IOException {
-			SpotlessTask task = service().source.get(getSourceTaskPath());
+		protected String errorMsgForCheck(List<File> problemFiles, String runToFix) throws IOException {
+			SpotlessTask task = service().source.get(sourceTaskPath());
 			((SpotlessCheck) this).getSpotlessOutDirectory();
 			if (task != null) {
 				try (Formatter formatter = task.buildFormatter()) {
@@ -125,7 +125,7 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 			if (cached != null && cached.getKey().equals(key)) {
 				return cached.getValue();
 			} else {
-				throw new IllegalStateException(getPath() + " is running but " + getSourceTaskPath() + " was up-to-date and didn't run");
+				throw new IllegalStateException(getPath() + " is running but " + sourceTaskPath() + " was up-to-date and didn't run");
 			}
 		}
 	}

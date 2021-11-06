@@ -31,7 +31,7 @@ public abstract class SpotlessApply extends SpotlessTaskService.ClientTask {
 		getTaskService().get().registerApplyAlreadyRan(this);
 		ConfigurableFileTree files = getProject().fileTree(getSpotlessOutDirectory().get());
 		if (files.isEmpty()) {
-			getState().setDidWork(getSourceDidWork());
+			getState().setDidWork(sourceDidWork());
 		} else {
 			files.visit(new FileVisitor() {
 				@Override
