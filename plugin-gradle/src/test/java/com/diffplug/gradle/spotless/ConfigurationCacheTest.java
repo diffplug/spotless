@@ -37,10 +37,10 @@ public class ConfigurationCacheTest extends GradleIntegrationHarness {
 	@Test
 	public void helpConfigures() throws IOException {
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"apply plugin: 'java'",
 				"spotless {",
 				"    java {",
@@ -53,10 +53,10 @@ public class ConfigurationCacheTest extends GradleIntegrationHarness {
 	@Test
 	public void helpConfiguresIfTasksAreCreated() throws IOException {
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"apply plugin: 'java'",
 				"spotless {",
 				"    java {",

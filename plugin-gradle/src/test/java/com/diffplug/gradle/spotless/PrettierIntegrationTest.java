@@ -28,10 +28,10 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 	@Test
 	void useInlineConfig() throws IOException {
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"def prettierConfig = [:]",
 				"prettierConfig['printWidth'] = 50",
 				"prettierConfig['parser'] = 'typescript'",
@@ -50,10 +50,10 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 	@Test
 	void verifyCleanSpotlessCheckWorks() throws IOException {
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"def prettierConfig = [:]",
 				"prettierConfig['printWidth'] = 50",
 				"prettierConfig['parser'] = 'typescript'",
@@ -75,10 +75,10 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 	void useFileConfig() throws IOException {
 		setFile(".prettierrc.yml").toResource("npm/prettier/config/.prettierrc.yml");
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"spotless {",
 				"    format 'mytypescript', {",
 				"        target 'test.ts'",
@@ -94,10 +94,10 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 	@Test
 	void chooseParserBasedOnFilename() throws IOException {
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"spotless {",
 				"    format 'webResources', {",
 				"        target 'dirty.*'",
@@ -113,10 +113,10 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 	@Test
 	void useJavaCommunityPlugin() throws IOException {
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"def prettierConfig = [:]",
 				"prettierConfig['tabWidth'] = 4",
 				"prettierConfig['parser'] = 'java'",
@@ -138,10 +138,10 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 	@Test
 	void usePhpCommunityPlugin() throws IOException {
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"def prettierConfig = [:]",
 				"prettierConfig['tabWidth'] = 3",
 				"prettierConfig['parser'] = 'php'",
@@ -165,10 +165,10 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 		setFile(".npmrc").toLines(
 				"registry=https://i.do.no.exist.com");
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"def prettierConfig = [:]",
 				"prettierConfig['printWidth'] = 50",
 				"prettierConfig['parser'] = 'typescript'",
@@ -188,10 +188,10 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 		setFile(".custom_npmrc").toLines(
 				"registry=https://i.do.no.exist.com");
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"def prettierConfig = [:]",
 				"prettierConfig['printWidth'] = 50",
 				"prettierConfig['parser'] = 'typescript'",

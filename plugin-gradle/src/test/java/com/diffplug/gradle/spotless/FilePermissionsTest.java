@@ -32,10 +32,10 @@ class FilePermissionsTest extends GradleIntegrationHarness {
 	@DisabledOnOs(WINDOWS)
 	void spotlessApplyShouldPreservePermissions() throws IOException {
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"",
 				"spotless {",
 				"    java {",
