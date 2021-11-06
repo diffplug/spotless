@@ -86,15 +86,6 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 			}
 		}
 
-		public boolean getApplyDidWork() {
-			SpotlessApply applyTask = service().apply.get(getSourceTaskPath());
-			if (applyTask != null) {
-				return applyTask.getDidWork();
-			} else {
-				return false;
-			}
-		}
-
 		public boolean applyHasRun() {
 			return service().apply.containsKey(getSourceTaskPath());
 		}

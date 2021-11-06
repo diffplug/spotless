@@ -48,7 +48,7 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 	private void performAction(boolean isTest) {
 		ConfigurableFileTree files = getProject().fileTree(getSpotlessOutDirectory().get());
 		if (files.isEmpty()) {
-			getState().setDidWork(getApplyDidWork());
+			getState().setDidWork(getSourceDidWork());
 		} else if (!isTest && applyHasRun()) {
 			// if our matching apply has already run, then we don't need to do anything
 			getState().setDidWork(false);
