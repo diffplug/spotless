@@ -25,7 +25,7 @@ class MultiProjectAfterEvaluate extends GradleIntegrationHarness {
 	@Test
 	void failureDoesntTriggerAll() throws IOException {
 		setFile("settings.gradle").toLines("include 'sub'");
-		setFile("build.gradle").toLines("buildscript { repositories { mavenCentral() }}");
+		setFile("build.gradle").toLines("repositories { mavenCentral() }");
 		setFile("sub/build.gradle")
 				.toLines(
 						"plugins {",
