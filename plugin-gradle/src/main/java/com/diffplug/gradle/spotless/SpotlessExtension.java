@@ -182,15 +182,6 @@ public abstract class SpotlessExtension {
 		format(name, FormatExtension.class, closure);
 	}
 
-	/** Makes it possible to remove a format which was created earlier. */
-	public void removeFormat(String name) {
-		requireNonNull(name);
-		FormatExtension toRemove = formats.remove(name);
-		if (toRemove == null) {
-			project.getLogger().warn("Called removeFormat('" + name + "') but there was no such format.");
-		}
-	}
-
 	boolean enforceCheck = true;
 
 	/** Returns {@code true} if Gradle's {@code check} task should run {@code spotlessCheck}; {@code false} otherwise. */
