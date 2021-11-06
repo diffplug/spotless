@@ -1,8 +1,6 @@
 pluginManagement {
 	plugins {
 		id 'com.diffplug.spotless'                 version '5.17.1'
-		// https://github.com/diffplug/goomph/blob/main/CHANGES.md
-		id 'com.diffplug.eclipse.resourcefilters'  version '3.33.2'
 		// https://plugins.gradle.org/plugin/com.gradle.plugin-publish
 		id 'com.gradle.plugin-publish'             version '0.17.0'
 		// https://github.com/gradle-nexus/publish-plugin/releases
@@ -15,7 +13,6 @@ pluginManagement {
 }
 plugins {
 	id 'com.diffplug.spotless'                 apply false
-	id 'com.diffplug.eclipse.resourcefilters'  apply false
 	id 'com.gradle.plugin-publish'             apply false
 	id 'io.github.gradle-nexus.publish-plugin' apply false
 	id 'com.github.spotbugs'                   apply false
@@ -47,11 +44,6 @@ if (System.env['CI'] != null) {
 			}
 		}
 	}
-}
-
-if (startParameter.getProjectProperties().get('release') != 'true') {
-	// the ide project screws up the release tasks
-	include 'ide'
 }
 
 rootProject.name = 'spotless'
