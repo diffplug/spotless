@@ -45,8 +45,6 @@ class RegisterDependenciesTaskTest extends GradleIntegrationHarness {
 						"> Task :spotlessInternalRegisterDependencies\n")
 				.contains("> Task :sub:spotlessJava\n" +
 						"> Task :sub:spotlessJavaCheck\n" +
-						"> Task :sub:spotlessCheck\n" +
-						"\n" +
-						"BUILD SUCCESSFUL");
+						"> Task :sub:spotlessCheck\n");
 	}
 }
