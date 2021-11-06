@@ -5,15 +5,15 @@ pluginManagement {
 		//   5.6.0+ Tried to add format named 'freshmark' of type class @ spotless-freshmark.gradle:55
 		id 'com.diffplug.spotless'                 version '5.5.1'
 		// https://github.com/diffplug/goomph/blob/main/CHANGES.md
-		id 'com.diffplug.eclipse.resourcefilters'  version '3.27.0'
+		id 'com.diffplug.eclipse.resourcefilters'  version '3.33.2'
 		// https://plugins.gradle.org/plugin/com.gradle.plugin-publish
-		id 'com.gradle.plugin-publish'             version '0.14.0'
+		id 'com.gradle.plugin-publish'             version '0.17.0'
 		// https://github.com/gradle-nexus/publish-plugin/releases
-		id 'io.github.gradle-nexus.publish-plugin' version '1.0.0'
+		id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
 		// https://github.com/spotbugs/spotbugs-gradle-plugin/releases
-		id 'com.github.spotbugs'                   version '4.7.0'
+		id 'com.github.spotbugs'                   version '4.7.8'
 		// https://github.com/diffplug/spotless-changelog
-		id 'com.diffplug.spotless-changelog'       version '2.1.2'
+		id 'com.diffplug.spotless-changelog'       version '2.2.0'
 	}
 }
 plugins {
