@@ -15,6 +15,7 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,6 +51,9 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 	static String INDEPENDENT_HELPER = "Helper";
 
 	public static abstract class ClientTask extends DefaultTask {
+		@Internal
+		abstract Property<File> getSpotlessOutDirectory();
+
 		@Internal
 		abstract Property<SpotlessTaskService> getTaskService();
 

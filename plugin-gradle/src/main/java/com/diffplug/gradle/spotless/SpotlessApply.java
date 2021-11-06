@@ -23,25 +23,13 @@ import java.nio.file.StandardCopyOption;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileVisitDetails;
 import org.gradle.api.file.FileVisitor;
-import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 
 public abstract class SpotlessApply extends SpotlessTaskService.ClientTask {
-	private File spotlessOutDirectory;
-
-	@Internal
-	public File getSpotlessOutDirectory() {
-		return spotlessOutDirectory;
-	}
-
-	public void setSpotlessOutDirectory(File spotlessOutDirectory) {
-		this.spotlessOutDirectory = spotlessOutDirectory;
-	}
-
 	@TaskAction
 	public void performAction() {
 		getTaskService().get().registerApplyAlreadyRan(this);
-		ConfigurableFileTree files = getProject().fileTree(spotlessOutDirectory);
+		ConfigurableFileTree files = getProject().fileTree(getSpotlessOutDirectory().get());
 		if (files.isEmpty()) {
 			getState().setDidWork(getSourceDidWork());
 		} else {

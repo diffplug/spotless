@@ -97,10 +97,10 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 
 		// create the check and apply control tasks
 		TaskProvider<SpotlessApply> applyTask = tasks.register(taskName + APPLY, SpotlessApply.class, task -> {
+			task.getSpotlessOutDirectory().set(spotlessTask.get().getOutputDirectory());
 			task.getTaskService().set(taskService);
 			task.setEnabled(!isIdeHook);
 			task.dependsOn(spotlessTask);
-			task.setSpotlessOutDirectory(spotlessTask.get().getOutputDirectory());
 		});
 		rootApplyTask.configure(task -> {
 			task.dependsOn(applyTask);
@@ -112,10 +112,10 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 		});
 
 		TaskProvider<SpotlessCheck> checkTask = tasks.register(taskName + CHECK, SpotlessCheck.class, task -> {
+			task.getSpotlessOutDirectory().set(spotlessTask.get().getOutputDirectory());
 			task.getTaskService().set(taskService);
 			task.setEnabled(!isIdeHook);
 			task.dependsOn(spotlessTask);
-			task.setSpotlessOutDirectory(spotlessTask.get().getOutputDirectory());
 
 			// if the user runs both, make sure that apply happens first,
 			task.mustRunAfter(applyTask);

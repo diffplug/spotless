@@ -28,7 +28,6 @@ import org.gradle.api.GradleException;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileVisitDetails;
 import org.gradle.api.file.FileVisitor;
-import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 
 import com.diffplug.spotless.FileSignature;
@@ -37,17 +36,6 @@ import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
 public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
-	private File spotlessOutDirectory;
-
-	@Internal
-	public File getSpotlessOutDirectory() {
-		return spotlessOutDirectory;
-	}
-
-	public void setSpotlessOutDirectory(File spotlessOutDirectory) {
-		this.spotlessOutDirectory = spotlessOutDirectory;
-	}
-
 	public void performActionTest() {
 		performAction(true);
 	}
@@ -58,7 +46,7 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 	}
 
 	private void performAction(boolean isTest) {
-		ConfigurableFileTree files = getProject().fileTree(spotlessOutDirectory);
+		ConfigurableFileTree files = getProject().fileTree(getSpotlessOutDirectory().get());
 		if (files.isEmpty()) {
 			getState().setDidWork(getApplyDidWork());
 		} else if (!isTest && applyHasRun()) {

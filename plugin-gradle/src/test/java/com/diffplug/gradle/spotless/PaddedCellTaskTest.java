@@ -73,14 +73,14 @@ class PaddedCellTaskTest extends ResourceHarness {
 		private SpotlessCheck createCheckTask(String name, SpotlessTask source) {
 			SpotlessCheck task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + "Check", SpotlessCheck.class);
 			task.getTaskService().set(taskService);
-			task.setSpotlessOutDirectory(source.getOutputDirectory());
+			task.getSpotlessOutDirectory().set(source.getOutputDirectory());
 			return task;
 		}
 
 		private SpotlessApply createApplyTask(String name, SpotlessTask source) {
 			SpotlessApply task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + "Apply", SpotlessApply.class);
 			task.getTaskService().set(taskService);
-			task.setSpotlessOutDirectory(source.getOutputDirectory());
+			task.getSpotlessOutDirectory().set(source.getOutputDirectory());
 			return task;
 		}
 
