@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -164,8 +164,7 @@ public final class DiffMessageFormatter {
 	private static String diff(Builder builder, File file) throws IOException {
 		String raw = new String(Files.readAllBytes(file.toPath()), builder.formatter.getEncoding());
 		String rawUnix = LineEnding.toUnix(raw);
-		String formattedUnix;
-		formattedUnix = PaddedCell.check(builder.formatter, file, rawUnix).canonical();
+		String formattedUnix = PaddedCell.check(builder.formatter, file, rawUnix).canonical();
 
 		if (rawUnix.equals(formattedUnix)) {
 			// the formatting is fine, so it's a line-ending issue

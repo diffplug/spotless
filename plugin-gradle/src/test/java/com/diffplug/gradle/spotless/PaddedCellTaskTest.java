@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import org.gradle.api.Project;
+import org.gradle.api.services.BuildServiceParameters;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -38,6 +39,12 @@ class PaddedCellTaskTest extends ResourceHarness {
 	private class Bundle {
 		String name;
 		Project project = TestProvisioner.gradleProject(rootFolder());
+		SpotlessTaskService taskService = new SpotlessTaskService() {
+			@Override
+			public BuildServiceParameters.None getParameters() {
+				return null;
+			}
+		};
 		File file;
 		File outputFile;
 		SpotlessTaskImpl task;
@@ -56,6 +63,7 @@ class PaddedCellTaskTest extends ResourceHarness {
 
 		private SpotlessTaskImpl createFormatTask(String name, FormatterStep step) {
 			SpotlessTaskImpl task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name), SpotlessTaskImpl.class);
+			task.getTaskService().set(taskService);
 			task.addStep(step);
 			task.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
 			task.setTarget(Collections.singletonList(file));
@@ -64,14 +72,14 @@ class PaddedCellTaskTest extends ResourceHarness {
 
 		private SpotlessCheck createCheckTask(String name, SpotlessTask source) {
 			SpotlessCheck task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + "Check", SpotlessCheck.class);
-			task.source = source;
+			task.getTaskService().set(taskService);
 			task.setSpotlessOutDirectory(source.getOutputDirectory());
 			return task;
 		}
 
 		private SpotlessApply createApplyTask(String name, SpotlessTask source) {
 			SpotlessApply task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + "Apply", SpotlessApply.class);
-			task.linkSource(source);
+			task.getTaskService().set(taskService);
 			task.setSpotlessOutDirectory(source.getOutputDirectory());
 			return task;
 		}
