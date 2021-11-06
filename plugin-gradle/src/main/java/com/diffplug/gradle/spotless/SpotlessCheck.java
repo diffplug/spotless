@@ -18,6 +18,7 @@ package com.diffplug.gradle.spotless;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,6 +33,7 @@ import org.gradle.api.tasks.TaskAction;
 
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.ThrowingEx;
+import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
 public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 	public void performActionTest() throws IOException {
@@ -91,9 +93,14 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 			});
 			if (!problemFiles.isEmpty()) {
 				Collections.sort(problemFiles);
-				String errMsg = errorMsgForCheck(problemFiles, "Run '" + calculateGradleCommand() + " " + getTaskPathPrefix() + "spotlessApply' to fix these violations.");
-				throw new GradleException(errMsg);
-
+				throw new GradleException(DiffMessageFormatter.builder()
+						.runToFix("Run '" + calculateGradleCommand() + " " + getTaskPathPrefix() + "spotlessApply' to fix these violations.")
+						.formatterFolder(
+								getProject().getRootDir().toPath(),
+								getSpotlessOutDirectory().get().toPath(),
+								StandardCharsets.UTF_8.name())
+						.problemFiles(problemFiles)
+						.getMessage());
 			}
 		}
 	}
