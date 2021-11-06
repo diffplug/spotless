@@ -46,6 +46,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   * `:spotlessInternalRegisterDependencies task failed.`
   * `Cannot add a configuration with name 'spotless-1911100560'`
 * Spotless does not [yet](https://github.com/diffplug/spotless/pull/721) support configuration-cache, but now it can never interfere with configuration-cache for other tasks. ([#720](https://github.com/diffplug/spotless/pull/720))
+* Bump minimum required Gradle from `5.4` to `6.1`.
 
 ## [5.15.0] - 2021-09-04
 ### Added
