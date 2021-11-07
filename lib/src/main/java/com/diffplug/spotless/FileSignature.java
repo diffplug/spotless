@@ -174,20 +174,6 @@ public final class FileSignature implements Serializable {
 		}
 	}
 
-	@Override
-	public boolean equals(Object other) {
-		if (other instanceof FileSignature) {
-			return Arrays.equals(signatures, ((FileSignature) other).signatures);
-		} else {
-			return false;
-		}
-	}
-
-	@Override
-	public int hashCode() {
-		return Arrays.hashCode(signatures);
-	}
-
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	private static final class Sig implements Serializable {
 		private static final long serialVersionUID = 6727302747168655222L;
@@ -206,21 +192,6 @@ public final class FileSignature implements Serializable {
 			this.size = size;
 			this.hash = hash;
 			this.lastModified = lastModified;
-		}
-
-		@Override
-		public boolean equals(Object other) {
-			if (other instanceof Sig) {
-				Sig o = (Sig) other;
-				return name.equals(o.name) && size == o.size && Arrays.equals(hash, o.hash);
-			} else {
-				return false;
-			}
-		}
-
-		@Override
-		public int hashCode() {
-			return Arrays.hashCode(hash) | name.hashCode();
 		}
 	}
 
