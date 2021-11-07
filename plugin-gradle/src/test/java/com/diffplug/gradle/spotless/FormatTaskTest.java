@@ -36,12 +36,12 @@ class FormatTaskTest extends ResourceHarness {
 		Project project = TestProvisioner.gradleProject(rootFolder());
 		spotlessTask = project.getTasks().create("spotlessTaskUnderTest", SpotlessTaskImpl.class);
 		spotlessTask.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
-		spotlessTask.getTaskService().set(new SpotlessTaskService() {
+		spotlessTask.init(GradleIntegrationHarness.providerOf(new SpotlessTaskService() {
 			@Override
 			public BuildServiceParameters.None getParameters() {
 				return null;
 			}
-		});
+		}));
 	}
 
 	@Test

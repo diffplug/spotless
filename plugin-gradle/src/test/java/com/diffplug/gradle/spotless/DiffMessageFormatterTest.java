@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 
 import org.assertj.core.api.Assertions;
 import org.gradle.api.Project;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.services.BuildServiceParameters;
 import org.junit.jupiter.api.Test;
 
@@ -41,12 +42,12 @@ class DiffMessageFormatterTest extends ResourceHarness {
 
 	private class Bundle {
 		Project project = TestProvisioner.gradleProject(rootFolder());
-		SpotlessTaskService taskService = new SpotlessTaskService() {
+		Provider<SpotlessTaskService> taskService = GradleIntegrationHarness.providerOf(new SpotlessTaskService() {
 			@Override
 			public BuildServiceParameters.None getParameters() {
 				return null;
 			}
-		};
+		});
 
 		File file;
 		SpotlessTaskImpl task;
@@ -61,7 +62,7 @@ class DiffMessageFormatterTest extends ResourceHarness {
 
 		private SpotlessTaskImpl createFormatTask(String name) {
 			SpotlessTaskImpl task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name), SpotlessTaskImpl.class);
-			task.getTaskService().set(taskService);
+			task.init(taskService);
 			task.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
 			task.setTarget(Collections.singletonList(file));
 			return task;

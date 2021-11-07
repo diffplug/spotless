@@ -24,6 +24,7 @@ import java.util.ListIterator;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.gradle.api.provider.Provider;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.BuildTask;
 import org.gradle.testkit.runner.GradleRunner;
@@ -57,6 +58,10 @@ public class GradleIntegrationHarness extends ResourceHarness {
 				this.version = version;
 			}
 		}
+	}
+
+	public static <T> Provider<T> providerOf(T value) {
+		return org.gradle.api.internal.provider.Providers.of(value);
 	}
 
 	/**

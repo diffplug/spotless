@@ -24,8 +24,10 @@ import java.nio.file.StandardCopyOption;
 import javax.inject.Inject;
 
 import org.gradle.api.GradleException;
+import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileSystemOperations;
 import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.CacheableTask;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
@@ -40,14 +42,22 @@ import com.diffplug.spotless.PaddedCell;
 @CacheableTask
 public abstract class SpotlessTaskImpl extends SpotlessTask {
 	@Internal
-	abstract Property<SpotlessTaskService> getTaskService();
+	abstract Property<SpotlessTaskService> getTakService();
+
+	@Internal
+	abstract DirectoryProperty getProjectDir();
+
+	void init(Provider<SpotlessTaskService> service) {
+		getTakService().set(service);
+		getProjectDir().set(getProject().getProjectDir());
+	}
 
 	@Inject
 	protected abstract FileSystemOperations getFs();
 
 	@TaskAction
 	public void performAction(InputChanges inputs) throws Exception {
-		getTaskService().get().registerSourceAlreadyRan(this);
+		getTakService().get().registerSourceAlreadyRan(this);
 		if (target == null) {
 			throw new GradleException("You must specify 'Iterable<File> target'");
 		}
