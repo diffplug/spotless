@@ -75,7 +75,7 @@ public class FormatExtension {
 	}
 
 	protected final Provisioner provisioner() {
-		return GradleProvisioner.forProject(spotless.project);
+		return spotless.getRegisterDependenciesTask().getTaskService().get().provisionerFor(spotless.project);
 	}
 
 	private String formatName() {

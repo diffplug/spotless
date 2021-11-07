@@ -15,8 +15,12 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.io.File;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,7 +34,38 @@ import com.diffplug.spotless.Provisioner;
 class GradleProvisioner {
 	private GradleProvisioner() {}
 
-	static Provisioner forProject(Project project) {
+	static Provisioner newDedupingProvisioner(Project project) {
+		return new DedupingProvisioner(project);
+	}
+
+	static class DedupingProvisioner implements Provisioner {
+		private final Project project;
+		private final Map<Request, Set<File>> cache = new HashMap<>();
+
+		DedupingProvisioner(Project project) {
+			this.project = project;
+		}
+
+		@Override
+		public Set<File> provisionWithTransitives(boolean withTransitives, Collection<String> mavenCoordinates) {
+			Request req = new Request(withTransitives, mavenCoordinates);
+			Set<File> result = cache.get(req);
+			if (result != null) {
+				return result;
+			} else {
+				result = cache.get(req);
+				if (result != null) {
+					return result;
+				} else {
+					result = forProject(project).provisionWithTransitives(req.withTransitives, req.mavenCoords);
+					cache.put(req, result);
+					return result;
+				}
+			}
+		}
+	}
+
+	private static Provisioner forProject(Project project) {
 		Objects.requireNonNull(project);
 		return (withTransitives, mavenCoords) -> {
 			try {

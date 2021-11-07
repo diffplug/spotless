@@ -23,6 +23,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.Project;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
@@ -32,6 +33,7 @@ import org.gradle.api.tasks.Internal;
 
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.base.Unhandled;
+import com.diffplug.spotless.Provisioner;
 
 /**
  * Allows the check and apply tasks to coordinate
@@ -42,6 +44,13 @@ import com.diffplug.common.base.Unhandled;
 public abstract class SpotlessTaskService implements BuildService<BuildServiceParameters.None> {
 	private final Map<String, SpotlessApply> apply = Collections.synchronizedMap(new HashMap<>());
 	private final Map<String, SpotlessTask> source = Collections.synchronizedMap(new HashMap<>());
+	private final Map<String, Provisioner> provisioner = Collections.synchronizedMap(new HashMap<>());
+
+	public Provisioner provisionerFor(Project project) {
+		return provisioner.computeIfAbsent(project.getPath(), unused -> {
+			return GradleProvisioner.newDedupingProvisioner(project);
+		});
+	}
 
 	public void registerSourceAlreadyRan(SpotlessTask task) {
 		source.put(task.getPath(), task);
