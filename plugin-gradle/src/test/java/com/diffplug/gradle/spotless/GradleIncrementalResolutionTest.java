@@ -57,17 +57,16 @@ class GradleIncrementalResolutionTest extends GradleIntegrationHarness {
 		// check will run against all three the first time.
 		checkRanAgainst("abc");
 		// Subsequent runs will use the cached error message
-		checkRanAgainstNoneButError().contains("Caused by: org.gradle.api.GradleException: The following files had format violations:\n" +
-				"    b.md\n" +
-				"        @@ -1 +1 @@\n" +
-				"        -B\n" +
-				"        +b");
-		checkRanAgainstNoneButError().contains("Caused by: org.gradle.api.GradleException: The following files had format violations:\n" +
-				"    b.md\n" +
-				"        @@ -1 +1 @@\n" +
-				"        -B\n" +
-				"        +b");
-
+		checkRanAgainstNoneButError().contains("> The following files had format violations:\n" +
+				"      b.md\n" +
+				"          @@ -1 +1 @@\n" +
+				"          -B\n" +
+				"          +b");
+		checkRanAgainstNoneButError().contains("> The following files had format violations:\n" +
+				"      b.md\n" +
+				"          @@ -1 +1 @@\n" +
+				"          -B\n" +
+				"          +b");
 		// apply will simply copy outputs the first time: no formatters executed
 		applyRanAgainst("");
 		// the second time, it will only run on the file that was changed by apply
