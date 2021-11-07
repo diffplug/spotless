@@ -43,10 +43,13 @@ class GradleProvisioner {
 				config.setTransitive(withTransitives);
 				return config.resolve();
 			} catch (Exception e) {
-				String projName = project.getPath();
+				String projName = project.getPath().substring(1).replace(':', '/');
+				if (!projName.isEmpty()) {
+					projName = projName + "/";
+				}
 				logger.log(
 						Level.SEVERE,
-						"You probably need to add a repository containing the '" + mavenCoords + "' artifact in the 'build.gradle' of the " + projName + " project.\n" +
+						"You need to add a repository containing the '" + mavenCoords + "' artifact in '" + projName + "build.gradle'.\n" +
 								"E.g.: 'repositories { mavenCentral() }'",
 						e);
 				throw e;
