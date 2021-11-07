@@ -15,59 +15,20 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.io.File;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 
-import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.spotless.Provisioner;
 
 /** Should be package-private. */
 class GradleProvisioner {
 	private GradleProvisioner() {}
-
-	/** The provisioner used for the root project. */
-	static class RootProvisioner implements Provisioner {
-		private final Project rootProject;
-		private final Map<Request, Set<File>> cache = new HashMap<>();
-
-		RootProvisioner(Project rootProject) {
-			Preconditions.checkArgument(rootProject == rootProject.getRootProject());
-			this.rootProject = rootProject;
-		}
-
-		@Override
-		public Set<File> provisionWithTransitives(boolean withTransitives, Collection<String> mavenCoordinates) {
-			Request req = new Request(withTransitives, mavenCoordinates);
-			Set<File> result;
-			synchronized (cache) {
-				result = cache.get(req);
-			}
-			if (result != null) {
-				return result;
-			} else {
-				synchronized (cache) {
-					result = cache.get(req);
-					if (result != null) {
-						return result;
-					} else {
-						result = GradleProvisioner.forProject(rootProject).provisionWithTransitives(req.withTransitives, req.mavenCoords);
-						cache.put(req, result);
-						return result;
-					}
-				}
-			}
-		}
-	}
 
 	static Provisioner forProject(Project project) {
 		Objects.requireNonNull(project);
