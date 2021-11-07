@@ -16,10 +16,14 @@
 package com.diffplug.spotless.maven.incremental;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.io.ByteArrayInputStream;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
@@ -28,6 +32,10 @@ import org.codehaus.plexus.util.ReaderFactory;
 import org.codehaus.plexus.util.xml.XmlStreamReader;
 import org.junit.jupiter.api.Test;
 
+import com.diffplug.spotless.FormatExceptionPolicyStrict;
+import com.diffplug.spotless.Formatter;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
 class PluginFingerprintTest extends MavenIntegrationHarness {
@@ -57,6 +65,8 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 			"</googleJavaFormat>"
 	};
 
+	private static final List<Formatter> FORMATTERS = singletonList(formatter(formatterStep("default")));
+
 	@Test
 	void sameFingerprint() throws Exception {
 		String xml1 = createPomXmlContent(VERSION_1, EXECUTION_1, CONFIGURATION_1);
@@ -65,8 +75,8 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 		MavenProject project1 = mavenProject(xml1);
 		MavenProject project2 = mavenProject(xml2);
 
-		PluginFingerprint fingerprint1 = PluginFingerprint.from(project1);
-		PluginFingerprint fingerprint2 = PluginFingerprint.from(project2);
+		PluginFingerprint fingerprint1 = PluginFingerprint.from(project1, FORMATTERS);
+		PluginFingerprint fingerprint2 = PluginFingerprint.from(project2, FORMATTERS);
 
 		assertEquals(fingerprint1, fingerprint2);
 	}
@@ -79,8 +89,8 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 		MavenProject project1 = mavenProject(xml1);
 		MavenProject project2 = mavenProject(xml2);
 
-		PluginFingerprint fingerprint1 = PluginFingerprint.from(project1);
-		PluginFingerprint fingerprint2 = PluginFingerprint.from(project2);
+		PluginFingerprint fingerprint1 = PluginFingerprint.from(project1, FORMATTERS);
+		PluginFingerprint fingerprint2 = PluginFingerprint.from(project2, FORMATTERS);
 
 		assertNotEquals(fingerprint1, fingerprint2);
 	}
@@ -93,8 +103,8 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 		MavenProject project1 = mavenProject(xml1);
 		MavenProject project2 = mavenProject(xml2);
 
-		PluginFingerprint fingerprint1 = PluginFingerprint.from(project1);
-		PluginFingerprint fingerprint2 = PluginFingerprint.from(project2);
+		PluginFingerprint fingerprint1 = PluginFingerprint.from(project1, FORMATTERS);
+		PluginFingerprint fingerprint2 = PluginFingerprint.from(project2, FORMATTERS);
 
 		assertNotEquals(fingerprint1, fingerprint2);
 	}
@@ -107,8 +117,46 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 		MavenProject project1 = mavenProject(xml1);
 		MavenProject project2 = mavenProject(xml2);
 
-		PluginFingerprint fingerprint1 = PluginFingerprint.from(project1);
-		PluginFingerprint fingerprint2 = PluginFingerprint.from(project2);
+		PluginFingerprint fingerprint1 = PluginFingerprint.from(project1, FORMATTERS);
+		PluginFingerprint fingerprint2 = PluginFingerprint.from(project2, FORMATTERS);
+
+		assertNotEquals(fingerprint1, fingerprint2);
+	}
+
+	@Test
+	void differentFingerprintForFormattersWithDifferentSteps() throws Exception {
+		String xml1 = createPomXmlContent(VERSION_1, EXECUTION_1, CONFIGURATION_1);
+		String xml2 = createPomXmlContent(VERSION_1, EXECUTION_1, CONFIGURATION_1);
+
+		MavenProject project1 = mavenProject(xml1);
+		MavenProject project2 = mavenProject(xml2);
+
+		FormatterStep step1 = formatterStep("step1");
+		FormatterStep step2 = formatterStep("step2");
+		FormatterStep step3 = formatterStep("step3");
+		List<Formatter> formatters1 = singletonList(formatter(step1, step2));
+		List<Formatter> formatters2 = singletonList(formatter(step2, step3));
+
+		PluginFingerprint fingerprint1 = PluginFingerprint.from(project1, formatters1);
+		PluginFingerprint fingerprint2 = PluginFingerprint.from(project2, formatters2);
+
+		assertNotEquals(fingerprint1, fingerprint2);
+	}
+
+	@Test
+	void differentFingerprintForFormattersWithDifferentLineEndings() throws Exception {
+		String xml1 = createPomXmlContent(VERSION_1, EXECUTION_1, CONFIGURATION_1);
+		String xml2 = createPomXmlContent(VERSION_1, EXECUTION_1, CONFIGURATION_1);
+
+		MavenProject project1 = mavenProject(xml1);
+		MavenProject project2 = mavenProject(xml2);
+
+		FormatterStep step = formatterStep("step");
+		List<Formatter> formatters1 = singletonList(formatter(LineEnding.UNIX, step));
+		List<Formatter> formatters2 = singletonList(formatter(LineEnding.WINDOWS, step));
+
+		PluginFingerprint fingerprint1 = PluginFingerprint.from(project1, formatters1);
+		PluginFingerprint fingerprint2 = PluginFingerprint.from(project2, formatters2);
 
 		assertNotEquals(fingerprint1, fingerprint2);
 	}
@@ -123,5 +171,23 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 			MavenXpp3Reader pomReader = new MavenXpp3Reader();
 			return pomReader.read(xmlReader);
 		}
+	}
+
+	private static FormatterStep formatterStep(String name) {
+		return FormatterStep.createNeverUpToDate(name, input -> input);
+	}
+
+	private static Formatter formatter(FormatterStep... steps) {
+		return formatter(LineEnding.UNIX, steps);
+	}
+
+	private static Formatter formatter(LineEnding lineEnding, FormatterStep... steps) {
+		return Formatter.builder()
+				.rootDir(Paths.get(""))
+				.lineEndingsPolicy(lineEnding.createPolicy())
+				.encoding(UTF_8)
+				.steps(Arrays.asList(steps))
+				.exceptionPolicy(new FormatExceptionPolicyStrict())
+				.build();
 	}
 }

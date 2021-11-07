@@ -26,6 +26,8 @@ import java.util.Optional;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 
+import com.diffplug.spotless.Formatter;
+
 // todo: add unit tests
 class IndexBasedChecker implements UpToDateChecker {
 
@@ -35,8 +37,8 @@ class IndexBasedChecker implements UpToDateChecker {
 		this.index = index;
 	}
 
-	static IndexBasedChecker create(MavenProject project, Log log) {
-		PluginFingerprint pluginFingerprint = PluginFingerprint.from(project);
+	static IndexBasedChecker create(MavenProject project, Iterable<Formatter> formatters, Log log) {
+		PluginFingerprint pluginFingerprint = PluginFingerprint.from(project, formatters);
 		// todo: does this produce the correct dir?
 		Path buildDir = project.getBasedir().toPath().resolve(project.getBuild().getDirectory());
 		FileIndex fileIndex = FileIndex.read(buildDir, pluginFingerprint, log);

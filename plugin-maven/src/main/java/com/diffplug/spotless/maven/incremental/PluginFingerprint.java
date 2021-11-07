@@ -15,17 +15,15 @@
  */
 package com.diffplug.spotless.maven.incremental;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.UncheckedIOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Objects;
 
 import org.apache.maven.model.Plugin;
 import org.apache.maven.project.MavenProject;
+
+import com.diffplug.spotless.Formatter;
 
 class PluginFingerprint {
 
@@ -37,10 +35,9 @@ class PluginFingerprint {
 		this.value = value;
 	}
 
-	static PluginFingerprint from(MavenProject project) {
+	static PluginFingerprint from(MavenProject project, Iterable<Formatter> formatters) {
 		Plugin spotlessPlugin = project.getPlugin(SPOTLESS_PLUGIN_KEY);
-		byte[] serialized = serialize(spotlessPlugin);
-		byte[] digest = digest(serialized);
+		byte[] digest = digest(spotlessPlugin, formatters);
 		String value = Base64.getEncoder().encodeToString(digest);
 		return new PluginFingerprint(value);
 	}
@@ -75,20 +72,14 @@ class PluginFingerprint {
 		return "PluginFingerprint[" + value + "]";
 	}
 
-	private static byte[] digest(byte[] bytes) {
-		try {
-			return MessageDigest.getInstance("SHA-256").digest(bytes);
-		} catch (NoSuchAlgorithmException e) {
-			throw new IllegalStateException("SHA-256 digest algorithm not available", e);
-		}
-	}
-
-	private static byte[] serialize(Plugin plugin) {
-		try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-				ObjectOutputStream objectStream = new ObjectOutputStream(byteStream)) {
-			objectStream.writeObject(plugin);
-			objectStream.flush();
-			return byteStream.toByteArray();
+	private static byte[] digest(Plugin plugin, Iterable<Formatter> formatters) {
+		try (ObjectDigestOutputStream out = ObjectDigestOutputStream.create()) {
+			out.writeObject(plugin);
+			for (Formatter formatter : formatters) {
+				out.writeObject(formatter);
+			}
+			out.flush();
+			return out.digest();
 		} catch (IOException e) {
 			throw new UncheckedIOException("Unable to serialize plugin " + plugin, e);
 		}

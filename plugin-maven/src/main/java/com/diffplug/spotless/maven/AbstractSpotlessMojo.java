@@ -22,8 +22,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -160,10 +163,24 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	@Override
 	public final void execute() throws MojoExecutionException {
+		if (shouldSkip()) {
+			getLog().info(String.format("Spotless %s skipped", goal));
+			return;
+		}
+
 		List<FormatterFactory> formatterFactories = getFormatterFactories();
-		try (UpToDateChecker upToDateChecker = createUpToDateChecker()) {
-			for (FormatterFactory formatterFactory : formatterFactories) {
-				execute(formatterFactory, upToDateChecker);
+		FormatterConfig config = getFormatterConfig();
+
+		Map<FormatterFactory, List<File>> formatterFactoryToFiles = new HashMap<>();
+		for (FormatterFactory formatterFactory : formatterFactories) {
+			List<File> files = collectFiles(formatterFactory, config);
+			formatterFactoryToFiles.put(formatterFactory, files);
+		}
+
+		try (FormattersHolder formattersHolder = FormattersHolder.create(formatterFactoryToFiles, config);
+				UpToDateChecker upToDateChecker = createUpToDateChecker(formattersHolder.getFormatters())) {
+			for (Entry<Formatter, List<File>> entry : formattersHolder.getFormattersWithFiles().entrySet()) {
+				process(entry.getValue(), entry.getKey(), upToDateChecker);
 			}
 		}
 	}
@@ -178,20 +195,6 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 			break;
 		}
 		return false;
-	}
-
-	private void execute(FormatterFactory formatterFactory, UpToDateChecker upToDateChecker) throws MojoExecutionException {
-		if (shouldSkip()) {
-			getLog().info(String.format("Spotless %s skipped", goal));
-			return;
-		}
-
-		FormatterConfig config = getFormatterConfig();
-		List<File> files = collectFiles(formatterFactory, config);
-
-		try (Formatter formatter = formatterFactory.newFormatter(files, config)) {
-			process(files, formatter, upToDateChecker);
-		}
 	}
 
 	private List<File> collectFiles(FormatterFactory formatterFactory, FormatterConfig config) throws MojoExecutionException {
@@ -312,9 +315,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 				.collect(toList());
 	}
 
-	private UpToDateChecker createUpToDateChecker() {
+	private UpToDateChecker createUpToDateChecker(Iterable<Formatter> formatters) {
 		if (upToDateCheckingEnabled) {
-			return UpToDateChecker.forProject(project, getLog());
+			return UpToDateChecker.forProject(project, formatters, getLog());
 		}
 		return UpToDateChecker.noop();
 	}

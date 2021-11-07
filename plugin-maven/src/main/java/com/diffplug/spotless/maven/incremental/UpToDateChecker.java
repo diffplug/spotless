@@ -20,6 +20,8 @@ import java.io.File;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 
+import com.diffplug.spotless.Formatter;
+
 public interface UpToDateChecker extends AutoCloseable {
 
 	boolean isUpToDate(File file);
@@ -32,7 +34,7 @@ public interface UpToDateChecker extends AutoCloseable {
 		return NoopChecker.INSTANCE;
 	}
 
-	static UpToDateChecker forProject(MavenProject project, Log log) {
-		return IndexBasedChecker.create(project, log);
+	static UpToDateChecker forProject(MavenProject project, Iterable<Formatter> formatters, Log log) {
+		return IndexBasedChecker.create(project, formatters, log);
 	}
 }
