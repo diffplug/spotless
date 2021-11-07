@@ -25,13 +25,13 @@ class MultiProjectAfterEvaluate extends GradleIntegrationHarness {
 	@Test
 	void failureDoesntTriggerAll() throws IOException {
 		setFile("settings.gradle").toLines("include 'sub'");
-		setFile("build.gradle").toLines("repositories { mavenCentral() }");
 		setFile("sub/build.gradle")
 				.toLines(
 						"plugins {",
 						"  id 'com.diffplug.spotless'",
 						"  id 'java'",
 						"}",
+						"repositories { mavenCentral() }",
 						"spotless { java { googleJavaFormat() } }");
 		String output = gradleRunner().withArguments("spotlessApply", "--warning-mode", "all").build().getOutput().replace("\r\n", "\n");
 		Assertions.assertThat(output).doesNotContain("Using method Project#afterEvaluate(Action) when the project is already evaluated has been deprecated.");
