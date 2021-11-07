@@ -23,6 +23,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
 import org.gradle.api.services.BuildService;
@@ -59,12 +60,16 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 		@Internal
 		abstract Property<SpotlessTaskService> getTaskService();
 
+		@Internal
+		abstract DirectoryProperty getProjectDir();
+
 		@Inject
 		protected abstract ObjectFactory getConfigCacheWorkaround();
 
 		void init(SpotlessTaskImpl impl) {
 			getSpotlessOutDirectory().set(impl.getOutputDirectory());
-			getTaskService().set(impl.getTaskService());
+			getTaskService().set(impl.getTakService());
+			getProjectDir().set(impl.getProjectDir());
 		}
 
 		String sourceTaskPath() {

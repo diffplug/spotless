@@ -67,7 +67,7 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 				@Override
 				public void visitFile(FileVisitDetails fileVisitDetails) {
 					String path = fileVisitDetails.getPath();
-					File originalSource = new File(getProject().getProjectDir(), path);
+					File originalSource = new File(getProjectDir().get().getAsFile(), path);
 					try {
 						// read the file on disk
 						byte[] userFile = Files.readAllBytes(originalSource.toPath());
@@ -100,7 +100,7 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 				throw new GradleException(DiffMessageFormatter.builder()
 						.runToFix("Run '" + calculateGradleCommand() + " " + getTaskPathPrefix() + "spotlessApply' to fix these violations.")
 						.formatterFolder(
-								getProject().getRootDir().toPath(),
+								getProjectDir().get().getAsFile().toPath(),
 								getSpotlessOutDirectory().get().toPath(),
 								getEncoding().get())
 						.problemFiles(problemFiles)
@@ -109,10 +109,18 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 		}
 	}
 
+	@Internal
+	abstract Property<String> getProjectPath();
+
+	@Override
+	void init(SpotlessTaskImpl impl) {
+		super.init(impl);
+		getProjectPath().set(getProject().getPath());
+	}
+
 	private String getTaskPathPrefix() {
-		return getProject().getPath().equals(":")
-				? ":"
-				: getProject().getPath() + ":";
+		String path = getProjectPath().get();
+		return path.equals(":") ? ":" : path + ":";
 	}
 
 	private static String calculateGradleCommand() {

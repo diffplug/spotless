@@ -42,7 +42,7 @@ public abstract class SpotlessApply extends SpotlessTaskService.ClientTask {
 				@Override
 				public void visitFile(FileVisitDetails fileVisitDetails) {
 					String path = fileVisitDetails.getPath();
-					File originalSource = new File(getProject().getProjectDir(), path);
+					File originalSource = new File(getProjectDir().get().getAsFile(), path);
 					try {
 						getLogger().debug("Copying " + fileVisitDetails.getFile() + " to " + originalSource);
 						Files.copy(fileVisitDetails.getFile().toPath(), originalSource.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);

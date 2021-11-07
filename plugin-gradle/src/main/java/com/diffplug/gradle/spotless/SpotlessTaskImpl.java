@@ -86,7 +86,7 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 		File output = getOutputFile(input);
 		getLogger().debug("Applying format to " + input + " and writing to " + output);
 		PaddedCell.DirtyState dirtyState;
-		if (ratchet != null && ratchet.isClean(getProject(), rootTreeSha, input)) {
+		if (ratchet != null && ratchet.isClean(getProjectDir().get().getAsFile(), rootTreeSha, input)) {
 			dirtyState = PaddedCell.isClean();
 		} else {
 			dirtyState = PaddedCell.calculateDirtyState(formatter, input);
@@ -118,12 +118,13 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 	}
 
 	private File getOutputFile(File input) {
-		String outputFileName = FormatExtension.relativize(getProject().getProjectDir(), input);
+		File projectDir = getProjectDir().get().getAsFile();
+		String outputFileName = FormatExtension.relativize(projectDir, input);
 		if (outputFileName == null) {
 			throw new IllegalArgumentException(StringPrinter.buildString(printer -> {
-				printer.println("Spotless error! All target files must be within the project root. In project " + getProject().getPath());
-				printer.println("  root dir: " + getProject().getProjectDir().getAbsolutePath());
-				printer.println("    target: " + input.getAbsolutePath());
+				printer.println("Spotless error! All target files must be within the project root.");
+				printer.println("  project dir: " + projectDir.getAbsolutePath());
+				printer.println("       target: " + input.getAbsolutePath());
 			}));
 		}
 		return new File(outputDirectory, outputFileName);
