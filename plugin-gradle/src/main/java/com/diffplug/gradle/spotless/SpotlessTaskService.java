@@ -68,7 +68,7 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 
 		void init(SpotlessTaskImpl impl) {
 			getSpotlessOutDirectory().set(impl.getOutputDirectory());
-			getTaskService().set(impl.getTakService());
+			getTaskService().set(impl.getTaskService());
 			getProjectDir().set(impl.getProjectDir());
 		}
 

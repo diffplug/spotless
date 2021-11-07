@@ -112,10 +112,9 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 
 		TaskProvider<SpotlessCheck> checkTask = tasks.register(taskName + CHECK, SpotlessCheck.class, task -> {
 			SpotlessTaskImpl source = spotlessTask.get();
-			task.init(spotlessTask.get());
-			task.getEncoding().set(source.getEncoding());
+			task.init(source);
 			task.setEnabled(!isIdeHook);
-			task.dependsOn(spotlessTask);
+			task.dependsOn(source);
 
 			// if the user runs both, make sure that apply happens first,
 			task.mustRunAfter(applyTask);

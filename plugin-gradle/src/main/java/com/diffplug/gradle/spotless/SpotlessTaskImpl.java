@@ -42,13 +42,13 @@ import com.diffplug.spotless.PaddedCell;
 @CacheableTask
 public abstract class SpotlessTaskImpl extends SpotlessTask {
 	@Internal
-	abstract Property<SpotlessTaskService> getTakService();
+	abstract Property<SpotlessTaskService> getTaskService();
 
 	@Internal
 	abstract DirectoryProperty getProjectDir();
 
 	void init(Provider<SpotlessTaskService> service) {
-		getTakService().set(service);
+		getTaskService().set(service);
 		getProjectDir().set(getProject().getProjectDir());
 	}
 
@@ -57,7 +57,7 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 
 	@TaskAction
 	public void performAction(InputChanges inputs) throws Exception {
-		getTakService().get().registerSourceAlreadyRan(this);
+		getTaskService().get().registerSourceAlreadyRan(this);
 		if (target == null) {
 			throw new GradleException("You must specify 'Iterable<File> target'");
 		}
@@ -122,7 +122,7 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 		String outputFileName = FormatExtension.relativize(projectDir, input);
 		if (outputFileName == null) {
 			throw new IllegalArgumentException(StringPrinter.buildString(printer -> {
-				printer.println("Spotless error! All target files must be within the project root.");
+				printer.println("Spotless error! All target files must be within the project dir.");
 				printer.println("  project dir: " + projectDir.getAbsolutePath());
 				printer.println("       target: " + input.getAbsolutePath());
 			}));

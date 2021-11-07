@@ -116,6 +116,7 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 	void init(SpotlessTaskImpl impl) {
 		super.init(impl);
 		getProjectPath().set(getProject().getPath());
+		getEncoding().set(impl.getEncoding());
 	}
 
 	private String getTaskPathPrefix() {

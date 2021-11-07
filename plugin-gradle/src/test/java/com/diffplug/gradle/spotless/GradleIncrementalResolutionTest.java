@@ -26,7 +26,6 @@ import java.util.TreeSet;
 
 import org.assertj.core.api.AbstractStringAssert;
 import org.assertj.core.api.Assertions;
-import org.gradle.testkit.runner.BuildResult;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.Errors;
@@ -137,8 +136,7 @@ class GradleIncrementalResolutionTest extends GradleIntegrationHarness {
 		String console = StringPrinter.buildString(Errors.rethrow().wrap(printer -> {
 			boolean expectFailure = task.equals("spotlessCheck") && !isClean();
 			if (expectFailure) {
-				BuildResult b = gradleRunner().withArguments(task, "--stacktrace").forwardStdOutput(printer.toWriter()).forwardStdError(printer.toWriter()).buildAndFail();
-				//				System.err.println(b.getOutput());
+				gradleRunner().withArguments(task).forwardStdOutput(printer.toWriter()).forwardStdError(printer.toWriter()).buildAndFail();
 			} else {
 				gradleRunner().withArguments(task).forwardStdOutput(printer.toWriter()).build();
 			}
