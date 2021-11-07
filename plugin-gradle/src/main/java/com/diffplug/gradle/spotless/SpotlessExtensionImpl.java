@@ -19,13 +19,11 @@ import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaBasePlugin;
-import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 
 public class SpotlessExtensionImpl extends SpotlessExtension {
 	private final TaskProvider<RegisterDependenciesTask> registerDependenciesTask;
-	private final Provider<SpotlessTaskService> taskService;
 
 	public SpotlessExtensionImpl(Project project) {
 		super(project);
@@ -54,13 +52,6 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 						.configure(task -> task.dependsOn(rootCheckTask));
 			}
 		});
-
-		taskService = project.getGradle().getSharedServices().registerIfAbsent("SpotlessTaskService", SpotlessTaskService.class, spec -> {});
-	}
-
-	@Override
-	Provider<SpotlessTaskService> getTaskService() {
-		return taskService;
 	}
 
 	final TaskProvider<?> rootCheckTask, rootApplyTask, rootDiagnoseTask;
@@ -78,7 +69,7 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 		// create the SpotlessTask
 		String taskName = EXTENSION + SpotlessPlugin.capitalize(name);
 		TaskProvider<SpotlessTaskImpl> spotlessTask = tasks.register(taskName, SpotlessTaskImpl.class, task -> {
-			task.init(taskService);
+			task.init(getRegisterDependenciesTask().getTaskService());
 			task.setEnabled(!isIdeHook);
 			// clean removes the SpotlessCache, so we have to run after clean
 			task.mustRunAfter(cleanTask);

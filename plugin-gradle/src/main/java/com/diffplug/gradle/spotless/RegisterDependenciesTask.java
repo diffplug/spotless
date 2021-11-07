@@ -23,7 +23,7 @@ import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.provider.Property;
-import org.gradle.api.provider.Provider;
+import org.gradle.api.services.BuildServiceRegistry;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
@@ -69,9 +69,11 @@ public abstract class RegisterDependenciesTask extends DefaultTask {
 	void setup() {
 		Preconditions.checkArgument(getProject().getRootProject() == getProject(), "Can only be used on the root project");
 		unitOutput = new File(getProject().getBuildDir(), "tmp/spotless-register-dependencies");
-		Provider<GitRatchetGradle> gitRatchetProvider = getProject().getGradle().getSharedServices().registerIfAbsent("GitRatchetGradle", GitRatchetGradle.class, unused -> {});
-		getBuildEventsListenerRegistry().onTaskCompletion(gitRatchetProvider);
-		getGitRatchet().set(gitRatchetProvider);
+
+		BuildServiceRegistry buildServices = getProject().getGradle().getSharedServices();
+		getTaskService().set(buildServices.registerIfAbsent("SpotlessTaskService", SpotlessTaskService.class, spec -> {}));
+		getGitRatchet().set(buildServices.registerIfAbsent("GitRatchetGradle", GitRatchetGradle.class, unused -> {}));
+		getBuildEventsListenerRegistry().onTaskCompletion(getGitRatchet());
 	}
 
 	@TaskAction
@@ -79,6 +81,9 @@ public abstract class RegisterDependenciesTask extends DefaultTask {
 		Files.createParentDirs(unitOutput);
 		Files.write(Integer.toString(1), unitOutput, StandardCharsets.UTF_8);
 	}
+
+	@Internal
+	public abstract Property<SpotlessTaskService> getTaskService();
 
 	@Internal
 	public abstract Property<GitRatchetGradle> getGitRatchet();

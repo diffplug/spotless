@@ -763,7 +763,7 @@ public class FormatExtension {
 		Preconditions.checkArgument(!taskName.endsWith(SpotlessExtension.APPLY), "Task name must not end with " + SpotlessExtension.APPLY);
 		// create and setup the task
 		SpotlessTaskImpl spotlessTask = spotless.project.getTasks().create(taskName + SpotlessTaskService.INDEPENDENT_HELPER, SpotlessTaskImpl.class);
-		spotlessTask.init(spotless.getTaskService());
+		spotlessTask.init(spotless.getRegisterDependenciesTask().getTaskService());
 		setupTask(spotlessTask);
 		// enforce the clean ordering
 		Task clean = spotless.project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME);
