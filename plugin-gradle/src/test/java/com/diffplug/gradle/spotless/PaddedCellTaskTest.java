@@ -48,7 +48,7 @@ class PaddedCellTaskTest extends ResourceHarness {
 		};
 		File file;
 		File outputFile;
-		SpotlessTaskImpl task;
+		SpotlessTaskImpl source;
 		SpotlessCheck check;
 		SpotlessApply apply;
 
@@ -56,10 +56,10 @@ class PaddedCellTaskTest extends ResourceHarness {
 			this.name = name;
 			file = setFile("src/test." + name).toContent("CCC");
 			FormatterStep step = FormatterStep.createNeverUpToDate(name, function);
-			task = createFormatTask(name, step);
-			check = createCheckTask(name, task);
-			apply = createApplyTask(name, task);
-			outputFile = new File(task.getOutputDirectory() + "/src", file.getName());
+			source = createFormatTask(name, step);
+			check = createCheckTask(name, source);
+			apply = createApplyTask(name, source);
+			outputFile = new File(source.getOutputDirectory() + "/src", file.getName());
 		}
 
 		private SpotlessTaskImpl createFormatTask(String name, FormatterStep step) {
@@ -71,18 +71,16 @@ class PaddedCellTaskTest extends ResourceHarness {
 			return task;
 		}
 
-		private SpotlessCheck createCheckTask(String name, SpotlessTask source) {
+		private SpotlessCheck createCheckTask(String name, SpotlessTaskImpl source) {
 			SpotlessCheck task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + "Check", SpotlessCheck.class);
-			task.getTaskService().set(taskService);
-			task.getSpotlessOutDirectory().set(source.getOutputDirectory());
+			task.init(source);
 			task.getEncoding().set(StandardCharsets.UTF_8.name());
 			return task;
 		}
 
-		private SpotlessApply createApplyTask(String name, SpotlessTask source) {
+		private SpotlessApply createApplyTask(String name, SpotlessTaskImpl source) {
 			SpotlessApply task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + "Apply", SpotlessApply.class);
-			task.getTaskService().set(taskService);
-			task.getSpotlessOutDirectory().set(source.getOutputDirectory());
+			task.init(source);
 			return task;
 		}
 
@@ -97,21 +95,21 @@ class PaddedCellTaskTest extends ResourceHarness {
 
 		void diagnose() throws IOException {
 			SpotlessDiagnoseTask diagnose = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + "Diagnose", SpotlessDiagnoseTask.class);
-			diagnose.source = task;
+			diagnose.source = source;
 			diagnose.performAction();
 		}
 
 		void format() throws Exception {
-			Tasks.execute(task);
+			Tasks.execute(source);
 		}
 
 		void apply() throws Exception {
-			Tasks.execute(task);
+			Tasks.execute(source);
 			apply.performAction();
 		}
 
 		void check() throws Exception {
-			Tasks.execute(task);
+			Tasks.execute(source);
 			check.performActionTest();
 		}
 	}

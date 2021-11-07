@@ -67,18 +67,16 @@ class DiffMessageFormatterTest extends ResourceHarness {
 			return task;
 		}
 
-		private SpotlessCheck createCheckTask(String name, SpotlessTask source) {
+		private SpotlessCheck createCheckTask(String name, SpotlessTaskImpl source) {
 			SpotlessCheck task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + "Check", SpotlessCheck.class);
-			task.getSpotlessOutDirectory().set(source.getOutputDirectory());
-			task.getTaskService().set(taskService);
+			task.init(source);
 			task.getEncoding().set(StandardCharsets.UTF_8.name());
 			return task;
 		}
 
-		private SpotlessApply createApplyTask(String name, SpotlessTask source) {
+		private SpotlessApply createApplyTask(String name, SpotlessTaskImpl source) {
 			SpotlessApply task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + "Apply", SpotlessApply.class);
-			task.getSpotlessOutDirectory().set(source.getOutputDirectory());
-			task.getTaskService().set(taskService);
+			task.init(source);
 			return task;
 		}
 

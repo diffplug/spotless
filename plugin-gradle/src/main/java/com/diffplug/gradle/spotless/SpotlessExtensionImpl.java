@@ -97,8 +97,7 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 
 		// create the check and apply control tasks
 		TaskProvider<SpotlessApply> applyTask = tasks.register(taskName + APPLY, SpotlessApply.class, task -> {
-			task.getSpotlessOutDirectory().set(spotlessTask.get().getOutputDirectory());
-			task.getTaskService().set(taskService);
+			task.init(spotlessTask.get());
 			task.setEnabled(!isIdeHook);
 			task.dependsOn(spotlessTask);
 		});
@@ -112,9 +111,8 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 		});
 
 		TaskProvider<SpotlessCheck> checkTask = tasks.register(taskName + CHECK, SpotlessCheck.class, task -> {
-			SpotlessTask source = spotlessTask.get();
-			task.getSpotlessOutDirectory().set(source.getOutputDirectory());
-			task.getTaskService().set(taskService);
+			SpotlessTaskImpl source = spotlessTask.get();
+			task.init(spotlessTask.get());
 			task.getEncoding().set(source.getEncoding());
 			task.setEnabled(!isIdeHook);
 			task.dependsOn(spotlessTask);

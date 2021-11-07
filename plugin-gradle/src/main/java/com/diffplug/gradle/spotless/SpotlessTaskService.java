@@ -62,6 +62,11 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 		@Inject
 		protected abstract ObjectFactory getConfigCacheWorkaround();
 
+		void init(SpotlessTaskImpl impl) {
+			getSpotlessOutDirectory().set(impl.getOutputDirectory());
+			getTaskService().set(impl.getTaskService());
+		}
+
 		String sourceTaskPath() {
 			String path = getPath();
 			if (this instanceof SpotlessApply) {
