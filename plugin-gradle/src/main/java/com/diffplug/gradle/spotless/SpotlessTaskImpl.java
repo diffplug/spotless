@@ -20,9 +20,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Comparator;
+
+import javax.inject.Inject;
 
 import org.gradle.api.GradleException;
+import org.gradle.api.file.FileSystemOperations;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.CacheableTask;
 import org.gradle.api.tasks.Internal;
@@ -40,6 +42,9 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 	@Internal
 	abstract Property<SpotlessTaskService> getTaskService();
 
+	@Inject
+	protected abstract FileSystemOperations getFs();
+
 	@TaskAction
 	public void performAction(InputChanges inputs) throws Exception {
 		getTaskService().get().registerSourceAlreadyRan(this);
@@ -49,7 +54,7 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 
 		if (!inputs.isIncremental()) {
 			getLogger().info("Not incremental: removing prior outputs");
-			getProject().delete(outputDirectory);
+			getFs().delete(d -> d.delete(outputDirectory));
 			Files.createDirectories(outputDirectory.toPath());
 		}
 
@@ -96,10 +101,7 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 	private void deletePreviousResult(File input) throws IOException {
 		File output = getOutputFile(input);
 		if (output.isDirectory()) {
-			Files.walk(output.toPath())
-					.sorted(Comparator.reverseOrder())
-					.map(Path::toFile)
-					.forEach(File::delete);
+			getFs().delete(d -> d.delete(output));
 		} else {
 			Files.deleteIfExists(output.toPath());
 		}

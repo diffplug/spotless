@@ -50,7 +50,7 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 	}
 
 	private void performAction(boolean isTest) throws IOException {
-		ConfigurableFileTree files = getProject().fileTree(getSpotlessOutDirectory().get());
+		ConfigurableFileTree files = getConfigCacheWorkaround().fileTree().from(getSpotlessOutDirectory().get());
 		if (files.isEmpty()) {
 			getState().setDidWork(sourceDidWork());
 		} else if (!isTest && applyHasRun()) {

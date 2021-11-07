@@ -20,7 +20,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.gradle.api.DefaultTask;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
 import org.gradle.api.services.BuildService;
 import org.gradle.api.services.BuildServiceParameters;
@@ -49,12 +52,15 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 
 	static String INDEPENDENT_HELPER = "Helper";
 
-	public static abstract class ClientTask extends DefaultTask {
+	static abstract class ClientTask extends DefaultTask {
 		@Internal
 		abstract Property<File> getSpotlessOutDirectory();
 
 		@Internal
 		abstract Property<SpotlessTaskService> getTaskService();
+
+		@Inject
+		protected abstract ObjectFactory getConfigCacheWorkaround();
 
 		String sourceTaskPath() {
 			String path = getPath();
