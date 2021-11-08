@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -36,6 +38,8 @@ import org.gradle.work.InputChanges;
 
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.Formatter;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.PaddedCell;
 
 @CacheableTask
@@ -129,5 +133,27 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 			}));
 		}
 		return new File(outputDirectory, outputFileName);
+	}
+
+	static boolean isHydrated(SpotlessTask task) {
+		return task.lineEndingsPolicy != null;
+	}
+
+	static class LiveCache {
+		LineEnding.Policy lineEndingsPolicy;
+		List<FormatterStep> steps;
+		String ratchetFrom;
+
+		LiveCache(SpotlessTask task) {
+			lineEndingsPolicy = Objects.requireNonNull(task.lineEndingsPolicy);
+			steps = Objects.requireNonNull(task.steps);
+			ratchetFrom = Objects.requireNonNull(task.ratchetFrom);
+		}
+
+		void hydrate(SpotlessTask task) {
+			task.lineEndingsPolicy = lineEndingsPolicy;
+			task.steps = steps;
+			task.setupRatchet(ratchetFrom);
+		}
 	}
 }
