@@ -734,9 +734,7 @@ public class FormatExtension {
 		task.setSteps(steps);
 		task.setLineEndingsPolicy(getLineEndings().createPolicy(getProject().getProjectDir(), () -> totalTarget));
 		spotless.getRegisterDependenciesTask().hookSubprojectTask(task);
-		if (getRatchetFrom() != null) {
-			task.setupRatchet(getRatchetFrom());
-		}
+		task.setupRatchet(getRatchetFrom() != null ? getRatchetFrom() : "");
 	}
 
 	/** Returns the project that this extension is attached to. */
