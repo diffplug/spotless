@@ -48,6 +48,12 @@ public abstract class SpotlessTask extends DefaultTask {
 	@Internal
 	abstract Property<SpotlessTaskService> getTaskService();
 
+	private void hydrateIfNull(Object o) {
+		if (o == null) {
+			getTaskService().get().hydrate(this);
+		}
+	}
+
 	// set by SpotlessExtension, but possibly overridden by FormatExtension
 	protected String encoding = "UTF-8";
 
@@ -64,6 +70,7 @@ public abstract class SpotlessTask extends DefaultTask {
 
 	@Input
 	public LineEnding.Policy getLineEndingsPolicy() {
+		hydrateIfNull(lineEndingsPolicy);
 		return lineEndingsPolicy;
 	}
 
@@ -82,12 +89,19 @@ public abstract class SpotlessTask extends DefaultTask {
 	 * compared to using the project root.
 	 */
 	private transient ObjectId subtreeSha = ObjectId.zeroId();
+	/** Stored so that the configuration cache can recreate the GitRatchetGradle state. */
+	protected transient String ratchetFrom;
 
 	public void setupRatchet(String ratchetFrom) {
-		ratchet = getTaskService().get().getRatchet();
-		File projectDir = getProjectDir().get().getAsFile();
-		rootTreeSha = ratchet.rootTreeShaOf(projectDir, ratchetFrom);
-		subtreeSha = ratchet.subtreeShaOf(projectDir, rootTreeSha);
+		this.ratchetFrom = ratchetFrom;
+		if (!ratchetFrom.isEmpty()) {
+			ratchet = getTaskService().get().getRatchet();
+			File projectDir = getProjectDir().get().getAsFile();
+			rootTreeSha = ratchet.rootTreeShaOf(projectDir, ratchetFrom);
+			subtreeSha = ratchet.subtreeShaOf(projectDir, rootTreeSha);
+		} else {
+			subtreeSha = ObjectId.zeroId();
+		}
 	}
 
 	@Internal
@@ -105,6 +119,7 @@ public abstract class SpotlessTask extends DefaultTask {
 
 	@Input
 	public ObjectId getRatchetSha() {
+		hydrateIfNull(subtreeSha);
 		return subtreeSha;
 	}
 
@@ -147,6 +162,7 @@ public abstract class SpotlessTask extends DefaultTask {
 
 	@Input
 	public List<FormatterStep> getSteps() {
+		hydrateIfNull(steps);
 		return Collections.unmodifiableList(steps);
 	}
 
