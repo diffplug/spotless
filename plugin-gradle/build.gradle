@@ -34,9 +34,6 @@ test {
 
 apply from: rootProject.file('gradle/special-tests.gradle')
 
-// make it easy for eclipse to run against latest build
-tasks.eclipse.dependsOn(pluginUnderTestMetadata)
-
 //////////////////////////
 // GRADLE PLUGIN PORTAL //
 //////////////////////////
