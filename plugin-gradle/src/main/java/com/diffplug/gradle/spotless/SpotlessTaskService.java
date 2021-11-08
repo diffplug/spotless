@@ -23,7 +23,6 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
-import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.model.ObjectFactory;
@@ -36,7 +35,6 @@ import org.gradle.tooling.events.OperationCompletionListener;
 
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.base.Unhandled;
-import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.Provisioner;
 
 /**
@@ -68,6 +66,7 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 
 	private void storeOrHydrate(SpotlessTask task) {
 		if (!enableConfigCacheDaemonLocal) {
+			SpotlessTaskImpl.assertHydrated(task);
 			return;
 		}
 		String cacheKey = task.getProjectDir().getAsFile().get().getAbsolutePath() + ">" + task.getPath();
@@ -76,9 +75,7 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 		} else {
 			SpotlessTaskImpl.LiveCache cached = daemonLocalMap.get(cacheKey);
 			if (cached == null) {
-				throw new GradleException("Spotless daemon-local cache is stale. Regenerate the cache with\n" +
-						"  " + (FileSignature.machineIsWin() ? "rmdir /q /s" : "rm -rf") + " .gradle/configuration-cache\n" +
-						"For more information see #123");
+				throw SpotlessTaskImpl.cacheIsStale();
 			} else {
 				cached.hydrate(task);
 			}

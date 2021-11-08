@@ -37,6 +37,7 @@ import org.gradle.work.FileChange;
 import org.gradle.work.InputChanges;
 
 import com.diffplug.common.base.StringPrinter;
+import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
@@ -68,22 +69,18 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 			Files.createDirectories(outputDirectory.toPath());
 		}
 
-		if (lineEndingsPolicy != null) {
-			try (Formatter formatter = buildFormatter()) {
-				for (FileChange fileChange : inputs.getFileChanges(target)) {
-					File input = fileChange.getFile();
-					if (fileChange.getChangeType() == ChangeType.REMOVED) {
-						deletePreviousResult(input);
-					} else {
-						if (input.isFile()) {
-							processInputFile(formatter, input);
-						}
+		assertHydrated(this);
+		try (Formatter formatter = buildFormatter()) {
+			for (FileChange fileChange : inputs.getFileChanges(target)) {
+				File input = fileChange.getFile();
+				if (fileChange.getChangeType() == ChangeType.REMOVED) {
+					deletePreviousResult(input);
+				} else {
+					if (input.isFile()) {
+						processInputFile(formatter, input);
 					}
 				}
 			}
-		} else {
-			throw new GradleException("Spotless doesn't support configuration cache yet.\n" +
-					"Rerun with --no-configuration-cache");
 		}
 	}
 
@@ -137,6 +134,19 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 
 	static boolean isHydrated(SpotlessTask task) {
 		return task.lineEndingsPolicy != null;
+	}
+
+	static void assertHydrated(SpotlessTask task) {
+		if (!isHydrated(task)) {
+			throw new GradleException("Spotless doesn't support configuration cache yet.\n" +
+					"Rerun with --no-configuration-cache");
+		}
+	}
+
+	static GradleException cacheIsStale() {
+		return new GradleException("Spotless daemon-local cache is stale. Regenerate the cache with\n" +
+				"  " + (FileSignature.machineIsWin() ? "rmdir /q /s" : "rm -rf") + " .gradle/configuration-cache\n" +
+				"For more information see #123");
 	}
 
 	static class LiveCache {
