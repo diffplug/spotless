@@ -15,22 +15,17 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
 import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.provider.Property;
 import org.gradle.api.services.BuildServiceRegistry;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
-import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.build.event.BuildEventsListenerRegistry;
 
 import com.diffplug.common.base.Preconditions;
-import com.diffplug.common.io.Files;
 
 /**
  * NOT AN END-USER TASK, DO NOT USE FOR ANYTHING!
@@ -59,26 +54,24 @@ public abstract class RegisterDependenciesTask extends DefaultTask {
 		task.dependsOn(this);
 	}
 
-	File unitOutput;
-
-	@OutputFile
-	public File getUnitOutput() {
-		return unitOutput;
-	}
-
 	void setup() {
 		Preconditions.checkArgument(getProject().getRootProject() == getProject(), "Can only be used on the root project");
-		unitOutput = new File(getProject().getBuildDir(), "tmp/spotless-register-dependencies");
 
 		BuildServiceRegistry buildServices = getProject().getGradle().getSharedServices();
 		getTaskService().set(buildServices.registerIfAbsent("SpotlessTaskService", SpotlessTaskService.class, spec -> {}));
 		getBuildEventsListenerRegistry().onTaskCompletion(getTaskService());
 	}
 
+	boolean enableConfigCacheDaemonLocal;
+
+	@Input
+	public boolean getEnableConfigCacheDaemonLocal() {
+		return enableConfigCacheDaemonLocal;
+	}
+
 	@TaskAction
-	public void trivialFunction() throws IOException {
-		Files.createParentDirs(unitOutput);
-		Files.write(Integer.toString(1), unitOutput, StandardCharsets.UTF_8);
+	public void trivialFunction() {
+		getTaskService().get().registerDependenciesTask(this);
 	}
 
 	@Internal
