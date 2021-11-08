@@ -42,7 +42,6 @@ import com.diffplug.spotless.Provisioner;
  * apply already did).
  */
 public abstract class SpotlessTaskService implements BuildService<BuildServiceParameters.None> {
-	private final Map<String, SpotlessTask> sourceCreated = Collections.synchronizedMap(new HashMap<>());
 	private final Map<String, SpotlessApply> apply = Collections.synchronizedMap(new HashMap<>());
 	private final Map<String, SpotlessTask> source = Collections.synchronizedMap(new HashMap<>());
 	private final Map<String, Provisioner> provisioner = Collections.synchronizedMap(new HashMap<>());
@@ -51,14 +50,6 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 		return provisioner.computeIfAbsent(project.getPath(), unused -> {
 			return GradleProvisioner.newDedupingProvisioner(project);
 		});
-	}
-
-	void registerSourceCreated(SpotlessTask spotlessTask) {
-		sourceCreated.put(spotlessTask.getPath(), spotlessTask);
-	}
-
-	boolean sourceWasCreatedThisBuild(SpotlessTask spotlessTask) {
-		return sourceCreated.containsKey(spotlessTask.getPath());
 	}
 
 	void registerSourceAlreadyRan(SpotlessTask task) {

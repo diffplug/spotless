@@ -50,7 +50,6 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 	void init(Provider<SpotlessTaskService> service) {
 		getTaskService().set(service);
 		getProjectDir().set(getProject().getProjectDir());
-		service.get().registerSourceCreated(this);
 	}
 
 	@Inject
@@ -69,7 +68,7 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 			Files.createDirectories(outputDirectory.toPath());
 		}
 
-		if (getTaskService().get().sourceWasCreatedThisBuild(this)) {
+		if (lineEndingsPolicy != null) {
 			try (Formatter formatter = buildFormatter()) {
 				for (FileChange fileChange : inputs.getFileChanges(target)) {
 					File input = fileChange.getFile();
