@@ -138,15 +138,24 @@ public class GradleIntegrationHarness extends ResourceHarness {
 		pauseForFilesystem();
 		BuildResult buildResult = gradleRunner().withArguments(task).build();
 
-		TaskOutcome expected = upToDate ? TaskOutcome.UP_TO_DATE : TaskOutcome.SUCCESS;
-		TaskOutcome notExpected = upToDate ? TaskOutcome.SUCCESS : TaskOutcome.UP_TO_DATE;
-
-		boolean everythingAsExpected = !buildResult.tasks(expected).isEmpty() &&
-				buildResult.tasks(notExpected).isEmpty() &&
-				buildResult.getTasks().size() == buildResult.tasks(expected).size();
+		List<String> expected = outcomes(buildResult, upToDate ? TaskOutcome.UP_TO_DATE : TaskOutcome.SUCCESS);
+		List<String> notExpected = outcomes(buildResult, upToDate ? TaskOutcome.SUCCESS : TaskOutcome.UP_TO_DATE);
+		boolean everythingAsExpected = !expected.isEmpty() && notExpected.isEmpty() && buildResult.getTasks().size() - 1 == expected.size();
 		if (!everythingAsExpected) {
-			fail("Expected all tasks to be " + expected + ", but instead was\n" + buildResultToString(buildResult));
+			fail("Expected all tasks to be " + (upToDate ? TaskOutcome.UP_TO_DATE : TaskOutcome.SUCCESS) + ", but instead was\n" + buildResultToString(buildResult));
 		}
+	}
+
+	protected static List<String> outcomes(BuildResult build, TaskOutcome outcome) {
+		return build.taskPaths(outcome).stream()
+				.filter(s -> !s.equals(":spotlessInternalRegisterDependencies"))
+				.collect(Collectors.toList());
+	}
+
+	protected static List<BuildTask> outcomes(BuildResult build) {
+		return build.getTasks().stream()
+				.filter(t -> !t.getPath().equals(":spotlessInternalRegisterDependencies"))
+				.collect(Collectors.toList());
 	}
 
 	static String buildResultToString(BuildResult result) {
