@@ -19,6 +19,7 @@ plugins {
 	id 'io.github.gradle-nexus.publish-plugin' apply false
 	id 'com.github.spotbugs'                   apply false
 	id 'com.diffplug.spotless-changelog'       apply false
+	id 'com.diffplug.p2.asmaven'               apply false
 }
 if (System.env['CI'] != null) {
 	// use the remote buildcache on all CI builds
