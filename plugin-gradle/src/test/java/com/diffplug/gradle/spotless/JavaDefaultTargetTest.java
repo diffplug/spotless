@@ -23,10 +23,10 @@ class JavaDefaultTargetTest extends GradleIntegrationHarness {
 	@Test
 	void integration() throws IOException {
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"",
 				"apply plugin: 'groovy'",
 				"",
@@ -49,11 +49,11 @@ class JavaDefaultTargetTest extends GradleIntegrationHarness {
 	@Test
 	void multipleBlocksShouldWork() throws IOException {
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"  id 'com.diffplug.spotless'",
 				"  id 'java'",
 				"}",
+				"repositories { mavenCentral() }",
 				"",
 				"spotless {",
 				"  java {  googleJavaFormat()  }",

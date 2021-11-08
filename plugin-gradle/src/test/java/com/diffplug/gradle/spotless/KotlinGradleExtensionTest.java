@@ -38,7 +38,7 @@ class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 	private void testInDirectory(final String directory) throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'nebula.kotlin' version '1.3.72'",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
@@ -61,7 +61,7 @@ class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 	void integration_default() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'nebula.kotlin' version '1.3.72'",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
@@ -98,13 +98,13 @@ class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 	void integration_pinterest() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'nebula.kotlin' version '1.3.72'",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
 				"spotless {",
 				"    kotlinGradle {",
-				"        ktlint('0.21.0')",
+				"        ktlint('0.32.0')",
 				"    }",
 				"}");
 		setFile("configuration.gradle.kts").toResource("kotlin/ktlint/basic.dirty");
@@ -116,7 +116,7 @@ class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 	void indentStep() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'nebula.kotlin' version '1.3.72'",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
@@ -134,7 +134,7 @@ class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 	void integration_ktfmt() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'nebula.kotlin' version '1.3.72'",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
@@ -153,7 +153,7 @@ class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 	void integration_ktfmt_with_dropbox_style() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'nebula.kotlin' version '1.3.72'",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
@@ -171,7 +171,7 @@ class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 	void integration_lint_script_files_without_top_level_declaration() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'nebula.kotlin' version '1.3.72'",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",

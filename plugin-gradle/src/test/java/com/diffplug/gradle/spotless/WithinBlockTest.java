@@ -26,6 +26,7 @@ class WithinBlockTest extends GradleIntegrationHarness {
 		// it does, and it doesn't need `it`
 		setFile("build.gradle").toLines(
 				"plugins { id 'com.diffplug.spotless' }",
+				"repositories { mavenCentral() }",
 				"import com.diffplug.gradle.spotless.JavaExtension",
 				"spotless {",
 				"  format 'customJava', JavaExtension, {",
@@ -43,6 +44,7 @@ class WithinBlockTest extends GradleIntegrationHarness {
 		// but down here, we need `it`, or it will bind to the parent context, why?
 		setFile("build.gradle").toLines(
 				"plugins { id 'com.diffplug.spotless' }",
+				"repositories { mavenCentral() }",
 				"import com.diffplug.gradle.spotless.JavaExtension",
 				"spotless {",
 				"  format 'docs', {",

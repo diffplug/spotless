@@ -23,10 +23,10 @@ class GoogleJavaFormatIntegrationTest extends GradleIntegrationHarness {
 	@Test
 	void integration() throws IOException {
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"",
 				"spotless {",
 				"    java {",

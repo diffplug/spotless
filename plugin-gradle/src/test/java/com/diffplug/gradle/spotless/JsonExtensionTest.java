@@ -23,11 +23,11 @@ class JsonExtensionTest extends GradleIntegrationHarness {
 	@Test
 	void defaultFormatting() throws IOException {
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'java'",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"spotless {",
 				"    json {",
 				"    target 'examples/**/*.json'",
@@ -44,11 +44,11 @@ class JsonExtensionTest extends GradleIntegrationHarness {
 	@Test
 	void formattingWithCustomNumberOfSpaces() throws IOException {
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'java'",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"spotless {",
 				"    json {",
 				"    target 'src/**/*.json'",

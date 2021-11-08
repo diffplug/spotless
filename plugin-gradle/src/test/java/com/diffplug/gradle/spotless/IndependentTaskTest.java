@@ -23,10 +23,10 @@ class IndependentTaskTest extends GradleIntegrationHarness {
 	@Test
 	void independent() throws IOException {
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"",
 				"import com.diffplug.gradle.spotless.JavaExtension",
 				"",

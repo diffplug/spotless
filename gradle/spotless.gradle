@@ -8,7 +8,7 @@ spotless {
 		 */
 		String regex = "import org\\.gradle\\.api\\.internal\\.(?!plugins\\.DslObject)(?!project\\.ProjectInternal)"
 		if ((text.contains('import org.gradle.internal.') || text.find(regex)) &&
-		!text.contains('def noInternalDepsClosure')) {
+				!text.contains('def noInternalDepsClosure')) {
 			throw new AssertionError("Accidental internal import")
 		}
 	}

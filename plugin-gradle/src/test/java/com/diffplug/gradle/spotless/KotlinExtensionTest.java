@@ -32,7 +32,7 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	void integration() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'nebula.kotlin' version '1.3.72'",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
@@ -69,7 +69,7 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	void integrationKtfmt() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'nebula.kotlin' version '1.3.72'",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
@@ -88,7 +88,7 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	void integrationKtfmt_dropboxStyle_0_18() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'nebula.kotlin' version '1.3.72'",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
@@ -107,7 +107,7 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	void integrationKtfmt_dropboxStyle_0_19() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'nebula.kotlin' version '1.3.72'",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
@@ -125,13 +125,13 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	void testWithIndentation() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'nebula.kotlin' version '1.3.72'",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
 				"spotless {",
 				"    kotlin {",
-				"        ktlint('0.21.0').userData(['indent_size': '6'])",
+				"        ktlint('0.32.0').userData(['indent_size': '6'])",
 				"    }",
 				"}");
 		setFile("src/main/kotlin/basic.kt").toResource("kotlin/ktlint/basic.dirty");
@@ -143,7 +143,7 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	void testWithHeader() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'nebula.kotlin' version '1.3.72'",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
@@ -163,7 +163,7 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	void testWithHeaderKtfmt() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'nebula.kotlin' version '1.3.72'",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
@@ -182,7 +182,7 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	void testWithCustomHeaderSeparator() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'nebula.kotlin' version '1.3.72'",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
@@ -202,7 +202,7 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	void testWithCustomHeaderSeparatorKtfmt() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'nebula.kotlin' version '1.3.72'",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
@@ -221,7 +221,7 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	void testWithNonStandardYearSeparator() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'nebula.kotlin' version '1.3.72'",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
@@ -248,7 +248,7 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	void testWithNonStandardYearSeparatorKtfmt() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'nebula.kotlin' version '1.3.72'",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",

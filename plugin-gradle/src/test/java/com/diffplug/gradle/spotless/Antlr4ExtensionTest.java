@@ -24,14 +24,10 @@ class Antlr4ExtensionTest extends GradleIntegrationHarness {
 	@Test
 	void applyUsingDefaultVersion() throws IOException {
 		String[] buildScript = {
-				"buildscript {",
-				"    repositories {",
-				"        mavenCentral()",
-				"    }",
-				"}",
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"spotless {",
 				"    antlr4 {",
 				"        target 'src/main/antlr4/**/*.g4'",
@@ -45,14 +41,10 @@ class Antlr4ExtensionTest extends GradleIntegrationHarness {
 	@Test
 	void applyUsingCustomVersion() throws IOException {
 		String[] buildScript = {
-				"buildscript {",
-				"    repositories {",
-				"        mavenCentral()",
-				"    }",
-				"}",
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"spotless {",
 				"    antlr4 {",
 				"        target 'src/main/antlr4/**/*.g4'",

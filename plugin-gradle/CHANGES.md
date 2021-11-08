@@ -3,6 +3,9 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Changed
+* **BREAKING** Previously, many projects required `buildscript { repositories { mavenCentral() }}` at the top of their root project, because Spotless resolved its dependencies using the buildscript repositories. Spotless now resolves its dependencies from the normal project repositories of the root project, which means that you can remove the `buildscript {}` block, but you still need `repositories { mavenCentral() }` (or similar) in the root project.
+* Bump minimum required Gradle from `6.1` to `6.1.1`.
 
 ## [5.17.1] - 2021-10-26
 ### Changed
@@ -44,6 +47,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   * `:spotlessInternalRegisterDependencies task failed.`
   * `Cannot add a configuration with name 'spotless-1911100560'`
 * Spotless does not [yet](https://github.com/diffplug/spotless/pull/721) support configuration-cache, but now it can never interfere with configuration-cache for other tasks. ([#720](https://github.com/diffplug/spotless/pull/720))
+* Bump minimum required Gradle from `5.4` to `6.1`.
 
 ## [5.15.0] - 2021-09-04
 ### Added

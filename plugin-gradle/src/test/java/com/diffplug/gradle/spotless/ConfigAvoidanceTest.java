@@ -24,10 +24,10 @@ class ConfigAvoidanceTest extends GradleIntegrationHarness {
 	@Test
 	void noConfigOnHelp() throws IOException {
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"apply plugin: 'java'",
 				"spotless {",
 				"    java {",

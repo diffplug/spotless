@@ -27,11 +27,11 @@ class FreshMarkExtensionTest extends GradleIntegrationHarness {
 	@EnabledForJreRange(max = JAVA_14)
 	void integration() throws IOException {
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'java'",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"spotless {",
 				"    freshmark {",
 				"        target '*.md'",

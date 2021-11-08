@@ -26,10 +26,10 @@ class TypescriptExtensionTest extends GradleIntegrationHarness {
 	@Test
 	void allowToSpecifyFormatterVersion() throws IOException {
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"def tsfmtconfig = [:]",
 				"tsfmtconfig['indentSize'] = 1",
 				"tsfmtconfig['convertTabsToSpaces'] = true",
@@ -47,10 +47,10 @@ class TypescriptExtensionTest extends GradleIntegrationHarness {
 	@Test
 	void allowToSpecifyMultipleVersionStrings() throws IOException {
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"def tsfmtconfig = [:]",
 				"tsfmtconfig['indentSize'] = 1",
 				"tsfmtconfig['convertTabsToSpaces'] = true",
@@ -68,10 +68,10 @@ class TypescriptExtensionTest extends GradleIntegrationHarness {
 	@Test
 	void useTsfmtInlineConfig() throws IOException {
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"def tsfmtconfig = [:]",
 				"tsfmtconfig['indentSize'] = 1",
 				"tsfmtconfig['convertTabsToSpaces'] = true",
@@ -90,10 +90,10 @@ class TypescriptExtensionTest extends GradleIntegrationHarness {
 	void useTsfmtFileConfig() throws IOException {
 		setFile("tsfmt.json").toResource("npm/tsfmt/tsfmt/tsfmt.json");
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"spotless {",
 				"    typescript {",
 				"        target 'test.ts'",
@@ -109,10 +109,10 @@ class TypescriptExtensionTest extends GradleIntegrationHarness {
 	void useTsConfigFileConfig() throws IOException {
 		setFile("tsconfig.json").toResource("npm/tsfmt/tsconfig/tsconfig.json");
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"spotless {",
 				"    typescript {",
 				"        target 'src/**/*.ts'",
@@ -127,10 +127,10 @@ class TypescriptExtensionTest extends GradleIntegrationHarness {
 	@Test
 	void usePrettier() throws IOException {
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"spotless {",
 				"    typescript {",
 				"        target 'test.ts'",

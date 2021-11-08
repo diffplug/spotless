@@ -60,7 +60,7 @@ class GradleProvisioner {
 					if (result != null) {
 						return result;
 					} else {
-						result = GradleProvisioner.fromRootBuildscript(rootProject).provisionWithTransitives(req.withTransitives, req.mavenCoords);
+						result = GradleProvisioner.forProject(rootProject).provisionWithTransitives(req.withTransitives, req.mavenCoords);
 						cache.put(req, result);
 						return result;
 					}
@@ -69,23 +69,24 @@ class GradleProvisioner {
 		}
 	}
 
-	static Provisioner fromRootBuildscript(Project project) {
+	static Provisioner forProject(Project project) {
 		Objects.requireNonNull(project);
 		return (withTransitives, mavenCoords) -> {
 			try {
-				Configuration config = project.getRootProject().getBuildscript().getConfigurations().create("spotless"
+				Configuration config = project.getConfigurations().create("spotless"
 						+ new Request(withTransitives, mavenCoords).hashCode());
 				mavenCoords.stream()
-						.map(project.getBuildscript().getDependencies()::create)
+						.map(project.getDependencies()::create)
 						.forEach(config.getDependencies()::add);
 				config.setDescription(mavenCoords.toString());
 				config.setTransitive(withTransitives);
 				return config.resolve();
 			} catch (Exception e) {
+				String projName = project.getPath();
 				logger.log(
 						Level.SEVERE,
-						"You probably need to add a repository containing the '" + mavenCoords + "' artifact in the 'build.gradle' of your root project.\n" +
-								"E.g.: 'buildscript { repositories { mavenCentral() }}'",
+						"You probably need to add a repository containing the '" + mavenCoords + "' artifact in the 'build.gradle' of the " + projName + " project.\n" +
+								"E.g.: 'repositories { mavenCentral() }'",
 						e);
 				throw e;
 			}
@@ -125,7 +126,7 @@ class GradleProvisioner {
 		public String toString() {
 			String coords = mavenCoords.toString();
 			StringBuilder builder = new StringBuilder();
-			builder.append(coords.substring(1, coords.length() - 1)); // strip off []
+			builder.append(coords, 1, coords.length() - 1); // strip off []
 			if (withTransitives) {
 				builder.append(" with transitives");
 			} else {
