@@ -50,7 +50,7 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 	private Map<String, Provisioner> provisioner = Collections.synchronizedMap(new HashMap<>());
 
 	void registerDependenciesTask(RegisterDependenciesTask task) {
-		enableConfigCacheDaemonLocal = task.getEnableConfigCacheDaemonLocal();
+		enableConfigCacheDaemonLocal = task.getJvmLocalCache();
 	}
 
 	void registerSourceAlreadyRan(SpotlessTask task) {

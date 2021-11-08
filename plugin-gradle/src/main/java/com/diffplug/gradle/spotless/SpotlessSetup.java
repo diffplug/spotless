@@ -27,11 +27,11 @@ public class SpotlessSetup {
 		task = (TaskProvider<RegisterDependenciesTask>) (Object) project.getTasks().named(RegisterDependenciesTask.TASK_NAME);
 	}
 
-	public boolean isEnableConfigCacheDaemonLocal() {
-		return task.get().getEnableConfigCacheDaemonLocal();
+	public boolean isJvmLocalCache() {
+		return task.get().getJvmLocalCache();
 	}
 
-	public boolean setEnableConfigCacheDaemonLocal(boolean enabled) {
-		return task.get().enableConfigCacheDaemonLocal = enabled;
+	public boolean setJvmLocalCache(boolean enabled) {
+		return task.get().jvmLocalCache = enabled;
 	}
 }

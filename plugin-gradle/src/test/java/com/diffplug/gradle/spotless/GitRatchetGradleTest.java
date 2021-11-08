@@ -65,7 +65,7 @@ class GitRatchetGradleTest extends GradleIntegrationHarness {
 					"  id 'com.diffplug.spotless'",
 					"  id 'com.diffplug.spotless-setup'",
 					"}",
-					"spotlessSetup { enableConfigCacheDaemonLocal = true }",
+					"spotlessSetup { jvmLocalCache = true }",
 					"spotless {",
 					"  ratchetFrom 'baseline'",
 					"  format 'misc', {",
@@ -150,7 +150,7 @@ class GitRatchetGradleTest extends GradleIntegrationHarness {
 		return new BuildResultAssertion(gradleRunner().withArguments(tasks).buildAndFail());
 	}
 
-	private static final String BASELINE_ROOT = "a5efb43a0da929853e596a85c1f225a60ae0acfd";
+	private static final String BASELINE_ROOT = "71a2671ed452d52625245e5101cbf8467e905865";
 	private static final String BASELINE_CLEAN = "65fdd75c1ae00c0646f6487d68c44ddca51f0841";
 	private static final String BASELINE_DIRTY = "4cfc3358ccbf186738b82a60276b1e5306bc3870";
 
@@ -181,7 +181,7 @@ class GitRatchetGradleTest extends GradleIntegrationHarness {
 			setFile(".gitignore").toContent("build/\n.gradle\n*.properties\n");
 			setFile("build.gradle").toLines(
 					"apply plugin: 'com.diffplug.spotless-setup'",
-					"spotlessSetup { enableConfigCacheDaemonLocal = true }",
+					"spotlessSetup { jvmLocalCache = true }",
 					"apply from: rootProject.file('spotless.gradle') // root");
 			setFile(TEST_PATH).toContent("HELLO");
 			setFile("clean/build.gradle").toContent("apply from: rootProject.file('spotless.gradle') // clean");

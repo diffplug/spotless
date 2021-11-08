@@ -21,7 +21,7 @@ import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.Test;
 
-public class ConfigurationCacheDaemonLocalTest extends GradleIntegrationHarness {
+public class ConfigurationCacheJvmLocalTest extends GradleIntegrationHarness {
 	@Override
 	protected GradleRunner gradleRunner() throws IOException {
 		setFile("gradle.properties").toContent("org.gradle.unsafe.configuration-cache=true");
@@ -37,7 +37,7 @@ public class ConfigurationCacheDaemonLocalTest extends GradleIntegrationHarness 
 				"}",
 				"repositories { mavenCentral() }",
 				"spotlessSetup {",
-				"    enableConfigCacheDaemonLocal = true",
+				"    jvmLocalCache = true",
 				"}",
 				"spotless {",
 				"    java {",

@@ -41,16 +41,13 @@ public abstract class RegisterDependenciesTask extends DefaultTask {
 	static final String TASK_NAME = "spotlessInternalRegisterDependencies";
 
 	void hookSubprojectTask(SpotlessTask task) {
-		// TODO: in the future, we might use this hook to add an optional perf improvement
-		// spotlessRoot {
+		// TODO: in the future, we might use this hook to implement #984
+		// spotlessSetup {
 		//    java { googleJavaFormat('1.2') }
 		//    ...etc
 		// }
-		// The point would be to reuse configurations from the root project,
-		// with the restriction that you have to declare every formatter in
-		// the root, and you'd get an error if you used a formatter somewhere
-		// which you didn't declare in the root. That's a problem for the future
-		// though, not today!
+		// it's also needed to make sure that jvmLocalCache gets set
+		// in the SpotlessTaskService before any spotless tasks run
 		task.dependsOn(this);
 	}
 
@@ -62,11 +59,11 @@ public abstract class RegisterDependenciesTask extends DefaultTask {
 		getBuildEventsListenerRegistry().onTaskCompletion(getTaskService());
 	}
 
-	boolean enableConfigCacheDaemonLocal;
+	boolean jvmLocalCache;
 
 	@Input
-	public boolean getEnableConfigCacheDaemonLocal() {
-		return enableConfigCacheDaemonLocal;
+	public boolean getJvmLocalCache() {
+		return jvmLocalCache;
 	}
 
 	@TaskAction
