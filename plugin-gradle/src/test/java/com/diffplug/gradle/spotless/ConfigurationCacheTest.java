@@ -15,7 +15,11 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
@@ -84,5 +88,19 @@ public class ConfigurationCacheTest extends GradleIntegrationHarness {
 		// but the second fails
 		BuildResult failure = gradleRunner().withArguments("spotlessApply").buildAndFail();
 		failure.getOutput().contains("> Spotless doesn't support configuration cache yet");
+
+		// and it will keep failing forever
+		gradleRunner().withArguments("spotlessApply").buildAndFail();
+
+		// until you delete the .gradlle/configuration-cache folder
+		File configCache = new File(super.rootFolder(), ".gradle/configuration-cache");
+		Files.walk(configCache.toPath())
+				.sorted(Comparator.reverseOrder())
+				.map(Path::toFile)
+				.forEach(File::delete);
+
+		// then it will work again (but only once)
+		gradleRunner().withArguments("spotlessApply").build();
+		gradleRunner().withArguments("spotlessApply").buildAndFail();
 	}
 }

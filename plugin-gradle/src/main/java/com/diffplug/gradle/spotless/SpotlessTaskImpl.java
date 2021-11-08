@@ -83,7 +83,8 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 				}
 			}
 		} else {
-			throw new GradleException("Spotless doesn't support configuration cache yet");
+			throw new GradleException("Spotless doesn't support configuration cache yet.\n" +
+					"Rerun with --no-configuration-cache");
 		}
 	}
 
