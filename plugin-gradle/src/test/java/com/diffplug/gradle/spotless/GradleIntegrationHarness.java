@@ -83,7 +83,7 @@ public class GradleIntegrationHarness extends ResourceHarness {
 		setFile(".gitattributes").toContent("* text eol=lf");
 	}
 
-	protected final GradleRunner gradleRunner() throws IOException {
+	protected GradleRunner gradleRunner() throws IOException {
 		return GradleRunner.create()
 				.withGradleVersion(GradleVersionSupport.MINIMUM.version)
 				.withProjectDir(rootFolder())

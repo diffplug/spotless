@@ -16,22 +16,16 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
+import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.Test;
 
 public class ConfigurationCacheTest extends GradleIntegrationHarness {
-	protected void runTasks(String... tasks) throws IOException {
+	@Override
+	protected GradleRunner gradleRunner() throws IOException {
 		setFile("gradle.properties").toContent("org.gradle.unsafe.configuration-cache=true");
-		List<String> args = new ArrayList<>();
-		args.addAll(Arrays.asList(tasks));
-		gradleRunner()
-				.withGradleVersion(GradleVersionSupport.CONFIGURATION_CACHE.version)
-				.withArguments(args)
-				.forwardOutput()
-				.build();
+		return super.gradleRunner().withGradleVersion(GradleVersionSupport.CONFIGURATION_CACHE.version);
 	}
 
 	@Test
@@ -47,7 +41,7 @@ public class ConfigurationCacheTest extends GradleIntegrationHarness {
 				"        googleJavaFormat('1.2')",
 				"    }",
 				"}");
-		runTasks("help");
+		gradleRunner().withArguments("help").build();
 	}
 
 	@Test
@@ -64,6 +58,31 @@ public class ConfigurationCacheTest extends GradleIntegrationHarness {
 				"    }",
 				"}",
 				"tasks.named('spotlessJavaApply').get()");
-		runTasks("help");
+		gradleRunner().withArguments("help").build();
+	}
+
+	@Test
+	public void gjf() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"apply plugin: 'java'",
+				"spotless {",
+				"    java {",
+				"        target file('test.java')",
+				"        googleJavaFormat('1.2')",
+				"    }",
+				"}");
+
+		// first run works
+		setFile("test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("test.java").sameAsResource("java/googlejavaformat/JavaCodeFormatted.test");
+
+		// but the second fails
+		BuildResult failure = gradleRunner().withArguments("spotlessApply").buildAndFail();
+		failure.getOutput().contains("> Spotless doesn't support configuration cache yet");
 	}
 }

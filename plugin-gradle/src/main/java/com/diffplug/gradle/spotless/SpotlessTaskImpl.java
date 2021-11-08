@@ -50,6 +50,7 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 	void init(Provider<SpotlessTaskService> service) {
 		getTaskService().set(service);
 		getProjectDir().set(getProject().getProjectDir());
+		service.get().registerSourceCreated(this);
 	}
 
 	@Inject
@@ -68,17 +69,21 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 			Files.createDirectories(outputDirectory.toPath());
 		}
 
-		try (Formatter formatter = buildFormatter()) {
-			for (FileChange fileChange : inputs.getFileChanges(target)) {
-				File input = fileChange.getFile();
-				if (fileChange.getChangeType() == ChangeType.REMOVED) {
-					deletePreviousResult(input);
-				} else {
-					if (input.isFile()) {
-						processInputFile(formatter, input);
+		if (getTaskService().get().sourceWasCreatedThisBuild(this)) {
+			try (Formatter formatter = buildFormatter()) {
+				for (FileChange fileChange : inputs.getFileChanges(target)) {
+					File input = fileChange.getFile();
+					if (fileChange.getChangeType() == ChangeType.REMOVED) {
+						deletePreviousResult(input);
+					} else {
+						if (input.isFile()) {
+							processInputFile(formatter, input);
+						}
 					}
 				}
 			}
+		} else {
+			throw new GradleException("Spotless doesn't support configuration cache yet");
 		}
 	}
 
