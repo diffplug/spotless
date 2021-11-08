@@ -138,15 +138,18 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 
 	static void assertHydrated(SpotlessTask task) {
 		if (!isHydrated(task)) {
-			throw new GradleException("Spotless doesn't support configuration cache yet.\n" +
-					"Rerun with --no-configuration-cache");
+			throw new GradleException("Spotless needs a workaround to support configuration cache:\n" +
+					"  (in your root build.gradle)\n" +
+					"  apply plugin: 'com.diffplug.spotless-setup\n" +
+					"  spotlessSetup { jvmLocalCache = true }\n" +
+					"To make this workaround obsolete, please upvote https://github.com/diffplug/spotless/issues/987");
 		}
 	}
 
 	static GradleException cacheIsStale() {
-		return new GradleException("Spotless daemon-local cache is stale. Regenerate the cache with\n" +
+		return new GradleException("Spotless JVM-local cache is stale. Regenerate the cache with\n" +
 				"  " + (FileSignature.machineIsWin() ? "rmdir /q /s" : "rm -rf") + " .gradle/configuration-cache\n" +
-				"For more information see #123");
+				"To make this workaround obsolete, please upvote https://github.com/diffplug/spotless/issues/987");
 	}
 
 	static class LiveCache {
