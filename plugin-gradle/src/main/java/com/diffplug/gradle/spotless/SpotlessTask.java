@@ -29,6 +29,7 @@ import org.eclipse.jgit.lib.ObjectId;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Internal;
@@ -44,6 +45,9 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 
 public abstract class SpotlessTask extends DefaultTask {
+	@Internal
+	abstract Property<SpotlessTaskService> getTaskService();
+
 	// set by SpotlessExtension, but possibly overridden by FormatExtension
 	protected String encoding = "UTF-8";
 
@@ -79,11 +83,11 @@ public abstract class SpotlessTask extends DefaultTask {
 	 */
 	private transient ObjectId subtreeSha = ObjectId.zeroId();
 
-	public void setupRatchet(GitRatchetGradle gitRatchet, String ratchetFrom) {
-		ratchet = gitRatchet;
+	public void setupRatchet(String ratchetFrom) {
+		ratchet = getTaskService().get().getRatchet();
 		File projectDir = getProjectDir().get().getAsFile();
-		rootTreeSha = gitRatchet.rootTreeShaOf(projectDir, ratchetFrom);
-		subtreeSha = gitRatchet.subtreeShaOf(projectDir, rootTreeSha);
+		rootTreeSha = ratchet.rootTreeShaOf(projectDir, ratchetFrom);
+		subtreeSha = ratchet.subtreeShaOf(projectDir, rootTreeSha);
 	}
 
 	@Internal

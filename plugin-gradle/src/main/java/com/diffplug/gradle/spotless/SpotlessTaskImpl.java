@@ -26,7 +26,6 @@ import javax.inject.Inject;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileSystemOperations;
-import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.CacheableTask;
 import org.gradle.api.tasks.Internal;
@@ -41,9 +40,6 @@ import com.diffplug.spotless.PaddedCell;
 
 @CacheableTask
 public abstract class SpotlessTaskImpl extends SpotlessTask {
-	@Internal
-	abstract Property<SpotlessTaskService> getTaskService();
-
 	@Internal
 	abstract DirectoryProperty getProjectDir();
 

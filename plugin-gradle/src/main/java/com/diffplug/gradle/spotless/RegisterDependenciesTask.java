@@ -72,8 +72,7 @@ public abstract class RegisterDependenciesTask extends DefaultTask {
 
 		BuildServiceRegistry buildServices = getProject().getGradle().getSharedServices();
 		getTaskService().set(buildServices.registerIfAbsent("SpotlessTaskService", SpotlessTaskService.class, spec -> {}));
-		getGitRatchet().set(buildServices.registerIfAbsent("GitRatchetGradle", GitRatchetGradle.class, unused -> {}));
-		getBuildEventsListenerRegistry().onTaskCompletion(getGitRatchet());
+		getBuildEventsListenerRegistry().onTaskCompletion(getTaskService());
 	}
 
 	@TaskAction
@@ -83,10 +82,7 @@ public abstract class RegisterDependenciesTask extends DefaultTask {
 	}
 
 	@Internal
-	public abstract Property<SpotlessTaskService> getTaskService();
-
-	@Internal
-	public abstract Property<GitRatchetGradle> getGitRatchet();
+	abstract Property<SpotlessTaskService> getTaskService();
 
 	@Inject
 	protected abstract BuildEventsListenerRegistry getBuildEventsListenerRegistry();

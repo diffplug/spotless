@@ -30,6 +30,8 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.services.BuildService;
 import org.gradle.api.services.BuildServiceParameters;
 import org.gradle.api.tasks.Internal;
+import org.gradle.tooling.events.FinishEvent;
+import org.gradle.tooling.events.OperationCompletionListener;
 
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.base.Unhandled;
@@ -41,7 +43,7 @@ import com.diffplug.spotless.Provisioner;
  * duplicated work (e.g. no need for check to run if
  * apply already did).
  */
-public abstract class SpotlessTaskService implements BuildService<BuildServiceParameters.None> {
+public abstract class SpotlessTaskService implements BuildService<BuildServiceParameters.None>, AutoCloseable, OperationCompletionListener {
 	private final Map<String, SpotlessApply> apply = Collections.synchronizedMap(new HashMap<>());
 	private final Map<String, SpotlessTask> source = Collections.synchronizedMap(new HashMap<>());
 	private final Map<String, Provisioner> provisioner = Collections.synchronizedMap(new HashMap<>());
@@ -59,6 +61,24 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 	void registerApplyAlreadyRan(SpotlessApply task) {
 		apply.put(task.sourceTaskPath(), task);
 	}
+
+	// <GitRatchet>
+	private final GitRatchetGradle ratchet = new GitRatchetGradle();
+
+	GitRatchetGradle getRatchet() {
+		return ratchet;
+	}
+
+	@Override
+	public void onFinish(FinishEvent var1) {
+		// NOOP
+	}
+
+	@Override
+	public void close() throws Exception {
+		ratchet.close();
+	}
+	// </GitRatchet>
 
 	static String INDEPENDENT_HELPER = "Helper";
 
