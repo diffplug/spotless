@@ -23,6 +23,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.model.ObjectFactory;
@@ -35,6 +36,7 @@ import org.gradle.tooling.events.OperationCompletionListener;
 
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.base.Unhandled;
+import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.Provisioner;
 
 /**
@@ -44,9 +46,46 @@ import com.diffplug.spotless.Provisioner;
  * apply already did).
  */
 public abstract class SpotlessTaskService implements BuildService<BuildServiceParameters.None>, AutoCloseable, OperationCompletionListener {
-	private final Map<String, SpotlessApply> apply = Collections.synchronizedMap(new HashMap<>());
-	private final Map<String, SpotlessTask> source = Collections.synchronizedMap(new HashMap<>());
-	private final Map<String, Provisioner> provisioner = Collections.synchronizedMap(new HashMap<>());
+	private boolean enableConfigCacheDaemonLocal;
+	private Map<String, SpotlessApply> apply = Collections.synchronizedMap(new HashMap<>());
+	private Map<String, SpotlessTask> source = Collections.synchronizedMap(new HashMap<>());
+	private Map<String, Provisioner> provisioner = Collections.synchronizedMap(new HashMap<>());
+
+	void registerDependenciesTask(RegisterDependenciesTask task) {
+		enableConfigCacheDaemonLocal = task.getEnableConfigCacheDaemonLocal();
+	}
+
+	void registerSourceAlreadyRan(SpotlessTask task) {
+		source.put(task.getPath(), task);
+		if (enableConfigCacheDaemonLocal) {
+			storeOrHydrate(task);
+		}
+	}
+
+	void hydrate(SpotlessTask task) {
+		storeOrHydrate(task);
+	}
+
+	private void storeOrHydrate(SpotlessTask task) {
+		if (!enableConfigCacheDaemonLocal) {
+			return;
+		}
+		String cacheKey = task.getProjectDir().getAsFile().get().getAbsolutePath() + ">" + task.getPath();
+		if (SpotlessTaskImpl.isHydrated(task)) {
+			daemonLocalMap.put(cacheKey, new SpotlessTaskImpl.LiveCache(task));
+		} else {
+			SpotlessTaskImpl.LiveCache cached = daemonLocalMap.get(cacheKey);
+			if (cached == null) {
+				throw new GradleException("Spotless daemon-local cache is stale. Regenerate the cache with\n" +
+						"  " + (FileSignature.machineIsWin() ? "rmdir /q /s" : "rm -rf") + " .gradle/configuration-cache\n" +
+						"For more information see #123");
+			} else {
+				cached.hydrate(task);
+			}
+		}
+	}
+
+	private static final Map<String, SpotlessTaskImpl.LiveCache> daemonLocalMap = Collections.synchronizedMap(new HashMap<>());
 
 	Provisioner provisionerFor(Project project) {
 		return provisioner.computeIfAbsent(project.getPath(), unused -> {
@@ -54,16 +93,13 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 		});
 	}
 
-	void registerSourceAlreadyRan(SpotlessTask task) {
-		source.put(task.getPath(), task);
-	}
-
 	void registerApplyAlreadyRan(SpotlessApply task) {
 		apply.put(task.sourceTaskPath(), task);
 	}
 
+	/////////////////
 	// <GitRatchet>
-	private final GitRatchetGradle ratchet = new GitRatchetGradle();
+	private GitRatchetGradle ratchet = new GitRatchetGradle();
 
 	GitRatchetGradle getRatchet() {
 		return ratchet;
@@ -79,6 +115,7 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 		ratchet.close();
 	}
 	// </GitRatchet>
+	//////////////////
 
 	static String INDEPENDENT_HELPER = "Helper";
 
