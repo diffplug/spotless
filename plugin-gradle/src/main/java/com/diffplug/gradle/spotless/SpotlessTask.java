@@ -69,9 +69,9 @@ public abstract class SpotlessTask extends DefaultTask {
 
 	/*** API which performs git up-to-date tasks. */
 	@Nullable
-	GitRatchetGradle ratchet;
+	private GitRatchetGradle ratchet;
 	/** The sha of the tree at repository root, used for determining if an individual *file* is clean according to git. */
-	ObjectId rootTreeSha;
+	private ObjectId rootTreeSha;
 	/**
 	 * The sha of the tree at the root of *this project*, used to determine if the git baseline has changed within this folder.
 	 * Using a more fine-grained tree (rather than the project root) allows Gradle to mark more subprojects as up-to-date

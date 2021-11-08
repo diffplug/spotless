@@ -92,7 +92,7 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 		File output = getOutputFile(input);
 		getLogger().debug("Applying format to " + input + " and writing to " + output);
 		PaddedCell.DirtyState dirtyState;
-		if (ratchet != null && ratchet.isClean(getProjectDir().get().getAsFile(), rootTreeSha, input)) {
+		if (getRatchet() != null && getRatchet().isClean(getProjectDir().get().getAsFile(), getRootTreeSha(), input)) {
 			dirtyState = PaddedCell.isClean();
 		} else {
 			dirtyState = PaddedCell.calculateDirtyState(formatter, input);
