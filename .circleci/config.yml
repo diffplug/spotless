@@ -116,13 +116,13 @@ jobs:
           path: lib-extra/build/test-results/test
       - store_test_results:
           path: plugin-gradle/build/test-results/test
-      - store_test_results:
+      - store_artifacts:
           path: lib/build/spotbugs
-      - store_test_results:
+      - store_artifacts:
           path: lib-extra/build/spotbugs
-      - store_test_results:
+      - store_artifacts:
           path: testlib/build/spotbugs
-      - store_test_results:
+      - store_artifacts:
           path: plugin-gradle/build/spotbugs
   test_windows:
     executor:
