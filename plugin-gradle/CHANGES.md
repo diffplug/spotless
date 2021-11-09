@@ -17,6 +17,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * **BREAKING** `createIndepentApplyTask(String taskName)` now requires that `taskName` does not end with `Apply`
 * Bump minimum required Gradle from `6.1` to `6.1.1`.
 
+### Removed
+* **BREAKING** `removeFormat` (which has been broken since `5.0`) has been removed. Use `clearSteps()` as a workaround ([#653](https://github.com/diffplug/spotless/issues/653)).
+
 ## [5.17.1] - 2021-10-26
 ### Changed
 * Added support and bump Eclipse formatter default versions to `4.21` for `eclipse-groovy`. Change is only applied for JVM 11+.
