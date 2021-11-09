@@ -15,11 +15,7 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Comparator;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
@@ -66,13 +62,12 @@ public class ConfigurationCacheTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void gjf() throws IOException {
+	public void jvmLocalCache() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
-				"apply plugin: 'java'",
 				"spotless {",
 				"    java {",
 				"        target file('test.java')",
@@ -85,22 +80,19 @@ public class ConfigurationCacheTest extends GradleIntegrationHarness {
 		gradleRunner().withArguments("spotlessApply").build();
 		assertFile("test.java").sameAsResource("java/googlejavaformat/JavaCodeFormatted.test");
 
-		// but the second fails
-		BuildResult failure = gradleRunner().withArguments("spotlessApply").buildAndFail();
-		failure.getOutput().contains("> Spotless doesn't support configuration cache yet");
-
-		// and it will keep failing forever
-		gradleRunner().withArguments("spotlessApply").buildAndFail();
-
-		// until you delete the .gradlle/configuration-cache folder
-		File configCache = new File(super.rootFolder(), ".gradle/configuration-cache");
-		Files.walk(configCache.toPath())
-				.sorted(Comparator.reverseOrder())
-				.map(Path::toFile)
-				.forEach(File::delete);
-
-		// then it will work again (but only once)
+		// and it keeps working!
+		gradleRunner().withArguments("spotlessApply", "--stacktrace").build();
 		gradleRunner().withArguments("spotlessApply").build();
-		gradleRunner().withArguments("spotlessApply").buildAndFail();
+		gradleRunner().withArguments("spotlessApply").build();
+
+		setFile("test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
+		gradleRunner().withArguments("spotlessCheck").buildAndFail();
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("test.java").sameAsResource("java/googlejavaformat/JavaCodeFormatted.test");
+
+		BuildResult failure = gradleRunner().withDebug(true).withArguments("spotlessApply", "--stacktrace").buildAndFail();
+		failure.getOutput().contains("Spotless daemon-local cache is stale. Regenerate the cache with\n" +
+				"  rm -rf .gradle/configuration-cache\n" +
+				"For more information see #123\n");
 	}
 }

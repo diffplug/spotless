@@ -64,22 +64,17 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 			Files.createDirectories(outputDirectory.toPath());
 		}
 
-		if (lineEndingsPolicy != null) {
-			try (Formatter formatter = buildFormatter()) {
-				for (FileChange fileChange : inputs.getFileChanges(target)) {
-					File input = fileChange.getFile();
-					if (fileChange.getChangeType() == ChangeType.REMOVED) {
-						deletePreviousResult(input);
-					} else {
-						if (input.isFile()) {
-							processInputFile(formatter, input);
-						}
+		try (Formatter formatter = buildFormatter()) {
+			for (FileChange fileChange : inputs.getFileChanges(target)) {
+				File input = fileChange.getFile();
+				if (fileChange.getChangeType() == ChangeType.REMOVED) {
+					deletePreviousResult(input);
+				} else {
+					if (input.isFile()) {
+						processInputFile(formatter, input);
 					}
 				}
 			}
-		} else {
-			throw new GradleException("Spotless doesn't support configuration cache yet.\n" +
-					"Rerun with --no-configuration-cache");
 		}
 	}
 

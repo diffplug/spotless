@@ -3,8 +3,17 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+* Support for Gradle Configuration Cache* ([#982](https://github.com/diffplug/spotless/pull/982), [#986](https://github.com/diffplug/spotless/pull/986))
+  * *Spotless must run on the same daemon that wrote the configuration cache. If it isn't, you'll get this error message:
+  * ```
+    Spotless JVM-local cache is stale. Regenerate the cache with
+      rm -rf .gradle/configuration-cache
+    ```
+  * To make this daemon-restriction obsolete, please see and upvote [#987](https://github.com/diffplug/spotless/issues/987).
 ### Changed
-* **BREAKING** Previously, many projects required `buildscript { repositories { mavenCentral() }}` at the top of their root project, because Spotless resolved its dependencies using the buildscript repositories. Spotless now resolves its dependencies from the normal project repositories of each project with a `spotless {...}` block. This means that you can remove the `buildscript {}` block, but you still need a `repositories { mavenCentral() }` (or similar) in each project which is using Spotless.
+* **BREAKING** Previously, many projects required `buildscript { repositories { mavenCentral() }}` at the top of their root project, because Spotless resolved its dependencies using the buildscript repositories. Spotless now resolves its dependencies from the normal project repositories of each project with a `spotless {...}` block. This means that you can remove the `buildscript {}` block, but you still need a `repositories { mavenCentral() }` (or similar) in each project which is using Spotless. ([#980](https://github.com/diffplug/spotless/pull/980), [#983](https://github.com/diffplug/spotless/pull/983))
+  * If you prefer the old behavior, we are open to adding that back as a new feature, see [#984 predeclared dependencies](https://github.com/diffplug/spotless/issues/984).
 * **BREAKING** `createIndepentApplyTask(String taskName)` now requires that `taskName` does not end with `Apply`
 * Bump minimum required Gradle from `6.1` to `6.1.1`.
 
