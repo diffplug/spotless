@@ -20,7 +20,6 @@ import javax.inject.Inject;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.provider.Property;
 import org.gradle.api.services.BuildServiceRegistry;
-import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.build.event.BuildEventsListenerRegistry;
@@ -59,16 +58,9 @@ public abstract class RegisterDependenciesTask extends DefaultTask {
 		getBuildEventsListenerRegistry().onTaskCompletion(getTaskService());
 	}
 
-	boolean jvmLocalCache;
-
-	@Input
-	public boolean getJvmLocalCache() {
-		return jvmLocalCache;
-	}
-
 	@TaskAction
 	public void trivialFunction() {
-		getTaskService().get().registerDependenciesTask(this);
+		// nothing to do :)
 	}
 
 	@Internal

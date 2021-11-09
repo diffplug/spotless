@@ -32,13 +32,9 @@ public class ConfigurationCacheJvmLocalTest extends GradleIntegrationHarness {
 	public void gjf() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'com.diffplug.spotless-setup'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
-				"spotlessSetup {",
-				"    jvmLocalCache = true",
-				"}",
 				"spotless {",
 				"    java {",
 				"        target file('test.java')",

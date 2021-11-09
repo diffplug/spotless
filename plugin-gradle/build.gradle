@@ -45,12 +45,6 @@ gradlePlugin {
 			displayName = 'Spotless formatting plugin'
 			description = project.description
 		}
-		spotlessSetupPlugin {
-			id = 'com.diffplug.spotless-setup'
-			implementationClass = 'com.diffplug.gradle.spotless.SpotlessSetupPlugin'
-			displayName = 'Spotless formatting plugin setup'
-			description = project.description
-		}
 		spotlessPluginLegacy {
 			id = 'com.diffplug.gradle.spotless'
 			implementationClass = 'com.diffplug.gradle.spotless.SpotlessPluginRedirect'
@@ -84,9 +78,6 @@ if (version.endsWith('-SNAPSHOT')) {
 			'clang-format'
 		]
 		plugins {
-			spotlessSetupPlugin {
-				id = 'com.diffplug.spotless-setup'
-			}
 			spotlessPlugin {
 				id = 'com.diffplug.spotless'
 			}
