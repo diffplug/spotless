@@ -11,7 +11,7 @@ pluginManagement {
 		id 'com.diffplug.spotless-changelog'       version '2.2.0'
 		// https://github.com/diffplug/goomph/blob/main/CHANGES.md
 		id 'com.diffplug.p2.asmaven'               version '3.33.2'
-    // https://github.com/gradle/test-retry-gradle-plugin/releases
+		// https://github.com/gradle/test-retry-gradle-plugin/releases
 		id 'org.gradle.test-retry'                 version '1.3.1'
 	}
 }
