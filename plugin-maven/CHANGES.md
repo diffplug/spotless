@@ -4,6 +4,10 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+### Changed
+* Bump jgit version ([#992](https://github.com/diffplug/spotless/pull/992)).
+  * jgit `5.10.0.202012080955-r` -> `5.13.0.202109080827-r`
+
 ## [2.17.4] - 2021-11-09
 ### Changed
 * Bump default formatter versions ([#989](https://github.com/diffplug/spotless/pull/989))
