@@ -422,21 +422,17 @@ public class FormatExtension {
 
 		public LicenseHeaderConfig named(String name) {
 			String existingStepName = builder.getName();
-
 			builder = builder.withName(name);
-
 			int existingStepIdx = getExistingStepIdx(existingStepName);
-
 			if (existingStepIdx != -1) {
 				steps.set(existingStepIdx, createStep());
 			} else {
 				addStep(createStep());
 			}
-
 			return this;
 		}
 
-		public LicenseHeaderConfig onlyIfMatches(String contentPattern) {
+		public LicenseHeaderConfig onlyIfContentMatches(String contentPattern) {
 			builder = builder.withContentPattern(contentPattern);
 			replaceStep(createStep());
 			return this;
