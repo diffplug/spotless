@@ -107,6 +107,23 @@ jobs:
           path: plugin-maven/build/test-results/NpmTest
       - store_test_results:
           path: plugin-gradle/build/test-results/NpmTest
+      - run:
+          name: gradlew check
+          command: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew check --build-cache
+      - store_test_results:
+          path: testlib/build/test-results/test
+      - store_test_results:
+          path: lib-extra/build/test-results/test
+      - store_test_results:
+          path: plugin-gradle/build/test-results/test
+      - store_test_results:
+          path: lib/build/spotbugs
+      - store_test_results:
+          path: lib-extra/build/spotbugs
+      - store_test_results:
+          path: testlib/build/spotbugs
+      - store_test_results:
+          path: plugin-gradle/build/spotbugs
   test_windows:
     executor:
       name: win/default
@@ -114,14 +131,8 @@ jobs:
     steps:
       - checkout
       - run:
-          name: install
-          command: choco install ojdkbuild8 -params 'installdir=c:\\java8'
-      - run:
-          name: JAVA_HOME
-          command: setx JAVA_HOME "C:\java8"
-      - run:
-          name: gradlew check
-          command: gradlew check --build-cache -PSPOTLESS_EXCLUDE_MAVEN=true
+          name: gradlew test
+          command: gradlew test --build-cache -PSPOTLESS_EXCLUDE_MAVEN=true
       - store_test_results:
           path: testlib/build/test-results/test
       - store_test_results:
