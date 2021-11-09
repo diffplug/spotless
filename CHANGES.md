@@ -11,6 +11,10 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+### Changed
+* Bump jgit version ([#992](https://github.com/diffplug/spotless/pull/992)).
+  * jgit `5.10.0.202012080955-r` -> `5.13.0.202109080827-r`
+
 ## [2.20.0] - 2021-11-09
 ### Added
 * `DiffMessageFormatter` can now generate messages based on a folder of cleaned files, as an alternative to a `Formatter` ([#982](https://github.com/diffplug/spotless/pull/982)).
