@@ -115,7 +115,10 @@ jobs:
       - checkout
       - run:
           name: install
-          command: choco install ojdkbuild8
+          command: choco install ojdkbuild8 -params 'installdir=c:\\java8'
+      - run:
+          name: JAVA_HOME
+          command: setx JAVA_HOME "C:\java8"
       - run:
           name: gradlew check
           command: gradlew check --build-cache -PSPOTLESS_EXCLUDE_MAVEN=true
