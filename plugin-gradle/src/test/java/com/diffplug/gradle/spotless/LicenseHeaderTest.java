@@ -75,6 +75,34 @@ class LicenseHeaderTest extends GradleIntegrationHarness {
 	}
 
 	@Test
+	void filterByContentPatternTest() throws IOException {
+		setLicenseStep("licenseHeader('/** $YEAR */').onlyIfMatches('.+Test.+').updateYearWithLatest(true)");
+
+		testSuiteUpdateWithLatest(true);
+
+		setLicenseStep("licenseHeader('/** $YEAR */').onlyIfMatches('missingString').updateYearWithLatest(true)");
+		setFile(TEST_JAVA).toContent("/** This license header should be preserved */\n" + CONTENT);
+		gradleRunner().withArguments("spotlessApply", "--stacktrace").forwardOutput().build();
+
+		assertFile(TEST_JAVA).hasContent("/** This license header should be preserved */\n" + CONTENT);
+
+		setLicenseStep("licenseHeader('/** New License Header */').named('PrimaryHeaderLicense').onlyIfMatches('.+Test.+')");
+		setFile(TEST_JAVA).toContent(CONTENT);
+		gradleRunner().withArguments("spotlessApply", "--stacktrace").forwardOutput().build();
+
+		assertFile(TEST_JAVA).hasContent("/** New License Header */\n" + CONTENT);
+
+		String multipleLicenseHeaderConfiguration = "licenseHeader('/** Base License Header */').named('PrimaryHeaderLicense').onlyIfMatches('Best')\n" +
+				"licenseHeader('/** Alternate License Header */').named('SecondaryHeaderLicense').onlyIfMatches('.*Test.+')";
+
+		setLicenseStep(multipleLicenseHeaderConfiguration);
+		setFile(TEST_JAVA).toContent("/** 2003 */\n" + CONTENT);
+		gradleRunner().withArguments("spotlessApply", "--stacktrace").forwardOutput().build();
+
+		assertFile(TEST_JAVA).hasContent("/** Alternate License Header */\n" + CONTENT);
+	}
+
+	@Test
 	void ratchetFrom() throws Exception {
 		try (Git git = Git.init().setDirectory(rootFolder()).call()) {
 			git.commit().setMessage("First commit").call();
