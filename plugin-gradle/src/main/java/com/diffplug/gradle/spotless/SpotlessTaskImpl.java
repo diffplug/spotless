@@ -20,10 +20,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Comparator;
+
+import javax.inject.Inject;
 
 import org.gradle.api.GradleException;
+import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.file.FileSystemOperations;
+import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.CacheableTask;
+import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.work.ChangeType;
 import org.gradle.work.FileChange;
@@ -34,16 +40,31 @@ import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.PaddedCell;
 
 @CacheableTask
-public class SpotlessTaskImpl extends SpotlessTask {
+public abstract class SpotlessTaskImpl extends SpotlessTask {
+	@Internal
+	abstract Property<SpotlessTaskService> getTaskService();
+
+	@Internal
+	abstract DirectoryProperty getProjectDir();
+
+	void init(Provider<SpotlessTaskService> service) {
+		getTaskService().set(service);
+		getProjectDir().set(getProject().getProjectDir());
+	}
+
+	@Inject
+	protected abstract FileSystemOperations getFs();
+
 	@TaskAction
 	public void performAction(InputChanges inputs) throws Exception {
+		getTaskService().get().registerSourceAlreadyRan(this);
 		if (target == null) {
 			throw new GradleException("You must specify 'Iterable<File> target'");
 		}
 
 		if (!inputs.isIncremental()) {
 			getLogger().info("Not incremental: removing prior outputs");
-			getProject().delete(outputDirectory);
+			getFs().delete(d -> d.delete(outputDirectory));
 			Files.createDirectories(outputDirectory.toPath());
 		}
 
@@ -65,7 +86,7 @@ public class SpotlessTaskImpl extends SpotlessTask {
 		File output = getOutputFile(input);
 		getLogger().debug("Applying format to " + input + " and writing to " + output);
 		PaddedCell.DirtyState dirtyState;
-		if (ratchet != null && ratchet.isClean(getProject(), rootTreeSha, input)) {
+		if (ratchet != null && ratchet.isClean(getProjectDir().get().getAsFile(), rootTreeSha, input)) {
 			dirtyState = PaddedCell.isClean();
 		} else {
 			dirtyState = PaddedCell.calculateDirtyState(formatter, input);
@@ -90,22 +111,20 @@ public class SpotlessTaskImpl extends SpotlessTask {
 	private void deletePreviousResult(File input) throws IOException {
 		File output = getOutputFile(input);
 		if (output.isDirectory()) {
-			Files.walk(output.toPath())
-					.sorted(Comparator.reverseOrder())
-					.map(Path::toFile)
-					.forEach(File::delete);
+			getFs().delete(d -> d.delete(output));
 		} else {
 			Files.deleteIfExists(output.toPath());
 		}
 	}
 
 	private File getOutputFile(File input) {
-		String outputFileName = FormatExtension.relativize(getProject().getProjectDir(), input);
+		File projectDir = getProjectDir().get().getAsFile();
+		String outputFileName = FormatExtension.relativize(projectDir, input);
 		if (outputFileName == null) {
 			throw new IllegalArgumentException(StringPrinter.buildString(printer -> {
-				printer.println("Spotless error! All target files must be within the project root. In project " + getProject().getPath());
-				printer.println("  root dir: " + getProject().getProjectDir().getAbsolutePath());
-				printer.println("    target: " + input.getAbsolutePath());
+				printer.println("Spotless error! All target files must be within the project dir.");
+				printer.println("  project dir: " + projectDir.getAbsolutePath());
+				printer.println("       target: " + input.getAbsolutePath());
 			}));
 		}
 		return new File(outputDirectory, outputFileName);

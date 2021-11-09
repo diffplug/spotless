@@ -16,13 +16,13 @@ spotless {
 		// the rootProject doesn't have any java
 		java {
 			ratchetFrom 'origin/main'
-			custom 'noInternalDeps', noInternalDepsClosure
 			bumpThisNumberIfACustomStepChanges(1)
 			licenseHeaderFile rootProject.file('gradle/spotless.license')
 			importOrderFile   rootProject.file('gradle/spotless.importorder')
 			eclipse().configFile rootProject.file('gradle/spotless.eclipseformat.xml')
 			trimTrailingWhitespace()
 			removeUnusedImports()
+			custom 'noInternalDeps', noInternalDepsClosure
 		}
 	}
 	groovyGradle {

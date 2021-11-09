@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,10 @@ package com.diffplug.spotless.extra.integration;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
@@ -44,11 +46,74 @@ public final class DiffMessageFormatter {
 		return new Builder();
 	}
 
+	interface CleanProvider {
+
+		Path getRootDir();
+
+		Charset getEncoding();
+
+		String getFormatted(File file, String rawUnix);
+	}
+
+	private static class CleanProviderFormatter implements CleanProvider {
+		private final Formatter formatter;
+
+		CleanProviderFormatter(Formatter formatter) {
+			this.formatter = Objects.requireNonNull(formatter);
+		}
+
+		@Override
+		public Path getRootDir() {
+			return formatter.getRootDir();
+		}
+
+		@Override
+		public Charset getEncoding() {
+			return formatter.getEncoding();
+		}
+
+		@Override
+		public String getFormatted(File file, String rawUnix) {
+			String unix = PaddedCell.check(formatter, file, rawUnix).canonical();
+			return formatter.computeLineEndings(unix, file);
+		}
+	}
+
+	private static class CleanProviderFolder implements CleanProvider {
+		private final Path rootDir;
+		private final Path cleanDir;
+		private final Charset encoding;
+
+		CleanProviderFolder(Path rootDir, Path cleanDir, String encoding) {
+			this.rootDir = rootDir;
+			this.cleanDir = cleanDir;
+			this.encoding = Charset.forName(encoding);
+		}
+
+		@Override
+		public Path getRootDir() {
+			return rootDir;
+		}
+
+		@Override
+		public Charset getEncoding() {
+			return encoding;
+		}
+
+		@Override
+		public String getFormatted(File file, String rawUnix) {
+			Path relative = rootDir.relativize(file.toPath());
+			Path clean = cleanDir.resolve(rootDir.relativize(file.toPath()));
+			byte[] content = Errors.rethrow().get(() -> Files.readAllBytes(clean));
+			return new String(content, encoding);
+		}
+	}
+
 	public static class Builder {
 		private Builder() {}
 
 		private String runToFix;
-		private Formatter formatter;
+		private CleanProvider formatter;
 		private List<File> problemFiles;
 
 		/** "Run 'gradlew spotlessApply' to fix these violations." */
@@ -58,7 +123,12 @@ public final class DiffMessageFormatter {
 		}
 
 		public Builder formatter(Formatter formatter) {
-			this.formatter = Objects.requireNonNull(formatter);
+			this.formatter = new CleanProviderFormatter(formatter);
+			return this;
+		}
+
+		public Builder formatterFolder(Path rootDir, Path cleanDir, String encoding) {
+			this.formatter = new CleanProviderFolder(rootDir, cleanDir, encoding);
 			return this;
 		}
 
@@ -164,12 +234,11 @@ public final class DiffMessageFormatter {
 	private static String diff(Builder builder, File file) throws IOException {
 		String raw = new String(Files.readAllBytes(file.toPath()), builder.formatter.getEncoding());
 		String rawUnix = LineEnding.toUnix(raw);
-		String formattedUnix;
-		formattedUnix = PaddedCell.check(builder.formatter, file, rawUnix).canonical();
+		String formatted = builder.formatter.getFormatted(file, rawUnix);
+		String formattedUnix = LineEnding.toUnix(formatted);
 
 		if (rawUnix.equals(formattedUnix)) {
 			// the formatting is fine, so it's a line-ending issue
-			String formatted = builder.formatter.computeLineEndings(formattedUnix, file);
 			return diffWhitespaceLineEndings(raw, formatted, false, true);
 		} else {
 			return diffWhitespaceLineEndings(rawUnix, formattedUnix, true, false);

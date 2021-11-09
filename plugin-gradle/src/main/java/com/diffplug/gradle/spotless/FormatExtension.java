@@ -40,6 +40,7 @@ import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.BasePlugin;
 
+import com.diffplug.common.base.Preconditions;
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
@@ -754,19 +755,22 @@ public class FormatExtension {
 	 *
 	 * The returned task will not be hooked up to the global {@code spotlessApply}, and there will be no corresponding {@code check} task.
 	 *
+	 * The task name must not end with `Apply`.
+	 *
 	 * NOTE: does not respect the rarely-used <a href="https://github.com/diffplug/spotless/blob/b7f8c551a97dcb92cc4b0ee665448da5013b30a3/plugin-gradle/README.md#can-i-apply-spotless-to-specific-files">{@code spotlessFiles} property</a>.
 	 */
 	public SpotlessApply createIndependentApplyTask(String taskName) {
+		Preconditions.checkArgument(!taskName.endsWith(SpotlessExtension.APPLY), "Task name must not end with " + SpotlessExtension.APPLY);
 		// create and setup the task
-		SpotlessTask spotlessTask = spotless.project.getTasks().create(taskName + "Helper", SpotlessTaskImpl.class);
+		SpotlessTaskImpl spotlessTask = spotless.project.getTasks().create(taskName + SpotlessTaskService.INDEPENDENT_HELPER, SpotlessTaskImpl.class);
+		spotlessTask.init(spotless.getTaskService());
 		setupTask(spotlessTask);
 		// enforce the clean ordering
 		Task clean = spotless.project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME);
 		spotlessTask.mustRunAfter(clean);
 		// create the apply task
 		SpotlessApply applyTask = spotless.project.getTasks().create(taskName, SpotlessApply.class);
-		applyTask.setSpotlessOutDirectory(spotlessTask.getOutputDirectory());
-		applyTask.linkSource(spotlessTask);
+		applyTask.init(spotlessTask);
 		applyTask.dependsOn(spotlessTask);
 
 		return applyTask;

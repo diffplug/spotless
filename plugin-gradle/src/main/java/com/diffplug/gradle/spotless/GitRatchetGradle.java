@@ -19,7 +19,6 @@ import java.io.File;
 
 import javax.annotation.Nullable;
 
-import org.gradle.api.Project;
 import org.gradle.api.services.BuildService;
 import org.gradle.api.services.BuildServiceParameters;
 import org.gradle.tooling.events.FinishEvent;
@@ -28,15 +27,15 @@ import org.gradle.tooling.events.OperationCompletionListener;
 import com.diffplug.spotless.extra.GitRatchet;
 
 /** Gradle implementation of GitRatchet. */
-public abstract class GitRatchetGradle extends GitRatchet<Project> implements BuildService<BuildServiceParameters.None>, OperationCompletionListener {
+public abstract class GitRatchetGradle extends GitRatchet<File> implements BuildService<BuildServiceParameters.None>, OperationCompletionListener {
 	@Override
-	protected File getDir(Project project) {
-		return project.getProjectDir();
+	protected File getDir(File project) {
+		return project;
 	}
 
 	@Override
-	protected @Nullable Project getParent(Project project) {
-		return project.getParent();
+	protected @Nullable File getParent(File project) {
+		return project.getParentFile();
 	}
 
 	@Override

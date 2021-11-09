@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import javax.annotation.Nullable;
 
 import org.eclipse.jgit.lib.ObjectId;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
@@ -42,15 +43,7 @@ import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 
-public class SpotlessTask extends DefaultTask {
-	SpotlessApply applyTask;
-
-	/** Internal use only, allows coordination between check and apply when they are in the same build */
-	@Internal
-	SpotlessApply getApplyTask() {
-		return applyTask;
-	}
-
+public abstract class SpotlessTask extends DefaultTask {
 	// set by SpotlessExtension, but possibly overridden by FormatExtension
 	protected String encoding = "UTF-8";
 
@@ -88,9 +81,13 @@ public class SpotlessTask extends DefaultTask {
 
 	public void setupRatchet(GitRatchetGradle gitRatchet, String ratchetFrom) {
 		ratchet = gitRatchet;
-		rootTreeSha = gitRatchet.rootTreeShaOf(getProject(), ratchetFrom);
-		subtreeSha = gitRatchet.subtreeShaOf(getProject(), rootTreeSha);
+		File projectDir = getProjectDir().get().getAsFile();
+		rootTreeSha = gitRatchet.rootTreeShaOf(projectDir, ratchetFrom);
+		subtreeSha = gitRatchet.subtreeShaOf(projectDir, rootTreeSha);
 	}
+
+	@Internal
+	abstract DirectoryProperty getProjectDir();
 
 	@Internal
 	GitRatchetGradle getRatchet() {
@@ -171,7 +168,7 @@ public class SpotlessTask extends DefaultTask {
 		return Formatter.builder()
 				.lineEndingsPolicy(lineEndingsPolicy)
 				.encoding(Charset.forName(encoding))
-				.rootDir(getProject().getRootDir().toPath())
+				.rootDir(getProjectDir().get().getAsFile().toPath())
 				.steps(steps)
 				.exceptionPolicy(exceptionPolicy)
 				.build();

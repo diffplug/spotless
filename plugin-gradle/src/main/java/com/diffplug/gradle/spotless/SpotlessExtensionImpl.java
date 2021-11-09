@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,13 @@ import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaBasePlugin;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 
 public class SpotlessExtensionImpl extends SpotlessExtension {
 	private final TaskProvider<RegisterDependenciesTask> registerDependenciesTask;
+	private final Provider<SpotlessTaskService> taskService;
 
 	public SpotlessExtensionImpl(Project project) {
 		super(project);
@@ -52,6 +54,13 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 						.configure(task -> task.dependsOn(rootCheckTask));
 			}
 		});
+
+		taskService = project.getGradle().getSharedServices().registerIfAbsent("SpotlessTaskService", SpotlessTaskService.class, spec -> {});
+	}
+
+	@Override
+	Provider<SpotlessTaskService> getTaskService() {
+		return taskService;
 	}
 
 	final TaskProvider<?> rootCheckTask, rootApplyTask, rootDiagnoseTask;
@@ -69,6 +78,7 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 		// create the SpotlessTask
 		String taskName = EXTENSION + SpotlessPlugin.capitalize(name);
 		TaskProvider<SpotlessTaskImpl> spotlessTask = tasks.register(taskName, SpotlessTaskImpl.class, task -> {
+			task.init(taskService);
 			task.setEnabled(!isIdeHook);
 			// clean removes the SpotlessCache, so we have to run after clean
 			task.mustRunAfter(cleanTask);
@@ -87,10 +97,9 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 
 		// create the check and apply control tasks
 		TaskProvider<SpotlessApply> applyTask = tasks.register(taskName + APPLY, SpotlessApply.class, task -> {
+			task.init(spotlessTask.get());
 			task.setEnabled(!isIdeHook);
 			task.dependsOn(spotlessTask);
-			task.setSpotlessOutDirectory(spotlessTask.get().getOutputDirectory());
-			task.linkSource(spotlessTask.get());
 		});
 		rootApplyTask.configure(task -> {
 			task.dependsOn(applyTask);
@@ -102,10 +111,10 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 		});
 
 		TaskProvider<SpotlessCheck> checkTask = tasks.register(taskName + CHECK, SpotlessCheck.class, task -> {
+			SpotlessTaskImpl source = spotlessTask.get();
+			task.init(source);
 			task.setEnabled(!isIdeHook);
-			task.dependsOn(spotlessTask);
-			task.setSpotlessOutDirectory(spotlessTask.get().getOutputDirectory());
-			task.source = spotlessTask.get();
+			task.dependsOn(source);
 
 			// if the user runs both, make sure that apply happens first,
 			task.mustRunAfter(applyTask);

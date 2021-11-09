@@ -19,6 +19,7 @@ import java.io.File;
 import java.util.Collections;
 
 import org.gradle.api.Project;
+import org.gradle.api.services.BuildServiceParameters;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -35,6 +36,12 @@ class FormatTaskTest extends ResourceHarness {
 		Project project = TestProvisioner.gradleProject(rootFolder());
 		spotlessTask = project.getTasks().create("spotlessTaskUnderTest", SpotlessTaskImpl.class);
 		spotlessTask.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
+		spotlessTask.init(GradleIntegrationHarness.providerOf(new SpotlessTaskService() {
+			@Override
+			public BuildServiceParameters.None getParameters() {
+				return null;
+			}
+		}));
 	}
 
 	@Test

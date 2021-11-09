@@ -27,6 +27,7 @@ import javax.annotation.Nullable;
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
+import org.gradle.api.provider.Provider;
 
 import com.diffplug.spotless.LineEnding;
 
@@ -45,6 +46,8 @@ public abstract class SpotlessExtension {
 	protected SpotlessExtension(Project project) {
 		this.project = requireNonNull(project);
 	}
+
+	abstract Provider<SpotlessTaskService> getTaskService();
 
 	abstract RegisterDependenciesTask getRegisterDependenciesTask();
 
