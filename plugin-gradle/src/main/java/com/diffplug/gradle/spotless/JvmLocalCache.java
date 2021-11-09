@@ -22,8 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.annotation.Nullable;
-
 import org.gradle.api.GradleException;
 import org.gradle.api.Task;
 
@@ -36,24 +34,20 @@ class JvmLocalCache {
 				"To make this workaround obsolete, please upvote https://github.com/diffplug/spotless/issues/987");
 	}
 
-	interface CacheKey<T> {
+	interface LiveCache<T> {
 		T get();
 
 		void set(T value);
 	}
 
-	static <T> CacheKey<T> createCacheKey(Task task, String keyName, @Nullable T initialValue) {
-		CacheKeyImpl key = new CacheKeyImpl<T>(new InternalCacheKey(task.getProject().getProjectDir(), task.getPath(), keyName));
-		if (initialValue != null) {
-			key.set(initialValue);
-		}
-		return key;
+	static <T> LiveCache<T> createLive(Task task, String propertyName) {
+		return new LiveCacheKeyImpl<T>(new InternalCacheKey(task.getProject().getProjectDir(), task.getPath(), propertyName));
 	}
 
-	static class CacheKeyImpl<T> implements CacheKey<T>, Serializable {
+	static class LiveCacheKeyImpl<T> implements LiveCache<T>, Serializable {
 		InternalCacheKey internalKey;
 
-		CacheKeyImpl(InternalCacheKey internalKey) {
+		LiveCacheKeyImpl(InternalCacheKey internalKey) {
 			this.internalKey = internalKey;
 		}
 
@@ -79,12 +73,12 @@ class JvmLocalCache {
 	private static class InternalCacheKey implements Serializable {
 		private File projectDir;
 		private String taskPath;
-		private String keyName;
+		private String propertyName;
 
 		InternalCacheKey(File projectDir, String taskPath, String keyName) {
 			this.projectDir = projectDir;
 			this.taskPath = taskPath;
-			this.keyName = keyName;
+			this.propertyName = keyName;
 		}
 
 		@Override
@@ -94,12 +88,12 @@ class JvmLocalCache {
 			if (o == null || getClass() != o.getClass())
 				return false;
 			InternalCacheKey that = (InternalCacheKey) o;
-			return projectDir.equals(that.projectDir) && taskPath.equals(that.taskPath) && keyName.equals(that.keyName);
+			return projectDir.equals(that.projectDir) && taskPath.equals(that.taskPath) && propertyName.equals(that.propertyName);
 		}
 
 		@Override
 		public int hashCode() {
-			return Objects.hash(projectDir, taskPath, keyName);
+			return Objects.hash(projectDir, taskPath, propertyName);
 		}
 	}
 }

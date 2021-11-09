@@ -38,7 +38,7 @@ import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.work.Incremental;
 
-import com.diffplug.gradle.spotless.JvmLocalCache.CacheKey;
+import com.diffplug.gradle.spotless.JvmLocalCache.LiveCache;
 import com.diffplug.spotless.FormatExceptionPolicy;
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
@@ -49,12 +49,8 @@ public abstract class SpotlessTask extends DefaultTask {
 	@Internal
 	abstract Property<SpotlessTaskService> getTaskService();
 
-	protected <T> CacheKey<T> createCacheKey(String keyName) {
-		return createCacheKey(keyName, null);
-	}
-
-	protected <T> CacheKey<T> createCacheKey(String keyName, @Nullable T initialValue) {
-		return JvmLocalCache.createCacheKey(this, keyName, initialValue);
+	protected <T> LiveCache<T> createLive(String keyName) {
+		return JvmLocalCache.createLive(this, keyName);
 	}
 
 	// set by SpotlessExtension, but possibly overridden by FormatExtension
@@ -69,7 +65,7 @@ public abstract class SpotlessTask extends DefaultTask {
 		this.encoding = Objects.requireNonNull(encoding);
 	}
 
-	protected final CacheKey<LineEnding.Policy> lineEndingsPolicy = createCacheKey("lineEndingsPolicy");
+	protected final LiveCache<LineEnding.Policy> lineEndingsPolicy = createLive("lineEndingsPolicy");
 
 	@Input
 	public LineEnding.Policy getLineEndingsPolicy() {
@@ -162,7 +158,10 @@ public abstract class SpotlessTask extends DefaultTask {
 		return outputDirectory;
 	}
 
-	protected final CacheKey<List<FormatterStep>> steps = createCacheKey("steps", new ArrayList<FormatterStep>());
+	protected final LiveCache<List<FormatterStep>> steps = createLive("steps");
+	{
+		steps.set(new ArrayList<FormatterStep>());
+	}
 
 	@Input
 	public List<FormatterStep> getSteps() {
