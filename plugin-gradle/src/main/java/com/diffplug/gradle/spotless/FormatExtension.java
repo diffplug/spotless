@@ -159,6 +159,16 @@ public class FormatExtension {
 	/** The files to be formatted = (target - targetExclude). */
 	protected FileCollection target, targetExclude;
 
+	protected boolean isLicenseHeaderStep(FormatterStep formatterStep) {
+		String formatterStepName = formatterStep.getName();
+
+		if (formatterStepName.startsWith(LicenseHeaderStep.class.getName())) {
+			return true;
+		}
+
+		return false;
+	}
+
 	/**
 	 * Sets which files should be formatted.  Files to be formatted = (target - targetExclude).
 	 *
@@ -409,6 +419,28 @@ public class FormatExtension {
 	public class LicenseHeaderConfig {
 		LicenseHeaderStep builder;
 		Boolean updateYearWithLatest = null;
+
+		public LicenseHeaderConfig named(String name) {
+			String existingStepName = builder.getName();
+
+			builder = builder.withName(name);
+
+			int existingStepIdx = getExistingStepIdx(existingStepName);
+
+			if (existingStepIdx != -1) {
+				steps.set(existingStepIdx, createStep());
+			} else {
+				addStep(createStep());
+			}
+
+			return this;
+		}
+
+		public LicenseHeaderConfig onlyIfMatches(String contentPattern) {
+			builder = builder.withContentPattern(contentPattern);
+			replaceStep(createStep());
+			return this;
+		}
 
 		public LicenseHeaderConfig(LicenseHeaderStep builder) {
 			this.builder = builder;
