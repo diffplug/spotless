@@ -30,13 +30,13 @@ public class SortPomStep {
 
 	private SortPomStep() {}
 
-	private SortPomCfg cfg;
-
 	public static FormatterStep create(SortPomCfg cfg, Provisioner provisioner) {
 		return FormatterStep.createLazy(NAME, () -> new State(cfg, provisioner), State::createFormat);
 	}
 
 	static class State implements Serializable {
+		private static final long serialVersionUID = 1;
+
 		SortPomCfg cfg;
 		JarState jarState;
 

@@ -1,13 +1,22 @@
+apply plugin: 'org.gradle.test-retry'
+
 def special = [
 	'Npm',
 	'Black',
 	'Clang'
 ]
 
+boolean isCiServer = System.getenv().containsKey("CI")
 tasks.named('test') {
 	// See com.diffplug.spotless.tag package for available JUnit 5 @Tag annotations
 	useJUnitPlatform {
 		excludeTags special as String[]
+	}
+	if (isCiServer) {
+		retry {
+			maxRetries = 1
+			maxFailures = 2
+		}
 	}
 }
 

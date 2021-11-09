@@ -124,6 +124,7 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 	}
 
 	@Test
+	@EnabledForJreRange(min = JAVA_11) // google-java-format requires JRE 11+
 	void equalityGroupArtifact() throws Exception {
 		new SerializableEqualityTester() {
 			String groupArtifact = GoogleJavaFormatStep.defaultGroupArtifact();

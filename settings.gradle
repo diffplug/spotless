@@ -11,6 +11,8 @@ pluginManagement {
 		id 'com.diffplug.spotless-changelog'       version '2.2.0'
 		// https://github.com/diffplug/goomph/blob/main/CHANGES.md
 		id 'com.diffplug.p2.asmaven'               version '3.33.2'
+		// https://github.com/gradle/test-retry-gradle-plugin/releases
+		id 'org.gradle.test-retry'                 version '1.3.1'
 	}
 }
 plugins {
@@ -20,6 +22,7 @@ plugins {
 	id 'com.github.spotbugs'                   apply false
 	id 'com.diffplug.spotless-changelog'       apply false
 	id 'com.diffplug.p2.asmaven'               apply false
+	id 'org.gradle.test-retry'                 apply false
 }
 if (System.env['CI'] != null) {
 	// use the remote buildcache on all CI builds

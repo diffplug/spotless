@@ -44,7 +44,7 @@ anchors:
           path: plugin-gradle/build/test-results/test
 jobs:
   # gradlew spotlessCheck assemble testClasses
-  assemble_testClasses: 
+  assemble_testClasses:
     <<: *env_gradle_large
     steps:
       - checkout
@@ -102,11 +102,28 @@ jobs:
           name: gradlew npmTest
           command: ./gradlew npmTest --build-cache
       - store_test_results:
-          path: testlib/build/test-results/npm
+          path: testlib/build/test-results/NpmTest
       - store_test_results:
-          path: plugin-maven/build/test-results/npm
+          path: plugin-maven/build/test-results/NpmTest
       - store_test_results:
-          path: plugin-gradle/build/test-results/npm
+          path: plugin-gradle/build/test-results/NpmTest
+      - run:
+          name: gradlew check
+          command: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew check --build-cache
+      - store_test_results:
+          path: testlib/build/test-results/test
+      - store_test_results:
+          path: lib-extra/build/test-results/test
+      - store_test_results:
+          path: plugin-gradle/build/test-results/test
+      - store_artifacts:
+          path: lib/build/spotbugs
+      - store_artifacts:
+          path: lib-extra/build/spotbugs
+      - store_artifacts:
+          path: testlib/build/spotbugs
+      - store_artifacts:
+          path: plugin-gradle/build/spotbugs
   test_windows:
     executor:
       name: win/default
@@ -114,11 +131,8 @@ jobs:
     steps:
       - checkout
       - run:
-          name: install 
-          command: choco install ojdkbuild8
-      - run:
-          name: gradlew check
-          command: gradlew check --build-cache -PSPOTLESS_EXCLUDE_MAVEN=true
+          name: gradlew test
+          command: gradlew test --build-cache -PSPOTLESS_EXCLUDE_MAVEN=true
       - store_test_results:
           path: testlib/build/test-results/test
       - store_test_results:
@@ -129,9 +143,9 @@ jobs:
           name: gradlew npmTest
           command: gradlew npmTest --build-cache -PSPOTLESS_EXCLUDE_MAVEN=true
       - store_test_results:
-          path: testlib/build/test-results/npm
+          path: testlib/build/test-results/NpmTest
       - store_test_results:
-          path: plugin-gradle/build/test-results/npm
+          path: plugin-gradle/build/test-results/NpmTest
   changelog_print:
     << : *env_gradle
     steps:
