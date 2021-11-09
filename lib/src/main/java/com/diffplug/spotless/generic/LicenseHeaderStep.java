@@ -51,19 +51,35 @@ public final class LicenseHeaderStep {
 	}
 
 	public static LicenseHeaderStep headerDelimiter(ThrowingEx.Supplier<String> headerLazy, String delimiter) {
-		return new LicenseHeaderStep(headerLazy, delimiter, DEFAULT_YEAR_DELIMITER, () -> YearMode.PRESERVE);
+		return new LicenseHeaderStep(null, null, headerLazy, delimiter, DEFAULT_YEAR_DELIMITER, () -> YearMode.PRESERVE);
 	}
 
+	final String name;
+	final String contentPattern;
 	final ThrowingEx.Supplier<String> headerLazy;
 	final String delimiter;
 	final String yearSeparator;
 	final Supplier<YearMode> yearMode;
 
-	private LicenseHeaderStep(ThrowingEx.Supplier<String> headerLazy, String delimiter, String yearSeparator, Supplier<YearMode> yearMode) {
+	private LicenseHeaderStep(String name, String contentPattern, ThrowingEx.Supplier<String> headerLazy, String delimiter, String yearSeparator, Supplier<YearMode> yearMode) {
+		this.name = sanitizeName(name);
+		this.contentPattern = sanitizeContentPattern(contentPattern);
 		this.headerLazy = Objects.requireNonNull(headerLazy);
 		this.delimiter = Objects.requireNonNull(delimiter);
 		this.yearSeparator = Objects.requireNonNull(yearSeparator);
 		this.yearMode = Objects.requireNonNull(yearMode);
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public LicenseHeaderStep withName(String name) {
+		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode);
+	}
+
+	public LicenseHeaderStep withContentPattern(String contentPattern) {
+		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode);
 	}
 
 	public LicenseHeaderStep withHeaderString(String header) {
@@ -71,15 +87,15 @@ public final class LicenseHeaderStep {
 	}
 
 	public LicenseHeaderStep withHeaderLazy(ThrowingEx.Supplier<String> headerLazy) {
-		return new LicenseHeaderStep(headerLazy, delimiter, yearSeparator, yearMode);
+		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode);
 	}
 
 	public LicenseHeaderStep withDelimiter(String delimiter) {
-		return new LicenseHeaderStep(headerLazy, delimiter, yearSeparator, yearMode);
+		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode);
 	}
 
 	public LicenseHeaderStep withYearSeparator(String yearSeparator) {
-		return new LicenseHeaderStep(headerLazy, delimiter, yearSeparator, yearMode);
+		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode);
 	}
 
 	public LicenseHeaderStep withYearMode(YearMode yearMode) {
@@ -87,18 +103,20 @@ public final class LicenseHeaderStep {
 	}
 
 	public LicenseHeaderStep withYearModeLazy(Supplier<YearMode> yearMode) {
-		return new LicenseHeaderStep(headerLazy, delimiter, yearSeparator, yearMode);
+		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode);
 	}
 
 	public FormatterStep build() {
+		FormatterStep formatterStep = null;
+
 		if (yearMode.get() == YearMode.SET_FROM_GIT) {
-			return FormatterStep.createNeverUpToDateLazy(LicenseHeaderStep.name(), () -> {
+			formatterStep = FormatterStep.createNeverUpToDateLazy(name, () -> {
 				boolean updateYear = false; // doesn't matter
 				Runtime runtime = new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear);
 				return FormatterFunc.needsFile(runtime::setLicenseHeaderYearsFromGitHistory);
 			});
 		} else {
-			return FormatterStep.createLazy(LicenseHeaderStep.name(), () -> {
+			formatterStep = FormatterStep.createLazy(name, () -> {
 				// by default, we should update the year if the user is using ratchetFrom
 				boolean updateYear;
 				switch (yearMode.get()) {
@@ -115,18 +133,48 @@ public final class LicenseHeaderStep {
 				return new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear);
 			}, step -> step::format);
 		}
+
+		if (contentPattern == null) {
+			return formatterStep;
+		}
+
+		return formatterStep.filterByContentPattern(contentPattern);
 	}
 
-	private static final String NAME = "licenseHeader";
+	private String sanitizeName(String name) {
+		if (name == null) {
+			return DEFAULT_NAME_PREFIX;
+		}
+
+		name = name.trim();
+
+		if (Objects.equals(DEFAULT_NAME_PREFIX, name) || name.startsWith(DEFAULT_NAME_PREFIX)) {
+			return name;
+		}
+
+		return DEFAULT_NAME_PREFIX + "-" + name;
+	}
+
+	private String sanitizeContentPattern(String contentPattern) {
+		if (contentPattern == null) {
+			return contentPattern;
+		}
+
+		contentPattern = contentPattern.trim();
+
+		if (contentPattern.isEmpty()) {
+			return null;
+		}
+
+		return contentPattern;
+	}
+
+	private static final String DEFAULT_NAME_PREFIX = LicenseHeaderStep.class.getName();
 	private static final String DEFAULT_YEAR_DELIMITER = "-";
 	private static final List<String> YEAR_TOKENS = Arrays.asList("$YEAR", "$today.year");
 
 	private static final SerializableFileFilter UNSUPPORTED_JVM_FILES_FILTER = SerializableFileFilter.skipFilesNamed(
 			"package-info.java", "package-info.groovy", "module-info.java");
-
-	public static String name() {
-		return NAME;
-	}
 
 	public static String defaultYearDelimiter() {
 		return DEFAULT_YEAR_DELIMITER;
