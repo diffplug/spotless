@@ -6,7 +6,7 @@ def special = [
 	'Clang'
 ]
 
-boolean isCiServer = true
+boolean isCiServer = System.getenv().containsKey("CI")
 tasks.named('test') {
 	// See com.diffplug.spotless.tag package for available JUnit 5 @Tag annotations
 	useJUnitPlatform {
@@ -14,7 +14,7 @@ tasks.named('test') {
 	}
 	if (isCiServer) {
 		retry {
-			maxRetries = 2
+			maxRetries = 1
 			maxFailures = 2
 		}
 	}
