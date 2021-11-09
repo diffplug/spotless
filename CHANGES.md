@@ -14,6 +14,12 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * `DiffMessageFormatter` can now generate messages based on a folder of cleaned files, as an alternative to a `Formatter` ([#982](https://github.com/diffplug/spotless/pull/982)).
 ### Fixed
 * Fix CI and various spotbugs nits ([#988](https://github.com/diffplug/spotless/pull/988)).
+### Changed
+* Bump default formatter versions ([#989](https://github.com/diffplug/spotless/pull/989))
+  * google-java-format `1.11.0` -> `1.12.0`
+  * ktlint `0.42.1` -> `0.43.0`
+  * ktfmt `0.27` -> `0.29`
+  * scalafmt `3.0.0` -> `3.0.8`
 
 ## [2.19.2] - 2021-10-26
 ### Changed

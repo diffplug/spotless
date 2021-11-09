@@ -3,6 +3,12 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Changed
+* Bump default formatter versions ([#989](https://github.com/diffplug/spotless/pull/989))
+  * google-java-format `1.11.0` -> `1.12.0`
+  * ktlint `0.42.1` -> `0.43.0`
+  * ktfmt `0.27` -> `0.29`
+  * scalafmt `3.0.0` -> `3.0.8`
 
 ## [2.17.3] - 2021-10-26
 ### Changed

@@ -41,7 +41,7 @@ public class ScalaFmtStep {
 
 	private static final Pattern VERSION_PRE_2_0 = Pattern.compile("[10]\\.(\\d+)\\.\\d+");
 	private static final Pattern VERSION_PRE_3_0 = Pattern.compile("2\\.(\\d+)\\.\\d+");
-	private static final String DEFAULT_VERSION = "3.0.0";
+	private static final String DEFAULT_VERSION = "3.0.8";
 	static final String NAME = "scalafmt";
 	static final String MAVEN_COORDINATE_PRE_2_0 = "com.geirsson:scalafmt-core_2.11:";
 	static final String MAVEN_COORDINATE_PRE_3_0 = "org.scalameta:scalafmt-core_2.11:";
