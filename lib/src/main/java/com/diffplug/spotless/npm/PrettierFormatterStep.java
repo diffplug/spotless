@@ -85,7 +85,7 @@ public class PrettierFormatterStep {
 				PrettierRestService restService = new PrettierRestService(prettierRestServer.getBaseUrl());
 				String prettierConfigOptions = restService.resolveConfig(this.prettierConfig.getPrettierConfigPath(), this.prettierConfig.getOptions());
 				return Closeable.ofDangerous(() -> endServer(restService, prettierRestServer), new PrettierFilePathPassingFormatterFunc(prettierConfigOptions, restService));
-			} catch (Exception e) {
+			} catch (IOException e) {
 				throw ThrowingEx.asRuntime(e);
 			}
 		}
