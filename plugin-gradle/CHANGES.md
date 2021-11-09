@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [6.0.0] - 2021-11-09
 ### Added
 * Support for Gradle Configuration Cache* ([#982](https://github.com/diffplug/spotless/pull/982), [#986](https://github.com/diffplug/spotless/pull/986))
   * *Spotless must run on the same daemon that wrote the configuration cache. If it isn't, you'll get this error message:
