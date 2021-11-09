@@ -51,6 +51,16 @@ public interface FormatterStep extends Serializable {
 	 *
 	 * The provided filter must be serializable.
 	 */
+	public default FormatterStep filterByContentPattern(String contentPattern) {
+		return new FilterByContentPatternFormatterStep(this, contentPattern);
+	}
+
+	/**
+	 * Returns a new FormatterStep which will only apply its changes
+	 * to files which pass the given filter.
+	 *
+	 * The provided filter must be serializable.
+	 */
 	public default FormatterStep filterByFile(SerializableFileFilter filter) {
 		return new FilterByFileFormatterStep(this, filter);
 	}
