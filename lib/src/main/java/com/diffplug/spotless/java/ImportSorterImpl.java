@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.java;
 
+import java.io.Serializable;
 import java.util.*;
 
 import javax.annotation.Nullable;
@@ -256,7 +257,9 @@ final class ImportSorterImpl {
 		return null;
 	}
 
-	private static class OrderingComparator implements Comparator<String> {
+	private static class OrderingComparator implements Comparator<String>, Serializable {
+		private static final long serialVersionUID = 1;
+
 		private final boolean wildcardsLast;
 
 		private OrderingComparator(boolean wildcardsLast) {
