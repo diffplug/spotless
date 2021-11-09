@@ -44,45 +44,13 @@ import com.diffplug.spotless.Provisioner;
  * apply already did).
  */
 public abstract class SpotlessTaskService implements BuildService<BuildServiceParameters.None>, AutoCloseable, OperationCompletionListener {
-	private boolean enableConfigCacheDaemonLocal;
 	private Map<String, SpotlessApply> apply = Collections.synchronizedMap(new HashMap<>());
 	private Map<String, SpotlessTask> source = Collections.synchronizedMap(new HashMap<>());
 	private Map<String, Provisioner> provisioner = Collections.synchronizedMap(new HashMap<>());
 
-	void registerDependenciesTask(RegisterDependenciesTask task) {
-		enableConfigCacheDaemonLocal = task.getJvmLocalCache();
-	}
-
 	void registerSourceAlreadyRan(SpotlessTask task) {
 		source.put(task.getPath(), task);
-		if (enableConfigCacheDaemonLocal) {
-			storeOrHydrate(task);
-		}
 	}
-
-	void hydrate(SpotlessTask task) {
-		storeOrHydrate(task);
-	}
-
-	private void storeOrHydrate(SpotlessTask task) {
-		if (!enableConfigCacheDaemonLocal) {
-			SpotlessTaskImpl.assertHydrated(task);
-			return;
-		}
-		String cacheKey = task.getProjectDir().getAsFile().get().getAbsolutePath() + ">" + task.getPath();
-		if (SpotlessTaskImpl.isHydrated(task)) {
-			daemonLocalMap.put(cacheKey, new SpotlessTaskImpl.LiveCache(task));
-		} else {
-			SpotlessTaskImpl.LiveCache cached = daemonLocalMap.get(cacheKey);
-			if (cached == null) {
-				throw SpotlessTaskImpl.cacheIsStale();
-			} else {
-				cached.hydrate(task);
-			}
-		}
-	}
-
-	private static final Map<String, SpotlessTaskImpl.LiveCache> daemonLocalMap = Collections.synchronizedMap(new HashMap<>());
 
 	Provisioner provisionerFor(Project project) {
 		return provisioner.computeIfAbsent(project.getPath(), unused -> {

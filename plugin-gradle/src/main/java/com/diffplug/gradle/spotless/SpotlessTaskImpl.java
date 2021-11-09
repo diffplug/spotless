@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
-import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -37,10 +35,7 @@ import org.gradle.work.FileChange;
 import org.gradle.work.InputChanges;
 
 import com.diffplug.common.base.StringPrinter;
-import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.Formatter;
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.PaddedCell;
 
 @CacheableTask
@@ -69,7 +64,6 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 			Files.createDirectories(outputDirectory.toPath());
 		}
 
-		assertHydrated(this);
 		try (Formatter formatter = buildFormatter()) {
 			for (FileChange fileChange : inputs.getFileChanges(target)) {
 				File input = fileChange.getFile();
@@ -130,43 +124,5 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 			}));
 		}
 		return new File(outputDirectory, outputFileName);
-	}
-
-	static boolean isHydrated(SpotlessTask task) {
-		return task.lineEndingsPolicy != null;
-	}
-
-	static void assertHydrated(SpotlessTask task) {
-		if (!isHydrated(task)) {
-			throw new GradleException("Spotless needs a workaround to support configuration cache:\n" +
-					"  (in your root build.gradle)\n" +
-					"  apply plugin: 'com.diffplug.spotless-setup\n" +
-					"  spotlessSetup { jvmLocalCache = true }\n" +
-					"To make this workaround obsolete, please upvote https://github.com/diffplug/spotless/issues/987");
-		}
-	}
-
-	static GradleException cacheIsStale() {
-		return new GradleException("Spotless JVM-local cache is stale. Regenerate the cache with\n" +
-				"  " + (FileSignature.machineIsWin() ? "rmdir /q /s" : "rm -rf") + " .gradle/configuration-cache\n" +
-				"To make this workaround obsolete, please upvote https://github.com/diffplug/spotless/issues/987");
-	}
-
-	static class LiveCache {
-		LineEnding.Policy lineEndingsPolicy;
-		List<FormatterStep> steps;
-		String ratchetFrom;
-
-		LiveCache(SpotlessTask task) {
-			lineEndingsPolicy = Objects.requireNonNull(task.lineEndingsPolicy);
-			steps = Objects.requireNonNull(task.steps);
-			ratchetFrom = Objects.requireNonNull(task.ratchetFrom);
-		}
-
-		void hydrate(SpotlessTask task) {
-			task.lineEndingsPolicy = lineEndingsPolicy;
-			task.steps = steps;
-			task.setupRatchet(ratchetFrom);
-		}
 	}
 }

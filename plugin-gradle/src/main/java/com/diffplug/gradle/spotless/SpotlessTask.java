@@ -38,6 +38,7 @@ import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.work.Incremental;
 
+import com.diffplug.gradle.spotless.JvmLocalCache.CacheKey;
 import com.diffplug.spotless.FormatExceptionPolicy;
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
@@ -48,10 +49,12 @@ public abstract class SpotlessTask extends DefaultTask {
 	@Internal
 	abstract Property<SpotlessTaskService> getTaskService();
 
-	private void hydrateIfNull(Object o) {
-		if (o == null) {
-			getTaskService().get().hydrate(this);
-		}
+	protected <T> CacheKey<T> createCacheKey(String keyName) {
+		return createCacheKey(keyName, null);
+	}
+
+	protected <T> CacheKey<T> createCacheKey(String keyName, @Nullable T initialValue) {
+		return JvmLocalCache.createCacheKey(this, keyName, initialValue);
 	}
 
 	// set by SpotlessExtension, but possibly overridden by FormatExtension
@@ -66,16 +69,15 @@ public abstract class SpotlessTask extends DefaultTask {
 		this.encoding = Objects.requireNonNull(encoding);
 	}
 
-	protected transient LineEnding.Policy lineEndingsPolicy;
+	protected final CacheKey<LineEnding.Policy> lineEndingsPolicy = createCacheKey("lineEndingsPolicy");
 
 	@Input
 	public LineEnding.Policy getLineEndingsPolicy() {
-		hydrateIfNull(lineEndingsPolicy);
-		return lineEndingsPolicy;
+		return lineEndingsPolicy.get();
 	}
 
 	public void setLineEndingsPolicy(LineEnding.Policy lineEndingsPolicy) {
-		this.lineEndingsPolicy = Objects.requireNonNull(lineEndingsPolicy);
+		this.lineEndingsPolicy.set(lineEndingsPolicy);
 	}
 
 	/*** API which performs git up-to-date tasks. */
@@ -90,7 +92,7 @@ public abstract class SpotlessTask extends DefaultTask {
 	 */
 	private transient ObjectId subtreeSha = ObjectId.zeroId();
 	/** Stored so that the configuration cache can recreate the GitRatchetGradle state. */
-	protected transient String ratchetFrom;
+	protected String ratchetFrom;
 
 	public void setupRatchet(String ratchetFrom) {
 		this.ratchetFrom = ratchetFrom;
@@ -119,7 +121,9 @@ public abstract class SpotlessTask extends DefaultTask {
 
 	@Input
 	public ObjectId getRatchetSha() {
-		hydrateIfNull(subtreeSha);
+		if (subtreeSha == null) {
+			setupRatchet(ratchetFrom);
+		}
 		return subtreeSha;
 	}
 
@@ -158,20 +162,19 @@ public abstract class SpotlessTask extends DefaultTask {
 		return outputDirectory;
 	}
 
-	protected transient List<FormatterStep> steps = new ArrayList<>();
+	protected final CacheKey<List<FormatterStep>> steps = createCacheKey("steps", new ArrayList<FormatterStep>());
 
 	@Input
 	public List<FormatterStep> getSteps() {
-		hydrateIfNull(steps);
-		return Collections.unmodifiableList(steps);
+		return Collections.unmodifiableList(steps.get());
 	}
 
 	public void setSteps(List<FormatterStep> steps) {
-		this.steps = PluginGradlePreconditions.requireElementsNonNull(steps);
+		this.steps.set(PluginGradlePreconditions.requireElementsNonNull(steps));
 	}
 
 	public boolean addStep(FormatterStep step) {
-		return this.steps.add(Objects.requireNonNull(step));
+		return this.steps.get().add(Objects.requireNonNull(step));
 	}
 
 	/** Returns the name of this format. */
@@ -186,10 +189,10 @@ public abstract class SpotlessTask extends DefaultTask {
 
 	Formatter buildFormatter() {
 		return Formatter.builder()
-				.lineEndingsPolicy(lineEndingsPolicy)
+				.lineEndingsPolicy(lineEndingsPolicy.get())
 				.encoding(Charset.forName(encoding))
 				.rootDir(getProjectDir().get().getAsFile().toPath())
-				.steps(steps)
+				.steps(steps.get())
 				.exceptionPolicy(exceptionPolicy)
 				.build();
 	}
