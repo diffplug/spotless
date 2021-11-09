@@ -242,7 +242,7 @@ public final class Jvm {
 
 			private static <V> int[] convert(V versionObject) {
 				try {
-					return Arrays.asList(versionObject.toString().split("\\.")).stream().mapToInt(s -> Integer.valueOf(s)).toArray();
+					return Arrays.asList(versionObject.toString().split("\\.")).stream().mapToInt(Integer::parseInt).toArray();
 				} catch (Exception e) {
 					throw new IllegalArgumentException(String.format("Not a semantic version: %s", versionObject), e);
 				}
