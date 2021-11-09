@@ -4,7 +4,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Changed
-* **BREAKING** Previously, many projects required `buildscript { repositories { mavenCentral() }}` at the top of their root project, because Spotless resolved its dependencies using the buildscript repositories. Spotless now resolves its dependencies from the normal project repositories of the root project, which means that you can remove the `buildscript {}` block, but you still need `repositories { mavenCentral() }` (or similar) in the root project.
+* **BREAKING** Previously, many projects required `buildscript { repositories { mavenCentral() }}` at the top of their root project, because Spotless resolved its dependencies using the buildscript repositories. Spotless now resolves its dependencies from the normal project repositories of each project with a `spotless {...}` block. This means that you can remove the `buildscript {}` block, but you still need a `repositories { mavenCentral() }` (or similar) in each project which is using Spotless.
 * **BREAKING** `createIndepentApplyTask(String taskName)` now requires that `taskName` does not end with `Apply`
 * Bump minimum required Gradle from `6.1` to `6.1.1`.
 

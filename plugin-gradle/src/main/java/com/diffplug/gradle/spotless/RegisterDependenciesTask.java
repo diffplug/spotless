@@ -18,16 +18,12 @@ package com.diffplug.gradle.spotless;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
-import org.gradle.api.execution.TaskExecutionGraph;
 import org.gradle.api.provider.Property;
-import org.gradle.api.provider.Provider;
-import org.gradle.api.tasks.Input;
+import org.gradle.api.services.BuildServiceRegistry;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
@@ -35,7 +31,6 @@ import org.gradle.build.event.BuildEventsListenerRegistry;
 
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.io.Files;
-import com.diffplug.spotless.FormatterStep;
 
 /**
  * NOT AN END-USER TASK, DO NOT USE FOR ANYTHING!
@@ -50,26 +45,17 @@ import com.diffplug.spotless.FormatterStep;
 public abstract class RegisterDependenciesTask extends DefaultTask {
 	static final String TASK_NAME = "spotlessInternalRegisterDependencies";
 
-	@Input
-	public List<FormatterStep> getSteps() {
-		List<FormatterStep> allSteps = new ArrayList<>();
-		TaskExecutionGraph taskGraph = getProject().getGradle().getTaskGraph();
-		tasks.stream()
-				.filter(taskGraph::hasTask)
-				.sorted()
-				.forEach(task -> allSteps.addAll(task.getSteps()));
-		return allSteps;
-	}
-
-	private List<SpotlessTask> tasks = new ArrayList<>();
-
-	@Internal
-	public List<SpotlessTask> getTasks() {
-		return tasks;
-	}
-
 	void hookSubprojectTask(SpotlessTask task) {
-		tasks.add(task);
+		// TODO: in the future, we might use this hook to add an optional perf improvement
+		// spotlessRoot {
+		//    java { googleJavaFormat('1.2') }
+		//    ...etc
+		// }
+		// The point would be to reuse configurations from the root project,
+		// with the restriction that you have to declare every formatter in
+		// the root, and you'd get an error if you used a formatter somewhere
+		// which you didn't declare in the root. That's a problem for the future
+		// though, not today!
 		task.dependsOn(this);
 	}
 
@@ -80,30 +66,23 @@ public abstract class RegisterDependenciesTask extends DefaultTask {
 		return unitOutput;
 	}
 
-	GradleProvisioner.RootProvisioner rootProvisioner;
-
-	@Internal
-	public GradleProvisioner.RootProvisioner getRootProvisioner() {
-		return rootProvisioner;
-	}
-
 	void setup() {
 		Preconditions.checkArgument(getProject().getRootProject() == getProject(), "Can only be used on the root project");
 		unitOutput = new File(getProject().getBuildDir(), "tmp/spotless-register-dependencies");
-		rootProvisioner = new GradleProvisioner.RootProvisioner(getProject());
-		Provider<GitRatchetGradle> gitRatchetProvider = getProject().getGradle().getSharedServices().registerIfAbsent("GitRatchetGradle", GitRatchetGradle.class, unused -> {});
-		getBuildEventsListenerRegistry().onTaskCompletion(gitRatchetProvider);
-		getGitRatchet().set(gitRatchetProvider);
+
+		BuildServiceRegistry buildServices = getProject().getGradle().getSharedServices();
+		getTaskService().set(buildServices.registerIfAbsent("SpotlessTaskService", SpotlessTaskService.class, spec -> {}));
+		getBuildEventsListenerRegistry().onTaskCompletion(getTaskService());
 	}
 
 	@TaskAction
 	public void trivialFunction() throws IOException {
 		Files.createParentDirs(unitOutput);
-		Files.write(Integer.toString(getSteps().size()), unitOutput, StandardCharsets.UTF_8);
+		Files.write(Integer.toString(1), unitOutput, StandardCharsets.UTF_8);
 	}
 
 	@Internal
-	public abstract Property<GitRatchetGradle> getGitRatchet();
+	abstract Property<SpotlessTaskService> getTaskService();
 
 	@Inject
 	protected abstract BuildEventsListenerRegistry getBuildEventsListenerRegistry();

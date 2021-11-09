@@ -22,18 +22,20 @@ import org.junit.jupiter.api.Test;
 
 class RegisterDependenciesTaskTest extends GradleIntegrationHarness {
 	@Test
-	void registerDependencies() throws IOException {
+	void duplicateConfigs() throws IOException {
 		setFile("settings.gradle")
 				.toLines("include 'sub'");
-		setFile("build.gradle").toLines(
-				"plugins { id 'com.diffplug.spotless' }",
-				"repositories { mavenCentral() }");
 		setFile("sub/build.gradle").toLines(
-				"apply plugin: 'com.diffplug.spotless'",
+				"plugins { id 'com.diffplug.spotless' }",
 				"",
+				"repositories { mavenCentral() }",
 				"spotless {",
 				"  java {",
 				"    target 'src/main/java/**/*.java'",
+				"    googleJavaFormat('1.2')",
+				"  }",
+				"  format 'javaDupe', com.diffplug.gradle.spotless.JavaExtension, {",
+				"    target 'src/boop/java/**/*.java'",
 				"    googleJavaFormat('1.2')",
 				"  }",
 				"}");
@@ -41,10 +43,13 @@ class RegisterDependenciesTaskTest extends GradleIntegrationHarness {
 		setFile("gradle.properties").toLines();
 		String newestSupported = gradleRunner().withArguments("spotlessCheck").build().getOutput();
 		Assertions.assertThat(newestSupported.replace("\r", ""))
-				.startsWith("> Task :spotlessCheck UP-TO-DATE\n" +
+				.startsWith(
 						"> Task :spotlessInternalRegisterDependencies\n")
-				.contains("> Task :sub:spotlessJava\n" +
-						"> Task :sub:spotlessJavaCheck\n" +
+				.contains(
+						"> Task :sub:spotlessJava\n",
+						"> Task :sub:spotlessJavaCheck\n",
+						"> Task :sub:spotlessJavaDupe\n",
+						"> Task :sub:spotlessJavaDupeCheck\n",
 						"> Task :sub:spotlessCheck\n");
 	}
 }

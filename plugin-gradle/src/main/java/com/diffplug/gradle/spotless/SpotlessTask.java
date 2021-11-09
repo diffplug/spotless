@@ -29,6 +29,7 @@ import org.eclipse.jgit.lib.ObjectId;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Internal;
@@ -44,6 +45,9 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 
 public abstract class SpotlessTask extends DefaultTask {
+	@Internal
+	abstract Property<SpotlessTaskService> getTaskService();
+
 	// set by SpotlessExtension, but possibly overridden by FormatExtension
 	protected String encoding = "UTF-8";
 
@@ -56,7 +60,7 @@ public abstract class SpotlessTask extends DefaultTask {
 		this.encoding = Objects.requireNonNull(encoding);
 	}
 
-	protected LineEnding.Policy lineEndingsPolicy;
+	protected transient LineEnding.Policy lineEndingsPolicy;
 
 	@Input
 	public LineEnding.Policy getLineEndingsPolicy() {
@@ -69,21 +73,21 @@ public abstract class SpotlessTask extends DefaultTask {
 
 	/*** API which performs git up-to-date tasks. */
 	@Nullable
-	GitRatchetGradle ratchet;
+	private transient GitRatchetGradle ratchet;
 	/** The sha of the tree at repository root, used for determining if an individual *file* is clean according to git. */
-	ObjectId rootTreeSha;
+	private transient ObjectId rootTreeSha;
 	/**
 	 * The sha of the tree at the root of *this project*, used to determine if the git baseline has changed within this folder.
 	 * Using a more fine-grained tree (rather than the project root) allows Gradle to mark more subprojects as up-to-date
 	 * compared to using the project root.
 	 */
-	private ObjectId subtreeSha = ObjectId.zeroId();
+	private transient ObjectId subtreeSha = ObjectId.zeroId();
 
-	public void setupRatchet(GitRatchetGradle gitRatchet, String ratchetFrom) {
-		ratchet = gitRatchet;
+	public void setupRatchet(String ratchetFrom) {
+		ratchet = getTaskService().get().getRatchet();
 		File projectDir = getProjectDir().get().getAsFile();
-		rootTreeSha = gitRatchet.rootTreeShaOf(projectDir, ratchetFrom);
-		subtreeSha = gitRatchet.subtreeShaOf(projectDir, rootTreeSha);
+		rootTreeSha = ratchet.rootTreeShaOf(projectDir, ratchetFrom);
+		subtreeSha = ratchet.subtreeShaOf(projectDir, rootTreeSha);
 	}
 
 	@Internal
@@ -139,7 +143,7 @@ public abstract class SpotlessTask extends DefaultTask {
 		return outputDirectory;
 	}
 
-	protected List<FormatterStep> steps = new ArrayList<>();
+	protected transient List<FormatterStep> steps = new ArrayList<>();
 
 	@Input
 	public List<FormatterStep> getSteps() {

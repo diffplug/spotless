@@ -23,15 +23,19 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.Project;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
 import org.gradle.api.services.BuildService;
 import org.gradle.api.services.BuildServiceParameters;
 import org.gradle.api.tasks.Internal;
+import org.gradle.tooling.events.FinishEvent;
+import org.gradle.tooling.events.OperationCompletionListener;
 
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.base.Unhandled;
+import com.diffplug.spotless.Provisioner;
 
 /**
  * Allows the check and apply tasks to coordinate
@@ -39,17 +43,42 @@ import com.diffplug.common.base.Unhandled;
  * duplicated work (e.g. no need for check to run if
  * apply already did).
  */
-public abstract class SpotlessTaskService implements BuildService<BuildServiceParameters.None> {
+public abstract class SpotlessTaskService implements BuildService<BuildServiceParameters.None>, AutoCloseable, OperationCompletionListener {
 	private final Map<String, SpotlessApply> apply = Collections.synchronizedMap(new HashMap<>());
 	private final Map<String, SpotlessTask> source = Collections.synchronizedMap(new HashMap<>());
+	private final Map<String, Provisioner> provisioner = Collections.synchronizedMap(new HashMap<>());
 
-	public void registerSourceAlreadyRan(SpotlessTask task) {
+	Provisioner provisionerFor(Project project) {
+		return provisioner.computeIfAbsent(project.getPath(), unused -> {
+			return GradleProvisioner.newDedupingProvisioner(project);
+		});
+	}
+
+	void registerSourceAlreadyRan(SpotlessTask task) {
 		source.put(task.getPath(), task);
 	}
 
-	public void registerApplyAlreadyRan(SpotlessApply task) {
+	void registerApplyAlreadyRan(SpotlessApply task) {
 		apply.put(task.sourceTaskPath(), task);
 	}
+
+	// <GitRatchet>
+	private final GitRatchetGradle ratchet = new GitRatchetGradle();
+
+	GitRatchetGradle getRatchet() {
+		return ratchet;
+	}
+
+	@Override
+	public void onFinish(FinishEvent var1) {
+		// NOOP
+	}
+
+	@Override
+	public void close() throws Exception {
+		ratchet.close();
+	}
+	// </GitRatchet>
 
 	static String INDEPENDENT_HELPER = "Helper";
 

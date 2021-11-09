@@ -88,7 +88,7 @@ class UpToDateTest extends GradleIntegrationHarness {
 		// the format task is UP-TO-DATE (same inputs), but the apply tasks will run again
 		pauseForFilesystem();
 		BuildResult buildResult = gradleRunner().withArguments("spotlessApply").build();
-		Assertions.assertThat(buildResult.taskPaths(TaskOutcome.UP_TO_DATE)).containsExactly(":spotlessMisc");
+		Assertions.assertThat(buildResult.taskPaths(TaskOutcome.UP_TO_DATE)).containsExactly(":spotlessInternalRegisterDependencies", ":spotlessMisc");
 		Assertions.assertThat(buildResult.taskPaths(TaskOutcome.SUCCESS)).containsExactly(":spotlessMiscApply", ":spotlessApply");
 		assertFile("README.md").hasContent("abc");
 

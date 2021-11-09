@@ -19,15 +19,10 @@ import java.io.File;
 
 import javax.annotation.Nullable;
 
-import org.gradle.api.services.BuildService;
-import org.gradle.api.services.BuildServiceParameters;
-import org.gradle.tooling.events.FinishEvent;
-import org.gradle.tooling.events.OperationCompletionListener;
-
 import com.diffplug.spotless.extra.GitRatchet;
 
 /** Gradle implementation of GitRatchet. */
-public abstract class GitRatchetGradle extends GitRatchet<File> implements BuildService<BuildServiceParameters.None>, OperationCompletionListener {
+public class GitRatchetGradle extends GitRatchet<File> {
 	@Override
 	protected File getDir(File project) {
 		return project;
@@ -36,10 +31,5 @@ public abstract class GitRatchetGradle extends GitRatchet<File> implements Build
 	@Override
 	protected @Nullable File getParent(File project) {
 		return project.getParentFile();
-	}
-
-	@Override
-	public void onFinish(FinishEvent finishEvent) {
-		// NOOP
 	}
 }

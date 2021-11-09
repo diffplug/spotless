@@ -75,7 +75,7 @@ public class FormatExtension {
 	}
 
 	protected final Provisioner provisioner() {
-		return spotless.getRegisterDependenciesTask().rootProvisioner;
+		return spotless.getRegisterDependenciesTask().getTaskService().get().provisionerFor(spotless.project);
 	}
 
 	private String formatName() {
@@ -733,11 +733,9 @@ public class FormatExtension {
 		}
 		task.setSteps(steps);
 		task.setLineEndingsPolicy(getLineEndings().createPolicy(getProject().getProjectDir(), () -> totalTarget));
-		if (spotless.project != spotless.project.getRootProject()) {
-			spotless.getRegisterDependenciesTask().hookSubprojectTask(task);
-		}
+		spotless.getRegisterDependenciesTask().hookSubprojectTask(task);
 		if (getRatchetFrom() != null) {
-			task.setupRatchet(spotless.getRegisterDependenciesTask().getGitRatchet().get(), getRatchetFrom());
+			task.setupRatchet(getRatchetFrom());
 		}
 	}
 
@@ -763,7 +761,7 @@ public class FormatExtension {
 		Preconditions.checkArgument(!taskName.endsWith(SpotlessExtension.APPLY), "Task name must not end with " + SpotlessExtension.APPLY);
 		// create and setup the task
 		SpotlessTaskImpl spotlessTask = spotless.project.getTasks().create(taskName + SpotlessTaskService.INDEPENDENT_HELPER, SpotlessTaskImpl.class);
-		spotlessTask.init(spotless.getTaskService());
+		spotlessTask.init(spotless.getRegisterDependenciesTask().getTaskService());
 		setupTask(spotlessTask);
 		// enforce the clean ordering
 		Task clean = spotless.project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME);

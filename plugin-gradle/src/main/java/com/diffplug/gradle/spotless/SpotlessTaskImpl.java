@@ -26,7 +26,6 @@ import javax.inject.Inject;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileSystemOperations;
-import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.CacheableTask;
 import org.gradle.api.tasks.Internal;
@@ -41,9 +40,6 @@ import com.diffplug.spotless.PaddedCell;
 
 @CacheableTask
 public abstract class SpotlessTaskImpl extends SpotlessTask {
-	@Internal
-	abstract Property<SpotlessTaskService> getTaskService();
-
 	@Internal
 	abstract DirectoryProperty getProjectDir();
 
@@ -68,17 +64,22 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 			Files.createDirectories(outputDirectory.toPath());
 		}
 
-		try (Formatter formatter = buildFormatter()) {
-			for (FileChange fileChange : inputs.getFileChanges(target)) {
-				File input = fileChange.getFile();
-				if (fileChange.getChangeType() == ChangeType.REMOVED) {
-					deletePreviousResult(input);
-				} else {
-					if (input.isFile()) {
-						processInputFile(formatter, input);
+		if (lineEndingsPolicy != null) {
+			try (Formatter formatter = buildFormatter()) {
+				for (FileChange fileChange : inputs.getFileChanges(target)) {
+					File input = fileChange.getFile();
+					if (fileChange.getChangeType() == ChangeType.REMOVED) {
+						deletePreviousResult(input);
+					} else {
+						if (input.isFile()) {
+							processInputFile(formatter, input);
+						}
 					}
 				}
 			}
+		} else {
+			throw new GradleException("Spotless doesn't support configuration cache yet.\n" +
+					"Rerun with --no-configuration-cache");
 		}
 	}
 
@@ -86,7 +87,7 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 		File output = getOutputFile(input);
 		getLogger().debug("Applying format to " + input + " and writing to " + output);
 		PaddedCell.DirtyState dirtyState;
-		if (ratchet != null && ratchet.isClean(getProjectDir().get().getAsFile(), rootTreeSha, input)) {
+		if (getRatchet() != null && getRatchet().isClean(getProjectDir().get().getAsFile(), getRootTreeSha(), input)) {
 			dirtyState = PaddedCell.isClean();
 		} else {
 			dirtyState = PaddedCell.calculateDirtyState(formatter, input);

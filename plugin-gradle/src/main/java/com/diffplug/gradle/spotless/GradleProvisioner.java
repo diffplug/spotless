@@ -27,7 +27,6 @@ import java.util.logging.Logger;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 
-import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.spotless.Provisioner;
 
@@ -35,41 +34,38 @@ import com.diffplug.spotless.Provisioner;
 class GradleProvisioner {
 	private GradleProvisioner() {}
 
-	/** The provisioner used for the root project. */
-	static class RootProvisioner implements Provisioner {
-		private final Project rootProject;
+	static Provisioner newDedupingProvisioner(Project project) {
+		return new DedupingProvisioner(project);
+	}
+
+	static class DedupingProvisioner implements Provisioner {
+		private final Project project;
 		private final Map<Request, Set<File>> cache = new HashMap<>();
 
-		RootProvisioner(Project rootProject) {
-			Preconditions.checkArgument(rootProject == rootProject.getRootProject());
-			this.rootProject = rootProject;
+		DedupingProvisioner(Project project) {
+			this.project = project;
 		}
 
 		@Override
 		public Set<File> provisionWithTransitives(boolean withTransitives, Collection<String> mavenCoordinates) {
 			Request req = new Request(withTransitives, mavenCoordinates);
-			Set<File> result;
-			synchronized (cache) {
-				result = cache.get(req);
-			}
+			Set<File> result = cache.get(req);
 			if (result != null) {
 				return result;
 			} else {
-				synchronized (cache) {
-					result = cache.get(req);
-					if (result != null) {
-						return result;
-					} else {
-						result = GradleProvisioner.forProject(rootProject).provisionWithTransitives(req.withTransitives, req.mavenCoords);
-						cache.put(req, result);
-						return result;
-					}
+				result = cache.get(req);
+				if (result != null) {
+					return result;
+				} else {
+					result = forProject(project).provisionWithTransitives(req.withTransitives, req.mavenCoords);
+					cache.put(req, result);
+					return result;
 				}
 			}
 		}
 	}
 
-	static Provisioner forProject(Project project) {
+	private static Provisioner forProject(Project project) {
 		Objects.requireNonNull(project);
 		return (withTransitives, mavenCoords) -> {
 			try {
@@ -82,10 +78,13 @@ class GradleProvisioner {
 				config.setTransitive(withTransitives);
 				return config.resolve();
 			} catch (Exception e) {
-				String projName = project.getPath();
+				String projName = project.getPath().substring(1).replace(':', '/');
+				if (!projName.isEmpty()) {
+					projName = projName + "/";
+				}
 				logger.log(
 						Level.SEVERE,
-						"You probably need to add a repository containing the '" + mavenCoords + "' artifact in the 'build.gradle' of the " + projName + " project.\n" +
+						"You need to add a repository containing the '" + mavenCoords + "' artifact in '" + projName + "build.gradle'.\n" +
 								"E.g.: 'repositories { mavenCentral() }'",
 						e);
 				throw e;
