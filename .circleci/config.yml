@@ -44,7 +44,7 @@ anchors:
           path: plugin-gradle/build/test-results/test
 jobs:
   # gradlew spotlessCheck assemble testClasses
-  assemble_testClasses: 
+  assemble_testClasses:
     <<: *env_gradle_large
     steps:
       - checkout
@@ -102,11 +102,11 @@ jobs:
           name: gradlew npmTest
           command: ./gradlew npmTest --build-cache
       - store_test_results:
-          path: testlib/build/test-results/npm
+          path: testlib/build/test-results/NpmTest
       - store_test_results:
-          path: plugin-maven/build/test-results/npm
+          path: plugin-maven/build/test-results/NpmTest
       - store_test_results:
-          path: plugin-gradle/build/test-results/npm
+          path: plugin-gradle/build/test-results/NpmTest
   test_windows:
     executor:
       name: win/default
@@ -114,7 +114,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: install 
+          name: install
           command: choco install ojdkbuild8
       - run:
           name: gradlew check
@@ -129,9 +129,9 @@ jobs:
           name: gradlew npmTest
           command: gradlew npmTest --build-cache -PSPOTLESS_EXCLUDE_MAVEN=true
       - store_test_results:
-          path: testlib/build/test-results/npm
+          path: testlib/build/test-results/NpmTest
       - store_test_results:
-          path: plugin-gradle/build/test-results/npm
+          path: plugin-gradle/build/test-results/NpmTest
   changelog_print:
     << : *env_gradle
     steps:
