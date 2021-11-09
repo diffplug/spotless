@@ -44,13 +44,9 @@ import com.diffplug.spotless.Provisioner;
  * apply already did).
  */
 public abstract class SpotlessTaskService implements BuildService<BuildServiceParameters.None>, AutoCloseable, OperationCompletionListener {
-	private Map<String, SpotlessApply> apply = Collections.synchronizedMap(new HashMap<>());
-	private Map<String, SpotlessTask> source = Collections.synchronizedMap(new HashMap<>());
-	private Map<String, Provisioner> provisioner = Collections.synchronizedMap(new HashMap<>());
-
-	void registerSourceAlreadyRan(SpotlessTask task) {
-		source.put(task.getPath(), task);
-	}
+	private final Map<String, SpotlessApply> apply = Collections.synchronizedMap(new HashMap<>());
+	private final Map<String, SpotlessTask> source = Collections.synchronizedMap(new HashMap<>());
+	private final Map<String, Provisioner> provisioner = Collections.synchronizedMap(new HashMap<>());
 
 	Provisioner provisionerFor(Project project) {
 		return provisioner.computeIfAbsent(project.getPath(), unused -> {
@@ -58,13 +54,16 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 		});
 	}
 
+	void registerSourceAlreadyRan(SpotlessTask task) {
+		source.put(task.getPath(), task);
+	}
+
 	void registerApplyAlreadyRan(SpotlessApply task) {
 		apply.put(task.sourceTaskPath(), task);
 	}
 
-	/////////////////
 	// <GitRatchet>
-	private GitRatchetGradle ratchet = new GitRatchetGradle();
+	private final GitRatchetGradle ratchet = new GitRatchetGradle();
 
 	GitRatchetGradle getRatchet() {
 		return ratchet;
@@ -80,7 +79,6 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 		ratchet.close();
 	}
 	// </GitRatchet>
-	//////////////////
 
 	static String INDEPENDENT_HELPER = "Helper";
 
