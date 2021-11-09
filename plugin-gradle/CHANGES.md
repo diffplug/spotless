@@ -16,6 +16,11 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   * If you prefer the old behavior, we are open to adding that back as a new feature, see [#984 predeclared dependencies](https://github.com/diffplug/spotless/issues/984).
 * **BREAKING** `createIndepentApplyTask(String taskName)` now requires that `taskName` does not end with `Apply`
 * Bump minimum required Gradle from `6.1` to `6.1.1`.
+* Bump default formatter versions ([#989](https://github.com/diffplug/spotless/pull/989))
+  * google-java-format `1.11.0` -> `1.12.0`
+  * ktlint `0.42.1` -> `0.43.0`
+  * ktfmt `0.27` -> `0.29`
+  * scalafmt `3.0.0` -> `3.0.8`
 
 ### Removed
 * **BREAKING** `removeFormat` (which has been broken since `5.0`) has been removed. Use `clearSteps()` as a workaround ([#653](https://github.com/diffplug/spotless/issues/653)).
