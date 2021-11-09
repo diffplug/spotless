@@ -102,7 +102,6 @@ public final class DiffMessageFormatter {
 
 		@Override
 		public String getFormatted(File file, String rawUnix) {
-			Path relative = rootDir.relativize(file.toPath());
 			Path clean = cleanDir.resolve(rootDir.relativize(file.toPath()));
 			byte[] content = Errors.rethrow().get(() -> Files.readAllBytes(clean));
 			return new String(content, encoding);
