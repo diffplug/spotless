@@ -55,7 +55,7 @@ public final class LicenseHeaderStep {
 	}
 
 	final String name;
-	final String contentPattern;
+	final @Nullable String contentPattern;
 	final ThrowingEx.Supplier<String> headerLazy;
 	final String delimiter;
 	final String yearSeparator;
@@ -155,6 +155,7 @@ public final class LicenseHeaderStep {
 		return DEFAULT_NAME_PREFIX + "-" + name;
 	}
 
+	@Nullable
 	private String sanitizeContentPattern(String contentPattern) {
 		if (contentPattern == null) {
 			return contentPattern;
