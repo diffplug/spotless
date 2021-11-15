@@ -39,9 +39,8 @@ class IndexBasedChecker implements UpToDateChecker {
 
 	static IndexBasedChecker create(MavenProject project, Iterable<Formatter> formatters, Log log) {
 		PluginFingerprint pluginFingerprint = PluginFingerprint.from(project, formatters);
-		// todo: does this produce the correct dir?
-		Path buildDir = project.getBasedir().toPath().resolve(project.getBuild().getDirectory());
-		FileIndex fileIndex = FileIndex.read(buildDir, pluginFingerprint, log);
+		FileIndexConfig indexConfig = new FileIndexConfig(project, pluginFingerprint);
+		FileIndex fileIndex = FileIndex.read(indexConfig, log);
 		return new IndexBasedChecker(fileIndex);
 	}
 
