@@ -100,11 +100,7 @@ class FileIndex {
 			return;
 		}
 
-		try {
-			Files.createDirectories(indexFile.getParent());
-		} catch (IOException e) {
-			throw new UncheckedIOException("Unable to create parent directory for the index file: " + indexFile, e);
-		}
+		ensureParentDirExists();
 		try (PrintWriter writer = new PrintWriter(newBufferedWriter(indexFile, UTF_8, CREATE, TRUNCATE_EXISTING))) {
 			writer.println(pluginFingerprint.value());
 
@@ -113,6 +109,14 @@ class FileIndex {
 			}
 		} catch (IOException e) {
 			throw new UncheckedIOException("Unable to write the index", e);
+		}
+	}
+
+	private void ensureParentDirExists() {
+		try {
+			Files.createDirectories(indexFile.getParent());
+		} catch (IOException e) {
+			throw new UncheckedIOException("Unable to create parent directory for the index file: " + indexFile, e);
 		}
 	}
 
