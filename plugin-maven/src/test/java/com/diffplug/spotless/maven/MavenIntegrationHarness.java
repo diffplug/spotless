@@ -59,6 +59,7 @@ public class MavenIntegrationHarness extends ResourceHarness {
 	private static final String MODULES = "modules";
 	private static final String MODULE_NAME = "name";
 	private static final String CHILD_ID = "childId";
+	private static final int REMOTE_DEBUG_PORT = 5005;
 
 	private final MustacheFactory mustacheFactory = new DefaultMustacheFactory();
 
@@ -151,6 +152,15 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		return MavenRunner.create()
 				.withProjectDir(rootFolder())
 				.withLocalRepository(new File(getSystemProperty(LOCAL_MAVEN_REPOSITORY_DIR)));
+	}
+
+	/**
+	 * Useful for local development. Allows debugging the Spotless Maven Plugin remotely.
+	 * Effectively translates into running {@code mvnDebug} on port 5005. The forked JVM will be
+	 * suspended until the debugger connects.
+	 */
+	protected MavenRunner mavenRunnerWithRemoteDebug() throws IOException {
+		return mavenRunner().withRemoteDebug(REMOTE_DEBUG_PORT);
 	}
 
 	protected MultiModuleProjectCreator multiModuleProject() {
