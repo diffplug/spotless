@@ -66,13 +66,14 @@ class FileIndex {
 		}
 
 		try (BufferedReader reader = newBufferedReader(indexFile, UTF_8)) {
-			PluginFingerprint actualPluginFingerprint = PluginFingerprint.from(reader.readLine());
-			if (!config.getPluginFingerprint().equals(actualPluginFingerprint)) {
+			PluginFingerprint computedFingerprint = config.getPluginFingerprint();
+			PluginFingerprint storedFingerprint = PluginFingerprint.from(reader.readLine());
+			if (!computedFingerprint.equals(storedFingerprint)) {
 				log.info("Fingerprint mismatch in the index file. Fallback to an empty index");
 				return emptyIndex(config);
 			} else {
 				Map<Path, Instant> fileToLastModifiedTime = readFileToLastModifiedTime(reader, config.getProjectDir(), log);
-				return new FileIndex(indexFile, config.getPluginFingerprint(), fileToLastModifiedTime, config.getProjectDir());
+				return new FileIndex(indexFile, computedFingerprint, fileToLastModifiedTime, config.getProjectDir());
 			}
 		} catch (IOException e) {
 			log.warn("Error reading the index file. Fallback to an empty index", e);
