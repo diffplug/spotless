@@ -60,6 +60,7 @@ import com.diffplug.spotless.maven.generic.Format;
 import com.diffplug.spotless.maven.generic.LicenseHeader;
 import com.diffplug.spotless.maven.groovy.Groovy;
 import com.diffplug.spotless.maven.incremental.UpToDateChecker;
+import com.diffplug.spotless.maven.incremental.UpToDateChecking;
 import com.diffplug.spotless.maven.java.Java;
 import com.diffplug.spotless.maven.kotlin.Kotlin;
 import com.diffplug.spotless.maven.pom.Pom;
@@ -156,9 +157,8 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Parameter(property = LicenseHeaderStep.spotlessSetLicenseHeaderYearsFromGitHistory)
 	private String setLicenseHeaderYearsFromGitHistory;
 
-	// todo: check naming convensions for plugin properties
-	@Parameter(property = "spotless.upToDateCheckingEnabled", defaultValue = "false")
-	private boolean upToDateCheckingEnabled;
+	@Parameter
+	private UpToDateChecking upToDateChecking;
 
 	protected abstract void process(Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException;
 
@@ -320,7 +320,8 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private UpToDateChecker createUpToDateChecker(Iterable<Formatter> formatters) {
-		if (upToDateCheckingEnabled) {
+		if (upToDateChecking.isEnabled()) {
+			getLog().info("Up-to-date checking enabled");
 			return UpToDateChecker.forProject(project, formatters, getLog());
 		}
 		return UpToDateChecker.noop();
