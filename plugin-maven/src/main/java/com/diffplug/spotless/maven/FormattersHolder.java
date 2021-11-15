@@ -17,27 +17,27 @@ package com.diffplug.spotless.maven;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import com.diffplug.spotless.Formatter;
 
 class FormattersHolder implements AutoCloseable {
 
-	private final Map<Formatter, List<File>> formatterToFiles;
+	private final Map<Formatter, Supplier<Iterable<File>>> formatterToFiles;
 
-	private FormattersHolder(Map<Formatter, List<File>> formatterToFiles) {
+	FormattersHolder(Map<Formatter, Supplier<Iterable<File>>> formatterToFiles) {
 		this.formatterToFiles = formatterToFiles;
 	}
 
-	static FormattersHolder create(Map<FormatterFactory, List<File>> formatterFactoryToFiles, FormatterConfig config) {
-		Map<Formatter, List<File>> formatterToFiles = new HashMap<>();
+	static FormattersHolder create(Map<FormatterFactory, Supplier<Iterable<File>>> formatterFactoryToFiles, FormatterConfig config) {
+		Map<Formatter, Supplier<Iterable<File>>> formatterToFiles = new HashMap<>();
 		try {
-			for (Entry<FormatterFactory, List<File>> entry : formatterFactoryToFiles.entrySet()) {
+			for (Entry<FormatterFactory, Supplier<Iterable<File>>> entry : formatterFactoryToFiles.entrySet()) {
 				FormatterFactory formatterFactory = entry.getKey();
-				List<File> files = entry.getValue();
+				Supplier<Iterable<File>> files = entry.getValue();
 
 				Formatter formatter = formatterFactory.newFormatter(files, config);
 				formatterToFiles.put(formatter, files);
@@ -58,7 +58,7 @@ class FormattersHolder implements AutoCloseable {
 		return formatterToFiles.keySet();
 	}
 
-	Map<Formatter, List<File>> getFormattersWithFiles() {
+	Map<Formatter, Supplier<Iterable<File>>> getFormattersWithFiles() {
 		return formatterToFiles;
 	}
 

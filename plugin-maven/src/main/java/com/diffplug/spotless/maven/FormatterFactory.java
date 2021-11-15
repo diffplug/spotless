@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.maven.plugins.annotations.Parameter;
@@ -71,10 +72,10 @@ public abstract class FormatterFactory {
 		return excludes == null ? emptySet() : Sets.newHashSet(excludes);
 	}
 
-	public final Formatter newFormatter(List<File> filesToFormat, FormatterConfig config) {
+	public final Formatter newFormatter(Supplier<Iterable<File>> filesToFormat, FormatterConfig config) {
 		Charset formatterEncoding = encoding(config);
 		LineEnding formatterLineEndings = lineEndings(config);
-		LineEnding.Policy formatterLineEndingPolicy = formatterLineEndings.createPolicy(config.getFileLocator().getBaseDir(), () -> filesToFormat);
+		LineEnding.Policy formatterLineEndingPolicy = formatterLineEndings.createPolicy(config.getFileLocator().getBaseDir(), filesToFormat);
 
 		FormatterStepConfig stepConfig = stepConfig(formatterEncoding, config);
 		List<FormatterStepFactory> factories = gatherStepFactories(config.getGlobalStepFactories(), stepFactories);
