@@ -17,11 +17,18 @@ package com.diffplug.spotless.maven.incremental;
 
 import java.io.File;
 
+import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.project.MavenProject;
+
 class NoopChecker implements UpToDateChecker {
 
-	static final NoopChecker INSTANCE = new NoopChecker();
-
 	private NoopChecker() {}
+
+	static NoopChecker create(MavenProject project, Log log) {
+		FileIndexConfig indexConfig = new FileIndexConfig(project);
+		FileIndex.delete(indexConfig, log);
+		return new NoopChecker();
+	}
 
 	@Override
 	public boolean isUpToDate(File file) {

@@ -30,8 +30,8 @@ public interface UpToDateChecker extends AutoCloseable {
 
 	void close();
 
-	static UpToDateChecker noop() {
-		return NoopChecker.INSTANCE;
+	static UpToDateChecker noop(MavenProject project, Log log) {
+		return NoopChecker.create(project, log);
 	}
 
 	static UpToDateChecker forProject(MavenProject project, Iterable<Formatter> formatters, Log log) {

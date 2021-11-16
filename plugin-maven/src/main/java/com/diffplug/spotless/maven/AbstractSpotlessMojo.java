@@ -324,6 +324,6 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 			getLog().info("Up-to-date checking enabled");
 			return UpToDateChecker.forProject(project, formatters, getLog());
 		}
-		return UpToDateChecker.noop();
+		return UpToDateChecker.noop(project, getLog());
 	}
 }

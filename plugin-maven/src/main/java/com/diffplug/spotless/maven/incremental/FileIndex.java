@@ -81,6 +81,19 @@ class FileIndex {
 		}
 	}
 
+	static void delete(FileIndexConfig config, Log log) {
+		Path indexFile = config.getIndexFile();
+		boolean deleted = false;
+		try {
+			deleted = Files.deleteIfExists(indexFile);
+		} catch (IOException e) {
+			log.warn("Unable to delete the index file: " + indexFile, e);
+		}
+		if (deleted) {
+			log.info("Deleted the index file: " + indexFile);
+		}
+	}
+
 	Optional<Instant> getLastModifiedTime(Path file) {
 		if (!file.startsWith(projectDir)) {
 			return Optional.empty();

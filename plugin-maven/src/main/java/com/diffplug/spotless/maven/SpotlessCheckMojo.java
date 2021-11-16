@@ -49,6 +49,7 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 				if (!dirtyState.isClean() && !dirtyState.didNotConverge()) {
 					problemFiles.add(file);
 				}
+				// todo: else - mark file as up-to-date?
 			} catch (IOException e) {
 				throw new MojoExecutionException("Unable to format file " + file, e);
 			}

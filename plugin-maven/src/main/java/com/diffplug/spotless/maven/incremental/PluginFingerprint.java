@@ -46,6 +46,10 @@ class PluginFingerprint {
 		return new PluginFingerprint(value);
 	}
 
+	static PluginFingerprint empty() {
+		return new PluginFingerprint("");
+	}
+
 	String value() {
 		return value;
 	}

@@ -17,8 +17,7 @@ package com.diffplug.spotless.maven.incremental;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.singletonList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.ByteArrayInputStream;
 import java.nio.file.Paths;
@@ -78,7 +77,7 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 		PluginFingerprint fingerprint1 = PluginFingerprint.from(project1, FORMATTERS);
 		PluginFingerprint fingerprint2 = PluginFingerprint.from(project2, FORMATTERS);
 
-		assertEquals(fingerprint1, fingerprint2);
+		assertThat(fingerprint1).isEqualTo(fingerprint2);
 	}
 
 	@Test
@@ -92,7 +91,7 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 		PluginFingerprint fingerprint1 = PluginFingerprint.from(project1, FORMATTERS);
 		PluginFingerprint fingerprint2 = PluginFingerprint.from(project2, FORMATTERS);
 
-		assertNotEquals(fingerprint1, fingerprint2);
+		assertThat(fingerprint1).isNotEqualTo(fingerprint2);
 	}
 
 	@Test
@@ -106,7 +105,7 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 		PluginFingerprint fingerprint1 = PluginFingerprint.from(project1, FORMATTERS);
 		PluginFingerprint fingerprint2 = PluginFingerprint.from(project2, FORMATTERS);
 
-		assertNotEquals(fingerprint1, fingerprint2);
+		assertThat(fingerprint1).isNotEqualTo(fingerprint2);
 	}
 
 	@Test
@@ -120,7 +119,7 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 		PluginFingerprint fingerprint1 = PluginFingerprint.from(project1, FORMATTERS);
 		PluginFingerprint fingerprint2 = PluginFingerprint.from(project2, FORMATTERS);
 
-		assertNotEquals(fingerprint1, fingerprint2);
+		assertThat(fingerprint1).isNotEqualTo(fingerprint2);
 	}
 
 	@Test
@@ -140,7 +139,7 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 		PluginFingerprint fingerprint1 = PluginFingerprint.from(project1, formatters1);
 		PluginFingerprint fingerprint2 = PluginFingerprint.from(project2, formatters2);
 
-		assertNotEquals(fingerprint1, fingerprint2);
+		assertThat(fingerprint1).isNotEqualTo(fingerprint2);
 	}
 
 	@Test
@@ -158,7 +157,14 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 		PluginFingerprint fingerprint1 = PluginFingerprint.from(project1, formatters1);
 		PluginFingerprint fingerprint2 = PluginFingerprint.from(project2, formatters2);
 
-		assertNotEquals(fingerprint1, fingerprint2);
+		assertThat(fingerprint1).isNotEqualTo(fingerprint2);
+	}
+
+	@Test
+	void emptyFingerprint() {
+		PluginFingerprint fingerprint = PluginFingerprint.empty();
+
+		assertThat(fingerprint.value()).isEmpty();
 	}
 
 	private static MavenProject mavenProject(String xml) throws Exception {

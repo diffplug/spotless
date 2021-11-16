@@ -26,6 +26,10 @@ class FileIndexConfig {
 	private final MavenProject project;
 	private final PluginFingerprint pluginFingerprint;
 
+	FileIndexConfig(MavenProject project) {
+		this(project, PluginFingerprint.empty());
+	}
+
 	FileIndexConfig(MavenProject project, PluginFingerprint pluginFingerprint) {
 		this.project = project;
 		this.pluginFingerprint = pluginFingerprint;
