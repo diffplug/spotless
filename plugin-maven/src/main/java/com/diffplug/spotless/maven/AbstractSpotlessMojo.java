@@ -320,7 +320,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private UpToDateChecker createUpToDateChecker(Iterable<Formatter> formatters) {
-		if (upToDateChecking.isEnabled()) {
+		if (upToDateChecking != null && upToDateChecking.isEnabled()) {
 			getLog().info("Up-to-date checking enabled");
 			return UpToDateChecker.forProject(project, formatters, getLog());
 		}
