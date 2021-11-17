@@ -155,6 +155,7 @@ Once someone has filled in one square of the formatter/build system matrix, it's
 - Formatting by Eclipse
   - Special thanks to [Mateusz Matela](https://waynebeaton.wordpress.com/2015/03/15/great-fixes-for-mars-winners-part-i/) for huge improvements to the eclipse code formatter!
 - Thanks to [Zac Sweers](https://github.com/ZacSweers) for fixing the highly requested ktlint 0.34+ support ([#469](https://github.com/diffplug/spotless/pull/469)), multiple build updates and fixing a gradle deprecation warning ([#434](https://github.com/diffplug/spotless/pull/434) and others).
+- Thanks to [Stephen Panaro](https://github.com/smpanaro) for adding support for ktlint FilenameRule ([#974](https://github.com/diffplug/spotless/pull/974)).
 - Thanks to [Nelson Osacky](https://github.com/runningcode) for android doc improvements, versions bump, and a build improvement.
 - Thanks to [Stanley Shyiko](https://github.com/shyiko) for his help integrating [ktlint](https://github.com/shyiko/ktlint).
 - Thanks to [Jonathan Leitschuh](https://github.com/JLLeitschuh) for adding [ktlint](https://github.com/shyiko/ktlint) support for [Gradle Kotlin DSL](https://github.com/gradle/kotlin-dsl) files.
