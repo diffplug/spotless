@@ -7,6 +7,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changed
 * Bump jgit version ([#992](https://github.com/diffplug/spotless/pull/992)).
   * jgit `5.10.0.202012080955-r` -> `5.13.0.202109080827-r`
+* Fix gradle composite builds ([#860](https://github.com/diffplug/spotless/issues/860)).
 
 ## [6.0.0] - 2021-11-09
 ### Added
