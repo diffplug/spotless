@@ -54,7 +54,7 @@ public abstract class RegisterDependenciesTask extends DefaultTask {
 		Preconditions.checkArgument(getProject().getRootProject() == getProject(), "Can only be used on the root project");
 
 		BuildServiceRegistry buildServices = getProject().getGradle().getSharedServices();
-		getTaskService().set(buildServices.registerIfAbsent("SpotlessTaskService", SpotlessTaskService.class, spec -> {}));
+		getTaskService().set(buildServices.registerIfAbsent("SpotlessTaskService" + System.identityHashCode(RegisterDependenciesTask.class.getClassLoader()), SpotlessTaskService.class, spec -> {}));
 		getBuildEventsListenerRegistry().onTaskCompletion(getTaskService());
 	}
 

@@ -40,10 +40,11 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 		});
 
 		TaskContainer rootProjectTasks = project.getRootProject().getTasks();
-		if (!rootProjectTasks.getNames().contains(RegisterDependenciesTask.TASK_NAME)) {
-			this.registerDependenciesTask = rootProjectTasks.register(RegisterDependenciesTask.TASK_NAME, RegisterDependenciesTask.class, RegisterDependenciesTask::setup);
+		String taskName = RegisterDependenciesTask.TASK_NAME + System.identityHashCode(RegisterDependenciesTask.class.getClassLoader());
+		if (!rootProjectTasks.getNames().contains(taskName)) {
+			this.registerDependenciesTask = rootProjectTasks.register(taskName, RegisterDependenciesTask.class, RegisterDependenciesTask::setup);
 		} else {
-			this.registerDependenciesTask = rootProjectTasks.named(RegisterDependenciesTask.TASK_NAME, RegisterDependenciesTask.class);
+			this.registerDependenciesTask = rootProjectTasks.named(taskName, RegisterDependenciesTask.class);
 		}
 
 		project.afterEvaluate(unused -> {
