@@ -40,7 +40,8 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 		});
 
 		TaskContainer rootProjectTasks = project.getRootProject().getTasks();
-		String taskName = RegisterDependenciesTask.TASK_NAME + System.identityHashCode(RegisterDependenciesTask.class.getClassLoader());
+		String taskName = RegisterDependenciesTask.TASK_NAME +
+				(project.getRootProject().getSubprojects().size() > 1 ? System.identityHashCode(RegisterDependenciesTask.class.getClassLoader()) : "");
 		if (!rootProjectTasks.getNames().contains(taskName)) {
 			this.registerDependenciesTask = rootProjectTasks.register(taskName, RegisterDependenciesTask.class, RegisterDependenciesTask::setup);
 		} else {
