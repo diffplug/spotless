@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -127,7 +127,7 @@ public class GroovyExtension extends FormatExtension implements HasBuiltinDelimi
 		// LicenseHeaderStep completely blows apart package-info.java/groovy - this common-sense check
 		// ensures that it skips both. See https://github.com/diffplug/spotless/issues/1
 		steps.replaceAll(step -> {
-			if (LicenseHeaderStep.name().equals(step.getName())) {
+			if (isLicenseHeaderStep(step)) {
 				return step.filterByFile(LicenseHeaderStep.unsupportedJvmFilesFilter());
 			} else {
 				return step;
