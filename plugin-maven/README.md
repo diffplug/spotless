@@ -212,6 +212,17 @@ any other maven phase (i.e. compile) then it can be configured as below;
 </googleJavaFormat>
 ```
 
+**⚠️ Note on using Google Java Format with Java 16+**
+
+Using Java 16+ with Google Java Format 1.10.0 [requires additional flags](https://github.com/google/google-java-format/releases/tag/v1.10.0) to the running JDK.
+These Flags can be provided using `MAVEN_OPTS` environment variable or using the `./mvn/jvm.config` file (See [documentation](https://maven.apache.org/configure.html#mvn-jvm-config-file)).
+
+For example the following file under `.mvn/jvm.config` will run maven with the required flags:
+```
+--add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED
+```
+This is a workaround to a [pending issue](https://github.com/diffplug/spotless/issues/834).
+
 ### eclipse jdt
 
 [homepage](https://www.eclipse.org/downloads/packages/). [compatible versions](https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_jdt_formatter). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/java/Eclipse.java). See [here](../ECLIPSE_SCREENSHOTS.md) for screenshots that demonstrate how to get and install the config file mentioned below.
