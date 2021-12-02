@@ -56,6 +56,7 @@ import com.diffplug.spotless.maven.generic.LicenseHeader;
 import com.diffplug.spotless.maven.groovy.Groovy;
 import com.diffplug.spotless.maven.java.Java;
 import com.diffplug.spotless.maven.kotlin.Kotlin;
+import com.diffplug.spotless.maven.markdown.Markdown;
 import com.diffplug.spotless.maven.pom.Pom;
 import com.diffplug.spotless.maven.python.Python;
 import com.diffplug.spotless.maven.scala.Scala;
@@ -140,6 +141,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	@Parameter
 	private Python python;
+
+	@Parameter
+	private Markdown markdown;
 
 	@Parameter(property = "spotlessFiles")
 	private String filePatterns;
@@ -290,7 +294,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private List<FormatterFactory> getFormatterFactories() {
-		return Stream.concat(formats.stream(), Stream.of(groovy, java, scala, kotlin, cpp, typescript, antlr4, pom, sql, python))
+		return Stream.concat(formats.stream(), Stream.of(groovy, java, scala, kotlin, cpp, typescript, antlr4, pom, sql, python, markdown))
 				.filter(Objects::nonNull)
 				.collect(toList());
 	}
