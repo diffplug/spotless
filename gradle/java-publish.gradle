@@ -184,6 +184,6 @@ if (!version.endsWith('-SNAPSHOT')) {
 }
 
 tasks.withType(AbstractArchiveTask).configureEach {
-  preserveFileTimestamps = false
-  reproducibleFileOrder = true
+	preserveFileTimestamps = false
+	reproducibleFileOrder = true
 }
