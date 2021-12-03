@@ -11,6 +11,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Changed
+* Bumped default ktlint from `0.43.0` to `0.43.2`.
 * Converted `ktlint` integration to use a compile-only source set. ([#524](https://github.com/diffplug/spotless/issues/524))
 
 ## [2.20.1] - 2021-12-01
