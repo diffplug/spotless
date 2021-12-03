@@ -43,16 +43,18 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 	public KtlintFormatterFunc(boolean isScript, Map<String, String> userData) {
 		rulesets = Collections.singletonList(new StandardRuleSetProvider().get());
 		this.userData = userData;
-		formatterCallback = new Function2<LintError, Boolean, Unit>() {
-			@Override
-			public Unit invoke(LintError lint, Boolean corrected) {
-				if (!corrected) {
-					throw new AssertionError("Error on line: " + lint.getLine() + ", column: " + lint.getCol() + "\n" + lint.getDetail());
-				}
-				return null;
-			}
-		};
+		formatterCallback = new FormatterCallback();
 		this.isScript = isScript;
+	}
+
+	static class FormatterCallback implements Function2<LintError, Boolean, Unit> {
+		@Override
+		public Unit invoke(LintError lint, Boolean corrected) {
+			if (!corrected) {
+				throw new AssertionError("Error on line: " + lint.getLine() + ", column: " + lint.getCol() + "\n" + lint.getDetail());
+			}
+			return null;
+		}
 	}
 
 	@Override
