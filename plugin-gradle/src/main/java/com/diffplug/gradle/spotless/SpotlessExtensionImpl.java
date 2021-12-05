@@ -17,6 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import org.gradle.api.Action;
 import org.gradle.api.Project;
+import org.gradle.api.ProjectConfigurationException;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
@@ -47,8 +48,12 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 
 		project.afterEvaluate(unused -> {
 			if (enforceCheck) {
-				project.getTasks().named(JavaBasePlugin.CHECK_TASK_NAME)
-						.configure(task -> task.dependsOn(rootCheckTask));
+				try {
+					project.getTasks().named(JavaBasePlugin.CHECK_TASK_NAME)
+							.configure(task -> task.dependsOn(rootCheckTask));
+				} catch (ProjectConfigurationException e) {
+					// no action needed, it's okay if there's no `check` task
+				}
 			}
 		});
 	}
