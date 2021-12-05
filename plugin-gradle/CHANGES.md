@@ -3,9 +3,12 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Changed
+* Bumped default ktlint from `0.43.0` to `0.43.2`.
+### Fixed
+* Fixed problem with ktlint dependency variants ([#993](https://github.com/diffplug/spotless/issues/993))
 
 ## [6.0.1] - 2021-12-01
-
 ### Changed
 * Added `named` option to `licenseHeader` to support alternate license header within same format (like java) ([872](https://github.com/diffplug/spotless/issues/872)).
 * Added `onlyIfContentMatches` option to `licenseHeader` to skip license header application  based on source file content pattern ([#650](https://github.com/diffplug/spotless/issues/650)).

@@ -31,6 +31,7 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.ResolveException;
 import org.gradle.api.artifacts.dsl.RepositoryHandler;
+import org.gradle.api.attributes.Bundling;
 import org.gradle.testfixtures.ProjectBuilder;
 
 import com.diffplug.common.base.Errors;
@@ -68,6 +69,9 @@ public class TestProvisioner {
 			Configuration config = project.getConfigurations().detachedConfiguration(deps);
 			config.setTransitive(withTransitives);
 			config.setDescription(mavenCoords.toString());
+			config.attributes(attr -> {
+				attr.attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.EXTERNAL));
+			});
 			try {
 				return config.resolve();
 			} catch (ResolveException e) {
