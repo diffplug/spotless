@@ -61,7 +61,8 @@ public class SpotlessPlugin implements Plugin<Project> {
 		});
 	}
 
-	static void configureCleanTaskMustRunAfter(Project project, TaskProvider<?> task) {
+	/** clean removes the SpotlessCache, so we have to run after clean. */
+	static void taskMustRunAfterClean(Project project, TaskProvider<?> task) {
 		configureCleanTask(project, clean -> task.configure(spotless -> spotless.mustRunAfter(clean)));
 	}
 

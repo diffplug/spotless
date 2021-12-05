@@ -75,8 +75,7 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 			task.init(getRegisterDependenciesTask().getTaskService());
 			task.setEnabled(!isIdeHook);
 		});
-		// clean removes the SpotlessCache, so we have to run after clean
-		SpotlessPlugin.configureCleanTaskMustRunAfter(project, spotlessTask);
+		SpotlessPlugin.taskMustRunAfterClean(project, spotlessTask);
 		project.afterEvaluate(unused -> {
 			spotlessTask.configure(task -> {
 				// now that the task is being configured, we execute our actions
@@ -118,8 +117,7 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 		TaskProvider<SpotlessDiagnoseTask> diagnoseTask = tasks.register(taskName + DIAGNOSE, SpotlessDiagnoseTask.class, task -> {
 			task.source = spotlessTask.get();
 		});
-		// clean removes the SpotlessCache, so we have to run after clean
-		SpotlessPlugin.configureCleanTaskMustRunAfter(project, diagnoseTask);
+		SpotlessPlugin.taskMustRunAfterClean(project, diagnoseTask);
 		rootDiagnoseTask.configure(task -> task.dependsOn(diagnoseTask));
 	}
 }
