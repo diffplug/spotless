@@ -15,11 +15,14 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.util.function.Consumer;
+
 import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.tasks.Delete;
+import org.gradle.api.tasks.TaskProvider;
 
 import com.diffplug.spotless.SpotlessCache;
 
@@ -47,11 +50,19 @@ public class SpotlessPlugin implements Plugin<Project> {
 		//
 		// we use System.identityHashCode() to avoid a memory leak by hanging on to the reference directly
 		int cacheKey = System.identityHashCode(project.getRootProject());
+		configureCleanTask(project, clean -> clean.doLast(unused -> SpotlessCache.clearOnce(cacheKey)));
+	}
+
+	static void configureCleanTask(Project project, Consumer<Delete> onClean) {
 		project.getTasks().withType(Delete.class).configureEach(clean -> {
 			if (clean.getName().equals(BasePlugin.CLEAN_TASK_NAME)) {
-				clean.doLast(unused -> SpotlessCache.clearOnce(cacheKey));
+				onClean.accept(clean);
 			}
 		});
+	}
+
+	static void configureCleanTaskMustRunAfter(Project project, TaskProvider<?> task) {
+		configureCleanTask(project, clean -> task.configure(spotless -> spotless.mustRunAfter(clean)));
 	}
 
 	static String capitalize(String input) {

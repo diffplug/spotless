@@ -17,9 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import org.gradle.api.Action;
 import org.gradle.api.Project;
-import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaBasePlugin;
-import org.gradle.api.tasks.Delete;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 
@@ -73,12 +71,7 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 			task.setEnabled(!isIdeHook);
 		});
 		// clean removes the SpotlessCache, so we have to run after clean
-		tasks.withType(Delete.class).configureEach(clean -> {
-			if (clean.getName().equals(BasePlugin.CLEAN_TASK_NAME)) {
-				spotlessTask.configure(spotless -> spotless.mustRunAfter(clean));
-			}
-		});
-
+		SpotlessPlugin.configureCleanTaskMustRunAfter(project, spotlessTask);
 		project.afterEvaluate(unused -> {
 			spotlessTask.configure(task -> {
 				// now that the task is being configured, we execute our actions
@@ -121,11 +114,7 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 			task.source = spotlessTask.get();
 		});
 		// clean removes the SpotlessCache, so we have to run after clean
-		tasks.withType(Delete.class).configureEach(clean -> {
-			if (clean.getName().equals(BasePlugin.CLEAN_TASK_NAME)) {
-				diagnoseTask.configure(spotless -> spotless.mustRunAfter(clean));
-			}
-		});
+		SpotlessPlugin.configureCleanTaskMustRunAfter(project, diagnoseTask);
 		rootDiagnoseTask.configure(task -> task.dependsOn(diagnoseTask));
 	}
 }
