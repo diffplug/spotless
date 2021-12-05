@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.kotlin;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
@@ -42,6 +43,7 @@ class KtLintStepTest extends ResourceHarness {
 	}
 
 	@Test
+	@Disabled
 	void worksShyiko() throws Exception {
 		// Must use jcenter (GONE) because `com.andreapivetta.kolor:kolor:0.0.2` isn't available on mavenCentral.
 		// It is a dependency of ktlint.
