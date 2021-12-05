@@ -35,10 +35,10 @@ import javax.inject.Inject;
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.BasePlugin;
+import org.gradle.api.tasks.Delete;
 
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
@@ -789,9 +789,12 @@ public class FormatExtension {
 		SpotlessTaskImpl spotlessTask = spotless.project.getTasks().create(taskName + SpotlessTaskService.INDEPENDENT_HELPER, SpotlessTaskImpl.class);
 		spotlessTask.init(spotless.getRegisterDependenciesTask().getTaskService());
 		setupTask(spotlessTask);
-		// enforce the clean ordering
-		Task clean = spotless.project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME);
-		spotlessTask.mustRunAfter(clean);
+		// clean removes the SpotlessCache, so we have to run after clean
+		spotless.project.getTasks().withType(Delete.class).configureEach(task -> {
+			if (task.getName().equals(BasePlugin.CLEAN_TASK_NAME)) {
+				spotlessTask.mustRunAfter(task);
+			}
+		});
 		// create the apply task
 		SpotlessApply applyTask = spotless.project.getTasks().create(taskName, SpotlessApply.class);
 		applyTask.init(spotlessTask);

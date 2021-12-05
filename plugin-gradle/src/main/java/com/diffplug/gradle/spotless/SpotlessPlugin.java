@@ -19,6 +19,7 @@ import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.BasePlugin;
+import org.gradle.api.tasks.Delete;
 
 import com.diffplug.spotless.SpotlessCache;
 
@@ -35,8 +36,6 @@ public class SpotlessPlugin implements Plugin<Project> {
 		if (project.hasProperty(SPOTLESS_MODERN)) {
 			project.getLogger().warn("'spotlessModern' has no effect as of Spotless 5.0, recommend removing it.");
 		}
-		// make sure there's a {@code clean} task
-		project.getPlugins().apply(BasePlugin.class);
 
 		// setup the extension
 		project.getExtensions().create(SpotlessExtension.class, SpotlessExtension.EXTENSION, SpotlessExtensionImpl.class, project);
@@ -48,7 +47,11 @@ public class SpotlessPlugin implements Plugin<Project> {
 		//
 		// we use System.identityHashCode() to avoid a memory leak by hanging on to the reference directly
 		int cacheKey = System.identityHashCode(project.getRootProject());
-		project.getTasks().named(BasePlugin.CLEAN_TASK_NAME).configure(clean -> clean.doLast(unused -> SpotlessCache.clearOnce(cacheKey)));
+		project.getTasks().withType(Delete.class).configureEach(clean -> {
+			if (clean.getName().equals(BasePlugin.CLEAN_TASK_NAME)) {
+				clean.doLast(unused -> SpotlessCache.clearOnce(cacheKey));
+			}
+		});
 	}
 
 	static String capitalize(String input) {
