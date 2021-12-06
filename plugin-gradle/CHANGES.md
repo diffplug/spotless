@@ -4,6 +4,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+### Fixed
+* Fixed concurrency issue with deduping of tool provisioners
+
 ## [6.0.2] - 2021-12-05
 ### Changed
 * Bumped default ktlint from `0.43.0` to `0.43.2`.
