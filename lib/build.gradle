@@ -28,7 +28,7 @@ dependencies {
 	// used for pom sorting
 	sortPomCompileOnly 'com.github.ekryd.sortpom:sortpom-sorter:3.0.0'
 
-	String VER_KTLINT='0.43.1'
+	String VER_KTLINT='0.43.2'
 	ktlintCompileOnly "com.pinterest:ktlint:$VER_KTLINT"
 	ktlintCompileOnly "com.pinterest.ktlint:ktlint-core:$VER_KTLINT"
 	ktlintCompileOnly "com.pinterest.ktlint:ktlint-ruleset-standard:$VER_KTLINT"
