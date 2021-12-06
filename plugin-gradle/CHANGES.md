@@ -6,6 +6,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Fixed
 * Spotless no longer applies `BasePlugin` ([#1014](https://github.com/diffplug/spotless/pull/1014)).
   * This was done to ensure that any Spotless tasks would run after the `clean` task, but we found a way to do this without applying the `BasePlugin`. This resolves a conflict with the [Android Gradle template](https://issuetracker.google.com/issues/186924459) (fixes [#858](https://github.com/diffplug/spotless/issues/858)).
+* Large parallel builds could throw `ConcurrentModificationException` (masked by "Cannot add a configuration with name"), now fixed. ([#1015](https://github.com/diffplug/spotless/issues/1015))
 
 ## [6.0.2] - 2021-12-05
 ### Changed
