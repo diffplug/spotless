@@ -35,10 +35,8 @@ import javax.inject.Inject;
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.plugins.BasePlugin;
 
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
@@ -158,6 +156,16 @@ public class FormatExtension {
 
 	/** The files to be formatted = (target - targetExclude). */
 	protected FileCollection target, targetExclude;
+
+	protected boolean isLicenseHeaderStep(FormatterStep formatterStep) {
+		String formatterStepName = formatterStep.getName();
+
+		if (formatterStepName.startsWith(LicenseHeaderStep.class.getName())) {
+			return true;
+		}
+
+		return false;
+	}
 
 	/**
 	 * Sets which files should be formatted.  Files to be formatted = (target - targetExclude).
@@ -409,6 +417,24 @@ public class FormatExtension {
 	public class LicenseHeaderConfig {
 		LicenseHeaderStep builder;
 		Boolean updateYearWithLatest = null;
+
+		public LicenseHeaderConfig named(String name) {
+			String existingStepName = builder.getName();
+			builder = builder.withName(name);
+			int existingStepIdx = getExistingStepIdx(existingStepName);
+			if (existingStepIdx != -1) {
+				steps.set(existingStepIdx, createStep());
+			} else {
+				addStep(createStep());
+			}
+			return this;
+		}
+
+		public LicenseHeaderConfig onlyIfContentMatches(String contentPattern) {
+			builder = builder.withContentPattern(contentPattern);
+			replaceStep(createStep());
+			return this;
+		}
 
 		public LicenseHeaderConfig(LicenseHeaderStep builder) {
 			this.builder = builder;
@@ -731,6 +757,16 @@ public class FormatExtension {
 		} else {
 			steps = this.steps;
 		}
+		// <IMPORTANT>
+		// By calling .hashCode, we are triggering all steps to evaluate their state,
+		// which triggers dependency resolution. It's important to do that here, because
+		// otherwise it won't happen until Gradle starts checking for task up-to-date-ness.
+		// For a large parallel build, the task up-to-dateness might get called on a different
+		// thread than the thread where task configuration happens, which will trigger a
+		// java.util.ConcurrentModificationException
+		// See https://github.com/diffplug/spotless/issues/1015 for details.
+		steps.hashCode();
+		// </IMPORTANT>
 		task.setSteps(steps);
 		task.setLineEndingsPolicy(getLineEndings().createPolicy(getProject().getProjectDir(), () -> totalTarget));
 		spotless.getRegisterDependenciesTask().hookSubprojectTask(task);
@@ -761,9 +797,8 @@ public class FormatExtension {
 		SpotlessTaskImpl spotlessTask = spotless.project.getTasks().create(taskName + SpotlessTaskService.INDEPENDENT_HELPER, SpotlessTaskImpl.class);
 		spotlessTask.init(spotless.getRegisterDependenciesTask().getTaskService());
 		setupTask(spotlessTask);
-		// enforce the clean ordering
-		Task clean = spotless.project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME);
-		spotlessTask.mustRunAfter(clean);
+		// clean removes the SpotlessCache, so we have to run after clean
+		SpotlessPlugin.configureCleanTask(spotless.project, spotlessTask::mustRunAfter);
 		// create the apply task
 		SpotlessApply applyTask = spotless.project.getTasks().create(taskName, SpotlessApply.class);
 		applyTask.init(spotlessTask);

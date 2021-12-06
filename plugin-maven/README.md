@@ -12,8 +12,8 @@ output = [
   ].join('\n');
 -->
 [![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
-[![Javadoc](https://img.shields.io/badge/javadoc-yes-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.17.4/index.html)
-[![Changelog](https://img.shields.io/badge/changelog-2.17.4-brightgreen.svg)](CHANGES.md)
+[![Javadoc](https://img.shields.io/badge/javadoc-yes-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.17.6/index.html)
+[![Changelog](https://img.shields.io/badge/changelog-2.17.6-brightgreen.svg)](CHANGES.md)
 
 [![Circle CI](https://circleci.com/gh/diffplug/spotless/tree/main.svg?style=shield)](https://circleci.com/gh/diffplug/spotless/tree/main)
 [![Live chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
@@ -211,6 +211,17 @@ any other maven phase (i.e. compile) then it can be configured as below;
   <groupArtifact>com.google.googlejavaformat:google-java-format</groupArtifact>
 </googleJavaFormat>
 ```
+
+**⚠️ Note on using Google Java Format with Java 16+**
+
+Using Java 16+ with Google Java Format 1.10.0 [requires additional flags](https://github.com/google/google-java-format/releases/tag/v1.10.0) to the running JDK.
+These Flags can be provided using `MAVEN_OPTS` environment variable or using the `./mvn/jvm.config` file (See [documentation](https://maven.apache.org/configure.html#mvn-jvm-config-file)).
+
+For example the following file under `.mvn/jvm.config` will run maven with the required flags:
+```
+--add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED
+```
+This is a workaround to a [pending issue](https://github.com/diffplug/spotless/issues/834).
 
 ### eclipse jdt
 

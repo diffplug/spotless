@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
+import javax.annotation.Nullable;
+
 /**
  * Models the result of applying a {@link Formatter} on a given {@link File}
  * while characterizing various failure modes (slow convergence, cycles, and divergence).
@@ -240,9 +242,10 @@ public final class PaddedCell {
 	 *   then you can call {@link #writeCanonicalTo(OutputStream)} to get the canonical form of the given file.
 	 */
 	public static class DirtyState {
+		@Nullable
 		private final byte[] canonicalBytes;
 
-		private DirtyState(byte[] canonicalBytes) {
+		private DirtyState(@Nullable byte[] canonicalBytes) {
 			this.canonicalBytes = canonicalBytes;
 		}
 

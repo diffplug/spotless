@@ -37,7 +37,7 @@ public class KtLintStep {
 	// prevent direct instantiation
 	private KtLintStep() {}
 
-	private static final String DEFAULT_VERSION = "0.43.0";
+	private static final String DEFAULT_VERSION = "0.43.2";
 	static final String NAME = "ktlint";
 	static final String PACKAGE_PRE_0_32 = "com.github.shyiko";
 	static final String PACKAGE = "com.pinterest";
@@ -103,8 +103,13 @@ public class KtLintStep {
 		}
 
 		FormatterFunc createFormat() throws Exception {
-			ClassLoader classLoader = jarState.getClassLoader();
+			if (useParams) {
+				Class<?> formatterFunc = jarState.getClassLoader().loadClass("com.diffplug.spotless.glue.ktlint.KtlintFormatterFunc");
+				Constructor<?> constructor = formatterFunc.getConstructor(boolean.class, Map.class);
+				return (FormatterFunc.NeedsFile) constructor.newInstance(isScript, userData);
+			}
 
+			ClassLoader classLoader = jarState.getClassLoader();
 			// String KtLint::format(String input, Iterable<RuleSet> rules, Function2 errorCallback)
 
 			// first, we get the standard rules
@@ -134,57 +139,17 @@ public class KtLintStep {
 			// grab the KtLint singleton
 			Class<?> ktlintClass = classLoader.loadClass(pkg + ".ktlint.core.KtLint");
 			Object ktlint = ktlintClass.getDeclaredField("INSTANCE").get(null);
-			FormatterFunc formatterFunc;
-			if (useParams) {
-				//
-				// In KtLint 0.34+ there is a new "format(params: Params)" function. We create an
-				// instance of the Params class with our configuration and invoke it here.
-				//
 
-				// grab the Params class
-				Class<?> paramsClass = classLoader.loadClass(pkg + ".ktlint.core.KtLint$Params");
-				// and its constructor
-				Constructor<?> constructor = paramsClass.getConstructor(
-						/* fileName, nullable */ String.class,
-						/* text */ String.class,
-						/* ruleSets */ Iterable.class,
-						/* userData */ Map.class,
-						/* callback */ function2Interface,
-						/* script */ boolean.class,
-						/* editorConfigPath, nullable */ String.class,
-						/* debug */ boolean.class);
-				Method formatterMethod = ktlintClass.getMethod("format", paramsClass);
-				FormatterFunc.NeedsFile needsFile = (input, file) -> {
-					try {
-						Object params = constructor.newInstance(
-								/* fileName, nullable */ file.getName(),
-								/* text */ input,
-								/* ruleSets */ ruleSets,
-								/* userData */ userData,
-								/* callback */ formatterCallback,
-								/* script */ isScript,
-								/* editorConfigPath, nullable */ null,
-								/* debug */ false);
-						return (String) formatterMethod.invoke(ktlint, params);
-					} catch (InvocationTargetException e) {
-						throw ThrowingEx.unwrapCause(e);
-					}
-				};
-				formatterFunc = FormatterFunc.needsFile(needsFile);
-			} else {
-				// and its format method
-				String formatterMethodName = isScript ? "formatScript" : "format";
-				Method formatterMethod = ktlintClass.getMethod(formatterMethodName, String.class, Iterable.class, Map.class, function2Interface);
-				formatterFunc = input -> {
-					try {
-						return (String) formatterMethod.invoke(ktlint, input, ruleSets, userData, formatterCallback);
-					} catch (InvocationTargetException e) {
-						throw ThrowingEx.unwrapCause(e);
-					}
-				};
-			}
-
-			return formatterFunc;
+			// and its format method
+			String formatterMethodName = isScript ? "formatScript" : "format";
+			Method formatterMethod = ktlintClass.getMethod(formatterMethodName, String.class, Iterable.class, Map.class, function2Interface);
+			return input -> {
+				try {
+					return (String) formatterMethod.invoke(ktlint, input, ruleSets, userData, formatterCallback);
+				} catch (InvocationTargetException e) {
+					throw ThrowingEx.unwrapCause(e);
+				}
+			};
 		}
 	}
 }

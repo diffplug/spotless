@@ -217,7 +217,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 		}
 
 		steps.replaceAll(step -> {
-			if (LicenseHeaderStep.name().equals(step.getName())) {
+			if (isLicenseHeaderStep(step)) {
 				return step.filterByFile(LicenseHeaderStep.unsupportedJvmFilesFilter());
 			} else {
 				return step;

@@ -169,7 +169,7 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 
 	protected abstract @Nullable Project getParent(Project project);
 
-	private static @Nullable Repository traverseParentsUntil(File startWith, File file) throws IOException {
+	private static @Nullable Repository traverseParentsUntil(File startWith, @Nullable File file) throws IOException {
 		while (startWith != null && !Objects.equals(startWith, file)) {
 			if (isGitRoot(startWith)) {
 				return createRepo(startWith);

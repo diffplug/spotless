@@ -35,6 +35,8 @@ import java.util.stream.Stream;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 public final class ImportOrderStep {
 	private static final boolean WILDCARDS_LAST_DEFAULT = false;
 
@@ -77,6 +79,7 @@ public final class ImportOrderStep {
 				State::toFormatter);
 	}
 
+	@SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE") // workaround https://github.com/spotbugs/spotbugs/issues/756
 	private static List<String> getImportOrder(File importsFile) {
 		try (Stream<String> lines = Files.lines(importsFile.toPath())) {
 			return lines.filter(line -> !line.startsWith("#"))

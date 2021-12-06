@@ -15,7 +15,6 @@
  */
 package com.diffplug.spotless.kotlin;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
@@ -29,26 +28,21 @@ import com.diffplug.spotless.TestProvisioner;
  * causes these problems. The root is still a gradle bug, but in the meantime we don't
  * need to hold up *every* PR with this: https://github.com/gradle/gradle/issues/11752
  */
-@Disabled
 class KtLintStepTest extends ResourceHarness {
 	@Test
 	void behavior() throws Exception {
-		// Must use jcenter (GONE) because `com.andreapivetta.kolor:kolor:0.0.2` isn't available on mavenCentral.
-		// It is a dependency of ktlint.
 		FormatterStep step = KtLintStep.create(TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
 				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
 					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("Error on line: 1, column: 1\n" +
+					assertion.hasMessage("Error on line: 1, column: 2\n" +
 							"Wildcard import");
 				});
 	}
 
 	@Test
 	void worksShyiko() throws Exception {
-		// Must use jcenter (GONE) because `com.andreapivetta.kolor:kolor:0.0.2` isn't available on mavenCentral.
-		// It is a dependency of ktlint.
 		FormatterStep step = KtLintStep.create("0.31.0", TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
@@ -64,8 +58,6 @@ class KtLintStepTest extends ResourceHarness {
 	// https://github.com/diffplug/spotless/issues/419
 	@Test
 	void worksPinterestAndPre034() throws Exception {
-		// Must use jcenter (GONE) because `com.andreapivetta.kolor:kolor:0.0.2` isn't available on mavenCentral.
-		// It is a dependency of ktlint.
 		FormatterStep step = KtLintStep.create("0.32.0", TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
@@ -88,14 +80,14 @@ class KtLintStepTest extends ResourceHarness {
 	@Test
 	void equality() throws Exception {
 		new SerializableEqualityTester() {
-			String version = "0.2.2";
+			String version = "0.32.0";
 
 			@Override
 			protected void setupTest(API api) {
 				// same version == same
 				api.areDifferentThan();
 				// change the version, and it's different
-				version = "0.2.1";
+				version = "0.38.0-alpha01";
 				api.areDifferentThan();
 			}
 

@@ -64,11 +64,11 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"    }",
 				"}");
 		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
-		BuildResult spotlessCheckFailsGracefully = gradleRunner().withArguments("--stacktrace", "clean", "spotlessCheck").buildAndFail();
+		BuildResult spotlessCheckFailsGracefully = gradleRunner().withArguments("--stacktrace", "spotlessCheck").buildAndFail();
 		Assertions.assertThat(spotlessCheckFailsGracefully.getOutput()).contains("> The following files had format violations:");
 
-		gradleRunner().withArguments("--stacktrace", "clean", "spotlessApply").build();
-		gradleRunner().withArguments("--stacktrace", "clean", "spotlessCheck").build();
+		gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		gradleRunner().withArguments("--stacktrace", "spotlessCheck").build();
 	}
 
 	@Test

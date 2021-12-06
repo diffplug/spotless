@@ -4,7 +4,22 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+## [6.0.3] - 2021-12-06
+### Fixed
+* Spotless no longer applies `BasePlugin` ([#1014](https://github.com/diffplug/spotless/pull/1014)).
+  * This was done to ensure that any Spotless tasks would run after the `clean` task, but we found a way to do this without applying the `BasePlugin`. This resolves a conflict with the [Android Gradle template](https://issuetracker.google.com/issues/186924459) (fixes [#858](https://github.com/diffplug/spotless/issues/858)).
+* Large parallel builds could throw `ConcurrentModificationException` (masked by "Cannot add a configuration with name"), now fixed. ([#1015](https://github.com/diffplug/spotless/issues/1015))
+
+## [6.0.2] - 2021-12-05
 ### Changed
+* Bumped default ktlint from `0.43.0` to `0.43.2`.
+### Fixed
+* Fixed problem with ktlint dependency variants ([#993](https://github.com/diffplug/spotless/issues/993))
+
+## [6.0.1] - 2021-12-01
+### Changed
+* Added `named` option to `licenseHeader` to support alternate license header within same format (like java) ([872](https://github.com/diffplug/spotless/issues/872)).
+* Added `onlyIfContentMatches` option to `licenseHeader` to skip license header application  based on source file content pattern ([#650](https://github.com/diffplug/spotless/issues/650)).
 * Bump jgit version ([#992](https://github.com/diffplug/spotless/pull/992)).
   * jgit `5.10.0.202012080955-r` -> `5.13.0.202109080827-r`
 * Fix gradle composite builds ([#860](https://github.com/diffplug/spotless/issues/860)).

@@ -26,6 +26,7 @@ import java.util.logging.Logger;
 
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.attributes.Bundling;
 
 import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.spotless.Provisioner;
@@ -76,6 +77,9 @@ class GradleProvisioner {
 						.forEach(config.getDependencies()::add);
 				config.setDescription(mavenCoords.toString());
 				config.setTransitive(withTransitives);
+				config.attributes(attr -> {
+					attr.attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.EXTERNAL));
+				});
 				return config.resolve();
 			} catch (Exception e) {
 				String projName = project.getPath().substring(1).replace(':', '/');
