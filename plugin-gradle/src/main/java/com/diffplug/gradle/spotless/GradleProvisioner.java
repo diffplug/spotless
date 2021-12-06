@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,8 +41,9 @@ class GradleProvisioner {
 	}
 
 	static class DedupingProvisioner implements Provisioner {
+		private static final Map<Request, Set<File>> cache = new ConcurrentHashMap<>();
+
 		private final Project project;
-		private final Map<Request, Set<File>> cache = new HashMap<>();
 
 		DedupingProvisioner(Project project) {
 			this.project = project;
@@ -50,19 +52,8 @@ class GradleProvisioner {
 		@Override
 		public Set<File> provisionWithTransitives(boolean withTransitives, Collection<String> mavenCoordinates) {
 			Request req = new Request(withTransitives, mavenCoordinates);
-			Set<File> result = cache.get(req);
-			if (result != null) {
-				return result;
-			} else {
-				result = cache.get(req);
-				if (result != null) {
-					return result;
-				} else {
-					result = forProject(project).provisionWithTransitives(req.withTransitives, req.mavenCoords);
-					cache.put(req, result);
-					return result;
-				}
-			}
+			return cache.computeIfAbsent(
+				req, r -> forProject(project).provisionWithTransitives(r.withTransitives, r.mavenCoords));
 		}
 	}
 
