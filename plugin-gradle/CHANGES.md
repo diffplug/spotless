@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Fixed
+* Fix gradle composite builds ([#860](https://github.com/diffplug/spotless/issues/860)).
 
 ## [6.0.3] - 2021-12-06
 ### Fixed
@@ -22,7 +24,6 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Added `onlyIfContentMatches` option to `licenseHeader` to skip license header application  based on source file content pattern ([#650](https://github.com/diffplug/spotless/issues/650)).
 * Bump jgit version ([#992](https://github.com/diffplug/spotless/pull/992)).
   * jgit `5.10.0.202012080955-r` -> `5.13.0.202109080827-r`
-* Fix gradle composite builds ([#860](https://github.com/diffplug/spotless/issues/860)).
 
 ## [6.0.0] - 2021-11-09
 ### Added
