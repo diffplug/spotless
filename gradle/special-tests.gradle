@@ -14,8 +14,8 @@ tasks.named('test') {
 	}
 	if (isCiServer) {
 		retry {
-			maxRetries = 1
-			maxFailures = 2
+			maxRetries = 2
+			maxFailures = 10
 		}
 	}
 }
