@@ -19,14 +19,15 @@ spotbugs {
 	ignoreFailures = false 	// bug free or it doesn't ship!
 	reportsDir = file('build/spotbugs')
 	reportLevel = 'medium'	// low|medium|high (low = sensitive to even minor mistakes)
-	omitVisitors = []		// bugs that we want to ignore
+	omitVisitors = [
+		'FindReturnRef'] // https://spotbugs.readthedocs.io/en/latest/detectors.html#findreturnref
 }
 tasks.named('spotbugsTest') {
 	enabled = false
 }
 tasks.named('spotbugsMain') {
 	// only run on Java 8 (no benefit to running twice)
-	enabled = org.gradle.api.JavaVersion.current() == org.gradle.api.JavaVersion.VERSION_1_8
+	enabled = org.gradle.api.JavaVersion.current() == org.gradle.api.JavaVersion.VERSION_11
 	reports {
 		html.enabled = true
 	}

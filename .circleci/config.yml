@@ -42,6 +42,15 @@ anchors:
           path: lib-extra/build/test-results/test
       - store_test_results:
           path: plugin-gradle/build/test-results/test
+      - store_artifacts:
+          path: lib/build/spotbugs
+      - store_artifacts:
+          path: lib-extra/build/spotbugs
+      - store_artifacts:
+          path: testlib/build/spotbugs
+      - store_artifacts:
+          path: plugin-gradle/build/spotbugs
+
 jobs:
   # gradlew spotlessCheck assemble testClasses
   assemble_testClasses:
@@ -108,22 +117,14 @@ jobs:
       - store_test_results:
           path: plugin-gradle/build/test-results/NpmTest
       - run:
-          name: gradlew check
-          command: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew check --build-cache
+          name: gradlew test
+          command: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew test --build-cache
       - store_test_results:
           path: testlib/build/test-results/test
       - store_test_results:
           path: lib-extra/build/test-results/test
       - store_test_results:
           path: plugin-gradle/build/test-results/test
-      - store_artifacts:
-          path: lib/build/spotbugs
-      - store_artifacts:
-          path: lib-extra/build/spotbugs
-      - store_artifacts:
-          path: testlib/build/spotbugs
-      - store_artifacts:
-          path: plugin-gradle/build/spotbugs
   test_windows:
     executor:
       name: win/default

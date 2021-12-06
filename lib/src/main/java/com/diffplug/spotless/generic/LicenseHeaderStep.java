@@ -61,7 +61,7 @@ public final class LicenseHeaderStep {
 	final String yearSeparator;
 	final Supplier<YearMode> yearMode;
 
-	private LicenseHeaderStep(String name, String contentPattern, ThrowingEx.Supplier<String> headerLazy, String delimiter, String yearSeparator, Supplier<YearMode> yearMode) {
+	private LicenseHeaderStep(@Nullable String name, @Nullable String contentPattern, ThrowingEx.Supplier<String> headerLazy, String delimiter, String yearSeparator, Supplier<YearMode> yearMode) {
 		this.name = sanitizeName(name);
 		this.contentPattern = sanitizeContentPattern(contentPattern);
 		this.headerLazy = Objects.requireNonNull(headerLazy);
@@ -141,7 +141,7 @@ public final class LicenseHeaderStep {
 		return formatterStep.filterByContentPattern(contentPattern);
 	}
 
-	private String sanitizeName(String name) {
+	private String sanitizeName(@Nullable String name) {
 		if (name == null) {
 			return DEFAULT_NAME_PREFIX;
 		}
@@ -156,7 +156,7 @@ public final class LicenseHeaderStep {
 	}
 
 	@Nullable
-	private String sanitizeContentPattern(String contentPattern) {
+	private String sanitizeContentPattern(@Nullable String contentPattern) {
 		if (contentPattern == null) {
 			return contentPattern;
 		}

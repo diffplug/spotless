@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ public final class FormatterProperties {
 		try {
 			Properties newSettings = FileParser.parse(settingsFile);
 			properties.putAll(newSettings);
-		} catch (IOException | IllegalArgumentException | NullPointerException exception) {
+		} catch (IOException | IllegalArgumentException exception) {
 			String message = String.format("Failed to add properties from '%s' to formatter settings.", settingsFile);
 			String detailedMessage = exception.getMessage();
 			if (null != detailedMessage) {
