@@ -19,7 +19,8 @@ spotbugs {
 	ignoreFailures = false 	// bug free or it doesn't ship!
 	reportsDir = file('build/spotbugs')
 	reportLevel = 'medium'	// low|medium|high (low = sensitive to even minor mistakes)
-	omitVisitors = []		// bugs that we want to ignore
+	omitVisitors = [
+		'FindReturnRef'] // https://spotbugs.readthedocs.io/en/latest/detectors.html#findreturnref
 }
 tasks.named('spotbugsTest') {
 	enabled = false
