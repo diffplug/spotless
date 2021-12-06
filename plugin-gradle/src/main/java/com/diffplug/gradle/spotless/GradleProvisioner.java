@@ -17,7 +17,6 @@ package com.diffplug.gradle.spotless;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -53,7 +52,7 @@ class GradleProvisioner {
 		public Set<File> provisionWithTransitives(boolean withTransitives, Collection<String> mavenCoordinates) {
 			Request req = new Request(withTransitives, mavenCoordinates);
 			return cache.computeIfAbsent(
-				req, r -> forProject(project).provisionWithTransitives(r.withTransitives, r.mavenCoords));
+					req, r -> forProject(project).provisionWithTransitives(r.withTransitives, r.mavenCoords));
 		}
 	}
 
