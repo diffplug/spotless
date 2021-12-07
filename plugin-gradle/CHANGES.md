@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [6.0.4] - 2021-12-07
 ### Fixed
 * Fix gradle composite builds ([#860](https://github.com/diffplug/spotless/issues/860)).
 
