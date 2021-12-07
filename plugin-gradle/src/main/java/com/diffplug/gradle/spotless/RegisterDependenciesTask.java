@@ -52,9 +52,9 @@ public abstract class RegisterDependenciesTask extends DefaultTask {
 
 	void setup() {
 		Preconditions.checkArgument(getProject().getRootProject() == getProject(), "Can only be used on the root project");
-
+		String compositeBuildSuffix = getName().substring(TASK_NAME.length()); // see https://github.com/diffplug/spotless/pull/1001
 		BuildServiceRegistry buildServices = getProject().getGradle().getSharedServices();
-		getTaskService().set(buildServices.registerIfAbsent("SpotlessTaskService", SpotlessTaskService.class, spec -> {}));
+		getTaskService().set(buildServices.registerIfAbsent("SpotlessTaskService" + compositeBuildSuffix, SpotlessTaskService.class, spec -> {}));
 		getBuildEventsListenerRegistry().onTaskCompletion(getTaskService());
 	}
 
