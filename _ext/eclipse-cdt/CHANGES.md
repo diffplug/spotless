@@ -4,6 +4,10 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+## [10.5.0] - 2021-12-10
+### Added
+* Switch to Eclipse CDT release 10.5 for Eclipse 2021-12.
+
 ## [10.4.0] - 2021-09-23
 ### Added
 * Switch to Eclipse CDT release 10.4 for Eclipse 4.21.
