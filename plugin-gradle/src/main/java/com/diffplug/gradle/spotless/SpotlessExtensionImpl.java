@@ -15,6 +15,8 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.io.File;
+
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.UnknownTaskException;
@@ -133,5 +135,16 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 		});
 		SpotlessPlugin.taskMustRunAfterClean(project, diagnoseTask);
 		rootDiagnoseTask.configure(task -> task.dependsOn(diagnoseTask));
+	}
+
+	@Override
+	public SpotlessApplyResult applyFile(File file) {
+		TaskContainer tasks = project.getTasks();
+		for (SpotlessTaskImpl task : tasks.withType(SpotlessTaskImpl.class)) {
+			SpotlessApplyResult result = new FileApplier().applyFile(task, file);
+			if (result != SpotlessApplyResult.OUT_OF_BOUNDS)
+				return result;
+		}
+		return SpotlessApplyResult.OUT_OF_BOUNDS;
 	}
 }

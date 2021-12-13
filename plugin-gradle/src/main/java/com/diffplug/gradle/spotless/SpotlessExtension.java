@@ -17,6 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import static java.util.Objects.requireNonNull;
 
+import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
@@ -231,4 +232,7 @@ public abstract class SpotlessExtension {
 	}
 
 	protected abstract void createFormatTasks(String name, FormatExtension formatExtension);
+
+	/** Equivalent to running {@code spotlessApply} on the given file. */
+	public abstract SpotlessApplyResult applyFile(File file);
 }
