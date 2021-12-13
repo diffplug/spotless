@@ -15,54 +15,25 @@
  */
 package com.diffplug.spotless.maven.incremental;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.nio.file.StandardOpenOption.APPEND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.maven.plugin.logging.Log;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 
-class FileIndexTest {
-
-	private final FileIndexConfig config = mock(FileIndexConfig.class);
-	private final Log log = mock(Log.class);
-
-	private Path tempDir;
-
-	@BeforeEach
-	void beforeEach(@TempDir Path tempDir) throws Exception {
-		this.tempDir = tempDir;
-
-		Path projectDir = tempDir.resolve("my-project");
-		Files.createDirectory(projectDir);
-		when(config.getProjectDir()).thenReturn(projectDir);
-
-		Path indexFile = projectDir.resolve("target").resolve("spotless-index");
-		when(config.getIndexFile()).thenReturn(indexFile);
-
-		when(config.getPluginFingerprint()).thenReturn(PluginFingerprint.from("foo"));
-	}
+class FileIndexTest extends FileIndexHarness {
 
 	@Test
 	void readFallsBackToEmptyIndexWhenIndexFileDoesNotExist() {
@@ -84,7 +55,7 @@ class FileIndexTest {
 
 	@Test
 	void readFallsBackToEmptyIndexOnFingerprintMismatch() throws Exception {
-		createSourceFilesAndWriteIndexFile("bar", "source1.txt", "source2.txt");
+		createSourceFilesAndWriteIndexFile(PluginFingerprint.from("wrong"), "source1.txt", "source2.txt");
 
 		FileIndex index = FileIndex.read(config, log);
 
@@ -130,7 +101,7 @@ class FileIndexTest {
 
 	@Test
 	void readIndexWithSingleEntry() throws Exception {
-		Path sourceFile = createSourceFilesAndWriteIndexFile("foo", "source.txt").get(0);
+		Path sourceFile = createSourceFilesAndWriteIndexFile(FINGERPRINT, "source.txt").get(0);
 
 		FileIndex index = FileIndex.read(config, log);
 
@@ -141,7 +112,7 @@ class FileIndexTest {
 
 	@Test
 	void readIndexWithMultipleEntries() throws Exception {
-		List<Path> sourceFiles = createSourceFilesAndWriteIndexFile("foo", "source1.txt", "source2.txt", "source3.txt");
+		List<Path> sourceFiles = createSourceFilesAndWriteIndexFile(FINGERPRINT, "source1.txt", "source2.txt", "source3.txt");
 
 		FileIndex index = FileIndex.read(config, log);
 
@@ -154,7 +125,7 @@ class FileIndexTest {
 
 	@Test
 	void writeIndexWithoutUpdatesDoesNotUpdateTheFile() throws Exception {
-		createSourceFilesAndWriteIndexFile("foo", "source.txt");
+		createSourceFilesAndWriteIndexFile(FINGERPRINT, "source.txt");
 		FileTime modifiedTimeBeforeRead = Files.getLastModifiedTime(config.getIndexFile());
 
 		FileIndex index = FileIndex.read(config, log);
@@ -169,7 +140,7 @@ class FileIndexTest {
 
 	@Test
 	void writeIndexContainingUpdates() throws Exception {
-		createSourceFilesAndWriteIndexFile("foo", "source1.txt", "source2.txt");
+		createSourceFilesAndWriteIndexFile(FINGERPRINT, "source1.txt", "source2.txt");
 		Path sourceFile3 = createSourceFile("source3.txt");
 		Path sourceFile4 = createSourceFile("source4.txt");
 		Instant modifiedTime3 = Instant.now();
@@ -209,7 +180,7 @@ class FileIndexTest {
 
 	@Test
 	void deleteExistingIndex() throws Exception {
-		createSourceFilesAndWriteIndexFile("foo", "source1.txt", "source2.txt");
+		createSourceFilesAndWriteIndexFile(FINGERPRINT, "source1.txt", "source2.txt");
 		assertThat(config.getIndexFile()).exists();
 
 		FileIndex.delete(config, log);
@@ -220,7 +191,7 @@ class FileIndexTest {
 
 	@Test
 	void getLastModifiedTimeReturnsEmptyOptionalForNonProjectFile() throws Exception {
-		createSourceFilesAndWriteIndexFile("foo", "source.txt");
+		createSourceFilesAndWriteIndexFile(FINGERPRINT, "source.txt");
 		Path nonProjectDir = tempDir.resolve("some-other-project");
 		Files.createDirectory(nonProjectDir);
 		Path nonProjectFile = Files.createFile(nonProjectDir.resolve("some-other-source.txt"));
@@ -232,7 +203,7 @@ class FileIndexTest {
 
 	@Test
 	void getLastModifiedTimeReturnsEmptyOptionalForUnknownFile() throws Exception {
-		createSourceFilesAndWriteIndexFile("foo", "source.txt");
+		createSourceFilesAndWriteIndexFile(FINGERPRINT, "source.txt");
 		Path unknownSourceFile = createSourceFile("unknown-source.txt");
 
 		FileIndex index = FileIndex.read(config, log);
@@ -241,7 +212,7 @@ class FileIndexTest {
 	}
 
 	@Test
-	void setLastModifiedTimeThrowsForNonProjectFile() throws Exception {
+	void setLastModifiedTimeThrowsForNonProjectFile() {
 		FileIndex index = FileIndex.read(config, log);
 		Path nonProjectFile = Paths.get("non-project-file");
 
@@ -250,7 +221,7 @@ class FileIndexTest {
 
 	@Test
 	void setLastModifiedTimeUpdatesModifiedTime() throws Exception {
-		Path sourceFile = createSourceFilesAndWriteIndexFile("foo", "source.txt").get(0);
+		Path sourceFile = createSourceFilesAndWriteIndexFile(FINGERPRINT, "source.txt").get(0);
 		FileIndex index = FileIndex.read(config, log);
 
 		Optional<Instant> oldTimeOptional = index.getLastModifiedTime(sourceFile);
@@ -265,7 +236,7 @@ class FileIndexTest {
 
 	@Test
 	void rewritesIndexFileThatReferencesNonExistingFile() throws Exception {
-		List<Path> sourceFiles = createSourceFilesAndWriteIndexFile("foo", "source1.txt", "source2.txt");
+		createSourceFilesAndWriteIndexFile(FINGERPRINT, "source1.txt", "source2.txt");
 		Path nonExistingSourceFile = config.getProjectDir().resolve("non-existing-source.txt");
 		FileIndex index1 = FileIndex.read(config, log);
 		assertThat(index1.size()).isEqualTo(2);
@@ -281,33 +252,5 @@ class FileIndexTest {
 
 		FileIndex index3 = FileIndex.read(config, log);
 		assertThat(index3.size()).isEqualTo(2);
-	}
-
-	private List<Path> createSourceFilesAndWriteIndexFile(String fingerprint, String... files)
-			throws IOException {
-		List<String> lines = new ArrayList<>();
-		lines.add(fingerprint);
-
-		List<Path> sourceFiles = new ArrayList<>();
-		for (String file : files) {
-			Path path = createSourceFile(file);
-			lines.add(file + " " + Files.getLastModifiedTime(path).toInstant());
-			sourceFiles.add(path);
-		}
-
-		writeIndexFile(lines.toArray(new String[0]));
-		return sourceFiles;
-	}
-
-	private void writeIndexFile(String... lines) throws IOException {
-		Files.createDirectory(config.getIndexFile().getParent());
-		Files.createFile(config.getIndexFile());
-		Files.write(config.getIndexFile(), Arrays.asList(lines), UTF_8, APPEND);
-	}
-
-	private Path createSourceFile(String name) throws IOException {
-		Path file = config.getProjectDir().resolve(name);
-		Files.createFile(file);
-		return file;
 	}
 }

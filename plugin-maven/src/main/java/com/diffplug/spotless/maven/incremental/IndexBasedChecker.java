@@ -26,14 +26,15 @@ import java.util.Optional;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 
+import com.diffplug.common.annotations.VisibleForTesting;
 import com.diffplug.spotless.Formatter;
 
-// todo: add unit tests
 class IndexBasedChecker implements UpToDateChecker {
 
 	private final FileIndex index;
 
-	private IndexBasedChecker(FileIndex index) {
+	@VisibleForTesting
+	IndexBasedChecker(FileIndex index) {
 		this.index = index;
 	}
 
@@ -53,16 +54,14 @@ class IndexBasedChecker implements UpToDateChecker {
 			return false;
 		}
 
-		Instant currentLastModifiedTime = lastModifiedTime(path);
 		Instant storedLastModifiedTime = storedLastModifiedTimeOptional.get();
-		return currentLastModifiedTime.isAfter(storedLastModifiedTime);
+		return storedLastModifiedTime.equals(lastModifiedTime(path));
 	}
 
 	@Override
 	public void setUpToDate(File file) {
 		Path path = file.toPath();
-		Instant currentLastModifiedTime = lastModifiedTime(path);
-		index.setLastModifiedTime(path, currentLastModifiedTime);
+		index.setLastModifiedTime(path, lastModifiedTime(path));
 	}
 
 	@Override
