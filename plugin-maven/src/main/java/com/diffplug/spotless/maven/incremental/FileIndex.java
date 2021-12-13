@@ -37,9 +37,9 @@ import java.util.TreeMap;
 
 import org.apache.maven.plugin.logging.Log;
 
-// todo: use TrieMap for fileToLastModifiedTime with String keys
+import com.diffplug.common.annotations.VisibleForTesting;
+
 // todo: FileTime -> Instant can be a lossy conversion
-// todo: add unit tests
 class FileIndex {
 
 	private static final String SEPARATOR = " ";
@@ -49,35 +49,42 @@ class FileIndex {
 	private final Map<Path, Instant> fileToLastModifiedTime;
 	private final Path projectDir;
 
-	private boolean updated;
+	private boolean modified;
 
-	private FileIndex(Path indexFile, PluginFingerprint pluginFingerprint, Map<Path, Instant> fileToLastModifiedTime, Path projectDir) {
+	private FileIndex(Path indexFile, PluginFingerprint pluginFingerprint, Map<Path, Instant> fileToLastModifiedTime, Path projectDir, boolean needsRewrite) {
 		this.indexFile = indexFile;
 		this.pluginFingerprint = pluginFingerprint;
 		this.fileToLastModifiedTime = fileToLastModifiedTime;
 		this.projectDir = projectDir;
+		this.modified = needsRewrite;
 	}
 
 	static FileIndex read(FileIndexConfig config, Log log) {
 		Path indexFile = config.getIndexFile();
 		if (Files.notExists(indexFile)) {
 			log.info("Index file does not exist. Fallback to an empty index");
-			return emptyIndex(config);
+			return emptyIndexFallback(config);
 		}
 
 		try (BufferedReader reader = newBufferedReader(indexFile, UTF_8)) {
+			String firstLine = reader.readLine();
+			if (firstLine == null) {
+				log.info("Index file is empty. Fallback to an empty index");
+				return emptyIndexFallback(config);
+			}
+
 			PluginFingerprint computedFingerprint = config.getPluginFingerprint();
-			PluginFingerprint storedFingerprint = PluginFingerprint.from(reader.readLine());
+			PluginFingerprint storedFingerprint = PluginFingerprint.from(firstLine);
 			if (!computedFingerprint.equals(storedFingerprint)) {
 				log.info("Fingerprint mismatch in the index file. Fallback to an empty index");
-				return emptyIndex(config);
+				return emptyIndexFallback(config);
 			} else {
-				Map<Path, Instant> fileToLastModifiedTime = readFileToLastModifiedTime(reader, config.getProjectDir(), log);
-				return new FileIndex(indexFile, computedFingerprint, fileToLastModifiedTime, config.getProjectDir());
+				Content content = readIndexContent(reader, config.getProjectDir(), log);
+				return new FileIndex(indexFile, computedFingerprint, content.fileToLastModifiedTime, config.getProjectDir(), content.needsRewrite);
 			}
 		} catch (IOException e) {
 			log.warn("Error reading the index file. Fallback to an empty index", e);
-			return emptyIndex(config);
+			return emptyIndexFallback(config);
 		}
 	}
 
@@ -105,11 +112,16 @@ class FileIndex {
 	void setLastModifiedTime(Path file, Instant time) {
 		Path relativeFile = projectDir.relativize(file);
 		fileToLastModifiedTime.put(relativeFile, time);
-		updated = true;
+		modified = true;
+	}
+
+	@VisibleForTesting
+	int size() {
+		return fileToLastModifiedTime.size();
 	}
 
 	void write() {
-		if (!updated) {
+		if (!modified) {
 			return;
 		}
 
@@ -118,7 +130,7 @@ class FileIndex {
 			writer.println(pluginFingerprint.value());
 
 			for (Entry<Path, Instant> entry : fileToLastModifiedTime.entrySet()) {
-				writer.print(entry.getKey() + SEPARATOR + entry.getValue());
+				writer.println(entry.getKey() + SEPARATOR + entry.getValue());
 			}
 		} catch (IOException e) {
 			throw new UncheckedIOException("Unable to write the index", e);
@@ -133,8 +145,10 @@ class FileIndex {
 		}
 	}
 
-	private static Map<Path, Instant> readFileToLastModifiedTime(BufferedReader reader, Path projectDir, Log log) throws IOException {
+	private static Content readIndexContent(BufferedReader reader, Path projectDir, Log log) throws IOException {
 		Map<Path, Instant> fileToLastModifiedTime = new TreeMap<>();
+		boolean needsRewrite = false;
+
 		String line;
 		while ((line = reader.readLine()) != null) {
 			int separatorIndex = line.lastIndexOf(SEPARATOR);
@@ -146,20 +160,35 @@ class FileIndex {
 			Path absoluteFile = projectDir.resolve(relativeFile);
 			if (Files.notExists(absoluteFile)) {
 				log.info("File stored in the index does not exist: " + relativeFile);
+				needsRewrite = true;
 			} else {
-				Instant lastModifiedTime;
-				try {
-					lastModifiedTime = Instant.parse(line.substring(separatorIndex));
-				} catch (DateTimeParseException e) {
-					throw new IOException("Incorrect index file. Unable to parse last modified time from '" + line + "'", e);
-				}
+				Instant lastModifiedTime = parseLastModifiedTime(line, separatorIndex);
 				fileToLastModifiedTime.put(relativeFile, lastModifiedTime);
 			}
 		}
-		return fileToLastModifiedTime;
+
+		return new Content(fileToLastModifiedTime, needsRewrite);
 	}
 
-	private static FileIndex emptyIndex(FileIndexConfig config) {
-		return new FileIndex(config.getIndexFile(), config.getPluginFingerprint(), new TreeMap<>(), config.getProjectDir());
+	private static Instant parseLastModifiedTime(String line, int separatorIndex) throws IOException {
+		try {
+			return Instant.parse(line.substring(separatorIndex + 1));
+		} catch (DateTimeParseException e) {
+			throw new IOException("Incorrect index file. Unable to parse last modified time from '" + line + "'", e);
+		}
+	}
+
+	private static FileIndex emptyIndexFallback(FileIndexConfig config) {
+		return new FileIndex(config.getIndexFile(), config.getPluginFingerprint(), new TreeMap<>(), config.getProjectDir(), true);
+	}
+
+	private static class Content {
+		final Map<Path, Instant> fileToLastModifiedTime;
+		final boolean needsRewrite;
+
+		Content(Map<Path, Instant> fileToLastModifiedTime, boolean needsRewrite) {
+			this.fileToLastModifiedTime = fileToLastModifiedTime;
+			this.needsRewrite = needsRewrite;
+		}
 	}
 }
