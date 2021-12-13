@@ -161,6 +161,7 @@ task createPomXml(dependsOn: installLocalDependencies) {
 			mavenApiVersion           : VER_MAVEN_API,
 			eclipseAetherVersion      : VER_ECLIPSE_AETHER,
 			spotlessLibVersion        : libVersion,
+			jsr305Version             : VER_JSR_305,
 			additionalDependencies    : additionalDependencies
 		]
 

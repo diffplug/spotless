@@ -32,8 +32,9 @@ import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.TreeMap;
+
+import javax.annotation.Nullable;
 
 import org.apache.maven.plugin.logging.Log;
 
@@ -101,12 +102,13 @@ class FileIndex {
 		}
 	}
 
-	Optional<Instant> getLastModifiedTime(Path file) {
+	@Nullable
+	Instant getLastModifiedTime(Path file) {
 		if (!file.startsWith(projectDir)) {
-			return Optional.empty();
+			return null;
 		}
 		Path relativeFile = projectDir.relativize(file);
-		return Optional.ofNullable(fileToLastModifiedTime.get(relativeFile));
+		return fileToLastModifiedTime.get(relativeFile);
 	}
 
 	void setLastModifiedTime(Path file, Instant time) {

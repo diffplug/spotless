@@ -28,7 +28,6 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -106,7 +105,7 @@ class FileIndexTest extends FileIndexHarness {
 		FileIndex index = FileIndex.read(config, log);
 
 		assertThat(index.size()).isOne();
-		assertThat(index.getLastModifiedTime(sourceFile)).contains(Files.getLastModifiedTime(sourceFile).toInstant());
+		assertThat(index.getLastModifiedTime(sourceFile)).isEqualTo(Files.getLastModifiedTime(sourceFile).toInstant());
 		verifyNoInteractions(log);
 	}
 
@@ -118,7 +117,7 @@ class FileIndexTest extends FileIndexHarness {
 
 		assertThat(index.size()).isEqualTo(3);
 		for (Path sourceFile : sourceFiles) {
-			assertThat(index.getLastModifiedTime(sourceFile)).contains(Files.getLastModifiedTime(sourceFile).toInstant());
+			assertThat(index.getLastModifiedTime(sourceFile)).isEqualTo(Files.getLastModifiedTime(sourceFile).toInstant());
 		}
 		verifyNoInteractions(log);
 	}
@@ -152,8 +151,8 @@ class FileIndexTest extends FileIndexHarness {
 		index1.write();
 
 		FileIndex index2 = FileIndex.read(config, log);
-		assertThat(index2.getLastModifiedTime(sourceFile3)).contains(modifiedTime3);
-		assertThat(index2.getLastModifiedTime(sourceFile4)).contains(modifiedTime4);
+		assertThat(index2.getLastModifiedTime(sourceFile3)).isEqualTo(modifiedTime3);
+		assertThat(index2.getLastModifiedTime(sourceFile4)).isEqualTo(modifiedTime4);
 	}
 
 	@Test
@@ -168,7 +167,7 @@ class FileIndexTest extends FileIndexHarness {
 
 		assertThat(config.getIndexFile().getParent()).exists();
 		FileIndex index2 = FileIndex.read(config, log);
-		assertThat(index2.getLastModifiedTime(sourceFile)).contains(modifiedTime);
+		assertThat(index2.getLastModifiedTime(sourceFile)).isEqualTo(modifiedTime);
 	}
 
 	@Test
@@ -198,7 +197,7 @@ class FileIndexTest extends FileIndexHarness {
 
 		FileIndex index = FileIndex.read(config, log);
 
-		assertThat(index.getLastModifiedTime(nonProjectFile)).isEmpty();
+		assertThat(index.getLastModifiedTime(nonProjectFile)).isNull();
 	}
 
 	@Test
@@ -208,7 +207,7 @@ class FileIndexTest extends FileIndexHarness {
 
 		FileIndex index = FileIndex.read(config, log);
 
-		assertThat(index.getLastModifiedTime(unknownSourceFile)).isEmpty();
+		assertThat(index.getLastModifiedTime(unknownSourceFile)).isNull();
 	}
 
 	@Test
@@ -224,14 +223,14 @@ class FileIndexTest extends FileIndexHarness {
 		Path sourceFile = createSourceFilesAndWriteIndexFile(FINGERPRINT, "source.txt").get(0);
 		FileIndex index = FileIndex.read(config, log);
 
-		Optional<Instant> oldTimeOptional = index.getLastModifiedTime(sourceFile);
-		assertThat(oldTimeOptional).isPresent();
+		Instant oldTime = index.getLastModifiedTime(sourceFile);
+		assertThat(oldTime).isNotNull();
 
 		Instant newTime = Instant.now().plusSeconds(42);
-		assertThat(oldTimeOptional.get()).isNotEqualTo(newTime);
+		assertThat(oldTime).isNotEqualTo(newTime);
 
 		index.setLastModifiedTime(sourceFile, newTime);
-		assertThat(index.getLastModifiedTime(sourceFile)).contains(newTime);
+		assertThat(index.getLastModifiedTime(sourceFile)).isEqualTo(newTime);
 	}
 
 	@Test

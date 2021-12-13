@@ -21,7 +21,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.util.Optional;
+import java.util.Objects;
 
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -48,14 +48,8 @@ class IndexBasedChecker implements UpToDateChecker {
 	@Override
 	public boolean isUpToDate(File file) {
 		Path path = file.toPath();
-
-		Optional<Instant> storedLastModifiedTimeOptional = index.getLastModifiedTime(path);
-		if (!storedLastModifiedTimeOptional.isPresent()) {
-			return false;
-		}
-
-		Instant storedLastModifiedTime = storedLastModifiedTimeOptional.get();
-		return storedLastModifiedTime.equals(lastModifiedTime(path));
+		Instant storedLastModifiedTime = index.getLastModifiedTime(path);
+		return Objects.equals(storedLastModifiedTime, lastModifiedTime(path));
 	}
 
 	@Override

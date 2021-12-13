@@ -37,9 +37,9 @@ class IndexBasedCheckerTest extends FileIndexHarness {
 	}
 
 	@Test
-	void isUpToDateReturnsFalseForUnknownFile() {
-		File unknownFile = new File("unknown-file.txt");
-		assertThat(checker.isUpToDate(unknownFile)).isFalse();
+	void isUpToDateReturnsFalseForUnknownFile() throws Exception {
+		Path sourceFile = createSourceFile("source.txt");
+		assertThat(checker.isUpToDate(sourceFile.toFile())).isFalse();
 	}
 
 	@Test
@@ -77,24 +77,24 @@ class IndexBasedCheckerTest extends FileIndexHarness {
 	@Test
 	void setUpToDateUpdatesTheIndex() throws Exception {
 		Path sourceFile = createSourceFile("source.txt");
-		assertThat(index.getLastModifiedTime(sourceFile)).isEmpty();
+		assertThat(index.getLastModifiedTime(sourceFile)).isNull();
 		assertThat(checker.isUpToDate(sourceFile.toFile())).isFalse();
 
 		checker.setUpToDate(sourceFile.toFile());
 
-		assertThat(index.getLastModifiedTime(sourceFile)).contains(Files.getLastModifiedTime(sourceFile).toInstant());
+		assertThat(index.getLastModifiedTime(sourceFile)).isEqualTo(Files.getLastModifiedTime(sourceFile).toInstant());
 		assertThat(checker.isUpToDate(sourceFile.toFile())).isTrue();
 	}
 
 	@Test
 	void closeWritesTheIndex() throws Exception {
 		Path sourceFile = createSourceFile("source.txt");
-		assertThat(index.getLastModifiedTime(sourceFile)).isEmpty();
+		assertThat(index.getLastModifiedTime(sourceFile)).isNull();
 
 		checker.setUpToDate(sourceFile.toFile());
 		checker.close();
 
 		FileIndex newIndex = FileIndex.read(config, log);
-		assertThat(newIndex.getLastModifiedTime(sourceFile)).contains(Files.getLastModifiedTime(sourceFile).toInstant());
+		assertThat(newIndex.getLastModifiedTime(sourceFile)).isEqualTo(Files.getLastModifiedTime(sourceFile).toInstant());
 	}
 }

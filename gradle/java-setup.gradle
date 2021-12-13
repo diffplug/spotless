@@ -35,5 +35,5 @@ tasks.named('spotbugsMain') {
 dependencies {
 	compileOnly 'net.jcip:jcip-annotations:1.0'
 	compileOnly "com.github.spotbugs:spotbugs-annotations:${VER_SPOTBUGS}"
-	compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+	compileOnly "com.google.code.findbugs:jsr305:${VER_JSR_305}"
 }
