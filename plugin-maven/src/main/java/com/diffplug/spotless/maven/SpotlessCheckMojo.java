@@ -48,8 +48,9 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 				PaddedCell.DirtyState dirtyState = PaddedCell.calculateDirtyState(formatter, file);
 				if (!dirtyState.isClean() && !dirtyState.didNotConverge()) {
 					problemFiles.add(file);
+				} else {
+					upToDateChecker.setUpToDate(file.toPath());
 				}
-				// todo: else - mark file as up-to-date?
 			} catch (IOException e) {
 				throw new MojoExecutionException("Unable to format file " + file, e);
 			}
