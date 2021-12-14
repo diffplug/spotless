@@ -32,7 +32,7 @@ class IndexBasedCheckerTest extends FileIndexHarness {
 	@BeforeEach
 	void beforeEach() {
 		index = FileIndex.read(config, log);
-		checker = new IndexBasedChecker(index);
+		checker = new IndexBasedChecker(index, log);
 	}
 
 	@Test

@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.util.Objects;
 
@@ -32,17 +31,19 @@ import com.diffplug.spotless.Formatter;
 class IndexBasedChecker implements UpToDateChecker {
 
 	private final FileIndex index;
+	private final Log log;
 
 	@VisibleForTesting
-	IndexBasedChecker(FileIndex index) {
+	IndexBasedChecker(FileIndex index, Log log) {
 		this.index = index;
+		this.log = log;
 	}
 
 	static IndexBasedChecker create(MavenProject project, Iterable<Formatter> formatters, Log log) {
 		PluginFingerprint pluginFingerprint = PluginFingerprint.from(project, formatters);
 		FileIndexConfig indexConfig = new FileIndexConfig(project, pluginFingerprint);
 		FileIndex fileIndex = FileIndex.read(indexConfig, log);
-		return new IndexBasedChecker(fileIndex);
+		return new IndexBasedChecker(fileIndex, log);
 	}
 
 	@Override
@@ -53,7 +54,16 @@ class IndexBasedChecker implements UpToDateChecker {
 
 	@Override
 	public void setUpToDate(Path file) {
-		index.setLastModifiedTime(file, lastModifiedTime(file));
+		Instant lastModified = lastModifiedTime(file);
+		if (Instant.MIN.equals(lastModified) || Instant.MAX.equals(lastModified)) {
+			// FileTime can store timestamps further in the past/future than Instant.
+			// Such timestamps are saturated to Instant.MIN/Instant.MAX.
+			// Do not store such timestamps in the index because they are imprecise.
+			log.warn("File " + file + " has an approximated last modified time of " + lastModified + ". "
+					+ "It will not be recorded in the up-to-date index.");
+			return;
+		}
+		index.setLastModifiedTime(file, lastModified);
 	}
 
 	@Override
@@ -61,11 +71,9 @@ class IndexBasedChecker implements UpToDateChecker {
 		index.write();
 	}
 
-	// todo: FileTime -> Instant can be a lossy conversion
 	private static Instant lastModifiedTime(Path path) {
 		try {
-			FileTime lastModifiedTime = Files.getLastModifiedTime(path);
-			return lastModifiedTime.toInstant();
+			return Files.getLastModifiedTime(path).toInstant();
 		} catch (IOException e) {
 			throw new UncheckedIOException("Unable to get last modified date for " + path, e);
 		}
