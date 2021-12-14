@@ -41,6 +41,9 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 		List<File> problemFiles = new ArrayList<>();
 		for (File file : files) {
 			if (upToDateChecker.isUpToDate(file.toPath())) {
+				if (getLog().isDebugEnabled()) {
+					getLog().debug("Spotless will not check an up-to-date file: " + file);
+				}
 				continue;
 			}
 

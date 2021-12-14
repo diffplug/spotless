@@ -35,6 +35,9 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 	protected void process(Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException {
 		for (File file : files) {
 			if (upToDateChecker.isUpToDate(file.toPath())) {
+				if (getLog().isDebugEnabled()) {
+					getLog().debug("Spotless will not format an up-to-date file: " + file);
+				}
 				continue;
 			}
 
