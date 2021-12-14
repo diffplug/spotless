@@ -63,6 +63,8 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 		return isClean(project, treeSha, relativePath);
 	}
 
+	private Map<Repository, DirCache> dirCaches = new HashMap<>();
+
 	/**
 	 * This is the highest-level method, which all the others serve.  Given the sha
 	 * of a git tree (not a commit!), and the file in question, this method returns
@@ -72,13 +74,16 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 	public boolean isClean(Project project, ObjectId treeSha, String relativePathUnix) throws IOException {
 		Repository repo = repositoryFor(project);
 
-		// TODO: should be cached-per-repo if it is thread-safe, or per-repo-per-thread if it is not
-		DirCache dirCache = repo.readDirCache();
-
+		DirCacheIterator dirCacheIteratorInit;
+		synchronized (this) {
+			// each DirCache is thread-safe, and we compute them one-to-one based on `repositoryFor`
+			DirCache dirCache = dirCaches.computeIfAbsent(repo, Errors.rethrow().wrap(Repository::readDirCache));
+			dirCacheIteratorInit = new DirCacheIterator(dirCache);
+		}
 		try (TreeWalk treeWalk = new TreeWalk(repo)) {
 			treeWalk.setRecursive(true);
 			treeWalk.addTree(treeSha);
-			treeWalk.addTree(new DirCacheIterator(dirCache));
+			treeWalk.addTree(dirCacheIteratorInit);
 			treeWalk.addTree(new FileTreeIterator(repo));
 			treeWalk.setFilter(AndTreeFilter.create(
 					PathFilter.create(relativePathUnix),
@@ -216,7 +221,7 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 					RevCommit mergeBase = revWalk.next();
 					treeSha = Optional.ofNullable(mergeBase).orElse(ratchetFrom).getTree();
 				}
-				rootTreeShaCache.put(repo, reference, treeSha);
+				rootTreeShaCache.put(repo, reference, treeSha.copy());
 			}
 			return treeSha;
 		} catch (IOException e) {
@@ -241,7 +246,7 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 					TreeWalk treeWalk = TreeWalk.forPath(repo, subpath, rootTreeSha);
 					subtreeSha = treeWalk == null ? ObjectId.zeroId() : treeWalk.getObjectId(0);
 				}
-				subtreeShaCache.put(project, subtreeSha);
+				subtreeShaCache.put(project, subtreeSha.copy());
 			}
 			return subtreeSha;
 		} catch (IOException e) {
