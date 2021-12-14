@@ -46,16 +46,16 @@ class NoopCheckerTest extends ResourceHarness {
 
 	private MavenProject project;
 	private Path indexFile;
-	private File existingSourceFile;
-	private File nonExistingSourceFile;
+	private Path existingSourceFile;
+	private Path nonExistingSourceFile;
 
 	@BeforeEach
 	void beforeEach() throws Exception {
 		project = buildMavenProject();
 		indexFile = new FileIndexConfig(project).getIndexFile();
-		existingSourceFile = new File(project.getBasedir(), "existing.txt");
-		Files.write(existingSourceFile.toPath(), "foo".getBytes(UTF_8), CREATE_NEW);
-		nonExistingSourceFile = new File(project.getBasedir(), "non-existing.txt");
+		existingSourceFile = project.getBasedir().toPath().resolve("existing.txt");
+		Files.write(existingSourceFile, "foo".getBytes(UTF_8), CREATE_NEW);
+		nonExistingSourceFile = project.getBasedir().toPath().resolve("non-existing.txt");
 	}
 
 	@Test

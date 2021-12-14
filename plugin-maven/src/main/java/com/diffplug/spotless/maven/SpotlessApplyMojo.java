@@ -34,7 +34,7 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 	@Override
 	protected void process(Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException {
 		for (File file : files) {
-			if (upToDateChecker.isUpToDate(file)) {
+			if (upToDateChecker.isUpToDate(file.toPath())) {
 				continue;
 			}
 
@@ -47,7 +47,7 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 				throw new MojoExecutionException("Unable to format file " + file, e);
 			}
 
-			upToDateChecker.setUpToDate(file);
+			upToDateChecker.setUpToDate(file.toPath());
 		}
 	}
 }

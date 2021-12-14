@@ -40,7 +40,7 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 	protected void process(Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException {
 		List<File> problemFiles = new ArrayList<>();
 		for (File file : files) {
-			if (upToDateChecker.isUpToDate(file)) {
+			if (upToDateChecker.isUpToDate(file.toPath())) {
 				continue;
 			}
 

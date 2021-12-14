@@ -15,7 +15,7 @@
  */
 package com.diffplug.spotless.maven.incremental;
 
-import java.io.File;
+import java.nio.file.Path;
 
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -24,9 +24,9 @@ import com.diffplug.spotless.Formatter;
 
 public interface UpToDateChecker extends AutoCloseable {
 
-	boolean isUpToDate(File file);
+	boolean isUpToDate(Path file);
 
-	void setUpToDate(File file);
+	void setUpToDate(Path file);
 
 	void close();
 

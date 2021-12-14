@@ -40,7 +40,6 @@ import org.apache.maven.plugin.logging.Log;
 
 import com.diffplug.common.annotations.VisibleForTesting;
 
-// todo: FileTime -> Instant can be a lossy conversion
 class FileIndex {
 
 	private static final String SEPARATOR = " ";

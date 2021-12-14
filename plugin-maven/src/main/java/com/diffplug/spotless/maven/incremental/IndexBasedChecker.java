@@ -15,11 +15,11 @@
  */
 package com.diffplug.spotless.maven.incremental;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.util.Objects;
 
@@ -46,16 +46,14 @@ class IndexBasedChecker implements UpToDateChecker {
 	}
 
 	@Override
-	public boolean isUpToDate(File file) {
-		Path path = file.toPath();
-		Instant storedLastModifiedTime = index.getLastModifiedTime(path);
-		return Objects.equals(storedLastModifiedTime, lastModifiedTime(path));
+	public boolean isUpToDate(Path file) {
+		Instant storedLastModifiedTime = index.getLastModifiedTime(file);
+		return Objects.equals(storedLastModifiedTime, lastModifiedTime(file));
 	}
 
 	@Override
-	public void setUpToDate(File file) {
-		Path path = file.toPath();
-		index.setLastModifiedTime(path, lastModifiedTime(path));
+	public void setUpToDate(Path file) {
+		index.setLastModifiedTime(file, lastModifiedTime(file));
 	}
 
 	@Override
@@ -63,9 +61,11 @@ class IndexBasedChecker implements UpToDateChecker {
 		index.write();
 	}
 
+	// todo: FileTime -> Instant can be a lossy conversion
 	private static Instant lastModifiedTime(Path path) {
 		try {
-			return Files.getLastModifiedTime(path).toInstant();
+			FileTime lastModifiedTime = Files.getLastModifiedTime(path);
+			return lastModifiedTime.toInstant();
 		} catch (IOException e) {
 			throw new UncheckedIOException("Unable to get last modified date for " + path, e);
 		}

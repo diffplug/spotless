@@ -15,7 +15,7 @@
  */
 package com.diffplug.spotless.maven.incremental;
 
-import java.io.File;
+import java.nio.file.Path;
 
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -31,12 +31,12 @@ class NoopChecker implements UpToDateChecker {
 	}
 
 	@Override
-	public boolean isUpToDate(File file) {
+	public boolean isUpToDate(Path file) {
 		return false;
 	}
 
 	@Override
-	public void setUpToDate(File file) {}
+	public void setUpToDate(Path file) {}
 
 	@Override
 	public void close() {}
