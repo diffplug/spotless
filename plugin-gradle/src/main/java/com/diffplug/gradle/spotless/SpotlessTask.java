@@ -102,6 +102,11 @@ public abstract class SpotlessTask extends DefaultTask {
 	abstract DirectoryProperty getProjectDir();
 
 	@Internal
+	GitRatchetGradle getRatchet() {
+		return ObjectId.zeroId().equals(getRatchetSha()) ? null : getTaskService().get().getRatchet();
+	}
+
+	@Internal
 	ObjectId getRootTreeSha() {
 		return rootTreeSha;
 	}

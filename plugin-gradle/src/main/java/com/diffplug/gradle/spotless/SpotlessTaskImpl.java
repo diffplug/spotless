@@ -60,7 +60,6 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 		if (target == null) {
 			throw new GradleException("You must specify 'Iterable<File> target'");
 		}
-		GitRatchetGradle ratchet = taskService.getRatchet();
 
 		if (!inputs.isIncremental()) {
 			getLogger().info("Not incremental: removing prior outputs");
@@ -69,6 +68,7 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 		}
 
 		try (Formatter formatter = buildFormatter()) {
+			GitRatchetGradle ratchet = getRatchet();
 			for (FileChange fileChange : inputs.getFileChanges(target)) {
 				File input = fileChange.getFile();
 				if (fileChange.getChangeType() == ChangeType.REMOVED) {
