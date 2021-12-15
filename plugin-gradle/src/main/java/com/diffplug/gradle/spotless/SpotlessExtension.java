@@ -41,6 +41,7 @@ public abstract class SpotlessExtension {
 	protected static final String APPLY_DESCRIPTION = "Applies code formatting steps to sourcecode in-place.";
 
 	static final String EXTENSION = "spotless";
+	static final String EXTENSION_PREDECLARE = "spotlessPredeclare";
 	static final String CHECK = "Check";
 	static final String APPLY = "Apply";
 	static final String DIAGNOSE = "Diagnose";
@@ -257,5 +258,23 @@ public abstract class SpotlessExtension {
 		} else {
 			return rootProjectTasks.named(taskName, RegisterDependenciesTask.class);
 		}
+	}
+
+	public void predeclareDepsFromBuildscript() {
+		if (project.getRootProject() != project) {
+			throw new GradleException("predeclareDepsFromBuildscript can only be called from the root project");
+		}
+		predeclare(GradleProvisioner.Policy.ROOT_BUILDSCRIPT);
+	}
+
+	public void predeclareDeps() {
+		if (project.getRootProject() != project) {
+			throw new GradleException("predeclareDeps can only be called from the root project");
+		}
+		predeclare(GradleProvisioner.Policy.ROOT_PROJECT);
+	}
+
+	protected void predeclare(GradleProvisioner.Policy policy) {
+		project.getExtensions().create(SpotlessExtension.class, EXTENSION_PREDECLARE, SpotlessExtensionRoot.class, project, policy);
 	}
 }

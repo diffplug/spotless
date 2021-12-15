@@ -73,7 +73,7 @@ public class FormatExtension {
 	}
 
 	protected final Provisioner provisioner() {
-		return spotless.getRegisterDependenciesTask().getTaskService().get().provisionerFor(spotless.project);
+		return spotless.getRegisterDependenciesTask().getTaskService().get().provisionerFor(spotless);
 	}
 
 	private String formatName() {

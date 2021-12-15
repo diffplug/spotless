@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
@@ -30,12 +31,29 @@ import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.attributes.Bundling;
 import org.gradle.api.initialization.dsl.ScriptHandler;
 
+import com.diffplug.common.base.Unhandled;
 import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.spotless.Provisioner;
 
 /** Should be package-private. */
 class GradleProvisioner {
 	private GradleProvisioner() {}
+
+	enum Policy {
+		INDEPENDENT, ROOT_PROJECT, ROOT_BUILDSCRIPT;
+
+		public DedupingProvisioner dedupingProvisioner(Project project) {
+			switch (this) {
+			case ROOT_PROJECT:
+				return new DedupingProvisioner(forProject(project));
+			case ROOT_BUILDSCRIPT:
+				return new DedupingProvisioner(forRootProjectBuildscript(project));
+			case INDEPENDENT:
+			default:
+				throw Unhandled.enumException(this);
+			}
+		}
+	}
 
 	static class DedupingProvisioner implements Provisioner {
 		private final Provisioner provisioner;
@@ -65,6 +83,19 @@ class GradleProvisioner {
 				}
 			}
 		}
+
+		/** A child Provisioner which retries cached elements only. */
+		final Provisioner cachedOnly = (withTransitives, mavenCoordinates) -> {
+			Request req = new Request(withTransitives, mavenCoordinates);
+			Set<File> result;
+			synchronized (cache) {
+				result = cache.get(req);
+			}
+			if (result != null) {
+				return result;
+			}
+			throw new GradleException("Add a step with " + req + " into the root project.");
+		};
 	}
 
 	static Provisioner forProject(Project project) {
