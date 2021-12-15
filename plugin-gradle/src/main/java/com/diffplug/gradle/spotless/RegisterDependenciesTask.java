@@ -15,16 +15,26 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.provider.Property;
 import org.gradle.api.services.BuildServiceRegistry;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
+import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.build.event.BuildEventsListenerRegistry;
 
 import com.diffplug.common.base.Preconditions;
+import com.diffplug.common.io.Files;
+import com.diffplug.spotless.FormatterStep;
 
 /**
  * NOT AN END-USER TASK, DO NOT USE FOR ANYTHING!
@@ -56,11 +66,27 @@ public abstract class RegisterDependenciesTask extends DefaultTask {
 		BuildServiceRegistry buildServices = getProject().getGradle().getSharedServices();
 		getTaskService().set(buildServices.registerIfAbsent("SpotlessTaskService" + compositeBuildSuffix, SpotlessTaskService.class, spec -> {}));
 		getBuildEventsListenerRegistry().onTaskCompletion(getTaskService());
+		unitOutput = new File(getProject().getBuildDir(), "tmp/spotless-register-dependencies");
+	}
+
+	List<FormatterStep> steps = new ArrayList<>();
+
+	@Input
+	public List<FormatterStep> getSteps() {
+		return steps;
+	}
+
+	File unitOutput;
+
+	@OutputFile
+	public File getUnitOutput() {
+		return unitOutput;
 	}
 
 	@TaskAction
-	public void trivialFunction() {
-		// nothing to do :)
+	public void trivialFunction() throws IOException {
+		Files.createParentDirs(unitOutput);
+		Files.write(Integer.toString(1), unitOutput, StandardCharsets.UTF_8);
 	}
 
 	@Internal
