@@ -109,7 +109,7 @@ jobs:
       - *restore_cache_deps
       - run:
           name: gradlew npmTest
-          command: ./gradlew npmTest --build-cache
+          command: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew npmTest --build-cache
       - store_test_results:
           path: testlib/build/test-results/NpmTest
       - store_test_results:
