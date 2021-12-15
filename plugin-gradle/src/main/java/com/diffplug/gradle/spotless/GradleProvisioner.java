@@ -19,14 +19,16 @@ import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.ConfigurationContainer;
+import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.attributes.Bundling;
+import org.gradle.api.initialization.dsl.ScriptHandler;
 
 import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.spotless.Provisioner;
@@ -35,45 +37,53 @@ import com.diffplug.spotless.Provisioner;
 class GradleProvisioner {
 	private GradleProvisioner() {}
 
-	static Provisioner newDedupingProvisioner(Project project) {
-		return new DedupingProvisioner(project);
-	}
-
 	static class DedupingProvisioner implements Provisioner {
-		private final Project project;
+		private final Provisioner provisioner;
 		private final Map<Request, Set<File>> cache = new HashMap<>();
 
-		DedupingProvisioner(Project project) {
-			this.project = project;
+		DedupingProvisioner(Provisioner provisioner) {
+			this.provisioner = provisioner;
 		}
 
 		@Override
 		public Set<File> provisionWithTransitives(boolean withTransitives, Collection<String> mavenCoordinates) {
 			Request req = new Request(withTransitives, mavenCoordinates);
-			Set<File> result = cache.get(req);
+			Set<File> result;
+			synchronized (cache) {
+				result = cache.get(req);
+			}
 			if (result != null) {
 				return result;
 			} else {
-				result = cache.get(req);
-				if (result != null) {
-					return result;
-				} else {
-					result = forProject(project).provisionWithTransitives(req.withTransitives, req.mavenCoords);
-					cache.put(req, result);
+				synchronized (cache) {
+					result = cache.get(req);
+					if (result == null) {
+						result = provisioner.provisionWithTransitives(req.withTransitives, req.mavenCoords);
+						cache.put(req, result);
+					}
 					return result;
 				}
 			}
 		}
 	}
 
-	private static Provisioner forProject(Project project) {
-		Objects.requireNonNull(project);
+	static Provisioner forProject(Project project) {
+		return forConfigurationContainer(project, project.getConfigurations(), project.getDependencies());
+	}
+
+	static Provisioner forRootProjectBuildscript(Project project) {
+		Project rootProject = project.getRootProject();
+		ScriptHandler buildscript = rootProject.getBuildscript();
+		return forConfigurationContainer(rootProject, buildscript.getConfigurations(), buildscript.getDependencies());
+	}
+
+	private static Provisioner forConfigurationContainer(Project project, ConfigurationContainer configurations, DependencyHandler dependencies) {
 		return (withTransitives, mavenCoords) -> {
 			try {
-				Configuration config = project.getConfigurations().create("spotless"
+				Configuration config = configurations.create("spotless"
 						+ new Request(withTransitives, mavenCoords).hashCode());
 				mavenCoords.stream()
-						.map(project.getDependencies()::create)
+						.map(dependencies::create)
 						.forEach(config.getDependencies()::add);
 				config.setDescription(mavenCoords.toString());
 				config.setTransitive(withTransitives);

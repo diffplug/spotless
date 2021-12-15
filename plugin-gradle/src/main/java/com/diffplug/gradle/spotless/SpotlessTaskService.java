@@ -50,7 +50,7 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 
 	Provisioner provisionerFor(Project project) {
 		return provisioner.computeIfAbsent(project.getPath(), unused -> {
-			return GradleProvisioner.newDedupingProvisioner(project);
+			return new GradleProvisioner.DedupingProvisioner(GradleProvisioner.forProject(project));
 		});
 	}
 
