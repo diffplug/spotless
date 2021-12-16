@@ -94,7 +94,7 @@ class GradleProvisioner {
 			if (result != null) {
 				return result;
 			}
-			throw new GradleException("Add a step with " + req + " into the `spotlessPredeclare` block in the root project.");
+			throw new GradleException("Add a step with " + req.mavenCoords + " into the `spotlessPredeclare` block in the root project.");
 		};
 	}
 
