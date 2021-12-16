@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import org.gradle.api.GradleException;
@@ -37,6 +38,7 @@ import org.gradle.work.InputChanges;
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.PaddedCell;
+import com.diffplug.spotless.extra.GitRatchet;
 
 @CacheableTask
 public abstract class SpotlessTaskImpl extends SpotlessTask {
@@ -53,7 +55,8 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 
 	@TaskAction
 	public void performAction(InputChanges inputs) throws Exception {
-		getTaskService().get().registerSourceAlreadyRan(this);
+		SpotlessTaskService taskService = getTaskService().get();
+		taskService.registerSourceAlreadyRan(this);
 		if (target == null) {
 			throw new GradleException("You must specify 'Iterable<File> target'");
 		}
@@ -65,24 +68,25 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 		}
 
 		try (Formatter formatter = buildFormatter()) {
+			GitRatchetGradle ratchet = getRatchet();
 			for (FileChange fileChange : inputs.getFileChanges(target)) {
 				File input = fileChange.getFile();
 				if (fileChange.getChangeType() == ChangeType.REMOVED) {
 					deletePreviousResult(input);
 				} else {
 					if (input.isFile()) {
-						processInputFile(formatter, input);
+						processInputFile(ratchet, formatter, input);
 					}
 				}
 			}
 		}
 	}
 
-	private void processInputFile(Formatter formatter, File input) throws IOException {
+	private void processInputFile(@Nullable GitRatchet ratchet, Formatter formatter, File input) throws IOException {
 		File output = getOutputFile(input);
 		getLogger().debug("Applying format to " + input + " and writing to " + output);
 		PaddedCell.DirtyState dirtyState;
-		if (getRatchet() != null && getRatchet().isClean(getProjectDir().get().getAsFile(), getRootTreeSha(), input)) {
+		if (ratchet != null && ratchet.isClean(getProjectDir().get().getAsFile(), getRootTreeSha(), input)) {
 			dirtyState = PaddedCell.isClean();
 		} else {
 			dirtyState = PaddedCell.calculateDirtyState(formatter, input);

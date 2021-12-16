@@ -41,9 +41,10 @@ class IdeHook {
 			return;
 		}
 		if (spotlessTask.getTarget().contains(file)) {
+			GitRatchetGradle ratchet = spotlessTask.getRatchet();
 			try (Formatter formatter = spotlessTask.buildFormatter()) {
-				if (spotlessTask.getRatchet() != null) {
-					if (spotlessTask.getRatchet().isClean(spotlessTask.getProjectDir().get().getAsFile(), spotlessTask.getRootTreeSha(), file)) {
+				if (ratchet != null) {
+					if (ratchet.isClean(spotlessTask.getProjectDir().get().getAsFile(), spotlessTask.getRootTreeSha(), file)) {
 						dumpIsClean();
 						return;
 					}
