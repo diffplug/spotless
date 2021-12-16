@@ -68,6 +68,7 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 
 		private final String version;
 		private Map<String, String> userData;
+		private String editorConfig;
 
 		KotlinFormatExtension(String version, Map<String, String> config) {
 			this.version = version;
@@ -82,8 +83,13 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 			replaceStep(createStep());
 		}
 
+		public void editorConfig(String editorConfig) {
+			this.editorConfig = editorConfig;
+			replaceStep(createStep());
+		}
+
 		private FormatterStep createStep() {
-			return KtLintStep.create(version, provisioner(), userData);
+			return KtLintStep.create(version, provisioner(), userData, editorConfig);
 		}
 	}
 

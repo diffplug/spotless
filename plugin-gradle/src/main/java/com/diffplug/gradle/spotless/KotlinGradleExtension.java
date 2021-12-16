@@ -54,6 +54,7 @@ public class KotlinGradleExtension extends FormatExtension {
 
 		private final String version;
 		private Map<String, String> userData;
+		private String editorConfig;
 
 		KotlinFormatExtension(String version, Map<String, String> config) {
 			this.version = version;
@@ -68,8 +69,13 @@ public class KotlinGradleExtension extends FormatExtension {
 			replaceStep(createStep());
 		}
 
+		public void editorConfig(String editorConfig) {
+			this.editorConfig = editorConfig;
+			replaceStep(createStep());
+		}
+
 		private FormatterStep createStep() {
-			return KtLintStep.createForScript(version, provisioner(), userData);
+			return KtLintStep.createForScript(version, provisioner(), userData, editorConfig);
 		}
 	}
 

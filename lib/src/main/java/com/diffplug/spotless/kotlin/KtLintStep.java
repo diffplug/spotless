@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 
+import javax.annotation.Nullable;
+
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
@@ -53,22 +55,30 @@ public class KtLintStep {
 	}
 
 	public static FormatterStep create(String version, Provisioner provisioner, Map<String, String> userData) {
-		return create(version, provisioner, false, userData);
+		return create(version, provisioner, userData, null);
+	}
+
+	public static FormatterStep create(String version, Provisioner provisioner, Map<String, String> userData, @Nullable String editorConfig) {
+		return create(version, provisioner, false, userData, editorConfig);
 	}
 
 	public static FormatterStep createForScript(String version, Provisioner provisioner) {
-		return create(version, provisioner, true, Collections.emptyMap());
+		return create(version, provisioner, true, Collections.emptyMap(), null);
 	}
 
 	public static FormatterStep createForScript(String version, Provisioner provisioner, Map<String, String> userData) {
-		return create(version, provisioner, true, userData);
+		return create(version, provisioner, true, userData, null);
 	}
 
-	private static FormatterStep create(String version, Provisioner provisioner, boolean isScript, Map<String, String> userData) {
+	public static FormatterStep createForScript(String version, Provisioner provisioner, Map<String, String> userData, @Nullable String editorConfig) {
+		return create(version, provisioner, true, userData, editorConfig);
+	}
+
+	private static FormatterStep create(String version, Provisioner provisioner, boolean isScript, Map<String, String> userData, @Nullable String editorConfig) {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(provisioner, "provisioner");
 		return FormatterStep.createLazy(NAME,
-				() -> new State(version, provisioner, isScript, userData),
+				() -> new State(version, provisioner, isScript, userData, editorConfig),
 				State::createFormat);
 	}
 
@@ -85,10 +95,10 @@ public class KtLintStep {
 		/** The jar that contains the eclipse formatter. */
 		final JarState jarState;
 		private final TreeMap<String, String> userData;
+		private final String editorConfig;
 		private final boolean useParams;
 
-		State(String version, Provisioner provisioner, boolean isScript, Map<String, String> userData) throws IOException {
-			this.userData = new TreeMap<>(userData);
+		State(String version, Provisioner provisioner, boolean isScript, Map<String, String> userData, @Nullable String editorConfig) throws IOException {
 			String coordinate;
 			if (BadSemver.version(version) < BadSemver.version(0, 32)) {
 				coordinate = MAVEN_COORDINATE_PRE_0_32;
@@ -100,13 +110,15 @@ public class KtLintStep {
 			this.useParams = BadSemver.version(version) >= BadSemver.version(0, 34);
 			this.jarState = JarState.from(coordinate + version, provisioner);
 			this.isScript = isScript;
+			this.userData = new TreeMap<>(userData);
+			this.editorConfig = editorConfig;
 		}
 
 		FormatterFunc createFormat() throws Exception {
 			if (useParams) {
 				Class<?> formatterFunc = jarState.getClassLoader().loadClass("com.diffplug.spotless.glue.ktlint.KtlintFormatterFunc");
-				Constructor<?> constructor = formatterFunc.getConstructor(boolean.class, Map.class);
-				return (FormatterFunc.NeedsFile) constructor.newInstance(isScript, userData);
+				Constructor<?> constructor = formatterFunc.getConstructor(boolean.class, Map.class, String.class);
+				return (FormatterFunc.NeedsFile) constructor.newInstance(isScript, userData, editorConfig);
 			}
 
 			ClassLoader classLoader = jarState.getClassLoader();
