@@ -21,6 +21,7 @@ import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -251,5 +252,15 @@ class FileIndexTest extends FileIndexHarness {
 
 		FileIndex index3 = FileIndex.read(config, log);
 		assertThat(index3.size()).isEqualTo(2);
+	}
+
+	@Test
+	void writeFailsWhenIndexFilesDoesNotHaveParentDir() {
+		when(config.getIndexFile()).thenReturn(Paths.get("file-without-parent"));
+		FileIndex index = FileIndex.read(config, log);
+		assertThat(index.size()).isZero();
+
+		assertThatThrownBy(index::write).isInstanceOf(IllegalStateException.class)
+				.hasMessageContaining("Index file does not have a parent dir");
 	}
 }

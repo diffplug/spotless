@@ -139,8 +139,12 @@ class FileIndex {
 	}
 
 	private void ensureParentDirExists() {
+		Path parentDir = indexFile.getParent();
+		if (parentDir == null) {
+			throw new IllegalStateException("Index file does not have a parent dir: " + indexFile);
+		}
 		try {
-			Files.createDirectories(indexFile.getParent());
+			Files.createDirectories(parentDir);
 		} catch (IOException e) {
 			throw new UncheckedIOException("Unable to create parent directory for the index file: " + indexFile, e);
 		}
