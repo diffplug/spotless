@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [6.0.5] - 2021-12-16
 ### Fixed
 * `ratchetFrom` is now faster and uses less memory ([#1038](https://github.com/diffplug/spotless/pull/1038)).
 
