@@ -88,7 +88,7 @@ class MultiProjectTest extends GradleIntegrationHarness {
 				"spotless { predeclareDeps() }");
 		createNSubprojects();
 		Assertions.assertThat(gradleRunner().withArguments("spotlessApply").buildAndFail().getOutput())
-				.contains("Add a step with com.google.googlejavaformat:google-java-format:1.2 with transitives into the root project.");
+				.contains("Add a step with com.google.googlejavaformat:google-java-format:1.2 into the `spotlessPredeclare` block in the root project.");
 	}
 
 	@Test
