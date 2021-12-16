@@ -108,14 +108,14 @@ jobs:
       - *restore_cache_wrapper
       - *restore_cache_deps
       - run:
-          name: gradlew npmTest
-          command: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew npmTest --build-cache
+          name: gradlew testNpm
+          command: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew testNpm --build-cache
       - store_test_results:
-          path: testlib/build/test-results/NpmTest
+          path: testlib/build/test-results/testNpm
       - store_test_results:
-          path: plugin-maven/build/test-results/NpmTest
+          path: plugin-maven/build/test-results/testNpm
       - store_test_results:
-          path: plugin-gradle/build/test-results/NpmTest
+          path: plugin-gradle/build/test-results/testNpm
       - run:
           name: gradlew test
           command: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew test --build-cache
@@ -141,12 +141,12 @@ jobs:
       - store_test_results:
           path: plugin-gradle/build/test-results/test
       - run:
-          name: gradlew npmTest
-          command: gradlew npmTest --build-cache -PSPOTLESS_EXCLUDE_MAVEN=true
+          name: gradlew testNpm
+          command: gradlew testNpm --build-cache -PSPOTLESS_EXCLUDE_MAVEN=true
       - store_test_results:
-          path: testlib/build/test-results/NpmTest
+          path: testlib/build/test-results/testNpm
       - store_test_results:
-          path: plugin-gradle/build/test-results/NpmTest
+          path: plugin-gradle/build/test-results/testNpm
   changelog_print:
     << : *env_gradle
     steps:

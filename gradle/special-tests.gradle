@@ -1,5 +1,5 @@
 apply plugin: 'org.gradle.test-retry'
-
+apply plugin: 'com.adarshr.test-logger'
 def special = [
 	'Npm',
 	'Black',
@@ -21,7 +21,7 @@ tasks.named('test') {
 }
 
 special.forEach { tag ->
-	tasks.register("${tag}Test", Test) {
+	tasks.register("test${tag}", Test) {
 		useJUnitPlatform { includeTags tag }
 	}
 }
