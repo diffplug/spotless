@@ -49,14 +49,14 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 	private final Map<String, Provisioner> provisioner = Collections.synchronizedMap(new HashMap<>());
 
 	@Nullable
-	GradleProvisioner.DedupingProvisioner rootProvisioner;
+	GradleProvisioner.DedupingProvisioner predeclaredProvisioner;
 
 	Provisioner provisionerFor(SpotlessExtension spotless) {
-		if (spotless instanceof SpotlessExtensionRoot) {
-			return rootProvisioner;
+		if (spotless instanceof SpotlessExtensionPredeclare) {
+			return predeclaredProvisioner;
 		} else {
-			if (rootProvisioner != null) {
-				return rootProvisioner.cachedOnly;
+			if (predeclaredProvisioner != null) {
+				return predeclaredProvisioner.cachedOnly;
 			} else {
 				return provisioner.computeIfAbsent(spotless.project.getPath(), unused -> new GradleProvisioner.DedupingProvisioner(GradleProvisioner.forProject(spotless.project)));
 			}

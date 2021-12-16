@@ -50,11 +50,10 @@ public abstract class RegisterDependenciesTask extends DefaultTask {
 	static final String TASK_NAME = "spotlessInternalRegisterDependencies";
 
 	void hookSubprojectTask(SpotlessTask task) {
-		// TODO: in the future, we might use this hook to implement #984
-		// spotlessSetup {
-		//    java { googleJavaFormat('1.2') }
-		//    ...etc
-		// }
+		// this ensures that if a user is using predeclared dependencies,
+		// those predeclared deps will be resolved before they are needed
+		// by the child tasks
+		//
 		// it's also needed to make sure that jvmLocalCache gets set
 		// in the SpotlessTaskService before any spotless tasks run
 		task.dependsOn(this);

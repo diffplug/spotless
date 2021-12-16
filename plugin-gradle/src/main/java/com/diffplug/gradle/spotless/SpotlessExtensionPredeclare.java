@@ -21,12 +21,12 @@ import java.util.TreeMap;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 
-public class SpotlessExtensionRoot extends SpotlessExtension {
+public class SpotlessExtensionPredeclare extends SpotlessExtension {
 	private final SortedMap<String, FormatExtension> toSetup = new TreeMap<>();
 
-	public SpotlessExtensionRoot(Project project, GradleProvisioner.Policy policy) {
+	public SpotlessExtensionPredeclare(Project project, GradleProvisioner.Policy policy) {
 		super(project);
-		getRegisterDependenciesTask().getTaskService().get().rootProvisioner = policy.dedupingProvisioner(project);
+		getRegisterDependenciesTask().getTaskService().get().predeclaredProvisioner = policy.dedupingProvisioner(project);
 		project.afterEvaluate(unused -> {
 			toSetup.forEach((name, formatExtension) -> {
 				for (Action<FormatExtension> lazyAction : formatExtension.lazyActions) {
