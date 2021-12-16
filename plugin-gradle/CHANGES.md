@@ -20,6 +20,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
     }
     ```
   * By default, Spotless resolves all dependencies per-project, and the predeclaration above is unnecessary in the vast majority of cases.
+
+## [6.0.5] - 2021-12-16
 ### Fixed
 * `ratchetFrom` is now faster and uses less memory ([#1038](https://github.com/diffplug/spotless/pull/1038)).
 

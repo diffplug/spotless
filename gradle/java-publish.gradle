@@ -6,8 +6,10 @@ if (project.parent == null) {
 	nexusPublishing {
 		repositories {
 			sonatype {
-				username = System.env['nexus_user']
-				password = System.env['nexus_pass']
+				nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+				snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+				username = System.env['ORG_GRADLE_PROJECT_nexus_user']
+				password = System.env['ORG_GRADLE_PROJECT_nexus_pass']
 			}
 		}
 	}
@@ -157,8 +159,8 @@ model {
 
 if (!version.endsWith('-SNAPSHOT')) {
 	signing {
-		String gpg_key = new String(System.env['gpg_key64'].decodeBase64())
-		useInMemoryPgpKeys(gpg_key, System.env['gpg_passphrase'])
+		String gpg_key = new String(System.env['ORG_GRADLE_PROJECT_gpg_key64'].decodeBase64())
+		useInMemoryPgpKeys(gpg_key, System.env['ORG_GRADLE_PROJECT_gpg_passphrase'])
 		sign(publishing.publications)
 	}
 
