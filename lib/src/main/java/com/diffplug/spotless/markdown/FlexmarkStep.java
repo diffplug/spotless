@@ -54,6 +54,7 @@ public class FlexmarkStep {
 	private static class State implements Serializable {
 		private static final long serialVersionUID = 1L;
 
+		/** The jar that contains the formatter. */
 		final JarState jarState;
 
 		State(JarState jarState) {
