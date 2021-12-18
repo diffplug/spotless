@@ -594,6 +594,7 @@ All configuration settings are optional, they are described in detail [here](htt
 <configuration>
   <markdown>
     <!-- These are the defaults, you can override if you want -->
+    <!-- Multi-module users should consider not including **/*.md in modules that contain submodules to make sure files are not formatted multiple times -->
     <includes>
       <include>*.md</include>
       <include>**/*.md</include>
