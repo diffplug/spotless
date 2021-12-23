@@ -140,7 +140,7 @@ public class MavenIntegrationHarness extends ResourceHarness {
 	}
 
 	protected void writePomWithMarkdownSteps(String... steps) throws IOException {
-		writePom(groupWithSteps("markdown", steps));
+		writePom(groupWithSteps("markdown", including("**/*.md"), steps));
 	}
 
 	protected void writePom(String... configuration) throws IOException {
