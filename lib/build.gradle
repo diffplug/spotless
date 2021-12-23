@@ -8,7 +8,8 @@ apply from: rootProject.file('gradle/java-publish.gradle')
 
 def NEEDS_GLUE = [
 	'sortPom',
-	'ktlint'
+	'ktlint',
+	'flexmark'
 ]
 for (glue in NEEDS_GLUE) {
 	sourceSets.register(glue) {
@@ -32,6 +33,9 @@ dependencies {
 	ktlintCompileOnly "com.pinterest:ktlint:$VER_KTLINT"
 	ktlintCompileOnly "com.pinterest.ktlint:ktlint-core:$VER_KTLINT"
 	ktlintCompileOnly "com.pinterest.ktlint:ktlint-ruleset-standard:$VER_KTLINT"
+
+	// used for markdown formatting
+	flexmarkCompileOnly 'com.vladsch.flexmark:flexmark-all:0.62.2'
 }
 
 // we'll hold the core lib to a high standard

@@ -115,7 +115,7 @@ public class GoogleJavaFormatStep {
 	static final class State implements Serializable {
 		private static final long serialVersionUID = 1L;
 
-		/** The jar that contains the eclipse formatter. */
+		/** The jar that contains the formatter. */
 		final JarState jarState;
 		final String stepName;
 		final String version;

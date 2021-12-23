@@ -63,6 +63,7 @@ import com.diffplug.spotless.maven.incremental.UpToDateChecker;
 import com.diffplug.spotless.maven.incremental.UpToDateChecking;
 import com.diffplug.spotless.maven.java.Java;
 import com.diffplug.spotless.maven.kotlin.Kotlin;
+import com.diffplug.spotless.maven.markdown.Markdown;
 import com.diffplug.spotless.maven.pom.Pom;
 import com.diffplug.spotless.maven.python.Python;
 import com.diffplug.spotless.maven.scala.Scala;
@@ -150,6 +151,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	@Parameter
 	private Python python;
+
+	@Parameter
+	private Markdown markdown;
 
 	@Parameter(property = "spotlessFiles")
 	private String filePatterns;
@@ -278,7 +282,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		Set<String> configuredIncludes = formatterFactory.includes();
 		Set<String> includes = configuredIncludes.isEmpty() ? formatterFactory.defaultIncludes() : configuredIncludes;
 		if (includes.isEmpty()) {
-			throw new PluginException("You must specify some files to include, such as '<includes><include>src/**</include></includes>'");
+			throw new PluginException("You must specify some files to include, such as '<includes><include>src/**/*.blah</include></includes>'");
 		}
 		return includes;
 	}
@@ -308,7 +312,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private List<FormatterFactory> getFormatterFactories() {
-		return Stream.concat(formats.stream(), Stream.of(groovy, java, scala, kotlin, cpp, typescript, antlr4, pom, sql, python))
+		return Stream.concat(formats.stream(), Stream.of(groovy, java, scala, kotlin, cpp, typescript, antlr4, pom, sql, python, markdown))
 				.filter(Objects::nonNull)
 				.collect(toList());
 	}

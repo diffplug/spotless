@@ -56,6 +56,7 @@ user@machine repo % mvn spotless:check
   - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
   - [Sql](#sql) ([dbeaver](#dbeaver))
   - [Maven Pom](#maven-pom) ([sortPom](#sortpom))
+  - [Markdown](#markdown) ([flexmark](#flexmark))
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier))
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection))
@@ -584,6 +585,28 @@ All configuration settings are optional, they are described in detail [here](htt
   <sortExecutions>false</sortExecutions> <!-- Sort plugin executions -->
 </sortPom>
 ```
+
+## Markdown
+
+[code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/markdown/Markdown.java). [available steps](https://github.com/diffplug/spotless/tree/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/markdown).
+
+```xml
+<configuration>
+  <markdown>
+    <includes> <!-- You have to set the target manually -->
+      <include>**/*.md</include>
+    </includes>
+
+    <flexmark/> <!-- has its own section below -->
+  </markdown>
+</configuration>
+```
+
+### Flexmark
+
+[homepage](https://github.com/vsch/flexmark-java). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/markdown/Flexmark.java). Flexmark is a flexible Commonmark/Markdown parser that can be used to format Markdown files. It supports different [flavors of Markdown](https://github.com/vsch/flexmark-java#markdown-processor-emulation) and [many formatting options](https://github.com/vsch/flexmark-java/wiki/Markdown-Formatter#options).
+
+Currently, none of the available options can be configured yet. It uses only the default options together with `COMMONMARK` as `FORMATTER_EMULATION_PROFILE`.
 
 <a name="applying-to-typescript-source"></a>
 
