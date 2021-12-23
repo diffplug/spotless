@@ -59,6 +59,7 @@ public class MavenIntegrationHarness extends ResourceHarness {
 	private static final String MODULES = "modules";
 	private static final String MODULE_NAME = "name";
 	private static final String CHILD_ID = "childId";
+	private static final int REMOTE_DEBUG_PORT = 5005;
 
 	private final MustacheFactory mustacheFactory = new DefaultMustacheFactory();
 
@@ -138,6 +139,10 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		writePom(groupWithSteps("pom", including("pom_test.xml"), steps));
 	}
 
+	protected void writePomWithMarkdownSteps(String... steps) throws IOException {
+		writePom(groupWithSteps("markdown", including("**/*.md"), steps));
+	}
+
 	protected void writePom(String... configuration) throws IOException {
 		writePom(null, configuration);
 	}
@@ -153,12 +158,25 @@ public class MavenIntegrationHarness extends ResourceHarness {
 				.withLocalRepository(new File(getSystemProperty(LOCAL_MAVEN_REPOSITORY_DIR)));
 	}
 
+	/**
+	 * Useful for local development. Allows debugging the Spotless Maven Plugin remotely.
+	 * Effectively translates into running {@code mvnDebug} on port 5005. The forked JVM will be
+	 * suspended until the debugger connects.
+	 */
+	protected MavenRunner mavenRunnerWithRemoteDebug() throws IOException {
+		return mavenRunner().withRemoteDebug(REMOTE_DEBUG_PORT);
+	}
+
 	protected MultiModuleProjectCreator multiModuleProject() {
 		return new MultiModuleProjectCreator();
 	}
 
-	private String createPomXmlContent(String[] executions, String[] configuration) throws IOException {
-		Map<String, Object> params = buildPomXmlParams(executions, configuration, null);
+	protected String createPomXmlContent(String[] executions, String[] configuration) throws IOException {
+		return createPomXmlContent(null, executions, configuration);
+	}
+
+	protected String createPomXmlContent(String pluginVersion, String[] executions, String[] configuration) throws IOException {
+		Map<String, Object> params = buildPomXmlParams(pluginVersion, executions, configuration, null);
 		return createPomXmlContent("/pom-test.xml.mustache", params);
 	}
 
@@ -172,9 +190,9 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		}
 	}
 
-	private static Map<String, Object> buildPomXmlParams(String[] executions, String[] configuration, String[] modules) {
+	private static Map<String, Object> buildPomXmlParams(String pluginVersion, String[] executions, String[] configuration, String[] modules) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(SPOTLESS_MAVEN_PLUGIN_VERSION, getSystemProperty(SPOTLESS_MAVEN_PLUGIN_VERSION));
+		params.put(SPOTLESS_MAVEN_PLUGIN_VERSION, pluginVersion == null ? getSystemProperty(SPOTLESS_MAVEN_PLUGIN_VERSION) : pluginVersion);
 
 		if (configuration != null) {
 			params.put(CONFIGURATION, String.join("\n", configuration));
@@ -265,7 +283,7 @@ public class MavenIntegrationHarness extends ResourceHarness {
 			modulesList.addAll(subProjects.keySet());
 			String[] modules = modulesList.toArray(new String[0]);
 
-			Map<String, Object> rootPomParams = buildPomXmlParams(null, configuration, modules);
+			Map<String, Object> rootPomParams = buildPomXmlParams(null, null, configuration, modules);
 			setFile("pom.xml").toContent(createPomXmlContent("/multi-module/pom-parent.xml.mustache", rootPomParams));
 		}
 

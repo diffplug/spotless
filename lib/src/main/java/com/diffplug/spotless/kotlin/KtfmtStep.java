@@ -108,7 +108,7 @@ public class KtfmtStep {
 		 * Option that allows to apply formatting options to perform a 4 spaces block and continuation indent.
 		 */
 		private final Style style;
-		/** The jar that contains the eclipse formatter. */
+		/** The jar that contains the formatter. */
 		final JarState jarState;
 
 		State(String version, Provisioner provisioner, Style style) throws IOException {

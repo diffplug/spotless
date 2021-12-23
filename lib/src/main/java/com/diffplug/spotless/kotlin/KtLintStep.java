@@ -82,7 +82,7 @@ public class KtLintStep {
 		/** Are the files being linted Kotlin script files. */
 		private final boolean isScript;
 		private final String pkg;
-		/** The jar that contains the eclipse formatter. */
+		/** The jar that contains the formatter. */
 		final JarState jarState;
 		private final TreeMap<String, String> userData;
 		private final boolean useParams;
