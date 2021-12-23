@@ -264,7 +264,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		Set<String> configuredIncludes = formatterFactory.includes();
 		Set<String> includes = configuredIncludes.isEmpty() ? formatterFactory.defaultIncludes() : configuredIncludes;
 		if (includes.isEmpty()) {
-			throw new MojoExecutionException("You must specify some files to include, such as '<includes><include>src/**</include></includes>'");
+			throw new MojoExecutionException("You must specify some files to include, such as '<includes><include>src/**/*.blah</include></includes>'");
 		}
 		return includes;
 	}

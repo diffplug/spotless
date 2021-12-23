@@ -15,9 +15,9 @@
  */
 package com.diffplug.spotless.maven.markdown;
 
+import java.util.Collections;
 import java.util.Set;
 
-import com.diffplug.common.collect.ImmutableSet;
 import com.diffplug.spotless.maven.FormatterFactory;
 import com.diffplug.spotless.maven.generic.LicenseHeader;
 
@@ -30,7 +30,7 @@ import com.diffplug.spotless.maven.generic.LicenseHeader;
 public class Markdown extends FormatterFactory {
 	@Override
 	public Set<String> defaultIncludes() {
-		return ImmutableSet.of("*.md", "**/*.md");
+		return Collections.emptySet();
 	}
 
 	@Override
