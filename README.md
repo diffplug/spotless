@@ -42,7 +42,7 @@ output = [
 '| Toggle with [`spotless:off` and `spotless:on`](plugin-gradle/#spotlessoff-and-spotlesson) | {{yes}}    | {{yes}}      | {{no}}       | {{no}}  |',
 '| [Ratchet from](https://github.com/diffplug/spotless/tree/main/plugin-gradle#ratchet) `origin/main` or other git ref | {{yes}}    | {{yes}}      | {{no}}       | {{no}}  |',
 '| Define [line endings using git](https://github.com/diffplug/spotless/tree/main/plugin-gradle#line-endings-and-encodings-invisible-stuff) | {{yes}}    | {{yes}}      | {{yes}}       | {{no}}  |',
-'| Fast incremental format and up-to-date check   | {{yes}}      | {{no}}       | {{no}}       | {{no}}  |',
+'| Fast incremental format and up-to-date check   | {{yes}}      | {{yes}}      | {{no}}       | {{no}}  |',
 '| Fast format on fresh checkout using buildcache | {{yes}}      | {{no}}       | {{no}}       | {{no}}  |',
 lib('generic.EndWithNewlineStep')                +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('generic.IndentStep')                        +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
@@ -82,7 +82,7 @@ extra('wtp.EclipseWtpFormatterStep')             +'{{yes}}       | {{yes}}      
 | Toggle with [`spotless:off` and `spotless:on`](plugin-gradle/#spotlessoff-and-spotlesson) | :+1:    | :+1:      | :white_large_square:       | :white_large_square:  |
 | [Ratchet from](https://github.com/diffplug/spotless/tree/main/plugin-gradle#ratchet) `origin/main` or other git ref | :+1:    | :+1:      | :white_large_square:       | :white_large_square:  |
 | Define [line endings using git](https://github.com/diffplug/spotless/tree/main/plugin-gradle#line-endings-and-encodings-invisible-stuff) | :+1:    | :+1:      | :+1:       | :white_large_square:  |
-| Fast incremental format and up-to-date check   | :+1:      | :white_large_square:       | :white_large_square:       | :white_large_square:  |
+| Fast incremental format and up-to-date check   | :+1:      | :+1:      | :white_large_square:       | :white_large_square:  |
 | Fast format on fresh checkout using buildcache | :+1:      | :white_large_square:       | :white_large_square:       | :white_large_square:  |
 | [`generic.EndWithNewlineStep`](lib/src/main/java/com/diffplug/spotless/generic/EndWithNewlineStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`generic.IndentStep`](lib/src/main/java/com/diffplug/spotless/generic/IndentStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |

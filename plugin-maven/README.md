@@ -923,6 +923,47 @@ If your project has not been rigorous with copyright headers, and you'd like to 
 
 <a name="ratchet"></a>
 
+## Incremental up-to-date checking and formatting
+
+**This feature is turned off by default.**
+
+Execution of `spotless:check` and `spotless:apply` for large projects can take time.
+By default, Spotless Maven plugin needs to read and format each source file.
+Repeated executions of `spotless:check` or `spotless:apply` are completely independent.
+
+If your project has many source files managed by Spotless and formatting takes a long time, you can
+enable incremental up-to-date checking with the following configuration:
+
+```xml
+<configuration>
+  <upToDateChecking>
+    <enabled>true</enabled>
+  </upToDateChecking>
+  <!-- ... define formats ... -->
+</configuration>
+```
+
+With up-to-date checking enabled, Spotless creates an index file in the `target` directory.
+The index file contains source file paths and corresponding last modified timestamps.
+It allows Spotless to skip already formatted files that have not changed.
+
+**Note:** the index file is located in the `target` directory. Executing `mvn clean` will delete
+the index file, and Spotless will need to check/format all the source files.
+
+Spotless will remove the index file when up-to-date checking is explicitly turned off with the
+following configuration:
+
+```xml
+<configuration>
+  <upToDateChecking>
+    <enabled>false</enabled>
+  </upToDateChecking>
+  <!-- ... define formats ... -->
+</configuration>
+```
+
+Consider using this configuration if you experience issues with up-to-date checking.
+
 ## How can I enforce formatting gradually? (aka "ratchet")
 
 If your project is not currently enforcing formatting, then it can be a noisy transition.  Having a giant commit where every single file gets changed makes the history harder to read.  To address this, you can use the `ratchet` feature:

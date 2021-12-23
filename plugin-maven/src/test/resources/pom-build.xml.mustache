@@ -23,9 +23,16 @@
     <maven.api.version>{{mavenApiVersion}}</maven.api.version>
     <eclipse.aether.version>{{eclipseAetherVersion}}</eclipse.aether.version>
     <spotless.lib.version>{{spotlessLibVersion}}</spotless.lib.version>
+    <jsr305.version>{{jsr305Version}}</jsr305.version>
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-core</artifactId>
+      <version>${maven.api.version}</version>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-plugin-api</artifactId>
@@ -48,6 +55,12 @@
       <groupId>org.eclipse.aether</groupId>
       <artifactId>aether-util</artifactId>
       <version>${eclipse.aether.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+      <version>${jsr305.version}</version>
       <scope>provided</scope>
     </dependency>
 
