@@ -22,12 +22,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,6 +41,7 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.resource.ResourceManager;
 import org.codehaus.plexus.resource.loader.FileResourceLoader;
 import org.codehaus.plexus.util.FileUtils;
@@ -54,6 +59,8 @@ import com.diffplug.spotless.maven.cpp.Cpp;
 import com.diffplug.spotless.maven.generic.Format;
 import com.diffplug.spotless.maven.generic.LicenseHeader;
 import com.diffplug.spotless.maven.groovy.Groovy;
+import com.diffplug.spotless.maven.incremental.UpToDateChecker;
+import com.diffplug.spotless.maven.incremental.UpToDateChecking;
 import com.diffplug.spotless.maven.java.Java;
 import com.diffplug.spotless.maven.kotlin.Kotlin;
 import com.diffplug.spotless.maven.pom.Pom;
@@ -83,6 +90,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	@Parameter(property = "spotless.check.skip", defaultValue = "false")
 	private boolean checkSkip;
+
+	@Parameter(defaultValue = "${project}", required = true, readonly = true)
+	private MavenProject project;
 
 	@Parameter(defaultValue = "${repositorySystemSession}", required = true, readonly = true)
 	private RepositorySystemSession repositorySystemSession;
@@ -147,13 +157,36 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Parameter(property = LicenseHeaderStep.spotlessSetLicenseHeaderYearsFromGitHistory)
 	private String setLicenseHeaderYearsFromGitHistory;
 
-	protected abstract void process(Iterable<File> files, Formatter formatter) throws MojoExecutionException;
+	@Parameter
+	private UpToDateChecking upToDateChecking;
+
+	protected abstract void process(Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException;
 
 	@Override
 	public final void execute() throws MojoExecutionException {
+		if (shouldSkip()) {
+			getLog().info(String.format("Spotless %s skipped", goal));
+			return;
+		}
+
 		List<FormatterFactory> formatterFactories = getFormatterFactories();
+		FormatterConfig config = getFormatterConfig();
+
+		Map<FormatterFactory, Supplier<Iterable<File>>> formatterFactoryToFiles = new HashMap<>();
 		for (FormatterFactory formatterFactory : formatterFactories) {
-			execute(formatterFactory);
+			Supplier<Iterable<File>> filesToFormat = () -> collectFiles(formatterFactory, config);
+			formatterFactoryToFiles.put(formatterFactory, filesToFormat);
+		}
+
+		try (FormattersHolder formattersHolder = FormattersHolder.create(formatterFactoryToFiles, config);
+				UpToDateChecker upToDateChecker = createUpToDateChecker(formattersHolder.getFormatters())) {
+			for (Entry<Formatter, Supplier<Iterable<File>>> entry : formattersHolder.getFormattersWithFiles().entrySet()) {
+				Formatter formatter = entry.getKey();
+				Iterable<File> files = entry.getValue().get();
+				process(files, formatter, upToDateChecker);
+			}
+		} catch (PluginException e) {
+			throw e.asMojoExecutionException();
 		}
 	}
 
@@ -169,21 +202,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		return false;
 	}
 
-	private void execute(FormatterFactory formatterFactory) throws MojoExecutionException {
-		if (shouldSkip()) {
-			getLog().info(String.format("Spotless %s skipped", goal));
-			return;
-		}
-
-		FormatterConfig config = getFormatterConfig();
-		List<File> files = collectFiles(formatterFactory, config);
-
-		try (Formatter formatter = formatterFactory.newFormatter(files, config)) {
-			process(files, formatter);
-		}
-	}
-
-	private List<File> collectFiles(FormatterFactory formatterFactory, FormatterConfig config) throws MojoExecutionException {
+	private List<File> collectFiles(FormatterFactory formatterFactory, FormatterConfig config) {
 		Optional<String> ratchetFrom = formatterFactory.ratchetFrom(config);
 		try {
 			final List<File> files;
@@ -208,11 +227,11 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 					.filter(shouldInclude)
 					.collect(toList());
 		} catch (IOException e) {
-			throw new MojoExecutionException("Unable to scan file tree rooted at " + baseDir, e);
+			throw new PluginException("Unable to scan file tree rooted at " + baseDir, e);
 		}
 	}
 
-	private List<File> collectFilesFromGit(FormatterFactory formatterFactory, String ratchetFrom) throws MojoExecutionException {
+	private List<File> collectFilesFromGit(FormatterFactory formatterFactory, String ratchetFrom) {
 		MatchPatterns includePatterns = MatchPatterns.from(
 				withNormalizedFileSeparators(getIncludes(formatterFactory)));
 		MatchPatterns excludePatterns = MatchPatterns.from(
@@ -223,7 +242,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 			dirtyFiles = GitRatchetMaven
 					.instance().getDirtyFiles(baseDir, ratchetFrom);
 		} catch (IOException e) {
-			throw new MojoExecutionException("Unable to scan file tree rooted at " + baseDir, e);
+			throw new PluginException("Unable to scan file tree rooted at " + baseDir, e);
 		}
 
 		List<File> result = new ArrayList<>();
@@ -237,8 +256,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		return result;
 	}
 
-	private List<File> collectFilesFromFormatterFactory(FormatterFactory formatterFactory)
-			throws MojoExecutionException, IOException {
+	private List<File> collectFilesFromFormatterFactory(FormatterFactory formatterFactory) throws IOException {
 		String includesString = String.join(",", getIncludes(formatterFactory));
 		String excludesString = String.join(",", getExcludes(formatterFactory));
 
@@ -256,11 +274,11 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		return path.endsWith(File.separator) ? path : path + File.separator;
 	}
 
-	private Set<String> getIncludes(FormatterFactory formatterFactory) throws MojoExecutionException {
+	private Set<String> getIncludes(FormatterFactory formatterFactory) {
 		Set<String> configuredIncludes = formatterFactory.includes();
 		Set<String> includes = configuredIncludes.isEmpty() ? formatterFactory.defaultIncludes() : configuredIncludes;
 		if (includes.isEmpty()) {
-			throw new MojoExecutionException("You must specify some files to include, such as '<includes><include>src/**</include></includes>'");
+			throw new PluginException("You must specify some files to include, such as '<includes><include>src/**</include></includes>'");
 		}
 		return includes;
 	}
@@ -299,5 +317,13 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		return Stream.of(licenseHeader)
 				.filter(Objects::nonNull)
 				.collect(toList());
+	}
+
+	private UpToDateChecker createUpToDateChecker(Iterable<Formatter> formatters) {
+		if (upToDateChecking != null && upToDateChecking.isEnabled()) {
+			getLog().info("Up-to-date checking enabled");
+			return UpToDateChecker.forProject(project, formatters, getLog());
+		}
+		return UpToDateChecker.noop(project, getLog());
 	}
 }

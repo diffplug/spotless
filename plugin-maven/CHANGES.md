@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* Incremental up-to-date checking ([#935](https://github.com/diffplug/spotless/pull/935)).
 
 ## [2.17.7] - 2021-12-16
 ### Fixed
