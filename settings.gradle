@@ -1,6 +1,6 @@
 pluginManagement {
 	plugins {
-		id 'com.diffplug.spotless'                 version '6.0.1'
+		id 'com.diffplug.spotless'                 version '6.0.5'
 		// https://plugins.gradle.org/plugin/com.gradle.plugin-publish
 		id 'com.gradle.plugin-publish'             version '0.18.0'
 		// https://github.com/gradle-nexus/publish-plugin/releases
