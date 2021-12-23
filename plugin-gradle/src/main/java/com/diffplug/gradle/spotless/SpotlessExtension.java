@@ -27,26 +27,33 @@ import javax.annotation.Nullable;
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
+import org.gradle.api.tasks.TaskContainer;
+import org.gradle.api.tasks.TaskProvider;
 
 import com.diffplug.spotless.LineEnding;
 
 public abstract class SpotlessExtension {
 	final Project project;
+	private final RegisterDependenciesTask registerDependenciesTask;
 
 	protected static final String TASK_GROUP = "Verification";
 	protected static final String CHECK_DESCRIPTION = "Checks that sourcecode satisfies formatting steps.";
 	protected static final String APPLY_DESCRIPTION = "Applies code formatting steps to sourcecode in-place.";
 
 	static final String EXTENSION = "spotless";
+	static final String EXTENSION_PREDECLARE = "spotlessPredeclare";
 	static final String CHECK = "Check";
 	static final String APPLY = "Apply";
 	static final String DIAGNOSE = "Diagnose";
 
 	protected SpotlessExtension(Project project) {
 		this.project = requireNonNull(project);
+		this.registerDependenciesTask = findRegisterDepsTask().get();
 	}
 
-	abstract RegisterDependenciesTask getRegisterDependenciesTask();
+	RegisterDependenciesTask getRegisterDependenciesTask() {
+		return registerDependenciesTask;
+	}
 
 	/** Line endings (if any). */
 	LineEnding lineEndings = LineEnding.GIT_ATTRIBUTES;
@@ -231,4 +238,43 @@ public abstract class SpotlessExtension {
 	}
 
 	protected abstract void createFormatTasks(String name, FormatExtension formatExtension);
+
+	TaskProvider<RegisterDependenciesTask> findRegisterDepsTask() {
+		try {
+			return findRegisterDepsTask(RegisterDependenciesTask.TASK_NAME);
+		} catch (Exception e) {
+			// in a composite build there can be multiple Spotless plugins on the classpath, and they will each try to register
+			// a task on the root project with the same name. That will generate casting errors, which we can catch and try again
+			// with an identity-specific identifier.
+			// https://github.com/diffplug/spotless/pull/1001 for details
+			return findRegisterDepsTask(RegisterDependenciesTask.TASK_NAME + System.identityHashCode(RegisterDependenciesTask.class));
+		}
+	}
+
+	private TaskProvider<RegisterDependenciesTask> findRegisterDepsTask(String taskName) {
+		TaskContainer rootProjectTasks = project.getRootProject().getTasks();
+		if (!rootProjectTasks.getNames().contains(taskName)) {
+			return rootProjectTasks.register(taskName, RegisterDependenciesTask.class, RegisterDependenciesTask::setup);
+		} else {
+			return rootProjectTasks.named(taskName, RegisterDependenciesTask.class);
+		}
+	}
+
+	public void predeclareDepsFromBuildscript() {
+		if (project.getRootProject() != project) {
+			throw new GradleException("predeclareDepsFromBuildscript can only be called from the root project");
+		}
+		predeclare(GradleProvisioner.Policy.ROOT_BUILDSCRIPT);
+	}
+
+	public void predeclareDeps() {
+		if (project.getRootProject() != project) {
+			throw new GradleException("predeclareDeps can only be called from the root project");
+		}
+		predeclare(GradleProvisioner.Policy.ROOT_PROJECT);
+	}
+
+	protected void predeclare(GradleProvisioner.Policy policy) {
+		project.getExtensions().create(SpotlessExtension.class, EXTENSION_PREDECLARE, SpotlessExtensionPredeclare.class, project, policy);
+	}
 }

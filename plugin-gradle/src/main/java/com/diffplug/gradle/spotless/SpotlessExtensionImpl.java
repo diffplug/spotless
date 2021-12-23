@@ -23,7 +23,6 @@ import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 
 public class SpotlessExtensionImpl extends SpotlessExtension {
-	private final TaskProvider<RegisterDependenciesTask> registerDependenciesTask;
 	final TaskProvider<?> rootCheckTask, rootApplyTask, rootDiagnoseTask;
 
 	public SpotlessExtensionImpl(Project project) {
@@ -39,7 +38,6 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 		rootDiagnoseTask = project.getTasks().register(EXTENSION + DIAGNOSE, task -> {
 			task.setGroup(TASK_GROUP); // no description on purpose
 		});
-		registerDependenciesTask = findRegisterDepsTask();
 
 		project.afterEvaluate(unused -> {
 			if (enforceCheck) {
@@ -51,31 +49,6 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 				}
 			}
 		});
-	}
-
-	private TaskProvider<RegisterDependenciesTask> findRegisterDepsTask() {
-		try {
-			return findRegisterDepsTask(RegisterDependenciesTask.TASK_NAME);
-		} catch (Exception e) {
-			// in a composite build there can be multiple Spotless plugins on the classpath, and they will each try to register
-			// a task on the root project with the same name. That will generate casting errors, which we can catch and try again
-			// with an identity-specific identifier.
-			// https://github.com/diffplug/spotless/pull/1001 for details
-			return findRegisterDepsTask(RegisterDependenciesTask.TASK_NAME + System.identityHashCode(RegisterDependenciesTask.class));
-		}
-	}
-
-	private TaskProvider<RegisterDependenciesTask> findRegisterDepsTask(String taskName) {
-		TaskContainer rootProjectTasks = project.getRootProject().getTasks();
-		if (!rootProjectTasks.getNames().contains(taskName)) {
-			return rootProjectTasks.register(taskName, RegisterDependenciesTask.class, RegisterDependenciesTask::setup);
-		} else {
-			return rootProjectTasks.named(taskName, RegisterDependenciesTask.class);
-		}
-	}
-
-	RegisterDependenciesTask getRegisterDependenciesTask() {
-		return registerDependenciesTask.get();
 	}
 
 	@Override

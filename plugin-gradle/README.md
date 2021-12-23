@@ -86,6 +86,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Multiple (or custom) language-specific blocks](#multiple-or-custom-language-specific-blocks)
   - [Inception (languages within languages within...)](#inception-languages-within-languages-within)
   - [Disabling warnings and error messages](#disabling-warnings-and-error-messages)
+  - [Dependency resolution modes](#dependency-resolution-modes)
   - [How do I preview what `spotlessApply` will do?](#how-do-i-preview-what-spotlessapply-will-do)
   - [Example configurations (from real-world projects)](#example-configurations-from-real-world-projects)
 
@@ -909,6 +910,26 @@ spotless {
     ignoreErrorForStep('my-glitchy-step')   // ignore errors on all files thrown by a specific step
     ignoreErrorForPath('path/to/file.java') // ignore errors by all steps on this specific file
 ```
+
+<a name="dependency-resolution-modes"></a>
+## Dependency resolution modes
+
+By default, Spotless resolves dependencies on a per-project basis. For very large parallel builds, this can sometimes cause problems. As an alternative, Spotless can be configured to resolve all dependencies in the root project like so:
+
+```gradle
+spotless {
+  ...
+  predeclareDeps()
+}
+spotlessPredeclare {
+  java { eclipse() }
+  kotlin { ktfmt('0.28') }
+}
+```
+
+Alternatively, you can also use `predeclareDepsFromBuildscript()` to resolve the dependencies from the buildscript repositories rather than the project repositories.
+
+If you use this feature, you will get an error if you use a formatter in a subproject which is not declared in the `spotlessPredeclare` block.
 
 <a name="preview"></a>
 

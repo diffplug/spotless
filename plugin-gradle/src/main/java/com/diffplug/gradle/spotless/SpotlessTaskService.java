@@ -20,10 +20,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
-import org.gradle.api.Project;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
@@ -48,10 +48,19 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 	private final Map<String, SpotlessTask> source = Collections.synchronizedMap(new HashMap<>());
 	private final Map<String, Provisioner> provisioner = Collections.synchronizedMap(new HashMap<>());
 
-	Provisioner provisionerFor(Project project) {
-		return provisioner.computeIfAbsent(project.getPath(), unused -> {
-			return GradleProvisioner.newDedupingProvisioner(project);
-		});
+	@Nullable
+	GradleProvisioner.DedupingProvisioner predeclaredProvisioner;
+
+	Provisioner provisionerFor(SpotlessExtension spotless) {
+		if (spotless instanceof SpotlessExtensionPredeclare) {
+			return predeclaredProvisioner;
+		} else {
+			if (predeclaredProvisioner != null) {
+				return predeclaredProvisioner.cachedOnly;
+			} else {
+				return provisioner.computeIfAbsent(spotless.project.getPath(), unused -> new GradleProvisioner.DedupingProvisioner(GradleProvisioner.forProject(spotless.project)));
+			}
+		}
 	}
 
 	void registerSourceAlreadyRan(SpotlessTask task) {

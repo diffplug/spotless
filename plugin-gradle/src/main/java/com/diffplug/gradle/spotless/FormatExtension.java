@@ -73,7 +73,7 @@ public class FormatExtension {
 	}
 
 	protected final Provisioner provisioner() {
-		return spotless.getRegisterDependenciesTask().getTaskService().get().provisionerFor(spotless.project);
+		return spotless.getRegisterDependenciesTask().getTaskService().get().provisionerFor(spotless);
 	}
 
 	private String formatName() {
@@ -757,16 +757,6 @@ public class FormatExtension {
 		} else {
 			steps = this.steps;
 		}
-		// <IMPORTANT>
-		// By calling .hashCode, we are triggering all steps to evaluate their state,
-		// which triggers dependency resolution. It's important to do that here, because
-		// otherwise it won't happen until Gradle starts checking for task up-to-date-ness.
-		// For a large parallel build, the task up-to-dateness might get called on a different
-		// thread than the thread where task configuration happens, which will trigger a
-		// java.util.ConcurrentModificationException
-		// See https://github.com/diffplug/spotless/issues/1015 for details.
-		steps.hashCode();
-		// </IMPORTANT>
 		task.setSteps(steps);
 		task.setLineEndingsPolicy(getLineEndings().createPolicy(getProject().getProjectDir(), () -> totalTarget));
 		spotless.getRegisterDependenciesTask().hookSubprojectTask(task);
