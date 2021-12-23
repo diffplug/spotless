@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.18.0] - 2021-12-23
 ### Added
 * Incremental up-to-date checking ([#935](https://github.com/diffplug/spotless/pull/935)).
 * Support for Markdown with `flexmark` at `0.62.2` ([#1011](https://github.com/diffplug/spotless/pull/1011)).
