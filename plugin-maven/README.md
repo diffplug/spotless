@@ -246,8 +246,6 @@ This is a workaround to a [pending issue](https://github.com/diffplug/spotless/i
     <includes>
       <include>src/main/groovy/**/*.groovy</include>
       <include>src/test/groovy/**/*.groovy</include>
-      <include>src/main/java/**/*.java</include>
-      <include>src/test/java/**/*.java</include>
     </includes>
 
     <importOrder /> <!-- standard import order -->
