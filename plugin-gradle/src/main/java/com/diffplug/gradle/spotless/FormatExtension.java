@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.TreeMap;
+import java.util.Arrays;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -181,7 +182,9 @@ public class FormatExtension {
 	 * "build", ".gradle", and ".git" folders.
 	 */
 	public void target(Object... targets) {
-		this.target = parseTargetsIsExclude(targets, false);
+		List<Object> targetList = Arrays.asList(targets);
+		targetList.add(target);
+		this.target = parseTargetsIsExclude(targetList, false);
 	}
 
 	/**
@@ -195,15 +198,17 @@ public class FormatExtension {
 	 * Anything else gets passed to getProject().files().
 	 */
 	public void targetExclude(Object... targets) {
-		this.targetExclude = parseTargetsIsExclude(targets, true);
+		List<Object> targetList = Arrays.asList(targets);
+		targetList.add(targetExclude);
+		this.targetExclude = parseTargetsIsExclude(targetList, true);
 	}
 
-	private FileCollection parseTargetsIsExclude(Object[] targets, boolean isExclude) {
+	private FileCollection parseTargetsIsExclude(List<Object> targets, boolean isExclude) {
 		requireElementsNonNull(targets);
-		if (targets.length == 0) {
+		if (targets.isEmpty()) {
 			return getProject().files();
-		} else if (targets.length == 1) {
-			return parseTargetIsExclude(targets[0], isExclude);
+		} else if (targets.size() == 1) {
+			return parseTargetIsExclude(targets.get(0), isExclude);
 		} else {
 			FileCollection union = getProject().files();
 			for (Object target : targets) {
@@ -224,8 +229,12 @@ public class FormatExtension {
 	}
 
 	private final FileCollection parseTargetIsExclude(Object target, boolean isExclude) {
-		if (target instanceof Collection) {
-			return parseTargetsIsExclude(((Collection) target).toArray(), isExclude);
+		if (target instanceof List) {
+			//noinspection unchecked
+			return parseTargetsIsExclude((List<Object>) target, isExclude);
+		}if (target instanceof Collection) {
+			//noinspection unchecked
+			return parseTargetsIsExclude(new ArrayList<>((Collection<Object>) target), isExclude);
 		} else if (target instanceof FileCollection) {
 			return (FileCollection) target;
 		} else if (target instanceof String) {
