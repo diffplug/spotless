@@ -9,6 +9,7 @@ ext {
 		'org.eclipse.cdt.core':'+', // CodeFormatter and related
 	]
 
+	stepLockFileComment = "Spotless formatter based on CDT version ${VER_ECLIPSE_CDT} (see https://www.eclipse.org/cdt/)"
 }
 
 apply from: rootProject.file('_ext/gradle/update-lockfile.gradle')
@@ -36,5 +37,5 @@ dependencies {
 //////////
 sourceSets {
 	// Use JAR file with all resources for Eclipse-CDT integration-tests
-	test.runtimeClasspath = jar.outputs.files + sourceSets.test.output + sourceSets.test.compileClasspath
+	test.runtimeClasspath = jar.outputs.files + sourceSets.test.output + sourceSets.test.compileClasspath + sourceSets.test.runtimeClasspath
 }

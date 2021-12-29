@@ -1,13 +1,15 @@
-apply from: rootProject.file('_ext/gradle/update-lockfile.gradle')
-apply from: rootProject.file('_ext/gradle/java-setup.gradle')
-apply from: rootProject.file('gradle/java-publish.gradle')
-
 ext {
 	developers = [
 		fvgh: [ name: 'Frank Vennemeyer', email: 'frankgh@zoho.com' ],
 		nedtwigg: [ name: 'Ned Twigg', email: 'ned.twigg@diffplug.com' ],
 	]
+
+	stepLockFileComment = "Spotless formatter based on JDT version ${VER_ECLIPSE} (see https://projects.eclipse.org/projects/eclipse.jdt)"
 }
+
+apply from: rootProject.file('_ext/gradle/update-lockfile.gradle')
+apply from: rootProject.file('_ext/gradle/java-setup.gradle')
+apply from: rootProject.file('gradle/java-publish.gradle')
 
 dependencies {
 	implementation "com.diffplug.spotless:spotless-eclipse-base:${VER_SPOTLESS_ECLISPE_BASE}"

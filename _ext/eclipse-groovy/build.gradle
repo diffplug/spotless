@@ -32,6 +32,7 @@ ext {
 		'**/nlcl'
 	]
 
+	stepLockFileComment = "Spotless formatter based on Groovy-Eclipse version ${VER_GRECLIPSE} (see https://github.com/groovy/groovy-eclipse/releases)"
 }
 
 apply from: rootProject.file('_ext/gradle/update-lockfile.gradle')
@@ -52,5 +53,5 @@ dependencies {
 //////////
 sourceSets {
 	// Use JAR file with all resources for Eclipse-Groovy integration-tests
-	test.runtimeClasspath = jar.outputs.files + sourceSets.test.output + sourceSets.test.compileClasspath
+	test.runtimeClasspath = jar.outputs.files + sourceSets.test.output + sourceSets.test.compileClasspath + sourceSets.test.runtimeClasspath
 }

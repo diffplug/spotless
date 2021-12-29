@@ -231,7 +231,7 @@ jobs:
       - *set_git_origin_to_https
       - run:
           name: gradlew :eclipse-jdt:changelogPush
-          command: ./gradlew -Pcom.diffplug.spotless.include.ext.nop2=true :eclipse-jdt:changelogPush -Prelease=true --stacktrace
+          command: ./gradlew -Pcom.diffplug.spotless.include.ext.nop2=true :eclipse-jdt:changelogPush -Prelease=true --stacktrace --write-locks
   ext_do_release_cdt:
     << : *env_gradle
     steps:
@@ -241,7 +241,7 @@ jobs:
       - *set_git_origin_to_https
       - run:
           name: gradlew :eclipse-cdt:changelogPush
-          command: ./gradlew -Pcom.diffplug.spotless.include.ext.cdt=true :eclipse-cdt:changelogPush -Prelease=true --stacktrace
+          command: ./gradlew -Pcom.diffplug.spotless.include.ext.cdt=true :eclipse-cdt:changelogPush -Prelease=true --stacktrace --write-locks
   ext_do_release_groovy:
     << : *env_gradle
     steps:
@@ -251,7 +251,7 @@ jobs:
       - *set_git_origin_to_https
       - run:
           name: gradlew :eclipse-groovy:changelogPush
-          command: ./gradlew -Pcom.diffplug.spotless.include.ext.groovy=true :eclipse-groovy:changelogPush -Prelease=true --stacktrace
+          command: ./gradlew -Pcom.diffplug.spotless.include.ext.groovy=true :eclipse-groovy:changelogPush -Prelease=true --stacktrace --write-locks
   ext_do_release_wtp:
     << : *env_gradle
     steps:
@@ -261,7 +261,7 @@ jobs:
       - *set_git_origin_to_https
       - run:
           name: gradlew :eclipse-wtp:changelogPush
-          command: ./gradlew -Pcom.diffplug.spotless.include.ext.wtp=true :eclipse-wtp:changelogPush -Prelease=true --stacktrace
+          command: ./gradlew -Pcom.diffplug.spotless.include.ext.wtp=true :eclipse-wtp:changelogPush -Prelease=true --stacktrace --write-locks
 
 workflows:
   version: 2

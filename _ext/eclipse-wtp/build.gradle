@@ -3,7 +3,7 @@ ext {
 		fvgh: [ name: 'Frank Vennemeyer', email: 'frankgh@zoho.com' ],
 	]
 
-	p2Repository = "https://download.eclipse.org/webtools/repository/${VER_ECLIPSE_WTP}"
+	p2Repository = "https://download.eclipse.org/webtools/repository/${VER_ECLIPSE_WTP_REPO}"
 
 	p2Dependencies = [
 		// XML/HTML Formatter  - Dependencies
@@ -53,6 +53,8 @@ ext {
 		'org.eclipse.wst.xml.core': 'org.eclipse.wst.xml.core.internal',
 		'org.eclipse.wst.xsd.core': 'org.eclipse.wst.xsd.core.internal'
 	]
+
+	stepLockFileComment = "Spotless formatter based on Eclipse-WTP version ${VER_ECLIPSE_WTP} (see https://www.eclipse.org/webtools/)"
 }
 
 apply from: rootProject.file('_ext/gradle/update-lockfile.gradle')
@@ -93,7 +95,7 @@ jar {
 //////////
 sourceSets {
 	// Use JAR file with all resources for Eclipse-WTP integration-tests
-	test.runtimeClasspath = jar.outputs.files + sourceSets.test.output + sourceSets.test.compileClasspath
+	test.runtimeClasspath = jar.outputs.files + sourceSets.test.output + sourceSets.test.compileClasspath + sourceSets.test.runtimeClasspath
 }
 
 /*
@@ -115,6 +117,7 @@ fileTree(dir: testLocation).include('**/*Test.java').each { file ->
 		group = LifecycleBasePlugin.VERIFICATION_GROUP
 		description = "Runs ${testFile} integration test."
 		include "${filePath}"
+		useJUnitPlatform()
 		reports {
 			html.destination = new File("$buildDir/reports/${testFile}")
 			junitXml.destination = new File("$buildDir/${testFile}")

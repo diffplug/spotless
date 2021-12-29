@@ -1,0 +1,25 @@
+# This is a Gradle generated file for dependency locking.
+# Manual edits can break the build and are not advised.
+# This file is expected to be part of source control.
+com.diffplug.spotless:spotless-eclipse-base:3.5.2=compileClasspath
+com.github.spotbugs:spotbugs-annotations:4.5.0=compileClasspath
+com.google.code.findbugs:jsr305:3.0.2=compileClasspath
+com.ibm.icu:icu4j:67.1=compileClasspath
+net.jcip:jcip-annotations:1.0=compileClasspath
+org.eclipse.platform:org.eclipse.core.commands:3.10.100=compileClasspath
+org.eclipse.platform:org.eclipse.core.contenttype:3.8.100=compileClasspath
+org.eclipse.platform:org.eclipse.core.filebuffers:3.7.100=compileClasspath
+org.eclipse.platform:org.eclipse.core.filesystem:1.9.200=compileClasspath
+org.eclipse.platform:org.eclipse.core.jobs:3.12.0=compileClasspath
+org.eclipse.platform:org.eclipse.core.resources:3.16.0=compileClasspath
+org.eclipse.platform:org.eclipse.core.runtime:3.24.0=compileClasspath
+org.eclipse.platform:org.eclipse.equinox.app:1.6.100=compileClasspath
+org.eclipse.platform:org.eclipse.equinox.common:3.15.100=compileClasspath
+org.eclipse.platform:org.eclipse.equinox.preferences:3.9.100=compileClasspath
+org.eclipse.platform:org.eclipse.equinox.registry:3.11.100=compileClasspath
+org.eclipse.platform:org.eclipse.jface.text:3.19.0=compileClasspath
+org.eclipse.platform:org.eclipse.jface:3.24.0=compileClasspath
+org.eclipse.platform:org.eclipse.osgi:3.17.100=compileClasspath
+org.eclipse.platform:org.eclipse.text:3.12.0=compileClasspath
+org.slf4j:slf4j-api:1.8.0-beta4=compileClasspath
+empty=
