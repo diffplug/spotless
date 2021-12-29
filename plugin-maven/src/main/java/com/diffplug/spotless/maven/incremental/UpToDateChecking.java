@@ -15,6 +15,9 @@
  */
 package com.diffplug.spotless.maven.incremental;
 
+import java.io.File;
+import java.nio.file.Path;
+
 import org.apache.maven.plugins.annotations.Parameter;
 
 public class UpToDateChecking {
@@ -22,7 +25,13 @@ public class UpToDateChecking {
 	@Parameter
 	private boolean enabled;
 
+	private String indexFile;
+
 	public boolean isEnabled() {
 		return enabled;
+	}
+
+	public Path getIndexFile() {
+		return indexFile == null ? null : new File(indexFile).toPath();
 	}
 }

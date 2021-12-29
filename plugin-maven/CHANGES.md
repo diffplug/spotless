@@ -3,6 +3,9 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Changed
+* Support custom index files for incremental up-to-date checking ([#1055](https://github.com/diffplug/spotless/pull/1055)).
+
 ### Fixed
 * Remove Java files from default Maven Groovy formatting ([#1051](https://github.com/diffplug/spotless/pull/1051)).
   * Before this release, the default target of groovy was

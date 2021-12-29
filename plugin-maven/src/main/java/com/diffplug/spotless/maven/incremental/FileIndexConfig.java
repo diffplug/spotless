@@ -20,18 +20,18 @@ import java.nio.file.Path;
 import org.apache.maven.project.MavenProject;
 
 class FileIndexConfig {
-
-	private static final String INDEX_FILE_NAME = "spotless-index";
-
 	private final MavenProject project;
 	private final PluginFingerprint pluginFingerprint;
 
-	FileIndexConfig(MavenProject project) {
-		this(project, PluginFingerprint.empty());
+	private final Path indexFile;
+
+	FileIndexConfig(MavenProject project, Path indexFile) {
+		this(project, indexFile, PluginFingerprint.empty());
 	}
 
-	FileIndexConfig(MavenProject project, PluginFingerprint pluginFingerprint) {
+	FileIndexConfig(MavenProject project, Path indexFile, PluginFingerprint pluginFingerprint) {
 		this.project = project;
+		this.indexFile = indexFile;
 		this.pluginFingerprint = pluginFingerprint;
 	}
 
@@ -40,8 +40,7 @@ class FileIndexConfig {
 	}
 
 	Path getIndexFile() {
-		Path targetDir = getProjectDir().resolve(project.getBuild().getDirectory());
-		return targetDir.resolve(INDEX_FILE_NAME);
+		return indexFile;
 	}
 
 	PluginFingerprint getPluginFingerprint() {

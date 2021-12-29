@@ -936,6 +936,7 @@ enable incremental up-to-date checking with the following configuration:
 <configuration>
   <upToDateChecking>
     <enabled>true</enabled>
+    <indexFile>${project.basedir}/custom-index-file</indexFile> <!-- optional, default is ${project.build.directory}/spotless-index -->
   </upToDateChecking>
   <!-- ... define formats ... -->
 </configuration>
@@ -946,7 +947,7 @@ The index file contains source file paths and corresponding last modified timest
 It allows Spotless to skip already formatted files that have not changed.
 
 **Note:** the index file is located in the `target` directory. Executing `mvn clean` will delete
-the index file, and Spotless will need to check/format all the source files.
+the index file, and Spotless will need to check/format all the source files. You can override the default index file location with the `indexFile` configuration parameter.
 
 Spotless will remove the index file when up-to-date checking is explicitly turned off with the
 following configuration:
@@ -955,6 +956,7 @@ following configuration:
 <configuration>
   <upToDateChecking>
     <enabled>false</enabled>
+    <indexFile>${project.basedir}/custom-index-file</indexFile> <!-- optional, default is ${project.build.directory}/spotless-index -->
   </upToDateChecking>
   <!-- ... define formats ... -->
 </configuration>

@@ -18,6 +18,7 @@ package com.diffplug.spotless.maven.incremental;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.maven.model.Build;
@@ -28,14 +29,16 @@ class FileIndexConfigTest {
 
 	@Test
 	void returnsCorrectProjectDir() {
-		FileIndexConfig config = new FileIndexConfig(mavenProject(), PluginFingerprint.from("foo"));
+		MavenProject project = mavenProject();
+		FileIndexConfig config = new FileIndexConfig(project, getIndexFile(project), PluginFingerprint.from("foo"));
 
 		assertThat(config.getProjectDir()).isEqualTo(Paths.get("projectDir"));
 	}
 
 	@Test
 	void returnsCorrectIndexFile() {
-		FileIndexConfig config = new FileIndexConfig(mavenProject(), PluginFingerprint.from("foo"));
+		MavenProject project = mavenProject();
+		FileIndexConfig config = new FileIndexConfig(project, getIndexFile(project), PluginFingerprint.from("foo"));
 
 		assertThat(config.getIndexFile())
 				.isEqualTo(Paths.get("projectDir", "target", "spotless-index"));
@@ -43,14 +46,16 @@ class FileIndexConfigTest {
 
 	@Test
 	void returnsCorrectPluginFingerprint() {
-		FileIndexConfig config = new FileIndexConfig(mavenProject(), PluginFingerprint.from("foo"));
+		MavenProject project = mavenProject();
+		FileIndexConfig config = new FileIndexConfig(project, getIndexFile(project), PluginFingerprint.from("foo"));
 
 		assertThat(config.getPluginFingerprint()).isEqualTo(PluginFingerprint.from("foo"));
 	}
 
 	@Test
 	void returnsEmptyPluginFingerprint() {
-		FileIndexConfig config = new FileIndexConfig(mavenProject());
+		MavenProject project = mavenProject();
+		FileIndexConfig config = new FileIndexConfig(project, getIndexFile(project));
 
 		assertThat(config.getPluginFingerprint()).isEqualTo(PluginFingerprint.from(""));
 	}
@@ -62,5 +67,9 @@ class FileIndexConfigTest {
 		build.setDirectory("target");
 		project.setBuild(build);
 		return project;
+	}
+
+	private static Path getIndexFile(MavenProject project) {
+		return project.getBasedir().toPath().resolve(project.getBuild().getDirectory()).resolve("spotless-index");
 	}
 }
