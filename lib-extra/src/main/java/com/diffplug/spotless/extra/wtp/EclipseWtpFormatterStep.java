@@ -36,7 +36,7 @@ public enum EclipseWtpFormatterStep {
 	XML ("EclipseXmlFormatterStepImpl",  EclipseWtpFormatterStep::applyWithFile);
 	// @formatter:on
 
-	private static final String NAME = "eclipse wtp formatters";
+	private static final String NAME = "eclipse wtp formatter";
 	private static final String FORMATTER_PACKAGE = "com.diffplug.spotless.extra.eclipse.wtp.";
 	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(8, "4.18.0").add(11, "4.21.0");
 	private static final String FORMATTER_METHOD = "format";
