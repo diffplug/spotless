@@ -30,7 +30,7 @@ public final class GrEclipseFormatterStep {
 	// prevent direct instantiation
 	private GrEclipseFormatterStep() {}
 
-	private static final String NAME = "groovy eclipse formatter";
+	private static final String NAME = "eclipse groovy formatter";
 	private static final String FORMATTER_CLASS = "com.diffplug.spotless.extra.eclipse.groovy.GrEclipseFormatterStepImpl";
 	private static final String FORMATTER_CLASS_OLD = "com.diffplug.gradle.spotless.groovy.eclipse.GrEclipseFormatterStepImpl";
 	private static final String MAVEN_GROUP_ARTIFACT = "com.diffplug.spotless:spotless-eclipse-groovy";
