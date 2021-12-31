@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.2.1`).
 
 ## [Unreleased]
+### Changed
+* **BREAKING** `changeSystemLineSeparator` is no longer part of default configuration (see [#1049](https://github.com/diffplug/spotless/issues/1049)).
 
 ## [3.5.2] - 2021-10-23
 ### Fixed

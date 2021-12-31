@@ -85,12 +85,13 @@ class ResourceAccessor {
 		}
 	}
 
+	@edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "DCN_NULLPOINTER_EXCEPTION", justification = "Null-checking costs higher than benefit.")
 	private static URI getBundleUri(Class<?> clazz) throws BundleException {
 		try {
 			URL objUrl = clazz.getProtectionDomain().getCodeSource().getLocation();
 			return objUrl.toURI();
 		} catch (NullPointerException e) {
-			//No bunlde should be used for RT classes lookup. See also org.eclipse.core.runtime.PerformanceStats.
+			//No bundle should be used for RT classes lookup. See also org.eclipse.core.runtime.PerformanceStats.
 			throw new BundleException(String.format("No code source can be located for class '%s'. Class is probably not within a bundle, but part of the RT.", clazz.getName()), BundleException.READ_ERROR, e);
 		} catch (SecurityException e) {
 			throw new BundleException(String.format("Access to class '%s' is denied.", clazz.getName()), BundleException.READ_ERROR, e);

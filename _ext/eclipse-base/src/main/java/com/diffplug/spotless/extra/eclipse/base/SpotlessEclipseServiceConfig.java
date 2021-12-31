@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,7 +114,6 @@ public interface SpotlessEclipseServiceConfig {
 	 * system property.
 	 * Change the system default to the UNIX line separator as required
 	 * by Spotless.
-	 * @throws ServiceException in case service has already been configured
 	 */
 	default public void changeSystemLineSeparator() throws ServiceException {
 		System.setProperty("line.separator", LINE_DELIMITER);
@@ -149,6 +148,5 @@ public interface SpotlessEclipseServiceConfig {
 		disableDebugging();
 		ignoreUnsupportedPreferences();
 		useTemporaryLocations();
-		changeSystemLineSeparator();
 	}
 }

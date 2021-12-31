@@ -128,6 +128,7 @@ public class TemporaryLocation implements Location, AutoCloseable {
 	}
 
 	@Override
+	@edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "RV_RETURN_VALUE_IGNORED_BAD_PRACTICE", justification = "At shutdown everything is just done on best-efforts basis")
 	public void close() throws Exception {
 		try {
 			Path path = Path.of(location.toURI());
