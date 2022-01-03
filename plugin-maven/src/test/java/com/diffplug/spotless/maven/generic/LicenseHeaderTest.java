@@ -60,7 +60,11 @@ class LicenseHeaderTest extends MavenIntegrationHarness {
 				"// Does it help to have it in writing?",
 				"  </content>",
 				"</licenseHeader>");
-		runTest();
+
+		String path = "src/main/groovy/test.groovy";
+		setFile(path).toResource("license/MissingLicense.test");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile(path).sameAsResource("license/HasLicense.test");
 	}
 
 	@Test

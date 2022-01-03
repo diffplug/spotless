@@ -3,6 +3,14 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+* Remove Java files from default Maven Groovy formatting ([#1051](https://github.com/diffplug/spotless/pull/1051)).
+  * Before this release, the default target of groovy was
+    * `src/main/groovy/**/*.groovy`
+    * `src/test/groovy/**/*.groovy`
+    * `src/main/java/**/*.java`
+    * `src/test/java/**/*.java`
+  * This release removes the `.java` includes.
 
 ## [2.18.0] - 2021-12-23
 ### Added
