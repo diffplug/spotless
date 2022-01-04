@@ -230,7 +230,7 @@ class LicenseHeaderStepTest extends ResourceHarness {
 		FormatterStep step = LicenseHeaderStep.headerDelimiter(header(licenceWithAddress()), package_).withYearMode(YearMode.UPDATE_TO_TODAY).build();
 		StepHarness.forStep(step).test(
 				hasHeader(licenceWithAddress().replace("$YEAR", "2015")),
-				hasHeader(licenceWithAddress().replace("$YEAR", "2015-2021")));
+				hasHeader(licenceWithAddress().replace("$YEAR", "2015-2022")));
 	}
 
 	@Test
