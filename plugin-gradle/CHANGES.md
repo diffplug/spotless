@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Changed
+* **BREAKING** Bumped default DiKTat from `0.4.0` to `1.0.1`. This is a major version upgrade. Some DiKTat rules were renamed/changed. Check [DiKTat changelog](https://github.com/analysis-dev/diktat/releases) for details.
 
 ## [6.1.0] - 2021-12-23
 ### Added
