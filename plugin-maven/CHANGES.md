@@ -14,6 +14,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
     * `src/main/java/**/*.java`
     * `src/test/java/**/*.java`
   * This release removes the `.java` includes.
+### Changed
+* Bumped default DiKTat from `0.4.0` to `1.0.1`. This is a breaking change for DiKTat users on the default version, because some rules were renamed/changed. Check [DiKTat changelog](https://github.com/analysis-dev/diktat/releases) for details.
 
 ## [2.18.0] - 2021-12-23
 ### Added

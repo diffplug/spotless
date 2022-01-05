@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,9 +38,9 @@ class DiktatStepTest extends ResourceHarness {
 					assertion.isInstanceOf(AssertionError.class);
 					assertion.hasMessage("There are 2 unfixed errors:" +
 							System.lineSeparator() + "Error on line: 1, column: 1 cannot be fixed automatically" +
-							System.lineSeparator() + "[FILE_NAME_INCORRECT] file name is incorrect - it should end with .kt extension and be in PascalCase: testlib" +
+							System.lineSeparator() + "[FILE_NAME_INCORRECT] file name is incorrect - it should end with .kt extension and be in PascalCase: " +
 							System.lineSeparator() + "Error on line: 1, column: 1 cannot be fixed automatically" +
-							System.lineSeparator() + "[FILE_NAME_MATCH_CLASS] file name is incorrect - it should match with the class described in it if there is the only one class declared: testlib vs Unsolvable");
+							System.lineSeparator() + "[FILE_NAME_MATCH_CLASS] file name is incorrect - it should match with the class described in it if there is the only one class declared:  vs Unsolvable");
 				});
 	}
 
@@ -51,15 +51,15 @@ class DiktatStepTest extends ResourceHarness {
 		File conf = setFile(configPath).toResource("kotlin/diktat/diktat-analysis.yml");
 		FileSignature config = signAsList(conf);
 
-		FormatterStep step = DiktatStep.create("0.3.0", TestProvisioner.mavenCentral(), Collections.emptyMap(), config);
+		FormatterStep step = DiktatStep.create("1.0.1", TestProvisioner.mavenCentral(), Collections.emptyMap(), config);
 		StepHarness.forStep(step)
 				.testResourceException("kotlin/diktat/Unsolvable.kt", assertion -> {
 					assertion.isInstanceOf(AssertionError.class);
 					assertion.hasMessage("There are 2 unfixed errors:" +
 							System.lineSeparator() + "Error on line: 1, column: 1 cannot be fixed automatically" +
-							System.lineSeparator() + "[FILE_NAME_INCORRECT] file name is incorrect - it should end with .kt extension and be in PascalCase: testlib" +
+							System.lineSeparator() + "[FILE_NAME_INCORRECT] file name is incorrect - it should end with .kt extension and be in PascalCase: " +
 							System.lineSeparator() + "Error on line: 1, column: 1 cannot be fixed automatically" +
-							System.lineSeparator() + "[FILE_NAME_MATCH_CLASS] file name is incorrect - it should match with the class described in it if there is the only one class declared: testlib vs Unsolvable");
+							System.lineSeparator() + "[FILE_NAME_MATCH_CLASS] file name is incorrect - it should match with the class described in it if there is the only one class declared:  vs Unsolvable");
 				});
 	}
 
