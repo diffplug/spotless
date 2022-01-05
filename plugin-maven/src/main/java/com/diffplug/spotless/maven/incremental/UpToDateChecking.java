@@ -25,6 +25,7 @@ public class UpToDateChecking {
 	@Parameter
 	private boolean enabled;
 
+	@Parameter
 	private String indexFile;
 
 	public boolean isEnabled() {
