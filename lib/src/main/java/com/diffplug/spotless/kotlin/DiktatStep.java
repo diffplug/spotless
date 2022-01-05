@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ public class DiktatStep {
 	// prevent direct instantiation
 	private DiktatStep() {}
 
-	private static final String DEFAULT_VERSION = "0.4.0";
+	private static final String DEFAULT_VERSION = "1.0.1";
 	static final String NAME = "diktat";
 	static final String PACKAGE_DIKTAT = "org.cqfn.diktat";
 	static final String PACKAGE_KTLINT = "com.pinterest.ktlint";
