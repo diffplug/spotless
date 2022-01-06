@@ -16,7 +16,7 @@ Spotless can format &lt;antlr | c | c# | c++ | css | flow | graphql | groovy | h
 
 You probably want one of the links below:
 
-## [❇️ Spotless for Gradle](plugin-gradle) (with [VS Code integration](https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle))
+## [❇️ Spotless for Gradle](plugin-gradle) (with integrations for [VS Code](https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle) and [IntelliJ](https://github.com/ragurney/spotless-intellij-gradle))
 ## [❇️ Spotless for Maven](plugin-maven)
 ## [❇️ Spotless for SBT (external for now)](https://github.com/moznion/sbt-spotless)
 ## [Other build systems](CONTRIBUTING.md#how-to-add-a-new-plugin-for-a-build-system)
@@ -132,6 +132,7 @@ Once someone has filled in one square of the formatter/build system matrix, it's
   - constant improvements on a variety of topics with high-quality code reviews
 - Thanks to [Daz DeBoer](https://github.com/bigdaz) for the reworking the guts of our gradle plugin to support [buildcache](https://github.com/diffplug/spotless/pull/576), [InputChanges](https://github.com/diffplug/spotless/pull/607), and [lazy configuration](https://github.com/diffplug/spotless/pull/617).
 - Thanks to [Richard Willis](https://github.com/badsyntax) for creating the [VS Code extension for Spotless Gradle](https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle).
+- Thanks to [Ryan Gurney](https://github.com/ragurney) for creating the [IntelliJ plugin for Spotless Gradle](https://github.com/ragurney/spotless-intellij-gradle).
 - Thanks to [Markus Heberling](https://github.com/tisoft) for adding [generic native formatters](https://github.com/diffplug/spotless/pull/949), [jsr-223 formatters](https://github.com/diffplug/spotless/pull/945), and [maven pom sorting](https://github.com/diffplug/spotless/pull/946).
 - Thanks to [Matthias Balke](https://github.com/matthiasbalke) for [adding support for Antlr](https://github.com/diffplug/spotless/pull/328).
 - Thanks to [Matthias Andreas Benkard](https://github.com/benkard) for adding support for google-java-format 1.8+ ([#563](https://github.com/diffplug/spotless/pull/563))

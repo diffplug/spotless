@@ -3,6 +3,9 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+* 🎉🎉🎉 [**IntelliJ plugin**](https://github.com/ragurney/spotless-intellij-gradle) thanks to [@ragurney](https://github.com/ragurney) 🎉🎉🎉
+
 ### Fixed
 * If the `base` plugin has already been applied, then there is no need for configuration of the `clean` task to trigger configuration of the Spotless tasks ([#1068](https://github.com/diffplug/spotless/pull/1068)).
 ### Changed
