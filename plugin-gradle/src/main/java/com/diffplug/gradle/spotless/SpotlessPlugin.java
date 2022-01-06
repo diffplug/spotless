@@ -63,7 +63,7 @@ public class SpotlessPlugin implements Plugin<Project> {
 
 	/** clean removes the SpotlessCache, so we have to run after clean. */
 	static void taskMustRunAfterClean(Project project, TaskProvider<?> task) {
-		configureCleanTask(project, clean -> task.get().mustRunAfter(clean));
+		configureCleanTask(project, clean -> task.configure(spotless -> spotless.mustRunAfter(clean)));
 	}
 
 	static String capitalize(String input) {
