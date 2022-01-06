@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.19.0] - 2022-01-06
 ### Added
 * Support custom index files for incremental up-to-date checking ([#1055](https://github.com/diffplug/spotless/pull/1055)).
 ### Fixed
