@@ -147,8 +147,8 @@ spotless {
     // Use the default importOrder configuration
     importOrder()
     // optional: you can specify import groups directly
-    // note: You probably want an empty string at the end - all of the imports you didn't specify explicitly will go there.
-    importOrder('java', 'javax', 'com.acme', '')
+    // note: you can use an empty string for all the imports you didn't specify explicitly, and '\\#` prefix for static imports
+    importOrder('java', 'javax', 'com.acme', '', '\\#com.acme', '\\#')
     // optional: instead of specifying import groups directly you can specify a config file
     // export config file: https://github.com/diffplug/spotless/blob/main/ECLIPSE_SCREENSHOTS.md#creating-spotlessimportorder
     importOrderFile('eclipse-import-order.txt') // import order file as exported from eclipse
@@ -234,8 +234,8 @@ spotless {
     // Use the default importOrder configuration
     importOrder()
     // optional: you can specify import groups directly
-    // note: You probably want an empty string at the end - all of the imports you didn't specify explicitly will go there.
-    importOrder('java', 'javax', 'com.acme', '')
+    // note: you can use an empty string for all the imports you didn't specify explicitly, and '\\#` prefix for static imports
+    importOrder('java', 'javax', 'com.acme', '', '\\#com.acme', '\\#')
     // optional: instead of specifying import groups directly you can specify a config file
     // export config file: https://github.com/diffplug/spotless/blob/main/ECLIPSE_SCREENSHOTS.md#creating-spotlessimportorder
     importOrderFile('eclipse-import-order.txt') // import order file as exported from eclipse
