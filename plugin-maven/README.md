@@ -181,9 +181,8 @@ any other maven phase (i.e. compile) then it can be configured as below;
     <importOrder /> <!-- standard import order -->
     <importOrder>  <!-- or a custom ordering -->
       <wildcardsLast>false</wildcardsLast> <!-- Optional, default false. Sort wildcard import after specific imports -->
-      <order>java,javax,org,com,com.diffplug,</order>  <!-- or use <file>${project.basedir}/eclipse.importorder</file> -->
-      <!-- You probably want an empty string at the end - all of the
-           imports you didn't specify explicitly will go there. -->
+      <order>java,javax,org,com,com.diffplug,,\\#com.diffplug,\\#</order>  <!-- or use <file>${project.basedir}/eclipse.importorder</file> -->
+      <!-- you can use an empty string for all the imports you didn't specify explicitly, and '\\#` prefix for static imports. -->
     </importOrder>
 
     <removeUnusedImports /> <!-- self-explanatory -->
@@ -250,10 +249,8 @@ This is a workaround to a [pending issue](https://github.com/diffplug/spotless/i
 
     <importOrder /> <!-- standard import order -->
     <importOrder>  <!-- or a custom ordering -->
-      <order>java,javax,org,com,com.diffplug,</order>  <!-- or use <file>
-/eclipse.importorder</file> -->
-      <!-- You probably want an empty string at the end - all of the
-           imports you didn't specify explicitly will go there. -->
+      <order>java,javax,org,com,com.diffplug,,\\#com.diffplug,\\#</order>  <!-- or use <file>${project.basedir}/eclipse.importorder</file> -->
+      <!-- you can use an empty string for all the imports you didn't specify explicitly, and '\\#` prefix for static imports -->
     </importOrder>
 
     <greclipse />          <!-- has its own section below -->
