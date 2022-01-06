@@ -4,7 +4,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Fixed
-* Update IndentStep to allow leading space on multi-line comments ([#1072](https://github.com/diffplug/spotless/pull/1072)).
+* Update IndentStep to allow leading space on multiline comments ([#1072](https://github.com/diffplug/spotless/pull/1072)).
 
 ## [2.19.0] - 2022-01-06
 ### Added
