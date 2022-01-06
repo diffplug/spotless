@@ -87,9 +87,9 @@ class IndentStepTest extends ResourceHarness {
 	@Test
 	void allowLeadingSpaceIfMultiLineComment() throws Exception {
 		StepHarness.forStep(IndentStep.Type.TAB.create(4))
-			.testUnaffected("* test")
-			.testUnaffected(" * test")
-			.testUnaffected("\t* test")
-			.test("    * test", "\t* test");
+				.testUnaffected("* test")
+				.testUnaffected(" * test")
+				.testUnaffected("\t* test")
+				.test("    * test", "\t* test");
 	}
 }
