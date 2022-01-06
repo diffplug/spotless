@@ -22,7 +22,6 @@ import org.apache.maven.project.MavenProject;
 class FileIndexConfig {
 	private final MavenProject project;
 	private final PluginFingerprint pluginFingerprint;
-
 	private final Path indexFile;
 
 	FileIndexConfig(MavenProject project, Path indexFile) {

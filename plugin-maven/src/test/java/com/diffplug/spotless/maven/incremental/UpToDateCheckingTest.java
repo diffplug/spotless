@@ -69,7 +69,7 @@ class UpToDateCheckingTest extends MavenIntegrationHarness {
 
 	@Test
 	void enableUpToDateCheckingCustomIndexFile() throws Exception {
-		Path tempDirectory = Files.createTempDirectory("index-files");
+		Path tempDirectory = newFolder("index-files").toPath();
 		Path indexFile = tempDirectory.resolve("com.diffplug.spotless/spotless-maven-plugin-tests.index");
 		assertThat(indexFile.getParent()).doesNotExist();
 		assertThat(indexFile).doesNotExist();
@@ -86,10 +86,10 @@ class UpToDateCheckingTest extends MavenIntegrationHarness {
 
 	@Test
 	void disableUpToDateCheckingCustomIndexFile() throws Exception {
-		Path tempDirectory = Files.createTempDirectory("index-files");
+		Path tempDirectory = newFolder("index-files").toPath();
 		Path indexFile = tempDirectory.resolve("com.diffplug.spotless/spotless-maven-plugin-tests.index");
-		indexFile.toFile().getParentFile().mkdirs();
-		indexFile.toFile().createNewFile();
+		Files.createDirectories(indexFile.getParent());
+		Files.createFile(indexFile);
 		assertThat(indexFile.getParent()).exists();
 		assertThat(indexFile).exists();
 		writePomWithUpToDateCheckingEnabledIndexFile(false, tempDirectory + "/${project.groupId}/${project.artifactId}.index");
