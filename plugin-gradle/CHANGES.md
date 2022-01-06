@@ -4,7 +4,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Fixed
-* There is no need for the `clean` task to trigger configuration of the Spotless tasks ([#1068](https://github.com/diffplug/spotless/pull/1068))
+* If the `base` plugin has already been applied, then there is no need for configuration of the `clean` task to trigger configuration of the Spotless tasks ([#1068](https://github.com/diffplug/spotless/pull/1068)).
 ### Changed
 * Bumped default DiKTat from `0.4.0` to `1.0.1`. This is a breaking change for DiKTat users on the default version, because some rules were renamed/changed. Check [DiKTat changelog](https://github.com/analysis-dev/diktat/releases) for details.
 
