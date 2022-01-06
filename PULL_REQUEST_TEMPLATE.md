@@ -1,3 +1,5 @@
+Please **DO NOT FORCE PUSH**. Don't worry about messy history, it's easier to do code review if we can tell what happened after the review, and force pushing breaks that.
+
 Please make sure that your [PR allows edits from maintainers](https://help.github.com/articles/allowing-changes-to-a-pull-request-branch-created-from-a-fork/).  Sometimes its faster for us to just fix something than it is to describe how to fix it.
 
 ![Allow edits from maintainers](https://help.github.com/assets/images/help/pull_requests/allow-maintainers-to-make-edits-sidebar-checkbox.png)
