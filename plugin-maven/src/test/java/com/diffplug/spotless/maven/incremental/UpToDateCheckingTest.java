@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,6 +65,42 @@ class UpToDateCheckingTest extends MavenIntegrationHarness {
 
 		assertThat(output).doesNotContain("Up-to-date checking enabled");
 		assertFormatted(files);
+	}
+
+	@Test
+	void enableUpToDateCheckingCustomIndexFile() throws Exception {
+		Path tempDirectory = newFolder("index-files").toPath();
+		Path indexFile = tempDirectory.resolve("com.diffplug.spotless/spotless-maven-plugin-tests.index");
+		assertThat(indexFile.getParent()).doesNotExist();
+		assertThat(indexFile).doesNotExist();
+		writePomWithUpToDateCheckingEnabledIndexFile(true, tempDirectory + "/${project.groupId}/${project.artifactId}.index");
+
+		List<File> files = writeUnformattedFiles(1);
+		String output = runSpotlessApply();
+
+		assertThat(output).contains("Up-to-date checking enabled");
+		assertFormatted(files);
+		assertThat(indexFile.getParent()).exists();
+		assertThat(indexFile).exists();
+	}
+
+	@Test
+	void disableUpToDateCheckingCustomIndexFile() throws Exception {
+		Path tempDirectory = newFolder("index-files").toPath();
+		Path indexFile = tempDirectory.resolve("com.diffplug.spotless/spotless-maven-plugin-tests.index");
+		Files.createDirectories(indexFile.getParent());
+		Files.createFile(indexFile);
+		assertThat(indexFile.getParent()).exists();
+		assertThat(indexFile).exists();
+		writePomWithUpToDateCheckingEnabledIndexFile(false, tempDirectory + "/${project.groupId}/${project.artifactId}.index");
+
+		List<File> files = writeUnformattedFiles(1);
+		String output = runSpotlessApply();
+
+		assertThat(output).doesNotContain("Up-to-date checking enabled");
+		assertFormatted(files);
+		assertThat(indexFile.getParent()).exists();
+		assertThat(indexFile).doesNotExist();
 	}
 
 	@Test
@@ -138,6 +176,17 @@ class UpToDateCheckingTest extends MavenIntegrationHarness {
 				"</java>",
 				"<upToDateChecking>",
 				"  <enabled>" + enabled + "</enabled>",
+				"</upToDateChecking>");
+	}
+
+	private void writePomWithUpToDateCheckingEnabledIndexFile(boolean enabled, String indexFile) throws IOException {
+		writePom(
+				"<java>",
+				"  <googleJavaFormat/>",
+				"</java>",
+				"<upToDateChecking>",
+				"  <enabled>" + enabled + "</enabled>",
+				"  <indexFile>" + indexFile + "</indexFile>",
 				"</upToDateChecking>");
 	}
 

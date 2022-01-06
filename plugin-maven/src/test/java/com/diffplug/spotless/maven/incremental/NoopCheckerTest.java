@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ class NoopCheckerTest extends ResourceHarness {
 	@BeforeEach
 	void beforeEach() throws Exception {
 		project = buildMavenProject();
-		indexFile = new FileIndexConfig(project).getIndexFile();
+		indexFile = project.getBasedir().toPath().resolve(project.getBuild().getDirectory()).resolve("spotless-index");
 		existingSourceFile = project.getBasedir().toPath().resolve("existing.txt");
 		Files.write(existingSourceFile, "foo".getBytes(UTF_8), CREATE_NEW);
 		nonExistingSourceFile = project.getBasedir().toPath().resolve("non-existing.txt");
@@ -61,12 +61,12 @@ class NoopCheckerTest extends ResourceHarness {
 	@Test
 	void deletesExistingIndexFileWhenCreated() {
 		Log log = mock(Log.class);
-		try (UpToDateChecker realChecker = UpToDateChecker.forProject(project, singletonList(dummyFormatter()), log)) {
+		try (UpToDateChecker realChecker = UpToDateChecker.forProject(project, indexFile, singletonList(dummyFormatter()), log)) {
 			realChecker.setUpToDate(existingSourceFile);
 		}
 		assertThat(indexFile).exists();
 
-		try (UpToDateChecker noopChecker = UpToDateChecker.noop(project, log)) {
+		try (UpToDateChecker noopChecker = UpToDateChecker.noop(project, indexFile, log)) {
 			assertThat(noopChecker).isNotNull();
 		}
 		assertThat(indexFile).doesNotExist();
@@ -78,7 +78,7 @@ class NoopCheckerTest extends ResourceHarness {
 		assertThat(indexFile).doesNotExist();
 
 		Log log = mock(Log.class);
-		try (UpToDateChecker noopChecker = UpToDateChecker.noop(project, log)) {
+		try (UpToDateChecker noopChecker = UpToDateChecker.noop(project, indexFile, log)) {
 			assertThat(noopChecker).isNotNull();
 		}
 		assertThat(indexFile).doesNotExist();
@@ -87,7 +87,7 @@ class NoopCheckerTest extends ResourceHarness {
 
 	@Test
 	void neverUpToDate() {
-		try (UpToDateChecker noopChecker = UpToDateChecker.noop(project, mock(Log.class))) {
+		try (UpToDateChecker noopChecker = UpToDateChecker.noop(project, indexFile, mock(Log.class))) {
 			assertThat(noopChecker.isUpToDate(existingSourceFile)).isFalse();
 			assertThat(noopChecker.isUpToDate(nonExistingSourceFile)).isFalse();
 		}
