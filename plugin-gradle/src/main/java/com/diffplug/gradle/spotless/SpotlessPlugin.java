@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,13 @@ public class SpotlessPlugin implements Plugin<Project> {
 
 	/** clean removes the SpotlessCache, so we have to run after clean. */
 	static void taskMustRunAfterClean(Project project, TaskProvider<?> task) {
-		configureCleanTask(project, clean -> task.get().mustRunAfter(clean));
+		if (project.getPlugins().hasPlugin(BasePlugin.class)) {
+			// if we know that the clean task is around, then we can configure lazily
+			task.configure(t -> t.mustRunAfter(BasePlugin.CLEAN_TASK_NAME));
+		} else {
+			// otherwise, we trigger configuration when the clean task gets configured
+			configureCleanTask(project, clean -> task.get().mustRunAfter(clean));
+		}
 	}
 
 	static String capitalize(String input) {
