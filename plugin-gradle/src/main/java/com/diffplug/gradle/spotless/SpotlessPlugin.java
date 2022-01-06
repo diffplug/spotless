@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ public class SpotlessPlugin implements Plugin<Project> {
 
 	/** clean removes the SpotlessCache, so we have to run after clean. */
 	static void taskMustRunAfterClean(Project project, TaskProvider<?> task) {
-		configureCleanTask(project, clean -> task.configure(spotless -> spotless.mustRunAfter(clean)));
+		configureCleanTask(project, clean -> task.get().mustRunAfter(clean));
 	}
 
 	static String capitalize(String input) {
