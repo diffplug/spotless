@@ -8,7 +8,7 @@ pluginManagement {
 		// https://github.com/spotbugs/spotbugs-gradle-plugin/releases
 		id 'com.github.spotbugs'                   version '5.0.3'
 		// https://github.com/diffplug/spotless-changelog
-		id 'com.diffplug.spotless-changelog'       version '2.3.2'
+		id 'com.diffplug.spotless-changelog'       version '2.4.0'
 		// https://github.com/diffplug/goomph/blob/main/CHANGES.md
 		id 'com.diffplug.p2.asmaven'               version '3.27.0' // DO NOT UPDATE, see https://github.com/diffplug/spotless/pull/874
 		// https://github.com/gradle/test-retry-gradle-plugin/releases
@@ -83,29 +83,21 @@ if (System.getenv('SPOTLESS_EXCLUDE_MAVEN') != 'true' && getStartProperty('SPOTL
 }
 
 // include external (_ext) projects from development builds
-if (getStartProperty('com.diffplug.spotless.include.ext') == 'true') {
+String includeExt = getStartProperty('com.diffplug.spotless.include.ext')
+if (includeExt == 'true' || includeExt == 'ifgitdiff') {
 	file('_ext').eachDirMatch(~/^(?!(\.|gradle)).*/) { dir ->
-		include dir.name
-		project(":${dir.name}").projectDir = dir
-	}
-}
-
-// include external (_ext) projects from development builds, but disable the p2 parts
-if (getStartProperty('com.diffplug.spotless.include.ext.nop2') == 'true') {
-	file('_ext').eachDirMatch(~/^(?!(\.|gradle)).*/) { dir ->
-		include dir.name
-		project(":${dir.name}").projectDir = dir
-	}
-}
-
-// the p2-based projects are too expensive for routine CI builds, so they have to be invoked explicitly
-for (kind in [
-			'cdt',
-			'groovy',
-			'wtp'
-		]) {
-	if (getStartProperty("com.diffplug.spotless.include.ext.${kind}") == 'true') {
-		include "eclipse-${kind}"
-		project(":eclipse-${kind}").projectDir = file("_ext/eclipse-${kind}")
+		if (includeExt == 'ifgitdiff') {
+			apply plugin: 'com.diffplug.if-git-diff'
+			ifGitDiff {
+				baseline 'origin/ifgitdiff'
+				inFolder(dir) {
+					include dir.name
+					project(":${dir.name}").projectDir = dir
+				}
+			}
+		} else {
+			include dir.name
+			project(":${dir.name}").projectDir = dir
+		}
 	}
 }

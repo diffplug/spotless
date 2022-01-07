@@ -130,6 +130,8 @@ gradlew -Pcom.diffplug.spotless.include.ext=true build
 
 Or set the property in your user `gradle.properties` file, which is especially recommended if you like to work with the `_ext` projects using IDEs.
 
+You can also do `gradlew -Pcom.diffplug.spotless.include.ext=ifgitdiff` in which case each `_ext` project which has changes in the worktree relative to `origin/main` will be configured.
+
 ## How to add a new plugin for a build system
 
 The gist of it is that you will have to:

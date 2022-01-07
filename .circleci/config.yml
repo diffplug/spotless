@@ -202,6 +202,16 @@ jobs:
       - run:
           name: gradlew :plugin-maven:changelogPush
           command: ./gradlew :plugin-maven:changelogPush -Prelease=true --stacktrace
+  test_ext:
+      << : *env_gradle
+      steps:
+          - checkout
+          - *restore_cache_wrapper
+          - *restore_cache_deps
+          - *set_git_origin_to_https
+          - run:
+                name: gradlew -Pcom.diffplug.spotless.include.ext=ifgitdiff ext_test
+                command: ./gradlew -Pcom.diffplug.spotless.include.ext=ifgitdiff ext_test
   ext_changelog_print:
     << : *env_gradle
     steps:
@@ -210,9 +220,9 @@ jobs:
       - *restore_cache_deps
       - *set_git_origin_to_https
       - run:
-          name: gradlew -Pcom.diffplug.spotless.include.ext.nop2=true changelogPrint
-          command: ./gradlew -Pcom.diffplug.spotless.include.ext.nop2=true changelogPrint
-  ext_do_release_base:
+          name: gradlew -Pcom.diffplug.spotless.include.ext=ifgitdiff ext_changelogPrint
+          command: ./gradlew -Pcom.diffplug.spotless.include.ext=ifgitdiff ext_changelogPrint
+  ext_do_release:
     << : *env_gradle
     steps:
       - checkout
@@ -220,54 +230,15 @@ jobs:
       - *restore_cache_deps
       - *set_git_origin_to_https
       - run:
-          name: gradlew :eclipse-base:changelogPush
-          command: ./gradlew -Pcom.diffplug.spotless.include.ext.nop2=true :eclipse-base:changelogPush -Prelease=true --stacktrace
-  ext_do_release_jdt:
-    << : *env_gradle
-    steps:
-      - checkout
-      - *restore_cache_wrapper
-      - *restore_cache_deps
-      - *set_git_origin_to_https
-      - run:
-          name: gradlew :eclipse-jdt:changelogPush
-          command: ./gradlew -Pcom.diffplug.spotless.include.ext.nop2=true :eclipse-jdt:changelogPush -Prelease=true --stacktrace --write-locks
-  ext_do_release_cdt:
-    << : *env_gradle
-    steps:
-      - checkout
-      - *restore_cache_wrapper
-      - *restore_cache_deps
-      - *set_git_origin_to_https
-      - run:
-          name: gradlew :eclipse-cdt:changelogPush
-          command: ./gradlew -Pcom.diffplug.spotless.include.ext.cdt=true :eclipse-cdt:changelogPush -Prelease=true --stacktrace --write-locks
-  ext_do_release_groovy:
-    << : *env_gradle
-    steps:
-      - checkout
-      - *restore_cache_wrapper
-      - *restore_cache_deps
-      - *set_git_origin_to_https
-      - run:
-          name: gradlew :eclipse-groovy:changelogPush
-          command: ./gradlew -Pcom.diffplug.spotless.include.ext.groovy=true :eclipse-groovy:changelogPush -Prelease=true --stacktrace --write-locks
-  ext_do_release_wtp:
-    << : *env_gradle
-    steps:
-      - checkout
-      - *restore_cache_wrapper
-      - *restore_cache_deps
-      - *set_git_origin_to_https
-      - run:
-          name: gradlew :eclipse-wtp:changelogPush
-          command: ./gradlew -Pcom.diffplug.spotless.include.ext.wtp=true :eclipse-wtp:changelogPush -Prelease=true --stacktrace --write-locks
+          name: gradlew -Pcom.diffplug.spotless.include.ext=ifgitdiff ext_changelogPush -Prelease=true
+          command: ./gradlew -Pcom.diffplug.spotless.include.ext=ifgitdiff ext_changelogPush -Prelease=true --stacktrace
 
 workflows:
   version: 2
   assemble_and_test:
     jobs:
       - test_windows
+      - test_ext
       - assemble_testClasses
       - test_justmaven_11:
           requires:
@@ -329,57 +300,12 @@ workflows:
           filters:
             branches:
               only: main
-      - ext_release_base:
+      - ext_release:
           type: approval
           requires:
             - ext_changelog_print
-      - ext_do_release_base:
+      - ext_do_release:
           requires:
-            - ext_release_base
-          context:
-            - SonatypeDeploy
-      - ext_release_jdt:
-          type: approval
-          requires:
-            - ext_changelog_print
-      - ext_do_release_jdt:
-          requires:
-            - ext_release_jdt
-          context:
-            - SonatypeDeploy
-      - ext_release_cdt:
-          type: approval
-          requires:
-            - ext_changelog_print
-      - ext_do_release_cdt:
-          filters:
-            branches:
-              only: main
-          requires:
-            - ext_release_cdt
-          context:
-            - SonatypeDeploy
-      - ext_release_groovy:
-          type: approval
-          requires:
-            - ext_changelog_print
-      - ext_do_release_groovy:
-          filters:
-            branches:
-              only: main
-          requires:
-            - ext_release_groovy
-          context:
-            - SonatypeDeploy
-      - ext_release_wtp:
-          type: approval
-          requires:
-            - ext_changelog_print
-      - ext_do_release_wtp:
-          filters:
-            branches:
-              only: main
-          requires:
-            - ext_release_wtp
+            - ext_release
           context:
             - SonatypeDeploy

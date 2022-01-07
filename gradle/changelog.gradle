@@ -21,9 +21,15 @@ spotlessChangelog {
 	commitMessage "Published ${kind}/{{version}}" // {{version}} will be replaced
 }
 
-if (gradle.startParameter.projectProperties.get('com.diffplug.spotless.include.ext.nop2') == 'true') {
-	tasks.named('changelogPrint') {
-		enabled = kind.startsWith('ext-')
+if (kind.startsWith('ext-')) {
+	[
+		'changelogPrint',
+		'changelogPush',
+		'test'
+	].each {
+		tasks.register("ext_$it") {
+			dependsOn it
+		}
 	}
 }
 
