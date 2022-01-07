@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+* Enabling the upToDateChecking with the plugin configured inside pluginManagement, with an additional dependency and running under Maven 3.6.3 leads to a java.io.NotSerializableException. ([#1074](https://github.com/diffplug/spotless/pull/1074)).
 
 ## [2.19.1] - 2022-01-07
 ### Fixed
