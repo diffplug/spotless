@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,6 +100,9 @@ public final class IndentStep {
 					++contentStart;
 				}
 
+				// detect potential multi-line comments
+				boolean mightBeMultiLineComment = (contentStart < raw.length()) && (raw.charAt(contentStart) == '*');
+
 				// add the leading space in a canonical way
 				if (numSpaces > 0) {
 					switch (state.type) {
@@ -111,6 +114,9 @@ public final class IndentStep {
 					case TAB:
 						for (int i = 0; i < numSpaces / state.numSpacesPerTab; ++i) {
 							builder.append('\t');
+						}
+						if (mightBeMultiLineComment && (numSpaces % state.numSpacesPerTab == 1)) {
+							builder.append(' ');
 						}
 						break;
 					default:
