@@ -27,7 +27,10 @@ anchors:
     run:
       name: set git origin to https
       command: git remote set-url --push origin https://github.com/diffplug/spotless
-
+  checkout_ifgitdiff: &checkout_ifgitdiff
+      run:
+          name: checkout ifgitdiff here
+          command: git checkout -B ifgitdiff HEAD
   test_nomaven: &test_nomaven
     steps:
       - checkout
@@ -229,6 +232,7 @@ jobs:
       - *restore_cache_wrapper
       - *restore_cache_deps
       - *set_git_origin_to_https
+      - *checkout_ifgitdiff
       - run:
           name: gradlew -Pcom.diffplug.spotless.include.ext=ifgitdiff ext_changelogPush -Prelease=true
           command: ./gradlew -Pcom.diffplug.spotless.include.ext=ifgitdiff ext_changelogPush -Prelease=true --stacktrace

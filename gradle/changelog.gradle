@@ -22,6 +22,9 @@ spotlessChangelog {
 }
 
 if (kind.startsWith('ext-')) {
+	spotlessChangelog {
+		branch 'ifgitdiff'
+	}
 	[
 		'changelogPrint',
 		'changelogPush',
