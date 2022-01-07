@@ -57,6 +57,51 @@ class UpToDateCheckingTest extends MavenIntegrationHarness {
 	}
 
 	@Test
+	void enableUpToDateCheckingWithPluginDependencies() throws Exception {
+		writePomWithPluginManagementAndDependency();
+
+		List<File> files = writeUnformattedFiles(1);
+		String output = runSpotlessApply();
+
+		assertThat(output).contains("Up-to-date checking enabled");
+		assertFormatted(files);
+	}
+
+	@Test
+	void enableUpToDateCheckingWithPluginDependenciesMaven3_6_3() throws Exception {
+		writePomWithPluginManagementAndDependency();
+
+		setFile(".mvn/wrapper/maven-wrapper.properties").toContent("distributionUrl=https://repo1.maven.org/maven2/org/apache/maven/apache-maven/3.6.3/apache-maven-3.6.3-bin.zip\n");
+
+		List<File> files = writeUnformattedFiles(1);
+		String output = runSpotlessApply();
+
+		assertThat(output).contains("Up-to-date checking enabled");
+		assertFormatted(files);
+	}
+
+	private void writePomWithPluginManagementAndDependency() throws IOException {
+		setFile("pom.xml").toContent(createPomXmlContent("/pom-test-management.xml.mustache",
+				null,
+				null,
+				new String[]{
+						"<java>",
+						"  <googleJavaFormat/>",
+						"</java>",
+						"<upToDateChecking>",
+						"  <enabled>true</enabled>",
+						"</upToDateChecking>"},
+				new String[]{
+						"<dependencies>",
+						"  <dependency>",
+						"    <groupId>javax.inject</groupId>",
+						"    <artifactId>javax.inject</artifactId>",
+						"    <version>1</version>",
+						"  </dependency>",
+						"</dependencies>"}));
+	}
+
+	@Test
 	void disableUpToDateChecking() throws Exception {
 		writePomWithUpToDateCheckingEnabled(false);
 
