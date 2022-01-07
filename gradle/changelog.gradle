@@ -26,9 +26,9 @@ if (kind.startsWith('ext-')) {
 		'changelogPrint',
 		'changelogPush',
 		'test'
-	].each {
-		tasks.register("ext_$it") {
-			dependsOn it
+	].each { taskName ->
+		tasks.register("ext_$taskName") {
+			dependsOn taskName
 		}
 	}
 }
