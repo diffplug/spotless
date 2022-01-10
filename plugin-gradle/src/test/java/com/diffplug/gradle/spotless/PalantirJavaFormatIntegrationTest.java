@@ -42,7 +42,7 @@ class PalantirJavaFormatIntegrationTest extends GradleIntegrationHarness {
 		checkRunsThenUpToDate();
 		replace("build.gradle",
 				"palantirJavaFormat('1.1.0')",
-				"palantirJavaFormat('2.10.0')");
+				"palantirJavaFormat('1.0.1')");
 		checkRunsThenUpToDate();
 	}
 }
