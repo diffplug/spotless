@@ -3,7 +3,7 @@
 Thanks to `spotlessApply`, it is not necessary for Spotless and your IDE to agree on formatting - you can always run spotless at the end to fix things up.  But if you want them to agree, we have plugins for:
 
 - [VS Code](https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle)
-- [IntelliJ](https://github.com/ragurney/spotless-intellij-gradle)
+- [IntelliJ](https://plugins.jetbrains.com/plugin/18321-spotless-gradle)
 - (add your IDE here!)
 
 ## How to add an IDE
