@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,6 +57,7 @@ public class MavenIntegrationHarness extends ResourceHarness {
 	private static final String CONFIGURATION = "configuration";
 	private static final String EXECUTIONS = "executions";
 	private static final String MODULES = "modules";
+	private static final String DEPENDENCIES = "dependencies";
 	private static final String MODULE_NAME = "name";
 	private static final String CHILD_ID = "childId";
 	private static final int REMOTE_DEBUG_PORT = 5005;
@@ -144,11 +145,11 @@ public class MavenIntegrationHarness extends ResourceHarness {
 	}
 
 	protected void writePom(String... configuration) throws IOException {
-		writePom(null, configuration);
+		writePom(null, configuration, null);
 	}
 
-	protected void writePom(String[] executions, String[] configuration) throws IOException {
-		String pomXmlContent = createPomXmlContent(executions, configuration);
+	protected void writePom(String[] executions, String[] configuration, String[] dependencies) throws IOException {
+		String pomXmlContent = createPomXmlContent(null, executions, configuration, dependencies);
 		setFile("pom.xml").toContent(pomXmlContent);
 	}
 
@@ -171,13 +172,17 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		return new MultiModuleProjectCreator();
 	}
 
-	protected String createPomXmlContent(String[] executions, String[] configuration) throws IOException {
-		return createPomXmlContent(null, executions, configuration);
+	protected String createPomXmlContent(String pluginVersion, String[] executions, String[] configuration, String[] dependencies) throws IOException {
+		return createPomXmlContent("/pom-test.xml.mustache", pluginVersion, executions, configuration, dependencies);
+	}
+
+	protected String createPomXmlContent(String pomTemplate, String pluginVersion, String[] executions, String[] configuration, String[] dependencies) throws IOException {
+		Map<String, Object> params = buildPomXmlParams(pluginVersion, executions, configuration, null, dependencies);
+		return createPomXmlContent(pomTemplate, params);
 	}
 
 	protected String createPomXmlContent(String pluginVersion, String[] executions, String[] configuration) throws IOException {
-		Map<String, Object> params = buildPomXmlParams(pluginVersion, executions, configuration, null);
-		return createPomXmlContent("/pom-test.xml.mustache", params);
+		return createPomXmlContent(pluginVersion, executions, configuration, null);
 	}
 
 	private String createPomXmlContent(String pomTemplate, Map<String, Object> params) throws IOException {
@@ -190,7 +195,7 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		}
 	}
 
-	private static Map<String, Object> buildPomXmlParams(String pluginVersion, String[] executions, String[] configuration, String[] modules) {
+	private static Map<String, Object> buildPomXmlParams(String pluginVersion, String[] executions, String[] configuration, String[] modules, String[] dependencies) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(SPOTLESS_MAVEN_PLUGIN_VERSION, pluginVersion == null ? getSystemProperty(SPOTLESS_MAVEN_PLUGIN_VERSION) : pluginVersion);
 
@@ -205,6 +210,10 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		if (modules != null) {
 			List<Map<String, String>> moduleNames = stream(modules).map(name -> singletonMap(MODULE_NAME, name)).collect(toList());
 			params.put(MODULES, moduleNames);
+		}
+
+		if (dependencies != null) {
+			params.put(DEPENDENCIES, String.join("\n", dependencies));
 		}
 
 		return params;
@@ -283,7 +292,7 @@ public class MavenIntegrationHarness extends ResourceHarness {
 			modulesList.addAll(subProjects.keySet());
 			String[] modules = modulesList.toArray(new String[0]);
 
-			Map<String, Object> rootPomParams = buildPomXmlParams(null, null, configuration, modules);
+			Map<String, Object> rootPomParams = buildPomXmlParams(null, null, configuration, modules, null);
 			setFile("pom.xml").toContent(createPomXmlContent("/multi-module/pom-parent.xml.mustache", rootPomParams));
 		}
 

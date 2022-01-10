@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.diffplug.spotless.maven.incremental;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.ByteArrayInputStream;
 import java.nio.file.Paths;
@@ -64,6 +65,25 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 			"</googleJavaFormat>"
 	};
 
+	private static final String[] DEPENDENCIES_1 = {
+			"<dependencies>",
+			"  <dependency>",
+			"    <groupId>unknown</groupId>",
+			"    <artifactId>unknown</artifactId>",
+			"    <version>1.0</version>",
+			"  </dependency>",
+			"</dependencies>"
+	};
+	private static final String[] DEPENDENCIES_2 = {
+			"<dependencies>",
+			"  <dependency>",
+			"    <groupId>unknown</groupId>",
+			"    <artifactId>unknown</artifactId>",
+			"    <version>2.0</version>",
+			"  </dependency>",
+			"</dependencies>"
+	};
+
 	private static final List<Formatter> FORMATTERS = singletonList(formatter(formatterStep("default")));
 
 	@Test
@@ -78,6 +98,34 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 		PluginFingerprint fingerprint2 = PluginFingerprint.from(project2, FORMATTERS);
 
 		assertThat(fingerprint1).isEqualTo(fingerprint2);
+	}
+
+	@Test
+	void sameFingerprintWithDependencies() throws Exception {
+		String xml1 = createPomXmlContent(VERSION_1, EXECUTION_1, CONFIGURATION_1, DEPENDENCIES_1);
+		String xml2 = createPomXmlContent(VERSION_1, EXECUTION_1, CONFIGURATION_1, DEPENDENCIES_1);
+
+		MavenProject project1 = mavenProject(xml1);
+		MavenProject project2 = mavenProject(xml2);
+
+		PluginFingerprint fingerprint1 = PluginFingerprint.from(project1, FORMATTERS);
+		PluginFingerprint fingerprint2 = PluginFingerprint.from(project2, FORMATTERS);
+
+		assertThat(fingerprint1).isEqualTo(fingerprint2);
+	}
+
+	@Test
+	void differentFingerprintForDifferentDependencies() throws Exception {
+		String xml1 = createPomXmlContent(VERSION_1, EXECUTION_1, CONFIGURATION_1, DEPENDENCIES_1);
+		String xml2 = createPomXmlContent(VERSION_1, EXECUTION_1, CONFIGURATION_1, DEPENDENCIES_2);
+
+		MavenProject project1 = mavenProject(xml1);
+		MavenProject project2 = mavenProject(xml2);
+
+		PluginFingerprint fingerprint1 = PluginFingerprint.from(project1, FORMATTERS);
+		PluginFingerprint fingerprint2 = PluginFingerprint.from(project2, FORMATTERS);
+
+		assertThat(fingerprint1).isNotEqualTo(fingerprint2);
 	}
 
 	@Test
@@ -165,6 +213,15 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 		PluginFingerprint fingerprint = PluginFingerprint.empty();
 
 		assertThat(fingerprint.value()).isEmpty();
+	}
+
+	@Test
+	void failsWhenProjectDoesNotContainSpotlessPlugin() {
+		MavenProject projectWithoutSpotless = new MavenProject();
+
+		assertThatThrownBy(() -> PluginFingerprint.from(projectWithoutSpotless, FORMATTERS))
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessageContaining("Spotless plugin absent from the project");
 	}
 
 	private static MavenProject mavenProject(String xml) throws Exception {
