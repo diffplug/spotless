@@ -18,6 +18,7 @@ package com.diffplug.spotless.maven.incremental;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.ByteArrayInputStream;
 import java.nio.file.Paths;
@@ -212,6 +213,15 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 		PluginFingerprint fingerprint = PluginFingerprint.empty();
 
 		assertThat(fingerprint.value()).isEmpty();
+	}
+
+	@Test
+	void failsWhenProjectDoesNotContainSpotlessPlugin() {
+		MavenProject projectWithoutSpotless = new MavenProject();
+
+		assertThatThrownBy(() -> PluginFingerprint.from(projectWithoutSpotless, FORMATTERS))
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessageContaining("Spotless plugin absent from the project");
 	}
 
 	private static MavenProject mavenProject(String xml) throws Exception {
