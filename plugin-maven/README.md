@@ -47,7 +47,7 @@ user@machine repo % mvn spotless:check
   - [Requirements](#requirements)
   - [Binding to maven phase](#binding-to-maven-phase)
 - **Languages**
-  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier))
+  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier), [palantir-java-format](#palantir-java-format))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
   - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
@@ -215,6 +215,30 @@ any other maven phase (i.e. compile) then it can be configured as below;
 **⚠️ Note on using Google Java Format with Java 16+**
 
 Using Java 16+ with Google Java Format 1.10.0 [requires additional flags](https://github.com/google/google-java-format/releases/tag/v1.10.0) to the running JDK.
+These Flags can be provided using `MAVEN_OPTS` environment variable or using the `./mvn/jvm.config` file (See [documentation](https://maven.apache.org/configure.html#mvn-jvm-config-file)).
+
+For example the following file under `.mvn/jvm.config` will run maven with the required flags:
+```
+--add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED
+```
+This is a workaround to a [pending issue](https://github.com/diffplug/spotless/issues/834).
+
+### palantir-java-format
+
+[homepage](https://github.com/palantir/palantir-java-format). [changelog](https://github.com/palantir/palantir-java-format/releases). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/java/PalantirJavaFormat.java).
+
+```xml
+<palantirJavaFormat>
+  <version>2.10.0</version>                     <!-- optional -->
+  <style>PALANTIR</style>                       <!-- or AOSP/GOOGLE (optional) -->
+  <!-- optional: custom group artifact (you probably don't need this) -->
+  <groupArtifact>com.palantir.javaformat:palantir-java-format</groupArtifact>
+</palantirJavaFormat>
+```
+
+**⚠️ Note on using Palantir Java Format with Java 16+**
+
+Using Java 16+ with Palantir Java Format [requires additional flags](https://github.com/google/google-java-format/releases/tag/v1.10.0) on the running JDK.
 These Flags can be provided using `MAVEN_OPTS` environment variable or using the `./mvn/jvm.config` file (See [documentation](https://maven.apache.org/configure.html#mvn-jvm-config-file)).
 
 For example the following file under `.mvn/jvm.config` will run maven with the required flags:

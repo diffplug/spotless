@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import com.diffplug.spotless.extra.java.EclipseJdtFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.java.GoogleJavaFormatStep;
 import com.diffplug.spotless.java.ImportOrderStep;
+import com.diffplug.spotless.java.PalantirJavaFormatStep;
 import com.diffplug.spotless.java.RemoveUnusedImportsStep;
 
 public class JavaExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
@@ -172,6 +173,55 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 					style,
 					provisioner(),
 					reflowLongStrings);
+		}
+	}
+
+	/** Uses the <a href="https://github.com/palantir/palantir-java-format">palantir-java-format</a> jar to format source code. */
+	public PalantirJavaFormatConfig palantirJavaFormat() {
+		return palantirJavaFormat(PalantirJavaFormatStep.defaultVersion());
+	}
+
+	/**
+	 * Uses the given version of <a href="https://github.com/palantir/palantir-java-format">palantir-java-format</a> to format source code.
+	 *
+	 * Limited to published versions.  See <a href="https://github.com/diffplug/spotless/issues/33#issuecomment-252315095">issue #33</a>
+	 * for an workaround for using snapshot versions.
+	 */
+	public PalantirJavaFormatConfig palantirJavaFormat(String version) {
+		Objects.requireNonNull(version);
+		return new PalantirJavaFormatConfig(version);
+	}
+
+	public class PalantirJavaFormatConfig {
+		final String version;
+		String groupArtifact;
+		String style;
+
+		PalantirJavaFormatConfig(String version) {
+			this.version = Objects.requireNonNull(version);
+			this.groupArtifact = PalantirJavaFormatStep.defaultGroupArtifact();
+			this.style = PalantirJavaFormatStep.defaultStyle();
+			addStep(createStep());
+		}
+
+		public PalantirJavaFormatConfig groupArtifact(String groupArtifact) {
+			this.groupArtifact = Objects.requireNonNull(groupArtifact);
+			replaceStep(createStep());
+			return this;
+		}
+
+		public PalantirJavaFormatConfig style(String style) {
+			this.style = Objects.requireNonNull(style);
+			replaceStep(createStep());
+			return this;
+		}
+
+		private FormatterStep createStep() {
+			return PalantirJavaFormatStep.create(
+					groupArtifact,
+					version,
+					style,
+					provisioner());
 		}
 	}
 
