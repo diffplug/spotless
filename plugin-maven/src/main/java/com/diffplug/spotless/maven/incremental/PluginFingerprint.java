@@ -40,6 +40,9 @@ class PluginFingerprint {
 
 	static PluginFingerprint from(MavenProject project, Iterable<Formatter> formatters) {
 		Plugin spotlessPlugin = project.getPlugin(SPOTLESS_PLUGIN_KEY);
+		if (spotlessPlugin == null) {
+			throw new IllegalArgumentException("Spotless plugin absent from the project: " + project);
+		}
 		byte[] digest = digest(spotlessPlugin, formatters);
 		String value = Base64.getEncoder().encodeToString(digest);
 		return new PluginFingerprint(value);
@@ -82,11 +85,8 @@ class PluginFingerprint {
 	private static byte[] digest(Plugin plugin, Iterable<Formatter> formatters) {
 		// dependencies can be an unserializable org.apache.maven.model.merge.ModelMerger$MergingList
 		// replace it with a serializable ArrayList
-		List<Dependency> dependencies = null;
-		if (plugin != null) {
-			dependencies = plugin.getDependencies();
-			plugin.setDependencies(new ArrayList<>(dependencies));
-		}
+		List<Dependency> dependencies = plugin.getDependencies();
+		plugin.setDependencies(new ArrayList<>(dependencies));
 		try (ObjectDigestOutputStream out = ObjectDigestOutputStream.create()) {
 			out.writeObject(plugin);
 			for (Formatter formatter : formatters) {
@@ -98,9 +98,7 @@ class PluginFingerprint {
 			throw new UncheckedIOException("Unable to serialize plugin " + plugin, e);
 		} finally {
 			// reset the original list
-			if (plugin != null) {
-				plugin.setDependencies(dependencies);
-			}
+			plugin.setDependencies(dependencies);
 		}
 	}
 }
