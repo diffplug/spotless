@@ -210,9 +210,8 @@ This is a workaround to a [pending issue](https://github.com/diffplug/spotless/i
 spotless {
   java {
     palantirJavaFormat()
-    // optional: you can specify a specific version and/or switch to GOOGLE/AOSP style
-    //   and/or use custom group artifact (you probably don't need this)
-    palantirJavaFormat('2.9.0').style("PALANTIR").groupArtifact('com.google.googlejavaformat:google-java-format')
+    // optional: you can specify a specific version
+    palantirJavaFormat('2.9.0')
 ```
 
 **⚠️ Note on using Palantir Java Format with Java 16+**

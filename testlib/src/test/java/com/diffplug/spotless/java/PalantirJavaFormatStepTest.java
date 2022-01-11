@@ -38,7 +38,7 @@ class PalantirJavaFormatStepTest extends ResourceHarness {
 	}
 
 	@Test
-	@EnabledForJreRange(min = JAVA_11) // google-java-format requires JRE 11+
+	@EnabledForJreRange(min = JAVA_11)
 	void behavior2() throws Exception {
 		FormatterStep step = PalantirJavaFormatStep.create("2.10.0", TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
@@ -57,28 +57,9 @@ class PalantirJavaFormatStepTest extends ResourceHarness {
 	}
 
 	@Test
-	void behaviorWithAospStyle() throws Exception {
-		FormatterStep step = PalantirJavaFormatStep.create("1.1.0", "AOSP", TestProvisioner.mavenCentral());
-		StepHarness.forStep(step)
-				.testResource("java/palantirjavaformat/JavaCodeUnformatted.test", "java/palantirjavaformat/JavaCodeFormattedAOSP.test")
-				.testResource("java/palantirjavaformat/JavaCodeWithLicenseUnformatted.test", "java/palantirjavaformat/JavaCodeWithLicenseFormattedAOSP.test")
-				.testResource("java/palantirjavaformat/JavaCodeWithPackageUnformatted.test", "java/palantirjavaformat/JavaCodeWithPackageFormattedAOSP.test");
-	}
-
-	@Test
-	void behaviorWithCustomGroupArtifact() throws Exception {
-		FormatterStep step = PalantirJavaFormatStep.create(PalantirJavaFormatStep.defaultGroupArtifact(), "1.1.0", PalantirJavaFormatStep.defaultStyle(), TestProvisioner.mavenCentral());
-		StepHarness.forStep(step)
-				.testResource("java/palantirjavaformat/JavaCodeUnformatted.test", "java/palantirjavaformat/JavaCodeFormatted.test")
-				.testResource("java/palantirjavaformat/JavaCodeWithLicenseUnformatted.test", "java/palantirjavaformat/JavaCodeWithLicenseFormatted.test")
-				.testResource("java/palantirjavaformat/JavaCodeWithPackageUnformatted.test", "java/palantirjavaformat/JavaCodeWithPackageFormatted.test");
-	}
-
-	@Test
-	void equality() throws Exception {
+	void equality() {
 		new SerializableEqualityTester() {
 			String version = "1.1.0";
-			String style = "";
 
 			@Override
 			protected void setupTest(API api) {
@@ -87,15 +68,12 @@ class PalantirJavaFormatStepTest extends ResourceHarness {
 				// change the version, and it's different
 				version = "1.0.0";
 				api.areDifferentThan();
-				// change the style, and it's different
-				style = "AOSP";
-				api.areDifferentThan();
 			}
 
 			@Override
 			protected FormatterStep create() {
 				String finalVersion = this.version;
-				return PalantirJavaFormatStep.create(finalVersion, style, TestProvisioner.mavenCentral());
+				return PalantirJavaFormatStep.create(finalVersion, TestProvisioner.mavenCentral());
 			}
 		}.testEquals();
 	}

@@ -23,20 +23,13 @@ import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 
 public class PalantirJavaFormat implements FormatterStepFactory {
-	@Parameter
-	private String groupArtifact;
 
 	@Parameter
 	private String version;
 
-	@Parameter
-	private String style;
-
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
-		String groupArtifact = this.groupArtifact != null ? this.groupArtifact : PalantirJavaFormatStep.defaultGroupArtifact();
 		String version = this.version != null ? this.version : PalantirJavaFormatStep.defaultVersion();
-		String style = this.style != null ? this.style : PalantirJavaFormatStep.defaultStyle();
-		return PalantirJavaFormatStep.create(groupArtifact, version, style, config.getProvisioner());
+		return PalantirJavaFormatStep.create(version, config.getProvisioner());
 	}
 }

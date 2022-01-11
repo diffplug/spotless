@@ -230,9 +230,6 @@ This is a workaround to a [pending issue](https://github.com/diffplug/spotless/i
 ```xml
 <palantirJavaFormat>
   <version>2.10.0</version>                     <!-- optional -->
-  <style>PALANTIR</style>                       <!-- or AOSP/GOOGLE (optional) -->
-  <!-- optional: custom group artifact (you probably don't need this) -->
-  <groupArtifact>com.palantir.javaformat:palantir-java-format</groupArtifact>
 </palantirJavaFormat>
 ```
 
