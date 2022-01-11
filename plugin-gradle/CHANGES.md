@@ -6,6 +6,11 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Added
 * 🎉🎉🎉 [**IntelliJ plugin**](https://plugins.jetbrains.com/plugin/18321-spotless-gradle) thanks to [@ragurney](https://github.com/ragurney) 🎉🎉🎉
 
+## [6.1.2] - 2022-01-07
+### Fixed
+* Update IndentStep to allow leading space on multiline comments ([#1072](https://github.com/diffplug/spotless/pull/1072)).
+
+## [6.1.1] - 2022-01-06
 ### Fixed
 * If the `base` plugin has already been applied, then there is no need for configuration of the `clean` task to trigger configuration of the Spotless tasks ([#1068](https://github.com/diffplug/spotless/pull/1068)).
 ### Changed

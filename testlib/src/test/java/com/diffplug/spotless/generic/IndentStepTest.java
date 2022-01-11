@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
+import com.diffplug.spotless.StepHarness;
 
 class IndentStepTest extends ResourceHarness {
 	@Test
@@ -81,5 +82,14 @@ class IndentStepTest extends ResourceHarness {
 				return type.create(numSpacesPerTab);
 			}
 		}.testEquals();
+	}
+
+	@Test
+	void allowLeadingSpaceIfMultiLineComment() throws Exception {
+		StepHarness.forStep(IndentStep.Type.TAB.create(4))
+				.testUnaffected("* test")
+				.testUnaffected(" * test")
+				.testUnaffected("\t* test")
+				.test("    * test", "\t* test");
 	}
 }

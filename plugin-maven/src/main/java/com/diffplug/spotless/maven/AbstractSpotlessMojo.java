@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import static java.util.stream.Collectors.toList;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -71,7 +72,7 @@ import com.diffplug.spotless.maven.sql.Sql;
 import com.diffplug.spotless.maven.typescript.Typescript;
 
 public abstract class AbstractSpotlessMojo extends AbstractMojo {
-
+	private static final String DEFAULT_INDEX_FILE_NAME = "spotless-index";
 	private static final String DEFAULT_ENCODING = "UTF-8";
 	private static final String DEFAULT_LINE_ENDINGS = "GIT_ATTRIBUTES";
 	static final String GOAL_CHECK = "check";
@@ -324,10 +325,15 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private UpToDateChecker createUpToDateChecker(Iterable<Formatter> formatters) {
+		Path indexFile = upToDateChecking == null ? null : upToDateChecking.getIndexFile();
+		if (indexFile == null) {
+			Path targetDir = project.getBasedir().toPath().resolve(project.getBuild().getDirectory());
+			indexFile = targetDir.resolve(DEFAULT_INDEX_FILE_NAME);
+		}
 		if (upToDateChecking != null && upToDateChecking.isEnabled()) {
 			getLog().info("Up-to-date checking enabled");
-			return UpToDateChecker.forProject(project, formatters, getLog());
+			return UpToDateChecker.forProject(project, indexFile, formatters, getLog());
 		}
-		return UpToDateChecker.noop(project, getLog());
+		return UpToDateChecker.noop(project, indexFile, getLog());
 	}
 }

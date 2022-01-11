@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@ class NoopChecker implements UpToDateChecker {
 
 	private NoopChecker() {}
 
-	static NoopChecker create(MavenProject project, Log log) {
-		FileIndexConfig indexConfig = new FileIndexConfig(project);
+	static NoopChecker create(MavenProject project, Path indexFile, Log log) {
+		FileIndexConfig indexConfig = new FileIndexConfig(project, indexFile);
 		FileIndex.delete(indexConfig, log);
 		return new NoopChecker();
 	}

@@ -12,8 +12,8 @@ output = [
   ].join('\n');
 -->
 [![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
-[![Javadoc](https://img.shields.io/badge/javadoc-yes-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.18.0/index.html)
-[![Changelog](https://img.shields.io/badge/changelog-2.18.0-brightgreen.svg)](CHANGES.md)
+[![Javadoc](https://img.shields.io/badge/javadoc-yes-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.19.2/index.html)
+[![Changelog](https://img.shields.io/badge/changelog-2.19.2-brightgreen.svg)](CHANGES.md)
 
 [![Circle CI](https://circleci.com/gh/diffplug/spotless/tree/main.svg?style=shield)](https://circleci.com/gh/diffplug/spotless/tree/main)
 [![Live chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
@@ -181,9 +181,8 @@ any other maven phase (i.e. compile) then it can be configured as below;
     <importOrder /> <!-- standard import order -->
     <importOrder>  <!-- or a custom ordering -->
       <wildcardsLast>false</wildcardsLast> <!-- Optional, default false. Sort wildcard import after specific imports -->
-      <order>java,javax,org,com,com.diffplug,</order>  <!-- or use <file>${project.basedir}/eclipse.importorder</file> -->
-      <!-- You probably want an empty string at the end - all of the
-           imports you didn't specify explicitly will go there. -->
+      <order>java,javax,org,com,com.diffplug,,\\#com.diffplug,\\#</order>  <!-- or use <file>${project.basedir}/eclipse.importorder</file> -->
+      <!-- you can use an empty string for all the imports you didn't specify explicitly, and '\\#` prefix for static imports. -->
     </importOrder>
 
     <removeUnusedImports /> <!-- self-explanatory -->
@@ -250,10 +249,8 @@ This is a workaround to a [pending issue](https://github.com/diffplug/spotless/i
 
     <importOrder /> <!-- standard import order -->
     <importOrder>  <!-- or a custom ordering -->
-      <order>java,javax,org,com,com.diffplug,</order>  <!-- or use <file>
-/eclipse.importorder</file> -->
-      <!-- You probably want an empty string at the end - all of the
-           imports you didn't specify explicitly will go there. -->
+      <order>java,javax,org,com,com.diffplug,,\\#com.diffplug,\\#</order>  <!-- or use <file>${project.basedir}/eclipse.importorder</file> -->
+      <!-- you can use an empty string for all the imports you didn't specify explicitly, and '\\#` prefix for static imports -->
     </importOrder>
 
     <greclipse />          <!-- has its own section below -->
@@ -936,6 +933,7 @@ enable incremental up-to-date checking with the following configuration:
 <configuration>
   <upToDateChecking>
     <enabled>true</enabled>
+    <indexFile>${project.basedir}/custom-index-file</indexFile> <!-- optional, default is ${project.build.directory}/spotless-index -->
   </upToDateChecking>
   <!-- ... define formats ... -->
 </configuration>
@@ -946,7 +944,7 @@ The index file contains source file paths and corresponding last modified timest
 It allows Spotless to skip already formatted files that have not changed.
 
 **Note:** the index file is located in the `target` directory. Executing `mvn clean` will delete
-the index file, and Spotless will need to check/format all the source files.
+the index file, and Spotless will need to check/format all the source files. You can override the default index file location with the `indexFile` configuration parameter.
 
 Spotless will remove the index file when up-to-date checking is explicitly turned off with the
 following configuration:
@@ -955,6 +953,7 @@ following configuration:
 <configuration>
   <upToDateChecking>
     <enabled>false</enabled>
+    <indexFile>${project.basedir}/custom-index-file</indexFile> <!-- optional, default is ${project.build.directory}/spotless-index -->
   </upToDateChecking>
   <!-- ... define formats ... -->
 </configuration>

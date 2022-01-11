@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,8 @@ class SpotlessCheckMojoTest extends MavenIntegrationHarness {
 						"  <licenseHeader>",
 						"    <file>${basedir}/license.txt</file>",
 						"  </licenseHeader>",
-						"</java>"});
+						"</java>"},
+				null);
 
 		testSpotlessCheck(UNFORMATTED_FILE, "verify", true);
 	}
