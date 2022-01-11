@@ -39,8 +39,7 @@ public class PalantirJavaFormatStep {
 	private static final String OPTIONS_BUILDER_CLASS = "com.palantir.javaformat.java.JavaFormatterOptions$Builder";
 	private static final String OPTIONS_BUILDER_STYLE_METHOD = "style";
 	private static final String OPTIONS_BUILDER_BUILD_METHOD = "build";
-	private static final String OPTIONS_Style = "com.palantir.javaformat.java.JavaFormatterOptions$Style";
-	private static final String OPTIONS_MAX_LINE_LENGTH_METHOD = "maxLineLength";
+	private static final String OPTIONS_STYLE = "com.palantir.javaformat.java.JavaFormatterOptions$Style";
 
 	private static final String REMOVE_UNUSED_CLASS = "com.palantir.javaformat.java.RemoveUnusedImports";
 	private static final String REMOVE_UNUSED_METHOD = "removeUnusedImports";
@@ -101,14 +100,6 @@ public class PalantirJavaFormatStep {
 		final String version;
 		final String style;
 
-		State(String stepName, String version, Provisioner provisioner) throws Exception {
-			this(stepName, version, DEFAULT_STYLE, provisioner);
-		}
-
-		State(String stepName, String version, String style, Provisioner provisioner) throws Exception {
-			this(stepName, MAVEN_COORDINATE, version, style, provisioner);
-		}
-
 		State(String stepName, String groupArtifact, String version, String style, Provisioner provisioner) throws Exception {
 			JVM_SUPPORT.assertFormatterSupported(version);
 			this.jarState = JarState.from(groupArtifact + ":" + version, provisioner);
@@ -127,7 +118,7 @@ public class PalantirJavaFormatStep {
 			Method optionsBuilderMethod = optionsClass.getMethod(OPTIONS_BUILDER_METHOD);
 			Object optionsBuilder = optionsBuilderMethod.invoke(null);
 
-			Class<?> optionsStyleClass = classLoader.loadClass(OPTIONS_Style);
+			Class<?> optionsStyleClass = classLoader.loadClass(OPTIONS_STYLE);
 			Object styleConstant = Enum.valueOf((Class<Enum>) optionsStyleClass, style);
 			Method optionsBuilderStyleMethod = optionsBuilderClass.getMethod(OPTIONS_BUILDER_STYLE_METHOD, optionsStyleClass);
 			optionsBuilderStyleMethod.invoke(optionsBuilder, styleConstant);
@@ -147,15 +138,8 @@ public class PalantirJavaFormatStep {
 			return JVM_SUPPORT.suggestLaterVersionOnError(version, (input -> {
 				String formatted = (String) formatterMethod.invoke(formatter, input);
 				String removedUnused = removeUnused.apply(formatted);
-				String sortedImports = (String) importOrdererMethod.invoke(null, removedUnused);
-				return sortedImports;
+				return (String) importOrdererMethod.invoke(null, removedUnused);
 			}));
-		}
-
-		FormatterFunc createRemoveUnusedImportsOnly() throws Exception {
-			ClassLoader classLoader = jarState.getClassLoader();
-			Function<String, String> removeUnused = constructRemoveUnusedFunction(classLoader);
-			return JVM_SUPPORT.suggestLaterVersionOnError(version, removeUnused::apply);
 		}
 
 		private static Function<String, String> constructRemoveUnusedFunction(ClassLoader classLoader)
