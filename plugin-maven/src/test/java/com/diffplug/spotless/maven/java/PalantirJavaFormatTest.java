@@ -34,17 +34,6 @@ class PalantirJavaFormatTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	void specificVersionSpecificStyle() throws Exception {
-		writePomWithJavaSteps(
-				"<palantirJavaFormat>",
-				"  <version>1.1.0</version>",
-				"  <style>AOSP</style>",
-				"</palantirJavaFormat>");
-
-		runTest("java/palantirjavaformat/JavaCodeFormattedAOSP.test");
-	}
-
-	@Test
 	@EnabledForJreRange(min = JAVA_11)
 	void specificJava11Version2() throws Exception {
 		writePomWithJavaSteps(
