@@ -3,6 +3,9 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Changed
+* Register `spotlessPredeclare` extension with type `SpotlessPredeclareExtension` instead of the same `SpotlessExtension` as `spotless` ([#1084](https://github.com/diffplug/spotless/pull/1084)).
+
 
 ## [6.1.2] - 2022-01-07
 ### Fixed
