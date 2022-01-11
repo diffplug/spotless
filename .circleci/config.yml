@@ -275,7 +275,7 @@ workflows:
       - test_nomaven_11:
           requires:
             - assemble_testClasses
-      - test_nomaven_15:
+      - test_nomaven_17:
           requires:
             - assemble_testClasses
       - test_npm_8:
