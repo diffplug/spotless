@@ -4,6 +4,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
+* 🎉🎉🎉 [**IntelliJ plugin**](https://plugins.jetbrains.com/plugin/18321-spotless-gradle) thanks to [@ragurney](https://github.com/ragurney) 🎉🎉🎉
 * Added support for the [palantir-java-format](https://github.com/palantir/palantir-java-format) Java formatter ([#1083](https://github.com/diffplug/spotless/pull/1083)).
 
 ## [6.1.2] - 2022-01-07

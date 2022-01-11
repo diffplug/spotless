@@ -1,12 +1,10 @@
 # Spotless Gradle IDE integrations
 
-Thanks to `spotlessApply`, it is not necessary for Spotless and your IDE to agree on formatting - you can always run spotless at the end to fix things up.  But if you want them to agree, there are two approaches:
+Thanks to `spotlessApply`, it is not necessary for Spotless and your IDE to agree on formatting - you can always run spotless at the end to fix things up.  But if you want them to agree, we have plugins for:
 
-- 👎setup your IDE to match Spotless: tricky to get right, hard to keep up-to-date
-  - [eclipse](https://github.com/diffplug/spotless/blob/main/ECLIPSE_SCREENSHOTS.md)
-- 👍setup your IDE to use Spotless as the source of truth: easy to setup, guaranteed to stay up-to-date
-  - [VS Code](https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle)
-  - (add your IDE here!)
+- [VS Code](https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle)
+- [IntelliJ](https://plugins.jetbrains.com/plugin/18321-spotless-gradle)
+- (add your IDE here!)
 
 ## How to add an IDE
 
