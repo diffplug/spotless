@@ -77,11 +77,11 @@ jobs:
     docker:
       - image: cimg/openjdk:11.0
     <<: *test_nomaven
-  test_nomaven_15:
-    # latest JDK, replace with 16 when it comes out
+  test_nomaven_17:
+    # latest JDK
     <<: *env_gradle_large
     docker:
-      - image: cimg/openjdk:15.0
+      - image: cimg/openjdk:17.0
     <<: *test_nomaven
   test_justmaven_11:
     << : *env_gradle
