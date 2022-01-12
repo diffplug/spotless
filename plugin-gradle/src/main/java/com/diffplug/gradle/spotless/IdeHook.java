@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,11 @@ package com.diffplug.gradle.spotless;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.io.ByteStreams;
+import com.diffplug.spotless.DirtyState;
 import com.diffplug.spotless.Formatter;
-import com.diffplug.spotless.PaddedCell;
 
 class IdeHook {
 	final static String PROPERTY = "spotlessIdeHook";
@@ -49,13 +48,14 @@ class IdeHook {
 						return;
 					}
 				}
+				DirtyState.Calculation init;
 				byte[] bytes;
 				if (spotlessTask.getProject().hasProperty(USE_STD_IN)) {
-					bytes = ByteStreams.toByteArray(System.in);
+					init = DirtyState.of(formatter, file, ByteStreams.toByteArray(System.in));
 				} else {
-					bytes = Files.readAllBytes(file.toPath());
+					init = DirtyState.of(formatter, file);
 				}
-				PaddedCell.DirtyState dirty = PaddedCell.calculateDirtyState(formatter, file, bytes);
+				DirtyState dirty = init.calculateDirtyState();
 				if (dirty.isClean()) {
 					dumpIsClean();
 				} else if (dirty.didNotConverge()) {

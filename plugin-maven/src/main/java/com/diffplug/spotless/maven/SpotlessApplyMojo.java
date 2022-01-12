@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@ import java.io.IOException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 
+import com.diffplug.spotless.DirtyState;
 import com.diffplug.spotless.Formatter;
-import com.diffplug.spotless.PaddedCell;
 import com.diffplug.spotless.maven.incremental.UpToDateChecker;
 
 /**
@@ -42,7 +42,7 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 			}
 
 			try {
-				PaddedCell.DirtyState dirtyState = PaddedCell.calculateDirtyState(formatter, file);
+				DirtyState dirtyState = DirtyState.of(formatter, file).calculateDirtyState();
 				if (!dirtyState.isClean() && !dirtyState.didNotConverge()) {
 					dirtyState.writeCanonicalTo(file);
 				}
