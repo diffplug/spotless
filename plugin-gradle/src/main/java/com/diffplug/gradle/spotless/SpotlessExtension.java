@@ -243,6 +243,7 @@ public abstract class SpotlessExtension {
 		try {
 			return findRegisterDepsTask(RegisterDependenciesTask.TASK_NAME);
 		} catch (Exception e) {
+			System.out.println("~~~ FAILED TO REGISTER");
 			// in a composite build there can be multiple Spotless plugins on the classpath, and they will each try to register
 			// a task on the root project with the same name. That will generate casting errors, which we can catch and try again
 			// with an identity-specific identifier.
@@ -254,6 +255,7 @@ public abstract class SpotlessExtension {
 	private TaskProvider<RegisterDependenciesTask> findRegisterDepsTask(String taskName) {
 		TaskContainer rootProjectTasks = project.getRootProject().getTasks();
 		if (!rootProjectTasks.getNames().contains(taskName)) {
+			System.out.println("~~~ REGISTER " + taskName);
 			return rootProjectTasks.register(taskName, RegisterDependenciesTask.class, RegisterDependenciesTask::setup);
 		} else {
 			return rootProjectTasks.named(taskName, RegisterDependenciesTask.class);
