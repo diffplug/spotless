@@ -328,7 +328,7 @@ spotless { // if you are using build.gradle.kts, instead of 'spotless {' use:
 ```kotlin
 spotless {
   kotlin {
-    ktfmt('0.15').dropboxStyle() // version and dropbox style are optional
+    ktfmt('0.30').dropboxStyle() // version and dropbox style are optional
 ```
 
 <a name="applying-ktlint-to-kotlin-files"></a>
@@ -341,7 +341,7 @@ spotless {
 spotless {
   kotlin {
     // version and userData are both optional
-    ktlint('0.37.2').userData(mapOf('indent_size' to '2', 'continuation_indent_size' to '2'))
+    ktlint('0.43.2').userData(mapOf('indent_size' to '2', 'continuation_indent_size' to '2'))
 ```
 
 ### diktat
@@ -352,7 +352,7 @@ spotless {
 spotless {
   kotlin {
     // version and configFile are both optional
-    diktat('0.4.0').configFile("full/path/to/diktat-analysis.yml")
+    diktat('1.0.1').configFile("full/path/to/diktat-analysis.yml")
 ```
 
 <a name="applying-scalafmt-to-scala-files"></a>
