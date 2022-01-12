@@ -17,6 +17,7 @@ package com.diffplug.spotless;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 
 import javax.annotation.Nullable;
@@ -44,6 +45,19 @@ public interface FormatterStep extends Serializable {
 	 * @throws Exception if the formatter step experiences a problem
 	 */
 	public @Nullable String format(String rawUnix, File file) throws Exception;
+
+	/**
+	 * Returns a list of lints against the given file content
+	 *
+	 * @param content
+	 *            the content to check
+	 * @param file
+	 *            the file which {@code content} was obtained from; never null. Pass an empty file using
+	 *            {@code new File("")} if and only if no file is actually associated with {@code content}
+	 * @return a list of lints
+	 * @throws Exception if the formatter step experiences a problem
+	 */
+	public List<Lint> lint(String content, File file) throws Exception;
 
 	/**
 	 * Returns a new FormatterStep which will only apply its changes

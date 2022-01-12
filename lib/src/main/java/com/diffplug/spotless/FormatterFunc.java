@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 package com.diffplug.spotless;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -30,6 +32,11 @@ public interface FormatterFunc {
 
 	default String apply(String unix, File file) throws Exception {
 		return apply(unix);
+	}
+
+	/** Calculates a list of lints against the given content. */
+	default List<Lint> lint(String content, File file) {
+		return Collections.emptyList();
 	}
 
 	/**
