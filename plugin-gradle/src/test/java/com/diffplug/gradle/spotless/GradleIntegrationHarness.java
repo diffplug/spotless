@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,14 +48,26 @@ public class GradleIntegrationHarness extends ResourceHarness {
 		final String version;
 
 		GradleVersionSupport(String version) {
-			if (Jvm.version() >= 15) {
-				// the first version with support for Java 15+
+			switch (Jvm.version()) {
+			case 20:
+			case 19:
+			case 18:
+				// TODO: https://docs.gradle.org/current/userguide/compatibility.html
+			case 17:
+				this.version = "7.3";
+				break;
+			case 16:
+				this.version = "7.0";
+				break;
+			case 15:
 				this.version = "6.7";
-			} else if (Jvm.version() >= 14) {
-				// the first version with support for Java 14+
+				break;
+			case 14:
 				this.version = "6.3";
-			} else {
+				break;
+			default:
 				this.version = version;
+				break;
 			}
 		}
 	}
