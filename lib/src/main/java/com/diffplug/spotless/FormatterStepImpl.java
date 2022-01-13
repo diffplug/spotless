@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,6 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.Random;
 
-import com.diffplug.spotless.FormatterStep.Strict;
-
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -32,7 +30,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * from the API.
  */
 @SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-abstract class FormatterStepImpl<State extends Serializable> extends Strict<State> {
+abstract class FormatterStepImpl<State extends Serializable> extends LazyForwardingEquality<State> implements FormatterStep {
 	private static final long serialVersionUID = 1L;
 
 	/** Transient because only the state matters. */
@@ -67,15 +65,19 @@ abstract class FormatterStepImpl<State extends Serializable> extends Strict<Stat
 			this.stateToFormatter = Objects.requireNonNull(stateToFormatter);
 		}
 
+		private FormatterFunc func() throws Exception {
+			if (formatter != null) {
+				return formatter;
+			}
+			formatter = stateToFormatter.apply(state());
+			return formatter;
+		}
+
 		@Override
-		protected String format(State state, String rawUnix, File file) throws Exception {
-			Objects.requireNonNull(state, "state");
+		public String format(String rawUnix, File file) throws Exception {
 			Objects.requireNonNull(rawUnix, "rawUnix");
 			Objects.requireNonNull(file, "file");
-			if (formatter == null) {
-				formatter = stateToFormatter.apply(state());
-			}
-			return formatter.apply(rawUnix, file);
+			return func().apply(rawUnix, file);
 		}
 
 		void cleanupFormatterFunc() {
@@ -100,15 +102,17 @@ abstract class FormatterStepImpl<State extends Serializable> extends Strict<Stat
 			this.formatterSupplier = Objects.requireNonNull(formatterSupplier, "formatterSupplier");
 		}
 
-		@Override
-		protected String format(Integer state, String rawUnix, File file) throws Exception {
-			if (formatter == null) {
-				formatter = formatterSupplier.get();
-				if (formatter instanceof FormatterFunc.Closeable) {
-					throw new AssertionError("NeverUpToDate does not support FormatterFunc.Closeable.  See https://github.com/diffplug/spotless/pull/284");
-				}
+		private FormatterFunc func() throws Exception {
+			if (formatter != null) {
+				return formatter;
 			}
-			return formatter.apply(rawUnix, file);
+			formatter = formatterSupplier.get();
+			return formatter;
+		}
+
+		@Override
+		public String format(String rawUnix, File file) throws Exception {
+			return func().apply(rawUnix, file);
 		}
 	}
 

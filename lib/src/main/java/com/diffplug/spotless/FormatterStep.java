@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,28 +65,6 @@ public interface FormatterStep extends Serializable {
 	 */
 	public default FormatterStep filterByFile(SerializableFileFilter filter) {
 		return new FilterByFileFormatterStep(this, filter);
-	}
-
-	/**
-	 * Implements a FormatterStep in a strict way which guarantees correct and lazy implementation
-	 * of up-to-date checks.  This maximizes performance for cases where the FormatterStep is not
-	 * actually needed (e.g. don't load eclipse setting file unless this step is actually running)
-	 * while also ensuring that gradle can detect changes in a step's settings to determine that
-	 * it needs to rerun a format.
-	 */
-	abstract class Strict<State extends Serializable> extends LazyForwardingEquality<State> implements FormatterStep {
-		private static final long serialVersionUID = 1L;
-
-		/**
-		 * Implements the formatting function strictly in terms
-		 * of the input data and the result of {@link #calculateState()}.
-		 */
-		protected abstract String format(State state, String rawUnix, File file) throws Exception;
-
-		@Override
-		public final String format(String rawUnix, File file) throws Exception {
-			return format(state(), rawUnix, file);
-		}
 	}
 
 	/**
