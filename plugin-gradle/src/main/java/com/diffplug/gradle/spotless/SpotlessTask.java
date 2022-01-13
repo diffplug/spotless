@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 DiffPlug
+ * Copyright 2020-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -152,6 +152,17 @@ public abstract class SpotlessTask extends DefaultTask {
 	@OutputDirectory
 	public File getOutputDirectory() {
 		return outputDirectory;
+	}
+
+	static final String CONTENT = "content";
+	static final String LINT = "lint";
+
+	File contentDir() {
+		return new File(outputDirectory, CONTENT);
+	}
+
+	File lintDir() {
+		return new File(outputDirectory, LINT);
 	}
 
 	protected final LiveCache<List<FormatterStep>> steps = createLive("steps");

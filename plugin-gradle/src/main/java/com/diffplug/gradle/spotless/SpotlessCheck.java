@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 	}
 
 	private void performAction(boolean isTest) throws IOException {
-		ConfigurableFileTree files = getConfigCacheWorkaround().fileTree().from(getSpotlessOutDirectory().get());
+		ConfigurableFileTree files = getConfigCacheWorkaround().fileTree().from(contentDir());
 		if (files.isEmpty()) {
 			getState().setDidWork(sourceDidWork());
 		} else if (!isTest && applyHasRun()) {
@@ -101,7 +101,7 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 						.runToFix("Run '" + calculateGradleCommand() + " " + getTaskPathPrefix() + "spotlessApply' to fix these violations.")
 						.formatterFolder(
 								getProjectDir().get().getAsFile().toPath(),
-								getSpotlessOutDirectory().get().toPath(),
+								contentDir().toPath(),
 								getEncoding().get())
 						.problemFiles(problemFiles)
 						.getMessage());

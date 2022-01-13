@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ class PaddedCellTaskTest extends ResourceHarness {
 			source = createFormatTask(name, step);
 			check = createCheckTask(name, source);
 			apply = createApplyTask(name, source);
-			outputFile = new File(source.getOutputDirectory() + "/src", file.getName());
+			outputFile = new File(source.contentDir(), "src/" + file.getName());
 		}
 
 		private SpotlessTaskImpl createFormatTask(String name, FormatterStep step) {
