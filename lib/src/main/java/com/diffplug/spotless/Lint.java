@@ -15,6 +15,12 @@
  */
 package com.diffplug.spotless;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -83,5 +89,79 @@ public final class Lint {
 	@Override
 	public int hashCode() {
 		return Objects.hash(lineStart, lineEnd, code, msg);
+	}
+
+	/** Guaranteed to have no newlines, but also guarantees to preserve all newlines and parenthesis in code and msg. */
+	String asOneLine() {
+		StringBuilder buffer = new StringBuilder();
+		buffer.append(Integer.toString(lineStart));
+		if (lineStart != lineEnd) {
+			buffer.append('-');
+			buffer.append(Integer.toString(lineEnd));
+		}
+		buffer.append(OPEN);
+		buffer.append(safeParensAndNewlines.escape(code));
+		buffer.append(CLOSE);
+		buffer.append(safeParensAndNewlines.escape(msg));
+		return buffer.toString();
+	}
+
+	private static final String OPEN = ": (";
+	private static final String CLOSE = ") ";
+
+	static Lint fromOneLine(String content) {
+		int codeOpen = content.indexOf(OPEN);
+		int codeClose = content.indexOf(CLOSE, codeOpen);
+
+		int lineStart, lineEnd;
+		String lineNumber = content.substring(0, codeOpen);
+		int idxDash = lineNumber.indexOf('-');
+		if (idxDash == -1) {
+			lineStart = Integer.parseInt(lineNumber);
+			lineEnd = lineStart;
+		} else {
+			lineStart = Integer.parseInt(lineNumber.substring(0, idxDash));
+			lineEnd = Integer.parseInt(lineNumber.substring(idxDash + 1));
+		}
+
+		String code = safeParensAndNewlines.unescape(content.substring(codeOpen + OPEN.length(), codeClose));
+		String msg = safeParensAndNewlines.unescape(content.substring(codeClose + CLOSE.length()));
+		return Lint.create(code, msg, lineStart, lineEnd);
+	}
+
+	/** Call .escape to get a string which is guaranteed to have no parenthesis or newlines, and you can call unescape to get the original back. */
+	static final PerCharacterEscaper safeParensAndNewlines = PerCharacterEscaper.specifiedEscape("//\nn(₍)₎");
+
+	/** Converts a list of lints to a String, format is not guaranteed to be consistent from version to version of Spotless. */
+	public static String toString(List<Lint> lints) {
+		StringBuilder builder = new StringBuilder();
+		for (Lint lint : lints) {
+			builder.append(lint.asOneLine());
+			builder.append('\n');
+		}
+		return builder.toString();
+	}
+
+	/** Converts a list of lints to a String, format is not guaranteed to be consistent from version to version of Spotless. */
+	public static List<Lint> fromString(String content) {
+		List<Lint> lints = new ArrayList<>();
+		String[] lines = content.split("\n");
+		for (String line : lines) {
+			line = line.trim();
+			if (!line.isEmpty()) {
+				lints.add(fromOneLine(line));
+			}
+		}
+		return lints;
+	}
+
+	public static List<Lint> fromFile(File file) throws IOException {
+		byte[] content = Files.readAllBytes(file.toPath());
+		return fromString(new String(content, StandardCharsets.UTF_8));
+	}
+
+	public static void toFile(List<Lint> lints, File file) throws IOException {
+		byte[] content = toString(lints).getBytes(StandardCharsets.UTF_8);
+		Files.write(file.toPath(), content);
 	}
 }
