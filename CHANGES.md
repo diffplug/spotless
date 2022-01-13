@@ -11,7 +11,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Changed
-* Bump CI from Java 15 to 17.
+* Bump CI from Java 15 to 17 ([#1094](https://github.com/diffplug/spotless/pull/1094)).
 
 ## [2.22.0] - 2022-01-13
 ### Added
