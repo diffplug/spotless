@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -136,6 +137,10 @@ public class DirtyState {
 			} else {
 				return isClean;
 			}
+		}
+
+		public List<Lint> calculateLintAgainstRaw() {
+			return formatter.lint(raw, file);
 		}
 	}
 }

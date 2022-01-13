@@ -181,7 +181,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 	}
 
 	public List<Lint> lint(String content, File file) {
-		Objects.requireNonNull(content, "unix");
+		Objects.requireNonNull(content, "content");
 		Objects.requireNonNull(file, "file");
 
 		List<Lint> totalLints = new ArrayList<>();
