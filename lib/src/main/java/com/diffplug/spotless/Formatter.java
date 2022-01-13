@@ -27,6 +27,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -177,6 +178,29 @@ public final class Formatter implements Serializable, AutoCloseable {
 			}
 		}
 		return unix;
+	}
+
+	public List<Lint> lint(String content, File file) {
+		Objects.requireNonNull(content, "unix");
+		Objects.requireNonNull(file, "file");
+
+		List<Lint> totalLints = new ArrayList<>();
+		for (FormatterStep step : steps) {
+			try {
+				List<Lint> lints = step.lint(content, file);
+				if (lints != null && !lints.isEmpty()) {
+					totalLints.addAll(lints);
+				}
+			} catch (Throwable e) {
+				String relativePath = rootDir.relativize(file.toPath()).toString();
+				exceptionPolicy.handleError(e, step, relativePath);
+			}
+		}
+		if (totalLints.isEmpty()) {
+			return Collections.emptyList();
+		} else {
+			return totalLints;
+		}
 	}
 
 	@Override
