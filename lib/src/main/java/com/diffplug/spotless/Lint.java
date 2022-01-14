@@ -173,7 +173,7 @@ public final class Lint {
 	}
 
 	/** Attempts to parse a line number from the given exception. */
-	static Lint createFromThrowable(FormatterStep step, Throwable e) {
+	static Lint createFromThrowable(FormatterStep step, String content, Throwable e) {
 		Throwable current = e;
 		while (current != null) {
 			String message = current.getMessage();
@@ -183,7 +183,8 @@ public final class Lint {
 			}
 			current = current.getCause();
 		}
-		return Lint.create(step.getName(), ThrowingEx.stacktrace(e), 1);
+		int numNewlines = (int) content.codePoints().filter(c -> c == '\n').count();
+		return Lint.create(step.getName(), ThrowingEx.stacktrace(e), 1, 1 + numNewlines);
 	}
 
 	private static int lineNumberFor(String message) {

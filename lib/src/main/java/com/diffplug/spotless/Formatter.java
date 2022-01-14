@@ -160,7 +160,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 					totalLints.addAll(lints);
 				}
 			} catch (Throwable e) {
-				totalLints.add(Lint.createFromThrowable(step, e));
+				totalLints.add(Lint.createFromThrowable(step, content, e));
 			}
 		}
 		if (totalLints.isEmpty()) {
