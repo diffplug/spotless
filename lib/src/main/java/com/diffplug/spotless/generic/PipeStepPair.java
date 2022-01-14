@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 DiffPlug
+ * Copyright 2020-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.Lint;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -84,7 +85,17 @@ public class PipeStepPair {
 		public FormatterStep buildStepWhichAppliesSubSteps(Path rootPath, Collection<? extends FormatterStep> steps) {
 			return FormatterStep.createLazy(name,
 					() -> new StateApplyToBlock(regex, steps),
-					state -> FormatterFunc.Closeable.of(state.buildFormatter(rootPath), state::format));
+					state -> FormatterFunc.Closeable.of(state.buildFormatter(rootPath), new FormatterFunc.Closeable.ResourceFuncNeedsFile<Formatter>() {
+						@Override
+						public String apply(Formatter formatter, String unix, File file) {
+							return formatter.compute(unix, file);
+						}
+
+						@Override
+						public List<Lint> lint(Formatter formatter, String content, File file) throws Exception {
+							return formatter.lint(content, file);
+						}
+					}));
 		}
 	}
 

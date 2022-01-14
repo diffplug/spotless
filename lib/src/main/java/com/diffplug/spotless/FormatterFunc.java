@@ -61,7 +61,7 @@ public interface FormatterFunc {
 		 * The bug (and its fix) which is easy to write using this method: https://github.com/diffplug/spotless/commit/7f16ecca031810b5e6e6f647e1f10a6d2152d9f4
 		 * How the {@code of()} methods below make the correct thing easier to write and safer: https://github.com/diffplug/spotless/commit/18c10f9c93d6f18f753233d0b5f028d5f0961916
 		 */
-		public static Closeable ofDangerous(AutoCloseable closeable, FormatterFunc function) {
+		static Closeable ofDangerous(AutoCloseable closeable, FormatterFunc function) {
 			Objects.requireNonNull(closeable, "closeable");
 			Objects.requireNonNull(function, "function");
 			return new Closeable() {
@@ -79,22 +79,26 @@ public interface FormatterFunc {
 				public String apply(String unix) throws Exception {
 					return function.apply(unix);
 				}
-			};
-		}
 
-		/** @deprecated synonym for {@link #ofDangerous(AutoCloseable, FormatterFunc)} */
-		@Deprecated
-		public static Closeable of(AutoCloseable closeable, FormatterFunc function) {
-			return ofDangerous(closeable, function);
+				@Override
+				public List<Lint> lint(String content, File file) throws Exception {
+					return function.lint(content, file);
+				}
+			};
 		}
 
 		@FunctionalInterface
 		interface ResourceFunc<T extends AutoCloseable> {
 			String apply(T resource, String unix) throws Exception;
+
+			default List<Lint> lint(T resource, String content) throws Exception {
+				apply(resource, content);
+				return Collections.emptyList();
+			}
 		}
 
 		/** Creates a {@link FormatterFunc.Closeable} which uses the given resource to execute the format function. */
-		public static <T extends AutoCloseable> Closeable of(T resource, ResourceFunc<T> function) {
+		static <T extends AutoCloseable> Closeable of(T resource, ResourceFunc<T> function) {
 			Objects.requireNonNull(resource, "resource");
 			Objects.requireNonNull(function, "function");
 			return new Closeable() {
@@ -112,15 +116,24 @@ public interface FormatterFunc {
 				public String apply(String unix) throws Exception {
 					return function.apply(resource, unix);
 				}
+
+				@Override
+				public List<Lint> lint(String content, File file) throws Exception {
+					return function.lint(resource, content);
+				}
 			};
 		}
 
 		@FunctionalInterface
 		interface ResourceFuncNeedsFile<T extends AutoCloseable> {
 			String apply(T resource, String unix, File file) throws Exception;
+
+			default List<Lint> lint(T resource, String content, File file) throws Exception {
+				apply(resource, content, file);
+				return Collections.emptyList();
+			}
 		}
 
-		/** Creates a {@link FormatterFunc.Closeable} which uses the given resource to execute the file-dependent format function. */
 		public static <T extends AutoCloseable> Closeable of(T resource, ResourceFuncNeedsFile<T> function) {
 			Objects.requireNonNull(resource, "resource");
 			Objects.requireNonNull(function, "function");
@@ -139,6 +152,11 @@ public interface FormatterFunc {
 				@Override
 				public String apply(String unix) throws Exception {
 					return apply(unix, FormatterStepImpl.SENTINEL);
+				}
+
+				@Override
+				public List<Lint> lint(String content, File file) throws Exception {
+					return function.lint(resource, content, file);
 				}
 			};
 		}

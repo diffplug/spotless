@@ -14,6 +14,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * **BREAKING** Removed `FormatterStep.Strict` because it was unnecessary and unused implementation detail.
 * **BREAKING** Moved `PaddedCell.DirtyState` to its own top-level class with new methods.
 * **BREAKING** Removed `FormatExceptionPolicy` and its subclasses because exceptions are now wrapped as lints.
+* **BREAKING** Removed deprecated methods.
+  * `FormatterFunc.Closeable::of(AutoCloseable, FormatterFunc)`
 
 ## [Unreleased]
 ### Changed
