@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +31,9 @@ public class ToggleOffOn {
 
 	public PipeStepPair createPair() {
 		if (regex != null) {
-			return PipeStepPair.named(PipeStepPair.defaultToggleName()).regex(regex).buildPair();
+			return PipeStepPair.named(PipeStepPair.defaultToggleName()).regex(regex);
 		} else {
-			return PipeStepPair.named(PipeStepPair.defaultToggleName()).openClose(off, on).buildPair();
+			return PipeStepPair.named(PipeStepPair.defaultToggleName()).openClose(off, on);
 		}
 	}
 }

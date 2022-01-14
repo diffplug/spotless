@@ -23,6 +23,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -710,13 +711,13 @@ public class FormatExtension {
 		withinBlocksHelper(PipeStepPair.named(name).regex(regex), clazz, configure);
 	}
 
-	private <T extends FormatExtension> void withinBlocksHelper(PipeStepPair.Builder builder, Class<T> clazz, Action<T> configure) {
+	private <T extends FormatExtension> void withinBlocksHelper(PipeStepPair builder, Class<T> clazz, Action<T> configure) {
 		// create the sub-extension
 		T formatExtension = spotless.instantiateFormatExtension(clazz);
 		// configure it
 		configure.execute(formatExtension);
 		// create a step which applies all of those steps as sub-steps
-		FormatterStep step = builder.buildStepWhichAppliesSubSteps(spotless.project.getRootDir().toPath(), formatExtension.steps);
+		FormatterStep step = builder.applyWithin(spotless.project.getRootDir().toPath(), formatExtension.steps);
 		addStep(step);
 	}
 
@@ -725,12 +726,12 @@ public class FormatExtension {
 	 * inside that captured group.
 	 */
 	public void toggleOffOnRegex(String regex) {
-		this.togglePair = PipeStepPair.named(PipeStepPair.defaultToggleName()).regex(regex).buildPair();
+		this.togglePair = PipeStepPair.named(PipeStepPair.defaultToggleName()).regex(regex);
 	}
 
 	/** Disables formatting between the given tags. */
 	public void toggleOffOn(String off, String on) {
-		this.togglePair = PipeStepPair.named(PipeStepPair.defaultToggleName()).openClose(off, on).buildPair();
+		this.togglePair = PipeStepPair.named(PipeStepPair.defaultToggleName()).openClose(off, on);
 	}
 
 	/** Disables formatting between {@code spotless:off} and {@code spotless:on}. */
@@ -753,10 +754,7 @@ public class FormatExtension {
 		task.setTarget(totalTarget);
 		List<FormatterStep> steps;
 		if (togglePair != null) {
-			steps = new ArrayList<>(this.steps.size() + 2);
-			steps.add(togglePair.in());
-			steps.addAll(this.steps);
-			steps.add(togglePair.out());
+			steps = Collections.singletonList(togglePair.preserveWithin(getProject().getRootDir().toPath(), this.steps));
 		} else {
 			steps = this.steps;
 		}

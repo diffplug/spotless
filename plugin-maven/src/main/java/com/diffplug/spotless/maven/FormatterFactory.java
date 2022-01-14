@@ -20,6 +20,7 @@ import static java.util.Collections.emptySet;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -33,7 +34,6 @@ import com.diffplug.common.collect.Sets;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
-import com.diffplug.spotless.generic.PipeStepPair;
 import com.diffplug.spotless.maven.generic.*;
 
 public abstract class FormatterFactory {
@@ -84,11 +84,9 @@ public abstract class FormatterFactory {
 				.map(factory -> factory.newFormatterStep(stepConfig))
 				.collect(Collectors.toCollection(() -> new ArrayList<FormatterStep>()));
 		if (toggle != null) {
-			PipeStepPair pair = toggle.createPair();
-			formatterSteps.add(0, pair.in());
-			formatterSteps.add(pair.out());
+			List<FormatterStep> formatterStepsBeforeToggle = formatterSteps;
+			formatterSteps = Collections.singletonList(toggle.createPair().preserveWithin(config.getFileLocator().getBaseDir().toPath(), formatterStepsBeforeToggle));
 		}
-
 		return Formatter.builder()
 				.encoding(formatterEncoding)
 				.lineEndingsPolicy(formatterLineEndingPolicy)
