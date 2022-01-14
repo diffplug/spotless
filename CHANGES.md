@@ -17,6 +17,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * **BREAKING** Renamed `PipeStepPair` to `FenceStep` and changed its API.
   * The old "pair" approach could not detect when a `spotless:off/on` tag pair was removed by an intermediate step, so we have no choice but to condense the "in/(all other steps)/out" into a single step.
 * **BREAKING** Removed `rootDir` property `Formatter` and its builder because it was only used to annnotate errors, which is now done by the lint phase.
+  * This also means that `DiffMessageFormatter.Builder::formatter` needs a new `Path rootDir` parameter.
 * **BREAKING** Removed deprecated methods.
   * `FormatterFunc.Closeable::of(AutoCloseable, FormatterFunc)`
 
