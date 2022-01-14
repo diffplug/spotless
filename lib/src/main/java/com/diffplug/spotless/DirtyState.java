@@ -142,5 +142,23 @@ public class DirtyState {
 		public List<Lint> calculateLintAgainstRaw() {
 			return formatter.lint(raw, file);
 		}
+
+		public List<Lint> calculateLintAgainstDirtyState(DirtyState dirtyState) {
+			if (dirtyState.isClean() || dirtyState.didNotConverge()) {
+				return calculateLintAgainstRaw();
+			} else {
+				String canonical = new String(dirtyState.canonicalBytes(), formatter.getEncoding());
+				return formatter.lint(canonical, file);
+			}
+		}
+
+		/** If {@link #calculateLintAgainstRaw()} was already called, then you might be able to reuse that value. */
+		public List<Lint> calculateLintAgainstDirtyState(DirtyState dirtyState, List<Lint> lintsAgainstRaw) {
+			if (dirtyState.isClean() || dirtyState.didNotConverge()) {
+				return lintsAgainstRaw;
+			} else {
+				return calculateLintAgainstDirtyState(dirtyState);
+			}
+		}
 	}
 }

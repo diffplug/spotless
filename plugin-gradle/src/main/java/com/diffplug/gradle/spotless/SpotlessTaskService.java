@@ -96,11 +96,15 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 		abstract Property<File> getSpotlessOutDirectory();
 
 		File contentDir() {
-			return new File(getSpotlessOutDirectory().get(), SpotlessTaskImpl.CONTENT);
+			return new File(getSpotlessOutDirectory().get(), SpotlessTask.CONTENT);
 		}
 
-		File lintDir() {
-			return new File(getSpotlessOutDirectory().get(), SpotlessTaskImpl.LINT);
+		File lintApplyDir() {
+			return new File(getSpotlessOutDirectory().get(), SpotlessTask.LINT_APPLY);
+		}
+
+		File lintCheckDir() {
+			return new File(getSpotlessOutDirectory().get(), SpotlessTask.LINT_CHECK);
 		}
 
 		@Internal

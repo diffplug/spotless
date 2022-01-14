@@ -155,14 +155,19 @@ public abstract class SpotlessTask extends DefaultTask {
 	}
 
 	static final String CONTENT = "content";
-	static final String LINT = "lint";
+	static final String LINT_APPLY = "lint-apply";
+	static final String LINT_CHECK = "lint-check";
 
 	File contentDir() {
 		return new File(outputDirectory, CONTENT);
 	}
 
-	File lintDir() {
-		return new File(outputDirectory, LINT);
+	File lintApplyDir() {
+		return new File(outputDirectory, LINT_APPLY);
+	}
+
+	File lintCheckDir() {
+		return new File(outputDirectory, LINT_CHECK);
 	}
 
 	protected final LiveCache<List<FormatterStep>> steps = createLive("steps");

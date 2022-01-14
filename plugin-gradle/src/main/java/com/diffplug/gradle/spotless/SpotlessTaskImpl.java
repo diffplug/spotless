@@ -68,7 +68,8 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 			getLogger().info("Not incremental: removing prior outputs");
 			getFs().delete(d -> d.delete(outputDirectory));
 			Files.createDirectories(contentDir().toPath());
-			Files.createDirectories(lintDir().toPath());
+			Files.createDirectories(lintApplyDir().toPath());
+			Files.createDirectories(lintCheckDir().toPath());
 		}
 
 		try (Formatter formatter = buildFormatter()) {
@@ -90,14 +91,16 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 		File output = getOutputFile(input);
 		getLogger().debug("Applying format to " + input + " and writing to " + output);
 		DirtyState dirtyState;
-		List<Lint> lints;
+		List<Lint> lintsCheck, lintsApply;
 		if (ratchet != null && ratchet.isClean(getProjectDir().get().getAsFile(), getRootTreeSha(), input)) {
 			dirtyState = DirtyState.clean();
-			lints = Collections.emptyList();
+			lintsCheck = Collections.emptyList();
+			lintsApply = Collections.emptyList();
 		} else {
 			DirtyState.Calculation calculation = DirtyState.of(formatter, input);
 			dirtyState = calculation.calculateDirtyState();
-			lints = calculation.calculateLintAgainstRaw();
+			lintsCheck = calculation.calculateLintAgainstRaw();
+			lintsApply = calculation.calculateLintAgainstDirtyState(dirtyState, lintsCheck);
 		}
 		if (dirtyState.isClean()) {
 			// Remove previous output if it exists
@@ -115,25 +118,34 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 			dirtyState.writeCanonicalTo(output);
 		}
 
-		File lint = getLintFile(input);
+		writeLints(lintsCheck, getLintCheckFile(input));
+		writeLints(lintsApply, getLintApplyFile(input));
+	}
+
+	private void writeLints(List<Lint> lints, File lintFile) throws IOException {
 		if (lints.isEmpty()) {
-			Files.deleteIfExists(lint.toPath());
+			Files.deleteIfExists(lintFile.toPath());
 		} else {
-			Lint.toFile(lints, lint);
+			Lint.toFile(lints, lintFile);
 		}
 	}
 
 	private void deletePreviousResult(File input) throws IOException {
 		delete(getOutputFile(input));
-		delete(getLintFile(input));
+		delete(getLintCheckFile(input));
+		delete(getLintApplyFile(input));
 	}
 
 	private File getOutputFile(File input) {
 		return new File(contentDir(), relativize(input));
 	}
 
-	private File getLintFile(File input) {
-		return new File(lintDir(), relativize(input));
+	private File getLintCheckFile(File input) {
+		return new File(lintCheckDir(), relativize(input));
+	}
+
+	private File getLintApplyFile(File input) {
+		return new File(lintApplyDir(), relativize(input));
 	}
 
 	private void delete(File file) throws IOException {
