@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,6 @@ class FormatterTest {
 			private Charset encoding = StandardCharsets.UTF_8;
 			private Path rootDir = Paths.get(StandardSystemProperty.USER_DIR.value());
 			private List<FormatterStep> steps = new ArrayList<>();
-			private FormatExceptionPolicy exceptionPolicy = FormatExceptionPolicy.failOnlyOnError();
 
 			@Override
 			protected void setupTest(API api) throws Exception {
@@ -53,20 +52,6 @@ class FormatterTest {
 
 				steps.add(EndWithNewlineStep.create());
 				api.areDifferentThan();
-
-				{
-					FormatExceptionPolicyStrict standard = new FormatExceptionPolicyStrict();
-					standard.excludePath("path");
-					exceptionPolicy = standard;
-					api.areDifferentThan();
-				}
-
-				{
-					FormatExceptionPolicyStrict standard = new FormatExceptionPolicyStrict();
-					standard.excludeStep("step");
-					exceptionPolicy = standard;
-					api.areDifferentThan();
-				}
 			}
 
 			@Override
@@ -76,7 +61,6 @@ class FormatterTest {
 						.encoding(encoding)
 						.rootDir(rootDir)
 						.steps(steps)
-						.exceptionPolicy(exceptionPolicy)
 						.build();
 			}
 		}.testEquals();
