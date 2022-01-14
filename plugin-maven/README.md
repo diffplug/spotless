@@ -329,7 +329,7 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
 
 ```xml
 <ktfmt>
-  <version>0.18</version> <!-- optional -->
+  <version>0.30</version> <!-- optional -->
   <style>DEFAULT</style> <!-- optional, other option is DROPBOX -->
 </ktfmt>
 ```
@@ -342,7 +342,7 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
 
 ```xml
 <ktlint>
-  <version>0.37.2</version> <!-- optional -->
+  <version>0.43.2</version> <!-- optional -->
 </ktlint>
 ```
 
@@ -352,7 +352,7 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
 
 ```xml
 <diktat>
-  <version>0.4.0</version> <!-- optional -->
+  <version>1.0.1</version> <!-- optional -->
   <configFile>full/path/to/diktat-analysis.yml</configFile> <!-- optional, configuration file path -->
 </diktat>
 ```
