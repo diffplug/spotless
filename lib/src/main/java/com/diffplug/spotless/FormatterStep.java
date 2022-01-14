@@ -57,7 +57,7 @@ public interface FormatterStep extends Serializable {
 	 * @return a list of lints
 	 * @throws Exception if the formatter step experiences a problem
 	 */
-	public List<Lint> lint(String content, File file) throws Exception;
+	public @Nullable List<Lint> lint(String content, File file) throws Exception;
 
 	/**
 	 * Returns a new FormatterStep which will only apply its changes

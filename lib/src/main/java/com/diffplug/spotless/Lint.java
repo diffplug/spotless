@@ -161,7 +161,10 @@ public final class Lint {
 	}
 
 	public static void toFile(List<Lint> lints, File file) throws IOException {
-		file.getParentFile().mkdirs();
+		boolean success = file.getParentFile().mkdirs();
+		if (!success) {
+			throw new IllegalArgumentException("Failed to create parent directory to " + file);
+		}
 		byte[] content = toString(lints).getBytes(StandardCharsets.UTF_8);
 		Files.write(file.toPath(), content);
 	}
