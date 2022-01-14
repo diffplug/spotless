@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 DiffPlug
+ * Copyright 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,10 +27,10 @@ import com.diffplug.spotless.StepHarness;
 
 class PipeStepPairTest {
 	@Test
-	void single() throws Exception {
-		PipeStepPair pair = PipeStepPair.named("underTest").openClose("spotless:off", "spotless:on").buildPair();
-		FormatterStep lowercase = FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT));
-		StepHarness harness = StepHarness.forSteps(pair.in(), lowercase, pair.out());
+	void single() {
+		FormatterStep pair = PipeStepPair.named("underTest").openClose("spotless:off", "spotless:on")
+				.preserveWithin(Paths.get(""), Arrays.asList(FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT))));
+		StepHarness harness = StepHarness.forSteps(pair);
 		harness.test(
 				StringPrinter.buildStringFromLines(
 						"A B C",
@@ -47,10 +47,10 @@ class PipeStepPairTest {
 	}
 
 	@Test
-	void multiple() throws Exception {
-		PipeStepPair pair = PipeStepPair.named("underTest").openClose("spotless:off", "spotless:on").buildPair();
-		FormatterStep lowercase = FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT));
-		StepHarness harness = StepHarness.forSteps(pair.in(), lowercase, pair.out());
+	void multiple() {
+		FormatterStep pair = PipeStepPair.named("underTest").openClose("spotless:off", "spotless:on")
+				.preserveWithin(Paths.get(""), Arrays.asList(FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT))));
+		StepHarness harness = StepHarness.forSteps(pair);
 		harness.test(
 				StringPrinter.buildStringFromLines(
 						"A B C",
@@ -81,27 +81,25 @@ class PipeStepPairTest {
 	}
 
 	@Test
-	void broken() throws Exception {
-		PipeStepPair pair = PipeStepPair.named("underTest").openClose("spotless:off", "spotless:on").buildPair();
-		FormatterStep uppercase = FormatterStep.createNeverUpToDate("uppercase", str -> str.toUpperCase(Locale.ROOT));
-		StepHarness harness = StepHarness.forSteps(pair.in(), uppercase, pair.out());
+	void broken() {
+		FormatterStep pair = PipeStepPair.named("underTest").openClose("spotless:off", "spotless:on")
+				.preserveWithin(Paths.get(""), Arrays.asList(FormatterStep.createNeverUpToDate("uppercase", str -> str.toUpperCase(Locale.ROOT))));
+		StepHarness harness = StepHarness.forSteps(pair);
 		// this fails because uppercase turns spotless:off into SPOTLESS:OFF, etc
-		harness.testException(StringPrinter.buildStringFromLines(
+		harness.testExceptionMsg(StringPrinter.buildStringFromLines(
 				"A B C",
 				"spotless:off",
 				"D E F",
 				"spotless:on",
-				"G H I"), exception -> {
-					exception.hasMessage("An intermediate step removed a match of spotless:off spotless:on");
-				});
+				"G H I")).isEqualTo("An intermediate step removed a match of spotless:off spotless:on");
 	}
 
 	@Test
-	void andApply() throws Exception {
-		FormatterStep lowercase = FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT));
-		FormatterStep lowercaseSometimes = PipeStepPair.named("lowercaseSometimes").openClose("<lower>", "</lower>")
-				.buildStepWhichAppliesSubSteps(Paths.get(""), Arrays.asList(lowercase));
-		StepHarness.forSteps(lowercaseSometimes).test(
+	void andApply() {
+		FormatterStep pair = PipeStepPair.named("lowercaseSometimes").openClose("<lower>", "</lower>")
+				.applyWithin(Paths.get(""), Arrays.asList(
+						FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT))));
+		StepHarness.forSteps(pair).test(
 				StringPrinter.buildStringFromLines(
 						"A B C",
 						"<lower>",
