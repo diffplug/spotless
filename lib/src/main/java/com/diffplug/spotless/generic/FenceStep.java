@@ -18,7 +18,6 @@ package com.diffplug.spotless.generic;
 import java.io.File;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -78,22 +77,22 @@ public class FenceStep {
 	}
 
 	/** Returns a step which will apply the given steps globally then preserve the content within the fence selected by the regex / openClose pair. */
-	public FormatterStep preserveWithin(Path rootPath, List<FormatterStep> steps) {
+	public FormatterStep preserveWithin(List<FormatterStep> steps) {
 		assertRegexSet();
 		return FormatterStep.createLazy(name,
 				() -> new PreserveWithin(regex, steps),
-				state -> FormatterFunc.Closeable.of(state.buildFormatter(rootPath), state));
+				state -> FormatterFunc.Closeable.of(state.buildFormatter(), state));
 	}
 
 	/**
 	 * Returns a step which will apply the given steps only within the fence selected by the regex / openClose pair.
 	 * Linting within the substeps is not supported.
 	 */
-	public FormatterStep applyWithin(Path rootPath, List<FormatterStep> steps) {
+	public FormatterStep applyWithin(List<FormatterStep> steps) {
 		assertRegexSet();
 		return FormatterStep.createLazy(name,
 				() -> new ApplyWithin(regex, steps),
-				state -> FormatterFunc.Closeable.of(state.buildFormatter(rootPath), state));
+				state -> FormatterFunc.Closeable.of(state.buildFormatter(), state));
 	}
 
 	static class ApplyWithin extends BaseImplementation implements FormatterFunc.Closeable.ResourceFuncNeedsFile<Formatter> {
@@ -178,12 +177,11 @@ public class FenceStep {
 			return builderInternal;
 		}
 
-		protected Formatter buildFormatter(Path rootDir) {
+		protected Formatter buildFormatter() {
 			return Formatter.builder()
 					.encoding(StandardCharsets.UTF_8) // can be any UTF, doesn't matter
 					.lineEndingsPolicy(LineEnding.UNIX.createPolicy()) // just internal, won't conflict with user
 					.steps(steps)
-					.rootDir(rootDir)
 					.build();
 		}
 

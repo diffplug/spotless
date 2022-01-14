@@ -59,7 +59,6 @@ class FormatterTest {
 				return Formatter.builder()
 						.lineEndingsPolicy(lineEndingsPolicy)
 						.encoding(encoding)
-						.rootDir(rootDir)
 						.steps(steps)
 						.build();
 			}

@@ -21,7 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.ByteArrayInputStream;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
@@ -245,7 +244,6 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 
 	private static Formatter formatter(LineEnding lineEnding, FormatterStep... steps) {
 		return Formatter.builder()
-				.rootDir(Paths.get(""))
 				.lineEndingsPolicy(lineEnding.createPolicy())
 				.encoding(UTF_8)
 				.steps(Arrays.asList(steps))

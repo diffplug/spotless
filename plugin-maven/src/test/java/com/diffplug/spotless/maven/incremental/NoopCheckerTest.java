@@ -28,7 +28,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.apache.maven.model.Build;
 import org.apache.maven.model.Plugin;
@@ -115,7 +114,6 @@ class NoopCheckerTest extends ResourceHarness {
 
 	private static Formatter dummyFormatter() {
 		return Formatter.builder()
-				.rootDir(Paths.get(""))
 				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
 				.encoding(UTF_8)
 				.steps(singletonList(mock(FormatterStep.class, withSettings().serializable())))

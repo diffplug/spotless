@@ -717,7 +717,7 @@ public class FormatExtension {
 		// configure it
 		configure.execute(formatExtension);
 		// create a step which applies all of those steps as sub-steps
-		addStep(fence.applyWithin(spotless.project.getRootDir().toPath(), formatExtension.steps));
+		addStep(fence.applyWithin(formatExtension.steps));
 	}
 
 	/**
@@ -753,7 +753,7 @@ public class FormatExtension {
 		task.setTarget(totalTarget);
 		List<FormatterStep> steps;
 		if (toggleFence != null) {
-			steps = Collections.singletonList(toggleFence.preserveWithin(getProject().getRootDir().toPath(), this.steps));
+			steps = Collections.singletonList(toggleFence.preserveWithin(this.steps));
 		} else {
 			steps = this.steps;
 		}

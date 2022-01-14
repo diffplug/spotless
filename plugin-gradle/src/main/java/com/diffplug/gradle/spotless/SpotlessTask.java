@@ -200,7 +200,6 @@ public abstract class SpotlessTask extends DefaultTask {
 		return Formatter.builder()
 				.lineEndingsPolicy(lineEndingsPolicy.get())
 				.encoding(Charset.forName(encoding))
-				.rootDir(getProjectDir().get().getAsFile().toPath())
 				.steps(steps.get())
 				.build();
 	}

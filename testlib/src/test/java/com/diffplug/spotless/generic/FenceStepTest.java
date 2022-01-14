@@ -15,7 +15,6 @@
  */
 package com.diffplug.spotless.generic;
 
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Locale;
 
@@ -29,7 +28,7 @@ class FenceStepTest {
 	@Test
 	void single() {
 		FormatterStep pair = FenceStep.named("underTest").openClose("spotless:off", "spotless:on")
-				.preserveWithin(Paths.get(""), Arrays.asList(FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT))));
+				.preserveWithin(Arrays.asList(FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT))));
 		StepHarness harness = StepHarness.forSteps(pair);
 		harness.test(
 				StringPrinter.buildStringFromLines(
@@ -49,7 +48,7 @@ class FenceStepTest {
 	@Test
 	void multiple() {
 		FormatterStep pair = FenceStep.named("underTest").openClose("spotless:off", "spotless:on")
-				.preserveWithin(Paths.get(""), Arrays.asList(FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT))));
+				.preserveWithin(Arrays.asList(FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT))));
 		StepHarness harness = StepHarness.forSteps(pair);
 		harness.test(
 				StringPrinter.buildStringFromLines(
@@ -83,7 +82,7 @@ class FenceStepTest {
 	@Test
 	void broken() {
 		FormatterStep pair = FenceStep.named("underTest").openClose("spotless:off", "spotless:on")
-				.preserveWithin(Paths.get(""), Arrays.asList(FormatterStep.createNeverUpToDate("uppercase", str -> str.toUpperCase(Locale.ROOT))));
+				.preserveWithin(Arrays.asList(FormatterStep.createNeverUpToDate("uppercase", str -> str.toUpperCase(Locale.ROOT))));
 		StepHarness harness = StepHarness.forSteps(pair);
 		// this fails because uppercase turns spotless:off into SPOTLESS:OFF, etc
 		harness.testExceptionMsg(StringPrinter.buildStringFromLines(
@@ -97,7 +96,7 @@ class FenceStepTest {
 	@Test
 	void andApply() {
 		FormatterStep pair = FenceStep.named("lowercaseSometimes").openClose("<lower>", "</lower>")
-				.applyWithin(Paths.get(""), Arrays.asList(
+				.applyWithin(Arrays.asList(
 						FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT))));
 		StepHarness.forSteps(pair).test(
 				StringPrinter.buildStringFromLines(

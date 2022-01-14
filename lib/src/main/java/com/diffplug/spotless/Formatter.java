@@ -24,8 +24,6 @@ import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.nio.charset.Charset;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,13 +35,11 @@ public final class Formatter implements Serializable, AutoCloseable {
 
 	private LineEnding.Policy lineEndingsPolicy;
 	private Charset encoding;
-	private Path rootDir;
 	private List<FormatterStep> steps;
 
-	private Formatter(LineEnding.Policy lineEndingsPolicy, Charset encoding, Path rootDirectory, List<FormatterStep> steps) {
+	private Formatter(LineEnding.Policy lineEndingsPolicy, Charset encoding, List<FormatterStep> steps) {
 		this.lineEndingsPolicy = Objects.requireNonNull(lineEndingsPolicy, "lineEndingsPolicy");
 		this.encoding = Objects.requireNonNull(encoding, "encoding");
-		this.rootDir = Objects.requireNonNull(rootDirectory, "rootDir");
 		this.steps = requireElementsNonNull(new ArrayList<>(steps));
 	}
 
@@ -51,7 +47,6 @@ public final class Formatter implements Serializable, AutoCloseable {
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		out.writeObject(lineEndingsPolicy);
 		out.writeObject(encoding.name());
-		out.writeObject(rootDir.toString());
 		out.writeObject(steps);
 	}
 
@@ -60,7 +55,6 @@ public final class Formatter implements Serializable, AutoCloseable {
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		lineEndingsPolicy = (LineEnding.Policy) in.readObject();
 		encoding = Charset.forName((String) in.readObject());
-		rootDir = Paths.get((String) in.readObject());
 		steps = (List<FormatterStep>) in.readObject();
 	}
 
@@ -78,10 +72,6 @@ public final class Formatter implements Serializable, AutoCloseable {
 		return encoding;
 	}
 
-	public Path getRootDir() {
-		return rootDir;
-	}
-
 	public List<FormatterStep> getSteps() {
 		return steps;
 	}
@@ -94,7 +84,6 @@ public final class Formatter implements Serializable, AutoCloseable {
 		// required parameters
 		private LineEnding.Policy lineEndingsPolicy;
 		private Charset encoding;
-		private Path rootDir;
 		private List<FormatterStep> steps;
 
 		private Builder() {}
@@ -109,18 +98,13 @@ public final class Formatter implements Serializable, AutoCloseable {
 			return this;
 		}
 
-		public Builder rootDir(Path rootDir) {
-			this.rootDir = rootDir;
-			return this;
-		}
-
 		public Builder steps(List<FormatterStep> steps) {
 			this.steps = steps;
 			return this;
 		}
 
 		public Formatter build() {
-			return new Formatter(lineEndingsPolicy, encoding, rootDir, steps);
+			return new Formatter(lineEndingsPolicy, encoding, steps);
 		}
 	}
 
@@ -192,7 +176,6 @@ public final class Formatter implements Serializable, AutoCloseable {
 		int result = 1;
 		result = prime * result + encoding.hashCode();
 		result = prime * result + lineEndingsPolicy.hashCode();
-		result = prime * result + rootDir.hashCode();
 		result = prime * result + steps.hashCode();
 		return result;
 	}
@@ -211,7 +194,6 @@ public final class Formatter implements Serializable, AutoCloseable {
 		Formatter other = (Formatter) obj;
 		return encoding.equals(other.encoding) &&
 				lineEndingsPolicy.equals(other.lineEndingsPolicy) &&
-				rootDir.equals(other.rootDir) &&
 				steps.equals(other.steps);
 	}
 
