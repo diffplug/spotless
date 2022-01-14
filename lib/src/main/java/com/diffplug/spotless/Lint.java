@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -161,12 +162,14 @@ public final class Lint {
 	}
 
 	public static void toFile(List<Lint> lints, File file) throws IOException {
-		boolean success = file.getParentFile().mkdirs();
-		if (!success) {
-			throw new IllegalArgumentException("Failed to create parent directory to " + file);
+		Path path = file.toPath();
+		Path parent = path.getParent();
+		if (parent == null) {
+			throw new IllegalArgumentException("file has no parent dir");
 		}
+		Files.createDirectories(parent);
 		byte[] content = toString(lints).getBytes(StandardCharsets.UTF_8);
-		Files.write(file.toPath(), content);
+		Files.write(path, content);
 	}
 
 	/** Attempts to parse a line number from the given exception. */
