@@ -161,6 +161,7 @@ public final class Lint {
 	}
 
 	public static void toFile(List<Lint> lints, File file) throws IOException {
+		file.getParentFile().mkdirs();
 		byte[] content = toString(lints).getBytes(StandardCharsets.UTF_8);
 		Files.write(file.toPath(), content);
 	}
