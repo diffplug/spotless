@@ -34,7 +34,7 @@ anchors:
       - *restore_cache_wrapper
       - *restore_cache_deps
       - run:
-          name: gradlew check
+          name: gradlew check -x spotlessCheck
           command: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew check --build-cache
       - store_test_results:
           path: testlib/build/test-results/test
