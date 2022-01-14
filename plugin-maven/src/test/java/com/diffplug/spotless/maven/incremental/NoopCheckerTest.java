@@ -37,7 +37,6 @@ import org.apache.maven.project.MavenProject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
@@ -120,7 +119,6 @@ class NoopCheckerTest extends ResourceHarness {
 				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
 				.encoding(UTF_8)
 				.steps(singletonList(mock(FormatterStep.class, withSettings().serializable())))
-				.exceptionPolicy(new FormatExceptionPolicyStrict())
 				.build();
 	}
 }

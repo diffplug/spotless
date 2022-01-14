@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.common.collect.Sets;
-import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
@@ -93,7 +92,6 @@ public abstract class FormatterFactory {
 		return Formatter.builder()
 				.encoding(formatterEncoding)
 				.lineEndingsPolicy(formatterLineEndingPolicy)
-				.exceptionPolicy(new FormatExceptionPolicyStrict())
 				.steps(formatterSteps)
 				.rootDir(config.getFileLocator().getBaseDir().toPath())
 				.build();

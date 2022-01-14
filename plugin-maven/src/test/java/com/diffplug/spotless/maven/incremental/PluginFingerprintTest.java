@@ -32,7 +32,6 @@ import org.codehaus.plexus.util.ReaderFactory;
 import org.codehaus.plexus.util.xml.XmlStreamReader;
 import org.junit.jupiter.api.Test;
 
-import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
@@ -250,7 +249,6 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 				.lineEndingsPolicy(lineEnding.createPolicy())
 				.encoding(UTF_8)
 				.steps(Arrays.asList(steps))
-				.exceptionPolicy(new FormatExceptionPolicyStrict())
 				.build();
 	}
 }
