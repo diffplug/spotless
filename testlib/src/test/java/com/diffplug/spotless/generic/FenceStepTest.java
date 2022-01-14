@@ -25,10 +25,10 @@ import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.StepHarness;
 
-class PipeStepPairTest {
+class FenceStepTest {
 	@Test
 	void single() {
-		FormatterStep pair = PipeStepPair.named("underTest").openClose("spotless:off", "spotless:on")
+		FormatterStep pair = FenceStep.named("underTest").openClose("spotless:off", "spotless:on")
 				.preserveWithin(Paths.get(""), Arrays.asList(FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT))));
 		StepHarness harness = StepHarness.forSteps(pair);
 		harness.test(
@@ -48,7 +48,7 @@ class PipeStepPairTest {
 
 	@Test
 	void multiple() {
-		FormatterStep pair = PipeStepPair.named("underTest").openClose("spotless:off", "spotless:on")
+		FormatterStep pair = FenceStep.named("underTest").openClose("spotless:off", "spotless:on")
 				.preserveWithin(Paths.get(""), Arrays.asList(FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT))));
 		StepHarness harness = StepHarness.forSteps(pair);
 		harness.test(
@@ -82,7 +82,7 @@ class PipeStepPairTest {
 
 	@Test
 	void broken() {
-		FormatterStep pair = PipeStepPair.named("underTest").openClose("spotless:off", "spotless:on")
+		FormatterStep pair = FenceStep.named("underTest").openClose("spotless:off", "spotless:on")
 				.preserveWithin(Paths.get(""), Arrays.asList(FormatterStep.createNeverUpToDate("uppercase", str -> str.toUpperCase(Locale.ROOT))));
 		StepHarness harness = StepHarness.forSteps(pair);
 		// this fails because uppercase turns spotless:off into SPOTLESS:OFF, etc
@@ -96,7 +96,7 @@ class PipeStepPairTest {
 
 	@Test
 	void andApply() {
-		FormatterStep pair = PipeStepPair.named("lowercaseSometimes").openClose("<lower>", "</lower>")
+		FormatterStep pair = FenceStep.named("lowercaseSometimes").openClose("<lower>", "</lower>")
 				.applyWithin(Paths.get(""), Arrays.asList(
 						FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT))));
 		StepHarness.forSteps(pair).test(

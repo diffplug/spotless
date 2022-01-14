@@ -32,10 +32,10 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Lint;
 
-public class PipeStepPair {
+public class FenceStep {
 	/** Declares the name of the step. */
-	public static PipeStepPair named(String name) {
-		return new PipeStepPair(name);
+	public static FenceStep named(String name) {
+		return new FenceStep(name);
 	}
 
 	public static String defaultToggleName() {
@@ -53,22 +53,22 @@ public class PipeStepPair {
 	String name;
 	Pattern regex;
 
-	private PipeStepPair(String name) {
+	private FenceStep(String name) {
 		this.name = Objects.requireNonNull(name);
 	}
 
 	/** Defines the opening and closing markers. */
-	public PipeStepPair openClose(String open, String close) {
+	public FenceStep openClose(String open, String close) {
 		return regex(Pattern.quote(open) + "([\\s\\S]*?)" + Pattern.quote(close));
 	}
 
 	/** Defines the pipe via regex. Must have *exactly one* capturing group. */
-	public PipeStepPair regex(String regex) {
+	public FenceStep regex(String regex) {
 		return regex(Pattern.compile(regex));
 	}
 
 	/** Defines the pipe via regex. Must have *exactly one* capturing group. */
-	public PipeStepPair regex(Pattern regex) {
+	public FenceStep regex(Pattern regex) {
 		this.regex = Objects.requireNonNull(regex);
 		return this;
 	}
@@ -77,7 +77,7 @@ public class PipeStepPair {
 		Objects.requireNonNull(regex, "must call regex() or openClose()");
 	}
 
-	/** Returns a step which will apply the given steps but preserve the content selected by the regex / openClose pair. */
+	/** Returns a step which will apply the given steps globally then preserve the content within the fence selected by the regex / openClose pair. */
 	public FormatterStep preserveWithin(Path rootPath, List<FormatterStep> steps) {
 		assertRegexSet();
 		return FormatterStep.createLazy(name,
@@ -86,7 +86,7 @@ public class PipeStepPair {
 	}
 
 	/**
-	 * Returns a step which will apply the given steps only within the blocks selected by the regex / openClose pair.
+	 * Returns a step which will apply the given steps only within the fence selected by the regex / openClose pair.
 	 * Linting within the substeps is not supported.
 	 */
 	public FormatterStep applyWithin(Path rootPath, List<FormatterStep> steps) {
@@ -96,7 +96,7 @@ public class PipeStepPair {
 				state -> FormatterFunc.Closeable.of(state.buildFormatter(rootPath), state));
 	}
 
-	static class ApplyWithin extends Apply implements FormatterFunc.Closeable.ResourceFuncNeedsFile<Formatter> {
+	static class ApplyWithin extends BaseImplementation implements FormatterFunc.Closeable.ResourceFuncNeedsFile<Formatter> {
 		ApplyWithin(Pattern regex, List<FormatterStep> steps) {
 			super(regex, steps);
 		}
@@ -114,7 +114,7 @@ public class PipeStepPair {
 		}
 	}
 
-	static class PreserveWithin extends Apply implements FormatterFunc.Closeable.ResourceFuncNeedsFile<Formatter> {
+	static class PreserveWithin extends BaseImplementation implements FormatterFunc.Closeable.ResourceFuncNeedsFile<Formatter> {
 		PreserveWithin(Pattern regex, List<FormatterStep> steps) {
 			super(regex, steps);
 		}
@@ -148,14 +148,14 @@ public class PipeStepPair {
 		}
 	}
 
-	static class Apply implements Serializable {
+	static class BaseImplementation implements Serializable {
 		final Pattern regex;
 		final List<FormatterStep> steps;
 
 		transient ArrayList<String> groups = new ArrayList<>();
 		transient StringBuilder builderInternal;
 
-		public Apply(Pattern regex, List<FormatterStep> steps) {
+		public BaseImplementation(Pattern regex, List<FormatterStep> steps) {
 			this.regex = regex;
 			this.steps = steps;
 		}

@@ -17,23 +17,23 @@ package com.diffplug.spotless.maven.generic;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
-import com.diffplug.spotless.generic.PipeStepPair;
+import com.diffplug.spotless.generic.FenceStep;
 
 public class ToggleOffOn {
 	@Parameter
-	public String off = PipeStepPair.defaultToggleOff();
+	public String off = FenceStep.defaultToggleOff();
 
 	@Parameter
-	public String on = PipeStepPair.defaultToggleOn();
+	public String on = FenceStep.defaultToggleOn();
 
 	@Parameter
 	public String regex;
 
-	public PipeStepPair createPair() {
+	public FenceStep createFence() {
 		if (regex != null) {
-			return PipeStepPair.named(PipeStepPair.defaultToggleName()).regex(regex);
+			return FenceStep.named(FenceStep.defaultToggleName()).regex(regex);
 		} else {
-			return PipeStepPair.named(PipeStepPair.defaultToggleName()).openClose(off, on);
+			return FenceStep.named(FenceStep.defaultToggleName()).openClose(off, on);
 		}
 	}
 }

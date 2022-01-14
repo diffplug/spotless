@@ -85,7 +85,7 @@ public abstract class FormatterFactory {
 				.collect(Collectors.toCollection(() -> new ArrayList<FormatterStep>()));
 		if (toggle != null) {
 			List<FormatterStep> formatterStepsBeforeToggle = formatterSteps;
-			formatterSteps = Collections.singletonList(toggle.createPair().preserveWithin(config.getFileLocator().getBaseDir().toPath(), formatterStepsBeforeToggle));
+			formatterSteps = Collections.singletonList(toggle.createFence().preserveWithin(config.getFileLocator().getBaseDir().toPath(), formatterStepsBeforeToggle));
 		}
 		return Formatter.builder()
 				.encoding(formatterEncoding)
