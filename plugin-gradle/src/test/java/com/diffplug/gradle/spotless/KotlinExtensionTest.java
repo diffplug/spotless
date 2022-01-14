@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -135,7 +135,7 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 				"    }",
 				"}");
 		setFile("src/main/kotlin/basic.kt").toResource("kotlin/ktlint/basic.dirty");
-		BuildResult result = gradleRunner().withArguments("spotlessApply").buildAndFail();
+		BuildResult result = gradleRunner().withArguments("spotlessCheck", "--stacktrace").buildAndFail();
 		assertThat(result.getOutput()).contains("Unexpected indentation (4) (it should be 6)");
 	}
 
