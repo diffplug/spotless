@@ -37,8 +37,6 @@ import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.work.Incremental;
 
 import com.diffplug.gradle.spotless.JvmLocalCache.LiveCache;
-import com.diffplug.spotless.FormatExceptionPolicy;
-import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
@@ -119,15 +117,15 @@ public abstract class SpotlessTask extends DefaultTask {
 		return subtreeSha;
 	}
 
-	protected FormatExceptionPolicy exceptionPolicy = new FormatExceptionPolicyStrict();
+	protected LintPolicy lintPolicy = new LintPolicy();
 
-	public void setExceptionPolicy(FormatExceptionPolicy exceptionPolicy) {
-		this.exceptionPolicy = Objects.requireNonNull(exceptionPolicy);
+	public void setLintPolicy(LintPolicy lintPolicy) {
+		this.lintPolicy = Objects.requireNonNull(lintPolicy);
 	}
 
 	@Input
-	public FormatExceptionPolicy getExceptionPolicy() {
-		return exceptionPolicy;
+	public LintPolicy getLintPolicy() {
+		return lintPolicy;
 	}
 
 	protected FileCollection target;
@@ -204,7 +202,6 @@ public abstract class SpotlessTask extends DefaultTask {
 				.encoding(Charset.forName(encoding))
 				.rootDir(getProjectDir().get().getAsFile().toPath())
 				.steps(steps.get())
-				.exceptionPolicy(exceptionPolicy)
 				.build();
 	}
 }

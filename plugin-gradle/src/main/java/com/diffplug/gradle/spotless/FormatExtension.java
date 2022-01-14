@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,6 @@ import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileCollection;
 
 import com.diffplug.common.base.Preconditions;
-import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LazyForwardingEquality;
@@ -137,16 +136,20 @@ public class FormatExtension {
 		encoding = Objects.requireNonNull(charset);
 	}
 
-	final FormatExceptionPolicyStrict exceptionPolicy = new FormatExceptionPolicyStrict();
+	final LintPolicy lintPolicy = new LintPolicy();
 
 	/** Ignores errors in the given step. */
+	@Deprecated
 	public void ignoreErrorForStep(String stepName) {
-		exceptionPolicy.excludeStep(Objects.requireNonNull(stepName));
+		// TODO: deprecation message
+		lintPolicy.excludeStep(Objects.requireNonNull(stepName));
 	}
 
 	/** Ignores errors for the given relative path. */
+	@Deprecated
 	public void ignoreErrorForPath(String relativePath) {
-		exceptionPolicy.excludePath(Objects.requireNonNull(relativePath));
+		// TODO: deprecation message
+		lintPolicy.excludePath(Objects.requireNonNull(relativePath));
 	}
 
 	/** Sets encoding to use (defaults to {@link SpotlessExtensionImpl#getEncoding()}). */
@@ -745,7 +748,7 @@ public class FormatExtension {
 	/** Sets up a format task according to the values in this extension. */
 	protected void setupTask(SpotlessTask task) {
 		task.setEncoding(getEncoding().name());
-		task.setExceptionPolicy(exceptionPolicy);
+		task.setLintPolicy(lintPolicy);
 		FileCollection totalTarget = targetExclude == null ? target : target.minus(targetExclude);
 		task.setTarget(totalTarget);
 		List<FormatterStep> steps;

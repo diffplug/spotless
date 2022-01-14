@@ -29,6 +29,7 @@ import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileVisitDetails;
 import org.gradle.api.file.FileVisitor;
 import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 
@@ -40,6 +41,9 @@ import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 	@Internal
 	public abstract Property<String> getEncoding();
+
+	@Input
+	public abstract Property<LintPolicy> getLintPolicy();
 
 	public void performActionTest() throws IOException {
 		performAction(true);
@@ -122,6 +126,7 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 		super.init(impl);
 		getProjectPath().set(getProject().getPath());
 		getEncoding().set(impl.getEncoding());
+		getLintPolicy().set(impl.getLintPolicy());
 	}
 
 	private String getTaskPathPrefix() {
@@ -134,27 +139,37 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 	}
 
 	private void checkForLint() {
+		LintPolicy lintPolicy = getLintPolicy().get();
 		File lintDir = applyHasRun() ? lintApplyDir() : lintCheckDir();
 		ConfigurableFileTree lintFiles = getConfigCacheWorkaround().fileTree().from(lintDir);
 		List<File> withLint = new ArrayList<>();
+		StringBuilder errorMsg = new StringBuilder();
 		lintFiles.visit(fileVisitDetails -> {
 			if (fileVisitDetails.isDirectory()) {
 				return;
 			}
 			try {
 				String path = fileVisitDetails.getPath();
-				File originalSource = new File(getProjectDir().get().getAsFile(), path);
-				List<Lint> lints = Lint.fromFile(fileVisitDetails.getFile());
-				for (Lint lint : lints) {
-					System.err.println(path + ":" + lint.toString());
+				if (lintPolicy.runLintOn(path)) {
+					File originalSource = new File(getProjectDir().get().getAsFile(), path);
+					List<Lint> lints = Lint.fromFile(fileVisitDetails.getFile());
+					boolean hasLints = false;
+					for (Lint lint : lints) {
+						if (lintPolicy.includeLint(path, lint)) {
+							hasLints = true;
+							errorMsg.append(path + ":" + lint.toString() + "\n");
+						}
+					}
+					if (hasLints) {
+						withLint.add(originalSource);
+					}
 				}
-				withLint.add(originalSource);
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
 		});
 		if (!withLint.isEmpty()) {
-			throw new GradleException("The files above cannot be fixed by spotlessApply");
+			throw new GradleException("The files below cannot be fixed by spotlessApply\n" + errorMsg);
 		}
 	}
 }

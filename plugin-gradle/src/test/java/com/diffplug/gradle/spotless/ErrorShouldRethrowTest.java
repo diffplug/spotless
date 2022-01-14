@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,10 +66,8 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
 		runWithFailure(
-				"> Task :spotlessMisc FAILED\n" +
-						"Step 'no swearing' found problem in 'README.md':\n" +
-						"No swearing!\n" +
-						"java.lang.RuntimeException: No swearing!");
+				"> The files below cannot be fixed by spotlessApply\n" +
+						"  README.md:1: (no swearing) java.lang.RuntimeException: No swearing!");
 	}
 
 	@Test
@@ -89,8 +87,7 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 				"    } // format",
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
-		runWithSuccess("> Task :spotlessMisc\n" +
-				"Unable to apply step 'no swearing' to 'README.md'");
+		runWithSuccess("> Task :spotlessMisc");
 	}
 
 	@Test
@@ -100,8 +97,7 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 				"    } // format",
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
-		runWithSuccess("> Task :spotlessMisc\n" +
-				"Unable to apply step 'no swearing' to 'README.md'");
+		runWithSuccess("> Task :spotlessMisc");
 	}
 
 	@Test
@@ -112,10 +108,8 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 				"    } // format",
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
-		runWithFailure("> Task :spotlessMisc FAILED\n" +
-				"Step 'no swearing' found problem in 'README.md':\n" +
-				"No swearing!\n" +
-				"java.lang.RuntimeException: No swearing!");
+		runWithFailure("> The files below cannot be fixed by spotlessApply\n" +
+				"  README.md:1: (no swearing) java.lang.RuntimeException: No swearing!");
 	}
 
 	private void runWithSuccess(String expectedToStartWith) throws Exception {
@@ -124,13 +118,13 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 	}
 
 	private void runWithFailure(String expectedToStartWith) throws Exception {
-		BuildResult result = gradleRunner().withArguments("check").buildAndFail();
+		BuildResult result = gradleRunner().forwardOutput().withArguments("check").buildAndFail();
 		assertResultAndMessages(result, TaskOutcome.FAILED, expectedToStartWith);
 	}
 
 	private void assertResultAndMessages(BuildResult result, TaskOutcome outcome, String expectedToStartWith) {
 		String output = result.getOutput();
-		int register = output.indexOf(":spotlessInternalRegisterDependencies");
+		int register = output.indexOf("Execution failed for task ':spotlessMiscCheck'.");
 		int firstNewlineAfterThat = output.indexOf('\n', register + 1);
 		String useThisToMatch = output.substring(firstNewlineAfterThat);
 
@@ -138,7 +132,5 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 		List<String> actualLines = Splitter.on('\n').splitToList(LineEnding.toUnix(useThisToMatch.trim()));
 		String actualStart = String.join("\n", actualLines.subList(0, numNewlines + 1));
 		Assertions.assertThat(actualStart).isEqualTo(expectedToStartWith);
-		Assertions.assertThat(outcomes(result, outcome).size() + outcomes(result, TaskOutcome.UP_TO_DATE).size() + outcomes(result, TaskOutcome.NO_SOURCE).size())
-				.isEqualTo(outcomes(result).size());
 	}
 }
