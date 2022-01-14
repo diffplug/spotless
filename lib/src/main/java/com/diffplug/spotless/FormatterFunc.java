@@ -34,8 +34,12 @@ public interface FormatterFunc {
 		return apply(unix);
 	}
 
-	/** Calculates a list of lints against the given content. */
-	default List<Lint> lint(String content, File file) {
+	/**
+	 * Calculates a list of lints against the given content.
+	 * By default, that's just an throwables thrown by the lint.
+	 */
+	default List<Lint> lint(String content, File file) throws Exception {
+		apply(content, file);
 		return Collections.emptyList();
 	}
 

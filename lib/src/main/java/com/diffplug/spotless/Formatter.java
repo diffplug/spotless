@@ -173,8 +173,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 					unix = LineEnding.toUnix(formatted);
 				}
 			} catch (Throwable e) {
-				String relativePath = rootDir.relativize(file.toPath()).toString();
-				exceptionPolicy.handleError(e, step, relativePath);
+				// we ignore exceptions in format because we collect them in lint
 			}
 		}
 		return unix;
@@ -192,8 +191,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 					totalLints.addAll(lints);
 				}
 			} catch (Throwable e) {
-				String relativePath = rootDir.relativize(file.toPath()).toString();
-				exceptionPolicy.handleError(e, step, relativePath);
+				totalLints.add(Lint.createFromThrowable(step, e));
 			}
 		}
 		if (totalLints.isEmpty()) {

@@ -164,4 +164,43 @@ public final class Lint {
 		byte[] content = toString(lints).getBytes(StandardCharsets.UTF_8);
 		Files.write(file.toPath(), content);
 	}
+
+	/** Attempts to parse a line number from the given exception. */
+	static Lint createFromThrowable(FormatterStep step, Throwable e) {
+		Throwable current = e;
+		while (current != null) {
+			String message = current.getMessage();
+			int lineNumber = lineNumberFor(message);
+			if (lineNumber != -1) {
+				return Lint.create(step.getName(), msgFrom(message), lineNumber);
+			}
+			current = current.getCause();
+		}
+		return Lint.create(step.getName(), ThrowingEx.stacktrace(e), 1);
+	}
+
+	private static int lineNumberFor(String message) {
+		if (message == null) {
+			return -1;
+		}
+		int firstColon = message.indexOf(':');
+		if (firstColon == -1) {
+			return -1;
+		}
+		String candidateNum = message.substring(0, firstColon);
+		try {
+			return Integer.parseInt(candidateNum);
+		} catch (NumberFormatException e) {
+			return -1;
+		}
+	}
+
+	private static String msgFrom(String message) {
+		for (int i = 0; i < message.length(); ++i) {
+			if (Character.isLetter(message.charAt(i))) {
+				return message.substring(i);
+			}
+		}
+		return "";
+	}
 }
