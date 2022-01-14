@@ -33,6 +33,7 @@ import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 
 import com.diffplug.spotless.FileSignature;
+import com.diffplug.spotless.Lint;
 import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
@@ -52,9 +53,11 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 	private void performAction(boolean isTest) throws IOException {
 		ConfigurableFileTree files = getConfigCacheWorkaround().fileTree().from(contentDir());
 		if (files.isEmpty()) {
+			checkForLint();
 			getState().setDidWork(sourceDidWork());
 		} else if (!isTest && applyHasRun()) {
 			// if our matching apply has already run, then we don't need to do anything
+			checkForLint();
 			getState().setDidWork(false);
 		} else {
 			List<File> problemFiles = new ArrayList<>();
@@ -105,6 +108,8 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 								getEncoding().get())
 						.problemFiles(problemFiles)
 						.getMessage());
+			} else {
+				checkForLint();
 			}
 		}
 	}
@@ -126,5 +131,30 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 
 	private static String calculateGradleCommand() {
 		return FileSignature.machineIsWin() ? "gradlew.bat" : "./gradlew";
+	}
+
+	private void checkForLint() {
+		File lintDir = applyHasRun() ? lintApplyDir() : lintCheckDir();
+		ConfigurableFileTree lintFiles = getConfigCacheWorkaround().fileTree().from(lintDir);
+		List<File> withLint = new ArrayList<>();
+		lintFiles.visit(fileVisitDetails -> {
+			if (fileVisitDetails.isDirectory()) {
+				return;
+			}
+			try {
+				String path = fileVisitDetails.getPath();
+				File originalSource = new File(getProjectDir().get().getAsFile(), path);
+				List<Lint> lints = Lint.fromFile(fileVisitDetails.getFile());
+				for (Lint lint : lints) {
+					System.err.println(path + ":" + lint.toString());
+				}
+				withLint.add(originalSource);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		});
+		if (!withLint.isEmpty()) {
+			throw new GradleException("The files above cannot be fixed by spotlessApply");
+		}
 	}
 }
