@@ -90,7 +90,7 @@ public class ResourceHarness {
 		if (url == null) {
 			throw new IllegalArgumentException("No such resource " + filename);
 		}
-		return ThrowingEx.get(() -> Resources.toString(url, StandardCharsets.UTF_8));
+		return ThrowingEx.get(() -> LineEnding.toUnix(Resources.toString(url, StandardCharsets.UTF_8)));
 	}
 
 	/** Returns Files (in a temporary folder) which has the contents of the given file from the src/test/resources directory. */
