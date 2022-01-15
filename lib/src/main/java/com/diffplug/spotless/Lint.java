@@ -17,6 +17,7 @@ package com.diffplug.spotless;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,7 +30,9 @@ import java.util.Objects;
  * for severity and confidence are pushed down to the configuration of the lint tool. If a lint makes it
  * to Spotless, then it is by definition.
  */
-public final class Lint {
+public final class Lint implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	private int lineStart, lineEnd; // 1-indexed
 	private String code; // e.g. CN_IDIOM https://spotbugs.readthedocs.io/en/stable/bugDescriptions.html#cn-class-implements-cloneable-but-does-not-define-or-use-clone-method-cn-idiom
 	private String msg;

@@ -25,6 +25,8 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.graalvm.compiler.core.common.SuppressFBWarnings;
+
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
@@ -96,6 +98,8 @@ public class FenceStep {
 	}
 
 	static class ApplyWithin extends BaseImplementation implements FormatterFunc.Closeable.ResourceFuncNeedsFile<Formatter> {
+		private static final long serialVersionUID = 1L;
+
 		ApplyWithin(Pattern regex, List<FormatterStep> steps) {
 			super(regex, steps);
 		}
@@ -114,6 +118,8 @@ public class FenceStep {
 	}
 
 	static class PreserveWithin extends BaseImplementation implements FormatterFunc.Closeable.ResourceFuncNeedsFile<Formatter> {
+		private static final long serialVersionUID = 1L;
+
 		PreserveWithin(Pattern regex, List<FormatterStep> steps) {
 			super(regex, steps);
 		}
@@ -147,7 +153,10 @@ public class FenceStep {
 		}
 	}
 
+	@SuppressFBWarnings(value = "SE_TRANSIENT_FIELD_NOT_RESTORED", justification = "accessed via getters that repopulate")
 	static class BaseImplementation implements Serializable {
+		private static final long serialVersionUID = 1L;
+
 		final Pattern regex;
 		final List<FormatterStep> steps;
 
@@ -223,6 +232,8 @@ public class FenceStep {
 	}
 
 	static class IntermediateStepRemovedException extends Exception {
+		private static final long serialVersionUID = 1L;
+
 		Lint lint;
 
 		IntermediateStepRemovedException(Lint lint) {
