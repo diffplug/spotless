@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,13 +25,14 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import com.diffplug.common.collect.ImmutableMap;
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.StepHarnessWithFile;
 import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.tag.NpmTest;
 
 @NpmTest
-class PrettierFormatterStepTest {
+class PrettierFormatterStepTest extends ResourceHarness {
 
 	@NpmTest
 	@Nested
@@ -96,8 +97,8 @@ class PrettierFormatterStepTest {
 					npmPathResolver(),
 					new PrettierConfig(null, Collections.emptyMap()));
 
-			try (StepHarnessWithFile stepHarness = StepHarnessWithFile.forStep(formatterStep)) {
-				stepHarness.testResource(new File("test.json"), dirtyFile, cleanFile);
+			try (StepHarnessWithFile stepHarness = StepHarnessWithFile.forStep(this, formatterStep)) {
+				stepHarness.testResource("test.json", dirtyFile, cleanFile);
 			}
 		}
 
@@ -110,10 +111,8 @@ class PrettierFormatterStepTest {
 					npmPathResolver(),
 					new PrettierConfig(null, ImmutableMap.of("parser", "postcss")));
 			try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
-				stepHarness.testResourceException("npm/prettier/filetypes/scss/scss.dirty", exception -> {
-					exception.hasMessageContaining("HTTP 501");
-					exception.hasMessageContaining("Couldn't resolve parser \"postcss\"");
-				});
+				stepHarness.testResourceExceptionMsg("npm/prettier/filetypes/scss/scss.dirty").startsWith(
+						"com.diffplug.spotless.npm.SimpleRestClient$SimpleRestResponseException: Unexpected response status code at /prettier/format [HTTP 501] -- (Error while formatting: Error: Couldn't resolve parser \"postcss\")");
 			}
 		}
 	}

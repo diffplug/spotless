@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,11 +34,7 @@ class KtLintStepTest extends ResourceHarness {
 		FormatterStep step = KtLintStep.create(TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
-				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
-					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("Error on line: 1, column: 2\n" +
-							"Wildcard import");
-				});
+				.testResourceExceptionMsg("kotlin/ktlint/unsolvable.dirty").isEqualTo("Error on line: 1, column: 2\nWildcard import");
 	}
 
 	@Test
@@ -46,11 +42,7 @@ class KtLintStepTest extends ResourceHarness {
 		FormatterStep step = KtLintStep.create("0.31.0", TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
-				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
-					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("Error on line: 1, column: 1\n" +
-							"Wildcard import");
-				});
+				.testResourceExceptionMsg("kotlin/ktlint/unsolvable.dirty").isEqualTo("Error on line: 1, column: 1\nWildcard import");
 	}
 
 	// Regression test to ensure it works on the version it switched to Pinterest (version 0.32.0)
@@ -61,11 +53,7 @@ class KtLintStepTest extends ResourceHarness {
 		FormatterStep step = KtLintStep.create("0.32.0", TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
-				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
-					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("Error on line: 1, column: 1\n" +
-							"Wildcard import");
-				});
+				.testResourceExceptionMsg("kotlin/ktlint/unsolvable.dirty").isEqualTo("Error on line: 1, column: 1\nWildcard import");
 	}
 
 	// Regression test to handle alpha and 1.x version numbers

@@ -17,14 +17,11 @@ package com.diffplug.spotless;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.diffplug.common.base.StandardSystemProperty;
 import com.diffplug.spotless.generic.EndWithNewlineStep;
 
 class FormatterTest {
@@ -34,7 +31,6 @@ class FormatterTest {
 		new SerializableEqualityTester() {
 			private LineEnding.Policy lineEndingsPolicy = LineEnding.UNIX.createPolicy();
 			private Charset encoding = StandardCharsets.UTF_8;
-			private Path rootDir = Paths.get(StandardSystemProperty.USER_DIR.value());
 			private List<FormatterStep> steps = new ArrayList<>();
 
 			@Override
@@ -45,9 +41,6 @@ class FormatterTest {
 				api.areDifferentThan();
 
 				encoding = StandardCharsets.UTF_16;
-				api.areDifferentThan();
-
-				rootDir = rootDir.getParent();
 				api.areDifferentThan();
 
 				steps.add(EndWithNewlineStep.create());

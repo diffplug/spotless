@@ -25,42 +25,33 @@ import org.junit.jupiter.api.Test;
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
-import com.diffplug.spotless.StepHarness;
+import com.diffplug.spotless.StepHarnessWithFile;
 import com.diffplug.spotless.TestProvisioner;
 
 class DiktatStepTest extends ResourceHarness {
-
 	@Test
 	void behavior() throws Exception {
 		FormatterStep step = DiktatStep.create(TestProvisioner.mavenCentral());
-		StepHarness.forStep(step)
-				.testResourceException("kotlin/diktat/Unsolvable.kt", assertion -> {
-					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("There are 2 unfixed errors:" +
-							System.lineSeparator() + "Error on line: 1, column: 1 cannot be fixed automatically" +
-							System.lineSeparator() + "[FILE_NAME_INCORRECT] file name is incorrect - it should end with .kt extension and be in PascalCase: " +
-							System.lineSeparator() + "Error on line: 1, column: 1 cannot be fixed automatically" +
-							System.lineSeparator() + "[FILE_NAME_MATCH_CLASS] file name is incorrect - it should match with the class described in it if there is the only one class declared:  vs Unsolvable");
-				});
+		StepHarnessWithFile.forStep(this, step)
+				.testResourceExceptionMsg("kotlin/diktat/Unsolvable.kt").isEqualTo("There are 2 unfixed errors:" +
+						System.lineSeparator() + "Error on line: 1, column: 1 cannot be fixed automatically" +
+						System.lineSeparator() + "[FILE_NAME_INCORRECT] file name is incorrect - it should end with .kt extension and be in PascalCase: " +
+						System.lineSeparator() + "Error on line: 1, column: 1 cannot be fixed automatically" +
+						System.lineSeparator() + "[FILE_NAME_MATCH_CLASS] file name is incorrect - it should match with the class described in it if there is the only one class declared:  vs Unsolvable");
 	}
 
 	@Test
 	void behaviorConf() throws Exception {
-
 		String configPath = "src/main/kotlin/diktat-analysis.yml";
 		File conf = setFile(configPath).toResource("kotlin/diktat/diktat-analysis.yml");
 		FileSignature config = signAsList(conf);
 
 		FormatterStep step = DiktatStep.create("1.0.1", TestProvisioner.mavenCentral(), Collections.emptyMap(), config);
-		StepHarness.forStep(step)
-				.testResourceException("kotlin/diktat/Unsolvable.kt", assertion -> {
-					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("There are 2 unfixed errors:" +
-							System.lineSeparator() + "Error on line: 1, column: 1 cannot be fixed automatically" +
-							System.lineSeparator() + "[FILE_NAME_INCORRECT] file name is incorrect - it should end with .kt extension and be in PascalCase: " +
-							System.lineSeparator() + "Error on line: 1, column: 1 cannot be fixed automatically" +
-							System.lineSeparator() + "[FILE_NAME_MATCH_CLASS] file name is incorrect - it should match with the class described in it if there is the only one class declared:  vs Unsolvable");
-				});
+		StepHarnessWithFile.forStep(this, step)
+				.testResourceExceptionMsg("kotlin/diktat/Unsolvable.kt").isEqualTo("There are 2 unfixed errors:" +
+						System.lineSeparator() + "Error on line: 1, column: 1 cannot be fixed automatically" +
+						System.lineSeparator() + "[FILE_NAME_INCORRECT] file name is incorrect - it should end with .kt extension and be in PascalCase: " +
+						System.lineSeparator() + "Error on line: 1, column: 1 cannot be fixed automatically" +
+						System.lineSeparator() + "[FILE_NAME_MATCH_CLASS] file name is incorrect - it should match with the class described in it if there is the only one class declared:  vs Unsolvable");
 	}
-
 }

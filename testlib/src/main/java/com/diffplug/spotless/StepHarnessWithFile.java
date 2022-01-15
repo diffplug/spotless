@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,78 +18,91 @@ package com.diffplug.spotless;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+
+import org.assertj.core.api.AbstractStringAssert;
+import org.assertj.core.api.Assertions;
 
 /** An api for testing a {@code FormatterStep} that depends on the File path. */
 public class StepHarnessWithFile implements AutoCloseable {
-	private final FormatterFunc formatter;
+	private final Formatter formatter;
+	private ResourceHarness harness;
 
-	private StepHarnessWithFile(FormatterFunc formatter) {
+	private StepHarnessWithFile(ResourceHarness harness, Formatter formatter) {
+		this.harness = Objects.requireNonNull(harness);
 		this.formatter = Objects.requireNonNull(formatter);
+
 	}
 
 	/** Creates a harness for testing steps which do depend on the file. */
-	public static StepHarnessWithFile forStep(FormatterStep step) {
-		// We don't care if an individual FormatterStep is misbehaving on line-endings, because
-		// Formatter fixes that.  No reason to care in tests either.  It's likely to pop up when
-		// running tests on Windows from time-to-time
-		return new StepHarnessWithFile(FormatterFunc.Closeable.ofDangerous(
-				() -> {
-					if (step instanceof FormatterStepImpl.Standard) {
-						((FormatterStepImpl.Standard<?>) step).cleanupFormatterFunc();
-					}
-				},
-				new FormatterFunc() {
-					@Override
-					public String apply(String unix) throws Exception {
-						return apply(unix, new File(""));
-					}
-
-					@Override
-					public String apply(String unix, File file) throws Exception {
-						return LineEnding.toUnix(step.format(unix, file));
-					}
-				}));
+	public static StepHarnessWithFile forStep(ResourceHarness harness, FormatterStep step) {
+		return new StepHarnessWithFile(harness, Formatter.builder()
+				.encoding(StandardCharsets.UTF_8)
+				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
+				.steps(Arrays.asList(step))
+				.build());
 	}
 
 	/** Creates a harness for testing a formatter whose steps do depend on the file. */
-	public static StepHarnessWithFile forFormatter(Formatter formatter) {
-		return new StepHarnessWithFile(FormatterFunc.Closeable.ofDangerous(
-				formatter::close,
-				input -> formatter.compute(input, new File(""))));
+	public static StepHarnessWithFile forFormatter(ResourceHarness harness, Formatter formatter) {
+		return new StepHarnessWithFile(harness, formatter);
 	}
 
 	/** Asserts that the given element is transformed as expected, and that the result is idempotent. */
-	public StepHarnessWithFile test(File file, String before, String after) throws Exception {
-		String actual = formatter.apply(before, file);
+	public StepHarnessWithFile test(File file, String before, String after) {
+		String actual = formatter.compute(LineEnding.toUnix(before), file);
 		assertEquals(after, actual, "Step application failed");
 		return testUnaffected(file, after);
 	}
 
 	/** Asserts that the given element is idempotent w.r.t the step under test. */
-	public StepHarnessWithFile testUnaffected(File file, String idempotentElement) throws Exception {
-		String actual = formatter.apply(idempotentElement, file);
+	public StepHarnessWithFile testUnaffected(File file, String idempotentElement) {
+		String actual = formatter.compute(LineEnding.toUnix(idempotentElement), file);
 		assertEquals(idempotentElement, actual, "Step is not idempotent");
 		return this;
 	}
 
 	/** Asserts that the given elements in  the resources directory are transformed as expected. */
-	public StepHarnessWithFile testResource(File file, String resourceBefore, String resourceAfter) throws Exception {
-		String before = ResourceHarness.getTestResource(resourceBefore);
-		String after = ResourceHarness.getTestResource(resourceAfter);
-		return test(file, before, after);
+	public StepHarnessWithFile testResource(String resourceBefore, String resourceAfter) {
+		return testResource(resourceBefore, resourceBefore, resourceAfter);
+	}
+
+	public StepHarnessWithFile testResource(String filename, String resourceBefore, String resourceAfter) {
+		String contentBefore = ResourceHarness.getTestResource(resourceBefore);
+		File file = harness.setFile(filename).toContent(contentBefore);
+		return test(file, contentBefore, ResourceHarness.getTestResource(resourceAfter));
 	}
 
 	/** Asserts that the given elements in the resources directory are transformed as expected. */
-	public StepHarnessWithFile testResourceUnaffected(File file, String resourceIdempotent) throws Exception {
-		String idempotentElement = ResourceHarness.getTestResource(resourceIdempotent);
-		return testUnaffected(file, idempotentElement);
+	public StepHarnessWithFile testResourceUnaffected(String resourceIdempotent) {
+		String contentBefore = ResourceHarness.getTestResource(resourceIdempotent);
+		File file = harness.setFile(resourceIdempotent).toContent(contentBefore);
+		return testUnaffected(file, contentBefore);
+	}
+
+	public AbstractStringAssert<?> testResourceExceptionMsg(String resourceBefore) throws IOException {
+		String contentBefore = ResourceHarness.getTestResource(resourceBefore);
+		File file = harness.setFile(resourceBefore).toContent(contentBefore);
+		return testExceptionMsg(file, contentBefore);
+	}
+
+	public AbstractStringAssert<?> testExceptionMsg(File file, String before) {
+		List<Lint> lints = formatter.lint(LineEnding.toUnix(before), file);
+		if (lints.size() == 0) {
+			throw new AssertionError("No exception was thrown");
+		} else if (lints.size() >= 2) {
+			throw new AssertionError("Expected one lint, had " + lints.size());
+		} else {
+			return Assertions.assertThat(lints.get(0).getMsg());
+		}
 	}
 
 	@Override
 	public void close() {
-		if (formatter instanceof FormatterFunc.Closeable) {
-			((FormatterFunc.Closeable) formatter).close();
-		}
+		formatter.close();
 	}
 }
