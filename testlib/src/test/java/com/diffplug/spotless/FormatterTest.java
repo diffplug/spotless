@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,11 @@ package com.diffplug.spotless;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.diffplug.common.base.StandardSystemProperty;
 import com.diffplug.spotless.generic.EndWithNewlineStep;
 
 class FormatterTest {
@@ -34,9 +31,7 @@ class FormatterTest {
 		new SerializableEqualityTester() {
 			private LineEnding.Policy lineEndingsPolicy = LineEnding.UNIX.createPolicy();
 			private Charset encoding = StandardCharsets.UTF_8;
-			private Path rootDir = Paths.get(StandardSystemProperty.USER_DIR.value());
 			private List<FormatterStep> steps = new ArrayList<>();
-			private FormatExceptionPolicy exceptionPolicy = FormatExceptionPolicy.failOnlyOnError();
 
 			@Override
 			protected void setupTest(API api) throws Exception {
@@ -48,25 +43,8 @@ class FormatterTest {
 				encoding = StandardCharsets.UTF_16;
 				api.areDifferentThan();
 
-				rootDir = rootDir.getParent();
-				api.areDifferentThan();
-
 				steps.add(EndWithNewlineStep.create());
 				api.areDifferentThan();
-
-				{
-					FormatExceptionPolicyStrict standard = new FormatExceptionPolicyStrict();
-					standard.excludePath("path");
-					exceptionPolicy = standard;
-					api.areDifferentThan();
-				}
-
-				{
-					FormatExceptionPolicyStrict standard = new FormatExceptionPolicyStrict();
-					standard.excludeStep("step");
-					exceptionPolicy = standard;
-					api.areDifferentThan();
-				}
 			}
 
 			@Override
@@ -74,9 +52,7 @@ class FormatterTest {
 				return Formatter.builder()
 						.lineEndingsPolicy(lineEndingsPolicy)
 						.encoding(encoding)
-						.rootDir(rootDir)
 						.steps(steps)
-						.exceptionPolicy(exceptionPolicy)
 						.build();
 			}
 		}.testEquals();

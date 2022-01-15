@@ -89,7 +89,7 @@ class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 				"    }",
 				"}");
 		setFile("configuration.gradle.kts").toResource("kotlin/diktat/basic.dirty");
-		BuildResult result = gradleRunner().withArguments("spotlessApply").buildAndFail();
+		BuildResult result = gradleRunner().withArguments("spotlessCheck").buildAndFail();
 		assertThat(result.getOutput()).contains("[AVOID_NESTED_FUNCTIONS] try to avoid using nested functions");
 	}
 

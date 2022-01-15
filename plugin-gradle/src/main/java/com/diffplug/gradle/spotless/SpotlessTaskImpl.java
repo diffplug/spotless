@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Collections;
+import java.util.List;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -38,6 +40,7 @@ import org.gradle.work.InputChanges;
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.DirtyState;
 import com.diffplug.spotless.Formatter;
+import com.diffplug.spotless.Lint;
 import com.diffplug.spotless.extra.GitRatchet;
 
 @CacheableTask
@@ -64,7 +67,9 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 		if (!inputs.isIncremental()) {
 			getLogger().info("Not incremental: removing prior outputs");
 			getFs().delete(d -> d.delete(outputDirectory));
-			Files.createDirectories(outputDirectory.toPath());
+			Files.createDirectories(contentDir().toPath());
+			Files.createDirectories(lintApplyDir().toPath());
+			Files.createDirectories(lintCheckDir().toPath());
 		}
 
 		try (Formatter formatter = buildFormatter()) {
@@ -86,10 +91,16 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 		File output = getOutputFile(input);
 		getLogger().debug("Applying format to " + input + " and writing to " + output);
 		DirtyState dirtyState;
+		List<Lint> lintsCheck, lintsApply;
 		if (ratchet != null && ratchet.isClean(getProjectDir().get().getAsFile(), getRootTreeSha(), input)) {
 			dirtyState = DirtyState.clean();
+			lintsCheck = Collections.emptyList();
+			lintsApply = Collections.emptyList();
 		} else {
-			dirtyState = DirtyState.of(formatter, input).calculateDirtyState();
+			DirtyState.Calculation calculation = DirtyState.of(formatter, input);
+			dirtyState = calculation.calculateDirtyState();
+			lintsCheck = calculation.calculateLintAgainstRaw();
+			lintsApply = calculation.calculateLintAgainstDirtyState(dirtyState, lintsCheck);
 		}
 		if (dirtyState.isClean()) {
 			// Remove previous output if it exists
@@ -106,27 +117,55 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 			Files.copy(input.toPath(), output.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
 			dirtyState.writeCanonicalTo(output);
 		}
+
+		writeLints(lintsCheck, getLintCheckFile(input));
+		writeLints(lintsApply, getLintApplyFile(input));
+	}
+
+	private void writeLints(List<Lint> lints, File lintFile) throws IOException {
+		if (lints.isEmpty()) {
+			Files.deleteIfExists(lintFile.toPath());
+		} else {
+			Lint.toFile(lints, lintFile);
+		}
 	}
 
 	private void deletePreviousResult(File input) throws IOException {
-		File output = getOutputFile(input);
-		if (output.isDirectory()) {
-			getFs().delete(d -> d.delete(output));
-		} else {
-			Files.deleteIfExists(output.toPath());
-		}
+		delete(getOutputFile(input));
+		delete(getLintCheckFile(input));
+		delete(getLintApplyFile(input));
 	}
 
 	private File getOutputFile(File input) {
+		return new File(contentDir(), relativize(input));
+	}
+
+	private File getLintCheckFile(File input) {
+		return new File(lintCheckDir(), relativize(input));
+	}
+
+	private File getLintApplyFile(File input) {
+		return new File(lintApplyDir(), relativize(input));
+	}
+
+	private void delete(File file) throws IOException {
+		if (file.isDirectory()) {
+			getFs().delete(d -> d.delete(file));
+		} else {
+			Files.deleteIfExists(file.toPath());
+		}
+	}
+
+	private String relativize(File input) {
 		File projectDir = getProjectDir().get().getAsFile();
 		String outputFileName = FormatExtension.relativize(projectDir, input);
-		if (outputFileName == null) {
-			throw new IllegalArgumentException(StringPrinter.buildString(printer -> {
-				printer.println("Spotless error! All target files must be within the project dir.");
-				printer.println("  project dir: " + projectDir.getAbsolutePath());
-				printer.println("       target: " + input.getAbsolutePath());
-			}));
+		if (outputFileName != null) {
+			return outputFileName;
 		}
-		return new File(outputDirectory, outputFileName);
+		throw new IllegalArgumentException(StringPrinter.buildString(printer -> {
+			printer.println("Spotless error! All target files must be within the project dir.");
+			printer.println("  project dir: " + projectDir.getAbsolutePath());
+			printer.println("       target: " + input.getAbsolutePath());
+		}));
 	}
 }

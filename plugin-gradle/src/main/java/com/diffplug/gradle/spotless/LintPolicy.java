@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless;
+package com.diffplug.gradle.spotless;
 
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
-/**
- * A policy for handling exceptions in the format.  Any exceptions will
- * halt the build except for a specifically excluded path or step.
- */
-public class FormatExceptionPolicyStrict extends NoLambda.EqualityBasedOnSerialization implements FormatExceptionPolicy {
-	private static final long serialVersionUID = 1L;
+import com.diffplug.spotless.Lint;
+import com.diffplug.spotless.NoLambda;
 
+public class LintPolicy extends NoLambda.EqualityBasedOnSerialization {
 	private final Set<String> excludeSteps = new TreeSet<>();
 	private final Set<String> excludePaths = new TreeSet<>();
 
@@ -39,20 +36,11 @@ public class FormatExceptionPolicyStrict extends NoLambda.EqualityBasedOnSeriali
 		excludePaths.add(Objects.requireNonNull(relativePath));
 	}
 
-	@Override
-	public void handleError(Throwable e, FormatterStep step, String relativePath) {
-		Objects.requireNonNull(e, "e");
-		Objects.requireNonNull(step, "step");
-		Objects.requireNonNull(relativePath, "relativePath");
-		if (excludeSteps.contains(step.getName())) {
-			FormatExceptionPolicyLegacy.warning(e, step, relativePath);
-		} else {
-			if (excludePaths.contains(relativePath)) {
-				FormatExceptionPolicyLegacy.warning(e, step, relativePath);
-			} else {
-				FormatExceptionPolicyLegacy.error(e, step, relativePath);
-				throw ThrowingEx.asRuntimeRethrowError(e);
-			}
-		}
+	public boolean runLintOn(String path) {
+		return !excludePaths.contains(path);
+	}
+
+	public boolean includeLint(String path, Lint lint) {
+		return runLintOn(path) && !excludeSteps.contains(lint.getCode());
 	}
 }

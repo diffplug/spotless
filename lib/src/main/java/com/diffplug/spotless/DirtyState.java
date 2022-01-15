@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -135,6 +136,28 @@ public class DirtyState {
 				return new DirtyState(canonicalBytes);
 			} else {
 				return isClean;
+			}
+		}
+
+		public List<Lint> calculateLintAgainstRaw() {
+			return formatter.lint(raw, file);
+		}
+
+		public List<Lint> calculateLintAgainstDirtyState(DirtyState dirtyState) {
+			if (dirtyState.isClean() || dirtyState.didNotConverge()) {
+				return calculateLintAgainstRaw();
+			} else {
+				String canonical = new String(dirtyState.canonicalBytes(), formatter.getEncoding());
+				return formatter.lint(canonical, file);
+			}
+		}
+
+		/** If {@link #calculateLintAgainstRaw()} was already called, then you might be able to reuse that value. */
+		public List<Lint> calculateLintAgainstDirtyState(DirtyState dirtyState, List<Lint> lintsAgainstRaw) {
+			if (dirtyState.isClean() || dirtyState.didNotConverge()) {
+				return lintsAgainstRaw;
+			} else {
+				return calculateLintAgainstDirtyState(dirtyState);
 			}
 		}
 	}

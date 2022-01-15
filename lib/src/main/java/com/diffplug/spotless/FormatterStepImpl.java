@@ -17,6 +17,7 @@ package com.diffplug.spotless;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
@@ -80,6 +81,13 @@ abstract class FormatterStepImpl<State extends Serializable> extends LazyForward
 			return func().apply(rawUnix, file);
 		}
 
+		@Override
+		public List<Lint> lint(String content, File file) throws Exception {
+			Objects.requireNonNull(content, "content");
+			Objects.requireNonNull(file, "file");
+			return func().lint(content, file);
+		}
+
 		void cleanupFormatterFunc() {
 			if (formatter instanceof FormatterFunc.Closeable) {
 				((FormatterFunc.Closeable) formatter).close();
@@ -113,6 +121,11 @@ abstract class FormatterStepImpl<State extends Serializable> extends LazyForward
 		@Override
 		public String format(String rawUnix, File file) throws Exception {
 			return func().apply(rawUnix, file);
+		}
+
+		@Override
+		public List<Lint> lint(String content, File file) throws Exception {
+			return func().lint(content, file);
 		}
 	}
 

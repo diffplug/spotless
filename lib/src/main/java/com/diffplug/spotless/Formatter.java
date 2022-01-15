@@ -24,9 +24,8 @@ import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.nio.charset.Charset;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -36,25 +35,19 @@ public final class Formatter implements Serializable, AutoCloseable {
 
 	private LineEnding.Policy lineEndingsPolicy;
 	private Charset encoding;
-	private Path rootDir;
 	private List<FormatterStep> steps;
-	private FormatExceptionPolicy exceptionPolicy;
 
-	private Formatter(LineEnding.Policy lineEndingsPolicy, Charset encoding, Path rootDirectory, List<FormatterStep> steps, FormatExceptionPolicy exceptionPolicy) {
+	private Formatter(LineEnding.Policy lineEndingsPolicy, Charset encoding, List<FormatterStep> steps) {
 		this.lineEndingsPolicy = Objects.requireNonNull(lineEndingsPolicy, "lineEndingsPolicy");
 		this.encoding = Objects.requireNonNull(encoding, "encoding");
-		this.rootDir = Objects.requireNonNull(rootDirectory, "rootDir");
 		this.steps = requireElementsNonNull(new ArrayList<>(steps));
-		this.exceptionPolicy = Objects.requireNonNull(exceptionPolicy, "exceptionPolicy");
 	}
 
 	// override serialize output
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		out.writeObject(lineEndingsPolicy);
 		out.writeObject(encoding.name());
-		out.writeObject(rootDir.toString());
 		out.writeObject(steps);
-		out.writeObject(exceptionPolicy);
 	}
 
 	// override serialize input
@@ -62,9 +55,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		lineEndingsPolicy = (LineEnding.Policy) in.readObject();
 		encoding = Charset.forName((String) in.readObject());
-		rootDir = Paths.get((String) in.readObject());
 		steps = (List<FormatterStep>) in.readObject();
-		exceptionPolicy = (FormatExceptionPolicy) in.readObject();
 	}
 
 	// override serialize input
@@ -81,16 +72,8 @@ public final class Formatter implements Serializable, AutoCloseable {
 		return encoding;
 	}
 
-	public Path getRootDir() {
-		return rootDir;
-	}
-
 	public List<FormatterStep> getSteps() {
 		return steps;
-	}
-
-	public FormatExceptionPolicy getExceptionPolicy() {
-		return exceptionPolicy;
 	}
 
 	public static Formatter.Builder builder() {
@@ -101,9 +84,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 		// required parameters
 		private LineEnding.Policy lineEndingsPolicy;
 		private Charset encoding;
-		private Path rootDir;
 		private List<FormatterStep> steps;
-		private FormatExceptionPolicy exceptionPolicy;
 
 		private Builder() {}
 
@@ -117,24 +98,13 @@ public final class Formatter implements Serializable, AutoCloseable {
 			return this;
 		}
 
-		public Builder rootDir(Path rootDir) {
-			this.rootDir = rootDir;
-			return this;
-		}
-
 		public Builder steps(List<FormatterStep> steps) {
 			this.steps = steps;
 			return this;
 		}
 
-		public Builder exceptionPolicy(FormatExceptionPolicy exceptionPolicy) {
-			this.exceptionPolicy = exceptionPolicy;
-			return this;
-		}
-
 		public Formatter build() {
-			return new Formatter(lineEndingsPolicy, encoding, rootDir, steps,
-					exceptionPolicy == null ? FormatExceptionPolicy.failOnlyOnError() : exceptionPolicy);
+			return new Formatter(lineEndingsPolicy, encoding, steps);
 		}
 	}
 
@@ -172,11 +142,32 @@ public final class Formatter implements Serializable, AutoCloseable {
 					unix = LineEnding.toUnix(formatted);
 				}
 			} catch (Throwable e) {
-				String relativePath = rootDir.relativize(file.toPath()).toString();
-				exceptionPolicy.handleError(e, step, relativePath);
+				// we ignore exceptions in format because we collect them in lint
 			}
 		}
 		return unix;
+	}
+
+	public List<Lint> lint(String content, File file) {
+		Objects.requireNonNull(content, "content");
+		Objects.requireNonNull(file, "file");
+
+		List<Lint> totalLints = new ArrayList<>();
+		for (FormatterStep step : steps) {
+			try {
+				List<Lint> lints = step.lint(content, file);
+				if (lints != null && !lints.isEmpty()) {
+					totalLints.addAll(lints);
+				}
+			} catch (Throwable e) {
+				totalLints.add(Lint.createFromThrowable(step, content, e));
+			}
+		}
+		if (totalLints.isEmpty()) {
+			return Collections.emptyList();
+		} else {
+			return totalLints;
+		}
 	}
 
 	@Override
@@ -185,9 +176,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 		int result = 1;
 		result = prime * result + encoding.hashCode();
 		result = prime * result + lineEndingsPolicy.hashCode();
-		result = prime * result + rootDir.hashCode();
 		result = prime * result + steps.hashCode();
-		result = prime * result + exceptionPolicy.hashCode();
 		return result;
 	}
 
@@ -205,9 +194,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 		Formatter other = (Formatter) obj;
 		return encoding.equals(other.encoding) &&
 				lineEndingsPolicy.equals(other.lineEndingsPolicy) &&
-				rootDir.equals(other.rootDir) &&
-				steps.equals(other.steps) &&
-				exceptionPolicy.equals(other.exceptionPolicy);
+				steps.equals(other.steps);
 	}
 
 	@SuppressWarnings("rawtypes")

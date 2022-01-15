@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 DiffPlug
+ * Copyright 2020-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,6 @@ import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.work.Incremental;
 
 import com.diffplug.gradle.spotless.JvmLocalCache.LiveCache;
-import com.diffplug.spotless.FormatExceptionPolicy;
-import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
@@ -119,15 +117,15 @@ public abstract class SpotlessTask extends DefaultTask {
 		return subtreeSha;
 	}
 
-	protected FormatExceptionPolicy exceptionPolicy = new FormatExceptionPolicyStrict();
+	protected LintPolicy lintPolicy = new LintPolicy();
 
-	public void setExceptionPolicy(FormatExceptionPolicy exceptionPolicy) {
-		this.exceptionPolicy = Objects.requireNonNull(exceptionPolicy);
+	public void setLintPolicy(LintPolicy lintPolicy) {
+		this.lintPolicy = Objects.requireNonNull(lintPolicy);
 	}
 
 	@Input
-	public FormatExceptionPolicy getExceptionPolicy() {
-		return exceptionPolicy;
+	public LintPolicy getLintPolicy() {
+		return lintPolicy;
 	}
 
 	protected FileCollection target;
@@ -152,6 +150,22 @@ public abstract class SpotlessTask extends DefaultTask {
 	@OutputDirectory
 	public File getOutputDirectory() {
 		return outputDirectory;
+	}
+
+	static final String CONTENT = "content";
+	static final String LINT_APPLY = "lint-apply";
+	static final String LINT_CHECK = "lint-check";
+
+	File contentDir() {
+		return new File(outputDirectory, CONTENT);
+	}
+
+	File lintApplyDir() {
+		return new File(outputDirectory, LINT_APPLY);
+	}
+
+	File lintCheckDir() {
+		return new File(outputDirectory, LINT_CHECK);
 	}
 
 	protected final LiveCache<List<FormatterStep>> steps = createLive("steps");
@@ -186,9 +200,7 @@ public abstract class SpotlessTask extends DefaultTask {
 		return Formatter.builder()
 				.lineEndingsPolicy(lineEndingsPolicy.get())
 				.encoding(Charset.forName(encoding))
-				.rootDir(getProjectDir().get().getAsFile().toPath())
 				.steps(steps.get())
-				.exceptionPolicy(exceptionPolicy)
 				.build();
 	}
 }

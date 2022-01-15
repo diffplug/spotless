@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,16 +29,21 @@ import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileVisitDetails;
 import org.gradle.api.file.FileVisitor;
 import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 
 import com.diffplug.spotless.FileSignature;
+import com.diffplug.spotless.Lint;
 import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
 public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 	@Internal
 	public abstract Property<String> getEncoding();
+
+	@Input
+	public abstract Property<LintPolicy> getLintPolicy();
 
 	public void performActionTest() throws IOException {
 		performAction(true);
@@ -50,11 +55,13 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 	}
 
 	private void performAction(boolean isTest) throws IOException {
-		ConfigurableFileTree files = getConfigCacheWorkaround().fileTree().from(getSpotlessOutDirectory().get());
+		ConfigurableFileTree files = getConfigCacheWorkaround().fileTree().from(contentDir());
 		if (files.isEmpty()) {
+			checkForLint();
 			getState().setDidWork(sourceDidWork());
 		} else if (!isTest && applyHasRun()) {
 			// if our matching apply has already run, then we don't need to do anything
+			checkForLint();
 			getState().setDidWork(false);
 		} else {
 			List<File> problemFiles = new ArrayList<>();
@@ -101,10 +108,12 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 						.runToFix("Run '" + calculateGradleCommand() + " " + getTaskPathPrefix() + "spotlessApply' to fix these violations.")
 						.formatterFolder(
 								getProjectDir().get().getAsFile().toPath(),
-								getSpotlessOutDirectory().get().toPath(),
+								contentDir().toPath(),
 								getEncoding().get())
 						.problemFiles(problemFiles)
 						.getMessage());
+			} else {
+				checkForLint();
 			}
 		}
 	}
@@ -117,6 +126,7 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 		super.init(impl);
 		getProjectPath().set(getProject().getPath());
 		getEncoding().set(impl.getEncoding());
+		getLintPolicy().set(impl.getLintPolicy());
 	}
 
 	private String getTaskPathPrefix() {
@@ -126,5 +136,40 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 
 	private static String calculateGradleCommand() {
 		return FileSignature.machineIsWin() ? "gradlew.bat" : "./gradlew";
+	}
+
+	private void checkForLint() {
+		LintPolicy lintPolicy = getLintPolicy().get();
+		File lintDir = applyHasRun() ? lintApplyDir() : lintCheckDir();
+		ConfigurableFileTree lintFiles = getConfigCacheWorkaround().fileTree().from(lintDir);
+		List<File> withLint = new ArrayList<>();
+		StringBuilder errorMsg = new StringBuilder();
+		lintFiles.visit(fileVisitDetails -> {
+			if (fileVisitDetails.isDirectory()) {
+				return;
+			}
+			try {
+				String path = fileVisitDetails.getPath();
+				if (lintPolicy.runLintOn(path)) {
+					File originalSource = new File(getProjectDir().get().getAsFile(), path);
+					List<Lint> lints = Lint.fromFile(fileVisitDetails.getFile());
+					boolean hasLints = false;
+					for (Lint lint : lints) {
+						if (lintPolicy.includeLint(path, lint)) {
+							hasLints = true;
+							errorMsg.append(path + ":" + lint.toString() + "\n");
+						}
+					}
+					if (hasLints) {
+						withLint.add(originalSource);
+					}
+				}
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		});
+		if (!withLint.isEmpty()) {
+			throw new GradleException("The files below cannot be fixed by spotlessApply\n" + errorMsg);
+		}
 	}
 }

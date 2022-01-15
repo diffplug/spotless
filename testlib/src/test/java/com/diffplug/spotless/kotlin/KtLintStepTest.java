@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
-import com.diffplug.spotless.StepHarness;
+import com.diffplug.spotless.StepHarnessWithFile;
 import com.diffplug.spotless.TestProvisioner;
 
 /**
@@ -32,25 +32,17 @@ class KtLintStepTest extends ResourceHarness {
 	@Test
 	void behavior() throws Exception {
 		FormatterStep step = KtLintStep.create(TestProvisioner.mavenCentral());
-		StepHarness.forStep(step)
-				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
-				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
-					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("Error on line: 1, column: 2\n" +
-							"Wildcard import");
-				});
+		StepHarnessWithFile.forStep(this, step)
+				.testResource("basic.kt", "kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
+				.testResourceExceptionMsg("basic.kt", "kotlin/ktlint/unsolvable.dirty").startsWith("java.lang.AssertionError: Error on line: 1, column: 2\nWildcard import");
 	}
 
 	@Test
 	void worksShyiko() throws Exception {
 		FormatterStep step = KtLintStep.create("0.31.0", TestProvisioner.mavenCentral());
-		StepHarness.forStep(step)
-				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
-				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
-					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("Error on line: 1, column: 1\n" +
-							"Wildcard import");
-				});
+		StepHarnessWithFile.forStep(this, step)
+				.testResource("basic.kt", "kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
+				.testResourceExceptionMsg("basic.kt", "kotlin/ktlint/unsolvable.dirty").startsWith("java.lang.AssertionError: Error on line: 1, column: 1\nWildcard import");
 	}
 
 	// Regression test to ensure it works on the version it switched to Pinterest (version 0.32.0)
@@ -59,13 +51,9 @@ class KtLintStepTest extends ResourceHarness {
 	@Test
 	void worksPinterestAndPre034() throws Exception {
 		FormatterStep step = KtLintStep.create("0.32.0", TestProvisioner.mavenCentral());
-		StepHarness.forStep(step)
+		StepHarnessWithFile.forStep(this, step)
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
-				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
-					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("Error on line: 1, column: 1\n" +
-							"Wildcard import");
-				});
+				.testResourceExceptionMsg("kotlin/ktlint/unsolvable.dirty").startsWith("java.lang.AssertionError: Error on line: 1, column: 1\nWildcard import");
 	}
 
 	// Regression test to handle alpha and 1.x version numbers
@@ -73,7 +61,7 @@ class KtLintStepTest extends ResourceHarness {
 	@Test
 	void worksAlpha1() throws Exception {
 		FormatterStep step = KtLintStep.create("0.38.0-alpha01", TestProvisioner.mavenCentral());
-		StepHarness.forStep(step)
+		StepHarnessWithFile.forStep(this, step)
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean");
 	}
 
