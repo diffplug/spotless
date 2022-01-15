@@ -25,13 +25,13 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.graalvm.compiler.core.common.SuppressFBWarnings;
-
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Lint;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public class FenceStep {
 	/** Declares the name of the step. */
