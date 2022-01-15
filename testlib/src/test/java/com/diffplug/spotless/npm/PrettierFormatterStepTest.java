@@ -110,7 +110,7 @@ class PrettierFormatterStepTest extends ResourceHarness {
 					buildDir(),
 					npmPathResolver(),
 					new PrettierConfig(null, ImmutableMap.of("parser", "postcss")));
-			try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
+			try (StepHarnessWithFile stepHarness = StepHarnessWithFile.forStep(this, formatterStep)) {
 				stepHarness.testResourceExceptionMsg("npm/prettier/filetypes/scss/scss.dirty").startsWith(
 						"com.diffplug.spotless.npm.SimpleRestClient$SimpleRestResponseException: Unexpected response status code at /prettier/format [HTTP 501] -- (Error while formatting: Error: Couldn't resolve parser \"postcss\")");
 			}
