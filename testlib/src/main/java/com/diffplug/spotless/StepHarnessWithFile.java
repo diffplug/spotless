@@ -18,7 +18,6 @@ package com.diffplug.spotless;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
@@ -84,9 +83,13 @@ public class StepHarnessWithFile implements AutoCloseable {
 		return testUnaffected(file, contentBefore);
 	}
 
-	public AbstractStringAssert<?> testResourceExceptionMsg(String resourceBefore) throws IOException {
+	public AbstractStringAssert<?> testResourceExceptionMsg(String resourceBefore) {
+		return testResourceExceptionMsg(resourceBefore, resourceBefore);
+	}
+
+	public AbstractStringAssert<?> testResourceExceptionMsg(String filename, String resourceBefore) {
 		String contentBefore = ResourceHarness.getTestResource(resourceBefore);
-		File file = harness.setFile(resourceBefore).toContent(contentBefore);
+		File file = harness.setFile(filename).toContent(contentBefore);
 		return testExceptionMsg(file, contentBefore);
 	}
 

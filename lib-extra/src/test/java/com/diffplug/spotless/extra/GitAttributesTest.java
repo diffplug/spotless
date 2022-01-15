@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,23 +24,18 @@ import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ResourceHarness;
 
 class GitAttributesTest extends ResourceHarness {
 	private List<File> testFiles() {
-		try {
-			List<File> result = new ArrayList<>();
-			for (String path : TEST_PATHS) {
-				setFile(path).toContent("");
-				result.add(newFile(path));
-			}
-			return result;
-		} catch (IOException e) {
-			throw Errors.asRuntime(e);
+		List<File> result = new ArrayList<>();
+		for (String path : TEST_PATHS) {
+			setFile(path).toContent("");
+			result.add(newFile(path));
 		}
+		return result;
 	}
 
 	private static List<String> TEST_PATHS = Arrays.asList("someFile", "subfolder/someFile", "MANIFEST.MF", "subfolder/MANIFEST.MF");

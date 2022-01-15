@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,8 @@
  */
 package com.diffplug.spotless.scala;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 
 import org.junit.jupiter.api.Test;
 
@@ -113,18 +109,11 @@ class ScalaFmtStepTest extends ResourceHarness {
 		File invalidConfFile = createTestFile("scala/scalafmt/scalafmt.invalid.conf");
 		Provisioner provisioner = TestProvisioner.mavenCentral();
 
-		InvocationTargetException exception;
-
-		exception = assertThrows(InvocationTargetException.class,
-				() -> StepHarness.forStep(ScalaFmtStep.create("1.1.0", provisioner, invalidConfFile)).test("", ""));
-		assertThat(exception.getTargetException().getMessage()).contains("Invalid fields: invalidScalaFmtConfigField");
-
-		exception = assertThrows(InvocationTargetException.class,
-				() -> StepHarness.forStep(ScalaFmtStep.create("2.0.1", provisioner, invalidConfFile)).test("", ""));
-		assertThat(exception.getTargetException().getMessage()).contains("Invalid field: invalidScalaFmtConfigField");
-
-		exception = assertThrows(InvocationTargetException.class,
-				() -> StepHarness.forStep(ScalaFmtStep.create("3.0.0", provisioner, invalidConfFile)).test("", ""));
-		assertThat(exception.getTargetException().getMessage()).contains("found option 'invalidScalaFmtConfigField' which wasn't expected");
+		StepHarness.forStep(ScalaFmtStep.create("1.1.0", provisioner, invalidConfFile))
+				.testExceptionMsg("").contains("Invalid fields: invalidScalaFmtConfigField");
+		StepHarness.forStep(ScalaFmtStep.create("2.0.1", provisioner, invalidConfFile))
+				.testExceptionMsg("").contains("Invalid field: invalidScalaFmtConfigField");
+		StepHarness.forStep(ScalaFmtStep.create("3.0.0", provisioner, invalidConfFile))
+				.testExceptionMsg("").contains("found option 'invalidScalaFmtConfigField' which wasn't expected");
 	}
 }
