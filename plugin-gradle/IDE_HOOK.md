@@ -22,3 +22,23 @@ In all of these cases, Spotless will send useful status information on `stderr`:
 - if `stderr` is anything else, then it is the stacktrace of whatever went wrong
 
 See the VS Code extension above for a working example, or [the PR](https://github.com/diffplug/spotless/pull/568) where this feature was added for more context.
+
+## Compatibility considerations and future plans
+
+### Configuration cache
+
+- Gradle 6.6 introduced the [configuration-cache](https://docs.gradle.org/6.6/release-notes.html#performance-improvements)
+- The Spotless IDE hook does not work with the configuration-cache, but this might change in a future version of Spotless ([#1082](https://github.com/diffplug/spotless/issues/1082))
+- A user might have enabled configuration-cache with `org.gradle.unsafe.configuration-cache=true` in a `gradle.properties` file
+- In that case, the IDE plugin must pass `--no-configuration-cache` at the command line or the user will get an error.
+- You could pass that flag all the time, but the flag will generate "unrecognized flag" errors in Gradle < 6.6.
+
+### Configure on demand
+
+This is not yet supported, but in a future version of Spotless you might be able to improve speed dramatically by calling `:spotlessApply --configure-on-demand` rather than `spotlessApply` (note the leading colon). This is being tracked in [#1101](https://github.com/diffplug/spotless/issues/1101).
+
+### Lint as well as format
+
+Spotless is in the process of adding support for linters ([#1097](https://github.com/diffplug/spotless/pull/1097)). When this gets added, Spotless will be able to provide a list of things like `L5: NPE on blah blah blah` and `L8-14: leaking resource` etc.
+
+We will provide those lint errors over stderr like so `IS DIRTY\nLINTS` or `IS CLEAN\nLINTS`, and then provide the list of lints in a TBD format. The key thing is that if you are correctly using `startsWith("IS DIRTY")` then older versions of your plugin are future-compatible.
