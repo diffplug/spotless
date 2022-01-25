@@ -279,7 +279,7 @@ This is a workaround to a [pending issue](https://github.com/diffplug/spotless/i
     <licenseHeader>
       <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
     </licenseHeader>
-  </java>
+  </groovy>
 </configuration>
 ```
 
