@@ -38,10 +38,10 @@ import org.eclipse.jgit.attributes.AttributesRule;
 import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.lib.CoreConfig;
 import org.eclipse.jgit.lib.CoreConfig.AutoCRLF;
 import org.eclipse.jgit.lib.CoreConfig.EOL;
 import org.eclipse.jgit.storage.file.FileBasedConfig;
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.util.FS;
 import org.eclipse.jgit.util.SystemReader;
 
@@ -52,6 +52,7 @@ import com.diffplug.common.base.Errors;
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.LazyForwardingEquality;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.extra.GitWorkarounds.RepositorySpecificResolver;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -132,8 +133,11 @@ public final class GitAttributesLineEndings {
 	}
 
 	static class RuntimeInit {
-		/** /etc/gitconfig (system-global), ~/.gitconfig, project/.git/config (each might-not exist). */
-		final FileBasedConfig systemConfig, userConfig, repoConfig;
+		/** /etc/gitconfig (system-global), ~/.gitconfig (each might-not exist). */
+		final FileBasedConfig systemConfig, userConfig;
+
+		/** Repository specific config, can be $GIT_COMMON_DIR/config, project/.git/config or .git/worktrees/<id>/config.worktree if enabled by extension */
+		final Config repoConfig;
 
 		/** Global .gitattributes file pointed at by systemConfig or userConfig, and the file in the repo. */
 		final @Nullable File globalAttributesFile, repoAttributesFile;
@@ -142,7 +146,7 @@ public final class GitAttributesLineEndings {
 		final @Nullable File workTree;
 
 		@SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
-		RuntimeInit(File projectDir, Iterable<File> toFormat) throws IOException {
+		RuntimeInit(File projectDir, Iterable<File> toFormat) {
 			requireElementsNonNull(toFormat);
 			/////////////////////////////////
 			// USER AND SYSTEM-WIDE VALUES //
@@ -152,9 +156,8 @@ public final class GitAttributesLineEndings {
 			userConfig = SystemReader.getInstance().openUserConfig(systemConfig, FS.DETECTED);
 			Errors.log().run(userConfig::load);
 
-			// copy-pasted from org.eclipse.jgit.lib.CoreConfig
-			String globalAttributesPath = userConfig.getString(ConfigConstants.CONFIG_CORE_SECTION, null, ConfigConstants.CONFIG_KEY_ATTRIBUTESFILE);
 			// copy-pasted from org.eclipse.jgit.internal.storage.file.GlobalAttributesNode
+			String globalAttributesPath = userConfig.get(CoreConfig.KEY).getAttributesFile();
 			if (globalAttributesPath != null) {
 				FS fs = FS.detect();
 				if (globalAttributesPath.startsWith("~/")) { //$NON-NLS-1$
@@ -169,29 +172,16 @@ public final class GitAttributesLineEndings {
 			//////////////////////////
 			// REPO-SPECIFIC VALUES //
 			//////////////////////////
-			FileRepositoryBuilder builder = GitWorkarounds.fileRepositoryBuilderForProject(projectDir);
-			if (builder.getGitDir() != null) {
-				workTree = builder.getWorkTree();
-				repoConfig = new FileBasedConfig(userConfig, new File(builder.getGitDir(), Constants.CONFIG), FS.DETECTED);
-				repoAttributesFile = new File(builder.getGitDir(), Constants.INFO_ATTRIBUTES);
+			RepositorySpecificResolver repositoryResolver = GitWorkarounds.fileRepositoryResolverForProject(projectDir);
+			if (repositoryResolver.getGitDir() != null) {
+				workTree = repositoryResolver.getWorkTree();
+				repoConfig = repositoryResolver.getRepositoryConfig();
+				repoAttributesFile = repositoryResolver.resolveWithCommonDir(Constants.INFO_ATTRIBUTES);
 			} else {
 				workTree = null;
-				// null would make repoConfig.getFile() bomb below
-				repoConfig = new FileBasedConfig(userConfig, null, FS.DETECTED) {
-					@Override
-					public void load() {
-						// empty, do not load
-					}
-
-					@Override
-					public boolean isOutdated() {
-						// regular class would bomb here
-						return false;
-					}
-				};
+				repoConfig = new Config();
 				repoAttributesFile = null;
 			}
-			Errors.log().run(repoConfig::load);
 		}
 
 		private Runtime atRuntime() {
