@@ -22,6 +22,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.assertj.core.api.Assertions;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.Errors;
@@ -86,5 +88,18 @@ class GitAttributesTest extends ResourceHarness {
 		Assertions.assertThat(policy.getEndingFor(newFile("subfolder/someFile"))).isEqualTo("\n");
 		Assertions.assertThat(policy.getEndingFor(newFile("MANIFEST.MF"))).isEqualTo("\r\n");
 		Assertions.assertThat(policy.getEndingFor(newFile("subfolder/MANIFEST.MF"))).isEqualTo("\r\n");
+	}
+
+	@Test
+	void policyDefaultLineEndingTest() throws GitAPIException, IOException {
+		Git git = Git.init().setDirectory(rootFolder()).call();
+		git.close();
+		setFile(".git/config").toContent(StringPrinter.buildStringFromLines(
+			"[core]",
+			"autocrlf=true",
+			"eol=lf"
+		));
+		LineEnding.Policy policy = LineEnding.GIT_ATTRIBUTES.createPolicy(rootFolder(), () -> testFiles());
+		Assertions.assertThat(policy.getEndingFor(newFile("someFile"))).isEqualTo("\r\n");
 	}
 }

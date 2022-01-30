@@ -38,6 +38,7 @@ import org.eclipse.jgit.attributes.AttributesRule;
 import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.lib.CoreConfig.AutoCRLF;
 import org.eclipse.jgit.lib.CoreConfig.EOL;
 import org.eclipse.jgit.storage.file.FileBasedConfig;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
@@ -56,7 +57,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Uses <a href="https://git-scm.com/docs/gitattributes">.gitattributes</a> to determine
- * the appropriate line ending. Falls back to the {@code core.eol} property in the
+ * the appropriate line ending. Falls back to the {@code core.eol} and {@code core.autocrlf} properties in the
  * git config if there are no applicable git attributes, then finally falls
  * back to the platform native.
  */
@@ -224,7 +225,7 @@ public final class GitAttributesLineEndings {
 		private Runtime(List<AttributesRule> infoRules, @Nullable File workTree, Config config, List<AttributesRule> globalRules) {
 			this.infoRules = Objects.requireNonNull(infoRules);
 			this.workTree = workTree;
-			this.defaultEnding = fromEol(config.getEnum(ConfigConstants.CONFIG_CORE_SECTION, null, ConfigConstants.CONFIG_KEY_EOL, EOL.NATIVE)).str();
+			this.defaultEnding = findDefaultLineEnding(config).str();
 			this.globalRules = Objects.requireNonNull(globalRules);
 		}
 
@@ -271,6 +272,26 @@ public final class GitAttributesLineEndings {
 				System.err.println(".gitattributes file has unspecified eol value: " + eol + " for " + file + ", defaulting to platform native");
 				return LineEnding.PLATFORM_NATIVE.str();
 			}
+		}
+
+		private LineEnding findDefaultLineEnding(Config config) {
+			// handle core.autocrlf, whose values "true" and "input" override core.eol
+			AutoCRLF autoCRLF = config.getEnum(ConfigConstants.CONFIG_CORE_SECTION, null, ConfigConstants.CONFIG_KEY_AUTOCRLF, AutoCRLF.FALSE);
+			if (autoCRLF == AutoCRLF.TRUE) {
+				// autocrlf=true converts CRLF->LF during commit
+				//               and converts LF->CRLF during checkout
+				// so CRLF is the default line ending
+				return LineEnding.WINDOWS;
+			} else if (autoCRLF == AutoCRLF.INPUT) {
+				// autocrlf=input converts CRLF->LF during commit
+				//                and does no conversion during checkout
+				// mostly used on Unix, so LF is the default encoding
+				return LineEnding.UNIX;
+			}
+
+			// handle core.eol
+			EOL eol = config.getEnum(ConfigConstants.CONFIG_CORE_SECTION, null, ConfigConstants.CONFIG_KEY_EOL, EOL.NATIVE);
+			return fromEol(eol);
 		}
 
 		/** Creates a LineEnding from an EOL. */
