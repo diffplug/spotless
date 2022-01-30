@@ -19,9 +19,11 @@ import javax.inject.Inject;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.json.JsonSimpleStep;
+import com.diffplug.spotless.json.gson.GsonStep;
 
 public class JsonExtension extends FormatExtension {
 	private static final int DEFAULT_INDENTATION = 4;
+	private static final String DEFAULT_GSON_VERSION = "2.8.9";
 	static final String NAME = "json";
 
 	@Inject
@@ -41,6 +43,10 @@ public class JsonExtension extends FormatExtension {
 		return new SimpleConfig(DEFAULT_INDENTATION);
 	}
 
+	public GsonConfig gson() {
+		return new GsonConfig();
+	}
+
 	public class SimpleConfig {
 		private int indent;
 
@@ -56,6 +62,41 @@ public class JsonExtension extends FormatExtension {
 
 		private FormatterStep createStep() {
 			return JsonSimpleStep.create(indent, provisioner());
+		}
+	}
+
+	public class GsonConfig {
+		private int indentSpaces;
+		private boolean sortByKeys;
+		private String version;
+
+		public GsonConfig() {
+			this.indentSpaces = DEFAULT_INDENTATION;
+			this.sortByKeys = false;
+			this.version = DEFAULT_GSON_VERSION;
+			addStep(createStep());
+		}
+
+		public GsonConfig indentWithSpaces(int indentSpaces) {
+			this.indentSpaces = indentSpaces;
+			replaceStep(createStep());
+			return this;
+		}
+
+		public GsonConfig sortByKeys() {
+			this.sortByKeys = true;
+			replaceStep(createStep());
+			return this;
+		}
+
+		public GsonConfig version(String version) {
+			this.version = version;
+			replaceStep(createStep());
+			return this;
+		}
+
+		private FormatterStep createStep() {
+			return GsonStep.create(indentSpaces, sortByKeys, version, provisioner());
 		}
 	}
 
