@@ -595,6 +595,7 @@ spotless {
     simple() // has its own section below
     prettier().config(['parser': 'json']) // see Prettier section below
     eclipseWtp('json') // see Eclipse web tools platform section
+    gson() // has its own section below
   }
 }
 ```
@@ -610,6 +611,22 @@ spotless {
     simple()
     // optional: specify the number of spaces to use
     simple().indentWithSpaces(6)
+  }
+}
+```
+
+### Gson
+
+Uses Google Gson to also allow sorting by keys besides custom indentation - useful for i18n files.
+
+```gradle
+spotless {
+  json {
+    target 'src/**/*.json'
+    gson()
+      .indentWithSpaces(6) // optional: specify the number of spaces to use
+      .sortByKeys()        // optional: sort JSON by its keys
+      .version('2.8.1')    // optional: specify version
   }
 }
 ```
