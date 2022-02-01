@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,10 +95,9 @@ class GitAttributesTest extends ResourceHarness {
 		Git git = Git.init().setDirectory(rootFolder()).call();
 		git.close();
 		setFile(".git/config").toContent(StringPrinter.buildStringFromLines(
-			"[core]",
-			"autocrlf=true",
-			"eol=lf"
-		));
+				"[core]",
+				"autocrlf=true",
+				"eol=lf"));
 		LineEnding.Policy policy = LineEnding.GIT_ATTRIBUTES.createPolicy(rootFolder(), () -> testFiles());
 		Assertions.assertThat(policy.getEndingFor(newFile("someFile"))).isEqualTo("\r\n");
 	}
