@@ -287,11 +287,13 @@ public final class GitAttributesLineEndings {
 				//                and does no conversion during checkout
 				// mostly used on Unix, so LF is the default encoding
 				return LineEnding.UNIX;
+			} else if (autoCRLF == AutoCRLF.FALSE) {
+				// handle core.eol
+				EOL eol = config.getEnum(ConfigConstants.CONFIG_CORE_SECTION, null, ConfigConstants.CONFIG_KEY_EOL, EOL.NATIVE);
+				return fromEol(eol);
+			} else {
+				throw new IllegalStateException("Unexpected value for autoCRLF " + autoCRLF);
 			}
-
-			// handle core.eol
-			EOL eol = config.getEnum(ConfigConstants.CONFIG_CORE_SECTION, null, ConfigConstants.CONFIG_KEY_EOL, EOL.NATIVE);
-			return fromEol(eol);
 		}
 
 		/** Creates a LineEnding from an EOL. */
