@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Changed
+* ktfmt `0.30` -> `0.31`
 
 ## [2.20.1] - 2022-02-01
 * Bump default versions of formatters ([#1095](https://github.com/diffplug/spotless/pull/1095)).

@@ -32,7 +32,7 @@ public class KtfmtStep {
 	// prevent direct instantiation
 	private KtfmtStep() {}
 
-	private static final String DEFAULT_VERSION = "0.30";
+	private static final String DEFAULT_VERSION = "0.31";
 	static final String NAME = "ktfmt";
 	static final String PACKAGE = "com.facebook";
 	static final String MAVEN_COORDINATE = PACKAGE + ":ktfmt:";
@@ -120,18 +120,16 @@ public class KtfmtStep {
 
 		FormatterFunc createFormat() throws Exception {
 			ClassLoader classLoader = jarState.getClassLoader();
-			Class<?> formatterClazz = classLoader.loadClass(pkg + ".ktfmt.FormatterKt");
 			return input -> {
 				try {
 					if (style == DEFAULT) {
-						Method formatterMethod = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
-						return (String) formatterMethod.invoke(formatterClazz, input);
+						Method formatterMethod = getFormatterClazz(classLoader).getMethod(FORMATTER_METHOD, String.class);
+						return (String) formatterMethod.invoke(getFormatterClazz(classLoader), input);
 					} else {
-						Class<?> formattingOptionsClazz = classLoader.loadClass(pkg + ".ktfmt.FormattingOptions");
-						Method formatterMethod = formatterClazz.getMethod(FORMATTER_METHOD, formattingOptionsClazz,
+						Method formatterMethod = getFormatterClazz(classLoader).getMethod(FORMATTER_METHOD, getFormattingOptionsClazz(classLoader),
 								String.class);
 						Object formattingOptions = getCustomFormattingOptions(classLoader, style);
-						return (String) formatterMethod.invoke(formatterClazz, formattingOptions, input);
+						return (String) formatterMethod.invoke(getFormatterClazz(classLoader), formattingOptions, input);
 					}
 				} catch (InvocationTargetException e) {
 					throw ThrowingEx.unwrapCause(e);
@@ -146,7 +144,7 @@ public class KtfmtStep {
 
 			try {
 				// ktfmt v0.19 and later
-				return classLoader.loadClass(pkg + ".ktfmt.FormatterKt").getField(style.getFormat()).get(null);
+				return getFormatterClazz(classLoader).getField(style.getFormat()).get(null);
 			} catch (NoSuchFieldException ignored) {}
 
 			// fallback to old, pre-0.19 ktfmt interface.
@@ -158,6 +156,26 @@ public class KtfmtStep {
 			} else {
 				throw new IllegalStateException("Versions pre-0.19 can only use Default and Dropbox styles");
 			}
+		}
+
+		private Class<?> getFormatterClazz(ClassLoader classLoader) throws Exception {
+			Class<?> formatterClazz;
+			if (BadSemver.version(version) >= BadSemver.version(0, 31)) {
+				formatterClazz = classLoader.loadClass(pkg + ".ktfmt.format.Formatter");
+			} else {
+				formatterClazz = classLoader.loadClass(pkg + ".ktfmt.FormatterKt");
+			}
+			return formatterClazz;
+		}
+
+		private Class<?> getFormattingOptionsClazz(ClassLoader classLoader) throws Exception {
+			Class<?> formattingOptionsClazz;
+			if (BadSemver.version(version) >= BadSemver.version(0, 31)) {
+				formattingOptionsClazz = classLoader.loadClass(pkg + ".ktfmt.format.FormattingOptions");
+			} else {
+				formattingOptionsClazz = classLoader.loadClass(pkg + ".ktfmt.FormattingOptions");
+			}
+			return formattingOptionsClazz;
 		}
 	}
 }
