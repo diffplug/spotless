@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterFunc;
@@ -36,7 +38,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 abstract class NpmFormatterStepStateBase implements Serializable {
 
-	private static final Logger logger = Logger.getLogger(NpmFormatterStepStateBase.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(NpmFormatterStepStateBase.class.getName());
 
 	private static final long serialVersionUID = 1460749955865959948L;
 
@@ -166,13 +168,13 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 		@Override
 		public void close() throws Exception {
 			try {
-				logger.fine("Closing npm server in directory <" + serverPortFile.getParent() + "> and port <" + serverPort + ">");
+				logger.trace("Closing npm server in directory <" + serverPortFile.getParent() + "> and port <" + serverPort + ">");
 				if (server.isAlive()) {
 					boolean ended = server.waitFor(5, TimeUnit.SECONDS);
 					if (!ended) {
 						logger.info("Force-Closing npm server in directory <" + serverPortFile.getParent() + "> and port <" + serverPort + ">");
 						server.destroyForcibly().waitFor();
-						logger.fine("Force-Closing npm server in directory <" + serverPortFile.getParent() + "> and port <" + serverPort + "> -- Finished");
+						logger.trace("Force-Closing npm server in directory <" + serverPortFile.getParent() + "> and port <" + serverPort + "> -- Finished");
 					}
 				}
 			} finally {

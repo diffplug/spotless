@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,9 @@ import java.util.NavigableMap;
 import java.util.Objects;
 import java.util.TreeMap;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
@@ -78,8 +80,8 @@ public class FreshMarkStep {
 		}
 
 		FormatterFunc createFormat() throws Exception {
-			Logger logger = Logger.getLogger(FreshMarkStep.class.getName());
-			Consumer<String> loggingStream = logger::warning;
+			Logger logger = LoggerFactory.getLogger(FreshMarkStep.class.getName());
+			Consumer<String> loggingStream = logger::warn;
 
 			ClassLoader classLoader = jarState.getClassLoader();
 

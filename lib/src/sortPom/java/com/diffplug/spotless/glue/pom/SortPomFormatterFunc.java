@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,10 @@ package com.diffplug.spotless.glue.pom;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.pom.SortPomCfg;
@@ -30,7 +31,7 @@ import sortpom.logger.SortPomLogger;
 import sortpom.parameter.PluginParameters;
 
 public class SortPomFormatterFunc implements FormatterFunc {
-	private static final Logger logger = Logger.getLogger(SortPomFormatterFunc.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(SortPomFormatterFunc.class.getName());
 	private final SortPomCfg cfg;
 
 	public SortPomFormatterFunc(SortPomCfg cfg) {
@@ -61,7 +62,7 @@ public class SortPomFormatterFunc implements FormatterFunc {
 	private static class MySortPomLogger implements SortPomLogger {
 		@Override
 		public void warn(String content) {
-			logger.warning(content);
+			logger.warn(content);
 		}
 
 		@Override
@@ -71,7 +72,7 @@ public class SortPomFormatterFunc implements FormatterFunc {
 
 		@Override
 		public void error(String content) {
-			logger.severe(content);
+			logger.error(content);
 		}
 	}
 }
