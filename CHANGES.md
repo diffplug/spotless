@@ -10,6 +10,7 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+# Add full support for git worktrees ([#1119](https://github.com/diffplug/spotless/pull/1119))
 
 ## [2.22.1] - 2022-02-01
 ### Changed
