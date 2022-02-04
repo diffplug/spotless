@@ -128,8 +128,9 @@ class GradleProvisioner {
 					projName = projName + "/";
 				}
 				logger.error(
-						"You need to add a repository containing the '" + mavenCoords + "' artifact in '" + projName + "build.gradle'.\n" +
+						"You need to add a repository containing the '{}' artifact in '{}build.gradle'.\n" +
 								"E.g.: 'repositories { mavenCentral() }'",
+						mavenCoords, projName,
 						e);
 				throw e;
 			}

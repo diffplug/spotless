@@ -34,10 +34,10 @@ class FormatExceptionPolicyLegacy extends NoLambda.EqualityBasedOnSerialization 
 	}
 
 	static void error(Throwable e, FormatterStep step, String relativePath) {
-		logger.error("Step '" + step.getName() + "' found problem in '" + relativePath + "':\n" + e.getMessage(), e);
+		logger.error("Step '{}' found problem in '{}':\n{}", step.getName(), relativePath, e.getMessage(), e);
 	}
 
 	static void warning(Throwable e, FormatterStep step, String relativePath) {
-		logger.warn("Unable to apply step '" + step.getName() + "' to '" + relativePath + "'", e);
+		logger.warn("Unable to apply step '{}' to '{}'", step.getName(), relativePath, e);
 	}
 }
