@@ -19,7 +19,6 @@ import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import com.pinterest.ktlint.core.KtLint;
 import com.pinterest.ktlint.core.KtLint.Params;
@@ -33,7 +32,6 @@ import kotlin.Unit;
 import kotlin.jvm.functions.Function2;
 
 public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
-	private static final Logger logger = Logger.getLogger(KtlintFormatterFunc.class.getName());
 
 	private final List<RuleSet> rulesets;
 	private final Map<String, String> userData;
