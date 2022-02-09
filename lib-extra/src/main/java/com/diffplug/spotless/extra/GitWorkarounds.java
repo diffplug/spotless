@@ -32,6 +32,8 @@ import org.eclipse.jgit.util.SystemReader;
 
 import com.diffplug.common.base.Errors;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Utility methods for Git workarounds.
  */
@@ -172,6 +174,7 @@ public final class GitWorkarounds {
 			return new IOException("Empty 'commondir' file: " + commonDir.getAbsolutePath());
 		}
 
+		@SuppressFBWarnings(value = "BC_UNCONFIRMED_CAST_OF_RETURN_VALUE")
 		@Override
 		public FileRepositoryBuilder readEnvironment(SystemReader sr) {
 			super.readEnvironment(sr);
