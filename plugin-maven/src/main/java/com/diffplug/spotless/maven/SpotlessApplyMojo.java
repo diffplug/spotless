@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,14 @@
 package com.diffplug.spotless.maven;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 
 import com.diffplug.spotless.Formatter;
-import com.diffplug.spotless.PaddedCell;
 import com.diffplug.spotless.maven.incremental.UpToDateChecker;
 
 /**
@@ -33,6 +34,8 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 
 	@Override
 	protected void process(Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException {
+		List<CompletableFuture<Void>> futures = new ArrayList<>();
+
 		for (File file : files) {
 			if (upToDateChecker.isUpToDate(file.toPath())) {
 				if (getLog().isDebugEnabled()) {
@@ -41,15 +44,12 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 				continue;
 			}
 
-			try {
-				PaddedCell.DirtyState dirtyState = PaddedCell.calculateDirtyState(formatter, file);
-				if (!dirtyState.isClean() && !dirtyState.didNotConverge()) {
-					dirtyState.writeCanonicalTo(file);
-				}
-			} catch (IOException e) {
-				throw new MojoExecutionException("Unable to format file " + file, e);
-			}
+			futures.add(FormattingParallelizer.INSTANCE.format(file, formatter));
+		}
 
+		CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+		for (File file : files) {
 			upToDateChecker.setUpToDate(file.toPath());
 		}
 	}
