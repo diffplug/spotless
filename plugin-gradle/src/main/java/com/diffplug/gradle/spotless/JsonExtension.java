@@ -18,8 +18,8 @@ package com.diffplug.gradle.spotless;
 import javax.inject.Inject;
 
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.json.GsonStep;
 import com.diffplug.spotless.json.JsonSimpleStep;
-import com.diffplug.spotless.json.gson.GsonStep;
 
 public class JsonExtension extends FormatExtension {
 	private static final int DEFAULT_INDENTATION = 4;

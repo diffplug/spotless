@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.json.gson;
+package com.diffplug.spotless.json;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -25,6 +25,7 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.json.gson.*;
 
 public class GsonStep {
 	private static final String MAVEN_COORDINATES = "com.google.code.gson:gson";

@@ -23,7 +23,6 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
-import com.diffplug.spotless.json.gson.GsonStep;
 
 public class GsonStepTest extends JsonFormatterStepCommonTests {
 
