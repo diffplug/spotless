@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@ package com.diffplug.spotless.json;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.diffplug.spotless.*;
-
 import org.junit.jupiter.api.Test;
+
+import com.diffplug.spotless.*;
 
 class JsonSimpleStepTest extends JsonFormatterStepCommonTests {
 
@@ -46,17 +46,17 @@ class JsonSimpleStepTest extends JsonFormatterStepCommonTests {
 	@Test
 	void handlesInvalidJson() {
 		assertThatThrownBy(() -> doWithResource("invalidJson"))
-			.isInstanceOf(AssertionError.class)
-			.hasMessage("Unable to format JSON")
-			.hasRootCauseMessage("Expected a ',' or '}' at 9 [character 0 line 3]");
+				.isInstanceOf(AssertionError.class)
+				.hasMessage("Unable to format JSON")
+				.hasRootCauseMessage("Expected a ',' or '}' at 9 [character 0 line 3]");
 	}
 
 	@Test
 	void handlesNotJson() {
 		assertThatThrownBy(() -> doWithResource("notJson"))
-			.isInstanceOf(AssertionError.class)
-			.hasMessage("Unable to determine JSON type, expected a '{' or '[' but found '#'")
-			.hasNoCause();
+				.isInstanceOf(AssertionError.class)
+				.hasMessage("Unable to determine JSON type, expected a '{' or '[' but found '#'")
+				.hasNoCause();
 	}
 
 	@Override
