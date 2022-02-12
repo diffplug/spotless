@@ -14,21 +14,23 @@ import java.util.Objects;
 public class GsonStep {
 	private static final String MAVEN_COORDINATES = "com.google.code.gson:gson";
 
-	public static FormatterStep create(int indentSpaces, boolean sortByKeys, String version, Provisioner provisioner) {
+	public static FormatterStep create(int indentSpaces, boolean sortByKeys, boolean escapeHtml, String version, Provisioner provisioner) {
 		Objects.requireNonNull(provisioner, "provisioner cannot be null");
-		return FormatterStep.createLazy("gson", () -> new State(indentSpaces, sortByKeys, version, provisioner), State::toFormatter);
+		return FormatterStep.createLazy("gson", () -> new State(indentSpaces, sortByKeys, escapeHtml, version, provisioner), State::toFormatter);
 	}
 
 	private static final class State implements Serializable {
-		private static final long serialVersionUID = 6540876150977107116L;
+		private static final long serialVersionUID = -1493479043249379485L;
 
 		private final int indentSpaces;
 		private final boolean sortByKeys;
+		private final boolean escapeHtml;
 		private final JarState jarState;
 
-		private State(int indentSpaces, boolean sortByKeys, String version, Provisioner provisioner) throws IOException {
+		private State(int indentSpaces, boolean sortByKeys, boolean escapeHtml, String version, Provisioner provisioner) throws IOException {
 			this.indentSpaces = indentSpaces;
 			this.sortByKeys = sortByKeys;
+			this.escapeHtml = escapeHtml;
 			this.jarState = JarState.from(MAVEN_COORDINATES + ":" + version, provisioner);
 		}
 
@@ -36,20 +38,35 @@ public class GsonStep {
 			JsonWriterWrapper jsonWriterWrapper = new JsonWriterWrapper(jarState);
 			JsonElementWrapper jsonElementWrapper = new JsonElementWrapper(jarState);
 			JsonObjectWrapper jsonObjectWrapper = new JsonObjectWrapper(jarState, jsonElementWrapper);
+			GsonBuilderWrapper gsonBuilderWrapper = new GsonBuilderWrapper(jarState);
 			GsonWrapper gsonWrapper = new GsonWrapper(jarState, jsonElementWrapper, jsonWriterWrapper);
-			Object gson = gsonWrapper.createGson();
+
+			Object gsonBuilder = gsonBuilderWrapper.serializeNulls(gsonBuilderWrapper.createGsonBuilder());
+			if (!escapeHtml) {
+				gsonBuilder = gsonBuilderWrapper.disableHtmlEscaping(gsonBuilder);
+			}
+			Object gson = gsonBuilderWrapper.create(gsonBuilder);
 
 			return inputString -> {
-				Object jsonElement = gsonWrapper.fromJson(gson, inputString, jsonElementWrapper.getWrappedClass());
-				if (sortByKeys && jsonElementWrapper.isJsonObject(jsonElement)) {
-					jsonElement = sortByKeys(jsonObjectWrapper, jsonElementWrapper, jsonElement);
+				String result;
+				if (inputString.isEmpty()) {
+					result = "";
+				} else {
+					Object jsonElement = gsonWrapper.fromJson(gson, inputString, jsonElementWrapper.getWrappedClass());
+					if (jsonElement == null) {
+						throw new AssertionError(GsonWrapperBase.FAILED_TO_PARSE_ERROR_MESSAGE);
+					}
+					if (sortByKeys && jsonElementWrapper.isJsonObject(jsonElement)) {
+						jsonElement = sortByKeys(jsonObjectWrapper, jsonElementWrapper, jsonElement);
+					}
+					try (StringWriter stringWriter = new StringWriter()) {
+						Object jsonWriter = jsonWriterWrapper.createJsonWriter(stringWriter);
+						jsonWriterWrapper.setIndent(jsonWriter, generateIndent(indentSpaces));
+						gsonWrapper.toJson(gson, jsonElement, jsonWriter);
+						result = stringWriter + "\n";
+					}
 				}
-				try (StringWriter stringWriter = new StringWriter()) {
-					Object jsonWriter = jsonWriterWrapper.createJsonWriter(stringWriter);
-					jsonWriterWrapper.setIndent(jsonWriter, generateIndent(indentSpaces));
-					gsonWrapper.toJson(gson, jsonElement, jsonWriter);
-					return stringWriter.toString();
-				}
+				return result;
 			};
 		}
 

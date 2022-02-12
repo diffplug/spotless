@@ -8,14 +8,13 @@ import java.util.Set;
 
 public class JsonObjectWrapper extends GsonWrapperBase {
 
-	private final Class<?> clazz;
 	private final Constructor<?> constructor;
 	private final Method keySetMethod;
 	private final Method getMethod;
 	private final Method addMethod;
 
 	public JsonObjectWrapper(JarState jarState, JsonElementWrapper jsonElementWrapper) {
-		this.clazz = loadClass(jarState.getClassLoader(), "com.google.gson.JsonObject");
+		Class<?> clazz = loadClass(jarState.getClassLoader(), "com.google.gson.JsonObject");
 		this.constructor = getConstructor(clazz);
 		this.keySetMethod = getMethod(clazz, "keySet");
 		this.getMethod = getMethod(clazz, "get", String.class);
@@ -37,10 +36,6 @@ public class JsonObjectWrapper extends GsonWrapperBase {
 
 	public void add(Object jsonObject, String key, Object element) {
 		invoke(addMethod, jsonObject, key, element);
-	}
-
-	public Class<?> getWrappedClass() {
-		return clazz;
 	}
 
 }

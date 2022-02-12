@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
 public abstract class GsonWrapperBase {
 
 	public static final String INCOMPATIBLE_ERROR_MESSAGE = "There was a problem interacting with Gson; maybe you set an incompatible version?";
-	public static final String FAILED_TO_PARSE_ERROR_MESSAGE = "Failed to parse JSON";
+	public static final String FAILED_TO_PARSE_ERROR_MESSAGE = "Unable to format JSON";
 
 	protected final Class<?> loadClass(ClassLoader classLoader, String className) {
 		try {
@@ -39,7 +39,7 @@ public abstract class GsonWrapperBase {
 		} catch (InstantiationException | IllegalAccessException cause) {
 			throw new IllegalStateException(INCOMPATIBLE_ERROR_MESSAGE, cause);
 		} catch (InvocationTargetException cause) {
-			throw new IllegalStateException(FAILED_TO_PARSE_ERROR_MESSAGE, cause.getCause());
+			throw new AssertionError(FAILED_TO_PARSE_ERROR_MESSAGE, cause.getCause());
 		}
 	}
 
@@ -49,7 +49,7 @@ public abstract class GsonWrapperBase {
 		} catch (IllegalAccessException cause) {
 			throw new IllegalStateException(INCOMPATIBLE_ERROR_MESSAGE, cause);
 		} catch (InvocationTargetException cause) {
-			throw new IllegalStateException(FAILED_TO_PARSE_ERROR_MESSAGE, cause.getCause());
+			throw new AssertionError(FAILED_TO_PARSE_ERROR_MESSAGE, cause.getCause());
 		}
 	}
 

@@ -68,11 +68,13 @@ public class JsonExtension extends FormatExtension {
 	public class GsonConfig {
 		private int indentSpaces;
 		private boolean sortByKeys;
+		private boolean escapeHtml;
 		private String version;
 
 		public GsonConfig() {
 			this.indentSpaces = DEFAULT_INDENTATION;
 			this.sortByKeys = false;
+			this.escapeHtml = false;
 			this.version = DEFAULT_GSON_VERSION;
 			addStep(createStep());
 		}
@@ -89,6 +91,12 @@ public class JsonExtension extends FormatExtension {
 			return this;
 		}
 
+		public GsonConfig escapeHtml() {
+			this.escapeHtml = true;
+			replaceStep(createStep());
+			return this;
+		}
+
 		public GsonConfig version(String version) {
 			this.version = version;
 			replaceStep(createStep());
@@ -96,7 +104,7 @@ public class JsonExtension extends FormatExtension {
 		}
 
 		private FormatterStep createStep() {
-			return GsonStep.create(indentSpaces, sortByKeys, version, provisioner());
+			return GsonStep.create(indentSpaces, sortByKeys, escapeHtml, version, provisioner());
 		}
 	}
 
