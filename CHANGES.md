@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* Added support for JSON formatting based on [Gson](https://github.com/google/gson)
 
 ## [2.22.2] - 2022-02-09
 ### Changed
