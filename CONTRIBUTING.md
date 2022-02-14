@@ -99,6 +99,10 @@ Here's a checklist for creating a new step for Spotless:
 - [ ] Test class has test methods to verify behavior.
 - [ ] Test class has a test method `equality()` which tests equality using `StepEqualityTester` (see existing methods for examples).
 
+### Third-party dependencies via reflection or compile-only source sets
+
+Most formatters are going to use some kind of third-party jar. Spotless integrates with many formatters, some of which have incompatible transitive dependencies. To address this, we resolve third-party dependencies using [`JarState`](https://github.com/diffplug/spotless/blob/b26f0972b185995d7c6a7aefa726c146d24d9a82/lib/src/main/java/com/diffplug/spotless/kotlin/KtfmtStep.java#L118). To call methods on the classes in that `JarState`, you can either use reflection or a compile-only source set. See [#524](https://github.com/diffplug/spotless/issues/524) for examples of both approaches.
+
 ### Accessing the underlying File
 
 In order for Spotless' model to work, each step needs to look only at the `String` input, otherwise they cannot compose.  However, there are some cases where the source `File` is useful, such as to look at the file extension.  In this case, you can pass a `FormatterFunc.NeedsFile` instead of a `FormatterFunc`.  This should only be used in [rare circumstances](https://github.com/diffplug/spotless/pull/637), be careful that you don't accidentally depend on the bytes inside of the `File`!
