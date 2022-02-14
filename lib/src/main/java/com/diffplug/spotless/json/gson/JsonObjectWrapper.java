@@ -21,14 +21,14 @@ import java.util.Set;
 
 import com.diffplug.spotless.JarState;
 
-public class JsonObjectWrapper extends GsonWrapperBase {
+class JsonObjectWrapper extends GsonWrapperBase {
 
 	private final Constructor<?> constructor;
 	private final Method keySetMethod;
 	private final Method getMethod;
 	private final Method addMethod;
 
-	public JsonObjectWrapper(JarState jarState, JsonElementWrapper jsonElementWrapper) {
+	JsonObjectWrapper(JarState jarState, JsonElementWrapper jsonElementWrapper) {
 		Class<?> clazz = loadClass(jarState.getClassLoader(), "com.google.gson.JsonObject");
 		this.constructor = getConstructor(clazz);
 		this.keySetMethod = getMethod(clazz, "keySet");
@@ -36,20 +36,20 @@ public class JsonObjectWrapper extends GsonWrapperBase {
 		this.addMethod = getMethod(clazz, "add", String.class, jsonElementWrapper.getWrappedClass());
 	}
 
-	public Object createJsonObject() {
+	Object createJsonObject() {
 		return newInstance(constructor);
 	}
 
 	@SuppressWarnings("unchecked")
-	public Set<String> keySet(Object jsonObject) {
+	Set<String> keySet(Object jsonObject) {
 		return (Set<String>) invoke(keySetMethod, jsonObject);
 	}
 
-	public Object get(Object jsonObject, String key) {
+	Object get(Object jsonObject, String key) {
 		return invoke(getMethod, jsonObject, key);
 	}
 
-	public void add(Object jsonObject, String key, Object element) {
+	void add(Object jsonObject, String key, Object element) {
 		invoke(addMethod, jsonObject, key, element);
 	}
 

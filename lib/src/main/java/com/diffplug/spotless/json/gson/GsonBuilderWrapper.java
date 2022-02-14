@@ -20,14 +20,14 @@ import java.lang.reflect.Method;
 
 import com.diffplug.spotless.JarState;
 
-public class GsonBuilderWrapper extends GsonWrapperBase {
+class GsonBuilderWrapper extends GsonWrapperBase {
 
 	private final Constructor<?> constructor;
 	private final Method serializeNullsMethod;
 	private final Method disableHtmlEscapingMethod;
 	private final Method createMethod;
 
-	public GsonBuilderWrapper(JarState jarState) {
+	GsonBuilderWrapper(JarState jarState) {
 		Class<?> clazz = loadClass(jarState.getClassLoader(), "com.google.gson.GsonBuilder");
 		this.constructor = getConstructor(clazz);
 		this.serializeNullsMethod = getMethod(clazz, "serializeNulls");
@@ -35,19 +35,19 @@ public class GsonBuilderWrapper extends GsonWrapperBase {
 		this.createMethod = getMethod(clazz, "create");
 	}
 
-	public Object createGsonBuilder() {
+	Object createGsonBuilder() {
 		return newInstance(constructor);
 	}
 
-	public Object serializeNulls(Object gsonBuilder) {
+	Object serializeNulls(Object gsonBuilder) {
 		return invoke(serializeNullsMethod, gsonBuilder);
 	}
 
-	public Object disableHtmlEscaping(Object gsonBuilder) {
+	Object disableHtmlEscaping(Object gsonBuilder) {
 		return invoke(disableHtmlEscapingMethod, gsonBuilder);
 	}
 
-	public Object create(Object gsonBuilder) {
+	Object create(Object gsonBuilder) {
 		return invoke(createMethod, gsonBuilder);
 	}
 

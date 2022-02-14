@@ -21,27 +21,27 @@ import java.lang.reflect.Method;
 
 import com.diffplug.spotless.JarState;
 
-public class JsonWriterWrapper extends GsonWrapperBase {
+class JsonWriterWrapper extends GsonWrapperBase {
 
 	private final Class<?> clazz;
 	private final Constructor<?> constructor;
 	private final Method setIndentMethod;
 
-	public JsonWriterWrapper(JarState jarState) {
+	JsonWriterWrapper(JarState jarState) {
 		this.clazz = loadClass(jarState.getClassLoader(), "com.google.gson.stream.JsonWriter");
 		this.constructor = getConstructor(clazz, Writer.class);
 		this.setIndentMethod = getMethod(clazz, "setIndent", String.class);
 	}
 
-	public Object createJsonWriter(Writer writer) {
+	Object createJsonWriter(Writer writer) {
 		return newInstance(constructor, writer);
 	}
 
-	public void setIndent(Object jsonWriter, String indent) {
+	void setIndent(Object jsonWriter, String indent) {
 		invoke(setIndentMethod, jsonWriter, indent);
 	}
 
-	public Class<?> getWrappedClass() {
+	Class<?> getWrappedClass() {
 		return clazz;
 	}
 

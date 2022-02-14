@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.json;
+package com.diffplug.spotless.json.gson;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import com.diffplug.spotless.json.JsonFormatterStepCommonTests;
 
 import org.junit.jupiter.api.Test;
 

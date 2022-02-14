@@ -19,10 +19,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public abstract class GsonWrapperBase {
+abstract class GsonWrapperBase {
 
-	public static final String INCOMPATIBLE_ERROR_MESSAGE = "There was a problem interacting with Gson; maybe you set an incompatible version?";
-	public static final String FAILED_TO_PARSE_ERROR_MESSAGE = "Unable to format JSON";
+	static final String INCOMPATIBLE_ERROR_MESSAGE = "There was a problem interacting with Gson; maybe you set an incompatible version?";
+	static final String FAILED_TO_PARSE_ERROR_MESSAGE = "Unable to format JSON";
 
 	protected final Class<?> loadClass(ClassLoader classLoader, String className) {
 		try {
