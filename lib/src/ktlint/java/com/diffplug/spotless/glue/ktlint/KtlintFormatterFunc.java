@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import com.pinterest.ktlint.core.KtLint;
 import com.pinterest.ktlint.core.KtLint.Params;
@@ -33,7 +32,6 @@ import kotlin.Unit;
 import kotlin.jvm.functions.Function2;
 
 public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
-	private static final Logger logger = Logger.getLogger(KtlintFormatterFunc.class.getName());
 
 	private final List<RuleSet> rulesets;
 	private final Map<String, String> userData;
