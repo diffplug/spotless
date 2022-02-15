@@ -595,6 +595,7 @@ spotless {
     simple() // has its own section below
     prettier().config(['parser': 'json']) // see Prettier section below
     eclipseWtp('json') // see Eclipse web tools platform section
+    gson() // has its own section below
   }
 }
 ```
@@ -613,6 +614,30 @@ spotless {
   }
 }
 ```
+
+### Gson
+
+Uses Google Gson to also allow sorting by keys besides custom indentation - useful for i18n files.
+
+```gradle
+spotless {
+  json {
+    target 'src/**/*.json'
+    gson()
+      .indentWithSpaces(6) // optional: specify the number of spaces to use
+      .sortByKeys()        // optional: sort JSON by its keys
+      .escapeHtml()        // optional: escape HTML in values
+      .version('2.8.1')    // optional: specify version
+  }
+}
+```
+
+Notes:
+* There's no option in Gson to leave HTML as-is (i.e. escaped HTML would remain escaped, raw would remain raw). Either
+all HTML characters are written escaped or none. Set `escapeHtml` if you prefer the former.
+* `sortByKeys` will apply lexicographic order on the keys of the input JSON. See the
+[javadoc of String](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html#compareTo(java.lang.String))
+for details.
 
 <a name="applying-prettier-to-javascript--flow--typescript--css--scss--less--jsx--graphql--yaml--etc"></a>
 
