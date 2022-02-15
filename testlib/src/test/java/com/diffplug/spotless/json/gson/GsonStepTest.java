@@ -17,14 +17,13 @@ package com.diffplug.spotless.json.gson;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.diffplug.spotless.json.JsonFormatterStepCommonTests;
-
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
+import com.diffplug.spotless.json.JsonFormatterStepCommonTests;
 
 public class GsonStepTest extends JsonFormatterStepCommonTests {
 
