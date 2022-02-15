@@ -12,9 +12,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * Added support for JSON formatting based on [Gson](https://github.com/google/gson) ([#1125](https://github.com/diffplug/spotless/pull/1125)).
-
 ### Changed
-
 * Use SLF4J for logging ([#1116](https://github.com/diffplug/spotless/issues/1116))
 
 ## [2.22.2] - 2022-02-09
