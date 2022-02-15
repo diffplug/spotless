@@ -80,7 +80,7 @@ public class FreshMarkStep {
 		}
 
 		FormatterFunc createFormat() throws Exception {
-			Logger logger = LoggerFactory.getLogger(FreshMarkStep.class.getName());
+			Logger logger = LoggerFactory.getLogger(FreshMarkStep.class);
 			Consumer<String> loggingStream = logger::warn;
 
 			ClassLoader classLoader = jarState.getClassLoader();

@@ -31,7 +31,7 @@ import sortpom.logger.SortPomLogger;
 import sortpom.parameter.PluginParameters;
 
 public class SortPomFormatterFunc implements FormatterFunc {
-	private static final Logger logger = LoggerFactory.getLogger(SortPomFormatterFunc.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(SortPomFormatterFunc.class);
 	private final SortPomCfg cfg;
 
 	public SortPomFormatterFunc(SortPomCfg cfg) {

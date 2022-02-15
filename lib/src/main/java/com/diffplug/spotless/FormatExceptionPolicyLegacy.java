@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 class FormatExceptionPolicyLegacy extends NoLambda.EqualityBasedOnSerialization implements FormatExceptionPolicy {
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger logger = LoggerFactory.getLogger(Formatter.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(Formatter.class);
 
 	@Override
 	public void handleError(Throwable e, FormatterStep step, String relativePath) {

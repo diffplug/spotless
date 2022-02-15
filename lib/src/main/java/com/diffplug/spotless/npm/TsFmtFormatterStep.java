@@ -36,7 +36,7 @@ import com.diffplug.spotless.ThrowingEx;
 
 public class TsFmtFormatterStep {
 
-	private static final Logger logger = LoggerFactory.getLogger(TsFmtFormatterStep.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(TsFmtFormatterStep.class);
 
 	public static final String NAME = "tsfmt-format";
 

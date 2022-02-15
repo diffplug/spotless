@@ -38,7 +38,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 abstract class NpmFormatterStepStateBase implements Serializable {
 
-	private static final Logger logger = LoggerFactory.getLogger(NpmFormatterStepStateBase.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(NpmFormatterStepStateBase.class);
 
 	private static final long serialVersionUID = 1460749955865959948L;
 

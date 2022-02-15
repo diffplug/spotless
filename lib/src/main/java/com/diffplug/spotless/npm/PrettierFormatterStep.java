@@ -37,7 +37,7 @@ import com.diffplug.spotless.ThrowingEx;
 
 public class PrettierFormatterStep {
 
-	private static final Logger logger = LoggerFactory.getLogger(PrettierFormatterStep.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(PrettierFormatterStep.class);
 
 	public static final String NAME = "prettier-format";
 
