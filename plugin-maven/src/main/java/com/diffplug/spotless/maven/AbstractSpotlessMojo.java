@@ -15,8 +15,6 @@
  */
 package com.diffplug.spotless.maven;
 
-import static java.util.stream.Collectors.toList;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -71,10 +69,16 @@ import com.diffplug.spotless.maven.scala.Scala;
 import com.diffplug.spotless.maven.sql.Sql;
 import com.diffplug.spotless.maven.typescript.Typescript;
 
+import static java.util.stream.Collectors.toList;
+
 public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	private static final String DEFAULT_INDEX_FILE_NAME = "spotless-index";
 	private static final String DEFAULT_ENCODING = "UTF-8";
 	private static final String DEFAULT_LINE_ENDINGS = "GIT_ATTRIBUTES";
+
+	/** Value to allow unsetting the ratchet inherited from parent pom configuration. */
+	static final String RATCHETFROM_NONE = "NONE";
+
 	static final String GOAL_CHECK = "check";
 	static final String GOAL_APPLY = "apply";
 
@@ -302,7 +306,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		Provisioner provisioner = MavenProvisioner.create(resolver);
 		List<FormatterStepFactory> formatterStepFactories = getFormatterStepFactories();
 		FileLocator fileLocator = getFileLocator();
-		return new FormatterConfig(baseDir, encoding, lineEndings, Optional.ofNullable(ratchetFrom), provisioner, fileLocator, formatterStepFactories, Optional.ofNullable(setLicenseHeaderYearsFromGitHistory));
+		final Optional<String> optionalRatchetFrom = Optional.ofNullable(this.ratchetFrom)
+			.filter(ratchet -> !RATCHETFROM_NONE.equals(ratchet));
+		return new FormatterConfig(baseDir, encoding, lineEndings, optionalRatchetFrom, provisioner, fileLocator, formatterStepFactories, Optional.ofNullable(setLicenseHeaderYearsFromGitHistory));
 	}
 
 	private FileLocator getFileLocator() {
