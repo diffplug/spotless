@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.maven;
 
+import static java.util.stream.Collectors.toList;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -68,8 +70,6 @@ import com.diffplug.spotless.maven.python.Python;
 import com.diffplug.spotless.maven.scala.Scala;
 import com.diffplug.spotless.maven.sql.Sql;
 import com.diffplug.spotless.maven.typescript.Typescript;
-
-import static java.util.stream.Collectors.toList;
 
 public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	private static final String DEFAULT_INDEX_FILE_NAME = "spotless-index";
@@ -307,7 +307,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		List<FormatterStepFactory> formatterStepFactories = getFormatterStepFactories();
 		FileLocator fileLocator = getFileLocator();
 		final Optional<String> optionalRatchetFrom = Optional.ofNullable(this.ratchetFrom)
-			.filter(ratchet -> !RATCHETFROM_NONE.equals(ratchet));
+				.filter(ratchet -> !RATCHETFROM_NONE.equals(ratchet));
 		return new FormatterConfig(baseDir, encoding, lineEndings, optionalRatchetFrom, provisioner, fileLocator, formatterStepFactories, Optional.ofNullable(setLicenseHeaderYearsFromGitHistory));
 	}
 

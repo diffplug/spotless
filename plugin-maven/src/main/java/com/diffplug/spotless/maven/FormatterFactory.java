@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 package com.diffplug.spotless.maven;
+
+import static com.diffplug.spotless.maven.AbstractSpotlessMojo.RATCHETFROM_NONE;
+import static java.util.Collections.emptySet;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -44,9 +47,6 @@ import com.diffplug.spotless.maven.generic.Replace;
 import com.diffplug.spotless.maven.generic.ReplaceRegex;
 import com.diffplug.spotless.maven.generic.ToggleOffOn;
 import com.diffplug.spotless.maven.generic.TrimTrailingWhitespace;
-
-import static com.diffplug.spotless.maven.AbstractSpotlessMojo.RATCHETFROM_NONE;
-import static java.util.Collections.emptySet;
 
 public abstract class FormatterFactory {
 	@Parameter
