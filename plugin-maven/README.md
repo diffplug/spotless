@@ -999,6 +999,14 @@ However, we strongly recommend that you use a non-local branch, such as a tag or
 
 This is especially helpful for injecting accurate copyright dates using the [license step](#license-header).
 
+You can explicitly disable ratchet functionality by providing the value 'NONE':
+```xml
+<configuration>
+  <ratchetFrom>NONE</ratchetFrom>
+</configuration>
+```
+This is useful for disabling the ratchet functionality in child projects where the parent defines a ratchetFrom value.
+
 ## `spotless:off` and `spotless:on`
 
 Sometimes there is a chunk of code  which you have carefully handcrafted, and you would like to exclude just this one little part from getting clobbered by the autoformat. Some formatters have a way to do this, many don't, but who cares. If you setup your spotless like this:

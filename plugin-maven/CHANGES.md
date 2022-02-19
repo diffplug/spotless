@@ -3,6 +3,9 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* Magic value 'NONE' for disabling ratchet functionality ([#1134](https://github.com/diffplug/spotless/issues/1134))
+
 ### Changed
 * Use SLF4J for logging ([#1116](https://github.com/diffplug/spotless/issues/1116))
 
