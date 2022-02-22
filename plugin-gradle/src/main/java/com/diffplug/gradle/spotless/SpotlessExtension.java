@@ -74,14 +74,19 @@ public abstract class SpotlessExtension {
 	}
 
 	/** Sets encoding to use (defaults to UTF_8). */
+	public void setEncoding(Charset charset) {
+		encoding = requireNonNull(charset);
+	}
+
+	/** Sets encoding to use (defaults to UTF_8). */
 	public void setEncoding(String name) {
 		requireNonNull(name);
 		setEncoding(Charset.forName(name));
 	}
 
 	/** Sets encoding to use (defaults to UTF_8). */
-	public void setEncoding(Charset charset) {
-		encoding = requireNonNull(charset);
+	public void encoding(Charset charset) {
+		setEncoding(charset);
 	}
 
 	/** Sets encoding to use (defaults to UTF_8). */
