@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+* Accept `java.nio.charset.Charset` type when setting the character encoding via `encoding` ([#1128](https://github.com/diffplug/spotless/issues/1128))
 
 ## [6.3.0] - 2022-02-15
 ### Added
