@@ -21,7 +21,7 @@ for (glue in NEEDS_GLUE) {
 }
 
 dependencies {
-	compileOnly 'org.slf4j:slf4j-api:1.7.35'
+	compileOnly 'org.slf4j:slf4j-api:1.7.36'
 	// zero runtime reqs is a hard requirements for spotless-lib
 	// if you need a dep, put it in lib-extra
 	testImplementation "org.junit.jupiter:junit-jupiter:$VER_JUNIT"
