@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import javax.inject.Inject;
 
@@ -28,6 +29,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.kotlin.DiktatStep;
 import com.diffplug.spotless.kotlin.KtLintStep;
 import com.diffplug.spotless.kotlin.KtfmtStep;
+import com.diffplug.spotless.kotlin.KtfmtStep.KtfmtFormattingOptions;
 import com.diffplug.spotless.kotlin.KtfmtStep.Style;
 
 public class KotlinGradleExtension extends FormatExtension {
@@ -90,6 +92,9 @@ public class KotlinGradleExtension extends FormatExtension {
 	public class KtfmtConfig {
 		final String version;
 		Style style;
+		KtfmtFormattingOptions options;
+
+		private final ConfigurableStyle configurableStyle = new ConfigurableStyle();
 
 		KtfmtConfig(String version) {
 			this.version = Objects.requireNonNull(version);
@@ -97,25 +102,40 @@ public class KotlinGradleExtension extends FormatExtension {
 			addStep(createStep());
 		}
 
-		public void style(Style style) {
+		private ConfigurableStyle style(Style style) {
 			this.style = style;
 			replaceStep(createStep());
+			return configurableStyle;
 		}
 
-		public void dropboxStyle() {
-			style(Style.DROPBOX);
+		public ConfigurableStyle dropboxStyle() {
+			return style(Style.DROPBOX);
 		}
 
-		public void googleStyle() {
-			style(Style.GOOGLE);
+		public ConfigurableStyle googleStyle() {
+			return style(Style.GOOGLE);
 		}
 
-		public void kotlinlangStyle() {
-			style(Style.KOTLINLANG);
+		public ConfigurableStyle kotlinlangStyle() {
+			return style(Style.KOTLINLANG);
+		}
+
+		public void configure(Consumer<KtfmtFormattingOptions> optionsConfiguration) {
+			this.configurableStyle.configure(optionsConfiguration);
 		}
 
 		private FormatterStep createStep() {
-			return KtfmtStep.create(version, provisioner(), style);
+			return KtfmtStep.create(version, provisioner(), style, options);
+		}
+
+		class ConfigurableStyle {
+
+			void configure(Consumer<KtfmtFormattingOptions> optionsConfiguration) {
+				KtfmtFormattingOptions ktfmtFormattingOptions = new KtfmtFormattingOptions();
+				optionsConfiguration.accept(ktfmtFormattingOptions);
+				options = ktfmtFormattingOptions;
+				replaceStep(createStep());
+			}
 		}
 	}
 

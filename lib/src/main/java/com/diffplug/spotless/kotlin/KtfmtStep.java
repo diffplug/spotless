@@ -19,11 +19,18 @@ import static com.diffplug.spotless.kotlin.KtfmtStep.Style.DEFAULT;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Objects;
 
-import com.diffplug.spotless.*;
+import javax.annotation.Nullable;
+
+import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.JarState;
+import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.ThrowingEx;
 
 /**
  * Wraps up <a href="https://github.com/facebookincubator/ktfmt">ktfmt</a> as a FormatterStep.
@@ -32,7 +39,7 @@ public class KtfmtStep {
 	// prevent direct instantiation
 	private KtfmtStep() {}
 
-	private static final String DEFAULT_VERSION = "0.31";
+	private static final String DEFAULT_VERSION = "0.34";
 	static final String NAME = "ktfmt";
 	static final String PACKAGE = "com.facebook";
 	static final String MAVEN_COORDINATE = PACKAGE + ":ktfmt:";
@@ -62,7 +69,35 @@ public class KtfmtStep {
 		}
 	}
 
-	private static final String DROPBOX_STYLE_METHOD = "dropboxStyle";
+	public static class KtfmtFormattingOptions implements Serializable {
+
+		private static final long serialVersionUID = 1L;
+
+		@Nullable
+		private Integer maxWidth = null;
+
+		@Nullable
+		private Integer blockIndent = null;
+
+		@Nullable
+		private Integer continuationIndent = null;
+
+		@Nullable
+		private Boolean removeUnusedImport = null;
+
+		public KtfmtFormattingOptions() {}
+
+		public KtfmtFormattingOptions(
+				@Nullable Integer maxWidth,
+				@Nullable Integer blockIndent,
+				@Nullable Integer continuationIndent,
+				@Nullable Boolean removeUnusedImport) {
+			this.maxWidth = maxWidth;
+			this.blockIndent = blockIndent;
+			this.continuationIndent = continuationIndent;
+			this.removeUnusedImport = removeUnusedImport;
+		}
+	}
 
 	/**
 	 * The <code>format</code> method is available in the link below.
@@ -78,24 +113,19 @@ public class KtfmtStep {
 
 	/** Creates a step which formats everything - code, import order, and unused imports. */
 	public static FormatterStep create(String version, Provisioner provisioner) {
-		return create(version, provisioner, DEFAULT);
+		return create(version, provisioner, null, null);
 	}
 
 	/** Creates a step which formats everything - code, import order, and unused imports. */
-	public static FormatterStep create(String version, Provisioner provisioner, Style style) {
+	public static FormatterStep create(String version, Provisioner provisioner, @Nullable Style style, @Nullable KtfmtFormattingOptions options) {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(provisioner, "provisioner");
-		Objects.requireNonNull(style, "style");
 		return FormatterStep.createLazy(
-				NAME, () -> new State(version, provisioner, style), State::createFormat);
+				NAME, () -> new State(version, provisioner, style, options), State::createFormat);
 	}
 
 	public static String defaultVersion() {
 		return DEFAULT_VERSION;
-	}
-
-	public static String defaultStyle() {
-		return Style.DEFAULT.name();
 	}
 
 	static final class State implements Serializable {
@@ -107,26 +137,90 @@ public class KtfmtStep {
 		/**
 		 * Option that allows to apply formatting options to perform a 4 spaces block and continuation indent.
 		 */
+		@Nullable
 		private final Style style;
+		/**
+		 *
+		 */
+		@Nullable
+		private final KtfmtFormattingOptions options;
 		/** The jar that contains the formatter. */
 		final JarState jarState;
 
-		State(String version, Provisioner provisioner, Style style) throws IOException {
+		State(String version, Provisioner provisioner, @Nullable Style style, @Nullable KtfmtFormattingOptions options) throws IOException {
 			this.version = version;
+			this.options = options;
 			this.pkg = PACKAGE;
 			this.style = style;
 			this.jarState = JarState.from(MAVEN_COORDINATE + version, provisioner);
 		}
 
 		FormatterFunc createFormat() throws Exception {
-			ClassLoader classLoader = jarState.getClassLoader();
+			final ClassLoader classLoader = jarState.getClassLoader();
+
+			if (BadSemver.version(version) < BadSemver.version(0, 32)) {
+				if (options != null) {
+					throw new IllegalStateException("Ktfmt formatting options supported for version 0.32 and later");
+				}
+				return getFormatterFuncFallback(style != null ? style : DEFAULT, classLoader);
+			}
+
+			final Class<?> formatterFuncClass = classLoader.loadClass("com.diffplug.spotless.glue.ktfmt.KtfmtFormatterFunc");
+			final Class<?> ktfmtStyleClass = classLoader.loadClass("com.diffplug.spotless.glue.ktfmt.KtfmtStyle");
+			final Class<?> ktfmtFormattingOptionsClass = classLoader.loadClass("com.diffplug.spotless.glue.ktfmt.KtfmtFormattingOptions");
+
+			if (style == null && options == null) {
+				final Constructor<?> constructor = formatterFuncClass.getConstructor();
+				return (FormatterFunc) constructor.newInstance();
+			}
+
+			final Object ktfmtStyle = style == null ? null : Enum.valueOf((Class<? extends Enum>) ktfmtStyleClass, getKtfmtStyleOption(style));
+			if (options == null) {
+				final Constructor<?> constructor = formatterFuncClass.getConstructor(ktfmtStyleClass);
+				return (FormatterFunc) constructor.newInstance(ktfmtStyle);
+			}
+
+			final Constructor<?> optionsConstructor = ktfmtFormattingOptionsClass.getConstructor(
+					Integer.class, Integer.class, Integer.class, Boolean.class);
+			final Object ktfmtFormattingOptions = optionsConstructor.newInstance(
+					options.maxWidth, options.blockIndent, options.continuationIndent, options.removeUnusedImport);
+			if (style == null) {
+				final Constructor<?> constructor = formatterFuncClass.getConstructor(ktfmtFormattingOptionsClass);
+				return (FormatterFunc) constructor.newInstance(ktfmtFormattingOptions);
+			}
+
+			final Constructor<?> constructor = formatterFuncClass.getConstructor(ktfmtStyleClass, ktfmtFormattingOptionsClass);
+			return (FormatterFunc) constructor.newInstance(ktfmtStyle, ktfmtFormattingOptions);
+		}
+
+		/**
+		 * @param style
+		 * @return com.diffplug.spotless.glue.ktfmt.KtfmtStyle enum value name
+		 */
+		private String getKtfmtStyleOption(Style style) {
+			switch (style) {
+			case DEFAULT:
+				return "DEFAULT";
+			case DROPBOX:
+				return "DROPBOX";
+			case GOOGLE:
+				return "GOOGLE";
+			case KOTLINLANG:
+				return "KOTLIN_LANG";
+			default:
+				throw new IllegalStateException("Unsupported style: " + style);
+			}
+		}
+
+		private FormatterFunc getFormatterFuncFallback(Style style, ClassLoader classLoader) {
 			return input -> {
 				try {
 					if (style == DEFAULT) {
 						Method formatterMethod = getFormatterClazz(classLoader).getMethod(FORMATTER_METHOD, String.class);
 						return (String) formatterMethod.invoke(getFormatterClazz(classLoader), input);
 					} else {
-						Method formatterMethod = getFormatterClazz(classLoader).getMethod(FORMATTER_METHOD, getFormattingOptionsClazz(classLoader),
+						Method formatterMethod = getFormatterClazz(classLoader).getMethod(FORMATTER_METHOD,
+								getFormattingOptionsClazz(classLoader),
 								String.class);
 						Object formattingOptions = getCustomFormattingOptions(classLoader, style);
 						return (String) formatterMethod.invoke(getFormatterClazz(classLoader), formattingOptions, input);
@@ -151,7 +245,7 @@ public class KtfmtStep {
 			if (style == Style.DEFAULT || style == Style.DROPBOX) {
 				Class<?> formattingOptionsCompanionClazz = classLoader.loadClass(pkg + ".ktfmt.FormattingOptions$Companion");
 				Object companion = formattingOptionsCompanionClazz.getConstructors()[0].newInstance((Object) null);
-				Method formattingOptionsMethod = formattingOptionsCompanionClazz.getDeclaredMethod(DROPBOX_STYLE_METHOD);
+				Method formattingOptionsMethod = formattingOptionsCompanionClazz.getDeclaredMethod("dropboxStyle");
 				return formattingOptionsMethod.invoke(companion);
 			} else {
 				throw new IllegalStateException("Versions pre-0.19 can only use Default and Dropbox styles");

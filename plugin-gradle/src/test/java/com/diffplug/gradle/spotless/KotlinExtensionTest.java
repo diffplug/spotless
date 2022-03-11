@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -268,5 +268,49 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 		assertFile("src/main/kotlin/AnObject2.kt").matches(matcher -> {
 			matcher.startsWith("// License Header 2012, 2014");
 		});
+	}
+
+	@Test
+	@EnabledForJreRange(min = JAVA_11) // ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
+	void testWithCustomMaxWidthDefaultStyleKtfmt() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlin {",
+				"        ktfmt().configure { options ->",
+				"            options.maxWidth = 120",
+				"		 }",
+				"    }",
+				"}");
+
+		setFile("src/main/kotlin/max-width.kt").toResource("kotlin/ktfmt/max-width.dirty");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/kotlin/max-width.kt").sameAsResource("kotlin/ktfmt/max-width.clean");
+	}
+
+	@Test
+	@EnabledForJreRange(min = JAVA_11) // ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
+	void testWithCustomMaxWidthDropboxStyleKtfmt() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlin {",
+				"        ktfmt().dropboxStyle().configure { options ->",
+				"            options.maxWidth = 120",
+				"		 }",
+				"    }",
+				"}");
+
+		setFile("src/main/kotlin/max-width.kt").toResource("kotlin/ktfmt/max-width.dirty");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/kotlin/max-width.kt").sameAsResource("kotlin/ktfmt/max-width-dropbox.clean");
 	}
 }

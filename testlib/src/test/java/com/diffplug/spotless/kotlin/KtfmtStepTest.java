@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,14 +35,14 @@ class KtfmtStepTest extends ResourceHarness {
 	@Test
 	@EnabledForJreRange(min = JAVA_11) // ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
 	void dropboxStyle_0_18() throws Exception {
-		FormatterStep step = KtfmtStep.create("0.18", TestProvisioner.mavenCentral(), KtfmtStep.Style.DROPBOX);
+		FormatterStep step = KtfmtStep.create("0.18", TestProvisioner.mavenCentral(), KtfmtStep.Style.DROPBOX, null);
 		StepHarness.forStep(step).testResource("kotlin/ktfmt/basic.dirty", "kotlin/ktfmt/basic-dropboxstyle.clean");
 	}
 
 	@Test
 	@EnabledForJreRange(min = JAVA_11) // ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
 	void dropboxStyle_0_19() throws Exception {
-		FormatterStep step = KtfmtStep.create("0.19", TestProvisioner.mavenCentral(), KtfmtStep.Style.DROPBOX);
+		FormatterStep step = KtfmtStep.create("0.19", TestProvisioner.mavenCentral(), KtfmtStep.Style.DROPBOX, null);
 		StepHarness.forStep(step).testResource("kotlin/ktfmt/basic.dirty", "kotlin/ktfmt/basic-dropboxstyle.clean");
 	}
 
