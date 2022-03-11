@@ -34,7 +34,7 @@ dependencies {
 
 	palantirJavaFormatCompileOnly 'com.palantir.javaformat:palantir-java-format:1.1.0'
 
-	String VER_KTLINT='0.43.2'
+	String VER_KTLINT='0.44.0'
 	ktlintCompileOnly "com.pinterest:ktlint:$VER_KTLINT"
 	ktlintCompileOnly "com.pinterest.ktlint:ktlint-core:$VER_KTLINT"
 	ktlintCompileOnly "com.pinterest.ktlint:ktlint-ruleset-standard:$VER_KTLINT"
