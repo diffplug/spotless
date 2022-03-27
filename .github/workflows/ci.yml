@@ -2,11 +2,9 @@ name: CI
 
 on:
   pull_request:
-    branches:
-      - *
+    branches: [ * ]
   push:
-    branches:
-      - *
+    branches: [ * ]
 
 jobs:
   build:
