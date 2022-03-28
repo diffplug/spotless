@@ -5,6 +5,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * Accept `java.nio.charset.Charset` type when setting the character encoding via `encoding` ([#1128](https://github.com/diffplug/spotless/issues/1128))
+* Added support for setting custom parameters for Kotlin ktfmt in Gradle plugin. ([#1145](https://github.com/diffplug/spotless/pull/1145))
 
 ## [6.3.0] - 2022-02-15
 ### Added
