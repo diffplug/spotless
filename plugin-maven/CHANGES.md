@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.22.0] - 2022-03-28
 ### Added
 * Added support for setting custom parameters for Kotlin ktfmt in Maven plugin. ([#1145](https://github.com/diffplug/spotless/pull/1145))
 
