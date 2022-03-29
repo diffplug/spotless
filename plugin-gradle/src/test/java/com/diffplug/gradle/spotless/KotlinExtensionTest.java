@@ -294,6 +294,28 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 
 	@Test
 	@EnabledForJreRange(min = JAVA_11) // ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
+	void testWithCustomMaxWidthDefaultStyleKtfmtGradleKts() throws IOException {
+		setFile("build.gradle.kts").toLines(
+				"plugins {",
+				"    id(\"org.jetbrains.kotlin.jvm\") version \"1.5.31\"",
+				"    id(\"com.diffplug.spotless\")",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlin {",
+				"        ktfmt().configure { options ->",
+				"            options.setMaxWidth(120)",
+				"		 }",
+				"    }",
+				"}");
+
+		setFile("src/main/kotlin/max-width.kt").toResource("kotlin/ktfmt/max-width.dirty");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/kotlin/max-width.kt").sameAsResource("kotlin/ktfmt/max-width.clean");
+	}
+
+	@Test
+	@EnabledForJreRange(min = JAVA_11) // ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
 	void testWithCustomMaxWidthDropboxStyleKtfmt() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
@@ -305,6 +327,28 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 				"    kotlin {",
 				"        ktfmt().dropboxStyle().configure { options ->",
 				"            options.maxWidth = 120",
+				"		 }",
+				"    }",
+				"}");
+
+		setFile("src/main/kotlin/max-width.kt").toResource("kotlin/ktfmt/max-width.dirty");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/kotlin/max-width.kt").sameAsResource("kotlin/ktfmt/max-width-dropbox.clean");
+	}
+
+	@Test
+	@EnabledForJreRange(min = JAVA_11) // ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
+	void testWithCustomMaxWidthDropboxStyleKtfmtGradleKts() throws IOException {
+		setFile("build.gradle.kts").toLines(
+				"plugins {",
+				"    id(\"org.jetbrains.kotlin.jvm\") version \"1.5.31\"",
+				"    id(\"com.diffplug.spotless\")",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlin {",
+				"        ktfmt().dropboxStyle().configure { options ->",
+				"            options.setMaxWidth(120)",
 				"		 }",
 				"    }",
 				"}");

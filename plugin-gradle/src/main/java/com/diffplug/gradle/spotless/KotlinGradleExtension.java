@@ -128,9 +128,9 @@ public class KotlinGradleExtension extends FormatExtension {
 			return KtfmtStep.create(version, provisioner(), style, options);
 		}
 
-		class ConfigurableStyle {
+		public class ConfigurableStyle {
 
-			void configure(Consumer<KtfmtFormattingOptions> optionsConfiguration) {
+			public void configure(Consumer<KtfmtFormattingOptions> optionsConfiguration) {
 				KtfmtFormattingOptions ktfmtFormattingOptions = new KtfmtFormattingOptions();
 				optionsConfiguration.accept(ktfmtFormattingOptions);
 				options = ktfmtFormattingOptions;
