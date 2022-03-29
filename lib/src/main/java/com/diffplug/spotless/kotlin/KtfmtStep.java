@@ -97,6 +97,22 @@ public class KtfmtStep {
 			this.continuationIndent = continuationIndent;
 			this.removeUnusedImport = removeUnusedImport;
 		}
+
+		public void setMaxWidth(int maxWidth) {
+			this.maxWidth = maxWidth;
+		}
+
+		public void setBlockIndent(int blockIndent) {
+			this.blockIndent = blockIndent;
+		}
+
+		public void setContinuationIndent(int continuationIndent) {
+			this.continuationIndent = continuationIndent;
+		}
+
+		public void setRemoveUnusedImport(boolean removeUnusedImport) {
+			this.removeUnusedImport = removeUnusedImport;
+		}
 	}
 
 	/**
