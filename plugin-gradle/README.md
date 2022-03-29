@@ -195,7 +195,7 @@ spotless {
 Using Java 16+ with Google Java Format 1.10.0 [requires additional flags](https://github.com/google/google-java-format/releases/tag/v1.10.0) to the running JDK.
 These Flags can be provided using the `gradle.properties` file (See [documentation](https://docs.gradle.org/current/userguide/build_environment.html)).
 
-For example the following file under `gradle.properties` will run maven with the required flags:
+For example the following file under `gradle.properties` will run gradle with the required flags:
 ```
 org.gradle.jvmargs=--add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED \
   --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED \
@@ -221,7 +221,7 @@ spotless {
 Using Java 16+ with Palantir Java Format [requires additional flags](https://github.com/google/google-java-format/releases/tag/v1.10.0) on the running JDK.
 These Flags can be provided using the `gradle.properties` file (See [documentation](https://docs.gradle.org/current/userguide/build_environment.html)).
 
-For example the following file under `gradle.properties` will run maven with the required flags:
+For example the following file under `gradle.properties` will run gradle with the required flags:
 ```
 org.gradle.jvmargs=--add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED \
   --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED \
