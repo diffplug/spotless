@@ -50,7 +50,7 @@ public final class GitWorkarounds {
 	 * @return the path to the .git directory.
 	 */
 	static @Nullable File getDotGitDir(File projectDir) {
-		return fileRepositoryResolverForProject(projectDir, null).getGitDir();
+		return fileRepositoryResolverForProject(projectDir).getGitDir();
 	}
 
 	/**
@@ -59,6 +59,19 @@ public final class GitWorkarounds {
 	 * This applies a workaround for JGit not supporting worktrees properly.
 	 *
 	 * @param projectDir the project directory.
+	 * @return the builder.
+	 */
+	static RepositorySpecificResolver fileRepositoryResolverForProject(File projectDir) {
+		return fileRepositoryResolverForProject(projectDir, null);
+	}
+
+	/**
+	 * Creates a {@link RepositorySpecificResolver} for the given project directory.
+	 *
+	 * This applies a workaround for JGit not supporting worktrees properly.
+	 *
+	 * @param projectDir the project directory.
+	 * @param baseConfig the user and system level git config.
 	 * @return the builder.
 	 */
 	static RepositorySpecificResolver fileRepositoryResolverForProject(File projectDir, Config baseConfig) {
