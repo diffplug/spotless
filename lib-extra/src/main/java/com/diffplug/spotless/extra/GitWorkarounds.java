@@ -74,7 +74,7 @@ public final class GitWorkarounds {
 	 * @param baseConfig the user and system level git config.
 	 * @return the builder.
 	 */
-	static RepositorySpecificResolver fileRepositoryResolverForProject(File projectDir, Config baseConfig) {
+	static RepositorySpecificResolver fileRepositoryResolverForProject(File projectDir, @Nullable Config baseConfig) {
 		RepositorySpecificResolver repositoryResolver = new RepositorySpecificResolver(baseConfig);
 		repositoryResolver.findGitDir(projectDir);
 		repositoryResolver.readEnvironment();
@@ -113,7 +113,7 @@ public final class GitWorkarounds {
 			this(null);
 		}
 
-		public RepositorySpecificResolver(Config baseConfig) {
+		public RepositorySpecificResolver(@Nullable Config baseConfig) {
 			this.baseConfig = baseConfig;
 		}
 
