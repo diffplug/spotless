@@ -172,7 +172,7 @@ public final class GitAttributesLineEndings {
 			//////////////////////////
 			// REPO-SPECIFIC VALUES //
 			//////////////////////////
-			RepositorySpecificResolver repositoryResolver = GitWorkarounds.fileRepositoryResolverForProject(projectDir);
+			RepositorySpecificResolver repositoryResolver = GitWorkarounds.fileRepositoryResolverForProject(projectDir, userConfig);
 			if (repositoryResolver.getGitDir() != null) {
 				workTree = repositoryResolver.getWorkTree();
 				repoConfig = repositoryResolver.getRepositoryConfig();

@@ -4,6 +4,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+### Fixed
+* Git user config and system config also included for defaultEndings configuration. ([#540](https://github.com/diffplug/spotless/issues/540))
+
 ## [6.4.1] - 2022-03-30
 ### Fixed
 * Fixed ktfmt options configuration in Gradle plugin for Gradle Kotlin scripts (kts).

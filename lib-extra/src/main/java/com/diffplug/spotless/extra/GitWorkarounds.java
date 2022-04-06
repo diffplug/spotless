@@ -62,7 +62,20 @@ public final class GitWorkarounds {
 	 * @return the builder.
 	 */
 	static RepositorySpecificResolver fileRepositoryResolverForProject(File projectDir) {
-		RepositorySpecificResolver repositoryResolver = new RepositorySpecificResolver();
+		return fileRepositoryResolverForProject(projectDir, null);
+	}
+
+	/**
+	 * Creates a {@link RepositorySpecificResolver} for the given project directory.
+	 *
+	 * This applies a workaround for JGit not supporting worktrees properly.
+	 *
+	 * @param projectDir the project directory.
+	 * @param baseConfig the user and system level git config.
+	 * @return the builder.
+	 */
+	static RepositorySpecificResolver fileRepositoryResolverForProject(File projectDir, @Nullable Config baseConfig) {
+		RepositorySpecificResolver repositoryResolver = new RepositorySpecificResolver(baseConfig);
 		repositoryResolver.findGitDir(projectDir);
 		repositoryResolver.readEnvironment();
 		if (repositoryResolver.getGitDir() != null || repositoryResolver.getWorkTree() != null) {
@@ -94,6 +107,16 @@ public final class GitWorkarounds {
 
 		private File commonDirectory;
 
+		private Config baseConfig;
+
+		public RepositorySpecificResolver() {
+			this(null);
+		}
+
+		public RepositorySpecificResolver(@Nullable Config baseConfig) {
+			this.baseConfig = baseConfig;
+		}
+
 		/** @return the repository specific configuration. */
 		Config getRepositoryConfig() {
 			return Errors.rethrow().get(this::getConfig);
@@ -108,7 +131,12 @@ public final class GitWorkarounds {
 		protected Config loadConfig() throws IOException {
 			if (getGitDir() != null) {
 				File path = resolveWithCommonDir(Constants.CONFIG);
-				FileBasedConfig cfg = new FileBasedConfig(path, safeFS());
+				FileBasedConfig cfg = null;
+				if (this.baseConfig == null) {
+					cfg = new FileBasedConfig(path, safeFS());
+				} else {
+					cfg = new FileBasedConfig(baseConfig, path, safeFS());
+				}
 				try {
 					cfg.load();
 
