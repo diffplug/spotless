@@ -59,7 +59,7 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 	/** Adds the specified version of <a href="https://github.com/pinterest/ktlint">ktlint</a>. */
 	public KotlinFormatExtension ktlint(String version) {
 		Objects.requireNonNull(version);
-		return new KotlinFormatExtension(version, Collections.emptyMap());
+		return new KotlinFormatExtension(version, false, Collections.emptyMap());
 	}
 
 	public KotlinFormatExtension ktlint() {
@@ -69,23 +69,32 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 	public class KotlinFormatExtension {
 
 		private final String version;
+		private boolean useExperimental;
 		private Map<String, String> userData;
 
-		KotlinFormatExtension(String version, Map<String, String> config) {
+		KotlinFormatExtension(String version, boolean useExperimental, Map<String, String> config) {
 			this.version = version;
+			this.useExperimental = useExperimental;
 			this.userData = config;
 			addStep(createStep());
 		}
 
-		public void userData(Map<String, String> userData) {
+		public KotlinFormatExtension setUseExperimental(boolean useExperimental) {
+			this.useExperimental = useExperimental;
+			replaceStep(createStep());
+			return this;
+		}
+
+		public KotlinFormatExtension userData(Map<String, String> userData) {
 			// Copy the map to a sorted map because up-to-date checking is based on binary-equals of the serialized
 			// representation.
 			this.userData = userData;
 			replaceStep(createStep());
+			return this;
 		}
 
 		private FormatterStep createStep() {
-			return KtLintStep.create(version, provisioner(), userData);
+			return KtLintStep.create(version, provisioner(), useExperimental, userData);
 		}
 	}
 
