@@ -9,6 +9,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Fixed
 * Fixed support for Python Black's new version reporting, and bumped default version to latest (`19.10b0` -> `22.3.0`). ([#1170](https://github.com/diffplug/spotless/issues/1170))
 * All tasks (including helper tasks) are now part of the `verification` group. (fixes [#1050](https://github.com/diffplug/spotless/issues/1050))
+* Error messages for unexpected file encoding now works on Java 8. (fixes [#1081](https://github.com/diffplug/spotless/issues/1081))
 ### Changed
 - Spotless now applies the `base` plugin to make sure that Spotless always has a `check` task to hook into. ([#1179](https://github.com/diffplug/spotless/pull/1179), fixes [#1164](https://github.com/diffplug/spotless/pull/1164), reverts [#1014](https://github.com/diffplug/spotless/pull/1014))
   - Spotless used to work this way, we stopped applying base starting with version [`6.0.3` (released Dec 2021)](https://github.com/diffplug/spotless/blob/main/plugin-gradle/CHANGES.md#603---2021-12-06) in order to play nicely with a now-outdated Android template, but not applying `base` causes more problems than it fixes (see [#1164](https://github.com/diffplug/spotless/pull/1164) for a good example).
