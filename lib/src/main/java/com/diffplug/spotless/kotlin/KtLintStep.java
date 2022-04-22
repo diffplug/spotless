@@ -38,7 +38,7 @@ public class KtLintStep {
 	// prevent direct instantiation
 	private KtLintStep() {}
 
-	private static final String DEFAULT_VERSION = "0.43.2";
+	private static final String DEFAULT_VERSION = "0.45.2";
 	static final String NAME = "ktlint";
 	static final String PACKAGE_PRE_0_32 = "com.github.shyiko";
 	static final String PACKAGE = "com.pinterest";
