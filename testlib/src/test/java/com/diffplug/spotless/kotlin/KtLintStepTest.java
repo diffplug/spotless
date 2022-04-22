@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ class KtLintStepTest extends ResourceHarness {
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
 				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
 					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("Error on line: 1, column: 2\n" +
+					assertion.hasMessage("Error on line: 1, column: 1\n" +
 							"Wildcard import");
 				});
 	}
