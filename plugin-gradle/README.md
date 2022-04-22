@@ -340,8 +340,10 @@ spotless {
 ```kotlin
 spotless {
   kotlin {
-    // version and userData are both optional
-    ktlint('0.43.2').userData(mapOf('indent_size' to '2', 'continuation_indent_size' to '2'))
+    // version, setUseExperimental and userData are all optional
+    ktlint('0.43.2')
+      .setUseExperimental(true)
+      .userData(mapOf('indent_size' to '2', 'continuation_indent_size' to '2'))
 ```
 
 ### diktat

@@ -16,7 +16,7 @@
 package com.diffplug.spotless.glue.ktlint;
 
 import java.io.File;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +24,7 @@ import com.pinterest.ktlint.core.KtLint;
 import com.pinterest.ktlint.core.KtLint.Params;
 import com.pinterest.ktlint.core.LintError;
 import com.pinterest.ktlint.core.RuleSet;
+import com.pinterest.ktlint.ruleset.experimental.ExperimentalRuleSetProvider;
 import com.pinterest.ktlint.ruleset.standard.StandardRuleSetProvider;
 
 import com.diffplug.spotless.FormatterFunc;
@@ -38,8 +39,13 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 	private final Function2<? super LintError, ? super Boolean, Unit> formatterCallback;
 	private final boolean isScript;
 
-	public KtlintFormatterFunc(boolean isScript, Map<String, String> userData) {
-		rulesets = Collections.singletonList(new StandardRuleSetProvider().get());
+	public KtlintFormatterFunc(boolean isScript, boolean useExperimental, Map<String, String> userData) {
+		rulesets = new ArrayList<>();
+		rulesets.add(new StandardRuleSetProvider().get());
+
+		if (useExperimental) {
+			rulesets.add(new ExperimentalRuleSetProvider().get());
+		}
 		this.userData = userData;
 		formatterCallback = new FormatterCallback();
 		this.isScript = isScript;

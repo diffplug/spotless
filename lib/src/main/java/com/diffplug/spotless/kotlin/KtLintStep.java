@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
@@ -49,26 +50,26 @@ public class KtLintStep {
 	}
 
 	public static FormatterStep create(String version, Provisioner provisioner) {
-		return create(version, provisioner, Collections.emptyMap());
+		return create(version, provisioner, false, Collections.emptyMap());
 	}
 
-	public static FormatterStep create(String version, Provisioner provisioner, Map<String, String> userData) {
-		return create(version, provisioner, false, userData);
+	public static FormatterStep create(String version, Provisioner provisioner, boolean useExperimental, Map<String, String> userData) {
+		return create(version, provisioner, false, useExperimental, userData);
 	}
 
 	public static FormatterStep createForScript(String version, Provisioner provisioner) {
-		return create(version, provisioner, true, Collections.emptyMap());
+		return create(version, provisioner, true, false, Collections.emptyMap());
 	}
 
-	public static FormatterStep createForScript(String version, Provisioner provisioner, Map<String, String> userData) {
-		return create(version, provisioner, true, userData);
+	public static FormatterStep createForScript(String version, Provisioner provisioner, boolean useExperimental, Map<String, String> userData) {
+		return create(version, provisioner, true, useExperimental, userData);
 	}
 
-	private static FormatterStep create(String version, Provisioner provisioner, boolean isScript, Map<String, String> userData) {
+	private static FormatterStep create(String version, Provisioner provisioner, boolean isScript, boolean useExperimental, Map<String, String> userData) {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(provisioner, "provisioner");
 		return FormatterStep.createLazy(NAME,
-				() -> new State(version, provisioner, isScript, userData),
+				() -> new State(version, provisioner, isScript, useExperimental, userData),
 				State::createFormat);
 	}
 
@@ -84,10 +85,12 @@ public class KtLintStep {
 		private final String pkg;
 		/** The jar that contains the formatter. */
 		final JarState jarState;
+		private final boolean useExperimental;
 		private final TreeMap<String, String> userData;
 		private final boolean useParams;
 
-		State(String version, Provisioner provisioner, boolean isScript, Map<String, String> userData) throws IOException {
+		State(String version, Provisioner provisioner, boolean isScript, boolean useExperimental, Map<String, String> userData) throws IOException {
+			this.useExperimental = useExperimental;
 			this.userData = new TreeMap<>(userData);
 			String coordinate;
 			if (BadSemver.version(version) < BadSemver.version(0, 32)) {
@@ -105,17 +108,26 @@ public class KtLintStep {
 		FormatterFunc createFormat() throws Exception {
 			if (useParams) {
 				Class<?> formatterFunc = jarState.getClassLoader().loadClass("com.diffplug.spotless.glue.ktlint.KtlintFormatterFunc");
-				Constructor<?> constructor = formatterFunc.getConstructor(boolean.class, Map.class);
-				return (FormatterFunc.NeedsFile) constructor.newInstance(isScript, userData);
+				Constructor<?> constructor = formatterFunc.getConstructor(boolean.class, boolean.class, Map.class);
+				return (FormatterFunc.NeedsFile) constructor.newInstance(isScript, useExperimental, userData);
 			}
 
 			ClassLoader classLoader = jarState.getClassLoader();
 			// String KtLint::format(String input, Iterable<RuleSet> rules, Function2 errorCallback)
 
+			ArrayList<Object> ruleSets = new ArrayList<>();
+
 			// first, we get the standard rules
 			Class<?> standardRuleSetProviderClass = classLoader.loadClass(pkg + ".ktlint.ruleset.standard.StandardRuleSetProvider");
 			Object standardRuleSet = standardRuleSetProviderClass.getMethod("get").invoke(standardRuleSetProviderClass.newInstance());
-			Iterable<?> ruleSets = Collections.singletonList(standardRuleSet);
+			ruleSets.add(standardRuleSet);
+
+			// second, we get the experimental rules if desired
+			if (useExperimental) {
+				Class<?> experimentalRuleSetProviderClass = classLoader.loadClass(pkg + ".ktlint.ruleset.experimental.ExperimentalRuleSetProvider");
+				Object experimentalRuleSet = experimentalRuleSetProviderClass.getMethod("get").invoke(experimentalRuleSetProviderClass.newInstance());
+				ruleSets.add(experimentalRuleSet);
+			}
 
 			// next, we create an error callback which throws an assertion error when the format is bad
 			Class<?> function2Interface = classLoader.loadClass("kotlin.jvm.functions.Function2");

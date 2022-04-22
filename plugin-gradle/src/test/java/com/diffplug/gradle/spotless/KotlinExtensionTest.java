@@ -140,6 +140,67 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
+	void withExperimental() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlin {",
+				"        ktlint().setUseExperimental(true)",
+				"    }",
+				"}");
+		setFile("src/main/kotlin/experimental.kt").toResource("kotlin/ktlint/experimental.dirty");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/kotlin/experimental.kt").sameAsResource("kotlin/ktlint/experimental.clean");
+	}
+
+	@Test
+	void withExperimental_0_32() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlin {",
+				"        ktlint('0.32.0').setUseExperimental(true)",
+				"    }",
+				"}");
+		setFile("src/main/kotlin/basic.kt").toResource("kotlin/ktlint/basic.dirty");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/kotlin/basic.kt").sameAsResource("kotlin/ktlint/basic.clean");
+	}
+
+	/**
+	 * Check that the sample used to verify the experimental ruleset is untouched by the default ruleset, to verify
+	 * that enabling the experimental ruleset is actually doing something.
+	 *
+	 * If this test fails, it's likely that the experimental rule being used as a test graduated into the standard
+	 * ruleset, and therefore a new experimental rule should be used to verify functionality.
+	 */
+	@Test
+	void experimentalSampleUnchangedWithDefaultRuleset() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlin {",
+				"        ktlint()",
+				"    }",
+				"}");
+		setFile("src/main/kotlin/experimental.kt").toResource("kotlin/ktlint/experimental.dirty");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/kotlin/experimental.kt").sameAsResource("kotlin/ktlint/experimental.dirty");
+	}
+
+	@Test
 	void testWithHeader() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",

@@ -19,7 +19,3 @@ spotless {
 		endWithNewline()
 	}
 }
-
-static Class<?> spotBugsTaskType() {
-	return com.github.spotbugs.snom.SpotBugsTask
-}

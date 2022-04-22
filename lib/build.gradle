@@ -47,6 +47,7 @@ dependencies {
 	String VER_KTLINT='0.43.2'
 	ktlintCompileOnly "com.pinterest:ktlint:$VER_KTLINT"
 	ktlintCompileOnly "com.pinterest.ktlint:ktlint-core:$VER_KTLINT"
+	ktlintCompileOnly "com.pinterest.ktlint:ktlint-ruleset-experimental:$VER_KTLINT"
 	ktlintCompileOnly "com.pinterest.ktlint:ktlint-ruleset-standard:$VER_KTLINT"
 
 	// used for markdown formatting
