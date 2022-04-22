@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileVisitDetails;
 import org.gradle.api.file.FileVisitor;
 import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 
@@ -39,6 +40,9 @@ import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 	@Internal
 	public abstract Property<String> getEncoding();
+
+	@Input
+	public abstract Property<String> getRunToFixMessage();
 
 	public void performActionTest() throws IOException {
 		performAction(true);
@@ -98,7 +102,7 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 			if (!problemFiles.isEmpty()) {
 				Collections.sort(problemFiles);
 				throw new GradleException(DiffMessageFormatter.builder()
-						.runToFix("Run '" + calculateGradleCommand() + " " + getTaskPathPrefix() + "spotlessApply' to fix these violations.")
+						.runToFix(getRunToFixMessage().get())
 						.formatterFolder(
 								getProjectDir().get().getAsFile().toPath(),
 								getSpotlessOutDirectory().get().toPath(),
@@ -117,6 +121,8 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 		super.init(impl);
 		getProjectPath().set(getProject().getPath());
 		getEncoding().set(impl.getEncoding());
+		getRunToFixMessage().convention(
+				"Run '" + calculateGradleCommand() + " " + getTaskPathPrefix() + "spotlessApply' to fix these violations.");
 	}
 
 	private String getTaskPathPrefix() {
