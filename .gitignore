@@ -23,7 +23,6 @@ gradle-app.setting
 _ext/*/gradle/dependency-locks/*.lockfile
 
 ### Eclipse ###
-*.pydevproject
 .metadata
 .gradle
 bin/
