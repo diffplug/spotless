@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 DiffPlug
+ * Copyright 2020-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
@@ -63,6 +64,7 @@ public class BlackStep {
 		String trackingIssue = "\n  github issue to handle this better: https://github.com/diffplug/spotless/issues/674";
 		String exeAbsPath = ForeignExe.nameAndVersion("black", version)
 				.pathToExe(pathToExe)
+				.versionRegex(Pattern.compile("(?:black,|version) (\\S*)"))
 				.fixCantFind("Try running {@code pip install black=={version}}, or else tell Spotless where it is with {@code black().pathToExe('path/to/executable')}" + trackingIssue)
 				.fixWrongVersion("Try running {@code pip install --force-reinstall black=={version}}, or else specify {@code black('{versionFound}')} to Spotless" + trackingIssue)
 				.confirmVersionAndGetAbsolutePath();
