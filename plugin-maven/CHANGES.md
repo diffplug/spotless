@@ -3,9 +3,14 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+* Fixed support for Python Black's new version reporting. ([#1170](https://github.com/diffplug/spotless/issues/1170))
+* Error messages for unexpected file encoding now works on Java 8. (fixes [#1081](https://github.com/diffplug/spotless/issues/1081))
+### Changes
+* Bump default `black` version to latest (`19.10b0` -> `22.3.0`). ([#1170](https://github.com/diffplug/spotless/issues/1170))
+* Bump default `ktfmt` version `0.34` -> `0.35`. ([#1159](https://github.com/diffplug/spotless/pull/1159))
 
 ## [2.22.1] - 2022-04-06
-
 ### Fixed
 * Git user config and system config also included for defaultEndings configuration. ([#540](https://github.com/diffplug/spotless/issues/540))
 
