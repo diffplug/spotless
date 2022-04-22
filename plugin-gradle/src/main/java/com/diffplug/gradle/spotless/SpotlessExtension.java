@@ -29,6 +29,7 @@ import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
+import org.gradle.language.base.plugins.LifecycleBasePlugin;
 
 import com.diffplug.spotless.LineEnding;
 
@@ -36,7 +37,7 @@ public abstract class SpotlessExtension {
 	final Project project;
 	private final RegisterDependenciesTask registerDependenciesTask;
 
-	protected static final String TASK_GROUP = "Verification";
+	protected static final String TASK_GROUP = LifecycleBasePlugin.VERIFICATION_GROUP;
 	protected static final String CHECK_DESCRIPTION = "Checks that sourcecode satisfies formatting steps.";
 	protected static final String APPLY_DESCRIPTION = "Applies code formatting steps to sourcecode in-place.";
 
