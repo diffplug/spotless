@@ -12,9 +12,10 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * Added support for enabling ktlint experimental ruleset. ([#1145](https://github.com/diffplug/spotless/pull/1168))
+### Fixed
+* Fixed support for Python Black's new version reporting, and bumped default version to latest (`19.10b0` -> `22.3.0`) ([#1170](https://github.com/diffplug/spotless/issues/1170))
 
 ## [2.24.2] - 2022-04-06
-
 ### Fixed
 * Git user config and system config also included for defaultEndings configuration. ([#540](https://github.com/diffplug/spotless/issues/540))
 
