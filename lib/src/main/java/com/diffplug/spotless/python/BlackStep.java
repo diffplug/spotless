@@ -37,7 +37,7 @@ public class BlackStep {
 	}
 
 	public static String defaultVersion() {
-		return "19.10b0";
+		return "22.3.0";
 	}
 
 	private final String version;
