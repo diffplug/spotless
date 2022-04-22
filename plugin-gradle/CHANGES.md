@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [6.5.0] - 2022-04-22
 ### Added
 * Added a `runToFixMessage` property to customize the run-to-fix message in `spotlessCheck` task. ([#1175](https://github.com/diffplug/spotless/issues/1175))
 * Added support for enabling ktlint experimental ruleset. ([#1145](https://github.com/diffplug/spotless/pull/1168))
