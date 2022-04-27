@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.22.3] - 2022-04-27
 ### Changes
 * Bump default `ktfmt` version to latest `0.35` -> `0.36`. ([#1183](https://github.com/diffplug/spotless/issues/1183))
 * Bump default `google-java-format` version to latest `1.13.0` -> `1.15.0`.
