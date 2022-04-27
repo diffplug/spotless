@@ -93,7 +93,7 @@ public class GoogleJavaFormatStep {
 				State::createFormat);
 	}
 
-	static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(8, "1.7").add(11, "1.13.0");
+	static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(8, "1.7").add(11, "1.15.0");
 
 	public static String defaultGroupArtifact() {
 		return MAVEN_COORDINATE;
