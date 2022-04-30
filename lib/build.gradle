@@ -11,7 +11,8 @@ def NEEDS_GLUE = [
 	'palantirJavaFormat',
 	'ktfmt',
 	'ktlint',
-	'flexmark'
+	'flexmark',
+	'diktat'
 ]
 for (glue in NEEDS_GLUE) {
 	sourceSets.register(glue) {
@@ -49,6 +50,9 @@ dependencies {
 	ktlintCompileOnly "com.pinterest.ktlint:ktlint-core:$VER_KTLINT"
 	ktlintCompileOnly "com.pinterest.ktlint:ktlint-ruleset-experimental:$VER_KTLINT"
 	ktlintCompileOnly "com.pinterest.ktlint:ktlint-ruleset-standard:$VER_KTLINT"
+
+	String VER_DIKTAT = "1.1.0"
+	diktatCompileOnly "org.cqfn.diktat:diktat-rules:$VER_DIKTAT"
 
 	// used for markdown formatting
 	flexmarkCompileOnly 'com.vladsch.flexmark:flexmark-all:0.62.2'

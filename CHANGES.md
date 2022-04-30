@@ -10,6 +10,7 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+* Converted `diktat` integration to use a compile-only source set. ([#524](https://github.com/diffplug/spotless/issues/524))
 
 ## [2.25.1] - 2022-04-27
 ### Changes
