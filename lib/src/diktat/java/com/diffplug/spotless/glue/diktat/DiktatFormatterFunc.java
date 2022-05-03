@@ -67,7 +67,9 @@ public class DiktatFormatterFunc implements FormatterFunc.NeedsFile {
 		errors.clear();
 		userData.put("file_path", file.getAbsolutePath());
 		String result = KtLint.INSTANCE.format(new Params(
-				file.getName(),
+				// Unlike Ktlint, Diktat requires full path to the file.
+				// See https://github.com/diffplug/spotless/issues/1189, https://github.com/analysis-dev/diktat/issues/1202
+				file.getAbsolutePath(),
 				unix,
 				rulesets,
 				userData,
