@@ -38,9 +38,9 @@ class DiktatStepTest extends ResourceHarness {
 					assertion.isInstanceOf(AssertionError.class);
 					assertion.hasMessage("There are 2 unfixed errors:" +
 							System.lineSeparator() + "Error on line: 1, column: 1 cannot be fixed automatically" +
-							System.lineSeparator() + "[FILE_NAME_INCORRECT] file name is incorrect - it should end with .kt extension and be in PascalCase: " +
+							System.lineSeparator() + "[FILE_NAME_INCORRECT] file name is incorrect - it should end with .kt extension and be in PascalCase: testlib" +
 							System.lineSeparator() + "Error on line: 1, column: 1 cannot be fixed automatically" +
-							System.lineSeparator() + "[FILE_NAME_MATCH_CLASS] file name is incorrect - it should match with the class described in it if there is the only one class declared:  vs Unsolvable");
+							System.lineSeparator() + "[FILE_NAME_MATCH_CLASS] file name is incorrect - it should match with the class described in it if there is the only one class declared: testlib vs Unsolvable");
 				});
 	}
 
@@ -57,9 +57,9 @@ class DiktatStepTest extends ResourceHarness {
 					assertion.isInstanceOf(AssertionError.class);
 					assertion.hasMessage("There are 2 unfixed errors:" +
 							System.lineSeparator() + "Error on line: 1, column: 1 cannot be fixed automatically" +
-							System.lineSeparator() + "[FILE_NAME_INCORRECT] file name is incorrect - it should end with .kt extension and be in PascalCase: " +
+							System.lineSeparator() + "[FILE_NAME_INCORRECT] file name is incorrect - it should end with .kt extension and be in PascalCase: testlib" +
 							System.lineSeparator() + "Error on line: 1, column: 1 cannot be fixed automatically" +
-							System.lineSeparator() + "[FILE_NAME_MATCH_CLASS] file name is incorrect - it should match with the class described in it if there is the only one class declared:  vs Unsolvable");
+							System.lineSeparator() + "[FILE_NAME_MATCH_CLASS] file name is incorrect - it should match with the class described in it if there is the only one class declared: testlib vs Unsolvable");
 				});
 	}
 
