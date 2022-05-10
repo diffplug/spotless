@@ -12,6 +12,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Fixed
 * Update the `black` version regex to fix `19.10b0` and earlier. (fixes [#1195](https://github.com/diffplug/spotless/issues/1195), regression introduced in `2.25.0`)
+* `GitAttributesLineEndings$RelocatablePolicy` and `FormatterStepImpl` now null-out their initialization lambdas after their state has been calculated, which allows GC to collect variables which were incidentally captured but not needed in the calculated state. ([#1198](https://github.com/diffplug/spotless/pull/1198))
 
 ## [2.25.2] - 2022-05-03
 ### Changes
