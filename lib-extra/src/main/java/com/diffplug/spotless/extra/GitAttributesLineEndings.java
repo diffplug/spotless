@@ -15,8 +15,6 @@
  */
 package com.diffplug.spotless.extra;
 
-import static com.diffplug.spotless.extra.LibExtraPreconditions.requireElementsNonNull;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -78,8 +76,8 @@ public final class GitAttributesLineEndings {
 	static class RelocatablePolicy extends LazyForwardingEquality<CachedEndings> implements LineEnding.Policy {
 		private static final long serialVersionUID = 5868522122123693015L;
 
-		final transient File projectDir;
-		final transient Supplier<Iterable<File>> toFormat;
+		transient File projectDir;
+		transient Supplier<Iterable<File>> toFormat;
 
 		RelocatablePolicy(File projectDir, Supplier<Iterable<File>> toFormat) {
 			this.projectDir = Objects.requireNonNull(projectDir, "projectDir");
@@ -88,8 +86,13 @@ public final class GitAttributesLineEndings {
 
 		@Override
 		protected CachedEndings calculateState() throws Exception {
-			Runtime runtime = new RuntimeInit(projectDir, toFormat.get()).atRuntime();
-			return new CachedEndings(projectDir, runtime, toFormat.get());
+			Runtime runtime = new RuntimeInit(projectDir).atRuntime();
+			// LazyForwardingEquality guarantees that this will only be called once, and keeping toFormat
+			// causes a memory leak, see https://github.com/diffplug/spotless/issues/1194
+			CachedEndings state = new CachedEndings(projectDir, runtime, toFormat.get());
+			projectDir = null;
+			toFormat = null;
+			return state;
 		}
 
 		@Override
@@ -146,8 +149,7 @@ public final class GitAttributesLineEndings {
 		final @Nullable File workTree;
 
 		@SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
-		RuntimeInit(File projectDir, Iterable<File> toFormat) {
-			requireElementsNonNull(toFormat);
+		RuntimeInit(File projectDir) {
 			/////////////////////////////////
 			// USER AND SYSTEM-WIDE VALUES //
 			/////////////////////////////////

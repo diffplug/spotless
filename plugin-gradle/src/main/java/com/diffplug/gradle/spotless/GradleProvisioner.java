@@ -127,12 +127,10 @@ class GradleProvisioner {
 				if (!projName.isEmpty()) {
 					projName = projName + "/";
 				}
-				logger.error(
-						"You need to add a repository containing the '{}' artifact in '{}build.gradle'.\n" +
+				throw new GradleException(String.format(
+						"You need to add a repository containing the '%s' artifact in '%sbuild.gradle'.\n" +
 								"E.g.: 'repositories { mavenCentral() }'",
-						mavenCoords, projName,
-						e);
-				throw e;
+						mavenCoords, projName), e);
 			}
 		};
 	}
