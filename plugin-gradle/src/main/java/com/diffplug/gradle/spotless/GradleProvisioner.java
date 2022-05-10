@@ -128,7 +128,7 @@ class GradleProvisioner {
 					projName = projName + "/";
 				}
 				throw new GradleException(String.format(
-						"You need to add a repository containing the '%s' artifact in '%sbuild.gradle'.\n" +
+						"You need to add a repository containing the '%s' artifact in '%sbuild.gradle'.%n" +
 								"E.g.: 'repositories { mavenCentral() }'",
 						mavenCoords, projName), e);
 			}
