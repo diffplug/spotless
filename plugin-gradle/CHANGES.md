@@ -8,6 +8,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Fixed
 * Update the `black` version regex to fix `19.10b0` and earlier. (fixes [#1195](https://github.com/diffplug/spotless/issues/1195), regression introduced in `6.5.0`)
 * Improved daemon memory consumption ([#1198](https://github.com/diffplug/spotless/pull/1198) fixes [#1194](https://github.com/diffplug/spotless/issues/1194))
+### Changes
+* Bump default `ktfmt` version to latest `0.36` -> `0.37`. ([#1200](https://github.com/diffplug/spotless/pull/1200))
 
 ## [6.5.2] - 2022-05-03
 ### Changes
