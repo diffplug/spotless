@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [6.6.0] - 2022-05-10
 ### Added
 * `FormatExtension.createIndependentApplyTaskLazy`, with same functionality as `createIndependentApplyTaskLazy` but returning `TaskProvider` ([#1198](https://github.com/diffplug/spotless/pull/1198))
 ### Fixed
