@@ -113,7 +113,16 @@ public abstract class LazyForwardingEquality<T extends Serializable> implements 
 	}
 
 	/** Ensures that the lazy state has been evaluated. */
-	public static void unlazy(LazyForwardingEquality<?> in) {
-		in.state();
+	public static void unlazy(Object in) {
+		if (in instanceof LazyForwardingEquality) {
+			((LazyForwardingEquality<?>) in).state();
+		} else if (in instanceof DelegateFormatterStep) {
+			unlazy(((DelegateFormatterStep) in).delegateStep);
+		} else if (in instanceof Iterable) {
+			Iterable<Object> cast = (Iterable<Object>) in;
+			for (Object c : cast) {
+				unlazy(c);
+			}
+		}
 	}
 }
