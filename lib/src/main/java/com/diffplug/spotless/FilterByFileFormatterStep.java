@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,18 +20,12 @@ import java.util.Objects;
 
 import javax.annotation.Nullable;
 
-final class FilterByFileFormatterStep implements FormatterStep {
-	private final FormatterStep delegateStep;
+final class FilterByFileFormatterStep extends DelegateFormatterStep {
 	private final SerializableFileFilter filter;
 
 	FilterByFileFormatterStep(FormatterStep delegateStep, SerializableFileFilter filter) {
-		this.delegateStep = Objects.requireNonNull(delegateStep);
+		super(delegateStep);
 		this.filter = Objects.requireNonNull(filter);
-	}
-
-	@Override
-	public String getName() {
-		return delegateStep.getName();
 	}
 
 	@Override
