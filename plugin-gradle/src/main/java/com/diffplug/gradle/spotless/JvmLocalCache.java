@@ -54,11 +54,10 @@ class JvmLocalCache {
 
 		@Override
 		public void set(T value) {
-			if (value instanceof LazyForwardingEquality) {
-				// whenever we cache an instance of LazyForwardingEquality, we want to make sure that we give it
-				// a chance to null-out its initialization lambda (see https://github.com/diffplug/spotless/issues/1194#issuecomment-1120744842)
-				LazyForwardingEquality.unlazy((LazyForwardingEquality<?>) value);
-			}
+
+			// whenever we cache an instance of LazyForwardingEquality, we want to make sure that we give it
+			// a chance to null-out its initialization lambda (see https://github.com/diffplug/spotless/issues/1194#issuecomment-1120744842)
+			LazyForwardingEquality.unlazy(value);
 			daemonState.put(internalKey, value);
 		}
 
