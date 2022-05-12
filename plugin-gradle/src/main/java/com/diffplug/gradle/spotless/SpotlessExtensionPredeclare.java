@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import java.util.TreeMap;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 
+import com.diffplug.spotless.LazyForwardingEquality;
+
 public class SpotlessExtensionPredeclare extends SpotlessExtension {
 	private final SortedMap<String, FormatExtension> toSetup = new TreeMap<>();
 
@@ -33,6 +35,8 @@ public class SpotlessExtensionPredeclare extends SpotlessExtension {
 					lazyAction.execute(formatExtension);
 				}
 				getRegisterDependenciesTask().steps.addAll(formatExtension.steps);
+				// needed to fix Deemon memory leaks (#1194), but this line came from https://github.com/diffplug/spotless/pull/1206
+				LazyForwardingEquality.unlazy(getRegisterDependenciesTask().steps);
 			});
 		});
 	}
