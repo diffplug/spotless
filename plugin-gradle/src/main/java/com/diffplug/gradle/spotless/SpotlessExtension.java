@@ -188,6 +188,12 @@ public abstract class SpotlessExtension {
 		format(JsonExtension.NAME, JsonExtension.class, closure);
 	}
 
+	/** Configures the special protobuf-specific extension. */
+	public void protobuf(Action<ProtobufExtension> closure) {
+		requireNonNull(closure);
+		format(ProtobufExtension.NAME, ProtobufExtension.class, closure);
+	}
+
 	/** Configures a custom extension. */
 	public void format(String name, Action<FormatExtension> closure) {
 		requireNonNull(name, "name");

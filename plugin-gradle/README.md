@@ -65,6 +65,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
   - [C/C++](#cc) ([clang-format](#clang-format), [eclipse cdt](#eclipse-cdt))
+  - [Protobuf](#protobuf) ([buf](#buf), [clang-format](#clang-format))
   - [Python](#python) ([black](#black))
   - [FreshMark](#freshmark) aka markdown
   - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
@@ -456,6 +457,23 @@ black().pathToExe('C:/myuser/.pyenv/versions/3.8.0/scripts/black.exe')
 ```
 
 <a name="applying-freshmark-to-markdown-files"></a>
+
+## Protobuf
+
+### buf
+
+`com.diffplug.gradle.spotless.ProtobufExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.6.0/com/diffplug/gradle/spotless/ProtobufExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/ProtobufExtension.java)
+
+```gradle
+spotless {
+  protobuf {
+    // by default the target is every '.proto' file in the project
+    buf()
+
+    licenseHeader '/* (C) $YEAR */' // or licenseHeaderFile
+  }
+}
+```
 
 ## FreshMark
 
