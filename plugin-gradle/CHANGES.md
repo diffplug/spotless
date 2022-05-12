@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+* Added support for Protobuf formatting based on [Buf](https://buf.build/) (#1208).
 
 ## [6.6.0] - 2022-05-10
 ### Added
