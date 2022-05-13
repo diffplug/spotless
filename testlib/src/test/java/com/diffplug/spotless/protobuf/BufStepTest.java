@@ -17,11 +17,10 @@ package com.diffplug.spotless.protobuf;
 
 import java.io.File;
 
-import com.diffplug.spotless.tag.BufTest;
-
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.StepHarnessWithFile;
+import com.diffplug.spotless.tag.BufTest;
 
 @BufTest
 class BufStepTest {
