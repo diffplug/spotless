@@ -76,9 +76,9 @@ public class ProtobufExtension extends FormatExtension implements HasBuiltinDeli
 		 * <pre>
 		 * {@code
 		 * spotless {
-         *     protobuf {
-         *         buf().pathToExe(configurations.getByName(BUF_BINARY_CONFIGURATION_NAME).singleFile.absolutePath)
-         *     }
+         *   protobuf {
+         *     buf().pathToExe(configurations.getByName(BUF_BINARY_CONFIGURATION_NAME).getSingleFile().getAbsolutePath())
+         *   }
 		 * }
 		 * }
 		 * </pre>
@@ -88,7 +88,7 @@ public class ProtobufExtension extends FormatExtension implements HasBuiltinDeli
 		 * <pre>
 		 * {@code
 		 * buf {
-         *     enforceFormat = false
+         *   enforceFormat = false
 		 * }
 		 * }
 		 * </pre>

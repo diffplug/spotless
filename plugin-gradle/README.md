@@ -475,6 +475,21 @@ spotless {
 }
 ```
 
+When used in conjunction with the [buf-gradle-plugin](https://github.com/andrewparmet/buf-gradle-plugin), the `buf` executable can be resolved from its `bufTool` configuration:
+
+```gradle
+spotless {
+  protobuf {
+    buf().pathToExe(configurations.getByName(BUF_BINARY_CONFIGURATION_NAME).getSingleFile().getAbsolutePath())
+  }
+}
+
+// Be sure to disable the buf-gradle-plugin's native support of `buf format`:
+buf {
+  enforceFormat = false
+}
+```
+
 ## FreshMark
 
 `com.diffplug.gradle.spotless.FreshMarkExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.6.0/com/diffplug/gradle/spotless/FreshMarkExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/FreshMarkExtension.java)
