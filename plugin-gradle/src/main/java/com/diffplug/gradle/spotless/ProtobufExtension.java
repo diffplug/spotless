@@ -83,7 +83,7 @@ public class ProtobufExtension extends FormatExtension implements HasBuiltinDeli
 		 * }
 		 * </pre>
 		 *
-		 * Be sure to disable the {@code buf-gradle-plugin}'s native support of {@code buf format}:
+		 * Be sure to disable the {@code buf-gradle-plugin}'s execution of {@code buf format}:
 		 *
 		 * <pre>
 		 * {@code

@@ -484,7 +484,7 @@ spotless {
   }
 }
 
-// Be sure to disable the buf-gradle-plugin's native support of `buf format`:
+// Be sure to disable the buf-gradle-plugin's execution of `buf format`:
 buf {
   enforceFormat = false
 }
