@@ -69,6 +69,30 @@ public class ProtobufExtension extends FormatExtension implements HasBuiltinDeli
 			addStep(createStep());
 		}
 
+		/**
+		 * When used in conjunction with the <a href=https://github.com/andrewparmet/buf-gradle-plugin>{@code buf-gradle-plugin}</a>,
+		 * the {@code buf} executable can be resolved from its {@code bufTool} configuration:
+		 *
+		 * <pre>
+		 * {@code
+		 * spotless {
+         *     protobuf {
+         *         buf().pathToExe(configurations.getByName(BUF_BINARY_CONFIGURATION_NAME).singleFile.absolutePath)
+         *     }
+		 * }
+		 * }
+		 * </pre>
+		 *
+		 * Be sure to disable the {@code buf-gradle-plugin}'s native support of {@code buf format}:
+		 *
+		 * <pre>
+		 * {@code
+		 * buf {
+         *     enforceFormat = false
+		 * }
+		 * }
+		 * </pre>
+		 */
 		public BufFormatExtension pathToExe(String pathToExe) {
 			step = step.withPathToExe(pathToExe);
 			replaceStep(createStep());
