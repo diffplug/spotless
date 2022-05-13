@@ -71,6 +71,7 @@ lib('markdown.FlexmarkStep')                     +'{{no}}        | {{yes}}      
 lib('npm.PrettierFormatterStep')                 +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('npm.TsFmtFormatterStep')                    +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('pom.SortPomStepStep')                       +'{{no}}        | {{yes}}      | {{no}}       | {{no}}  |',
+lib('protobuf.BufSetp')                          +'{{yes}}       | {{no}}       | {{no}}       | {{no}}  |',
 lib('python.BlackStep')                          +'{{yes}}       | {{no}}       | {{no}}       | {{no}}  |',
 lib('scala.ScalaFmtStep')                        +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
 lib('sql.DBeaverSQLFormatterStep')               +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
