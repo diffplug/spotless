@@ -42,6 +42,15 @@ public class ProtobufExtension extends FormatExtension implements HasBuiltinDeli
 		return licenseHeaderFile(licenseHeaderFile, LICENSE_HEADER_DELIMITER);
 	}
 
+	/** If the user hasn't specified files, assume all protobuf files should be checked. */
+	@Override
+	protected void setupTask(SpotlessTask task) {
+		if (target == null) {
+			target = parseTarget("**/*.proto");
+		}
+		super.setupTask(task);
+	}
+
 	/** Adds the specified version of <a href="https://buf.build/">buf</a>. */
 	public BufFormatExtension buf(String version) {
 		Objects.requireNonNull(version);
@@ -53,24 +62,21 @@ public class ProtobufExtension extends FormatExtension implements HasBuiltinDeli
 	}
 
 	public class BufFormatExtension {
-		private final String version;
+		BufStep step;
 
 		BufFormatExtension(String version) {
-			this.version = version;
+			this.step = BufStep.withVersion(version);
 			addStep(createStep());
 		}
 
-		private FormatterStep createStep() {
-			return BufStep.withVersion(version).create();
+		public BufFormatExtension pathToExe(String pathToExe) {
+			step = step.withPathToExe(pathToExe);
+			replaceStep(createStep());
+			return this;
 		}
-	}
 
-	/** If the user hasn't specified files, assume all protobuf files should be checked. */
-	@Override
-	protected void setupTask(SpotlessTask task) {
-		if (target == null) {
-			target = parseTarget("**/*.proto");
+		private FormatterStep createStep() {
+			return step.create();
 		}
-		super.setupTask(task);
 	}
 }
