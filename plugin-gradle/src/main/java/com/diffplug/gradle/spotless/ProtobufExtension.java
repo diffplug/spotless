@@ -42,7 +42,7 @@ public class ProtobufExtension extends FormatExtension implements HasBuiltinDeli
 		return licenseHeaderFile(licenseHeaderFile, LICENSE_HEADER_DELIMITER);
 	}
 
-	/** Adds the specified version of <a href="https://github.com/pinterest/ktlint">ktlint</a>. */
+	/** Adds the specified version of <a href="https://buf.build/">buf</a>. */
 	public BufFormatExtension buf(String version) {
 		Objects.requireNonNull(version);
 		return new BufFormatExtension(version);
