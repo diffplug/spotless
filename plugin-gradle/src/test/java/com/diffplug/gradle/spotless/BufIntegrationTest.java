@@ -17,8 +17,11 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
+import com.diffplug.spotless.tag.BufTest;
+
 import org.junit.jupiter.api.Test;
 
+@BufTest
 class BufIntegrationTest extends GradleIntegrationHarness {
 	@Test
 	void buf() throws IOException {

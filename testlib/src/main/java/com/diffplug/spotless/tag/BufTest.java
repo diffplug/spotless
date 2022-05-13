@@ -13,22 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.protobuf;
+package com.diffplug.spotless.tag;
 
-import java.io.File;
+import org.junit.jupiter.api.Tag;
 
-import com.diffplug.spotless.tag.BufTest;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-import org.junit.jupiter.api.Test;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import com.diffplug.spotless.StepHarnessWithFile;
-
-@BufTest
-class BufStepTest {
-	@Test
-	void test() throws Exception {
-		try (StepHarnessWithFile harness = StepHarnessWithFile.forStep(BufStep.withVersion(BufStep.defaultVersion()).create())) {
-			harness.testResource(new File("src/main/resources/protobuf/buf/buf.proto"), "protobuf/buf/buf.proto", "protobuf/buf/buf.proto.clean");
-		}
-	}
-}
+@Target({TYPE, METHOD})
+@Retention(RUNTIME)
+@Tag("Buf")
+public @interface BufTest {}
