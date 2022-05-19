@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Fixed
+* Fixed errors of the form `Cannot add a configuration with name 'spotless865455342' as a configuration with that name already exists.` ([#1216](https://github.com/diffplug/spotless/pull/1216))
 
 ## [6.6.1] - 2022-05-13
 ### Fixed
