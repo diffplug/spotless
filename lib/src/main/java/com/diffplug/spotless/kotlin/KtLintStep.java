@@ -50,26 +50,29 @@ public class KtLintStep {
 	}
 
 	public static FormatterStep create(String version, Provisioner provisioner) {
-		return create(version, provisioner, false, Collections.emptyMap());
+		return create(version, provisioner, false, Collections.emptyMap(), Collections.emptyMap());
 	}
 
-	public static FormatterStep create(String version, Provisioner provisioner, boolean useExperimental, Map<String, String> userData) {
-		return create(version, provisioner, false, useExperimental, userData);
+	public static FormatterStep create(String version, Provisioner provisioner, boolean useExperimental,
+			Map<String, String> userData, Map<String, Object> editorConfigOverride) {
+		return create(version, provisioner, false, useExperimental, userData, editorConfigOverride);
 	}
 
 	public static FormatterStep createForScript(String version, Provisioner provisioner) {
-		return create(version, provisioner, true, false, Collections.emptyMap());
+		return create(version, provisioner, true, false, Collections.emptyMap(), Collections.emptyMap());
 	}
 
-	public static FormatterStep createForScript(String version, Provisioner provisioner, boolean useExperimental, Map<String, String> userData) {
-		return create(version, provisioner, true, useExperimental, userData);
+	public static FormatterStep createForScript(String version, Provisioner provisioner, boolean useExperimental,
+			Map<String, String> userData, Map<String, Object> editorConfigOverride) {
+		return create(version, provisioner, true, useExperimental, userData, editorConfigOverride);
 	}
 
-	private static FormatterStep create(String version, Provisioner provisioner, boolean isScript, boolean useExperimental, Map<String, String> userData) {
+	private static FormatterStep create(String version, Provisioner provisioner, boolean isScript, boolean useExperimental,
+			Map<String, String> userData, Map<String, Object> editorConfigOverride) {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(provisioner, "provisioner");
 		return FormatterStep.createLazy(NAME,
-				() -> new State(version, provisioner, isScript, useExperimental, userData),
+				() -> new State(version, provisioner, isScript, useExperimental, userData, editorConfigOverride),
 				State::createFormat);
 	}
 
@@ -87,11 +90,20 @@ public class KtLintStep {
 		final JarState jarState;
 		private final boolean useExperimental;
 		private final TreeMap<String, String> userData;
+		private final TreeMap<String, Object> editorConfigOverride;
 		private final boolean useParams;
 
-		State(String version, Provisioner provisioner, boolean isScript, boolean useExperimental, Map<String, String> userData) throws IOException {
+		State(String version, Provisioner provisioner, boolean isScript, boolean useExperimental,
+				Map<String, String> userData, Map<String, Object> editorConfigOverride) throws IOException {
+
+			if (!editorConfigOverride.isEmpty() &&
+					BadSemver.version(version) < BadSemver.version(0, 45, 2)) {
+				throw new IllegalStateException("KtLint editorConfigOverride supported for version 0.45.2 and later");
+			}
+
 			this.useExperimental = useExperimental;
 			this.userData = new TreeMap<>(userData);
+			this.editorConfigOverride = new TreeMap<>(editorConfigOverride);
 			String coordinate;
 			if (BadSemver.version(version) < BadSemver.version(0, 32)) {
 				coordinate = MAVEN_COORDINATE_PRE_0_32;
@@ -108,8 +120,8 @@ public class KtLintStep {
 		FormatterFunc createFormat() throws Exception {
 			if (useParams) {
 				Class<?> formatterFunc = jarState.getClassLoader().loadClass("com.diffplug.spotless.glue.ktlint.KtlintFormatterFunc");
-				Constructor<?> constructor = formatterFunc.getConstructor(boolean.class, boolean.class, Map.class);
-				return (FormatterFunc.NeedsFile) constructor.newInstance(isScript, useExperimental, userData);
+				Constructor<?> constructor = formatterFunc.getConstructor(boolean.class, boolean.class, Map.class, Map.class);
+				return (FormatterFunc.NeedsFile) constructor.newInstance(isScript, useExperimental, userData, editorConfigOverride);
 			}
 
 			ClassLoader classLoader = jarState.getClassLoader();

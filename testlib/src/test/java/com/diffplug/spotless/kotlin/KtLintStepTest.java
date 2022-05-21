@@ -78,6 +78,13 @@ class KtLintStepTest extends ResourceHarness {
 	}
 
 	@Test
+	void worksPre0_45_2() throws Exception {
+		FormatterStep step = KtLintStep.create("0.45.1", TestProvisioner.mavenCentral());
+		StepHarness.forStep(step)
+				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean");
+	}
+
+	@Test
 	void equality() throws Exception {
 		new SerializableEqualityTester() {
 			String version = "0.32.0";
