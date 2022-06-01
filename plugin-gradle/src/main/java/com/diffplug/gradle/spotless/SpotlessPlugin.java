@@ -35,8 +35,6 @@ public class SpotlessPlugin implements Plugin<Project> {
 		if (project.hasProperty(SPOTLESS_MODERN)) {
 			project.getLogger().warn("'spotlessModern' has no effect as of Spotless 5.0, recommend removing it.");
 		}
-		// make sure there's a `clean` and a `check`
-		project.getPlugins().apply(BasePlugin.class);
 
 		// setup the extension
 		project.getExtensions().create(SpotlessExtension.class, SpotlessExtension.EXTENSION, SpotlessExtensionImpl.class, project);
@@ -48,7 +46,9 @@ public class SpotlessPlugin implements Plugin<Project> {
 		//
 		// we use System.identityHashCode() to avoid a memory leak by hanging on to the reference directly
 		int cacheKey = System.identityHashCode(project.getRootProject());
-		project.getTasks().named(BasePlugin.CLEAN_TASK_NAME).configure(clean -> clean.doLast(unused -> SpotlessCache.clearOnce(cacheKey)));
+		project.getPluginManager().withPlugin("base", plugin ->
+			project.getTasks().named(BasePlugin.CLEAN_TASK_NAME).configure(clean -> clean.doLast(unused -> SpotlessCache.clearOnce(cacheKey)));
+		);
 	}
 
 	static String capitalize(String input) {
