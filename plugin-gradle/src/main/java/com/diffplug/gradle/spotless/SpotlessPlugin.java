@@ -46,9 +46,7 @@ public class SpotlessPlugin implements Plugin<Project> {
 		//
 		// we use System.identityHashCode() to avoid a memory leak by hanging on to the reference directly
 		int cacheKey = System.identityHashCode(project.getRootProject());
-		project.getPluginManager().withPlugin("base", plugin ->
-			project.getTasks().named(BasePlugin.CLEAN_TASK_NAME).configure(clean -> clean.doLast(unused -> SpotlessCache.clearOnce(cacheKey)));
-		);
+		project.getPluginManager().withPlugin("base", plugin -> project.getTasks().named(BasePlugin.CLEAN_TASK_NAME).configure(clean -> clean.doLast(unused -> SpotlessCache.clearOnce(cacheKey))));
 	}
 
 	static String capitalize(String input) {
