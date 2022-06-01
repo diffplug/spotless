@@ -28,6 +28,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import sun.misc.Unsafe;
 
 public final class ModuleHelper {
@@ -68,6 +69,7 @@ public final class ModuleHelper {
 		}
 	}
 
+	@SuppressFBWarnings("REC_CATCH_EXCEPTION") // workaround JDK11
 	private static List<String> unavailableRequiredPackages() {
 		final List<String> packages = new ArrayList<>();
 		for (Map.Entry<String, String> e : REQUIRED_PACKAGES_TO_TEST_CLASSES.entrySet()) {
@@ -114,8 +116,9 @@ public final class ModuleHelper {
 	}
 
 	@Nullable
-	// calling ModuleLayer.boot().modules() by reflection
+	@SuppressFBWarnings("REC_CATCH_EXCEPTION") // workaround JDK11
 	private static Collection<?> allModules() {
+		// calling ModuleLayer.boot().modules() by reflection
 		try {
 			final Object boot = Class.forName("java.lang.ModuleLayer").getMethod("boot").invoke(null);
 			if (boot == null) {
