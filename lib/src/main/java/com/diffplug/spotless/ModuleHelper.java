@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.diffplug.spotless;
 
 import java.lang.invoke.MethodHandle;
@@ -58,7 +57,7 @@ public final class ModuleHelper {
 					final StringBuilder message = new StringBuilder();
 					message.append("WARNING: Some required internal classes are unavailable. Please consider adding the following JVM arguments\n");
 					message.append("WARNING: ");
-					for (String name: failedToOpen) {
+					for (String name : failedToOpen) {
 						message.append(String.format("--add-opens jdk.compiler/%s=ALL-UNNAMED", name));
 					}
 					System.err.println(message);
@@ -99,8 +98,8 @@ public final class ModuleHelper {
 		final Unsafe unsafe = Unsafe.getUnsafe();
 		final Field implLookupField = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
 		final MethodHandles.Lookup lookup = (MethodHandles.Lookup) unsafe.getObject(
-			unsafe.staticFieldBase(implLookupField),
-			unsafe.staticFieldOffset(implLookupField));
+				unsafe.staticFieldBase(implLookupField),
+				unsafe.staticFieldOffset(implLookupField));
 		final MethodHandle modifiers = lookup.findSetter(Method.class, "modifiers", Integer.TYPE);
 		final Method exportMethod = Class.forName("java.lang.Module").getDeclaredMethod("implAddOpens", String.class);
 		modifiers.invokeExact(exportMethod, Modifier.PUBLIC);
