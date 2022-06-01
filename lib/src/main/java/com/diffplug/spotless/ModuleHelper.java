@@ -38,12 +38,7 @@ public final class ModuleHelper {
 		REQUIRED_PACKAGES_TO_TEST_CLASSES.putIfAbsent("com.sun.tools.javac.util", "Context");
 		REQUIRED_PACKAGES_TO_TEST_CLASSES.putIfAbsent("com.sun.tools.javac.file", "CacheFSInfo");
 		REQUIRED_PACKAGES_TO_TEST_CLASSES.putIfAbsent("com.sun.tools.javac.tree", "TreeTranslator");
-		REQUIRED_PACKAGES_TO_TEST_CLASSES.putIfAbsent("com.sun.tools.javac.main", "CommandLine");
-		REQUIRED_PACKAGES_TO_TEST_CLASSES.putIfAbsent("com.sun.tools.javac.jvm", "ClassFile");
 		REQUIRED_PACKAGES_TO_TEST_CLASSES.putIfAbsent("com.sun.tools.javac.parser", "Tokens$TokenKind");
-		REQUIRED_PACKAGES_TO_TEST_CLASSES.putIfAbsent("com.sun.tools.javac.code", "Source");
-		REQUIRED_PACKAGES_TO_TEST_CLASSES.putIfAbsent("com.sun.tools.javac.processing", "PrintingProcessor");
-		REQUIRED_PACKAGES_TO_TEST_CLASSES.putIfAbsent("com.sun.tools.javac.comp", "AttrContext");
 		REQUIRED_PACKAGES_TO_TEST_CLASSES.putIfAbsent("com.sun.tools.javac.api", "DiagnosticFormatter$PositionKind");
 	}
 
