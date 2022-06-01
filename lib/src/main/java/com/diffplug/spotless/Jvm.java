@@ -48,6 +48,9 @@ public final class Jvm {
 			if (VERSION <= 8) {
 				throw new IllegalArgumentException("Expected " + jre + " to start with an integer greater than 8");
 			}
+			if (VERSION >= 16) {
+				ModuleHelper.doOpenInternalPackagesIfRequired();
+			}
 		}
 	}
 
