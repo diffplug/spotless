@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+* google-java-format works on JDK16+ without jvm args workaround. ([#1224](https://github.com/diffplug/spotless/pull/1224))
 
 ## [2.22.5] - 2022-05-10
 ### Fixed
