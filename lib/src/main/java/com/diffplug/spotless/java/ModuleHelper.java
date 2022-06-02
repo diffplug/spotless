@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless;
+package com.diffplug.spotless.java;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -31,7 +31,10 @@ import javax.annotation.Nullable;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import sun.misc.Unsafe;
 
-public final class ModuleHelper {
+final class ModuleHelper {
+	// prevent direct instantiation
+	private ModuleHelper() {}
+
 	private static final Map<String, String> REQUIRED_PACKAGES_TO_TEST_CLASSES = new HashMap<>();
 
 	static {
