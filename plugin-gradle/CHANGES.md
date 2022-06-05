@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [6.7.0] - 2022-06-05
 ### Added
 * Support for `editorConfigOverride` in `ktlint`. ([#1218](https://github.com/diffplug/spotless/pull/1218) fixes [#1193](https://github.com/diffplug/spotless/issues/1193))
   * If you are using properties like `indent_size`, you should pass now pass them as `editorConfigOverride` and not as `userData`.
