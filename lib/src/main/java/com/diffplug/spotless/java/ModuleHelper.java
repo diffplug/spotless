@@ -28,6 +28,8 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import com.diffplug.spotless.Jvm;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import sun.misc.Unsafe;
 
@@ -48,7 +50,7 @@ final class ModuleHelper {
 	private static boolean checkDone = false;
 
 	public static synchronized void doOpenInternalPackagesIfRequired() {
-		if (checkDone) {
+		if (Jvm.version() < 16 || checkDone) {
 			return;
 		}
 		try {
