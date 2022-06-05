@@ -335,15 +335,18 @@ spotless {
 
 ### ktlint
 
-[homepage](https://github.com/pinterest/ktlint). [changelog](https://github.com/pinterest/ktlint/releases).  Spotless does not ([yet](https://github.com/diffplug/spotless/issues/142)) respect the `.editorconfig` settings ([ktlint docs](https://github.com/pinterest/ktlint#editorconfig)), but you can provide them manually as `userData`.
+[homepage](https://github.com/pinterest/ktlint). [changelog](https://github.com/pinterest/ktlint/releases).  Spotless does not ([yet](https://github.com/diffplug/spotless/issues/142)) respect the `.editorconfig` settings ([ktlint docs](https://github.com/pinterest/ktlint#editorconfig)), but you can provide them manually as `editorConfigOverride`.
 
 ```kotlin
 spotless {
   kotlin {
-    // version, setUseExperimental and userData are all optional
-    ktlint('0.43.2')
+    // version, setUseExperimental, userData and editorConfigOverride are all optional
+    ktlint("0.45.2")
       .setUseExperimental(true)
-      .userData(mapOf('indent_size' to '2', 'continuation_indent_size' to '2'))
+      .userData(mapOf("android" to "true"))
+      .editorConfigOverride(mapOf("indent_size" to 2))
+  }
+}
 ```
 
 ### diktat

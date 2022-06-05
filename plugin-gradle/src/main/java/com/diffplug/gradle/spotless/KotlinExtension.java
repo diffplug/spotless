@@ -30,6 +30,7 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 
+import com.diffplug.common.collect.ImmutableSortedMap;
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.kotlin.DiktatStep;
@@ -59,7 +60,7 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 	/** Adds the specified version of <a href="https://github.com/pinterest/ktlint">ktlint</a>. */
 	public KotlinFormatExtension ktlint(String version) {
 		Objects.requireNonNull(version);
-		return new KotlinFormatExtension(version, false, Collections.emptyMap());
+		return new KotlinFormatExtension(version, false, Collections.emptyMap(), Collections.emptyMap());
 	}
 
 	public KotlinFormatExtension ktlint() {
@@ -71,11 +72,14 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 		private final String version;
 		private boolean useExperimental;
 		private Map<String, String> userData;
+		private Map<String, Object> editorConfigOverride;
 
-		KotlinFormatExtension(String version, boolean useExperimental, Map<String, String> config) {
+		KotlinFormatExtension(String version, boolean useExperimental, Map<String, String> config,
+				Map<String, Object> editorConfigOverride) {
 			this.version = version;
 			this.useExperimental = useExperimental;
 			this.userData = config;
+			this.editorConfigOverride = editorConfigOverride;
 			addStep(createStep());
 		}
 
@@ -88,13 +92,21 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 		public KotlinFormatExtension userData(Map<String, String> userData) {
 			// Copy the map to a sorted map because up-to-date checking is based on binary-equals of the serialized
 			// representation.
-			this.userData = userData;
+			this.userData = ImmutableSortedMap.copyOf(userData);
+			replaceStep(createStep());
+			return this;
+		}
+
+		public KotlinFormatExtension editorConfigOverride(Map<String, Object> editorConfigOverride) {
+			// Copy the map to a sorted map because up-to-date checking is based on binary-equals of the serialized
+			// representation.
+			this.editorConfigOverride = ImmutableSortedMap.copyOf(editorConfigOverride);
 			replaceStep(createStep());
 			return this;
 		}
 
 		private FormatterStep createStep() {
-			return KtLintStep.create(version, provisioner(), useExperimental, userData);
+			return KtLintStep.create(version, provisioner(), useExperimental, userData, editorConfigOverride);
 		}
 	}
 
