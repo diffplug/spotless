@@ -136,6 +136,7 @@ public class GoogleJavaFormatStep {
 
 		State(String stepName, String groupArtifact, String version, String style, Provisioner provisioner, boolean reflowLongStrings) throws Exception {
 			JVM_SUPPORT.assertFormatterSupported(version);
+			ModuleHelper.doOpenInternalPackagesIfRequired();
 			this.jarState = JarState.from(groupArtifact + ":" + version, provisioner);
 			this.stepName = stepName;
 			this.version = version;
