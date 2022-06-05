@@ -16,6 +16,7 @@
 package com.diffplug.gradle.spotless;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.condition.JRE.JAVA_11;
 
 import java.io.IOException;
@@ -173,6 +174,50 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 		setFile("src/main/kotlin/basic.kt").toResource("kotlin/ktlint/basic.dirty");
 		gradleRunner().withArguments("spotlessApply").build();
 		assertFile("src/main/kotlin/basic.kt").sameAsResource("kotlin/ktlint/basic.clean");
+	}
+
+	@Test
+	void withExperimentalEditorConfigOverride() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlin {",
+				"        ktlint().setUseExperimental(true)",
+				"            .editorConfigOverride([",
+				"        	    ij_kotlin_allow_trailing_comma: true,",
+				"        	    ij_kotlin_allow_trailing_comma_on_call_site: true",
+				"            ])",
+				"    }",
+				"}");
+		setFile("src/main/kotlin/experimental.kt").toResource("kotlin/ktlint/experimentalEditorConfigOverride.dirty");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/kotlin/experimental.kt").sameAsResource("kotlin/ktlint/experimentalEditorConfigOverride.clean");
+	}
+
+	@Test
+	void withEditorConfigOverride_0_45_1() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlin {",
+				"        ktlint('0.45.1')",
+				"            .editorConfigOverride([",
+				"        	    indent_size: 5",
+				"            ])",
+				"    }",
+				"}");
+		setFile("src/main/kotlin/basic.kt").toResource("kotlin/ktlint/basic.dirty");
+		Throwable error = assertThrows(Throwable.class,
+				() -> gradleRunner().withArguments("spotlessApply").build());
+		assertThat(error).hasMessageContaining("KtLint editorConfigOverride supported for version 0.45.2 and later");
 	}
 
 	/**

@@ -45,7 +45,7 @@ public class KotlinGradleExtension extends FormatExtension {
 	/** Adds the specified version of <a href="https://github.com/pinterest/ktlint">ktlint</a>. */
 	public KotlinFormatExtension ktlint(String version) {
 		Objects.requireNonNull(version, "version");
-		return new KotlinFormatExtension(version, false, Collections.emptyMap());
+		return new KotlinFormatExtension(version, false, Collections.emptyMap(), Collections.emptyMap());
 	}
 
 	public KotlinFormatExtension ktlint() {
@@ -57,11 +57,14 @@ public class KotlinGradleExtension extends FormatExtension {
 		private final String version;
 		private boolean useExperimental;
 		private Map<String, String> userData;
+		private Map<String, Object> editorConfigOverride;
 
-		KotlinFormatExtension(String version, boolean useExperimental, Map<String, String> config) {
+		KotlinFormatExtension(String version, boolean useExperimental, Map<String, String> config,
+				Map<String, Object> editorConfigOverride) {
 			this.version = version;
 			this.useExperimental = useExperimental;
 			this.userData = config;
+			this.editorConfigOverride = editorConfigOverride;
 			addStep(createStep());
 		}
 
@@ -79,8 +82,16 @@ public class KotlinGradleExtension extends FormatExtension {
 			return this;
 		}
 
+		public KotlinFormatExtension editorConfigOverride(Map<String, Object> editorConfigOverride) {
+			// Copy the map to a sorted map because up-to-date checking is based on binary-equals of the serialized
+			// representation.
+			this.editorConfigOverride = ImmutableSortedMap.copyOf(editorConfigOverride);
+			replaceStep(createStep());
+			return this;
+		}
+
 		private FormatterStep createStep() {
-			return KtLintStep.createForScript(version, provisioner(), useExperimental, userData);
+			return KtLintStep.createForScript(version, provisioner(), useExperimental, userData, editorConfigOverride);
 		}
 	}
 
