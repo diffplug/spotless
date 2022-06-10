@@ -3,6 +3,9 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Fixed
+* (Second try) `googleJavaFormat` and `removeUnusedImports` works on JDK16+ without jvm args workaround. ([#1228](https://github.com/diffplug/spotless/pull/1228))
+  * If you have a bunch of `--add-exports` calls in your `org.gradle.jvmargs` property in `gradle.properties`, you should be able to remove them. (fixes [#834](https://github.com/diffplug/spotless/issues/834#issuecomment-819118761))
 
 ## [6.7.0] - 2022-06-05
 ### Added

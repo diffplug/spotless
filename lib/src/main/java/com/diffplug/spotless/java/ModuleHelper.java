@@ -102,7 +102,9 @@ final class ModuleHelper {
 		if (modules == null) {
 			return;
 		}
-		final Unsafe unsafe = Unsafe.getUnsafe();
+		final Field unsafeField = Unsafe.class.getDeclaredField("theUnsafe");
+		unsafeField.setAccessible(true);
+		final Unsafe unsafe = (Unsafe) unsafeField.get(null);
 		final Field implLookupField = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
 		final MethodHandles.Lookup lookup = (MethodHandles.Lookup) unsafe.getObject(
 				unsafe.staticFieldBase(implLookupField),
