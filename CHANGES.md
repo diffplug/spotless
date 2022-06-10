@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.26.1] - 2022-06-10
 ### Fixed
 * (Second try) `googleJavaFormat` and `removeUnusedImports` works on JDK16+ without jvm args workaround. ([#1228](https://github.com/diffplug/spotless/pull/1228))
 
