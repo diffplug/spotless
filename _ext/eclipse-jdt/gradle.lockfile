@@ -2,7 +2,7 @@
 # Manual edits can break the build and are not advised.
 # This file is expected to be part of source control.
 com.diffplug.spotless:spotless-eclipse-base:3.5.2=compileClasspath
-com.github.spotbugs:spotbugs-annotations:4.0.2=compileClasspath
+com.github.spotbugs:spotbugs-annotations:4.5.0=compileClasspath
 com.google.code.findbugs:jsr305:3.0.2=compileClasspath
 net.jcip:jcip-annotations:1.0=compileClasspath
 org.eclipse.jdt:org.eclipse.jdt.core:3.27.0=compileClasspath
