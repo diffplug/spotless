@@ -60,6 +60,7 @@ public class PalantirJavaFormatStep {
 		private final String formatterVersion;
 
 		State(JarState jarState, String formatterVersion) {
+			ModuleHelper.doOpenInternalPackagesIfRequired();
 			this.jarState = jarState;
 			this.formatterVersion = formatterVersion;
 		}
