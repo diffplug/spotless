@@ -4,6 +4,100 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+## [2.22.8] - 2022-06-11
+### Fixed
+* `PalantirJavaFormatStep` no longer needs the `--add-exports` calls in `MAVEN_OPTS` or `.mvn/jvm.config`. ([#1233](https://github.com/diffplug/spotless/pull/1233))
+
+## [2.22.7] - 2022-06-10
+### Fixed
+* (Second try) `googleJavaFormat` and `removeUnusedImports` works on JDK16+ without jvm args workaround. ([#1228](https://github.com/diffplug/spotless/pull/1228))
+  * If you have a bunch of `--add-exports` calls in `MAVEN_OPTS` or `.mvn/jvm.config`, you should be able to remove them. (fixes [#834](https://github.com/diffplug/spotless/issues/834#issuecomment-817524058))
+
+## [2.22.6] - 2022-06-05
+### Fixed
+* `googleJavaFormat` and `removeUnusedImports` works on JDK16+ without jvm args workaround. ([#1224](https://github.com/diffplug/spotless/pull/1224))
+  * If you have a bunch of `--add-exports` calls in `MAVEN_OPTS` or `.mvn/jvm.config`, you should be able to remove them. (fixes [#834](https://github.com/diffplug/spotless/issues/834#issuecomment-817524058))
+
+## [2.22.5] - 2022-05-10
+### Fixed
+* Update the `black` version regex to fix `19.10b0` and earlier. (fixes [#1195](https://github.com/diffplug/spotless/issues/1195), regression introduced in `2.22.2`)
+### Changes
+* Bump default `ktfmt` version to latest `0.36` -> `0.37`. ([#1200](https://github.com/diffplug/spotless/pull/1200))
+
+## [2.22.4] - 2022-05-03
+### Changes
+* Bump default `diktat` version to latest `1.0.1` -> `1.1.0`. ([#1190](https://github.com/diffplug/spotless/pull/1190))
+  * Converted `diktat` integration to use a compile-only source set. (fixes [#524](https://github.com/diffplug/spotless/issues/524))
+  * Use the full path to a file in `diktat` integration. (fixes [#1189](https://github.com/diffplug/spotless/issues/1189))
+
+## [2.22.3] - 2022-04-27
+### Changes
+* Bump default `ktfmt` version to latest `0.35` -> `0.36`. ([#1183](https://github.com/diffplug/spotless/issues/1183))
+* Bump default `google-java-format` version to latest `1.13.0` -> `1.15.0`.
+  * ~~This means it is no longer necessary to use the `--add-exports` workaround (fixes [#834](https://github.com/diffplug/spotless/issues/834)).~~ `--add-exports` workaround is still needed.
+
+## [2.22.2] - 2022-04-22
+### Fixed
+* Fixed support for Python Black's new version reporting. ([#1170](https://github.com/diffplug/spotless/issues/1170))
+* Error messages for unexpected file encoding now works on Java 8. (fixes [#1081](https://github.com/diffplug/spotless/issues/1081))
+### Changes
+* Bump default `black` version to latest `19.10b0` -> `22.3.0`. ([#1170](https://github.com/diffplug/spotless/issues/1170))
+* Bump default `ktfmt` version to latest `0.34` -> `0.35`. ([#1159](https://github.com/diffplug/spotless/pull/1159))
+* Bump default `ktlint` version to latest `0.43.2` -> `0.45.2`. ([#1177](https://github.com/diffplug/spotless/pull/1177))
+
+## [2.22.1] - 2022-04-06
+### Fixed
+* Git user config and system config also included for defaultEndings configuration. ([#540](https://github.com/diffplug/spotless/issues/540))
+
+## [2.22.0] - 2022-03-28
+### Added
+* Added support for setting custom parameters for Kotlin ktfmt in Maven plugin. ([#1145](https://github.com/diffplug/spotless/pull/1145))
+
+## [2.21.0] - 2022-02-19
+### Added
+* Magic value 'NONE' for disabling ratchet functionality ([#1134](https://github.com/diffplug/spotless/issues/1134))
+
+### Changed
+* Use SLF4J for logging ([#1116](https://github.com/diffplug/spotless/issues/1116))
+
+## [2.20.2] - 2022-02-09
+### Changed
+* Bump default ktfmt `0.30` -> `0.31` ([#1118](https://github.com/diffplug/spotless/pull/1118)).
+### Fixed
+* Add full support for git worktrees ([#1119](https://github.com/diffplug/spotless/pull/1119)).
+
+## [2.20.1] - 2022-02-01
+* Bump default versions of formatters ([#1095](https://github.com/diffplug/spotless/pull/1095)).
+  * google-java-format `1.12.0` -> `1.13.0`
+  * ktfmt `0.29` -> `0.30`
+* Added support for git property `core.autocrlf` ([#540](https://github.com/diffplug/spotless/issues/540))
+
+## [2.20.0] - 2022-01-13
+### Added
+* Added support for the [palantir-java-format](https://github.com/palantir/palantir-java-format) Java formatter ([#1083](https://github.com/diffplug/spotless/pull/1083)).
+
+## [2.19.2] - 2022-01-10
+### Fixed
+* Enabling the upToDateChecking with the plugin configured inside pluginManagement, with an additional dependency and running under Maven 3.6.3 leads to a java.io.NotSerializableException. ([#1074](https://github.com/diffplug/spotless/pull/1074)).
+
+## [2.19.1] - 2022-01-07
+### Fixed
+* Update IndentStep to allow leading space on multiline comments ([#1072](https://github.com/diffplug/spotless/pull/1072)).
+
+## [2.19.0] - 2022-01-06
+### Added
+* Support custom index files for incremental up-to-date checking ([#1055](https://github.com/diffplug/spotless/pull/1055)).
+### Fixed
+* Remove Java files from default Maven Groovy formatting ([#1051](https://github.com/diffplug/spotless/pull/1051)).
+  * Before this release, the default target of groovy was
+    * `src/main/groovy/**/*.groovy`
+    * `src/test/groovy/**/*.groovy`
+    * `src/main/java/**/*.java`
+    * `src/test/java/**/*.java`
+  * This release removes the `.java` includes.
+### Changed
+* Bumped default DiKTat from `0.4.0` to `1.0.1`. This is a breaking change for DiKTat users on the default version, because some rules were renamed/changed. Check [DiKTat changelog](https://github.com/analysis-dev/diktat/releases) for details.
+
 ## [2.18.0] - 2021-12-23
 ### Added
 * Incremental up-to-date checking ([#935](https://github.com/diffplug/spotless/pull/935)).

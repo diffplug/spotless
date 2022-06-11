@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,9 +39,9 @@ class IndexBasedChecker implements UpToDateChecker {
 		this.log = log;
 	}
 
-	static IndexBasedChecker create(MavenProject project, Iterable<Formatter> formatters, Log log) {
+	static IndexBasedChecker create(MavenProject project, Path indexFile, Iterable<Formatter> formatters, Log log) {
 		PluginFingerprint pluginFingerprint = PluginFingerprint.from(project, formatters);
-		FileIndexConfig indexConfig = new FileIndexConfig(project, pluginFingerprint);
+		FileIndexConfig indexConfig = new FileIndexConfig(project, indexFile, pluginFingerprint);
 		FileIndex fileIndex = FileIndex.read(indexConfig, log);
 		return new IndexBasedChecker(fileIndex, log);
 	}

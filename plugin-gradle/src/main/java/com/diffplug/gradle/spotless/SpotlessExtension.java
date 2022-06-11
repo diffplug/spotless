@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
+import org.gradle.language.base.plugins.LifecycleBasePlugin;
 
 import com.diffplug.spotless.LineEnding;
 
@@ -36,7 +37,7 @@ public abstract class SpotlessExtension {
 	final Project project;
 	private final RegisterDependenciesTask registerDependenciesTask;
 
-	protected static final String TASK_GROUP = "Verification";
+	protected static final String TASK_GROUP = LifecycleBasePlugin.VERIFICATION_GROUP;
 	protected static final String CHECK_DESCRIPTION = "Checks that sourcecode satisfies formatting steps.";
 	protected static final String APPLY_DESCRIPTION = "Applies code formatting steps to sourcecode in-place.";
 
@@ -74,14 +75,19 @@ public abstract class SpotlessExtension {
 	}
 
 	/** Sets encoding to use (defaults to UTF_8). */
+	public void setEncoding(Charset charset) {
+		encoding = requireNonNull(charset);
+	}
+
+	/** Sets encoding to use (defaults to UTF_8). */
 	public void setEncoding(String name) {
 		requireNonNull(name);
 		setEncoding(Charset.forName(name));
 	}
 
 	/** Sets encoding to use (defaults to UTF_8). */
-	public void setEncoding(Charset charset) {
-		encoding = requireNonNull(charset);
+	public void encoding(Charset charset) {
+		setEncoding(charset);
 	}
 
 	/** Sets encoding to use (defaults to UTF_8). */
@@ -275,6 +281,6 @@ public abstract class SpotlessExtension {
 	}
 
 	protected void predeclare(GradleProvisioner.Policy policy) {
-		project.getExtensions().create(SpotlessExtension.class, EXTENSION_PREDECLARE, SpotlessExtensionPredeclare.class, project, policy);
+		project.getExtensions().create(SpotlessExtensionPredeclare.class, EXTENSION_PREDECLARE, SpotlessExtensionPredeclare.class, project, policy);
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import javax.inject.Inject;
 
@@ -28,6 +29,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.kotlin.DiktatStep;
 import com.diffplug.spotless.kotlin.KtLintStep;
 import com.diffplug.spotless.kotlin.KtfmtStep;
+import com.diffplug.spotless.kotlin.KtfmtStep.KtfmtFormattingOptions;
 import com.diffplug.spotless.kotlin.KtfmtStep.Style;
 
 public class KotlinGradleExtension extends FormatExtension {
@@ -43,7 +45,7 @@ public class KotlinGradleExtension extends FormatExtension {
 	/** Adds the specified version of <a href="https://github.com/pinterest/ktlint">ktlint</a>. */
 	public KotlinFormatExtension ktlint(String version) {
 		Objects.requireNonNull(version, "version");
-		return new KotlinFormatExtension(version, Collections.emptyMap());
+		return new KotlinFormatExtension(version, false, Collections.emptyMap(), Collections.emptyMap());
 	}
 
 	public KotlinFormatExtension ktlint() {
@@ -53,23 +55,43 @@ public class KotlinGradleExtension extends FormatExtension {
 	public class KotlinFormatExtension {
 
 		private final String version;
+		private boolean useExperimental;
 		private Map<String, String> userData;
+		private Map<String, Object> editorConfigOverride;
 
-		KotlinFormatExtension(String version, Map<String, String> config) {
+		KotlinFormatExtension(String version, boolean useExperimental, Map<String, String> config,
+				Map<String, Object> editorConfigOverride) {
 			this.version = version;
+			this.useExperimental = useExperimental;
 			this.userData = config;
+			this.editorConfigOverride = editorConfigOverride;
 			addStep(createStep());
 		}
 
-		public void userData(Map<String, String> userData) {
+		public KotlinFormatExtension setUseExperimental(boolean useExperimental) {
+			this.useExperimental = useExperimental;
+			replaceStep(createStep());
+			return this;
+		}
+
+		public KotlinFormatExtension userData(Map<String, String> userData) {
 			// Copy the map to a sorted map because up-to-date checking is based on binary-equals of the serialized
 			// representation.
 			this.userData = ImmutableSortedMap.copyOf(userData);
 			replaceStep(createStep());
+			return this;
+		}
+
+		public KotlinFormatExtension editorConfigOverride(Map<String, Object> editorConfigOverride) {
+			// Copy the map to a sorted map because up-to-date checking is based on binary-equals of the serialized
+			// representation.
+			this.editorConfigOverride = ImmutableSortedMap.copyOf(editorConfigOverride);
+			replaceStep(createStep());
+			return this;
 		}
 
 		private FormatterStep createStep() {
-			return KtLintStep.createForScript(version, provisioner(), userData);
+			return KtLintStep.createForScript(version, provisioner(), useExperimental, userData, editorConfigOverride);
 		}
 	}
 
@@ -90,6 +112,9 @@ public class KotlinGradleExtension extends FormatExtension {
 	public class KtfmtConfig {
 		final String version;
 		Style style;
+		KtfmtFormattingOptions options;
+
+		private final ConfigurableStyle configurableStyle = new ConfigurableStyle();
 
 		KtfmtConfig(String version) {
 			this.version = Objects.requireNonNull(version);
@@ -97,25 +122,40 @@ public class KotlinGradleExtension extends FormatExtension {
 			addStep(createStep());
 		}
 
-		public void style(Style style) {
+		private ConfigurableStyle style(Style style) {
 			this.style = style;
 			replaceStep(createStep());
+			return configurableStyle;
 		}
 
-		public void dropboxStyle() {
-			style(Style.DROPBOX);
+		public ConfigurableStyle dropboxStyle() {
+			return style(Style.DROPBOX);
 		}
 
-		public void googleStyle() {
-			style(Style.GOOGLE);
+		public ConfigurableStyle googleStyle() {
+			return style(Style.GOOGLE);
 		}
 
-		public void kotlinlangStyle() {
-			style(Style.KOTLINLANG);
+		public ConfigurableStyle kotlinlangStyle() {
+			return style(Style.KOTLINLANG);
+		}
+
+		public void configure(Consumer<KtfmtFormattingOptions> optionsConfiguration) {
+			this.configurableStyle.configure(optionsConfiguration);
 		}
 
 		private FormatterStep createStep() {
-			return KtfmtStep.create(version, provisioner(), style);
+			return KtfmtStep.create(version, provisioner(), style, options);
+		}
+
+		public class ConfigurableStyle {
+
+			public void configure(Consumer<KtfmtFormattingOptions> optionsConfiguration) {
+				KtfmtFormattingOptions ktfmtFormattingOptions = new KtfmtFormattingOptions();
+				optionsConfiguration.accept(ktfmtFormattingOptions);
+				options = ktfmtFormattingOptions;
+				replaceStep(createStep());
+			}
 		}
 	}
 

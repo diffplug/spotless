@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package com.diffplug.spotless.java;
 
 import static org.junit.jupiter.api.condition.JRE.JAVA_11;
 import static org.junit.jupiter.api.condition.JRE.JAVA_13;
+import static org.junit.jupiter.api.condition.JRE.JAVA_15;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -41,7 +42,7 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 	}
 
 	@Test
-	@EnabledForJreRange(min = JAVA_11) // google-java-format requires JRE 11+
+	@EnabledForJreRange(min = JAVA_11, max = JAVA_15) // google-java-format requires JRE 11+
 	void behavior18() throws Exception {
 		FormatterStep step = GoogleJavaFormatStep.create("1.8", TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)

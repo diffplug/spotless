@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,27 +22,19 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
-final class FilterByContentPatternFormatterStep implements FormatterStep {
-	private final FormatterStep delegateStep;
+final class FilterByContentPatternFormatterStep extends DelegateFormatterStep {
 	final Pattern contentPattern;
 
 	FilterByContentPatternFormatterStep(FormatterStep delegateStep, String contentPattern) {
-		this.delegateStep = Objects.requireNonNull(delegateStep);
+		super(delegateStep);
 		this.contentPattern = Pattern.compile(Objects.requireNonNull(contentPattern));
-	}
-
-	@Override
-	public String getName() {
-		return delegateStep.getName();
 	}
 
 	@Override
 	public @Nullable String format(String raw, File file) throws Exception {
 		Objects.requireNonNull(raw, "raw");
 		Objects.requireNonNull(file, "file");
-
 		Matcher matcher = contentPattern.matcher(raw);
-
 		if (matcher.find()) {
 			return delegateStep.format(raw, file);
 		} else {

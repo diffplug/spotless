@@ -16,7 +16,7 @@ Spotless can format &lt;antlr | c | c# | c++ | css | flow | graphql | groovy | h
 
 You probably want one of the links below:
 
-## [❇️ Spotless for Gradle](plugin-gradle) (with [VS Code integration](https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle))
+## [❇️ Spotless for Gradle](plugin-gradle) (with integrations for [VS Code](https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle) and [IntelliJ](https://plugins.jetbrains.com/plugin/18321-spotless-gradle))
 ## [❇️ Spotless for Maven](plugin-maven)
 ## [❇️ Spotless for SBT (external for now)](https://github.com/moznion/sbt-spotless)
 ## [Other build systems](CONTRIBUTING.md#how-to-add-a-new-plugin-for-a-build-system)
@@ -30,8 +30,8 @@ It's easy to build such a function, but there are some gotchas and lots of integ
 ## Current feature matrix
 
 <!---freshmark matrix
-function lib(className)   { return '| [`' + className + '`](lib/src/main/java/com/diffplug/spotless/' + className.replace('.', '/') + '.java) | ' }
-function extra(className) { return '| [`' + className + '`](lib-extra/src/main/java/com/diffplug/spotless/extra/' + className.replace('.', '/') + '.java) | ' }
+function lib(className)   { return '| [`' + className + '`](lib/src/main/java/com/diffplug/spotless/' + className.replaceAll('\\.', '/') + '.java) | ' }
+function extra(className) { return '| [`' + className + '`](lib-extra/src/main/java/com/diffplug/spotless/extra/' + className.replaceAll('\\.', '/') + '.java) | ' }
 
 //                                               | GRADLE        | MAVEN        | SBT          | (new)   |
 output = [
@@ -58,8 +58,11 @@ extra('cpp.EclipseFormatterStep')                +'{{yes}}       | {{yes}}      
 extra('groovy.GrEclipseFormatterStep')           +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
 lib('java.GoogleJavaFormatStep')                 +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
 lib('java.ImportOrderStep')                      +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
+lib('java.PalantirJavaFormatStep')               +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('java.RemoveUnusedImportsStep')              +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
 extra('java.EclipseJdtFormatterStep')            +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
+lib('json.gson.GsonStep')                        +'{{yes}}       | {{no}}       | {{no}}       | {{no}}  |',
+lib('json.JsonSimpleStep')                       +'{{yes}}       | {{no}}       | {{no}}       | {{no}}  |',
 lib('kotlin.KtLintStep')                         +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
 lib('kotlin.KtfmtStep')                          +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('kotlin.DiktatStep')                         +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
@@ -98,8 +101,11 @@ extra('wtp.EclipseWtpFormatterStep')             +'{{yes}}       | {{yes}}      
 | [`groovy.GrEclipseFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/groovy/GrEclipseFormatterStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |
 | [`java.GoogleJavaFormatStep`](lib/src/main/java/com/diffplug/spotless/java/GoogleJavaFormatStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |
 | [`java.ImportOrderStep`](lib/src/main/java/com/diffplug/spotless/java/ImportOrderStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |
+| [`java.PalantirJavaFormatStep`](lib/src/main/java/com/diffplug/spotless/java/PalantirJavaFormatStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`java.RemoveUnusedImportsStep`](lib/src/main/java/com/diffplug/spotless/java/RemoveUnusedImportsStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |
 | [`java.EclipseJdtFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/java/EclipseJdtFormatterStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |
+| [`json.gson.GsonStep`](lib/src/main/java/com/diffplug/spotless/json/gson/GsonStep.java) | :+1:       | :white_large_square:       | :white_large_square:       | :white_large_square:  |
+| [`json.JsonSimpleStep`](lib/src/main/java/com/diffplug/spotless/json/JsonSimpleStep.java) | :+1:       | :white_large_square:       | :white_large_square:       | :white_large_square:  |
 | [`kotlin.KtLintStep`](lib/src/main/java/com/diffplug/spotless/kotlin/KtLintStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |
 | [`kotlin.KtfmtStep`](lib/src/main/java/com/diffplug/spotless/kotlin/KtfmtStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`kotlin.DiktatStep`](lib/src/main/java/com/diffplug/spotless/kotlin/DiktatStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
@@ -132,6 +138,7 @@ Once someone has filled in one square of the formatter/build system matrix, it's
   - constant improvements on a variety of topics with high-quality code reviews
 - Thanks to [Daz DeBoer](https://github.com/bigdaz) for the reworking the guts of our gradle plugin to support [buildcache](https://github.com/diffplug/spotless/pull/576), [InputChanges](https://github.com/diffplug/spotless/pull/607), and [lazy configuration](https://github.com/diffplug/spotless/pull/617).
 - Thanks to [Richard Willis](https://github.com/badsyntax) for creating the [VS Code extension for Spotless Gradle](https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle).
+- Thanks to [Ryan Gurney](https://github.com/ragurney) for creating the [IntelliJ plugin for Spotless Gradle](https://plugins.jetbrains.com/plugin/18321-spotless-gradle).
 - Thanks to [Markus Heberling](https://github.com/tisoft) for adding [generic native formatters](https://github.com/diffplug/spotless/pull/949), [jsr-223 formatters](https://github.com/diffplug/spotless/pull/945), and [maven pom sorting](https://github.com/diffplug/spotless/pull/946).
 - Thanks to [Matthias Balke](https://github.com/matthiasbalke) for [adding support for Antlr](https://github.com/diffplug/spotless/pull/328).
 - Thanks to [Matthias Andreas Benkard](https://github.com/benkard) for adding support for google-java-format 1.8+ ([#563](https://github.com/diffplug/spotless/pull/563))

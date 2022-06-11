@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,10 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.util.function.Consumer;
-
 import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.BasePlugin;
-import org.gradle.api.tasks.Delete;
-import org.gradle.api.tasks.TaskProvider;
 
 import com.diffplug.spotless.SpotlessCache;
 
@@ -39,6 +35,8 @@ public class SpotlessPlugin implements Plugin<Project> {
 		if (project.hasProperty(SPOTLESS_MODERN)) {
 			project.getLogger().warn("'spotlessModern' has no effect as of Spotless 5.0, recommend removing it.");
 		}
+		// make sure there's a `clean` and a `check`
+		project.getPlugins().apply(BasePlugin.class);
 
 		// setup the extension
 		project.getExtensions().create(SpotlessExtension.class, SpotlessExtension.EXTENSION, SpotlessExtensionImpl.class, project);
@@ -50,20 +48,7 @@ public class SpotlessPlugin implements Plugin<Project> {
 		//
 		// we use System.identityHashCode() to avoid a memory leak by hanging on to the reference directly
 		int cacheKey = System.identityHashCode(project.getRootProject());
-		configureCleanTask(project, clean -> clean.doLast(unused -> SpotlessCache.clearOnce(cacheKey)));
-	}
-
-	static void configureCleanTask(Project project, Consumer<Delete> onClean) {
-		project.getTasks().withType(Delete.class).configureEach(clean -> {
-			if (clean.getName().equals(BasePlugin.CLEAN_TASK_NAME)) {
-				onClean.accept(clean);
-			}
-		});
-	}
-
-	/** clean removes the SpotlessCache, so we have to run after clean. */
-	static void taskMustRunAfterClean(Project project, TaskProvider<?> task) {
-		configureCleanTask(project, clean -> task.get().mustRunAfter(clean));
+		project.getTasks().named(BasePlugin.CLEAN_TASK_NAME).configure(clean -> clean.doLast(unused -> SpotlessCache.clearOnce(cacheKey)));
 	}
 
 	static String capitalize(String input) {

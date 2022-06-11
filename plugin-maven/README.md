@@ -12,8 +12,8 @@ output = [
   ].join('\n');
 -->
 [![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
-[![Javadoc](https://img.shields.io/badge/javadoc-yes-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.18.0/index.html)
-[![Changelog](https://img.shields.io/badge/changelog-2.18.0-brightgreen.svg)](CHANGES.md)
+[![Javadoc](https://img.shields.io/badge/javadoc-yes-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.22.8/index.html)
+[![Changelog](https://img.shields.io/badge/changelog-2.22.8-brightgreen.svg)](CHANGES.md)
 
 [![Circle CI](https://circleci.com/gh/diffplug/spotless/tree/main.svg?style=shield)](https://circleci.com/gh/diffplug/spotless/tree/main)
 [![Live chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
@@ -47,7 +47,7 @@ user@machine repo % mvn spotless:check
   - [Requirements](#requirements)
   - [Binding to maven phase](#binding-to-maven-phase)
 - **Languages**
-  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier))
+  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier), [palantir-java-format](#palantir-java-format))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
   - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
@@ -181,9 +181,8 @@ any other maven phase (i.e. compile) then it can be configured as below;
     <importOrder /> <!-- standard import order -->
     <importOrder>  <!-- or a custom ordering -->
       <wildcardsLast>false</wildcardsLast> <!-- Optional, default false. Sort wildcard import after specific imports -->
-      <order>java,javax,org,com,com.diffplug,</order>  <!-- or use <file>${project.basedir}/eclipse.importorder</file> -->
-      <!-- You probably want an empty string at the end - all of the
-           imports you didn't specify explicitly will go there. -->
+      <order>java,javax,org,com,com.diffplug,,\\#com.diffplug,\\#</order>  <!-- or use <file>${project.basedir}/eclipse.importorder</file> -->
+      <!-- you can use an empty string for all the imports you didn't specify explicitly, and '\\#` prefix for static imports. -->
     </importOrder>
 
     <removeUnusedImports /> <!-- self-explanatory -->
@@ -224,6 +223,27 @@ For example the following file under `.mvn/jvm.config` will run maven with the r
 ```
 This is a workaround to a [pending issue](https://github.com/diffplug/spotless/issues/834).
 
+### palantir-java-format
+
+[homepage](https://github.com/palantir/palantir-java-format). [changelog](https://github.com/palantir/palantir-java-format/releases). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/java/PalantirJavaFormat.java).
+
+```xml
+<palantirJavaFormat>
+  <version>2.10.0</version>                     <!-- optional -->
+</palantirJavaFormat>
+```
+
+**⚠️ Note on using Palantir Java Format with Java 16+**
+
+Using Java 16+ with Palantir Java Format [requires additional flags](https://github.com/google/google-java-format/releases/tag/v1.10.0) on the running JDK.
+These Flags can be provided using `MAVEN_OPTS` environment variable or using the `./mvn/jvm.config` file (See [documentation](https://maven.apache.org/configure.html#mvn-jvm-config-file)).
+
+For example the following file under `.mvn/jvm.config` will run maven with the required flags:
+```
+--add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED
+```
+This is a workaround to a [pending issue](https://github.com/diffplug/spotless/issues/834).
+
 ### eclipse jdt
 
 [homepage](https://www.eclipse.org/downloads/packages/). [compatible versions](https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_jdt_formatter). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/java/Eclipse.java). See [here](../ECLIPSE_SCREENSHOTS.md) for screenshots that demonstrate how to get and install the config file mentioned below.
@@ -246,16 +266,12 @@ This is a workaround to a [pending issue](https://github.com/diffplug/spotless/i
     <includes>
       <include>src/main/groovy/**/*.groovy</include>
       <include>src/test/groovy/**/*.groovy</include>
-      <include>src/main/java/**/*.java</include>
-      <include>src/test/java/**/*.java</include>
     </includes>
 
     <importOrder /> <!-- standard import order -->
     <importOrder>  <!-- or a custom ordering -->
-      <order>java,javax,org,com,com.diffplug,</order>  <!-- or use <file>
-/eclipse.importorder</file> -->
-      <!-- You probably want an empty string at the end - all of the
-           imports you didn't specify explicitly will go there. -->
+      <order>java,javax,org,com,com.diffplug,,\\#com.diffplug,\\#</order>  <!-- or use <file>${project.basedir}/eclipse.importorder</file> -->
+      <!-- you can use an empty string for all the imports you didn't specify explicitly, and '\\#` prefix for static imports -->
     </importOrder>
 
     <greclipse />          <!-- has its own section below -->
@@ -263,7 +279,7 @@ This is a workaround to a [pending issue](https://github.com/diffplug/spotless/i
     <licenseHeader>
       <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
     </licenseHeader>
-  </java>
+  </groovy>
 </configuration>
 ```
 
@@ -313,7 +329,7 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
 
 ```xml
 <ktfmt>
-  <version>0.18</version> <!-- optional -->
+  <version>0.30</version> <!-- optional -->
   <style>DEFAULT</style> <!-- optional, other option is DROPBOX -->
 </ktfmt>
 ```
@@ -326,7 +342,7 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
 
 ```xml
 <ktlint>
-  <version>0.37.2</version> <!-- optional -->
+  <version>0.43.2</version> <!-- optional -->
 </ktlint>
 ```
 
@@ -336,7 +352,7 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
 
 ```xml
 <diktat>
-  <version>0.4.0</version> <!-- optional -->
+  <version>1.0.1</version> <!-- optional -->
   <configFile>full/path/to/diktat-analysis.yml</configFile> <!-- optional, configuration file path -->
 </diktat>
 ```
@@ -938,6 +954,7 @@ enable incremental up-to-date checking with the following configuration:
 <configuration>
   <upToDateChecking>
     <enabled>true</enabled>
+    <indexFile>${project.basedir}/custom-index-file</indexFile> <!-- optional, default is ${project.build.directory}/spotless-index -->
   </upToDateChecking>
   <!-- ... define formats ... -->
 </configuration>
@@ -948,7 +965,7 @@ The index file contains source file paths and corresponding last modified timest
 It allows Spotless to skip already formatted files that have not changed.
 
 **Note:** the index file is located in the `target` directory. Executing `mvn clean` will delete
-the index file, and Spotless will need to check/format all the source files.
+the index file, and Spotless will need to check/format all the source files. You can override the default index file location with the `indexFile` configuration parameter.
 
 Spotless will remove the index file when up-to-date checking is explicitly turned off with the
 following configuration:
@@ -957,6 +974,7 @@ following configuration:
 <configuration>
   <upToDateChecking>
     <enabled>false</enabled>
+    <indexFile>${project.basedir}/custom-index-file</indexFile> <!-- optional, default is ${project.build.directory}/spotless-index -->
   </upToDateChecking>
   <!-- ... define formats ... -->
 </configuration>
@@ -980,6 +998,14 @@ In this mode, Spotless will apply only to files which have changed since `origin
 However, we strongly recommend that you use a non-local branch, such as a tag or `origin/main`.  The problem with `HEAD` or any local branch is that as soon as you commit a file, that is now the canonical formatting, even if it was formatted incorrectly.  By instead specifying `origin/main` or a tag, your CI server will fail unless every changed file is at least as good or better than it was before the change.
 
 This is especially helpful for injecting accurate copyright dates using the [license step](#license-header).
+
+You can explicitly disable ratchet functionality by providing the value 'NONE':
+```xml
+<configuration>
+  <ratchetFrom>NONE</ratchetFrom>
+</configuration>
+```
+This is useful for disabling the ratchet functionality in child projects where the parent defines a ratchetFrom value.
 
 ## `spotless:off` and `spotless:on`
 

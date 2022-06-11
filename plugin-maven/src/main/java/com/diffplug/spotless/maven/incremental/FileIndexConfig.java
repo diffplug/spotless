@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,18 +20,17 @@ import java.nio.file.Path;
 import org.apache.maven.project.MavenProject;
 
 class FileIndexConfig {
-
-	private static final String INDEX_FILE_NAME = "spotless-index";
-
 	private final MavenProject project;
 	private final PluginFingerprint pluginFingerprint;
+	private final Path indexFile;
 
-	FileIndexConfig(MavenProject project) {
-		this(project, PluginFingerprint.empty());
+	FileIndexConfig(MavenProject project, Path indexFile) {
+		this(project, indexFile, PluginFingerprint.empty());
 	}
 
-	FileIndexConfig(MavenProject project, PluginFingerprint pluginFingerprint) {
+	FileIndexConfig(MavenProject project, Path indexFile, PluginFingerprint pluginFingerprint) {
 		this.project = project;
+		this.indexFile = indexFile;
 		this.pluginFingerprint = pluginFingerprint;
 	}
 
@@ -40,8 +39,7 @@ class FileIndexConfig {
 	}
 
 	Path getIndexFile() {
-		Path targetDir = getProjectDir().resolve(project.getBuild().getDirectory());
-		return targetDir.resolve(INDEX_FILE_NAME);
+		return indexFile;
 	}
 
 	PluginFingerprint getPluginFingerprint() {

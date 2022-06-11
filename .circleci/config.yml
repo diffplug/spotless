@@ -37,8 +37,8 @@ anchors:
       - *restore_cache_wrapper
       - *restore_cache_deps
       - run:
-          name: gradlew check
-          command: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew check --build-cache
+          name: gradlew check -x spotlessCheck
+          command: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew check -x spotlessCheck --build-cache
       - store_test_results:
           path: testlib/build/test-results/test
       - store_test_results:
@@ -80,11 +80,11 @@ jobs:
     docker:
       - image: cimg/openjdk:11.0
     <<: *test_nomaven
-  test_nomaven_15:
-    # latest JDK, replace with 16 when it comes out
+  test_nomaven_17:
+    # latest JDK
     <<: *env_gradle_large
     docker:
-      - image: cimg/openjdk:15.0
+      - image: cimg/openjdk:17.0
     <<: *test_nomaven
   test_justmaven_11:
     << : *env_gradle
@@ -250,7 +250,7 @@ workflows:
       - test_nomaven_11:
           requires:
             - assemble_testClasses
-      - test_nomaven_15:
+      - test_nomaven_17:
           requires:
             - assemble_testClasses
       - test_npm_8:

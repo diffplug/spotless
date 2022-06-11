@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.assertj.core.api.Assertions;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.Errors;
@@ -30,12 +32,13 @@ import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ResourceHarness;
 
 class GitAttributesTest extends ResourceHarness {
-	private List<File> testFiles() {
+	private List<File> testFiles(String prefix) {
 		try {
 			List<File> result = new ArrayList<>();
 			for (String path : TEST_PATHS) {
-				setFile(path).toContent("");
-				result.add(newFile(path));
+				String prefixedPath = prefix + path;
+				setFile(prefixedPath).toContent("");
+				result.add(newFile(prefixedPath));
 			}
 			return result;
 		} catch (IOException e) {
@@ -43,7 +46,11 @@ class GitAttributesTest extends ResourceHarness {
 		}
 	}
 
-	private static List<String> TEST_PATHS = Arrays.asList("someFile", "subfolder/someFile", "MANIFEST.MF", "subfolder/MANIFEST.MF");
+	private List<File> testFiles() {
+		return testFiles("");
+	}
+
+	private static final List<String> TEST_PATHS = Arrays.asList("someFile", "subfolder/someFile", "MANIFEST.MF", "subfolder/MANIFEST.MF");
 
 	@Test
 	void cacheTest() throws IOException {
@@ -86,5 +93,55 @@ class GitAttributesTest extends ResourceHarness {
 		Assertions.assertThat(policy.getEndingFor(newFile("subfolder/someFile"))).isEqualTo("\n");
 		Assertions.assertThat(policy.getEndingFor(newFile("MANIFEST.MF"))).isEqualTo("\r\n");
 		Assertions.assertThat(policy.getEndingFor(newFile("subfolder/MANIFEST.MF"))).isEqualTo("\r\n");
+	}
+
+	@Test
+	void policyDefaultLineEndingTest() throws GitAPIException, IOException {
+		Git git = Git.init().setDirectory(rootFolder()).call();
+		git.close();
+		setFile(".git/config").toContent(StringPrinter.buildStringFromLines(
+				"[core]",
+				"autocrlf=true",
+				"eol=lf"));
+		LineEnding.Policy policy = LineEnding.GIT_ATTRIBUTES.createPolicy(rootFolder(), () -> testFiles());
+		Assertions.assertThat(policy.getEndingFor(newFile("someFile"))).isEqualTo("\r\n");
+	}
+
+	@Test
+	void policyTestWithExternalGitDir() throws IOException, GitAPIException {
+		File projectFolder = newFolder("project");
+		File gitDir = newFolder("project.git");
+		Git.init().setDirectory(projectFolder).setGitDir(gitDir).call();
+
+		setFile("project.git/info/attributes").toContent(StringPrinter.buildStringFromLines(
+				"* eol=lf",
+				"*.MF eol=crlf"));
+		LineEnding.Policy policy = LineEnding.GIT_ATTRIBUTES.createPolicy(projectFolder, () -> testFiles("project/"));
+		Assertions.assertThat(policy.getEndingFor(newFile("project/someFile"))).isEqualTo("\n");
+		Assertions.assertThat(policy.getEndingFor(newFile("project/subfolder/someFile"))).isEqualTo("\n");
+		Assertions.assertThat(policy.getEndingFor(newFile("project/MANIFEST.MF"))).isEqualTo("\r\n");
+		Assertions.assertThat(policy.getEndingFor(newFile("project/subfolder/MANIFEST.MF"))).isEqualTo("\r\n");
+	}
+
+	@Test
+	void policyTestWithCommonDir() throws IOException, GitAPIException {
+		File projectFolder = newFolder("project");
+		File commonGitDir = newFolder("project.git");
+		Git.init().setDirectory(projectFolder).setGitDir(commonGitDir).call();
+		newFolder("project.git/worktrees/");
+
+		File projectGitDir = newFolder("project.git/worktrees/project/");
+		setFile("project.git/worktrees/project/gitdir").toContent(projectFolder.getAbsolutePath() + "/.git");
+		setFile("project.git/worktrees/project/commondir").toContent("../..");
+		setFile("project/.git").toContent("gitdir: " + projectGitDir.getAbsolutePath());
+
+		setFile("project.git/info/attributes").toContent(StringPrinter.buildStringFromLines(
+				"* eol=lf",
+				"*.MF eol=crlf"));
+		LineEnding.Policy policy = LineEnding.GIT_ATTRIBUTES.createPolicy(projectFolder, () -> testFiles("project/"));
+		Assertions.assertThat(policy.getEndingFor(newFile("project/someFile"))).isEqualTo("\n");
+		Assertions.assertThat(policy.getEndingFor(newFile("project/subfolder/someFile"))).isEqualTo("\n");
+		Assertions.assertThat(policy.getEndingFor(newFile("project/MANIFEST.MF"))).isEqualTo("\r\n");
+		Assertions.assertThat(policy.getEndingFor(newFile("project/subfolder/MANIFEST.MF"))).isEqualTo("\r\n");
 	}
 }

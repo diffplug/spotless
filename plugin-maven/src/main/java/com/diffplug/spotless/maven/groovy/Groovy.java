@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import com.diffplug.spotless.maven.generic.LicenseHeader;
  */
 public class Groovy extends FormatterFactory {
 
-	private static final Set<String> DEFAULT_INCLUDES = ImmutableSet.of("src/main/groovy/**/*.groovy", "src/test/groovy/**/*.groovy", "src/main/java/**/*.java", "src/test/java/**/*.java");
+	private static final Set<String> DEFAULT_INCLUDES = ImmutableSet.of("src/main/groovy/**/*.groovy", "src/test/groovy/**/*.groovy");
 	private static final String LICENSE_HEADER_DELIMITER = "package ";
 
 	@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
@@ -30,6 +28,8 @@ import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.attributes.Bundling;
 import org.gradle.api.initialization.dsl.ScriptHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.diffplug.common.base.Unhandled;
 import com.diffplug.common.collect.ImmutableList;
@@ -127,17 +127,15 @@ class GradleProvisioner {
 				if (!projName.isEmpty()) {
 					projName = projName + "/";
 				}
-				logger.log(
-						Level.SEVERE,
-						"You need to add a repository containing the '" + mavenCoords + "' artifact in '" + projName + "build.gradle'.\n" +
+				throw new GradleException(String.format(
+						"You need to add a repository containing the '%s' artifact in '%sbuild.gradle'.%n" +
 								"E.g.: 'repositories { mavenCentral() }'",
-						e);
-				throw e;
+						mavenCoords, projName), e);
 			}
 		};
 	}
 
-	private static final Logger logger = Logger.getLogger(GradleProvisioner.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(GradleProvisioner.class);
 
 	/** Models a request to the provisioner. */
 	private static class Request {

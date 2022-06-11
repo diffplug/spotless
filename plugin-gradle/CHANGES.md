@@ -4,6 +4,113 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+## [6.7.2] - 2022-06-11
+### Fixed
+* `PalantirJavaFormatStep` no longer needs the `--add-exports` calls in the `org.gradle.jvmargs` property in `gradle.properties`. ([#1233](https://github.com/diffplug/spotless/pull/1233))
+
+## [6.7.1] - 2022-06-10
+### Fixed
+* (Second try) `googleJavaFormat` and `removeUnusedImports` works on JDK16+ without jvm args workaround. ([#1228](https://github.com/diffplug/spotless/pull/1228))
+  * If you have a bunch of `--add-exports` calls in your `org.gradle.jvmargs` property in `gradle.properties`, you should be able to remove them. (fixes [#834](https://github.com/diffplug/spotless/issues/834#issuecomment-819118761))
+
+## [6.7.0] - 2022-06-05
+### Added
+* Support for `editorConfigOverride` in `ktlint`. ([#1218](https://github.com/diffplug/spotless/pull/1218) fixes [#1193](https://github.com/diffplug/spotless/issues/1193))
+  * If you are using properties like `indent_size`, you should pass now pass them as `editorConfigOverride` and not as `userData`.
+### Fixed
+* `googleJavaFormat` and `removeUnusedImports` works on JDK16+ without jvm args workaround. ([#1224](https://github.com/diffplug/spotless/pull/1224))
+  * If you have a bunch of `--add-exports` calls in your `org.gradle.jvmargs` property in `gradle.properties`, you should be able to remove them. (fixes [#834](https://github.com/diffplug/spotless/issues/834#issuecomment-819118761))
+
+## [6.6.1] - 2022-05-13
+### Fixed
+* More daemon memory consumption fixes ([#1206](https://github.com/diffplug/spotless/pull/1198) fixes [#1194](https://github.com/diffplug/spotless/issues/1194))
+
+## [6.6.0] - 2022-05-10
+### Added
+* `FormatExtension.createIndependentApplyTaskLazy`, with same functionality as `createIndependentApplyTaskLazy` but returning `TaskProvider` ([#1198](https://github.com/diffplug/spotless/pull/1198))
+### Fixed
+* Update the `black` version regex to fix `19.10b0` and earlier. (fixes [#1195](https://github.com/diffplug/spotless/issues/1195), regression introduced in `6.5.0`)
+* Improved daemon memory consumption ([#1198](https://github.com/diffplug/spotless/pull/1198) fixes [#1194](https://github.com/diffplug/spotless/issues/1194))
+### Changes
+* Bump default `ktfmt` version to latest `0.36` -> `0.37`. ([#1200](https://github.com/diffplug/spotless/pull/1200))
+
+## [6.5.2] - 2022-05-03
+### Changes
+* Bump default `diktat` version to latest `1.0.1` -> `1.1.0`. ([#1190](https://github.com/diffplug/spotless/pull/1190))
+  * Converted `diktat` integration to use a compile-only source set. (fixes [#524](https://github.com/diffplug/spotless/issues/524))
+  * Use the full path to a file in `diktat` integration. (fixes [#1189](https://github.com/diffplug/spotless/issues/1189))
+
+## [6.5.1] - 2022-04-27
+### Changes
+* Bump default `ktfmt` version to latest `0.35` -> `0.36`. ([#1183](https://github.com/diffplug/spotless/issues/1183))
+* Bump default `google-java-format` version to latest `1.13.0` -> `1.15.0`.
+  * ~~This means it is no longer necessary to use the `--add-exports` workaround (fixes [#834](https://github.com/diffplug/spotless/issues/834)).~~ `--add-exports` workaround is still needed.
+
+## [6.5.0] - 2022-04-22
+### Added
+* Added a `runToFixMessage` property to customize the run-to-fix message in `spotlessCheck` task. ([#1175](https://github.com/diffplug/spotless/issues/1175))
+* Added support for enabling ktlint experimental ruleset. ([#1145](https://github.com/diffplug/spotless/pull/1168))
+### Fixed
+* Fixed support for Python Black's new version reporting. ([#1170](https://github.com/diffplug/spotless/issues/1170))
+* All tasks (including helper tasks) are now part of the `verification` group. (fixes [#1050](https://github.com/diffplug/spotless/issues/1050))
+* Error messages for unexpected file encoding now works on Java 8. (fixes [#1081](https://github.com/diffplug/spotless/issues/1081))
+### Changed
+* Spotless now applies the `base` plugin to make sure that Spotless always has a `check` task to hook into. ([#1179](https://github.com/diffplug/spotless/pull/1179), fixes [#1164](https://github.com/diffplug/spotless/pull/1164), reverts [#1014](https://github.com/diffplug/spotless/pull/1014))
+  * Spotless used to work this way, we stopped applying base starting with version [`6.0.3` (released Dec 2021)](https://github.com/diffplug/spotless/blob/main/plugin-gradle/CHANGES.md#603---2021-12-06) in order to play nicely with a now-outdated Android template, but not applying `base` causes more problems than it fixes (see [#1164](https://github.com/diffplug/spotless/pull/1164) for a good example).
+  * If you have anything like `tasks.register<Delete>("clean"` or `tasks.register("clean", Delete)`, just change the `register` to `named` so that you are configuring the existing `clean` created by `base`, rather than creating a new task.
+* Bump default `black` version to latest `19.10b0` -> `22.3.0`. ([#1170](https://github.com/diffplug/spotless/issues/1170))
+* Bump default `ktfmt` version to latest `0.34` -> `0.35`. ([#1159](https://github.com/diffplug/spotless/pull/1159))
+* Bump default `ktlint` version to latest `0.43.2` -> `0.45.2`. ([#1177](https://github.com/diffplug/spotless/pull/1177))
+
+## [6.4.2] - 2022-04-06
+### Fixed
+* Git user config and system config also included for defaultEndings configuration. ([#540](https://github.com/diffplug/spotless/issues/540))
+
+## [6.4.1] - 2022-03-30
+### Fixed
+* Fixed ktfmt options configuration in Gradle plugin for Gradle Kotlin scripts (kts).
+
+## [6.4.0] - 2022-03-28
+### Added
+* Accept `java.nio.charset.Charset` type when setting the character encoding via `encoding` ([#1128](https://github.com/diffplug/spotless/issues/1128))
+* Added support for setting custom parameters for Kotlin ktfmt in Gradle plugin. ([#1145](https://github.com/diffplug/spotless/pull/1145))
+
+## [6.3.0] - 2022-02-15
+### Added
+* Added support for JSON formatting based on [Gson](https://github.com/google/gson) ([#1125](https://github.com/diffplug/spotless/pull/1125)).
+### Changed
+* Use SLF4J for logging ([#1116](https://github.com/diffplug/spotless/issues/1116))
+
+## [6.2.2] - 2022-02-09
+### Changed
+* Bump default ktfmt `0.30` -> `0.31` ([#1118](https://github.com/diffplug/spotless/pull/1118)).
+### Fixed
+* Add full support for git worktrees ([#1119](https://github.com/diffplug/spotless/pull/1119)).
+
+## [6.2.1] - 2022-02-01
+### Changed
+* Bump default versions of formatters ([#1095](https://github.com/diffplug/spotless/pull/1095)).
+  * google-java-format `1.12.0` -> `1.13.0`
+  * ktfmt `0.29` -> `0.30`
+* Added support for git property `core.autocrlf` ([#540](https://github.com/diffplug/spotless/issues/540))
+
+## [6.2.0] - 2022-01-13
+### Added
+* 🎉🎉🎉 [**IntelliJ plugin**](https://plugins.jetbrains.com/plugin/18321-spotless-gradle) thanks to [@ragurney](https://github.com/ragurney) 🎉🎉🎉
+* Added support for the [palantir-java-format](https://github.com/palantir/palantir-java-format) Java formatter ([#1083](https://github.com/diffplug/spotless/pull/1083)).
+### Fixed
+* Register `spotlessPredeclare` extension with type `SpotlessExtensionPredeclare` instead of the same `SpotlessExtension` as `spotless` so that Kotlin users can use `configure<SpotlessExtensionPredeclare>` ([#1084](https://github.com/diffplug/spotless/pull/1084)).
+
+## [6.1.2] - 2022-01-07
+### Fixed
+* Update IndentStep to allow leading space on multiline comments ([#1072](https://github.com/diffplug/spotless/pull/1072)).
+
+## [6.1.1] - 2022-01-06
+### Fixed
+* If the `base` plugin has already been applied, then there is no need for configuration of the `clean` task to trigger configuration of the Spotless tasks ([#1068](https://github.com/diffplug/spotless/pull/1068)).
+### Changed
+* Bumped default DiKTat from `0.4.0` to `1.0.1`. This is a breaking change for DiKTat users on the default version, because some rules were renamed/changed. Check [DiKTat changelog](https://github.com/analysis-dev/diktat/releases) for details.
+
 ## [6.1.0] - 2021-12-23
 ### Added
 * You can now predeclare formatter dependencies in the root project.

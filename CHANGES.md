@@ -11,6 +11,94 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+## [2.26.2] - 2022-06-11
+### Fixed
+* `PalantirJavaFormatStep` no longer needs the `--add-exports` calls in the `org.gradle.jvmargs` property in `gradle.properties`. ([#1233](https://github.com/diffplug/spotless/pull/1233))
+
+## [2.26.1] - 2022-06-10
+### Fixed
+* (Second try) `googleJavaFormat` and `removeUnusedImports` works on JDK16+ without jvm args workaround. ([#1228](https://github.com/diffplug/spotless/pull/1228))
+
+## [2.26.0] - 2022-06-05
+### Added
+* Support for `editorConfigOverride` in `ktlint`. ([#1218](https://github.com/diffplug/spotless/pull/1218) fixes [#1193](https://github.com/diffplug/spotless/issues/1193))
+### Fixed
+* `google-java-format` and `RemoveUnusedImportsStep` works on JDK16+ without jvm args workaround. ([#1224](https://github.com/diffplug/spotless/pull/1224) fixes [#834](https://github.com/diffplug/spotless/issues/834))
+
+## [2.25.3] - 2022-05-10
+### Fixed
+* Update the `black` version regex to fix `19.10b0` and earlier. (fixes [#1195](https://github.com/diffplug/spotless/issues/1195), regression introduced in `2.25.0`)
+* `GitAttributesLineEndings$RelocatablePolicy` and `FormatterStepImpl` now null-out their initialization lambdas after their state has been calculated, which allows GC to collect variables which were incidentally captured but not needed in the calculated state. ([#1198](https://github.com/diffplug/spotless/pull/1198))
+### Changes
+* Bump default `ktfmt` version to latest `0.36` -> `0.37`. ([#1200](https://github.com/diffplug/spotless/pull/1200))
+
+## [2.25.2] - 2022-05-03
+### Changes
+* Bump default `diktat` version to latest `1.0.1` -> `1.1.0`. ([#1190](https://github.com/diffplug/spotless/pull/1190))
+  * Converted `diktat` integration to use a compile-only source set. (fixes [#524](https://github.com/diffplug/spotless/issues/524))
+  * Use the full path to a file in `diktat` integration. (fixes [#1189](https://github.com/diffplug/spotless/issues/1189))
+
+## [2.25.1] - 2022-04-27
+### Changes
+* Bump default `ktfmt` version to latest `0.35` -> `0.36`. ([#1183](https://github.com/diffplug/spotless/issues/1183))
+* Bump default `google-java-format` version to latest `1.13.0` -> `1.15.0`.
+  * ~~This means it is no longer necessary to use the `--add-exports` workaround (fixes [#834](https://github.com/diffplug/spotless/issues/834)).~~ `--add-exports` workaround is still needed.
+
+## [2.25.0] - 2022-04-22
+### Added
+* Added support for enabling ktlint experimental ruleset. ([#1145](https://github.com/diffplug/spotless/pull/1168))
+### Fixed
+* Fixed support for Python Black's new version reporting. ([#1170](https://github.com/diffplug/spotless/issues/1170))
+* Error messages for unexpected file encoding now works on Java 8. (fixes [#1081](https://github.com/diffplug/spotless/issues/1081))
+### Changes
+* Bump default `black` version to latest `19.10b0` -> `22.3.0`. ([#1170](https://github.com/diffplug/spotless/issues/1170))
+* Bump default `ktfmt` version to latest `0.34` -> `0.35`. ([#1159](https://github.com/diffplug/spotless/pull/1159))
+* Bump default `ktlint` version to latest `0.43.2` -> `0.45.2`. ([#1177](https://github.com/diffplug/spotless/pull/1177))
+
+## [2.24.2] - 2022-04-06
+### Fixed
+* Git user config and system config also included for defaultEndings configuration. ([#540](https://github.com/diffplug/spotless/issues/540))
+
+## [2.24.1] - 2022-03-30
+### Fixed
+* Fixed access modifiers for setters in KtfmtStep configuration
+
+## [2.24.0] - 2022-03-28
+### Added
+* Added support for setting custom parameters for Kotlin ktfmt in Gradle and Maven plugins. ([#1145](https://github.com/diffplug/spotless/pull/1145))
+
+## [2.23.0] - 2022-02-15
+### Added
+* Added support for JSON formatting based on [Gson](https://github.com/google/gson) ([#1125](https://github.com/diffplug/spotless/pull/1125)).
+### Changed
+* Use SLF4J for logging ([#1116](https://github.com/diffplug/spotless/issues/1116))
+
+## [2.22.2] - 2022-02-09
+### Changed
+* Bump default ktfmt `0.30` -> `0.31` ([#1118](https://github.com/diffplug/spotless/pull/1118)).
+### Fixed
+* Add full support for git worktrees ([#1119](https://github.com/diffplug/spotless/pull/1119)).
+
+## [2.22.1] - 2022-02-01
+### Changed
+* Bump CI from Java 15 to 17 ([#1094](https://github.com/diffplug/spotless/pull/1094)).
+* Bump default versions of formatters ([#1095](https://github.com/diffplug/spotless/pull/1095)).
+  * google-java-format `1.12.0` -> `1.13.0`
+  * ktfmt `0.29` -> `0.30`
+* Added support for git property `core.autocrlf` ([#540](https://github.com/diffplug/spotless/issues/540))
+
+## [2.22.0] - 2022-01-13
+### Added
+* Added support for the [palantir-java-format](https://github.com/palantir/palantir-java-format) Java formatter ([#1083](https://github.com/diffplug/spotless/pull/1083)).
+
+## [2.21.2] - 2022-01-07
+### Fixed
+* Update IndentStep to allow leading space on multiline comments ([#1072](https://github.com/diffplug/spotless/pull/1072)).
+
+## [2.21.1] - 2022-01-06
+### Changed
+* Bumped default DiKTat from `0.4.0` to `1.0.1`. This is a breaking change for DiKTat users on the default version, because some rules were renamed/changed. Check [DiKTat changelog](https://github.com/analysis-dev/diktat/releases) for details.
+
 ## [2.21.0] - 2021-12-23
 ### Added
 * Added support for Markdown with `flexmark` at `0.62.2` ([#1011](https://github.com/diffplug/spotless/pull/1011)).

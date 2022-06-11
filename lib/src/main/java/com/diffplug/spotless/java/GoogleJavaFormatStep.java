@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ public class GoogleJavaFormatStep {
 				State::createFormat);
 	}
 
-	static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(8, "1.7").add(11, "1.12.0");
+	static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(8, "1.7").add(11, "1.15.0");
 
 	public static String defaultGroupArtifact() {
 		return MAVEN_COORDINATE;
@@ -136,6 +136,7 @@ public class GoogleJavaFormatStep {
 
 		State(String stepName, String groupArtifact, String version, String style, Provisioner provisioner, boolean reflowLongStrings) throws Exception {
 			JVM_SUPPORT.assertFormatterSupported(version);
+			ModuleHelper.doOpenInternalPackagesIfRequired();
 			this.jarState = JarState.from(groupArtifact + ":" + version, provisioner);
 			this.stepName = stepName;
 			this.version = version;

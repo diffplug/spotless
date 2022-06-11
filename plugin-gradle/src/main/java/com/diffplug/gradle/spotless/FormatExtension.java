@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,8 @@ import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.plugins.BasePlugin;
+import org.gradle.api.tasks.TaskProvider;
 
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
@@ -768,6 +770,11 @@ public class FormatExtension {
 		return spotless.project;
 	}
 
+	/** Eager version of {@link #createIndependentApplyTaskLazy(String)} */
+	public SpotlessApply createIndependentApplyTask(String taskName) {
+		return createIndependentApplyTaskLazy(taskName).get();
+	}
+
 	/**
 	 * Creates an independent {@link SpotlessApply} for (very) unusual circumstances.
 	 *
@@ -781,19 +788,19 @@ public class FormatExtension {
 	 *
 	 * NOTE: does not respect the rarely-used <a href="https://github.com/diffplug/spotless/blob/b7f8c551a97dcb92cc4b0ee665448da5013b30a3/plugin-gradle/README.md#can-i-apply-spotless-to-specific-files">{@code spotlessFiles} property</a>.
 	 */
-	public SpotlessApply createIndependentApplyTask(String taskName) {
+	public TaskProvider<SpotlessApply> createIndependentApplyTaskLazy(String taskName) {
 		Preconditions.checkArgument(!taskName.endsWith(SpotlessExtension.APPLY), "Task name must not end with " + SpotlessExtension.APPLY);
-		// create and setup the task
-		SpotlessTaskImpl spotlessTask = spotless.project.getTasks().create(taskName + SpotlessTaskService.INDEPENDENT_HELPER, SpotlessTaskImpl.class);
-		spotlessTask.init(spotless.getRegisterDependenciesTask().getTaskService());
-		setupTask(spotlessTask);
-		// clean removes the SpotlessCache, so we have to run after clean
-		SpotlessPlugin.configureCleanTask(spotless.project, spotlessTask::mustRunAfter);
+		TaskProvider<SpotlessTaskImpl> spotlessTask = spotless.project.getTasks().register(taskName + SpotlessTaskService.INDEPENDENT_HELPER, SpotlessTaskImpl.class, task -> {
+			task.init(spotless.getRegisterDependenciesTask().getTaskService());
+			setupTask(task);
+			// clean removes the SpotlessCache, so we have to run after clean
+			task.mustRunAfter(BasePlugin.CLEAN_TASK_NAME);
+		});
 		// create the apply task
-		SpotlessApply applyTask = spotless.project.getTasks().create(taskName, SpotlessApply.class);
-		applyTask.init(spotlessTask);
-		applyTask.dependsOn(spotlessTask);
-
+		TaskProvider<SpotlessApply> applyTask = spotless.project.getTasks().register(taskName, SpotlessApply.class, task -> {
+			task.dependsOn(spotlessTask);
+			task.init(spotlessTask.get());
+		});
 		return applyTask;
 	}
 
