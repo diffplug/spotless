@@ -27,7 +27,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 import static java.nio.charset.StandardCharsets.UTF_8
-import static java.nio.file.StandardOpenOption.CREATE_NEW
+import static java.nio.file.StandardOpenOption.CREATE
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING
 
 ext.artifactId = project.artifactIdMaven
@@ -91,9 +91,7 @@ dependencies {
 	testImplementation "org.apache.maven:maven-core:${VER_MAVEN_API}"
 }
 
-task cleanMavenProjectDir(type: Delete) { delete MAVEN_PROJECT_DIR }
-
-task copySourceFiles(type: Sync, dependsOn: cleanMavenProjectDir) {
+task copySourceFiles(type: Sync) {
 	from "src/main/java"
 	into "${MAVEN_PROJECT_DIR}/src/main/java"
 }
@@ -137,6 +135,9 @@ libs.each {
 }
 
 task createPomXml(dependsOn: installLocalDependencies) {
+	def newPomXml = Paths.get(MAVEN_PROJECT_DIR, "pom.xml")
+
+	outputs.file(newPomXml)
 	doLast {
 		def additionalDependencies = project.configurations.runtimeClasspath.resolvedConfiguration.resolvedArtifacts.findAll {
 			return !libs.contains(it.moduleVersion.id.name)
@@ -158,10 +159,9 @@ task createPomXml(dependsOn: installLocalDependencies) {
 		]
 
 		def pomXmlTemplate = Paths.get(PROJECT_DIR, "src/test/resources/pom-build.xml.mustache")
-		def newPomXml = Paths.get(MAVEN_PROJECT_DIR, "pom.xml")
 
 		Files.newBufferedReader(pomXmlTemplate).withCloseable { reader ->
-			Files.newBufferedWriter(newPomXml, UTF_8, CREATE_NEW, TRUNCATE_EXISTING).withCloseable { writer ->
+			Files.newBufferedWriter(newPomXml, UTF_8, CREATE, TRUNCATE_EXISTING).withCloseable { writer ->
 				def mustache = new DefaultMustacheFactory().compile(reader, "pom")
 				mustache.execute(writer, versions)
 			}
@@ -170,11 +170,12 @@ task createPomXml(dependsOn: installLocalDependencies) {
 }
 
 task runMavenBuild(type: Exec, dependsOn: [
-	cleanMavenProjectDir,
 	copySourceFiles,
 	copyMvnw,
 	createPomXml
 ]) {
+	outputs.dir(LOCAL_MAVEN_REPO_DIR)
+
 	workingDir MAVEN_PROJECT_DIR
 	// -B batch mode to make dependency download logging less verbose
 	commandLine mvnw("clean install -B -Dmaven.repo.local=${LOCAL_MAVEN_REPO_DIR}")
