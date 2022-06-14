@@ -17,7 +17,6 @@ apply plugin: 'com.github.spotbugs'
 spotbugs {
 	toolVersion = VER_SPOTBUGS
 	ignoreFailures = false 	// bug free or it doesn't ship!
-	reportsDir = file('build/spotbugs')
 	reportLevel = 'medium'	// low|medium|high (low = sensitive to even minor mistakes)
 	omitVisitors = [
 		'FindReturnRef'] // https://spotbugs.readthedocs.io/en/latest/detectors.html#findreturnref
@@ -25,6 +24,15 @@ spotbugs {
 tasks.named('spotbugsTest') {
 	enabled = false
 }
+
+tasks.withType(com.github.spotbugs.snom.SpotBugsTask).configureEach {
+	outputs.file(project.layout.buildDirectory.file("reports/spotbugs/${it.name}.html"))
+	outputs.file(project.layout.buildDirectory.file("spotbugs/auxclasspath/${it.name}"))
+	reports {
+		html.enabled = true
+	}
+}
+
 tasks.named('spotbugsMain') {
 	// only run on Java 8 (no benefit to running twice)
 	enabled = org.gradle.api.JavaVersion.current() == org.gradle.api.JavaVersion.VERSION_11
