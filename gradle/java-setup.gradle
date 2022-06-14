@@ -26,8 +26,8 @@ tasks.named('spotbugsTest') {
 }
 
 tasks.withType(com.github.spotbugs.snom.SpotBugsTask).configureEach {
-	outputs.file("$buildDir/reports/spotbugs/${it.name}.html")
-	outputs.file("$buildDir/spotbugs/auxclasspath/${it.name}")
+	outputs.file(project.layout.buildDirectory.file("reports/spotbugs/${it.name}.html"))
+	outputs.file(project.layout.buildDirectory.file("spotbugs/auxclasspath/${it.name}"))
 	reports {
 		html.enabled = true
 	}
