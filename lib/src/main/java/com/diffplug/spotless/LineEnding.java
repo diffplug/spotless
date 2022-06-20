@@ -41,8 +41,10 @@ public enum LineEnding {
 	PLATFORM_NATIVE,
 	/** {@code \r\n} */
 	WINDOWS,
-	/** {@code \n} */
-	UNIX;
+    /** {@code \n} */
+    UNIX,
+    /** {@code \r} */
+    MAC_CLASSIC;
 	// @formatter:on
 
 	/** Returns a {@link Policy} appropriate for files which are contained within the given rootFolder. */
@@ -75,6 +77,7 @@ public enum LineEnding {
 		case PLATFORM_NATIVE:	return _platformNativePolicy;
 		case WINDOWS:			return WINDOWS_POLICY;
 		case UNIX:				return UNIX_POLICY;
+        case MAC_CLASSIC:       return MAC_CLASSIC_POLICY;
 		default:	throw new UnsupportedOperationException(this + " is a path-specific line ending.");
 		}
 	}
@@ -96,6 +99,7 @@ public enum LineEnding {
 
 	private static final Policy WINDOWS_POLICY = new ConstantLineEndingPolicy(WINDOWS.str());
 	private static final Policy UNIX_POLICY = new ConstantLineEndingPolicy(UNIX.str());
+    private static final Policy MAC_CLASSIC_POLICY = new ConstantLineEndingPolicy(MAC_CLASSIC.str());
 	private static final String _platformNative = System.getProperty("line.separator");
 	private static final Policy _platformNativePolicy = new ConstantLineEndingPolicy(_platformNative);
 	private static final boolean nativeIsWin = _platformNative.equals(WINDOWS.str());
@@ -117,6 +121,7 @@ public enum LineEnding {
 		case PLATFORM_NATIVE:	return _platformNative;
 		case WINDOWS:			return "\r\n";
 		case UNIX:				return "\n";
+		case MAC_CLASSIC:       return "\r";
 		default:	throw new UnsupportedOperationException(this + " is a path-specific line ending.");
 		}
 	}
@@ -137,12 +142,14 @@ public enum LineEnding {
 
 	/** Returns a string with exclusively unix line endings. */
 	public static String toUnix(String input) {
-		int firstNewline = input.lastIndexOf('\n');
-		if (firstNewline == -1) {
+		if (input.lastIndexOf(WINDOWS.str()) > -1) {
+			return input.replace("\r", "");
+		} else if (input.lastIndexOf(MAC_CLASSIC.str()) > -1) {
+			// replace mac classic '\r' with unix line endings '\n'
+			return input.replace(MAC_CLASSIC.str(), UNIX.str());
+		} else {
 			// fastest way to detect if a string is already unix-only
 			return input;
-		} else {
-			return input.replace("\r", "");
 		}
 	}
 }
