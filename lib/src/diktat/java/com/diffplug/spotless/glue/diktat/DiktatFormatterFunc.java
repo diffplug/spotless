@@ -20,10 +20,10 @@ import java.util.*;
 
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider;
 
-import com.pinterest.ktlint.core.api.EditorConfigOverride;
 import com.pinterest.ktlint.core.KtLint;
 import com.pinterest.ktlint.core.LintError;
 import com.pinterest.ktlint.core.RuleSet;
+import com.pinterest.ktlint.core.api.EditorConfigOverride;
 
 import com.diffplug.spotless.FormatterFunc;
 

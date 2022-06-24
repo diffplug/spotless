@@ -41,6 +41,6 @@ public class Diktat implements FormatterStepFactory {
 			config = ThrowingEx.get(() -> FileSignature.signAsList(stepConfig.getFileLocator().locateFile(configFile)));
 		}
 		String diktatVersion = version != null ? version : DiktatStep.defaultVersionDiktat();
-		return DiktatStep.create(diktatVersion, stepConfig.getProvisioner(), Collections.emptyMap(), config);
+		return DiktatStep.create(diktatVersion, stepConfig.getProvisioner(), config);
 	}
 }
