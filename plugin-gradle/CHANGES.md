@@ -5,6 +5,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * Support for `MAC_CLASSIC` (`\r`) line ending ([#1243](https://github.com/diffplug/spotless/pull/1243) fixes [#1196](https://github.com/diffplug/spotless/issues/1196))
+### Fixed
+* Bump default `diktat` version to latest `1.1.0` -> `1.2.0`. ([saveourtool/diktat#1399](https://github.com/saveourtool/diktat/issues/1399))
 
 ## [6.7.2] - 2022-06-11
 ### Fixed
