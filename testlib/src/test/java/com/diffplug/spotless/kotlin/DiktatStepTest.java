@@ -36,11 +36,15 @@ class DiktatStepTest extends ResourceHarness {
 		StepHarness.forStep(step)
 				.testResourceException("kotlin/diktat/Unsolvable.kt", assertion -> {
 					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("There are 2 unfixed errors:" +
+					assertion.hasMessage("There are 4 unfixed errors:" +
 							System.lineSeparator() + "Error on line: 1, column: 1 cannot be fixed automatically" +
 							System.lineSeparator() + "[FILE_NAME_INCORRECT] file name is incorrect - it should end with .kt extension and be in PascalCase: testlib" +
 							System.lineSeparator() + "Error on line: 1, column: 1 cannot be fixed automatically" +
-							System.lineSeparator() + "[FILE_NAME_MATCH_CLASS] file name is incorrect - it should match with the class described in it if there is the only one class declared: testlib vs Unsolvable");
+							System.lineSeparator() + "[FILE_NAME_MATCH_CLASS] file name is incorrect - it should match with the class described in it if there is the only one class declared: testlib vs Unsolvable" +
+							System.lineSeparator() + "Error on line: 1, column: 1 cannot be fixed automatically" +
+							System.lineSeparator() + "[DEBUG_PRINT] use a dedicated logging library: found println()" +
+							System.lineSeparator() + "Error on line: 13, column: 9 cannot be fixed automatically" +
+							System.lineSeparator() + "[DEBUG_PRINT] use a dedicated logging library: found println()");
 				});
 	}
 
@@ -51,15 +55,19 @@ class DiktatStepTest extends ResourceHarness {
 		File conf = setFile(configPath).toResource("kotlin/diktat/diktat-analysis.yml");
 		FileSignature config = signAsList(conf);
 
-		FormatterStep step = DiktatStep.create("1.0.1", TestProvisioner.mavenCentral(), Collections.emptyMap(), config);
+		FormatterStep step = DiktatStep.create("1.2.0", TestProvisioner.mavenCentral(), config);
 		StepHarness.forStep(step)
 				.testResourceException("kotlin/diktat/Unsolvable.kt", assertion -> {
 					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("There are 2 unfixed errors:" +
+					assertion.hasMessage("There are 4 unfixed errors:" +
 							System.lineSeparator() + "Error on line: 1, column: 1 cannot be fixed automatically" +
 							System.lineSeparator() + "[FILE_NAME_INCORRECT] file name is incorrect - it should end with .kt extension and be in PascalCase: testlib" +
 							System.lineSeparator() + "Error on line: 1, column: 1 cannot be fixed automatically" +
-							System.lineSeparator() + "[FILE_NAME_MATCH_CLASS] file name is incorrect - it should match with the class described in it if there is the only one class declared: testlib vs Unsolvable");
+							System.lineSeparator() + "[FILE_NAME_MATCH_CLASS] file name is incorrect - it should match with the class described in it if there is the only one class declared: testlib vs Unsolvable" +
+							System.lineSeparator() + "Error on line: 1, column: 1 cannot be fixed automatically" +
+							System.lineSeparator() + "[DEBUG_PRINT] use a dedicated logging library: found println()" +
+							System.lineSeparator() + "Error on line: 13, column: 9 cannot be fixed automatically" +
+							System.lineSeparator() + "[DEBUG_PRINT] use a dedicated logging library: found println()");
 				});
 	}
 
