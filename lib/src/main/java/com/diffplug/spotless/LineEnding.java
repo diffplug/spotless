@@ -142,14 +142,17 @@ public enum LineEnding {
 
 	/** Returns a string with exclusively unix line endings. */
 	public static String toUnix(String input) {
-		if (input.lastIndexOf(WINDOWS.str()) > -1) {
-			return input.replace("\r", "");
-		} else if (input.lastIndexOf(MAC_CLASSIC.str()) > -1) {
-			// replace mac classic '\r' with unix line endings '\n'
-			return input.replace(MAC_CLASSIC.str(), UNIX.str());
-		} else {
-			// fastest way to detect if a string is already unix-only
+		int lastCarriageReturn = input.lastIndexOf('\r');
+		if (lastCarriageReturn == -1) {
 			return input;
+		} else {
+			if (input.lastIndexOf("\r\n") == -1) {
+				// it is MAC_CLASSIC \r
+				return input.replace('\r', '\n');
+			} else {
+				// it is WINDOWS \r\n
+				return input.replace("\r", "");
+			}
 		}
 	}
 }
