@@ -18,8 +18,8 @@ package com.diffplug.spotless.kotlin;
 import static com.diffplug.spotless.FileSignature.signAsList;
 
 import java.io.File;
-import java.util.Collections;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FileSignature;
@@ -50,12 +50,11 @@ class DiktatStepTest extends ResourceHarness {
 
 	@Test
 	void behaviorConf() throws Exception {
-
 		String configPath = "src/main/kotlin/diktat-analysis.yml";
 		File conf = setFile(configPath).toResource("kotlin/diktat/diktat-analysis.yml");
 		FileSignature config = signAsList(conf);
 
-		FormatterStep step = DiktatStep.create("1.2.0", TestProvisioner.mavenCentral(), config);
+		FormatterStep step = DiktatStep.create("1.2.1", TestProvisioner.mavenCentral(), config);
 		StepHarness.forStep(step)
 				.testResourceException("kotlin/diktat/Unsolvable.kt", assertion -> {
 					assertion.isInstanceOf(AssertionError.class);
@@ -71,4 +70,15 @@ class DiktatStepTest extends ResourceHarness {
 				});
 	}
 
+	@Test
+	void notSupportedVersion() {
+		final IllegalStateException notSupportedException = Assertions.assertThrows(IllegalStateException.class,
+			() -> DiktatStep.create("1.2.0", TestProvisioner.mavenCentral()));
+		Assertions.assertTrue(
+			notSupportedException.getMessage().contains("Diktat supported for version 1.2.1 and later")
+		);
+
+		Assertions.assertDoesNotThrow(() -> DiktatStep.create("1.2.1", TestProvisioner.mavenCentral()));
+		Assertions.assertDoesNotThrow(() -> DiktatStep.create("2.0.0", TestProvisioner.mavenCentral()));
+	}
 }

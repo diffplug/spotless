@@ -30,7 +30,9 @@ public class DiktatStep {
 	// prevent direct instantiation
 	private DiktatStep() {}
 
-	private static final String DEFAULT_VERSION = "1.2.0";
+	private static final String MIN_SUPPORTED_VERSION = "1.2.1";
+
+	private static final String DEFAULT_VERSION = "1.2.1";
 	static final String NAME = "diktat";
 	static final String PACKAGE_DIKTAT = "org.cqfn.diktat";
 	static final String MAVEN_COORDINATE = PACKAGE_DIKTAT + ":diktat-rules:";
@@ -56,6 +58,9 @@ public class DiktatStep {
 	}
 
 	public static FormatterStep create(String versionDiktat, Provisioner provisioner, boolean isScript, @Nullable FileSignature config) {
+		if (BadSemver.version(versionDiktat) < BadSemver.version(MIN_SUPPORTED_VERSION)) {
+			throw new IllegalStateException("Diktat supported for version " + MIN_SUPPORTED_VERSION + " and later");
+		}
 		Objects.requireNonNull(versionDiktat, "versionDiktat");
 		Objects.requireNonNull(provisioner, "provisioner");
 		return FormatterStep.createLazy(NAME,
