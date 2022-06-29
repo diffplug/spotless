@@ -73,10 +73,9 @@ class DiktatStepTest extends ResourceHarness {
 	@Test
 	void notSupportedVersion() {
 		final IllegalStateException notSupportedException = Assertions.assertThrows(IllegalStateException.class,
-			() -> DiktatStep.create("1.2.0", TestProvisioner.mavenCentral()));
+				() -> DiktatStep.create("1.2.0", TestProvisioner.mavenCentral()));
 		Assertions.assertTrue(
-			notSupportedException.getMessage().contains("Diktat supported for version 1.2.1 and later")
-		);
+				notSupportedException.getMessage().contains("Diktat supported for version 1.2.1 and later"));
 
 		Assertions.assertDoesNotThrow(() -> DiktatStep.create("1.2.1", TestProvisioner.mavenCentral()));
 		Assertions.assertDoesNotThrow(() -> DiktatStep.create("2.0.0", TestProvisioner.mavenCentral()));
