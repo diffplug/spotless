@@ -23,11 +23,6 @@ import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
-/**
- * This class is the only one that uses jcenter, and it seems to be the only one that
- * causes these problems. The root is still a gradle bug, but in the meantime we don't
- * need to hold up *every* PR with this: https://github.com/gradle/gradle/issues/11752
- */
 class KtLintStepTest extends ResourceHarness {
 	@Test
 	void behavior() throws Exception {
