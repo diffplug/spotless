@@ -24,6 +24,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.pinterest.ktlint.core.KtLint;
 import com.pinterest.ktlint.core.KtLint.ExperimentalParams;
 import com.pinterest.ktlint.core.LintError;
@@ -46,6 +48,7 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 	private final Map<String, String> userData;
 	private final Function2<? super LintError, ? super Boolean, Unit> formatterCallback;
 	private final boolean isScript;
+	@NotNull
 	private final EditorConfigOverride editorConfigOverride;
 
 	/**
@@ -64,7 +67,7 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 		this.isScript = isScript;
 
 		if (editorConfigOverrideMap.isEmpty()) {
-			this.editorConfigOverride = null;
+			this.editorConfigOverride = EditorConfigOverride.Companion.getEmptyEditorConfigOverride();
 		} else {
 			this.editorConfigOverride = createEditorConfigOverride(editorConfigOverrideMap);
 		}
@@ -83,7 +86,7 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 
 		// Create a mapping of properties to their names based on rule properties and default properties
 		Map<String, UsesEditorConfigProperties.EditorConfigProperty<?>> supportedProperties = Stream
-				.concat(ruleProperties, DefaultEditorConfigProperties.INSTANCE.getDefaultEditorConfigProperties().stream())
+				.concat(ruleProperties, DefaultEditorConfigProperties.INSTANCE.getEditorConfigProperties().stream())
 				.distinct()
 				.collect(Collectors.toMap(property -> property.getType().getName(), property -> property));
 
@@ -116,31 +119,16 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 
 	@Override
 	public String applyWithFile(String unix, File file) throws Exception {
-
-		if (editorConfigOverride != null) {
-			// Use ExperimentalParams with EditorConfigOverride which requires KtLint 0.45.2
-			return KtLint.INSTANCE.format(new ExperimentalParams(
-					file.getName(),
-					unix,
-					rulesets,
-					userData,
-					formatterCallback,
-					isScript,
-					null,
-					false,
-					editorConfigOverride,
-					false));
-		} else {
-			// Use Params for backward compatibility
-			return KtLint.INSTANCE.format(new KtLint.Params(
-					file.getName(),
-					unix,
-					rulesets,
-					userData,
-					formatterCallback,
-					isScript,
-					null,
-					false));
-		}
+		return KtLint.INSTANCE.format(new ExperimentalParams(
+				file.getName(),
+				unix,
+				rulesets,
+				userData,
+				formatterCallback,
+				isScript,
+				null,
+				false,
+				editorConfigOverride,
+				false));
 	}
 }

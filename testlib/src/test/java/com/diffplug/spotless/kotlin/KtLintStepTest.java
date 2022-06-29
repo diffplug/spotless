@@ -42,8 +42,8 @@ class KtLintStepTest extends ResourceHarness {
 	}
 
 	@Test
-	void worksShyiko() throws Exception {
-		FormatterStep step = KtLintStep.create("0.31.0", TestProvisioner.mavenCentral());
+	void worksPre0_46_1() throws Exception {
+		FormatterStep step = KtLintStep.create("0.46.0", TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
 				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
@@ -51,50 +51,19 @@ class KtLintStepTest extends ResourceHarness {
 					assertion.hasMessage("Error on line: 1, column: 1\n" +
 							"Wildcard import");
 				});
-	}
-
-	// Regression test to ensure it works on the version it switched to Pinterest (version 0.32.0)
-	// but before 0.34.
-	// https://github.com/diffplug/spotless/issues/419
-	@Test
-	void worksPinterestAndPre034() throws Exception {
-		FormatterStep step = KtLintStep.create("0.32.0", TestProvisioner.mavenCentral());
-		StepHarness.forStep(step)
-				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
-				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
-					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("Error on line: 1, column: 1\n" +
-							"Wildcard import");
-				});
-	}
-
-	// Regression test to handle alpha and 1.x version numbers
-	// https://github.com/diffplug/spotless/issues/668
-	@Test
-	void worksAlpha1() throws Exception {
-		FormatterStep step = KtLintStep.create("0.38.0-alpha01", TestProvisioner.mavenCentral());
-		StepHarness.forStep(step)
-				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean");
-	}
-
-	@Test
-	void worksPre0_45_2() throws Exception {
-		FormatterStep step = KtLintStep.create("0.45.1", TestProvisioner.mavenCentral());
-		StepHarness.forStep(step)
-				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean");
 	}
 
 	@Test
 	void equality() throws Exception {
 		new SerializableEqualityTester() {
-			String version = "0.32.0";
+			String version = "0.46.0";
 
 			@Override
 			protected void setupTest(API api) {
 				// same version == same
 				api.areDifferentThan();
 				// change the version, and it's different
-				version = "0.38.0-alpha01";
+				version = "0.46.1";
 				api.areDifferentThan();
 			}
 
