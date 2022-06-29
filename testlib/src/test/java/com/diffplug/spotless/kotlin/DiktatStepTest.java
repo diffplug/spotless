@@ -54,7 +54,7 @@ class DiktatStepTest extends ResourceHarness {
 		File conf = setFile(configPath).toResource("kotlin/diktat/diktat-analysis.yml");
 		FileSignature config = signAsList(conf);
 
-		FormatterStep step = DiktatStep.create("1.2.1", TestProvisioner.mavenCentral(), config);
+		FormatterStep step = DiktatStep.create("1.2.0", TestProvisioner.mavenCentral(), config);
 		StepHarness.forStep(step)
 				.testResourceException("kotlin/diktat/Unsolvable.kt", assertion -> {
 					assertion.isInstanceOf(AssertionError.class);
@@ -73,9 +73,9 @@ class DiktatStepTest extends ResourceHarness {
 	@Test
 	void notSupportedVersion() {
 		final IllegalStateException notSupportedException = Assertions.assertThrows(IllegalStateException.class,
-				() -> DiktatStep.create("1.2.0", TestProvisioner.mavenCentral()));
+				() -> DiktatStep.create("1.1.0", TestProvisioner.mavenCentral()));
 		Assertions.assertTrue(
-				notSupportedException.getMessage().contains("Diktat supported for version 1.2.1 and later"));
+				notSupportedException.getMessage().contains("Minimum required Diktat version is 1.2.0, you tried 1.1.0 which is too old"));
 
 		Assertions.assertDoesNotThrow(() -> DiktatStep.create("1.2.1", TestProvisioner.mavenCentral()));
 		Assertions.assertDoesNotThrow(() -> DiktatStep.create("2.0.0", TestProvisioner.mavenCentral()));
