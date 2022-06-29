@@ -12,10 +12,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * Support for `MAC_CLASSIC` (`\r`) line ending ([#1243](https://github.com/diffplug/spotless/pull/1243) fixes [#1196](https://github.com/diffplug/spotless/issues/1196))
-### Fixed
-* Bump default `diktat` version to latest `1.1.0` -> `1.2.1`. ([saveourtool/diktat#1399](https://github.com/saveourtool/diktat/issues/1399))
-  * Note that support `diktat` version `1.2.1` is or higher
-  * The property `userData` is removed
+### Changed
+* Minimum required `diktat` version bumped to `1.2.1` ([#1246](https://github.com/diffplug/spotless/pull/1246))
+  * Default bumped from `1.1.0` -> `1.2.1`
 
 ## [2.26.2] - 2022-06-11
 ### Fixed
