@@ -8,8 +8,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changes
 * Bump default `ktlint` version to latest `0.45.2` -> `0.46.1` ([#1239](https://github.com/diffplug/spotless/issues/1239))
   * Minimum supported version also bumped to `0.46.0` (we have abandoned strong backward compatibility for `ktlint`, from here on out Spotless will only support the most-recent breaking change).
-* Bump default `diktat` version to latest `1.1.0` -> `1.2.0` ([#1246](https://github.com/diffplug/spotless/pull/1246))
+* Bump default `diktat` version to latest `1.1.0` -> `1.2.1` ([#1246](https://github.com/diffplug/spotless/pull/1246))
   * Minimum supported version also bumped to `1.2.0` (diktat is based on ktlint and has the same backward compatibility issues).
+* Bump default `ktfmt` version to latest `0.37` -> `0.39` ([#1240](https://github.com/diffplug/spotless/pull/1240))
 
 ## [6.7.2] - 2022-06-11
 ### Fixed
