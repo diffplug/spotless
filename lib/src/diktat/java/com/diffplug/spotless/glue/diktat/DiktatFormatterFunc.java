@@ -21,9 +21,9 @@ import java.util.*;
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider;
 
 import com.pinterest.ktlint.core.KtLint;
-import com.pinterest.ktlint.core.KtLint.Params;
 import com.pinterest.ktlint.core.LintError;
 import com.pinterest.ktlint.core.RuleSet;
+import com.pinterest.ktlint.core.api.EditorConfigOverride;
 
 import com.diffplug.spotless.FormatterFunc;
 
@@ -33,15 +33,13 @@ import kotlin.jvm.functions.Function2;
 public class DiktatFormatterFunc implements FormatterFunc.NeedsFile {
 
 	private final List<RuleSet> rulesets;
-	private final Map<String, String> userData;
 	private final Function2<? super LintError, ? super Boolean, Unit> formatterCallback;
 	private final boolean isScript;
 
 	private final ArrayList<LintError> errors = new ArrayList<>();
 
-	public DiktatFormatterFunc(boolean isScript, Map<String, String> userData) {
+	public DiktatFormatterFunc(boolean isScript) {
 		rulesets = Collections.singletonList(new DiktatRuleSetProvider().get());
-		this.userData = userData;
 		this.formatterCallback = new FormatterCallback(errors);
 		this.isScript = isScript;
 	}
@@ -65,17 +63,18 @@ public class DiktatFormatterFunc implements FormatterFunc.NeedsFile {
 	@Override
 	public String applyWithFile(String unix, File file) throws Exception {
 		errors.clear();
-		userData.put("file_path", file.getAbsolutePath());
-		String result = KtLint.INSTANCE.format(new Params(
+		String result = KtLint.INSTANCE.format(new KtLint.ExperimentalParams(
 				// Unlike Ktlint, Diktat requires full path to the file.
 				// See https://github.com/diffplug/spotless/issues/1189, https://github.com/analysis-dev/diktat/issues/1202
 				file.getAbsolutePath(),
 				unix,
 				rulesets,
-				userData,
+				Collections.emptyMap(),
 				formatterCallback,
 				isScript,
 				null,
+				false,
+				new EditorConfigOverride(),
 				false));
 
 		if (!errors.isEmpty()) {
