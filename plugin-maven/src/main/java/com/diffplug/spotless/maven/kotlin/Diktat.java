@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 package com.diffplug.spotless.maven.kotlin;
-
-import java.util.Collections;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
@@ -41,6 +39,6 @@ public class Diktat implements FormatterStepFactory {
 			config = ThrowingEx.get(() -> FileSignature.signAsList(stepConfig.getFileLocator().locateFile(configFile)));
 		}
 		String diktatVersion = version != null ? version : DiktatStep.defaultVersionDiktat();
-		return DiktatStep.create(diktatVersion, stepConfig.getProvisioner(), Collections.emptyMap(), config);
+		return DiktatStep.create(diktatVersion, stepConfig.getProvisioner(), config);
 	}
 }
