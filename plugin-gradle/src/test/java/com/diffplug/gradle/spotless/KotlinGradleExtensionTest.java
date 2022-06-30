@@ -16,7 +16,6 @@
 package com.diffplug.gradle.spotless;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.condition.JRE.JAVA_11;
 
 import java.io.IOException;
@@ -95,24 +94,6 @@ class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	void integration_pinterest() throws IOException {
-		setFile("build.gradle").toLines(
-				"plugins {",
-				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
-				"    id 'com.diffplug.spotless'",
-				"}",
-				"repositories { mavenCentral() }",
-				"spotless {",
-				"    kotlinGradle {",
-				"        ktlint('0.32.0')",
-				"    }",
-				"}");
-		setFile("configuration.gradle.kts").toResource("kotlin/ktlint/basic.dirty");
-		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("configuration.gradle.kts").sameAsResource("kotlin/ktlint/basic.clean");
-	}
-
-	@Test
 	void indentStep() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
@@ -148,24 +129,6 @@ class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	void withExperimental_0_32() throws IOException {
-		setFile("build.gradle").toLines(
-				"plugins {",
-				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
-				"    id 'com.diffplug.spotless'",
-				"}",
-				"repositories { mavenCentral() }",
-				"spotless {",
-				"    kotlinGradle {",
-				"        ktlint('0.32.0').setUseExperimental(true)",
-				"    }",
-				"}");
-		setFile("configuration.gradle.kts").toResource("kotlin/ktlint/basic.dirty");
-		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("configuration.gradle.kts").sameAsResource("kotlin/ktlint/basic.clean");
-	}
-
-	@Test
 	void withExperimentalEditorConfigOverride() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
@@ -185,53 +148,6 @@ class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 		setFile("configuration.gradle.kts").toResource("kotlin/ktlint/experimentalEditorConfigOverride.dirty");
 		gradleRunner().withArguments("spotlessApply").build();
 		assertFile("configuration.gradle.kts").sameAsResource("kotlin/ktlint/experimentalEditorConfigOverride.clean");
-	}
-
-	@Test
-	void withEditorConfigOverride_0_45_1() throws IOException {
-		setFile("build.gradle").toLines(
-				"plugins {",
-				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
-				"    id 'com.diffplug.spotless'",
-				"}",
-				"repositories { mavenCentral() }",
-				"spotless {",
-				"    kotlinGradle {",
-				"        ktlint('0.45.1')",
-				"            .editorConfigOverride([",
-				"        	    indent_size: 5",
-				"            ])",
-				"    }",
-				"}");
-		setFile("configuration.gradle.kts").toResource("kotlin/ktlint/basic.dirty");
-		Throwable error = assertThrows(Throwable.class,
-				() -> gradleRunner().withArguments("spotlessApply").build());
-		assertThat(error).hasMessageContaining("KtLint editorConfigOverride supported for version 0.45.2 and later");
-	}
-
-	/**
-	 * Check that the sample used to verify the experimental ruleset is untouched by the default ruleset, to verify
-	 * that enabling the experimental ruleset is actually doing something.
-	 *
-	 * If this test fails, it's likely that the experimental rule being used as a test graduated into the standard
-	 * ruleset, and therefore a new experimental rule should be used to verify functionality.
-	 */
-	@Test
-	void experimentalSampleUnchangedWithDefaultRuleset() throws IOException {
-		setFile("build.gradle").toLines(
-				"plugins {",
-				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
-				"    id 'com.diffplug.spotless'",
-				"}",
-				"repositories { mavenCentral() }",
-				"spotless {",
-				"    kotlinGradle {",
-				"        ktlint()",
-				"    }",
-				"}");
-		setFile("configuration.gradle.kts").toResource("kotlin/ktlint/experimental.dirty");
-		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("configuration.gradle.kts").sameAsResource("kotlin/ktlint/experimental.dirty");
 	}
 
 	@Test
