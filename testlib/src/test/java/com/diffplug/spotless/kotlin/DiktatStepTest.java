@@ -54,7 +54,7 @@ class DiktatStepTest extends ResourceHarness {
 		File conf = setFile(configPath).toResource("kotlin/diktat/diktat-analysis.yml");
 		FileSignature config = signAsList(conf);
 
-		FormatterStep step = DiktatStep.create("1.2.0", TestProvisioner.mavenCentral(), config);
+		FormatterStep step = DiktatStep.create("1.2.1", TestProvisioner.mavenCentral(), config);
 		StepHarness.forStep(step)
 				.testResourceException("kotlin/diktat/Unsolvable.kt", assertion -> {
 					assertion.isInstanceOf(AssertionError.class);
