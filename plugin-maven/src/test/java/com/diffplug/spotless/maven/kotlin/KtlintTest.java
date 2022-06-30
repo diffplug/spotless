@@ -24,31 +24,9 @@ class KtlintTest extends MavenIntegrationHarness {
 	void testKtlint() throws Exception {
 		writePomWithKotlinSteps("<ktlint/>");
 
-		String path1 = "src/main/kotlin/main1.kt";
-		String path2 = "src/main/kotlin/main2.kt";
-
-		setFile(path1).toResource("kotlin/ktlint/basic.dirty");
-		setFile(path2).toResource("kotlin/ktlint/basic.dirty");
-
+		String path = "src/main/kotlin/Main.kt";
+		setFile(path).toResource("kotlin/ktlint/basic.dirty");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-
-		assertFile(path1).sameAsResource("kotlin/ktlint/basic.clean");
-		assertFile(path2).sameAsResource("kotlin/ktlint/basic.clean");
-	}
-
-	@Test
-	void testKtlintShyiko() throws Exception {
-		writePomWithKotlinSteps("<ktlint><version>0.21.0</version></ktlint>");
-
-		String path1 = "src/main/kotlin/main1.kt";
-		String path2 = "src/main/kotlin/main2.kt";
-
-		setFile(path1).toResource("kotlin/ktlint/basic.dirty");
-		setFile(path2).toResource("kotlin/ktlint/basic.dirty");
-
-		mavenRunner().withArguments("spotless:apply").runNoError();
-
-		assertFile(path1).sameAsResource("kotlin/ktlint/basic.clean");
-		assertFile(path2).sameAsResource("kotlin/ktlint/basic.clean");
+		assertFile(path).sameAsResource("kotlin/ktlint/basic.clean");
 	}
 }

@@ -177,31 +177,6 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 		assertFile("src/main/kotlin/Main.kt").sameAsResource("kotlin/ktlint/experimentalEditorConfigOverride.clean");
 	}
 
-	/**
-	 * Check that the sample used to verify the experimental ruleset is untouched by the default ruleset, to verify
-	 * that enabling the experimental ruleset is actually doing something.
-	 *
-	 * If this test fails, it's likely that the experimental rule being used as a test graduated into the standard
-	 * ruleset, and therefore a new experimental rule should be used to verify functionality.
-	 */
-	@Test
-	void experimentalSampleUnchangedWithDefaultRuleset() throws IOException {
-		setFile("build.gradle").toLines(
-				"plugins {",
-				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
-				"    id 'com.diffplug.spotless'",
-				"}",
-				"repositories { mavenCentral() }",
-				"spotless {",
-				"    kotlin {",
-				"        ktlint()",
-				"    }",
-				"}");
-		setFile("src/main/kotlin/Main.kt").toResource("kotlin/ktlint/experimental.dirty");
-		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("src/main/kotlin/Main.kt").sameAsResource("kotlin/ktlint/experimental.dirty");
-	}
-
 	@Test
 	void testWithHeader() throws IOException {
 		setFile("build.gradle").toLines(
