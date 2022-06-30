@@ -51,7 +51,7 @@ dependencies {
 	ktlintCompileOnly "com.pinterest.ktlint:ktlint-ruleset-experimental:$VER_KTLINT"
 	ktlintCompileOnly "com.pinterest.ktlint:ktlint-ruleset-standard:$VER_KTLINT"
 
-	String VER_DIKTAT = "1.2.0"
+	String VER_DIKTAT = "1.2.1"
 	diktatCompileOnly "org.cqfn.diktat:diktat-rules:$VER_DIKTAT"
 
 	// used for markdown formatting
