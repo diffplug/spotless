@@ -4,6 +4,10 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+## [2.23.1] - 2022-07-01
+### Updated
+* Comment with examples of available style options for ktfmt.
+
 ## [2.23.0] - 2022-06-30
 ### Added
 * Support for `MAC_CLASSIC` (`\r`) line ending ([#1243](https://github.com/diffplug/spotless/pull/1243) fixes [#1196](https://github.com/diffplug/spotless/issues/1196))
