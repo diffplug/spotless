@@ -74,9 +74,9 @@ public class BlackStep {
 		private static final long serialVersionUID = -1825662356883926318L;
 		// used for up-to-date checks and caching
 		final String version;
-		final ForeignExe exe;
+		final transient ForeignExe exe;
 		// used for executing
-		private @Nullable String[] args;
+		private transient @Nullable String[] args;
 
 		State(BlackStep step, ForeignExe exeAbsPath) {
 			this.version = step.version;

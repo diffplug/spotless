@@ -91,9 +91,9 @@ public class ClangFormatStep {
 		// used for up-to-date checks and caching
 		final String version;
 		final @Nullable String style;
-		final ForeignExe exe;
+		final transient ForeignExe exe;
 		// used for executing
-		private @Nullable List<String> args;
+		private transient @Nullable List<String> args;
 
 		State(ClangFormatStep step, ForeignExe pathToExe) {
 			this.version = step.version;
