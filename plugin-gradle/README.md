@@ -758,7 +758,7 @@ spotless {
 ```gradle
 spotless {
   format 'xml', {
-    target 'src/**/*/xml' // must specify target
+    target 'src/**/*.xml' // must specify target
     eclipseWtp('xml')     // must specify a type (table below)
     eclipseWtp('xml', '4.13.0') // optional version
     // you can also specify an arbitrary number of config files
