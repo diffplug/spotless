@@ -329,8 +329,8 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
 
 ```xml
 <ktfmt>
-  <version>0.30</version> <!-- optional -->
-  <style>DEFAULT</style> <!-- optional, other option is DROPBOX -->
+  <version>0.39</version> <!-- optional -->
+  <style>DEFAULT</style> <!-- optional, other options are DROPBOX, GOOGLE and KOTLINLANG -->
 </ktfmt>
 ```
 
