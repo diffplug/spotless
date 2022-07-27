@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,6 +64,7 @@ public abstract class RegisterDependenciesTask extends DefaultTask {
 		String compositeBuildSuffix = getName().substring(TASK_NAME.length()); // see https://github.com/diffplug/spotless/pull/1001
 		BuildServiceRegistry buildServices = getProject().getGradle().getSharedServices();
 		getTaskService().set(buildServices.registerIfAbsent("SpotlessTaskService" + compositeBuildSuffix, SpotlessTaskService.class, spec -> {}));
+		usesService(getTaskService());
 		getBuildEventsListenerRegistry().onTaskCompletion(getTaskService());
 		unitOutput = new File(getProject().getBuildDir(), "tmp/spotless-register-dependencies");
 	}

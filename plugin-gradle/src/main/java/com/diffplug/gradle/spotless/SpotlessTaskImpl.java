@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 	abstract DirectoryProperty getProjectDir();
 
 	void init(Provider<SpotlessTaskService> service) {
+		usesService(service);
 		getTaskService().set(service);
 		getProjectDir().set(getProject().getProjectDir());
 	}
