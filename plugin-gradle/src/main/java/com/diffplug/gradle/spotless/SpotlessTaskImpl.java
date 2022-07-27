@@ -46,9 +46,18 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 	abstract DirectoryProperty getProjectDir();
 
 	void init(Provider<SpotlessTaskService> service) {
+		taskServiceProvider = service;
 		usesService(service);
 		getTaskService().set(service);
 		getProjectDir().set(getProject().getProjectDir());
+	}
+
+	// this field is stupid, but we need it, see https://github.com/diffplug/spotless/issues/1260
+	private transient Provider<SpotlessTaskService> taskServiceProvider;
+
+	@Internal
+	Provider<SpotlessTaskService> getTaskServiceProvider() {
+		return taskServiceProvider;
 	}
 
 	@Inject
