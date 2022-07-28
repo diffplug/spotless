@@ -29,7 +29,7 @@ spotbugs { reportLevel = 'low' } // low|medium|high (low = sensitive to even min
 
 test {
 	useJUnitPlatform()
-	if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)) {
+	if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_16)) {
 		// needed for EclipseCdtFormatterStepTest
 		jvmArgs '--add-opens=java.base/java.lang=ALL-UNNAMED'
 	}
