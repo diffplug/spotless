@@ -27,4 +27,10 @@ dependencies {
 // we'll hold the core lib to a high standard
 spotbugs { reportLevel = 'low' } // low|medium|high (low = sensitive to even minor mistakes)
 
-test { useJUnitPlatform() }
+test {
+	useJUnitPlatform()
+	if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)) {
+		// needed for EclipseCdtFormatterStepTest
+		jvmArgs '--add-opens=java.base/java.lang=ALL-UNNAMED'
+	}
+}
