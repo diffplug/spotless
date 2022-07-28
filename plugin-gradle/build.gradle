@@ -77,19 +77,6 @@ if (version.endsWith('-SNAPSHOT')) {
 			'black',
 			'clang-format'
 		]
-		plugins {
-			spotlessPlugin {
-				id = 'com.diffplug.spotless'
-			}
-			spotlessPluginLegacy {
-				id = 'com.diffplug.gradle.spotless'
-			}
-		}
-		mavenCoordinates {
-			groupId = project.group
-			artifactId = project.artifactIdGradle
-			version = project.version
-		}
 	}
 }
 
