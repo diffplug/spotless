@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,6 +105,7 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 		protected abstract ObjectFactory getConfigCacheWorkaround();
 
 		void init(SpotlessTaskImpl impl) {
+			usesService(impl.getTaskServiceProvider());
 			getSpotlessOutDirectory().set(impl.getOutputDirectory());
 			getTaskService().set(impl.getTaskService());
 			getProjectDir().set(impl.getProjectDir());

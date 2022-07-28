@@ -5,6 +5,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * Clang and Black no longer break the build when the binary is unavailable, if they will not be run during that build ([#1257](https://github.com/diffplug/spotless/pull/1257)).
+### Fixed
+* Warnings about missing `Task#usesService` for Gradle 8.0 ([#1262](https://github.com/diffplug/spotless/pull/1262) fixes [#1260](https://github.com/diffplug/spotless/issues/1260))
 
 ## [6.8.0] - 2022-06-30
 ### Added
