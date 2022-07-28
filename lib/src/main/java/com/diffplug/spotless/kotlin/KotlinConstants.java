@@ -18,7 +18,7 @@ package com.diffplug.spotless.kotlin;
 public final class KotlinConstants {
 
 	// '^' is prepended to the regex in LICENSE_HEADER_DELIMITER later in FormatExtension.licenseHeader(String, String)
-	public static final String LICENSE_HEADER_DELIMITER = "(package |@file)";
+	public static final String LICENSE_HEADER_DELIMITER = "(package |@file|import )";
 
 	private KotlinConstants() {}
 }
