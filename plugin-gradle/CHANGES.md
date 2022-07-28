@@ -5,6 +5,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * Clang and Black no longer break the build when the binary is unavailable, if they will not be run during that build ([#1257](https://github.com/diffplug/spotless/pull/1257)).
+* License header support for Kotlin files without `package` or `@file` but do at least have `import` ([#1263](https://github.com/diffplug/spotless/pull/1263)).
 ### Fixed
 * Warnings about missing `Task#usesService` for Gradle 8.0 ([#1262](https://github.com/diffplug/spotless/pull/1262) fixes [#1260](https://github.com/diffplug/spotless/issues/1260))
 
