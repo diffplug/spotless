@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package com.diffplug.spotless.kotlin;
 public final class KotlinConstants {
 
 	// '^' is prepended to the regex in LICENSE_HEADER_DELIMITER later in FormatExtension.licenseHeader(String, String)
-	public static final String LICENSE_HEADER_DELIMITER = "(package |@file)";
+	public static final String LICENSE_HEADER_DELIMITER = "(package |@file|import )";
 
 	private KotlinConstants() {}
 }

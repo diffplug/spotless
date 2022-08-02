@@ -85,7 +85,7 @@ public class BlackStep {
 
 		String format(ProcessRunner runner, String input) throws IOException, InterruptedException {
 			if (args == null) {
-				args = new String[] {exe.confirmVersionAndGetAbsolutePath(), "-"};
+				args = new String[]{exe.confirmVersionAndGetAbsolutePath(), "-"};
 			}
 			return runner.exec(input.getBytes(StandardCharsets.UTF_8), args).assertExitZero(StandardCharsets.UTF_8);
 		}

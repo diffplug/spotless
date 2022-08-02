@@ -12,8 +12,8 @@ output = [
   ].join('\n');
 -->
 [![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
-[![Javadoc](https://img.shields.io/badge/javadoc-yes-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.23.0/index.html)
-[![Changelog](https://img.shields.io/badge/changelog-2.23.0-brightgreen.svg)](CHANGES.md)
+[![Javadoc](https://img.shields.io/badge/javadoc-yes-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.24.0/index.html)
+[![Changelog](https://img.shields.io/badge/changelog-2.24.0-brightgreen.svg)](CHANGES.md)
 
 [![Circle CI](https://circleci.com/gh/diffplug/spotless/tree/main.svg?style=shield)](https://circleci.com/gh/diffplug/spotless/tree/main)
 [![Live chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
@@ -329,8 +329,8 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
 
 ```xml
 <ktfmt>
-  <version>0.30</version> <!-- optional -->
-  <style>DEFAULT</style> <!-- optional, other option is DROPBOX -->
+  <version>0.39</version> <!-- optional -->
+  <style>DEFAULT</style> <!-- optional, other options are DROPBOX, GOOGLE and KOTLINLANG -->
 </ktfmt>
 ```
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 DiffPlug
+ * Copyright 2020-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,19 +70,19 @@ public class ClangFormatStep {
 
 	private State createState() throws IOException, InterruptedException {
 		String howToInstall = "" +
-			"You can download clang-format from https://releases.llvm.org and " +
-			"then point Spotless to it with {@code pathToExe('/path/to/clang-format')} " +
-			"or you can use your platform's package manager:" +
-			"\n  win:   choco install llvm --version {version}  (try dropping version if it fails)" +
-			"\n  mac:   brew install clang-format (TODO: how to specify version?)" +
-			"\n  linux: apt install clang-format  (try clang-format-{version} with dropped minor versions)" +
-			"\n    github issue to handle this better: https://github.com/diffplug/spotless/issues/673";
-		final ForeignExe exe =  ForeignExe.nameAndVersion("clang-format", version)
-			.pathToExe(pathToExe)
-			.fixCantFind(howToInstall)
-			.fixWrongVersion(
-					"You can tell Spotless to use the version you already have with {@code clangFormat('{versionFound}')}" +
-							"or you can download the currently specified version, {version}.\n" + howToInstall);
+				"You can download clang-format from https://releases.llvm.org and " +
+				"then point Spotless to it with {@code pathToExe('/path/to/clang-format')} " +
+				"or you can use your platform's package manager:" +
+				"\n  win:   choco install llvm --version {version}  (try dropping version if it fails)" +
+				"\n  mac:   brew install clang-format (TODO: how to specify version?)" +
+				"\n  linux: apt install clang-format  (try clang-format-{version} with dropped minor versions)" +
+				"\n    github issue to handle this better: https://github.com/diffplug/spotless/issues/673";
+		final ForeignExe exe = ForeignExe.nameAndVersion("clang-format", version)
+				.pathToExe(pathToExe)
+				.fixCantFind(howToInstall)
+				.fixWrongVersion(
+						"You can tell Spotless to use the version you already have with {@code clangFormat('{versionFound}')}" +
+								"or you can download the currently specified version, {version}.\n" + howToInstall);
 		return new State(this, exe);
 	}
 
@@ -107,7 +107,7 @@ public class ClangFormatStep {
 				final List<String> tmpArgs = new ArrayList<>();
 				tmpArgs.add(exe.confirmVersionAndGetAbsolutePath());
 				if (style != null) {
-					tmpArgs.add("--style="+ style);	
+					tmpArgs.add("--style=" + style);
 				}
 				args = tmpArgs;
 			}

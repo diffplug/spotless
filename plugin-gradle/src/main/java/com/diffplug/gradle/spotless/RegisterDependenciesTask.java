@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
-import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.services.BuildServiceRegistry;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
@@ -63,8 +63,9 @@ public abstract class RegisterDependenciesTask extends DefaultTask {
 		Preconditions.checkArgument(getProject().getRootProject() == getProject(), "Can only be used on the root project");
 		String compositeBuildSuffix = getName().substring(TASK_NAME.length()); // see https://github.com/diffplug/spotless/pull/1001
 		BuildServiceRegistry buildServices = getProject().getGradle().getSharedServices();
-		getTaskService().set(buildServices.registerIfAbsent("SpotlessTaskService" + compositeBuildSuffix, SpotlessTaskService.class, spec -> {}));
-		getBuildEventsListenerRegistry().onTaskCompletion(getTaskService());
+		taskService = buildServices.registerIfAbsent("SpotlessTaskService" + compositeBuildSuffix, SpotlessTaskService.class, spec -> {});
+		usesService(taskService);
+		getBuildEventsListenerRegistry().onTaskCompletion(taskService);
 		unitOutput = new File(getProject().getBuildDir(), "tmp/spotless-register-dependencies");
 	}
 
@@ -88,8 +89,13 @@ public abstract class RegisterDependenciesTask extends DefaultTask {
 		Files.write(Integer.toString(1), unitOutput, StandardCharsets.UTF_8);
 	}
 
+	// this field is stupid, but we need it, see https://github.com/diffplug/spotless/issues/1260
+	private Provider<SpotlessTaskService> taskService;
+
 	@Internal
-	abstract Property<SpotlessTaskService> getTaskService();
+	public Provider<SpotlessTaskService> getTaskService() {
+		return taskService;
+	}
 
 	@Inject
 	protected abstract BuildEventsListenerRegistry getBuildEventsListenerRegistry();
