@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -112,7 +113,7 @@ public class ClangFormatStep {
 			}
 			final String[] processArgs = args.toArray(new String[args.size() + 1]);
 			processArgs[processArgs.length - 1] = "--assume-filename=" + file.getName();
-			return runner.exec(input.getBytes(StandardCharsets.UTF_8), args).assertExitZero(StandardCharsets.UTF_8);
+			return runner.exec(input.getBytes(StandardCharsets.UTF_8), processArgs).assertExitZero(StandardCharsets.UTF_8);
 		}
 
 		FormatterFunc.Closeable toFunc() {
