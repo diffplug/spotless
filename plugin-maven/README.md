@@ -481,7 +481,7 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
       <include>src/*/antlr4/**/*.g4</include>
     </includes>
 
-    <antlr4formatter /> <!-- has its own section below -->
+    <antlr4Formatter /> <!-- has its own section below -->
 
     <licenseHeader>
       <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
@@ -490,14 +490,14 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
 </configuration>
 ```
 
-### antlr4formatter
+### antlr4Formatter
 
 [homepage](https://github.com/antlr/Antlr4Formatter). [available versions](https://search.maven.org/artifact/com.khubla.antlr4formatter/antlr4-formatter). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/antlr4/Antlr4Formatter.java).
 
 ```xml
-<antlr4formatter>
+<antlr4Formatter>
   <version>1.2.1</version> <!-- optional -->
-</antlr4formatter>
+</antlr4Formatter>
 ```
 
 ## SQL
