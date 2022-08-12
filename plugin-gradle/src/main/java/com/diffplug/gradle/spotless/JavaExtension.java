@@ -36,6 +36,7 @@ import com.diffplug.spotless.java.GoogleJavaFormatStep;
 import com.diffplug.spotless.java.ImportOrderStep;
 import com.diffplug.spotless.java.PalantirJavaFormatStep;
 import com.diffplug.spotless.java.RemoveUnusedImportsStep;
+import com.diffplug.spotless.java.TypeAnnotationsStep;
 
 public class JavaExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "java";
@@ -229,6 +230,11 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 			replaceStep(builder.build());
 		}
 
+	}
+
+	/** Removes newlines between type annotations and types. */
+	public void typeAnnotations() {
+		addStep(TypeAnnotationsStep.create());
 	}
 
 	/** If the user hasn't specified the files yet, we'll assume he/she means all of the java files. */
