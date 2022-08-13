@@ -421,7 +421,7 @@ public final class TypeAnnotationsStep {
 						continue;
 					}
 					lines[i] = "";
-					lines[i + 1] = line.stripTrailing() + " " + nextLine.stripLeading();
+					lines[i + 1] = line.replaceAll("\\s+$", "") + " " + nextLine.replaceAll("^\\s+", "");
 				}
 			}
 			return String.join("", lines);
@@ -432,7 +432,7 @@ public final class TypeAnnotationsStep {
 		 */
 		boolean endsWithTypeAnnotation(String unixLine) {
 			// Remove trailing newline.
-			String line = unixLine.stripTrailing();
+			String line = unixLine.replaceAll("\\s+$", "");
 			Matcher m = trailingAnnoPattern.matcher(line);
 			if (!m.find()) {
 				return false;
