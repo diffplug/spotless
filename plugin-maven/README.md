@@ -524,7 +524,7 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
 
 ```xml
 <dbeaver>
-    <configFile>dbeaver.props</configFile> <!-- configFile is optional -->
+    <configFile>dbeaver.properties</configFile> <!-- configFile is optional -->
 </dbeaver>
 ```
 

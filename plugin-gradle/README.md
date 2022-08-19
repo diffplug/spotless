@@ -528,7 +528,7 @@ spotless {
 ```gradle
 spotless {
   sql {
-    dbeaver().configFile('dbeaver.props') // configFile is optional
+    dbeaver().configFile('dbeaver.properties') // configFile is optional
 ```
 
 Default configuration file, other options [available here](https://github.com/diffplug/spotless/blob/main/lib/src/main/java/com/diffplug/spotless/sql/dbeaver/DBeaverSQLFormatterConfiguration.java).
