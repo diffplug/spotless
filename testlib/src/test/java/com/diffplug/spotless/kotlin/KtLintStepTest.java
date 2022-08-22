@@ -32,6 +32,7 @@ class KtLintStepTest extends ResourceHarness {
 				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
 					assertion.isInstanceOf(AssertionError.class);
 					assertion.hasMessage("Error on line: 1, column: 1\n" +
+							"rule: no-wildcard-imports\n" +
 							"Wildcard import");
 				});
 	}
@@ -44,6 +45,7 @@ class KtLintStepTest extends ResourceHarness {
 				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
 					assertion.isInstanceOf(AssertionError.class);
 					assertion.hasMessage("Error on line: 1, column: 1\n" +
+							"rule: no-wildcard-imports\n" +
 							"Wildcard import");
 				});
 	}
