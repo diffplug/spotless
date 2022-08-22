@@ -54,6 +54,7 @@ public class ScalaExtension extends FormatExtension {
 
 		ScalaFmtConfig(String version) {
 			this.version = Objects.requireNonNull(version);
+			addStep(createStep());
 		}
 
 		public ScalaFmtConfig configFile(Object configFile) {
