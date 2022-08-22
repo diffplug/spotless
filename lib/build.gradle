@@ -12,7 +12,8 @@ def NEEDS_GLUE = [
 	'ktfmt',
 	'ktlint',
 	'flexmark',
-	'diktat'
+	'diktat',
+	'scalafmt'
 ]
 for (glue in NEEDS_GLUE) {
 	sourceSets.register(glue) {
@@ -50,6 +51,9 @@ dependencies {
 	ktlintCompileOnly "com.pinterest.ktlint:ktlint-core:$VER_KTLINT"
 	ktlintCompileOnly "com.pinterest.ktlint:ktlint-ruleset-experimental:$VER_KTLINT"
 	ktlintCompileOnly "com.pinterest.ktlint:ktlint-ruleset-standard:$VER_KTLINT"
+
+	String VER_SCALAFMT="3.5.9"
+	scalafmtCompileOnly "org.scalameta:scalafmt-core_2.13:$VER_SCALAFMT"
 
 	String VER_DIKTAT = "1.2.3"
 	diktatCompileOnly "org.cqfn.diktat:diktat-rules:$VER_DIKTAT"
