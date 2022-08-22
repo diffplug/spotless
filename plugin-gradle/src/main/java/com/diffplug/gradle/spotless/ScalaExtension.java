@@ -29,7 +29,7 @@ import org.gradle.api.tasks.SourceSet;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.scala.ScalaFmtStep;
 
-public class ScalaExtension extends FormatExtension {
+public class ScalaExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "scala";
 
 	@Inject
@@ -43,6 +43,15 @@ public class ScalaExtension extends FormatExtension {
 
 	public ScalaFmtConfig scalafmt(String version) {
 		return new ScalaFmtConfig(version);
+	}
+	@Override
+	public LicenseHeaderConfig licenseHeader(String licenseHeader) {
+		return licenseHeader(licenseHeader, JavaExtension.LICENSE_HEADER_DELIMITER);
+	}
+
+	@Override
+	public LicenseHeaderConfig licenseHeaderFile(Object licenseHeaderFile) {
+		return licenseHeaderFile(licenseHeaderFile, JavaExtension.LICENSE_HEADER_DELIMITER);
 	}
 
 	public class ScalaFmtConfig {
