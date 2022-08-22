@@ -35,21 +35,33 @@ public class ScalaFmtStep {
 	private ScalaFmtStep() {}
 
 	private static final String DEFAULT_VERSION = "3.5.9";
+
+	private static final String DEFAULT_SCALA_MAJOR_VERSION = "2.13";
 	static final String NAME = "scalafmt";
-	static final String MAVEN_COORDINATE = "org.scalameta:scalafmt-core_2.13:";
+	static final String MAVEN_COORDINATE = "org.scalameta:scalafmt-core_";
 
 	public static FormatterStep create(Provisioner provisioner) {
-		return create(defaultVersion(), provisioner, null);
+		return create(defaultVersion(), defaultScalaMajorVersion(), provisioner, null);
 	}
 
 	public static FormatterStep create(String version, Provisioner provisioner, @Nullable File configFile) {
+		return create(version, defaultScalaMajorVersion(), provisioner, configFile);
+	}
+
+	public static FormatterStep create(String version, @Nullable String scalaMajorVersion, Provisioner provisioner, @Nullable File configFile) {
+		String finalScalaMajorVersion = scalaMajorVersion == null ? DEFAULT_SCALA_MAJOR_VERSION : scalaMajorVersion;
+
 		return FormatterStep.createLazy(NAME,
-				() -> new State(JarState.from(MAVEN_COORDINATE + version, provisioner), configFile),
+				() -> new State(JarState.from(MAVEN_COORDINATE + finalScalaMajorVersion + ":" + version, provisioner), configFile),
 				State::createFormat);
 	}
 
 	public static String defaultVersion() {
 		return DEFAULT_VERSION;
+	}
+
+	public static String defaultScalaMajorVersion() {
+		return DEFAULT_SCALA_MAJOR_VERSION;
 	}
 
 	static final class State implements Serializable {

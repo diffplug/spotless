@@ -32,10 +32,14 @@ public class Scalafmt implements FormatterStepFactory {
 	@Parameter
 	private String version;
 
+	@Parameter
+	private String scalaMajorVersion;
+
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
 		String scalafmtVersion = version != null ? version : ScalaFmtStep.defaultVersion();
+		String scalafmtScalaMajorVersion = scalaMajorVersion != null ? scalaMajorVersion : ScalaFmtStep.defaultScalaMajorVersion();
 		File configFile = config.getFileLocator().locateFile(file);
-		return ScalaFmtStep.create(scalafmtVersion, config.getProvisioner(), configFile);
+		return ScalaFmtStep.create(scalafmtVersion, scalafmtScalaMajorVersion, config.getProvisioner(), configFile);
 	}
 }

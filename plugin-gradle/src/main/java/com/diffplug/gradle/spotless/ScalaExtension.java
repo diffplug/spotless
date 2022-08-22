@@ -48,21 +48,29 @@ public class ScalaExtension extends FormatExtension {
 	public class ScalaFmtConfig {
 		final String version;
 		@Nullable
+		String scalaMajorVersion;
+		@Nullable
 		Object configFile;
 
 		ScalaFmtConfig(String version) {
 			this.version = Objects.requireNonNull(version);
-			addStep(createStep());
 		}
 
-		public void configFile(Object configFile) {
+		public ScalaFmtConfig configFile(Object configFile) {
 			this.configFile = Objects.requireNonNull(configFile);
 			replaceStep(createStep());
+			return this;
+		}
+
+		public ScalaFmtConfig scalaMajorVersion(String scalaMajorVersion) {
+			this.scalaMajorVersion = Objects.requireNonNull(scalaMajorVersion);
+			replaceStep(createStep());
+			return this;
 		}
 
 		private FormatterStep createStep() {
 			File resolvedConfigFile = configFile == null ? null : getProject().file(configFile);
-			return ScalaFmtStep.create(version, provisioner(), resolvedConfigFile);
+			return ScalaFmtStep.create(version, scalaMajorVersion, provisioner(), resolvedConfigFile);
 		}
 	}
 
