@@ -111,7 +111,7 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 		@Override
 		public Unit invoke(LintError lint, Boolean corrected) {
 			if (!corrected) {
-				throw new AssertionError("Error on line: " + lint.getLine() + ", column: " + lint.getCol() + "\n" + lint.getDetail());
+				throw new AssertionError("Error on line: " + lint.getLine() + ", column: " + lint.getCol() + "\nrule: " + lint.getRuleId() + "\n" + lint.getDetail());
 			}
 			return null;
 		}
