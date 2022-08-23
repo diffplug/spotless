@@ -30,15 +30,9 @@ import com.diffplug.spotless.FormatterFunc;
 import scala.collection.immutable.Set$;
 
 public class ScalafmtFormatterFunc implements FormatterFunc {
-	private final FileSignature configSignature;
+	private final ScalafmtConfig config;
 
-	public ScalafmtFormatterFunc(FileSignature configSignature) {
-		this.configSignature = configSignature;
-	}
-
-	@Override
-	public String apply(String input) throws Exception {
-		ScalafmtConfig config;
+	public ScalafmtFormatterFunc(FileSignature configSignature) throws Exception {
 		if (configSignature.files().isEmpty()) {
 			// Note that reflection is used here only because Scalafmt has a method called
 			// default which happens to be a reserved Java keyword. The only way to call
@@ -51,6 +45,10 @@ public class ScalafmtFormatterFunc implements FormatterFunc {
 			String configStr = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
 			config = Scalafmt.parseHoconConfig(configStr).get();
 		}
+	}
+
+	@Override
+	public String apply(String input) {
 		return Scalafmt.format(input, config, Set$.MODULE$.empty()).get();
 	}
 }
