@@ -388,8 +388,8 @@ spotless {
 ```gradle
 spotless {
   scala {
-    // version and configFile are both optional
-    scalafmt('2.6.1').configFile('scalafmt.conf')
+    // version and configFile, majorScalaVersion are all optional
+    scalafmt('3.5.9').configFile('scalafmt.conf').majorScalaVersion('2.13')
 ```
 
 <a name="applying-to-cc-sources"></a>
