@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.NoSuchElementException;
+import java.lang.reflect.InvocationTargetException;
 
 import org.junit.jupiter.api.Test;
 
@@ -91,10 +91,8 @@ class ScalaFmtStepTest extends ResourceHarness {
 		File invalidConfFile = createTestFile("scala/scalafmt/scalafmt.invalid.conf");
 		Provisioner provisioner = TestProvisioner.mavenCentral();
 
-		NoSuchElementException exception;
-
-		exception = assertThrows(NoSuchElementException.class,
+		InvocationTargetException exception = assertThrows(InvocationTargetException.class,
 				() -> StepHarness.forStep(ScalaFmtStep.create("3.0.0", provisioner, invalidConfFile)).test("", ""));
-		assertThat(exception.getMessage()).contains("found option 'invalidScalaFmtConfigField' which wasn't expected");
+		assertThat(exception.getCause().getMessage()).contains("found option 'invalidScalaFmtConfigField' which wasn't expected");
 	}
 }
