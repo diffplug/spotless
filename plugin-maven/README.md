@@ -393,7 +393,7 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
 
 ```xml
 <scalafmt>
-  <version>2.0.1</version>              <!-- optional -->
+  <version>3.5.9</version>              <!-- optional -->
   <file>${project.basedir}/scalafmt.conf</file> <!-- optional -->
   <majorScalaVersion>2.13</majorScalaVersion> <!-- optional -->
 </scalafmt>
