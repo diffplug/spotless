@@ -12,6 +12,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Changes
 * Converted `scalafmt` integration to use a compile-only source set. (fixes [#524](https://github.com/diffplug/spotless/issues/524))
+* `scalafmt` integration now has a configuration option `majorScalaVersion` that allows you to configure the Scala version that gets resolved from the maven artifact. [#1283](https://github.com/diffplug/spotless/pull/1283)
 * Add the `ktlint` rule in error messages when `ktlint` fails to apply a fix ([#1279](https://github.com/diffplug/spotless/pull/1279))
 
 ## [2.28.1] - 2022-08-10
