@@ -105,7 +105,7 @@ extra('wtp.EclipseWtpFormatterStep')             +'{{yes}}       | {{yes}}      
 | [`java.PalantirJavaFormatStep`](lib/src/main/java/com/diffplug/spotless/java/PalantirJavaFormatStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`java.RemoveUnusedImportsStep`](lib/src/main/java/com/diffplug/spotless/java/RemoveUnusedImportsStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |
 | [`java.EclipseJdtFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/java/EclipseJdtFormatterStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |
-| [`java.TypeAnnotationsStep`](lib/src/main/java/com/diffplug/spotless/java/TypeAnnotationsStep.java) | :+1:       | :+1:       | :white_large_square:       | :white_large_square:  |
+| [`java.TypeAnnotationsStep`](lib/src/main/java/com/diffplug/spotless/java/TypeAnnotationsStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`json.gson.GsonStep`](lib/src/main/java/com/diffplug/spotless/json/gson/GsonStep.java) | :+1:       | :white_large_square:       | :white_large_square:       | :white_large_square:  |
 | [`json.JsonSimpleStep`](lib/src/main/java/com/diffplug/spotless/json/JsonSimpleStep.java) | :+1:       | :white_large_square:       | :white_large_square:       | :white_large_square:  |
 | [`kotlin.KtLintStep`](lib/src/main/java/com/diffplug/spotless/kotlin/KtLintStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |
