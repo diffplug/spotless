@@ -405,10 +405,10 @@ public final class TypeAnnotationsStep {
 		}
 
 		/**
-		         * Removes line break between type annotations and the following type.
-		         *
-		         * @param the text of a Java file
-		         * @return corrected text of the Java file
+		 * Removes line break between type annotations and the following type.
+		 *
+		 * @param the text of a Java file
+		 * @return corrected text of the Java file
 		 */
 		String fixupTypeAnnotations(String unixStr) {
 			// Each element of `lines` ends with a newline.
@@ -428,7 +428,8 @@ public final class TypeAnnotationsStep {
 		}
 
 		/**
-		 * Returns true if the line ends with a type annotation. We need to fix such formatting.
+		 * Returns true if the line ends with a type annotation.
+		 * TypeAnnotationStep fixes such formatting.
 		 */
 		boolean endsWithTypeAnnotation(String unixLine) {
 			// Remove trailing newline.
