@@ -285,6 +285,8 @@ spotless {
 }
 ```
 
+This does not re-order annotations, it just removes incorrect newlines.
+
 
 <a name="applying-to-groovy-source"></a>
 

@@ -286,6 +286,8 @@ To fix the incorrect formatting, add the `typeAnnotations()` rule after a Java f
 <typeAnnotations />
 ```
 
+This does not re-order annotations, it just removes incorrect newlines.
+
 ## Groovy
 
 [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/groovy/Groovy.java). [available steps](https://github.com/diffplug/spotless/tree/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/groovy).
