@@ -267,6 +267,8 @@ Type annotations should be on the same line as the type that they qualify.
   @Nullable @Interned String s;
 ```
 
+(A type annotation is an annotation that is meta-annotated with `@Target({ElementType.TYPE_USE})`.)
+
 However, some tools format them incorrectly, like this:
 
 ```java

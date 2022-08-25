@@ -30,6 +30,9 @@ import com.diffplug.spotless.FormatterStep;
  * -- even type annotations, which should be on the same line as the type they qualify.
  * This class corrects the formatting.
  * This is useful as a postprocessing step after a Java formatter that is not cognizant of type annotations.
+
+ * <p>
+ * Note: A type annotation is an annotation that is meta-annotated with {@code @Target({ElementType.TYPE_USE})}.
  */
 public final class TypeAnnotationsStep {
 	private TypeAnnotationsStep() {}
@@ -54,6 +57,7 @@ public final class TypeAnnotationsStep {
 						// Type annotations from the Checker Framework and all the tools it
 						// supports, including FindBugs, JetBrains (IntelliJ), Eclipse, NetBeans,
 						// Spring, JML, Android, etc.
+						// A type annotation is an annotation that is meta-annotated with @Target({ElementType.TYPE_USE}).
 						"A",
 						"ACCBottom",
 						"Acceleration",
