@@ -61,7 +61,7 @@ lib('java.ImportOrderStep')                      +'{{yes}}       | {{yes}}      
 lib('java.PalantirJavaFormatStep')               +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('java.RemoveUnusedImportsStep')              +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
 extra('java.EclipseJdtFormatterStep')            +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
-lib('java.TypeAnnotationsStep')                  +'{{yes}}       | {{no}}       | {{no}}       | {{no}}  |',
+lib('java.TypeAnnotationsStep')                  +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('json.gson.GsonStep')                        +'{{yes}}       | {{no}}       | {{no}}       | {{no}}  |',
 lib('json.JsonSimpleStep')                       +'{{yes}}       | {{no}}       | {{no}}       | {{no}}  |',
 lib('kotlin.KtLintStep')                         +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',

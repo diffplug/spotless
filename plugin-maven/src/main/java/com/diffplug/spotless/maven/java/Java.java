@@ -61,4 +61,8 @@ public class Java extends FormatterFactory {
 	public void addRemoveUnusedImports(RemoveUnusedImports removeUnusedImports) {
 		addStepFactory(removeUnusedImports);
 	}
+
+	public void addTypeAnnotations(TypeAnnotations typeAnnotations) {
+		addStepFactory(typeAnnotations);
+	}
 }
