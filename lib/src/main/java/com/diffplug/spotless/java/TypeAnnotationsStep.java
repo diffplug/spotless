@@ -51,7 +51,9 @@ public final class TypeAnnotationsStep {
 		 */
 		private static final Set<String> typeAnnotations = new HashSet<>(
 				Arrays.asList(
-						// Type annotations from the Checker Framework.
+						// Type annotations from the Checker Framework and all the tools it
+						// supports, including FindBugs, JetBrains (IntelliJ), Eclipse, NetBeans,
+						// Spring, JML, Android, etc.
 						"A",
 						"ACCBottom",
 						"Acceleration",
