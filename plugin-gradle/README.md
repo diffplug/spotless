@@ -164,7 +164,7 @@ spotless {
     prettier()         // has its own section below
     clangFormat()      // has its own section below
 
-    typeAnnotations()  // has its own section below
+    typeAnnotations()  // fixes formatting of type annotations, see below
 
     licenseHeader '/* (C) $YEAR */' // or licenseHeaderFile
   }
