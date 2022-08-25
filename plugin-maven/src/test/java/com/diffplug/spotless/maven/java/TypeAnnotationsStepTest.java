@@ -22,7 +22,7 @@ import com.diffplug.spotless.maven.MavenIntegrationHarness;
 class TypeAnnotationsStepTest extends MavenIntegrationHarness {
 
 	@Test
-	void testRemoveUnusedInports() throws Exception {
+	void testTypeAnnotations() throws Exception {
 		writePomWithJavaSteps("<typeAnnotations/>");
 
 		String path = "src/main/java/test.java";
