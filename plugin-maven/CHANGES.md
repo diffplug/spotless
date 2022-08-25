@@ -4,6 +4,13 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+## [2.25.0] - 2022-08-23
+### Added
+* `scalafmt` integration now has a configuration option `majorScalaVersion` that allows you to configure the Scala version that gets resolved from the maven artifact ([#1283](https://github.com/diffplug/spotless/pull/1283))
+### Changes
+* Add the `ktlint` rule in error messages when `ktlint` fails to apply a fix ([#1279](https://github.com/diffplug/spotless/pull/1279))
+* Bump default `scalafmt` to latest `3.0.8` -> `3.5.9` (removed support for pre-`3.0.0`) ([#1283](https://github.com/diffplug/spotless/pull/1283))
+
 ## [2.24.1] - 2022-08-10
 ### Fixed
 * Fix Clang not knowing the filename and changing the format ([#1268](https://github.com/diffplug/spotless/pull/1268) fixes [#1267](https://github.com/diffplug/spotless/issues/1267)).

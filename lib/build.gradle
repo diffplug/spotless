@@ -12,7 +12,8 @@ def NEEDS_GLUE = [
 	'ktfmt',
 	'ktlint',
 	'flexmark',
-	'diktat'
+	'diktat',
+	'scalafmt'
 ]
 for (glue in NEEDS_GLUE) {
 	sourceSets.register(glue) {
@@ -23,7 +24,7 @@ for (glue in NEEDS_GLUE) {
 }
 
 dependencies {
-	compileOnly 'org.slf4j:slf4j-api:1.7.36'
+	compileOnly 'org.slf4j:slf4j-api:2.0.0'
 	// zero runtime reqs is a hard requirements for spotless-lib
 	// if you need a dep, put it in lib-extra
 	testImplementation "org.junit.jupiter:junit-jupiter:$VER_JUNIT"
@@ -32,7 +33,7 @@ dependencies {
 
 	// used for pom sorting
 	sortPomCompileOnly 'com.github.ekryd.sortpom:sortpom-sorter:3.0.0'
-	sortPomCompileOnly 'org.slf4j:slf4j-api:1.7.35'
+	sortPomCompileOnly 'org.slf4j:slf4j-api:2.0.0'
 
 	palantirJavaFormatCompileOnly 'com.palantir.javaformat:palantir-java-format:1.1.0'
 
@@ -50,6 +51,9 @@ dependencies {
 	ktlintCompileOnly "com.pinterest.ktlint:ktlint-core:$VER_KTLINT"
 	ktlintCompileOnly "com.pinterest.ktlint:ktlint-ruleset-experimental:$VER_KTLINT"
 	ktlintCompileOnly "com.pinterest.ktlint:ktlint-ruleset-standard:$VER_KTLINT"
+
+	String VER_SCALAFMT="3.5.9"
+	scalafmtCompileOnly "org.scalameta:scalafmt-core_2.13:$VER_SCALAFMT"
 
 	String VER_DIKTAT = "1.2.3"
 	diktatCompileOnly "org.cqfn.diktat:diktat-rules:$VER_DIKTAT"

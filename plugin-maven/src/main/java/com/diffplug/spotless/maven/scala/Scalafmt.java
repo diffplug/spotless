@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,10 +32,14 @@ public class Scalafmt implements FormatterStepFactory {
 	@Parameter
 	private String version;
 
+	@Parameter
+	private String scalaMajorVersion;
+
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
 		String scalafmtVersion = version != null ? version : ScalaFmtStep.defaultVersion();
+		String scalafmtScalaMajorVersion = scalaMajorVersion != null ? scalaMajorVersion : ScalaFmtStep.defaultScalaMajorVersion();
 		File configFile = config.getFileLocator().locateFile(file);
-		return ScalaFmtStep.create(scalafmtVersion, config.getProvisioner(), configFile);
+		return ScalaFmtStep.create(scalafmtVersion, scalafmtScalaMajorVersion, config.getProvisioner(), configFile);
 	}
 }
