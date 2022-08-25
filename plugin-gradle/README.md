@@ -60,7 +60,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
 - [**Quickstart**](#quickstart)
   - [Requirements](#requirements)
 - **Languages**
-  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [clang-format](#clang-format), [prettier](#prettier), [palantir-java-format](#palantir-java-format))
+  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [clang-format](#clang-format), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [type annotations](#Type annotations))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
   - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
@@ -117,6 +117,8 @@ spotless {
 
     // apply a specific flavor of google-java-format
     googleJavaFormat('1.8').aosp().reflowLongStrings()
+    // fix formatting of type annotations
+    typeAnnotations()
     // make sure every file has the following copyright header.
     // optionally, Spotless can set copyright years by digging
     // through git history (see "license" section below)
@@ -162,6 +164,8 @@ spotless {
     prettier()         // has its own section below
     clangFormat()      // has its own section below
 
+    typeAnnotations()  // has its own section below
+
     licenseHeader '/* (C) $YEAR */' // or licenseHeaderFile
   }
 }
@@ -188,6 +192,8 @@ spotless {
     //   and/or reflow long strings (requires at least 1.8)
     //   and/or use custom group artifact (you probably don't need this)
     googleJavaFormat('1.8').aosp().reflowLongStrings().groupArtifact('com.google.googlejavaformat:google-java-format')
+    // optional: fix formatting of type annotations
+    typeAnnotations()
 ```
 
 **⚠️ Note on using Google Java Format with Java 16+**
@@ -214,6 +220,8 @@ spotless {
     palantirJavaFormat()
     // optional: you can specify a specific version
     palantirJavaFormat('2.9.0')
+    // optional: fix formatting of type annotations
+    typeAnnotations()
 ```
 
 **⚠️ Note on using Palantir Java Format with Java 16+**
@@ -241,6 +249,38 @@ spotless {
     eclipse()
     // optional: you can specify a specific version and/or config file
     eclipse('4.17').configFile('eclipse-prefs.xml')
+```
+
+
+### Type annotations
+
+Type annotations should be on the same line as the type that they qualify.
+
+```java
+  @Override
+  @Deprecated
+  @Nullable @Interned String s;
+```
+
+However, some tools format them incorrectly, like this:
+
+```java
+  @Override
+  @Deprecated
+  @Nullable
+  @Interned
+  String s;
+```
+
+To fix the incorrect formatting, add the `typeAnnotations()` rule after a Java formatter.  For example:
+
+```gradle
+spotless {
+  java {
+    googleJavaFormat()
+    typeAnnotations()
+  }
+}
 ```
 
 
