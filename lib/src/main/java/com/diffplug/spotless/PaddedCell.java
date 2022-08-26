@@ -236,7 +236,7 @@ public final class PaddedCell {
 
 	/**
 	 * The clean/dirty state of a single file.  Intended use:
-	 * - {@link #isClean()} means that the file is is clean, and there's nothing else to say
+	 * - {@link #isClean()} means that the file is clean, and there's nothing else to say
 	 * - {@link #didNotConverge()} means that we were unable to determine a clean state
 	 * - once you've tested the above conditions and you know that it's a dirty file with a converged state,
 	 *   then you can call {@link #writeCanonicalTo(OutputStream)} to get the canonical form of the given file.
