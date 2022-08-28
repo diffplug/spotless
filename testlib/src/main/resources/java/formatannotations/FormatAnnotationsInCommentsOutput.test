@@ -1,9 +1,9 @@
 class FormatAnnotationsInComments {
 
-  // Here is a comment relating to the annotation @Nullable
+  // Here is a comment
   @Interned String m1() {}
 
-  // Here is another comment relating to the annotation @Nullable
+  // Here is another comment
   String m2() {}
 
   /**

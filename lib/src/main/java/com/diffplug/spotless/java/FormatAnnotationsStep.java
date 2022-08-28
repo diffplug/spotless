@@ -393,7 +393,6 @@ public final class FormatAnnotationsStep {
 
 	private FormatAnnotationsStep() {}
 
-	// TODO: Enable users to specify more type annotations in `formatAnnotations` in build.gradle.
 	// TODO: Read from a local .type-annotations file.
 	private static final class State implements Serializable {
 		private static final long serialVersionUID = 1L;
@@ -415,13 +414,17 @@ public final class FormatAnnotationsStep {
 		// Don't move an annotation to the start of a comment line.
 		private static final Pattern startsWithCommentPattern = Pattern.compile("^[ \t]*(//|/\\*$|/\\*|void\\b)");
 
+                /**
+                 * @param addedTypeAnnotations simple names to add to Spotless's default list
+                 * @param removedTypeAnnotations simple names to remove from Spotless's default list
+                 */
 		State(List<String> addedTypeAnnotations, List<String> removedTypeAnnotations) {
 			typeAnnotations.addAll(addedTypeAnnotations);
 			typeAnnotations.removeAll(removedTypeAnnotations);
 		}
 
 		FormatterFunc toFormatter() {
-			return unixStr -> fixupFormatAnnotations(unixStr);
+			return unixStr -> fixupTypeAnnotations(unixStr);
 		}
 
 		/**
@@ -430,7 +433,7 @@ public final class FormatAnnotationsStep {
 		 * @param the text of a Java file
 		 * @return corrected text of the Java file
 		 */
-		String fixupFormatAnnotations(String unixStr) {
+		String fixupTypeAnnotations(String unixStr) {
 			// Each element of `lines` ends with a newline.
 			String[] lines = unixStr.split("((?<=\n))");
 			for (int i = 0; i < lines.length - 1; i++) {

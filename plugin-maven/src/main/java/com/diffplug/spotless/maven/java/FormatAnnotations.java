@@ -26,7 +26,7 @@ public class FormatAnnotations implements FormatterStepFactory {
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
-		// TODO: Permit customization in Maven.
+		// TODO: Permit customization in Maven build files.
 		return FormatAnnotationsStep.create(Collections.emptyList(), Collections.emptyList());
 	}
 }

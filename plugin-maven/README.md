@@ -290,6 +290,7 @@ A type annotation is an annotation that is meta-annotated with `@Target({Element
 Because Spotless cannot necessarily examine the annotation definition, it uses a hard-coded
 list of well-known type annotations.  You can make a pull request to add new ones.
 In the future there will be mechanisms to add/remove annotations from the list.
+These mechanisms already exist for the Gradle plugin.
 
 
 ## Groovy
