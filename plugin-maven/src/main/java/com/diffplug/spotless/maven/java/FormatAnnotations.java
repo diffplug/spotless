@@ -15,15 +15,18 @@
  */
 package com.diffplug.spotless.maven.java;
 
+import java.util.Collections;
+
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.java.TypeAnnotationsStep;
+import com.diffplug.spotless.java.FormatAnnotationsStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 
-public class TypeAnnotations implements FormatterStepFactory {
+public class FormatAnnotations implements FormatterStepFactory {
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
-		return TypeAnnotationsStep.create();
+		// TODO: Permit customization in Maven.
+		return FormatAnnotationsStep.create(Collections.emptyList(), Collections.emptyList());
 	}
 }

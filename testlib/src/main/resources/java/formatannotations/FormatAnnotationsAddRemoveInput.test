@@ -1,0 +1,11 @@
+class FormatAnnotationsAddRemove {
+
+  @Empty
+  String e;
+
+  @NonEmpty
+  String ne;
+
+  @Localized
+  String localized;
+}

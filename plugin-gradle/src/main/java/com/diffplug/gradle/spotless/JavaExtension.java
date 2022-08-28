@@ -18,6 +18,8 @@ package com.diffplug.gradle.spotless;
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -32,11 +34,11 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.java.EclipseJdtFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
+import com.diffplug.spotless.java.FormatAnnotationsStep;
 import com.diffplug.spotless.java.GoogleJavaFormatStep;
 import com.diffplug.spotless.java.ImportOrderStep;
 import com.diffplug.spotless.java.PalantirJavaFormatStep;
 import com.diffplug.spotless.java.RemoveUnusedImportsStep;
-import com.diffplug.spotless.java.TypeAnnotationsStep;
 
 public class JavaExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "java";
@@ -233,8 +235,37 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 	}
 
 	/** Removes newlines between type annotations and types. */
-	public void typeAnnotations() {
-		addStep(TypeAnnotationsStep.create());
+	public FormatAnnotationsConfig formatAnnotations() {
+		return new FormatAnnotationsConfig();
+	}
+
+	public class FormatAnnotationsConfig {
+		final List<String> addedTypeAnnotations = new ArrayList<>();
+		final List<String> removedTypeAnnotations = new ArrayList<>();
+
+		FormatAnnotationsConfig() {
+			addStep(createStep());
+		}
+
+		public FormatAnnotationsConfig addTypeAnnotation(String simpleName) {
+			Objects.requireNonNull(simpleName);
+			addedTypeAnnotations.add(simpleName);
+			replaceStep(createStep());
+			return this;
+		}
+
+		public FormatAnnotationsConfig removeTypeAnnotation(String simpleName) {
+			Objects.requireNonNull(simpleName);
+			removedTypeAnnotations.add(simpleName);
+			replaceStep(createStep());
+			return this;
+		}
+
+		private FormatterStep createStep() {
+			return FormatAnnotationsStep.create(
+					addedTypeAnnotations,
+					removedTypeAnnotations);
+		}
 	}
 
 	/** If the user hasn't specified the files yet, we'll assume he/she means all of the java files. */
