@@ -120,7 +120,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 	 * Uses the given version of <a href="https://github.com/google/google-java-format">google-java-format</a> to format source code.
 	 *
 	 * Limited to published versions.  See <a href="https://github.com/diffplug/spotless/issues/33#issuecomment-252315095">issue #33</a>
-	 * for an workaround for using snapshot versions.
+	 * for a workaround for using snapshot versions.
 	 */
 	public GoogleJavaFormatConfig googleJavaFormat(String version) {
 		Objects.requireNonNull(version);
@@ -185,7 +185,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 	 * Uses the given version of <a href="https://github.com/palantir/palantir-java-format">palantir-java-format</a> to format source code.
 	 *
 	 * Limited to published versions.  See <a href="https://github.com/diffplug/spotless/issues/33#issuecomment-252315095">issue #33</a>
-	 * for an workaround for using snapshot versions.
+	 * for a workaround for using snapshot versions.
 	 */
 	public PalantirJavaFormatConfig palantirJavaFormat(String version) {
 		Objects.requireNonNull(version);
