@@ -414,10 +414,10 @@ public final class FormatAnnotationsStep {
 		// Don't move an annotation to the start of a comment line.
 		private static final Pattern startsWithCommentPattern = Pattern.compile("^[ \t]*(//|/\\*$|/\\*|void\\b)");
 
-                /**
-                 * @param addedTypeAnnotations simple names to add to Spotless's default list
-                 * @param removedTypeAnnotations simple names to remove from Spotless's default list
-                 */
+		/**
+		 * @param addedTypeAnnotations simple names to add to Spotless's default list
+		 * @param removedTypeAnnotations simple names to remove from Spotless's default list
+		 */
 		State(List<String> addedTypeAnnotations, List<String> removedTypeAnnotations) {
 			typeAnnotations.addAll(addedTypeAnnotations);
 			typeAnnotations.removeAll(removedTypeAnnotations);

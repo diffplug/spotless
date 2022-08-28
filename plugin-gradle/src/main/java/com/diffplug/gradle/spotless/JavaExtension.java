@@ -240,9 +240,9 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 	}
 
 	public class FormatAnnotationsConfig {
-                /** Annotations in addition to those in the default list. */
+		/** Annotations in addition to those in the default list. */
 		final List<String> addedTypeAnnotations = new ArrayList<>();
-                /** Annotations that the user doesn't want treated as type annotations. */
+		/** Annotations that the user doesn't want treated as type annotations. */
 		final List<String> removedTypeAnnotations = new ArrayList<>();
 
 		FormatAnnotationsConfig() {
