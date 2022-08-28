@@ -691,6 +691,7 @@ public class FormatExtension {
 	 *     target '*.md'
 	 *     withinBlocks 'java examples', '\n```java\n', '\n```\n', com.diffplug.gradle.spotless.JavaExtension, {
 	 *       googleJavaFormat()
+	 *       formatAnnotations()
 	 *     }
 	 *     ...
 	 * </pre>

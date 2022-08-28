@@ -62,7 +62,7 @@ public class Java extends FormatterFactory {
 		addStepFactory(removeUnusedImports);
 	}
 
-	public void addTypeAnnotations(TypeAnnotations typeAnnotations) {
-		addStepFactory(typeAnnotations);
+	public void addFormatAnnotations(FormatAnnotations formatAnnotations) {
+		addStepFactory(formatAnnotations);
 	}
 }

@@ -19,15 +19,15 @@ import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
-class TypeAnnotationsStepTest extends MavenIntegrationHarness {
+class FormatAnnotationsStepTest extends MavenIntegrationHarness {
 
 	@Test
-	void testTypeAnnotations() throws Exception {
-		writePomWithJavaSteps("<typeAnnotations/>");
+	void testFormatAnnotations() throws Exception {
+		writePomWithJavaSteps("<formatAnnotations/>");
 
 		String path = "src/main/java/test.java";
-		setFile(path).toResource("java/typeannotations/TypeAnnotationsTestInput.test");
+		setFile(path).toResource("java/formatannotations/FormatAnnotationsTestInput.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("java/typeannotations/TypeAnnotationsTestOutput.test");
+		assertFile(path).sameAsResource("java/formatannotations/FormatAnnotationsTestOutput.test");
 	}
 }

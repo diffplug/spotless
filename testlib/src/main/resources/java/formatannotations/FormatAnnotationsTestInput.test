@@ -1,4 +1,4 @@
-class TypeAnnotationsTest {
+class FormatAnnotationsTest {
 
   public @Nullable
   String s0 = null;
@@ -65,4 +65,13 @@ class TypeAnnotationsTest {
   @Regex(2)
   @Interned
   String m6() {}
+
+  @Empty
+  String e;
+
+  @NonEmpty
+  String ne;
+
+  @Localized
+  String localized;
 }

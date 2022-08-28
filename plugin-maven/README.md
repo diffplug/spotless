@@ -191,7 +191,7 @@ any other maven phase (i.e. compile) then it can be configured as below;
     <eclipse />          <!-- has its own section below -->
     <prettier />         <!-- has its own section below -->
 
-    <typeAnnotations />  <!-- fixes formatting of type annotations, see below -->
+    <formatAnnotations />  <!-- fixes formatting of type annotations, see below -->
 
     <licenseHeader>
       <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
@@ -277,11 +277,11 @@ However, some tools format them incorrectly, like this:
   String s;
 ```
 
-To fix the incorrect formatting, add the `typeAnnotations()` rule after a Java formatter.  For example:
+To fix the incorrect formatting, add the `formatAnnotations()` rule after a Java formatter.  For example:
 
 ```XML
 <googleJavaFormat />
-<typeAnnotations />
+<formatAnnotations />
 ```
 
 This does not re-order annotations, it just removes incorrect newlines.

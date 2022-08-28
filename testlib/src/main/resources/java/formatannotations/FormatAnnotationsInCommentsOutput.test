@@ -1,8 +1,7 @@
-class TypeAnnotationsInComments {
+class FormatAnnotationsInComments {
 
   // Here is a comment relating to the annotation @Nullable
-  @Interned
-  String m1() {}
+  @Interned String m1() {}
 
   // Here is another comment relating to the annotation @Nullable
   String m2() {}
@@ -14,18 +13,13 @@ class TypeAnnotationsInComments {
    * String s;
    */
 
-  @Nullable
-  @Interned
-  String m3(/* Don't get confused by other comments on the line with the type */) {}
+  @Nullable @Interned String m3(/* Don't get confused by other comments on the line with the type */) {}
 
-  @Nullable
-  @Interned
-  String m3() {} // Still not confused
+  @Nullable @Interned String m3() {} // Still not confused
 
   /*
     code snippets in regular comments do get re-formatted
 
-    @Nullable
-    String s;
+    @Nullable String s;
    */
 }
