@@ -1,5 +1,6 @@
 plugins {
 	id 'java-library'
+	id 'io.github.davidburstrom.version-compatibility'
 }
 ext.artifactId = project.artifactIdLib
 version = rootProject.spotlessChangelog.versionNext
@@ -20,6 +21,21 @@ for (glue in NEEDS_GLUE) {
 		compileClasspath += sourceSets.main.output
 		runtimeClasspath += sourceSets.main.output
 		java {}
+	}
+}
+
+versionCompatibility {
+	adapters {
+		namespaces.register('KtLint') {
+			versions = [
+				'0.31.0',
+				'0.32.0',
+				'0.34.2',
+				'0.45.2',
+				'0.46.0',
+			]
+			targetSourceSetName = 'ktlint'
+		}
 	}
 }
 
@@ -51,6 +67,25 @@ dependencies {
 	ktlintCompileOnly "com.pinterest.ktlint:ktlint-core:$VER_KTLINT"
 	ktlintCompileOnly "com.pinterest.ktlint:ktlint-ruleset-experimental:$VER_KTLINT"
 	ktlintCompileOnly "com.pinterest.ktlint:ktlint-ruleset-standard:$VER_KTLINT"
+
+	compatKtLint0Dot31Dot0CompileOnly 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.20'
+	compatKtLint0Dot31Dot0CompileOnly 'com.github.shyiko.ktlint:ktlint-core:0.31.0'
+	compatKtLint0Dot31Dot0CompileOnly 'com.github.shyiko.ktlint:ktlint-ruleset-experimental:0.31.0'
+	compatKtLint0Dot31Dot0CompileOnly 'com.github.shyiko.ktlint:ktlint-ruleset-standard:0.31.0'
+	compatKtLint0Dot32Dot0CompileOnly 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.20'
+	compatKtLint0Dot32Dot0CompileOnly 'com.pinterest.ktlint:ktlint-core:0.32.0'
+	compatKtLint0Dot32Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.32.0'
+	compatKtLint0Dot32Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.32.0'
+	compatKtLint0Dot34Dot2CompileOnly 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.20'
+	compatKtLint0Dot34Dot2CompileOnly 'com.pinterest.ktlint:ktlint-core:0.34.2'
+	compatKtLint0Dot34Dot2CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.34.2'
+	compatKtLint0Dot34Dot2CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.34.2'
+	compatKtLint0Dot45Dot2CompileOnly 'com.pinterest.ktlint:ktlint-core:0.45.2'
+	compatKtLint0Dot45Dot2CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.45.2'
+	compatKtLint0Dot45Dot2CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.45.2'
+	compatKtLint0Dot46Dot0CompileOnly 'com.pinterest.ktlint:ktlint-core:0.46.0'
+	compatKtLint0Dot46Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.46.0'
+	compatKtLint0Dot46Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.46.0'
 
 	String VER_SCALAFMT="3.5.9"
 	scalafmtCompileOnly "org.scalameta:scalafmt-core_2.13:$VER_SCALAFMT"

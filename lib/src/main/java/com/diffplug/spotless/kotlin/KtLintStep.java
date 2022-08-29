@@ -35,7 +35,9 @@ public class KtLintStep {
 
 	private static final String DEFAULT_VERSION = "0.46.1";
 	static final String NAME = "ktlint";
+	static final String PACKAGE_PRE_0_32 = "com.github.shyiko";
 	static final String PACKAGE = "com.pinterest";
+	static final String MAVEN_COORDINATE_PRE_0_32 = PACKAGE_PRE_0_32 + ":ktlint:";
 	static final String MAVEN_COORDINATE = PACKAGE + ":ktlint:";
 
 	public static FormatterStep create(Provisioner provisioner) {
@@ -83,25 +85,34 @@ public class KtLintStep {
 		private final boolean useExperimental;
 		private final TreeMap<String, String> userData;
 		private final TreeMap<String, Object> editorConfigOverride;
+		private final String version;
 
 		State(String version, Provisioner provisioner, boolean isScript, boolean useExperimental,
 				Map<String, String> userData, Map<String, Object> editorConfigOverride) throws IOException {
+			this.version = version;
 
-			if (BadSemver.version(version) < BadSemver.version(0, 46, 0)) {
-				throw new IllegalStateException("KtLint versions < 0.46.0 not supported!");
+			String coordinate;
+			if (BadSemver.version(version) < BadSemver.version(0, 32)) {
+				coordinate = MAVEN_COORDINATE_PRE_0_32;
+			} else {
+				coordinate = MAVEN_COORDINATE;
 			}
-
+			if (BadSemver.version(version) < BadSemver.version(0, 31, 0)) {
+				throw new IllegalStateException("KtLint versions < 0.31.0 not supported!");
+			}
 			this.useExperimental = useExperimental;
 			this.userData = new TreeMap<>(userData);
 			this.editorConfigOverride = new TreeMap<>(editorConfigOverride);
-			this.jarState = JarState.from(MAVEN_COORDINATE + version, provisioner);
+			this.jarState = JarState.from(coordinate + version, provisioner);
 			this.isScript = isScript;
 		}
 
 		FormatterFunc createFormat() throws Exception {
-			Class<?> formatterFunc = jarState.getClassLoader().loadClass("com.diffplug.spotless.glue.ktlint.KtlintFormatterFunc");
-			Constructor<?> constructor = formatterFunc.getConstructor(boolean.class, boolean.class, Map.class, Map.class);
-			return (FormatterFunc.NeedsFile) constructor.newInstance(isScript, useExperimental, userData, editorConfigOverride);
+			final ClassLoader classLoader = jarState.getClassLoader();
+			Class<?> formatterFunc = classLoader.loadClass("com.diffplug.spotless.glue.ktlint.KtlintFormatterFunc");
+			Constructor<?> constructor = formatterFunc.getConstructor(
+					String.class, boolean.class, boolean.class, Map.class, Map.class);
+			return (FormatterFunc.NeedsFile) constructor.newInstance(version, isScript, useExperimental, userData, editorConfigOverride);
 		}
 	}
 }

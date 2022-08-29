@@ -4,6 +4,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+### Changes
+* Extend minimum supported version for `ktlint` to `0.31.0` ([#1303](https://github.com/diffplug/spotless/pull/1303)).
+
 ## [2.25.0] - 2022-08-23
 ### Added
 * `scalafmt` integration now has a configuration option `majorScalaVersion` that allows you to configure the Scala version that gets resolved from the maven artifact ([#1283](https://github.com/diffplug/spotless/pull/1283))
