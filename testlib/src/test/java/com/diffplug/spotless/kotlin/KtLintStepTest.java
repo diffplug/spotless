@@ -119,6 +119,32 @@ class KtLintStepTest extends ResourceHarness {
 	}
 
 	@Test
+	void works0_47_0() throws Exception {
+		FormatterStep step = KtLintStep.create("0.47.0", TestProvisioner.mavenCentral());
+		StepHarness.forStep(step)
+				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
+				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
+					assertion.isInstanceOf(AssertionError.class);
+					assertion.hasMessage("Error on line: 1, column: 1\n" +
+							"rule: no-wildcard-imports\n" +
+							"Wildcard import");
+				});
+	}
+
+	@Test
+	void works0_47_1() throws Exception {
+		FormatterStep step = KtLintStep.create("0.47.1", TestProvisioner.mavenCentral());
+		StepHarness.forStep(step)
+				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
+				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
+					assertion.isInstanceOf(AssertionError.class);
+					assertion.hasMessage("Error on line: 1, column: 1\n" +
+							"rule: no-wildcard-imports\n" +
+							"Wildcard import");
+				});
+	}
+
+	@Test
 	void equality() throws Exception {
 		new SerializableEqualityTester() {
 			String version = "0.32.0";

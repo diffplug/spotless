@@ -6,6 +6,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ### Changes
 * Extend minimum supported version for `ktlint` to `0.31.0` ([#1303](https://github.com/diffplug/spotless/pull/1303)).
+* Support `ktlint` version 0.47.x ([#1303](https://github.com/diffplug/spotless/pull/1303)) fixes [#1281](https://github.com/diffplug/spotless/issues/1281).
 
 ## [6.10.0] - 2022-08-23
 ### Added

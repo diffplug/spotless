@@ -33,6 +33,7 @@ versionCompatibility {
 				'0.34.2',
 				'0.45.2',
 				'0.46.0',
+				'0.47.0',
 			]
 			targetSourceSetName = 'ktlint'
 		}
@@ -86,6 +87,9 @@ dependencies {
 	compatKtLint0Dot46Dot0CompileOnly 'com.pinterest.ktlint:ktlint-core:0.46.0'
 	compatKtLint0Dot46Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.46.0'
 	compatKtLint0Dot46Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.46.0'
+	compatKtLint0Dot47Dot0CompileOnly 'com.pinterest.ktlint:ktlint-core:0.47.0'
+	compatKtLint0Dot47Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.47.0'
+	compatKtLint0Dot47Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.47.0'
 
 	String VER_SCALAFMT="3.5.9"
 	scalafmtCompileOnly "org.scalameta:scalafmt-core_2.13:$VER_SCALAFMT"
