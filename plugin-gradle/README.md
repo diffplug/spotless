@@ -197,21 +197,6 @@ spotless {
     formatAnnotations()
 ```
 
-**⚠️ Note on using Google Java Format with Java 16+**
-
-Using Java 16+ with Google Java Format 1.10.0 [requires additional flags](https://github.com/google/google-java-format/releases/tag/v1.10.0) to the running JDK.
-These Flags can be provided using the `gradle.properties` file (See [documentation](https://docs.gradle.org/current/userguide/build_environment.html)).
-
-For example the following file under `gradle.properties` will run gradle with the required flags:
-```
-org.gradle.jvmargs=--add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED \
-  --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED \
-  --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED \
-  --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED \
-  --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED
-```
-This is a workaround to a [pending issue](https://github.com/diffplug/spotless/issues/834).
-
 ### palantir-java-format
 
 [homepage](https://github.com/palantir/palantir-java-format). [changelog](https://github.com/palantir/palantir-java-format/releases).
@@ -224,21 +209,6 @@ spotless {
     // optional: fix formatting of type annotations
     formatAnnotations()
 ```
-
-**⚠️ Note on using Palantir Java Format with Java 16+**
-
-Using Java 16+ with Palantir Java Format [requires additional flags](https://github.com/google/google-java-format/releases/tag/v1.10.0) on the running JDK.
-These Flags can be provided using the `gradle.properties` file (See [documentation](https://docs.gradle.org/current/userguide/build_environment.html)).
-
-For example the following file under `gradle.properties` will run gradle with the required flags:
-```
-org.gradle.jvmargs=--add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED \
-  --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED \
-  --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED \
-  --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED \
-  --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED
-```
-This is a workaround to a [pending issue](https://github.com/diffplug/spotless/issues/834).
 
 ### eclipse jdt
 
