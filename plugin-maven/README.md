@@ -24,7 +24,7 @@ output = [
 output = prefixDelimiterReplace(input, 'https://{{org}}.github.io/{{name}}/javadoc/spotless-plugin-maven/', '/', versionLast)
 -->
 
-Spotless is a general-purpose formatting plugin.  It is completely à la carte, but also includes powerful "batteries-included" if you opt-in. Plugin requires a version of Maven higher or equal to 3.1.0.
+Spotless is a general-purpose formatting plugin used by [4,000 projects on GitHub (August 2020)](https://github.com/search?l=gradle&q=spotless&type=Code).  It is completely à la carte, but also includes powerful "batteries-included" if you opt-in. Plugin requires a version of Maven higher or equal to 3.1.0.
 
 To people who use your build, it looks like this:
 
@@ -47,7 +47,7 @@ user@machine repo % mvn spotless:check
   - [Requirements](#requirements)
   - [Binding to maven phase](#binding-to-maven-phase)
 - **Languages**
-  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier), [palantir-java-format](#palantir-java-format))
+  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
   - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
@@ -191,6 +191,8 @@ any other maven phase (i.e. compile) then it can be configured as below;
     <eclipse />          <!-- has its own section below -->
     <prettier />         <!-- has its own section below -->
 
+    <formatAnnotations />  <!-- fixes formatting of type annotations, see below -->
+
     <licenseHeader>
       <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
     </licenseHeader>
@@ -212,17 +214,6 @@ any other maven phase (i.e. compile) then it can be configured as below;
 </googleJavaFormat>
 ```
 
-**⚠️ Note on using Google Java Format with Java 16+**
-
-Using Java 16+ with Google Java Format 1.10.0 [requires additional flags](https://github.com/google/google-java-format/releases/tag/v1.10.0) to the running JDK.
-These Flags can be provided using `MAVEN_OPTS` environment variable or using the `./mvn/jvm.config` file (See [documentation](https://maven.apache.org/configure.html#mvn-jvm-config-file)).
-
-For example the following file under `.mvn/jvm.config` will run maven with the required flags:
-```
---add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED
-```
-This is a workaround to a [pending issue](https://github.com/diffplug/spotless/issues/834).
-
 ### palantir-java-format
 
 [homepage](https://github.com/palantir/palantir-java-format). [changelog](https://github.com/palantir/palantir-java-format/releases). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/java/PalantirJavaFormat.java).
@@ -232,17 +223,6 @@ This is a workaround to a [pending issue](https://github.com/diffplug/spotless/i
   <version>2.10.0</version>                     <!-- optional -->
 </palantirJavaFormat>
 ```
-
-**⚠️ Note on using Palantir Java Format with Java 16+**
-
-Using Java 16+ with Palantir Java Format [requires additional flags](https://github.com/google/google-java-format/releases/tag/v1.10.0) on the running JDK.
-These Flags can be provided using `MAVEN_OPTS` environment variable or using the `./mvn/jvm.config` file (See [documentation](https://maven.apache.org/configure.html#mvn-jvm-config-file)).
-
-For example the following file under `.mvn/jvm.config` will run maven with the required flags:
-```
---add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED
-```
-This is a workaround to a [pending issue](https://github.com/diffplug/spotless/issues/834).
 
 ### eclipse jdt
 
@@ -254,6 +234,42 @@ This is a workaround to a [pending issue](https://github.com/diffplug/spotless/i
   <file>${project.basedir}/eclipse-formatter.xml</file> <!-- optional -->
 </eclipse>
 ```
+
+### formatAnnotations
+
+Type annotations should be on the same line as the type that they qualify.
+
+```java
+  @Override
+  @Deprecated
+  @Nullable @Interned String s;
+```
+
+However, some tools format them incorrectly, like this:
+
+```java
+  @Override
+  @Deprecated
+  @Nullable
+  @Interned
+  String s;
+```
+
+To fix the incorrect formatting, add the `formatAnnotations` rule after a Java formatter.  For example:
+
+```XML
+<googleJavaFormat />
+<formatAnnotations />
+```
+
+This does not re-order annotations, it just removes incorrect newlines.
+
+A type annotation is an annotation that is meta-annotated with `@Target({ElementType.TYPE_USE})`.
+Because Spotless cannot necessarily examine the annotation definition, it uses a hard-coded
+list of well-known type annotations.  You can make a pull request to add new ones.
+In the future there will be mechanisms to add/remove annotations from the list.
+These mechanisms already exist for the Gradle plugin.
+
 
 ## Groovy
 
