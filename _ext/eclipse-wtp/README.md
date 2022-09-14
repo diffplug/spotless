@@ -2,7 +2,7 @@
 
 Eclipse WTP is not available in a form which can be easily consumed by maven or gradle. To fix this, we publish Eclipse's WTP formatters, along with a small amount of glue code, into the `com.diffplug.spotless.extra:spotless-eclipse-wtp` artifact.
 
-To publish a new version, update the `_ext/eclipse-wtp/gradle.properties` appropriately and and see [CONTRIBUTING.md](../../CONTRIBUTING.md) how to enable
+To publish a new version, update the `_ext/eclipse-wtp/gradle.properties` appropriately and see [CONTRIBUTING.md](../../CONTRIBUTING.md) how to enable
 `_ext` projects.
 
 ## License

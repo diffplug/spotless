@@ -18,6 +18,8 @@ package com.diffplug.gradle.spotless;
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -32,6 +34,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.java.EclipseJdtFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
+import com.diffplug.spotless.java.FormatAnnotationsStep;
 import com.diffplug.spotless.java.GoogleJavaFormatStep;
 import com.diffplug.spotless.java.ImportOrderStep;
 import com.diffplug.spotless.java.PalantirJavaFormatStep;
@@ -120,7 +123,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 	 * Uses the given version of <a href="https://github.com/google/google-java-format">google-java-format</a> to format source code.
 	 *
 	 * Limited to published versions.  See <a href="https://github.com/diffplug/spotless/issues/33#issuecomment-252315095">issue #33</a>
-	 * for an workaround for using snapshot versions.
+	 * for a workaround for using snapshot versions.
 	 */
 	public GoogleJavaFormatConfig googleJavaFormat(String version) {
 		Objects.requireNonNull(version);
@@ -185,7 +188,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 	 * Uses the given version of <a href="https://github.com/palantir/palantir-java-format">palantir-java-format</a> to format source code.
 	 *
 	 * Limited to published versions.  See <a href="https://github.com/diffplug/spotless/issues/33#issuecomment-252315095">issue #33</a>
-	 * for an workaround for using snapshot versions.
+	 * for a workaround for using snapshot versions.
 	 */
 	public PalantirJavaFormatConfig palantirJavaFormat(String version) {
 		Objects.requireNonNull(version);
@@ -229,6 +232,42 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 			replaceStep(builder.build());
 		}
 
+	}
+
+	/** Removes newlines between type annotations and types. */
+	public FormatAnnotationsConfig formatAnnotations() {
+		return new FormatAnnotationsConfig();
+	}
+
+	public class FormatAnnotationsConfig {
+		/** Annotations in addition to those in the default list. */
+		final List<String> addedTypeAnnotations = new ArrayList<>();
+		/** Annotations that the user doesn't want treated as type annotations. */
+		final List<String> removedTypeAnnotations = new ArrayList<>();
+
+		FormatAnnotationsConfig() {
+			addStep(createStep());
+		}
+
+		public FormatAnnotationsConfig addTypeAnnotation(String simpleName) {
+			Objects.requireNonNull(simpleName);
+			addedTypeAnnotations.add(simpleName);
+			replaceStep(createStep());
+			return this;
+		}
+
+		public FormatAnnotationsConfig removeTypeAnnotation(String simpleName) {
+			Objects.requireNonNull(simpleName);
+			removedTypeAnnotations.add(simpleName);
+			replaceStep(createStep());
+			return this;
+		}
+
+		private FormatterStep createStep() {
+			return FormatAnnotationsStep.create(
+					addedTypeAnnotations,
+					removedTypeAnnotations);
+		}
 	}
 
 	/** If the user hasn't specified the files yet, we'll assume he/she means all of the java files. */

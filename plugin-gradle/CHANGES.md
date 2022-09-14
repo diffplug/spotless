@@ -3,6 +3,10 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+* `formatAnnotations()` step to correct formatting of Java type annotations.  It puts type annotations on the same line as the type that they qualify.  Run it after a Java formatting step, such as `googleJavaFormat()`. ([#1275](https://github.com/diffplug/spotless/pull/1275))
+### Changes
+* Bump default `ktfmt` version to latest `0.39` -> `0.40` ([#1312](https://github.com/diffplug/spotless/pull/1312))
 
 ### Changes
 * Extend minimum supported version for `ktlint` to `0.31.0` ([#1303](https://github.com/diffplug/spotless/pull/1303)).
@@ -797,7 +801,7 @@ spotless {
 ## [3.4.0] - 2017-05-21
 * `ImportOrderStep` can now handle multi-line comments and misplaced imports.
 * Groovy extension now checks for the `groovy` plugin to be applied.
-* Deprecated the old syntax for the the eclipse formatter:
+* Deprecated the old syntax for the eclipse formatter:
   + New syntax better separates the version from the other configuration options, and is more consistent with the other
   + `eclipseFormatFile('format.xml')` -> `eclipse().configFile('format.xml')`
   + `eclipseFormatFile('4.4.0', 'format.xml')` -> `eclipse('4.4.0').configFile('format.xml')`

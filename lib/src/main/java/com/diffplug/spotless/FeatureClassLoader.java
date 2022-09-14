@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import javax.annotation.Nullable;
  * This class loader is used to load classes of Spotless features from a search
  * path of URLs.<br/>
  * Features shall be independent from build tools. Hence the class loader of the
- * underlying build tool is e.g. skipped during the the search for classes.<br/>
+ * underlying build tool is e.g. skipped during the search for classes.<br/>
  *
  * For `com.diffplug.spotless.glue.`, classes are redefined from within the lib jar
  * but linked against the `Url[]`. This allows us to ship classfiles which function as glue

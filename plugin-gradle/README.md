@@ -60,7 +60,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
 - [**Quickstart**](#quickstart)
   - [Requirements](#requirements)
 - **Languages**
-  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [clang-format](#clang-format), [prettier](#prettier), [palantir-java-format](#palantir-java-format))
+  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [clang-format](#clang-format), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
   - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
@@ -117,6 +117,8 @@ spotless {
 
     // apply a specific flavor of google-java-format
     googleJavaFormat('1.8').aosp().reflowLongStrings()
+    // fix formatting of type annotations
+    formatAnnotations()
     // make sure every file has the following copyright header.
     // optionally, Spotless can set copyright years by digging
     // through git history (see "license" section below)
@@ -157,10 +159,13 @@ spotless {
 
     removeUnusedImports()
 
-    googleJavaFormat() // has its own section below
-    eclipse()          // has its own section below
-    prettier()         // has its own section below
-    clangFormat()      // has its own section below
+    // Choose one of these formatters.
+    googleJavaFormat()   // has its own section below
+    eclipse()            // has its own section below
+    prettier()           // has its own section below
+    clangFormat()        // has its own section below
+
+    formatAnnotations()  // fixes formatting of type annotations, see below
 
     licenseHeader '/* (C) $YEAR */' // or licenseHeaderFile
   }
@@ -190,21 +195,6 @@ spotless {
     googleJavaFormat('1.8').aosp().reflowLongStrings().groupArtifact('com.google.googlejavaformat:google-java-format')
 ```
 
-**⚠️ Note on using Google Java Format with Java 16+**
-
-Using Java 16+ with Google Java Format 1.10.0 [requires additional flags](https://github.com/google/google-java-format/releases/tag/v1.10.0) to the running JDK.
-These Flags can be provided using the `gradle.properties` file (See [documentation](https://docs.gradle.org/current/userguide/build_environment.html)).
-
-For example the following file under `gradle.properties` will run gradle with the required flags:
-```
-org.gradle.jvmargs=--add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED \
-  --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED \
-  --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED \
-  --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED \
-  --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED
-```
-This is a workaround to a [pending issue](https://github.com/diffplug/spotless/issues/834).
-
 ### palantir-java-format
 
 [homepage](https://github.com/palantir/palantir-java-format). [changelog](https://github.com/palantir/palantir-java-format/releases).
@@ -215,21 +205,6 @@ spotless {
     // optional: you can specify a specific version
     palantirJavaFormat('2.9.0')
 ```
-
-**⚠️ Note on using Palantir Java Format with Java 16+**
-
-Using Java 16+ with Palantir Java Format [requires additional flags](https://github.com/google/google-java-format/releases/tag/v1.10.0) on the running JDK.
-These Flags can be provided using the `gradle.properties` file (See [documentation](https://docs.gradle.org/current/userguide/build_environment.html)).
-
-For example the following file under `gradle.properties` will run gradle with the required flags:
-```
-org.gradle.jvmargs=--add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED \
-  --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED \
-  --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED \
-  --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED \
-  --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED
-```
-This is a workaround to a [pending issue](https://github.com/diffplug/spotless/issues/834).
 
 ### eclipse jdt
 
@@ -242,6 +217,50 @@ spotless {
     // optional: you can specify a specific version and/or config file
     eclipse('4.17').configFile('eclipse-prefs.xml')
 ```
+
+
+### formatAnnotations
+
+Type annotations should be on the same line as the type that they qualify.
+
+```java
+  @Override
+  @Deprecated
+  @Nullable @Interned String s;
+```
+
+However, some tools format them incorrectly, like this:
+
+```java
+  @Override
+  @Deprecated
+  @Nullable
+  @Interned
+  String s;
+```
+
+To fix the incorrect formatting, add the `formatAnnotations()` rule after a Java formatter.  For example:
+
+```gradle
+spotless {
+  java {
+    googleJavaFormat()
+    formatAnnotations()
+  }
+}
+```
+
+This does not re-order annotations, it just removes incorrect newlines.
+
+A type annotation is an annotation that is meta-annotated with `@Target({ElementType.TYPE_USE})`.
+Spotless has a default list of well-known type annotations.
+You can use `addTypeAnnotation()` and `removeTypeAnnotation()` to override its defaults:
+
+```gradle
+    formatAnnotations().addTypeAnnotation("Empty").addTypeAnnotation("NonEmpty").removeTypeAnnotation("Localized")
+```
+
+You can make a pull request to add new annotations to Spotless's default list.
 
 
 <a name="applying-to-groovy-source"></a>
