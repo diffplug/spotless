@@ -47,7 +47,7 @@ user@machine repo % mvn spotless:check
   - [Requirements](#requirements)
   - [Binding to maven phase](#binding-to-maven-phase)
 - **Languages**
-  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [type annotations](#type-annotations))
+  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
   - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
@@ -235,7 +235,7 @@ any other maven phase (i.e. compile) then it can be configured as below;
 </eclipse>
 ```
 
-### Type annotations
+### formatAnnotations
 
 Type annotations should be on the same line as the type that they qualify.
 
@@ -255,7 +255,7 @@ However, some tools format them incorrectly, like this:
   String s;
 ```
 
-To fix the incorrect formatting, add the `formatAnnotations()` rule after a Java formatter.  For example:
+To fix the incorrect formatting, add the `formatAnnotations` rule after a Java formatter.  For example:
 
 ```XML
 <googleJavaFormat />
