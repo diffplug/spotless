@@ -41,17 +41,23 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 	public KtlintFormatterFunc(String version, boolean isScript, boolean useExperimental, Map<String, String> userData,
 			Map<String, Object> editorConfigOverrideMap) {
 		int minorVersion = Integer.parseInt(version.split("\\.")[1]);
-		if (version.equals("0.45.2")) {
-			this.adapter = new KtLintCompat0Dot45Dot2Adapter();
-		} else if (minorVersion >= 47) {
+		if (minorVersion >= 47) {
+			// rename RuleSet to RuleProvider
 			this.adapter = new KtLintCompat0Dot47Dot0Adapter();
 		} else if (minorVersion >= 46) {
+			// DefaultEditorConfigProperties.INSTANCE.getDefaultEditorConfigProperties() renamed to .getEditorConfigProperties()
 			this.adapter = new KtLintCompat0Dot46Dot0Adapter();
+		} else if (version.equals("0.45.2")) {
+			// add editorConfigOverride
+			this.adapter = new KtLintCompat0Dot45Dot2Adapter();
 		} else if (minorVersion >= 34) {
+			// KtLint.INSTANCE.format() now needs more parameters
 			this.adapter = new KtLintCompat0Dot34Dot2Adapter();
 		} else if (minorVersion >= 32) {
+			// rename packages from `com.github.shyiko` to `com.pinterest`
 			this.adapter = new KtLintCompat0Dot32Dot0Adapter();
 		} else {
+			// the OG
 			this.adapter = new KtLintCompat0Dot31Dot0Adapter();
 		}
 		this.useExperimental = useExperimental;
