@@ -193,8 +193,6 @@ spotless {
     //   and/or reflow long strings (requires at least 1.8)
     //   and/or use custom group artifact (you probably don't need this)
     googleJavaFormat('1.8').aosp().reflowLongStrings().groupArtifact('com.google.googlejavaformat:google-java-format')
-    // optional: fix formatting of type annotations
-    formatAnnotations()
 ```
 
 ### palantir-java-format
@@ -206,8 +204,6 @@ spotless {
     palantirJavaFormat()
     // optional: you can specify a specific version
     palantirJavaFormat('2.9.0')
-    // optional: fix formatting of type annotations
-    formatAnnotations()
 ```
 
 ### eclipse jdt
