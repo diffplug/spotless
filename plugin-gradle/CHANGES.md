@@ -795,7 +795,7 @@ spotless {
 ## [3.4.0] - 2017-05-21
 * `ImportOrderStep` can now handle multi-line comments and misplaced imports.
 * Groovy extension now checks for the `groovy` plugin to be applied.
-* Deprecated the old syntax for the the eclipse formatter:
+* Deprecated the old syntax for the eclipse formatter:
   + New syntax better separates the version from the other configuration options, and is more consistent with the other
   + `eclipseFormatFile('format.xml')` -> `eclipse().configFile('format.xml')`
   + `eclipseFormatFile('4.4.0', 'format.xml')` -> `eclipse('4.4.0').configFile('format.xml')`

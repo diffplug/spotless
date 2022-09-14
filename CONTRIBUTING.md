@@ -129,7 +129,7 @@ The `_ext` projects are disabled per default, since:
 
 The `_ext` can be activated via the root project property `com.diffplug.spotless.include.ext`.
 
-Activate the the property via command line, like for example:
+Activate the property via command line, like for example:
 
 ```
 gradlew -Pcom.diffplug.spotless.include.ext=true build
