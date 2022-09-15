@@ -8,7 +8,7 @@ anchors:
        # we're only allowed to use 2 vCPUs
       GRADLE_OPTS: "-Dorg.gradle.workers.max=2"
     docker:
-      - image: cimg/openjdk:11.0
+      - image: cimg/openjdk:18.0
   env_gradle_large: &env_gradle_large
     << : *env_gradle
     resource_class: large # https://circleci.com/docs/2.0/configuration-reference/#resource_class
@@ -75,13 +75,13 @@ jobs:
     # latest LTS version
     <<: *env_gradle_large
     docker:
-      - image: cimg/openjdk:11.0
+      - image: cimg/openjdk:18.0
     <<: *test_nomaven
   test_nomaven_17:
     # latest JDK
     <<: *env_gradle_large
     docker:
-      - image: cimg/openjdk:17.0
+      - image: cimg/openjdk:18.0
     <<: *test_nomaven
   test_justmaven_11:
     << : *env_gradle
@@ -102,7 +102,7 @@ jobs:
       # try the experimental JVM option
       _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
     docker:
-      - image: cimg/openjdk:8.0-node
+      - image: cimg/openjdk:18.0-node
     steps:
       - checkout
       - *restore_cache_wrapper
