@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  win: circleci/windows@2.4.1
+  win: circleci/windows@5.0.0
 
 anchors:
   env_gradle: &env_gradle
