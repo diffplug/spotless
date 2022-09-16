@@ -22,14 +22,26 @@ import com.diffplug.spotless.kotlin.KtLintStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 public class Ktlint implements FormatterStepFactory {
 
 	@Parameter
 	private String version;
 
+	@Parameter
+	private Map<String, Object> editorConfigOverride;
+
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
 		String ktlintVersion = version != null ? version : KtLintStep.defaultVersion();
-		return KtLintStep.create(ktlintVersion, config.getProvisioner());
+
+		if (editorConfigOverride == null) {
+			editorConfigOverride = new HashMap<>();
+		}
+
+		return KtLintStep.create(ktlintVersion, config.getProvisioner(), false, Collections.emptyMap(), editorConfigOverride);
 	}
 }
