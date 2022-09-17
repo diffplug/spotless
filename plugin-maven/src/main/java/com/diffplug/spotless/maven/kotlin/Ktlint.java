@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,16 @@
  */
 package com.diffplug.spotless.maven.kotlin;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.kotlin.KtLintStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Ktlint implements FormatterStepFactory {
 
