@@ -10,8 +10,6 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
-### Added
-* Support for `editorConfigOverride` in `ktlint`, `plugin-maven`. ([#1335](https://github.com/diffplug/spotless/pull/1335) fixes [#1334](https://github.com/diffplug/spotless/issues/1334))
 
 ## [2.30.0] - 2022-09-14
 ### Added
