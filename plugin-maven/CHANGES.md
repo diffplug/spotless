@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+* `skip` config key should work again now. ([#1353](https://github.com/diffplug/spotless/pull/1353) fixes [#1227](https://github.com/diffplug/spotless/issues/1227) and [#491](https://github.com/diffplug/spotless/issues/491))
 
 ## [2.27.0] - 2022-09-19
 ### Added
