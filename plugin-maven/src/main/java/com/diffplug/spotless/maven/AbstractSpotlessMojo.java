@@ -91,6 +91,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Parameter(defaultValue = "${mojoExecution.goal}", required = true, readonly = true)
 	private String goal;
 
+	@Parameter(defaultValue = "false")
+	private boolean skip;
+
 	@Parameter(property = "spotless.apply.skip", defaultValue = "false")
 	private boolean applySkip;
 
@@ -200,6 +203,10 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private boolean shouldSkip() {
+		if (skip) {
+			return true;
+		}
+
 		switch (goal) {
 		case GOAL_CHECK:
 			return checkSkip;
@@ -208,6 +215,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		default:
 			break;
 		}
+
 		return false;
 	}
 

@@ -4,6 +4,14 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+## [2.27.1] - 2022-09-28
+### Fixed
+* `skip` config key should work again now. ([#1353](https://github.com/diffplug/spotless/pull/1353) fixes [#1227](https://github.com/diffplug/spotless/issues/1227) and [#491](https://github.com/diffplug/spotless/issues/491))
+
+## [2.27.0] - 2022-09-19
+### Added
+* Support for `editorConfigOverride` in `ktlint`, `plugin-maven`. ([#1335](https://github.com/diffplug/spotless/pull/1335) fixes [#1334](https://github.com/diffplug/spotless/issues/1334))
+
 ## [2.26.0] - 2022-09-14
 ### Added
 * `formatAnnotations` step to correct formatting of Java type annotations.  It puts type annotations on the same line as the type that they qualify.  Run it after a Java formatting step, such as `googleJavaFormat`. ([#1275](https://github.com/diffplug/spotless/pull/1275))
