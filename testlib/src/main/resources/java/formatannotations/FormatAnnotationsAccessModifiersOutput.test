@@ -10,26 +10,27 @@ class FormatAnnotationsAccessModifiers {
     return null;
   }
 
-  @Nullable
-  public Object myMethod2() {
+  @Nullable public Object myMethod2() {
     return null;
   }
 
-  @Nullable
-  public
+  @Nullable public
   Object myMethod3() {
     return null;
   }
 
-  @Nullable
-  @Deprecated
+  @Nullable @Deprecated
   public Object myMethod4() {
     return null;
   }
 
-  @Override
-  @Nullable
   @Deprecated
+  @Nullable public Object myMethod4a() {
+    return null;
+  }
+
+  @Override
+  @Nullable @Deprecated
   public Object myMethod5() {
     return null;
   }
@@ -40,9 +41,7 @@ class FormatAnnotationsAccessModifiers {
 }
 
 @Deprecated
-@Interned
-@MustCall("close")
-@SuppressWarnings
+@Interned @MustCall("close") @SuppressWarnings
 public class MyClass3 {
   // No body
 }
@@ -50,8 +49,6 @@ public class MyClass3 {
 public
 @Deprecated
 @SuppressWarnings
-@Interned
-@MustCall("close")
-class MyClass4 {
+@Interned @MustCall("close") class MyClass4 {
   // No body
 }

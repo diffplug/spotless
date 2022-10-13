@@ -27,6 +27,12 @@ class FormatAnnotationsAccessModifiers {
     return null;
   }
 
+  @Deprecated
+  @Nullable
+  public Object myMethod4a() {
+    return null;
+  }
+
   @Override
   @Nullable
   @Deprecated
