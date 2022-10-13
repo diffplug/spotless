@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,10 +35,12 @@ public class ReplaceRegex implements FormatterStepFactory {
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
-		if (name == null || searchRegex == null || replacement == null) {
-			throw new IllegalArgumentException("Must specify 'name', 'searchRegex' and 'replacement'.");
+		if (name == null || searchRegex == null) {
+			throw new IllegalArgumentException("Must specify 'name' and 'searchRegex'.");
 		}
-
-		return ReplaceRegexStep.create(name, searchRegex, replacement);
+		// Use empty string if replacement is not provided. In pom.xml there is no way to specify
+		// an empty string as a property value as maven will always trim the value and if it is
+		// empty, maven will consider the property as not provided.
+		return ReplaceRegexStep.create(name, searchRegex, replacement != null ? replacement : "");
 	}
 }

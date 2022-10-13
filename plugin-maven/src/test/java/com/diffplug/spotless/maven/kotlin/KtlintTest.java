@@ -29,4 +29,14 @@ class KtlintTest extends MavenIntegrationHarness {
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).sameAsResource("kotlin/ktlint/basic.clean");
 	}
+
+	@Test
+	void testKtlintEditorConfigOverride() throws Exception {
+		writePomWithKotlinSteps("<ktlint><editorConfigOverride><ij_kotlin_allow_trailing_comma>true</ij_kotlin_allow_trailing_comma><ij_kotlin_allow_trailing_comma_on_call_site>true</ij_kotlin_allow_trailing_comma_on_call_site></editorConfigOverride></ktlint>");
+
+		String path = "src/main/kotlin/Main.kt";
+		setFile(path).toResource("kotlin/ktlint/experimentalEditorConfigOverride.dirty");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile(path).sameAsResource("kotlin/ktlint/experimentalEditorConfigOverride.clean");
+	}
 }
