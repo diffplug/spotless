@@ -17,6 +17,7 @@ package com.diffplug.spotless.glue.ktlint.compat;
 
 import static java.util.Collections.emptySet;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -101,7 +102,7 @@ public class KtLintCompat0Dot47Dot0Adapter implements KtLintCompatAdapter {
 				.flatMap(rule -> ((UsesEditorConfigProperties) rule).getEditorConfigProperties().stream());
 
 		// get complete list of supported properties in DefaultEditorConfigProperties.INSTANCE
-		List<UsesEditorConfigProperties.EditorConfigProperty<?>> editorConfigProperties = DefaultEditorConfigProperties.INSTANCE.getEditorConfigProperties();
+		List<UsesEditorConfigProperties.EditorConfigProperty<?>> editorConfigProperties = new ArrayList<>(DefaultEditorConfigProperties.INSTANCE.getEditorConfigProperties());
 		editorConfigProperties.add(DefaultEditorConfigProperties.INSTANCE.getKtlintDisabledRulesProperty());
 
 		// Create a mapping of properties to their names based on rule properties and default properties
