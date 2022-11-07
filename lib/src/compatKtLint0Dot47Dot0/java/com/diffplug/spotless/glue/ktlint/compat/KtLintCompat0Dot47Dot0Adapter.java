@@ -42,12 +42,19 @@ import kotlin.Unit;
 import kotlin.jvm.functions.Function2;
 
 public class KtLintCompat0Dot47Dot0Adapter implements KtLintCompatAdapter {
+	private final ArrayList<String> errors = new ArrayList<>();
 
 	static class FormatterCallback implements Function2<LintError, Boolean, Unit> {
+		private final ArrayList<String> errors;
+
+		FormatterCallback(ArrayList<String> errors) {
+			this.errors = errors;
+		}
+
 		@Override
 		public Unit invoke(LintError lint, Boolean corrected) {
 			if (!corrected) {
-				KtLintCompatReporting.report(lint.getLine(), lint.getCol(), lint.getRuleId(), lint.getDetail());
+				KtLintCompatReporting.addReport(errors, lint.getLine(), lint.getCol(), lint.getRuleId(), lint.getDetail());
 			}
 			return null;
 		}
@@ -58,7 +65,7 @@ public class KtLintCompat0Dot47Dot0Adapter implements KtLintCompatAdapter {
 			final boolean useExperimental,
 			final Map<String, String> userData,
 			final Map<String, Object> editorConfigOverrideMap) {
-		final FormatterCallback formatterCallback = new FormatterCallback();
+		final FormatterCallback formatterCallback = new FormatterCallback(errors);
 
 		Set<RuleProvider> allRuleProviders = new LinkedHashSet<>(
 				new StandardRuleSetProvider().getRuleProviders());
@@ -76,7 +83,8 @@ public class KtLintCompat0Dot47Dot0Adapter implements KtLintCompatAdapter {
 					editorConfigOverrideMap);
 		}
 
-		return KtLint.INSTANCE.format(new KtLint.ExperimentalParams(
+		errors.clear();
+		final String result = KtLint.INSTANCE.format(new KtLint.ExperimentalParams(
 				name,
 				text,
 				emptySet(),
@@ -89,6 +97,12 @@ public class KtLintCompat0Dot47Dot0Adapter implements KtLintCompatAdapter {
 				EditorConfigDefaults.Companion.getEmptyEditorConfigDefaults(),
 				editorConfigOverride,
 				false));
+
+		if (!errors.isEmpty()) {
+			KtLintCompatReporting.report(errors);
+		}
+
+		return result;
 	}
 
 	/**

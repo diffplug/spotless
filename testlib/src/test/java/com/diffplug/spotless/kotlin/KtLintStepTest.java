@@ -32,9 +32,9 @@ class KtLintStepTest extends ResourceHarness {
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
 				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
 					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("Error on line: 1, column: 1\n" +
-							"rule: no-wildcard-imports\n" +
-							"Wildcard import");
+                                        assertion.hasMessage("There are 2 unfixed errors:\n" +
+							"Error on line: 1, column: 1\nrule: no-wildcard-imports\nWildcard import\n" +
+							"Error on line: 2, column: 1\nrule: no-wildcard-imports\nWildcard import\n");
 				});
 	}
 
@@ -45,9 +45,9 @@ class KtLintStepTest extends ResourceHarness {
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
 				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
 					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("Error on line: 1, column: 1\n" +
-							"rule: no-wildcard-imports\n" +
-							"Wildcard import");
+                                        assertion.hasMessage("There are 2 unfixed errors:\n" +
+							"Error on line: 1, column: 1\nrule: no-wildcard-imports\nWildcard import\n" +
+							"Error on line: 2, column: 1\nrule: no-wildcard-imports\nWildcard import\n");
 				});
 	}
 
@@ -61,9 +61,9 @@ class KtLintStepTest extends ResourceHarness {
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
 				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
 					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("Error on line: 1, column: 1\n" +
-							"rule: no-wildcard-imports\n" +
-							"Wildcard import");
+                                        assertion.hasMessage("There are 2 unfixed errors:\n" +
+							"Error on line: 1, column: 1\nrule: no-wildcard-imports\nWildcard import\n" +
+							"Error on line: 2, column: 1\nrule: no-wildcard-imports\nWildcard import\n");
 				});
 	}
 
@@ -112,9 +112,9 @@ class KtLintStepTest extends ResourceHarness {
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
 				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
 					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("Error on line: 1, column: 1\n" +
-							"rule: no-wildcard-imports\n" +
-							"Wildcard import");
+                                        assertion.hasMessage("There are 2 unfixed errors:\n" +
+							"Error on line: 1, column: 1\nrule: no-wildcard-imports\nWildcard import\n" +
+							"Error on line: 2, column: 1\nrule: no-wildcard-imports\nWildcard import\n");
 				});
 	}
 
@@ -125,9 +125,9 @@ class KtLintStepTest extends ResourceHarness {
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
 				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
 					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("Error on line: 1, column: 1\n" +
-							"rule: no-wildcard-imports\n" +
-							"Wildcard import");
+                                        assertion.hasMessage("There are 2 unfixed errors:\n" +
+							"Error on line: 1, column: 1\nrule: no-wildcard-imports\nWildcard import\n" +
+							"Error on line: 2, column: 1\nrule: no-wildcard-imports\nWildcard import\n");
 				});
 	}
 
@@ -138,9 +138,9 @@ class KtLintStepTest extends ResourceHarness {
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
 				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
 					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("Error on line: 1, column: 1\n" +
-							"rule: no-wildcard-imports\n" +
-							"Wildcard import");
+                                        assertion.hasMessage("There are 2 unfixed errors:\n" +
+							"Error on line: 1, column: 1\nrule: no-wildcard-imports\nWildcard import\n" +
+							"Error on line: 2, column: 1\nrule: no-wildcard-imports\nWildcard import\n");
 				});
 	}
 
