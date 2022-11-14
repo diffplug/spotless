@@ -19,10 +19,12 @@ import java.io.File;
 import java.util.*;
 
 import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider;
+import org.ec4j.core.model.EditorConfig;
 
 import com.pinterest.ktlint.core.KtLint;
 import com.pinterest.ktlint.core.LintError;
 import com.pinterest.ktlint.core.RuleSet;
+import com.pinterest.ktlint.core.api.EditorConfigDefaults;
 import com.pinterest.ktlint.core.api.EditorConfigOverride;
 
 import com.diffplug.spotless.FormatterFunc;
@@ -32,12 +34,14 @@ import kotlin.jvm.functions.Function2;
 
 public class DiktatFormatterFunc implements FormatterFunc.NeedsFile {
 
+	@SuppressWarnings("deprecation")
 	private final List<RuleSet> rulesets;
 	private final Function2<? super LintError, ? super Boolean, Unit> formatterCallback;
 	private final boolean isScript;
 
 	private final ArrayList<LintError> errors = new ArrayList<>();
 
+	@SuppressWarnings("deprecation")
 	public DiktatFormatterFunc(boolean isScript) {
 		rulesets = Collections.singletonList(new DiktatRuleSetProvider().get());
 		this.formatterCallback = new FormatterCallback(errors);
@@ -69,11 +73,13 @@ public class DiktatFormatterFunc implements FormatterFunc.NeedsFile {
 				file.getAbsolutePath(),
 				unix,
 				rulesets,
+				Collections.emptySet(),
 				Collections.emptyMap(),
 				formatterCallback,
 				isScript,
 				null,
 				false,
+				new EditorConfigDefaults(EditorConfig.builder().build()),
 				new EditorConfigOverride(),
 				false));
 
