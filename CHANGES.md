@@ -13,6 +13,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Fixed
 * Don't treat `@Value` as a type annotation [#1367](https://github.com/diffplug/spotless/pull/1367)
 * Support `ktlint_disabled_rules` in `ktlint` 0.47.x [#1378](https://github.com/diffplug/spotless/pull/1378)
+* Bump default `diktat` version to latest `1.2.3` -> `1.2.4` ([#1396](https://github.com/diffplug/spotless/pull/1396))
 
 ## [2.30.0] - 2022-09-14
 ### Added
