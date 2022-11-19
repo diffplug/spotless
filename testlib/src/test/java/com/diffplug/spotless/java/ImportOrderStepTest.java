@@ -35,6 +35,12 @@ class ImportOrderStepTest extends ResourceHarness {
 	}
 
 	@Test
+	void sortImportsFromArrayWithSubgroups() throws Throwable {
+		FormatterStep step = ImportOrderStep.forJava().createFrom("java|javax", "org|\\#com", "\\#");
+		assertOnResources(step, "java/importsorter/JavaCodeUnsortedImportsSubgroups.test", "java/importsorter/JavaCodeSortedImportsSubgroups.test");
+	}
+
+	@Test
 	void sortImportsFromFile() throws Throwable {
 		FormatterStep step = ImportOrderStep.forJava().createFrom(createTestFile("java/importsorter/import.properties"));
 		assertOnResources(step, "java/importsorter/JavaCodeUnsortedImports.test", "java/importsorter/JavaCodeSortedImports.test");
