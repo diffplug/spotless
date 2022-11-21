@@ -37,14 +37,14 @@ import kotlin.Unit;
 import kotlin.jvm.functions.Function2;
 
 public class KtLintCompat0Dot46Dot0Adapter implements KtLintCompatAdapter {
-        private final ArrayList<String> errors = new ArrayList<>();
+	private final ArrayList<String> errors = new ArrayList<>();
 
 	static class FormatterCallback implements Function2<LintError, Boolean, Unit> {
-                private final ArrayList<String> errors;
+		private final ArrayList<String> errors;
 
-                FormatterCallback(ArrayList<String> errors) {
-                        this.errors = errors;
-                }
+		FormatterCallback(ArrayList<String> errors) {
+			this.errors = errors;
+		}
 
 		@Override
 		public Unit invoke(LintError lint, Boolean corrected) {

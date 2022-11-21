@@ -22,9 +22,9 @@ final class KtLintCompatReporting {
 	private KtLintCompatReporting() {}
 
 	static void addReport(ArrayList<String> errors, int line, int column, String ruleId, String detail) {
-                StringBuilder sb = new StringBuilder("Error on line: ");
-                sb.append(line).append(", column: ").append(column).append("\nrule: ").append(ruleId).append("\n").append(detail);
-                errors.add(sb.toString());
+		StringBuilder sb = new StringBuilder("Error on line: ");
+		sb.append(line).append(", column: ").append(column).append("\nrule: ").append(ruleId).append("\n").append(detail);
+		errors.add(sb.toString());
 	}
 
 	static String report(final ArrayList<String> errors) {
@@ -34,5 +34,5 @@ final class KtLintCompatReporting {
 			output.append(error).append(System.lineSeparator());
 		}
 		throw new AssertionError(output);
-	 }
+	}
 }
