@@ -32,9 +32,14 @@ class KtLintStepTest extends ResourceHarness {
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
 				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
 					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("There are 2 unfixed errors:\n" +
-							"Error on line: 1, column: 1\nrule: no-wildcard-imports\nWildcard import\n" +
-							"Error on line: 2, column: 1\nrule: no-wildcard-imports\nWildcard import\n");
+					assertion.hasMessage("There are 2 unfixed errors:" +
+							System.lineSeparator() + "Error on line: 1, column: 1" +
+							System.lineSeparator() + "rule: no-wildcard-imports" +
+							System.lineSeparator() + "Wildcard import" +
+							System.lineSeparator() + "Error on line: 2, column: 1" +
+							System.lineSeparator() + "rule: no-wildcard-imports" +
+							System.lineSeparator() + "Wildcard import" +
+							System.lineSeparator());
 				});
 	}
 
@@ -45,9 +50,14 @@ class KtLintStepTest extends ResourceHarness {
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
 				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
 					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("There are 2 unfixed errors:\n" +
-							"Error on line: 1, column: 1\nrule: no-wildcard-imports\nWildcard import\n" +
-							"Error on line: 2, column: 1\nrule: no-wildcard-imports\nWildcard import\n");
+					assertion.hasMessage("There are 2 unfixed errors:" +
+							System.lineSeparator() + "Error on line: 1, column: 1" +
+							System.lineSeparator() + "rule: no-wildcard-imports" +
+							System.lineSeparator() + "Wildcard import" +
+							System.lineSeparator() + "Error on line: 2, column: 1" +
+							System.lineSeparator() + "rule: no-wildcard-imports" +
+							System.lineSeparator() + "Wildcard import" +
+							System.lineSeparator());
 				});
 	}
 
@@ -61,9 +71,14 @@ class KtLintStepTest extends ResourceHarness {
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
 				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
 					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("There are 2 unfixed errors:\n" +
-							"Error on line: 1, column: 1\nrule: no-wildcard-imports\nWildcard import\n" +
-							"Error on line: 2, column: 1\nrule: no-wildcard-imports\nWildcard import\n");
+					assertion.hasMessage("There are 2 unfixed errors:" +
+							System.lineSeparator() + "Error on line: 1, column: 1" +
+							System.lineSeparator() + "rule: no-wildcard-imports" +
+							System.lineSeparator() + "Wildcard import" +
+							System.lineSeparator() + "Error on line: 2, column: 1" +
+							System.lineSeparator() + "rule: no-wildcard-imports" +
+							System.lineSeparator() + "Wildcard import" +
+							System.lineSeparator());
 				});
 	}
 
@@ -112,9 +127,14 @@ class KtLintStepTest extends ResourceHarness {
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
 				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
 					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("There are 2 unfixed errors:\n" +
-							"Error on line: 1, column: 1\nrule: no-wildcard-imports\nWildcard import\n" +
-							"Error on line: 2, column: 1\nrule: no-wildcard-imports\nWildcard import\n");
+					assertion.hasMessage("There are 2 unfixed errors:" +
+							System.lineSeparator() + "Error on line: 1, column: 1" +
+							System.lineSeparator() + "rule: no-wildcard-imports" +
+							System.lineSeparator() + "Wildcard import" +
+							System.lineSeparator() + "Error on line: 2, column: 1" +
+							System.lineSeparator() + "rule: no-wildcard-imports" +
+							System.lineSeparator() + "Wildcard import" +
+							System.lineSeparator());
 				});
 	}
 
@@ -125,9 +145,14 @@ class KtLintStepTest extends ResourceHarness {
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
 				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
 					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("There are 2 unfixed errors:\n" +
-							"Error on line: 1, column: 1\nrule: no-wildcard-imports\nWildcard import\n" +
-							"Error on line: 2, column: 1\nrule: no-wildcard-imports\nWildcard import\n");
+					assertion.hasMessage("There are 2 unfixed errors:" +
+							System.lineSeparator() + "Error on line: 1, column: 1" +
+							System.lineSeparator() + "rule: no-wildcard-imports" +
+							System.lineSeparator() + "Wildcard import" +
+							System.lineSeparator() + "Error on line: 2, column: 1" +
+							System.lineSeparator() + "rule: no-wildcard-imports" +
+							System.lineSeparator() + "Wildcard import" +
+							System.lineSeparator());
 				});
 	}
 
@@ -138,9 +163,14 @@ class KtLintStepTest extends ResourceHarness {
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
 				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
 					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("There are 2 unfixed errors:\n" +
-							"Error on line: 1, column: 1\nrule: no-wildcard-imports\nWildcard import\n" +
-							"Error on line: 2, column: 1\nrule: no-wildcard-imports\nWildcard import\n");
+					assertion.hasMessage("There are 2 unfixed errors:" +
+							System.lineSeparator() + "Error on line: 1, column: 1" +
+							System.lineSeparator() + "rule: no-wildcard-imports" +
+							System.lineSeparator() + "Wildcard import" +
+							System.lineSeparator() + "Error on line: 2, column: 1" +
+							System.lineSeparator() + "rule: no-wildcard-imports" +
+							System.lineSeparator() + "Wildcard import" +
+							System.lineSeparator());
 				});
 	}
 

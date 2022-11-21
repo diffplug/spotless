@@ -23,7 +23,7 @@ final class KtLintCompatReporting {
 
 	static void addReport(ArrayList<String> errors, int line, int column, String ruleId, String detail) {
 		StringBuilder sb = new StringBuilder("Error on line: ");
-		sb.append(line).append(", column: ").append(column).append("\nrule: ").append(ruleId).append("\n").append(detail);
+		sb.append(line).append(", column: ").append(column).append(System.lineSeparator()).append("rule: ").append(ruleId).append(System.lineSeparator()).append(detail);
 		errors.add(sb.toString());
 	}
 
