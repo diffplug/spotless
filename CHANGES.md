@@ -13,6 +13,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Fixed
 * Don't treat `@Value` as a type annotation [#1367](https://github.com/diffplug/spotless/pull/1367)
 * Support `ktlint_disabled_rules` in `ktlint` 0.47.x [#1378](https://github.com/diffplug/spotless/pull/1378)
+* Upgrade org.codehaus.groovy:groovy-xml:3.0.10 to org.apache.groovy:groovy-xml:4.0.6 [#1405](https://github.com/diffplug/spotless/pull/1405)
 
 ## [2.30.0] - 2022-09-14
 ### Added
