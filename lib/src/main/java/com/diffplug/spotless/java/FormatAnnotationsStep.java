@@ -371,7 +371,7 @@ public final class FormatAnnotationsStep {
 					"UpperBoundBottom",
 					"UpperBoundLiteral",
 					"UpperBoundUnknown",
-					"Value",
+					"ValueTypeAnno",
 					"VariableNameDefaultBottom",
 					"VariableNameDefaultMiddle",
 					"VariableNameDefaultTop",

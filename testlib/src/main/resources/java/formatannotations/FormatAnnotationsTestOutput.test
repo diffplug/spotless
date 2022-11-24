@@ -49,3 +49,10 @@ class FormatAnnotationsTest {
 
   @Localized String localized;
 }
+
+@Deprecated
+@SuppressWarnings
+public
+@Interned @MustCall("close") class MyClass1 {
+  // No body
+}

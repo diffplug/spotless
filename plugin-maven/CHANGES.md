@@ -3,6 +3,23 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* `importOrder` now support groups of imports without blank lines ([#1401](https://github.com/diffplug/spotless/pull/1401))
+### Fixed
+* Don't treat `@Value` as a type annotation [#1367](https://github.com/diffplug/spotless/pull/1367)
+* Support `ktlint_disabled_rules` in `ktlint` 0.47.x [#1378](https://github.com/diffplug/spotless/pull/1378)
+### Changes
+* Bump default `ktfmt` version to latest `0.40` -> `0.41` ([#1340](https://github.com/diffplug/spotless/pull/1340))
+* Bump default `scalafmt` version to latest `3.5.9` -> `3.6.1` ([#1373](https://github.com/diffplug/spotless/pull/1373))
+* Bump default `diktat` version to latest `1.2.3` -> `1.2.4.2` ([#1393](https://github.com/diffplug/spotless/pull/1393))
+
+## [2.27.2] - 2022-10-10
+### Fixed
+* `replace` and `replaceRegex` steps now allow you to replace something with an empty string, previously this would generate a null pointer exception. (fixes [#1359](https://github.com/diffplug/spotless/issues/1359))
+
+## [2.27.1] - 2022-09-28
+### Fixed
+* `skip` config key should work again now. ([#1353](https://github.com/diffplug/spotless/pull/1353) fixes [#1227](https://github.com/diffplug/spotless/issues/1227) and [#491](https://github.com/diffplug/spotless/issues/491))
 
 ## [2.27.0] - 2022-09-19
 ### Added
