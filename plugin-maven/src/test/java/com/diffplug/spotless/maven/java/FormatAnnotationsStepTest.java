@@ -30,4 +30,14 @@ class FormatAnnotationsStepTest extends MavenIntegrationHarness {
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).sameAsResource("java/formatannotations/FormatAnnotationsTestOutput.test");
 	}
+
+	@Test
+	void testFormatAnnotationsAccessModifiers() throws Exception {
+		writePomWithJavaSteps("<formatAnnotations/>");
+
+		String path = "src/main/java/test.java";
+		setFile(path).toResource("java/formatannotations/FormatAnnotationsAccessModifiersInput.test");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile(path).sameAsResource("java/formatannotations/FormatAnnotationsAccessModifiersOutput.test");
+	}
 }

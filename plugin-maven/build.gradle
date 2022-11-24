@@ -5,6 +5,7 @@ buildscript {
 plugins {
 	id 'cz.malohlava.visteg' version '1.0.5' // https://github.com/mmalohlava/gradle-visteg
 }
+repositories { mavenCentral() }
 apply from: rootProject.file('gradle/changelog.gradle')
 apply from: rootProject.file('gradle/spotless-freshmark.gradle')
 
