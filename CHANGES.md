@@ -10,9 +10,13 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* `importOrder` now support groups of imports without blank lines ([#1401](https://github.com/diffplug/spotless/pull/1401))
 ### Fixed
 * Don't treat `@Value` as a type annotation [#1367](https://github.com/diffplug/spotless/pull/1367)
 * Support `ktlint_disabled_rules` in `ktlint` 0.47.x [#1378](https://github.com/diffplug/spotless/pull/1378)
+### Changes
+* Bump default `ktfmt` version to latest `0.40` -> `0.41` ([#1340](https://github.com/diffplug/spotless/pull/1340))
 
 ## [2.30.0] - 2022-09-14
 ### Added
