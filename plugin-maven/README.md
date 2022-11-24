@@ -181,8 +181,8 @@ any other maven phase (i.e. compile) then it can be configured as below;
     <importOrder /> <!-- standard import order -->
     <importOrder>  <!-- or a custom ordering -->
       <wildcardsLast>false</wildcardsLast> <!-- Optional, default false. Sort wildcard import after specific imports -->
-      <order>java,javax,org,com,com.diffplug,,\\#com.diffplug,\\#</order>  <!-- or use <file>${project.basedir}/eclipse.importorder</file> -->
-      <!-- you can use an empty string for all the imports you didn't specify explicitly, and '\\#` prefix for static imports. -->
+      <order>java|javax,org,com,com.diffplug,,\\#com.diffplug,\\#</order>  <!-- or use <file>${project.basedir}/eclipse.importorder</file> -->
+      <!-- you can use an empty string for all the imports you didn't specify explicitly, '|' to join group without blank line, and '\\#` prefix for static imports. -->
     </importOrder>
 
     <removeUnusedImports /> <!-- self-explanatory -->
@@ -286,8 +286,8 @@ These mechanisms already exist for the Gradle plugin.
 
     <importOrder /> <!-- standard import order -->
     <importOrder>  <!-- or a custom ordering -->
-      <order>java,javax,org,com,com.diffplug,,\\#com.diffplug,\\#</order>  <!-- or use <file>${project.basedir}/eclipse.importorder</file> -->
-      <!-- you can use an empty string for all the imports you didn't specify explicitly, and '\\#` prefix for static imports -->
+      <order>java|javax,org,com,com.diffplug,,\\#com.diffplug,\\#</order>  <!-- or use <file>${project.basedir}/eclipse.importorder</file> -->
+      <!-- you can use an empty string for all the imports you didn't specify explicitly, '|' to join group without blank line, and '\\#` prefix for static imports. -->
     </importOrder>
 
     <greclipse />          <!-- has its own section below -->
