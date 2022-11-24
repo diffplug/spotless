@@ -8,7 +8,7 @@ pluginManagement {
 		// https://github.com/spotbugs/spotbugs-gradle-plugin/releases
 		id 'com.github.spotbugs'                   version '5.0.13'
 		// https://github.com/diffplug/spotless-changelog
-		id 'com.diffplug.spotless-changelog'       version '2.4.0'
+		id 'com.diffplug.spotless-changelog'       version '2.4.1'
 		// https://github.com/diffplug/goomph/blob/main/CHANGES.md
 		id 'com.diffplug.p2.asmaven'               version '3.27.0' // DO NOT UPDATE, see https://github.com/diffplug/spotless/pull/874
 		// https://github.com/gradle/test-retry-gradle-plugin/releases
