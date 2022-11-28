@@ -76,7 +76,9 @@ public class TsFmtFormatterStep {
 					new NpmConfig(
 							replaceDevDependencies(NpmResourceHelper.readUtf8StringFromClasspath(TsFmtFormatterStep.class, "/com/diffplug/spotless/npm/tsfmt-package.json"), new TreeMap<>(versions)),
 							"typescript-formatter",
-							NpmResourceHelper.readUtf8StringFromClasspath(PrettierFormatterStep.class, "/com/diffplug/spotless/npm/tsfmt-serve.js"),
+							NpmResourceHelper.readUtf8StringFromClasspath(PrettierFormatterStep.class,
+									"/com/diffplug/spotless/npm/common-serve.js",
+									"/com/diffplug/spotless/npm/tsfmt-serve.js"),
 							npmPathResolver.resolveNpmrcContent()),
 					buildDir,
 					npmPathResolver.resolveNpmExecutable());

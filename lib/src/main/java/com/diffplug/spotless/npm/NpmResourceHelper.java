@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,9 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import com.diffplug.spotless.ThrowingEx;
 
@@ -43,6 +45,12 @@ final class NpmResourceHelper {
 				throw new IOException("Failed to delete " + file);
 			}
 		}
+	}
+
+	static String readUtf8StringFromClasspath(Class<?> clazz, String... resourceNames) {
+		return Arrays.stream(resourceNames)
+				.map(resourceName -> readUtf8StringFromClasspath(clazz, resourceName))
+				.collect(Collectors.joining("\n"));
 	}
 
 	static String readUtf8StringFromClasspath(Class<?> clazz, String resourceName) {
