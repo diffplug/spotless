@@ -45,6 +45,7 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 				PaddedCell.DirtyState dirtyState = PaddedCell.calculateDirtyState(formatter, file);
 				if (!dirtyState.isClean() && !dirtyState.didNotConverge()) {
 					dirtyState.writeCanonicalTo(file);
+					buildContext.refresh(file);
 				}
 			} catch (IOException e) {
 				throw new MojoExecutionException("Unable to format file " + file, e);
