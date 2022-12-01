@@ -50,6 +50,7 @@ import org.codehaus.plexus.util.MatchPatterns;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.repository.RemoteRepository;
+import org.sonatype.plexus.build.incremental.BuildContext;
 
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.LineEnding;
