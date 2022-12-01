@@ -38,10 +38,10 @@ public interface UpToDateChecker extends AutoCloseable {
 	static UpToDateChecker forProject(MavenProject project, Path indexFile, Iterable<Formatter> formatters, Log log) {
 		return IndexBasedChecker.create(project, indexFile, formatters, log);
 	}
-	
+
 	static UpToDateChecker wrapWithBuildContext(UpToDateChecker delegate, BuildContext buildContext) {
 		return new UpToDateChecker() {
-		
+
 			@Override
 			public void setUpToDate(Path file) {
 				delegate.setUpToDate(file);
@@ -58,5 +58,5 @@ public interface UpToDateChecker extends AutoCloseable {
 			}
 		};
 	}
-	
+
 }
