@@ -15,22 +15,16 @@
  */
 package com.diffplug.spotless.npm;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+abstract class BaseNpmRestService {
 
-public class TsFmtRestService extends BaseNpmRestService {
+	protected final SimpleRestClient restClient;
 
-	TsFmtRestService(String baseUrl) {
-		super(baseUrl);
+	BaseNpmRestService(String baseUrl) {
+		this.restClient = SimpleRestClient.forBaseUrl(baseUrl);
 	}
 
-	public String format(String fileContent, Map<String, Object> configOptions) {
-		Map<String, Object> jsonProperties = new LinkedHashMap<>();
-		jsonProperties.put("file_content", fileContent);
-		if (configOptions != null && !configOptions.isEmpty()) {
-			jsonProperties.put("config_options", SimpleJsonWriter.of(configOptions).toJsonRawValue());
-		}
-
-		return restClient.postJson("/tsfmt/format", jsonProperties);
+	public String shutdown() {
+		return restClient.post("/shutdown");
 	}
+
 }
