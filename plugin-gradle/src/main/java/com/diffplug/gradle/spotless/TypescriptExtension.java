@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,12 @@ package com.diffplug.gradle.spotless;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -28,6 +30,8 @@ import javax.inject.Inject;
 import org.gradle.api.Project;
 
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.npm.EslintFormatterStep;
+import com.diffplug.spotless.npm.EslintFormatterStep.PopularStyleGuide;
 import com.diffplug.spotless.npm.NpmPathResolver;
 import com.diffplug.spotless.npm.PrettierFormatterStep;
 import com.diffplug.spotless.npm.TsConfigFileType;
@@ -166,6 +170,56 @@ public class TypescriptExtension extends FormatExtension {
 					getProject().getLogger().warn("overriding parser option to 'typescript'. Was set to '{}'", replaced);
 				}
 			}
+		}
+	}
+
+	@Override
+	public TypescriptEslintFormatExtension eslint() {
+		return eslint(EslintFormatterStep.defaultDevDependenciesForTypescript());
+	}
+
+	@Override
+	public TypescriptEslintFormatExtension eslint(String version) {
+		return eslint(EslintFormatterStep.defaultDevDependenciesTypescriptWithEslint(version));
+	}
+
+	@Override
+	public TypescriptEslintFormatExtension eslint(Map<String, String> devDependencies) {
+		TypescriptEslintFormatExtension eslint = new TypescriptEslintFormatExtension(devDependencies);
+		addStep(eslint.createStep());
+		return eslint;
+	}
+
+	public class TypescriptEslintFormatExtension extends EslintFormatExtension {
+
+		public TypescriptEslintFormatExtension(Map<String, String> devDependencies) {
+			super(devDependencies);
+		}
+
+		@Override
+		public TypescriptEslintFormatExtension devDependencies(Map<String, String> devDependencies) {
+			return (TypescriptEslintFormatExtension) super.devDependencies(devDependencies);
+		}
+
+		@Override
+		public TypescriptEslintFormatExtension configJs(String configJs) {
+			return (TypescriptEslintFormatExtension) super.configJs(configJs);
+		}
+
+		@Override
+		public TypescriptEslintFormatExtension configFile(Object configFilePath) {
+			return (TypescriptEslintFormatExtension) super.configFile(configFilePath);
+		}
+
+		public TypescriptEslintFormatExtension styleGuide(String styleGuide) {
+			PopularStyleGuide popularStyleGuide = PopularStyleGuide.fromNameOrNull(styleGuide);
+			if (popularStyleGuide == null) {
+				throw new IllegalArgumentException("Unknown style guide: " + styleGuide + ". Known style guides: "
+						+ Arrays.stream(PopularStyleGuide.values()).map(PopularStyleGuide::getPopularStyleGuideName).collect(Collectors.joining(", ")));
+			}
+			devDependencies(popularStyleGuide.devDependencies());
+			replaceStep(createStep());
+			return this;
 		}
 	}
 

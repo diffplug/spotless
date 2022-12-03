@@ -16,6 +16,7 @@
 package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.Serializable;
@@ -23,9 +24,9 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Random;
 import java.util.TreeMap;
 
@@ -59,6 +60,8 @@ import com.diffplug.spotless.generic.PipeStepPair;
 import com.diffplug.spotless.generic.ReplaceRegexStep;
 import com.diffplug.spotless.generic.ReplaceStep;
 import com.diffplug.spotless.generic.TrimTrailingWhitespaceStep;
+import com.diffplug.spotless.npm.EslintConfig;
+import com.diffplug.spotless.npm.EslintFormatterStep;
 import com.diffplug.spotless.npm.NpmPathResolver;
 import com.diffplug.spotless.npm.PrettierFormatterStep;
 
@@ -71,7 +74,7 @@ public class FormatExtension {
 
 	@Inject
 	public FormatExtension(SpotlessExtension spotless) {
-		this.spotless = Objects.requireNonNull(spotless);
+		this.spotless = requireNonNull(spotless);
 	}
 
 	protected final Provisioner provisioner() {
@@ -96,7 +99,7 @@ public class FormatExtension {
 
 	/** Sets the line endings to use (defaults to {@link SpotlessExtensionImpl#getLineEndings()}. */
 	public void setLineEndings(LineEnding lineEndings) {
-		this.lineEndings = Objects.requireNonNull(lineEndings);
+		this.lineEndings = requireNonNull(lineEndings);
 	}
 
 	Charset encoding;
@@ -108,7 +111,7 @@ public class FormatExtension {
 
 	/** Sets the encoding to use (defaults to {@link SpotlessExtensionImpl#getEncoding()}. */
 	public void setEncoding(String name) {
-		setEncoding(Charset.forName(Objects.requireNonNull(name)));
+		setEncoding(Charset.forName(requireNonNull(name)));
 	}
 
 	/** Sentinel to distinguish between "don't ratchet this format" and "use spotless parent format". */
@@ -136,19 +139,19 @@ public class FormatExtension {
 
 	/** Sets the encoding to use (defaults to {@link SpotlessExtensionImpl#getEncoding()}. */
 	public void setEncoding(Charset charset) {
-		encoding = Objects.requireNonNull(charset);
+		encoding = requireNonNull(charset);
 	}
 
 	final FormatExceptionPolicyStrict exceptionPolicy = new FormatExceptionPolicyStrict();
 
 	/** Ignores errors in the given step. */
 	public void ignoreErrorForStep(String stepName) {
-		exceptionPolicy.excludeStep(Objects.requireNonNull(stepName));
+		exceptionPolicy.excludeStep(requireNonNull(stepName));
 	}
 
 	/** Ignores errors for the given relative path. */
 	public void ignoreErrorForPath(String relativePath) {
-		exceptionPolicy.excludePath(Objects.requireNonNull(relativePath));
+		exceptionPolicy.excludePath(requireNonNull(relativePath));
 	}
 
 	/** Sets encoding to use (defaults to {@link SpotlessExtensionImpl#getEncoding()}). */
@@ -290,7 +293,7 @@ public class FormatExtension {
 
 	/** Adds a new step. */
 	public void addStep(FormatterStep newStep) {
-		Objects.requireNonNull(newStep);
+		requireNonNull(newStep);
 		int existingIdx = getExistingStepIdx(newStep.getName());
 		if (existingIdx != -1) {
 			throw new GradleException("Multiple steps with name '" + newStep.getName() + "' for spotless format '" + formatName() + "'");
@@ -356,13 +359,13 @@ public class FormatExtension {
 
 	/** Adds a custom step. Receives a string with unix-newlines, must return a string with unix newlines. */
 	public void custom(String name, Closure<String> formatter) {
-		Objects.requireNonNull(formatter, "formatter");
+		requireNonNull(formatter, "formatter");
 		custom(name, formatter::call);
 	}
 
 	/** Adds a custom step. Receives a string with unix-newlines, must return a string with unix newlines. */
 	public void custom(String name, FormatterFunc formatter) {
-		Objects.requireNonNull(formatter, "formatter");
+		requireNonNull(formatter, "formatter");
 		addStep(FormatterStep.createLazy(name, () -> globalState, unusedState -> formatter));
 	}
 
@@ -560,7 +563,7 @@ public class FormatExtension {
 		final Map<String, String> devDependencies;
 
 		PrettierConfig(Map<String, String> devDependencies) {
-			this.devDependencies = Objects.requireNonNull(devDependencies);
+			this.devDependencies = requireNonNull(devDependencies);
 		}
 
 		public PrettierConfig configFile(final Object prettierConfigFile) {
@@ -603,6 +606,68 @@ public class FormatExtension {
 		PrettierConfig prettierConfig = new PrettierConfig(devDependencies);
 		addStep(prettierConfig.createStep());
 		return prettierConfig;
+	}
+
+	public class EslintFormatExtension extends NpmStepConfig<EslintFormatExtension> {
+
+		Map<String, String> devDependencies = new LinkedHashMap<>();
+
+		@Nullable
+		Object configFilePath = null;
+
+		@Nullable
+		String configJs = null;
+
+		public EslintFormatExtension(Map<String, String> devDependencies) {
+			this.devDependencies.putAll(requireNonNull(devDependencies));
+		}
+
+		public EslintFormatExtension devDependencies(Map<String, String> devDependencies) {
+			this.devDependencies.putAll(devDependencies);
+			replaceStep(createStep());
+			return this;
+		}
+
+		public EslintFormatExtension configJs(String configJs) {
+			this.configJs = requireNonNull(configJs);
+			replaceStep(createStep());
+			return this;
+		}
+
+		public EslintFormatExtension configFile(Object configFilePath) {
+			this.configFilePath = requireNonNull(configFilePath);
+			replaceStep(createStep());
+			return this;
+		}
+
+		public FormatterStep createStep() {
+			final Project project = getProject();
+
+			return EslintFormatterStep.create(
+					devDependencies,
+					provisioner(),
+					project.getBuildDir(),
+					new NpmPathResolver(npmFileOrNull(), npmrcFileOrNull(), project.getProjectDir(), project.getRootDir()),
+					eslintConfig());
+		}
+
+		private EslintConfig eslintConfig() {
+			return new EslintConfig(configFilePath != null ? getProject().file(configFilePath) : null, configJs);
+		}
+	}
+
+	public EslintFormatExtension eslint() {
+		return eslint(EslintFormatterStep.defaultDevDependencies());
+	}
+
+	public EslintFormatExtension eslint(String version) {
+		return eslint(EslintFormatterStep.defaultDevDependenciesWithEslint(version));
+	}
+
+	public EslintFormatExtension eslint(Map<String, String> devDependencies) {
+		EslintFormatExtension eslint = new EslintFormatExtension(devDependencies);
+		addStep(eslint.createStep());
+		return eslint;
 	}
 
 	/** Uses the default version of clang-format. */

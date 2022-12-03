@@ -18,6 +18,7 @@ package com.diffplug.spotless.npm;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
@@ -98,6 +99,16 @@ final class NpmResourceHelper {
 			if ((System.currentTimeMillis() - startedAt) > maxWaitTime.toMillis()) {
 				throw new TimeoutException("The file did not appear within " + maxWaitTime);
 			}
+		}
+	}
+
+	static File copyFileToDir(File file, File targetDir) {
+		try {
+			File copiedFile = new File(targetDir, file.getName());
+			Files.copy(file.toPath(), copiedFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			return copiedFile;
+		} catch (IOException e) {
+			throw ThrowingEx.asRuntime(e);
 		}
 	}
 }
