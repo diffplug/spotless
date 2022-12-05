@@ -49,7 +49,7 @@ public interface UpToDateChecker extends AutoCloseable {
 
 			@Override
 			public boolean isUpToDate(Path file) {
-				if (buildContext.hasDelta(file)) {
+				if (buildContext.hasDelta(file.toFile())) {
 					return delegate.isUpToDate(file);
 				}
 				return true;
