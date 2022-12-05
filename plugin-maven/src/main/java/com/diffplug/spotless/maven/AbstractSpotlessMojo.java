@@ -90,7 +90,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	private ResourceManager resourceManager;
 
 	@Component
-	private BuildContext buildContext;
+	protected BuildContext buildContext;
 
 	@Parameter(defaultValue = "${mojoExecution.goal}", required = true, readonly = true)
 	private String goal;
