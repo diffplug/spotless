@@ -27,8 +27,10 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -583,6 +585,7 @@ public class FormatExtension {
 			return PrettierFormatterStep.create(
 					devDependencies,
 					provisioner(),
+					project.getProjectDir(),
 					project.getBuildDir(),
 					new NpmPathResolver(npmFileOrNull(), npmrcFileOrNull(), project.getProjectDir(), project.getRootDir()),
 					new com.diffplug.spotless.npm.PrettierConfig(
@@ -618,6 +621,8 @@ public class FormatExtension {
 		@Nullable
 		String configJs = null;
 
+		List<AdditionalEslintConfig> additionalConfigs = new ArrayList<>();
+
 		public EslintFormatExtension(Map<String, String> devDependencies) {
 			this.devDependencies.putAll(requireNonNull(devDependencies));
 		}
@@ -640,19 +645,44 @@ public class FormatExtension {
 			return this;
 		}
 
+		protected void additionalConfigFilePath(Object sourceFile, String relativeTargetPath) {
+			this.additionalConfigs.add(new AdditionalEslintConfig(sourceFile, relativeTargetPath));
+		}
+
 		public FormatterStep createStep() {
 			final Project project = getProject();
 
 			return EslintFormatterStep.create(
 					devDependencies,
 					provisioner(),
+					project.getProjectDir(),
 					project.getBuildDir(),
 					new NpmPathResolver(npmFileOrNull(), npmrcFileOrNull(), project.getProjectDir(), project.getRootDir()),
 					eslintConfig());
 		}
 
 		private EslintConfig eslintConfig() {
-			return new EslintConfig(configFilePath != null ? getProject().file(configFilePath) : null, configJs);
+			return new EslintConfig(configFilePath != null ? getProject().file(configFilePath) : null, configJs, additionalConfigs());
+		}
+
+		private Map<File, Optional<String>> additionalConfigs() {
+			// convert additionalConfigs to a map explicitly allowing null values
+
+			return additionalConfigs.stream()
+					.collect(Collectors.toMap(
+							config -> getProject().file(config.configFilePath),
+							config -> Optional.ofNullable(config.relativeTargetPath)));
+		}
+	}
+
+	private static class AdditionalEslintConfig {
+		final Object configFilePath;
+
+		final String relativeTargetPath;
+
+		AdditionalEslintConfig(Object configFilePath, String relativeTargetPath) {
+			this.configFilePath = configFilePath;
+			this.relativeTargetPath = relativeTargetPath;
 		}
 	}
 

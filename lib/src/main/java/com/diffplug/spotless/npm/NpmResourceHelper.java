@@ -18,9 +18,12 @@ package com.diffplug.spotless.npm;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
@@ -103,10 +106,18 @@ final class NpmResourceHelper {
 	}
 
 	static File copyFileToDir(File file, File targetDir) {
+		return copyFileToDirAtSubpath(file, targetDir, file.getName());
+	}
+
+	static File copyFileToDirAtSubpath(File file, File targetDir, String relativePath) {
+		Objects.requireNonNull(relativePath);
 		try {
-			File copiedFile = new File(targetDir, file.getName());
-			Files.copy(file.toPath(), copiedFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-			return copiedFile;
+			// create file pointing to relativePath in targetDir
+			final Path relativeTargetFile = Paths.get(targetDir.getAbsolutePath(), relativePath);
+			assertDirectoryExists(relativeTargetFile.getParent().toFile());
+
+			Files.copy(file.toPath(), relativeTargetFile, StandardCopyOption.REPLACE_EXISTING);
+			return relativeTargetFile.toFile();
 		} catch (IOException e) {
 			throw ThrowingEx.asRuntime(e);
 		}

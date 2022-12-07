@@ -113,6 +113,7 @@ public class TypescriptExtension extends FormatExtension {
 			return TsFmtFormatterStep.create(
 					devDependencies,
 					provisioner(),
+					project.getProjectDir(),
 					project.getBuildDir(),
 					new NpmPathResolver(npmFileOrNull(), npmrcFileOrNull(), project.getProjectDir(), project.getRootDir()),
 					typedConfigFile(),
@@ -218,6 +219,16 @@ public class TypescriptExtension extends FormatExtension {
 						+ Arrays.stream(PopularStyleGuide.values()).map(PopularStyleGuide::getPopularStyleGuideName).collect(Collectors.joining(", ")));
 			}
 			devDependencies(popularStyleGuide.devDependencies());
+			replaceStep(createStep());
+			return this;
+		}
+
+		public TypescriptEslintFormatExtension tsconfigFile(Object path) {
+			return tsconfigFile(path, null);
+		}
+
+		public TypescriptEslintFormatExtension tsconfigFile(Object path, String remapping) {
+			additionalConfigFilePath(path, remapping);
 			replaceStep(createStep());
 			return this;
 		}

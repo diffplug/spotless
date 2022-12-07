@@ -51,13 +51,17 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	private final transient File npmExecutable;
 
+	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
+	public final transient File projectDir;
+
 	private final NpmConfig npmConfig;
 
 	private final String stepName;
 
-	protected NpmFormatterStepStateBase(String stepName, NpmConfig npmConfig, File buildDir, File npm) throws IOException {
+	protected NpmFormatterStepStateBase(String stepName, NpmConfig npmConfig, File projectDir, File buildDir, File npm) throws IOException {
 		this.stepName = requireNonNull(stepName);
 		this.npmConfig = requireNonNull(npmConfig);
+		this.projectDir = requireNonNull(projectDir);
 		this.npmExecutable = npm;
 
 		NodeServerLayout layout = prepareNodeServer(buildDir);

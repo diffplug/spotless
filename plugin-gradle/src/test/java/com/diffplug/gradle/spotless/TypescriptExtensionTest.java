@@ -144,7 +144,7 @@ class TypescriptExtensionTest extends GradleIntegrationHarness {
 
 	@Test
 	void useEslint() throws IOException {
-		setFile(".eslintrc.js").toResource("npm/eslint/filetypes/typescript/.eslintrc.js");
+		setFile(".eslintrc.js").toResource("npm/eslint/typescript/custom_rules/.eslintrc.js");
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
@@ -156,8 +156,28 @@ class TypescriptExtensionTest extends GradleIntegrationHarness {
 				"        eslint().configFile('.eslintrc.js')",
 				"    }",
 				"}");
-		setFile("test.ts").toResource("npm/eslint/filetypes/typescript/typescript.dirty");
+		setFile("test.ts").toResource("npm/eslint/typescript/custom_rules/typescript.dirty");
 		gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
-		assertFile("test.ts").sameAsResource("npm/eslint/filetypes/typescript/typescript.clean");
+		assertFile("test.ts").sameAsResource("npm/eslint/typescript/custom_rules/typescript.clean");
+	}
+
+	@Test
+	void useXoStandardRules() throws IOException {
+		setFile(".eslintrc.js").toResource("npm/eslint/typescript/standard_rules_xo/.eslintrc.js");
+		setFile("tsconfig.json").toResource("npm/eslint/typescript/standard_rules_xo/tsconfig.json"); // needs to be copied to!
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    typescript {",
+				"        target 'test.ts'",
+				"        eslint().styleGuide('xo-typescript').configFile('.eslintrc.js')//.tsconfigFile('tsconfig.json')", // TODO TODO maybe can skip the additional config files alltogether, instead provide tsConfigRootDir to eslint-serve.js via call
+				"    }",
+				"}");
+		setFile("test.ts").toResource("npm/eslint/typescript/standard_rules_xo/typescript.dirty");
+		gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		assertFile("test.ts").sameAsResource("npm/eslint/typescript/standard_rules_xo/typescript.clean");
 	}
 }

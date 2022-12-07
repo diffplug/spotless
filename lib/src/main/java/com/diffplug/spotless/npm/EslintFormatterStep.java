@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.TreeMap;
 
 import javax.annotation.Nonnull;
@@ -113,12 +114,13 @@ public class EslintFormatterStep {
 		return Collections.singletonMap("eslint", version);
 	}
 
-	public static FormatterStep create(Map<String, String> devDependencies, Provisioner provisioner, File buildDir, NpmPathResolver npmPathResolver, EslintConfig eslintConfig) {
+	public static FormatterStep create(Map<String, String> devDependencies, Provisioner provisioner, File projectDir, File buildDir, NpmPathResolver npmPathResolver, EslintConfig eslintConfig) {
 		requireNonNull(devDependencies);
 		requireNonNull(provisioner);
+		requireNonNull(projectDir);
 		requireNonNull(buildDir);
 		return FormatterStep.createLazy(NAME,
-				() -> new State(NAME, devDependencies, buildDir, npmPathResolver, eslintConfig),
+				() -> new State(NAME, devDependencies, projectDir, buildDir, npmPathResolver, eslintConfig),
 				State::createFormatterFunc);
 	}
 
@@ -127,7 +129,7 @@ public class EslintFormatterStep {
 		private static final long serialVersionUID = -539537027004745812L;
 		private final EslintConfig eslintConfig;
 
-		State(String stepName, Map<String, String> devDependencies, File buildDir, NpmPathResolver npmPathResolver, EslintConfig eslintConfig) throws IOException {
+		State(String stepName, Map<String, String> devDependencies, File projectDir, File buildDir, NpmPathResolver npmPathResolver, EslintConfig eslintConfig) throws IOException {
 			super(stepName,
 					new NpmConfig(
 							replaceDevDependencies(
@@ -138,20 +140,29 @@ public class EslintFormatterStep {
 									"/com/diffplug/spotless/npm/common-serve.js",
 									"/com/diffplug/spotless/npm/eslint-serve.js"),
 							npmPathResolver.resolveNpmrcContent()),
+					projectDir,
 					buildDir,
 					npmPathResolver.resolveNpmExecutable());
 			this.eslintConfig = localCopyFiles(requireNonNull(eslintConfig));
 		}
 
 		private EslintConfig localCopyFiles(EslintConfig orig) {
-			if (orig.getEslintConfigPath() == null) {
-				return orig;
-			}
-			// If a config file is provided, we need to make sure it is at the same location as the node modules
-			// as eslint will try to resolve plugin/config names relatively to the config file location
+			// If any config files are provided, we need to make sure they are at the same location as the node modules
+			// as eslint will try to resolve plugin/config names relatively to the config file location and some
+			// eslint configs contain relative paths to additional config files (such as tsconfig.json e.g.)
 			FormattedPrinter.SYSOUT.print("Copying config file <%s> to <%s> and using the copy", orig.getEslintConfigPath(), nodeModulesDir);
 			File configFileCopy = NpmResourceHelper.copyFileToDir(orig.getEslintConfigPath(), nodeModulesDir);
-			return new EslintConfig(configFileCopy, orig.getEslintConfigJs());
+
+			for (Map.Entry<File, Optional<String>> additionalConfigFile : orig.getAdditionalConfigFiles().entrySet()) {
+				FormattedPrinter.SYSOUT.print("Copying additional config file <%s> to <%s> at subpath <%s> and using the copy", additionalConfigFile.getKey(), nodeModulesDir, additionalConfigFile.getValue());
+
+				if (additionalConfigFile.getValue().isPresent()) {
+					NpmResourceHelper.copyFileToDirAtSubpath(additionalConfigFile.getKey(), nodeModulesDir, additionalConfigFile.getValue().get());
+				} else {
+					NpmResourceHelper.copyFileToDir(additionalConfigFile.getKey(), nodeModulesDir);
+				}
+			}
+			return new EslintConfig(configFileCopy, orig.getEslintConfigJs(), orig.getAdditionalConfigFiles());
 		}
 
 		@Override
@@ -161,9 +172,7 @@ public class EslintFormatterStep {
 				FormattedPrinter.SYSOUT.print("creating formatter function (starting server)");
 				ServerProcessInfo eslintRestServer = npmRunServer();
 				EslintRestService restService = new EslintRestService(eslintRestServer.getBaseUrl());
-
-				//				String prettierConfigOptions = restService.resolveConfig(this.prettierConfig.getPrettierConfigPath(), this.prettierConfig.getOptions());
-				return Closeable.ofDangerous(() -> endServer(restService, eslintRestServer), new EslintFilePathPassingFormatterFunc(nodeModulesDir, eslintConfig, restService));
+				return Closeable.ofDangerous(() -> endServer(restService, eslintRestServer), new EslintFilePathPassingFormatterFunc(projectDir, nodeModulesDir, eslintConfig, restService));
 			} catch (IOException e) {
 				throw ThrowingEx.asRuntime(e);
 			}
@@ -182,12 +191,14 @@ public class EslintFormatterStep {
 	}
 
 	private static class EslintFilePathPassingFormatterFunc implements FormatterFunc.NeedsFile {
+		private final File projectDir;
 		private final File nodeModulesDir;
 		private final EslintConfig eslintConfig;
 		private final EslintRestService restService;
 
-		public EslintFilePathPassingFormatterFunc(File nodeModulesDir, EslintConfig eslintConfig, EslintRestService restService) {
-			this.nodeModulesDir = nodeModulesDir;
+		public EslintFilePathPassingFormatterFunc(File projectDir, File nodeModulesDir, EslintConfig eslintConfig, EslintRestService restService) {
+			this.projectDir = requireNonNull(projectDir);
+			this.nodeModulesDir = requireNonNull(nodeModulesDir);
 			this.eslintConfig = requireNonNull(eslintConfig);
 			this.restService = requireNonNull(restService);
 		}
@@ -214,6 +225,9 @@ public class EslintFormatterStep {
 				eslintCallOptions.put(FormatOption.ESLINT_OVERRIDE_CONFIG, eslintConfig.getEslintConfigJs());
 			}
 			eslintCallOptions.put(FormatOption.NODE_MODULES_DIR, nodeModulesDir.getAbsolutePath());
+
+			// TODO (simschla, 09.12.22): maybe only add this if there is a typescript config active? (TBD: how to detect)
+			eslintCallOptions.put(FormatOption.TS_CONFIG_ROOT_DIR, nodeModulesDir.toPath().relativize(projectDir.toPath()).toString());
 		}
 	}
 }
