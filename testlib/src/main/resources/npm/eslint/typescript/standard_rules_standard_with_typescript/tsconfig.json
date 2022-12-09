@@ -1,0 +1,18 @@
+{
+	"compileOnSave": true,
+	"compilerOptions": {
+		"module": "ES6",
+		"noImplicitAny": true,
+		"outDir": "build/ide/",
+		"sourceMap": true,
+		"skipLibCheck": true,
+		"target": "ES6",
+		"baseUrl": "./",
+		"paths": {
+		},
+		"lib": ["es7", "dom", "es2017"]
+	},
+	"include": [
+		"**/*"
+	]
+}

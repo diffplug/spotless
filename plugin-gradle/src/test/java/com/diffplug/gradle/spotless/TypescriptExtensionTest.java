@@ -164,7 +164,7 @@ class TypescriptExtensionTest extends GradleIntegrationHarness {
 	@Test
 	void useXoStandardRules() throws IOException {
 		setFile(".eslintrc.js").toResource("npm/eslint/typescript/standard_rules_xo/.eslintrc.js");
-		setFile("tsconfig.json").toResource("npm/eslint/typescript/standard_rules_xo/tsconfig.json"); // needs to be copied to!
+		setFile("tsconfig.json").toResource("npm/eslint/typescript/standard_rules_xo/tsconfig.json");
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
@@ -173,11 +173,31 @@ class TypescriptExtensionTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    typescript {",
 				"        target 'test.ts'",
-				"        eslint().styleGuide('xo-typescript').configFile('.eslintrc.js')//.tsconfigFile('tsconfig.json')", // TODO TODO maybe can skip the additional config files alltogether, instead provide tsConfigRootDir to eslint-serve.js via call
+				"        eslint().styleGuide('xo-typescript').configFile('.eslintrc.js')",
 				"    }",
 				"}");
 		setFile("test.ts").toResource("npm/eslint/typescript/standard_rules_xo/typescript.dirty");
 		gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 		assertFile("test.ts").sameAsResource("npm/eslint/typescript/standard_rules_xo/typescript.clean");
+	}
+
+	@Test
+	void useStandardWithTypescriptRules() throws IOException {
+		setFile(".eslintrc.js").toResource("npm/eslint/typescript/standard_rules_standard_with_typescript/.eslintrc.js");
+		setFile("tsconfig.json").toResource("npm/eslint/typescript/standard_rules_standard_with_typescript/tsconfig.json");
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    typescript {",
+				"        target 'test.ts'",
+				"        eslint().styleGuide('standard-with-typescript').configFile('.eslintrc.js')",
+				"    }",
+				"}");
+		setFile("test.ts").toResource("npm/eslint/typescript/standard_rules_standard_with_typescript/typescript.dirty");
+		gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		assertFile("test.ts").sameAsResource("npm/eslint/typescript/standard_rules_standard_with_typescript/typescript.clean");
 	}
 }
