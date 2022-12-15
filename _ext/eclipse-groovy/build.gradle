@@ -39,7 +39,7 @@ apply from: rootProject.file('_ext/gradle/p2-fat-jar-setup.gradle')
 apply from: rootProject.file('gradle/java-publish.gradle')
 
 dependencies {
-	implementation "com.diffplug.spotless:spotless-eclipse-base:${VER_SPOTLESS_ECLISPE_BASE}"
+	implementation "com.diffplug.spotless:spotless-eclipse-base:${VER_SPOTLESS_ECLIPSE_BASE}"
 	// Provides text partitioners for formatters
 	implementation ("org.eclipse.platform:org.eclipse.jface.text:${VER_ECLIPSE_JFACE}") {
 		exclude group: 'org.eclipse.platform', module: 'org.eclipse.swt'

@@ -60,7 +60,7 @@ apply from: rootProject.file('_ext/gradle/p2-fat-jar-setup.gradle')
 apply from: rootProject.file('gradle/java-publish.gradle')
 
 dependencies {
-	implementation "com.diffplug.spotless:spotless-eclipse-base:${VER_SPOTLESS_ECLISPE_BASE}"
+	implementation "com.diffplug.spotless:spotless-eclipse-base:${VER_SPOTLESS_ECLIPSE_BASE}"
 	// Required by most WPT formatters
 	implementation "com.ibm.icu:icu4j:${VER_IBM_ICU}"
 	// The XSD/DTD and other models are defined with EMF.
