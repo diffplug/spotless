@@ -138,6 +138,7 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 	private final static int WORKDIR = 2;
 
 	Map<Project, Repository> gitRoots = new HashMap<>();
+    Map<File, Repository> gitRepositories = new HashMap<>();
 	Table<Repository, String, ObjectId> rootTreeShaCache = HashBasedTable.create();
 	Map<Project, ObjectId> subtreeShaCache = new HashMap<>();
 
@@ -174,7 +175,7 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 
 	protected abstract @Nullable Project getParent(Project project);
 
-	private static @Nullable Repository traverseParentsUntil(File startWith, @Nullable File file) throws IOException {
+	private @Nullable Repository traverseParentsUntil(File startWith, @Nullable File file) throws IOException {
 		while (startWith != null && !Objects.equals(startWith, file)) {
 			if (isGitRoot(startWith)) {
 				return createRepo(startWith);
@@ -190,8 +191,14 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 		return dotGit != null && RepositoryCache.FileKey.isGitRepository(dotGit, FS.DETECTED);
 	}
 
-	static Repository createRepo(File dir) throws IOException {
-		return FileRepositoryBuilder.create(GitWorkarounds.getDotGitDir(dir));
+	Repository createRepo(File dir) throws IOException {
+        File dotGitDir = GitWorkarounds.getDotGitDir(dir);
+        Repository repo = gitRepositories.get(dotGitDir);
+        if (repo == null) {
+		    repo = FileRepositoryBuilder.create(dotGitDir);
+            gitRepositories.put(dotGitDir, repo);
+        }
+        return repo;
 	}
 
 	/**
