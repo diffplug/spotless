@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 				PaddedCell.DirtyState dirtyState = PaddedCell.calculateDirtyState(formatter, file);
 				if (!dirtyState.isClean() && !dirtyState.didNotConverge()) {
 					dirtyState.writeCanonicalTo(file);
+					buildContext.refresh(file);
 				}
 			} catch (IOException e) {
 				throw new MojoExecutionException("Unable to format file " + file, e);
