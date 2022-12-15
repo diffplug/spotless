@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.TreeMap;
 
 import javax.annotation.Nonnull;
@@ -152,17 +151,7 @@ public class EslintFormatterStep {
 			// eslint configs contain relative paths to additional config files (such as tsconfig.json e.g.)
 			FormattedPrinter.SYSOUT.print("Copying config file <%s> to <%s> and using the copy", orig.getEslintConfigPath(), nodeModulesDir);
 			File configFileCopy = NpmResourceHelper.copyFileToDir(orig.getEslintConfigPath(), nodeModulesDir);
-
-			for (Map.Entry<File, Optional<String>> additionalConfigFile : orig.getAdditionalConfigFiles().entrySet()) {
-				FormattedPrinter.SYSOUT.print("Copying additional config file <%s> to <%s> at subpath <%s> and using the copy", additionalConfigFile.getKey(), nodeModulesDir, additionalConfigFile.getValue());
-
-				if (additionalConfigFile.getValue().isPresent()) {
-					NpmResourceHelper.copyFileToDirAtSubpath(additionalConfigFile.getKey(), nodeModulesDir, additionalConfigFile.getValue().get());
-				} else {
-					NpmResourceHelper.copyFileToDir(additionalConfigFile.getKey(), nodeModulesDir);
-				}
-			}
-			return new EslintConfig(configFileCopy, orig.getEslintConfigJs(), orig.getAdditionalConfigFiles());
+			return orig.withEslintConfigPath(configFileCopy);
 		}
 
 		@Override
@@ -226,8 +215,12 @@ public class EslintFormatterStep {
 			}
 			eslintCallOptions.put(FormatOption.NODE_MODULES_DIR, nodeModulesDir.getAbsolutePath());
 
-			// TODO (simschla, 09.12.22): maybe only add this if there is a typescript config active? (TBD: how to detect)
-			eslintCallOptions.put(FormatOption.TS_CONFIG_ROOT_DIR, nodeModulesDir.toPath().relativize(projectDir.toPath()).toString());
+			if (eslintConfig instanceof EslintTypescriptConfig) {
+				// if we are a ts config, see if we need to use specific paths or use default projectDir
+				File tsConfigFilePath = ((EslintTypescriptConfig) eslintConfig).getTypescriptConfigPath();
+				File tsConfigRootDir = tsConfigFilePath != null ? tsConfigFilePath.getParentFile() : projectDir;
+				eslintCallOptions.put(FormatOption.TS_CONFIG_ROOT_DIR, nodeModulesDir.getAbsoluteFile().toPath().relativize(tsConfigRootDir.getAbsoluteFile().toPath()).toString());
+			}
 		}
 	}
 }

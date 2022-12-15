@@ -18,12 +18,7 @@ package com.diffplug.spotless.npm;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeMap;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.diffplug.spotless.FileSignature;
@@ -44,21 +39,18 @@ public class EslintConfig implements Serializable {
 
 	private final String eslintConfigJs;
 
-	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-	private final transient Map<File, Optional<String>> additionalConfigFiles; // key: source-file, value: target-remapping path relative to package.json (if needed)
-
-	private final FileSignature additionalConfigFilesSignature;
-
-	public EslintConfig(@Nullable File eslintConfigPath, @Nullable String eslintConfigJs, Map<File, Optional<String>> additionalConfigFiles) {
+	public EslintConfig(@Nullable File eslintConfigPath, @Nullable String eslintConfigJs) {
 		try {
 			this.eslintConfigPath = eslintConfigPath;
 			this.eslintConfigPathSignature = eslintConfigPath != null ? FileSignature.signAsList(this.eslintConfigPath) : FileSignature.signAsList();
 			this.eslintConfigJs = eslintConfigJs;
-			this.additionalConfigFiles = additionalConfigFiles != null ? new TreeMap<>(additionalConfigFiles) : Collections.emptyMap();
-			this.additionalConfigFilesSignature = FileSignature.signAsList(this.additionalConfigFiles.keySet().toArray(new File[0]));
 		} catch (IOException e) {
 			throw ThrowingEx.asRuntime(e);
 		}
+	}
+
+	public EslintConfig withEslintConfigPath(@Nullable File eslintConfigPath) {
+		return new EslintConfig(eslintConfigPath, this.eslintConfigJs);
 	}
 
 	@Nullable
@@ -69,10 +61,5 @@ public class EslintConfig implements Serializable {
 	@Nullable
 	public String getEslintConfigJs() {
 		return eslintConfigJs;
-	}
-
-	@Nonnull
-	public Map<File, Optional<String>> getAdditionalConfigFiles() {
-		return additionalConfigFiles;
 	}
 }

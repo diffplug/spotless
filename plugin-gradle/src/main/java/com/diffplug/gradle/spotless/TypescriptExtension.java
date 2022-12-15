@@ -27,6 +27,10 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
+import com.diffplug.spotless.npm.EslintConfig;
+
+import com.diffplug.spotless.npm.EslintTypescriptConfig;
+
 import org.gradle.api.Project;
 
 import com.diffplug.spotless.FormatterStep;
@@ -193,6 +197,9 @@ public class TypescriptExtension extends FormatExtension {
 
 	public class TypescriptEslintFormatExtension extends EslintFormatExtension {
 
+		@Nullable
+		Object typescriptConfigFilePath = null;
+
 		public TypescriptEslintFormatExtension(Map<String, String> devDependencies) {
 			super(devDependencies);
 		}
@@ -224,13 +231,15 @@ public class TypescriptExtension extends FormatExtension {
 		}
 
 		public TypescriptEslintFormatExtension tsconfigFile(Object path) {
-			return tsconfigFile(path, null);
-		}
-
-		public TypescriptEslintFormatExtension tsconfigFile(Object path, String remapping) {
-			additionalConfigFilePath(path, remapping);
+			this.typescriptConfigFilePath = requireNonNull(path);
 			replaceStep(createStep());
 			return this;
+		}
+
+		@Override
+		protected EslintConfig eslintConfig() {
+			EslintConfig config = super.eslintConfig();
+			return new EslintTypescriptConfig(config.getEslintConfigPath(), config.getEslintConfigJs(), typescriptConfigFilePath != null ? getProject().file(typescriptConfigFilePath) : null);
 		}
 	}
 

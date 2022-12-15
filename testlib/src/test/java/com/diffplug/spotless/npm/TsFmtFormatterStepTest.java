@@ -57,6 +57,7 @@ class TsFmtFormatterStepTest {
 			final FormatterStep formatterStep = TsFmtFormatterStep.create(
 					TsFmtFormatterStep.defaultDevDependencies(),
 					TestProvisioner.mavenCentral(),
+					projectDir(),
 					buildDir(),
 					npmPathResolver(),
 					TypedTsFmtConfigFile.named(configFileNameWithoutExtension, configFile),
@@ -79,6 +80,7 @@ class TsFmtFormatterStepTest {
 			final FormatterStep formatterStep = TsFmtFormatterStep.create(
 					TsFmtFormatterStep.defaultDevDependencies(),
 					TestProvisioner.mavenCentral(),
+					projectDir(),
 					buildDir(),
 					npmPathResolver(),
 					null,

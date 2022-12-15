@@ -42,4 +42,13 @@ public abstract class NpmFormatterStepCommonTests extends ResourceHarness {
 		}
 		return this.buildDir;
 	}
+
+	private File projectDir = null;
+
+	protected File projectDir() throws IOException {
+		if (this.projectDir == null) {
+			this.projectDir = newFolder("project-dir");
+		}
+		return this.projectDir;
+	}
 }
