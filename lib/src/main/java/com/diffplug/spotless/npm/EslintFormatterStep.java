@@ -48,7 +48,7 @@ public class EslintFormatterStep {
 	public static final String DEFAULT_ESLINT_VERSION = "8.28.0";
 
 	public enum PopularStyleGuide {
-		STANDARD_WITH_TYPESCRIPT("standard-with-typescript") {
+		TS_STANDARD_WITH_TYPESCRIPT("standard-with-typescript") {
 			@Override
 			public Map<String, String> devDependencies() {
 				Map<String, String> dependencies = new LinkedHashMap<>();
@@ -60,13 +60,49 @@ public class EslintFormatterStep {
 				return dependencies;
 			}
 		},
-		XO_TYPESCRIPT("xo-typescript") {
+		TS_XO_TYPESCRIPT("xo-typescript") {
 			@Override
 			public Map<String, String> devDependencies() {
 				Map<String, String> dependencies = new LinkedHashMap<>();
 				dependencies.put("eslint-config-xo", "0.43.1");
 				dependencies.put("eslint-config-xo-typescript", "0.55.1");
 				dependencies.put("typescript", "4.9.3");
+				return dependencies;
+			}
+		},
+		JS_AIRBNB("airbnb") {
+			@Override
+			public Map<String, String> devDependencies() {
+				Map<String, String> dependencies = new LinkedHashMap<>();
+				dependencies.put("eslint-config-airbnb-base", "15.0.0");
+				dependencies.put("eslint-plugin-import", "2.26.0");
+				return dependencies;
+			}
+		},
+		JS_GOOGLE("google") {
+			@Override
+			public Map<String, String> devDependencies() {
+				Map<String, String> dependencies = new LinkedHashMap<>();
+				dependencies.put("eslint-config-google", "0.14.0");
+				return dependencies;
+			}
+		},
+		JS_STANDARD("standard") {
+			@Override
+			public Map<String, String> devDependencies() {
+				Map<String, String> dependencies = new LinkedHashMap<>();
+				dependencies.put("eslint-config-standard", "17.0.0");
+				dependencies.put("eslint-plugin-import", "2.26.0");
+				dependencies.put("eslint-plugin-n", "15.6.0");
+				dependencies.put("eslint-plugin-promise", "6.1.1");
+				return dependencies;
+			}
+		},
+		JS_XO("xo") {
+			@Override
+			public Map<String, String> devDependencies() {
+				Map<String, String> dependencies = new LinkedHashMap<>();
+				dependencies.put("eslint-config-xo", "0.43.1");
 				return dependencies;
 			}
 		};

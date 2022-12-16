@@ -17,7 +17,6 @@ package com.diffplug.spotless.npm;
 
 import com.diffplug.common.collect.ImmutableMap;
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.StepHarnessWithFile;
 import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.tag.NpmTest;
@@ -42,22 +41,65 @@ class EslintFormatterStepTest {
 
 	@NpmTest
 	@Nested
+	class EslintJavascriptFormattingStepTest extends NpmFormatterStepCommonTests {
+
+		private final Map<String, Map<String, String>> devDependenciesForRuleset = ImmutableMap.of(
+			"custom_rules", EslintFormatterStep.defaultDevDependenciesForTypescript(),
+			"styleguide/airbnb", combine(EslintFormatterStep.defaultDevDependencies(), EslintFormatterStep.PopularStyleGuide.JS_AIRBNB.devDependencies()),
+			"styleguide/google", combine(EslintFormatterStep.defaultDevDependencies(), EslintFormatterStep.PopularStyleGuide.JS_GOOGLE.devDependencies()),
+			"styleguide/standard", combine(EslintFormatterStep.defaultDevDependencies(), EslintFormatterStep.PopularStyleGuide.JS_STANDARD.devDependencies()),
+			"styleguide/xo", combine(EslintFormatterStep.defaultDevDependencies(), EslintFormatterStep.PopularStyleGuide.JS_XO.devDependencies())
+		);
+
+		@ParameterizedTest(name = "{index}: eslint can be applied using ruleset {0}")
+		@ValueSource(strings = {"custom_rules", "styleguide/airbnb", "styleguide/google", "styleguide/standard", "styleguide/xo"})
+		void formattingUsingRulesetsFile(String ruleSetName) throws Exception {
+			String filedir = "npm/eslint/javascript/" + ruleSetName + "/";
+
+			String testDir = "formatting_ruleset_" + ruleSetName.replace('/', '_') + "/";
+//			File testDirFile = newFolder(testDir);
+
+			final File eslintRc = createTestFile(filedir + ".eslintrc.js");
+//			final File eslintRc = setFile(buildDir().getPath() + "/.eslintrc.js").toResource(filedir + ".eslintrc.js");
+
+			final String dirtyFile = filedir + "javascript-es6.dirty";
+			File dirtyFileFile = setFile(testDir + "test.js").toResource(dirtyFile);
+			final String cleanFile = filedir + "javascript-es6.clean";
+
+			final FormatterStep formatterStep = EslintFormatterStep.create(
+				devDependenciesForRuleset.get(ruleSetName),
+				TestProvisioner.mavenCentral(),
+				projectDir(),
+				buildDir(),
+				npmPathResolver(),
+				new EslintConfig(eslintRc, null));
+
+			try (StepHarnessWithFile stepHarness = StepHarnessWithFile.forStep(formatterStep)) {
+				stepHarness.testResource(dirtyFileFile, dirtyFile, cleanFile);
+			}
+		}
+	}
+
+
+
+	@NpmTest
+	@Nested
 	class EslintTypescriptFormattingStepTest extends NpmFormatterStepCommonTests {
 
 		private final Map<String, Map<String, String>> devDependenciesForRuleset = ImmutableMap.of(
 			"custom_rules", EslintFormatterStep.defaultDevDependenciesForTypescript(),
-			"standard_rules_standard_with_typescript", combine(EslintFormatterStep.defaultDevDependenciesForTypescript(), EslintFormatterStep.PopularStyleGuide.STANDARD_WITH_TYPESCRIPT.devDependencies()),
-				"standard_rules_xo", combine(EslintFormatterStep.defaultDevDependenciesForTypescript(), EslintFormatterStep.PopularStyleGuide.XO_TYPESCRIPT.devDependencies())
+			"styleguide/standard_with_typescript", combine(EslintFormatterStep.defaultDevDependenciesForTypescript(), EslintFormatterStep.PopularStyleGuide.TS_STANDARD_WITH_TYPESCRIPT.devDependencies()),
+				"styleguide/xo", combine(EslintFormatterStep.defaultDevDependenciesForTypescript(), EslintFormatterStep.PopularStyleGuide.TS_XO_TYPESCRIPT.devDependencies())
 				);
 
 
 
 		@ParameterizedTest(name = "{index}: eslint can be applied using ruleset {0}")
-		@ValueSource(strings = {"custom_rules", "standard_rules_standard_with_typescript", "standard_rules_xo"})
+		@ValueSource(strings = {"custom_rules", "styleguide/standard_with_typescript", "styleguide/xo"})
 		void formattingUsingRulesetsFile(String ruleSetName) throws Exception {
 			String filedir = "npm/eslint/typescript/" + ruleSetName + "/";
 
-			String testDir = "formatting_ruleset_" + ruleSetName + "/";
+			String testDir = "formatting_ruleset_" + ruleSetName.replace('/', '_') + "/";
 //			File testDirFile = newFolder(testDir);
 
 			final File eslintRc = createTestFile(filedir + ".eslintrc.js");
@@ -88,7 +130,7 @@ class EslintFormatterStepTest {
 
 	@NpmTest
 	@Nested
-	class EslintInlineConfigFormattingStepTest extends NpmFormatterStepCommonTests {
+	class EslintInlineConfigTypescriptFormattingStepTest extends NpmFormatterStepCommonTests {
 
 
 		@Test
@@ -133,7 +175,7 @@ class EslintFormatterStepTest {
 			final String cleanFile = filedir + "typescript.clean";
 
 			final FormatterStep formatterStep = EslintFormatterStep.create(
-				combine(EslintFormatterStep.PopularStyleGuide.XO_TYPESCRIPT.devDependencies(), EslintFormatterStep.defaultDevDependenciesForTypescript()),
+				combine(EslintFormatterStep.PopularStyleGuide.TS_XO_TYPESCRIPT.devDependencies(), EslintFormatterStep.defaultDevDependenciesForTypescript()),
 				TestProvisioner.mavenCentral(),
 				projectDir(),
 				buildDir(),
