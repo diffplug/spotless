@@ -35,7 +35,7 @@ public class EslintRestService extends BaseNpmRestService {
 	}
 
 	enum FormatOption {
-		ESLINT_OVERRIDE_CONFIG("eslint_override_config"), ESLINT_OVERRIDE_CONFIG_FILE("eslint_override_config_file"), FILE_PATH("file_path"), NODE_MODULES_DIR("node_modules_dir"), TS_CONFIG_ROOT_DIR("ts_config_root_dir");
+		ESLINT_OVERRIDE_CONFIG("eslint_override_config"), ESLINT_OVERRIDE_CONFIG_FILE("eslint_override_config_file"), FILE_PATH("file_path"), TS_CONFIG_ROOT_DIR("ts_config_root_dir");
 
 		private final String backendName;
 

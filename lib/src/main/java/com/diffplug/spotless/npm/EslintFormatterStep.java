@@ -213,8 +213,6 @@ public class EslintFormatterStep {
 			if (eslintConfig.getEslintConfigJs() != null) {
 				eslintCallOptions.put(FormatOption.ESLINT_OVERRIDE_CONFIG, eslintConfig.getEslintConfigJs());
 			}
-			eslintCallOptions.put(FormatOption.NODE_MODULES_DIR, nodeModulesDir.getAbsolutePath());
-
 			if (eslintConfig instanceof EslintTypescriptConfig) {
 				// if we are a ts config, see if we need to use specific paths or use default projectDir
 				File tsConfigFilePath = ((EslintTypescriptConfig) eslintConfig).getTypescriptConfigPath();

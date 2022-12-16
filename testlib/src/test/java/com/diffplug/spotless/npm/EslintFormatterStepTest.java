@@ -23,6 +23,7 @@ import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.tag.NpmTest;
 
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -32,6 +33,12 @@ import java.util.TreeMap;
 
 @NpmTest
 class EslintFormatterStepTest {
+
+	private final Map<String, String> combine(Map<String, String> m1, Map<String, String> m2) {
+		Map<String, String> combined = new TreeMap<>(m1);
+		combined.putAll(m2);
+		return combined;
+	}
 
 	@NpmTest
 	@Nested
@@ -43,11 +50,7 @@ class EslintFormatterStepTest {
 				"standard_rules_xo", combine(EslintFormatterStep.defaultDevDependenciesForTypescript(), EslintFormatterStep.PopularStyleGuide.XO_TYPESCRIPT.devDependencies())
 				);
 
-		private final Map<String, String> combine(Map<String, String> m1, Map<String, String> m2) {
-			Map<String, String> combined = new TreeMap<>(m1);
-			combined.putAll(m2);
-			return combined;
-		}
+
 
 		@ParameterizedTest(name = "{index}: eslint can be applied using ruleset {0}")
 		@ValueSource(strings = {"custom_rules", "standard_rules_standard_with_typescript", "standard_rules_xo"})
