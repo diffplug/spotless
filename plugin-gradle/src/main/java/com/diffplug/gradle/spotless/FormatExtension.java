@@ -24,13 +24,11 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Random;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
+import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -62,8 +60,6 @@ import com.diffplug.spotless.generic.PipeStepPair;
 import com.diffplug.spotless.generic.ReplaceRegexStep;
 import com.diffplug.spotless.generic.ReplaceStep;
 import com.diffplug.spotless.generic.TrimTrailingWhitespaceStep;
-import com.diffplug.spotless.npm.EslintConfig;
-import com.diffplug.spotless.npm.EslintFormatterStep;
 import com.diffplug.spotless.npm.NpmPathResolver;
 import com.diffplug.spotless.npm.PrettierFormatterStep;
 
@@ -518,23 +514,32 @@ public class FormatExtension {
 		return config;
 	}
 
-	public abstract class NpmStepConfig<T extends NpmStepConfig<?>> {
+	public abstract static class NpmStepConfig<T extends NpmStepConfig<?>> {
 		@Nullable
 		protected Object npmFile;
 
 		@Nullable
 		protected Object npmrcFile;
 
+		protected Project project;
+
+		private Consumer<FormatterStep> replaceStep;
+
+		public NpmStepConfig(Project project, Consumer<FormatterStep> replaceStep) {
+			this.project = requireNonNull(project);
+			this.replaceStep = requireNonNull(replaceStep);
+		}
+
 		@SuppressWarnings("unchecked")
 		public T npmExecutable(final Object npmFile) {
 			this.npmFile = npmFile;
-			replaceStep(createStep());
+			replaceStep();
 			return (T) this;
 		}
 
 		public T npmrc(final Object npmrcFile) {
 			this.npmrcFile = npmrcFile;
-			replaceStep(createStep());
+			replaceStep();
 			return (T) this;
 		}
 
@@ -547,10 +552,14 @@ public class FormatExtension {
 		}
 
 		private File fileOrNull(Object npmFile) {
-			return npmFile != null ? getProject().file(npmFile) : null;
+			return npmFile != null ? project.file(npmFile) : null;
 		}
 
-		abstract FormatterStep createStep();
+		protected void replaceStep() {
+			replaceStep.accept(createStep());
+		}
+
+		abstract protected FormatterStep createStep();
 
 	}
 
@@ -565,22 +574,24 @@ public class FormatExtension {
 		final Map<String, String> devDependencies;
 
 		PrettierConfig(Map<String, String> devDependencies) {
+			super(getProject(), FormatExtension.this::replaceStep);
 			this.devDependencies = requireNonNull(devDependencies);
 		}
 
 		public PrettierConfig configFile(final Object prettierConfigFile) {
 			this.prettierConfigFile = prettierConfigFile;
-			replaceStep(createStep());
+			replaceStep();
 			return this;
 		}
 
 		public PrettierConfig config(final Map<String, Object> prettierConfig) {
 			this.prettierConfig = new TreeMap<>(prettierConfig);
-			replaceStep(createStep());
+			replaceStep();
 			return this;
 		}
 
-		FormatterStep createStep() {
+		@Override
+		protected FormatterStep createStep() {
 			final Project project = getProject();
 			return PrettierFormatterStep.create(
 					devDependencies,
@@ -609,69 +620,6 @@ public class FormatExtension {
 		PrettierConfig prettierConfig = new PrettierConfig(devDependencies);
 		addStep(prettierConfig.createStep());
 		return prettierConfig;
-	}
-
-	public class EslintFormatExtension extends NpmStepConfig<EslintFormatExtension> {
-
-		Map<String, String> devDependencies = new LinkedHashMap<>();
-
-		@Nullable
-		Object configFilePath = null;
-
-		@Nullable
-		String configJs = null;
-
-		public EslintFormatExtension(Map<String, String> devDependencies) {
-			this.devDependencies.putAll(requireNonNull(devDependencies));
-		}
-
-		public EslintFormatExtension devDependencies(Map<String, String> devDependencies) {
-			this.devDependencies.putAll(devDependencies);
-			replaceStep(createStep());
-			return this;
-		}
-
-		public EslintFormatExtension configJs(String configJs) {
-			this.configJs = requireNonNull(configJs);
-			replaceStep(createStep());
-			return this;
-		}
-
-		public EslintFormatExtension configFile(Object configFilePath) {
-			this.configFilePath = requireNonNull(configFilePath);
-			replaceStep(createStep());
-			return this;
-		}
-
-		public FormatterStep createStep() {
-			final Project project = getProject();
-
-			return EslintFormatterStep.create(
-					devDependencies,
-					provisioner(),
-					project.getProjectDir(),
-					project.getBuildDir(),
-					new NpmPathResolver(npmFileOrNull(), npmrcFileOrNull(), project.getProjectDir(), project.getRootDir()),
-					eslintConfig());
-		}
-
-		protected EslintConfig eslintConfig() {
-			return new EslintConfig(configFilePath != null ? getProject().file(configFilePath) : null, configJs);
-		}
-	}
-
-	public EslintFormatExtension eslint() {
-		return eslint(EslintFormatterStep.defaultDevDependencies());
-	}
-
-	public EslintFormatExtension eslint(String version) {
-		return eslint(EslintFormatterStep.defaultDevDependenciesWithEslint(version));
-	}
-
-	public EslintFormatExtension eslint(Map<String, String> devDependencies) {
-		EslintFormatExtension eslint = new EslintFormatExtension(devDependencies);
-		addStep(eslint.createStep());
-		return eslint;
 	}
 
 	/** Uses the default version of clang-format. */

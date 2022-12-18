@@ -167,6 +167,11 @@ public abstract class SpotlessExtension {
 		format(CppExtension.NAME, CppExtension.class, closure);
 	}
 
+	/** Configures the special javascript-specific extension for javascript files. */
+	public void javascript(Action<JavascriptExtension> closure) {
+		format(JavascriptExtension.NAME, JavascriptExtension.class, closure);
+	}
+
 	/** Configures the special typescript-specific extension for typescript files. */
 	public void typescript(Action<TypescriptExtension> closure) {
 		format(TypescriptExtension.NAME, TypescriptExtension.class, closure);

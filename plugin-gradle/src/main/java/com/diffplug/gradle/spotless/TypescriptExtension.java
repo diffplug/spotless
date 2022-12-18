@@ -27,15 +27,13 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-import com.diffplug.spotless.npm.EslintConfig;
-
-import com.diffplug.spotless.npm.EslintTypescriptConfig;
-
 import org.gradle.api.Project;
 
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.npm.EslintConfig;
 import com.diffplug.spotless.npm.EslintFormatterStep;
 import com.diffplug.spotless.npm.EslintFormatterStep.PopularStyleGuide;
+import com.diffplug.spotless.npm.EslintTypescriptConfig;
 import com.diffplug.spotless.npm.NpmPathResolver;
 import com.diffplug.spotless.npm.PrettierFormatterStep;
 import com.diffplug.spotless.npm.TsConfigFileType;
@@ -81,12 +79,13 @@ public class TypescriptExtension extends FormatExtension {
 		private final Map<String, String> devDependencies;
 
 		TypescriptFormatExtension(Map<String, String> devDependencies) {
+			super(getProject(), TypescriptExtension.this::replaceStep);
 			this.devDependencies = Objects.requireNonNull(devDependencies);
 		}
 
 		public void config(final Map<String, Object> config) {
 			this.config = new TreeMap<>(requireNonNull(config));
-			replaceStep(createStep());
+			replaceStep();
 		}
 
 		public void tsconfigFile(final Object path) {
@@ -108,7 +107,7 @@ public class TypescriptExtension extends FormatExtension {
 		private void configFile(TsConfigFileType filetype, Object path) {
 			this.configFileType = requireNonNull(filetype);
 			this.configFilePath = requireNonNull(path);
-			replaceStep(createStep());
+			replaceStep();
 		}
 
 		public FormatterStep createStep() {
@@ -161,7 +160,7 @@ public class TypescriptExtension extends FormatExtension {
 		}
 
 		@Override
-		FormatterStep createStep() {
+		protected FormatterStep createStep() {
 			fixParserToTypescript();
 			return super.createStep();
 		}
@@ -178,74 +177,73 @@ public class TypescriptExtension extends FormatExtension {
 		}
 	}
 
-	@Override
-	public TypescriptEslintFormatExtension eslint() {
+	public TypescriptEslintConfig eslint() {
 		return eslint(EslintFormatterStep.defaultDevDependenciesForTypescript());
 	}
 
-	@Override
-	public TypescriptEslintFormatExtension eslint(String version) {
+	public TypescriptEslintConfig eslint(String version) {
 		return eslint(EslintFormatterStep.defaultDevDependenciesTypescriptWithEslint(version));
 	}
 
-	@Override
-	public TypescriptEslintFormatExtension eslint(Map<String, String> devDependencies) {
-		TypescriptEslintFormatExtension eslint = new TypescriptEslintFormatExtension(devDependencies);
+	public TypescriptEslintConfig eslint(Map<String, String> devDependencies) {
+		TypescriptEslintConfig eslint = new TypescriptEslintConfig(devDependencies);
 		addStep(eslint.createStep());
 		return eslint;
 	}
 
-	public class TypescriptEslintFormatExtension extends EslintFormatExtension {
+	public class TypescriptEslintConfig extends JavascriptExtension.EslintBaseConfig<TypescriptEslintConfig> {
 
 		@Nullable
 		Object typescriptConfigFilePath = null;
 
-		public TypescriptEslintFormatExtension(Map<String, String> devDependencies) {
-			super(devDependencies);
+		public TypescriptEslintConfig(Map<String, String> devDependencies) {
+			super(getProject(), TypescriptExtension.this::replaceStep, devDependencies);
 		}
 
-		@Override
-		public TypescriptEslintFormatExtension devDependencies(Map<String, String> devDependencies) {
-			return (TypescriptEslintFormatExtension) super.devDependencies(devDependencies);
-		}
-
-		@Override
-		public TypescriptEslintFormatExtension configJs(String configJs) {
-			return (TypescriptEslintFormatExtension) super.configJs(configJs);
-		}
-
-		@Override
-		public TypescriptEslintFormatExtension configFile(Object configFilePath) {
-			return (TypescriptEslintFormatExtension) super.configFile(configFilePath);
-		}
-
-		public TypescriptEslintFormatExtension styleGuide(String styleGuide) {
-			PopularStyleGuide popularStyleGuide = PopularStyleGuide.fromNameOrNull(styleGuide);
-			if (popularStyleGuide == null) {
-				throw new IllegalArgumentException("Unknown style guide: " + styleGuide + ". Known style guides: "
-						+ Arrays.stream(PopularStyleGuide.values()).map(PopularStyleGuide::getPopularStyleGuideName).collect(Collectors.joining(", ")));
-			}
-			devDependencies(popularStyleGuide.devDependencies());
-			replaceStep(createStep());
-			return this;
-		}
-
-		public TypescriptEslintFormatExtension tsconfigFile(Object path) {
+		public TypescriptEslintConfig tsconfigFile(Object path) {
 			this.typescriptConfigFilePath = requireNonNull(path);
-			replaceStep(createStep());
+			replaceStep();
 			return this;
 		}
 
 		@Override
+		protected void verifyStyleGuideIsSupported(String styleGuideName, PopularStyleGuide popularStyleGuide) {
+			if (!isTsStyleGuide(popularStyleGuide)) {
+				throw new IllegalArgumentException("Unknown style guide: " + styleGuideName + ". Known typescript style guides: "
+						+ Arrays.stream(EslintFormatterStep.PopularStyleGuide.values())
+								.filter(this::isTsStyleGuide)
+								.map(PopularStyleGuide::getPopularStyleGuideName)
+								.sorted()
+								.collect(Collectors.joining(", ")));
+			}
+		}
+
+		private boolean isTsStyleGuide(PopularStyleGuide popularStyleGuide) {
+			return popularStyleGuide != null && popularStyleGuide.name().startsWith("TS_");
+		}
+
+		public FormatterStep createStep() {
+			final Project project = getProject();
+
+			return EslintFormatterStep.create(
+					devDependencies,
+					provisioner(),
+					project.getProjectDir(),
+					project.getBuildDir(),
+					new NpmPathResolver(npmFileOrNull(), npmrcFileOrNull(), project.getProjectDir(), project.getRootDir()),
+					eslintConfig());
+		}
+
 		protected EslintConfig eslintConfig() {
-			EslintConfig config = super.eslintConfig();
-			return new EslintTypescriptConfig(config.getEslintConfigPath(), config.getEslintConfigJs(), typescriptConfigFilePath != null ? getProject().file(typescriptConfigFilePath) : null);
+			return new EslintTypescriptConfig(
+					configFilePath != null ? getProject().file(configFilePath) : null,
+					configJs,
+					typescriptConfigFilePath != null ? getProject().file(typescriptConfigFilePath) : null);
 		}
 	}
 
 	@Override
 	protected void setupTask(SpotlessTask task) {
-		// defaults to all typescript files
 		if (target == null) {
 			throw noDefaultTargetException();
 		}
