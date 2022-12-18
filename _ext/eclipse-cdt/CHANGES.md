@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `9.9.0`).
 
 ## [Unreleased]
+### Fixed
+* Fix typo in gradle variable names ([#1425](https://github.com/diffplug/spotless/pull/1425))
 
 ## [10.5.0] - 2021-12-13
 ### Added
