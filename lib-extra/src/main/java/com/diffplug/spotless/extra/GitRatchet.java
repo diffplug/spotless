@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 DiffPlug
+ * Copyright 2020-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -138,7 +138,7 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 	private final static int WORKDIR = 2;
 
 	Map<Project, Repository> gitRoots = new HashMap<>();
-    Map<File, Repository> gitRepositories = new HashMap<>();
+	Map<File, Repository> gitRepositories = new HashMap<>();
 	Table<Repository, String, ObjectId> rootTreeShaCache = HashBasedTable.create();
 	Map<Project, ObjectId> subtreeShaCache = new HashMap<>();
 
@@ -192,13 +192,13 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 	}
 
 	Repository createRepo(File dir) throws IOException {
-        File dotGitDir = GitWorkarounds.getDotGitDir(dir);
-        Repository repo = gitRepositories.get(dotGitDir);
-        if (repo == null) {
-		    repo = FileRepositoryBuilder.create(dotGitDir);
-            gitRepositories.put(dotGitDir, repo);
-        }
-        return repo;
+		File dotGitDir = GitWorkarounds.getDotGitDir(dir);
+		Repository repo = gitRepositories.get(dotGitDir);
+		if (repo == null) {
+			repo = FileRepositoryBuilder.create(dotGitDir);
+			gitRepositories.put(dotGitDir, repo);
+		}
+		return repo;
 	}
 
 	/**
