@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 import javax.annotation.Nullable;
@@ -137,8 +136,7 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 	private final static int INDEX = 1;
 	private final static int WORKDIR = 2;
 
-	Map<Project, Repository> gitRoots = new HashMap<>();
-	Map<File, Repository> gitRepositories = new HashMap<>();
+	Map<File, Repository> gitRoots = new HashMap<>();
 	Table<Repository, String, ObjectId> rootTreeShaCache = HashBasedTable.create();
 	Map<Project, ObjectId> subtreeShaCache = new HashMap<>();
 
@@ -148,25 +146,14 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 	 * We cache the Repository for every Project in {@code gitRoots}, and use dynamic programming to populate it.
 	 */
 	protected Repository repositoryFor(Project project) throws IOException {
-		Repository repo = gitRoots.get(project);
+		File projectGitDir = GitWorkarounds.getDotGitDir(getDir(project));
+		if (projectGitDir == null || !RepositoryCache.FileKey.isGitRepository(projectGitDir, FS.DETECTED)) {
+			throw new IllegalArgumentException("Cannot find git repository in any parent directory");
+		}
+		Repository repo = gitRoots.get(projectGitDir);
 		if (repo == null) {
-			if (isGitRoot(getDir(project))) {
-				repo = createRepo(getDir(project));
-			} else {
-				Project parentProj = getParent(project);
-				if (parentProj == null) {
-					repo = traverseParentsUntil(getDir(project).getParentFile(), null);
-					if (repo == null) {
-						throw new IllegalArgumentException("Cannot find git repository in any parent directory");
-					}
-				} else {
-					repo = traverseParentsUntil(getDir(project).getParentFile(), getDir(parentProj));
-					if (repo == null) {
-						repo = repositoryFor(parentProj);
-					}
-				}
-			}
-			gitRoots.put(project, repo);
+			repo = FileRepositoryBuilder.create(projectGitDir);
+			gitRoots.put(projectGitDir, repo);
 		}
 		return repo;
 	}
@@ -174,32 +161,6 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 	protected abstract File getDir(Project project);
 
 	protected abstract @Nullable Project getParent(Project project);
-
-	private @Nullable Repository traverseParentsUntil(File startWith, @Nullable File file) throws IOException {
-		while (startWith != null && !Objects.equals(startWith, file)) {
-			if (isGitRoot(startWith)) {
-				return createRepo(startWith);
-			} else {
-				startWith = startWith.getParentFile();
-			}
-		}
-		return null;
-	}
-
-	private static boolean isGitRoot(File dir) {
-		File dotGit = GitWorkarounds.getDotGitDir(dir);
-		return dotGit != null && RepositoryCache.FileKey.isGitRepository(dotGit, FS.DETECTED);
-	}
-
-	Repository createRepo(File dir) throws IOException {
-		File dotGitDir = GitWorkarounds.getDotGitDir(dir);
-		Repository repo = gitRepositories.get(dotGitDir);
-		if (repo == null) {
-			repo = FileRepositoryBuilder.create(dotGitDir);
-			gitRepositories.put(dotGitDir, repo);
-		}
-		return repo;
-	}
 
 	/**
 	 * Fast way to return treeSha of the given ref against the git repository which stores the given project.
