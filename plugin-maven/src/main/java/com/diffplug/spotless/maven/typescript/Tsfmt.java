@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -120,8 +120,9 @@ public class Tsfmt implements FormatterStepFactory {
 		}
 
 		File buildDir = stepConfig.getFileLocator().getBuildDir();
-		NpmPathResolver npmPathResolver = new NpmPathResolver(npm, npmrcFile, stepConfig.getFileLocator().getBaseDir());
-		return TsFmtFormatterStep.create(devDependencies, stepConfig.getProvisioner(), buildDir, npmPathResolver, configFile, configInline);
+		File baseDir = stepConfig.getFileLocator().getBaseDir();
+		NpmPathResolver npmPathResolver = new NpmPathResolver(npm, npmrcFile, baseDir);
+		return TsFmtFormatterStep.create(devDependencies, stepConfig.getProvisioner(), baseDir, buildDir, npmPathResolver, configFile, configInline);
 	}
 
 	private static IllegalArgumentException onlyOneConfig() {

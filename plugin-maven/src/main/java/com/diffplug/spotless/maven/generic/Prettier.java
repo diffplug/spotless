@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,8 +105,9 @@ public class Prettier implements FormatterStepFactory {
 		// create the format step
 		PrettierConfig prettierConfig = new PrettierConfig(configFileHandler, configInline);
 		File buildDir = stepConfig.getFileLocator().getBuildDir();
-		NpmPathResolver npmPathResolver = new NpmPathResolver(npm, npmrcFile, stepConfig.getFileLocator().getBaseDir());
-		return PrettierFormatterStep.create(devDependencies, stepConfig.getProvisioner(), buildDir, npmPathResolver, prettierConfig);
+		File baseDir = stepConfig.getFileLocator().getBaseDir();
+		NpmPathResolver npmPathResolver = new NpmPathResolver(npm, npmrcFile, baseDir);
+		return PrettierFormatterStep.create(devDependencies, stepConfig.getProvisioner(), baseDir, buildDir, npmPathResolver, prettierConfig);
 	}
 
 	private boolean moreThanOneNonNull(Object... objects) {
