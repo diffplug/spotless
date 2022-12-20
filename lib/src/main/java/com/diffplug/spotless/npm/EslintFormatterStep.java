@@ -45,18 +45,17 @@ public class EslintFormatterStep {
 
 	public static final String NAME = "eslint-format";
 
-	public static final String DEFAULT_ESLINT_VERSION = "8.28.0";
+	public static final String DEFAULT_ESLINT_VERSION = "^8.30.0";
 
 	public enum PopularStyleGuide {
 		TS_STANDARD_WITH_TYPESCRIPT("standard-with-typescript") {
 			@Override
 			public Map<String, String> devDependencies() {
 				Map<String, String> dependencies = new LinkedHashMap<>();
-				dependencies.put("eslint-config-standard-with-typescript", "23.0.0");
-				dependencies.put("eslint-plugin-import", "2.26.0");
-				dependencies.put("eslint-plugin-n", "15.5.1");
-				dependencies.put("eslint-plugin-promise", "6.1.1");
-				dependencies.put("typescript", "4.9.3");
+				dependencies.put("eslint-config-standard-with-typescript", "^24.0.0");
+				dependencies.put("eslint-plugin-import", "^2.26.0");
+				dependencies.put("eslint-plugin-n", "^15.6.0");
+				dependencies.put("eslint-plugin-promise", "^6.1.1");
 				return dependencies;
 			}
 		},
@@ -64,9 +63,8 @@ public class EslintFormatterStep {
 			@Override
 			public Map<String, String> devDependencies() {
 				Map<String, String> dependencies = new LinkedHashMap<>();
-				dependencies.put("eslint-config-xo", "0.43.1");
-				dependencies.put("eslint-config-xo-typescript", "0.55.1");
-				dependencies.put("typescript", "4.9.3");
+				dependencies.put("eslint-config-xo", "^0.43.1");
+				dependencies.put("eslint-config-xo-typescript", "^0.55.1");
 				return dependencies;
 			}
 		},
@@ -74,8 +72,8 @@ public class EslintFormatterStep {
 			@Override
 			public Map<String, String> devDependencies() {
 				Map<String, String> dependencies = new LinkedHashMap<>();
-				dependencies.put("eslint-config-airbnb-base", "15.0.0");
-				dependencies.put("eslint-plugin-import", "2.26.0");
+				dependencies.put("eslint-config-airbnb-base", "^15.0.0");
+				dependencies.put("eslint-plugin-import", "^2.26.0");
 				return dependencies;
 			}
 		},
@@ -83,7 +81,7 @@ public class EslintFormatterStep {
 			@Override
 			public Map<String, String> devDependencies() {
 				Map<String, String> dependencies = new LinkedHashMap<>();
-				dependencies.put("eslint-config-google", "0.14.0");
+				dependencies.put("eslint-config-google", "^0.14.0");
 				return dependencies;
 			}
 		},
@@ -91,10 +89,10 @@ public class EslintFormatterStep {
 			@Override
 			public Map<String, String> devDependencies() {
 				Map<String, String> dependencies = new LinkedHashMap<>();
-				dependencies.put("eslint-config-standard", "17.0.0");
-				dependencies.put("eslint-plugin-import", "2.26.0");
-				dependencies.put("eslint-plugin-n", "15.6.0");
-				dependencies.put("eslint-plugin-promise", "6.1.1");
+				dependencies.put("eslint-config-standard", "^17.0.0");
+				dependencies.put("eslint-plugin-import", "^2.26.0");
+				dependencies.put("eslint-plugin-n", "^15.6.0");
+				dependencies.put("eslint-plugin-promise", "^6.1.1");
 				return dependencies;
 			}
 		},
@@ -102,7 +100,7 @@ public class EslintFormatterStep {
 			@Override
 			public Map<String, String> devDependencies() {
 				Map<String, String> dependencies = new LinkedHashMap<>();
-				dependencies.put("eslint-config-xo", "0.43.1");
+				dependencies.put("eslint-config-xo", "^0.43.1");
 				return dependencies;
 			}
 		};
@@ -135,8 +133,9 @@ public class EslintFormatterStep {
 
 	public static Map<String, String> defaultDevDependenciesTypescriptWithEslint(String eslintVersion) {
 		Map<String, String> dependencies = new LinkedHashMap<>();
-		dependencies.put("@typescript-eslint/eslint-plugin", "5.45.0");
-		dependencies.put("@typescript-eslint/parser", "5.45.0");
+		dependencies.put("@typescript-eslint/eslint-plugin", "^5.47.0");
+		dependencies.put("@typescript-eslint/parser", "^5.47.0");
+		dependencies.put("typescript", "^4.9.4");
 		dependencies.put("eslint", Objects.requireNonNull(eslintVersion));
 		return dependencies;
 	}
