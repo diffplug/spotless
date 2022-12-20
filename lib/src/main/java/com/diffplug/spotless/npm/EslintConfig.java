@@ -62,4 +62,11 @@ public class EslintConfig implements Serializable {
 	public String getEslintConfigJs() {
 		return eslintConfigJs;
 	}
+
+	public EslintConfig verify() {
+		if (eslintConfigPath == null && eslintConfigJs == null) {
+			throw new IllegalArgumentException("ESLint must be configured using either a configFile or a configJs - but both are null.");
+		}
+		return this;
+	}
 }

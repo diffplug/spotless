@@ -18,6 +18,7 @@ package com.diffplug.gradle.spotless;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -28,11 +29,13 @@ import javax.inject.Inject;
 
 import org.gradle.api.Project;
 
+import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.npm.EslintConfig;
 import com.diffplug.spotless.npm.EslintFormatterStep;
 import com.diffplug.spotless.npm.EslintFormatterStep.PopularStyleGuide;
 import com.diffplug.spotless.npm.NpmPathResolver;
+import com.diffplug.spotless.npm.PrettierFormatterStep;
 
 public class JavascriptExtension extends FormatExtension {
 
@@ -56,8 +59,6 @@ public class JavascriptExtension extends FormatExtension {
 		addStep(eslint.createStep());
 		return eslint;
 	}
-
-	// TODO: make the configs static so that they do not need to have a hierarchy symmetric to the extensions
 
 	public static abstract class EslintBaseConfig<T extends EslintBaseConfig<?>> extends NpmStepConfig<EslintBaseConfig<T>> {
 		Map<String, String> devDependencies = new LinkedHashMap<>();
@@ -143,6 +144,62 @@ public class JavascriptExtension extends FormatExtension {
 
 		protected EslintConfig eslintConfig() {
 			return new EslintConfig(configFilePath != null ? getProject().file(configFilePath) : null, configJs);
+		}
+	}
+
+	/** Uses the default version of prettier. */
+	@Override
+	public PrettierConfig prettier() {
+		return prettier(PrettierFormatterStep.defaultDevDependencies());
+	}
+
+	/** Uses the specified version of prettier. */
+	@Override
+	public PrettierConfig prettier(String version) {
+		return prettier(PrettierFormatterStep.defaultDevDependenciesWithPrettier(version));
+	}
+
+	/** Uses exactly the npm packages specified in the map. */
+	@Override
+	public PrettierConfig prettier(Map<String, String> devDependencies) {
+		PrettierConfig prettierConfig = new JavascriptPrettierConfig(devDependencies);
+		addStep(prettierConfig.createStep());
+		return prettierConfig;
+	}
+
+	private static final String DEFAULT_PRETTIER_JS_PARSER = "babel";
+	private static final ImmutableList<String> PRETTIER_JS_PARSERS = ImmutableList.of(DEFAULT_PRETTIER_JS_PARSER, "babel-flow", "flow");
+
+	/**
+	 * Overrides the parser to be set to a js parser.
+	 */
+	public class JavascriptPrettierConfig extends PrettierConfig {
+
+		JavascriptPrettierConfig(Map<String, String> devDependencies) {
+			super(devDependencies);
+		}
+
+		@Override
+		protected FormatterStep createStep() {
+			fixParserToJavascript();
+			return super.createStep();
+		}
+
+		private void fixParserToJavascript() {
+			if (this.prettierConfig == null) {
+				this.prettierConfig = Collections.singletonMap("parser", DEFAULT_PRETTIER_JS_PARSER);
+			} else {
+				final Object currentParser = this.prettierConfig.get("parser");
+				if (PRETTIER_JS_PARSERS.contains(String.valueOf(currentParser))) {
+					getProject().getLogger().debug("Already javascript parser set, not overriding.");
+				} else {
+					this.prettierConfig.put("parser", DEFAULT_PRETTIER_JS_PARSER);
+					if (currentParser != null) {
+						getProject().getLogger().warn("Overriding parser option to '{}'. (Was set to '{}'.) Set it to another js parser if you have problems with '{}'.", DEFAULT_PRETTIER_JS_PARSER, currentParser, DEFAULT_PRETTIER_JS_PARSER);
+					}
+				}
+
+			}
 		}
 	}
 

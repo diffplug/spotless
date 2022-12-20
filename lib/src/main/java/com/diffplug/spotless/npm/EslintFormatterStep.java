@@ -183,14 +183,14 @@ public class EslintFormatterStep {
 
 		private EslintConfig localCopyFiles(EslintConfig orig) {
 			if (orig.getEslintConfigPath() == null) {
-				return orig;
+				return orig.verify();
 			}
 			// If any config files are provided, we need to make sure they are at the same location as the node modules
 			// as eslint will try to resolve plugin/config names relatively to the config file location and some
 			// eslint configs contain relative paths to additional config files (such as tsconfig.json e.g.)
 			FormattedPrinter.SYSOUT.print("Copying config file <%s> to <%s> and using the copy", orig.getEslintConfigPath(), nodeModulesDir);
 			File configFileCopy = NpmResourceHelper.copyFileToDir(orig.getEslintConfigPath(), nodeModulesDir);
-			return orig.withEslintConfigPath(configFileCopy);
+			return orig.withEslintConfigPath(configFileCopy).verify();
 		}
 
 		@Override

@@ -17,6 +17,8 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
+import org.assertj.core.api.Assertions;
+import org.gradle.testkit.runner.BuildResult;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.tag.NpmTest;
@@ -162,7 +164,7 @@ class TypescriptExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	void useXoStandardRules() throws IOException {
+	void useEslintXoStandardRules() throws IOException {
 		setFile(".eslintrc.js").toResource("npm/eslint/typescript/styleguide/xo/.eslintrc.js");
 		setFile("tsconfig.json").toResource("npm/eslint/typescript/styleguide/xo/tsconfig.json");
 		setFile("build.gradle").toLines(
@@ -182,7 +184,7 @@ class TypescriptExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	void useStandardWithTypescriptRules() throws IOException {
+	void useEslintStandardWithTypescriptRules() throws IOException {
 		setFile(".eslintrc.js").toResource("npm/eslint/typescript/styleguide/standard_with_typescript/.eslintrc.js");
 		setFile("tsconfig.json").toResource("npm/eslint/typescript/styleguide/standard_with_typescript/tsconfig.json");
 		setFile("build.gradle").toLines(
@@ -199,5 +201,24 @@ class TypescriptExtensionTest extends GradleIntegrationHarness {
 		setFile("test.ts").toResource("npm/eslint/typescript/styleguide/standard_with_typescript/typescript.dirty");
 		gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 		assertFile("test.ts").sameAsResource("npm/eslint/typescript/styleguide/standard_with_typescript/typescript.clean");
+	}
+
+	@Test
+	void useEslintForTypescriptDoesNotAllowUsingJsStyleguide() throws IOException {
+		setFile(".eslintrc.js").toResource("npm/eslint/javascript/styleguide/airbnb/.eslintrc.js");
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    typescript {",
+				"        target 'test.ts'",
+				"        eslint().styleGuide('airbnb').configFile('.eslintrc.js')",
+				"    }",
+				"}");
+		setFile("test.js").toResource("npm/eslint/javascript/styleguide/airbnb/javascript-es6.dirty");
+		BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").buildAndFail();
+		Assertions.assertThat(spotlessApply.getOutput()).contains("Unknown style guide: airbnb");
 	}
 }
