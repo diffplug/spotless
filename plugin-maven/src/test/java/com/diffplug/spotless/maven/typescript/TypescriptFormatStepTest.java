@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,7 +114,11 @@ class TypescriptFormatStepTest extends MavenIntegrationHarness {
 
 	@Test
 	void testNpmrcIsAutoPickedUp() throws Exception {
-		setFile(".npmrc").toLines("registry=https://i.do.no.exist.com");
+		setFile(".npmrc").toLines(
+				"registry=https://i.do.not.exist.com",
+				"fetch-timeout=250",
+				"fetch-retry-mintimeout=250",
+				"fetch-retry-maxtimeout=250");
 		writePomWithTypescriptSteps(
 				"<tsfmt>",
 				"  <tslintFile>${basedir}/tslint.json</tslintFile>",
@@ -126,7 +130,11 @@ class TypescriptFormatStepTest extends MavenIntegrationHarness {
 
 	@Test
 	void testNpmrcIsConfigurativelyPickedUp() throws Exception {
-		setFile(".custom_npmrc").toLines("registry=https://i.do.no.exist.com");
+		setFile(".custom_npmrc").toLines(
+				"registry=https://i.do.not.exist.com",
+				"fetch-timeout=250",
+				"fetch-retry-mintimeout=250",
+				"fetch-retry-maxtimeout=250");
 		writePomWithTypescriptSteps(
 				"<tsfmt>",
 				"  <tslintFile>${basedir}/tslint.json</tslintFile>",
