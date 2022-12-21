@@ -23,12 +23,12 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
-import com.diffplug.spotless.maven.FormatterStepFactory;
+import com.diffplug.spotless.maven.npm.AbstractNpmFormatterStepFactory;
 import com.diffplug.spotless.npm.NpmPathResolver;
 import com.diffplug.spotless.npm.PrettierConfig;
 import com.diffplug.spotless.npm.PrettierFormatterStep;
 
-public class Prettier implements FormatterStepFactory {
+public class Prettier extends AbstractNpmFormatterStepFactory {
 
 	public static final String ERROR_MESSAGE_ONLY_ONE_CONFIG = "must specify exactly one prettierVersion, devDependencies or devDependencyProperties";
 
@@ -47,12 +47,6 @@ public class Prettier implements FormatterStepFactory {
 	@Parameter
 	private String configFile;
 
-	@Parameter
-	private String npmExecutable;
-
-	@Parameter
-	private String npmrc;
-
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
 
@@ -69,10 +63,6 @@ public class Prettier implements FormatterStepFactory {
 		} else if (devDependencyProperties != null) {
 			this.devDependencies = dependencyPropertiesAsMap();
 		}
-
-		File npm = npmExecutable != null ? stepConfig.getFileLocator().locateFile(npmExecutable) : null;
-
-		File npmrcFile = npmrc != null ? stepConfig.getFileLocator().locateFile(npmrc) : null;
 
 		// process config file or inline config
 		File configFileHandler;
@@ -103,10 +93,10 @@ public class Prettier implements FormatterStepFactory {
 		}
 
 		// create the format step
+		File baseDir = baseDir(stepConfig);
+		File buildDir = buildDir(stepConfig);
 		PrettierConfig prettierConfig = new PrettierConfig(configFileHandler, configInline);
-		File buildDir = stepConfig.getFileLocator().getBuildDir();
-		File baseDir = stepConfig.getFileLocator().getBaseDir();
-		NpmPathResolver npmPathResolver = new NpmPathResolver(npm, npmrcFile, baseDir);
+		NpmPathResolver npmPathResolver = npmPathResolver(stepConfig);
 		return PrettierFormatterStep.create(devDependencies, stepConfig.getProvisioner(), baseDir, buildDir, npmPathResolver, prettierConfig);
 	}
 
