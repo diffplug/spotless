@@ -69,7 +69,7 @@ public class EslintJs extends AbstractNpmFormatterStepFactory {
 
 	private void addStyleGuideDevDependencies(Map<String, String> devDependencies) {
 		if (this.styleGuide != null) {
-			EslintFormatterStep.PopularStyleGuide styleGuide = EslintFormatterStep.PopularStyleGuide.valueOf(this.styleGuide);
+			EslintFormatterStep.PopularStyleGuide styleGuide = EslintFormatterStep.PopularStyleGuide.fromNameOrNull(this.styleGuide);
 			validateStyleGuide(styleGuide);
 			devDependencies.putAll(styleGuide.devDependencies());
 		}
@@ -80,7 +80,7 @@ public class EslintJs extends AbstractNpmFormatterStepFactory {
 			throw new IllegalArgumentException("StyleGuide '" + this.styleGuide + "' is not supported. Supported style guides: " + supportedStyleGuides());
 		}
 		if (!isValidStyleGuide(styleGuide)) {
-			throw new IllegalArgumentException("StyleGuide must be of correct type but is: " + styleGuide + ". Use one of the following: " + supportedStyleGuides());
+			throw new IllegalArgumentException("StyleGuide must be of correct type but is: " + styleGuide.getPopularStyleGuideName() + ". Use one of the following: " + supportedStyleGuides());
 		}
 	}
 
