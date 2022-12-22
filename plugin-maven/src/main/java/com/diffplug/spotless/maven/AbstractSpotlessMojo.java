@@ -64,6 +64,7 @@ import com.diffplug.spotless.maven.groovy.Groovy;
 import com.diffplug.spotless.maven.incremental.UpToDateChecker;
 import com.diffplug.spotless.maven.incremental.UpToDateChecking;
 import com.diffplug.spotless.maven.java.Java;
+import com.diffplug.spotless.maven.javascript.Javascript;
 import com.diffplug.spotless.maven.kotlin.Kotlin;
 import com.diffplug.spotless.maven.markdown.Markdown;
 import com.diffplug.spotless.maven.pom.Pom;
@@ -151,6 +152,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	@Parameter
 	private Typescript typescript;
+
+	@Parameter
+	private Javascript javascript;
 
 	@Parameter
 	private Antlr4 antlr4;

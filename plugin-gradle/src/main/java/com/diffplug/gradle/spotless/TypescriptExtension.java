@@ -17,12 +17,10 @@ package com.diffplug.gradle.spotless;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -209,12 +207,7 @@ public class TypescriptExtension extends FormatExtension {
 		@Override
 		protected void verifyStyleGuideIsSupported(String styleGuideName, PopularStyleGuide popularStyleGuide) {
 			if (!isTsStyleGuide(popularStyleGuide)) {
-				throw new IllegalArgumentException("Unknown style guide: " + styleGuideName + ". Known typescript style guides: "
-						+ Arrays.stream(EslintFormatterStep.PopularStyleGuide.values())
-								.filter(this::isTsStyleGuide)
-								.map(PopularStyleGuide::getPopularStyleGuideName)
-								.sorted()
-								.collect(Collectors.joining(", ")));
+				throw new IllegalArgumentException("Unknown style guide: " + styleGuideName + ". Known typescript style guides: " + PopularStyleGuide.getPopularStyleGuideNames(this::isTsStyleGuide));
 			}
 		}
 

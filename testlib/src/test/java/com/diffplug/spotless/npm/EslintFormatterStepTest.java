@@ -128,7 +128,7 @@ class EslintFormatterStepTest {
 
 		@Test
 		void formattingUsingInlineXoConfig() throws Exception {
-			String filedir = "npm/eslint/typescript/standard_rules_xo/";
+			String filedir = "npm/eslint/typescript/styleguide/xo/";
 
 			String testDir = "formatting_ruleset_xo_inline_config/";
 

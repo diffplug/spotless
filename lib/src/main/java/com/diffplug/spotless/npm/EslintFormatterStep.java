@@ -20,12 +20,14 @@ import static java.util.Objects.requireNonNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
+import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
 
@@ -50,7 +52,7 @@ public class EslintFormatterStep {
 	public enum PopularStyleGuide {
 		TS_STANDARD_WITH_TYPESCRIPT("standard-with-typescript") {
 			@Override
-			public Map<String, String> devDependencies() {
+			public @Nonnull Map<String, String> devDependencies() {
 				Map<String, String> dependencies = new LinkedHashMap<>();
 				dependencies.put("eslint-config-standard-with-typescript", "^24.0.0");
 				dependencies.put("eslint-plugin-import", "^2.26.0");
@@ -61,7 +63,7 @@ public class EslintFormatterStep {
 		},
 		TS_XO_TYPESCRIPT("xo-typescript") {
 			@Override
-			public Map<String, String> devDependencies() {
+			public @Nonnull Map<String, String> devDependencies() {
 				Map<String, String> dependencies = new LinkedHashMap<>();
 				dependencies.put("eslint-config-xo", "^0.43.1");
 				dependencies.put("eslint-config-xo-typescript", "^0.55.1");
@@ -70,7 +72,7 @@ public class EslintFormatterStep {
 		},
 		JS_AIRBNB("airbnb") {
 			@Override
-			public Map<String, String> devDependencies() {
+			public @Nonnull Map<String, String> devDependencies() {
 				Map<String, String> dependencies = new LinkedHashMap<>();
 				dependencies.put("eslint-config-airbnb-base", "^15.0.0");
 				dependencies.put("eslint-plugin-import", "^2.26.0");
@@ -79,7 +81,7 @@ public class EslintFormatterStep {
 		},
 		JS_GOOGLE("google") {
 			@Override
-			public Map<String, String> devDependencies() {
+			public @Nonnull Map<String, String> devDependencies() {
 				Map<String, String> dependencies = new LinkedHashMap<>();
 				dependencies.put("eslint-config-google", "^0.14.0");
 				return dependencies;
@@ -87,7 +89,7 @@ public class EslintFormatterStep {
 		},
 		JS_STANDARD("standard") {
 			@Override
-			public Map<String, String> devDependencies() {
+			public @Nonnull Map<String, String> devDependencies() {
 				Map<String, String> dependencies = new LinkedHashMap<>();
 				dependencies.put("eslint-config-standard", "^17.0.0");
 				dependencies.put("eslint-plugin-import", "^2.26.0");
@@ -98,7 +100,7 @@ public class EslintFormatterStep {
 		},
 		JS_XO("xo") {
 			@Override
-			public Map<String, String> devDependencies() {
+			public @Nonnull Map<String, String> devDependencies() {
 				Map<String, String> dependencies = new LinkedHashMap<>();
 				dependencies.put("eslint-config-xo", "^0.43.1");
 				return dependencies;
@@ -115,7 +117,7 @@ public class EslintFormatterStep {
 			return popularStyleGuideName;
 		}
 
-		public abstract Map<String, String> devDependencies();
+		public abstract @Nonnull Map<String, String> devDependencies();
 
 		public static PopularStyleGuide fromNameOrNull(String popularStyleGuideName) {
 			for (PopularStyleGuide popularStyleGuide : PopularStyleGuide.values()) {
@@ -124,6 +126,15 @@ public class EslintFormatterStep {
 				}
 			}
 			return null;
+		}
+
+		public static String getPopularStyleGuideNames(Predicate<PopularStyleGuide> filter) {
+			// collect matching style guide names using stream
+			return Arrays.stream(PopularStyleGuide.values())
+					.filter(filter)
+					.map(PopularStyleGuide::getPopularStyleGuideName)
+					.sorted()
+					.collect(java.util.stream.Collectors.joining(", "));
 		}
 	}
 

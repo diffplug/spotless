@@ -17,12 +17,10 @@ package com.diffplug.gradle.spotless;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -100,9 +98,8 @@ public class JavascriptExtension extends FormatExtension {
 			PopularStyleGuide popularStyleGuide = PopularStyleGuide.fromNameOrNull(styleGuide);
 
 			verifyStyleGuideIsSupported(styleGuide, popularStyleGuide);
-			devDependencies(popularStyleGuide.devDependencies());
-			replaceStep();
-			return (T) this;
+			assert popularStyleGuide != null;
+			return devDependencies(popularStyleGuide.devDependencies());
 		}
 
 		protected abstract void verifyStyleGuideIsSupported(String styleGuideName, PopularStyleGuide popularStyleGuide);
@@ -129,12 +126,7 @@ public class JavascriptExtension extends FormatExtension {
 		@Override
 		protected void verifyStyleGuideIsSupported(String styleGuideName, PopularStyleGuide popularStyleGuide) {
 			if (!isJsStyleGuide(popularStyleGuide)) {
-				throw new IllegalArgumentException("Unknown style guide: " + styleGuideName + ". Known javascript style guides: "
-						+ Arrays.stream(PopularStyleGuide.values())
-								.filter(this::isJsStyleGuide)
-								.map(PopularStyleGuide::getPopularStyleGuideName)
-								.sorted()
-								.collect(Collectors.joining(", ")));
+				throw new IllegalArgumentException("Unknown style guide: " + styleGuideName + ". Known javascript style guides: " + PopularStyleGuide.getPopularStyleGuideNames(this::isJsStyleGuide));
 			}
 		}
 
