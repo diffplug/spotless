@@ -136,6 +136,10 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		writePom(groupWithSteps("cpp", steps));
 	}
 
+	protected void writePomWithJavascriptSteps(String includes, String... steps) throws IOException {
+		writePom(groupWithSteps("javascript", including(includes), steps));
+	}
+
 	protected void writePomWithTypescriptSteps(String includes, String... steps) throws IOException {
 		writePom(groupWithSteps("typescript", including(includes), steps));
 	}

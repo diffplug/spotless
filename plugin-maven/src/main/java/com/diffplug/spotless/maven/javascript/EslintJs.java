@@ -15,77 +15,16 @@
  */
 package com.diffplug.spotless.maven.javascript;
 
-import java.io.File;
 import java.util.Map;
-import java.util.TreeMap;
 
-import org.apache.maven.plugins.annotations.Parameter;
-
-import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
-import com.diffplug.spotless.maven.npm.AbstractNpmFormatterStepFactory;
 import com.diffplug.spotless.npm.EslintConfig;
 import com.diffplug.spotless.npm.EslintFormatterStep;
-import com.diffplug.spotless.npm.NpmPathResolver;
 
-public class EslintJs extends AbstractNpmFormatterStepFactory {
-
-	@Parameter
-	private String configFile;
-
-	@Parameter
-	private String configJs;
-
-	@Parameter
-	private String styleGuide;
-
-	@Parameter
-	protected String eslintVersion;
-
-	@Parameter
-	private Map<String, String> devDependencies;
-
-	@Override
-	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
-		Map<String, String> devDependencies = new TreeMap<>();
-		if (this.devDependencies != null) {
-			devDependencies.putAll(this.devDependencies);
-		} else {
-			Map<String, String> defaultDependencies = createDefaultDependencies();
-			devDependencies.putAll(defaultDependencies);
-		}
-
-		addStyleGuideDevDependencies(devDependencies);
-
-		File buildDir = buildDir(stepConfig);
-		File baseDir = baseDir(stepConfig);
-		NpmPathResolver npmPathResolver = npmPathResolver(stepConfig);
-		return EslintFormatterStep.create(devDependencies, stepConfig.getProvisioner(), baseDir, buildDir, npmPathResolver, eslintConfig(stepConfig));
-	}
+public class EslintJs extends AbstractEslint {
 
 	protected EslintConfig eslintConfig(FormatterStepConfig stepConfig) {
 		return new EslintConfig(this.configFile != null ? stepConfig.getFileLocator().locateFile(this.configFile) : null, this.configJs);
-	}
-
-	private void addStyleGuideDevDependencies(Map<String, String> devDependencies) {
-		if (this.styleGuide != null) {
-			EslintFormatterStep.PopularStyleGuide styleGuide = EslintFormatterStep.PopularStyleGuide.fromNameOrNull(this.styleGuide);
-			validateStyleGuide(styleGuide);
-			devDependencies.putAll(styleGuide.devDependencies());
-		}
-	}
-
-	private void validateStyleGuide(EslintFormatterStep.PopularStyleGuide styleGuide) {
-		if (styleGuide == null) {
-			throw new IllegalArgumentException("StyleGuide '" + this.styleGuide + "' is not supported. Supported style guides: " + supportedStyleGuides());
-		}
-		if (!isValidStyleGuide(styleGuide)) {
-			throw new IllegalArgumentException("StyleGuide must be of correct type but is: " + styleGuide.getPopularStyleGuideName() + ". Use one of the following: " + supportedStyleGuides());
-		}
-	}
-
-	private String supportedStyleGuides() {
-		return EslintFormatterStep.PopularStyleGuide.getPopularStyleGuideNames(this::isValidStyleGuide);
 	}
 
 	protected boolean isValidStyleGuide(EslintFormatterStep.PopularStyleGuide styleGuide) {
@@ -93,6 +32,6 @@ public class EslintJs extends AbstractNpmFormatterStepFactory {
 	}
 
 	protected Map<String, String> createDefaultDependencies() {
-		return eslintVersion == null ? EslintFormatterStep.defaultDevDependencies() : EslintFormatterStep.defaultDevDependenciesWithEslint(eslintVersion);
+		return this.eslintVersion == null ? EslintFormatterStep.defaultDevDependencies() : EslintFormatterStep.defaultDevDependenciesWithEslint(this.eslintVersion);
 	}
 }

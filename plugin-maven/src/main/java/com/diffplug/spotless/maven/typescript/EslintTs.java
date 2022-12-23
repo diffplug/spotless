@@ -20,20 +20,22 @@ import java.util.Map;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.maven.FormatterStepConfig;
-import com.diffplug.spotless.maven.javascript.EslintJs;
+import com.diffplug.spotless.maven.javascript.AbstractEslint;
 import com.diffplug.spotless.npm.EslintConfig;
 import com.diffplug.spotless.npm.EslintFormatterStep;
 import com.diffplug.spotless.npm.EslintTypescriptConfig;
 
-public class EslintTs extends EslintJs {
+public class EslintTs extends AbstractEslint {
 
 	@Parameter
 	private String tsconfigFile;
 
 	@Override
 	protected EslintConfig eslintConfig(FormatterStepConfig stepConfig) {
-		EslintConfig jsConfig = super.eslintConfig(stepConfig);
-		return new EslintTypescriptConfig(jsConfig.getEslintConfigPath(), jsConfig.getEslintConfigJs(), tsconfigFile != null ? stepConfig.getFileLocator().locateFile(tsconfigFile) : null);
+		return new EslintTypescriptConfig(
+				configFile != null ? stepConfig.getFileLocator().locateFile(configFile) : null,
+				configJs,
+				tsconfigFile != null ? stepConfig.getFileLocator().locateFile(tsconfigFile) : null);
 	}
 
 	@Override
