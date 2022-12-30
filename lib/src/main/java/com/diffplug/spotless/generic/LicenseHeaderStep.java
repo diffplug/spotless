@@ -51,7 +51,7 @@ public final class LicenseHeaderStep {
 	}
 
 	public static LicenseHeaderStep headerDelimiter(ThrowingEx.Supplier<String> headerLazy, String delimiter) {
-		return new LicenseHeaderStep(null, null, headerLazy, delimiter, DEFAULT_YEAR_DELIMITER, () -> YearMode.PRESERVE);
+		return new LicenseHeaderStep(null, null, headerLazy, delimiter, DEFAULT_YEAR_DELIMITER, () -> YearMode.PRESERVE, null);
 	}
 
 	final String name;
@@ -60,14 +60,16 @@ public final class LicenseHeaderStep {
 	final String delimiter;
 	final String yearSeparator;
 	final Supplier<YearMode> yearMode;
+	final @Nullable String skipLinesPattern;
 
-	private LicenseHeaderStep(@Nullable String name, @Nullable String contentPattern, ThrowingEx.Supplier<String> headerLazy, String delimiter, String yearSeparator, Supplier<YearMode> yearMode) {
+	private LicenseHeaderStep(@Nullable String name, @Nullable String contentPattern, ThrowingEx.Supplier<String> headerLazy, String delimiter, String yearSeparator, Supplier<YearMode> yearMode, @Nullable String skipLinesPattern) {
 		this.name = sanitizeName(name);
-		this.contentPattern = sanitizeContentPattern(contentPattern);
+		this.contentPattern = sanitizePattern(contentPattern);
 		this.headerLazy = Objects.requireNonNull(headerLazy);
 		this.delimiter = Objects.requireNonNull(delimiter);
 		this.yearSeparator = Objects.requireNonNull(yearSeparator);
 		this.yearMode = Objects.requireNonNull(yearMode);
+		this.skipLinesPattern = sanitizePattern(skipLinesPattern);
 	}
 
 	public String getName() {
@@ -75,11 +77,11 @@ public final class LicenseHeaderStep {
 	}
 
 	public LicenseHeaderStep withName(String name) {
-		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode);
+		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesPattern);
 	}
 
 	public LicenseHeaderStep withContentPattern(String contentPattern) {
-		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode);
+		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesPattern);
 	}
 
 	public LicenseHeaderStep withHeaderString(String header) {
@@ -87,15 +89,15 @@ public final class LicenseHeaderStep {
 	}
 
 	public LicenseHeaderStep withHeaderLazy(ThrowingEx.Supplier<String> headerLazy) {
-		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode);
+		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesPattern);
 	}
 
 	public LicenseHeaderStep withDelimiter(String delimiter) {
-		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode);
+		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesPattern);
 	}
 
 	public LicenseHeaderStep withYearSeparator(String yearSeparator) {
-		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode);
+		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesPattern);
 	}
 
 	public LicenseHeaderStep withYearMode(YearMode yearMode) {
@@ -103,7 +105,11 @@ public final class LicenseHeaderStep {
 	}
 
 	public LicenseHeaderStep withYearModeLazy(Supplier<YearMode> yearMode) {
-		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode);
+		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesPattern);
+	}
+
+	public LicenseHeaderStep withSkipLinesPattern(String skipLinesPattern) {
+		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesPattern);
 	}
 
 	public FormatterStep build() {
@@ -112,7 +118,7 @@ public final class LicenseHeaderStep {
 		if (yearMode.get() == YearMode.SET_FROM_GIT) {
 			formatterStep = FormatterStep.createNeverUpToDateLazy(name, () -> {
 				boolean updateYear = false; // doesn't matter
-				Runtime runtime = new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear);
+				Runtime runtime = new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear, skipLinesPattern);
 				return FormatterFunc.needsFile(runtime::setLicenseHeaderYearsFromGitHistory);
 			});
 		} else {
@@ -130,7 +136,7 @@ public final class LicenseHeaderStep {
 				default:
 					throw new IllegalStateException(yearMode.toString());
 				}
-				return new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear);
+				return new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear, skipLinesPattern);
 			}, step -> step::format);
 		}
 
@@ -156,18 +162,18 @@ public final class LicenseHeaderStep {
 	}
 
 	@Nullable
-	private String sanitizeContentPattern(@Nullable String contentPattern) {
-		if (contentPattern == null) {
-			return contentPattern;
+	private String sanitizePattern(@Nullable String pattern) {
+		if (pattern == null) {
+			return pattern;
 		}
 
-		contentPattern = contentPattern.trim();
+		pattern = pattern.trim();
 
-		if (contentPattern.isEmpty()) {
+		if (pattern.isEmpty()) {
 			return null;
 		}
 
-		return contentPattern;
+		return pattern;
 	}
 
 	private static final String DEFAULT_NAME_PREFIX = LicenseHeaderStep.class.getName();
@@ -195,6 +201,7 @@ public final class LicenseHeaderStep {
 		private static final long serialVersionUID = 1475199492829130965L;
 
 		private final Pattern delimiterPattern;
+		private final @Nullable Pattern skipLinesPattern;
 		private final String yearSepOrFull;
 		private final @Nullable String yearToday;
 		private final @Nullable String beforeYear;
@@ -203,7 +210,7 @@ public final class LicenseHeaderStep {
 		private final boolean licenseHeaderWithRange;
 
 		/** The license that we'd like enforced. */
-		private Runtime(String licenseHeader, String delimiter, String yearSeparator, boolean updateYearWithLatest) {
+		private Runtime(String licenseHeader, String delimiter, String yearSeparator, boolean updateYearWithLatest, @Nullable String skipLinesPattern) {
 			if (delimiter.contains("\n")) {
 				throw new IllegalArgumentException("The delimiter must not contain any newlines.");
 			}
@@ -213,6 +220,7 @@ public final class LicenseHeaderStep {
 				licenseHeader = licenseHeader + "\n";
 			}
 			this.delimiterPattern = Pattern.compile('^' + delimiter, Pattern.UNIX_LINES | Pattern.MULTILINE);
+			this.skipLinesPattern = skipLinesPattern == null ? null : Pattern.compile(skipLinesPattern);
 
 			Optional<String> yearToken = getYearToken(licenseHeader);
 			if (yearToken.isPresent()) {
@@ -254,6 +262,31 @@ public final class LicenseHeaderStep {
 
 		/** Formats the given string. */
 		private String format(String raw) {
+			if (skipLinesPattern == null) {
+				return addOrUpdateLicenseHeader(raw);
+			} else {
+				String[] lines = raw.split("\n");
+				StringBuilder skippedLinesBuilder = new StringBuilder();
+				StringBuilder remainingLinesBuilder = new StringBuilder();
+				boolean lastMatched = true;
+				for (String line : lines) {
+					if (lastMatched) {
+						Matcher matcher = skipLinesPattern.matcher(line);
+						if (matcher.find()) {
+							skippedLinesBuilder.append(line).append('\n');
+						} else {
+							remainingLinesBuilder.append(line).append('\n');
+							lastMatched = false;
+						}
+					} else {
+						remainingLinesBuilder.append(line).append('\n');
+					}
+				}
+				return skippedLinesBuilder + addOrUpdateLicenseHeader(remainingLinesBuilder.toString());
+			}
+		}
+
+		private String addOrUpdateLicenseHeader(String raw) {
 			Matcher contentMatcher = delimiterPattern.matcher(raw);
 			if (!contentMatcher.find()) {
 				throw new IllegalArgumentException("Unable to find delimiter regex " + delimiterPattern);
