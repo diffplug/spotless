@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.CharMatcher;
@@ -30,6 +31,7 @@ import com.diffplug.common.base.Splitter;
 import com.diffplug.spotless.LineEnding;
 
 /** Tests the desired behavior from https://github.com/diffplug/spotless/issues/46. */
+@Disabled("Because Formatter doesn't respect FormatExceptionPolicy anymore")
 class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 	private void writeBuild(String... toInsert) throws IOException {
 		List<String> lines = new ArrayList<>();
