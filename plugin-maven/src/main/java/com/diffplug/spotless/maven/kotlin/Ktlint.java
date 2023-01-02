@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,8 @@ public class Ktlint implements FormatterStepFactory {
 
 	@Parameter
 	private String version;
-
+	@Parameter
+	private String editorConfigPath;
 	@Parameter
 	private Map<String, Object> editorConfigOverride;
 
@@ -42,6 +43,6 @@ public class Ktlint implements FormatterStepFactory {
 			editorConfigOverride = new HashMap<>();
 		}
 
-		return KtLintStep.create(ktlintVersion, config.getProvisioner(), false, Collections.emptyMap(), editorConfigOverride);
+		return KtLintStep.create(ktlintVersion, config.getProvisioner(), false, false, editorConfigPath, Collections.emptyMap(), editorConfigOverride);
 	}
 }

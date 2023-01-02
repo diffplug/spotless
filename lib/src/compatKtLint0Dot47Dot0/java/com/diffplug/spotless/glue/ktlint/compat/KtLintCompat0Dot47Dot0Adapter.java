@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 DiffPlug
+ * Copyright 2022-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@ package com.diffplug.spotless.glue.ktlint.compat;
 
 import static java.util.Collections.emptySet;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -56,7 +58,7 @@ public class KtLintCompat0Dot47Dot0Adapter implements KtLintCompatAdapter {
 	@Override
 	public String format(final String text, final String name, final boolean isScript,
 			final boolean useExperimental,
-			final Map<String, String> userData,
+			String editorConfigPath, final Map<String, String> userData,
 			final Map<String, Object> editorConfigOverrideMap) {
 		final FormatterCallback formatterCallback = new FormatterCallback();
 
@@ -68,14 +70,19 @@ public class KtLintCompat0Dot47Dot0Adapter implements KtLintCompatAdapter {
 
 		EditorConfigOverride editorConfigOverride;
 		if (editorConfigOverrideMap.isEmpty()) {
-			editorConfigOverride = EditorConfigOverride.Companion.getEmptyEditorConfigOverride();
+			editorConfigOverride = new EditorConfigOverride();
 		} else {
 			editorConfigOverride = createEditorConfigOverride(allRuleProviders.stream().map(
 					RuleProvider::createNewRuleInstance).collect(
 							Collectors.toList()),
 					editorConfigOverrideMap);
 		}
-
+		Path editorConfigFilePath;
+		if (editorConfigPath == null) {
+			editorConfigFilePath = null;
+		} else {
+			editorConfigFilePath = new File(editorConfigPath).toPath();
+		}
 		return KtLint.INSTANCE.format(new KtLint.ExperimentalParams(
 				name,
 				text,
@@ -86,7 +93,7 @@ public class KtLintCompat0Dot47Dot0Adapter implements KtLintCompatAdapter {
 				isScript,
 				null,
 				false,
-				EditorConfigDefaults.Companion.getEmptyEditorConfigDefaults(),
+				EditorConfigDefaults.Companion.load(editorConfigFilePath),
 				editorConfigOverride,
 				false));
 	}

@@ -37,9 +37,10 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 	@NotNull
 	private final KtLintCompatAdapter adapter;
 	private final boolean useExperimental;
+	private final String editorConfigPath;
 	private final Map<String, Object> editorConfigOverrideMap;
 
-	public KtlintFormatterFunc(String version, boolean isScript, boolean useExperimental, Map<String, String> userData,
+	public KtlintFormatterFunc(String version, boolean isScript, boolean useExperimental, String editorConfigPath, Map<String, String> userData,
 			Map<String, Object> editorConfigOverrideMap) {
 		int minorVersion = Integer.parseInt(version.split("\\.")[1]);
 		if (minorVersion >= 48) {
@@ -64,6 +65,7 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 			// the OG
 			this.adapter = new KtLintCompat0Dot31Dot0Adapter();
 		}
+		this.editorConfigPath = editorConfigPath;
 		this.useExperimental = useExperimental;
 		this.editorConfigOverrideMap = editorConfigOverrideMap;
 		this.userData = userData;
@@ -72,6 +74,6 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 
 	@Override
 	public String applyWithFile(String unix, File file) throws Exception {
-		return adapter.format(unix, file.getName(), isScript, useExperimental, userData, editorConfigOverrideMap);
+		return adapter.format(unix, file.getName(), isScript, useExperimental, editorConfigPath, userData, editorConfigOverrideMap);
 	}
 }

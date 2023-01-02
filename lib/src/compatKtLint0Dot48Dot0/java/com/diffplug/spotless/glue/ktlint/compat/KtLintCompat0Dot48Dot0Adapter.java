@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.glue.ktlint.compat;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +56,7 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 	@Override
 	public String format(final String text, final String name, final boolean isScript,
 			final boolean useExperimental,
-			final Map<String, String> userData,
+			String editorConfigPath, final Map<String, String> userData,
 			final Map<String, Object> editorConfigOverrideMap) {
 		final FormatterCallback formatterCallback = new FormatterCallback();
 
@@ -66,14 +68,19 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 
 		EditorConfigOverride editorConfigOverride;
 		if (editorConfigOverrideMap.isEmpty()) {
-			editorConfigOverride = EditorConfigOverride.Companion.getEmptyEditorConfigOverride();
+			editorConfigOverride = new EditorConfigOverride();
 		} else {
 			editorConfigOverride = createEditorConfigOverride(allRuleProviders.stream().map(
 					RuleProvider::createNewRuleInstance).collect(
 							Collectors.toList()),
 					editorConfigOverrideMap);
 		}
-
+		Path editorConfigFilePath;
+		if (editorConfigPath == null) {
+			editorConfigFilePath = null;
+		} else {
+			editorConfigFilePath = new File(editorConfigPath).toPath();
+		}
 		return KtLint.INSTANCE.format(new KtLint.ExperimentalParams(
 				name,
 				text,
@@ -82,7 +89,7 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 				formatterCallback,
 				isScript,
 				false,
-				EditorConfigDefaults.Companion.getEmptyEditorConfigDefaults(),
+				EditorConfigDefaults.Companion.load(editorConfigFilePath),
 				editorConfigOverride,
 				false));
 	}

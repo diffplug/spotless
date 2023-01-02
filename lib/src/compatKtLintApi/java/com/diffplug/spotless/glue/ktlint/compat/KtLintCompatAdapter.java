@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 DiffPlug
+ * Copyright 2022-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,6 @@ import java.util.Map;
 
 public interface KtLintCompatAdapter {
 
-	String format(String text, String name, boolean isScript, boolean useExperimental, Map<String, String> userData,
+	String format(String text, String name, boolean isScript, boolean useExperimental, String editorConfigPath, Map<String, String> userData,
 			Map<String, Object> editorConfigOverrideMap);
 }

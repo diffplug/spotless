@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ public class KotlinGradleExtension extends FormatExtension {
 	/** Adds the specified version of <a href="https://github.com/pinterest/ktlint">ktlint</a>. */
 	public KotlinFormatExtension ktlint(String version) {
 		Objects.requireNonNull(version, "version");
-		return new KotlinFormatExtension(version, false, Collections.emptyMap(), Collections.emptyMap());
+		return new KotlinFormatExtension(version, false, null, Collections.emptyMap(), Collections.emptyMap());
 	}
 
 	public KotlinFormatExtension ktlint() {
@@ -56,16 +56,24 @@ public class KotlinGradleExtension extends FormatExtension {
 
 		private final String version;
 		private boolean useExperimental;
+		private String editorConfigPath;
 		private Map<String, String> userData;
 		private Map<String, Object> editorConfigOverride;
 
-		KotlinFormatExtension(String version, boolean useExperimental, Map<String, String> config,
+		KotlinFormatExtension(String version, boolean useExperimental, String editorConfigPath, Map<String, String> config,
 				Map<String, Object> editorConfigOverride) {
 			this.version = version;
 			this.useExperimental = useExperimental;
+			this.editorConfigPath = editorConfigPath;
 			this.userData = config;
 			this.editorConfigOverride = editorConfigOverride;
 			addStep(createStep());
+		}
+
+		public KotlinFormatExtension setEditorConfigPath(String editorConfigPath) {
+			this.editorConfigPath = editorConfigPath;
+			replaceStep(createStep());
+			return this;
 		}
 
 		public KotlinFormatExtension setUseExperimental(boolean useExperimental) {
