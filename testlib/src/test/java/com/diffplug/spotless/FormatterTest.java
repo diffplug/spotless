@@ -21,7 +21,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,7 +29,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.diffplug.common.base.StandardSystemProperty;
 import com.diffplug.spotless.generic.EndWithNewlineStep;
 
 class FormatterTest {
@@ -79,9 +77,6 @@ class FormatterTest {
 	public void testExceptionWithSentinelNoFileOnDisk() throws Exception {
 		LineEnding.Policy lineEndingsPolicy = LineEnding.UNIX.createPolicy();
 		Charset encoding = StandardCharsets.UTF_8;
-		FormatExceptionPolicy exceptionPolicy = FormatExceptionPolicy.failOnlyOnError();
-
-		Path rootDir = Paths.get(StandardSystemProperty.USER_DIR.value());
 
 		FormatterStep step = Mockito.mock(FormatterStep.class);
 		Mockito.when(step.getName()).thenReturn("someFailingStep");
@@ -92,7 +87,6 @@ class FormatterTest {
 				.lineEndingsPolicy(lineEndingsPolicy)
 				.encoding(encoding)
 				.steps(steps)
-				.exceptionPolicy(exceptionPolicy)
 				.build();
 
 		formatter.compute("someFileContent", Formatter.NO_FILE_SENTINEL);
@@ -103,7 +97,6 @@ class FormatterTest {
 	public void testExceptionWithRootDirIsNotFileSystem() throws Exception {
 		LineEnding.Policy lineEndingsPolicy = LineEnding.UNIX.createPolicy();
 		Charset encoding = StandardCharsets.UTF_8;
-		FormatExceptionPolicy exceptionPolicy = FormatExceptionPolicy.failOnlyOnError();
 
 		Path rootDir = Mockito.mock(Path.class);
 		FileSystem customFileSystem = Mockito.mock(FileSystem.class);
@@ -131,7 +124,6 @@ class FormatterTest {
 				.lineEndingsPolicy(lineEndingsPolicy)
 				.encoding(encoding)
 				.steps(steps)
-				.exceptionPolicy(exceptionPolicy)
 				.build();
 
 		formatter.compute("someFileContent", new File("/some/folder/some.file"));

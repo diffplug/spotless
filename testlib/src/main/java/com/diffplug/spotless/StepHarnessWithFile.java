@@ -40,7 +40,6 @@ public class StepHarnessWithFile extends StepHarnessBase {
 				.encoding(StandardCharsets.UTF_8)
 				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
 				.steps(Collections.singletonList(step))
-				.exceptionPolicy(new FormatExceptionPolicyStrict())
 				.build());
 	}
 

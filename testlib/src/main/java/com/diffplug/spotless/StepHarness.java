@@ -54,7 +54,6 @@ public class StepHarness extends StepHarnessBase {
 				.steps(Arrays.asList(step))
 				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
 				.encoding(StandardCharsets.UTF_8)
-				.exceptionPolicy(new FormatExceptionPolicyStrict())
 				.build(), RoundTrip.DONT_ROUNDTRIP);
 	}
 
