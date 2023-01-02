@@ -725,12 +725,12 @@ public class FormatExtension {
 	 * inside that captured group.
 	 */
 	public void toggleOffOnRegex(String regex) {
-		this.togglePair = FenceStep.named(FenceStep.defaultToggleName()).regex(regex);
+		this.toggleFence = FenceStep.named(FenceStep.defaultToggleName()).regex(regex);
 	}
 
 	/** Disables formatting between the given tags. */
 	public void toggleOffOn(String off, String on) {
-		this.togglePair = FenceStep.named(FenceStep.defaultToggleName()).openClose(off, on);
+		this.toggleFence = FenceStep.named(FenceStep.defaultToggleName()).openClose(off, on);
 	}
 
 	/** Disables formatting between {@code spotless:off} and {@code spotless:on}. */
@@ -740,10 +740,10 @@ public class FormatExtension {
 
 	/** Undoes all previous calls to {@link #toggleOffOn()} and {@link #toggleOffOn(String, String)}. */
 	public void toggleOffOnDisable() {
-		this.togglePair = null;
+		this.toggleFence = null;
 	}
 
-	private @Nullable FenceStep togglePair;
+	private @Nullable FenceStep toggleFence;
 
 	/** Sets up a format task according to the values in this extension. */
 	protected void setupTask(SpotlessTask task) {
@@ -752,8 +752,8 @@ public class FormatExtension {
 		FileCollection totalTarget = targetExclude == null ? target : target.minus(targetExclude);
 		task.setTarget(totalTarget);
 		List<FormatterStep> steps;
-		if (togglePair != null) {
-			steps = Collections.singletonList(togglePair.preserveWithin(this.steps));
+		if (toggleFence != null) {
+			steps = Collections.singletonList(toggleFence.preserveWithin(this.steps));
 		} else {
 			steps = this.steps;
 		}

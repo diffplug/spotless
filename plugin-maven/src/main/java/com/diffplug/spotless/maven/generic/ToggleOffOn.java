@@ -29,7 +29,7 @@ public class ToggleOffOn {
 	@Parameter
 	public String regex;
 
-	public FenceStep createPair() {
+	public FenceStep createFence() {
 		if (regex != null) {
 			return FenceStep.named(FenceStep.defaultToggleName()).regex(regex);
 		} else {

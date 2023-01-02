@@ -29,9 +29,9 @@ import com.diffplug.spotless.StepHarnessWithFile;
 class FenceStepTest extends ResourceHarness {
 	@Test
 	void single() {
-		FormatterStep pair = FenceStep.named("underTest").openClose("spotless:off", "spotless:on")
+		FormatterStep fence = FenceStep.named("underTest").openClose("spotless:off", "spotless:on")
 				.preserveWithin(Arrays.asList(FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT))));
-		StepHarness harness = StepHarness.forSteps(pair);
+		StepHarness harness = StepHarness.forSteps(fence);
 		harness.test(
 				StringPrinter.buildStringFromLines(
 						"A B C",
@@ -49,9 +49,9 @@ class FenceStepTest extends ResourceHarness {
 
 	@Test
 	void multiple() {
-		FormatterStep pair = FenceStep.named("underTest").openClose("spotless:off", "spotless:on")
+		FormatterStep fence = FenceStep.named("underTest").openClose("spotless:off", "spotless:on")
 				.preserveWithin(Arrays.asList(FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT))));
-		StepHarness harness = StepHarness.forSteps(pair);
+		StepHarness harness = StepHarness.forSteps(fence);
 		harness.test(
 				StringPrinter.buildStringFromLines(
 						"A B C",
@@ -83,9 +83,9 @@ class FenceStepTest extends ResourceHarness {
 
 	@Test
 	void broken() {
-		FormatterStep pair = FenceStep.named("underTest").openClose("spotless:off", "spotless:on")
+		FormatterStep fence = FenceStep.named("underTest").openClose("spotless:off", "spotless:on")
 				.preserveWithin(Arrays.asList(FormatterStep.createNeverUpToDate("uppercase", str -> str.toUpperCase(Locale.ROOT))));
-		StepHarnessWithFile harness = StepHarnessWithFile.forStep(this, pair);
+		StepHarnessWithFile harness = StepHarnessWithFile.forStep(this, fence);
 		// this fails because uppercase turns spotless:off into SPOTLESS:OFF, etc
 		harness.testExceptionMsg(newFile("test"), StringPrinter.buildStringFromLines("A B C",
 				"spotless:off",
@@ -96,10 +96,10 @@ class FenceStepTest extends ResourceHarness {
 
 	@Test
 	void andApply() {
-		FormatterStep pair = FenceStep.named("lowercaseSometimes").openClose("<lower>", "</lower>")
+		FormatterStep fence = FenceStep.named("lowercaseSometimes").openClose("<lower>", "</lower>")
 				.applyWithin(Arrays.asList(
 						FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT))));
-		StepHarness.forSteps(pair).test(
+		StepHarness.forSteps(fence).test(
 				StringPrinter.buildStringFromLines(
 						"A B C",
 						"<lower>",
