@@ -35,13 +35,11 @@ public final class Formatter implements Serializable, AutoCloseable {
 	private LineEnding.Policy lineEndingsPolicy;
 	private Charset encoding;
 	private List<FormatterStep> steps;
-	private FormatExceptionPolicy exceptionPolicy;
 
-	private Formatter(LineEnding.Policy lineEndingsPolicy, Charset encoding, List<FormatterStep> steps, FormatExceptionPolicy exceptionPolicy) {
+	private Formatter(LineEnding.Policy lineEndingsPolicy, Charset encoding, List<FormatterStep> steps) {
 		this.lineEndingsPolicy = Objects.requireNonNull(lineEndingsPolicy, "lineEndingsPolicy");
 		this.encoding = Objects.requireNonNull(encoding, "encoding");
 		this.steps = requireElementsNonNull(new ArrayList<>(steps));
-		this.exceptionPolicy = Objects.requireNonNull(exceptionPolicy, "exceptionPolicy");
 	}
 
 	// override serialize output
@@ -49,7 +47,6 @@ public final class Formatter implements Serializable, AutoCloseable {
 		out.writeObject(lineEndingsPolicy);
 		out.writeObject(encoding.name());
 		out.writeObject(steps);
-		out.writeObject(exceptionPolicy);
 	}
 
 	// override serialize input
@@ -58,7 +55,6 @@ public final class Formatter implements Serializable, AutoCloseable {
 		lineEndingsPolicy = (LineEnding.Policy) in.readObject();
 		encoding = Charset.forName((String) in.readObject());
 		steps = (List<FormatterStep>) in.readObject();
-		exceptionPolicy = (FormatExceptionPolicy) in.readObject();
 	}
 
 	// override serialize input
@@ -79,10 +75,6 @@ public final class Formatter implements Serializable, AutoCloseable {
 		return steps;
 	}
 
-	public FormatExceptionPolicy getExceptionPolicy() {
-		return exceptionPolicy;
-	}
-
 	public static Formatter.Builder builder() {
 		return new Formatter.Builder();
 	}
@@ -92,7 +84,6 @@ public final class Formatter implements Serializable, AutoCloseable {
 		private LineEnding.Policy lineEndingsPolicy;
 		private Charset encoding;
 		private List<FormatterStep> steps;
-		private FormatExceptionPolicy exceptionPolicy;
 
 		private Builder() {}
 
@@ -111,14 +102,8 @@ public final class Formatter implements Serializable, AutoCloseable {
 			return this;
 		}
 
-		public Builder exceptionPolicy(FormatExceptionPolicy exceptionPolicy) {
-			this.exceptionPolicy = exceptionPolicy;
-			return this;
-		}
-
 		public Formatter build() {
-			return new Formatter(lineEndingsPolicy, encoding, steps,
-					exceptionPolicy == null ? FormatExceptionPolicy.failOnlyOnError() : exceptionPolicy);
+			return new Formatter(lineEndingsPolicy, encoding, steps);
 		}
 	}
 
@@ -156,9 +141,8 @@ public final class Formatter implements Serializable, AutoCloseable {
 					unix = LineEnding.toUnix(formatted);
 				}
 			} catch (Throwable e) {
-				// TODO: this is not accurate, but it won't matter when add support for linting
-				String relativePath = file.toString();
-				exceptionPolicy.handleError(e, step, relativePath);
+				// TODO: this is bad, but it won't matter when add support for linting
+				throw new RuntimeException(e);
 			}
 		}
 		return unix;
@@ -171,7 +155,6 @@ public final class Formatter implements Serializable, AutoCloseable {
 		result = prime * result + encoding.hashCode();
 		result = prime * result + lineEndingsPolicy.hashCode();
 		result = prime * result + steps.hashCode();
-		result = prime * result + exceptionPolicy.hashCode();
 		return result;
 	}
 
@@ -189,8 +172,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 		Formatter other = (Formatter) obj;
 		return encoding.equals(other.encoding) &&
 				lineEndingsPolicy.equals(other.lineEndingsPolicy) &&
-				steps.equals(other.steps) &&
-				exceptionPolicy.equals(other.exceptionPolicy);
+				steps.equals(other.steps);
 	}
 
 	@SuppressWarnings("rawtypes")

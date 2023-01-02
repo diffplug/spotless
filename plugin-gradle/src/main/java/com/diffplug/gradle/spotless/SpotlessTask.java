@@ -187,7 +187,6 @@ public abstract class SpotlessTask extends DefaultTask {
 				.lineEndingsPolicy(lineEndingsPolicy.get())
 				.encoding(Charset.forName(encoding))
 				.steps(steps.get())
-				.exceptionPolicy(exceptionPolicy)
 				.build();
 	}
 }

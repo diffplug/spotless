@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.common.collect.Sets;
-import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
@@ -104,7 +103,6 @@ public abstract class FormatterFactory {
 		return Formatter.builder()
 				.encoding(formatterEncoding)
 				.lineEndingsPolicy(formatterLineEndingPolicy)
-				.exceptionPolicy(new FormatExceptionPolicyStrict())
 				.steps(formatterSteps)
 				.build();
 	}
