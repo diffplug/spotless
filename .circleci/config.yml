@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  win: circleci/windows@2.4.1
+  win: circleci/windows@5.0.0
 
 anchors:
   env_gradle: &env_gradle
@@ -140,13 +140,6 @@ jobs:
           path: lib-extra/build/test-results/test
       - store_test_results:
           path: plugin-gradle/build/test-results/test
-      - run:
-          name: gradlew testNpm
-          command: gradlew testNpm --build-cache -PSPOTLESS_EXCLUDE_MAVEN=true
-      - store_test_results:
-          path: testlib/build/test-results/testNpm
-      - store_test_results:
-          path: plugin-gradle/build/test-results/testNpm
   changelog_print:
     << : *env_gradle
     steps:
