@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,10 +35,12 @@ public class Replace implements FormatterStepFactory {
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
-		if (name == null || search == null || replacement == null) {
-			throw new IllegalArgumentException("Must specify 'name', 'search' and 'replacement'.");
+		if (name == null || search == null) {
+			throw new IllegalArgumentException("Must specify 'name' and 'search'.");
 		}
-
-		return ReplaceStep.create(name, search, replacement);
+		// Use empty string if replacement is not provided. In pom.xml there is no way to specify
+		// an empty string as a property value as maven will always trim the value and if it is
+		// empty, maven will consider the property as not provided.
+		return ReplaceStep.create(name, search, replacement != null ? replacement : "");
 	}
 }

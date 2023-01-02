@@ -5,6 +5,7 @@ buildscript {
 plugins {
 	id 'cz.malohlava.visteg' version '1.0.5' // https://github.com/mmalohlava/gradle-visteg
 }
+repositories { mavenCentral() }
 apply from: rootProject.file('gradle/changelog.gradle')
 apply from: rootProject.file('gradle/spotless-freshmark.gradle')
 
@@ -75,6 +76,7 @@ dependencies {
 	implementation "com.diffplug.durian:durian-collect:${VER_DURIAN}"
 	implementation("org.codehaus.plexus:plexus-resources:${VER_PLEXUS_RESOURCES}")
 	implementation "org.eclipse.jgit:org.eclipse.jgit:${VER_JGIT}"
+	implementation 'org.sonatype.plexus:plexus-build-api:0.0.7'
 
 	testImplementation project(":testlib")
 	testImplementation "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"

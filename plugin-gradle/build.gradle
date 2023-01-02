@@ -1,12 +1,12 @@
 apply from: rootProject.file('gradle/changelog.gradle')
 ext.artifactId = project.artifactIdGradle
 version = spotlessChangelog.versionNext
-apply from: rootProject.file('gradle/java-setup.gradle')
-apply from: rootProject.file('gradle/spotless-freshmark.gradle')
-
 apply plugin: 'java-library'
 apply plugin: 'com.gradle.plugin-publish'
 apply plugin: 'java-gradle-plugin'
+apply from: rootProject.file('gradle/java-setup.gradle')
+apply from: rootProject.file('gradle/spotless-freshmark.gradle')
+
 
 dependencies {
 	if (version.endsWith('-SNAPSHOT') || (rootProject.spotlessChangelog.versionNext == rootProject.spotlessChangelog.versionLast)) {

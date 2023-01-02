@@ -32,7 +32,7 @@ public class DiktatStep {
 
 	private static final String MIN_SUPPORTED_VERSION = "1.2.1";
 
-	private static final String DEFAULT_VERSION = "1.2.3";
+	private static final String DEFAULT_VERSION = "1.2.4.2";
 	static final String NAME = "diktat";
 	static final String PACKAGE_DIKTAT = "org.cqfn.diktat";
 	static final String MAVEN_COORDINATE = PACKAGE_DIKTAT + ":diktat-rules:";

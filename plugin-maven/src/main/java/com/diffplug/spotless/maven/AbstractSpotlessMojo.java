@@ -50,6 +50,7 @@ import org.codehaus.plexus.util.MatchPatterns;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.repository.RemoteRepository;
+import org.sonatype.plexus.build.incremental.BuildContext;
 
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.LineEnding;
@@ -88,8 +89,14 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Component
 	private ResourceManager resourceManager;
 
+	@Component
+	protected BuildContext buildContext;
+
 	@Parameter(defaultValue = "${mojoExecution.goal}", required = true, readonly = true)
 	private String goal;
+
+	@Parameter(defaultValue = "false")
+	private boolean skip;
 
 	@Parameter(property = "spotless.apply.skip", defaultValue = "false")
 	private boolean applySkip;
@@ -200,6 +207,10 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private boolean shouldSkip() {
+		if (skip) {
+			return true;
+		}
+
 		switch (goal) {
 		case GOAL_CHECK:
 			return checkSkip;
@@ -208,6 +219,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		default:
 			break;
 		}
+
 		return false;
 	}
 
@@ -336,10 +348,13 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 			Path targetDir = project.getBasedir().toPath().resolve(project.getBuild().getDirectory());
 			indexFile = targetDir.resolve(DEFAULT_INDEX_FILE_NAME);
 		}
+		final UpToDateChecker checker;
 		if (upToDateChecking != null && upToDateChecking.isEnabled()) {
 			getLog().info("Up-to-date checking enabled");
-			return UpToDateChecker.forProject(project, indexFile, formatters, getLog());
+			checker = UpToDateChecker.forProject(project, indexFile, formatters, getLog());
+		} else {
+			checker = UpToDateChecker.noop(project, indexFile, getLog());
 		}
-		return UpToDateChecker.noop(project, indexFile, getLog());
+		return UpToDateChecker.wrapWithBuildContext(checker, buildContext);
 	}
 }

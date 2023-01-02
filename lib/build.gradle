@@ -34,6 +34,7 @@ versionCompatibility {
 				'0.45.2',
 				'0.46.0',
 				'0.47.0',
+				'0.48.0',
 			]
 			targetSourceSetName = 'ktlint'
 		}
@@ -52,9 +53,9 @@ dependencies {
 	sortPomCompileOnly 'com.github.ekryd.sortpom:sortpom-sorter:3.0.0'
 	sortPomCompileOnly 'org.slf4j:slf4j-api:2.0.0'
 
-	palantirJavaFormatCompileOnly 'com.palantir.javaformat:palantir-java-format:1.1.0'
+	palantirJavaFormatCompileOnly 'com.palantir.javaformat:palantir-java-format:1.1.0' 	// this version needs to stay compilable against Java 8 for CI Job testNpm
 
-	String VER_KTFMT = '0.40'
+	String VER_KTFMT = '0.42'
 	ktfmtCompileOnly "com.facebook:ktfmt:$VER_KTFMT"
 	String VER_KTLINT_GOOGLE_JAVA_FORMAT = '1.7' // for JDK 8 compatibility
 	ktfmtCompileOnly("com.google.googlejavaformat:google-java-format") {
@@ -90,11 +91,14 @@ dependencies {
 	compatKtLint0Dot47Dot0CompileOnly 'com.pinterest.ktlint:ktlint-core:0.47.0'
 	compatKtLint0Dot47Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.47.0'
 	compatKtLint0Dot47Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.47.0'
+	compatKtLint0Dot48Dot0CompileOnly 'com.pinterest.ktlint:ktlint-core:0.48.0'
+	compatKtLint0Dot48Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.48.0'
+	compatKtLint0Dot48Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.48.0'
 
-	String VER_SCALAFMT="3.5.9"
+	String VER_SCALAFMT="3.6.1"
 	scalafmtCompileOnly "org.scalameta:scalafmt-core_2.13:$VER_SCALAFMT"
 
-	String VER_DIKTAT = "1.2.3"
+	String VER_DIKTAT = "1.2.4.2"
 	diktatCompileOnly "org.cqfn.diktat:diktat-rules:$VER_DIKTAT"
 
 	// used for markdown formatting

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 DiffPlug
+ * Copyright 2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,6 @@
  */
 package com.diffplug.spotless.glue.ktlint.compat;
 
-import static java.util.Collections.emptySet;
-
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +31,7 @@ import com.pinterest.ktlint.core.api.DefaultEditorConfigProperties;
 import com.pinterest.ktlint.core.api.EditorConfigDefaults;
 import com.pinterest.ktlint.core.api.EditorConfigOverride;
 import com.pinterest.ktlint.core.api.UsesEditorConfigProperties;
+import com.pinterest.ktlint.core.api.editorconfig.EditorConfigProperty;
 import com.pinterest.ktlint.ruleset.experimental.ExperimentalRuleSetProvider;
 import com.pinterest.ktlint.ruleset.standard.StandardRuleSetProvider;
 
@@ -41,7 +39,7 @@ import kotlin.Pair;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function2;
 
-public class KtLintCompat0Dot47Dot0Adapter implements KtLintCompatAdapter {
+public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 
 	static class FormatterCallback implements Function2<LintError, Boolean, Unit> {
 		@Override
@@ -79,12 +77,10 @@ public class KtLintCompat0Dot47Dot0Adapter implements KtLintCompatAdapter {
 		return KtLint.INSTANCE.format(new KtLint.ExperimentalParams(
 				name,
 				text,
-				emptySet(),
 				allRuleProviders,
 				userData,
 				formatterCallback,
 				isScript,
-				null,
 				false,
 				EditorConfigDefaults.Companion.getEmptyEditorConfigDefaults(),
 				editorConfigOverride,
@@ -93,29 +89,24 @@ public class KtLintCompat0Dot47Dot0Adapter implements KtLintCompatAdapter {
 
 	/**
 	 * Create EditorConfigOverride from user provided parameters.
-	 * Calling this method requires KtLint 0.45.2.
 	 */
 	private static EditorConfigOverride createEditorConfigOverride(final List<Rule> rules, Map<String, Object> editorConfigOverrideMap) {
 		// Get properties from rules in the rule sets
-		Stream<UsesEditorConfigProperties.EditorConfigProperty<?>> ruleProperties = rules.stream()
+		Stream<EditorConfigProperty<?>> ruleProperties = rules.stream()
 				.filter(rule -> rule instanceof UsesEditorConfigProperties)
 				.flatMap(rule -> ((UsesEditorConfigProperties) rule).getEditorConfigProperties().stream());
 
-		// get complete list of supported properties in DefaultEditorConfigProperties.INSTANCE
-		List<UsesEditorConfigProperties.EditorConfigProperty<?>> editorConfigProperties = new ArrayList<>(DefaultEditorConfigProperties.INSTANCE.getEditorConfigProperties());
-		editorConfigProperties.add(DefaultEditorConfigProperties.INSTANCE.getKtlintDisabledRulesProperty());
-
 		// Create a mapping of properties to their names based on rule properties and default properties
-		Map<String, UsesEditorConfigProperties.EditorConfigProperty<?>> supportedProperties = Stream
-				.concat(ruleProperties, editorConfigProperties.stream())
+		Map<String, EditorConfigProperty<?>> supportedProperties = Stream
+				.concat(ruleProperties, DefaultEditorConfigProperties.INSTANCE.getEditorConfigProperties().stream())
 				.distinct()
-				.collect(Collectors.toMap(property -> property.getType().getName(), property -> property));
+				.collect(Collectors.toMap(EditorConfigProperty::getName, property -> property));
 
 		// Create config properties based on provided property names and values
 		@SuppressWarnings("unchecked")
-		Pair<UsesEditorConfigProperties.EditorConfigProperty<?>, ?>[] properties = editorConfigOverrideMap.entrySet().stream()
+		Pair<EditorConfigProperty<?>, ?>[] properties = editorConfigOverrideMap.entrySet().stream()
 				.map(entry -> {
-					UsesEditorConfigProperties.EditorConfigProperty<?> property = supportedProperties.get(entry.getKey());
+					EditorConfigProperty<?> property = supportedProperties.get(entry.getKey());
 					if (property != null) {
 						return new Pair<>(property, entry.getValue());
 					} else {
