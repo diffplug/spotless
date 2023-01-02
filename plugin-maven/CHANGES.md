@@ -3,6 +3,13 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* Added support for M2E's incremental compilation ([#1414](https://github.com/diffplug/spotless/pull/1414) fixes [#1413](https://github.com/diffplug/spotless/issues/1413))
+### Fixed
+* Improve memory usage when using git ratchet ([#1426](https://github.com/diffplug/spotless/pull/1426))
+* Support `ktlint` 0.48+ ([#1432](https://github.com/diffplug/spotless/pull/1432)) fixes ([#1430](https://github.com/diffplug/spotless/issues/1430))
+### Changes
+* Bump default `ktlint` version to latest `0.47.1` -> `0.48.0` ([#1432](https://github.com/diffplug/spotless/pull/1432))
 
 ## [2.28.0] - 2022-11-24
 ### Added
@@ -10,6 +17,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Fixed
 * Don't treat `@Value` as a type annotation [#1367](https://github.com/diffplug/spotless/pull/1367)
 * Support `ktlint_disabled_rules` in `ktlint` 0.47.x [#1378](https://github.com/diffplug/spotless/pull/1378)
+* Share git repositories across projects when using ratchet ([#1426](https://github.com/diffplug/spotless/pull/1426))
 ### Changes
 * Bump default `ktfmt` version to latest `0.40` -> `0.41` ([#1340](https://github.com/diffplug/spotless/pull/1340))
 * Bump default `scalafmt` version to latest `3.5.9` -> `3.6.1` ([#1373](https://github.com/diffplug/spotless/pull/1373))

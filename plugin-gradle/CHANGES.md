@@ -3,6 +3,11 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Fixed
+* Improve memory usage when using git ratchet ([#1426](https://github.com/diffplug/spotless/pull/1426))
+* Support `ktlint` 0.48+ ([#1432](https://github.com/diffplug/spotless/pull/1432)) fixes ([#1430](https://github.com/diffplug/spotless/issues/1430))
+### Changes
+* Bump default `ktlint` version to latest `0.47.1` -> `0.48.0` ([#1432](https://github.com/diffplug/spotless/pull/1432))
 
 ## [6.12.0] - 2022-11-24
 ### Added
