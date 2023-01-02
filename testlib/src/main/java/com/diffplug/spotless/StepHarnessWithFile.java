@@ -33,7 +33,6 @@ public class StepHarnessWithFile implements AutoCloseable {
 	private StepHarnessWithFile(ResourceHarness harness, Formatter formatter) {
 		this.harness = Objects.requireNonNull(harness);
 		this.formatter = Objects.requireNonNull(formatter);
-
 	}
 
 	/** Creates a harness for testing steps which do depend on the file. */
