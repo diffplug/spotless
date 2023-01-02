@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,9 +53,12 @@ public class GradleIntegrationHarness extends ResourceHarness {
 		GradleVersionSupport(String version) {
 			String minVersionForRunningJRE;
 			switch (Jvm.version()) {
+			case 21:
 			case 20:
-			case 19:
 				// TODO: https://docs.gradle.org/current/userguide/compatibility.html
+			case 19:
+				minVersionForRunningJRE = "7.6";
+				break;
 			case 18:
 				minVersionForRunningJRE = "7.5";
 				break;
