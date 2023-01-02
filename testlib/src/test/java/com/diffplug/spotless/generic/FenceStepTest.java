@@ -26,10 +26,10 @@ import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.StepHarnessWithFile;
 
-class PipeStepPairTest extends ResourceHarness {
+class FenceStepTest extends ResourceHarness {
 	@Test
 	void single() {
-		FormatterStep pair = PipeStepPair.named("underTest").openClose("spotless:off", "spotless:on")
+		FormatterStep pair = FenceStep.named("underTest").openClose("spotless:off", "spotless:on")
 				.preserveWithin(Arrays.asList(FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT))));
 		StepHarness harness = StepHarness.forSteps(pair);
 		harness.test(
@@ -49,7 +49,7 @@ class PipeStepPairTest extends ResourceHarness {
 
 	@Test
 	void multiple() {
-		FormatterStep pair = PipeStepPair.named("underTest").openClose("spotless:off", "spotless:on")
+		FormatterStep pair = FenceStep.named("underTest").openClose("spotless:off", "spotless:on")
 				.preserveWithin(Arrays.asList(FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT))));
 		StepHarness harness = StepHarness.forSteps(pair);
 		harness.test(
@@ -83,7 +83,7 @@ class PipeStepPairTest extends ResourceHarness {
 
 	@Test
 	void broken() {
-		FormatterStep pair = PipeStepPair.named("underTest").openClose("spotless:off", "spotless:on")
+		FormatterStep pair = FenceStep.named("underTest").openClose("spotless:off", "spotless:on")
 				.preserveWithin(Arrays.asList(FormatterStep.createNeverUpToDate("uppercase", str -> str.toUpperCase(Locale.ROOT))));
 		StepHarnessWithFile harness = StepHarnessWithFile.forStep(this, pair);
 		// this fails because uppercase turns spotless:off into SPOTLESS:OFF, etc
@@ -96,7 +96,7 @@ class PipeStepPairTest extends ResourceHarness {
 
 	@Test
 	void andApply() {
-		FormatterStep pair = PipeStepPair.named("lowercaseSometimes").openClose("<lower>", "</lower>")
+		FormatterStep pair = FenceStep.named("lowercaseSometimes").openClose("<lower>", "</lower>")
 				.applyWithin(Arrays.asList(
 						FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT))));
 		StepHarness.forSteps(pair).test(

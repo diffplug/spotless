@@ -52,11 +52,11 @@ import com.diffplug.spotless.cpp.ClangFormatStep;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
 import com.diffplug.spotless.generic.EndWithNewlineStep;
+import com.diffplug.spotless.generic.FenceStep;
 import com.diffplug.spotless.generic.IndentStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep.YearMode;
 import com.diffplug.spotless.generic.NativeCmdStep;
-import com.diffplug.spotless.generic.PipeStepPair;
 import com.diffplug.spotless.generic.ReplaceRegexStep;
 import com.diffplug.spotless.generic.ReplaceStep;
 import com.diffplug.spotless.generic.TrimTrailingWhitespaceStep;
@@ -698,7 +698,7 @@ public class FormatExtension {
 	 * </pre>
 	 */
 	public <T extends FormatExtension> void withinBlocks(String name, String open, String close, Class<T> clazz, Action<T> configure) {
-		withinBlocksHelper(PipeStepPair.named(name).openClose(open, close), clazz, configure);
+		withinBlocksHelper(FenceStep.named(name).openClose(open, close), clazz, configure);
 	}
 
 	/** Same as {@link #withinBlocks(String, String, String, Action)}, except instead of an open/close pair, you specify a regex with exactly one capturing group. */
@@ -708,10 +708,10 @@ public class FormatExtension {
 
 	/** Same as {@link #withinBlocksRegex(String, String, Action)}, except you can specify any language-specific subclass of {@link FormatExtension} to get language-specific steps. */
 	public <T extends FormatExtension> void withinBlocksRegex(String name, String regex, Class<T> clazz, Action<T> configure) {
-		withinBlocksHelper(PipeStepPair.named(name).regex(regex), clazz, configure);
+		withinBlocksHelper(FenceStep.named(name).regex(regex), clazz, configure);
 	}
 
-	private <T extends FormatExtension> void withinBlocksHelper(PipeStepPair builder, Class<T> clazz, Action<T> configure) {
+	private <T extends FormatExtension> void withinBlocksHelper(FenceStep builder, Class<T> clazz, Action<T> configure) {
 		// create the sub-extension
 		T formatExtension = spotless.instantiateFormatExtension(clazz);
 		// configure it
@@ -725,17 +725,17 @@ public class FormatExtension {
 	 * inside that captured group.
 	 */
 	public void toggleOffOnRegex(String regex) {
-		this.togglePair = PipeStepPair.named(PipeStepPair.defaultToggleName()).regex(regex);
+		this.togglePair = FenceStep.named(FenceStep.defaultToggleName()).regex(regex);
 	}
 
 	/** Disables formatting between the given tags. */
 	public void toggleOffOn(String off, String on) {
-		this.togglePair = PipeStepPair.named(PipeStepPair.defaultToggleName()).openClose(off, on);
+		this.togglePair = FenceStep.named(FenceStep.defaultToggleName()).openClose(off, on);
 	}
 
 	/** Disables formatting between {@code spotless:off} and {@code spotless:on}. */
 	public void toggleOffOn() {
-		toggleOffOn(PipeStepPair.defaultToggleOff(), PipeStepPair.defaultToggleOn());
+		toggleOffOn(FenceStep.defaultToggleOff(), FenceStep.defaultToggleOn());
 	}
 
 	/** Undoes all previous calls to {@link #toggleOffOn()} and {@link #toggleOffOn(String, String)}. */
@@ -743,7 +743,7 @@ public class FormatExtension {
 		this.togglePair = null;
 	}
 
-	private @Nullable PipeStepPair togglePair;
+	private @Nullable FenceStep togglePair;
 
 	/** Sets up a format task according to the values in this extension. */
 	protected void setupTask(SpotlessTask task) {

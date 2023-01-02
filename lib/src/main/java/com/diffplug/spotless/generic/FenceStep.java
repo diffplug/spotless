@@ -29,10 +29,10 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 
-public class PipeStepPair {
+public class FenceStep {
 	/** Declares the name of the step. */
-	public static PipeStepPair named(String name) {
-		return new PipeStepPair(name);
+	public static FenceStep named(String name) {
+		return new FenceStep(name);
 	}
 
 	public static String defaultToggleName() {
@@ -50,22 +50,22 @@ public class PipeStepPair {
 	String name;
 	Pattern regex;
 
-	private PipeStepPair(String name) {
+	private FenceStep(String name) {
 		this.name = Objects.requireNonNull(name);
 	}
 
 	/** Defines the opening and closing markers. */
-	public PipeStepPair openClose(String open, String close) {
+	public FenceStep openClose(String open, String close) {
 		return regex(Pattern.quote(open) + "([\\s\\S]*?)" + Pattern.quote(close));
 	}
 
 	/** Defines the pipe via regex. Must have *exactly one* capturing group. */
-	public PipeStepPair regex(String regex) {
+	public FenceStep regex(String regex) {
 		return regex(Pattern.compile(regex));
 	}
 
 	/** Defines the pipe via regex. Must have *exactly one* capturing group. */
-	public PipeStepPair regex(Pattern regex) {
+	public FenceStep regex(Pattern regex) {
 		this.regex = Objects.requireNonNull(regex);
 		return this;
 	}
