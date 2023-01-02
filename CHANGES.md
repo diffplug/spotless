@@ -11,12 +11,21 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+## [2.31.1] - 2023-01-02
+### Fixed
+* Improve memory usage when using git ratchet ([#1426](https://github.com/diffplug/spotless/pull/1426))
+* Support `ktlint` 0.48+ ([#1432](https://github.com/diffplug/spotless/pull/1432)) fixes ([#1430](https://github.com/diffplug/spotless/issues/1430))
+### Changes
+* Bump default `ktlint` version to latest `0.47.1` -> `0.48.0` ([#1432](https://github.com/diffplug/spotless/pull/1432))
+* Bump default `ktfmt` version to latest `0.41` -> `0.42` ([#1421](https://github.com/diffplug/spotless/pull/1421))
+
 ## [2.31.0] - 2022-11-24
 ### Added
 * `importOrder` now support groups of imports without blank lines ([#1401](https://github.com/diffplug/spotless/pull/1401))
 ### Fixed
 * Don't treat `@Value` as a type annotation [#1367](https://github.com/diffplug/spotless/pull/1367)
 * Support `ktlint_disabled_rules` in `ktlint` 0.47.x [#1378](https://github.com/diffplug/spotless/pull/1378)
+* Share git repositories across projects when using ratchet ([#1426](https://github.com/diffplug/spotless/pull/1426))
 ### Changes
 * Bump default `ktfmt` version to latest `0.40` -> `0.41` ([#1340](https://github.com/diffplug/spotless/pull/1340))
 * Bump default `scalafmt` version to latest `3.5.9` -> `3.6.1` ([#1373](https://github.com/diffplug/spotless/pull/1373))
