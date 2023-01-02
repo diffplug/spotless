@@ -10,10 +10,11 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [TBD lint release]
-* **BREAKING** Removed `isClean`, `applyTo`, and `applyToAndReturnResultIfDirty` from `Formatter` because users should instead use `PaddedCell.check()`.
-* **BREAKING** Removed `FormatterStep.Strict` because it was unnecessary and unused implementation detail.
-* **BREAKING** Moved `PaddedCell.DirtyState` to its own top-level class with new methods.
+* **BREAKING** Removed `isClean`, `applyTo`, and `applyToAndReturnResultIfDirty` from `Formatter` because users should instead use new class `DirtyState.of`
+* **BREAKING** Removed `FormatterStep.Strict` because it was an unnecessary and unused implementation detail
 * **BREAKING** Removed `rootDir` and `exceptionPolicy` parameters from `Formatter`
+* **BREAKING** Renamed `PipeStepPair` to `FenceStep` and changed its approach to be lint-friendly
+* **BREAKING** Modified `StepHarness` and `StepHarnessWithFile` to stop asserting on exceptions (to prepare for Lint)
 
 ## [Unreleased]
 ### Changes
