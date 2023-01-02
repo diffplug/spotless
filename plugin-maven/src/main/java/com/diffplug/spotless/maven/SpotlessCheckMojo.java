@@ -62,7 +62,7 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 		if (!problemFiles.isEmpty()) {
 			throw new MojoExecutionException(DiffMessageFormatter.builder()
 					.runToFix("Run 'mvn spotless:apply' to fix these violations.")
-					.formatter(formatter)
+					.formatter(baseDir.toPath(), formatter)
 					.problemFiles(problemFiles)
 					.getMessage());
 		}

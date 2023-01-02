@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,7 +106,6 @@ public abstract class FormatterFactory {
 				.lineEndingsPolicy(formatterLineEndingPolicy)
 				.exceptionPolicy(new FormatExceptionPolicyStrict())
 				.steps(formatterSteps)
-				.rootDir(config.getFileLocator().getBaseDir().toPath())
 				.build();
 	}
 

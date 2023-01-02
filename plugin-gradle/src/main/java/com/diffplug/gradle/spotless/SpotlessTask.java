@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 DiffPlug
+ * Copyright 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -186,7 +186,6 @@ public abstract class SpotlessTask extends DefaultTask {
 		return Formatter.builder()
 				.lineEndingsPolicy(lineEndingsPolicy.get())
 				.encoding(Charset.forName(encoding))
-				.rootDir(getProjectDir().get().getAsFile().toPath())
 				.steps(steps.get())
 				.exceptionPolicy(exceptionPolicy)
 				.build();

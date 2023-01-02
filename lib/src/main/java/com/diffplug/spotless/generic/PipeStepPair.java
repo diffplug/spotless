@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 DiffPlug
+ * Copyright 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package com.diffplug.spotless.generic;
 import java.io.File;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -81,10 +80,10 @@ public class PipeStepPair {
 		}
 
 		/** Returns a single step which will apply the given steps only within the blocks selected by the regex / openClose pair. */
-		public FormatterStep buildStepWhichAppliesSubSteps(Path rootPath, Collection<? extends FormatterStep> steps) {
+		public FormatterStep buildStepWhichAppliesSubSteps(Collection<? extends FormatterStep> steps) {
 			return FormatterStep.createLazy(name,
 					() -> new StateApplyToBlock(regex, steps),
-					state -> FormatterFunc.Closeable.of(state.buildFormatter(rootPath), state::format));
+					state -> FormatterFunc.Closeable.of(state.buildFormatter(), state::format));
 		}
 	}
 
@@ -117,12 +116,11 @@ public class PipeStepPair {
 			this.steps = new ArrayList<>(steps);
 		}
 
-		Formatter buildFormatter(Path rootDir) {
+		Formatter buildFormatter() {
 			return Formatter.builder()
 					.encoding(StandardCharsets.UTF_8) // can be any UTF, doesn't matter
 					.lineEndingsPolicy(LineEnding.UNIX.createPolicy()) // just internal, won't conflict with user
 					.steps(steps)
-					.rootDir(rootDir)
 					.build();
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -55,7 +54,6 @@ public class StepHarness implements AutoCloseable {
 				.steps(Arrays.asList(steps))
 				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
 				.encoding(StandardCharsets.UTF_8)
-				.rootDir(Paths.get(""))
 				.build());
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -716,8 +716,7 @@ public class FormatExtension {
 		// configure it
 		configure.execute(formatExtension);
 		// create a step which applies all of those steps as sub-steps
-		FormatterStep step = builder.buildStepWhichAppliesSubSteps(spotless.project.getRootDir().toPath(), formatExtension.steps);
-		addStep(step);
+		addStep(builder.buildStepWhichAppliesSubSteps(formatExtension.steps));
 	}
 
 	/**
