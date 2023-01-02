@@ -107,7 +107,6 @@ public abstract class FormatterFactory {
 				.lineEndingsPolicy(formatterLineEndingPolicy)
 				.exceptionPolicy(new FormatExceptionPolicyStrict())
 				.steps(formatterSteps)
-				.rootDir(config.getFileLocator().getBaseDir().toPath())
 				.build();
 	}
 

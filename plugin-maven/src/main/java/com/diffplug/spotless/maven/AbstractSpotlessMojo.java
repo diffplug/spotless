@@ -121,7 +121,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	private List<RemoteRepository> repositories;
 
 	@Parameter(defaultValue = "${project.basedir}", required = true, readonly = true)
-	private File baseDir;
+	protected File baseDir;
 
 	@Parameter(defaultValue = "${project.build.directory}", required = true, readonly = true)
 	private File buildDir;

@@ -24,8 +24,6 @@ import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.nio.charset.Charset;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -38,15 +36,12 @@ public final class Formatter implements Serializable, AutoCloseable {
 	private String name;
 	private LineEnding.Policy lineEndingsPolicy;
 	private Charset encoding;
-	private Path rootDir;
 	private List<FormatterStep> steps;
 	private FormatExceptionPolicy exceptionPolicy;
 
-	private Formatter(String name, LineEnding.Policy lineEndingsPolicy, Charset encoding, Path rootDirectory, List<FormatterStep> steps, FormatExceptionPolicy exceptionPolicy) {
-		this.name = name;
+	private Formatter(LineEnding.Policy lineEndingsPolicy, Charset encoding, List<FormatterStep> steps, FormatExceptionPolicy exceptionPolicy) {
 		this.lineEndingsPolicy = Objects.requireNonNull(lineEndingsPolicy, "lineEndingsPolicy");
 		this.encoding = Objects.requireNonNull(encoding, "encoding");
-		this.rootDir = Objects.requireNonNull(rootDirectory, "rootDir");
 		this.steps = requireElementsNonNull(new ArrayList<>(steps));
 		this.exceptionPolicy = Objects.requireNonNull(exceptionPolicy, "exceptionPolicy");
 	}
@@ -56,7 +51,6 @@ public final class Formatter implements Serializable, AutoCloseable {
 		out.writeObject(name);
 		out.writeObject(lineEndingsPolicy);
 		out.writeObject(encoding.name());
-		out.writeObject(rootDir.toString());
 		out.writeObject(steps);
 		out.writeObject(exceptionPolicy);
 	}
@@ -67,7 +61,6 @@ public final class Formatter implements Serializable, AutoCloseable {
 		name = (String) in.readObject();
 		lineEndingsPolicy = (LineEnding.Policy) in.readObject();
 		encoding = Charset.forName((String) in.readObject());
-		rootDir = Paths.get((String) in.readObject());
 		steps = (List<FormatterStep>) in.readObject();
 		exceptionPolicy = (FormatExceptionPolicy) in.readObject();
 	}
@@ -90,10 +83,6 @@ public final class Formatter implements Serializable, AutoCloseable {
 		return encoding;
 	}
 
-	public Path getRootDir() {
-		return rootDir;
-	}
-
 	public List<FormatterStep> getSteps() {
 		return steps;
 	}
@@ -112,7 +101,6 @@ public final class Formatter implements Serializable, AutoCloseable {
 		// required parameters
 		private LineEnding.Policy lineEndingsPolicy;
 		private Charset encoding;
-		private Path rootDir;
 		private List<FormatterStep> steps;
 		private FormatExceptionPolicy exceptionPolicy;
 
@@ -133,11 +121,6 @@ public final class Formatter implements Serializable, AutoCloseable {
 			return this;
 		}
 
-		public Builder rootDir(Path rootDir) {
-			this.rootDir = rootDir;
-			return this;
-		}
-
 		public Builder steps(List<FormatterStep> steps) {
 			this.steps = steps;
 			return this;
@@ -149,7 +132,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 		}
 
 		public Formatter build() {
-			return new Formatter(name, lineEndingsPolicy, encoding, rootDir, steps,
+			return new Formatter(lineEndingsPolicy, encoding, steps,
 					exceptionPolicy == null ? FormatExceptionPolicy.failOnlyOnError() : exceptionPolicy);
 		}
 	}
@@ -188,13 +171,9 @@ public final class Formatter implements Serializable, AutoCloseable {
 					unix = LineEnding.toUnix(formatted);
 				}
 			} catch (Throwable e) {
-				if (file == NO_FILE_SENTINEL) {
-					exceptionPolicy.handleError(e, step, "");
-				} else {
-					// Path may be forged from a different FileSystem than Filesystem.default
-					String relativePath = rootDir.relativize(rootDir.getFileSystem().getPath(file.getPath())).toString();
-					exceptionPolicy.handleError(e, step, relativePath);
-				}
+				// TODO: this is not accurate, but it won't matter when add support for linting
+				String relativePath = file.toString();
+				exceptionPolicy.handleError(e, step, relativePath);
 			}
 		}
 		return unix;
@@ -207,7 +186,6 @@ public final class Formatter implements Serializable, AutoCloseable {
 		result = prime * result + name.hashCode();
 		result = prime * result + encoding.hashCode();
 		result = prime * result + lineEndingsPolicy.hashCode();
-		result = prime * result + rootDir.hashCode();
 		result = prime * result + steps.hashCode();
 		result = prime * result + exceptionPolicy.hashCode();
 		return result;
@@ -228,7 +206,6 @@ public final class Formatter implements Serializable, AutoCloseable {
 		return name.equals(other.name) &&
 				encoding.equals(other.encoding) &&
 				lineEndingsPolicy.equals(other.lineEndingsPolicy) &&
-				rootDir.equals(other.rootDir) &&
 				steps.equals(other.steps) &&
 				exceptionPolicy.equals(other.exceptionPolicy);
 	}

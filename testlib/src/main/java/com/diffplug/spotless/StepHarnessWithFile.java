@@ -41,7 +41,6 @@ public class StepHarnessWithFile extends StepHarnessBase {
 				.encoding(StandardCharsets.UTF_8)
 				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
 				.steps(Collections.singletonList(step))
-				.rootDir(harness.rootFolder().toPath())
 				.exceptionPolicy(new FormatExceptionPolicyStrict())
 				.build());
 	}
