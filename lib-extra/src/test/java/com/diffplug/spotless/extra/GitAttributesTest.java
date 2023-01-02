@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,24 +26,19 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.jupiter.api.Test;
 
-import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ResourceHarness;
 
 class GitAttributesTest extends ResourceHarness {
 	private List<File> testFiles(String prefix) {
-		try {
-			List<File> result = new ArrayList<>();
-			for (String path : TEST_PATHS) {
-				String prefixedPath = prefix + path;
-				setFile(prefixedPath).toContent("");
-				result.add(newFile(prefixedPath));
-			}
-			return result;
-		} catch (IOException e) {
-			throw Errors.asRuntime(e);
+		List<File> result = new ArrayList<>();
+		for (String path : TEST_PATHS) {
+			String prefixedPath = prefix + path;
+			setFile(prefixedPath).toContent("");
+			result.add(newFile(prefixedPath));
 		}
+		return result;
 	}
 
 	private List<File> testFiles() {

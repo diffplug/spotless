@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,8 @@
  */
 package com.diffplug.spotless.scala;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 
 import org.junit.jupiter.api.Test;
 
@@ -61,7 +57,7 @@ class ScalaFmtStepTest extends ResourceHarness {
 	@Test
 	void equality() throws Exception {
 		new SerializableEqualityTester() {
-			String version = "3.5.9";
+			String version = "3.6.1";
 			File configFile = null;
 
 			@Override
@@ -69,7 +65,7 @@ class ScalaFmtStepTest extends ResourceHarness {
 				// same version == same
 				api.areDifferentThan();
 				// change the version, and it's different
-				version = "3.5.8";
+				version = "3.0.0";
 				api.areDifferentThan();
 				// add a config file, and its different
 				configFile = createTestFile("scala/scalafmt/scalafmt.conf");
@@ -90,9 +86,7 @@ class ScalaFmtStepTest extends ResourceHarness {
 	void invalidConfiguration() throws Exception {
 		File invalidConfFile = createTestFile("scala/scalafmt/scalafmt.invalid.conf");
 		Provisioner provisioner = TestProvisioner.mavenCentral();
-
-		InvocationTargetException exception = assertThrows(InvocationTargetException.class,
-				() -> StepHarness.forStep(ScalaFmtStep.create("3.0.0", provisioner, invalidConfFile)).test("", ""));
-		assertThat(exception.getCause().getMessage()).contains("found option 'invalidScalaFmtConfigField' which wasn't expected");
+		StepHarness.forStep(ScalaFmtStep.create("3.0.0", provisioner, invalidConfFile))
+				.testExceptionMsg("").contains("found option 'invalidScalaFmtConfigField' which wasn't expected");
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 DiffPlug
+ * Copyright 2022-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 package com.diffplug.spotless.json.gson;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
 
@@ -41,25 +39,18 @@ public class GsonStepTest extends JsonFormatterStepCommonTests {
 
 	@Test
 	void handlesInvalidJson() {
-		assertThatThrownBy(() -> doWithResource("invalidJson"))
-				.isInstanceOf(AssertionError.class)
-				.hasMessage("Unable to format JSON")
-				.hasRootCauseMessage("End of input at line 3 column 1 path $.a");
+		getStepHarness().testResourceExceptionMsg("json/invalidJsonBefore.json").isEqualTo("End of input at line 3 column 1 path $.a");
 	}
 
 	@Test
 	void handlesNotJson() {
-		assertThatThrownBy(() -> doWithResource("notJson"))
-				.isInstanceOf(AssertionError.class)
-				.hasMessage("Unable to format JSON")
-				.hasNoCause();
+		getStepHarness().testResourceExceptionMsg("json/notJsonBefore.json").isEqualTo("Unable to format JSON");
 	}
 
 	@Test
 	void handlesSortingWhenSortByKeyEnabled() throws Exception {
 		FormatterStep step = GsonStep.create(INDENT, true, false, DEFAULT_VERSION, TestProvisioner.mavenCentral());
-		StepHarness stepHarness = StepHarness.forStep(step);
-		stepHarness.testResource("json/sortByKeysBefore.json", "json/sortByKeysAfter.json");
+		StepHarness.forStep(step).testResource("json/sortByKeysBefore.json", "json/sortByKeysAfter.json");
 	}
 
 	@Test
@@ -86,10 +77,8 @@ public class GsonStepTest extends JsonFormatterStepCommonTests {
 	@Test
 	void handlesVersionIncompatibility() {
 		FormatterStep step = GsonStep.create(INDENT, false, false, "1.7", TestProvisioner.mavenCentral());
-		StepHarness stepHarness = StepHarness.forStep(step);
-		assertThatThrownBy(() -> stepHarness.testResource("json/cucumberJsonSampleGsonBefore.json", "json/cucumberJsonSampleGsonAfter.json"))
-				.isInstanceOf(IllegalStateException.class)
-				.hasMessage("There was a problem interacting with Gson; maybe you set an incompatible version?");
+		StepHarness.forStep(step).testResourceExceptionMsg("json/cucumberJsonSampleGsonBefore.json")
+				.isEqualTo("There was a problem interacting with Gson; maybe you set an incompatible version?");
 	}
 
 	@Override

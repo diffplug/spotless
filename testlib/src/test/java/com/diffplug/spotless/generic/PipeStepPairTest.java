@@ -15,7 +15,6 @@
  */
 package com.diffplug.spotless.generic;
 
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Locale;
 
@@ -23,13 +22,15 @@ import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.StepHarness;
+import com.diffplug.spotless.StepHarnessWithFile;
 
-class PipeStepPairTest {
+class PipeStepPairTest extends ResourceHarness {
 	@Test
 	void single() {
 		FormatterStep pair = PipeStepPair.named("underTest").openClose("spotless:off", "spotless:on")
-				.preserveWithin(Paths.get(""), Arrays.asList(FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT))));
+				.preserveWithin(Arrays.asList(FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT))));
 		StepHarness harness = StepHarness.forSteps(pair);
 		harness.test(
 				StringPrinter.buildStringFromLines(
@@ -49,7 +50,7 @@ class PipeStepPairTest {
 	@Test
 	void multiple() {
 		FormatterStep pair = PipeStepPair.named("underTest").openClose("spotless:off", "spotless:on")
-				.preserveWithin(Paths.get(""), Arrays.asList(FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT))));
+				.preserveWithin(Arrays.asList(FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT))));
 		StepHarness harness = StepHarness.forSteps(pair);
 		harness.test(
 				StringPrinter.buildStringFromLines(
@@ -83,11 +84,10 @@ class PipeStepPairTest {
 	@Test
 	void broken() {
 		FormatterStep pair = PipeStepPair.named("underTest").openClose("spotless:off", "spotless:on")
-				.preserveWithin(Paths.get(""), Arrays.asList(FormatterStep.createNeverUpToDate("uppercase", str -> str.toUpperCase(Locale.ROOT))));
-		StepHarness harness = StepHarness.forSteps(pair);
+				.preserveWithin(Arrays.asList(FormatterStep.createNeverUpToDate("uppercase", str -> str.toUpperCase(Locale.ROOT))));
+		StepHarnessWithFile harness = StepHarnessWithFile.forStep(this, pair);
 		// this fails because uppercase turns spotless:off into SPOTLESS:OFF, etc
-		harness.testExceptionMsg(StringPrinter.buildStringFromLines(
-				"A B C",
+		harness.testExceptionMsg(newFile("test"), StringPrinter.buildStringFromLines("A B C",
 				"spotless:off",
 				"D E F",
 				"spotless:on",
@@ -97,7 +97,7 @@ class PipeStepPairTest {
 	@Test
 	void andApply() {
 		FormatterStep pair = PipeStepPair.named("lowercaseSometimes").openClose("<lower>", "</lower>")
-				.applyWithin(Paths.get(""), Arrays.asList(
+				.applyWithin(Arrays.asList(
 						FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT))));
 		StepHarness.forSteps(pair).test(
 				StringPrinter.buildStringFromLines(
