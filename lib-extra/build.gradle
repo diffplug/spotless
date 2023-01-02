@@ -15,7 +15,9 @@ dependencies {
 	implementation "org.eclipse.jgit:org.eclipse.jgit:${VER_JGIT}"
 	implementation "com.googlecode.concurrent-trees:concurrent-trees:2.6.1"
 	// used for xml parsing in EclipseFormatter
-	implementation "org.codehaus.groovy:groovy-xml:3.0.10"
+	// TODO: Gradle barfs if this doesn't match its built-in version,
+	// would be great to drop this for something less sensitive if possible
+	implementation "org.codehaus.groovy:groovy-xml:3.0.13"
 
 	// testing
 	testImplementation project(':testlib')
