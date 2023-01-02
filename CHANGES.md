@@ -10,6 +10,7 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [TBD lint release]
+* **BREAKING** Removed all deprecated methods.
 * **BREAKING** Removed `isClean`, `applyTo`, and `applyToAndReturnResultIfDirty` from `Formatter` because users should instead use new class `DirtyState.of`
 * **BREAKING** Removed `FormatterStep.Strict` because it was an unnecessary and unused implementation detail
 * **BREAKING** Removed `rootDir` and `exceptionPolicy` parameters from `Formatter`
