@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,18 +102,6 @@ public enum LineEnding {
     private static final Policy MAC_CLASSIC_POLICY = new ConstantLineEndingPolicy(MAC_CLASSIC.str());
 	private static final String _platformNative = System.getProperty("line.separator");
 	private static final Policy _platformNativePolicy = new ConstantLineEndingPolicy(_platformNative);
-	private static final boolean nativeIsWin = _platformNative.equals(WINDOWS.str());
-
-	/**
-	 * @deprecated Using the system-native line endings to detect the windows operating system has turned out
-	 * to be unreliable.  Use {@link FileSignature#machineIsWin()} instead.
-	 *
-	 * @see FileSignature#machineIsWin()
-	 */
-	@Deprecated
-	public static boolean nativeIsWin() {
-		return nativeIsWin;
-	}
 
 	/** Returns the standard line ending for this policy. */
 	public String str() {
