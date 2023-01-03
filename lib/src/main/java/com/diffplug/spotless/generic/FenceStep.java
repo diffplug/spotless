@@ -29,6 +29,8 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 public class FenceStep {
 	/** Declares the name of the step. */
 	public static FenceStep named(String name) {
@@ -94,6 +96,8 @@ public class FenceStep {
 	}
 
 	static class ApplyWithin extends Apply implements FormatterFunc.Closeable.ResourceFuncNeedsFile<Formatter> {
+		private static final long serialVersionUID = 17061466531957339L;
+
 		ApplyWithin(Pattern regex, List<FormatterStep> steps) {
 			super(regex, steps);
 		}
@@ -112,6 +116,8 @@ public class FenceStep {
 	}
 
 	static class PreserveWithin extends Apply implements FormatterFunc.Closeable.ResourceFuncNeedsFile<Formatter> {
+		private static final long serialVersionUID = -8676786492305178343L;
+
 		PreserveWithin(Pattern regex, List<FormatterStep> steps) {
 			super(regex, steps);
 		}
@@ -133,7 +139,9 @@ public class FenceStep {
 		}
 	}
 
+	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	static class Apply implements Serializable {
+		private static final long serialVersionUID = -2301848328356559915L;
 		final Pattern regex;
 		final List<FormatterStep> steps;
 
@@ -189,8 +197,9 @@ public class FenceStep {
 				builder.append(unix, lastEnd, unix.length());
 				return builder.toString();
 			} else {
-				int startLine = 1 + (int) builder.toString().codePoints().filter(c -> c == '\n').count();
-				int endLine = 1 + (int) unix.codePoints().filter(c -> c == '\n').count();
+				// these will be needed to generate Lints later on
+				// int startLine = 1 + (int) builder.toString().codePoints().filter(c -> c == '\n').count();
+				// int endLine = 1 + (int) unix.codePoints().filter(c -> c == '\n').count();
 
 				// throw an error with either the full regex, or the nicer open/close pair
 				Matcher openClose = Pattern.compile("\\\\Q([\\s\\S]*?)\\\\E" + "\\Q([\\s\\S]*?)\\E" + "\\\\Q([\\s\\S]*?)\\\\E")
