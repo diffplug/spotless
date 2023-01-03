@@ -15,14 +15,14 @@
  */
 package com.diffplug.spotless.glue.ktlint;
 
-import com.diffplug.spotless.FileSignature;
-import com.diffplug.spotless.FormatterFunc;
-import com.diffplug.spotless.glue.ktlint.compat.*;
+import java.io.File;
+import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-import java.util.Map;
+import com.diffplug.spotless.FileSignature;
+import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.glue.ktlint.compat.*;
 
 public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 
@@ -35,7 +35,7 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 	private final Map<String, Object> editorConfigOverrideMap;
 
 	public KtlintFormatterFunc(String version, boolean isScript, boolean useExperimental, FileSignature editorConfigPath, Map<String, String> userData,
-							   Map<String, Object> editorConfigOverrideMap) {
+			Map<String, Object> editorConfigOverrideMap) {
 		int minorVersion = Integer.parseInt(version.split("\\.")[1]);
 		if (minorVersion >= 48) {
 			// ExperimentalParams lost two constructor arguments, EditorConfigProperty moved to its own class
@@ -68,6 +68,11 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 
 	@Override
 	public String applyWithFile(String unix, File file) {
-		return adapter.format(unix, file.getName(), isScript, useExperimental, editorConfigPath.getOnlyFile().getAbsolutePath(), userData, editorConfigOverrideMap);
+
+		String absoluteEditorConfigPath = null;
+		if (editorConfigPath != null) {
+			absoluteEditorConfigPath = editorConfigPath.getOnlyFile().getAbsolutePath();
+		}
+		return adapter.format(unix, file.getName(), isScript, useExperimental, absoluteEditorConfigPath, userData, editorConfigOverrideMap);
 	}
 }

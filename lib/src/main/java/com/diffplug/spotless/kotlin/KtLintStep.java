@@ -59,7 +59,7 @@ public class KtLintStep {
 	}
 
 	public static FormatterStep createForScript(String version, Provisioner provisioner, boolean useExperimental,
-			Map<String, String> userData, Map<String, Object> editorConfigOverride) {
+			FileSignature editorConfigPath, Map<String, String> userData, Map<String, Object> editorConfigOverride) {
 		return create(version, provisioner, true, useExperimental, userData, editorConfigOverride);
 	}
 
@@ -119,7 +119,7 @@ public class KtLintStep {
 			final ClassLoader classLoader = jarState.getClassLoader();
 			Class<?> formatterFunc = classLoader.loadClass("com.diffplug.spotless.glue.ktlint.KtlintFormatterFunc");
 			Constructor<?> constructor = formatterFunc.getConstructor(
-					String.class, boolean.class, boolean.class, String.class, Map.class, Map.class);
+					String.class, boolean.class, boolean.class, FileSignature.class, Map.class, Map.class);
 			return (FormatterFunc.NeedsFile) constructor.newInstance(version, isScript, useExperimental, editorConfigPath, userData, editorConfigOverride);
 		}
 	}
