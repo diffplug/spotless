@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 DiffPlug
+ * Copyright 2022-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,10 +95,9 @@ public abstract class JsonFormatterStepCommonTests {
 		return StepHarness.forStep(createFormatterStep(INDENT, TestProvisioner.mavenCentral()));
 	}
 
-	protected void doWithResource(String name) throws Exception {
+	protected void doWithResource(String name) {
 		String before = String.format("json/%sBefore.json", name);
 		String after = String.format("json/%sAfter.json", name);
 		getStepHarness().testResource(before, after);
 	}
-
 }
