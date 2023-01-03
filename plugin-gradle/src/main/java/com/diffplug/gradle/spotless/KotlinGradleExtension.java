@@ -15,6 +15,7 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
@@ -43,12 +44,17 @@ public class KotlinGradleExtension extends FormatExtension {
 	}
 
 	/** Adds the specified version of <a href="https://github.com/pinterest/ktlint">ktlint</a>. */
-	public KotlinFormatExtension ktlint(String version) {
+	public KotlinFormatExtension ktlint(String version) throws IOException {
 		Objects.requireNonNull(version, "version");
-		return new KotlinFormatExtension(version, false, null, Collections.emptyMap(), Collections.emptyMap());
+		FileSignature editorConfigPath = null;
+		File defaultEditorConfig = getProject().getRootProject().file(".editorConfig");
+		if (defaultEditorConfig.exists() && defaultEditorConfig.isFile()) {
+			editorConfigPath = FileSignature.signAsList(defaultEditorConfig);
+		}
+		return new KotlinFormatExtension(version, false, editorConfigPath, Collections.emptyMap(), Collections.emptyMap());
 	}
 
-	public KotlinFormatExtension ktlint() {
+	public KotlinFormatExtension ktlint() throws IOException {
 		return ktlint(KtLintStep.defaultVersion());
 	}
 
@@ -104,7 +110,7 @@ public class KotlinGradleExtension extends FormatExtension {
 		}
 
 		private FormatterStep createStep() {
-			return KtLintStep.createForScript(version, provisioner(), useExperimental, userData, editorConfigOverride);
+			return KtLintStep.createForScript(version, provisioner(), useExperimental, editorConfigPath, userData, editorConfigOverride);
 		}
 	}
 
