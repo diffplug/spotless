@@ -46,6 +46,7 @@ public class StepHarness implements AutoCloseable {
 				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
 				.encoding(StandardCharsets.UTF_8)
 				.rootDir(Paths.get(""))
+				.exceptionPolicy(new FormatExceptionPolicyStrict())
 				.build());
 	}
 

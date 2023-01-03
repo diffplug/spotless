@@ -42,6 +42,7 @@ public class StepHarnessWithFile implements AutoCloseable {
 				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
 				.steps(Collections.singletonList(step))
 				.rootDir(harness.rootFolder().toPath())
+				.exceptionPolicy(new FormatExceptionPolicyStrict())
 				.build());
 	}
 
