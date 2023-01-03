@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import static java.util.Collections.emptySet;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -31,11 +32,9 @@ import java.util.stream.Collectors;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.common.collect.Sets;
-import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
-import com.diffplug.spotless.generic.PipeStepPair;
 import com.diffplug.spotless.maven.generic.EclipseWtp;
 import com.diffplug.spotless.maven.generic.EndWithNewline;
 import com.diffplug.spotless.maven.generic.Indent;
@@ -96,17 +95,13 @@ public abstract class FormatterFactory {
 				.map(factory -> factory.newFormatterStep(stepConfig))
 				.collect(Collectors.toCollection(() -> new ArrayList<FormatterStep>()));
 		if (toggle != null) {
-			PipeStepPair pair = toggle.createPair();
-			formatterSteps.add(0, pair.in());
-			formatterSteps.add(pair.out());
+			List<FormatterStep> formatterStepsBeforeToggle = formatterSteps;
+			formatterSteps = Collections.singletonList(toggle.createFence().preserveWithin(formatterStepsBeforeToggle));
 		}
-
 		return Formatter.builder()
 				.encoding(formatterEncoding)
 				.lineEndingsPolicy(formatterLineEndingPolicy)
-				.exceptionPolicy(new FormatExceptionPolicyStrict())
 				.steps(formatterSteps)
-				.rootDir(config.getFileLocator().getBaseDir().toPath())
 				.build();
 	}
 

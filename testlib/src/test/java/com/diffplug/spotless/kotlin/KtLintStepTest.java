@@ -22,33 +22,30 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
+import com.diffplug.spotless.StepHarnessWithFile;
 import com.diffplug.spotless.TestProvisioner;
 
 class KtLintStepTest extends ResourceHarness {
 	@Test
 	void behavior() throws Exception {
 		FormatterStep step = KtLintStep.create(TestProvisioner.mavenCentral());
-		StepHarness.forStep(step)
+		StepHarnessWithFile.forStep(this, step)
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
-				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
-					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("Error on line: 1, column: 1\n" +
-							"rule: no-wildcard-imports\n" +
-							"Wildcard import");
-				});
+				.testResourceExceptionMsg("kotlin/ktlint/unsolvable.dirty").isEqualTo(
+						"Error on line: 1, column: 1\n" +
+								"rule: no-wildcard-imports\n" +
+								"Wildcard import");
 	}
 
 	@Test
 	void worksShyiko() throws Exception {
 		FormatterStep step = KtLintStep.create("0.31.0", TestProvisioner.mavenCentral());
-		StepHarness.forStep(step)
+		StepHarnessWithFile.forStep(this, step)
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
-				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
-					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("Error on line: 1, column: 1\n" +
-							"rule: no-wildcard-imports\n" +
-							"Wildcard import");
-				});
+				.testResourceExceptionMsg("kotlin/ktlint/unsolvable.dirty").isEqualTo(
+						"Error on line: 1, column: 1\n" +
+								"rule: no-wildcard-imports\n" +
+								"Wildcard import");
 	}
 
 	// Regression test to ensure it works on the version it switched to Pinterest (version 0.32.0)
@@ -57,14 +54,11 @@ class KtLintStepTest extends ResourceHarness {
 	@Test
 	void worksPinterestAndPre034() throws Exception {
 		FormatterStep step = KtLintStep.create("0.32.0", TestProvisioner.mavenCentral());
-		StepHarness.forStep(step)
+		StepHarnessWithFile.forStep(this, step)
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
-				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
-					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("Error on line: 1, column: 1\n" +
-							"rule: no-wildcard-imports\n" +
-							"Wildcard import");
-				});
+				.testResourceExceptionMsg("kotlin/ktlint/unsolvable.dirty").isEqualTo("Error on line: 1, column: 1\n" +
+						"rule: no-wildcard-imports\n" +
+						"Wildcard import");
 	}
 
 	// Regression test to handle alpha and 1.x version numbers
@@ -108,53 +102,41 @@ class KtLintStepTest extends ResourceHarness {
 	@Test
 	void works0_46_0() throws Exception {
 		FormatterStep step = KtLintStep.create("0.46.0", TestProvisioner.mavenCentral());
-		StepHarness.forStep(step)
+		StepHarnessWithFile.forStep(this, step)
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
-				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
-					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("Error on line: 1, column: 1\n" +
-							"rule: no-wildcard-imports\n" +
-							"Wildcard import");
-				});
+				.testResourceExceptionMsg("kotlin/ktlint/unsolvable.dirty").isEqualTo("Error on line: 1, column: 1\n" +
+						"rule: no-wildcard-imports\n" +
+						"Wildcard import");
 	}
 
 	@Test
 	void works0_47_0() throws Exception {
 		FormatterStep step = KtLintStep.create("0.47.0", TestProvisioner.mavenCentral());
-		StepHarness.forStep(step)
+		StepHarnessWithFile.forStep(this, step)
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
-				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
-					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("Error on line: 1, column: 1\n" +
-							"rule: no-wildcard-imports\n" +
-							"Wildcard import");
-				});
+				.testResourceExceptionMsg("kotlin/ktlint/unsolvable.dirty").isEqualTo("Error on line: 1, column: 1\n" +
+						"rule: no-wildcard-imports\n" +
+						"Wildcard import");
 	}
 
 	@Test
 	void works0_47_1() throws Exception {
 		FormatterStep step = KtLintStep.create("0.47.1", TestProvisioner.mavenCentral());
-		StepHarness.forStep(step)
+		StepHarnessWithFile.forStep(this, step)
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
-				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
-					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("Error on line: 1, column: 1\n" +
-							"rule: no-wildcard-imports\n" +
-							"Wildcard import");
-				});
+				.testResourceExceptionMsg("kotlin/ktlint/unsolvable.dirty").isEqualTo("Error on line: 1, column: 1\n" +
+						"rule: no-wildcard-imports\n" +
+						"Wildcard import");
 	}
 
 	@Test
 	void works0_48_0() throws Exception {
 		FormatterStep step = KtLintStep.create("0.48.0", TestProvisioner.mavenCentral());
-		StepHarness.forStep(step)
+		StepHarnessWithFile.forStep(this, step)
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
-				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
-					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("Error on line: 1, column: 1\n" +
-							"rule: no-wildcard-imports\n" +
-							"Wildcard import");
-				});
+				.testResourceExceptionMsg("kotlin/ktlint/unsolvable.dirty").isEqualTo("Error on line: 1, column: 1\n" +
+						"rule: no-wildcard-imports\n" +
+						"Wildcard import");
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ public class ResourceHarness {
 	}
 
 	/** Returns a new child of the root folder. */
-	protected File newFile(String subpath) throws IOException {
+	protected File newFile(String subpath) {
 		return new File(rootFolder(), subpath);
 	}
 
@@ -85,12 +85,12 @@ public class ResourceHarness {
 	}
 
 	/** Returns the contents of the given file from the src/test/resources directory. */
-	protected static String getTestResource(String filename) throws IOException {
+	protected static String getTestResource(String filename) {
 		URL url = ResourceHarness.class.getResource("/" + filename);
 		if (url == null) {
 			throw new IllegalArgumentException("No such resource " + filename);
 		}
-		return Resources.toString(url, StandardCharsets.UTF_8);
+		return ThrowingEx.get(() -> LineEnding.toUnix(Resources.toString(url, StandardCharsets.UTF_8)));
 	}
 
 	/** Returns Files (in a temporary folder) which has the contents of the given file from the src/test/resources directory. */
@@ -176,7 +176,7 @@ public class ResourceHarness {
 		}
 	}
 
-	protected WriteAsserter setFile(String path) throws IOException {
+	protected WriteAsserter setFile(String path) {
 		return new WriteAsserter(newFile(path));
 	}
 
@@ -188,21 +188,25 @@ public class ResourceHarness {
 			this.file = file;
 		}
 
-		public File toLines(String... lines) throws IOException {
+		public File toLines(String... lines) {
 			return toContent(String.join("\n", Arrays.asList(lines)));
 		}
 
-		public File toContent(String content) throws IOException {
+		public File toContent(String content) {
 			return toContent(content, StandardCharsets.UTF_8);
 		}
 
-		public File toContent(String content, Charset charset) throws IOException {
-			Files.write(file.toPath(), content.getBytes(charset));
+		public File toContent(String content, Charset charset) {
+			ThrowingEx.run(() -> {
+				Files.write(file.toPath(), content.getBytes(charset));
+			});
 			return file;
 		}
 
-		public File toResource(String path) throws IOException {
-			Files.write(file.toPath(), getTestResource(path).getBytes(StandardCharsets.UTF_8));
+		public File toResource(String path) {
+			ThrowingEx.run(() -> {
+				Files.write(file.toPath(), getTestResource(path).getBytes(StandardCharsets.UTF_8));
+			});
 			return file;
 		}
 

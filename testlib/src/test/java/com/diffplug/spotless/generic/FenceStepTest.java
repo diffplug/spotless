@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 DiffPlug
+ * Copyright 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package com.diffplug.spotless.generic;
 
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Locale;
 
@@ -23,14 +22,16 @@ import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.StepHarness;
+import com.diffplug.spotless.StepHarnessWithFile;
 
-class PipeStepPairTest {
+class FenceStepTest extends ResourceHarness {
 	@Test
-	void single() throws Exception {
-		PipeStepPair pair = PipeStepPair.named("underTest").openClose("spotless:off", "spotless:on").buildPair();
-		FormatterStep lowercase = FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT));
-		StepHarness harness = StepHarness.forSteps(pair.in(), lowercase, pair.out());
+	void single() {
+		FormatterStep fence = FenceStep.named("underTest").openClose("spotless:off", "spotless:on")
+				.preserveWithin(Arrays.asList(FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT))));
+		StepHarness harness = StepHarness.forSteps(fence);
 		harness.test(
 				StringPrinter.buildStringFromLines(
 						"A B C",
@@ -47,10 +48,10 @@ class PipeStepPairTest {
 	}
 
 	@Test
-	void multiple() throws Exception {
-		PipeStepPair pair = PipeStepPair.named("underTest").openClose("spotless:off", "spotless:on").buildPair();
-		FormatterStep lowercase = FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT));
-		StepHarness harness = StepHarness.forSteps(pair.in(), lowercase, pair.out());
+	void multiple() {
+		FormatterStep fence = FenceStep.named("underTest").openClose("spotless:off", "spotless:on")
+				.preserveWithin(Arrays.asList(FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT))));
+		StepHarness harness = StepHarness.forSteps(fence);
 		harness.test(
 				StringPrinter.buildStringFromLines(
 						"A B C",
@@ -81,27 +82,24 @@ class PipeStepPairTest {
 	}
 
 	@Test
-	void broken() throws Exception {
-		PipeStepPair pair = PipeStepPair.named("underTest").openClose("spotless:off", "spotless:on").buildPair();
-		FormatterStep uppercase = FormatterStep.createNeverUpToDate("uppercase", str -> str.toUpperCase(Locale.ROOT));
-		StepHarness harness = StepHarness.forSteps(pair.in(), uppercase, pair.out());
+	void broken() {
+		FormatterStep fence = FenceStep.named("underTest").openClose("spotless:off", "spotless:on")
+				.preserveWithin(Arrays.asList(FormatterStep.createNeverUpToDate("uppercase", str -> str.toUpperCase(Locale.ROOT))));
+		StepHarnessWithFile harness = StepHarnessWithFile.forStep(this, fence);
 		// this fails because uppercase turns spotless:off into SPOTLESS:OFF, etc
-		harness.testException(StringPrinter.buildStringFromLines(
-				"A B C",
+		harness.testExceptionMsg(newFile("test"), StringPrinter.buildStringFromLines("A B C",
 				"spotless:off",
 				"D E F",
 				"spotless:on",
-				"G H I"), exception -> {
-					exception.hasMessage("An intermediate step removed a match of spotless:off spotless:on");
-				});
+				"G H I")).isEqualTo("An intermediate step removed a match of spotless:off spotless:on");
 	}
 
 	@Test
-	void andApply() throws Exception {
-		FormatterStep lowercase = FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT));
-		FormatterStep lowercaseSometimes = PipeStepPair.named("lowercaseSometimes").openClose("<lower>", "</lower>")
-				.buildStepWhichAppliesSubSteps(Paths.get(""), Arrays.asList(lowercase));
-		StepHarness.forSteps(lowercaseSometimes).test(
+	void andApply() {
+		FormatterStep fence = FenceStep.named("lowercaseSometimes").openClose("<lower>", "</lower>")
+				.applyWithin(Arrays.asList(
+						FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT))));
+		StepHarness.forSteps(fence).test(
 				StringPrinter.buildStringFromLines(
 						"A B C",
 						"<lower>",
