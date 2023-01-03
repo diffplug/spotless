@@ -354,7 +354,14 @@ spotless {
 
 ### ktlint
 
-[homepage](https://github.com/pinterest/ktlint). [changelog](https://github.com/pinterest/ktlint/releases).  Spotless does not ([yet](https://github.com/diffplug/spotless/issues/142)) respect the `.editorconfig` settings ([ktlint docs](https://github.com/pinterest/ktlint#editorconfig)), but you can provide them manually as `editorConfigOverride`.
+[homepage](https://github.com/pinterest/ktlint). [changelog](https://github.com/pinterest/ktlint/releases).
+
+Spotless respects the `.editorconfig` settings by providing `editorConfigPath` option.
+([ktlint docs](https://github.com/pinterest/ktlint#editorconfig)).
+Default value is the `.editorconfig` file located in the top project.
+Passing `null` will clear the option.
+
+Additionally, `editorConfigOverride` options will override what's supplied in `.editorconfig` file.
 
 ```kotlin
 spotless {
@@ -363,6 +370,7 @@ spotless {
     ktlint("0.45.2")
       .setUseExperimental(true)
       .userData(mapOf("android" to "true"))
+      .editorConfigPath("$projectDir/config/.editorconfig")  // sample unusual placement
       .editorConfigOverride(mapOf("indent_size" to 2))
   }
 }
