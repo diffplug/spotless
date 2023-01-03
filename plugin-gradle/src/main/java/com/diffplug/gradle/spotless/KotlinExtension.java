@@ -71,11 +71,11 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 
 		private final String version;
 		private boolean useExperimental;
-		private String editorConfigPath;
+		private FileSignature editorConfigPath;
 		private Map<String, String> userData;
 		private Map<String, Object> editorConfigOverride;
 
-		KotlinFormatExtension(String version, boolean useExperimental, String editorConfigPath, Map<String, String> config,
+		KotlinFormatExtension(String version, boolean useExperimental, FileSignature editorConfigPath, Map<String, String> config,
 				Map<String, Object> editorConfigOverride) {
 			this.version = version;
 			this.useExperimental = useExperimental;
@@ -87,6 +87,16 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 
 		public KotlinFormatExtension setUseExperimental(boolean useExperimental) {
 			this.useExperimental = useExperimental;
+			replaceStep(createStep());
+			return this;
+		}
+
+		public KotlinFormatExtension setEditorConfigPath(Object editorConfigFile) throws IOException {
+			if (editorConfigFile == null) {
+				this.editorConfigPath = null;
+			} else {
+				this.editorConfigPath = FileSignature.signAsList(getProject().file(editorConfigFile));
+			}
 			replaceStep(createStep());
 			return this;
 		}

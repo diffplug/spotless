@@ -15,20 +15,14 @@
  */
 package com.diffplug.spotless.glue.ktlint;
 
-import java.io.File;
-import java.util.Map;
+import com.diffplug.spotless.FileSignature;
+import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.glue.ktlint.compat.*;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.diffplug.spotless.FormatterFunc;
-import com.diffplug.spotless.glue.ktlint.compat.KtLintCompat0Dot31Dot0Adapter;
-import com.diffplug.spotless.glue.ktlint.compat.KtLintCompat0Dot32Dot0Adapter;
-import com.diffplug.spotless.glue.ktlint.compat.KtLintCompat0Dot34Dot2Adapter;
-import com.diffplug.spotless.glue.ktlint.compat.KtLintCompat0Dot45Dot2Adapter;
-import com.diffplug.spotless.glue.ktlint.compat.KtLintCompat0Dot46Dot0Adapter;
-import com.diffplug.spotless.glue.ktlint.compat.KtLintCompat0Dot47Dot0Adapter;
-import com.diffplug.spotless.glue.ktlint.compat.KtLintCompat0Dot48Dot0Adapter;
-import com.diffplug.spotless.glue.ktlint.compat.KtLintCompatAdapter;
+import java.io.File;
+import java.util.Map;
 
 public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 
@@ -37,11 +31,11 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 	@NotNull
 	private final KtLintCompatAdapter adapter;
 	private final boolean useExperimental;
-	private final String editorConfigPath;
+	private final FileSignature editorConfigPath;
 	private final Map<String, Object> editorConfigOverrideMap;
 
-	public KtlintFormatterFunc(String version, boolean isScript, boolean useExperimental, String editorConfigPath, Map<String, String> userData,
-			Map<String, Object> editorConfigOverrideMap) {
+	public KtlintFormatterFunc(String version, boolean isScript, boolean useExperimental, FileSignature editorConfigPath, Map<String, String> userData,
+							   Map<String, Object> editorConfigOverrideMap) {
 		int minorVersion = Integer.parseInt(version.split("\\.")[1]);
 		if (minorVersion >= 48) {
 			// ExperimentalParams lost two constructor arguments, EditorConfigProperty moved to its own class
@@ -73,7 +67,7 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 	}
 
 	@Override
-	public String applyWithFile(String unix, File file) throws Exception {
-		return adapter.format(unix, file.getName(), isScript, useExperimental, editorConfigPath, userData, editorConfigOverrideMap);
+	public String applyWithFile(String unix, File file) {
+		return adapter.format(unix, file.getName(), isScript, useExperimental, editorConfigPath.getOnlyFile().getAbsolutePath(), userData, editorConfigOverrideMap);
 	}
 }

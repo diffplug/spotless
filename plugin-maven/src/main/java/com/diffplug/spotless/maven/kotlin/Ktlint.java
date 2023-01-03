@@ -21,7 +21,9 @@ import java.util.Map;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
+import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.kotlin.KtLintStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
@@ -36,13 +38,16 @@ public class Ktlint implements FormatterStepFactory {
 	private Map<String, Object> editorConfigOverride;
 
 	@Override
-	public FormatterStep newFormatterStep(FormatterStepConfig config) {
+	public FormatterStep newFormatterStep(final FormatterStepConfig stepConfig) {
 		String ktlintVersion = version != null ? version : KtLintStep.defaultVersion();
-
+		FileSignature configPath = null;
+		if (editorConfigPath != null) {
+			configPath = ThrowingEx.get(() -> FileSignature.signAsList(stepConfig.getFileLocator().locateFile(editorConfigPath)));
+		}
 		if (editorConfigOverride == null) {
 			editorConfigOverride = new HashMap<>();
 		}
 
-		return KtLintStep.create(ktlintVersion, config.getProvisioner(), false, false, editorConfigPath, Collections.emptyMap(), editorConfigOverride);
+		return KtLintStep.create(ktlintVersion, stepConfig.getProvisioner(), false, false, configPath, Collections.emptyMap(), editorConfigOverride);
 	}
 }

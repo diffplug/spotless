@@ -56,11 +56,11 @@ public class KotlinGradleExtension extends FormatExtension {
 
 		private final String version;
 		private boolean useExperimental;
-		private String editorConfigPath;
+		private FileSignature editorConfigPath;
 		private Map<String, String> userData;
 		private Map<String, Object> editorConfigOverride;
 
-		KotlinFormatExtension(String version, boolean useExperimental, String editorConfigPath, Map<String, String> config,
+		KotlinFormatExtension(String version, boolean useExperimental, FileSignature editorConfigPath, Map<String, String> config,
 				Map<String, Object> editorConfigOverride) {
 			this.version = version;
 			this.useExperimental = useExperimental;
@@ -70,8 +70,13 @@ public class KotlinGradleExtension extends FormatExtension {
 			addStep(createStep());
 		}
 
-		public KotlinFormatExtension setEditorConfigPath(String editorConfigPath) {
-			this.editorConfigPath = editorConfigPath;
+		public KotlinFormatExtension setEditorConfigPath(Object editorConfigPath) throws IOException {
+
+			if (editorConfigPath == null) {
+				this.editorConfigPath = null;
+			} else {
+				this.editorConfigPath = FileSignature.signAsList(getProject().file(editorConfigPath));
+			}
 			replaceStep(createStep());
 			return this;
 		}

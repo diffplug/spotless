@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 
+import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
@@ -68,7 +69,7 @@ public class KtLintStep {
 	}
 
 	public static FormatterStep create(String version, Provisioner provisioner, boolean isScript, boolean useExperimental,
-			String editorConfig, Map<String, String> userData, Map<String, Object> editorConfigOverride) {
+			FileSignature editorConfig, Map<String, String> userData, Map<String, Object> editorConfigOverride) {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(provisioner, "provisioner");
 		return FormatterStep.createLazy(NAME,
@@ -91,10 +92,10 @@ public class KtLintStep {
 		private final TreeMap<String, String> userData;
 		private final TreeMap<String, Object> editorConfigOverride;
 		private final String version;
-		private final String editorConfigPath;
+		private final FileSignature editorConfigPath;
 
 		State(String version, Provisioner provisioner, boolean isScript, boolean useExperimental,
-				String editorConfigPath, Map<String, String> userData, Map<String, Object> editorConfigOverride) throws IOException {
+				FileSignature editorConfigPath, Map<String, String> userData, Map<String, Object> editorConfigOverride) throws IOException {
 			this.version = version;
 
 			String coordinate;
