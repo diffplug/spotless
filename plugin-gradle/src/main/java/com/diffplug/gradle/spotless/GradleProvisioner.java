@@ -119,6 +119,7 @@ class GradleProvisioner {
 				config.setDescription(mavenCoords.toString());
 				config.setTransitive(withTransitives);
 				config.setCanBeConsumed(false);
+				config.setVisible(false);
 				config.attributes(attr -> {
 					attr.attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.EXTERNAL));
 				});
