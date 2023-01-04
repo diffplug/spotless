@@ -462,8 +462,8 @@ public class FormatExtension {
 			return this;
 		}
 
-		public LicenseHeaderConfig skipLinesPattern(String skipLinesPattern) {
-			builder = builder.withSkipLinesPattern(skipLinesPattern);
+		public LicenseHeaderConfig skipLinesMatching(String skipLinesMatching) {
+			builder = builder.withSkipLinesMatching(skipLinesMatching);
 			replaceStep(createStep());
 			return this;
 		}
