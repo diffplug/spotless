@@ -27,7 +27,7 @@ import com.diffplug.spotless.glue.ktlint.compat.KtLintCompat0Dot34Dot2Adapter;
 import com.diffplug.spotless.glue.ktlint.compat.KtLintCompat0Dot45Dot2Adapter;
 import com.diffplug.spotless.glue.ktlint.compat.KtLintCompat0Dot46Dot0Adapter;
 import com.diffplug.spotless.glue.ktlint.compat.KtLintCompat0Dot47Dot0Adapter;
-import com.diffplug.spotless.glue.ktlint.compat.KtLintCompat0Dot48Dot0Adapter;
+import com.diffplug.spotless.glue.ktlint.compat.KtLintCompat0Dot48Dot1Adapter;
 import com.diffplug.spotless.glue.ktlint.compat.KtLintCompatAdapter;
 
 public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
@@ -44,7 +44,7 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 		int minorVersion = Integer.parseInt(version.split("\\.")[1]);
 		if (minorVersion >= 48) {
 			// ExperimentalParams lost two constructor arguments, EditorConfigProperty moved to its own class
-			this.adapter = new KtLintCompat0Dot48Dot0Adapter();
+			this.adapter = new KtLintCompat0Dot48Dot1Adapter();
 		} else if (minorVersion == 47) {
 			// rename RuleSet to RuleProvider
 			this.adapter = new KtLintCompat0Dot47Dot0Adapter();
