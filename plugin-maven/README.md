@@ -724,8 +724,8 @@ Uses a JSON pretty-printer that optionally allows configuring the number of spac
 
 ```xml
 <simple>
-	<indentSpaces>4</indentSpaces>    <!-- optional: specify the number of spaces to use -->
-</simple> 
+  <indentSpaces>4</indentSpaces>    <!-- optional: specify the number of spaces to use -->
+</simple>
 ```
 
 ### Gson
@@ -734,10 +734,10 @@ Uses Google Gson to also allow sorting by keys besides custom indentation - usef
 
 ```xml
 <gson>
-	<indentSpaces>4</indentSpaces>        <!-- optional: specify the number of spaces to use -->
-	<sortByKeys>false</sortByKeys>        <!-- optional: sort JSON by its keys -->
-	<escapeHtml>false</indentSpaces>      <!-- optional: escape HTML in values -->
-	<version>2.8.1</version>              <!-- optional: specify version -->
+  <indentSpaces>4</indentSpaces>        <!-- optional: specify the number of spaces to use -->
+  <sortByKeys>false</sortByKeys>        <!-- optional: sort JSON by its keys -->
+  <escapeHtml>false</indentSpaces>      <!-- optional: escape HTML in values -->
+  <version>2.8.1</version>              <!-- optional: specify version -->
 </gson>
 ```
 

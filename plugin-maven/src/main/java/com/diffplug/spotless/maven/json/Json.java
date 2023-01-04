@@ -25,7 +25,7 @@ import com.diffplug.spotless.maven.FormatterFactory;
  */
 public class Json extends FormatterFactory {
 	public static final int DEFAULT_INDENTATION = 4;
-	
+
 	@Override
 	public Set<String> defaultIncludes() {
 		return Collections.emptySet();
