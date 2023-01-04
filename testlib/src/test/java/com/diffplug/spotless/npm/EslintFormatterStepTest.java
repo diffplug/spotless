@@ -19,6 +19,8 @@ import java.io.File;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.diffplug.spotless.ResourceHarness;
+
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -73,8 +75,8 @@ class EslintFormatterStepTest {
 					npmPathResolver(),
 					new EslintConfig(eslintRc, null));
 
-			try (StepHarnessWithFile stepHarness = StepHarnessWithFile.forStep(formatterStep)) {
-				stepHarness.testResource(dirtyFileFile, dirtyFile, cleanFile);
+			try (StepHarnessWithFile stepHarness = StepHarnessWithFile.forStep(this, formatterStep)) {
+				stepHarness.test(dirtyFileFile, ResourceHarness.getTestResource(dirtyFile), ResourceHarness.getTestResource(cleanFile));
 			}
 		}
 	}
@@ -116,8 +118,8 @@ class EslintFormatterStepTest {
 					npmPathResolver(),
 					new EslintTypescriptConfig(eslintRc, null, tsconfigFile));
 
-			try (StepHarnessWithFile stepHarness = StepHarnessWithFile.forStep(formatterStep)) {
-				stepHarness.testResource(dirtyFileFile, dirtyFile, cleanFile);
+			try (StepHarnessWithFile stepHarness = StepHarnessWithFile.forStep(this, formatterStep)) {
+				stepHarness.test(dirtyFileFile, ResourceHarness.getTestResource(dirtyFile), ResourceHarness.getTestResource(cleanFile));
 			}
 		}
 	}
@@ -173,8 +175,8 @@ class EslintFormatterStepTest {
 					npmPathResolver(),
 					new EslintTypescriptConfig(null, esLintConfig, tsconfigFile));
 
-			try (StepHarnessWithFile stepHarness = StepHarnessWithFile.forStep(formatterStep)) {
-				stepHarness.testResource(dirtyFileFile, dirtyFile, cleanFile);
+			try (StepHarnessWithFile stepHarness = StepHarnessWithFile.forStep(this, formatterStep)) {
+				stepHarness.test(dirtyFileFile, ResourceHarness.getTestResource(dirtyFile), ResourceHarness.getTestResource(cleanFile));
 			}
 		}
 	}
