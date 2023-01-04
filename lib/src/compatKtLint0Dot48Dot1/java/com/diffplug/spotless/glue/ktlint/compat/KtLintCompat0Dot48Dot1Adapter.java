@@ -15,7 +15,6 @@
  */
 package com.diffplug.spotless.glue.ktlint.compat;
 
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -26,7 +25,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.pinterest.ktlint.core.KtLintRuleEngine;
+import com.pinterest.ktlint.core.KtLint;
 import com.pinterest.ktlint.core.LintError;
 import com.pinterest.ktlint.core.Rule;
 import com.pinterest.ktlint.core.RuleProvider;
@@ -99,10 +98,17 @@ public class KtLintCompat0Dot48Dot1Adapter implements KtLintCompatAdapter {
 					editorConfigOverrideMap);
 		}
 
-		EditorConfigDefaults editorConfigDefaults = EditorConfigDefaults.Companion.getEMPTY_EDITOR_CONFIG_DEFAULTS();
-		boolean isInvokedFromCli = false;
-		KtLintRuleEngine ktLintRuleEngine = new KtLintRuleEngine(allRuleProviders, editorConfigDefaults, editorConfigOverride, isInvokedFromCli);
-		return ktLintRuleEngine.format(text, Paths.get(name), formatterCallback);
+		return KtLint.INSTANCE.format(new KtLint.ExperimentalParams(
+				name,
+				text,
+				allRuleProviders,
+				userData,
+				formatterCallback,
+				isScript,
+				false,
+				EditorConfigDefaults.Companion.getEMPTY_EDITOR_CONFIG_DEFAULTS(),
+				editorConfigOverride,
+				false));
 	}
 
 	/**

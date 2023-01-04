@@ -55,6 +55,7 @@ public class KtLintCompat0Dot48Dot1AdapterTest {
 		Map<String, String> userData = new HashMap<>();
 
 		Map<String, Object> editorConfigOverrideMap = new HashMap<>();
+		editorConfigOverrideMap.put("indent_style", "tab");
 		editorConfigOverrideMap.put("ktlint_standard_no-semi", "disabled");
 
 		String formatted = KtLintCompat0Dot48Dot1Adapter.format(text, "fails_no_semicolons.kt", false, false, userData, editorConfigOverrideMap);
