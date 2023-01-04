@@ -15,6 +15,10 @@
  */
 package com.diffplug.spotless.maven.markdown;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
@@ -28,6 +32,23 @@ public class FlexmarkMavenTest extends MavenIntegrationHarness {
 		setFile("markdown_test.md").toResource("markdown/flexmark/FlexmarkUnformatted.md");
 		mavenRunner().withArguments("spotless:apply").runNoError().error();
 		assertFile("markdown_test.md").sameAsResource("markdown/flexmark/FlexmarkFormatted.md");
+	}
+
+
+	@Test
+	public void testFlexmarkWithDefaultConfig_endsWithCodeBlock_withNewLine() throws Exception {
+		List<String> configurations = new ArrayList<>();
+
+		configurations.addAll(Arrays.asList(formats(groupWithSteps("format", including("*.md"), "<endWithNewline/>"))));
+		configurations.addAll(Arrays.asList(groupWithSteps("markdown", including("**/*.md"), "<flexmark />")));
+
+		writePom(configurations.toArray(new String[0]));
+
+		setFile("markdown_test.md").toResource("markdown/flexmark/EndsWithCodeBlockUnformatted.md");
+		mavenRunner().withArguments("spotless:apply").runNoError().error();
+		assertFile("markdown_test.md").sameAsResource("markdown/flexmark/EndsWithCodeBlockFormattedWithNewLine.md");
+
+		mavenRunner().withArguments("spotless:check").runNoError().error();
 	}
 
 }

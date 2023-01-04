@@ -29,4 +29,12 @@ class FlexmarkStepTest {
 						"markdown/flexmark/FlexmarkUnformatted.md",
 						"markdown/flexmark/FlexmarkFormatted.md");
 	}
+
+	@Test
+	void endsWithcodeBlock() throws Exception {
+		StepHarness.forStep(FlexmarkStep.create(TestProvisioner.mavenCentral()))
+				.testResource(
+						"markdown/flexmark/EndsWithCodeBlockUnformatted.md",
+						"markdown/flexmark/EndsWithCodeBlockFormatted.md");
+	}
 }
