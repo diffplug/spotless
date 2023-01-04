@@ -108,7 +108,7 @@ public final class LicenseHeaderStep {
 		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesMatching);
 	}
 
-	public LicenseHeaderStep withSkipLinesMatching(String skipLinesMatching) {
+	public LicenseHeaderStep withSkipLinesMatching(@Nullable String skipLinesMatching) {
 		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesMatching);
 	}
 
