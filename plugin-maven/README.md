@@ -703,7 +703,7 @@ For details, see the [npm detection](#npm-detection) and [`.npmrc` detection](#n
 
 ## JSON
 
-- `com.diffplug.spotless.maven.json.Json` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.12.1/com/diffplug/gradle/spotless/JsonExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/json/Json.java)
+- `com.diffplug.spotless.maven.json.Json` [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/json/json.java)
 
 ```xml
 <configuration>
