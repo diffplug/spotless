@@ -10,8 +10,9 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+* Support `ktlint` 0.48+ new rule disabling syntax ([#1456](https://github.com/diffplug/spotless/pull/1456)) fixes ([#1444](https://github.com/diffplug/spotless/issues/1444))
 ### Changes
-* Fix ktlint 0.48.x and bump to ktlint 0.48.1 ([#1444](https://github.com/diffplug/spotless/issues/1444))
 * Bump the dev version of Gradle from `7.5.1` to `7.6` ([#1409](https://github.com/diffplug/spotless/pull/1409))
   * We also removed the no-longer-required dependency `org.codehaus.groovy:groovy-xml`
 * Breaking changes to Spotless' internal testing infrastructure `testlib` ([#1443](https://github.com/diffplug/spotless/pull/1443))
@@ -19,6 +20,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   * `StepHarness` now operates on `Formatter` rather than a `FormatterStep`
   * `StepHarnessWithFile` now takes a `ResourceHarness` in its constructor to handle the file manipulation parts
   * Standardized that we test exception *messages*, not types, which will ease the transition to linting later on
+  * Bump default `ktlint` version to latest `0.47.1` -> `0.48.1` ([#1456](https://github.com/diffplug/spotless/pull/1456))
 
 ## [2.31.1] - 2023-01-02
 ### Fixed
