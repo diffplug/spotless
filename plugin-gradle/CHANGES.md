@@ -4,7 +4,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
-* Added support for npm-based [ESLint](https://eslint.org/) formatter for javascript and typescript ([#1433](https://github.com/diffplug/spotless/pull/1433))
+* Added support for npm-based [ESLint](https://eslint.org/) formatter for javascript and typescript ([#1453](https://github.com/diffplug/spotless/pull/1453))
 ### Fixed
 * Prevent tool configurations from being resolved outside project ([#1447](https://github.com/diffplug/spotless/pull/1447) fixes [#1215](https://github.com/diffplug/spotless/issues/1215))
 
