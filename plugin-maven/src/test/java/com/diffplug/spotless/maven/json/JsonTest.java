@@ -22,19 +22,19 @@ import com.diffplug.spotless.maven.MavenIntegrationHarness;
 public class JsonTest extends MavenIntegrationHarness {
 	@Test
 	public void testFormatJson_WithSimple_defaultConfig() throws Exception {
-		writePomWithPomSteps("<json><simple/></json>");
+		writePomWithJsonSteps("<json><simple/></json>");
 
-		setFile("json_test.json").toResource("json/json_dirty.json");
+		setFile("json_test.json").toResource("json/sortByKeysBefore.json");
 		mavenRunner().withArguments("spotless:apply").runNoError().error();
-		assertFile("json_test.json").sameAsResource("json/json_clean_default.json");
+		assertFile("json_test.json").sameAsResource("json/sortByKeysAfterDisabled.json");
 	}
 
 	@Test
 	public void testFormatJson_WithGson_defaultConfig() throws Exception {
-		writePomWithPomSteps("<json><gson/></json>");
+		writePomWithJsonSteps("<json><gson/></json>");
 
-		setFile("json_test.json").toResource("json/json_dirty.json");
+		setFile("json_test.json").toResource("json/sortByKeysBefore.json");
 		mavenRunner().withArguments("spotless:apply").runNoError().error();
-		assertFile("json_test.json").sameAsResource("json/json_clean_default.json");
+		assertFile("json_test.json").sameAsResource("json/sortByKeysAfterDisabled.json");
 	}
 }
