@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,17 +113,17 @@ class JavascriptFormatStepTest extends MavenIntegrationHarness {
 			final String styleGuidePath = "npm/eslint/javascript/styleguide/standard";
 
 			writePomWithJavascriptSteps(
-				TEST_FILE_PATH,
-				"<eslint>",
-				"  <configFile>.eslintrc.js</configFile>",
-				"  <devDependencies>",
-				"    <eslint>8.28.0</eslint>",
-				"    <eslint-config-standard>17.0.0</eslint-config-standard>",
-				"    <eslint-plugin-import>2.26.0</eslint-plugin-import>",
-				"    <eslint-plugin-n>15.6.0</eslint-plugin-n>",
-				"    <eslint-plugin-promise>6.1.1</eslint-plugin-promise>",
-				"  </devDependencies>",
-				"</eslint>");
+					TEST_FILE_PATH,
+					"<eslint>",
+					"  <configFile>.eslintrc.js</configFile>",
+					"  <devDependencies>",
+					"    <eslint>8.28.0</eslint>",
+					"    <eslint-config-standard>17.0.0</eslint-config-standard>",
+					"    <eslint-plugin-import>2.26.0</eslint-plugin-import>",
+					"    <eslint-plugin-n>15.6.0</eslint-plugin-n>",
+					"    <eslint-plugin-promise>6.1.1</eslint-plugin-promise>",
+					"  </devDependencies>",
+					"</eslint>");
 			setFile(".eslintrc.js").toResource(styleGuidePath + "/.eslintrc.js");
 
 			setFile(TEST_FILE_PATH).toResource(styleGuidePath + "/javascript-es6.dirty");
