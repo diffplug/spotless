@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* Added support for npm-based [ESLint](https://eslint.org/)-formatter for javascript and typescript ([#1433](https://github.com/diffplug/spotless/pull/1433))
 
 ## [2.29.0] - 2023-01-02
 ### Added
