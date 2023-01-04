@@ -662,7 +662,7 @@ For details, see the [npm detection](#npm-detection) and [`.npmrc` detection](#n
 
 ## Javascript
 
-- `com.diffplug.gradle.spotless.JavascriptExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.12.0/com/diffplug/gradle/spotless/JavascriptExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/JavascriptExtension.java)
+- `com.diffplug.gradle.spotless.JavascriptExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.12.1/com/diffplug/gradle/spotless/JavascriptExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/JavascriptExtension.java)
 
 ```gradle
 spotless {
