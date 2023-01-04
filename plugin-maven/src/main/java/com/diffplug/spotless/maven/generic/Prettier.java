@@ -61,7 +61,7 @@ public class Prettier extends AbstractNpmFormatterStepFactory {
 		if (prettierVersion != null && !prettierVersion.isEmpty()) {
 			this.devDependencies = PrettierFormatterStep.defaultDevDependenciesWithPrettier(prettierVersion);
 		} else if (devDependencyProperties != null) {
-			this.devDependencies = dependencyPropertiesAsMap();
+			this.devDependencies = propertiesAsMap(this.devDependencyProperties);
 		}
 
 		// process config file or inline config
@@ -98,20 +98,6 @@ public class Prettier extends AbstractNpmFormatterStepFactory {
 		PrettierConfig prettierConfig = new PrettierConfig(configFileHandler, configInline);
 		NpmPathResolver npmPathResolver = npmPathResolver(stepConfig);
 		return PrettierFormatterStep.create(devDependencies, stepConfig.getProvisioner(), baseDir, buildDir, npmPathResolver, prettierConfig);
-	}
-
-	private boolean moreThanOneNonNull(Object... objects) {
-		return Arrays.stream(objects)
-				.filter(Objects::nonNull)
-				.filter(o -> !(o instanceof String) || !((String) o).isEmpty()) // if it is a string, it should not be empty
-				.count() > 1;
-	}
-
-	private Map<String, String> dependencyPropertiesAsMap() {
-		return this.devDependencyProperties.stringPropertyNames()
-				.stream()
-				.map(name -> new AbstractMap.SimpleEntry<>(name, this.devDependencyProperties.getProperty(name)))
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 
 	private static IllegalArgumentException onlyOneConfig() {

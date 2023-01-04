@@ -16,6 +16,12 @@
 package com.diffplug.spotless.maven.npm;
 
 import java.io.File;
+import java.util.AbstractMap;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.stream.Collectors;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
@@ -51,5 +57,19 @@ public abstract class AbstractNpmFormatterStepFactory implements FormatterStepFa
 
 	protected NpmPathResolver npmPathResolver(FormatterStepConfig stepConfig) {
 		return new NpmPathResolver(npm(stepConfig), npmrc(stepConfig), baseDir(stepConfig));
+	}
+
+	protected boolean moreThanOneNonNull(Object... objects) {
+		return Arrays.stream(objects)
+				.filter(Objects::nonNull)
+				.filter(o -> !(o instanceof String) || !((String) o).isEmpty()) // if it is a string, it should not be empty
+				.count() > 1;
+	}
+
+	protected Map<String, String> propertiesAsMap(Properties devDependencyProperties) {
+		return devDependencyProperties.stringPropertyNames()
+				.stream()
+				.map(name -> new AbstractMap.SimpleEntry<>(name, devDependencyProperties.getProperty(name)))
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 }

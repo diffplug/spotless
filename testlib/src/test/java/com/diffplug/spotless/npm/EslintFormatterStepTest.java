@@ -19,8 +19,6 @@ import java.io.File;
 import java.util.Map;
 import java.util.TreeMap;
 
-import com.diffplug.spotless.ResourceHarness;
-
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -28,6 +26,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import com.diffplug.common.collect.ImmutableMap;
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.StepHarnessWithFile;
 import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.tag.NpmTest;

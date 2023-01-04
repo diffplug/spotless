@@ -17,6 +17,7 @@ package com.diffplug.spotless.maven.javascript;
 
 import java.io.File;
 import java.util.Map;
+import java.util.Properties;
 import java.util.TreeMap;
 
 import org.apache.maven.plugins.annotations.Parameter;
@@ -29,6 +30,8 @@ import com.diffplug.spotless.npm.EslintFormatterStep;
 import com.diffplug.spotless.npm.NpmPathResolver;
 
 public abstract class AbstractEslint extends AbstractNpmFormatterStepFactory {
+
+	public static final String ERROR_MESSAGE_ONLY_ONE_CONFIG = "must specify exactly one eslintVersion, devDependencies or devDependencyProperties";
 
 	@Parameter
 	protected String configFile;
@@ -45,11 +48,21 @@ public abstract class AbstractEslint extends AbstractNpmFormatterStepFactory {
 	@Parameter
 	protected Map<String, String> devDependencies;
 
+	@Parameter
+	protected Properties devDependencyProperties;
+
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
+		// check if config is only setup in one way
+		if (moreThanOneNonNull(this.eslintVersion, this.devDependencies, this.devDependencyProperties)) {
+			throw onlyOneConfig();
+		}
+
 		Map<String, String> devDependencies = new TreeMap<>();
 		if (this.devDependencies != null) {
 			devDependencies.putAll(this.devDependencies);
+		} else if (this.devDependencyProperties != null) {
+			devDependencies.putAll(propertiesAsMap(this.devDependencyProperties));
 		} else {
 			Map<String, String> defaultDependencies = createDefaultDependencies();
 			devDependencies.putAll(defaultDependencies);
@@ -61,6 +74,10 @@ public abstract class AbstractEslint extends AbstractNpmFormatterStepFactory {
 		File baseDir = baseDir(stepConfig);
 		NpmPathResolver npmPathResolver = npmPathResolver(stepConfig);
 		return EslintFormatterStep.create(devDependencies, stepConfig.getProvisioner(), baseDir, buildDir, npmPathResolver, eslintConfig(stepConfig));
+	}
+
+	private static IllegalArgumentException onlyOneConfig() {
+		return new IllegalArgumentException(ERROR_MESSAGE_ONLY_ONE_CONFIG);
 	}
 
 	protected abstract EslintConfig eslintConfig(FormatterStepConfig stepConfig);
