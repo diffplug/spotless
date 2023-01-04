@@ -42,7 +42,7 @@ public class PrettierFormatterStep {
 	public static final String NAME = "prettier-format";
 
 	public static final Map<String, String> defaultDevDependencies() {
-		return defaultDevDependenciesWithPrettier("2.0.5");
+		return defaultDevDependenciesWithPrettier("2.8.1");
 	}
 
 	public static final Map<String, String> defaultDevDependenciesWithPrettier(String version) {

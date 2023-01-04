@@ -12,8 +12,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * Added support for npm-based [ESLint](https://eslint.org/)-formatter for javascript and typescript ([#1433](https://github.com/diffplug/spotless/pull/1433))
-
 ### Changes
+* Bump default Version for `prettier` from `2.0.5` to `2.8.1`
 * Bump the dev version of Gradle from `7.5.1` to `7.6` ([#1409](https://github.com/diffplug/spotless/pull/1409))
   * We also removed the no-longer-required dependency `org.codehaus.groovy:groovy-xml`
 * Breaking changes to Spotless' internal testing infrastructure `testlib` ([#1443](https://github.com/diffplug/spotless/pull/1443))
@@ -21,6 +21,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   * `StepHarness` now operates on `Formatter` rather than a `FormatterStep`
   * `StepHarnessWithFile` now takes a `ResourceHarness` in its constructor to handle the file manipulation parts
   * Standardized that we test exception *messages*, not types, which will ease the transition to linting later on
+
 
 ## [2.31.1] - 2023-01-02
 ### Fixed
