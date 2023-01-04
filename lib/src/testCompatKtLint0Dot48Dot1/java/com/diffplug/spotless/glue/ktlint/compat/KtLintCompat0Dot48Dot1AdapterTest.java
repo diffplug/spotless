@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -34,7 +35,7 @@ public class KtLintCompat0Dot48Dot1AdapterTest {
 		try (InputStream is = KtLintCompat0Dot48Dot1AdapterTest.class.getResourceAsStream("/empty_class_body.kt")) {
 			Files.copy(is, path.resolve("empty_class_body.kt"));
 		}
-		String text = new String(Files.readAllBytes(path.resolve("empty_class_body.kt")));
+		String text = new String(Files.readAllBytes(path.resolve("empty_class_body.kt")), StandardCharsets.UTF_8);
 
 		Map<String, String> userData = new HashMap<>();
 
@@ -50,7 +51,7 @@ public class KtLintCompat0Dot48Dot1AdapterTest {
 		try (InputStream is = KtLintCompat0Dot48Dot1AdapterTest.class.getResourceAsStream("/fails_no_semicolons.kt")) {
 			Files.copy(is, path.resolve("fails_no_semicolons.kt"));
 		}
-		String text = new String(Files.readAllBytes(path.resolve("fails_no_semicolons.kt")));
+		String text = new String(Files.readAllBytes(path.resolve("fails_no_semicolons.kt")), StandardCharsets.UTF_8);
 
 		Map<String, String> userData = new HashMap<>();
 
