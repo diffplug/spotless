@@ -5,6 +5,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * Added support for npm-based [ESLint](https://eslint.org/)-formatter for javascript and typescript ([#1453](https://github.com/diffplug/spotless/pull/1453))
+### Changes
+* Bump default Version for `prettier` from `2.0.5` to `2.8.1`
 
 ## [2.29.0] - 2023-01-02
 ### Added
