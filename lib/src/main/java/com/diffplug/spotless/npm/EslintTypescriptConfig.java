@@ -27,6 +27,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public class EslintTypescriptConfig extends EslintConfig {
 
+	private static final long serialVersionUID = -126864670181617006L;
+
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	@Nullable
 	private final transient File typescriptConfigPath;
