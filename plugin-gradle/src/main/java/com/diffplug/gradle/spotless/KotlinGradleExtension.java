@@ -47,11 +47,8 @@ public class KotlinGradleExtension extends FormatExtension {
 	/** Adds the specified version of <a href="https://github.com/pinterest/ktlint">ktlint</a>. */
 	public KotlinFormatExtension ktlint(String version) throws IOException {
 		Objects.requireNonNull(version, "version");
-		FileSignature editorConfigPath = null;
 		File defaultEditorConfig = getProject().getRootProject().file(".editorconfig");
-		if (defaultEditorConfig.exists() && defaultEditorConfig.isFile()) {
-			editorConfigPath = FileSignature.signAsList(defaultEditorConfig);
-		}
+		FileSignature editorConfigPath = FileSignature.signAsList(defaultEditorConfig);
 		return new KotlinFormatExtension(version, false, editorConfigPath, Collections.emptyMap(), Collections.emptyMap());
 	}
 
