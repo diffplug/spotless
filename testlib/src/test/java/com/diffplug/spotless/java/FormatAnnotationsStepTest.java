@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 DiffPlug
+ * Copyright 2022-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,26 +20,26 @@ import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
+import com.diffplug.spotless.StepHarness;
 
-class FormatAnnotationsStepTest extends ResourceHarness {
+class FormatAnnotationsStepTest {
 	@Test
-	void formatAnnotations() throws Throwable {
+	void formatAnnotations() {
 		FormatterStep step = FormatAnnotationsStep.create();
-		assertOnResources(step, "java/formatannotations/FormatAnnotationsTestInput.test", "java/formatannotations/FormatAnnotationsTestOutput.test");
+		StepHarness.forStep(step).testResource("java/formatannotations/FormatAnnotationsTestInput.test", "java/formatannotations/FormatAnnotationsTestOutput.test");
 	}
 
 	@Test
-	void formatAnnotationsInComments() throws Throwable {
+	void formatAnnotationsInComments() {
 		FormatterStep step = FormatAnnotationsStep.create();
-		assertOnResources(step, "java/formatannotations/FormatAnnotationsInCommentsInput.test", "java/formatannotations/FormatAnnotationsInCommentsOutput.test");
+		StepHarness.forStep(step).testResource("java/formatannotations/FormatAnnotationsInCommentsInput.test", "java/formatannotations/FormatAnnotationsInCommentsOutput.test");
 	}
 
 	@Test
-	void formatAnnotationsAddRemove() throws Throwable {
+	void formatAnnotationsAddRemove() {
 		FormatterStep step = FormatAnnotationsStep.create(Arrays.asList("Empty", "NonEmpty"), Arrays.asList("Localized"));
-		assertOnResources(step, "java/formatannotations/FormatAnnotationsAddRemoveInput.test", "java/formatannotations/FormatAnnotationsAddRemoveOutput.test");
+		StepHarness.forStep(step).testResource("java/formatannotations/FormatAnnotationsAddRemoveInput.test", "java/formatannotations/FormatAnnotationsAddRemoveOutput.test");
 	}
 
 	@Test

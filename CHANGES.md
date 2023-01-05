@@ -15,6 +15,11 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changes
 * Bump the dev version of Gradle from `7.5.1` to `7.6` ([#1409](https://github.com/diffplug/spotless/pull/1409))
   * We also removed the no-longer-required dependency `org.codehaus.groovy:groovy-xml`
+* Breaking changes to Spotless' internal testing infrastructure `testlib` ([#1443](https://github.com/diffplug/spotless/pull/1443))
+  * `ResourceHarness` no longer has any duplicated functionality which was also present in `StepHarness`
+  * `StepHarness` now operates on `Formatter` rather than a `FormatterStep`
+  * `StepHarnessWithFile` now takes a `ResourceHarness` in its constructor to handle the file manipulation parts
+  * Standardized that we test exception *messages*, not types, which will ease the transition to linting later on
 
 ## [2.31.1] - 2023-01-02
 ### Fixed
