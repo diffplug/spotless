@@ -17,12 +17,14 @@ package com.diffplug.gradle.spotless;
 
 import static com.diffplug.spotless.kotlin.KotlinConstants.LICENSE_HEADER_DELIMITER;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import org.gradle.api.GradleException;
@@ -58,12 +60,17 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 	}
 
 	/** Adds the specified version of <a href="https://github.com/pinterest/ktlint">ktlint</a>. */
-	public KotlinFormatExtension ktlint(String version) {
+	public KotlinFormatExtension ktlint(String version) throws IOException {
 		Objects.requireNonNull(version);
-		return new KotlinFormatExtension(version, false, null, Collections.emptyMap(), Collections.emptyMap());
+		FileSignature editorConfigPath = null;
+		File defaultEditorConfig = getProject().getRootProject().file(".editorconfig");
+		if (defaultEditorConfig.exists() && defaultEditorConfig.isFile()) {
+			editorConfigPath = FileSignature.signAsList(defaultEditorConfig);
+		}
+		return new KotlinFormatExtension(version, false, editorConfigPath, Collections.emptyMap(), Collections.emptyMap());
 	}
 
-	public KotlinFormatExtension ktlint() {
+	public KotlinFormatExtension ktlint() throws IOException {
 		return ktlint(KtLintStep.defaultVersion());
 	}
 
@@ -71,11 +78,12 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 
 		private final String version;
 		private boolean useExperimental;
+		@Nullable
 		private FileSignature editorConfigPath;
 		private Map<String, String> userData;
 		private Map<String, Object> editorConfigOverride;
 
-		KotlinFormatExtension(String version, boolean useExperimental, FileSignature editorConfigPath, Map<String, String> config,
+		KotlinFormatExtension(String version, boolean useExperimental, @Nullable FileSignature editorConfigPath, Map<String, String> config,
 				Map<String, Object> editorConfigOverride) {
 			this.version = version;
 			this.useExperimental = useExperimental;

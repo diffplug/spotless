@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 
+import javax.annotation.Nullable;
+
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
@@ -51,25 +53,50 @@ public class KtLintStep {
 
 	public static FormatterStep create(String version, Provisioner provisioner, boolean useExperimental,
 			Map<String, String> userData, Map<String, Object> editorConfigOverride) {
-		return create(version, provisioner, false, useExperimental, userData, editorConfigOverride);
+		return create(version, provisioner, false, useExperimental, null, userData, editorConfigOverride);
 	}
 
 	public static FormatterStep createForScript(String version, Provisioner provisioner) {
-		return create(version, provisioner, true, false, Collections.emptyMap(), Collections.emptyMap());
+		return create(version, provisioner, true, false, null, Collections.emptyMap(), Collections.emptyMap());
 	}
 
-	public static FormatterStep createForScript(String version, Provisioner provisioner, boolean useExperimental,
-			FileSignature editorConfigPath, Map<String, String> userData, Map<String, Object> editorConfigOverride) {
-		return create(version, provisioner, true, useExperimental, userData, editorConfigOverride);
+	public static FormatterStep createForScript(String version,
+			Provisioner provisioner,
+			boolean useExperimental,
+			@Nullable FileSignature editorConfigPath,
+			Map<String, String> userData,
+			Map<String, Object> editorConfigOverride) {
+		return create(version,
+				provisioner,
+				true,
+				useExperimental,
+				editorConfigPath,
+				userData,
+				editorConfigOverride);
 	}
 
-	private static FormatterStep create(String version, Provisioner provisioner, boolean isScript, boolean useExperimental,
-			Map<String, String> userData, Map<String, Object> editorConfigOverride) {
-		return create(version, provisioner, useExperimental, userData, editorConfigOverride);
+	private static FormatterStep create(String version,
+			Provisioner provisioner,
+			boolean isScript,
+			boolean useExperimental,
+			Map<String, String> userData,
+			Map<String, Object> editorConfigOverride) {
+		return create(version,
+				provisioner,
+				useExperimental,
+				isScript,
+				null,
+				userData,
+				editorConfigOverride);
 	}
 
-	public static FormatterStep create(String version, Provisioner provisioner, boolean isScript, boolean useExperimental,
-			FileSignature editorConfig, Map<String, String> userData, Map<String, Object> editorConfigOverride) {
+	public static FormatterStep create(String version,
+			Provisioner provisioner,
+			boolean isScript,
+			boolean useExperimental,
+			@Nullable FileSignature editorConfig,
+			Map<String, String> userData,
+			Map<String, Object> editorConfigOverride) {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(provisioner, "provisioner");
 		return FormatterStep.createLazy(NAME,
@@ -92,10 +119,16 @@ public class KtLintStep {
 		private final TreeMap<String, String> userData;
 		private final TreeMap<String, Object> editorConfigOverride;
 		private final String version;
+		@Nullable
 		private final FileSignature editorConfigPath;
 
-		State(String version, Provisioner provisioner, boolean isScript, boolean useExperimental,
-				FileSignature editorConfigPath, Map<String, String> userData, Map<String, Object> editorConfigOverride) throws IOException {
+		State(String version,
+				Provisioner provisioner,
+				boolean isScript,
+				boolean useExperimental,
+				@Nullable FileSignature editorConfigPath,
+				Map<String, String> userData,
+				Map<String, Object> editorConfigOverride) throws IOException {
 			this.version = version;
 
 			String coordinate;

@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import com.diffplug.common.collect.ImmutableSortedMap;
@@ -47,7 +48,7 @@ public class KotlinGradleExtension extends FormatExtension {
 	public KotlinFormatExtension ktlint(String version) throws IOException {
 		Objects.requireNonNull(version, "version");
 		FileSignature editorConfigPath = null;
-		File defaultEditorConfig = getProject().getRootProject().file(".editorConfig");
+		File defaultEditorConfig = getProject().getRootProject().file(".editorconfig");
 		if (defaultEditorConfig.exists() && defaultEditorConfig.isFile()) {
 			editorConfigPath = FileSignature.signAsList(defaultEditorConfig);
 		}
@@ -62,6 +63,7 @@ public class KotlinGradleExtension extends FormatExtension {
 
 		private final String version;
 		private boolean useExperimental;
+		@Nullable
 		private FileSignature editorConfigPath;
 		private Map<String, String> userData;
 		private Map<String, Object> editorConfigOverride;
@@ -110,7 +112,13 @@ public class KotlinGradleExtension extends FormatExtension {
 		}
 
 		private FormatterStep createStep() {
-			return KtLintStep.createForScript(version, provisioner(), useExperimental, editorConfigPath, userData, editorConfigOverride);
+			return KtLintStep.createForScript(
+					version,
+					provisioner(),
+					useExperimental,
+					editorConfigPath,
+					userData,
+					editorConfigOverride);
 		}
 	}
 
