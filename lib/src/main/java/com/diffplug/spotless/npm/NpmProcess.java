@@ -34,7 +34,11 @@ class NpmProcess {
 	}
 
 	void install() {
-		npmAwait("install", "--no-audit", "--no-package-lock", "--prefer-offline");
+		npmAwait("install",
+				"--no-audit",
+				"--no-package-lock",
+				"--no-fund",
+				"--prefer-offline");
 	}
 
 	Process start() {

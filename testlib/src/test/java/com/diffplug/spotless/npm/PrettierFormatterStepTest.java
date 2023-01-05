@@ -116,7 +116,7 @@ class PrettierFormatterStepTest extends ResourceHarness {
 					new PrettierConfig(null, ImmutableMap.of("parser", "postcss")));
 			try (StepHarnessWithFile stepHarness = StepHarnessWithFile.forStep(this, formatterStep)) {
 				stepHarness.testResourceExceptionMsg("npm/prettier/filetypes/scss/scss.dirty").isEqualTo(
-						"Unexpected response status code at /prettier/format [HTTP 501] -- (Error while formatting: Error: Couldn't resolve parser \"postcss\")");
+						"Unexpected response status code at /prettier/format [HTTP 500] -- (Error while formatting: Error: Couldn't resolve parser \"postcss\")");
 			}
 		}
 	}
