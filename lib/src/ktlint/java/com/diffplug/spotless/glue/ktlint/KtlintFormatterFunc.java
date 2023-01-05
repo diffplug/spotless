@@ -73,6 +73,6 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 		if (editorConfigPath != null) {
 			absoluteEditorConfigPath = editorConfigPath.getOnlyFile().getAbsolutePath();
 		}
-		return adapter.format(unix, file.getAbsolutePath(), isScript, useExperimental, absoluteEditorConfigPath, userData, editorConfigOverrideMap);
+		return adapter.format(unix, file.toPath(), isScript, useExperimental, absoluteEditorConfigPath, userData, editorConfigOverrideMap);
 	}
 }

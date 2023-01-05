@@ -15,10 +15,11 @@
  */
 package com.diffplug.spotless.glue.ktlint.compat;
 
+import java.nio.file.Path;
 import java.util.Map;
 
 public interface KtLintCompatAdapter {
 
-	String format(String text, String name, boolean isScript, boolean useExperimental, String editorConfigPath, Map<String, String> userData,
-			Map<String, Object> editorConfigOverrideMap);
+	String format(String text, Path path, boolean isScript, boolean useExperimental, String editorConfigPath, Map<String, String> userData,
+				  Map<String, Object> editorConfigOverrideMap);
 }

@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.glue.ktlint.compat;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,10 +50,10 @@ public class KtLintCompat0Dot45Dot2Adapter implements KtLintCompatAdapter {
 	}
 
 	@Override
-	public String format(final String text, final String name, final boolean isScript,
-			final boolean useExperimental,
-			String editorConfigPath, final Map<String, String> userData,
-			final Map<String, Object> editorConfigOverrideMap) {
+	public String format(final String text, Path path, final boolean isScript,
+						 final boolean useExperimental,
+						 String editorConfigPath, final Map<String, String> userData,
+						 final Map<String, Object> editorConfigOverrideMap) {
 		final FormatterCallback formatterCallback = new FormatterCallback();
 
 		final List<RuleSet> rulesets = new ArrayList<>();
@@ -70,7 +71,7 @@ public class KtLintCompat0Dot45Dot2Adapter implements KtLintCompatAdapter {
 		}
 
 		return KtLint.INSTANCE.format(new KtLint.ExperimentalParams(
-				name,
+				path.toFile().getAbsolutePath(),
 				text,
 				rulesets,
 				userData,

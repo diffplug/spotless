@@ -56,10 +56,10 @@ public class KtLintCompat0Dot47Dot0Adapter implements KtLintCompatAdapter {
 	}
 
 	@Override
-	public String format(final String text, final String name, final boolean isScript,
-			final boolean useExperimental,
-			String editorConfigPath, final Map<String, String> userData,
-			final Map<String, Object> editorConfigOverrideMap) {
+	public String format(final String text, Path path, final boolean isScript,
+						 final boolean useExperimental,
+						 String editorConfigPath, final Map<String, String> userData,
+						 final Map<String, Object> editorConfigOverrideMap) {
 		final FormatterCallback formatterCallback = new FormatterCallback();
 
 		Set<RuleProvider> allRuleProviders = new LinkedHashSet<>(
@@ -84,7 +84,7 @@ public class KtLintCompat0Dot47Dot0Adapter implements KtLintCompatAdapter {
 			editorConfigFilePath = new File(editorConfigPath).toPath();
 		}
 		return KtLint.INSTANCE.format(new KtLint.ExperimentalParams(
-				name,
+				path.toFile().getAbsolutePath(),
 				text,
 				emptySet(),
 				allRuleProviders,
