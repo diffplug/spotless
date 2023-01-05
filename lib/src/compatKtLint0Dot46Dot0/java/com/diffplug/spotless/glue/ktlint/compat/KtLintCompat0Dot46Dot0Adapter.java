@@ -52,7 +52,7 @@ public class KtLintCompat0Dot46Dot0Adapter implements KtLintCompatAdapter {
 	@Override
 	public String format(final String text, Path path, final boolean isScript,
 			final boolean useExperimental,
-			String editorConfigPath, final Map<String, String> userData,
+			Path editorConfigPath, final Map<String, String> userData,
 			final Map<String, Object> editorConfigOverrideMap) {
 		final FormatterCallback formatterCallback = new FormatterCallback();
 
@@ -77,7 +77,7 @@ public class KtLintCompat0Dot46Dot0Adapter implements KtLintCompatAdapter {
 				userData,
 				formatterCallback,
 				isScript,
-				editorConfigPath,
+				editorConfigPath.toFile().getAbsolutePath(),
 				false,
 				editorConfigOverride,
 				false));

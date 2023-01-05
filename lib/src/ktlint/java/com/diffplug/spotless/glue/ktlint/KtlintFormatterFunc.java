@@ -16,6 +16,7 @@
 package com.diffplug.spotless.glue.ktlint;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
@@ -69,9 +70,9 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 	@Override
 	public String applyWithFile(String unix, File file) {
 
-		String absoluteEditorConfigPath = null;
+		Path absoluteEditorConfigPath = null;
 		if (editorConfigPath != null) {
-			absoluteEditorConfigPath = editorConfigPath.getOnlyFile().getAbsolutePath();
+			absoluteEditorConfigPath = editorConfigPath.getOnlyFile().toPath();
 		}
 		return adapter.format(unix, file.toPath(), isScript, useExperimental, absoluteEditorConfigPath, userData, editorConfigOverrideMap);
 	}
