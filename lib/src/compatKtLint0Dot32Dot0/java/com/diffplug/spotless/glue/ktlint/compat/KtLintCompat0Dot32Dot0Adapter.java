@@ -43,9 +43,9 @@ public class KtLintCompat0Dot32Dot0Adapter implements KtLintCompatAdapter {
 
 	@Override
 	public String format(final String text, Path path, final boolean isScript,
-						 final boolean useExperimental,
-						 String editorConfigPath, final Map<String, String> userData,
-						 final Map<String, Object> editorConfigOverrideMap) {
+			final boolean useExperimental,
+			String editorConfigPath, final Map<String, String> userData,
+			final Map<String, Object> editorConfigOverrideMap) {
 		final FormatterCallback formatterCallback = new FormatterCallback();
 
 		final List<RuleSet> rulesets = new ArrayList<>();

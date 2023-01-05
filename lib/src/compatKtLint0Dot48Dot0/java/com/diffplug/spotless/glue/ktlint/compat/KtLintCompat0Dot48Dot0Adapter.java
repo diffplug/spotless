@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.pinterest.ktlint.core.KtLint;
+import com.pinterest.ktlint.core.KtLintRuleEngine;
 import com.pinterest.ktlint.core.LintError;
 import com.pinterest.ktlint.core.Rule;
 import com.pinterest.ktlint.core.RuleProvider;
@@ -55,9 +55,9 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 
 	@Override
 	public String format(final String text, Path path, final boolean isScript,
-						 final boolean useExperimental,
-						 String editorConfigPath, final Map<String, String> userData,
-						 final Map<String, Object> editorConfigOverrideMap) {
+			final boolean useExperimental,
+			String editorConfigPath, final Map<String, String> userData,
+			final Map<String, Object> editorConfigOverrideMap) {
 		final FormatterCallback formatterCallback = new FormatterCallback();
 
 		Set<RuleProvider> allRuleProviders = new LinkedHashSet<>(
@@ -81,17 +81,12 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 		} else {
 			editorConfigFilePath = new File(editorConfigPath).toPath();
 		}
-		return KtLint.INSTANCE.format(new KtLint.ExperimentalParams(
-				path.toFile().getAbsolutePath(),
-				text,
+		return new KtLintRuleEngine(
 				allRuleProviders,
-				userData,
-				formatterCallback,
-				isScript,
-				false,
 				EditorConfigDefaults.Companion.load(editorConfigFilePath),
 				editorConfigOverride,
-				false));
+				false)
+						.format(path, formatterCallback);
 	}
 
 	/**

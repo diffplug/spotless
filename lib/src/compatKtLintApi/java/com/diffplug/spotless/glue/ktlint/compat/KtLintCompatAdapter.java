@@ -21,5 +21,5 @@ import java.util.Map;
 public interface KtLintCompatAdapter {
 
 	String format(String text, Path path, boolean isScript, boolean useExperimental, String editorConfigPath, Map<String, String> userData,
-				  Map<String, Object> editorConfigOverrideMap);
+			Map<String, Object> editorConfigOverrideMap);
 }
