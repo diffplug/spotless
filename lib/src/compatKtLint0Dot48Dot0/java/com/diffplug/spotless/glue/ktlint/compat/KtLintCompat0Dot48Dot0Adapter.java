@@ -47,7 +47,7 @@ import kotlin.Pair;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function2;
 
-public class KtLintCompat0Dot48Dot1Adapter implements KtLintCompatAdapter {
+public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 
 	private static final List<EditorConfigProperty<?>> DEFAULT_EDITOR_CONFIG_PROPERTIES;
 

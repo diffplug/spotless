@@ -28,11 +28,11 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-public class KtLintCompat0Dot48Dot1AdapterTest {
+public class KtLintCompat0Dot48Dot0AdapterTest {
 	@Test
 	public void testDefaults(@TempDir Path path) throws IOException {
-		KtLintCompat0Dot48Dot1Adapter KtLintCompat0Dot48Dot1Adapter = new KtLintCompat0Dot48Dot1Adapter();
-		try (InputStream is = KtLintCompat0Dot48Dot1AdapterTest.class.getResourceAsStream("/empty_class_body.kt")) {
+		KtLintCompat0Dot48Dot0Adapter ktLintCompat0Dot48Dot0Adapter = new KtLintCompat0Dot48Dot0Adapter();
+		try (InputStream is = KtLintCompat0Dot48Dot0AdapterTest.class.getResourceAsStream("/empty_class_body.kt")) {
 			Files.copy(is, path.resolve("empty_class_body.kt"));
 		}
 		String text = new String(Files.readAllBytes(path.resolve("empty_class_body.kt")), StandardCharsets.UTF_8);
@@ -41,14 +41,14 @@ public class KtLintCompat0Dot48Dot1AdapterTest {
 
 		Map<String, Object> editorConfigOverrideMap = new HashMap<>();
 
-		String formatted = KtLintCompat0Dot48Dot1Adapter.format(text, "empty_class_body.kt", false, false, userData, editorConfigOverrideMap);
+		String formatted = ktLintCompat0Dot48Dot0Adapter.format(text, "empty_class_body.kt", false, false, userData, editorConfigOverrideMap);
 		assertEquals("class empty_class_body\n", formatted);
 	}
 
 	@Test
 	public void testEditorConfigCanDisable(@TempDir Path path) throws IOException {
-		KtLintCompat0Dot48Dot1Adapter KtLintCompat0Dot48Dot1Adapter = new KtLintCompat0Dot48Dot1Adapter();
-		try (InputStream is = KtLintCompat0Dot48Dot1AdapterTest.class.getResourceAsStream("/fails_no_semicolons.kt")) {
+		KtLintCompat0Dot48Dot0Adapter ktLintCompat0Dot48Dot0Adapter = new KtLintCompat0Dot48Dot0Adapter();
+		try (InputStream is = KtLintCompat0Dot48Dot0AdapterTest.class.getResourceAsStream("/fails_no_semicolons.kt")) {
 			Files.copy(is, path.resolve("fails_no_semicolons.kt"));
 		}
 		String text = new String(Files.readAllBytes(path.resolve("fails_no_semicolons.kt")), StandardCharsets.UTF_8);
@@ -59,7 +59,7 @@ public class KtLintCompat0Dot48Dot1AdapterTest {
 		editorConfigOverrideMap.put("indent_style", "tab");
 		editorConfigOverrideMap.put("ktlint_standard_no-semi", "disabled");
 
-		String formatted = KtLintCompat0Dot48Dot1Adapter.format(text, "fails_no_semicolons.kt", false, false, userData, editorConfigOverrideMap);
+		String formatted = ktLintCompat0Dot48Dot0Adapter.format(text, "fails_no_semicolons.kt", false, false, userData, editorConfigOverrideMap);
 		assertEquals("class fails_no_semicolons {\n\tval i = 0;\n}\n", formatted);
 	}
 }

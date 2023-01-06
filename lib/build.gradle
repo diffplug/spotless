@@ -34,7 +34,7 @@ versionCompatibility {
 				'0.45.2',
 				'0.46.0',
 				'0.47.0',
-				'0.48.1',
+				'0.48.0',
 			]
 			targetSourceSetName = 'ktlint'
 		}
@@ -91,9 +91,9 @@ dependencies {
 	compatKtLint0Dot47Dot0CompileOnly 'com.pinterest.ktlint:ktlint-core:0.47.0'
 	compatKtLint0Dot47Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.47.0'
 	compatKtLint0Dot47Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.47.0'
-	compatKtLint0Dot48Dot1CompileOnly 'com.pinterest.ktlint:ktlint-core:0.48.1'
-	compatKtLint0Dot48Dot1CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.48.1'
-	compatKtLint0Dot48Dot1CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.48.1'
+	compatKtLint0Dot48Dot0CompileOnly 'com.pinterest.ktlint:ktlint-core:0.48.0'
+	compatKtLint0Dot48Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.48.0'
+	compatKtLint0Dot48Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.48.0'
 
 	String VER_SCALAFMT="3.6.1"
 	scalafmtCompileOnly "org.scalameta:scalafmt-core_2.13:$VER_SCALAFMT"
@@ -105,8 +105,8 @@ dependencies {
 	flexmarkCompileOnly 'com.vladsch.flexmark:flexmark-all:0.62.2'
 }
 
-configurations.named('testCompatKtLint0Dot48Dot1Implementation').configure {
-	extendsFrom(configurations.testImplementation, configurations.compatKtLint0Dot48Dot1CompileOnly)
+configurations.named('testCompatKtLint0Dot48Dot0Implementation').configure {
+	extendsFrom(configurations.testImplementation, configurations.compatKtLint0Dot48Dot0CompileOnly)
 }
 
 // we'll hold the core lib to a high standard
