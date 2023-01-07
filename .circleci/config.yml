@@ -140,52 +140,6 @@ jobs:
           path: lib-extra/build/test-results/test
       - store_test_results:
           path: plugin-gradle/build/test-results/test
-  do_release_all:
-    << : *env_gradle
-    steps:
-      - checkout
-      - *restore_cache_wrapper
-      - *restore_cache_deps
-      - *set_git_origin_to_https
-      - run:
-          name: gradlew :changelogPush
-          command: ./gradlew :changelogPush -Prelease=true --stacktrace --warning-mode all
-      - run:
-          name: gradlew :plugin-gradle:changelogPush
-          command: ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${gradle_key} -Pgradle.publish.secret=${gradle_secret} --stacktrace --warning-mode all
-      - run:
-          name: gradlew :plugin-maven:changelogPush
-          command: ./gradlew :plugin-maven:changelogPush -Prelease=true --stacktrace --warning-mode all
-  do_release_lib:
-    << : *env_gradle
-    steps:
-      - checkout
-      - *restore_cache_wrapper
-      - *restore_cache_deps
-      - *set_git_origin_to_https
-      - run:
-          name: gradlew :changelogPush
-          command: ./gradlew :changelogPush -Prelease=true --stacktrace --warning-mode all
-  do_release_plugin_gradle:
-    << : *env_gradle
-    steps:
-      - checkout
-      - *restore_cache_wrapper
-      - *restore_cache_deps
-      - *set_git_origin_to_https
-      - run:
-          name: gradlew :plugin-gradle:changelogPush
-          command: ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${gradle_key} -Pgradle.publish.secret=${gradle_secret} --stacktrace
-  do_release_plugin_maven:
-    << : *env_gradle
-    steps:
-      - checkout
-      - *restore_cache_wrapper
-      - *restore_cache_deps
-      - *set_git_origin_to_https
-      - run:
-          name: gradlew :plugin-maven:changelogPush
-          command: ./gradlew :plugin-maven:changelogPush -Prelease=true --stacktrace
 
 workflows:
   version: 2
@@ -205,25 +159,3 @@ workflows:
       - test_npm_8:
           requires:
             - assemble_testClasses
-  deploy:
-    jobs:
-      - release_all:
-          type: approval
-      - do_release_all:
-          requires:
-            - release_all
-      - release_plugin_gradle:
-          type: approval
-      - do_release_plugin_gradle:
-          requires:
-            - release_plugin_gradle
-      - release_plugin_maven:
-          type: approval
-      - do_release_plugin_maven:
-          requires:
-            - release_plugin_maven
-      - release_lib:
-          type: approval
-      - do_release_lib:
-          requires:
-            - release_lib
