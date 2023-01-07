@@ -32,10 +32,7 @@ public class KtLintCompat0Dot48Dot0AdapterTest {
 	@Test
 	public void testDefaults(@TempDir Path path) throws IOException {
 		KtLintCompat0Dot48Dot0Adapter ktLintCompat0Dot48Dot0Adapter = new KtLintCompat0Dot48Dot0Adapter();
-		try (InputStream is = KtLintCompat0Dot48Dot0AdapterTest.class.getResourceAsStream("/empty_class_body.kt")) {
-			Files.copy(is, path.resolve("empty_class_body.kt"));
-		}
-		String text = new String(Files.readAllBytes(path.resolve("empty_class_body.kt")), StandardCharsets.UTF_8);
+		String text = loadAndWriteText(path, "empty_class_body.kt");
 
 		Map<String, String> userData = new HashMap<>();
 
@@ -48,10 +45,7 @@ public class KtLintCompat0Dot48Dot0AdapterTest {
 	@Test
 	public void testEditorConfigCanDisable(@TempDir Path path) throws IOException {
 		KtLintCompat0Dot48Dot0Adapter ktLintCompat0Dot48Dot0Adapter = new KtLintCompat0Dot48Dot0Adapter();
-		try (InputStream is = KtLintCompat0Dot48Dot0AdapterTest.class.getResourceAsStream("/fails_no_semicolons.kt")) {
-			Files.copy(is, path.resolve("fails_no_semicolons.kt"));
-		}
-		String text = new String(Files.readAllBytes(path.resolve("fails_no_semicolons.kt")), StandardCharsets.UTF_8);
+		String text = loadAndWriteText(path, "fails_no_semicolons.kt");
 
 		Map<String, String> userData = new HashMap<>();
 
@@ -62,4 +56,12 @@ public class KtLintCompat0Dot48Dot0AdapterTest {
 		String formatted = ktLintCompat0Dot48Dot0Adapter.format(text, "fails_no_semicolons.kt", false, false, userData, editorConfigOverrideMap);
 		assertEquals("class fails_no_semicolons {\n\tval i = 0;\n}\n", formatted);
 	}
+
+	private static String loadAndWriteText(Path path, String name) throws IOException {
+		try (InputStream is = KtLintCompat0Dot48Dot0AdapterTest.class.getResourceAsStream("/" + name)) {
+			Files.copy(is, path.resolve(name));
+		}
+		return new String(Files.readAllBytes(path.resolve(name)), StandardCharsets.UTF_8);
+	}
+
 }
