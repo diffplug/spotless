@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ class FileIndexTest extends FileIndexHarness {
 		FileIndex index = FileIndex.read(config, log);
 
 		assertThat(index.size()).isZero();
-		verify(log).info("Fingerprint mismatch in the index file. Fallback to an empty index");
+		verify(log).info("Index file corresponds to a different configuration of the plugin. Either the plugin version or its configuration has changed. Fallback to an empty index");
 	}
 
 	@Test
