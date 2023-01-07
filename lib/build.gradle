@@ -91,9 +91,9 @@ dependencies {
 	compatKtLint0Dot47Dot0CompileOnly 'com.pinterest.ktlint:ktlint-core:0.47.0'
 	compatKtLint0Dot47Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.47.0'
 	compatKtLint0Dot47Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.47.0'
-	compatKtLint0Dot48Dot0CompileOnly 'com.pinterest.ktlint:ktlint-core:0.48.0'
-	compatKtLint0Dot48Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.48.0'
-	compatKtLint0Dot48Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.48.0'
+	compatKtLint0Dot48Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-core:0.48.0'
+	compatKtLint0Dot48Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.48.0'
+	compatKtLint0Dot48Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.48.0'
 
 	String VER_SCALAFMT="3.6.1"
 	scalafmtCompileOnly "org.scalameta:scalafmt-core_2.13:$VER_SCALAFMT"
@@ -103,10 +103,6 @@ dependencies {
 
 	// used for markdown formatting
 	flexmarkCompileOnly 'com.vladsch.flexmark:flexmark-all:0.62.2'
-}
-
-configurations.named('testCompatKtLint0Dot48Dot0Implementation').configure {
-	extendsFrom(configurations.compatKtLint0Dot48Dot0CompileOnly)
 }
 
 // we'll hold the core lib to a high standard
