@@ -129,7 +129,16 @@ To use it in your pom, just [add the Spotless dependency](https://search.maven.o
 Spotless consists of a list of formats (in the example above, `misc` and `java`), and each format has:
 - a `target` (the files to format), which you set with [`includes` and `excludes`](https://github.com/diffplug/spotless/blob/989abbecff4d8373c6111c1a98f359eadc532429/plugin-maven/src/main/java/com/diffplug/spotless/maven/FormatterFactory.java#L51-L55)
 - a list of `FormatterStep`, which are just `String -> String` functions, such as [`replace`](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/generic/Replace.java), [`replaceRegex`](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/generic/ReplaceRegex.java), [`trimTrailingWhitespace`](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/generic/TrimTrailingWhitespace.java), [`indent`](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/generic/Indent.java), [`prettier`](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/generic/Prettier.java), [`eclipseWtp`](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/generic/EclipseWtp.java), and [`licenseHeader`](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/generic/LicenseHeader.java).
-
+- **order matters**, and this is good! (More info [here](https://github.com/diffplug/spotless/blob/main/PADDEDCELL.md) and [here](https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md#how-spotless-works))
+  - For example, `googleJavaFormat` always indents with spaces, but some wish it had a tab mode
+    - ```xml
+      <googleJavaFormat/> // this works
+      <indent><tabs>true</tabs><spacesPerTab>2</spacesPerTab></indent>
+       ```
+    - ```xml
+      <indent><tabs>true</tabs><spacesPerTab>2</spacesPerTab></indent>
+      <googleJavaFormat/> // the tab indentation gets overwritten
+       ```
 
 ### Requirements
 
@@ -179,6 +188,10 @@ any other maven phase (i.e. compile) then it can be configured as below;
       <include>src/test/java/**/*.java</include>
     </includes>
 
+    <googleJavaFormat /> <!-- has its own section below -->
+    <eclipse />          <!-- has its own section below -->
+    <prettier />         <!-- has its own section below -->
+
     <importOrder /> <!-- standard import order -->
     <importOrder>  <!-- or a custom ordering -->
       <wildcardsLast>false</wildcardsLast> <!-- Optional, default false. Sort wildcard import after specific imports -->
@@ -187,10 +200,6 @@ any other maven phase (i.e. compile) then it can be configured as below;
     </importOrder>
 
     <removeUnusedImports /> <!-- self-explanatory -->
-
-    <googleJavaFormat /> <!-- has its own section below -->
-    <eclipse />          <!-- has its own section below -->
-    <prettier />         <!-- has its own section below -->
 
     <formatAnnotations />  <!-- fixes formatting of type annotations, see below -->
 
