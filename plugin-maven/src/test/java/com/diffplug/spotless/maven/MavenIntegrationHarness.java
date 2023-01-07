@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -154,6 +154,10 @@ public class MavenIntegrationHarness extends ResourceHarness {
 
 	protected void writePomWithMarkdownSteps(String... steps) throws IOException {
 		writePom(groupWithSteps("markdown", including("**/*.md"), steps));
+	}
+
+	protected void writePomWithJsonSteps(String... steps) throws IOException {
+		writePom(groupWithSteps("json", including("**/*.json"), steps));
 	}
 
 	protected void writePom(String... configuration) throws IOException {
