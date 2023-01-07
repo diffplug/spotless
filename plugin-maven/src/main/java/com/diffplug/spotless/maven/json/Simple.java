@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.antlr4;
+package com.diffplug.spotless.maven.json;
 
-import org.junit.jupiter.api.Test;
+import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.StepHarness;
-import com.diffplug.spotless.TestProvisioner;
+import com.diffplug.spotless.json.JsonSimpleStep;
+import com.diffplug.spotless.maven.FormatterStepConfig;
+import com.diffplug.spotless.maven.FormatterStepFactory;
 
-class Antlr4FormatterStepTest {
-	@Test
-	void formatGrammar() throws Throwable {
-		FormatterStep step = Antlr4FormatterStep.create(TestProvisioner.mavenCentral());
-		StepHarness.forStep(step).testResource("antlr4/Hello.unformatted.g4", "antlr4/Hello.formatted.g4");
+public class Simple implements FormatterStepFactory {
+
+	@Parameter
+	int indentSpaces = Json.DEFAULT_INDENTATION;
+
+	@Override
+	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
+		int indentSpaces = this.indentSpaces;
+		return JsonSimpleStep.create(indentSpaces, stepConfig.getProvisioner());
 	}
 }
