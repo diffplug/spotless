@@ -179,6 +179,10 @@ any other maven phase (i.e. compile) then it can be configured as below;
       <include>src/test/java/**/*.java</include>
     </includes>
 
+    <googleJavaFormat /> <!-- has its own section below -->
+    <eclipse />          <!-- has its own section below -->
+    <prettier />         <!-- has its own section below -->
+
     <importOrder /> <!-- standard import order -->
     <importOrder>  <!-- or a custom ordering -->
       <wildcardsLast>false</wildcardsLast> <!-- Optional, default false. Sort wildcard import after specific imports -->
@@ -187,10 +191,6 @@ any other maven phase (i.e. compile) then it can be configured as below;
     </importOrder>
 
     <removeUnusedImports /> <!-- self-explanatory -->
-
-    <googleJavaFormat /> <!-- has its own section below -->
-    <eclipse />          <!-- has its own section below -->
-    <prettier />         <!-- has its own section below -->
 
     <formatAnnotations />  <!-- fixes formatting of type annotations, see below -->
 
