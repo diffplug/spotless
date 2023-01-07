@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -125,8 +125,8 @@ class LicenseHeaderStepTest extends ResourceHarness {
 	@Test
 	void should_skip_lines_matching_predefined_pattern() throws Throwable {
 		StepHarness.forStep(LicenseHeaderStep.headerDelimiter("<!--\n  -- This is a fake license header.\n  -- All rights reserved.\n  -->", "^(?!<!--|\\s+--).*$")
-			.withSkipLinesMatching("(?i)^(<\\?xml[^>]+>|<!doctype[^>]+>)$").build())
-			.testResource("license/SkipLines.test", "license/SkipLinesHasLicense.test");
+				.withSkipLinesMatching("(?i)^(<\\?xml[^>]+>|<!doctype[^>]+>)$").build())
+				.testResource("license/SkipLines.test", "license/SkipLinesHasLicense.test");
 	}
 
 	private String licenceWithAddress() {
