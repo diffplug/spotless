@@ -140,15 +140,6 @@ jobs:
           path: lib-extra/build/test-results/test
       - store_test_results:
           path: plugin-gradle/build/test-results/test
-  changelog_print:
-    << : *env_gradle
-    steps:
-      - checkout
-      - *restore_cache_wrapper
-      - *restore_cache_deps
-      - run:
-          name: gradlew changelogPrint
-          command: ./gradlew changelogPrint
   do_release_all:
     << : *env_gradle
     steps:
@@ -276,46 +267,26 @@ workflows:
             - assemble_testClasses
   deploy:
     jobs:
-      - changelog_print:
-          filters:
-            branches:
-              only: main
       - release_all:
           type: approval
-          requires:
-            - changelog_print
       - do_release_all:
           requires:
             - release_all
-          context:
-            - SonatypeDeploy
       - release_plugin_gradle:
           type: approval
-          requires:
-            - changelog_print
       - do_release_plugin_gradle:
           requires:
             - release_plugin_gradle
-          context:
-            - SonatypeDeploy
       - release_plugin_maven:
           type: approval
-          requires:
-            - changelog_print
       - do_release_plugin_maven:
           requires:
             - release_plugin_maven
-          context:
-            - SonatypeDeploy
       - release_lib:
           type: approval
-          requires:
-            - changelog_print
       - do_release_lib:
           requires:
             - release_lib
-          context:
-            - SonatypeDeploy
   ext_deploy:
     jobs:
       - ext_changelog_print:
