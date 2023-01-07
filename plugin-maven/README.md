@@ -1013,6 +1013,12 @@ Once a file's license header has a valid year, whether it is a year (`2020`) or 
 
 If your project has not been rigorous with copyright headers, and you'd like to use git history to repair this retroactively, you can do so with `-DspotlessSetLicenseHeaderYearsFromGitHistory=true`.  When run in this mode, Spotless will do an expensive search through git history for each file, and set the copyright header based on the oldest and youngest commits for that file.  This is intended to be a one-off sort of thing.
 
+### Files with fixed header lines
+
+Some files have fixed header lines (e.g. `<?xml version="1.0" ...` in XMLs, or `#!/bin/bash` in bash scripts). Comments cannot precede these, so the license header has to come after them, too.
+
+To define what lines to skip at the beginning of such files, fill the `skipLinesMatching` option with a regular expression that matches them (e.g. `<skipLinesMatching>^#!.+?$</skipLinesMatching>` to skip shebangs).
+
 <a name="invisible"></a>
 
 <a name="ratchet"></a>
