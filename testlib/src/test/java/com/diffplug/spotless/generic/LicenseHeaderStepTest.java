@@ -122,6 +122,13 @@ class LicenseHeaderStepTest extends ResourceHarness {
 				.test(getTestResource("license/HasLicense.test"), getTestResource("license/MissingLicense.test"));
 	}
 
+	@Test
+	void should_skip_lines_matching_predefined_pattern() throws Throwable {
+		StepHarness.forStep(LicenseHeaderStep.headerDelimiter("<!--\n  -- This is a fake license header.\n  -- All rights reserved.\n  -->", "^(?!<!--|\\s+--).*$")
+			.withSkipLinesMatching("(?i)^(<\\?xml[^>]+>|<!doctype[^>]+>)$").build())
+			.testResource("license/SkipLines.test", "license/SkipLinesHasLicense.test");
+	}
+
 	private String licenceWithAddress() {
 		return "Copyright &#169; $YEAR FooBar Inc. All Rights Reserved.\n" +
 				" *\n" +
