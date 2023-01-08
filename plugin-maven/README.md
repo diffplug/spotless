@@ -58,6 +58,7 @@ user@machine repo % mvn spotless:check
   - [Maven Pom](#maven-pom) ([sortPom](#sortpom))
   - [Markdown](#markdown) ([flexmark](#flexmark))
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier))
+  - [JSON](#json)
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection))
     - [eclipse web tools platform](#eclipse-web-tools-platform)
@@ -128,7 +129,16 @@ To use it in your pom, just [add the Spotless dependency](https://search.maven.o
 Spotless consists of a list of formats (in the example above, `misc` and `java`), and each format has:
 - a `target` (the files to format), which you set with [`includes` and `excludes`](https://github.com/diffplug/spotless/blob/989abbecff4d8373c6111c1a98f359eadc532429/plugin-maven/src/main/java/com/diffplug/spotless/maven/FormatterFactory.java#L51-L55)
 - a list of `FormatterStep`, which are just `String -> String` functions, such as [`replace`](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/generic/Replace.java), [`replaceRegex`](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/generic/ReplaceRegex.java), [`trimTrailingWhitespace`](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/generic/TrimTrailingWhitespace.java), [`indent`](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/generic/Indent.java), [`prettier`](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/generic/Prettier.java), [`eclipseWtp`](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/generic/EclipseWtp.java), and [`licenseHeader`](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/generic/LicenseHeader.java).
-
+- **order matters**, and this is good! (More info [here](https://github.com/diffplug/spotless/blob/main/PADDEDCELL.md) and [here](https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md#how-spotless-works))
+  - For example, `googleJavaFormat` always indents with spaces, but some wish it had a tab mode
+    - ```xml
+      <googleJavaFormat/> // this works
+      <indent><tabs>true</tabs><spacesPerTab>2</spacesPerTab></indent>
+       ```
+    - ```xml
+      <indent><tabs>true</tabs><spacesPerTab>2</spacesPerTab></indent>
+      <googleJavaFormat/> // the tab indentation gets overwritten
+       ```
 
 ### Requirements
 
@@ -178,6 +188,10 @@ any other maven phase (i.e. compile) then it can be configured as below;
       <include>src/test/java/**/*.java</include>
     </includes>
 
+    <googleJavaFormat /> <!-- has its own section below -->
+    <eclipse />          <!-- has its own section below -->
+    <prettier />         <!-- has its own section below -->
+
     <importOrder /> <!-- standard import order -->
     <importOrder>  <!-- or a custom ordering -->
       <wildcardsLast>false</wildcardsLast> <!-- Optional, default false. Sort wildcard import after specific imports -->
@@ -186,10 +200,6 @@ any other maven phase (i.e. compile) then it can be configured as below;
     </importOrder>
 
     <removeUnusedImports /> <!-- self-explanatory -->
-
-    <googleJavaFormat /> <!-- has its own section below -->
-    <eclipse />          <!-- has its own section below -->
-    <prettier />         <!-- has its own section below -->
 
     <formatAnnotations />  <!-- fixes formatting of type annotations, see below -->
 
@@ -437,7 +447,7 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
 <configuration>
   <cpp>
     <includes> <!-- You have to set the target manually -->
-      <include>src/native/**</inclue>
+      <include>src/native/**</include>
     </includes>
 
     <eclipseCdt /> <!-- has its own section below -->
@@ -705,6 +715,53 @@ The auto-discovery of config files (up the file tree) will not work when using t
 **Prerequisite: tsfmt requires a working NodeJS version**
 
 For details, see the [npm detection](#npm-detection) and [`.npmrc` detection](#npmrc-detection) sections of prettier, which apply also to tsfmt.
+
+## JSON
+
+- `com.diffplug.spotless.maven.json.Json` [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/json/json.java)
+
+```xml
+<configuration>
+  <json>
+    <includes>    <!-- You have to set the target manually -->
+      <include>src/**/*.json</include>
+    </includes>
+
+    <simple />    <!-- has its own section below -->
+    <gson />      <!-- has its own section below -->
+  </json>
+</configuration>
+```
+
+### simple
+
+Uses a JSON pretty-printer that optionally allows configuring the number of spaces that are used to pretty print objects:
+
+```xml
+<simple>
+  <indentSpaces>4</indentSpaces>    <!-- optional: specify the number of spaces to use -->
+</simple>
+```
+
+### Gson
+
+Uses Google Gson to also allow sorting by keys besides custom indentation - useful for i18n files.
+
+```xml
+<gson>
+  <indentSpaces>4</indentSpaces>        <!-- optional: specify the number of spaces to use -->
+  <sortByKeys>false</sortByKeys>        <!-- optional: sort JSON by its keys -->
+  <escapeHtml>false</indentSpaces>      <!-- optional: escape HTML in values -->
+  <version>2.8.1</version>              <!-- optional: specify version -->
+</gson>
+```
+
+Notes:
+* There's no option in Gson to leave HTML as-is (i.e. escaped HTML would remain escaped, raw would remain raw). Either
+all HTML characters are written escaped or none. Set `escapeHtml` if you prefer the former.
+* `sortByKeys` will apply lexicographic order on the keys of the input JSON. See the
+[javadoc of String](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html#compareTo(java.lang.String))
+for details.
 
 <a name="applying-prettier-to-javascript--flow--typescript--css--scss--less--jsx--graphql--yaml--etc"></a>
 

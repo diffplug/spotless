@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,7 +76,7 @@ class FileIndex {
 			PluginFingerprint computedFingerprint = config.getPluginFingerprint();
 			PluginFingerprint storedFingerprint = PluginFingerprint.from(firstLine);
 			if (!computedFingerprint.equals(storedFingerprint)) {
-				log.info("Fingerprint mismatch in the index file. Fallback to an empty index");
+				log.info("Index file corresponds to a different configuration of the plugin. Either the plugin version or its configuration has changed. Fallback to an empty index");
 				return emptyIndexFallback(config);
 			} else {
 				Content content = readIndexContent(reader, config.getProjectDir(), log);
