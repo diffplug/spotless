@@ -45,9 +45,9 @@ dependencies {
 	compileOnly 'org.slf4j:slf4j-api:2.0.0'
 	// zero runtime reqs is a hard requirements for spotless-lib
 	// if you need a dep, put it in lib-extra
-	testImplementation "org.junit.jupiter:junit-jupiter:$VER_JUNIT"
-	testImplementation "org.assertj:assertj-core:$VER_ASSERTJ"
-	testImplementation "com.diffplug.durian:durian-testlib:$VER_DURIAN"
+	testCommonImplementation "org.junit.jupiter:junit-jupiter:$VER_JUNIT"
+	testCommonImplementation "org.assertj:assertj-core:$VER_ASSERTJ"
+	testCommonImplementation "com.diffplug.durian:durian-testlib:$VER_DURIAN"
 
 	// used for pom sorting
 	sortPomCompileOnly 'com.github.ekryd.sortpom:sortpom-sorter:3.0.0'
@@ -91,9 +91,9 @@ dependencies {
 	compatKtLint0Dot47Dot0CompileOnly 'com.pinterest.ktlint:ktlint-core:0.47.0'
 	compatKtLint0Dot47Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.47.0'
 	compatKtLint0Dot47Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.47.0'
-	compatKtLint0Dot48Dot0CompileOnly 'com.pinterest.ktlint:ktlint-core:0.48.0'
-	compatKtLint0Dot48Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.48.0'
-	compatKtLint0Dot48Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.48.0'
+	compatKtLint0Dot48Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-core:0.48.0'
+	compatKtLint0Dot48Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.48.0'
+	compatKtLint0Dot48Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.48.0'
 
 	String VER_SCALAFMT="3.6.1"
 	scalafmtCompileOnly "org.scalameta:scalafmt-core_2.13:$VER_SCALAFMT"
@@ -108,7 +108,9 @@ dependencies {
 // we'll hold the core lib to a high standard
 spotbugs { reportLevel = 'low' } // low|medium|high (low = sensitive to even minor mistakes)
 
-test { useJUnitPlatform() }
+tasks.withType(Test).configureEach {
+	useJUnitPlatform()
+}
 
 jar {
 	for (glue in NEEDS_GLUE) {
