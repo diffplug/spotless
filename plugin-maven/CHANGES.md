@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+* Reduce spurious invalidations of the up-to-date index file ([#1461](https://github.com/diffplug/spotless/pull/1461))
 
 ## [2.29.0] - 2023-01-02
 ### Added
