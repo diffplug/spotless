@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,21 @@ package com.diffplug.spotless.maven.incremental;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.List;
 import java.util.Objects;
 
-import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.project.MavenProject;
 
 import com.diffplug.spotless.Formatter;
 
+/**
+ * Represents a particular Spotless Maven plugin setup using a Base64-encoded serialized form of:
+ * <ol>
+ *    <li>Plugin version as configured in the POM</li>
+ *    <li>Formatter instances created according to the POM configuration</li>
+ * </ol>
+ */
 class PluginFingerprint {
 
 	private static final String SPOTLESS_PLUGIN_KEY = "com.diffplug.spotless:spotless-maven-plugin";
@@ -83,12 +87,8 @@ class PluginFingerprint {
 	}
 
 	private static byte[] digest(Plugin plugin, Iterable<Formatter> formatters) {
-		// dependencies can be an unserializable org.apache.maven.model.merge.ModelMerger$MergingList
-		// replace it with a serializable ArrayList
-		List<Dependency> dependencies = plugin.getDependencies();
-		plugin.setDependencies(new ArrayList<>(dependencies));
 		try (ObjectDigestOutputStream out = ObjectDigestOutputStream.create()) {
-			out.writeObject(plugin);
+			out.writeObject(plugin.getVersion());
 			for (Formatter formatter : formatters) {
 				out.writeObject(formatter);
 			}
@@ -96,9 +96,6 @@ class PluginFingerprint {
 			return out.digest();
 		} catch (IOException e) {
 			throw new UncheckedIOException("Unable to serialize plugin " + plugin, e);
-		} finally {
-			// reset the original list
-			plugin.setDependencies(dependencies);
 		}
 	}
 }
