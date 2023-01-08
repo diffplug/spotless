@@ -17,7 +17,6 @@ package com.diffplug.spotless.glue.ktlint.compat;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;

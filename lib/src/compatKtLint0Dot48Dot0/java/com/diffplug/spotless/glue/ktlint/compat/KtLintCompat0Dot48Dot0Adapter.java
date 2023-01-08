@@ -15,9 +15,10 @@
  */
 package com.diffplug.spotless.glue.ktlint.compat;
 
+import java.nio.file.Path;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.nio.file.Path;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -99,7 +100,7 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 					editorConfigOverrideMap);
 		}
 		EditorConfigDefaults editorConfig;
-		if (editorConfigPath == null || !editorConfigPath.toFile().exists()) {
+		if (editorConfigPath == null || !Files.exists(editorConfigPath)) {
 			editorConfig = EditorConfigDefaults.Companion.getEMPTY_EDITOR_CONFIG_DEFAULTS();
 		} else {
 			editorConfig = EditorConfigDefaults.Companion.load(editorConfigPath);

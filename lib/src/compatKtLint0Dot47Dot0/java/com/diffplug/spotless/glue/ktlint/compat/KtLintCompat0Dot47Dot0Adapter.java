@@ -17,6 +17,7 @@ package com.diffplug.spotless.glue.ktlint.compat;
 
 import static java.util.Collections.emptySet;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -77,6 +78,13 @@ public class KtLintCompat0Dot47Dot0Adapter implements KtLintCompatAdapter {
 					editorConfigOverrideMap);
 		}
 
+		EditorConfigDefaults editorConfig;
+		if (editorConfigPath == null || !Files.exists(editorConfigPath)) {
+			editorConfig = EditorConfigDefaults.Companion.getEmptyEditorConfigDefaults();
+		} else {
+			editorConfig = EditorConfigDefaults.Companion.load(editorConfigPath);
+		}
+
 		return KtLint.INSTANCE.format(new KtLint.ExperimentalParams(
 				path.toFile().getAbsolutePath(),
 				text,
@@ -87,7 +95,7 @@ public class KtLintCompat0Dot47Dot0Adapter implements KtLintCompatAdapter {
 				isScript,
 				null,
 				false,
-				EditorConfigDefaults.Companion.load(editorConfigPath),
+				editorConfig,
 				editorConfigOverride,
 				false));
 	}
