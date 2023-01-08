@@ -7,10 +7,12 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Support `ktlint` 0.48+ new rule disabling syntax ([#1456](https://github.com/diffplug/spotless/pull/1456)) fixes ([#1444](https://github.com/diffplug/spotless/issues/1444))
 ### Changes
 * Bump default `ktlint` version to latest `0.47.1` -> `0.48.1` ([#1456](https://github.com/diffplug/spotless/pull/1456))
+* Reduce spurious invalidations of the up-to-date index file ([#1461](https://github.com/diffplug/spotless/pull/1461))
 
 ## [2.29.0] - 2023-01-02
 ### Added
 * Added support for M2E's incremental compilation ([#1414](https://github.com/diffplug/spotless/pull/1414) fixes [#1413](https://github.com/diffplug/spotless/issues/1413))
+* Add JSON support ([#1446](https://github.com/diffplug/spotless/pull/1446))
 ### Fixed
 * Improve memory usage when using git ratchet ([#1426](https://github.com/diffplug/spotless/pull/1426))
 * Support `ktlint` 0.48+ ([#1432](https://github.com/diffplug/spotless/pull/1432)) fixes ([#1430](https://github.com/diffplug/spotless/issues/1430))
