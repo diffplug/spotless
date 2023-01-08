@@ -70,15 +70,15 @@ dependencies {
 	ktlintCompileOnly "com.pinterest.ktlint:ktlint-ruleset-experimental:$VER_KTLINT"
 	ktlintCompileOnly "com.pinterest.ktlint:ktlint-ruleset-standard:$VER_KTLINT"
 
-	compatKtLint0Dot31Dot0CompileOnly 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.20'
+	compatKtLint0Dot31Dot0CompileOnly 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0'
 	compatKtLint0Dot31Dot0CompileOnly 'com.github.shyiko.ktlint:ktlint-core:0.31.0'
 	compatKtLint0Dot31Dot0CompileOnly 'com.github.shyiko.ktlint:ktlint-ruleset-experimental:0.31.0'
 	compatKtLint0Dot31Dot0CompileOnly 'com.github.shyiko.ktlint:ktlint-ruleset-standard:0.31.0'
-	compatKtLint0Dot32Dot0CompileOnly 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.20'
+	compatKtLint0Dot32Dot0CompileOnly 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0'
 	compatKtLint0Dot32Dot0CompileOnly 'com.pinterest.ktlint:ktlint-core:0.32.0'
 	compatKtLint0Dot32Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.32.0'
 	compatKtLint0Dot32Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.32.0'
-	compatKtLint0Dot34Dot2CompileOnly 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.20'
+	compatKtLint0Dot34Dot2CompileOnly 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0'
 	compatKtLint0Dot34Dot2CompileOnly 'com.pinterest.ktlint:ktlint-core:0.34.2'
 	compatKtLint0Dot34Dot2CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.34.2'
 	compatKtLint0Dot34Dot2CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.34.2'
