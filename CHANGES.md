@@ -24,6 +24,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   * `StepHarnessWithFile` now takes a `ResourceHarness` in its constructor to handle the file manipulation parts
   * Standardized that we test exception *messages*, not types, which will ease the transition to linting later on
   * Bump default `ktlint` version to latest `0.47.1` -> `0.48.1` ([#1456](https://github.com/diffplug/spotless/pull/1456))
+* Switch our publishing infrastructure from CircleCI to GitHub Actions ([#1462](https://github.com/diffplug/spotless/pull/1462)).
+  * Help wanted for moving our tests too ([#1472](https://github.com/diffplug/spotless/issues/1472))
 
 ## [2.31.1] - 2023-01-02
 ### Fixed
