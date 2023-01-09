@@ -29,6 +29,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Switch our publishing infrastructure from CircleCI to GitHub Actions ([#1462](https://github.com/diffplug/spotless/pull/1462)).
   * Help wanted for moving our tests too ([#1472](https://github.com/diffplug/spotless/issues/1472))
 
+#### Removed
+* Removed support for KtLint 0.3x and 0.45.2 ([#1475](https://github.com/diffplug/spotless/pull/1475))
+
 ## [2.31.1] - 2023-01-02
 ### Fixed
 * Improve memory usage when using git ratchet ([#1426](https://github.com/diffplug/spotless/pull/1426))
