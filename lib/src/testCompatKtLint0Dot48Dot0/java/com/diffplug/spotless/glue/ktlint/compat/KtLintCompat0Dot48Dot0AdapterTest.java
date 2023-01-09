@@ -38,7 +38,7 @@ public class KtLintCompat0Dot48Dot0AdapterTest {
 
 		Map<String, Object> editorConfigOverrideMap = new HashMap<>();
 
-		String formatted = ktLintCompat0Dot48Dot0Adapter.format(text, "empty_class_body.kt", false, false, userData, editorConfigOverrideMap);
+		String formatted = ktLintCompat0Dot48Dot0Adapter.format(text, path, false, false, null, userData, editorConfigOverrideMap);
 		assertEquals("class empty_class_body\n", formatted);
 	}
 
@@ -53,7 +53,7 @@ public class KtLintCompat0Dot48Dot0AdapterTest {
 		editorConfigOverrideMap.put("indent_style", "tab");
 		editorConfigOverrideMap.put("ktlint_standard_no-semi", "disabled");
 
-		String formatted = ktLintCompat0Dot48Dot0Adapter.format(text, "fails_no_semicolons.kt", false, false, userData, editorConfigOverrideMap);
+		String formatted = ktLintCompat0Dot48Dot0Adapter.format(text, path, false, false, null, userData, editorConfigOverrideMap);
 		assertEquals("class fails_no_semicolons {\n\tval i = 0;\n}\n", formatted);
 	}
 

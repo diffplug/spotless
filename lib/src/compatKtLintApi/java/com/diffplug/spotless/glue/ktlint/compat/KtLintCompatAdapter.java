@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 DiffPlug
+ * Copyright 2022-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,11 @@
  */
 package com.diffplug.spotless.glue.ktlint.compat;
 
+import java.nio.file.Path;
 import java.util.Map;
 
 public interface KtLintCompatAdapter {
 
-	String format(String text, String name, boolean isScript, boolean useExperimental, Map<String, String> userData,
+	String format(String text, Path path, boolean isScript, boolean useExperimental, Path editorConfigPath, Map<String, String> userData,
 			Map<String, Object> editorConfigOverrideMap);
 }

@@ -364,7 +364,13 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
 
 ### ktlint
 
-[homepage](https://github.com/pinterest/ktlint). [changelog](https://github.com/pinterest/ktlint/releases). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/kotlin/Ktlint.java).  Spotless does not ([yet](https://github.com/diffplug/spotless/issues/142)) respect the `.editorconfig` settings.
+[homepage](https://github.com/pinterest/ktlint). [changelog](https://github.com/pinterest/ktlint/releases).
+[code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/kotlin/Ktlint.java).
+
+Spotless respects the `.editorconfig` settings by providing `editorConfigPath` option.
+([ktlint docs](https://github.com/pinterest/ktlint#editorconfig)).
+
+Additionally, `editorConfigOverride` options will override what's supplied in `.editorconfig` file.
 
 ```xml
 <ktlint>
