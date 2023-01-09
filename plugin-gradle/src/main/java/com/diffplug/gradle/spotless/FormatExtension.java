@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -458,6 +458,12 @@ public class FormatExtension {
 		 */
 		public LicenseHeaderConfig yearSeparator(String yearSeparator) {
 			builder = builder.withYearSeparator(yearSeparator);
+			replaceStep(createStep());
+			return this;
+		}
+
+		public LicenseHeaderConfig skipLinesMatching(String skipLinesMatching) {
+			builder = builder.withSkipLinesMatching(skipLinesMatching);
 			replaceStep(createStep());
 			return this;
 		}

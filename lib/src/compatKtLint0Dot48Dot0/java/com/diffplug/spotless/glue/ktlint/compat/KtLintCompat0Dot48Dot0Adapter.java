@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.glue.ktlint.compat;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -27,11 +29,17 @@ import com.pinterest.ktlint.core.KtLint;
 import com.pinterest.ktlint.core.LintError;
 import com.pinterest.ktlint.core.Rule;
 import com.pinterest.ktlint.core.RuleProvider;
-import com.pinterest.ktlint.core.api.DefaultEditorConfigProperties;
 import com.pinterest.ktlint.core.api.EditorConfigDefaults;
 import com.pinterest.ktlint.core.api.EditorConfigOverride;
 import com.pinterest.ktlint.core.api.UsesEditorConfigProperties;
+import com.pinterest.ktlint.core.api.editorconfig.CodeStyleEditorConfigPropertyKt;
+import com.pinterest.ktlint.core.api.editorconfig.DisabledRulesEditorConfigPropertyKt;
 import com.pinterest.ktlint.core.api.editorconfig.EditorConfigProperty;
+import com.pinterest.ktlint.core.api.editorconfig.IndentSizeEditorConfigPropertyKt;
+import com.pinterest.ktlint.core.api.editorconfig.IndentStyleEditorConfigPropertyKt;
+import com.pinterest.ktlint.core.api.editorconfig.InsertFinalNewLineEditorConfigPropertyKt;
+import com.pinterest.ktlint.core.api.editorconfig.MaxLineLengthEditorConfigPropertyKt;
+import com.pinterest.ktlint.core.api.editorconfig.RuleExecutionEditorConfigPropertyKt;
 import com.pinterest.ktlint.ruleset.experimental.ExperimentalRuleSetProvider;
 import com.pinterest.ktlint.ruleset.standard.StandardRuleSetProvider;
 
@@ -41,13 +49,29 @@ import kotlin.jvm.functions.Function2;
 
 public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 
+	private static final List<EditorConfigProperty<?>> DEFAULT_EDITOR_CONFIG_PROPERTIES;
+
+	static {
+		List<EditorConfigProperty<?>> list = new ArrayList<>();
+		list.add(CodeStyleEditorConfigPropertyKt.getCODE_STYLE_PROPERTY());
+		//noinspection deprecation
+		list.add(DisabledRulesEditorConfigPropertyKt.getDISABLED_RULES_PROPERTY());
+		//noinspection KotlinInternalInJava,deprecation
+		list.add(DisabledRulesEditorConfigPropertyKt.getKTLINT_DISABLED_RULES_PROPERTY());
+		list.add(IndentStyleEditorConfigPropertyKt.getINDENT_STYLE_PROPERTY());
+		list.add(IndentSizeEditorConfigPropertyKt.getINDENT_SIZE_PROPERTY());
+		list.add(InsertFinalNewLineEditorConfigPropertyKt.getINSERT_FINAL_NEWLINE_PROPERTY());
+		list.add(MaxLineLengthEditorConfigPropertyKt.getMAX_LINE_LENGTH_PROPERTY());
+		DEFAULT_EDITOR_CONFIG_PROPERTIES = Collections.unmodifiableList(list);
+	}
+
 	static class FormatterCallback implements Function2<LintError, Boolean, Unit> {
 		@Override
 		public Unit invoke(LintError lint, Boolean corrected) {
 			if (!corrected) {
 				KtLintCompatReporting.report(lint.getLine(), lint.getCol(), lint.getRuleId(), lint.getDetail());
 			}
-			return null;
+			return Unit.INSTANCE;
 		}
 	}
 
@@ -66,7 +90,7 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 
 		EditorConfigOverride editorConfigOverride;
 		if (editorConfigOverrideMap.isEmpty()) {
-			editorConfigOverride = EditorConfigOverride.Companion.getEmptyEditorConfigOverride();
+			editorConfigOverride = EditorConfigOverride.Companion.getEMPTY_EDITOR_CONFIG_OVERRIDE();
 		} else {
 			editorConfigOverride = createEditorConfigOverride(allRuleProviders.stream().map(
 					RuleProvider::createNewRuleInstance).collect(
@@ -82,7 +106,7 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 				formatterCallback,
 				isScript,
 				false,
-				EditorConfigDefaults.Companion.getEmptyEditorConfigDefaults(),
+				EditorConfigDefaults.Companion.getEMPTY_EDITOR_CONFIG_DEFAULTS(),
 				editorConfigOverride,
 				false));
 	}
@@ -98,7 +122,7 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 
 		// Create a mapping of properties to their names based on rule properties and default properties
 		Map<String, EditorConfigProperty<?>> supportedProperties = Stream
-				.concat(ruleProperties, DefaultEditorConfigProperties.INSTANCE.getEditorConfigProperties().stream())
+				.concat(ruleProperties, DEFAULT_EDITOR_CONFIG_PROPERTIES.stream())
 				.distinct()
 				.collect(Collectors.toMap(EditorConfigProperty::getName, property -> property));
 
@@ -108,6 +132,18 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 				.map(entry -> {
 					EditorConfigProperty<?> property = supportedProperties.get(entry.getKey());
 					if (property != null) {
+						return new Pair<>(property, entry.getValue());
+					} else if (entry.getKey().startsWith("ktlint_")) {
+						String[] parts = entry.getKey().substring(7).split("_", 2);
+						if (parts.length == 1) {
+							// convert ktlint_{ruleset} to {ruleset}
+							String qualifiedRuleId = parts[0];
+							property = RuleExecutionEditorConfigPropertyKt.createRuleSetExecutionEditorConfigProperty(qualifiedRuleId);
+						} else {
+							// convert ktlint_{ruleset}_{rulename} to {ruleset}:{rulename}
+							String qualifiedRuleId = parts[0] + ":" + parts[1];
+							property = RuleExecutionEditorConfigPropertyKt.createRuleExecutionEditorConfigProperty(qualifiedRuleId);
+						}
 						return new Pair<>(property, entry.getValue());
 					} else {
 						return null;
