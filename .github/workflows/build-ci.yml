@@ -46,3 +46,22 @@ jobs:
           cache: gradle
       - name: Check spotless
         run: ./gradlew spotlessCheck -S
+  buildTestOnWindows:
+      name: Build on Windows CI
+      runs-on: windows-latest
+      strategy:
+          fail-fast: false
+          matrix:
+              java_version: [11, 17]
+              distribution: ["temurin"]
+      steps:
+          - name: Checkout
+            uses: actions/checkout@v3
+          - name: Install JDK ${{ matrix.distribution }} ${{ matrix.java_version }}
+            uses: actions/setup-java@v3.9.0
+            with:
+                distribution: ${{ matrix.distribution }}
+                java-version: ${{ matrix.java_version }}
+                cache: gradle
+          - name: Build project
+            run: ./gradlew build -x spotlessCheck -S
