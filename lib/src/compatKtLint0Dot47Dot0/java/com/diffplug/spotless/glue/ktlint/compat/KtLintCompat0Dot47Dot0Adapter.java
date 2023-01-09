@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 DiffPlug
+ * Copyright 2022-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@ package com.diffplug.spotless.glue.ktlint.compat;
 
 import static java.util.Collections.emptySet;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -54,9 +56,9 @@ public class KtLintCompat0Dot47Dot0Adapter implements KtLintCompatAdapter {
 	}
 
 	@Override
-	public String format(final String text, final String name, final boolean isScript,
+	public String format(final String text, Path path, final boolean isScript,
 			final boolean useExperimental,
-			final Map<String, String> userData,
+			Path editorConfigPath, final Map<String, String> userData,
 			final Map<String, Object> editorConfigOverrideMap) {
 		final FormatterCallback formatterCallback = new FormatterCallback();
 
@@ -68,7 +70,7 @@ public class KtLintCompat0Dot47Dot0Adapter implements KtLintCompatAdapter {
 
 		EditorConfigOverride editorConfigOverride;
 		if (editorConfigOverrideMap.isEmpty()) {
-			editorConfigOverride = EditorConfigOverride.Companion.getEmptyEditorConfigOverride();
+			editorConfigOverride = new EditorConfigOverride();
 		} else {
 			editorConfigOverride = createEditorConfigOverride(allRuleProviders.stream().map(
 					RuleProvider::createNewRuleInstance).collect(
@@ -76,8 +78,15 @@ public class KtLintCompat0Dot47Dot0Adapter implements KtLintCompatAdapter {
 					editorConfigOverrideMap);
 		}
 
+		EditorConfigDefaults editorConfig;
+		if (editorConfigPath == null || !Files.exists(editorConfigPath)) {
+			editorConfig = EditorConfigDefaults.Companion.getEmptyEditorConfigDefaults();
+		} else {
+			editorConfig = EditorConfigDefaults.Companion.load(editorConfigPath);
+		}
+
 		return KtLint.INSTANCE.format(new KtLint.ExperimentalParams(
-				name,
+				path.toFile().getAbsolutePath(),
 				text,
 				emptySet(),
 				allRuleProviders,
@@ -86,7 +95,7 @@ public class KtLintCompat0Dot47Dot0Adapter implements KtLintCompatAdapter {
 				isScript,
 				null,
 				false,
-				EditorConfigDefaults.Companion.getEmptyEditorConfigDefaults(),
+				editorConfig,
 				editorConfigOverride,
 				false));
 	}

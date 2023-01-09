@@ -16,19 +16,14 @@
 package com.diffplug.spotless.glue.ktlint;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterFunc;
-import com.diffplug.spotless.glue.ktlint.compat.KtLintCompat0Dot31Dot0Adapter;
-import com.diffplug.spotless.glue.ktlint.compat.KtLintCompat0Dot32Dot0Adapter;
-import com.diffplug.spotless.glue.ktlint.compat.KtLintCompat0Dot34Dot2Adapter;
-import com.diffplug.spotless.glue.ktlint.compat.KtLintCompat0Dot45Dot2Adapter;
-import com.diffplug.spotless.glue.ktlint.compat.KtLintCompat0Dot46Dot0Adapter;
-import com.diffplug.spotless.glue.ktlint.compat.KtLintCompat0Dot47Dot0Adapter;
-import com.diffplug.spotless.glue.ktlint.compat.KtLintCompat0Dot48Dot0Adapter;
-import com.diffplug.spotless.glue.ktlint.compat.KtLintCompatAdapter;
+import com.diffplug.spotless.glue.ktlint.compat.*;
 
 public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 
@@ -37,9 +32,10 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 	@NotNull
 	private final KtLintCompatAdapter adapter;
 	private final boolean useExperimental;
+	private final FileSignature editorConfigPath;
 	private final Map<String, Object> editorConfigOverrideMap;
 
-	public KtlintFormatterFunc(String version, boolean isScript, boolean useExperimental, Map<String, String> userData,
+	public KtlintFormatterFunc(String version, boolean isScript, boolean useExperimental, FileSignature editorConfigPath, Map<String, String> userData,
 			Map<String, Object> editorConfigOverrideMap) {
 		int minorVersion = Integer.parseInt(version.split("\\.")[1]);
 		if (minorVersion >= 48) {
@@ -64,6 +60,7 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 			// the OG
 			this.adapter = new KtLintCompat0Dot31Dot0Adapter();
 		}
+		this.editorConfigPath = editorConfigPath;
 		this.useExperimental = useExperimental;
 		this.editorConfigOverrideMap = editorConfigOverrideMap;
 		this.userData = userData;
@@ -71,7 +68,12 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 	}
 
 	@Override
-	public String applyWithFile(String unix, File file) throws Exception {
-		return adapter.format(unix, file.getName(), isScript, useExperimental, userData, editorConfigOverrideMap);
+	public String applyWithFile(String unix, File file) {
+
+		Path absoluteEditorConfigPath = null;
+		if (editorConfigPath != null) {
+			absoluteEditorConfigPath = editorConfigPath.getOnlyFile().toPath();
+		}
+		return adapter.format(unix, file.toPath(), isScript, useExperimental, absoluteEditorConfigPath, userData, editorConfigOverrideMap);
 	}
 }

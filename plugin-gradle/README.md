@@ -355,7 +355,14 @@ spotless {
 
 ### ktlint
 
-[homepage](https://github.com/pinterest/ktlint). [changelog](https://github.com/pinterest/ktlint/releases).  Spotless does not ([yet](https://github.com/diffplug/spotless/issues/142)) respect the `.editorconfig` settings ([ktlint docs](https://github.com/pinterest/ktlint#editorconfig)), but you can provide them manually as `editorConfigOverride`.
+[homepage](https://github.com/pinterest/ktlint). [changelog](https://github.com/pinterest/ktlint/releases).
+
+Spotless respects the `.editorconfig` settings by providing `editorConfigPath` option.
+([ktlint docs](https://github.com/pinterest/ktlint#editorconfig)).
+Default value is the `.editorconfig` file located in the top project.
+Passing `null` will clear the option.
+
+Additionally, `editorConfigOverride` options will override what's supplied in `.editorconfig` file.
 
 ```kotlin
 spotless {
@@ -364,6 +371,7 @@ spotless {
     ktlint("0.45.2")
       .setUseExperimental(true)
       .userData(mapOf("android" to "true"))
+      .editorConfigPath("$projectDir/config/.editorconfig")  // sample unusual placement
       .editorConfigOverride(mapOf("indent_size" to 2))
   }
 }
@@ -960,6 +968,12 @@ See the [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-g
 ### Retroactively slurp years from git history
 
 If your project has not been rigorous with copyright headers, and you'd like to use git history to repair this retroactively, you can do so with `-PspotlessSetLicenseHeaderYearsFromGitHistory=true`.  When run in this mode, Spotless will do an expensive search through git history for each file, and set the copyright header based on the oldest and youngest commits for that file.  This is intended to be a one-off sort of thing.
+
+### Files with fixed header lines
+
+Some files have fixed header lines (e.g. `<?xml version="1.0" ...` in XMLs, or `#!/bin/bash` in bash scripts). Comments cannot precede these, so the license header has to come after them, too.
+
+To define what lines to skip at the beginning of such files, fill the `skipLinesMatching` option with a regular expression that matches them (e.g. `.skipLinesMatching("^#!.+?\$")` to skip shebangs).
 
 <a name="ratchet"></a>
 

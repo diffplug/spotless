@@ -463,6 +463,12 @@ public class FormatExtension {
 			return this;
 		}
 
+		public LicenseHeaderConfig skipLinesMatching(String skipLinesMatching) {
+			builder = builder.withSkipLinesMatching(skipLinesMatching);
+			replaceStep(createStep());
+			return this;
+		}
+
 		/**
 		 * @param updateYearWithLatest
 		 *           Will turn {@code 2004} into {@code 2004-2020}, and {@code 2004-2019} into {@code 2004-2020}
