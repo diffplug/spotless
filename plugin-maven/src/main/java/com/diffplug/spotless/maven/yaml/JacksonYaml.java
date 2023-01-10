@@ -31,7 +31,7 @@ public class JacksonYaml implements FormatterStepFactory {
 	private String version = YamlJacksonStep.defaultVersion();
 
 	@Parameter
-	private String[] enabledFeatures = new String[] { "INDENT_OUTPUT" };
+	private String[] enabledFeatures = new String[]{"INDENT_OUTPUT"};
 
 	@Parameter
 	private String[] disabledFeatures = new String[0];

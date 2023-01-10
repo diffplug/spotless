@@ -15,27 +15,17 @@
  */
 package com.diffplug.spotless.maven.yaml;
 
-import java.util.Set;
+import org.junit.jupiter.api.Test;
 
-import com.diffplug.common.collect.Sets;
-import com.diffplug.spotless.maven.FormatterFactory;
+import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
-/**
- * A {@link FormatterFactory} implementation that corresponds to {@code <yaml>...</yaml>} configuration element.
- */
-public class Yaml extends FormatterFactory {
-	@Override
-	public Set<String> defaultIncludes() {
-		return Sets.newHashSet("**/*.yaml", "**/*.yml");
+public class YamlTest extends MavenIntegrationHarness {
+	@Test
+	public void testFormatJson_WithSimple_defaultConfig() throws Exception {
+		writePomWithJsonSteps("<yaml><jackson/></yaml>");
+
+		setFile("yaml_test.json").toResource("yaml/separator_comments.yaml");
+		mavenRunner().withArguments("spotless:apply").runNoError().error();
+		assertFile("yaml_test.json").sameAsResource("yaml/separator_comments.clean.yaml");
 	}
-
-	@Override
-	public String licenseHeaderDelimiter() {
-		return null;
-	}
-
-	public void addJackson(JacksonYaml jackson) {
-		addStepFactory(jackson);
-	}
-
 }

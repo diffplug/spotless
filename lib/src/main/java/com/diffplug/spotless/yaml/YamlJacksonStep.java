@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,8 +92,7 @@ public final class YamlJacksonStep {
 				// Configure the ObjectMapper
 				// https://github.com/FasterXML/jackson-databind#commonly-used-features
 				{
-					serializationFeatureClass =
-							classLoader.loadClass("com.fasterxml.jackson.databind.SerializationFeature");
+					serializationFeatureClass = classLoader.loadClass("com.fasterxml.jackson.databind.SerializationFeature");
 					enableFeature = objectMapperClass.getMethod("enable", serializationFeatureClass);
 					disableFeature = objectMapperClass.getMethod("disable", serializationFeatureClass);
 				}
