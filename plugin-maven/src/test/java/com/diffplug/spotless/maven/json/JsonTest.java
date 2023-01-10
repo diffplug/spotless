@@ -22,7 +22,7 @@ import com.diffplug.spotless.maven.MavenIntegrationHarness;
 public class JsonTest extends MavenIntegrationHarness {
 	@Test
 	public void testFormatJson_WithSimple_defaultConfig() throws Exception {
-		writePomWithJsonSteps("<json><simple/></json>");
+		writePomWithJsonSteps("<simple/>");
 
 		setFile("json_test.json").toResource("json/sortByKeysBefore.json");
 		mavenRunner().withArguments("spotless:apply").runNoError().error();
@@ -31,7 +31,7 @@ public class JsonTest extends MavenIntegrationHarness {
 
 	@Test
 	public void testFormatJson_WithGson_defaultConfig() throws Exception {
-		writePomWithJsonSteps("<json><gson/></json>");
+		writePomWithJsonSteps("<gson/>");
 
 		setFile("json_test.json").toResource("json/sortByKeysBefore.json");
 		mavenRunner().withArguments("spotless:apply").runNoError().error();

@@ -768,9 +768,8 @@ for details.
 ```xml
 <configuration>
   <yaml>
-    <includes>   <!-- These are the default includes -->
-      <include>**/*.yaml</include>
-      <include>**/*.yml</include>
+    <includes>     <!-- You have to set the target manually -->
+      <include>src/**/*.yaml</include>
     </includes>
 
     <jackson />    <!-- has its own section below -->
@@ -785,11 +784,11 @@ Uses Jackson and YAMLFactory to pretty print objects:
 ```xml
 <jackson>
   <version>2.13.4</version>    <!-- optional: The version of 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml' to be used -->
-  <enabledFeatures>    <!-- optional: Customize the set of enabled features -->
+  <enabledFeatures>            <!-- optional: Customize the set of enabled features -->
     <enabledFeature>INDENT_OUTPUT<enabledFeature/>
   </enabledFeatures>
-  <disabledFeatures>    <!-- optional: Customize the set of disabled features -->
-    <disabledFeature>DEFAULT_HAS_TO_DISABLED_FEATURE<disabledFeature/>
+  <disabledFeatures>           <!-- optional: Customize the set of disabled features -->
+    <disabledFeature>DEFAULT_HAS_NO_DISABLED_FEATURE<disabledFeature/>
   </disabledFeatures>
 </jackson>
 ```

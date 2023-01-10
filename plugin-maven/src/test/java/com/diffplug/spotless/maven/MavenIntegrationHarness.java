@@ -161,7 +161,7 @@ public class MavenIntegrationHarness extends ResourceHarness {
 	}
 
 	protected void writePomWithYamlSteps(String... steps) throws IOException {
-		writePom(groupWithSteps("yaml", steps));
+		writePom(groupWithSteps("yaml", including("**/*.yaml"), steps));
 	}
 
 	protected void writePom(String... configuration) throws IOException {

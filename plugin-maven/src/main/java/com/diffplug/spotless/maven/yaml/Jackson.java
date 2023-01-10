@@ -25,7 +25,7 @@ import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 import com.diffplug.spotless.yaml.YamlJacksonStep;
 
-public class JacksonYaml implements FormatterStepFactory {
+public class Jackson implements FormatterStepFactory {
 
 	@Parameter
 	private String version = YamlJacksonStep.defaultVersion();

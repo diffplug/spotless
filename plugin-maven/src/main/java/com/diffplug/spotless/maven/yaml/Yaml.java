@@ -15,9 +15,9 @@
  */
 package com.diffplug.spotless.maven.yaml;
 
+import java.util.Collections;
 import java.util.Set;
 
-import com.diffplug.common.collect.Sets;
 import com.diffplug.spotless.maven.FormatterFactory;
 
 /**
@@ -26,7 +26,7 @@ import com.diffplug.spotless.maven.FormatterFactory;
 public class Yaml extends FormatterFactory {
 	@Override
 	public Set<String> defaultIncludes() {
-		return Sets.newHashSet("**/*.yaml", "**/*.yml");
+		return Collections.emptySet();
 	}
 
 	@Override
@@ -34,7 +34,7 @@ public class Yaml extends FormatterFactory {
 		return null;
 	}
 
-	public void addJackson(JacksonYaml jackson) {
+	public void addJackson(Jackson jackson) {
 		addStepFactory(jackson);
 	}
 
