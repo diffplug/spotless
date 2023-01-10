@@ -27,10 +27,10 @@ import javax.inject.Inject;
 
 import org.gradle.api.Project;
 
+import com.diffplug.gradle.spotless.JavascriptExtension.EslintBaseConfig;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.npm.EslintConfig;
 import com.diffplug.spotless.npm.EslintFormatterStep;
-import com.diffplug.spotless.npm.EslintFormatterStep.PopularStyleGuide;
 import com.diffplug.spotless.npm.EslintTypescriptConfig;
 import com.diffplug.spotless.npm.NpmPathResolver;
 import com.diffplug.spotless.npm.PrettierFormatterStep;
@@ -189,7 +189,7 @@ public class TypescriptExtension extends FormatExtension {
 		return eslint;
 	}
 
-	public class TypescriptEslintConfig extends JavascriptExtension.EslintBaseConfig<TypescriptEslintConfig> {
+	public class TypescriptEslintConfig extends EslintBaseConfig<TypescriptEslintConfig> {
 
 		@Nullable
 		Object typescriptConfigFilePath = null;
@@ -202,17 +202,6 @@ public class TypescriptExtension extends FormatExtension {
 			this.typescriptConfigFilePath = requireNonNull(path);
 			replaceStep();
 			return this;
-		}
-
-		@Override
-		protected void verifyStyleGuideIsSupported(String styleGuideName, PopularStyleGuide popularStyleGuide) {
-			if (!isTsStyleGuide(popularStyleGuide)) {
-				throw new IllegalArgumentException("Unknown style guide: " + styleGuideName + ". Known typescript style guides: " + PopularStyleGuide.getPopularStyleGuideNames(this::isTsStyleGuide));
-			}
-		}
-
-		private boolean isTsStyleGuide(PopularStyleGuide popularStyleGuide) {
-			return popularStyleGuide != null && popularStyleGuide.name().startsWith("TS_");
 		}
 
 		public FormatterStep createStep() {

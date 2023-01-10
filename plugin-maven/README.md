@@ -745,8 +745,6 @@ styleguides and the requirement for a tsconfigFile.
       <value>0.14.2</value>
     </property>
   </devDependencyProperties>
-  <!-- optional: use one of the popular style guides: 'standard-with-typescript' or 'xo-typescript' -->
-  <styleGuide>standard-with-typescript</styleGuide>
   <!-- mandatory: provide either a configFile or a configJs object -->
   <configFile>${project.basedir}/.eslintrc.js</configFile>
   <configJs>
@@ -826,8 +824,6 @@ styleguides and no requirement for a tsconfig (of course).
       <value>0.14.2</value>
     </property>
   </devDependencyProperties>
-  <!-- optional: use one of the popular style guides: 'standard', 'airbnb', 'google' or 'xo' -->
-  <styleGuide>standard</styleGuide>
   <!-- mandatory: provide either a configFile or a configJs object -->
   <configFile>${project.basedir}/.eslintrc.js</configFile>
   <configJs>

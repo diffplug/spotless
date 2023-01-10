@@ -20,14 +20,12 @@ import static java.util.Objects.requireNonNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
-import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
 
@@ -47,96 +45,7 @@ public class EslintFormatterStep {
 
 	public static final String NAME = "eslint-format";
 
-	public static final String DEFAULT_ESLINT_VERSION = "^8.30.0";
-
-	public enum PopularStyleGuide {
-		TS_STANDARD_WITH_TYPESCRIPT("standard-with-typescript") {
-			@Override
-			public @Nonnull Map<String, String> devDependencies() {
-				Map<String, String> dependencies = new LinkedHashMap<>();
-				dependencies.put("eslint-config-standard-with-typescript", "^24.0.0");
-				dependencies.put("eslint-plugin-import", "^2.26.0");
-				dependencies.put("eslint-plugin-n", "^15.6.0");
-				dependencies.put("eslint-plugin-promise", "^6.1.1");
-				return dependencies;
-			}
-		},
-		TS_XO_TYPESCRIPT("xo-typescript") {
-			@Override
-			public @Nonnull Map<String, String> devDependencies() {
-				Map<String, String> dependencies = new LinkedHashMap<>();
-				dependencies.put("eslint-config-xo", "^0.43.1");
-				dependencies.put("eslint-config-xo-typescript", "^0.55.1");
-				return dependencies;
-			}
-		},
-		JS_AIRBNB("airbnb") {
-			@Override
-			public @Nonnull Map<String, String> devDependencies() {
-				Map<String, String> dependencies = new LinkedHashMap<>();
-				dependencies.put("eslint-config-airbnb-base", "^15.0.0");
-				dependencies.put("eslint-plugin-import", "^2.26.0");
-				return dependencies;
-			}
-		},
-		JS_GOOGLE("google") {
-			@Override
-			public @Nonnull Map<String, String> devDependencies() {
-				Map<String, String> dependencies = new LinkedHashMap<>();
-				dependencies.put("eslint-config-google", "^0.14.0");
-				return dependencies;
-			}
-		},
-		JS_STANDARD("standard") {
-			@Override
-			public @Nonnull Map<String, String> devDependencies() {
-				Map<String, String> dependencies = new LinkedHashMap<>();
-				dependencies.put("eslint-config-standard", "^17.0.0");
-				dependencies.put("eslint-plugin-import", "^2.26.0");
-				dependencies.put("eslint-plugin-n", "^15.6.0");
-				dependencies.put("eslint-plugin-promise", "^6.1.1");
-				return dependencies;
-			}
-		},
-		JS_XO("xo") {
-			@Override
-			public @Nonnull Map<String, String> devDependencies() {
-				Map<String, String> dependencies = new LinkedHashMap<>();
-				dependencies.put("eslint-config-xo", "^0.43.1");
-				return dependencies;
-			}
-		};
-
-		private final String popularStyleGuideName;
-
-		PopularStyleGuide(String popularStyleGuideName) {
-			this.popularStyleGuideName = popularStyleGuideName;
-		}
-
-		public String getPopularStyleGuideName() {
-			return popularStyleGuideName;
-		}
-
-		public abstract @Nonnull Map<String, String> devDependencies();
-
-		public static PopularStyleGuide fromNameOrNull(String popularStyleGuideName) {
-			for (PopularStyleGuide popularStyleGuide : PopularStyleGuide.values()) {
-				if (popularStyleGuide.popularStyleGuideName.equals(popularStyleGuideName)) {
-					return popularStyleGuide;
-				}
-			}
-			return null;
-		}
-
-		public static String getPopularStyleGuideNames(Predicate<PopularStyleGuide> filter) {
-			// collect matching style guide names using stream
-			return Arrays.stream(PopularStyleGuide.values())
-					.filter(filter)
-					.map(PopularStyleGuide::getPopularStyleGuideName)
-					.sorted()
-					.collect(java.util.stream.Collectors.joining(", "));
-		}
-	}
+	public static final String DEFAULT_ESLINT_VERSION = "^8.31.0";
 
 	public static Map<String, String> defaultDevDependenciesForTypescript() {
 		return defaultDevDependenciesTypescriptWithEslint(DEFAULT_ESLINT_VERSION);

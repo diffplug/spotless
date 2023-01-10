@@ -24,10 +24,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import com.diffplug.spotless.npm.EslintFormatterStep;
+import com.diffplug.spotless.npm.EslintStyleGuide;
 import com.diffplug.spotless.tag.NpmTest;
 
 @NpmTest
 class JavascriptExtensionTest extends GradleIntegrationHarness {
+
+	private static String styleGuideMapString(String styleGuideName) {
+		return EslintStyleGuide.fromNameOrNull(styleGuideName).asGradleMapStringMergedWith(EslintFormatterStep.defaultDevDependencies());
+	}
 
 	@NpmTest
 	@Nested
@@ -43,36 +49,17 @@ class JavascriptExtensionTest extends GradleIntegrationHarness {
 					"spotless {",
 					"    javascript {",
 					"        target 'test.js'",
-					"        eslint().configFile('.eslintrc.js').styleGuide('standard')",
+					"        eslint(" + styleGuideMapString("standard") + ").configFile('.eslintrc.js')",
 					"    }",
 					"}");
 			setFile("test.js").toResource("npm/eslint/javascript/styleguide/standard/javascript-es6.dirty");
 			gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 			assertFile("test.js").sameAsResource("npm/eslint/javascript/styleguide/standard/javascript-es6.clean");
-		}
-
-		@Test
-		void eslintDoesNotAllowToUseTsStyleGuideForJavascript() throws IOException {
-			setFile(".eslintrc.js").toResource("npm/eslint/javascript/styleguide/standard/.eslintrc.js");
-			setFile("build.gradle").toLines(
-					"plugins {",
-					"    id 'com.diffplug.spotless'",
-					"}",
-					"repositories { mavenCentral() }",
-					"spotless {",
-					"    javascript {",
-					"        target 'test.js'",
-					"        eslint().configFile('.eslintrc.js').styleGuide('xo-typescript')",
-					"    }",
-					"}");
-			setFile("test.js").toResource("npm/eslint/javascript/styleguide/standard/javascript-es6.dirty");
-			final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").buildAndFail();
-			Assertions.assertThat(spotlessApply.getOutput()).contains("Unknown style guide: xo-typescript");
 		}
 
 		@Test
 		void eslintAllowsToSpecifyEslintVersionForJavascript() throws IOException {
-			setFile(".eslintrc.js").toResource("npm/eslint/javascript/styleguide/standard/.eslintrc.js");
+			setFile(".eslintrc.js").toResource("npm/eslint/javascript/custom_rules/.eslintrc.js");
 			setFile("build.gradle").toLines(
 					"plugins {",
 					"    id 'com.diffplug.spotless'",
@@ -81,12 +68,12 @@ class JavascriptExtensionTest extends GradleIntegrationHarness {
 					"spotless {",
 					"    javascript {",
 					"        target 'test.js'",
-					"        eslint('8.28.0').configFile('.eslintrc.js').styleGuide('standard')",
+					"        eslint('8.28.0').configFile('.eslintrc.js')",
 					"    }",
 					"}");
-			setFile("test.js").toResource("npm/eslint/javascript/styleguide/standard/javascript-es6.dirty");
+			setFile("test.js").toResource("npm/eslint/javascript/custom_rules/javascript-es6.dirty");
 			gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
-			assertFile("test.js").sameAsResource("npm/eslint/javascript/styleguide/standard/javascript-es6.clean");
+			assertFile("test.js").sameAsResource("npm/eslint/javascript/custom_rules/javascript-es6.clean");
 		}
 
 		@Test
@@ -115,7 +102,7 @@ class JavascriptExtensionTest extends GradleIntegrationHarness {
 					"spotless {",
 					"    javascript {",
 					"        target 'test.js'",
-					"        eslint().configJs('''" + eslintConfigJs + "''').styleGuide('standard')",
+					"        eslint(" + styleGuideMapString("standard") + ").configJs('''" + eslintConfigJs + "''')",
 					"    }",
 					"}");
 			setFile("test.js").toResource("npm/eslint/javascript/styleguide/standard/javascript-es6.dirty");
@@ -134,7 +121,7 @@ class JavascriptExtensionTest extends GradleIntegrationHarness {
 					"spotless {",
 					"    javascript {",
 					"        target 'test.js'",
-					"        eslint().styleGuide('standard')",
+					"        eslint(" + styleGuideMapString("standard") + ")",
 					"    }",
 					"}");
 			setFile("test.js").toResource("npm/eslint/javascript/styleguide/standard/javascript-es6.dirty");
@@ -187,7 +174,7 @@ class JavascriptExtensionTest extends GradleIntegrationHarness {
 					"spotless {",
 					"    javascript {",
 					"        target 'test.js'",
-					"        eslint().configFile('.eslintrc.js').styleGuide('" + styleguide + "')",
+					"        eslint(" + styleGuideMapString(styleguide) + ").configFile('.eslintrc.js')",
 					"    }",
 					"}");
 			setFile("test.js").toResource(styleguidePath + "javascript-es6.dirty");

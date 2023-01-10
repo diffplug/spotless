@@ -31,7 +31,6 @@ import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.npm.EslintConfig;
 import com.diffplug.spotless.npm.EslintFormatterStep;
-import com.diffplug.spotless.npm.EslintFormatterStep.PopularStyleGuide;
 import com.diffplug.spotless.npm.NpmPathResolver;
 import com.diffplug.spotless.npm.PrettierFormatterStep;
 
@@ -73,7 +72,7 @@ public class JavascriptExtension extends FormatExtension {
 		}
 
 		@SuppressWarnings("unchecked")
-		public T devDependencies(Map<String, String> devDependencies) {
+		protected T devDependencies(Map<String, String> devDependencies) {
 			this.devDependencies.putAll(devDependencies);
 			replaceStep();
 			return (T) this;
@@ -92,17 +91,6 @@ public class JavascriptExtension extends FormatExtension {
 			replaceStep();
 			return (T) this;
 		}
-
-		@SuppressWarnings("unchecked")
-		public T styleGuide(String styleGuide) {
-			PopularStyleGuide popularStyleGuide = PopularStyleGuide.fromNameOrNull(styleGuide);
-
-			verifyStyleGuideIsSupported(styleGuide, popularStyleGuide);
-			assert popularStyleGuide != null;
-			return devDependencies(popularStyleGuide.devDependencies());
-		}
-
-		protected abstract void verifyStyleGuideIsSupported(String styleGuideName, PopularStyleGuide popularStyleGuide);
 	}
 
 	public class JavascriptEslintConfig extends EslintBaseConfig<JavascriptEslintConfig> {
@@ -121,17 +109,6 @@ public class JavascriptExtension extends FormatExtension {
 					project.getBuildDir(),
 					new NpmPathResolver(npmFileOrNull(), npmrcFileOrNull(), project.getProjectDir(), project.getRootDir()),
 					eslintConfig());
-		}
-
-		@Override
-		protected void verifyStyleGuideIsSupported(String styleGuideName, PopularStyleGuide popularStyleGuide) {
-			if (!isJsStyleGuide(popularStyleGuide)) {
-				throw new IllegalArgumentException("Unknown style guide: " + styleGuideName + ". Known javascript style guides: " + PopularStyleGuide.getPopularStyleGuideNames(this::isJsStyleGuide));
-			}
-		}
-
-		private boolean isJsStyleGuide(PopularStyleGuide popularStyleGuide) {
-			return popularStyleGuide != null && popularStyleGuide.name().startsWith("JS_");
 		}
 
 		protected EslintConfig eslintConfig() {

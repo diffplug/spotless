@@ -17,14 +17,19 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
-import org.assertj.core.api.Assertions;
-import org.gradle.testkit.runner.BuildResult;
 import org.junit.jupiter.api.Test;
 
+import com.diffplug.spotless.npm.EslintFormatterStep;
+import com.diffplug.spotless.npm.EslintStyleGuide;
 import com.diffplug.spotless.tag.NpmTest;
 
 @NpmTest
 class TypescriptExtensionTest extends GradleIntegrationHarness {
+
+	private static String styleGuideMapString(String styleGuideName) {
+		return EslintStyleGuide.fromNameOrNull(styleGuideName).asGradleMapStringMergedWith(EslintFormatterStep.defaultDevDependencies());
+	}
+
 	@Test
 	void allowToSpecifyFormatterVersion() throws IOException {
 		setFile("build.gradle").toLines(
@@ -175,7 +180,7 @@ class TypescriptExtensionTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    typescript {",
 				"        target 'test.ts'",
-				"        eslint().styleGuide('xo-typescript').configFile('.eslintrc.js')",
+				"        eslint(" + styleGuideMapString("xo-typescript") + ").configFile('.eslintrc.js')",
 				"    }",
 				"}");
 		setFile("test.ts").toResource("npm/eslint/typescript/styleguide/xo/typescript.dirty");
@@ -195,30 +200,11 @@ class TypescriptExtensionTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    typescript {",
 				"        target 'test.ts'",
-				"        eslint().styleGuide('standard-with-typescript').configFile('.eslintrc.js')",
+				"        eslint(" + styleGuideMapString("standard-with-typescript") + ").configFile('.eslintrc.js')",
 				"    }",
 				"}");
 		setFile("test.ts").toResource("npm/eslint/typescript/styleguide/standard_with_typescript/typescript.dirty");
 		gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 		assertFile("test.ts").sameAsResource("npm/eslint/typescript/styleguide/standard_with_typescript/typescript.clean");
-	}
-
-	@Test
-	void useEslintForTypescriptDoesNotAllowUsingJsStyleguide() throws IOException {
-		setFile(".eslintrc.js").toResource("npm/eslint/javascript/styleguide/airbnb/.eslintrc.js");
-		setFile("build.gradle").toLines(
-				"plugins {",
-				"    id 'com.diffplug.spotless'",
-				"}",
-				"repositories { mavenCentral() }",
-				"spotless {",
-				"    typescript {",
-				"        target 'test.ts'",
-				"        eslint().styleGuide('airbnb').configFile('.eslintrc.js')",
-				"    }",
-				"}");
-		setFile("test.js").toResource("npm/eslint/javascript/styleguide/airbnb/javascript-es6.dirty");
-		BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").buildAndFail();
-		Assertions.assertThat(spotlessApply.getOutput()).contains("Unknown style guide: airbnb");
 	}
 }

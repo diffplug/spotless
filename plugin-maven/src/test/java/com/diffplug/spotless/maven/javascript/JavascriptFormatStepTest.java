@@ -23,12 +23,18 @@ import org.junit.jupiter.params.provider.ValueSource;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 import com.diffplug.spotless.maven.MavenRunner.Result;
+import com.diffplug.spotless.npm.EslintFormatterStep;
+import com.diffplug.spotless.npm.EslintStyleGuide;
 import com.diffplug.spotless.tag.NpmTest;
 
 @NpmTest
 class JavascriptFormatStepTest extends MavenIntegrationHarness {
 
 	private static final String TEST_FILE_PATH = "src/main/javascript/test.js";
+
+	private static String styleGuideDevDependenciesString(String styleGuideName) {
+		return EslintStyleGuide.fromNameOrNull(styleGuideName).asMavenXmlStringMergedWith(EslintFormatterStep.defaultDevDependencies());
+	}
 
 	@NpmTest
 	@Nested
@@ -79,7 +85,7 @@ class JavascriptFormatStepTest extends MavenIntegrationHarness {
 					TEST_FILE_PATH,
 					"<eslint>",
 					"  <configFile>.eslintrc.js</configFile>",
-					"  <styleGuide>" + styleGuide + "</styleGuide>",
+					"  " + styleGuideDevDependenciesString(styleGuide),
 					"</eslint>");
 			setFile(".eslintrc.js").toResource(styleGuidePath + "/.eslintrc.js");
 			setFile(TEST_FILE_PATH).toResource(styleGuidePath + "/javascript-es6.dirty");
@@ -100,7 +106,7 @@ class JavascriptFormatStepTest extends MavenIntegrationHarness {
 					TEST_FILE_PATH,
 					"<eslint>",
 					"  <configJs>" + escapedInlineConfig + "</configJs>",
-					"  <styleGuide>" + styleGuide + "</styleGuide>",
+					"  " + styleGuideDevDependenciesString(styleGuide),
 					"</eslint>");
 			setFile(TEST_FILE_PATH).toResource(styleGuidePath + "/javascript-es6.dirty");
 

@@ -27,10 +27,6 @@ public class EslintJs extends AbstractEslint {
 		return new EslintConfig(this.configFile != null ? stepConfig.getFileLocator().locateFile(this.configFile) : null, this.configJs);
 	}
 
-	protected boolean isValidStyleGuide(EslintFormatterStep.PopularStyleGuide styleGuide) {
-		return styleGuide.name().startsWith("JS_");
-	}
-
 	protected Map<String, String> createDefaultDependencies() {
 		return this.eslintVersion == null ? EslintFormatterStep.defaultDevDependencies() : EslintFormatterStep.defaultDevDependenciesWithEslint(this.eslintVersion);
 	}

@@ -40,9 +40,6 @@ public abstract class AbstractEslint extends AbstractNpmFormatterStepFactory {
 	protected String configJs;
 
 	@Parameter
-	protected String styleGuide;
-
-	@Parameter
 	protected String eslintVersion;
 
 	@Parameter
@@ -68,8 +65,6 @@ public abstract class AbstractEslint extends AbstractNpmFormatterStepFactory {
 			devDependencies.putAll(defaultDependencies);
 		}
 
-		addStyleGuideDevDependencies(devDependencies);
-
 		File buildDir = buildDir(stepConfig);
 		File baseDir = baseDir(stepConfig);
 		NpmPathResolver npmPathResolver = npmPathResolver(stepConfig);
@@ -81,29 +76,6 @@ public abstract class AbstractEslint extends AbstractNpmFormatterStepFactory {
 	}
 
 	protected abstract EslintConfig eslintConfig(FormatterStepConfig stepConfig);
-
-	private void addStyleGuideDevDependencies(Map<String, String> devDependencies) {
-		if (this.styleGuide != null) {
-			EslintFormatterStep.PopularStyleGuide styleGuide = EslintFormatterStep.PopularStyleGuide.fromNameOrNull(this.styleGuide);
-			validateStyleGuide(styleGuide);
-			devDependencies.putAll(styleGuide.devDependencies());
-		}
-	}
-
-	private void validateStyleGuide(EslintFormatterStep.PopularStyleGuide styleGuide) {
-		if (styleGuide == null) {
-			throw new IllegalArgumentException("StyleGuide '" + this.styleGuide + "' is not supported. Supported style guides: " + supportedStyleGuides());
-		}
-		if (!isValidStyleGuide(styleGuide)) {
-			throw new IllegalArgumentException("StyleGuide must be of correct type but is: " + styleGuide.getPopularStyleGuideName() + ". Use one of the following: " + supportedStyleGuides());
-		}
-	}
-
-	private String supportedStyleGuides() {
-		return EslintFormatterStep.PopularStyleGuide.getPopularStyleGuideNames(this::isValidStyleGuide);
-	}
-
-	protected abstract boolean isValidStyleGuide(EslintFormatterStep.PopularStyleGuide styleGuide);
 
 	protected abstract Map<String, String> createDefaultDependencies();
 }

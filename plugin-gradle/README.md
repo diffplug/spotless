@@ -634,8 +634,6 @@ spotless {
     eslint(['my-eslint-fork': '1.2.3', 'my-eslint-plugin': '1.2.1']) // can specify exactly which npm packages to use
 
     eslint()
-      // optional: use a popular eslint styleguide for typescript
-      .styleGuide('standard-with-typescript') // or 'xo-typescript'
       // configuration is mandatory. Provide inline config or a config file.
       // a) inline-configuration
       .configJs('''
@@ -703,8 +701,6 @@ spotless {
     eslint(['my-eslint-fork': '1.2.3', 'my-eslint-plugin': '1.2.1']) // can specify exactly which npm packages to use
 
     eslint()
-      // optional: use a popular eslint styleguide for javascript
-      .styleGuide('standard') // or 'airbnb', 'google', 'xo'
       // configuration is mandatory. Provide inline config or a config file.
       // a) inline-configuration
       .configJs('''

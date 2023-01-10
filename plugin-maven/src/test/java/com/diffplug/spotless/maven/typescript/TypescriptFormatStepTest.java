@@ -24,12 +24,18 @@ import org.junit.jupiter.api.Test;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 import com.diffplug.spotless.maven.MavenRunner.Result;
+import com.diffplug.spotless.npm.EslintFormatterStep;
+import com.diffplug.spotless.npm.EslintStyleGuide;
 import com.diffplug.spotless.tag.NpmTest;
 
 @NpmTest
 class TypescriptFormatStepTest extends MavenIntegrationHarness {
 
 	private static final String TEST_FILE_PATH = "src/main/typescript/test.ts";
+
+	private static String styleGuideDevDependenciesString(String styleGuideName) {
+		return EslintStyleGuide.fromNameOrNull(styleGuideName).asMavenXmlStringMergedWith(EslintFormatterStep.defaultDevDependencies());
+	}
 
 	private void runTsfmt(String kind) throws IOException, InterruptedException {
 		String path = prepareRunTsfmt(kind);
@@ -192,7 +198,7 @@ class TypescriptFormatStepTest extends MavenIntegrationHarness {
 				TEST_FILE_PATH,
 				"<eslint>",
 				"  <configFile>.eslintrc.js</configFile>",
-				"  <styleGuide>standard-with-typescript</styleGuide>",
+				"  " + styleGuideDevDependenciesString("standard-with-typescript"),
 				"  <tsconfigFile>${basedir}/tsconfig.json</tsconfigFile>",
 				"</eslint>");
 		setFile(".eslintrc.js").toResource("npm/eslint/typescript/styleguide/standard_with_typescript/.eslintrc.js");
@@ -209,7 +215,7 @@ class TypescriptFormatStepTest extends MavenIntegrationHarness {
 				TEST_FILE_PATH,
 				"<eslint>",
 				"  <configFile>.eslintrc.js</configFile>",
-				"  <styleGuide>xo-typescript</styleGuide>",
+				"  " + styleGuideDevDependenciesString("xo-typescript"),
 				"  <tsconfigFile>${basedir}/tsconfig.json</tsconfigFile>",
 				"</eslint>");
 		setFile(".eslintrc.js").toResource("npm/eslint/typescript/styleguide/xo/.eslintrc.js");

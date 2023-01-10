@@ -17,7 +17,6 @@ package com.diffplug.spotless.npm;
 
 import java.io.File;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -34,22 +33,16 @@ import com.diffplug.spotless.tag.NpmTest;
 @NpmTest
 class EslintFormatterStepTest {
 
-	private final Map<String, String> combine(Map<String, String> m1, Map<String, String> m2) {
-		Map<String, String> combined = new TreeMap<>(m1);
-		combined.putAll(m2);
-		return combined;
-	}
-
 	@NpmTest
 	@Nested
 	class EslintJavascriptFormattingStepTest extends NpmFormatterStepCommonTests {
 
 		private final Map<String, Map<String, String>> devDependenciesForRuleset = ImmutableMap.of(
 				"custom_rules", EslintFormatterStep.defaultDevDependenciesForTypescript(),
-				"styleguide/airbnb", combine(EslintFormatterStep.defaultDevDependencies(), EslintFormatterStep.PopularStyleGuide.JS_AIRBNB.devDependencies()),
-				"styleguide/google", combine(EslintFormatterStep.defaultDevDependencies(), EslintFormatterStep.PopularStyleGuide.JS_GOOGLE.devDependencies()),
-				"styleguide/standard", combine(EslintFormatterStep.defaultDevDependencies(), EslintFormatterStep.PopularStyleGuide.JS_STANDARD.devDependencies()),
-				"styleguide/xo", combine(EslintFormatterStep.defaultDevDependencies(), EslintFormatterStep.PopularStyleGuide.JS_XO.devDependencies()));
+				"styleguide/airbnb", EslintStyleGuide.JS_AIRBNB.mergedWith(EslintFormatterStep.defaultDevDependencies()),
+				"styleguide/google", EslintStyleGuide.JS_GOOGLE.mergedWith(EslintFormatterStep.defaultDevDependencies()),
+				"styleguide/standard", EslintStyleGuide.JS_STANDARD.mergedWith(EslintFormatterStep.defaultDevDependencies()),
+				"styleguide/xo", EslintStyleGuide.JS_XO.mergedWith(EslintFormatterStep.defaultDevDependencies()));
 
 		@ParameterizedTest(name = "{index}: eslint can be applied using ruleset {0}")
 		@ValueSource(strings = {"custom_rules", "styleguide/airbnb", "styleguide/google", "styleguide/standard", "styleguide/xo"})
@@ -86,8 +79,8 @@ class EslintFormatterStepTest {
 
 		private final Map<String, Map<String, String>> devDependenciesForRuleset = ImmutableMap.of(
 				"custom_rules", EslintFormatterStep.defaultDevDependenciesForTypescript(),
-				"styleguide/standard_with_typescript", combine(EslintFormatterStep.defaultDevDependenciesForTypescript(), EslintFormatterStep.PopularStyleGuide.TS_STANDARD_WITH_TYPESCRIPT.devDependencies()),
-				"styleguide/xo", combine(EslintFormatterStep.defaultDevDependenciesForTypescript(), EslintFormatterStep.PopularStyleGuide.TS_XO_TYPESCRIPT.devDependencies()));
+				"styleguide/standard_with_typescript", EslintStyleGuide.TS_STANDARD_WITH_TYPESCRIPT.mergedWith(EslintFormatterStep.defaultDevDependenciesForTypescript()),
+				"styleguide/xo", EslintStyleGuide.TS_XO_TYPESCRIPT.mergedWith(EslintFormatterStep.defaultDevDependenciesForTypescript()));
 
 		@ParameterizedTest(name = "{index}: eslint can be applied using ruleset {0}")
 		@ValueSource(strings = {"custom_rules", "styleguide/standard_with_typescript", "styleguide/xo"})
@@ -167,7 +160,7 @@ class EslintFormatterStepTest {
 			final String cleanFile = filedir + "typescript.clean";
 
 			final FormatterStep formatterStep = EslintFormatterStep.create(
-					combine(EslintFormatterStep.PopularStyleGuide.TS_XO_TYPESCRIPT.devDependencies(), EslintFormatterStep.defaultDevDependenciesForTypescript()),
+					EslintStyleGuide.TS_XO_TYPESCRIPT.mergedWith(EslintFormatterStep.defaultDevDependenciesForTypescript()),
 					TestProvisioner.mavenCentral(),
 					projectDir(),
 					buildDir(),

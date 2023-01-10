@@ -39,11 +39,6 @@ public class EslintTs extends AbstractEslint {
 	}
 
 	@Override
-	protected boolean isValidStyleGuide(EslintFormatterStep.PopularStyleGuide styleGuide) {
-		return styleGuide.name().startsWith("TS_");
-	}
-
-	@Override
 	protected Map<String, String> createDefaultDependencies() {
 		return this.eslintVersion == null ? EslintFormatterStep.defaultDevDependenciesForTypescript() : EslintFormatterStep.defaultDevDependenciesTypescriptWithEslint(this.eslintVersion);
 	}
