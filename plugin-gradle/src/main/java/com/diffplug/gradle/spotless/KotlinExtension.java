@@ -63,7 +63,7 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 	public KotlinFormatExtension ktlint(String version) throws IOException {
 		Objects.requireNonNull(version);
 		File defaultEditorConfig = getProject().getRootProject().file(".editorconfig");
-		FileSignature editorConfigPath = FileSignature.signAsList(defaultEditorConfig);
+		FileSignature editorConfigPath = defaultEditorConfig.exists() ? FileSignature.signAsList(defaultEditorConfig) : null;
 		return new KotlinFormatExtension(version, false, editorConfigPath, Collections.emptyMap(), Collections.emptyMap());
 	}
 

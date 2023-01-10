@@ -75,21 +75,6 @@ public class KtLintStep {
 				editorConfigOverride);
 	}
 
-	private static FormatterStep create(String version,
-			Provisioner provisioner,
-			boolean isScript,
-			boolean useExperimental,
-			Map<String, String> userData,
-			Map<String, Object> editorConfigOverride) {
-		return create(version,
-				provisioner,
-				useExperimental,
-				isScript,
-				null,
-				userData,
-				editorConfigOverride);
-	}
-
 	public static FormatterStep create(String version,
 			Provisioner provisioner,
 			boolean isScript,
