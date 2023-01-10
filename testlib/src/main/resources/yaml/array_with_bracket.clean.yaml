@@ -1,8 +1,2 @@
----
-hr:
-  - Mark McGwire
-  # Following node labeled SS
-  - &SS Sammy Sosa
-rbi:
-  - *SS # Subsequent occurrence
-  - Ken Griffey
+episodes: [1, 2, 3, 4, 5, 6, 7]
+best-jedi: {name: Obi-Wan, side: light} 
