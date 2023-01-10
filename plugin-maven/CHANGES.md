@@ -10,9 +10,11 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Add JSON support ([#1446](https://github.com/diffplug/spotless/pull/1446))
 ### Fixed
 * Support `ktlint` 0.48+ new rule disabling syntax ([#1456](https://github.com/diffplug/spotless/pull/1456)) fixes ([#1444](https://github.com/diffplug/spotless/issues/1444))
+* Added support for npm-based [ESLint](https://eslint.org/)-formatter for javascript and typescript ([#1453](https://github.com/diffplug/spotless/pull/1453))
 ### Changes
 * Bump default `ktlint` version to latest `0.47.1` -> `0.48.1` ([#1456](https://github.com/diffplug/spotless/pull/1456))
 * Reduce spurious invalidations of the up-to-date index file ([#1461](https://github.com/diffplug/spotless/pull/1461))
+* Bump default version for `prettier` from `2.0.5` to `2.8.1` ([#1453](https://github.com/diffplug/spotless/pull/1453))
 
 ## [2.29.0] - 2023-01-02
 ### Added
