@@ -57,8 +57,8 @@ user@machine repo % mvn spotless:check
   - [Sql](#sql) ([dbeaver](#dbeaver))
   - [Maven Pom](#maven-pom) ([sortPom](#sortpom))
   - [Markdown](#markdown) ([flexmark](#flexmark))
-  - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier), [ESLint](#eslint--typescript-))
-  - [Javascript](#javascript) ([prettier](#prettier), [ESLint](#eslint--javascript-))
+  - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier), [ESLint](#eslint-typescript))
+  - [Javascript](#javascript) ([prettier](#prettier), [ESLint](#eslint-javascript))
   - [JSON](#json)
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection))
@@ -724,7 +724,7 @@ For details, see the [npm detection](#npm-detection) and [`.npmrc` detection](#n
 The auto-discovery of config files (up the file tree) will not work when using ESLint within spotless,
 hence you are required to provide resolvable file paths for config files, or alternatively provide the configuration inline.
 
-The configuration is very similar to the [ESLint (Javascript)](#eslint--javascript-) configuration. It differs in supported
+The configuration is very similar to the [ESLint (Javascript)](#eslint-javascript) configuration. It differs in supported
 styleguides and the requirement for a tsconfigFile.
 
 ```xml
@@ -803,7 +803,7 @@ For details, see the [npm detection](#npm-detection) and [`.npmrc` detection](#n
 The auto-discovery of config files (up the file tree) will not work when using ESLint within spotless,
 hence you are required to provide resolvable file paths for config files, or alternatively provide the configuration inline.
 
-The configuration is very similar to the [ESLint (Typescript)](#eslint--typescript-) configuration. It differs in supported
+The configuration is very similar to the [ESLint (Typescript)](#eslint-typescript) configuration. It differs in supported
 styleguides and no requirement for a tsconfig (of course).
 
 ```xml
