@@ -21,11 +21,29 @@ import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
 public class YamlTest extends MavenIntegrationHarness {
 	@Test
-	public void testFormatJson_WithSimple_defaultConfig() throws Exception {
+	public void testFormatYaml_WithJackson_defaultConfig_separatorComments() throws Exception {
 		writePomWithJsonSteps("<yaml><jackson/></yaml>");
 
 		setFile("yaml_test.json").toResource("yaml/separator_comments.yaml");
 		mavenRunner().withArguments("spotless:apply").runNoError().error();
 		assertFile("yaml_test.json").sameAsResource("yaml/separator_comments.clean.yaml");
+	}
+
+	@Test
+	public void testFormatYaml_WithJackson_defaultConfig_arrayBrackets() throws Exception {
+		writePomWithJsonSteps("<yaml><jackson/></yaml>");
+
+		setFile("yaml_test.json").toResource("yaml/array_with_bracket.yaml");
+		mavenRunner().withArguments("spotless:apply").runNoError().error();
+		assertFile("yaml_test.json").sameAsResource("yaml/array_with_bracket.clean.yaml");
+	}
+
+	@Test
+	public void testFormatYaml_WithJackson_defaultConfig_multipleComments() throws Exception {
+		writePomWithJsonSteps("<yaml><jackson/></yaml>");
+
+		setFile("yaml_test.json").toResource("yaml/multiple_documents.yaml");
+		mavenRunner().withArguments("spotless:apply").runNoError().error();
+		assertFile("yaml_test.json").sameAsResource("yaml/multiple_documents.clean.yaml");
 	}
 }
