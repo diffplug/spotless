@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.glue.ktlint.compat;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -25,7 +27,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.pinterest.ktlint.core.KtLint;
+import com.pinterest.ktlint.core.KtLintRuleEngine;
 import com.pinterest.ktlint.core.LintError;
 import com.pinterest.ktlint.core.Rule;
 import com.pinterest.ktlint.core.RuleProvider;
@@ -76,9 +78,9 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 	}
 
 	@Override
-	public String format(final String text, final String name, final boolean isScript,
+	public String format(final String text, Path path, final boolean isScript,
 			final boolean useExperimental,
-			final Map<String, String> userData,
+			Path editorConfigPath, final Map<String, String> userData,
 			final Map<String, Object> editorConfigOverrideMap) {
 		final FormatterCallback formatterCallback = new FormatterCallback();
 
@@ -97,18 +99,19 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 							Collectors.toList()),
 					editorConfigOverrideMap);
 		}
+		EditorConfigDefaults editorConfig;
+		if (editorConfigPath == null || !Files.exists(editorConfigPath)) {
+			editorConfig = EditorConfigDefaults.Companion.getEMPTY_EDITOR_CONFIG_DEFAULTS();
+		} else {
+			editorConfig = EditorConfigDefaults.Companion.load(editorConfigPath);
+		}
 
-		return KtLint.INSTANCE.format(new KtLint.ExperimentalParams(
-				name,
-				text,
+		return new KtLintRuleEngine(
 				allRuleProviders,
-				userData,
-				formatterCallback,
-				isScript,
-				false,
-				EditorConfigDefaults.Companion.getEMPTY_EDITOR_CONFIG_DEFAULTS(),
+				editorConfig,
 				editorConfigOverride,
-				false));
+				false)
+						.format(path, formatterCallback);
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 DiffPlug
+ * Copyright 2022-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.glue.ktlint.compat;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,9 +50,9 @@ public class KtLintCompat0Dot45Dot2Adapter implements KtLintCompatAdapter {
 	}
 
 	@Override
-	public String format(final String text, final String name, final boolean isScript,
+	public String format(final String text, Path path, final boolean isScript,
 			final boolean useExperimental,
-			final Map<String, String> userData,
+			Path editorConfigPath, final Map<String, String> userData,
 			final Map<String, Object> editorConfigOverrideMap) {
 		final FormatterCallback formatterCallback = new FormatterCallback();
 
@@ -70,13 +71,13 @@ public class KtLintCompat0Dot45Dot2Adapter implements KtLintCompatAdapter {
 		}
 
 		return KtLint.INSTANCE.format(new KtLint.ExperimentalParams(
-				name,
+				path.toFile().getAbsolutePath(),
 				text,
 				rulesets,
 				userData,
 				formatterCallback,
 				isScript,
-				null,
+				editorConfigPath == null ? null : editorConfigPath.toFile().getAbsolutePath(),
 				false,
 				editorConfigOverride,
 				false));

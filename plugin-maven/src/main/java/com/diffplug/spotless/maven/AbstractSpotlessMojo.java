@@ -64,6 +64,7 @@ import com.diffplug.spotless.maven.groovy.Groovy;
 import com.diffplug.spotless.maven.incremental.UpToDateChecker;
 import com.diffplug.spotless.maven.incremental.UpToDateChecking;
 import com.diffplug.spotless.maven.java.Java;
+import com.diffplug.spotless.maven.javascript.Javascript;
 import com.diffplug.spotless.maven.json.Json;
 import com.diffplug.spotless.maven.kotlin.Kotlin;
 import com.diffplug.spotless.maven.markdown.Markdown;
@@ -153,6 +154,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	@Parameter
 	private Typescript typescript;
+
+	@Parameter
+	private Javascript javascript;
 
 	@Parameter
 	private Antlr4 antlr4;
@@ -339,7 +343,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private List<FormatterFactory> getFormatterFactories() {
-		return Stream.concat(formats.stream(), Stream.of(groovy, java, scala, kotlin, cpp, typescript, antlr4, pom, sql, python, markdown, json, yaml))
+		return Stream.concat(formats.stream(), Stream.of(groovy, java, scala, kotlin, cpp, typescript, javascript, antlr4, pom, sql, python, markdown, json, yaml))
 				.filter(Objects::nonNull)
 				.collect(toList());
 	}

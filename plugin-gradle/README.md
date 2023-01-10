@@ -69,7 +69,8 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [FreshMark](#freshmark) aka markdown
   - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
   - [SQL](#sql) ([dbeaver](#dbeaver), [prettier](#prettier))
-  - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier))
+  - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier), [ESLint](#eslint-typescript))
+  - [Javascript](#javascript) ([prettier](#prettier), [ESLint](#eslint-javascript))
   - [JSON](#json)
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection))
@@ -354,7 +355,14 @@ spotless {
 
 ### ktlint
 
-[homepage](https://github.com/pinterest/ktlint). [changelog](https://github.com/pinterest/ktlint/releases).  Spotless does not ([yet](https://github.com/diffplug/spotless/issues/142)) respect the `.editorconfig` settings ([ktlint docs](https://github.com/pinterest/ktlint#editorconfig)), but you can provide them manually as `editorConfigOverride`.
+[homepage](https://github.com/pinterest/ktlint). [changelog](https://github.com/pinterest/ktlint/releases).
+
+Spotless respects the `.editorconfig` settings by providing `editorConfigPath` option.
+([ktlint docs](https://github.com/pinterest/ktlint#editorconfig)).
+Default value is the `.editorconfig` file located in the top project.
+Passing `null` will clear the option.
+
+Additionally, `editorConfigOverride` options will override what's supplied in `.editorconfig` file.
 
 ```kotlin
 spotless {
@@ -363,6 +371,7 @@ spotless {
     ktlint("0.45.2")
       .setUseExperimental(true)
       .userData(mapOf("android" to "true"))
+      .editorConfigPath("$projectDir/config/.editorconfig")  // sample unusual placement
       .editorConfigOverride(mapOf("indent_size" to 2))
   }
 }
@@ -576,6 +585,7 @@ spotless {
 
     tsfmt()    // has its own section below
     prettier() // has its own section below
+    eslint() // has its own section below
 
     licenseHeader '/* (C) $YEAR */', '(import|const|declare|export|var) ' // or licenseHeaderFile
     // note the '(import|const|...' argument - this is a regex which identifies the top
@@ -607,6 +617,118 @@ spotless {
 **Prerequisite: tsfmt requires a working NodeJS version**
 
 For details, see the [npm detection](#npm-detection) and [`.npmrc` detection](#npmrc-detection) sections of prettier, which apply also to tsfmt.
+
+### ESLint (Typescript)
+
+[npm](https://www.npmjs.com/package/eslint). [changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md). *Please note:*
+The auto-discovery of config files (up the file tree) will not work when using ESLint within spotless,
+hence you are required to provide resolvable file paths for config files, or alternatively provide the configuration inline.
+
+The configuration is very similar to the [ESLint (Javascript)](#eslint-javascript) configuration. In typescript, a
+reference to a `tsconfig.json` is required.
+
+```gradle
+spotless {
+  typescript {
+    eslint('8.30.0') // version is optional
+    eslint(['my-eslint-fork': '1.2.3', 'my-eslint-plugin': '1.2.1']) // can specify exactly which npm packages to use
+
+    eslint()
+      // configuration is mandatory. Provide inline config or a config file.
+      // a) inline-configuration
+      .configJs('''
+        {
+          env: {
+            browser: true,
+            es2021: true
+          },
+          extends: 'standard-with-typescript',
+          overrides: [
+          ],
+          parserOptions: {
+            ecmaVersion: 'latest',
+            sourceType: 'module',
+            project: './tsconfig.json',
+          },
+          rules: {
+          }
+        }
+      ''')
+      // b) config file
+      .configFile('.eslintrc.js')
+      // recommended: provide a tsconfig.json - especially when using the styleguides
+      .tsconfigFile('tsconfig.json')
+  }
+}
+```
+
+**Prerequisite: ESLint requires a working NodeJS version**
+
+For details, see the [npm detection](#npm-detection) and [`.npmrc` detection](#npmrc-detection) sections of prettier, which apply also to ESLint.
+
+## Javascript
+
+- `com.diffplug.gradle.spotless.JavascriptExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.12.1/com/diffplug/gradle/spotless/JavascriptExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/JavascriptExtension.java)
+
+```gradle
+spotless {
+  javascript {
+    target 'src/**/*.js' // you have to set the target manually
+
+    prettier() // has its own section below
+    eslint() // has its own section below
+
+    licenseHeader '/* (C) $YEAR */', 'REGEX_TO_DEFINE_TOP_OF_FILE' // or licenseHeaderFile
+  }
+}
+```
+
+### ESLint (Javascript)
+
+[npm](https://www.npmjs.com/package/eslint). [changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md). *Please note:*
+The auto-discovery of config files (up the file tree) will not work when using ESLint within spotless,
+hence you are required to provide resolvable file paths for config files, or alternatively provide the configuration inline.
+
+The configuration is very similar to the [ESLint (Typescript)](#eslint-typescript) configuration. In javascript, *no*
+`tsconfig.json` is supported.
+
+```gradle
+
+```gradle
+spotless {
+  javascript {
+    eslint('8.30.0') // version is optional
+    eslint(['my-eslint-fork': '1.2.3', 'my-eslint-plugin': '1.2.1']) // can specify exactly which npm packages to use
+
+    eslint()
+      // configuration is mandatory. Provide inline config or a config file.
+      // a) inline-configuration
+      .configJs('''
+        {
+          env: {
+            browser: true,
+            es2021: true
+          },
+          extends: 'standard',
+          overrides: [
+          ],
+          parserOptions: {
+            ecmaVersion: 'latest',
+            sourceType: 'module'
+          },
+          rules: {
+          }
+        }
+      ''')
+      // b) config file
+      .configFile('.eslintrc.js')
+  }
+}
+```
+
+**Prerequisite: ESLint requires a working NodeJS version**
+
+For details, see the [npm detection](#npm-detection) and [`.npmrc` detection](#npmrc-detection) sections of prettier, which apply also to ESLint.
 
 ## JSON
 

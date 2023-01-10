@@ -57,7 +57,8 @@ user@machine repo % mvn spotless:check
   - [Sql](#sql) ([dbeaver](#dbeaver))
   - [Maven Pom](#maven-pom) ([sortPom](#sortpom))
   - [Markdown](#markdown) ([flexmark](#flexmark))
-  - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier))
+  - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier), [ESLint](#eslint-typescript))
+  - [Javascript](#javascript) ([prettier](#prettier), [ESLint](#eslint-javascript))
   - [JSON](#json)
   - [YAML](#yaml)
   - Multiple languages
@@ -365,7 +366,13 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
 
 ### ktlint
 
-[homepage](https://github.com/pinterest/ktlint). [changelog](https://github.com/pinterest/ktlint/releases). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/kotlin/Ktlint.java).  Spotless does not ([yet](https://github.com/diffplug/spotless/issues/142)) respect the `.editorconfig` settings.
+[homepage](https://github.com/pinterest/ktlint). [changelog](https://github.com/pinterest/ktlint/releases).
+[code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/kotlin/Ktlint.java).
+
+Spotless respects the `.editorconfig` settings by providing `editorConfigPath` option.
+([ktlint docs](https://github.com/pinterest/ktlint#editorconfig)).
+
+Additionally, `editorConfigOverride` options will override what's supplied in `.editorconfig` file.
 
 ```xml
 <ktlint>
@@ -671,6 +678,7 @@ Currently, none of the available options can be configured yet. It uses only the
 
     <tsfmt/>    <!-- has its own section below -->
     <prettier/> <!-- has its own section below -->
+    <eslint/>   <!-- has its own section below -->
 
     <licenseHeader>
       <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
@@ -710,6 +718,138 @@ The auto-discovery of config files (up the file tree) will not work when using t
 **Prerequisite: tsfmt requires a working NodeJS version**
 
 For details, see the [npm detection](#npm-detection) and [`.npmrc` detection](#npmrc-detection) sections of prettier, which apply also to tsfmt.
+
+### ESLint (typescript)
+
+[npm](https://www.npmjs.com/package/eslint). [changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md). *Please note:*
+The auto-discovery of config files (up the file tree) will not work when using ESLint within spotless,
+hence you are required to provide resolvable file paths for config files, or alternatively provide the configuration inline.
+
+The configuration is very similar to the [ESLint (Javascript)](#eslint-javascript) configuration. In typescript, a
+reference to a `tsconfig.json` is required.
+
+```xml
+<eslint>
+  <!-- Specify at most one of the following 3 configs: either 'eslintVersion', 'devDependencies' or 'devDependencyProperties'  -->
+  <eslintVersion>8.30.0</eslintVersion>
+  <devDependencies>
+    <myEslintFork>8.30.0</myEslintFork>
+    <myEslintPlugin>1.2.1</myEslintPlugin>
+  </devDependencies>
+  <devDependencyProperties>
+    <property>
+      <name>eslint</name>
+      <value>8.30.0</value>
+    </property>
+    <property>
+      <name>@eslint/my-plugin-typescript</name> <!-- this could not be written in the simpler to write 'devDependencies' element. -->
+      <value>0.14.2</value>
+    </property>
+  </devDependencyProperties>
+  <!-- mandatory: provide either a configFile or a configJs object -->
+  <configFile>${project.basedir}/.eslintrc.js</configFile>
+  <configJs>
+    {
+      env: {
+        browser: true,
+        es2021: true
+      },
+      extends: 'standard-with-typescript',
+      overrides: [
+      ],
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        project: './tsconfig.json',
+      },
+      rules: {
+      }
+    }
+  </configJs>
+  <!-- recommended: provide a tsconfigFile - especially when using the styleguides -->
+  <tsconfigFile>${project.basedir}/tsconfig.json</tsconfigFile>
+</eslint>
+```
+
+**Prerequisite: ESLint requires a working NodeJS version**
+
+For details, see the [npm detection](#npm-detection) and [`.npmrc` detection](#npmrc-detection) sections of prettier, which apply also to ESLint.
+
+
+## Javascript
+
+[code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/javascript/Javascript.java). [available steps](https://github.com/diffplug/spotless/tree/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/javascript).
+
+```xml
+<configuration>
+  <typescript>
+    <includes> <!-- You have to set the target manually -->
+      <include>src/**/*.js</include>
+    </includes>
+
+    <prettier/> <!-- has its own section below -->
+    <eslint/>   <!-- has its own section below -->
+
+    <licenseHeader>
+      <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
+      <delimiter>REGEX_TO_DEFINE_TOP_OF_FILE</delimiter> <!-- set a regex to define the top of the file -->
+    </licenseHeader>
+  </typescript>
+</configuration>
+```
+
+### ESLint (Javascript)
+
+[npm](https://www.npmjs.com/package/eslint). [changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md). *Please note:*
+The auto-discovery of config files (up the file tree) will not work when using ESLint within spotless,
+hence you are required to provide resolvable file paths for config files, or alternatively provide the configuration inline.
+
+The configuration is very similar to the [ESLint (Typescript)](#eslint-typescript) configuration. In javascript, *no*
+`tsconfig.json` is supported.
+
+```xml
+<eslint>
+  <!-- Specify at most one of the following 3 configs: either 'eslintVersion', 'devDependencies' or 'devDependencyProperties'  -->
+  <eslintVersion>8.30.0</eslintVersion>
+  <devDependencies>
+    <myEslintFork>8.30.0</myEslintFork>
+    <myEslintPlugin>1.2.1</myEslintPlugin>
+  </devDependencies>
+  <devDependencyProperties>
+    <property>
+      <name>eslint</name>
+      <value>8.30.0</value>
+    </property>
+    <property>
+      <name>@eslint/my-plugin-javascript</name> <!-- this could not be written in the simpler to write 'devDependencies' element. -->
+      <value>0.14.2</value>
+    </property>
+  </devDependencyProperties>
+  <!-- mandatory: provide either a configFile or a configJs object -->
+  <configFile>${project.basedir}/.eslintrc.js</configFile>
+  <configJs>
+    {
+      env: {
+        browser: true,
+        es2021: true
+      },
+      extends: 'standard',
+      overrides: [
+      ],
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module'
+      },
+      rules: {
+      }
+    }
+  </configJs>
+</eslint>
+```
+
+**Prerequisite: ESLint requires a working NodeJS version**
+
+For details, see the [npm detection](#npm-detection) and [`.npmrc` detection](#npmrc-detection) sections of prettier, which apply also to ESLint.
 
 ## JSON
 
