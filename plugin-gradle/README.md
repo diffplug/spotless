@@ -624,8 +624,8 @@ For details, see the [npm detection](#npm-detection) and [`.npmrc` detection](#n
 The auto-discovery of config files (up the file tree) will not work when using ESLint within spotless,
 hence you are required to provide resolvable file paths for config files, or alternatively provide the configuration inline.
 
-The configuration is very similar to the [ESLint (Javascript)](#eslint-javascript) configuration. It differs in supported
-styleguides and the requirement for a tsconfigFile.
+The configuration is very similar to the [ESLint (Javascript)](#eslint-javascript) configuration. In typescript, a
+reference to a `tsconfig.json` is required.
 
 ```gradle
 spotless {
@@ -689,8 +689,8 @@ spotless {
 The auto-discovery of config files (up the file tree) will not work when using ESLint within spotless,
 hence you are required to provide resolvable file paths for config files, or alternatively provide the configuration inline.
 
-The configuration is very similar to the [ESLint (Typescript)](#eslint-typescript) configuration. It differs in supported
-styleguides and no requirement for a tsconfig (of course).
+The configuration is very similar to the [ESLint (Typescript)](#eslint-typescript) configuration. In javascript, *no*
+`tsconfig.json` is supported.
 
 ```gradle
 
