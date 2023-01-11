@@ -132,7 +132,7 @@ public final class YamlJacksonStep {
 		private String format(Object objectMapper, Method stringToObject, Method objectToString, String s)
 				throws IllegalAccessException, IllegalArgumentException {
 			try {
-				Object parsed = stringToObject.invoke(s, Object.class);
+				Object parsed = stringToObject.invoke(objectMapper, s, Object.class);
 				return (String) objectToString.invoke(objectMapper, parsed);
 			} catch (InvocationTargetException ex) {
 				throw new AssertionError("Unable to format YAML", ex.getCause());
