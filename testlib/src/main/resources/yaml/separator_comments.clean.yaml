@@ -1,9 +1,7 @@
 ---
-
 hr:
   - Mark McGwire
-  # Following node labeled SS
-  - &SS Sammy Sosa
+  - Sammy Sosa
 rbi:
-  - *SS # Subsequent occurrence
+  - Sammy Sosa
   - Ken Griffey
