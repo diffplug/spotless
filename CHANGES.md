@@ -16,8 +16,10 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Added `skipLinesMatching` option to `licenseHeader` to support formats where license header cannot be immediately added to the top of the file (e.g. xml, sh). ([#1441](https://github.com/diffplug/spotless/pull/1441)).
 ### Fixed
 * Support `ktlint` 0.48+ new rule disabling syntax ([#1456](https://github.com/diffplug/spotless/pull/1456)) fixes ([#1444](https://github.com/diffplug/spotless/issues/1444))
+* Added support for npm-based [ESLint](https://eslint.org/)-formatter for javascript and typescript ([#1453](https://github.com/diffplug/spotless/pull/1453))
 
 ### Changes
+* Bump default version for `prettier` from `2.0.5` to `2.8.1` ([#1453](https://github.com/diffplug/spotless/pull/1453))
 * Bump the dev version of Gradle from `7.5.1` to `7.6` ([#1409](https://github.com/diffplug/spotless/pull/1409))
   * We also removed the no-longer-required dependency `org.codehaus.groovy:groovy-xml`
 * Breaking changes to Spotless' internal testing infrastructure `testlib` ([#1443](https://github.com/diffplug/spotless/pull/1443))
