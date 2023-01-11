@@ -1035,7 +1035,7 @@ Alternatively you can supply spotless with a location of the `.npmrc` file to us
 
 ## Eclipse web tools platform
 
-[changelog](https://www.eclipse.org/webtools/). [compatible versions](https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatters).
+[changelog](https://www.eclipse.org/webtools/). [compatible versions](https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatter).
 
 ```xml
 <configuration>
