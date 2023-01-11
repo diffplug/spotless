@@ -241,7 +241,7 @@ any other maven phase (i.e. compile) then it can be configured as below;
 
 ```xml
 <eclipse>
-  <version>4.13.0</version>                     <!-- optional -->
+  <version>4.13.0</version>                     <!-- optional version of Eclipse Formatter -->
   <file>${project.basedir}/eclipse-formatter.xml</file> <!-- optional -->
 </eclipse>
 ```
@@ -316,7 +316,7 @@ These mechanisms already exist for the Gradle plugin.
 
 ```xml
 <greclipse>
-  <version>4.13.0</version>                     <!-- optional -->
+  <version>4.13.0</version>                     <!-- optional version of Eclipse Formatter -->
   <file>${project.basedir}/greclipse.properties</file> <!-- optional -->
 </greclipse>
 ```
@@ -466,7 +466,7 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
 
 ```xml
 <eclipseCdt>
-  <version>4.13.0</version>               <!-- optional -->
+  <version>4.13.0</version>               <!-- optional version of Eclipse Formatter -->
   <file>${project.basedir}/eclipse-cdt.xml</file> <!-- optional -->
 </eclipseCdt>
 ```
@@ -1052,7 +1052,7 @@ Alternatively you can supply spotless with a location of the `.npmrc` file to us
           <file>${project.basedir}/xml.prefs</file>
           <file>${project.basedir}/additional.properties</file>
         </files>
-        <version>4.13.0</version> <!-- optional -->
+        <version>4.13.0</version> <!-- optional version of Eclipse Formatter -->
       </eclipseWtp>
     </format>
   </formats>
