@@ -2,7 +2,7 @@
 # NEXUS_USER
 # NEXUS_PASS
 # GPG_PASSPHRASE
-# GPG_KEY (base64)
+# GPG_KEY64 (base64)
 #   gpg --export-secret-keys --armor KEY_ID | openssl base64 | pbcopy
 # GRADLE_PORTAL_KEY
 # GRADLE_PORTAL_SECRET
@@ -31,7 +31,7 @@ jobs:
       ORG_GRADLE_PROJECT_nexus_user: ${{ secrets.NEXUS_USER }}
       ORG_GRADLE_PROJECT_nexus_pass: ${{ secrets.NEXUS_PASS }}
       ORG_GRADLE_PROJECT_gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
-      ORG_GRADLE_PROJECT_gpg_key64: ${{ secrets.GPG_KEY }}
+      ORG_GRADLE_PROJECT_gpg_key64: ${{ secrets.GPG_KEY64 }}
 
         gradle_key
     steps:
