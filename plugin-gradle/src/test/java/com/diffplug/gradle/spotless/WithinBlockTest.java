@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 DiffPlug
+ * Copyright 2020-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ class WithinBlockTest extends GradleIntegrationHarness {
 				"      custom 'lowercase', { str -> str.toLowerCase() }",
 				"    }",
 				"    withinBlocks 'java only', '\\n```java\\n', '\\n```\\n', JavaExtension, {",
-				"      googleJavaFormat()",
+				"      googleJavaFormat('1.2')",
 				"    }",
 				"  }",
 				"}");

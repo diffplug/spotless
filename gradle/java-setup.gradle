@@ -17,16 +17,25 @@ apply plugin: 'com.github.spotbugs'
 spotbugs {
 	toolVersion = VER_SPOTBUGS
 	ignoreFailures = false 	// bug free or it doesn't ship!
-	reportsDir = file('build/spotbugs')
 	reportLevel = 'medium'	// low|medium|high (low = sensitive to even minor mistakes)
-	omitVisitors = []		// bugs that we want to ignore
+	omitVisitors = [
+		'FindReturnRef'] // https://spotbugs.readthedocs.io/en/latest/detectors.html#findreturnref
 }
 tasks.named('spotbugsTest') {
 	enabled = false
 }
+
+tasks.withType(com.github.spotbugs.snom.SpotBugsTask).configureEach {
+	outputs.file(project.layout.buildDirectory.file("reports/spotbugs/${it.name}.html"))
+	outputs.file(project.layout.buildDirectory.file("spotbugs/auxclasspath/${it.name}"))
+	reports {
+		html.enabled = true
+	}
+}
+
 tasks.named('spotbugsMain') {
 	// only run on Java 8 (no benefit to running twice)
-	enabled = org.gradle.api.JavaVersion.current() == org.gradle.api.JavaVersion.VERSION_1_8
+	enabled = org.gradle.api.JavaVersion.current() == org.gradle.api.JavaVersion.VERSION_11
 	reports {
 		html.enabled = true
 	}
@@ -34,5 +43,5 @@ tasks.named('spotbugsMain') {
 dependencies {
 	compileOnly 'net.jcip:jcip-annotations:1.0'
 	compileOnly "com.github.spotbugs:spotbugs-annotations:${VER_SPOTBUGS}"
-	compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+	compileOnly "com.google.code.findbugs:jsr305:${VER_JSR_305}"
 }

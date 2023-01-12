@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,20 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.StandardSystemProperty;
 import com.diffplug.spotless.generic.EndWithNewlineStep;
 
 class FormatterTest {
+	@Test
+	void toUnix() {
+		Assertions.assertEquals("1\n2\n3", LineEnding.toUnix("1\n2\n3"));
+		Assertions.assertEquals("1\n2\n3", LineEnding.toUnix("1\r2\r3"));
+		Assertions.assertEquals("1\n2\n3", LineEnding.toUnix("1\r\n2\r\n3"));
+	}
+
 	// Formatter normally needs to be closed, but no resources will be leaked in this special case
 	@Test
 	void equality() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,58 +37,54 @@ class JsonSimpleStepTest {
 	}
 
 	@Test
-	void handlesSingletonObject() throws Exception {
+	void handlesSingletonObject() {
 		doWithResource(stepHarness, "singletonObject");
 	}
 
 	@Test
-	void handlesSingletonObjectWithArray() throws Exception {
+	void handlesSingletonObjectWithArray() {
 		doWithResource(stepHarness, "singletonObjectWithArray");
 	}
 
 	@Test
-	void handlesNestedObject() throws Exception {
+	void handlesNestedObject() {
 		doWithResource(stepHarness, "nestedObject");
 	}
 
 	@Test
-	void handlesSingletonArray() throws Exception {
+	void handlesSingletonArray() {
 		doWithResource(stepHarness, "singletonArray");
 	}
 
 	@Test
-	void handlesEmptyFile() throws Exception {
+	void handlesEmptyFile() {
 		doWithResource(stepHarness, "empty");
 	}
 
 	@Test
-	void handlesComplexNestedObject() throws Exception {
+	void handlesComplexNestedObject() {
 		doWithResource(stepHarness, "cucumberJsonSample");
 	}
 
 	@Test
-	void handlesObjectWithNull() throws Exception {
+	void handlesObjectWithNull() {
 		doWithResource(stepHarness, "objectWithNull");
 	}
 
 	@Test
 	void handlesInvalidJson() {
-		assertThatThrownBy(() -> doWithResource(stepHarness, "invalidJson"))
-				.isInstanceOf(AssertionError.class)
-				.hasMessage("Unable to format JSON")
-				.hasRootCauseMessage("Expected a ',' or '}' at 9 [character 0 line 3]");
+		stepHarness.testResourceExceptionMsg("json/invalidJsonBefore.json")
+				.contains("Expected a ',' or '}' at 9 [character 0 line 3]");
 	}
 
 	@Test
 	void handlesNotJson() {
-		assertThatThrownBy(() -> doWithResource(stepHarness, "notJson"))
-				.isInstanceOf(AssertionError.class)
-				.hasMessage("Unable to determine JSON type, expected a '{' or '[' but found '#'")
-				.hasNoCause();
+		stepHarness.testResourceExceptionMsg("json/notJsonBefore.json")
+				.contains("Unable to determine JSON type, expected a '{' or '[' but found '#'");
 	}
 
 	@Test
-	void canSetCustomIndentationLevel() throws Exception {
+	void canSetCustomIndentationLevel() {
 		FormatterStep step = JsonSimpleStep.create(6, TestProvisioner.mavenCentral());
 		StepHarness stepHarness = StepHarness.forStep(step);
 
@@ -98,7 +94,7 @@ class JsonSimpleStepTest {
 	}
 
 	@Test
-	void canSetIndentationLevelTo0() throws Exception {
+	void canSetIndentationLevelTo0() {
 		FormatterStep step = JsonSimpleStep.create(0, TestProvisioner.mavenCentral());
 		StepHarness stepHarness = StepHarness.forStep(step);
 
@@ -129,7 +125,7 @@ class JsonSimpleStepTest {
 		}.testEquals();
 	}
 
-	private static void doWithResource(StepHarness stepHarness, String name) throws Exception {
+	private static void doWithResource(StepHarness stepHarness, String name) {
 		String before = String.format("json/%sBefore.json", name);
 		String after = String.format("json/%sAfter.json", name);
 		stepHarness.testResource(before, after);

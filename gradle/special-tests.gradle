@@ -1,5 +1,5 @@
 apply plugin: 'org.gradle.test-retry'
-
+apply plugin: 'com.adarshr.test-logger'
 def special = [
 	'Npm',
 	'Black',
@@ -14,14 +14,14 @@ tasks.named('test') {
 	}
 	if (isCiServer) {
 		retry {
-			maxRetries = 1
-			maxFailures = 2
+			maxRetries = 2
+			maxFailures = 10
 		}
 	}
 }
 
 special.forEach { tag ->
-	tasks.register("${tag}Test", Test) {
+	tasks.register("test${tag}", Test) {
 		useJUnitPlatform { includeTags tag }
 	}
 }

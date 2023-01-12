@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 DiffPlug
+ * Copyright 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 import javax.annotation.Nullable;
@@ -63,6 +62,8 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 		return isClean(project, treeSha, relativePath);
 	}
 
+	private Map<Repository, DirCache> dirCaches = new HashMap<>();
+
 	/**
 	 * This is the highest-level method, which all the others serve.  Given the sha
 	 * of a git tree (not a commit!), and the file in question, this method returns
@@ -72,13 +73,16 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 	public boolean isClean(Project project, ObjectId treeSha, String relativePathUnix) throws IOException {
 		Repository repo = repositoryFor(project);
 
-		// TODO: should be cached-per-repo if it is thread-safe, or per-repo-per-thread if it is not
-		DirCache dirCache = repo.readDirCache();
-
+		DirCacheIterator dirCacheIteratorInit;
+		synchronized (this) {
+			// each DirCache is thread-safe, and we compute them one-to-one based on `repositoryFor`
+			DirCache dirCache = dirCaches.computeIfAbsent(repo, Errors.rethrow().wrap(Repository::readDirCache));
+			dirCacheIteratorInit = new DirCacheIterator(dirCache);
+		}
 		try (TreeWalk treeWalk = new TreeWalk(repo)) {
 			treeWalk.setRecursive(true);
 			treeWalk.addTree(treeSha);
-			treeWalk.addTree(new DirCacheIterator(dirCache));
+			treeWalk.addTree(dirCacheIteratorInit);
 			treeWalk.addTree(new FileTreeIterator(repo));
 			treeWalk.setFilter(AndTreeFilter.create(
 					PathFilter.create(relativePathUnix),
@@ -132,7 +136,7 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 	private final static int INDEX = 1;
 	private final static int WORKDIR = 2;
 
-	Map<Project, Repository> gitRoots = new HashMap<>();
+	Map<File, Repository> gitRoots = new HashMap<>();
 	Table<Repository, String, ObjectId> rootTreeShaCache = HashBasedTable.create();
 	Map<Project, ObjectId> subtreeShaCache = new HashMap<>();
 
@@ -142,25 +146,14 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 	 * We cache the Repository for every Project in {@code gitRoots}, and use dynamic programming to populate it.
 	 */
 	protected Repository repositoryFor(Project project) throws IOException {
-		Repository repo = gitRoots.get(project);
+		File projectGitDir = GitWorkarounds.getDotGitDir(getDir(project));
+		if (projectGitDir == null || !RepositoryCache.FileKey.isGitRepository(projectGitDir, FS.DETECTED)) {
+			throw new IllegalArgumentException("Cannot find git repository in any parent directory");
+		}
+		Repository repo = gitRoots.get(projectGitDir);
 		if (repo == null) {
-			if (isGitRoot(getDir(project))) {
-				repo = createRepo(getDir(project));
-			} else {
-				Project parentProj = getParent(project);
-				if (parentProj == null) {
-					repo = traverseParentsUntil(getDir(project).getParentFile(), null);
-					if (repo == null) {
-						throw new IllegalArgumentException("Cannot find git repository in any parent directory");
-					}
-				} else {
-					repo = traverseParentsUntil(getDir(project).getParentFile(), getDir(parentProj));
-					if (repo == null) {
-						repo = repositoryFor(parentProj);
-					}
-				}
-			}
-			gitRoots.put(project, repo);
+			repo = FileRepositoryBuilder.create(projectGitDir);
+			gitRoots.put(projectGitDir, repo);
 		}
 		return repo;
 	}
@@ -168,26 +161,6 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 	protected abstract File getDir(Project project);
 
 	protected abstract @Nullable Project getParent(Project project);
-
-	private static @Nullable Repository traverseParentsUntil(File startWith, File file) throws IOException {
-		while (startWith != null && !Objects.equals(startWith, file)) {
-			if (isGitRoot(startWith)) {
-				return createRepo(startWith);
-			} else {
-				startWith = startWith.getParentFile();
-			}
-		}
-		return null;
-	}
-
-	private static boolean isGitRoot(File dir) {
-		File dotGit = GitWorkarounds.getDotGitDir(dir);
-		return dotGit != null && RepositoryCache.FileKey.isGitRepository(dotGit, FS.DETECTED);
-	}
-
-	static Repository createRepo(File dir) throws IOException {
-		return FileRepositoryBuilder.create(GitWorkarounds.getDotGitDir(dir));
-	}
 
 	/**
 	 * Fast way to return treeSha of the given ref against the git repository which stores the given project.
@@ -216,7 +189,7 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 					RevCommit mergeBase = revWalk.next();
 					treeSha = Optional.ofNullable(mergeBase).orElse(ratchetFrom).getTree();
 				}
-				rootTreeShaCache.put(repo, reference, treeSha);
+				rootTreeShaCache.put(repo, reference, treeSha.copy());
 			}
 			return treeSha;
 		} catch (IOException e) {
@@ -241,7 +214,7 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 					TreeWalk treeWalk = TreeWalk.forPath(repo, subpath, rootTreeSha);
 					subtreeSha = treeWalk == null ? ObjectId.zeroId() : treeWalk.getObjectId(0);
 				}
-				subtreeShaCache.put(project, subtreeSha);
+				subtreeShaCache.put(project, subtreeSha.copy());
 			}
 			return subtreeSha;
 		} catch (IOException e) {

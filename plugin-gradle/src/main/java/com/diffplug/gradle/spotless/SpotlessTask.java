@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import javax.annotation.Nullable;
-
 import org.eclipse.jgit.lib.ObjectId;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.DirectoryProperty;
@@ -44,6 +42,7 @@ import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.extra.GitRatchet;
 
 public abstract class SpotlessTask extends DefaultTask {
 	@Internal
@@ -76,9 +75,6 @@ public abstract class SpotlessTask extends DefaultTask {
 		this.lineEndingsPolicy.set(lineEndingsPolicy);
 	}
 
-	/*** API which performs git up-to-date tasks. */
-	@Nullable
-	private transient GitRatchetGradle ratchet;
 	/** The sha of the tree at repository root, used for determining if an individual *file* is clean according to git. */
 	private transient ObjectId rootTreeSha;
 	/**
@@ -93,7 +89,7 @@ public abstract class SpotlessTask extends DefaultTask {
 	public void setupRatchet(String ratchetFrom) {
 		this.ratchetFrom = ratchetFrom;
 		if (!ratchetFrom.isEmpty()) {
-			ratchet = getTaskService().get().getRatchet();
+			GitRatchet ratchet = getTaskService().get().getRatchet();
 			File projectDir = getProjectDir().get().getAsFile();
 			rootTreeSha = ratchet.rootTreeShaOf(projectDir, ratchetFrom);
 			subtreeSha = ratchet.subtreeShaOf(projectDir, rootTreeSha);
@@ -107,7 +103,7 @@ public abstract class SpotlessTask extends DefaultTask {
 
 	@Internal
 	GitRatchetGradle getRatchet() {
-		return ratchet;
+		return ObjectId.zeroId().equals(getRatchetSha()) ? null : getTaskService().get().getRatchet();
 	}
 
 	@Internal

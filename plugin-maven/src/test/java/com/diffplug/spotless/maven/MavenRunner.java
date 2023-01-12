@@ -23,12 +23,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import com.diffplug.common.base.Throwables;
 import com.diffplug.common.io.ByteStreams;
 import com.diffplug.spotless.FileSignature;
+import com.diffplug.spotless.Jvm;
 
 /**
  * Harness for running a maven build, same idea as the
@@ -44,6 +47,7 @@ public class MavenRunner {
 	private File projectDir;
 	private String[] args;
 	private File localRepositoryDir;
+	private Map<String, String> environment = new HashMap<>();
 
 	public MavenRunner withProjectDir(File projectDir) {
 		this.projectDir = Objects.requireNonNull(projectDir);
@@ -60,6 +64,12 @@ public class MavenRunner {
 		return this;
 	}
 
+	public MavenRunner withRemoteDebug(int port) {
+		String address = (Jvm.version() < 9 ? "" : "*:") + port;
+		environment.put("MAVEN_OPTS", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=" + address);
+		return this;
+	}
+
 	private Result run() throws IOException, InterruptedException {
 		Objects.requireNonNull(projectDir, "Need to call withProjectDir() first");
 		Objects.requireNonNull(args, "Need to call withArguments() first");
@@ -68,6 +78,7 @@ public class MavenRunner {
 		List<String> cmds = getPlatformCmds("-e -Dmaven.repo.local=" + localRepositoryDir + ' ' + argsString);
 		ProcessBuilder builder = new ProcessBuilder(cmds);
 		builder.directory(projectDir);
+		builder.environment().putAll(environment);
 		Process process = builder.start();
 		// slurp and return the stdout, stderr, and exitValue
 		Slurper output = new Slurper(process.getInputStream());

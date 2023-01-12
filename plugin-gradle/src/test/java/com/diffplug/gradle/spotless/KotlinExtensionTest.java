@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,10 @@
  */
 package com.diffplug.gradle.spotless;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.condition.JRE.JAVA_11;
 
 import java.io.IOException;
 
-import org.gradle.testkit.runner.BuildResult;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 
@@ -41,9 +39,9 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 				"        ktlint()",
 				"    }",
 				"}");
-		setFile("src/main/kotlin/basic.kt").toResource("kotlin/ktlint/basic.dirty");
+		setFile("src/main/kotlin/Main.kt").toResource("kotlin/ktlint/basic.dirty");
 		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("src/main/kotlin/basic.kt").sameAsResource("kotlin/ktlint/basic.clean");
+		assertFile("src/main/kotlin/Main.kt").sameAsResource("kotlin/ktlint/basic.clean");
 	}
 
 	@Test
@@ -131,12 +129,52 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 				"repositories { mavenCentral() }",
 				"spotless {",
 				"    kotlin {",
-				"        ktlint('0.32.0').userData(['indent_size': '6'])",
+				"        ktlint().editorConfigOverride(['indent_size': '6'])",
 				"    }",
 				"}");
-		setFile("src/main/kotlin/basic.kt").toResource("kotlin/ktlint/basic.dirty");
-		BuildResult result = gradleRunner().withArguments("spotlessApply").buildAndFail();
-		assertThat(result.getOutput()).contains("Unexpected indentation (4) (it should be 6)");
+		setFile("src/main/kotlin/Main.kt").toResource("kotlin/ktlint/basic.dirty");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/kotlin/Main.kt").sameAsResource("kotlin/ktlint/basic.clean-indent6");
+	}
+
+	@Test
+	void withExperimental() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlin {",
+				"        ktlint().setUseExperimental(true)",
+				"    }",
+				"}");
+		setFile("src/main/kotlin/Main.kt").toResource("kotlin/ktlint/experimental.dirty");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/kotlin/Main.kt").sameAsResource("kotlin/ktlint/experimental.clean");
+	}
+
+	@Test
+	void withExperimentalEditorConfigOverride() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlin {",
+				"        ktlint().setUseExperimental(true)",
+				"            .editorConfigOverride([",
+				"        	    ij_kotlin_allow_trailing_comma: true,",
+				"        	    ij_kotlin_allow_trailing_comma_on_call_site: true",
+				"            ])",
+				"    }",
+				"}");
+		setFile("src/main/kotlin/Main.kt").toResource("kotlin/ktlint/experimentalEditorConfigOverride.dirty");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/kotlin/Main.kt").sameAsResource("kotlin/ktlint/experimentalEditorConfigOverride.clean");
 	}
 
 	@Test
@@ -149,8 +187,8 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 				"repositories { mavenCentral() }",
 				"spotless {",
 				"    kotlin {",
-				"        licenseHeader('" + HEADER + "')",
 				"        ktlint()",
+				"        licenseHeader('" + HEADER + "')",
 				"    }",
 				"}");
 		setFile("src/main/kotlin/AnObject.kt").toResource("kotlin/licenseheader/KotlinCodeWithoutHeader.test");
@@ -188,8 +226,8 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 				"repositories { mavenCentral() }",
 				"spotless {",
 				"    kotlin {",
-				"        licenseHeader ('" + HEADER + "', '@file')",
 				"        ktlint()",
+				"        licenseHeader ('" + HEADER + "', '@file')",
 				"    }",
 				"}");
 		setFile("src/main/kotlin/AnObject.kt").toResource("kotlin/licenseheader/KotlinCodeWithoutHeader.test");
@@ -227,8 +265,8 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 				"repositories { mavenCentral() }",
 				"spotless {",
 				"    kotlin {",
-				"        licenseHeader('" + HEADER_WITH_YEAR + "').yearSeparator(', ')",
 				"        ktlint()",
+				"        licenseHeader('" + HEADER_WITH_YEAR + "').yearSeparator(', ')",
 				"    }",
 				"}");
 
@@ -268,5 +306,93 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 		assertFile("src/main/kotlin/AnObject2.kt").matches(matcher -> {
 			matcher.startsWith("// License Header 2012, 2014");
 		});
+	}
+
+	@Test
+	@EnabledForJreRange(min = JAVA_11) // ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
+	void testWithCustomMaxWidthDefaultStyleKtfmt() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlin {",
+				"        ktfmt().configure { options ->",
+				"            options.maxWidth = 120",
+				"		 }",
+				"    }",
+				"}");
+
+		setFile("src/main/kotlin/max-width.kt").toResource("kotlin/ktfmt/max-width.dirty");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/kotlin/max-width.kt").sameAsResource("kotlin/ktfmt/max-width.clean");
+	}
+
+	@Test
+	@EnabledForJreRange(min = JAVA_11) // ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
+	void testWithCustomMaxWidthDefaultStyleKtfmtGradleKts() throws IOException {
+		setFile("build.gradle.kts").toLines(
+				"plugins {",
+				"    id(\"org.jetbrains.kotlin.jvm\") version \"1.5.31\"",
+				"    id(\"com.diffplug.spotless\")",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlin {",
+				"        ktfmt().configure { options ->",
+				"            options.setMaxWidth(120)",
+				"		 }",
+				"    }",
+				"}");
+
+		setFile("src/main/kotlin/max-width.kt").toResource("kotlin/ktfmt/max-width.dirty");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/kotlin/max-width.kt").sameAsResource("kotlin/ktfmt/max-width.clean");
+	}
+
+	@Test
+	@EnabledForJreRange(min = JAVA_11) // ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
+	void testWithCustomMaxWidthDropboxStyleKtfmt() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlin {",
+				"        ktfmt().dropboxStyle().configure { options ->",
+				"            options.maxWidth = 120",
+				"		 }",
+				"    }",
+				"}");
+
+		setFile("src/main/kotlin/max-width.kt").toResource("kotlin/ktfmt/max-width.dirty");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/kotlin/max-width.kt").sameAsResource("kotlin/ktfmt/max-width-dropbox.clean");
+	}
+
+	@Test
+	@EnabledForJreRange(min = JAVA_11) // ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
+	void testWithCustomMaxWidthDropboxStyleKtfmtGradleKts() throws IOException {
+		setFile("build.gradle.kts").toLines(
+				"plugins {",
+				"    id(\"org.jetbrains.kotlin.jvm\") version \"1.5.31\"",
+				"    id(\"com.diffplug.spotless\")",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlin {",
+				"        ktfmt().dropboxStyle().configure { options ->",
+				"            options.setMaxWidth(120)",
+				"		 }",
+				"    }",
+				"}");
+
+		setFile("src/main/kotlin/max-width.kt").toResource("kotlin/ktfmt/max-width.dirty");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/kotlin/max-width.kt").sameAsResource("kotlin/ktfmt/max-width-dropbox.clean");
 	}
 }

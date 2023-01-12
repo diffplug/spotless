@@ -26,7 +26,6 @@ class EclipseFormatStepTest extends MavenIntegrationHarness {
 		writePomWithJavaSteps(
 				"<eclipse>",
 				"  <file>${basedir}/formatter.xml</file>",
-				"  <version>4.7.1</version>",
 				"</eclipse>");
 		setFile("formatter.xml").toResource("java/eclipse/formatter.xml");
 

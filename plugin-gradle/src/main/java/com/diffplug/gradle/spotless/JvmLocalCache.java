@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.gradle.api.GradleException;
 import org.gradle.api.Task;
 
 import com.diffplug.spotless.FileSignature;
+import com.diffplug.spotless.LazyForwardingEquality;
 
 class JvmLocalCache {
 	private static GradleException cacheIsStale() {
@@ -53,6 +54,10 @@ class JvmLocalCache {
 
 		@Override
 		public void set(T value) {
+
+			// whenever we cache an instance of LazyForwardingEquality, we want to make sure that we give it
+			// a chance to null-out its initialization lambda (see https://github.com/diffplug/spotless/issues/1194#issuecomment-1120744842)
+			LazyForwardingEquality.unlazy(value);
 			daemonState.put(internalKey, value);
 		}
 

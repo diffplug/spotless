@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,5 +47,23 @@ class KtfmtTest extends MavenIntegrationHarness {
 		setFile("src/main/kotlin/main.kt").toResource("kotlin/ktfmt/basic.dirty");
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile("src/main/kotlin/main.kt").sameAsResource("kotlin/ktfmt/basic-dropboxstyle.clean");
+	}
+
+	@Test
+	void testKtfmtWithMaxWidthOption() throws Exception {
+		writePomWithKotlinSteps("<ktfmt><maxWidth>120</maxWidth></ktfmt>");
+
+		setFile("src/main/kotlin/main.kt").toResource("kotlin/ktfmt/max-width.dirty");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("src/main/kotlin/main.kt").sameAsResource("kotlin/ktfmt/max-width.clean");
+	}
+
+	@Test
+	void testKtfmtStyleWithMaxWidthOption() throws Exception {
+		writePomWithKotlinSteps("<ktfmt><style>DROPBOX</style><maxWidth>120</maxWidth></ktfmt>");
+
+		setFile("src/main/kotlin/main.kt").toResource("kotlin/ktfmt/max-width.dirty");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("src/main/kotlin/main.kt").sameAsResource("kotlin/ktfmt/max-width-dropbox.clean");
 	}
 }

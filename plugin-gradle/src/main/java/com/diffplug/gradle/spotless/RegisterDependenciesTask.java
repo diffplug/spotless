@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,26 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
-import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.services.BuildServiceRegistry;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
+import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.build.event.BuildEventsListenerRegistry;
 
 import com.diffplug.common.base.Preconditions;
+import com.diffplug.common.io.Files;
+import com.diffplug.spotless.FormatterStep;
 
 /**
  * NOT AN END-USER TASK, DO NOT USE FOR ANYTHING!
@@ -40,11 +50,10 @@ public abstract class RegisterDependenciesTask extends DefaultTask {
 	static final String TASK_NAME = "spotlessInternalRegisterDependencies";
 
 	void hookSubprojectTask(SpotlessTask task) {
-		// TODO: in the future, we might use this hook to implement #984
-		// spotlessSetup {
-		//    java { googleJavaFormat('1.2') }
-		//    ...etc
-		// }
+		// this ensures that if a user is using predeclared dependencies,
+		// those predeclared deps will be resolved before they are needed
+		// by the child tasks
+		//
 		// it's also needed to make sure that jvmLocalCache gets set
 		// in the SpotlessTaskService before any spotless tasks run
 		task.dependsOn(this);
@@ -52,19 +61,41 @@ public abstract class RegisterDependenciesTask extends DefaultTask {
 
 	void setup() {
 		Preconditions.checkArgument(getProject().getRootProject() == getProject(), "Can only be used on the root project");
-
+		String compositeBuildSuffix = getName().substring(TASK_NAME.length()); // see https://github.com/diffplug/spotless/pull/1001
 		BuildServiceRegistry buildServices = getProject().getGradle().getSharedServices();
-		getTaskService().set(buildServices.registerIfAbsent("SpotlessTaskService", SpotlessTaskService.class, spec -> {}));
-		getBuildEventsListenerRegistry().onTaskCompletion(getTaskService());
+		taskService = buildServices.registerIfAbsent("SpotlessTaskService" + compositeBuildSuffix, SpotlessTaskService.class, spec -> {});
+		usesService(taskService);
+		getBuildEventsListenerRegistry().onTaskCompletion(taskService);
+		unitOutput = new File(getProject().getBuildDir(), "tmp/spotless-register-dependencies");
+	}
+
+	List<FormatterStep> steps = new ArrayList<>();
+
+	@Input
+	public List<FormatterStep> getSteps() {
+		return steps;
+	}
+
+	File unitOutput;
+
+	@OutputFile
+	public File getUnitOutput() {
+		return unitOutput;
 	}
 
 	@TaskAction
-	public void trivialFunction() {
-		// nothing to do :)
+	public void trivialFunction() throws IOException {
+		Files.createParentDirs(unitOutput);
+		Files.write(Integer.toString(1), unitOutput, StandardCharsets.UTF_8);
 	}
 
+	// this field is stupid, but we need it, see https://github.com/diffplug/spotless/issues/1260
+	private Provider<SpotlessTaskService> taskService;
+
 	@Internal
-	abstract Property<SpotlessTaskService> getTaskService();
+	public Provider<SpotlessTaskService> getTaskService() {
+		return taskService;
+	}
 
 	@Inject
 	protected abstract BuildEventsListenerRegistry getBuildEventsListenerRegistry();

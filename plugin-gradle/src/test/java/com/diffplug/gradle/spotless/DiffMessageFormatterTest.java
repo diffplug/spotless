@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -133,6 +133,19 @@ class DiffMessageFormatterTest extends ResourceHarness {
 				"        +A\\n",
 				"        +B\\n",
 				"        +C\\n");
+	}
+
+	@Test
+	void customRunToFixMessage() throws Exception {
+		Bundle task = create(setFile("testFile").toContent("A\r\nB\r\nC\r\n"));
+		String customMessage = "Formatting issues detected, please read automatic-code-formatting.txt and correct.";
+		task.check.getRunToFixMessage().set(customMessage);
+
+		String msg = task.checkFailureMsg();
+
+		String firstLine = "The following files had format violations:\n";
+		String lastLine = "\n" + customMessage;
+		Assertions.assertThat(msg).startsWith(firstLine).endsWith(lastLine);
 	}
 
 	@Test

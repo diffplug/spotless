@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ import com.github.mustachejava.MustacheFactory;
 
 import com.diffplug.common.base.Unhandled;
 import com.diffplug.common.io.Resources;
+import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.ResourceHarness;
 
 public class MavenIntegrationHarness extends ResourceHarness {
@@ -57,8 +58,10 @@ public class MavenIntegrationHarness extends ResourceHarness {
 	private static final String CONFIGURATION = "configuration";
 	private static final String EXECUTIONS = "executions";
 	private static final String MODULES = "modules";
+	private static final String DEPENDENCIES = "dependencies";
 	private static final String MODULE_NAME = "name";
 	private static final String CHILD_ID = "childId";
+	private static final int REMOTE_DEBUG_PORT = 5005;
 
 	private final MustacheFactory mustacheFactory = new DefaultMustacheFactory();
 
@@ -79,6 +82,17 @@ public class MavenIntegrationHarness extends ResourceHarness {
 	@BeforeEach
 	void gitAttributes() throws IOException {
 		setFile(".gitattributes").toContent("* text eol=lf");
+		if (Jvm.version() >= 16) {
+			// for GJF https://github.com/diffplug/spotless/issues/834
+			setFile(".mvn/jvm.config").toContent(
+					"--add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED" +
+							" --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED" +
+							" --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED" +
+							" --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED" +
+							" --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED" +
+							// this last line is for Detekt
+							" --add-opens java.base/java.lang=ALL-UNNAMED");
+		}
 		// copy the mvnw resources
 		copy("mvnw").setExecutable(true);
 		copy("mvnw.cmd");
@@ -95,7 +109,7 @@ public class MavenIntegrationHarness extends ResourceHarness {
 	}
 
 	protected void writePomWithFormatSteps(String... steps) throws IOException {
-		writePom(formats(groupWithSteps("format", including("<include>src/**/java/**/*.java</include>"), steps)));
+		writePom(formats(groupWithSteps("format", including("src/**/java/**/*.java"), steps)));
 	}
 
 	protected void writePomWithAntlr4Steps(String... steps) throws IOException {
@@ -122,8 +136,12 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		writePom(groupWithSteps("cpp", steps));
 	}
 
-	protected void writePomWithTypescriptSteps(String... steps) throws IOException {
-		writePom(groupWithSteps("typescript", including("**/*.ts"), steps));
+	protected void writePomWithJavascriptSteps(String includes, String... steps) throws IOException {
+		writePom(groupWithSteps("javascript", including(includes), steps));
+	}
+
+	protected void writePomWithTypescriptSteps(String includes, String... steps) throws IOException {
+		writePom(groupWithSteps("typescript", including(includes), steps));
 	}
 
 	protected void writePomWithSqlSteps(String... steps) throws IOException {
@@ -138,12 +156,24 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		writePom(groupWithSteps("pom", including("pom_test.xml"), steps));
 	}
 
-	protected void writePom(String... configuration) throws IOException {
-		writePom(null, configuration);
+	protected void writePomWithMarkdownSteps(String... steps) throws IOException {
+		writePom(groupWithSteps("markdown", including("**/*.md"), steps));
 	}
 
-	protected void writePom(String[] executions, String[] configuration) throws IOException {
-		String pomXmlContent = createPomXmlContent(executions, configuration);
+	protected void writePomWithJsonSteps(String... steps) throws IOException {
+		writePom(groupWithSteps("json", including("**/*.json"), steps));
+	}
+
+	protected void writePomWithYamlSteps(String... steps) throws IOException {
+		writePom(groupWithSteps("yaml", including("**/*.yaml"), steps));
+	}
+
+	protected void writePom(String... configuration) throws IOException {
+		writePom(null, configuration, null);
+	}
+
+	protected void writePom(String[] executions, String[] configuration, String[] dependencies) throws IOException {
+		String pomXmlContent = createPomXmlContent(null, executions, configuration, dependencies);
 		setFile("pom.xml").toContent(pomXmlContent);
 	}
 
@@ -153,13 +183,30 @@ public class MavenIntegrationHarness extends ResourceHarness {
 				.withLocalRepository(new File(getSystemProperty(LOCAL_MAVEN_REPOSITORY_DIR)));
 	}
 
+	/**
+	 * Useful for local development. Allows debugging the Spotless Maven Plugin remotely.
+	 * Effectively translates into running {@code mvnDebug} on port 5005. The forked JVM will be
+	 * suspended until the debugger connects.
+	 */
+	protected MavenRunner mavenRunnerWithRemoteDebug() throws IOException {
+		return mavenRunner().withRemoteDebug(REMOTE_DEBUG_PORT);
+	}
+
 	protected MultiModuleProjectCreator multiModuleProject() {
 		return new MultiModuleProjectCreator();
 	}
 
-	private String createPomXmlContent(String[] executions, String[] configuration) throws IOException {
-		Map<String, Object> params = buildPomXmlParams(executions, configuration, null);
-		return createPomXmlContent("/pom-test.xml.mustache", params);
+	protected String createPomXmlContent(String pluginVersion, String[] executions, String[] configuration, String[] dependencies) throws IOException {
+		return createPomXmlContent("/pom-test.xml.mustache", pluginVersion, executions, configuration, dependencies);
+	}
+
+	protected String createPomXmlContent(String pomTemplate, String pluginVersion, String[] executions, String[] configuration, String[] dependencies) throws IOException {
+		Map<String, Object> params = buildPomXmlParams(pluginVersion, executions, configuration, null, dependencies);
+		return createPomXmlContent(pomTemplate, params);
+	}
+
+	protected String createPomXmlContent(String pluginVersion, String[] executions, String[] configuration) throws IOException {
+		return createPomXmlContent(pluginVersion, executions, configuration, null);
 	}
 
 	private String createPomXmlContent(String pomTemplate, Map<String, Object> params) throws IOException {
@@ -172,9 +219,9 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		}
 	}
 
-	private static Map<String, Object> buildPomXmlParams(String[] executions, String[] configuration, String[] modules) {
+	private static Map<String, Object> buildPomXmlParams(String pluginVersion, String[] executions, String[] configuration, String[] modules, String[] dependencies) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(SPOTLESS_MAVEN_PLUGIN_VERSION, getSystemProperty(SPOTLESS_MAVEN_PLUGIN_VERSION));
+		params.put(SPOTLESS_MAVEN_PLUGIN_VERSION, pluginVersion == null ? getSystemProperty(SPOTLESS_MAVEN_PLUGIN_VERSION) : pluginVersion);
 
 		if (configuration != null) {
 			params.put(CONFIGURATION, String.join("\n", configuration));
@@ -187,6 +234,10 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		if (modules != null) {
 			List<Map<String, String>> moduleNames = stream(modules).map(name -> singletonMap(MODULE_NAME, name)).collect(toList());
 			params.put(MODULES, moduleNames);
+		}
+
+		if (dependencies != null) {
+			params.put(DEPENDENCIES, String.join("\n", dependencies));
 		}
 
 		return params;
@@ -223,7 +274,7 @@ public class MavenIntegrationHarness extends ResourceHarness {
 	}
 
 	private static String[] including(String... includes) {
-		return groupWithSteps("includes", includes);
+		return groupWithSteps("includes", groupWithSteps("include", includes));
 	}
 
 	private static String[] formats(String... formats) {
@@ -265,7 +316,7 @@ public class MavenIntegrationHarness extends ResourceHarness {
 			modulesList.addAll(subProjects.keySet());
 			String[] modules = modulesList.toArray(new String[0]);
 
-			Map<String, Object> rootPomParams = buildPomXmlParams(null, configuration, modules);
+			Map<String, Object> rootPomParams = buildPomXmlParams(null, null, configuration, modules, null);
 			setFile("pom.xml").toContent(createPomXmlContent("/multi-module/pom-parent.xml.mustache", rootPomParams));
 		}
 

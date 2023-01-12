@@ -22,6 +22,7 @@ spotless {
 			eclipse().configFile rootProject.file('gradle/spotless.eclipseformat.xml')
 			trimTrailingWhitespace()
 			removeUnusedImports()
+			// TODO: formatAnnotations()
 			custom 'noInternalDeps', noInternalDepsClosure
 		}
 	}

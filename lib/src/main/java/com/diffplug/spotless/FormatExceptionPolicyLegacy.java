@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,13 @@
  */
 package com.diffplug.spotless;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class FormatExceptionPolicyLegacy extends NoLambda.EqualityBasedOnSerialization implements FormatExceptionPolicy {
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger logger = Logger.getLogger(Formatter.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(Formatter.class);
 
 	@Override
 	public void handleError(Throwable e, FormatterStep step, String relativePath) {
@@ -34,10 +34,10 @@ class FormatExceptionPolicyLegacy extends NoLambda.EqualityBasedOnSerialization 
 	}
 
 	static void error(Throwable e, FormatterStep step, String relativePath) {
-		logger.log(Level.SEVERE, "Step '" + step.getName() + "' found problem in '" + relativePath + "':\n" + e.getMessage(), e);
+		logger.error("Step '{}' found problem in '{}':\n{}", step.getName(), relativePath, e.getMessage(), e);
 	}
 
 	static void warning(Throwable e, FormatterStep step, String relativePath) {
-		logger.log(Level.WARNING, "Unable to apply step '" + step.getName() + "' to '" + relativePath + "'", e);
+		logger.warn("Unable to apply step '{}' to '{}'", step.getName(), relativePath, e);
 	}
 }

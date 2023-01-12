@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,9 @@ package com.diffplug.spotless.generic;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.ZoneOffset;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -118,6 +120,13 @@ class LicenseHeaderStepTest extends ResourceHarness {
 		StepHarness.forStep(LicenseHeaderStep.headerDelimiter("", package_).build())
 				.testUnaffected(getTestResource("license/MissingLicense.test"))
 				.test(getTestResource("license/HasLicense.test"), getTestResource("license/MissingLicense.test"));
+	}
+
+	@Test
+	void should_skip_lines_matching_predefined_pattern() throws Throwable {
+		StepHarness.forStep(LicenseHeaderStep.headerDelimiter("<!--\n  -- This is a fake license header.\n  -- All rights reserved.\n  -->", "^(?!<!--|\\s+--).*$")
+				.withSkipLinesMatching("(?i)^(<\\?xml[^>]+>|<!doctype[^>]+>)$").build())
+				.testResource("license/SkipLines.test", "license/SkipLinesHasLicense.test");
 	}
 
 	private String licenceWithAddress() {
@@ -227,10 +236,11 @@ class LicenseHeaderStepTest extends ResourceHarness {
 
 	@Test
 	void should_update_year_for_license_with_address() throws Throwable {
+		int currentYear = LocalDate.now(ZoneOffset.UTC).getYear();
 		FormatterStep step = LicenseHeaderStep.headerDelimiter(header(licenceWithAddress()), package_).withYearMode(YearMode.UPDATE_TO_TODAY).build();
 		StepHarness.forStep(step).test(
 				hasHeader(licenceWithAddress().replace("$YEAR", "2015")),
-				hasHeader(licenceWithAddress().replace("$YEAR", "2015-2021")));
+				hasHeader(licenceWithAddress().replace("$YEAR", "2015-" + currentYear)));
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.BuildTask;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
+import org.gradle.util.GradleVersion;
 import org.junit.jupiter.api.BeforeEach;
 
 import com.diffplug.common.base.Errors;
@@ -43,17 +44,42 @@ public class GradleIntegrationHarness extends ResourceHarness {
 	public enum GradleVersionSupport {
 		JRE_11("5.0"), MINIMUM(SpotlessPlugin.MINIMUM_GRADLE),
 		// technically, this API exists in 6.5, but the flags for it change in 6.6, so we build to that
-		CONFIGURATION_CACHE("6.6");
+		CONFIGURATION_CACHE("6.6"),
+		// https://docs.gradle.org/7.5/userguide/configuration_cache.html#config_cache:stable
+		STABLE_CONFIGURATION_CACHE("7.5");
 
 		final String version;
 
 		GradleVersionSupport(String version) {
-			if (Jvm.version() >= 15) {
-				// the first version with support for Java 15+
-				this.version = "6.7";
-			} else if (Jvm.version() >= 14) {
-				// the first version with support for Java 14+
-				this.version = "6.3";
+			String minVersionForRunningJRE;
+			switch (Jvm.version()) {
+			case 21:
+			case 20:
+				// TODO: https://docs.gradle.org/current/userguide/compatibility.html
+			case 19:
+				minVersionForRunningJRE = "7.6";
+				break;
+			case 18:
+				minVersionForRunningJRE = "7.5";
+				break;
+			case 17:
+				minVersionForRunningJRE = "7.3";
+				break;
+			case 16:
+				minVersionForRunningJRE = "7.0";
+				break;
+			case 15:
+				minVersionForRunningJRE = "6.7";
+				break;
+			case 14:
+				minVersionForRunningJRE = "6.3";
+				break;
+			default:
+				minVersionForRunningJRE = null;
+				break;
+			}
+			if (minVersionForRunningJRE != null && GradleVersion.version(minVersionForRunningJRE).compareTo(GradleVersion.version(version)) > 0) {
+				this.version = minVersionForRunningJRE;
 			} else {
 				this.version = version;
 			}

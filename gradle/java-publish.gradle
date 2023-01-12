@@ -1,13 +1,29 @@
+import java.nio.charset.StandardCharsets
+
+def decode64(String varName) {
+	String envValue = System.env[varName]
+	if (envValue == null) {
+		return ""
+	} else {
+		return new String(envValue.decodeBase64(), "UTF-8")
+	}
+}
 
 if (project.parent == null) {
 	group = 'com.diffplug.spotless'
+	def pass = System.env['ORG_GRADLE_PROJECT_nexus_pass64']
+	if (pass != null) {
+		pass = pass.decodeBase64()
+	}
 	// it's the root project
 	apply plugin: 'io.github.gradle-nexus.publish-plugin'
 	nexusPublishing {
 		repositories {
 			sonatype {
-				username = System.env['nexus_user']
-				password = System.env['nexus_pass']
+				nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+				snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+				username = System.env['ORG_GRADLE_PROJECT_nexus_user']
+				password = decode64('ORG_GRADLE_PROJECT_nexus_pass64')
 			}
 		}
 	}
@@ -64,7 +80,6 @@ javadoc {
 	options.addStringOption('source', '8')
 	// setup the header
 	options.header javadocInfo
-	options.footer javadocInfo
 	// setup links
 	options.linksOffline('https://docs.oracle.com/javase/8/docs/api/', "${dotdotGradle}/javadoc/java8")
 	options.linksOffline('https://docs.gradle.org/2.14/javadoc/', "${dotdotGradle}/javadoc/gradle")
@@ -157,8 +172,8 @@ model {
 
 if (!version.endsWith('-SNAPSHOT')) {
 	signing {
-		String gpg_key = new String(System.env['gpg_key64'].decodeBase64())
-		useInMemoryPgpKeys(gpg_key, System.env['gpg_passphrase'])
+		String gpg_key = decode64('ORG_GRADLE_PROJECT_gpg_key64')
+		useInMemoryPgpKeys(gpg_key, System.env['ORG_GRADLE_PROJECT_gpg_passphrase'])
 		sign(publishing.publications)
 	}
 
@@ -181,4 +196,9 @@ if (!version.endsWith('-SNAPSHOT')) {
 			}
 		}
 	}
+}
+
+tasks.withType(AbstractArchiveTask).configureEach {
+	preserveFileTimestamps = false
+	reproducibleFileOrder = true
 }

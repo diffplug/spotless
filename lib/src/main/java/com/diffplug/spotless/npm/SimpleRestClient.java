@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.net.URL;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 class SimpleRestClient {
 	private final String baseUrl;
@@ -49,7 +50,7 @@ class SimpleRestClient {
 		return postJson(endpoint, (String) null);
 	}
 
-	String postJson(String endpoint, String rawJson) throws SimpleRestException {
+	String postJson(String endpoint, @Nullable String rawJson) throws SimpleRestException {
 		try {
 			URL url = new URL(this.baseUrl + endpoint);
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ public class SpotlessPlugin implements Plugin<Project> {
 		if (project.hasProperty(SPOTLESS_MODERN)) {
 			project.getLogger().warn("'spotlessModern' has no effect as of Spotless 5.0, recommend removing it.");
 		}
-		// make sure there's a {@code clean} task
+		// make sure there's a `clean` and a `check`
 		project.getPlugins().apply(BasePlugin.class);
 
 		// setup the extension

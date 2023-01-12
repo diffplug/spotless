@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,13 +26,18 @@ class BadSemver {
 		}
 		String major = matcher.group(1);
 		String minor = matcher.group(2);
-		return version(Integer.parseInt(major), Integer.parseInt(minor));
+		String patch = matcher.group(3);
+		return version(Integer.parseInt(major), Integer.parseInt(minor), patch != null ? Integer.parseInt(patch) : 0);
 	}
 
 	/** Ambiguous after 2147.483647.blah-blah */
-	protected static int version(int major, int minor) {
-		return major * 1_000_000 + minor;
+	protected static int version(int major, int minor, int patch) {
+		return major * 1_000_000 + minor * 1_000 + patch;
 	}
 
-	private static final Pattern BAD_SEMVER = Pattern.compile("(\\d+)\\.(\\d+)");
+	protected static int version(int major, int minor) {
+		return version(major, minor, 0);
+	}
+
+	private static final Pattern BAD_SEMVER = Pattern.compile("(\\d+)\\.(\\d+)\\.*(\\d+)*");
 }

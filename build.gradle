@@ -1,7 +1,5 @@
-buildscript {
-	repositories {
-		mavenCentral()
-	}
+repositories {
+	mavenCentral()
 }
 apply from: rootProject.file('gradle/java-publish.gradle')
 apply from: rootProject.file('gradle/changelog.gradle')
@@ -20,8 +18,4 @@ spotless {
 		trimTrailingWhitespace()
 		endWithNewline()
 	}
-}
-
-static Class<?> spotBugsTaskType() {
-	return com.github.spotbugs.snom.SpotBugsTask
 }

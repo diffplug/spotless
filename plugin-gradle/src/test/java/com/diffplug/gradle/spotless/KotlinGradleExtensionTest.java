@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,26 +90,7 @@ class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 				"}");
 		setFile("configuration.gradle.kts").toResource("kotlin/diktat/basic.dirty");
 		BuildResult result = gradleRunner().withArguments("spotlessApply").buildAndFail();
-		assertThat(result.getOutput()).contains("[HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE] files that contain multiple "
-				+ "or no classes should contain description of what is inside of this file: there are 0 declared classes and/or objects");
-	}
-
-	@Test
-	void integration_pinterest() throws IOException {
-		setFile("build.gradle").toLines(
-				"plugins {",
-				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
-				"    id 'com.diffplug.spotless'",
-				"}",
-				"repositories { mavenCentral() }",
-				"spotless {",
-				"    kotlinGradle {",
-				"        ktlint('0.32.0')",
-				"    }",
-				"}");
-		setFile("configuration.gradle.kts").toResource("kotlin/ktlint/basic.dirty");
-		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("configuration.gradle.kts").sameAsResource("kotlin/ktlint/basic.clean");
+		assertThat(result.getOutput()).contains("[AVOID_NESTED_FUNCTIONS] try to avoid using nested functions");
 	}
 
 	@Test
@@ -127,6 +108,46 @@ class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 				"}");
 		setFile("configuration.gradle.kts").toResource("kotlin/ktlint/basic.dirty");
 		gradleRunner().withArguments("spotlessCheck").buildAndFail();
+	}
+
+	@Test
+	void withExperimental() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlinGradle {",
+				"        ktlint().setUseExperimental(true)",
+				"    }",
+				"}");
+		setFile("configuration.gradle.kts").toResource("kotlin/ktlint/experimental.dirty");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("configuration.gradle.kts").sameAsResource("kotlin/ktlint/experimental.clean");
+	}
+
+	@Test
+	void withExperimentalEditorConfigOverride() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlinGradle {",
+				"        ktlint().setUseExperimental(true)",
+				"            .editorConfigOverride([",
+				"        	    ij_kotlin_allow_trailing_comma: true,",
+				"        	    ij_kotlin_allow_trailing_comma_on_call_site: true",
+				"            ])",
+				"    }",
+				"}");
+		setFile("configuration.gradle.kts").toResource("kotlin/ktlint/experimentalEditorConfigOverride.dirty");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("configuration.gradle.kts").sameAsResource("kotlin/ktlint/experimentalEditorConfigOverride.clean");
 	}
 
 	@Test
