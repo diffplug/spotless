@@ -60,6 +60,7 @@ user@machine repo % mvn spotless:check
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier), [ESLint](#eslint-typescript))
   - [Javascript](#javascript) ([prettier](#prettier), [ESLint](#eslint-javascript))
   - [JSON](#json)
+  - [YAML](#yaml)
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection))
     - [eclipse web tools platform](#eclipse-web-tools-platform)
@@ -852,7 +853,7 @@ For details, see the [npm detection](#npm-detection) and [`.npmrc` detection](#n
 
 ## JSON
 
-- `com.diffplug.spotless.maven.json.Json` [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/json/json.java)
+- `com.diffplug.spotless.maven.json.Json` [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/json/Json.java)
 
 ```xml
 <configuration>
@@ -896,6 +897,41 @@ all HTML characters are written escaped or none. Set `escapeHtml` if you prefer 
 * `sortByKeys` will apply lexicographic order on the keys of the input JSON. See the
 [javadoc of String](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html#compareTo(java.lang.String))
 for details.
+
+<a name="applying-prettier-to-javascript--flow--typescript--css--scss--less--jsx--graphql--yaml--etc"></a>
+
+
+## YAML
+
+- `com.diffplug.spotless.maven.FormatterFactory.addStepFactory(FormatterStepFactory)` [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/yaml/Yaml.java)
+
+```xml
+<configuration>
+  <yaml>
+    <includes>     <!-- You have to set the target manually -->
+      <include>src/**/*.yaml</include>
+    </includes>
+
+    <jackson />    <!-- has its own section below -->
+  </yaml>
+</configuration>
+```
+
+### jackson
+
+Uses Jackson and YAMLFactory to pretty print objects:
+
+```xml
+<jackson>
+  <version>2.14.1</version>    <!-- optional: The version of 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml' to be used -->
+  <enabledFeatures>            <!-- optional: Customize the set of enabled features -->
+    <enabledFeature>INDENT_OUTPUT<enabledFeature/>
+  </enabledFeatures>
+  <disabledFeatures>           <!-- optional: Customize the set of disabled features -->
+    <disabledFeature>DEFAULT_HAS_NO_DISABLED_FEATURE<disabledFeature/>
+  </disabledFeatures>
+</jackson>
+```
 
 <a name="applying-prettier-to-javascript--flow--typescript--css--scss--less--jsx--graphql--yaml--etc"></a>
 
