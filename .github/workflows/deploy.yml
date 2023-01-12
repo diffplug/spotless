@@ -32,8 +32,6 @@ jobs:
       ORG_GRADLE_PROJECT_nexus_pass: ${{ secrets.NEXUS_PASS }}
       ORG_GRADLE_PROJECT_gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
       ORG_GRADLE_PROJECT_gpg_key64: ${{ secrets.GPG_KEY64 }}
-
-        gradle_key
     steps:
       - uses: actions/checkout@v3
       - name: jdk 11
