@@ -142,7 +142,7 @@ class JvmTest {
 			}).getMessage();
 			assertThat(proposal).isEqualTo("My Test Formatter " + fmtVersion + " is currently being used, but outdated.\n" +
 					"My Test Formatter 2 is the recommended version, which may have fixed this problem.\n" +
-					"My Test Formatter 2 requires JVM 10+.");
+					"My Test Formatter 2 requires JVM " + (requiredJvm) + "+.");
 		}
 	}
 
