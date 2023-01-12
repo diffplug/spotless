@@ -140,7 +140,7 @@ class JvmTest {
 					throw new Exception("Some test exception");
 				}).apply("");
 			}).getMessage();
-			assertThat(proposal).isEqualTo("My Test Formatter " + fmtVersion + " is currently being used, but outdated.\n" +
+			assertThat(proposal.replace("\r", "")).isEqualTo("My Test Formatter " + fmtVersion + " is currently being used, but outdated.\n" +
 					"My Test Formatter 2 is the recommended version, which may have fixed this problem.\n" +
 					"My Test Formatter 2 requires JVM " + (requiredJvm) + "+.");
 		}
