@@ -31,9 +31,10 @@ import com.diffplug.spotless.Provisioner;
 /**
  * Simple YAML formatter which reformats the file according to Jackson YAMLFactory.
  */
+// https://stackoverflow.com/questions/14515994/convert-json-string-to-pretty-print-json-output-using-jackson
 public final class YamlJacksonStep {
-	private static final String MAVEN_COORDINATE = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:";
-	private static final String DEFAULT_VERSION = "2.13.4";
+	static final String MAVEN_COORDINATE = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:";
+	static final String DEFAULT_VERSION = "2.13.4";
 
 	public static String defaultVersion() {
 		return DEFAULT_VERSION;
@@ -80,8 +81,8 @@ public final class YamlJacksonStep {
 			Method enableFeature;
 			Method disableFeature;
 
-			Method stringToObject;
-			Method objectToString;
+			Method stringToNode;
+			Method nodeToString;
 			try {
 				ClassLoader classLoader = jarState.getClassLoader();
 				jsonFactoryClass = classLoader.loadClass("com.fasterxml.jackson.core.JsonFactory");
@@ -97,8 +98,18 @@ public final class YamlJacksonStep {
 					disableFeature = objectMapperClass.getMethod("disable", serializationFeatureClass);
 				}
 
-				stringToObject = objectMapperClass.getMethod("readValue", String.class, Class.class);
-				objectToString = objectMapperClass.getMethod("writeValueAsString", Object.class);
+				// https://stackoverflow.com/questions/25222327/deserialize-pojos-from-multiple-yaml-documents-in-a-single-file-in-jackson
+				// List<ObjectNode> docs = mapper
+				// .readValues<ObjectNode>(yamlParser, new TypeReference<ObjectNode> {})
+				// .readAll();
+
+				Class<?> jsonNodeClass = classLoader.loadClass("com.fasterxml.jackson.databind.JsonNode");
+
+				// This will transit with a JsonNode
+				// A JsonNode may keep the comments from the input node
+				stringToNode = objectMapperClass.getMethod("readTree", String.class);
+				// Not 'toPrettyString' as one could require no INDENT_OUTPUT
+				nodeToString = jsonNodeClass.getMethod("toPrettyString");
 			} catch (ClassNotFoundException | NoSuchMethodException e) {
 				throw new IllegalStateException("There was a problem preparing org.json dependencies", e);
 			}
@@ -125,15 +136,15 @@ public final class YamlJacksonStep {
 					disableFeature.invoke(objectMapper, indentOutput);
 				}
 
-				return format(objectMapper, stringToObject, objectToString, s);
+				return format(objectMapper, stringToNode, nodeToString, s);
 			};
 		}
 
-		private String format(Object objectMapper, Method stringToObject, Method objectToString, String s)
+		private String format(Object objectMapper, Method stringToNode, Method nodeToString, String s)
 				throws IllegalAccessException, IllegalArgumentException {
 			try {
-				Object parsed = stringToObject.invoke(objectMapper, s, Object.class);
-				return (String) objectToString.invoke(objectMapper, parsed);
+				Object node = stringToNode.invoke(objectMapper, s);
+				return (String) nodeToString.invoke(node);
 			} catch (InvocationTargetException ex) {
 				throw new AssertionError("Unable to format YAML", ex.getCause());
 			}

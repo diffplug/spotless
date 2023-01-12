@@ -14,7 +14,8 @@ def NEEDS_GLUE = [
 	'ktlint',
 	'flexmark',
 	'diktat',
-	'scalafmt'
+	'scalafmt',
+	'jackson'
 ]
 for (glue in NEEDS_GLUE) {
 	sourceSets.register(glue) {
@@ -54,6 +55,9 @@ dependencies {
 	sortPomCompileOnly 'org.slf4j:slf4j-api:2.0.0'
 
 	palantirJavaFormatCompileOnly 'com.palantir.javaformat:palantir-java-format:1.1.0' 	// this version needs to stay compilable against Java 8 for CI Job testNpm
+
+	// used jackson-based formatters
+	jacksonCompileOnly 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.4'
 
 	String VER_KTFMT = '0.42'
 	ktfmtCompileOnly "com.facebook:ktfmt:$VER_KTFMT"
