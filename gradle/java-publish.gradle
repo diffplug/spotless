@@ -1,7 +1,7 @@
 import java.nio.charset.StandardCharsets
 
-def decode64(String varNam) {
-	String envValue = System.env['ORG_GRADLE_PROJECT_nexus_user']
+def decode64(String varName) {
+	String envValue = System.env[varName]
 	if (envValue == null) {
 		return ""
 	} else {
