@@ -17,8 +17,8 @@ package com.diffplug.spotless.yaml;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -32,9 +32,12 @@ import com.diffplug.spotless.Provisioner;
  * Simple YAML formatter which reformats the file according to Jackson YAMLFactory.
  */
 // https://stackoverflow.com/questions/14515994/convert-json-string-to-pretty-print-json-output-using-jackson
-public final class YamlJacksonStep {
+public class YamlJacksonStep {
 	static final String MAVEN_COORDINATE = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:";
-	static final String DEFAULT_VERSION = "2.13.4";
+	// https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml
+	static final String DEFAULT_VERSION = "2.14.1";
+
+	private YamlJacksonStep() {}
 
 	public static String defaultVersion() {
 		return DEFAULT_VERSION;
@@ -69,89 +72,14 @@ public final class YamlJacksonStep {
 			this.enabledFeatures = enabledFeatures;
 			this.disabledFeatures = disabledFeatures;
 
-			this.jarState = JarState.from(MAVEN_COORDINATE + jacksonVersion, provisioner);
+			this.jarState = JarState.from(YamlJacksonStep.MAVEN_COORDINATE + jacksonVersion, provisioner);
 		}
 
-		FormatterFunc toFormatter() {
-			Class<?> jsonFactoryClass;
-			Class<?> yamlFactoryClass;
-			Class<?> objectMapperClass;
-
-			Class<?> serializationFeatureClass;
-			Method enableFeature;
-			Method disableFeature;
-
-			Method stringToNode;
-			Method nodeToString;
-			try {
-				ClassLoader classLoader = jarState.getClassLoader();
-				jsonFactoryClass = classLoader.loadClass("com.fasterxml.jackson.core.JsonFactory");
-				yamlFactoryClass = classLoader.loadClass("com.fasterxml.jackson.dataformat.yaml.YAMLFactory");
-
-				objectMapperClass = classLoader.loadClass("com.fasterxml.jackson.databind.ObjectMapper");
-
-				// Configure the ObjectMapper
-				// https://github.com/FasterXML/jackson-databind#commonly-used-features
-				{
-					serializationFeatureClass = classLoader.loadClass("com.fasterxml.jackson.databind.SerializationFeature");
-					enableFeature = objectMapperClass.getMethod("enable", serializationFeatureClass);
-					disableFeature = objectMapperClass.getMethod("disable", serializationFeatureClass);
-				}
-
-				// https://stackoverflow.com/questions/25222327/deserialize-pojos-from-multiple-yaml-documents-in-a-single-file-in-jackson
-				// List<ObjectNode> docs = mapper
-				// .readValues<ObjectNode>(yamlParser, new TypeReference<ObjectNode> {})
-				// .readAll();
-
-				Class<?> jsonNodeClass = classLoader.loadClass("com.fasterxml.jackson.databind.JsonNode");
-
-				// This will transit with a JsonNode
-				// A JsonNode may keep the comments from the input node
-				stringToNode = objectMapperClass.getMethod("readTree", String.class);
-				// Not 'toPrettyString' as one could require no INDENT_OUTPUT
-				nodeToString = jsonNodeClass.getMethod("toPrettyString");
-			} catch (ClassNotFoundException | NoSuchMethodException e) {
-				throw new IllegalStateException("There was a problem preparing org.json dependencies", e);
-			}
-
-			return s -> {
-				if (s.isEmpty()) {
-					return s;
-				}
-
-				Object yamlFactory = yamlFactoryClass.getConstructor().newInstance();
-				Object objectMapper = objectMapperClass.getConstructor(jsonFactoryClass).newInstance(yamlFactory);
-
-				for (String feature : enabledFeatures) {
-					// https://stackoverflow.com/questions/3735927/java-instantiating-an-enum-using-reflection
-					Object indentOutput = Enum.valueOf(serializationFeatureClass.asSubclass(Enum.class), feature);
-
-					enableFeature.invoke(objectMapper, indentOutput);
-				}
-
-				for (String feature : disabledFeatures) {
-					// https://stackoverflow.com/questions/3735927/java-instantiating-an-enum-using-reflection
-					Object indentOutput = Enum.valueOf(serializationFeatureClass.asSubclass(Enum.class), feature);
-
-					disableFeature.invoke(objectMapper, indentOutput);
-				}
-
-				return format(objectMapper, stringToNode, nodeToString, s);
-			};
+		FormatterFunc toFormatter() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
+				InstantiationException, IllegalAccessException {
+			Class<?> formatterFunc = jarState.getClassLoader().loadClass("com.diffplug.spotless.glue.yaml.YamlJacksonFormatterFunc");
+			Constructor<?> constructor = formatterFunc.getConstructor(List.class, List.class);
+			return (FormatterFunc) constructor.newInstance(enabledFeatures, disabledFeatures);
 		}
-
-		private String format(Object objectMapper, Method stringToNode, Method nodeToString, String s)
-				throws IllegalAccessException, IllegalArgumentException {
-			try {
-				Object node = stringToNode.invoke(objectMapper, s);
-				return (String) nodeToString.invoke(node);
-			} catch (InvocationTargetException ex) {
-				throw new AssertionError("Unable to format YAML", ex.getCause());
-			}
-		}
-	}
-
-	private YamlJacksonStep() {
-		// cannot be directly instantiated
 	}
 }

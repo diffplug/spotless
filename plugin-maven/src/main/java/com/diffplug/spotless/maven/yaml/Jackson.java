@@ -24,7 +24,6 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 import com.diffplug.spotless.yaml.YamlJacksonStep;
-import com.diffplug.spotless.yaml.YamlJacksonV2Step;
 
 public class Jackson implements FormatterStepFactory {
 
@@ -41,7 +40,7 @@ public class Jackson implements FormatterStepFactory {
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
 		List<String> enabledFeaturesAsList = Arrays.asList(enabledFeatures);
 		List<String> disabledFeaturesAsList = Arrays.asList(disabledFeatures);
-		return YamlJacksonV2Step
+		return YamlJacksonStep
 				.create(enabledFeaturesAsList, disabledFeaturesAsList, version, stepConfig.getProvisioner());
 	}
 }

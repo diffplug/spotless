@@ -31,8 +31,6 @@ public class YamlJacksonFormatterFunc implements FormatterFunc {
 	private List<String> enabledFeatures;
 	private List<String> disabledFeatures;
 
-	// private static final Logger logger = LoggerFactory.getLogger(YamlJacksonFormatterFunc.class);
-
 	public YamlJacksonFormatterFunc(List<String> enabledFeatures, List<String> disabledFeatures) {
 		this.enabledFeatures = enabledFeatures;
 		this.disabledFeatures = disabledFeatures;

@@ -923,7 +923,7 @@ Uses Jackson and YAMLFactory to pretty print objects:
 
 ```xml
 <jackson>
-  <version>2.13.4</version>    <!-- optional: The version of 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml' to be used -->
+  <version>2.14.1</version>    <!-- optional: The version of 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml' to be used -->
   <enabledFeatures>            <!-- optional: Customize the set of enabled features -->
     <enabledFeature>INDENT_OUTPUT<enabledFeature/>
   </enabledFeatures>
