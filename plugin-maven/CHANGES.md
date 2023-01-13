@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.30.0] - 2023-01-13
 ### Added
 * Add option `editorConfigFile` for `ktLint` [#142](https://github.com/diffplug/spotless/issues/142)
   * **POTENTIALLY BREAKING** `ktlint` step now modifies license headers. Make sure to put `licenseHeader` *after* `ktlint`.
