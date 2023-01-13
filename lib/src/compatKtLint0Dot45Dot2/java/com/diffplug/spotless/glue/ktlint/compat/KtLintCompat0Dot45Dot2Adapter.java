@@ -77,7 +77,7 @@ public class KtLintCompat0Dot45Dot2Adapter implements KtLintCompatAdapter {
 				userData,
 				formatterCallback,
 				isScript,
-				editorConfigPath.toFile().getAbsolutePath(),
+				editorConfigPath == null ? null : editorConfigPath.toFile().getAbsolutePath(),
 				false,
 				editorConfigOverride,
 				false));

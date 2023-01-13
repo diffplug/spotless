@@ -16,25 +16,60 @@
 package com.diffplug.spotless.maven.json;
 
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
 public class JsonTest extends MavenIntegrationHarness {
+	private static final Logger LOGGER = LoggerFactory.getLogger(JsonTest.class);
+
 	@Test
-	public void testFormatJson_WithSimple_defaultConfig() throws Exception {
-		writePomWithJsonSteps("<json><simple/></json>");
+	public void testFormatJson_WithSimple_defaultConfig_sortByKeys() throws Exception {
+		writePomWithJsonSteps("<simple/>");
 
 		setFile("json_test.json").toResource("json/sortByKeysBefore.json");
-		mavenRunner().withArguments("spotless:apply").runNoError().error();
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("json_test.json").sameAsResource("json/sortByKeysAfterDisabled_Simple.json");
+	}
+
+	@Test
+	public void testFormatJson_WithSimple_defaultConfig_nestedObject() throws Exception {
+		writePomWithJsonSteps("<simple/>");
+
+		setFile("json_test.json").toResource("json/nestedObjectBefore.json");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("json_test.json").sameAsResource("json/nestedObjectAfter.json");
+	}
+
+	@Test
+	public void testFormatJson_WithGson_defaultConfig_sortByKeys() throws Exception {
+		writePomWithJsonSteps("<gson/>");
+
+		setFile("json_test.json").toResource("json/sortByKeysBefore.json");
+		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile("json_test.json").sameAsResource("json/sortByKeysAfterDisabled.json");
 	}
 
 	@Test
-	public void testFormatJson_WithGson_defaultConfig() throws Exception {
-		writePomWithJsonSteps("<json><gson/></json>");
+	public void testFormatJson_WithGson_sortByKeys() throws Exception {
+		writePomWithJsonSteps("<gson><sortByKeys>true</sortByKeys></gson>");
 
 		setFile("json_test.json").toResource("json/sortByKeysBefore.json");
-		mavenRunner().withArguments("spotless:apply").runNoError().error();
-		assertFile("json_test.json").sameAsResource("json/sortByKeysAfterDisabled.json");
+
+		String output = mavenRunner().withArguments("spotless:apply").runNoError().output();
+		LOGGER.error(output);
+		System.err.println(output);
+		assertFile("json_test.json").sameAsResource("json/sortByKeysAfter.json");
 	}
+
+	@Test
+	public void testFormatJson_WithGson_defaultConfig_nestedObject() throws Exception {
+		writePomWithJsonSteps("<gson/>");
+
+		setFile("json_test.json").toResource("json/nestedObjectBefore.json");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("json_test.json").sameAsResource("json/nestedObjectAfter.json");
+	}
+
 }

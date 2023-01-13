@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -165,6 +165,11 @@ public abstract class SpotlessExtension {
 	/** Configures the special C/C++-specific extension. */
 	public void cpp(Action<CppExtension> closure) {
 		format(CppExtension.NAME, CppExtension.class, closure);
+	}
+
+	/** Configures the special javascript-specific extension for javascript files. */
+	public void javascript(Action<JavascriptExtension> closure) {
+		format(JavascriptExtension.NAME, JavascriptExtension.class, closure);
 	}
 
 	/** Configures the special typescript-specific extension for typescript files. */
