@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.32.0] - 2023-01-13
 ### Added
 * Add option `editorConfigFile` for `ktLint` [#142](https://github.com/diffplug/spotless/issues/142)
   * **POTENTIALLY BREAKING** `ktlint` step now modifies license headers. Make sure to put `licenseHeader` *after* `ktlint`.
@@ -32,7 +34,6 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   * Bump default `ktlint` version to latest `0.47.1` -> `0.48.1` ([#1456](https://github.com/diffplug/spotless/pull/1456))
 * Switch our publishing infrastructure from CircleCI to GitHub Actions ([#1462](https://github.com/diffplug/spotless/pull/1462)).
   * Help wanted for moving our tests too ([#1472](https://github.com/diffplug/spotless/issues/1472))
-
 
 ## [2.31.1] - 2023-01-02
 ### Fixed
