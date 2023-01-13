@@ -69,8 +69,14 @@ class NpmProcess {
 
 	private List<String> processCommand(String... args) {
 		List<String> command = new ArrayList<>(args.length + 1);
+		File nodeExecutable = this.npmExecutable.getParentFile().toPath().resolve("node").toFile();
+		if (!(nodeExecutable.exists() && nodeExecutable.canExecute())) {
+			throw new IllegalStateException("node must exist in the same directory as npm and be executable. Using npm @ " + this.npmExecutable.getAbsolutePath());
+		}
+		command.add(nodeExecutable.getAbsolutePath());
 		command.add(this.npmExecutable.getAbsolutePath());
 		command.addAll(Arrays.asList(args));
+
 		return command;
 	}
 
