@@ -50,6 +50,7 @@ class PrettierFormatterStepTest extends ResourceHarness {
 			final FormatterStep formatterStep = PrettierFormatterStep.create(
 					PrettierFormatterStep.defaultDevDependencies(),
 					TestProvisioner.mavenCentral(),
+					projectDir(),
 					buildDir(),
 					npmPathResolver(),
 					new PrettierConfig(prettierRc, null));
@@ -74,6 +75,7 @@ class PrettierFormatterStepTest extends ResourceHarness {
 			final FormatterStep formatterStep = PrettierFormatterStep.create(
 					PrettierFormatterStep.defaultDevDependencies(),
 					TestProvisioner.mavenCentral(),
+					projectDir(),
 					buildDir(),
 					npmPathResolver(),
 					new PrettierConfig(null, ImmutableMap.of("filepath", "anyname.json"))); // should select parser based on this name
@@ -93,6 +95,7 @@ class PrettierFormatterStepTest extends ResourceHarness {
 			final FormatterStep formatterStep = PrettierFormatterStep.create(
 					PrettierFormatterStep.defaultDevDependencies(),
 					TestProvisioner.mavenCentral(),
+					projectDir(),
 					buildDir(),
 					npmPathResolver(),
 					new PrettierConfig(null, Collections.emptyMap()));
@@ -107,12 +110,13 @@ class PrettierFormatterStepTest extends ResourceHarness {
 			FormatterStep formatterStep = PrettierFormatterStep.create(
 					PrettierFormatterStep.defaultDevDependenciesWithPrettier("2.0.5"),
 					TestProvisioner.mavenCentral(),
+					projectDir(),
 					buildDir(),
 					npmPathResolver(),
 					new PrettierConfig(null, ImmutableMap.of("parser", "postcss")));
 			try (StepHarnessWithFile stepHarness = StepHarnessWithFile.forStep(this, formatterStep)) {
 				stepHarness.testResourceExceptionMsg("npm/prettier/filetypes/scss/scss.dirty").isEqualTo(
-						"Unexpected response status code at /prettier/format [HTTP 501] -- (Error while formatting: Error: Couldn't resolve parser \"postcss\")");
+						"Unexpected response status code at /prettier/format [HTTP 500] -- (Error while formatting: Error: Couldn't resolve parser \"postcss\")");
 			}
 		}
 	}
@@ -131,6 +135,7 @@ class PrettierFormatterStepTest extends ResourceHarness {
 			final FormatterStep formatterStep = PrettierFormatterStep.create(
 					PrettierFormatterStep.defaultDevDependencies(),
 					TestProvisioner.mavenCentral(),
+					projectDir(),
 					buildDir(),
 					npmPathResolver(),
 					config); // should select parser based on this name

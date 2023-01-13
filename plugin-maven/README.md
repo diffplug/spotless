@@ -57,8 +57,10 @@ user@machine repo % mvn spotless:check
   - [Sql](#sql) ([dbeaver](#dbeaver))
   - [Maven Pom](#maven-pom) ([sortPom](#sortpom))
   - [Markdown](#markdown) ([flexmark](#flexmark))
-  - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier))
+  - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier), [ESLint](#eslint-typescript))
+  - [Javascript](#javascript) ([prettier](#prettier), [ESLint](#eslint-javascript))
   - [JSON](#json)
+  - [YAML](#yaml)
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection))
     - [eclipse web tools platform](#eclipse-web-tools-platform)
@@ -240,7 +242,7 @@ any other maven phase (i.e. compile) then it can be configured as below;
 
 ```xml
 <eclipse>
-  <version>4.13.0</version>                     <!-- optional -->
+  <version>4.21.0</version>                     <!-- optional version of Eclipse Formatter -->
   <file>${project.basedir}/eclipse-formatter.xml</file> <!-- optional -->
 </eclipse>
 ```
@@ -315,7 +317,7 @@ These mechanisms already exist for the Gradle plugin.
 
 ```xml
 <greclipse>
-  <version>4.13.0</version>                     <!-- optional -->
+  <version>4.21.0</version>                     <!-- optional version of Eclipse Formatter -->
   <file>${project.basedir}/greclipse.properties</file> <!-- optional -->
 </greclipse>
 ```
@@ -465,7 +467,7 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
 
 ```xml
 <eclipseCdt>
-  <version>4.13.0</version>               <!-- optional -->
+  <version>4.21.0</version>               <!-- optional version of Eclipse Formatter -->
   <file>${project.basedir}/eclipse-cdt.xml</file> <!-- optional -->
 </eclipseCdt>
 ```
@@ -676,6 +678,7 @@ Currently, none of the available options can be configured yet. It uses only the
 
     <tsfmt/>    <!-- has its own section below -->
     <prettier/> <!-- has its own section below -->
+    <eslint/>   <!-- has its own section below -->
 
     <licenseHeader>
       <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
@@ -716,9 +719,141 @@ The auto-discovery of config files (up the file tree) will not work when using t
 
 For details, see the [npm detection](#npm-detection) and [`.npmrc` detection](#npmrc-detection) sections of prettier, which apply also to tsfmt.
 
+### ESLint (typescript)
+
+[npm](https://www.npmjs.com/package/eslint). [changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md). *Please note:*
+The auto-discovery of config files (up the file tree) will not work when using ESLint within spotless,
+hence you are required to provide resolvable file paths for config files, or alternatively provide the configuration inline.
+
+The configuration is very similar to the [ESLint (Javascript)](#eslint-javascript) configuration. In typescript, a
+reference to a `tsconfig.json` is required.
+
+```xml
+<eslint>
+  <!-- Specify at most one of the following 3 configs: either 'eslintVersion', 'devDependencies' or 'devDependencyProperties'  -->
+  <eslintVersion>8.30.0</eslintVersion>
+  <devDependencies>
+    <myEslintFork>8.30.0</myEslintFork>
+    <myEslintPlugin>1.2.1</myEslintPlugin>
+  </devDependencies>
+  <devDependencyProperties>
+    <property>
+      <name>eslint</name>
+      <value>8.30.0</value>
+    </property>
+    <property>
+      <name>@eslint/my-plugin-typescript</name> <!-- this could not be written in the simpler to write 'devDependencies' element. -->
+      <value>0.14.2</value>
+    </property>
+  </devDependencyProperties>
+  <!-- mandatory: provide either a configFile or a configJs object -->
+  <configFile>${project.basedir}/.eslintrc.js</configFile>
+  <configJs>
+    {
+      env: {
+        browser: true,
+        es2021: true
+      },
+      extends: 'standard-with-typescript',
+      overrides: [
+      ],
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        project: './tsconfig.json',
+      },
+      rules: {
+      }
+    }
+  </configJs>
+  <!-- recommended: provide a tsconfigFile - especially when using the styleguides -->
+  <tsconfigFile>${project.basedir}/tsconfig.json</tsconfigFile>
+</eslint>
+```
+
+**Prerequisite: ESLint requires a working NodeJS version**
+
+For details, see the [npm detection](#npm-detection) and [`.npmrc` detection](#npmrc-detection) sections of prettier, which apply also to ESLint.
+
+
+## Javascript
+
+[code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/javascript/Javascript.java). [available steps](https://github.com/diffplug/spotless/tree/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/javascript).
+
+```xml
+<configuration>
+  <typescript>
+    <includes> <!-- You have to set the target manually -->
+      <include>src/**/*.js</include>
+    </includes>
+
+    <prettier/> <!-- has its own section below -->
+    <eslint/>   <!-- has its own section below -->
+
+    <licenseHeader>
+      <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
+      <delimiter>REGEX_TO_DEFINE_TOP_OF_FILE</delimiter> <!-- set a regex to define the top of the file -->
+    </licenseHeader>
+  </typescript>
+</configuration>
+```
+
+### ESLint (Javascript)
+
+[npm](https://www.npmjs.com/package/eslint). [changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md). *Please note:*
+The auto-discovery of config files (up the file tree) will not work when using ESLint within spotless,
+hence you are required to provide resolvable file paths for config files, or alternatively provide the configuration inline.
+
+The configuration is very similar to the [ESLint (Typescript)](#eslint-typescript) configuration. In javascript, *no*
+`tsconfig.json` is supported.
+
+```xml
+<eslint>
+  <!-- Specify at most one of the following 3 configs: either 'eslintVersion', 'devDependencies' or 'devDependencyProperties'  -->
+  <eslintVersion>8.30.0</eslintVersion>
+  <devDependencies>
+    <myEslintFork>8.30.0</myEslintFork>
+    <myEslintPlugin>1.2.1</myEslintPlugin>
+  </devDependencies>
+  <devDependencyProperties>
+    <property>
+      <name>eslint</name>
+      <value>8.30.0</value>
+    </property>
+    <property>
+      <name>@eslint/my-plugin-javascript</name> <!-- this could not be written in the simpler to write 'devDependencies' element. -->
+      <value>0.14.2</value>
+    </property>
+  </devDependencyProperties>
+  <!-- mandatory: provide either a configFile or a configJs object -->
+  <configFile>${project.basedir}/.eslintrc.js</configFile>
+  <configJs>
+    {
+      env: {
+        browser: true,
+        es2021: true
+      },
+      extends: 'standard',
+      overrides: [
+      ],
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module'
+      },
+      rules: {
+      }
+    }
+  </configJs>
+</eslint>
+```
+
+**Prerequisite: ESLint requires a working NodeJS version**
+
+For details, see the [npm detection](#npm-detection) and [`.npmrc` detection](#npmrc-detection) sections of prettier, which apply also to ESLint.
+
 ## JSON
 
-- `com.diffplug.spotless.maven.json.Json` [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/json/json.java)
+- `com.diffplug.spotless.maven.json.Json` [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/json/Json.java)
 
 ```xml
 <configuration>
@@ -762,6 +897,41 @@ all HTML characters are written escaped or none. Set `escapeHtml` if you prefer 
 * `sortByKeys` will apply lexicographic order on the keys of the input JSON. See the
 [javadoc of String](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html#compareTo(java.lang.String))
 for details.
+
+<a name="applying-prettier-to-javascript--flow--typescript--css--scss--less--jsx--graphql--yaml--etc"></a>
+
+
+## YAML
+
+- `com.diffplug.spotless.maven.FormatterFactory.addStepFactory(FormatterStepFactory)` [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/yaml/Yaml.java)
+
+```xml
+<configuration>
+  <yaml>
+    <includes>     <!-- You have to set the target manually -->
+      <include>src/**/*.yaml</include>
+    </includes>
+
+    <jackson />    <!-- has its own section below -->
+  </yaml>
+</configuration>
+```
+
+### jackson
+
+Uses Jackson and YAMLFactory to pretty print objects:
+
+```xml
+<jackson>
+  <version>2.14.1</version>    <!-- optional: The version of 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml' to be used -->
+  <enabledFeatures>            <!-- optional: Customize the set of enabled features -->
+    <enabledFeature>INDENT_OUTPUT<enabledFeature/>
+  </enabledFeatures>
+  <disabledFeatures>           <!-- optional: Customize the set of disabled features -->
+    <disabledFeature>DEFAULT_HAS_NO_DISABLED_FEATURE<disabledFeature/>
+  </disabledFeatures>
+</jackson>
+```
 
 <a name="applying-prettier-to-javascript--flow--typescript--css--scss--less--jsx--graphql--yaml--etc"></a>
 
@@ -901,7 +1071,7 @@ Alternatively you can supply spotless with a location of the `.npmrc` file to us
 
 ## Eclipse web tools platform
 
-[changelog](https://www.eclipse.org/webtools/). [compatible versions](https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatters).
+[changelog](https://www.eclipse.org/webtools/). [compatible versions](https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatter).
 
 ```xml
 <configuration>
@@ -918,7 +1088,7 @@ Alternatively you can supply spotless with a location of the `.npmrc` file to us
           <file>${project.basedir}/xml.prefs</file>
           <file>${project.basedir}/additional.properties</file>
         </files>
-        <version>4.13.0</version> <!-- optional -->
+        <version>4.21.0</version> <!-- optional version of Eclipse Formatter -->
       </eclipseWtp>
     </format>
   </formats>

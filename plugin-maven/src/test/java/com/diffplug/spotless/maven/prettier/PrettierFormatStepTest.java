@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -145,7 +145,11 @@ class PrettierFormatStepTest extends MavenIntegrationHarness {
 
 	@Test
 	void autodetect_npmrc_file() throws Exception {
-		setFile(".npmrc").toLines("registry=https://i.do.no.exist.com");
+		setFile(".npmrc").toLines(
+				"registry=https://i.do.not.exist.com",
+				"fetch-timeout=250",
+				"fetch-retry-mintimeout=250",
+				"fetch-retry-maxtimeout=250");
 		String suffix = "ts";
 		writePomWithPrettierSteps("**/*." + suffix,
 				"<prettier>",
@@ -158,7 +162,11 @@ class PrettierFormatStepTest extends MavenIntegrationHarness {
 
 	@Test
 	void select_configured_npmrc_file() throws Exception {
-		setFile(".custom_npmrc").toLines("registry=https://i.do.no.exist.com");
+		setFile(".custom_npmrc").toLines(
+				"registry=https://i.do.not.exist.com",
+				"fetch-timeout=250",
+				"fetch-retry-mintimeout=250",
+				"fetch-retry-maxtimeout=250");
 		String suffix = "ts";
 		writePomWithPrettierSteps("**/*." + suffix,
 				"<prettier>",

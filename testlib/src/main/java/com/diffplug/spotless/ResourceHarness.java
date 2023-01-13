@@ -27,6 +27,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
@@ -86,11 +87,20 @@ public class ResourceHarness {
 
 	/** Returns the contents of the given file from the src/test/resources directory. */
 	protected static String getTestResource(String filename) {
-		URL url = ResourceHarness.class.getResource("/" + filename);
-		if (url == null) {
-			throw new IllegalArgumentException("No such resource " + filename);
+		Optional<URL> resourceUrl = getTestResourceUrl(filename);
+		if (resourceUrl.isPresent()) {
+			return ThrowingEx.get(() -> LineEnding.toUnix(Resources.toString(resourceUrl.get(), StandardCharsets.UTF_8)));
 		}
-		return ThrowingEx.get(() -> LineEnding.toUnix(Resources.toString(url, StandardCharsets.UTF_8)));
+		throw new IllegalArgumentException("No such resource " + filename);
+	}
+
+	protected static boolean existsTestResource(String filename) {
+		return getTestResourceUrl(filename).isPresent();
+	}
+
+	private static Optional<URL> getTestResourceUrl(String filename) {
+		URL url = ResourceHarness.class.getResource("/" + filename);
+		return Optional.ofNullable(url);
 	}
 
 	/** Returns Files (in a temporary folder) which has the contents of the given file from the src/test/resources directory. */

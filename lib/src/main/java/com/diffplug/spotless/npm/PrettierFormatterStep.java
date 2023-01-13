@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,19 +42,19 @@ public class PrettierFormatterStep {
 	public static final String NAME = "prettier-format";
 
 	public static final Map<String, String> defaultDevDependencies() {
-		return defaultDevDependenciesWithPrettier("2.0.5");
+		return defaultDevDependenciesWithPrettier("2.8.1");
 	}
 
 	public static final Map<String, String> defaultDevDependenciesWithPrettier(String version) {
 		return Collections.singletonMap("prettier", version);
 	}
 
-	public static FormatterStep create(Map<String, String> devDependencies, Provisioner provisioner, File buildDir, NpmPathResolver npmPathResolver, PrettierConfig prettierConfig) {
+	public static FormatterStep create(Map<String, String> devDependencies, Provisioner provisioner, File projectDir, File buildDir, NpmPathResolver npmPathResolver, PrettierConfig prettierConfig) {
 		requireNonNull(devDependencies);
 		requireNonNull(provisioner);
 		requireNonNull(buildDir);
 		return FormatterStep.createLazy(NAME,
-				() -> new State(NAME, devDependencies, buildDir, npmPathResolver, prettierConfig),
+				() -> new State(NAME, devDependencies, projectDir, buildDir, npmPathResolver, prettierConfig),
 				State::createFormatterFunc);
 	}
 
@@ -63,15 +63,18 @@ public class PrettierFormatterStep {
 		private static final long serialVersionUID = -539537027004745812L;
 		private final PrettierConfig prettierConfig;
 
-		State(String stepName, Map<String, String> devDependencies, File buildDir, NpmPathResolver npmPathResolver, PrettierConfig prettierConfig) throws IOException {
+		State(String stepName, Map<String, String> devDependencies, File projectDir, File buildDir, NpmPathResolver npmPathResolver, PrettierConfig prettierConfig) throws IOException {
 			super(stepName,
 					new NpmConfig(
 							replaceDevDependencies(
 									NpmResourceHelper.readUtf8StringFromClasspath(PrettierFormatterStep.class, "/com/diffplug/spotless/npm/prettier-package.json"),
 									new TreeMap<>(devDependencies)),
 							"prettier",
-							NpmResourceHelper.readUtf8StringFromClasspath(PrettierFormatterStep.class, "/com/diffplug/spotless/npm/prettier-serve.js"),
+							NpmResourceHelper.readUtf8StringFromClasspath(PrettierFormatterStep.class,
+									"/com/diffplug/spotless/npm/common-serve.js",
+									"/com/diffplug/spotless/npm/prettier-serve.js"),
 							npmPathResolver.resolveNpmrcContent()),
+					projectDir,
 					buildDir,
 					npmPathResolver.resolveNpmExecutable());
 			this.prettierConfig = requireNonNull(prettierConfig);

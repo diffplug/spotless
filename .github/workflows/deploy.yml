@@ -2,7 +2,7 @@
 # NEXUS_USER
 # NEXUS_PASS
 # GPG_PASSPHRASE
-# GPG_KEY (base64)
+# GPG_KEY64 (base64)
 #   gpg --export-secret-keys --armor KEY_ID | openssl base64 | pbcopy
 # GRADLE_PORTAL_KEY
 # GRADLE_PORTAL_SECRET
@@ -29,11 +29,9 @@ jobs:
     env:
       gh_token: ${{ secrets.GH_TOKEN }}
       ORG_GRADLE_PROJECT_nexus_user: ${{ secrets.NEXUS_USER }}
-      ORG_GRADLE_PROJECT_nexus_pass: ${{ secrets.NEXUS_PASS }}
+      ORG_GRADLE_PROJECT_nexus_pass64: ${{ secrets.NEXUS_PASS64 }}
       ORG_GRADLE_PROJECT_gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
-      ORG_GRADLE_PROJECT_gpg_key64: ${{ secrets.GPG_KEY }}
-
-        gradle_key
+      ORG_GRADLE_PROJECT_gpg_key64: ${{ secrets.GPG_KEY64 }}
     steps:
       - uses: actions/checkout@v3
       - name: jdk 11

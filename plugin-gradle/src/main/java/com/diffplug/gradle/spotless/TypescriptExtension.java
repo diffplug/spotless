@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,11 @@ import javax.inject.Inject;
 
 import org.gradle.api.Project;
 
+import com.diffplug.gradle.spotless.JavascriptExtension.EslintBaseConfig;
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.npm.EslintConfig;
+import com.diffplug.spotless.npm.EslintFormatterStep;
+import com.diffplug.spotless.npm.EslintTypescriptConfig;
 import com.diffplug.spotless.npm.NpmPathResolver;
 import com.diffplug.spotless.npm.PrettierFormatterStep;
 import com.diffplug.spotless.npm.TsConfigFileType;
@@ -73,12 +77,13 @@ public class TypescriptExtension extends FormatExtension {
 		private final Map<String, String> devDependencies;
 
 		TypescriptFormatExtension(Map<String, String> devDependencies) {
+			super(getProject(), TypescriptExtension.this::replaceStep);
 			this.devDependencies = Objects.requireNonNull(devDependencies);
 		}
 
 		public void config(final Map<String, Object> config) {
 			this.config = new TreeMap<>(requireNonNull(config));
-			replaceStep(createStep());
+			replaceStep();
 		}
 
 		public void tsconfigFile(final Object path) {
@@ -100,7 +105,7 @@ public class TypescriptExtension extends FormatExtension {
 		private void configFile(TsConfigFileType filetype, Object path) {
 			this.configFileType = requireNonNull(filetype);
 			this.configFilePath = requireNonNull(path);
-			replaceStep(createStep());
+			replaceStep();
 		}
 
 		public FormatterStep createStep() {
@@ -109,6 +114,7 @@ public class TypescriptExtension extends FormatExtension {
 			return TsFmtFormatterStep.create(
 					devDependencies,
 					provisioner(),
+					project.getProjectDir(),
 					project.getBuildDir(),
 					new NpmPathResolver(npmFileOrNull(), npmrcFileOrNull(), project.getProjectDir(), project.getRootDir()),
 					typedConfigFile(),
@@ -152,7 +158,7 @@ public class TypescriptExtension extends FormatExtension {
 		}
 
 		@Override
-		FormatterStep createStep() {
+		protected FormatterStep createStep() {
 			fixParserToTypescript();
 			return super.createStep();
 		}
@@ -169,9 +175,57 @@ public class TypescriptExtension extends FormatExtension {
 		}
 	}
 
+	public TypescriptEslintConfig eslint() {
+		return eslint(EslintFormatterStep.defaultDevDependenciesForTypescript());
+	}
+
+	public TypescriptEslintConfig eslint(String version) {
+		return eslint(EslintFormatterStep.defaultDevDependenciesTypescriptWithEslint(version));
+	}
+
+	public TypescriptEslintConfig eslint(Map<String, String> devDependencies) {
+		TypescriptEslintConfig eslint = new TypescriptEslintConfig(devDependencies);
+		addStep(eslint.createStep());
+		return eslint;
+	}
+
+	public class TypescriptEslintConfig extends EslintBaseConfig<TypescriptEslintConfig> {
+
+		@Nullable
+		Object typescriptConfigFilePath = null;
+
+		public TypescriptEslintConfig(Map<String, String> devDependencies) {
+			super(getProject(), TypescriptExtension.this::replaceStep, devDependencies);
+		}
+
+		public TypescriptEslintConfig tsconfigFile(Object path) {
+			this.typescriptConfigFilePath = requireNonNull(path);
+			replaceStep();
+			return this;
+		}
+
+		public FormatterStep createStep() {
+			final Project project = getProject();
+
+			return EslintFormatterStep.create(
+					devDependencies,
+					provisioner(),
+					project.getProjectDir(),
+					project.getBuildDir(),
+					new NpmPathResolver(npmFileOrNull(), npmrcFileOrNull(), project.getProjectDir(), project.getRootDir()),
+					eslintConfig());
+		}
+
+		protected EslintConfig eslintConfig() {
+			return new EslintTypescriptConfig(
+					configFilePath != null ? getProject().file(configFilePath) : null,
+					configJs,
+					typescriptConfigFilePath != null ? getProject().file(typescriptConfigFilePath) : null);
+		}
+	}
+
 	@Override
 	protected void setupTask(SpotlessTask task) {
-		// defaults to all typescript files
 		if (target == null) {
 			throw noDefaultTargetException();
 		}
