@@ -45,7 +45,7 @@ final class ImportSorterImpl {
 		private final List<String> subGroups;
 
 		public ImportsGroup(String importOrder) {
-			this.subGroups = Stream.of(importOrder.split("\\" + SUBGROUP_SEPARATOR))
+			this.subGroups = Stream.of(importOrder.split("\\" + SUBGROUP_SEPARATOR, -1))
 					.map(this::normalizeStatic)
 					.collect(Collectors.toList());
 		}
