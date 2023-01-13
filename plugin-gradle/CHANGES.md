@@ -11,7 +11,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Support `ktlint` 0.48+ new rule disabling syntax ([#1456](https://github.com/diffplug/spotless/pull/1456)) fixes ([#1444](https://github.com/diffplug/spotless/issues/1444))
 ### Changes
 * Bump default `ktlint` version to latest `0.47.1` -> `0.48.1` ([#1456](https://github.com/diffplug/spotless/pull/1456))
-
+### Fixed
+* Support for executing prettier without node being present on $PATH [#1185](https://github.com/diffplug/spotless/issues/1185)
 ## [6.12.1] - 2023-01-02
 ### Fixed
 * Improve memory usage when using git ratchet ([#1426](https://github.com/diffplug/spotless/pull/1426))
