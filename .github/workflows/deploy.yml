@@ -1,6 +1,9 @@
 # GH_TOKEN
 # NEXUS_USER
-# NEXUS_PASS
+# NEXUS_PASS64 (base64 NOTE: `base64` and `openssl base64` failed, had to use Java
+#   byte[] data = "{{password}}".getBytes(StandardCharsets.UTF_8);
+#   String encoded = new String(Base64.getEncoder().encode(data), StandardCharsets.UTF_8);
+#   System.out.println(encoded);
 # GPG_PASSPHRASE
 # GPG_KEY64 (base64)
 #   gpg --export-secret-keys --armor KEY_ID | openssl base64 | pbcopy
