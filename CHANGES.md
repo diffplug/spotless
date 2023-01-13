@@ -19,6 +19,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Better suggested messages when user's default is set by JVM limitation. ([#995](https://github.com/diffplug/spotless/pull/995))
 ### Fixed
 * Support `ktlint` 0.48+ new rule disabling syntax ([#1456](https://github.com/diffplug/spotless/pull/1456)) fixes ([#1444](https://github.com/diffplug/spotless/issues/1444))
+* Fix subgroups leading catch all matcher.
 ### Changes
 * Bump default version for `prettier` from `2.0.5` to `2.8.1` ([#1453](https://github.com/diffplug/spotless/pull/1453))
 * Bump the dev version of Gradle from `7.5.1` to `7.6` ([#1409](https://github.com/diffplug/spotless/pull/1409))
