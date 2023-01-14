@@ -12,8 +12,8 @@ output = [
   ].join('\n');
 -->
 [![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
-[![Javadoc](https://img.shields.io/badge/javadoc-yes-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.29.0/index.html)
-[![Changelog](https://img.shields.io/badge/changelog-2.29.0-brightgreen.svg)](CHANGES.md)
+[![Javadoc](https://img.shields.io/badge/javadoc-yes-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.30.0/index.html)
+[![Changelog](https://img.shields.io/badge/changelog-2.30.0-brightgreen.svg)](CHANGES.md)
 
 [![Circle CI](https://circleci.com/gh/diffplug/spotless/tree/main.svg?style=shield)](https://circleci.com/gh/diffplug/spotless/tree/main)
 [![Live chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
@@ -60,6 +60,7 @@ user@machine repo % mvn spotless:check
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier), [ESLint](#eslint-typescript))
   - [Javascript](#javascript) ([prettier](#prettier), [ESLint](#eslint-javascript))
   - [JSON](#json)
+  - [YAML](#yaml)
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection))
     - [eclipse web tools platform](#eclipse-web-tools-platform)
@@ -241,7 +242,7 @@ any other maven phase (i.e. compile) then it can be configured as below;
 
 ```xml
 <eclipse>
-  <version>4.13.0</version>                     <!-- optional -->
+  <version>4.21.0</version>                     <!-- optional version of Eclipse Formatter -->
   <file>${project.basedir}/eclipse-formatter.xml</file> <!-- optional -->
 </eclipse>
 ```
@@ -316,7 +317,7 @@ These mechanisms already exist for the Gradle plugin.
 
 ```xml
 <greclipse>
-  <version>4.13.0</version>                     <!-- optional -->
+  <version>4.21.0</version>                     <!-- optional version of Eclipse Formatter -->
   <file>${project.basedir}/greclipse.properties</file> <!-- optional -->
 </greclipse>
 ```
@@ -466,7 +467,7 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
 
 ```xml
 <eclipseCdt>
-  <version>4.13.0</version>               <!-- optional -->
+  <version>4.21.0</version>               <!-- optional version of Eclipse Formatter -->
   <file>${project.basedir}/eclipse-cdt.xml</file> <!-- optional -->
 </eclipseCdt>
 ```
@@ -852,7 +853,7 @@ For details, see the [npm detection](#npm-detection) and [`.npmrc` detection](#n
 
 ## JSON
 
-- `com.diffplug.spotless.maven.json.Json` [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/json/json.java)
+- `com.diffplug.spotless.maven.json.Json` [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/json/Json.java)
 
 ```xml
 <configuration>
@@ -896,6 +897,41 @@ all HTML characters are written escaped or none. Set `escapeHtml` if you prefer 
 * `sortByKeys` will apply lexicographic order on the keys of the input JSON. See the
 [javadoc of String](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html#compareTo(java.lang.String))
 for details.
+
+<a name="applying-prettier-to-javascript--flow--typescript--css--scss--less--jsx--graphql--yaml--etc"></a>
+
+
+## YAML
+
+- `com.diffplug.spotless.maven.FormatterFactory.addStepFactory(FormatterStepFactory)` [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/yaml/Yaml.java)
+
+```xml
+<configuration>
+  <yaml>
+    <includes>     <!-- You have to set the target manually -->
+      <include>src/**/*.yaml</include>
+    </includes>
+
+    <jackson />    <!-- has its own section below -->
+  </yaml>
+</configuration>
+```
+
+### jackson
+
+Uses Jackson and YAMLFactory to pretty print objects:
+
+```xml
+<jackson>
+  <version>2.14.1</version>    <!-- optional: The version of 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml' to be used -->
+  <enabledFeatures>            <!-- optional: Customize the set of enabled features -->
+    <enabledFeature>INDENT_OUTPUT<enabledFeature/>
+  </enabledFeatures>
+  <disabledFeatures>           <!-- optional: Customize the set of disabled features -->
+    <disabledFeature>DEFAULT_HAS_NO_DISABLED_FEATURE<disabledFeature/>
+  </disabledFeatures>
+</jackson>
+```
 
 <a name="applying-prettier-to-javascript--flow--typescript--css--scss--less--jsx--graphql--yaml--etc"></a>
 
@@ -1035,7 +1071,7 @@ Alternatively you can supply spotless with a location of the `.npmrc` file to us
 
 ## Eclipse web tools platform
 
-[changelog](https://www.eclipse.org/webtools/). [compatible versions](https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatters).
+[changelog](https://www.eclipse.org/webtools/). [compatible versions](https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_wtp_formatter).
 
 ```xml
 <configuration>
@@ -1052,7 +1088,7 @@ Alternatively you can supply spotless with a location of the `.npmrc` file to us
           <file>${project.basedir}/xml.prefs</file>
           <file>${project.basedir}/additional.properties</file>
         </files>
-        <version>4.13.0</version> <!-- optional -->
+        <version>4.21.0</version> <!-- optional version of Eclipse Formatter -->
       </eclipseWtp>
     </format>
   </formats>

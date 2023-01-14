@@ -65,6 +65,7 @@ import com.diffplug.spotless.maven.incremental.UpToDateChecker;
 import com.diffplug.spotless.maven.incremental.UpToDateChecking;
 import com.diffplug.spotless.maven.java.Java;
 import com.diffplug.spotless.maven.javascript.Javascript;
+import com.diffplug.spotless.maven.json.Json;
 import com.diffplug.spotless.maven.kotlin.Kotlin;
 import com.diffplug.spotless.maven.markdown.Markdown;
 import com.diffplug.spotless.maven.pom.Pom;
@@ -72,6 +73,7 @@ import com.diffplug.spotless.maven.python.Python;
 import com.diffplug.spotless.maven.scala.Scala;
 import com.diffplug.spotless.maven.sql.Sql;
 import com.diffplug.spotless.maven.typescript.Typescript;
+import com.diffplug.spotless.maven.yaml.Yaml;
 
 public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	private static final String DEFAULT_INDEX_FILE_NAME = "spotless-index";
@@ -170,6 +172,12 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	@Parameter
 	private Markdown markdown;
+
+	@Parameter
+	private Json json;
+
+	@Parameter
+	private Yaml yaml;
 
 	@Parameter(property = "spotlessFiles")
 	private String filePatterns;
@@ -335,7 +343,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private List<FormatterFactory> getFormatterFactories() {
-		return Stream.concat(formats.stream(), Stream.of(groovy, java, scala, kotlin, cpp, typescript, javascript, antlr4, pom, sql, python, markdown))
+		return Stream.concat(formats.stream(), Stream.of(groovy, java, scala, kotlin, cpp, typescript, javascript, antlr4, pom, sql, python, markdown, json, yaml))
 				.filter(Objects::nonNull)
 				.collect(toList());
 	}

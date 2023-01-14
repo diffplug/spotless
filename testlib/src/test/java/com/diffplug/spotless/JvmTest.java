@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -140,9 +140,9 @@ class JvmTest {
 					throw new Exception("Some test exception");
 				}).apply("");
 			}).getMessage();
-			assertThat(proposal).contains("not using latest version");
-			assertThat(proposal).contains(String.format("on JVM %d+", requiredJvm));
-			assertThat(proposal).contains(String.format("upgrade to %s %s", TEST_NAME, "2"));
+			assertThat(proposal.replace("\r", "")).isEqualTo("My Test Formatter " + fmtVersion + " is currently being used, but outdated.\n" +
+					"My Test Formatter 2 is the recommended version, which may have fixed this problem.\n" +
+					"My Test Formatter 2 requires JVM " + (requiredJvm) + "+.");
 		}
 	}
 
