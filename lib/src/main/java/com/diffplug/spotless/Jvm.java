@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -198,8 +198,9 @@ public final class Jvm {
 			StringBuilder builder = new StringBuilder();
 			V recommendedFmtVersionOrNull = getRecommendedFormatterVersion();
 			if (null != recommendedFmtVersionOrNull && (fmtVersionComparator.compare(fmtVersion, recommendedFmtVersionOrNull) < 0)) {
-				builder.append(String.format("You are not using latest version on JVM %d+.%n", getRequiredJvmVersion(recommendedFmtVersionOrNull)));
-				builder.append(String.format("Try to upgrade to %s %s, which may have fixed this problem.", fmtName, getRecommendedFormatterVersion()));
+				builder.append(String.format("%s %s is currently being used, but outdated.%n", fmtName, fmtVersion));
+				builder.append(String.format("%s %s is the recommended version, which may have fixed this problem.%n", fmtName, recommendedFmtVersionOrNull));
+				builder.append(String.format("%s %s requires JVM %d+.", fmtName, recommendedFmtVersionOrNull, getRequiredJvmVersion(recommendedFmtVersionOrNull)));
 			} else {
 				V higherFormatterVersionOrNull = fmt2jvmVersion.higherKey(fmtVersion);
 				if (null != higherFormatterVersionOrNull) {

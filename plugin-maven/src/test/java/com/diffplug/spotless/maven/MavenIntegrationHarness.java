@@ -136,8 +136,12 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		writePom(groupWithSteps("cpp", steps));
 	}
 
-	protected void writePomWithTypescriptSteps(String... steps) throws IOException {
-		writePom(groupWithSteps("typescript", including("**/*.ts"), steps));
+	protected void writePomWithJavascriptSteps(String includes, String... steps) throws IOException {
+		writePom(groupWithSteps("javascript", including(includes), steps));
+	}
+
+	protected void writePomWithTypescriptSteps(String includes, String... steps) throws IOException {
+		writePom(groupWithSteps("typescript", including(includes), steps));
 	}
 
 	protected void writePomWithSqlSteps(String... steps) throws IOException {
@@ -158,6 +162,10 @@ public class MavenIntegrationHarness extends ResourceHarness {
 
 	protected void writePomWithJsonSteps(String... steps) throws IOException {
 		writePom(groupWithSteps("json", including("**/*.json"), steps));
+	}
+
+	protected void writePomWithYamlSteps(String... steps) throws IOException {
+		writePom(groupWithSteps("yaml", including("**/*.yaml"), steps));
 	}
 
 	protected void writePom(String... configuration) throws IOException {

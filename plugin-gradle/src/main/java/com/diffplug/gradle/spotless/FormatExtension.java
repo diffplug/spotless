@@ -16,6 +16,7 @@
 package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.Serializable;
@@ -25,9 +26,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Random;
 import java.util.TreeMap;
+import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -71,7 +72,7 @@ public class FormatExtension {
 
 	@Inject
 	public FormatExtension(SpotlessExtension spotless) {
-		this.spotless = Objects.requireNonNull(spotless);
+		this.spotless = requireNonNull(spotless);
 	}
 
 	protected final Provisioner provisioner() {
@@ -96,7 +97,7 @@ public class FormatExtension {
 
 	/** Sets the line endings to use (defaults to {@link SpotlessExtensionImpl#getLineEndings()}. */
 	public void setLineEndings(LineEnding lineEndings) {
-		this.lineEndings = Objects.requireNonNull(lineEndings);
+		this.lineEndings = requireNonNull(lineEndings);
 	}
 
 	Charset encoding;
@@ -108,7 +109,7 @@ public class FormatExtension {
 
 	/** Sets the encoding to use (defaults to {@link SpotlessExtensionImpl#getEncoding()}. */
 	public void setEncoding(String name) {
-		setEncoding(Charset.forName(Objects.requireNonNull(name)));
+		setEncoding(Charset.forName(requireNonNull(name)));
 	}
 
 	/** Sentinel to distinguish between "don't ratchet this format" and "use spotless parent format". */
@@ -136,19 +137,19 @@ public class FormatExtension {
 
 	/** Sets the encoding to use (defaults to {@link SpotlessExtensionImpl#getEncoding()}. */
 	public void setEncoding(Charset charset) {
-		encoding = Objects.requireNonNull(charset);
+		encoding = requireNonNull(charset);
 	}
 
 	final FormatExceptionPolicyStrict exceptionPolicy = new FormatExceptionPolicyStrict();
 
 	/** Ignores errors in the given step. */
 	public void ignoreErrorForStep(String stepName) {
-		exceptionPolicy.excludeStep(Objects.requireNonNull(stepName));
+		exceptionPolicy.excludeStep(requireNonNull(stepName));
 	}
 
 	/** Ignores errors for the given relative path. */
 	public void ignoreErrorForPath(String relativePath) {
-		exceptionPolicy.excludePath(Objects.requireNonNull(relativePath));
+		exceptionPolicy.excludePath(requireNonNull(relativePath));
 	}
 
 	/** Sets encoding to use (defaults to {@link SpotlessExtensionImpl#getEncoding()}). */
@@ -290,7 +291,7 @@ public class FormatExtension {
 
 	/** Adds a new step. */
 	public void addStep(FormatterStep newStep) {
-		Objects.requireNonNull(newStep);
+		requireNonNull(newStep);
 		int existingIdx = getExistingStepIdx(newStep.getName());
 		if (existingIdx != -1) {
 			throw new GradleException("Multiple steps with name '" + newStep.getName() + "' for spotless format '" + formatName() + "'");
@@ -356,13 +357,13 @@ public class FormatExtension {
 
 	/** Adds a custom step. Receives a string with unix-newlines, must return a string with unix newlines. */
 	public void custom(String name, Closure<String> formatter) {
-		Objects.requireNonNull(formatter, "formatter");
+		requireNonNull(formatter, "formatter");
 		custom(name, formatter::call);
 	}
 
 	/** Adds a custom step. Receives a string with unix-newlines, must return a string with unix newlines. */
 	public void custom(String name, FormatterFunc formatter) {
-		Objects.requireNonNull(formatter, "formatter");
+		requireNonNull(formatter, "formatter");
 		addStep(FormatterStep.createLazy(name, () -> globalState, unusedState -> formatter));
 	}
 
@@ -519,23 +520,32 @@ public class FormatExtension {
 		return config;
 	}
 
-	public abstract class NpmStepConfig<T extends NpmStepConfig<?>> {
+	public abstract static class NpmStepConfig<T extends NpmStepConfig<?>> {
 		@Nullable
 		protected Object npmFile;
 
 		@Nullable
 		protected Object npmrcFile;
 
+		protected Project project;
+
+		private Consumer<FormatterStep> replaceStep;
+
+		public NpmStepConfig(Project project, Consumer<FormatterStep> replaceStep) {
+			this.project = requireNonNull(project);
+			this.replaceStep = requireNonNull(replaceStep);
+		}
+
 		@SuppressWarnings("unchecked")
 		public T npmExecutable(final Object npmFile) {
 			this.npmFile = npmFile;
-			replaceStep(createStep());
+			replaceStep();
 			return (T) this;
 		}
 
 		public T npmrc(final Object npmrcFile) {
 			this.npmrcFile = npmrcFile;
-			replaceStep(createStep());
+			replaceStep();
 			return (T) this;
 		}
 
@@ -548,10 +558,14 @@ public class FormatExtension {
 		}
 
 		private File fileOrNull(Object npmFile) {
-			return npmFile != null ? getProject().file(npmFile) : null;
+			return npmFile != null ? project.file(npmFile) : null;
 		}
 
-		abstract FormatterStep createStep();
+		protected void replaceStep() {
+			replaceStep.accept(createStep());
+		}
+
+		abstract protected FormatterStep createStep();
 
 	}
 
@@ -566,26 +580,29 @@ public class FormatExtension {
 		final Map<String, String> devDependencies;
 
 		PrettierConfig(Map<String, String> devDependencies) {
-			this.devDependencies = Objects.requireNonNull(devDependencies);
+			super(getProject(), FormatExtension.this::replaceStep);
+			this.devDependencies = requireNonNull(devDependencies);
 		}
 
 		public PrettierConfig configFile(final Object prettierConfigFile) {
 			this.prettierConfigFile = prettierConfigFile;
-			replaceStep(createStep());
+			replaceStep();
 			return this;
 		}
 
 		public PrettierConfig config(final Map<String, Object> prettierConfig) {
 			this.prettierConfig = new TreeMap<>(prettierConfig);
-			replaceStep(createStep());
+			replaceStep();
 			return this;
 		}
 
-		FormatterStep createStep() {
+		@Override
+		protected FormatterStep createStep() {
 			final Project project = getProject();
 			return PrettierFormatterStep.create(
 					devDependencies,
 					provisioner(),
+					project.getProjectDir(),
 					project.getBuildDir(),
 					new NpmPathResolver(npmFileOrNull(), npmrcFileOrNull(), project.getProjectDir(), project.getRootDir()),
 					new com.diffplug.spotless.npm.PrettierConfig(
