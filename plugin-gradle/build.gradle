@@ -69,6 +69,7 @@ gradlePlugin {
 			implementationClass = 'com.diffplug.gradle.spotless.SpotlessPluginRedirect'
 			displayName = 'Spotless formatting plugin (legacy)'
 			description = project.description
+			tags.set(['format'])
 		}
 	}
 }
