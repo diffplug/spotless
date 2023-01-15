@@ -1,0 +1,43 @@
+# BUILDCACHE_USER
+# BUILDCACHE_PASS
+#   - rw access to buildcache.diffplug.com
+
+on: [push, pull_request]
+jobs:
+  testClasses:
+    name: spotlessCheck assemble testClasses
+    runs-on: ubuntu-latest
+    env:
+      buildcacheuser: ${{ secrets.BUILDCACHE_USER }}
+      buildcachepass: ${{ secrets.BUILDCACHE_PASS }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install JDK 11
+        uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: 11
+          cache: gradle
+      - name: Build project
+        run: ./gradlew spotlessCheck assemble testClasses --build-cache
+  test_windows:
+    needs: testClasses
+    name: test_windows
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        java_version: [17]
+        distribution: ["temurin"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install JDK ${{ matrix.distribution }} ${{ matrix.java_version }}
+        uses: actions/setup-java@v3
+        with:
+          distribution: ${{ matrix.distribution }}
+          java-version: ${{ matrix.java_version }}
+          cache: gradle
+      - name: Build project
+        run: ./gradlew test --build-cache -PSPOTLESS_EXCLUDE_MAVEN=true
