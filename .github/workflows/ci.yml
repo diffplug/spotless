@@ -27,9 +27,10 @@ jobs:
     needs: testClasses
     strategy:
       fail-fast: false
-      maven_or_gradle: [maven, gradle]
-      os: [ubuntu-latest, windows-latest]
-      jre: [11, 17]
+      matrix:
+        maven_or_gradle: [maven, gradle]
+        os: [ubuntu-latest, windows-latest]
+        jre: [11, 17]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
