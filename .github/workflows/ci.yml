@@ -24,16 +24,16 @@ jobs:
       - name: spotlessCheck
         run: ./gradlew spotlessCheck --build-cache
       - name: assemble testClasses
-        run: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew assemble testClasses --build-cache
+        run: ./gradlew assemble testClasses --build-cache -PSPOTLESS_EXCLUDE_MAVEN=true
         # If this gets resolved, remove the EXCLUDE_MAVEN https://github.com/diffplug/spotless/issues/554
   check:
     needs: testClasses
     strategy:
       fail-fast: false
       matrix:
-        maven_or_gradle: [maven, gradle]
+        kind: [maven, gradle, npm]
         os: [ubuntu-latest, windows-latest]
-        jre: [11, 17]
+        jre: [8, 11, 17]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -45,8 +45,11 @@ jobs:
           java-version: ${{ matrix.jre }}
           cache: gradle
       - name: check maven
-        if: matrix.maven_or_gradle == 'maven'
+        if: matrix.kind == 'maven'
         run: ./gradlew :plugin-maven:check -x spotlessCheck --build-cache
       - name: check everything but maven
-        if: matrix.maven_or_gradle == 'gradle'
-        run: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew check -x spotlessCheck --build-cache
+        if: matrix.kind == 'gradle'
+        run: ./gradlew check -x spotlessCheck --build-cache -PSPOTLESS_EXCLUDE_MAVEN=true
+      - name: check npm
+        if: matrix.kind == 'npm'
+        run: ./gradlew testNpm --build-cache
