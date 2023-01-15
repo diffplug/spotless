@@ -31,14 +31,15 @@ jobs:
         maven_or_gradle: [maven, gradle]
         os: [ubuntu-latest, windows-latest]
         jre: [11, 17]
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Install JDK ${{ matrix.distribution }} ${{ matrix.java_version }}
         uses: actions/setup-java@v3
         with:
-          distribution: ${{ matrix.distribution }}
-          java-version: ${{ matrix.java_version }}
+          distribution: "temurin"
+          java-version: ${{ matrix.jre }}
           cache: gradle
       - name: check maven
         if: matrix.maven_or_gradle == 'maven'
