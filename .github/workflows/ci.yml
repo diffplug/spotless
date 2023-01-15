@@ -10,7 +10,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  testClasses:
+  sanityCheck:
     name: spotlessCheck assemble testClasses
     runs-on: ubuntu-latest
     env:
@@ -32,8 +32,8 @@ jobs:
       - name: assemble testClasses
         run: ./gradlew assemble testClasses --build-cache -PSPOTLESS_EXCLUDE_MAVEN=true
         # If this gets resolved, remove the EXCLUDE_MAVEN https://github.com/diffplug/spotless/issues/554
-  check:
-    needs: testClasses
+  build:
+    needs: sanityCheck
     strategy:
       fail-fast: false
       matrix:
@@ -50,12 +50,12 @@ jobs:
           distribution: "temurin"
           java-version: ${{ matrix.jre }}
           cache: gradle
-      - name: check maven
+      - name: build (maven-only)
         if: matrix.kind == 'maven'
-        run: ./gradlew :plugin-maven:check -x spotlessCheck --build-cache
-      - name: check everything but maven
+        run: ./gradlew :plugin-maven:build -x spotlessCheck --build-cache
+      - name: build (everything-but-maven)
         if: matrix.kind == 'gradle'
-        run: ./gradlew check -x spotlessCheck --build-cache -PSPOTLESS_EXCLUDE_MAVEN=true
-      - name: check npm
+        run: ./gradlew build -x spotlessCheck --build-cache -PSPOTLESS_EXCLUDE_MAVEN=true
+      - name: testNpm
         if: matrix.kind == 'npm'
         run: ./gradlew testNpm --build-cache
