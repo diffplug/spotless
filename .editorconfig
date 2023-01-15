@@ -21,3 +21,7 @@ ij_java_names_count_to_use_import_on_demand = 999
 
 [*.xml.mustache]
 indent_style = space
+
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
