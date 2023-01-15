@@ -23,15 +23,13 @@ jobs:
           cache: gradle
       - name: Build project
         run: ./gradlew spotlessCheck assemble testClasses --build-cache
-  test_windows:
+  check:
     needs: testClasses
-    name: test_windows
-    runs-on: windows-latest
     strategy:
       fail-fast: false
-      matrix:
-        java_version: [17]
-        distribution: ["temurin"]
+      maven_or_gradle: [maven, gradle]
+      os: [ubuntu-latest, windows-latest]
+      jre: [11, 17]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -41,5 +39,9 @@ jobs:
           distribution: ${{ matrix.distribution }}
           java-version: ${{ matrix.java_version }}
           cache: gradle
-      - name: Build project
-        run: ./gradlew test --build-cache -PSPOTLESS_EXCLUDE_MAVEN=true
+      - name: check maven
+        if: matrix.maven_or_gradle == 'maven'
+        run: ./gradlew :plugin-maven:check -x spotlessCheck --build-cache
+      - name: check everything but maven
+        if: matrix.maven_or_gradle == 'gradle'
+        run: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew check -x spotlessCheck --build-cache
