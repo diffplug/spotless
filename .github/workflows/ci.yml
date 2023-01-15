@@ -56,6 +56,12 @@ jobs:
       - name: build (everything-but-maven)
         if: matrix.kind == 'gradle'
         run: ./gradlew build -x spotlessCheck --build-cache -PSPOTLESS_EXCLUDE_MAVEN=true
-      - name: testNpm
+      - name: test npm
         if: matrix.kind == 'npm'
         run: ./gradlew testNpm --build-cache
+      - name: junit result
+        uses: mikepenz/action-junit-report@v3
+        if: always() # always run even if the previous step fails
+        with:
+          check_name: JUnit ${{ matrix.kind }} ${{ matrix.jre }} ${{ matrix.os }}
+          report_paths: '*/build/test-results/*/TEST-*.xml'
