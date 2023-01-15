@@ -37,9 +37,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        kind: [maven, gradle, npm]
+        kind: [maven, gradle]
         jre: [8, 11, 17]
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
+        include:
+          # test windows at the diagonals of the above matrix
+          - kind: maven
+            jre: 8
+            os: windows-latest
+          - kind: gradle
+            jre: 17
+            os: windows-latest
+          # npm on linux only (crazy slow on windows)
+          - kind: npm
+            jre: 8
+            os: ubuntu-latest
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
