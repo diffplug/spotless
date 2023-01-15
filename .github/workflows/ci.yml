@@ -21,8 +21,11 @@ jobs:
           distribution: "temurin"
           java-version: 11
           cache: gradle
-      - name: Build project
-        run: ./gradlew spotlessCheck assemble testClasses --build-cache
+      - name: spotlessCheck
+        run: ./gradlew spotlessCheck --build-cache
+      - name: assemble testClasses
+        run: export SPOTLESS_EXCLUDE_MAVEN=true && ./gradlew assemble testClasses --build-cache
+        # If this gets resolved, remove the EXCLUDE_MAVEN https://github.com/diffplug/spotless/issues/554
   check:
     needs: testClasses
     strategy:
