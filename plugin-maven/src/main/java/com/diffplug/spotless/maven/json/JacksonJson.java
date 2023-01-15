@@ -13,34 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.maven.yaml;
+package com.diffplug.spotless.maven.json;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
+import java.util.Map;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.json.JacksonConfig;
+import com.diffplug.spotless.json.JacksonJsonStep;
+import com.diffplug.spotless.maven.FormatterFactory;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
-import com.diffplug.spotless.yaml.YamlJacksonStep;
 
-public class Jackson implements FormatterStepFactory {
-
-	@Parameter
-	private String version = YamlJacksonStep.defaultVersion();
-
-	@Parameter
-	private String[] enabledFeatures = new String[]{"INDENT_OUTPUT"};
+/**
+ * A {@link FormatterFactory} implementation that corresponds to {@code <jackson>...</jackson>} configuration element.
+ */
+public class JacksonJson implements FormatterStepFactory {
 
 	@Parameter
-	private String[] disabledFeatures = new String[0];
+	String version = JacksonJsonStep.defaultVersion();
+
+	@Parameter
+	boolean endWithEol = new JacksonConfig().isEndWithEol();
+
+	@Parameter
+	private Map<String, Boolean> features = Collections.emptyMap();
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
-		List<String> enabledFeaturesAsList = Arrays.asList(enabledFeatures);
-		List<String> disabledFeaturesAsList = Arrays.asList(disabledFeatures);
-		return YamlJacksonStep
-				.create(enabledFeaturesAsList, disabledFeaturesAsList, version, stepConfig.getProvisioner());
+		JacksonConfig jacksonConfig = new JacksonConfig();
+
+		if (features != null) {
+			jacksonConfig.appendFeatureToToggle(features);
+		}
+		jacksonConfig.setEndWithEol(endWithEol);
+
+		return JacksonJsonStep
+				.create(jacksonConfig, version, stepConfig.getProvisioner());
 	}
 }

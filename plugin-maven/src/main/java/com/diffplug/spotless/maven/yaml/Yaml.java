@@ -34,7 +34,7 @@ public class Yaml extends FormatterFactory {
 		return null;
 	}
 
-	public void addJackson(Jackson jackson) {
+	public void addJackson(JacksonYaml jackson) {
 		addStepFactory(jackson);
 	}
 
