@@ -2,7 +2,10 @@
 # BUILDCACHE_PASS
 #   - rw access to buildcache.diffplug.com
 
-on: [push, pull_request]
+on:
+  pull_request:
+  push:
+    branches: [main]
 jobs:
   testClasses:
     name: spotlessCheck assemble testClasses
