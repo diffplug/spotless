@@ -32,8 +32,8 @@ jobs:
       fail-fast: false
       matrix:
         kind: [maven, gradle, npm]
-        os: [ubuntu-latest, windows-latest]
         jre: [8, 11, 17]
+        os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
