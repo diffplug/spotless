@@ -22,8 +22,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Fixed
 * Support `ktlint` 0.48+ new rule disabling syntax ([#1456](https://github.com/diffplug/spotless/pull/1456)) fixes ([#1444](https://github.com/diffplug/spotless/issues/1444))
 * Fix subgroups leading catch all matcher.
-* Format more type annotations as type annotations [#????](https://github.com/diffplug/spotless/pull/????)
-
+* Format more type annotations as type annotations [#1494](https://github.com/diffplug/spotless/pull/1494)
 ### Changes
 * Bump default version for `prettier` from `2.0.5` to `2.8.1` ([#1453](https://github.com/diffplug/spotless/pull/1453))
 * Bump the dev version of Gradle from `7.5.1` to `7.6` ([#1409](https://github.com/diffplug/spotless/pull/1409))
