@@ -70,7 +70,6 @@ public class JsonTest extends MavenIntegrationHarness {
 		assertFile("json_test.json").sameAsResource("json/nestedObjectAfter.json");
 	}
 
-
 	@Test
 	public void testFormatJson_WithJackson_sortByKeys() throws Exception {
 		writePomWithJsonSteps("<jackson><features><ORDER_MAP_ENTRIES_BY_KEYS>true</ORDER_MAP_ENTRIES_BY_KEYS></features></jackson>");
@@ -78,17 +77,17 @@ public class JsonTest extends MavenIntegrationHarness {
 		setFile("json_test.json").toResource("json/sortByKeysBefore.json");
 
 		String output = mavenRunner().withArguments("spotless:apply").runNoError().output();
-		assertFile("json_test.json").sameAsResource("json/sortByKeysAfter.json");
+		assertFile("json_test.json").sameAsResource("json/sortByKeysAfter_Jackson.json");
 	}
 
 	@Test
-	public void testFormatJson_WithJackson_sortByKeys_noSpaceAfterKeySeparator() throws Exception {
-		writePomWithJsonSteps("<jackson><spaceBeforeSeparator>false</spaceBeforeSeparator><features><ORDER_MAP_ENTRIES_BY_KEYS>true</ORDER_MAP_ENTRIES_BY_KEYS></features></jackson>");
+	public void testFormatJson_WithJackson_sortByKeys_spaceAfterKeySeparator() throws Exception {
+		writePomWithJsonSteps("<jackson><spaceBeforeSeparator>true</spaceBeforeSeparator><features><ORDER_MAP_ENTRIES_BY_KEYS>true</ORDER_MAP_ENTRIES_BY_KEYS></features></jackson>");
 
 		setFile("json_test.json").toResource("json/sortByKeysBefore.json");
 
 		String output = mavenRunner().withArguments("spotless:apply").runNoError().output();
-		assertFile("json_test.json").sameAsResource("json/sortByKeysAfter.json");
+		assertFile("json_test.json").sameAsResource("json/sortByKeysAfter_Jackson_spaceAfterKeySeparator.json");
 	}
 
 }

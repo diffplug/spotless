@@ -18,12 +18,11 @@ package com.diffplug.spotless.maven.yaml;
 import java.util.Collections;
 import java.util.Map;
 
-import com.diffplug.spotless.maven.FormatterFactory;
-
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.json.JacksonConfig;
+import com.diffplug.spotless.maven.FormatterFactory;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 import com.diffplug.spotless.yaml.JacksonYamlStep;
@@ -37,10 +36,7 @@ public class JacksonYaml implements FormatterStepFactory {
 	private String version = JacksonYamlStep.defaultVersion();
 
 	@Parameter
-	boolean endWithEol = new JacksonConfig().isEndWithEol();
-
-	@Parameter
-	boolean spaceBeforeSeparator = new JacksonConfig().isSpaceBeforeSeparator();
+	private boolean spaceBeforeSeparator = new JacksonConfig().isSpaceBeforeSeparator();
 
 	@Parameter
 	private Map<String, Boolean> features = Collections.emptyMap();
@@ -49,10 +45,8 @@ public class JacksonYaml implements FormatterStepFactory {
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
 		JacksonConfig jacksonConfig = new JacksonConfig();
 
-		if (features != null) {
-			jacksonConfig.appendFeatureToToggle(features);
-		}
-		jacksonConfig.setEndWithEol(endWithEol);
+		jacksonConfig.appendFeatureToToggle(features);
+		jacksonConfig.setSpaceBeforeSeparator(spaceBeforeSeparator);
 
 		return JacksonYamlStep
 				.create(jacksonConfig, version, stepConfig.getProvisioner());

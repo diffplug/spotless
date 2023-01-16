@@ -49,12 +49,12 @@ public class YamlTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void testFormatYaml_WithJackson_defaultConfig_arrayBrackets_withEol() throws Exception {
-		writePomWithYamlSteps("<jackson><endWithEol>true</endWithEol></jackson>");
+	public void testFormatYaml_WithJackson_defaultConfig_arrayBrackets_spaceBeforeSeparator() throws Exception {
+		writePomWithYamlSteps("<jackson><spaceBeforeSeparator>true</spaceBeforeSeparator></jackson>");
 
 		setFile("yaml_test.yaml").toResource("yaml/array_with_bracket.yaml");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile("yaml_test.yaml").sameAsResource("yaml/array_with_bracket.clean_with_eol.yaml");
+		assertFile("yaml_test.yaml").sameAsResource("yaml/array_with_bracket.clean.spaceBeforeSeparator.yaml");
 	}
 
 	@Test

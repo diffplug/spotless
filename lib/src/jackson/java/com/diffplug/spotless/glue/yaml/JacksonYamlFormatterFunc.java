@@ -13,61 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.glue.json;
+package com.diffplug.spotless.glue.yaml;
 
 import java.io.IOException;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
-import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.glue.json.JacksonJsonFormatterFunc;
 import com.diffplug.spotless.json.JacksonConfig;
 
-/**
- * A {@link FormatterFunc} based on Jackson library
- */
-// https://github.com/FasterXML/jackson-dataformats-text/issues/372
-public class JsonJacksonFormatterFunc implements FormatterFunc {
-	private JacksonConfig jacksonConfig;
+public class JacksonYamlFormatterFunc extends JacksonJsonFormatterFunc {
 
-	public JsonJacksonFormatterFunc(JacksonConfig jacksonConfig) {
-		this.jacksonConfig = jacksonConfig;
+	public JacksonYamlFormatterFunc(JacksonConfig jacksonConfig) {
+		super(jacksonConfig);
 	}
 
 	@Override
-	public String apply(String input) throws Exception {
-		ObjectMapper objectMapper = makeObjectMapper();
-
-		return format(objectMapper, input);
+	protected YAMLFactory makeJsonFactory() {
+		return new YAMLFactory();
 	}
 
-	/**
-	 * @return a {@link JsonFactory}. May be overridden to handle alternative formats.
-	 * @see <a href="https://github.com/FasterXML/jackson-dataformats-text">jackson-dataformats-text</a>
-	 */
-	protected JsonFactory makeJsonFactory() {
-		return new JsonFactory();
-	}
-
-	protected ObjectMapper makeObjectMapper() {
-		JsonFactory jsonFactory = makeJsonFactory();
-		ObjectMapper objectMapper = new ObjectMapper(jsonFactory);
-
-		// Configure the ObjectMapper
-		// https://github.com/FasterXML/jackson-databind#commonly-used-features
-		jacksonConfig.getFeatureToToggle().forEach((rawFeature, toggle) -> {
-			// https://stackoverflow.com/questions/3735927/java-instantiating-an-enum-using-reflection
-			SerializationFeature feature = SerializationFeature.valueOf(rawFeature);
-
-			objectMapper.configure(feature, toggle);
-		});
-
-		return objectMapper;
-	}
-
+	@Override
 	protected String format(ObjectMapper objectMapper, String input) throws IllegalArgumentException, IOException {
 		// We may consider adding manually an initial '---' prefix to help management of multiple documents
 		// if (!input.trim().startsWith("---")) {
@@ -82,18 +51,12 @@ public class JsonJacksonFormatterFunc implements FormatterFunc {
 			//			List<ObjectNode> docs = objectMapper.readValues(yamlParser, ObjectNode.class).readAll();
 			//			return objectMapper.writeValueAsString(docs);
 
-			// 2023-01: This returns JSON instead of YAML
-			// This will transit with a JsonNode
 			// A JsonNode may keep the comments from the input node
 			// JsonNode jsonNode = objectMapper.readTree(input);
 			//Not 'toPrettyString' as one could require no INDENT_OUTPUT
 			// return jsonNode.toPrettyString();
 			ObjectNode objectNode = objectMapper.readValue(input, ObjectNode.class);
 			String outputFromjackson = objectMapper.writeValueAsString(objectNode);
-
-			if (jacksonConfig.isEndWithEol() && !outputFromjackson.endsWith("\n")) {
-				outputFromjackson += "\n";
-			}
 
 			return outputFromjackson;
 		} catch (JsonProcessingException e) {

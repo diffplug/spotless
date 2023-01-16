@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.json;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -22,7 +23,7 @@ import java.util.Map;
 /**
  * A DTO holding the options for Jackson-based formatters
  */
-public class JacksonConfig {
+public class JacksonConfig implements Serializable {
 
 	private static final Map<String, Boolean> DEFAULT_FEATURE_TOGGLES;
 
@@ -33,13 +34,13 @@ public class JacksonConfig {
 		DEFAULT_FEATURE_TOGGLES = defaultFeatureToggles;
 	}
 
-	protected Map<String, Boolean> featureToToggle;
-
-	// https://github.com/revelc/formatter-maven-plugin/pull/405
-	protected boolean endWithEol = false;
+	protected Map<String, Boolean> featureToToggle = new LinkedHashMap<>();
 
 	// https://github.com/revelc/formatter-maven-plugin/pull/280
+	// By default, Jackson adds a ' ' before separator, which is not standard with most IDE/JSON libraries
 	protected boolean spaceBeforeSeparator = false;
+
+	// protected int indentSpaces;
 
 	public Map<String, Boolean> getFeatureToToggle() {
 		return Collections.unmodifiableMap(featureToToggle);
@@ -53,14 +54,6 @@ public class JacksonConfig {
 		this.featureToToggle.putAll(features);
 	}
 
-	public boolean isEndWithEol() {
-		return endWithEol;
-	}
-
-	public void setEndWithEol(boolean endWithEol) {
-		this.endWithEol = endWithEol;
-	}
-
 	public boolean isSpaceBeforeSeparator() {
 		return spaceBeforeSeparator;
 	}
@@ -68,4 +61,12 @@ public class JacksonConfig {
 	public void setSpaceBeforeSeparator(boolean spaceBeforeSeparator) {
 		this.spaceBeforeSeparator = spaceBeforeSeparator;
 	}
+
+	//	public int getIndentSpaces() {
+	//		return indentSpaces;
+	//	}
+
+	//	public void setIndentSpaces(int indentSpaces) {
+	//		this.indentSpaces = indentSpaces;
+	//	}
 }

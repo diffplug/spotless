@@ -33,10 +33,10 @@ import com.diffplug.spotless.maven.FormatterStepFactory;
 public class JacksonJson implements FormatterStepFactory {
 
 	@Parameter
-	String version = JacksonJsonStep.defaultVersion();
+	private String version = JacksonJsonStep.defaultVersion();
 
 	@Parameter
-	boolean endWithEol = new JacksonConfig().isEndWithEol();
+	private boolean spaceBeforeSeparator = new JacksonConfig().isSpaceBeforeSeparator();
 
 	@Parameter
 	private Map<String, Boolean> features = Collections.emptyMap();
@@ -45,10 +45,8 @@ public class JacksonJson implements FormatterStepFactory {
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
 		JacksonConfig jacksonConfig = new JacksonConfig();
 
-		if (features != null) {
-			jacksonConfig.appendFeatureToToggle(features);
-		}
-		jacksonConfig.setEndWithEol(endWithEol);
+		jacksonConfig.appendFeatureToToggle(features);
+		jacksonConfig.setSpaceBeforeSeparator(spaceBeforeSeparator);
 
 		return JacksonJsonStep
 				.create(jacksonConfig, version, stepConfig.getProvisioner());

@@ -924,12 +924,12 @@ Uses Jackson and YAMLFactory to pretty print objects:
 ```xml
 <jackson>
   <version>2.14.1</version>    <!-- optional: The version of 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml' to be used -->
-  <enabledFeatures>            <!-- optional: Customize the set of enabled features -->
-    <enabledFeature>INDENT_OUTPUT<enabledFeature/>
-  </enabledFeatures>
-  <disabledFeatures>           <!-- optional: Customize the set of disabled features -->
-    <disabledFeature>DEFAULT_HAS_NO_DISABLED_FEATURE<disabledFeature/>
-  </disabledFeatures>
+  <features>                   <!-- optional: Customize the set of features -->
+    <INDENT_OUTPUT>true<INDENT_OUTPUT/>                            <!-- true by default -->
+    <ORDER_MAP_ENTRIES_BY_KEYS>false</ORDER_MAP_ENTRIES_BY_KEYS>   <!-- false by default -->
+    <ANY_OTHER_FEATURE>true|false</ANY_OTHER_FEATURE>
+  </features>
+  <spaceBeforeSeparator>false</spaceBeforeSeparator>   <!-- optional: false by default -->
 </jackson>
 ```
 
