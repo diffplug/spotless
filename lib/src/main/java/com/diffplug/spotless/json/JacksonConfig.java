@@ -24,6 +24,7 @@ import java.util.Map;
  * A DTO holding the options for Jackson-based formatters
  */
 public class JacksonConfig implements Serializable {
+	private static final long serialVersionUID = 1L;
 
 	private static final Map<String, Boolean> DEFAULT_FEATURE_TOGGLES;
 

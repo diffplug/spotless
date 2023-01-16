@@ -16,8 +16,6 @@
 package com.diffplug.spotless.glue.json;
 
 import java.io.IOException;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -79,25 +77,7 @@ public class JacksonJsonFormatterFunc implements FormatterFunc {
 		boolean spaceBeforeSeparator = jacksonConfig.isSpaceBeforeSeparator();
 
 		DefaultPrettyPrinter.Indenter indenter = new DefaultIndenter(getIndentation(), "\n");
-		DefaultPrettyPrinter printer = new DefaultPrettyPrinter() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public DefaultPrettyPrinter createInstance() {
-				return new DefaultPrettyPrinter(this);
-			}
-
-			@Override
-			public DefaultPrettyPrinter withSeparators(Separators separators) {
-				this._separators = separators;
-				if (spaceBeforeSeparator) {
-					this._objectFieldValueSeparatorWithSpaces = " " + separators.getObjectFieldValueSeparator() + " ";
-				} else {
-					this._objectFieldValueSeparatorWithSpaces = separators.getObjectFieldValueSeparator() + " ";
-				}
-				return this;
-			}
-		};
+		DefaultPrettyPrinter printer = new SpotlessDefaultPrettyPrinter(spaceBeforeSeparator);
 
 		printer.indentObjectsWith(indenter);
 		printer.indentArraysWith(indenter);
@@ -105,40 +85,49 @@ public class JacksonJsonFormatterFunc implements FormatterFunc {
 	}
 
 	protected String getIndentation() {
-		int indentSpaces = jacksonConfig.getIndentSpaces();
-		if (indentSpaces < 0) {
-			return "\t";
-		} else {
-			return IntStream.range(0, indentSpaces).mapToObj(i -> "").collect(Collectors.joining());
-		}
+		// DefaultIndenter default constructor relies on this
+		return "  ";
+		//		int indentSpaces = jacksonConfig.getIndentSpaces();
+		//		if (indentSpaces < 0) {
+		//			return "\t";
+		//		} else {
+		//			return IntStream.range(0, indentSpaces).mapToObj(i -> "").collect(Collectors.joining());
+		//		}
 	}
 
 	protected String format(ObjectMapper objectMapper, String input) throws IllegalArgumentException, IOException {
-		// We may consider adding manually an initial '---' prefix to help management of multiple documents
-		// if (!input.trim().startsWith("---")) {
-		// 	input = "---" + "\n" + input;
-		// }
-
 		try {
-			// https://stackoverflow.com/questions/25222327/deserialize-pojos-from-multiple-yaml-documents-in-a-single-file-in-jackson
-			// https://github.com/FasterXML/jackson-dataformats-text/issues/66#issuecomment-375328648
-			// 2023-01: For now, we get 'Cannot deserialize value of type `com.fasterxml.jackson.databind.node.ObjectNode` from Array value'
-			//			JsonParser yamlParser = objectMapper.getFactory().createParser(input);
-			//			List<ObjectNode> docs = objectMapper.readValues(yamlParser, ObjectNode.class).readAll();
-			//			return objectMapper.writeValueAsString(docs);
-
-			// 2023-01: This returns JSON instead of YAML
-			// This will transit with a JsonNode
-			// A JsonNode may keep the comments from the input node
-			// JsonNode jsonNode = objectMapper.readTree(input);
-			//Not 'toPrettyString' as one could require no INDENT_OUTPUT
-			// return jsonNode.toPrettyString();
 			ObjectNode objectNode = objectMapper.readValue(input, ObjectNode.class);
 			String outputFromjackson = objectMapper.writeValueAsString(objectNode);
 
 			return outputFromjackson;
 		} catch (JsonProcessingException e) {
 			throw new AssertionError("Unable to format. input='" + input + "'", e);
+		}
+	}
+
+	protected static class SpotlessDefaultPrettyPrinter extends DefaultPrettyPrinter {
+		private static final long serialVersionUID = 1L;
+		private final boolean spaceBeforeSeparator;
+
+		public SpotlessDefaultPrettyPrinter(boolean spaceBeforeSeparator) {
+			this.spaceBeforeSeparator = spaceBeforeSeparator;
+		}
+
+		@Override
+		public DefaultPrettyPrinter createInstance() {
+			return new DefaultPrettyPrinter(this);
+		}
+
+		@Override
+		public DefaultPrettyPrinter withSeparators(Separators separators) {
+			this._separators = separators;
+			if (spaceBeforeSeparator) {
+				this._objectFieldValueSeparatorWithSpaces = " " + separators.getObjectFieldValueSeparator() + " ";
+			} else {
+				this._objectFieldValueSeparatorWithSpaces = separators.getObjectFieldValueSeparator() + " ";
+			}
+			return this;
 		}
 	}
 }
