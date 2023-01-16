@@ -1,11 +1,14 @@
 # GH_TOKEN
 # NEXUS_USER
-# NEXUS_PASS
+# NEXUS_PASS64 (base64 NOTE: `base64` and `openssl base64` failed, had to use Java
+#   byte[] data = "{{password}}".getBytes(StandardCharsets.UTF_8);
+#   String encoded = new String(Base64.getEncoder().encode(data), StandardCharsets.UTF_8);
+#   System.out.println(encoded);
 # GPG_PASSPHRASE
 # GPG_KEY64 (base64)
 #   gpg --export-secret-keys --armor KEY_ID | openssl base64 | pbcopy
-# GRADLE_PORTAL_KEY
-# GRADLE_PORTAL_SECRET
+# GRADLE_KEY
+# GRADLE_SECRET
 
 name: deploy
 on:
@@ -46,12 +49,12 @@ jobs:
         if: "${{ github.event.inputs.to_publish == 'all' }}"
         run: |
           ./gradlew :changelogPush -Prelease=true --stacktrace --warning-mode all
-          ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${{ secrets.GRADLE_PORTAL_KEY }} -Pgradle.publish.secret=${{ secrets.GRADLE_PORTAL_SECRET }} --stacktrace --warning-mode all
+          ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${{ secrets.GRADLE_KEY }} -Pgradle.publish.secret=${{ secrets.GRADLE_SECRET }} --stacktrace --warning-mode all
           ./gradlew :plugin-maven:changelogPush -Prelease=true --stacktrace --warning-mode all
       - name: publish just plugin-gradle
         if: "${{ github.event.inputs.to_publish == 'plugin-gradle' }}"
         run: |
-          ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${{ secrets.GRADLE_PORTAL_KEY }} -Pgradle.publish.secret=${{ secrets.GRADLE_PORTAL_SECRET }} --stacktrace --warning-mode all
+          ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${{ secrets.GRADLE_KEY }} -Pgradle.publish.secret=${{ secrets.GRADLE_SECRET }} --stacktrace --warning-mode all
       - name: publish just plugin-maven
         if: "${{ github.event.inputs.to_publish == 'plugin-maven' }}"
         run: |
