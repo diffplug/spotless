@@ -74,9 +74,11 @@ public class PrettierFormatterStep {
 									"/com/diffplug/spotless/npm/common-serve.js",
 									"/com/diffplug/spotless/npm/prettier-serve.js"),
 							npmPathResolver.resolveNpmrcContent()),
-					projectDir,
-					buildDir,
-					npmPathResolver.resolveNpmExecutable());
+					new NpmFormatterStepLocations(
+							projectDir,
+							buildDir,
+							npmPathResolver.resolveNpmExecutable(),
+							npmPathResolver.resolveNodeExecutable()));
 			this.prettierConfig = requireNonNull(prettierConfig);
 		}
 

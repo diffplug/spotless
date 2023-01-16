@@ -28,9 +28,12 @@ class NpmProcess {
 
 	private final File npmExecutable;
 
-	NpmProcess(File workingDir, File npmExecutable) {
+	private final File nodeExecutable;
+
+	NpmProcess(File workingDir, File npmExecutable, File nodeExecutable) {
 		this.workingDir = workingDir;
 		this.npmExecutable = npmExecutable;
+		this.nodeExecutable = nodeExecutable;
 	}
 
 	void install() {
@@ -61,11 +64,12 @@ class NpmProcess {
 	private Process npm(String... args) {
 		List<String> processCommand = processCommand(args);
 		try {
-			return new ProcessBuilder()
+			ProcessBuilder processBuilder = new ProcessBuilder()
 					.inheritIO()
 					.directory(this.workingDir)
-					.command(processCommand)
-					.start();
+					.command(processCommand);
+			addEnvironmentVariables(processBuilder);
+			return processBuilder.start();
 		} catch (IOException e) {
 			throw new NpmProcessException("Failed to launch npm command '" + commandLine(args) + "'.", e);
 		}
@@ -76,6 +80,10 @@ class NpmProcess {
 		command.add(this.npmExecutable.getAbsolutePath());
 		command.addAll(Arrays.asList(args));
 		return command;
+	}
+
+	private void addEnvironmentVariables(ProcessBuilder processBuilder) {
+		processBuilder.environment().put("PATH", this.nodeExecutable.getParentFile().getAbsolutePath() + File.pathSeparator + System.getenv("PATH"));
 	}
 
 	private String commandLine(String... args) {

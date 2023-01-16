@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,8 @@
 package com.diffplug.spotless.npm;
 
 import java.io.File;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,20 +25,29 @@ public class NpmPathResolver {
 
 	private final File explicitNpmExecutable;
 
+	private final File explicitNodeExecutable;
+
 	private final File explicitNpmrcFile;
 
 	private final List<File> additionalNpmrcLocations;
 
-	public NpmPathResolver(File explicitNpmExecutable, File explicitNpmrcFile, File... additionalNpmrcLocations) {
+	public NpmPathResolver(File explicitNpmExecutable, File explicitNodeExecutable, File explicitNpmrcFile, List<File> additionalNpmrcLocations) {
 		this.explicitNpmExecutable = explicitNpmExecutable;
+		this.explicitNodeExecutable = explicitNodeExecutable;
 		this.explicitNpmrcFile = explicitNpmrcFile;
-		this.additionalNpmrcLocations = Arrays.asList(additionalNpmrcLocations);
+		this.additionalNpmrcLocations = Collections.unmodifiableList(new ArrayList<>(additionalNpmrcLocations));
 	}
 
 	public File resolveNpmExecutable() {
 		return Optional.ofNullable(this.explicitNpmExecutable)
 				.orElseGet(() -> NpmExecutableResolver.tryFind()
 						.orElseThrow(() -> new IllegalStateException("Can't automatically determine npm executable and none was specifically supplied!\n\n" + NpmExecutableResolver.explainMessage())));
+	}
+
+	public File resolveNodeExecutable() {
+		return Optional.ofNullable(this.explicitNodeExecutable)
+				.orElseGet(() -> NodeExecutableResolver.tryFindNextTo(resolveNpmExecutable())
+						.orElseThrow(() -> new IllegalStateException("Can't automatically determine node executable and none was specifically supplied!\n\n" + NpmExecutableResolver.explainMessage())));
 	}
 
 	public String resolveNpmrcContent() {
