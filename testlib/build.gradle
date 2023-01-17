@@ -22,6 +22,15 @@ dependencies {
 spotbugs { reportLevel = 'high' } // low|medium|high (low = sensitive to even minor mistakes)
 
 apply from: rootProject.file('gradle/special-tests.gradle')
+tasks.named('test') {
+	if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_16)) {
+		// for Antlr4FormatterStepTest and KtLintStepTest
+		def args = [
+			'--add-opens=java.base/java.lang=ALL-UNNAMED'
+		]
+		jvmArgs args
+	}
+}
 
 javadoc {
 	options.addStringOption('Xdoclint:none', '-quiet')
