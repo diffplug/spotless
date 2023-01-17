@@ -53,7 +53,6 @@ public class MavenIntegrationHarness extends ResourceHarness {
 	 */
 	private static final String SPOTLESS_MAVEN_VERSION_IDE = null;
 
-	private static final String LOCAL_MAVEN_REPOSITORY_DIR = "localMavenRepositoryDir";
 	private static final String SPOTLESS_MAVEN_PLUGIN_VERSION = "spotlessMavenPluginVersion";
 	private static final String CONFIGURATION = "configuration";
 	private static final String EXECUTIONS = "executions";
@@ -179,8 +178,7 @@ public class MavenIntegrationHarness extends ResourceHarness {
 
 	protected MavenRunner mavenRunner() throws IOException {
 		return MavenRunner.create()
-				.withProjectDir(rootFolder())
-				.withLocalRepository(new File(getSystemProperty(LOCAL_MAVEN_REPOSITORY_DIR)));
+				.withProjectDir(rootFolder());
 	}
 
 	/**
@@ -247,8 +245,6 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		if (SPOTLESS_MAVEN_VERSION_IDE != null) {
 			if (name.equals("spotlessMavenPluginVersion")) {
 				return SPOTLESS_MAVEN_VERSION_IDE;
-			} else if (name.equals("localMavenRepositoryDir")) {
-				return new File("build/localMavenRepository").getAbsolutePath();
 			} else {
 				throw Unhandled.stringException(name);
 			}

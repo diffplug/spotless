@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,6 @@ public class MavenRunner {
 
 	private File projectDir;
 	private String[] args;
-	private File localRepositoryDir;
 	private Map<String, String> environment = new HashMap<>();
 
 	public MavenRunner withProjectDir(File projectDir) {
@@ -56,11 +55,6 @@ public class MavenRunner {
 
 	public MavenRunner withArguments(String... args) {
 		this.args = Objects.requireNonNull(args);
-		return this;
-	}
-
-	public MavenRunner withLocalRepository(File localRepositoryDir) {
-		this.localRepositoryDir = localRepositoryDir;
 		return this;
 	}
 
@@ -75,7 +69,7 @@ public class MavenRunner {
 		Objects.requireNonNull(args, "Need to call withArguments() first");
 		// run maven with the given args in the given directory
 		String argsString = String.join(" ", Arrays.asList(args));
-		List<String> cmds = getPlatformCmds("-e -Dmaven.repo.local=" + localRepositoryDir + ' ' + argsString);
+		List<String> cmds = getPlatformCmds("-e " + argsString);
 		ProcessBuilder builder = new ProcessBuilder(cmds);
 		builder.directory(projectDir);
 		builder.environment().putAll(environment);
