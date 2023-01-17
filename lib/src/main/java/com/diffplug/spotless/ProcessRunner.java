@@ -31,6 +31,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.BiConsumer;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -62,7 +63,7 @@ public class ProcessRunner implements AutoCloseable {
 	}
 
 	/** Executes the given shell command (using {@code cmd} on windows and {@code sh} on unix). */
-	public Result shellWinUnix(File cwd, Map<String, String> environment, String cmdWin, String cmdUnix) throws IOException, InterruptedException {
+	public Result shellWinUnix(@Nullable File cwd, @Nullable Map<String, String> environment, String cmdWin, String cmdUnix) throws IOException, InterruptedException {
 		List<String> args;
 		if (FileSignature.machineIsWin()) {
 			args = Arrays.asList("cmd", "/c", cmdWin);
@@ -78,7 +79,7 @@ public class ProcessRunner implements AutoCloseable {
 	}
 
 	/** Creates a process with the given arguments, the given byte array is written to stdin immediately. */
-	public Result exec(byte[] stdin, String... args) throws IOException, InterruptedException {
+	public Result exec(@Nullable byte[] stdin, String... args) throws IOException, InterruptedException {
 		return exec(stdin, Arrays.asList(args));
 	}
 
@@ -88,12 +89,12 @@ public class ProcessRunner implements AutoCloseable {
 	}
 
 	/** Creates a process with the given arguments, the given byte array is written to stdin immediately. */
-	public Result exec(byte[] stdin, List<String> args) throws IOException, InterruptedException {
+	public Result exec(@Nullable byte[] stdin, List<String> args) throws IOException, InterruptedException {
 		return exec(null, null, stdin, args);
 	}
 
 	/** Creates a process with the given arguments, the given byte array is written to stdin immediately. */
-	public Result exec(File cwd, Map<String, String> environment, byte[] stdin, List<String> args) throws IOException, InterruptedException {
+	public Result exec(@Nullable File cwd, @Nullable Map<String, String> environment, @Nullable byte[] stdin, List<String> args) throws IOException, InterruptedException {
 		ProcessBuilder builder = new ProcessBuilder(args);
 		if (cwd != null) {
 			builder.directory(cwd);
