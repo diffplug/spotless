@@ -24,6 +24,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -57,18 +58,18 @@ public class ProcessRunner implements AutoCloseable {
 
 	/** Executes the given shell command (using {@code cmd} on windows and {@code sh} on unix). */
 	public Result shellWinUnix(String cmdWin, String cmdUnix) throws IOException, InterruptedException {
-		return shellWinUnix(null, cmdWin, cmdUnix);
+		return shellWinUnix(null, null, cmdWin, cmdUnix);
 	}
 
 	/** Executes the given shell command (using {@code cmd} on windows and {@code sh} on unix). */
-	public Result shellWinUnix(File cwd, String cmdWin, String cmdUnix) throws IOException, InterruptedException {
+	public Result shellWinUnix(File cwd, Map<String, String> environment, String cmdWin, String cmdUnix) throws IOException, InterruptedException {
 		List<String> args;
 		if (FileSignature.machineIsWin()) {
 			args = Arrays.asList("cmd", "/c", cmdWin);
 		} else {
 			args = Arrays.asList("sh", "-c", cmdUnix);
 		}
-		return exec(cwd, args);
+		return exec(cwd, environment, new byte[0], args);
 	}
 
 	/** Creates a process with the given arguments. */
@@ -83,24 +84,22 @@ public class ProcessRunner implements AutoCloseable {
 
 	/** Creates a process with the given arguments. */
 	public Result exec(List<String> args) throws IOException, InterruptedException {
-		return exec((File) null, args);
-	}
-
-	/** Creates a process with the given arguments. */
-	public Result exec(File cwd, List<String> args) throws IOException, InterruptedException {
-		return exec(cwd, new byte[0], args);
+		return exec(null, args);
 	}
 
 	/** Creates a process with the given arguments, the given byte array is written to stdin immediately. */
 	public Result exec(byte[] stdin, List<String> args) throws IOException, InterruptedException {
-		return exec(null, stdin, args);
+		return exec(null, null, stdin, args);
 	}
 
 	/** Creates a process with the given arguments, the given byte array is written to stdin immediately. */
-	public Result exec(File cwd, byte[] stdin, List<String> args) throws IOException, InterruptedException {
+	public Result exec(File cwd, Map<String, String> environment, byte[] stdin, List<String> args) throws IOException, InterruptedException {
 		ProcessBuilder builder = new ProcessBuilder(args);
 		if (cwd != null) {
 			builder.directory(cwd);
+		}
+		if (environment != null) {
+			builder.environment().putAll(environment);
 		}
 		Process process = builder.start();
 		Future<byte[]> outputFut = threadStdOut.submit(() -> drainToBytes(process.getInputStream(), bufStdOut));

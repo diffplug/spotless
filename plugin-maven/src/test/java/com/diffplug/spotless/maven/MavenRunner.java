@@ -69,7 +69,7 @@ public class MavenRunner {
 		Objects.requireNonNull(args, "Need to call withArguments() first");
 		// run maven with the given args in the given directory
 		String argsString = "-e " + String.join(" ", Arrays.asList(args));
-		return runner.shellWinUnix(projectDir, "mvnw " + argsString, "./mvnw " + argsString);
+		return runner.shellWinUnix(projectDir, environment, "mvnw " + argsString, "./mvnw " + argsString);
 	}
 
 	/** Runs the command and asserts that exit code is 0. */
