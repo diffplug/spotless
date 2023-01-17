@@ -42,4 +42,9 @@ class NodeExecutableResolver {
 		}
 		return Optional.empty();
 	}
+
+	public static String explainMessage() {
+		return "Spotless was unable to find a node executable.\n" +
+				"Either specify the node executable explicitly or make sure it can be found next to the npm executable.";
+	}
 }

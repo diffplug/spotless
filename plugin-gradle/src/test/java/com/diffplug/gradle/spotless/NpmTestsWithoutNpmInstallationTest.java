@@ -92,4 +92,38 @@ class NpmTestsWithoutNpmInstallationTest extends GradleIntegrationHarness {
 		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
 		assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile.clean");
 	}
+
+	@Test
+	void useNpmNextToConfiguredNodePluginFromNodeGradlePlugin() throws Exception {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"    id 'com.github.node-gradle.node' version '3.5.1'",
+				"}",
+				"repositories { mavenCentral() }",
+				"node {",
+				"    download = true",
+				"    version = '18.13.0'",
+				"    workDir = file(\"${buildDir}/nodejs\")",
+				"}",
+				"def prettierConfig = [:]",
+				"prettierConfig['printWidth'] = 50",
+				"prettierConfig['parser'] = 'typescript'",
+				"def nodeExecExtension = System.getProperty('os.name').toLowerCase().contains('windows') ? '.exe' : ''",
+				"spotless {",
+				"    format 'mytypescript', {",
+				"        target 'test.ts'",
+				"        prettier()",
+				"            .nodeExecutable(\"${tasks.named('nodeSetup').get().nodeDir.get()}/bin/node${nodeExecExtension}\")",
+				"            .config(prettierConfig)",
+				"    }",
+				"}");
+		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
+		// make sure node binary is there
+		gradleRunner().withArguments("nodeSetup", "npmSetup").build();
+		// then run spotless using that node installation
+		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile.clean");
+	}
 }
