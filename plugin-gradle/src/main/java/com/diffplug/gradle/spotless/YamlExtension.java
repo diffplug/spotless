@@ -41,11 +41,11 @@ public class YamlExtension extends FormatExtension {
 		super.setupTask(task);
 	}
 
-	public JacksonGradleConfig jacksonYaml() {
+	public AJacksonGradleConfig jacksonYaml() {
 		return new JacksonYamlGradleConfig(this);
 	}
 
-	public class JacksonYamlGradleConfig extends JacksonGradleConfig {
+	public class JacksonYamlGradleConfig extends AJacksonGradleConfig {
 		protected JacksonYamlConfig jacksonConfig;
 
 		public JacksonYamlGradleConfig(JacksonYamlConfig jacksonConfig, FormatExtension formatExtension) {
@@ -65,7 +65,7 @@ public class YamlExtension extends FormatExtension {
 		/**
 		 * @see com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature
 		 */
-		public JacksonGradleConfig yamlFeature(String feature, boolean toggle) {
+		public AJacksonGradleConfig yamlFeature(String feature, boolean toggle) {
 			this.jacksonConfig.appendYamlFeatureToToggle(Collections.singletonMap(feature, toggle));
 			formatExtension.replaceStep(createStep());
 			return this;

@@ -116,7 +116,7 @@ public class JsonExtension extends FormatExtension {
 		}
 	}
 
-	public static class JacksonJsonGradleConfig extends JacksonGradleConfig {
+	public static class JacksonJsonGradleConfig extends AJacksonGradleConfig {
 		protected JacksonJsonConfig jacksonConfig;
 
 		public JacksonJsonGradleConfig(JacksonJsonConfig jacksonConfig, FormatExtension formatExtension) {
@@ -135,7 +135,7 @@ public class JsonExtension extends FormatExtension {
 		/**
 		 * @see com.fasterxml.jackson.core.JsonGenerator.Feature
 		 */
-		public JacksonGradleConfig jsonFeature(String feature, boolean toggle) {
+		public AJacksonGradleConfig jsonFeature(String feature, boolean toggle) {
 			this.jacksonConfig.appendJsonFeatureToToggle(Collections.singletonMap(feature, toggle));
 			formatExtension.replaceStep(createStep());
 			return this;

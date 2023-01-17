@@ -51,8 +51,8 @@ class YamlExtensionTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    yaml {",
 				"        target 'src/**/*.yaml'",
-				"        jacksonYaml()" +
-				"	        .yamlFeature('WRITE_DOC_START_MARKER', false)" +
+				"        jacksonYaml()" ,
+				"	        .yamlFeature('WRITE_DOC_START_MARKER', false)" ,
 				"	        .yamlFeature('MINIMIZE_QUOTES', true)",
 				"    }",
 				"}");

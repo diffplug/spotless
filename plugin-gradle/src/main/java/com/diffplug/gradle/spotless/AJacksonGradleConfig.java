@@ -21,37 +21,27 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.json.JacksonConfig;
 import com.diffplug.spotless.json.JacksonJsonStep;
 
-public abstract class JacksonGradleConfig {
+public abstract class AJacksonGradleConfig {
 	protected final FormatExtension formatExtension;
 
 	protected JacksonConfig jacksonConfig;
 
 	protected String version = JacksonJsonStep.defaultVersion();
 
-	public JacksonGradleConfig(JacksonConfig jacksonConfig, FormatExtension formatExtension) {
+	public AJacksonGradleConfig(JacksonConfig jacksonConfig, FormatExtension formatExtension) {
 		this.formatExtension = formatExtension;
 
 		this.jacksonConfig = jacksonConfig;
 		formatExtension.addStep(createStep());
 	}
 
-	public JacksonGradleConfig(FormatExtension formatExtension) {
-		this(new JacksonConfig(), formatExtension);
-	}
-
-	public JacksonGradleConfig config(JacksonConfig jacksonConfig) {
-		this.jacksonConfig = jacksonConfig;
-		formatExtension.replaceStep(createStep());
-		return this;
-	}
-
-	public JacksonGradleConfig feature(String feature, boolean toggle) {
+	public AJacksonGradleConfig feature(String feature, boolean toggle) {
 		this.jacksonConfig.appendFeatureToToggle(Collections.singletonMap(feature, toggle));
 		formatExtension.replaceStep(createStep());
 		return this;
 	}
 
-	public JacksonGradleConfig version(String version) {
+	public AJacksonGradleConfig version(String version) {
 		this.version = version;
 		formatExtension.replaceStep(createStep());
 		return this;
