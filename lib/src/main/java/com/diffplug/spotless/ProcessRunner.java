@@ -69,7 +69,7 @@ public class ProcessRunner implements AutoCloseable {
 		} else {
 			args = Arrays.asList("sh", "-c", cmdUnix);
 		}
-		return exec(cwd, environment, new byte[0], args);
+		return exec(cwd, environment, null, args);
 	}
 
 	/** Creates a process with the given arguments. */
@@ -100,6 +100,9 @@ public class ProcessRunner implements AutoCloseable {
 		}
 		if (environment != null) {
 			builder.environment().putAll(environment);
+		}
+		if (stdin == null) {
+			stdin = new byte[0];
 		}
 		Process process = builder.start();
 		Future<byte[]> outputFut = threadStdOut.submit(() -> drainToBytes(process.getInputStream(), bufStdOut));
