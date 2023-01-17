@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,6 @@ import java.net.URLClassLoader;
 import java.nio.ByteBuffer;
 import java.security.ProtectionDomain;
 import java.util.Objects;
-
-import javax.annotation.Nullable;
 
 /**
  * This class loader is used to load classes of Spotless features from a search
@@ -113,25 +111,7 @@ class FeatureClassLoader extends URLClassLoader {
 		return ByteBuffer.wrap(buffer.toByteArray());
 	}
 
-	/**
-	 * Making spotless Java 9+ compatible. In Java 8 (and minor) the bootstrap
-	 * class loader saw every platform class. In Java 9+ it was changed so the
-	 * bootstrap class loader does not see all classes anymore. This might lead
-	 * to ClassNotFoundException in formatters (e.g. freshmark).
-	 *
-	 * @return <code>null</code> on Java 8 (and minor), otherwise <code>PlatformClassLoader</code>
-	 */
-	@Nullable
 	private static ClassLoader getParentClassLoader() {
-		double version = Double.parseDouble(System.getProperty("java.specification.version"));
-		if (version > 1.8) {
-			try {
-				return (ClassLoader) ClassLoader.class.getMethod("getPlatformClassLoader").invoke(null);
-			} catch (Exception e) {
-				throw ThrowingEx.asRuntime(e);
-			}
-		} else {
-			return null;
-		}
+		return ThrowingEx.get(() -> (ClassLoader) ClassLoader.class.getMethod("getPlatformClassLoader").invoke(null));
 	}
 }
