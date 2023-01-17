@@ -21,8 +21,8 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.diffplug.spotless.ProcessRunner;
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
-import com.diffplug.spotless.maven.MavenRunner.Result;
 
 public class YamlTest extends MavenIntegrationHarness {
 	private static final Logger LOGGER = LoggerFactory.getLogger(YamlTest.class);
@@ -32,9 +32,9 @@ public class YamlTest extends MavenIntegrationHarness {
 		writePomWithYamlSteps("<jackson/>");
 
 		setFile("yaml_test.yaml").toResource("yaml/separator_comments.yaml");
-		Result runNoError = mavenRunner().withArguments("spotless:apply").runNoError();
+		ProcessRunner.Result runNoError = mavenRunner().withArguments("spotless:apply").runNoError();
 		LOGGER.error("result: {}", runNoError);
-		assertThat(runNoError.exitValue()).as("Run without error %s", runNoError).isEqualTo(0);
+		assertThat(runNoError.exitCode()).as("Run without error %s", runNoError).isEqualTo(0);
 		LOGGER.error("GOGO");
 		assertFile("yaml_test.yaml").sameAsResource("yaml/separator_comments.clean.yaml");
 	}

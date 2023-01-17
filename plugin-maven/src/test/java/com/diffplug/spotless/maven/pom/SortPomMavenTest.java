@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ public class SortPomMavenTest extends MavenIntegrationHarness {
 		writePomWithPomSteps("<sortPom/>");
 
 		setFile("pom_test.xml").toResource("pom/pom_dirty.xml");
-		mavenRunner().withArguments("spotless:apply").runNoError().error();
+		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile("pom_test.xml").sameAsResource("pom/pom_clean_default.xml");
 	}
 }

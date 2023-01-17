@@ -93,10 +93,7 @@ dependencies {
 // we'll hold the core lib to a high standard
 spotbugs { reportLevel = 'low' } // low|medium|high (low = sensitive to even minor mistakes)
 
-tasks.withType(Test).configureEach {
-	useJUnitPlatform()
-}
-
+apply from: rootProject.file('gradle/special-tests.gradle')
 jar {
 	for (glue in NEEDS_GLUE) {
 		from sourceSets.getByName(glue).output.classesDirs

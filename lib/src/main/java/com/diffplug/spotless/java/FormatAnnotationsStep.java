@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 DiffPlug
+ * Copyright 2022-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,6 +55,13 @@ public final class FormatAnnotationsStep {
 					"Acceleration",
 					"ACCTop",
 					"AinferBottom",
+					"AinferDefaultType",
+					"AinferParent",
+					"AinferSibling1",
+					"AinferSibling2",
+					"AinferTop",
+					"AinferImplicitAnno",
+					"AinferSiblingWithFields",
 					"AlwaysSafe",
 					"Angle",
 					"AnnoWithStringArg",
@@ -102,6 +109,7 @@ public final class FormatAnnotationsStep {
 					"DefaultType",
 					"degrees",
 					"Det",
+					"DoesNotMatchRegex",
 					"DotSeparatedIdentifiers",
 					"DotSeparatedIdentifiersOrPrimitiveType",
 					"DoubleVal",

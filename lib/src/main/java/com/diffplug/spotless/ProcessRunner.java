@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 DiffPlug
+ * Copyright 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,22 @@
 package com.diffplug.spotless;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.BiConsumer;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -55,13 +59,18 @@ public class ProcessRunner implements AutoCloseable {
 
 	/** Executes the given shell command (using {@code cmd} on windows and {@code sh} on unix). */
 	public Result shellWinUnix(String cmdWin, String cmdUnix) throws IOException, InterruptedException {
+		return shellWinUnix(null, null, cmdWin, cmdUnix);
+	}
+
+	/** Executes the given shell command (using {@code cmd} on windows and {@code sh} on unix). */
+	public Result shellWinUnix(@Nullable File cwd, @Nullable Map<String, String> environment, String cmdWin, String cmdUnix) throws IOException, InterruptedException {
 		List<String> args;
 		if (FileSignature.machineIsWin()) {
 			args = Arrays.asList("cmd", "/c", cmdWin);
 		} else {
 			args = Arrays.asList("sh", "-c", cmdUnix);
 		}
-		return exec(args);
+		return exec(cwd, environment, null, args);
 	}
 
 	/** Creates a process with the given arguments. */
@@ -70,18 +79,32 @@ public class ProcessRunner implements AutoCloseable {
 	}
 
 	/** Creates a process with the given arguments, the given byte array is written to stdin immediately. */
-	public Result exec(byte[] stdin, String... args) throws IOException, InterruptedException {
+	public Result exec(@Nullable byte[] stdin, String... args) throws IOException, InterruptedException {
 		return exec(stdin, Arrays.asList(args));
 	}
 
 	/** Creates a process with the given arguments. */
 	public Result exec(List<String> args) throws IOException, InterruptedException {
-		return exec(new byte[0], args);
+		return exec(null, args);
 	}
 
 	/** Creates a process with the given arguments, the given byte array is written to stdin immediately. */
-	public Result exec(byte[] stdin, List<String> args) throws IOException, InterruptedException {
+	public Result exec(@Nullable byte[] stdin, List<String> args) throws IOException, InterruptedException {
+		return exec(null, null, stdin, args);
+	}
+
+	/** Creates a process with the given arguments, the given byte array is written to stdin immediately. */
+	public Result exec(@Nullable File cwd, @Nullable Map<String, String> environment, @Nullable byte[] stdin, List<String> args) throws IOException, InterruptedException {
 		ProcessBuilder builder = new ProcessBuilder(args);
+		if (cwd != null) {
+			builder.directory(cwd);
+		}
+		if (environment != null) {
+			builder.environment().putAll(environment);
+		}
+		if (stdin == null) {
+			stdin = new byte[0];
+		}
 		Process process = builder.start();
 		Future<byte[]> outputFut = threadStdOut.submit(() -> drainToBytes(process.getInputStream(), bufStdOut));
 		Future<byte[]> errorFut = threadStdErr.submit(() -> drainToBytes(process.getErrorStream(), bufStdErr));
@@ -145,6 +168,14 @@ public class ProcessRunner implements AutoCloseable {
 
 		public byte[] stdErr() {
 			return stdErr;
+		}
+
+		public String stdOutUtf8() {
+			return new String(stdOut, StandardCharsets.UTF_8);
+		}
+
+		public String stdErrUtf8() {
+			return new String(stdErr, StandardCharsets.UTF_8);
 		}
 
 		/** Returns true if the exit code was not zero. */

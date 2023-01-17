@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -254,15 +254,15 @@ class UpToDateCheckingTest extends MavenIntegrationHarness {
 	}
 
 	private String runSpotlessApply() throws Exception {
-		return mavenRunnerForGoal("apply").runNoError().output();
+		return mavenRunnerForGoal("apply").runNoError().stdOutUtf8();
 	}
 
 	private String runSpotlessCheck() throws Exception {
-		return mavenRunnerForGoal("check").runNoError().output();
+		return mavenRunnerForGoal("check").runNoError().stdOutUtf8();
 	}
 
 	private String runSpotlessCheckOnUnformattedFiles() throws Exception {
-		return mavenRunnerForGoal("check").runHasError().output();
+		return mavenRunnerForGoal("check").runHasError().stdOutUtf8();
 	}
 
 	private MavenRunner mavenRunnerForGoal(String goal) throws IOException {
