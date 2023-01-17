@@ -1,42 +1,15 @@
-buildscript {
-	repositories { mavenCentral() }
-	dependencies { classpath "com.github.spullara.mustache.java:compiler:${VER_MUSTACHE}" }
-}
 plugins {
-	id 'cz.malohlava.visteg' version '1.0.5' // https://github.com/mmalohlava/gradle-visteg
+	// https://www.benediktritter.de/maven-plugin-development/#release-history
+	id 'de.benediktritter.maven-plugin-development' version '0.4.0'
 }
+
 repositories { mavenCentral() }
 apply from: rootProject.file('gradle/changelog.gradle')
-apply from: rootProject.file('gradle/spotless-freshmark.gradle')
-
-// to generate taskGraph.pdf
-// - set enabled (below) to true
-// - run: ./gradlew :plugin-maven:test
-// - run: rm plugin-maven/output.pdf
-// - run: dot -Tpdf plugin-maven/build/reports/visteg.dot > plugin-maven/taskGraph.pdf
-visteg {
-	enabled = false
-	nodeShape = 'box'
-	startNodeShape = 'box'
-	endNodeShape = 'box'
-	colorscheme = 'pastel24' // https://www.graphviz.org/doc/info/colors.html
-}
-
-import com.github.mustachejava.DefaultMustacheFactory
-
-import java.nio.file.Files
-
-import static java.nio.charset.StandardCharsets.UTF_8
-import static java.nio.file.StandardOpenOption.CREATE
-import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING
-
 ext.artifactId = project.artifactIdMaven
 version = spotlessChangelog.versionNext
-apply from: rootProject.file("gradle/java-setup.gradle")
-apply from: rootProject.file("gradle/java-publish.gradle")
 
-final MAVEN_PROJECT_DIR = project.layout.buildDirectory.dir("mavenProject").get()
-final LOCAL_MAVEN_REPO_DIR = project.layout.buildDirectory.dir("localMavenRepository").get()
+apply from: rootProject.file("gradle/java-setup.gradle")
+apply from: rootProject.file('gradle/spotless-freshmark.gradle')
 
 def mvnw(String args) {
 	boolean isWin = System.getProperty('os.name').toLowerCase().contains('win')
@@ -55,17 +28,15 @@ def mvnw(String args) {
 	}
 }
 
-String libVersion = version.endsWith('-SNAPSHOT') ?
-		rootProject.spotlessChangelog.versionNext :
-		rootProject.spotlessChangelog.versionLast
+apply plugin: 'de.benediktritter.maven-plugin-development'
+mavenPlugin {
+	name = 'Spotless Maven Plugin'
+	artifactId = project.artifactIdMaven
+	description = project.description
+}
 dependencies {
-	if (version.endsWith('-SNAPSHOT') || (rootProject.spotlessChangelog.versionNext == rootProject.spotlessChangelog.versionLast)) {
-		implementation project(':lib')
-		implementation project(':lib-extra')
-	} else {
-		implementation "com.diffplug.spotless:spotless-lib:${libVersion}"
-		implementation "com.diffplug.spotless:spotless-lib-extra:${libVersion}"
-	}
+	implementation project(':lib')
+	implementation project(':lib-extra')
 
 	compileOnly "org.apache.maven:maven-plugin-api:${VER_MAVEN_API}"
 	compileOnly "org.apache.maven.plugin-tools:maven-plugin-annotations:${VER_MAVEN_API}"
@@ -90,112 +61,14 @@ dependencies {
 	testImplementation "org.apache.maven:maven-core:${VER_MAVEN_API}"
 }
 
-task copySourceFiles(type: Sync) {
-	from "src/main/java"
-	into MAVEN_PROJECT_DIR.dir("src/main/java")
-}
-
-task copyMvnw(type: Copy, dependsOn: copySourceFiles) {
-	from 'src/test/resources'
-	include 'mvnw'
-	include 'mvnw.cmd'
-	include '.mvn/**'
-	into MAVEN_PROJECT_DIR
-}
-
-task installLocalDependencies
-def libs = [
-	'lib',
-	'lib-extra',
-	'testlib'
-]
-libs.each {
-	def groupId = 'com.diffplug.spotless'
-	def artifactId = "spotless-${it}"
-	def jarTask = tasks.getByPath(":${it}:jar")
-	def file = jarTask.archivePath
-
-	def installDependency = task "install_${artifactId}"(type: Exec) {
-		workingDir MAVEN_PROJECT_DIR
-
-		inputs.file(file)
-		outputs.dir(LOCAL_MAVEN_REPO_DIR.file(groupId.replace('.', '/') + "/" + artifactId + "/" + version))
-		commandLine mvnw("org.apache.maven.plugins:maven-install-plugin:2.3.1:install-file " +
-				"-Dfile=${file} " +
-				"-DgroupId=${groupId} " +
-				"-DartifactId=${artifactId} " +
-				"-Dversion=${libVersion} " +
-				"-Dpackaging=jar " +
-				"-DlocalRepositoryPath=${LOCAL_MAVEN_REPO_DIR}")
-	}
-	installDependency.dependsOn(jarTask)
-
-	installLocalDependencies.dependsOn installDependency
-}
-
-task createPomXml(dependsOn: installLocalDependencies) {
-	def newPomXml = MAVEN_PROJECT_DIR.file("pom.xml").asFile.toPath()
-
-	outputs.file(newPomXml)
-	doLast {
-		def additionalDependencies = project.configurations.runtimeClasspath.resolvedConfiguration.resolvedArtifacts.findAll {
-			return !libs.contains(it.moduleVersion.id.name)
-		}.collect {
-			return  "    <dependency>\n" +
-					"      <groupId>${it.moduleVersion.id.group}</groupId>\n" +
-					"      <artifactId>${it.moduleVersion.id.name}</artifactId>\n" +
-					"      <version>${it.moduleVersion.id.version}</version>\n" +
-					"    </dependency>\n"
-		}.join()
-
-		def versions = [
-			spotlessMavenPluginVersion: version,
-			mavenApiVersion           : VER_MAVEN_API,
-			eclipseAetherVersion      : VER_ECLIPSE_AETHER,
-			spotlessLibVersion        : libVersion,
-			jsr305Version             : VER_JSR_305,
-			additionalDependencies    : additionalDependencies
-		]
-
-		def pomXmlTemplate = project.layout.projectDirectory.file("src/test/resources/pom-build.xml.mustache").asFile.toPath()
-
-		Files.newBufferedReader(pomXmlTemplate).withCloseable { reader ->
-			Files.newBufferedWriter(newPomXml, UTF_8, CREATE, TRUNCATE_EXISTING).withCloseable { writer ->
-				def mustache = new DefaultMustacheFactory().compile(reader, "pom")
-				mustache.execute(writer, versions)
-			}
-		}
-	}
-}
-
-task runMavenBuild(type: Exec, dependsOn: [
-	copySourceFiles,
-	copyMvnw,
-	createPomXml
-]) {
-	outputs.dir(LOCAL_MAVEN_REPO_DIR)
-
-	workingDir MAVEN_PROJECT_DIR
-	// -B batch mode to make dependency download logging less verbose
-	commandLine mvnw("clean install -B -Dmaven.repo.local=${LOCAL_MAVEN_REPO_DIR}")
-}
-
-jar.setActions Arrays.asList()
-jar.dependsOn(runMavenBuild)
-File jarIn = MAVEN_PROJECT_DIR.file("target/spotless-maven-plugin-${version}.jar").asFile
-File jarOut = jar.archivePath
-jar.inputs.file(jarIn)
-jar.outputs.file(jarOut)
-jar.doLast {
-	Files.copy(jarIn.toPath(), jarOut.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING)
-}
-
-test { useJUnitPlatform() }
-
 apply from: rootProject.file('gradle/special-tests.gradle')
 
-tasks.withType(Test) {
-	systemProperty "localMavenRepositoryDir", LOCAL_MAVEN_REPO_DIR.asFile
-	systemProperty "spotlessMavenPluginVersion", project.version
-	dependsOn(jar)
+tasks.withType(Test).configureEach {
+	useJUnitPlatform()
+	systemProperty 'spotlessMavenPluginVersion', project.version
+	dependsOn 'publishToMavenLocal'
+	dependsOn ':lib:publishToMavenLocal'
+	dependsOn ':lib-extra:publishToMavenLocal'
 }
+
+apply from: rootProject.file("gradle/java-publish.gradle")
