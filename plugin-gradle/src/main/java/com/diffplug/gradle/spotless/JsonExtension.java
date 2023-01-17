@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package com.diffplug.gradle.spotless;
 import javax.inject.Inject;
 
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.json.JacksonConfig;
+import com.diffplug.spotless.json.JacksonJsonStep;
 import com.diffplug.spotless.json.JsonSimpleStep;
 import com.diffplug.spotless.json.gson.GsonStep;
 
@@ -45,6 +47,10 @@ public class JsonExtension extends FormatExtension {
 
 	public GsonConfig gson() {
 		return new GsonConfig();
+	}
+
+	public JacksonJsonGradleConfig jackson() {
+		return new JacksonJsonGradleConfig(this);
 	}
 
 	public class SimpleConfig {
@@ -108,4 +114,19 @@ public class JsonExtension extends FormatExtension {
 		}
 	}
 
+	public static class JacksonJsonGradleConfig extends JacksonGradleConfig {
+
+		public JacksonJsonGradleConfig(JacksonConfig jacksonConfig, FormatExtension formatExtension) {
+			super(jacksonConfig, formatExtension);
+		}
+
+		public JacksonJsonGradleConfig(FormatExtension formatExtension) {
+			this(new JacksonConfig(), formatExtension);
+		}
+
+		@Override
+		protected FormatterStep createStep() {
+			return JacksonJsonStep.create(jacksonConfig, version, formatExtension.provisioner());
+		}
+	}
 }

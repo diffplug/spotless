@@ -73,7 +73,7 @@ public class JacksonYamlStep {
 		FormatterFunc toFormatter() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
 				InstantiationException, IllegalAccessException {
 			Class<?> formatterFunc = jarState.getClassLoader().loadClass("com.diffplug.spotless.glue.yaml.JacksonYamlFormatterFunc");
-			Constructor<?> constructor = formatterFunc.getConstructor(JacksonConfig.class);
+			Constructor<?> constructor = formatterFunc.getConstructor(JacksonYamlConfig.class);
 			return (FormatterFunc) constructor.newInstance(jacksonConfig);
 		}
 	}

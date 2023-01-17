@@ -7,6 +7,6 @@ episodes:
 - 5
 - 6
 - 7
-best-jedi:
-  name: "Obi-Wan"
-  side: "light"
+best-jedi :
+  name : "Obi-Wan"
+  side : "light"

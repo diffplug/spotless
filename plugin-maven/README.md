@@ -12,8 +12,8 @@ output = [
   ].join('\n');
 -->
 [![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
-[![Javadoc](https://img.shields.io/badge/javadoc-yes-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.30.0/index.html)
-[![Changelog](https://img.shields.io/badge/changelog-2.30.0-brightgreen.svg)](CHANGES.md)
+[![Javadoc](https://img.shields.io/badge/javadoc-yes-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.29.0/index.html)
+[![Changelog](https://img.shields.io/badge/changelog-2.29.0-brightgreen.svg)](CHANGES.md)
 
 [![Circle CI](https://circleci.com/gh/diffplug/spotless/tree/main.svg?style=shield)](https://circleci.com/gh/diffplug/spotless/tree/main)
 [![Live chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
@@ -864,6 +864,7 @@ For details, see the [npm detection](#npm-detection) and [`.npmrc` detection](#n
 
     <simple />    <!-- has its own section below -->
     <gson />      <!-- has its own section below -->
+    <jackson />   <!-- has its own section below -->
   </json>
 </configuration>
 ```
@@ -898,6 +899,22 @@ all HTML characters are written escaped or none. Set `escapeHtml` if you prefer 
 [javadoc of String](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html#compareTo(java.lang.String))
 for details.
 
+### Jackson
+
+Uses Jackson for formatting.
+
+```xml
+<jackson>
+  <version>2.14.1</version>    <!-- optional: The version of 'com.fasterxml.jackson.core:jackson-databind' to be used -->
+  <features>                   <!-- optional: Customize the set of features (based on com.fasterxml.jackson.databind.SerializationFeature) -->
+    <INDENT_OUTPUT>true</INDENT_OUTPUT>                            <!-- true by default -->
+    <ORDER_MAP_ENTRIES_BY_KEYS>false</ORDER_MAP_ENTRIES_BY_KEYS>   <!-- false by default -->
+    <ANY_OTHER_FEATURE>true|false</ANY_OTHER_FEATURE>              <!-- any feature can be toggled on or off -->
+  </features>
+  <spaceBeforeSeparator>false</spaceBeforeSeparator>   <!-- optional: false by default -->
+</jackson>
+```
+
 <a name="applying-prettier-to-javascript--flow--typescript--css--scss--less--jsx--graphql--yaml--etc"></a>
 
 
@@ -924,10 +941,11 @@ Uses Jackson and YAMLFactory to pretty print objects:
 ```xml
 <jackson>
   <version>2.14.1</version>    <!-- optional: The version of 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml' to be used -->
-  <features>                   <!-- optional: Customize the set of features -->
-    <INDENT_OUTPUT>true<INDENT_OUTPUT/>                            <!-- true by default -->
+  <features>                   <!-- optional: Customize the set of features (based on com.fasterxml.jackson.databind.SerializationFeature) -->
+    <INDENT_OUTPUT>true</INDENT_OUTPUT>                            <!-- true by default -->
     <ORDER_MAP_ENTRIES_BY_KEYS>false</ORDER_MAP_ENTRIES_BY_KEYS>   <!-- false by default -->
-    <ANY_OTHER_FEATURE>true|false</ANY_OTHER_FEATURE>
+    <com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature.WRITE_DOC_START_MARKER>false</com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature.WRITE_DOC_START_MARKER>   <!-- feature can be referenced by their fully qualified className -->
+    <ANY_OTHER_FEATURE>true|false</ANY_OTHER_FEATURE>              <!-- any feature can be toggled on or off -->
   </features>
   <spaceBeforeSeparator>false</spaceBeforeSeparator>   <!-- optional: false by default -->
 </jackson>

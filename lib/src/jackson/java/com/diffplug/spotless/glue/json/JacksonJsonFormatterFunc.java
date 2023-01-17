@@ -18,6 +18,7 @@ package com.diffplug.spotless.glue.json;
 import java.io.IOException;
 
 import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonFactoryBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
@@ -47,12 +48,22 @@ public class JacksonJsonFormatterFunc implements FormatterFunc {
 		return format(objectMapper, input);
 	}
 
+	protected String format(ObjectMapper objectMapper, String input) throws IllegalArgumentException, IOException {
+		try {
+			ObjectNode objectNode = objectMapper.readValue(input, ObjectNode.class);
+			return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(objectNode);
+		} catch (JsonProcessingException e) {
+			throw new AssertionError("Unable to format. input='" + input + "'", e);
+		}
+	}
+
 	/**
 	 * @return a {@link JsonFactory}. May be overridden to handle alternative formats.
 	 * @see <a href="https://github.com/FasterXML/jackson-dataformats-text">jackson-dataformats-text</a>
 	 */
 	protected JsonFactory makeJsonFactory() {
-		return new JsonFactory();
+		// We may later accept JsonFactory.Features
+		return new JsonFactoryBuilder().build();
 	}
 
 	protected ObjectMapper makeObjectMapper() {
@@ -76,34 +87,14 @@ public class JacksonJsonFormatterFunc implements FormatterFunc {
 	protected DefaultPrettyPrinter makePrinter() {
 		boolean spaceBeforeSeparator = jacksonConfig.isSpaceBeforeSeparator();
 
-		DefaultPrettyPrinter.Indenter indenter = new DefaultIndenter(getIndentation(), "\n");
+		// DefaultIndenter default constructor relies on 2 whitespaces as default tabulation
+		// By we want to force '\n' as eol given Spotless provides LF-input (whatever the actual File content/current OS)
+		DefaultPrettyPrinter.Indenter indenter = new DefaultIndenter("  ", "\n");
 		DefaultPrettyPrinter printer = new SpotlessDefaultPrettyPrinter(spaceBeforeSeparator);
 
 		printer.indentObjectsWith(indenter);
 		printer.indentArraysWith(indenter);
 		return printer;
-	}
-
-	protected String getIndentation() {
-		// DefaultIndenter default constructor relies on this
-		return "  ";
-		//		int indentSpaces = jacksonConfig.getIndentSpaces();
-		//		if (indentSpaces < 0) {
-		//			return "\t";
-		//		} else {
-		//			return IntStream.range(0, indentSpaces).mapToObj(i -> "").collect(Collectors.joining());
-		//		}
-	}
-
-	protected String format(ObjectMapper objectMapper, String input) throws IllegalArgumentException, IOException {
-		try {
-			ObjectNode objectNode = objectMapper.readValue(input, ObjectNode.class);
-			String outputFromjackson = objectMapper.writeValueAsString(objectNode);
-
-			return outputFromjackson;
-		} catch (JsonProcessingException e) {
-			throw new AssertionError("Unable to format. input='" + input + "'", e);
-		}
 	}
 
 	protected static class SpotlessDefaultPrettyPrinter extends DefaultPrettyPrinter {
@@ -123,6 +114,7 @@ public class JacksonJsonFormatterFunc implements FormatterFunc {
 		public DefaultPrettyPrinter withSeparators(Separators separators) {
 			this._separators = separators;
 			if (spaceBeforeSeparator) {
+				// This is Jackson default behavior
 				this._objectFieldValueSeparatorWithSpaces = " " + separators.getObjectFieldValueSeparator() + " ";
 			} else {
 				this._objectFieldValueSeparatorWithSpaces = separators.getObjectFieldValueSeparator() + " ";

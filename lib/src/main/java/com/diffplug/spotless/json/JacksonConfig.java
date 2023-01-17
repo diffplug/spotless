@@ -31,6 +31,7 @@ public class JacksonConfig implements Serializable {
 	static {
 		Map<String, Boolean> defaultFeatureToggles = new LinkedHashMap<>();
 		// We activate by default the PrettyPrinter from Jackson
+		// @see com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT
 		defaultFeatureToggles.put("INDENT_OUTPUT", true);
 		DEFAULT_FEATURE_TOGGLES = defaultFeatureToggles;
 	}
@@ -40,8 +41,6 @@ public class JacksonConfig implements Serializable {
 	// https://github.com/revelc/formatter-maven-plugin/pull/280
 	// By default, Jackson adds a ' ' before separator, which is not standard with most IDE/JSON libraries
 	protected boolean spaceBeforeSeparator = false;
-
-	// protected int indentSpaces;
 
 	public Map<String, Boolean> getFeatureToToggle() {
 		return Collections.unmodifiableMap(featureToToggle);
@@ -62,12 +61,4 @@ public class JacksonConfig implements Serializable {
 	public void setSpaceBeforeSeparator(boolean spaceBeforeSeparator) {
 		this.spaceBeforeSeparator = spaceBeforeSeparator;
 	}
-
-	//	public int getIndentSpaces() {
-	//		return indentSpaces;
-	//	}
-
-	//	public void setIndentSpaces(int indentSpaces) {
-	//		this.indentSpaces = indentSpaces;
-	//	}
 }

@@ -193,6 +193,12 @@ public abstract class SpotlessExtension {
 		format(JsonExtension.NAME, JsonExtension.class, closure);
 	}
 
+	/** Configures the special YAML-specific extension. */
+	public void yaml(Action<YamlExtension> closure) {
+		requireNonNull(closure);
+		format(JsonExtension.NAME, YamlExtension.class, closure);
+	}
+
 	/** Configures a custom extension. */
 	public void format(String name, Action<FormatExtension> closure) {
 		requireNonNull(name, "name");

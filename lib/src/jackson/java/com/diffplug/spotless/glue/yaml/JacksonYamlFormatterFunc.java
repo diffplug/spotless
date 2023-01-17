@@ -17,23 +17,39 @@ package com.diffplug.spotless.glue.yaml;
 
 import java.io.IOException;
 
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactoryBuilder;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 
 import com.diffplug.spotless.glue.json.JacksonJsonFormatterFunc;
-import com.diffplug.spotless.json.JacksonConfig;
+import com.diffplug.spotless.yaml.JacksonYamlConfig;
 
 public class JacksonYamlFormatterFunc extends JacksonJsonFormatterFunc {
+	final JacksonYamlConfig yamlConfig;
 
-	public JacksonYamlFormatterFunc(JacksonConfig jacksonConfig) {
+	public JacksonYamlFormatterFunc(JacksonYamlConfig jacksonConfig) {
 		super(jacksonConfig);
+		this.yamlConfig = jacksonConfig;
 	}
 
-	@Override
-	protected YAMLFactory makeJsonFactory() {
-		return new YAMLFactory();
+	protected JsonFactory makeJsonFactory() {
+		YAMLFactoryBuilder yamlFactoryBuilder = new YAMLFactoryBuilder(new YAMLFactory());
+
+		// Configure the ObjectMapper
+		// https://github.com/FasterXML/jackson-databind#commonly-used-features
+		yamlConfig.getYamlFeatureToToggle().forEach((rawFeature, toggle) -> {
+			// https://stackoverflow.com/questions/3735927/java-instantiating-an-enum-using-reflection
+			// Refers to 'com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature'
+			YAMLGenerator.Feature feature = YAMLGenerator.Feature.valueOf(rawFeature);
+
+			yamlFactoryBuilder.configure(feature, toggle);
+		});
+
+		return yamlFactoryBuilder.build();
 	}
 
 	@Override
@@ -56,7 +72,7 @@ public class JacksonYamlFormatterFunc extends JacksonJsonFormatterFunc {
 			//Not 'toPrettyString' as one could require no INDENT_OUTPUT
 			// return jsonNode.toPrettyString();
 			ObjectNode objectNode = objectMapper.readValue(input, ObjectNode.class);
-			String outputFromjackson = objectMapper.writeValueAsString(objectNode);
+			String outputFromjackson = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(objectNode);
 
 			return outputFromjackson;
 		} catch (JsonProcessingException e) {
