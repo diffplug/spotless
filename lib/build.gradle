@@ -28,6 +28,9 @@ for (glue in NEEDS_GLUE) {
 versionCompatibility {
 	adapters {
 		namespaces.register('KtLint') {
+			// as discussed at https://github.com/diffplug/spotless/pull/1475
+			// we will support no more than 2 breaking changes at a time = 3 incompatible versions
+			// we will try to drop down to only one version if a stable API can be maintained for a full year
 			versions = [
 				'0.46.0',
 				'0.47.0',

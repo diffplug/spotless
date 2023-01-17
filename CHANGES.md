@@ -15,6 +15,10 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Fixed
 * The default list of type annotations used by `formatAnnotations` has had 8 more annotations from the Checker Framework added [#1494](https://github.com/diffplug/spotless/pull/1494)
 ### Changes
+#### Removed
+* Removed support for KtLint 0.3x and 0.45.2 ([#1475](https://github.com/diffplug/spotless/pull/1475))
+  * `KtLint` does not maintain a stable API - before this PR, we supported every breaking change in the API since 2019.
+  * From now on, we will support no more than 2 breaking changes at a time.
 
 ## [2.32.0] - 2023-01-13
 ### Added
@@ -39,8 +43,6 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   * Bump default `ktlint` version to latest `0.47.1` -> `0.48.1` ([#1456](https://github.com/diffplug/spotless/pull/1456))
 * Switch our publishing infrastructure from CircleCI to GitHub Actions ([#1462](https://github.com/diffplug/spotless/pull/1462)).
   * Help wanted for moving our tests too ([#1472](https://github.com/diffplug/spotless/issues/1472))
-#### Removed
-* Removed support for KtLint 0.3x and 0.45.2 ([#1475](https://github.com/diffplug/spotless/pull/1475))
 
 ## [2.31.1] - 2023-01-02
 ### Fixed
