@@ -178,8 +178,8 @@ public class MavenIntegrationHarness extends ResourceHarness {
 
 	protected MavenRunner mavenRunner() throws IOException {
 		return MavenRunner.create()
-				.withRunner(runner)
-				.withProjectDir(rootFolder());
+				.withProjectDir(rootFolder())
+				.withRunner(runner);
 	}
 
 	private static ProcessRunner runner;
