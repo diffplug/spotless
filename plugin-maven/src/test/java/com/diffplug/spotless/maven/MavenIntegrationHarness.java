@@ -31,6 +31,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
 import com.github.mustachejava.DefaultMustacheFactory;
@@ -40,6 +42,7 @@ import com.github.mustachejava.MustacheFactory;
 import com.diffplug.common.base.Unhandled;
 import com.diffplug.common.io.Resources;
 import com.diffplug.spotless.Jvm;
+import com.diffplug.spotless.ProcessRunner;
 import com.diffplug.spotless.ResourceHarness;
 
 public class MavenIntegrationHarness extends ResourceHarness {
@@ -175,7 +178,20 @@ public class MavenIntegrationHarness extends ResourceHarness {
 
 	protected MavenRunner mavenRunner() throws IOException {
 		return MavenRunner.create()
+				.withRunner(runner)
 				.withProjectDir(rootFolder());
+	}
+
+	private static ProcessRunner runner;
+
+	@BeforeAll
+	static void setupRunner() throws IOException {
+		runner = new ProcessRunner();
+	}
+
+	@AfterAll
+	static void closeRunner() throws IOException {
+		runner.close();
 	}
 
 	/**
