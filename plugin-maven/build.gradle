@@ -67,9 +67,7 @@ dependencies {
 }
 
 apply from: rootProject.file('gradle/special-tests.gradle')
-
 tasks.withType(Test).configureEach {
-	useJUnitPlatform()
 	systemProperty 'spotlessMavenPluginVersion', project.version
 	dependsOn 'publishToMavenLocal'
 	dependsOn ':lib:publishToMavenLocal'

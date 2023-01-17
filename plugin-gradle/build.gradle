@@ -27,12 +27,10 @@ dependencies {
 	testImplementation "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
 }
 
-test {
-	useJUnitPlatform()
+apply from: rootProject.file('gradle/special-tests.gradle')
+tasks.named('test') {
 	testLogging.showStandardStreams = true
 }
-
-apply from: rootProject.file('gradle/special-tests.gradle')
 
 //////////////////////////
 // GRADLE PLUGIN PORTAL //
