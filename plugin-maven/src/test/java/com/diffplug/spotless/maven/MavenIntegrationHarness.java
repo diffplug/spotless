@@ -16,9 +16,7 @@
 package com.diffplug.spotless.maven;
 
 import static com.diffplug.common.base.Strings.isNullOrEmpty;
-import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
-import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -59,7 +57,6 @@ public class MavenIntegrationHarness extends ResourceHarness {
 	private static final String MODULES = "modules";
 	private static final String DEPENDENCIES = "dependencies";
 	private static final String MODULE_NAME = "name";
-	private static final String CHILD_ID = "childId";
 	private static final int REMOTE_DEBUG_PORT = 5005;
 
 	private final MustacheFactory mustacheFactory = new DefaultMustacheFactory();
@@ -190,10 +187,6 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		return mavenRunner().withRemoteDebug(REMOTE_DEBUG_PORT);
 	}
 
-	protected MultiModuleProjectCreator multiModuleProject() {
-		return new MultiModuleProjectCreator();
-	}
-
 	protected String createPomXmlContent(String pluginVersion, String[] executions, String[] configuration, String[] dependencies) throws IOException {
 		return createPomXmlContent("/pom-test.xml.mustache", pluginVersion, executions, configuration, dependencies);
 	}
@@ -207,7 +200,7 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		return createPomXmlContent(pluginVersion, executions, configuration, null);
 	}
 
-	private String createPomXmlContent(String pomTemplate, Map<String, Object> params) throws IOException {
+	protected String createPomXmlContent(String pomTemplate, Map<String, Object> params) throws IOException {
 		URL url = MavenIntegrationHarness.class.getResource(pomTemplate);
 		try (BufferedReader reader = Resources.asCharSource(url, StandardCharsets.UTF_8).openBufferedStream()) {
 			Mustache mustache = mustacheFactory.compile(reader, "pom");
@@ -217,7 +210,7 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		}
 	}
 
-	private static Map<String, Object> buildPomXmlParams(String pluginVersion, String[] executions, String[] configuration, String[] modules, String[] dependencies) {
+	protected static Map<String, Object> buildPomXmlParams(String pluginVersion, String[] executions, String[] configuration, String[] modules, String[] dependencies) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(SPOTLESS_MAVEN_PLUGIN_VERSION, pluginVersion == null ? getSystemProperty(SPOTLESS_MAVEN_PLUGIN_VERSION) : pluginVersion);
 
@@ -275,87 +268,5 @@ public class MavenIntegrationHarness extends ResourceHarness {
 
 	private static String[] formats(String... formats) {
 		return groupWithSteps("formats", formats);
-	}
-
-	protected class MultiModuleProjectCreator {
-
-		private String configSubProject;
-		private SubProjectFile[] configSubProjectFiles;
-		private String[] configuration;
-		private final Map<String, List<SubProjectFile>> subProjects = new LinkedHashMap<>();
-
-		protected MultiModuleProjectCreator withConfigSubProject(String name, SubProjectFile... files) {
-			configSubProject = name;
-			configSubProjectFiles = files;
-			return this;
-		}
-
-		protected MultiModuleProjectCreator withConfiguration(String... lines) {
-			configuration = lines;
-			return this;
-		}
-
-		protected MultiModuleProjectCreator addSubProject(String name, SubProjectFile... files) {
-			subProjects.put(name, asList(files));
-			return this;
-		}
-
-		protected void create() throws IOException {
-			createRootPom();
-			createConfigSubProject();
-			createSubProjects();
-		}
-
-		private void createRootPom() throws IOException {
-			List<Object> modulesList = new ArrayList<>();
-			modulesList.add(configSubProject);
-			modulesList.addAll(subProjects.keySet());
-			String[] modules = modulesList.toArray(new String[0]);
-
-			Map<String, Object> rootPomParams = buildPomXmlParams(null, null, configuration, modules, null);
-			setFile("pom.xml").toContent(createPomXmlContent("/multi-module/pom-parent.xml.mustache", rootPomParams));
-		}
-
-		private void createConfigSubProject() throws IOException {
-			if (configSubProject != null) {
-				String content = createPomXmlContent("/multi-module/pom-config.xml.mustache", emptyMap());
-				setFile(configSubProject + "/pom.xml").toContent(content);
-
-				createSubProjectFiles(configSubProject, asList(configSubProjectFiles));
-			}
-		}
-
-		private void createSubProjects() throws IOException {
-			for (Map.Entry<String, List<SubProjectFile>> entry : subProjects.entrySet()) {
-				String subProjectName = entry.getKey();
-				List<SubProjectFile> subProjectFiles = entry.getValue();
-
-				String content = createPomXmlContent("/multi-module/pom-child.xml.mustache", singletonMap(CHILD_ID, subProjectName));
-				setFile(subProjectName + "/pom.xml").toContent(content);
-
-				createSubProjectFiles(subProjectName, subProjectFiles);
-			}
-		}
-
-		private void createSubProjectFiles(String subProjectName, List<SubProjectFile> subProjectFiles) throws IOException {
-			for (SubProjectFile file : subProjectFiles) {
-				setFile(subProjectName + '/' + file.to).toResource(file.from);
-			}
-		}
-	}
-
-	protected static class SubProjectFile {
-
-		private final String from;
-		private final String to;
-
-		private SubProjectFile(String from, String to) {
-			this.from = from;
-			this.to = to;
-		}
-
-		protected static SubProjectFile file(String from, String to) {
-			return new SubProjectFile(from, to);
-		}
 	}
 }
