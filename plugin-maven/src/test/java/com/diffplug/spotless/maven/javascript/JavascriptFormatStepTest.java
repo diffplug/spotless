@@ -20,9 +20,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import com.diffplug.spotless.ProcessRunner;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
-import com.diffplug.spotless.maven.MavenRunner.Result;
 import com.diffplug.spotless.npm.EslintFormatterStep;
 import com.diffplug.spotless.npm.EslintStyleGuide;
 import com.diffplug.spotless.tag.NpmTest;
@@ -50,8 +50,7 @@ class JavascriptFormatStepTest extends MavenIntegrationHarness {
 			setFile(".eslintrc.js").toResource("npm/eslint/javascript/custom_rules/.eslintrc.js");
 			setFile(TEST_FILE_PATH).toResource("npm/eslint/javascript/custom_rules/javascript-es6.dirty");
 
-			Result result = mavenRunner().withArguments("spotless:apply").runNoError();
-			System.out.println(result.output());
+			ProcessRunner.Result result = mavenRunner().withArguments("spotless:apply").runNoError();
 			assertFile(TEST_FILE_PATH).sameAsResource("npm/eslint/javascript/custom_rules/javascript-es6.clean");
 		}
 

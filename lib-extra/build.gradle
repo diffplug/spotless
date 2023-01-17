@@ -25,8 +25,8 @@ dependencies {
 // we'll hold the core lib to a high standard
 spotbugs { reportLevel = 'low' } // low|medium|high (low = sensitive to even minor mistakes)
 
-test {
-	useJUnitPlatform()
+apply from: rootProject.file('gradle/special-tests.gradle')
+tasks.named('test') {
 	if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_16)) {
 		// needed for EclipseCdtFormatterStepTest
 		jvmArgs '--add-opens=java.base/java.lang=ALL-UNNAMED'
