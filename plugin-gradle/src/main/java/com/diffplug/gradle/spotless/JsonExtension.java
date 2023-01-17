@@ -15,10 +15,12 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.util.Collections;
+
 import javax.inject.Inject;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.json.JacksonConfig;
+import com.diffplug.spotless.json.JacksonJsonConfig;
 import com.diffplug.spotless.json.JacksonJsonStep;
 import com.diffplug.spotless.json.JsonSimpleStep;
 import com.diffplug.spotless.json.gson.GsonStep;
@@ -49,7 +51,7 @@ public class JsonExtension extends FormatExtension {
 		return new GsonConfig();
 	}
 
-	public JacksonJsonGradleConfig jackson() {
+	public JacksonJsonGradleConfig jacksonJson() {
 		return new JacksonJsonGradleConfig(this);
 	}
 
@@ -115,17 +117,35 @@ public class JsonExtension extends FormatExtension {
 	}
 
 	public static class JacksonJsonGradleConfig extends JacksonGradleConfig {
+		protected JacksonJsonConfig jacksonConfig;
 
-		public JacksonJsonGradleConfig(JacksonConfig jacksonConfig, FormatExtension formatExtension) {
+		public JacksonJsonGradleConfig(JacksonJsonConfig jacksonConfig, FormatExtension formatExtension) {
 			super(jacksonConfig, formatExtension);
+			this.jacksonConfig = jacksonConfig;
+
+			if (jacksonConfig == null) {
+				throw new IllegalArgumentException("ARG2");
+			}
 		}
 
 		public JacksonJsonGradleConfig(FormatExtension formatExtension) {
-			this(new JacksonConfig(), formatExtension);
+			this(new JacksonJsonConfig(), formatExtension);
+		}
+
+		/**
+		 * @see com.fasterxml.jackson.core.JsonGenerator.Feature
+		 */
+		public JacksonGradleConfig jsonFeature(String feature, boolean toggle) {
+			this.jacksonConfig.appendJsonFeatureToToggle(Collections.singletonMap(feature, toggle));
+			formatExtension.replaceStep(createStep());
+			return this;
 		}
 
 		@Override
 		protected FormatterStep createStep() {
+			if (jacksonConfig == null) {
+				throw new IllegalArgumentException("ARG3");
+			}
 			return JacksonJsonStep.create(jacksonConfig, version, formatExtension.provisioner());
 		}
 	}

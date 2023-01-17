@@ -36,9 +36,6 @@ public class JacksonYaml implements FormatterStepFactory {
 	private String version = JacksonYamlStep.defaultVersion();
 
 	@Parameter
-	private boolean spaceBeforeSeparator = new JacksonYamlConfig().isSpaceBeforeSeparator();
-
-	@Parameter
 	private Map<String, Boolean> features = Collections.emptyMap();
 
 	@Parameter
@@ -50,7 +47,6 @@ public class JacksonYaml implements FormatterStepFactory {
 
 		jacksonConfig.appendFeatureToToggle(features);
 		jacksonConfig.appendYamlFeatureToToggle(yamlFeatures);
-		jacksonConfig.setSpaceBeforeSeparator(spaceBeforeSeparator);
 
 		return JacksonYamlStep
 				.create(jacksonConfig, version, stepConfig.getProvisioner());

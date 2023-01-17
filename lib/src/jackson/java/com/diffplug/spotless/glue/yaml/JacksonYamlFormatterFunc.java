@@ -25,15 +25,19 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactoryBuilder;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 
-import com.diffplug.spotless.glue.json.JacksonJsonFormatterFunc;
+import com.diffplug.spotless.glue.json.AJacksonFormatterFunc;
 import com.diffplug.spotless.yaml.JacksonYamlConfig;
 
-public class JacksonYamlFormatterFunc extends JacksonJsonFormatterFunc {
+public class JacksonYamlFormatterFunc extends AJacksonFormatterFunc {
 	final JacksonYamlConfig yamlConfig;
 
 	public JacksonYamlFormatterFunc(JacksonYamlConfig jacksonConfig) {
 		super(jacksonConfig);
 		this.yamlConfig = jacksonConfig;
+
+		if (jacksonConfig == null) {
+			throw new IllegalArgumentException("ARG");
+		}
 	}
 
 	protected JsonFactory makeJsonFactory() {
@@ -43,7 +47,6 @@ public class JacksonYamlFormatterFunc extends JacksonJsonFormatterFunc {
 		// https://github.com/FasterXML/jackson-databind#commonly-used-features
 		yamlConfig.getYamlFeatureToToggle().forEach((rawFeature, toggle) -> {
 			// https://stackoverflow.com/questions/3735927/java-instantiating-an-enum-using-reflection
-			// Refers to 'com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature'
 			YAMLGenerator.Feature feature = YAMLGenerator.Feature.valueOf(rawFeature);
 
 			yamlFactoryBuilder.configure(feature, toggle);

@@ -41,7 +41,7 @@ public class YamlExtension extends FormatExtension {
 		super.setupTask(task);
 	}
 
-	public JacksonGradleConfig jackson() {
+	public JacksonGradleConfig jacksonYaml() {
 		return new JacksonYamlGradleConfig(this);
 	}
 
@@ -52,6 +52,10 @@ public class YamlExtension extends FormatExtension {
 			super(jacksonConfig, formatExtension);
 
 			this.jacksonConfig = jacksonConfig;
+
+			if (jacksonConfig == null) {
+				throw new IllegalArgumentException("ARG");
+			}
 		}
 
 		public JacksonYamlGradleConfig(FormatExtension formatExtension) {

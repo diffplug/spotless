@@ -7,5 +7,5 @@ episodes:
 - 6
 - 7
 best-jedi:
-  name: "Obi-Wan"
-  side: "light"
+  name: Obi-Wan
+  side: light

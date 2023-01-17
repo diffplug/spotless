@@ -30,32 +30,13 @@ class YamlExtensionTest extends GradleIntegrationHarness {
 				"repositories { mavenCentral() }",
 				"spotless {",
 				"    yaml {",
-				"    target 'src/**/*.yaml'",
-				"    jackson()",
-				"}",
+				"        target 'src/**/*.yaml'",
+				"        jacksonYaml()",
+				"    }",
 				"}");
 		setFile("src/main/resources/example.yaml").toResource("yaml/separator_comments.yaml");
 		gradleRunner().withArguments("spotlessApply").build();
 		assertFile("src/main/resources/example.yaml").sameAsResource("yaml/separator_comments.clean.yaml");
-	}
-
-	@Test
-	void testFormatYaml_WithJackson_defaultConfig_arrayBrackets_spaceBeforeSeparator() throws IOException {
-		setFile("build.gradle").toLines(
-				"plugins {",
-				"    id 'java'",
-				"    id 'com.diffplug.spotless'",
-				"}",
-				"repositories { mavenCentral() }",
-				"spotless {",
-				"    yaml {",
-				"    target 'src/**/*.yaml'",
-				"    jackson().spaceBeforeSeparator(true)",
-				"}",
-				"}");
-		setFile("src/main/resources/example.yaml").toResource("yaml/array_with_bracket.yaml");
-		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("src/main/resources/example.yaml").sameAsResource("yaml/array_with_bracket.clean.spaceBeforeSeparator.yaml");
 	}
 
 	// see YAMLGenerator.Feature.WRITE_DOC_START_MARKER
@@ -69,9 +50,11 @@ class YamlExtensionTest extends GradleIntegrationHarness {
 				"repositories { mavenCentral() }",
 				"spotless {",
 				"    yaml {",
-				"    target 'src/**/*.yaml'",
-				"    jackson().yamlFeature('WRITE_DOC_START_MARKER', false)",
-				"}",
+				"        target 'src/**/*.yaml'",
+				"        jacksonYaml()" +
+				"	        .yamlFeature('WRITE_DOC_START_MARKER', false)" +
+				"	        .yamlFeature('MINIMIZE_QUOTES', true)",
+				"    }",
 				"}");
 		setFile("src/main/resources/example.yaml").toResource("yaml/array_with_bracket.yaml");
 		gradleRunner().withArguments("spotlessApply").build();

@@ -21,7 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * A DTO holding the options for Jackson-based formatters
+ * A DTO holding the basic for Jackson-based formatters
  */
 public class JacksonConfig implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -38,10 +38,6 @@ public class JacksonConfig implements Serializable {
 
 	protected Map<String, Boolean> featureToToggle = new LinkedHashMap<>();
 
-	// https://github.com/revelc/formatter-maven-plugin/pull/280
-	// By default, Jackson adds a ' ' before separator, which is not standard with most IDE/JSON libraries
-	protected boolean spaceBeforeSeparator = false;
-
 	public Map<String, Boolean> getFeatureToToggle() {
 		return Collections.unmodifiableMap(featureToToggle);
 	}
@@ -52,13 +48,5 @@ public class JacksonConfig implements Serializable {
 
 	public void appendFeatureToToggle(Map<String, Boolean> features) {
 		this.featureToToggle.putAll(features);
-	}
-
-	public boolean isSpaceBeforeSeparator() {
-		return spaceBeforeSeparator;
-	}
-
-	public void setSpaceBeforeSeparator(boolean spaceBeforeSeparator) {
-		this.spaceBeforeSeparator = spaceBeforeSeparator;
 	}
 }

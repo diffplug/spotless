@@ -51,12 +51,6 @@ public abstract class JacksonGradleConfig {
 		return this;
 	}
 
-	public JacksonGradleConfig spaceBeforeSeparator(boolean toggle) {
-		this.jacksonConfig.setSpaceBeforeSeparator(toggle);
-		formatExtension.replaceStep(createStep());
-		return this;
-	}
-
 	public JacksonGradleConfig version(String version) {
 		this.version = version;
 		formatExtension.replaceStep(createStep());

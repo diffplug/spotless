@@ -25,7 +25,6 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.json.JacksonConfig;
 
 /**
  * Simple YAML formatter which reformats the file according to Jackson YAMLFactory.
@@ -42,7 +41,7 @@ public class JacksonYamlStep {
 		return DEFAULT_VERSION;
 	}
 
-	public static FormatterStep create(JacksonConfig jacksonConfig,
+	public static FormatterStep create(JacksonYamlConfig jacksonConfig,
 			String jacksonVersion,
 			Provisioner provisioner) {
 		Objects.requireNonNull(provisioner, "provisioner cannot be null");
@@ -52,20 +51,24 @@ public class JacksonYamlStep {
 	}
 
 	public static FormatterStep create(Provisioner provisioner) {
-		return create(new JacksonConfig(), defaultVersion(), provisioner);
+		return create(new JacksonYamlConfig(), defaultVersion(), provisioner);
 	}
 
 	private static final class State implements Serializable {
 		private static final long serialVersionUID = 1L;
 
-		private final JacksonConfig jacksonConfig;
+		private final JacksonYamlConfig jacksonConfig;
 
 		private final JarState jarState;
 
-		private State(JacksonConfig jacksonConfig,
+		private State(JacksonYamlConfig jacksonConfig,
 				String jacksonVersion,
 				Provisioner provisioner) throws IOException {
 			this.jacksonConfig = jacksonConfig;
+
+			if (jacksonConfig == null) {
+				throw new IllegalArgumentException("ARG");
+			}
 
 			this.jarState = JarState.from(JacksonYamlStep.MAVEN_COORDINATE + jacksonVersion, provisioner);
 		}

@@ -41,7 +41,7 @@ public class JacksonJsonStep {
 		return DEFAULT_VERSION;
 	}
 
-	public static FormatterStep create(JacksonConfig jacksonConfig,
+	public static FormatterStep create(JacksonJsonConfig jacksonConfig,
 			String jacksonVersion,
 			Provisioner provisioner) {
 		Objects.requireNonNull(provisioner, "provisioner cannot be null");
@@ -51,7 +51,7 @@ public class JacksonJsonStep {
 	}
 
 	public static FormatterStep create(Provisioner provisioner) {
-		return create(new JacksonConfig(), defaultVersion(), provisioner);
+		return create(new JacksonJsonConfig(), defaultVersion(), provisioner);
 	}
 
 	private static final class State implements Serializable {
@@ -72,7 +72,7 @@ public class JacksonJsonStep {
 		FormatterFunc toFormatter() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
 				InstantiationException, IllegalAccessException {
 			Class<?> formatterFunc = jarState.getClassLoader().loadClass("com.diffplug.spotless.glue.json.JacksonJsonFormatterFunc");
-			Constructor<?> constructor = formatterFunc.getConstructor(JacksonConfig.class);
+			Constructor<?> constructor = formatterFunc.getConstructor(JacksonJsonConfig.class);
 			return (FormatterFunc) constructor.newInstance(jacksonConfig);
 		}
 	}
