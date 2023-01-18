@@ -737,11 +737,12 @@ For details, see the [npm detection](#npm-detection) and [`.npmrc` detection](#n
 ```gradle
 spotless {
   json {
-    target 'src/**/*.json' // you have to set the target manually
-    simple() // has its own section below
+    target 'src/**/*.json'                // you have to set the target manually
+    simple()                              // has its own section below
     prettier().config(['parser': 'json']) // see Prettier section below
-    eclipseWtp('json') // see Eclipse web tools platform section
-    gson() // has its own section below
+    eclipseWtp('json')                    // see Eclipse web tools platform section
+    gson()                                // has its own section below
+    jackson()                             // has its own section below
   }
 }
 ```
@@ -780,10 +781,60 @@ spotless {
 
 Notes:
 * There's no option in Gson to leave HTML as-is (i.e. escaped HTML would remain escaped, raw would remain raw). Either
-all HTML characters are written escaped or none. Set `escapeHtml` if you prefer the former.
+  all HTML characters are written escaped or none. Set `escapeHtml` if you prefer the former.
 * `sortByKeys` will apply lexicographic order on the keys of the input JSON. See the
-[javadoc of String](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html#compareTo(java.lang.String))
-for details.
+  [javadoc of String](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html#compareTo(java.lang.String))
+  for details.
+
+### Jackson
+
+Uses Jackson for json files.
+
+```gradle
+spotless {
+  json {
+    target 'src/**/*.json'
+    jackson()
+      .spaceBeforeSeparator(false)                   // optional: add a whitespace before key separator. False by default
+      .feature('INDENT_OUTPUT', true)                // optional: true by default
+      .feature('ORDER_MAP_ENTRIES_BY_KEYS', true)    // optional: false by default
+      .feature('ANY_OTHER_FEATURE', true|false)      // optional: any SerializationFeature can be toggled on or off
+      .jsonFeature('ANY_OTHER_FEATURE', true|false)  // any JsonGenerator.Feature can be toggled on or off
+  }
+}
+```
+
+
+## YAML
+
+- `com.diffplug.gradle.spotless.YamlExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.13.0/com/diffplug/gradle/spotless/JsonExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/YamlExtension.java)
+
+```gradle
+spotless {
+  yaml {
+    target 'src/**/*.yaml'                // you have to set the target manually
+    jackson()                             // has its own section below
+  }
+}
+```
+
+### Jackson
+
+Uses Jackson for `yaml` files.
+
+```gradle
+spotless {
+  yaml {
+    target 'src/**/*.yaml'
+    jackson()
+      .spaceBeforeSeparator(false)                   // optional: add a whitespace before key separator. False by default
+      .feature('INDENT_OUTPUT', true)                // optional: true by default
+      .feature('ORDER_MAP_ENTRIES_BY_KEYS', true)    // optional: false by default
+      .feature('ANY_OTHER_FEATURE', true|false)      // optional: any SerializationFeature can be toggled on or off
+      .yamlFeature('ANY_OTHER_FEATURE', true|false)  // any YAMLGenerator.Feature can be toggled on or off
+  }
+}
+```
 
 <a name="applying-prettier-to-javascript--flow--typescript--css--scss--less--jsx--graphql--yaml--etc"></a>
 

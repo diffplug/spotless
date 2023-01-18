@@ -907,11 +907,15 @@ Uses Jackson for formatting.
 <jackson>
   <version>2.14.1</version>    <!-- optional: The version of 'com.fasterxml.jackson.core:jackson-databind' to be used -->
   <features>                   <!-- optional: Customize the set of features (based on com.fasterxml.jackson.databind.SerializationFeature) -->
-    <INDENT_OUTPUT>true</INDENT_OUTPUT>                            <!-- true by default -->
-    <ORDER_MAP_ENTRIES_BY_KEYS>false</ORDER_MAP_ENTRIES_BY_KEYS>   <!-- false by default -->
-    <ANY_OTHER_FEATURE>true|false</ANY_OTHER_FEATURE>              <!-- any feature can be toggled on or off -->
+    <INDENT_OUTPUT>true</INDENT_OUTPUT>                            <!-- optional: true by default -->
+    <ORDER_MAP_ENTRIES_BY_KEYS>false</ORDER_MAP_ENTRIES_BY_KEYS>   <!-- optional: false by default -->
+    <ANY_OTHER_FEATURE>true|false</ANY_OTHER_FEATURE>              <!-- any SerializationFeature can be toggled on or off -->
   </features>
-  <spaceBeforeSeparator>false</spaceBeforeSeparator>   <!-- optional: false by default -->
+  <jsonFeatures>
+    <QUOTE_FIELD_NAMES>false</QUOTE_FIELD_NAMES>                   <!-- false by default -->
+    <ANY_OTHER_FEATURE>true|false</ANY_OTHER_FEATURE>              <!-- any JsonGenerator.Feature can be toggled on or off -->
+  </jsonFeatures>
+  <spaceBeforeSeparator>false</spaceBeforeSeparator>               <!-- optional: false by default -->
 </jackson>
 ```
 
@@ -944,9 +948,13 @@ Uses Jackson and YAMLFactory to pretty print objects:
   <features>                   <!-- optional: Customize the set of features (based on com.fasterxml.jackson.databind.SerializationFeature) -->
     <INDENT_OUTPUT>true</INDENT_OUTPUT>                            <!-- true by default -->
     <ORDER_MAP_ENTRIES_BY_KEYS>false</ORDER_MAP_ENTRIES_BY_KEYS>   <!-- false by default -->
-    <com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature.WRITE_DOC_START_MARKER>false</com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature.WRITE_DOC_START_MARKER>   <!-- feature can be referenced by their fully qualified className -->
-    <ANY_OTHER_FEATURE>true|false</ANY_OTHER_FEATURE>              <!-- any feature can be toggled on or off -->
+    <ANY_OTHER_FEATURE>true|false</ANY_OTHER_FEATURE>              <!-- any SerializationFeature can be toggled on or off -->
   </features>
+  <yamlFeatures>
+    <WRITE_DOC_START_MARKER>true</WRITE_DOC_START_MARKER>          <!-- false by default -->
+    <MINIMIZE_QUOTES>false</MINIMIZE_QUOTES>                       <!-- false by default -->
+    <ANY_OTHER_FEATURE>true|false</ANY_OTHER_FEATURE>              <!-- any YAMLGenerator.Feature can be toggled on or off -->
+  </yamlFeatures>
   <spaceBeforeSeparator>false</spaceBeforeSeparator>   <!-- optional: false by default -->
 </jackson>
 ```
