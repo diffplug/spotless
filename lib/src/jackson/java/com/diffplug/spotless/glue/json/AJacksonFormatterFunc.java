@@ -55,7 +55,7 @@ public abstract class AJacksonFormatterFunc implements FormatterFunc {
 
 			return output;
 		} catch (JsonProcessingException e) {
-			throw new AssertionError("Unable to format. input='" + input + "'", e);
+			throw new IllegalArgumentException("Unable to format. input='" + input + "'", e);
 		}
 	}
 

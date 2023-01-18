@@ -81,7 +81,7 @@ public final class JsonSimpleStep {
 					return format(arrayConstructor, arrayToString, s);
 				}
 
-				throw new AssertionError(String.format("Unable to determine JSON type, expected a '{' or '[' but found '%s'", first));
+				throw new IllegalArgumentException(String.format("Unable to determine JSON type, expected a '{' or '[' but found '%s'", first));
 			};
 		}
 
@@ -89,8 +89,8 @@ public final class JsonSimpleStep {
 			try {
 				Object parsed = constructor.newInstance(input);
 				return toString.invoke(parsed, indentSpaces) + "\n";
-			} catch (InvocationTargetException ex) {
-				throw new AssertionError("Unable to format JSON", ex.getCause());
+			} catch (InvocationTargetException e) {
+				throw new IllegalArgumentException("Unable to format JSON", e);
 			}
 		}
 	}
