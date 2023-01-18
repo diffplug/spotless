@@ -22,6 +22,7 @@ import java.util.List;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ContainerNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -60,13 +61,11 @@ public class JacksonYamlFormatterFunc extends AJacksonFormatterFunc {
 
 	@Override
 	protected String format(ObjectMapper objectMapper, String input) throws IllegalArgumentException, IOException {
-		//if (true)
-		//	throw new IllegalArgumentException("input = \r\n" + input);
 		try {
 			// https://stackoverflow.com/questions/25222327/deserialize-pojos-from-multiple-yaml-documents-in-a-single-file-in-jackson
 			// https://github.com/FasterXML/jackson-dataformats-text/issues/66#issuecomment-375328648
 			JsonParser yamlParser = objectMapper.getFactory().createParser(input);
-			List<ContainerNode> documents = objectMapper.readValues(yamlParser, ContainerNode.class).readAll();
+			List<JsonNode> documents = objectMapper.readValues(yamlParser, JsonNode.class).readAll();
 
 			// https://github.com/FasterXML/jackson-dataformats-text/issues/66#issuecomment-554265055
 			// https://github.com/FasterXML/jackson-dataformats-text/issues/66#issuecomment-554265055
