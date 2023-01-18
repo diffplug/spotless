@@ -19,7 +19,6 @@ import java.util.Collections;
 
 import javax.inject.Inject;
 
-import com.diffplug.common.base.Throwables;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.json.JacksonJsonStep;
 import com.diffplug.spotless.yaml.JacksonYamlConfig;

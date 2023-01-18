@@ -57,11 +57,6 @@ public class JacksonYamlFormatterFunc extends AJacksonFormatterFunc {
 
 	@Override
 	protected String format(ObjectMapper objectMapper, String input) throws IllegalArgumentException, IOException {
-		// We may consider adding manually an initial '---' prefix to help management of multiple documents
-		// if (!input.trim().startsWith("---")) {
-		// 	input = "---" + "\n" + input;
-		// }
-
 		try {
 			// https://stackoverflow.com/questions/25222327/deserialize-pojos-from-multiple-yaml-documents-in-a-single-file-in-jackson
 			// https://github.com/FasterXML/jackson-dataformats-text/issues/66#issuecomment-375328648

@@ -57,7 +57,7 @@ class YamlExtensionTest extends GradleIntegrationHarness {
 				"    }",
 				"}");
 		setFile("src/main/resources/example.yaml").toResource("yaml/array_with_bracket.yaml");
-		gradleRunner().withArguments("spotlessApply").build();
+		gradleRunner().withArguments("spotlessApply", "--stacktrace").build();
 		assertFile("src/main/resources/example.yaml").sameAsResource("yaml/array_with_bracket.clean.no_start_marker.no_quotes.yaml");
 	}
 
