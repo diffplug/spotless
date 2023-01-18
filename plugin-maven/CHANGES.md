@@ -4,12 +4,16 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
+* Introduce `<json><jackson/></json>` ([#1492](https://github.com/diffplug/spotless/pull/1492))
+  * **POTENTIALLY BREAKING** `JacksonYaml` is now configured with a `Map<String, Boolean>` to configure features
+* Jackson (`json` and `yaml`) has new `spaceBeforeSeparator` option
+  * **POTENTIALLY BREAKING** `spaceBeforeSeparator` is defaulted to false while the formatter was behaving with `<spaceBeforeSeparator>true<spaceBeforeSeparator/>`
 ### Fixed
 * The default list of type annotations used by `formatAnnotations` has had 8 more annotations from the Checker Framework added [#1494](https://github.com/diffplug/spotless/pull/1494)
 ### Changes
 * Spotless' custom build was replaced by [`maven-plugin-development`](https://github.com/britter/maven-plugin-development). ([#1496](https://github.com/diffplug/spotless/pull/1496) fixes [#554](https://github.com/diffplug/spotless/issues/554))
 
-# [2.30.0] - 2023-01-13
+## [2.30.0] - 2023-01-13
 ### Added
 * Add option `editorConfigFile` for `ktLint` [#142](https://github.com/diffplug/spotless/issues/142)
   * **POTENTIALLY BREAKING** `ktlint` step now modifies license headers. Make sure to put `licenseHeader` *after* `ktlint`.
