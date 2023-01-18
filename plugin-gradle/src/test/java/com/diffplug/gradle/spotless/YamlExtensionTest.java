@@ -31,7 +31,7 @@ class YamlExtensionTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    yaml {",
 				"        target 'src/**/*.yaml'",
-				"        jacksonYaml()",
+				"        jackson()",
 				"    }",
 				"}");
 		setFile("src/main/resources/example.yaml").toResource("yaml/separator_comments.yaml");
@@ -51,14 +51,14 @@ class YamlExtensionTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    yaml {",
 				"        target 'src/**/*.yaml'",
-				"        jacksonYaml()",
+				"        jackson()",
 				"	        .yamlFeature('WRITE_DOC_START_MARKER', false)",
 				"	        .yamlFeature('MINIMIZE_QUOTES', true)",
 				"    }",
 				"}");
 		setFile("src/main/resources/example.yaml").toResource("yaml/array_with_bracket.yaml");
 		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("src/main/resources/example.yaml").sameAsResource("yaml/array_with_bracket.clean.no_start_marker.yaml");
+		assertFile("src/main/resources/example.yaml").sameAsResource("yaml/array_with_bracket.clean.no_start_marker.no_quotes.yaml");
 	}
 
 }

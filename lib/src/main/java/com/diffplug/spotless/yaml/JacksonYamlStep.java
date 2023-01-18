@@ -30,6 +30,7 @@ import com.diffplug.spotless.Provisioner;
  * Simple YAML formatter which reformats the file according to Jackson YAMLFactory.
  */
 // https://stackoverflow.com/questions/14515994/convert-json-string-to-pretty-print-json-output-using-jackson
+// https://stackoverflow.com/questions/60891174/i-want-to-load-a-yaml-file-possibly-edit-the-data-and-then-dump-it-again-how
 public class JacksonYamlStep {
 	static final String MAVEN_COORDINATE = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:";
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml
@@ -44,6 +45,7 @@ public class JacksonYamlStep {
 	public static FormatterStep create(JacksonYamlConfig jacksonConfig,
 			String jacksonVersion,
 			Provisioner provisioner) {
+		Objects.requireNonNull(jacksonConfig, "jacksonConfig cannot be null");
 		Objects.requireNonNull(provisioner, "provisioner cannot be null");
 		return FormatterStep.createLazy("yaml",
 				() -> new State(jacksonConfig, jacksonVersion, provisioner),
@@ -65,10 +67,6 @@ public class JacksonYamlStep {
 				String jacksonVersion,
 				Provisioner provisioner) throws IOException {
 			this.jacksonConfig = jacksonConfig;
-
-			if (jacksonConfig == null) {
-				throw new IllegalArgumentException("ARG");
-			}
 
 			this.jarState = JarState.from(JacksonYamlStep.MAVEN_COORDINATE + jacksonVersion, provisioner);
 		}

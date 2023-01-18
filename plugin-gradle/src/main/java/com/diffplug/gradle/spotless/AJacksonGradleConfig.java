@@ -28,11 +28,11 @@ public abstract class AJacksonGradleConfig {
 
 	protected String version = JacksonJsonStep.defaultVersion();
 
+	// Make sure to call 'formatExtension.addStep(createStep());' in the extented constructors
 	public AJacksonGradleConfig(JacksonConfig jacksonConfig, FormatExtension formatExtension) {
 		this.formatExtension = formatExtension;
 
 		this.jacksonConfig = jacksonConfig;
-		formatExtension.addStep(createStep());
 	}
 
 	public AJacksonGradleConfig feature(String feature, boolean toggle) {

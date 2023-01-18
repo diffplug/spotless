@@ -149,7 +149,7 @@ class JsonExtensionTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    json {",
 				"        target 'src/**/*.json'",
-				"        jacksonJson().feature('ORDER_MAP_ENTRIES_BY_KEYS', true)",
+				"        jackson().feature('ORDER_MAP_ENTRIES_BY_KEYS', true)",
 				"    }",
 				"}");
 		setFile("src/main/resources/example.json").toResource("json/sortByKeysBefore.json");

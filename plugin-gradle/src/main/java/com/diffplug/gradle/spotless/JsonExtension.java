@@ -51,7 +51,7 @@ public class JsonExtension extends FormatExtension {
 		return new GsonConfig();
 	}
 
-	public JacksonJsonGradleConfig jacksonJson() {
+	public JacksonJsonGradleConfig jackson() {
 		return new JacksonJsonGradleConfig(this);
 	}
 
@@ -123,9 +123,7 @@ public class JsonExtension extends FormatExtension {
 			super(jacksonConfig, formatExtension);
 			this.jacksonConfig = jacksonConfig;
 
-			if (jacksonConfig == null) {
-				throw new IllegalArgumentException("ARG2");
-			}
+			formatExtension.addStep(createStep());
 		}
 
 		public JacksonJsonGradleConfig(FormatExtension formatExtension) {
@@ -141,11 +139,9 @@ public class JsonExtension extends FormatExtension {
 			return this;
 		}
 
+		// 'final' as it is called in the constructor
 		@Override
-		protected FormatterStep createStep() {
-			if (jacksonConfig == null) {
-				throw new IllegalArgumentException("ARG3");
-			}
+		protected final FormatterStep createStep() {
 			return JacksonJsonStep.create(jacksonConfig, version, formatExtension.provisioner());
 		}
 	}

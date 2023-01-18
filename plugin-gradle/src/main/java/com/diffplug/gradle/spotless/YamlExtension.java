@@ -19,6 +19,7 @@ import java.util.Collections;
 
 import javax.inject.Inject;
 
+import com.diffplug.common.base.Throwables;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.json.JacksonJsonStep;
 import com.diffplug.spotless.yaml.JacksonYamlConfig;
@@ -41,7 +42,7 @@ public class YamlExtension extends FormatExtension {
 		super.setupTask(task);
 	}
 
-	public AJacksonGradleConfig jacksonYaml() {
+	public AJacksonGradleConfig jackson() {
 		return new JacksonYamlGradleConfig(this);
 	}
 
@@ -53,9 +54,7 @@ public class YamlExtension extends FormatExtension {
 
 			this.jacksonConfig = jacksonConfig;
 
-			if (jacksonConfig == null) {
-				throw new IllegalArgumentException("ARG");
-			}
+			formatExtension.addStep(createStep());
 		}
 
 		public JacksonYamlGradleConfig(FormatExtension formatExtension) {
@@ -71,8 +70,9 @@ public class YamlExtension extends FormatExtension {
 			return this;
 		}
 
+		// 'final' as it is called in the constructor
 		@Override
-		protected FormatterStep createStep() {
+		protected final FormatterStep createStep() {
 			return JacksonYamlStep.create(jacksonConfig, version, provisioner());
 		}
 	}
