@@ -131,7 +131,7 @@ public class JsonExtension extends FormatExtension {
 		}
 
 		/**
-		 * @Refers to com.fasterxml.jackson.core.JsonGenerator.Feature
+		 * Refers to com.fasterxml.jackson.core.JsonGenerator.Feature
 		 */
 		public AJacksonGradleConfig jsonFeature(String feature, boolean toggle) {
 			this.jacksonConfig.appendJsonFeatureToToggle(Collections.singletonMap(feature, toggle));
