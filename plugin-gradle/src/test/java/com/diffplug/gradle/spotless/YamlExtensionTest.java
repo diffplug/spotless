@@ -73,7 +73,6 @@ class YamlExtensionTest extends GradleIntegrationHarness {
 				"    yaml {",
 				"        target 'src/**/*.yaml'",
 				"        jackson()",
-				"	        .yamlFeature('MINIMIZE_QUOTES', true)",
 				"    }",
 				"}");
 		setFile("src/main/resources/example.yaml").toResource("yaml/multiple_documents.yaml");
