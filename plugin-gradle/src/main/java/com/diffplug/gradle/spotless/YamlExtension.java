@@ -20,7 +20,6 @@ import java.util.Collections;
 import javax.inject.Inject;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.json.JacksonJsonStep;
 import com.diffplug.spotless.yaml.JacksonYamlConfig;
 import com.diffplug.spotless.yaml.JacksonYamlStep;
 

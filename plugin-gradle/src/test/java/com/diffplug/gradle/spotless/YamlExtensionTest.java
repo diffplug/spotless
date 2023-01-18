@@ -43,19 +43,19 @@ class YamlExtensionTest extends GradleIntegrationHarness {
 	@Test
 	void testFormatYaml_WithJackson_skipDocStartMarker() throws IOException {
 		setFile("build.gradle").toLines(
-			"plugins {",
-			"    id 'java'",
-			"    id 'com.diffplug.spotless'",
-			"}",
-			"repositories { mavenCentral() }",
-			"spotless {",
-			"    yaml {",
-			"        target 'src/**/*.yaml'",
-			"        jackson()",
-			"	        .yamlFeature('WRITE_DOC_START_MARKER', false)",
-			"	        .yamlFeature('MINIMIZE_QUOTES', true)",
-			"    }",
-			"}");
+				"plugins {",
+				"    id 'java'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    yaml {",
+				"        target 'src/**/*.yaml'",
+				"        jackson()",
+				"	        .yamlFeature('WRITE_DOC_START_MARKER', false)",
+				"	        .yamlFeature('MINIMIZE_QUOTES', true)",
+				"    }",
+				"}");
 		setFile("src/main/resources/example.yaml").toResource("yaml/array_with_bracket.yaml");
 		gradleRunner().withArguments("spotlessApply", "--stacktrace").build();
 		assertFile("src/main/resources/example.yaml").sameAsResource("yaml/array_with_bracket.clean.no_start_marker.no_quotes.yaml");
@@ -64,42 +64,40 @@ class YamlExtensionTest extends GradleIntegrationHarness {
 	@Test
 	void testFormatYaml_WithJackson_multipleDocuments() throws IOException {
 		setFile("build.gradle").toLines(
-			"plugins {",
-			"    id 'java'",
-			"    id 'com.diffplug.spotless'",
-			"}",
-			"repositories { mavenCentral() }",
-			"spotless {",
-			"    yaml {",
-			"        target 'src/**/*.yaml'",
-			"        jackson()",
-			"	        .yamlFeature('MINIMIZE_QUOTES', true)",
-			"    }",
-			"}");
+				"plugins {",
+				"    id 'java'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    yaml {",
+				"        target 'src/**/*.yaml'",
+				"        jackson()",
+				"	        .yamlFeature('MINIMIZE_QUOTES', true)",
+				"    }",
+				"}");
 		setFile("src/main/resources/example.yaml").toResource("yaml/multiple_documents.yaml");
 		gradleRunner().withArguments("spotlessApply", "--stacktrace").build();
 		assertFile("src/main/resources/example.yaml").sameAsResource("yaml/multiple_documents.clean.jackson.yaml");
 	}
 
-
 	@Test
 	void testFormatYaml_WithJackson_arrayAtRoot() throws IOException {
 		setFile("build.gradle").toLines(
-			"plugins {",
-			"    id 'java'",
-			"    id 'com.diffplug.spotless'",
-			"}",
-			"repositories { mavenCentral() }",
-			"spotless {",
-			"    yaml {",
-			"        target 'src/**/*.yaml'",
-			"        jackson()",
-			"    }",
-			"}");
+				"plugins {",
+				"    id 'java'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    yaml {",
+				"        target 'src/**/*.yaml'",
+				"        jackson()",
+				"    }",
+				"}");
 		setFile("src/main/resources/example.yaml").toResource("yaml/array_at_root.yaml");
 		gradleRunner().withArguments("spotlessApply", "--stacktrace").build();
 		assertFile("src/main/resources/example.yaml").sameAsResource("yaml/array_at_root.clean.yaml");
 	}
-
 
 }
