@@ -10,6 +10,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Prettier will now suggest to install plugins if a parser cannot be inferred from the file extension ([#1511](https://github.com/diffplug/spotless/pull/1511))
 ### Fixed
 * The default list of type annotations used by `formatAnnotations` has had 8 more annotations from the Checker Framework added [#1494](https://github.com/diffplug/spotless/pull/1494)
+* **POTENTIALLY BREAKING** Generate the correct qualifiedRuleId for Ktlint 0.48.x [#1495](https://github.com/diffplug/spotless/pull/1495)
 ### Changes
 * **POTENTIALLY BREAKING** Removed support for KtLint 0.3x and 0.45.2 ([#1475](https://github.com/diffplug/spotless/pull/1475))
   * `KtLint` does not maintain a stable API - before this PR, we supported every breaking change in the API since 2019.
