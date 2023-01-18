@@ -57,7 +57,7 @@ public class JsonTest extends MavenIntegrationHarness {
 
 		setFile("json_test.json").toResource("json/sortByKeysBefore.json");
 
-		String output = mavenRunner().withArguments("spotless:apply").runNoError().output();
+		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile("json_test.json").sameAsResource("json/sortByKeysAfter.json");
 	}
 
@@ -76,7 +76,7 @@ public class JsonTest extends MavenIntegrationHarness {
 
 		setFile("json_test.json").toResource("json/sortByKeysBefore.json");
 
-		String output = mavenRunner().withArguments("spotless:apply").runNoError().output();
+		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile("json_test.json").sameAsResource("json/sortByKeysAfter_Jackson.json");
 	}
 
@@ -86,7 +86,7 @@ public class JsonTest extends MavenIntegrationHarness {
 
 		setFile("json_test.json").toResource("json/sortByKeysBefore.json");
 
-		String output = mavenRunner().withArguments("spotless:apply").runNoError().output();
+		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile("json_test.json").sameAsResource("json/sortByKeysAfter_Jackson_spaceAfterKeySeparator.json");
 	}
 
