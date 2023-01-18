@@ -61,6 +61,6 @@ public final class NpmFrontendMavenPlugin {
 	}
 
 	public static String installedNpmPath() {
-		return String.format("%s/node/npm", INSTALL_DIRECTORY);
+		return String.format("%s/node/npm%s", INSTALL_DIRECTORY, System.getProperty("os.name").toLowerCase().contains("win") ? ".cmd" : "");
 	}
 }
