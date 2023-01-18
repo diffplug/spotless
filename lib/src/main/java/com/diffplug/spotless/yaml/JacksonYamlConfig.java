@@ -34,14 +34,14 @@ public class JacksonYamlConfig extends JacksonConfig {
 	}
 
 	/**
-	 * @see com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature
+	 * Refers to com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature
 	 */
 	public void setYamlFeatureToToggle(Map<String, Boolean> yamlFeatureToToggle) {
 		this.yamlFeatureToToggle = yamlFeatureToToggle;
 	}
 
 	/**
-	 * @see com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature
+	 * Refers to com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature
 	 */
 	public void appendYamlFeatureToToggle(Map<String, Boolean> features) {
 		this.yamlFeatureToToggle.putAll(features);

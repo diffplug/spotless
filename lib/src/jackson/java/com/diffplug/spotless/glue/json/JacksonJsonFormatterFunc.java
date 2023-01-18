@@ -57,7 +57,7 @@ public class JacksonJsonFormatterFunc extends AJacksonFormatterFunc {
 	}
 
 	@Override
-	protected DefaultPrettyPrinter makePrinter() {
+	protected DefaultPrettyPrinter makePrettyPrinter() {
 		boolean spaceBeforeSeparator = jacksonConfig.isSpaceBeforeSeparator();
 
 		// DefaultIndenter default constructor relies on 2 whitespaces as default tabulation

@@ -76,7 +76,7 @@ public class JsonTest extends MavenIntegrationHarness {
 
 		setFile("json_test.json").toResource("json/sortByKeysBefore.json");
 
-		mavenRunner().withArguments("spotless:apply").runNoError();
+		mavenRunner().withArguments("spotless:apply", "-X").runNoError();
 		assertFile("json_test.json").sameAsResource("json/sortByKeysAfter_Jackson.json");
 	}
 

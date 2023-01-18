@@ -36,7 +36,7 @@ public class JacksonConfig implements Serializable {
 		DEFAULT_FEATURE_TOGGLES = defaultFeatureToggles;
 	}
 
-	protected Map<String, Boolean> featureToToggle = new LinkedHashMap<>();
+	protected Map<String, Boolean> featureToToggle = new LinkedHashMap<>(DEFAULT_FEATURE_TOGGLES);
 
 	public Map<String, Boolean> getFeatureToToggle() {
 		return Collections.unmodifiableMap(featureToToggle);

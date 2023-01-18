@@ -25,7 +25,6 @@ import com.diffplug.spotless.yaml.JacksonYamlConfig;
 import com.diffplug.spotless.yaml.JacksonYamlStep;
 
 public class YamlExtension extends FormatExtension {
-	private static final String DEFAULT_GSON_VERSION = JacksonJsonStep.defaultVersion();
 	static final String NAME = "yaml";
 
 	@Inject
@@ -61,7 +60,7 @@ public class YamlExtension extends FormatExtension {
 		}
 
 		/**
-		 * @see com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature
+		 * Refers to com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature
 		 */
 		public AJacksonGradleConfig yamlFeature(String feature, boolean toggle) {
 			this.jacksonConfig.appendYamlFeatureToToggle(Collections.singletonMap(feature, toggle));

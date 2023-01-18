@@ -16,10 +16,11 @@
 package com.diffplug.spotless.glue.json;
 
 import java.io.IOException;
+import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.PrettyPrinter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -48,8 +49,11 @@ public abstract class AJacksonFormatterFunc implements FormatterFunc {
 
 	protected String format(ObjectMapper objectMapper, String input) throws IllegalArgumentException, IOException {
 		try {
-			ObjectNode objectNode = objectMapper.readValue(input, ObjectNode.class);
-			return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(objectNode);
+			// ObjectNode is not compatible with SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS
+			Map objectNode = objectMapper.readValue(input, Map.class);
+			String output = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(objectNode);
+
+			return output;
 		} catch (JsonProcessingException e) {
 			throw new AssertionError("Unable to format. input='" + input + "'", e);
 		}
@@ -65,7 +69,7 @@ public abstract class AJacksonFormatterFunc implements FormatterFunc {
 		JsonFactory jsonFactory = makeJsonFactory();
 		ObjectMapper objectMapper = new ObjectMapper(jsonFactory);
 
-		objectMapper.setDefaultPrettyPrinter(makePrinter());
+		objectMapper.setDefaultPrettyPrinter(makePrettyPrinter());
 
 		// Configure the ObjectMapper
 		// https://github.com/FasterXML/jackson-databind#commonly-used-features
@@ -76,12 +80,10 @@ public abstract class AJacksonFormatterFunc implements FormatterFunc {
 			objectMapper.configure(feature, toggle);
 		});
 
-		new JsonFactory().configure(JsonGenerator.Feature.AUTO_CLOSE_JSON_CONTENT, true);
-
 		return objectMapper;
 	}
 
-	protected DefaultPrettyPrinter makePrinter() {
+	protected PrettyPrinter makePrettyPrinter() {
 		return new DefaultPrettyPrinter();
 	}
 }

@@ -36,14 +36,14 @@ public class JacksonJsonConfig extends JacksonConfig {
 	}
 
 	/**
-	 * @see com.fasterxml.jackson.core.JsonGenerator.Feature
+	 * Refers to com.fasterxml.jackson.core.JsonGenerator.Feature
 	 */
 	public void setJsonFeatureToToggle(Map<String, Boolean> jsonFeatureToToggle) {
 		this.jsonFeatureToToggle = jsonFeatureToToggle;
 	}
 
 	/**
-	 * @see com.fasterxml.jackson.core.JsonGenerator.Feature
+	 * Refers to com.fasterxml.jackson.core.JsonGenerator.Feature
 	 */
 	public void appendJsonFeatureToToggle(Map<String, Boolean> features) {
 		this.jsonFeatureToToggle.putAll(features);
