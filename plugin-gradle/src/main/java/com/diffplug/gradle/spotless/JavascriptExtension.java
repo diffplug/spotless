@@ -17,6 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -107,7 +108,7 @@ public class JavascriptExtension extends FormatExtension {
 					provisioner(),
 					project.getProjectDir(),
 					project.getBuildDir(),
-					new NpmPathResolver(npmFileOrNull(), npmrcFileOrNull(), project.getProjectDir(), project.getRootDir()),
+					new NpmPathResolver(npmFileOrNull(), nodeFileOrNull(), npmrcFileOrNull(), Arrays.asList(project.getProjectDir(), project.getRootDir())),
 					eslintConfig());
 		}
 

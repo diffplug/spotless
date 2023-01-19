@@ -48,23 +48,17 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	public final transient File nodeModulesDir;
 
-	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-	private final transient File npmExecutable;
-
-	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-	public final transient File projectDir;
+	public final NpmFormatterStepLocations locations;
 
 	private final NpmConfig npmConfig;
 
 	private final String stepName;
 
-	protected NpmFormatterStepStateBase(String stepName, NpmConfig npmConfig, File projectDir, File buildDir, File npm) throws IOException {
+	protected NpmFormatterStepStateBase(String stepName, NpmConfig npmConfig, NpmFormatterStepLocations locations) throws IOException {
 		this.stepName = requireNonNull(stepName);
 		this.npmConfig = requireNonNull(npmConfig);
-		this.projectDir = requireNonNull(projectDir);
-		this.npmExecutable = npm;
-
-		NodeServerLayout layout = prepareNodeServer(buildDir);
+		this.locations = locations;
+		NodeServerLayout layout = prepareNodeServer(locations.buildDir());
 		this.nodeModulesDir = layout.nodeModulesDir();
 		this.packageJsonSignature = FileSignature.signAsList(layout.packageJsonFile());
 	}
@@ -88,7 +82,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 	}
 
 	private void runNpmInstall(File npmProjectDir) throws IOException {
-		new NpmProcess(npmProjectDir, this.npmExecutable).install();
+		new NpmProcess(npmProjectDir, this.locations.npmExecutable(), this.locations.nodeExecutable()).install();
 	}
 
 	protected ServerProcessInfo npmRunServer() throws ServerStartException, IOException {
@@ -102,7 +96,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 			final File serverPortFile = new File(this.nodeModulesDir, "server.port");
 			NpmResourceHelper.deleteFileIfExists(serverPortFile);
 			// start the http server in node
-			Process server = new NpmProcess(this.nodeModulesDir, this.npmExecutable).start();
+			Process server = new NpmProcess(this.nodeModulesDir, this.locations.npmExecutable(), this.locations.nodeExecutable()).start();
 
 			// await the readiness of the http server - wait for at most 60 seconds
 			try {

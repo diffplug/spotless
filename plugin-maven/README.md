@@ -1076,17 +1076,23 @@ Since spotless uses the actual npm prettier package behind the scenes, it is pos
 ### npm detection
 
 Prettier is based on NodeJS, so to use it, a working NodeJS installation (especially npm) is required on the host running spotless.
-Spotless will try to auto-discover an npm installation. If that is not working for you, it is possible to directly configure the npm binary to use.
+Spotless will try to auto-discover an npm installation. If that is not working for you, it is possible to directly configure the npm
+and/or node binary to use.
 
 ```xml
 <prettier>
   <npmExecutable>/usr/bin/npm</npmExecutable>
+  <nodeExecutable>/usr/bin/node</nodeExecutable>
 ```
+
+If you provide both `npmExecutable` and `nodeExecutable`, spotless will use these paths. If you specify only one of the
+two, spotless will assume the other one is in the same directory.
 
 ### `.npmrc` detection
 
 Spotless picks up npm configuration stored in a `.npmrc` file either in the project directory or in your user home.
-Alternatively you can supply spotless with a location of the `.npmrc` file to use. (This can be combined with `npmExecutable`, of course.)
+Alternatively you can supply spotless with a location of the `.npmrc` file to use. (This can be combined with
+`npmExecutable` and `nodeExecutable`, of course.)
 
 ```xml
 <prettier>

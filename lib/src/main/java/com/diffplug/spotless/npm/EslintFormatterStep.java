@@ -94,9 +94,11 @@ public class EslintFormatterStep {
 									"/com/diffplug/spotless/npm/common-serve.js",
 									"/com/diffplug/spotless/npm/eslint-serve.js"),
 							npmPathResolver.resolveNpmrcContent()),
-					projectDir,
-					buildDir,
-					npmPathResolver.resolveNpmExecutable());
+					new NpmFormatterStepLocations(
+							projectDir,
+							buildDir,
+							npmPathResolver.resolveNpmExecutable(),
+							npmPathResolver.resolveNodeExecutable()));
 			this.eslintConfig = localCopyFiles(requireNonNull(eslintConfig));
 		}
 
@@ -119,7 +121,7 @@ public class EslintFormatterStep {
 				FormattedPrinter.SYSOUT.print("creating formatter function (starting server)");
 				ServerProcessInfo eslintRestServer = npmRunServer();
 				EslintRestService restService = new EslintRestService(eslintRestServer.getBaseUrl());
-				return Closeable.ofDangerous(() -> endServer(restService, eslintRestServer), new EslintFilePathPassingFormatterFunc(projectDir, nodeModulesDir, eslintConfig, restService));
+				return Closeable.ofDangerous(() -> endServer(restService, eslintRestServer), new EslintFilePathPassingFormatterFunc(locations.projectDir(), nodeModulesDir, eslintConfig, restService));
 			} catch (IOException e) {
 				throw ThrowingEx.asRuntime(e);
 			}

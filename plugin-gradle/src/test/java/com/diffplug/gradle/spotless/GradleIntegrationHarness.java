@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -117,11 +118,34 @@ public class GradleIntegrationHarness extends ResourceHarness {
 	}
 
 	/** Dumps the complete file contents of the folder to the console. */
-	protected String getContents() throws IOException {
+	protected String getContents() {
 		return getContents(subPath -> !subPath.startsWith(".gradle"));
 	}
 
-	protected String getContents(Predicate<String> subpathsToInclude) throws IOException {
+	protected String getContents(Predicate<String> subpathsToInclude) {
+		return StringPrinter.buildString(printer -> Errors.rethrow().run(() -> iterateFiles(subpathsToInclude, (subpath, file) -> {
+			printer.println("### " + subpath + " ###");
+			try {
+				printer.println(read(subpath));
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		})));
+	}
+
+	/** Dumps the filtered file listing of the folder to the console. */
+	protected String listFiles(Predicate<String> subpathsToInclude) {
+		return StringPrinter.buildString(printer -> iterateFiles(subpathsToInclude, (subPath, file) -> {
+			printer.println(subPath + " [" + getFileAttributes(file) + "]");
+		}));
+	}
+
+	/** Dumps the file listing of the folder to the console. */
+	protected String listFiles() {
+		return listFiles(subPath -> !subPath.startsWith(".gradle"));
+	}
+
+	protected void iterateFiles(Predicate<String> subpathsToInclude, BiConsumer<String, File> consumer) {
 		TreeDef<File> treeDef = TreeDef.forFile(Errors.rethrow());
 		List<File> files = TreeStream.depthFirst(treeDef, rootFolder())
 				.filter(File::isFile)
@@ -129,16 +153,17 @@ public class GradleIntegrationHarness extends ResourceHarness {
 
 		ListIterator<File> iterator = files.listIterator(files.size());
 		int rootLength = rootFolder().getAbsolutePath().length() + 1;
-		return StringPrinter.buildString(printer -> Errors.rethrow().run(() -> {
-			while (iterator.hasPrevious()) {
-				File file = iterator.previous();
-				String subPath = file.getAbsolutePath().substring(rootLength);
-				if (subpathsToInclude.test(subPath)) {
-					printer.println("### " + subPath + " ###");
-					printer.println(read(subPath));
-				}
+		while (iterator.hasPrevious()) {
+			File file = iterator.previous();
+			String subPath = file.getAbsolutePath().substring(rootLength);
+			if (subpathsToInclude.test(subPath)) {
+				consumer.accept(subPath, file);
 			}
-		}));
+		}
+	}
+
+	protected String getFileAttributes(File file) {
+		return (file.canRead() ? "r" : "-") + (file.canWrite() ? "w" : "-") + (file.canExecute() ? "x" : "-");
 	}
 
 	protected void checkRunsThenUpToDate() throws IOException {
