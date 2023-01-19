@@ -23,11 +23,12 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.json.JacksonJsonConfig;
 import com.diffplug.spotless.json.JacksonJsonStep;
 import com.diffplug.spotless.json.JsonSimpleStep;
+import com.diffplug.spotless.json.gson.GsonConfig;
 import com.diffplug.spotless.json.gson.GsonStep;
 
 public class JsonExtension extends FormatExtension {
 	private static final int DEFAULT_INDENTATION = 4;
-	private static final String DEFAULT_GSON_VERSION = "2.8.9";
+	private static final String DEFAULT_GSON_VERSION = "2.10.1";
 	static final String NAME = "json";
 
 	@Inject
@@ -47,8 +48,8 @@ public class JsonExtension extends FormatExtension {
 		return new SimpleConfig(DEFAULT_INDENTATION);
 	}
 
-	public GsonConfig gson() {
-		return new GsonConfig();
+	public GsonGradleConfig gson() {
+		return new GsonGradleConfig();
 	}
 
 	public JacksonJsonGradleConfig jackson() {
@@ -73,13 +74,13 @@ public class JsonExtension extends FormatExtension {
 		}
 	}
 
-	public class GsonConfig {
+	public class GsonGradleConfig {
 		private int indentSpaces;
 		private boolean sortByKeys;
 		private boolean escapeHtml;
 		private String version;
 
-		public GsonConfig() {
+		public GsonGradleConfig() {
 			this.indentSpaces = DEFAULT_INDENTATION;
 			this.sortByKeys = false;
 			this.escapeHtml = false;
@@ -87,32 +88,32 @@ public class JsonExtension extends FormatExtension {
 			addStep(createStep());
 		}
 
-		public GsonConfig indentWithSpaces(int indentSpaces) {
+		public GsonGradleConfig indentWithSpaces(int indentSpaces) {
 			this.indentSpaces = indentSpaces;
 			replaceStep(createStep());
 			return this;
 		}
 
-		public GsonConfig sortByKeys() {
+		public GsonGradleConfig sortByKeys() {
 			this.sortByKeys = true;
 			replaceStep(createStep());
 			return this;
 		}
 
-		public GsonConfig escapeHtml() {
+		public GsonGradleConfig escapeHtml() {
 			this.escapeHtml = true;
 			replaceStep(createStep());
 			return this;
 		}
 
-		public GsonConfig version(String version) {
+		public GsonGradleConfig version(String version) {
 			this.version = version;
 			replaceStep(createStep());
 			return this;
 		}
 
 		private FormatterStep createStep() {
-			return GsonStep.create(indentSpaces, sortByKeys, escapeHtml, version, provisioner());
+			return GsonStep.create(new GsonConfig(sortByKeys, escapeHtml, indentSpaces, version), provisioner());
 		}
 	}
 
