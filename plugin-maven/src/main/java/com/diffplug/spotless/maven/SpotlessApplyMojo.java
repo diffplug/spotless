@@ -33,6 +33,8 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 
 	@Override
 	protected void process(Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException {
+		ImpactedFilesTracker impactedFilesTracker = new ImpactedFilesTracker();
+
 		for (File file : files) {
 			if (upToDateChecker.isUpToDate(file.toPath())) {
 				if (getLog().isDebugEnabled()) {
@@ -42,10 +44,13 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 			}
 
 			try {
+				impactedFilesTracker.checked();
 				PaddedCell.DirtyState dirtyState = PaddedCell.calculateDirtyState(formatter, file);
 				if (!dirtyState.isClean() && !dirtyState.didNotConverge()) {
+					getLog().info(String.format("Writing clean file: %s", file));
 					dirtyState.writeCanonicalTo(file);
 					buildContext.refresh(file);
+					impactedFilesTracker.cleaned();
 				}
 			} catch (IOException e) {
 				throw new MojoExecutionException("Unable to format file " + file, e);
@@ -53,5 +58,8 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 
 			upToDateChecker.setUpToDate(file.toPath());
 		}
+
+		// We print the number of considered files which is useful when ratchetFrom is setup
+		getLog().info(String.format("A formatter with %s steps cleaned: %s files (for %s considered)", formatter.getSteps().size(), impactedFilesTracker.getCleaned(), impactedFilesTracker.getChecked()));
 	}
 }
