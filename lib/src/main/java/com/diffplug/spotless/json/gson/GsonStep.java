@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 DiffPlug
+ * Copyright 2022-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ public class GsonStep {
 		}
 
 		FormatterFunc toFormatter() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
-			InstantiationException, IllegalAccessException {
+				InstantiationException, IllegalAccessException {
 			Class<?> formatterFunc = jarState.getClassLoader().loadClass("com.diffplug.spotless.glue.gson.GsonFormatterFunc");
 			Constructor<?> constructor = formatterFunc.getConstructor(GsonConfig.class);
 			return (FormatterFunc) constructor.newInstance(gsonConfig);

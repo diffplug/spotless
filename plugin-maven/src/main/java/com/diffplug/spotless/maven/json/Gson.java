@@ -15,11 +15,10 @@
  */
 package com.diffplug.spotless.maven.json;
 
-import com.diffplug.spotless.json.gson.GsonConfig;
-
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.json.gson.GsonConfig;
 import com.diffplug.spotless.json.gson.GsonStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
