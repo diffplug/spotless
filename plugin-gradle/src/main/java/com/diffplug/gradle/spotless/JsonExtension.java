@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,13 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.util.Collections;
+
 import javax.inject.Inject;
 
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.json.JacksonJsonConfig;
+import com.diffplug.spotless.json.JacksonJsonStep;
 import com.diffplug.spotless.json.JsonSimpleStep;
 import com.diffplug.spotless.json.gson.GsonStep;
 
@@ -45,6 +49,10 @@ public class JsonExtension extends FormatExtension {
 
 	public GsonConfig gson() {
 		return new GsonConfig();
+	}
+
+	public JacksonJsonGradleConfig jackson() {
+		return new JacksonJsonGradleConfig(this);
 	}
 
 	public class SimpleConfig {
@@ -108,4 +116,33 @@ public class JsonExtension extends FormatExtension {
 		}
 	}
 
+	public static class JacksonJsonGradleConfig extends AJacksonGradleConfig {
+		protected JacksonJsonConfig jacksonConfig;
+
+		public JacksonJsonGradleConfig(JacksonJsonConfig jacksonConfig, FormatExtension formatExtension) {
+			super(jacksonConfig, formatExtension);
+			this.jacksonConfig = jacksonConfig;
+
+			formatExtension.addStep(createStep());
+		}
+
+		public JacksonJsonGradleConfig(FormatExtension formatExtension) {
+			this(new JacksonJsonConfig(), formatExtension);
+		}
+
+		/**
+		 * Refers to com.fasterxml.jackson.core.JsonGenerator.Feature
+		 */
+		public AJacksonGradleConfig jsonFeature(String feature, boolean toggle) {
+			this.jacksonConfig.appendJsonFeatureToToggle(Collections.singletonMap(feature, toggle));
+			formatExtension.replaceStep(createStep());
+			return this;
+		}
+
+		// 'final' as it is called in the constructor
+		@Override
+		protected final FormatterStep createStep() {
+			return JacksonJsonStep.create(jacksonConfig, version, formatExtension.provisioner());
+		}
+	}
 }

@@ -15,13 +15,10 @@
  */
 package com.diffplug.spotless.maven.yaml;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.diffplug.spotless.ProcessRunner;
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
 public class YamlTest extends MavenIntegrationHarness {
@@ -32,10 +29,7 @@ public class YamlTest extends MavenIntegrationHarness {
 		writePomWithYamlSteps("<jackson/>");
 
 		setFile("yaml_test.yaml").toResource("yaml/separator_comments.yaml");
-		ProcessRunner.Result runNoError = mavenRunner().withArguments("spotless:apply").runNoError();
-		LOGGER.error("result: {}", runNoError);
-		assertThat(runNoError.exitCode()).as("Run without error %s", runNoError).isEqualTo(0);
-		LOGGER.error("GOGO");
+		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile("yaml_test.yaml").sameAsResource("yaml/separator_comments.clean.yaml");
 	}
 

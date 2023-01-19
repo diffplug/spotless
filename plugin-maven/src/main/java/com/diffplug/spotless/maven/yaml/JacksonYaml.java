@@ -15,32 +15,40 @@
  */
 package com.diffplug.spotless.maven.yaml;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
+import java.util.Map;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.maven.FormatterFactory;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
-import com.diffplug.spotless.yaml.YamlJacksonStep;
+import com.diffplug.spotless.yaml.JacksonYamlConfig;
+import com.diffplug.spotless.yaml.JacksonYamlStep;
 
-public class Jackson implements FormatterStepFactory {
-
-	@Parameter
-	private String version = YamlJacksonStep.defaultVersion();
-
-	@Parameter
-	private String[] enabledFeatures = new String[]{"INDENT_OUTPUT"};
+/**
+ * A {@link FormatterFactory} implementation that corresponds to {@code <jackson>...</jackson>} configuration element.
+ */
+public class JacksonYaml implements FormatterStepFactory {
 
 	@Parameter
-	private String[] disabledFeatures = new String[0];
+	private String version = JacksonYamlStep.defaultVersion();
+
+	@Parameter
+	private Map<String, Boolean> features = Collections.emptyMap();
+
+	@Parameter
+	private Map<String, Boolean> yamlFeatures = Collections.emptyMap();
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
-		List<String> enabledFeaturesAsList = Arrays.asList(enabledFeatures);
-		List<String> disabledFeaturesAsList = Arrays.asList(disabledFeatures);
-		return YamlJacksonStep
-				.create(enabledFeaturesAsList, disabledFeaturesAsList, version, stepConfig.getProvisioner());
+		JacksonYamlConfig jacksonConfig = new JacksonYamlConfig();
+
+		jacksonConfig.appendFeatureToToggle(features);
+		jacksonConfig.appendYamlFeatureToToggle(yamlFeatures);
+
+		return JacksonYamlStep
+				.create(jacksonConfig, version, stepConfig.getProvisioner());
 	}
 }

@@ -4,6 +4,10 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
+* Introduce `<json><jackson/></json>` ([#1492](https://github.com/diffplug/spotless/pull/1492))
+  * **POTENTIALLY BREAKING** `JacksonYaml` is now configured with a `Map<String, Boolean>` to configure features
+* Jackson (`json` and `yaml`) has new `spaceBeforeSeparator` option
+  * **POTENTIALLY BREAKING** `spaceBeforeSeparator` is defaulted to false while the formatter was behaving with `<spaceBeforeSeparator>true<spaceBeforeSeparator/>`
 * Allow to specify node executable for node-based formatters using `nodeExecutable` parameter ([#1500](https://github.com/diffplug/spotless/pull/1500))
 ### Fixed
 * The default list of type annotations used by `formatAnnotations` has had 8 more annotations from the Checker Framework added [#1494](https://github.com/diffplug/spotless/pull/1494)

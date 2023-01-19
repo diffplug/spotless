@@ -19,8 +19,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 import com.diffplug.spotless.FormatterFunc;
@@ -32,54 +30,52 @@ import com.diffplug.spotless.Provisioner;
  * Simple YAML formatter which reformats the file according to Jackson YAMLFactory.
  */
 // https://stackoverflow.com/questions/14515994/convert-json-string-to-pretty-print-json-output-using-jackson
-public class YamlJacksonStep {
+// https://stackoverflow.com/questions/60891174/i-want-to-load-a-yaml-file-possibly-edit-the-data-and-then-dump-it-again-how
+public class JacksonYamlStep {
 	static final String MAVEN_COORDINATE = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:";
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml
 	static final String DEFAULT_VERSION = "2.14.1";
 
-	private YamlJacksonStep() {}
+	private JacksonYamlStep() {}
 
 	public static String defaultVersion() {
 		return DEFAULT_VERSION;
 	}
 
-	public static FormatterStep create(List<String> enabledFeatures,
-			List<String> disabledFeatures,
+	public static FormatterStep create(JacksonYamlConfig jacksonConfig,
 			String jacksonVersion,
 			Provisioner provisioner) {
+		Objects.requireNonNull(jacksonConfig, "jacksonConfig cannot be null");
 		Objects.requireNonNull(provisioner, "provisioner cannot be null");
 		return FormatterStep.createLazy("yaml",
-				() -> new State(enabledFeatures, disabledFeatures, jacksonVersion, provisioner),
+				() -> new State(jacksonConfig, jacksonVersion, provisioner),
 				State::toFormatter);
 	}
 
 	public static FormatterStep create(Provisioner provisioner) {
-		return create(Arrays.asList("INDENT_OUTPUT"), Arrays.asList(), defaultVersion(), provisioner);
+		return create(new JacksonYamlConfig(), defaultVersion(), provisioner);
 	}
 
 	private static final class State implements Serializable {
 		private static final long serialVersionUID = 1L;
 
-		private final List<String> enabledFeatures;
-		private final List<String> disabledFeatures;
+		private final JacksonYamlConfig jacksonConfig;
 
 		private final JarState jarState;
 
-		private State(List<String> enabledFeatures,
-				List<String> disabledFeatures,
+		private State(JacksonYamlConfig jacksonConfig,
 				String jacksonVersion,
 				Provisioner provisioner) throws IOException {
-			this.enabledFeatures = enabledFeatures;
-			this.disabledFeatures = disabledFeatures;
+			this.jacksonConfig = jacksonConfig;
 
-			this.jarState = JarState.from(YamlJacksonStep.MAVEN_COORDINATE + jacksonVersion, provisioner);
+			this.jarState = JarState.from(JacksonYamlStep.MAVEN_COORDINATE + jacksonVersion, provisioner);
 		}
 
 		FormatterFunc toFormatter() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
 				InstantiationException, IllegalAccessException {
-			Class<?> formatterFunc = jarState.getClassLoader().loadClass("com.diffplug.spotless.glue.yaml.YamlJacksonFormatterFunc");
-			Constructor<?> constructor = formatterFunc.getConstructor(List.class, List.class);
-			return (FormatterFunc) constructor.newInstance(enabledFeatures, disabledFeatures);
+			Class<?> formatterFunc = jarState.getClassLoader().loadClass("com.diffplug.spotless.glue.yaml.JacksonYamlFormatterFunc");
+			Constructor<?> constructor = formatterFunc.getConstructor(JacksonYamlConfig.class);
+			return (FormatterFunc) constructor.newInstance(jacksonConfig);
 		}
 	}
 }
