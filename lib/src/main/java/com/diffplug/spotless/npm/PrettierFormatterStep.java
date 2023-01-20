@@ -122,7 +122,14 @@ public class PrettierFormatterStep {
 			FormattedPrinter.SYSOUT.print("formatting String '" + unix.substring(0, Math.min(50, unix.length())) + "[...]' in file '" + file + "'");
 
 			final String prettierConfigOptionsWithFilepath = assertFilepathInConfigOptions(file);
-			return restService.format(unix, prettierConfigOptionsWithFilepath);
+			try {
+				return restService.format(unix, prettierConfigOptionsWithFilepath);
+			} catch (SimpleRestClient.SimpleRestResponseException e) {
+				if (e.getStatusCode() != 200 && e.getResponseMessage().contains("No parser could be inferred")) {
+					throw new PrettierMissingParserException(file, e);
+				}
+				throw e;
+			}
 		}
 
 		private String assertFilepathInConfigOptions(File file) {
@@ -141,4 +148,5 @@ public class PrettierFormatterStep {
 			return "{" + filePathOption + (hasAnyConfigOption ? "," : "") + prettierConfigOptions.substring(startOfConfigOption + 1);
 		}
 	}
+
 }
