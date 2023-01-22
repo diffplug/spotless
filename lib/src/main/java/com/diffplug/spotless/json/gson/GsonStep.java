@@ -52,7 +52,7 @@ public class GsonStep {
 				Constructor<?> constructor = formatterFunc.getConstructor(GsonConfig.class);
 				return (FormatterFunc) constructor.newInstance(gsonConfig);
 			} catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException
-					 | InstantiationException | IllegalAccessException | NoClassDefFoundError cause) {
+					| InstantiationException | IllegalAccessException | NoClassDefFoundError cause) {
 				throw new IllegalStateException(INCOMPATIBLE_ERROR_MESSAGE, cause);
 			}
 		}
