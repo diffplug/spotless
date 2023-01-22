@@ -28,6 +28,7 @@ import com.diffplug.spotless.Provisioner;
 
 public class GsonStep {
 	private static final String MAVEN_COORDINATES = "com.google.code.gson:gson";
+	private static final String INCOMPATIBLE_ERROR_MESSAGE = "There was a problem interacting with Gson; maybe you set an incompatible version?";
 
 	public static FormatterStep create(GsonConfig gsonConfig, Provisioner provisioner) {
 		Objects.requireNonNull(provisioner, "provisioner cannot be null");
@@ -45,11 +46,15 @@ public class GsonStep {
 			this.jarState = JarState.from(MAVEN_COORDINATES + ":" + gsonConfig.getVersion(), provisioner);
 		}
 
-		FormatterFunc toFormatter() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
-				InstantiationException, IllegalAccessException {
-			Class<?> formatterFunc = jarState.getClassLoader().loadClass("com.diffplug.spotless.glue.gson.GsonFormatterFunc");
-			Constructor<?> constructor = formatterFunc.getConstructor(GsonConfig.class);
-			return (FormatterFunc) constructor.newInstance(gsonConfig);
+		FormatterFunc toFormatter() {
+			try {
+				Class<?> formatterFunc = jarState.getClassLoader().loadClass("com.diffplug.spotless.glue.gson.GsonFormatterFunc");
+				Constructor<?> constructor = formatterFunc.getConstructor(GsonConfig.class);
+				return (FormatterFunc) constructor.newInstance(gsonConfig);
+			} catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException
+					 | InstantiationException | IllegalAccessException | NoClassDefFoundError cause) {
+				throw new IllegalStateException(INCOMPATIBLE_ERROR_MESSAGE, cause);
+			}
 		}
 	}
 

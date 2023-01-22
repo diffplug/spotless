@@ -74,7 +74,7 @@ public class GsonFormatterFunc implements FormatterFunc {
 
 	private JsonElement sortByKeys(JsonObject jsonObject) {
 		JsonObject result = new JsonObject();
-		result.keySet().stream().sorted()
+		jsonObject.keySet().stream().sorted()
 				.forEach(key -> {
 					JsonElement element = jsonObject.get(key);
 					if (element.isJsonObject()) {
