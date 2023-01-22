@@ -52,10 +52,17 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 public class ProcessRunner implements AutoCloseable {
 	private final ExecutorService threadStdOut = Executors.newSingleThreadExecutor();
 	private final ExecutorService threadStdErr = Executors.newSingleThreadExecutor();
-	private final ByteArrayOutputStream bufStdOut = new ByteArrayOutputStream();
-	private final ByteArrayOutputStream bufStdErr = new ByteArrayOutputStream();
+	private final ByteArrayOutputStream bufStdOut;
+	private final ByteArrayOutputStream bufStdErr;
 
-	public ProcessRunner() {}
+	public ProcessRunner() {
+		this(-1);
+	}
+
+	public ProcessRunner(int limitedBuffers) {
+		this.bufStdOut = limitedBuffers >= 0 ? new LimitedOverwritingByteArrayOutputStream(limitedBuffers) : new ByteArrayOutputStream();
+		this.bufStdErr = limitedBuffers >= 0 ? new LimitedOverwritingByteArrayOutputStream(limitedBuffers) : new ByteArrayOutputStream();
+	}
 
 	/** Executes the given shell command (using {@code cmd} on windows and {@code sh} on unix). */
 	public Result shell(String cmd) throws IOException, InterruptedException {
