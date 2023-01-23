@@ -34,8 +34,6 @@ tasks.withType(com.github.spotbugs.snom.SpotBugsTask).configureEach {
 }
 
 tasks.named('spotbugsMain') {
-	// only run on Java 8 (no benefit to running twice)
-	enabled = org.gradle.api.JavaVersion.current() == org.gradle.api.JavaVersion.VERSION_11
 	reports {
 		html.enabled = true
 	}
