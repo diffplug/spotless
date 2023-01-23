@@ -42,7 +42,7 @@ class NpmProcess {
 		this.workingDir = workingDir;
 		this.npmExecutable = npmExecutable;
 		this.nodeExecutable = nodeExecutable;
-		processRunner = new ProcessRunner(100 * 1024); // 100kB
+		processRunner = ProcessRunner.usingRingBuffersOfCapacity(100 * 1024); // 100kB
 	}
 
 	void install() {

@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
-public class LimitedOverwritingByteArrayOutputStream extends ByteArrayOutputStream {
+class RingBufferByteArrayOutputStream extends ByteArrayOutputStream {
 
 	private final int limit;
 
@@ -28,20 +28,20 @@ public class LimitedOverwritingByteArrayOutputStream extends ByteArrayOutputStre
 
 	private boolean isOverLimit = false;
 
-	public LimitedOverwritingByteArrayOutputStream(int limit) {
+	public RingBufferByteArrayOutputStream(int limit) {
 		this(limit, 32);
 	}
 
-	public LimitedOverwritingByteArrayOutputStream(int limit, int initialCapacity) {
+	public RingBufferByteArrayOutputStream(int limit, int initialCapacity) {
 		super(initialCapacity);
 		if (limit < initialCapacity) {
-			throw new IllegalArgumentException("Limit must be greater than initial capacity");
+			throw new IllegalArgumentException("Limit must be greater than initial capacity. Limit: " + limit + ", initial capacity: " + initialCapacity);
 		}
-		if (limit < 0) {
-			throw new IllegalArgumentException("Limit must be greater than 0");
+		if (limit < 2) {
+			throw new IllegalArgumentException("Limit must be greater than or equal to 2 but is " + limit);
 		}
 		if (limit % 2 != 0) {
-			throw new IllegalArgumentException("Limit must be even"); // to fit 16 bit unicode chars
+			throw new IllegalArgumentException("Limit must be an even number but is " + limit); // to fit 16 bit unicode chars
 		}
 		this.limit = limit;
 	}

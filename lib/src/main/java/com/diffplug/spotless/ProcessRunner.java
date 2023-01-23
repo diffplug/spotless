@@ -59,9 +59,13 @@ public class ProcessRunner implements AutoCloseable {
 		this(-1);
 	}
 
-	public ProcessRunner(int limitedBuffers) {
-		this.bufStdOut = limitedBuffers >= 0 ? new LimitedOverwritingByteArrayOutputStream(limitedBuffers) : new ByteArrayOutputStream();
-		this.bufStdErr = limitedBuffers >= 0 ? new LimitedOverwritingByteArrayOutputStream(limitedBuffers) : new ByteArrayOutputStream();
+	public static ProcessRunner usingRingBuffersOfCapacity(int limit) {
+		return new ProcessRunner(limit);
+	}
+
+	private ProcessRunner(int limitedBuffers) {
+		this.bufStdOut = limitedBuffers >= 0 ? new RingBufferByteArrayOutputStream(limitedBuffers) : new ByteArrayOutputStream();
+		this.bufStdErr = limitedBuffers >= 0 ? new RingBufferByteArrayOutputStream(limitedBuffers) : new ByteArrayOutputStream();
 	}
 
 	/** Executes the given shell command (using {@code cmd} on windows and {@code sh} on unix). */

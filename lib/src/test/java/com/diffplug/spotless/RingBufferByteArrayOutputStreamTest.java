@@ -25,14 +25,14 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-class LimitedOverwritingByteArrayOutputStreamTest {
+class RingBufferByteArrayOutputStreamTest {
 
 	private final byte[] bytes = new byte[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
 	@ParameterizedTest(name = "{index} writeStrategy: {0}")
 	@MethodSource("writeStrategies")
 	void toStringBehavesNormallyWithinLimit(String name, ByteWriteStrategy writeStrategy) {
-		LimitedOverwritingByteArrayOutputStream stream = new LimitedOverwritingByteArrayOutputStream(12, 1);
+		RingBufferByteArrayOutputStream stream = new RingBufferByteArrayOutputStream(12, 1);
 		writeStrategy.write(stream, bytes);
 		Assertions.assertThat(stream.toString()).isEqualTo("0123456789");
 	}
@@ -40,7 +40,7 @@ class LimitedOverwritingByteArrayOutputStreamTest {
 	@ParameterizedTest(name = "{index} writeStrategy: {0}")
 	@MethodSource("writeStrategies")
 	void toStringBehavesOverwritingOverLimit(String name, ByteWriteStrategy writeStrategy) {
-		LimitedOverwritingByteArrayOutputStream stream = new LimitedOverwritingByteArrayOutputStream(4, 1);
+		RingBufferByteArrayOutputStream stream = new RingBufferByteArrayOutputStream(4, 1);
 		writeStrategy.write(stream, bytes);
 		Assertions.assertThat(stream.toString()).hasSize(4);
 		Assertions.assertThat(stream.toString()).isEqualTo("6789");
@@ -49,7 +49,7 @@ class LimitedOverwritingByteArrayOutputStreamTest {
 	@ParameterizedTest(name = "{index} writeStrategy: {0}")
 	@MethodSource("writeStrategies")
 	void toStringBehavesNormallyAtExactlyLimit(String name, ByteWriteStrategy writeStrategy) {
-		LimitedOverwritingByteArrayOutputStream stream = new LimitedOverwritingByteArrayOutputStream(bytes.length, 1);
+		RingBufferByteArrayOutputStream stream = new RingBufferByteArrayOutputStream(bytes.length, 1);
 		writeStrategy.write(stream, bytes);
 		Assertions.assertThat(stream.toString()).isEqualTo("0123456789");
 	}
@@ -57,7 +57,7 @@ class LimitedOverwritingByteArrayOutputStreamTest {
 	@ParameterizedTest(name = "{index} writeStrategy: {0}")
 	@MethodSource("writeStrategies")
 	void toByteArrayBehavesNormallyWithinLimit(String name, ByteWriteStrategy writeStrategy) {
-		LimitedOverwritingByteArrayOutputStream stream = new LimitedOverwritingByteArrayOutputStream(12, 1);
+		RingBufferByteArrayOutputStream stream = new RingBufferByteArrayOutputStream(12, 1);
 		writeStrategy.write(stream, bytes);
 		Assertions.assertThat(stream.toByteArray()).isEqualTo(bytes);
 	}
@@ -65,7 +65,7 @@ class LimitedOverwritingByteArrayOutputStreamTest {
 	@ParameterizedTest(name = "{index} writeStrategy: {0}")
 	@MethodSource("writeStrategies")
 	void toByteArrayBehavesOverwritingOverLimit(String name, ByteWriteStrategy writeStrategy) {
-		LimitedOverwritingByteArrayOutputStream stream = new LimitedOverwritingByteArrayOutputStream(4, 1);
+		RingBufferByteArrayOutputStream stream = new RingBufferByteArrayOutputStream(4, 1);
 		writeStrategy.write(stream, bytes);
 		Assertions.assertThat(stream.toByteArray()).hasSize(4);
 		Assertions.assertThat(stream.toByteArray()).isEqualTo(new byte[]{'6', '7', '8', '9'});
@@ -74,7 +74,7 @@ class LimitedOverwritingByteArrayOutputStreamTest {
 	@ParameterizedTest(name = "{index} writeStrategy: {0}")
 	@MethodSource("writeStrategies")
 	void toByteArrayBehavesOverwritingAtExactlyLimit(String name, ByteWriteStrategy writeStrategy) {
-		LimitedOverwritingByteArrayOutputStream stream = new LimitedOverwritingByteArrayOutputStream(bytes.length, 1);
+		RingBufferByteArrayOutputStream stream = new RingBufferByteArrayOutputStream(bytes.length, 1);
 		writeStrategy.write(stream, bytes);
 		Assertions.assertThat(stream.toByteArray()).isEqualTo(bytes);
 	}
@@ -82,7 +82,7 @@ class LimitedOverwritingByteArrayOutputStreamTest {
 	@ParameterizedTest(name = "{index} writeStrategy: {0}")
 	@MethodSource("writeStrategies")
 	void writeToBehavesNormallyWithinLimit(String name, ByteWriteStrategy writeStrategy) throws IOException {
-		LimitedOverwritingByteArrayOutputStream stream = new LimitedOverwritingByteArrayOutputStream(12, 1);
+		RingBufferByteArrayOutputStream stream = new RingBufferByteArrayOutputStream(12, 1);
 		writeStrategy.write(stream, bytes);
 		ByteArrayOutputStream target = new ByteArrayOutputStream();
 		stream.writeTo(target);
@@ -92,7 +92,7 @@ class LimitedOverwritingByteArrayOutputStreamTest {
 	@ParameterizedTest(name = "{index} writeStrategy: {0}")
 	@MethodSource("writeStrategies")
 	void writeToBehavesOverwritingOverLimit(String name, ByteWriteStrategy writeStrategy) throws IOException {
-		LimitedOverwritingByteArrayOutputStream stream = new LimitedOverwritingByteArrayOutputStream(4, 1);
+		RingBufferByteArrayOutputStream stream = new RingBufferByteArrayOutputStream(4, 1);
 		writeStrategy.write(stream, bytes);
 		ByteArrayOutputStream target = new ByteArrayOutputStream();
 		stream.writeTo(target);
@@ -103,7 +103,7 @@ class LimitedOverwritingByteArrayOutputStreamTest {
 	@ParameterizedTest(name = "{index} writeStrategy: {0}")
 	@MethodSource("writeStrategies")
 	void writeToBehavesNormallyAtExactlyLimit(String name, ByteWriteStrategy writeStrategy) throws IOException {
-		LimitedOverwritingByteArrayOutputStream stream = new LimitedOverwritingByteArrayOutputStream(bytes.length, 1);
+		RingBufferByteArrayOutputStream stream = new RingBufferByteArrayOutputStream(bytes.length, 1);
 		writeStrategy.write(stream, bytes);
 		ByteArrayOutputStream target = new ByteArrayOutputStream();
 		stream.writeTo(target);
@@ -113,7 +113,7 @@ class LimitedOverwritingByteArrayOutputStreamTest {
 	@Test
 	void writeToBehavesCorrectlyWhenOverLimitMultipleCalls() {
 		// this test explicitly captures a border case where the buffer is not empty but can exactly fit what we are writing
-		LimitedOverwritingByteArrayOutputStream stream = new LimitedOverwritingByteArrayOutputStream(2, 1);
+		RingBufferByteArrayOutputStream stream = new RingBufferByteArrayOutputStream(2, 1);
 		stream.write('0');
 		stream.write(new byte[]{'1', '2'}, 0, 2);
 		Assertions.assertThat(stream.toString()).hasSize(2);
@@ -173,7 +173,7 @@ class LimitedOverwritingByteArrayOutputStreamTest {
 
 	@FunctionalInterface
 	private interface ByteWriteStrategy {
-		void write(LimitedOverwritingByteArrayOutputStream stream, byte[] bytes);
+		void write(RingBufferByteArrayOutputStream stream, byte[] bytes);
 	}
 
 }
