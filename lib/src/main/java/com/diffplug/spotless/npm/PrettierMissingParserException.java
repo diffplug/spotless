@@ -92,7 +92,8 @@ class PrettierMissingParserException extends RuntimeException {
 		return "A good candidate for file '" + file + "' is '" + pluginName + "\n"
 				+ "See if you can find it on <https://prettier.io/docs/en/plugins.html#official-plugins>\n"
 				+ "or search on npmjs.com for a plugin matching that name: "
-				+ String.format("<https://www.npmjs.com/search?ranking=popularity&q=%s>\n\n", pluginName)
+				+ String.format("<https://www.npmjs.com/search?ranking=popularity&q=%s>", pluginName)
+				+ "\n\n"
 				+ "For instructions on how to include plugins for prettier in spotless see our documentation:\n"
 				+ "- for gradle <https://github.com/diffplug/spotless/tree/main/plugin-gradle#prettier-plugins>\n"
 				+ "- for maven <https://github.com/diffplug/spotless/tree/main/plugin-maven#prettier-plugins>";

@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 class RingBufferByteArrayOutputStream extends ByteArrayOutputStream {
 
 	private final int limit;
@@ -113,6 +115,7 @@ class RingBufferByteArrayOutputStream extends ByteArrayOutputStream {
 		return result;
 	}
 
+	@SuppressFBWarnings(value = "DM_DEFAULT_ENCODING", justification = "We want to use the default encoding here since this is contract on ByteArrayOutputStream")
 	@Override
 	public synchronized String toString() {
 		if (!isOverLimit) {
