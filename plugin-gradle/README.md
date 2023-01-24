@@ -907,6 +907,13 @@ spotless {
 If you provide both `npmExecutable` and `nodeExecutable`, spotless will use these paths. If you specify only one of the
 two, spotless will assume the other one is in the same directory.
 
+If you use the `gradle-node-plugin` ([github](https://github.com/node-gradle/gradle-node-plugin)), it is possible to use the
+node- and npm-binaries dynamically installed by this plugin. See
+[this](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/test/resources/com/diffplug/gradle/spotless/NpmTestsWithoutNpmInstallationTest_gradle_node_plugin_example_1.gradle)
+or [this](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/test/resources/com/diffplug/gradle/spotless/NpmTestsWithoutNpmInstallationTest_gradle_node_plugin_example_2.gradle) example.
+
+```gradle
+
 ### `.npmrc` detection
 
 Spotless picks up npm configuration stored in a `.npmrc` file either in the project directory or in your user home.
