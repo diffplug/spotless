@@ -100,7 +100,7 @@ sourceSets {
  * All test classes need to run separately since they all instatiate different setups of the
  * Eclipse framework.
  */
-test {
+tasks.withType(Test).configureEach {
 	//Skip default tests, which would run every test case.
 	exclude '**'
 }
