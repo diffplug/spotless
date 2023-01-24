@@ -12,6 +12,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * `ProcessRunner` has added some convenience methods so it can be used for maven testing. ([#1496](https://github.com/diffplug/spotless/pull/1496))
+* `ProcessRunner` allows to limit captured output to a certain number of bytes. ([#1511](https://github.com/diffplug/spotless/pull/1511))
+* `ProcessRunner` is now capable of handling long-running tasks where waiting for exit is delegated to the caller. ([#1511](https://github.com/diffplug/spotless/pull/1511))
 * Allow to specify node executable for node-based formatters using `nodeExecutable` parameter ([#1500](https://github.com/diffplug/spotless/pull/1500))
 ### Fixed
 * The default list of type annotations used by `formatAnnotations` has had 8 more annotations from the Checker Framework added [#1494](https://github.com/diffplug/spotless/pull/1494)

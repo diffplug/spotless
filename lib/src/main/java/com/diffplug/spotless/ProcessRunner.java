@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -29,9 +31,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
-import edu.umd.cs.findbugs.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -47,10 +52,21 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 public class ProcessRunner implements AutoCloseable {
 	private final ExecutorService threadStdOut = Executors.newSingleThreadExecutor();
 	private final ExecutorService threadStdErr = Executors.newSingleThreadExecutor();
-	private final ByteArrayOutputStream bufStdOut = new ByteArrayOutputStream();
-	private final ByteArrayOutputStream bufStdErr = new ByteArrayOutputStream();
+	private final ByteArrayOutputStream bufStdOut;
+	private final ByteArrayOutputStream bufStdErr;
 
-	public ProcessRunner() {}
+	public ProcessRunner() {
+		this(-1);
+	}
+
+	public static ProcessRunner usingRingBuffersOfCapacity(int limit) {
+		return new ProcessRunner(limit);
+	}
+
+	private ProcessRunner(int limitedBuffers) {
+		this.bufStdOut = limitedBuffers >= 0 ? new RingBufferByteArrayOutputStream(limitedBuffers) : new ByteArrayOutputStream();
+		this.bufStdErr = limitedBuffers >= 0 ? new RingBufferByteArrayOutputStream(limitedBuffers) : new ByteArrayOutputStream();
+	}
 
 	/** Executes the given shell command (using {@code cmd} on windows and {@code sh} on unix). */
 	public Result shell(String cmd) throws IOException, InterruptedException {
@@ -95,6 +111,36 @@ public class ProcessRunner implements AutoCloseable {
 
 	/** Creates a process with the given arguments, the given byte array is written to stdin immediately. */
 	public Result exec(@Nullable File cwd, @Nullable Map<String, String> environment, @Nullable byte[] stdin, List<String> args) throws IOException, InterruptedException {
+		LongRunningProcess process = start(cwd, environment, stdin, args);
+		try {
+			// wait for the process to finish
+			process.waitFor();
+			// collect the output
+			return process.result();
+		} catch (ExecutionException e) {
+			throw ThrowingEx.asRuntime(e);
+		}
+	}
+
+	/**
+	 * Creates a process with the given arguments, the given byte array is written to stdin immediately.
+	 * <br>
+	 * Delegates to {@link #start(File, Map, byte[], boolean, List)} with {@code false} for {@code redirectErrorStream}.
+	 */
+	public LongRunningProcess start(@Nullable File cwd, @Nullable Map<String, String> environment, @Nullable byte[] stdin, List<String> args) throws IOException {
+		return start(cwd, environment, stdin, false, args);
+	}
+
+	/**
+	 * Creates a process with the given arguments, the given byte array is written to stdin immediately.
+	 * <br>
+	 * The process is not waited for, so the caller is responsible for calling {@link LongRunningProcess#waitFor()} (if needed).
+	 * <br>
+	 * To dispose this {@code ProcessRunner} instance, either call {@link #close()} or {@link LongRunningProcess#close()}. After
+	 * {@link #close()} or {@link LongRunningProcess#close()} has been called, this {@code ProcessRunner} instance must not be used anymore.
+	 */
+	public LongRunningProcess start(@Nullable File cwd, @Nullable Map<String, String> environment, @Nullable byte[] stdin, boolean redirectErrorStream, List<String> args) throws IOException {
+		checkState();
 		ProcessBuilder builder = new ProcessBuilder(args);
 		if (cwd != null) {
 			builder.directory(cwd);
@@ -105,20 +151,20 @@ public class ProcessRunner implements AutoCloseable {
 		if (stdin == null) {
 			stdin = new byte[0];
 		}
+		if (redirectErrorStream) {
+			builder.redirectErrorStream(true);
+		}
+
 		Process process = builder.start();
 		Future<byte[]> outputFut = threadStdOut.submit(() -> drainToBytes(process.getInputStream(), bufStdOut));
-		Future<byte[]> errorFut = threadStdErr.submit(() -> drainToBytes(process.getErrorStream(), bufStdErr));
+		Future<byte[]> errorFut = null;
+		if (!redirectErrorStream) {
+			errorFut = threadStdErr.submit(() -> drainToBytes(process.getErrorStream(), bufStdErr));
+		}
 		// write stdin
 		process.getOutputStream().write(stdin);
 		process.getOutputStream().close();
-		// wait for the process to finish
-		int exitCode = process.waitFor();
-		try {
-			// collect the output
-			return new Result(args, exitCode, outputFut.get(), errorFut.get());
-		} catch (ExecutionException e) {
-			throw ThrowingEx.asRuntime(e);
-		}
+		return new LongRunningProcess(process, args, outputFut, errorFut);
 	}
 
 	private static void drain(InputStream input, OutputStream output) throws IOException {
@@ -141,17 +187,24 @@ public class ProcessRunner implements AutoCloseable {
 		threadStdErr.shutdown();
 	}
 
+	/** Checks if this {@code ProcessRunner} instance is still usable. */
+	private void checkState() {
+		if (threadStdOut.isShutdown() || threadStdErr.isShutdown()) {
+			throw new IllegalStateException("ProcessRunner has been closed and must not be used anymore.");
+		}
+	}
+
 	@SuppressFBWarnings({"EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 	public static class Result {
 		private final List<String> args;
 		private final int exitCode;
 		private final byte[] stdOut, stdErr;
 
-		public Result(List<String> args, int exitCode, byte[] stdOut, byte[] stdErr) {
+		public Result(@Nonnull List<String> args, int exitCode, @Nonnull byte[] stdOut, @Nullable byte[] stdErr) {
 			this.args = args;
 			this.exitCode = exitCode;
 			this.stdOut = stdOut;
-			this.stdErr = stdErr;
+			this.stdErr = (stdErr == null ? new byte[0] : stdErr);
 		}
 
 		public List<String> args() {
@@ -222,8 +275,86 @@ public class ProcessRunner implements AutoCloseable {
 				}
 			};
 			perStream.accept("   stdout", stdOut);
-			perStream.accept("   stderr", stdErr);
+			if (stdErr.length > 0) {
+				perStream.accept("   stderr", stdErr);
+			}
 			return builder.toString();
+		}
+	}
+
+	/**
+	 * A long-running process that can be waited for.
+	 */
+	public class LongRunningProcess extends Process implements AutoCloseable {
+
+		private final Process delegate;
+		private final List<String> args;
+		private final Future<byte[]> outputFut;
+		private final Future<byte[]> errorFut;
+
+		public LongRunningProcess(@Nonnull Process delegate, @Nonnull List<String> args, @Nonnull Future<byte[]> outputFut, @Nullable Future<byte[]> errorFut) {
+			this.delegate = requireNonNull(delegate);
+			this.args = args;
+			this.outputFut = outputFut;
+			this.errorFut = errorFut;
+		}
+
+		@Override
+		public OutputStream getOutputStream() {
+			return delegate.getOutputStream();
+		}
+
+		@Override
+		public InputStream getInputStream() {
+			return delegate.getInputStream();
+		}
+
+		@Override
+		public InputStream getErrorStream() {
+			return delegate.getErrorStream();
+		}
+
+		@Override
+		public int waitFor() throws InterruptedException {
+			return delegate.waitFor();
+		}
+
+		@Override
+		public boolean waitFor(long timeout, TimeUnit unit) throws InterruptedException {
+			return delegate.waitFor(timeout, unit);
+		}
+
+		@Override
+		public int exitValue() {
+			return delegate.exitValue();
+		}
+
+		@Override
+		public void destroy() {
+			delegate.destroy();
+		}
+
+		@Override
+		public Process destroyForcibly() {
+			return delegate.destroyForcibly();
+		}
+
+		@Override
+		public boolean isAlive() {
+			return delegate.isAlive();
+		}
+
+		public Result result() throws ExecutionException, InterruptedException {
+			int exitCode = waitFor();
+			return new Result(args, exitCode, this.outputFut.get(), (this.errorFut != null ? this.errorFut.get() : null));
+		}
+
+		@Override
+		public void close() {
+			if (isAlive()) {
+				destroy();
+			}
+			ProcessRunner.this.close();
 		}
 	}
 }
