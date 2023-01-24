@@ -18,6 +18,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Fixed
 * The default list of type annotations used by `formatAnnotations` has had 8 more annotations from the Checker Framework added [#1494](https://github.com/diffplug/spotless/pull/1494)
 ### Changes
+* **POTENTIALLY BREAKING** Bump minimum JRE from 8 to 11, next release likely to bump bytecode to Java 11 ([#1514](https://github.com/diffplug/spotless/pull/1514) part 1 of [#1337](https://github.com/diffplug/spotless/issues/1337))
 * Rename `YamlJacksonStep` into `JacksonYamlStep` while normalizing Jackson usage ([#1492](https://github.com/diffplug/spotless/pull/1492))
 
 ## [2.32.0] - 2023-01-13
