@@ -23,7 +23,6 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.json.JacksonJsonConfig;
 import com.diffplug.spotless.json.JacksonJsonStep;
 import com.diffplug.spotless.json.JsonSimpleStep;
-import com.diffplug.spotless.json.gson.GsonConfig;
 import com.diffplug.spotless.json.gson.GsonStep;
 
 public class JsonExtension extends FormatExtension {
@@ -48,8 +47,8 @@ public class JsonExtension extends FormatExtension {
 		return new SimpleConfig(DEFAULT_INDENTATION);
 	}
 
-	public GsonGradleConfig gson() {
-		return new GsonGradleConfig();
+	public GsonConfig gson() {
+		return new GsonConfig();
 	}
 
 	public JacksonJsonGradleConfig jackson() {
@@ -74,13 +73,13 @@ public class JsonExtension extends FormatExtension {
 		}
 	}
 
-	public class GsonGradleConfig {
+	public class GsonConfig {
 		private int indentSpaces;
 		private boolean sortByKeys;
 		private boolean escapeHtml;
 		private String version;
 
-		public GsonGradleConfig() {
+		public GsonConfig() {
 			this.indentSpaces = DEFAULT_INDENTATION;
 			this.sortByKeys = false;
 			this.escapeHtml = false;
@@ -88,32 +87,32 @@ public class JsonExtension extends FormatExtension {
 			addStep(createStep());
 		}
 
-		public GsonGradleConfig indentWithSpaces(int indentSpaces) {
+		public GsonConfig indentWithSpaces(int indentSpaces) {
 			this.indentSpaces = indentSpaces;
 			replaceStep(createStep());
 			return this;
 		}
 
-		public GsonGradleConfig sortByKeys() {
+		public GsonConfig sortByKeys() {
 			this.sortByKeys = true;
 			replaceStep(createStep());
 			return this;
 		}
 
-		public GsonGradleConfig escapeHtml() {
+		public GsonConfig escapeHtml() {
 			this.escapeHtml = true;
 			replaceStep(createStep());
 			return this;
 		}
 
-		public GsonGradleConfig version(String version) {
+		public GsonConfig version(String version) {
 			this.version = version;
 			replaceStep(createStep());
 			return this;
 		}
 
 		private FormatterStep createStep() {
-			return GsonStep.create(new GsonConfig(sortByKeys, escapeHtml, indentSpaces, version), provisioner());
+			return GsonStep.create(new com.diffplug.spotless.json.gson.GsonConfig(sortByKeys, escapeHtml, indentSpaces, version), provisioner());
 		}
 	}
 

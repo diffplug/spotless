@@ -30,6 +30,11 @@ public class GsonStep {
 	private static final String MAVEN_COORDINATES = "com.google.code.gson:gson";
 	private static final String INCOMPATIBLE_ERROR_MESSAGE = "There was a problem interacting with Gson; maybe you set an incompatible version?";
 
+	@Deprecated
+	public static FormatterStep create(int indentSpaces, boolean sortByKeys, boolean escapeHtml, String version, Provisioner provisioner) {
+		return create(new GsonConfig(sortByKeys, escapeHtml, indentSpaces, version), provisioner);
+	}
+
 	public static FormatterStep create(GsonConfig gsonConfig, Provisioner provisioner) {
 		Objects.requireNonNull(provisioner, "provisioner cannot be null");
 		return FormatterStep.createLazy("gson", () -> new State(gsonConfig, provisioner), State::toFormatter);
