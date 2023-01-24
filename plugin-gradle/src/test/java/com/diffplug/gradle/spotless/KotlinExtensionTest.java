@@ -15,12 +15,9 @@
  */
 package com.diffplug.gradle.spotless;
 
-import static org.junit.jupiter.api.condition.JRE.JAVA_11;
-
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
 
 class KotlinExtensionTest extends GradleIntegrationHarness {
 	private static final String HEADER = "// License Header";
@@ -63,7 +60,6 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	@EnabledForJreRange(min = JAVA_11) // ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
 	void integrationKtfmt() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
@@ -82,7 +78,6 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	@EnabledForJreRange(min = JAVA_11) // ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
 	void integrationKtfmt_dropboxStyle_0_18() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
@@ -101,7 +96,6 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	@EnabledForJreRange(min = JAVA_11) // ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
 	void integrationKtfmt_dropboxStyle_0_19() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
@@ -197,7 +191,6 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	@EnabledForJreRange(min = JAVA_11) // ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
 	void testWithHeaderKtfmt() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
@@ -236,7 +229,6 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	@EnabledForJreRange(min = JAVA_11) // ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
 	void testWithCustomHeaderSeparatorKtfmt() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
@@ -282,7 +274,6 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	@EnabledForJreRange(min = JAVA_11) // ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
 	void testWithNonStandardYearSeparatorKtfmt() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
@@ -309,7 +300,6 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	@EnabledForJreRange(min = JAVA_11) // ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
 	void testWithCustomMaxWidthDefaultStyleKtfmt() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
@@ -331,7 +321,6 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	@EnabledForJreRange(min = JAVA_11) // ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
 	void testWithCustomMaxWidthDefaultStyleKtfmtGradleKts() throws IOException {
 		setFile("build.gradle.kts").toLines(
 				"plugins {",
@@ -353,7 +342,6 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	@EnabledForJreRange(min = JAVA_11) // ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
 	void testWithCustomMaxWidthDropboxStyleKtfmt() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
@@ -375,7 +363,6 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	@EnabledForJreRange(min = JAVA_11) // ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
 	void testWithCustomMaxWidthDropboxStyleKtfmtGradleKts() throws IOException {
 		setFile("build.gradle.kts").toLines(
 				"plugins {",
