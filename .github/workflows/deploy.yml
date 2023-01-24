@@ -42,9 +42,10 @@ jobs:
         with:
           java-version: 11
           distribution: 'temurin'
-          cache: 'gradle'
       - name: gradle caching
         uses: gradle/gradle-build-action@v2
+        with:
+          gradle-home-cache-cleanup: true
       - name: publish all
         if: "${{ github.event.inputs.to_publish == 'all' }}"
         run: |
