@@ -42,6 +42,11 @@ versionCompatibility {
 	}
 }
 
+tasks.named("check").configure {
+	dependsOn(tasks.named("testCompatibilityAdapters"))
+	dependsOn(tasks.named("testCompatibility"))
+}
+
 dependencies {
 	compileOnly 'org.slf4j:slf4j-api:2.0.0'
 	// zero runtime reqs is a hard requirements for spotless-lib
