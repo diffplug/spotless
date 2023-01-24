@@ -81,7 +81,9 @@ public class EslintFormatterStep {
 	private static class State extends NpmFormatterStepStateBase implements Serializable {
 
 		private static final long serialVersionUID = -539537027004745812L;
-		private final EslintConfig eslintConfig;
+		private final EslintConfig origEslintConfig;
+
+		private transient EslintConfig eslintConfigInUse;
 
 		State(String stepName, Map<String, String> devDependencies, File projectDir, File buildDir, NpmPathResolver npmPathResolver, EslintConfig eslintConfig) throws IOException {
 			super(stepName,
@@ -97,21 +99,23 @@ public class EslintFormatterStep {
 					new NpmFormatterStepLocations(
 							projectDir,
 							buildDir,
-							npmPathResolver.resolveNpmExecutable(),
-							npmPathResolver.resolveNodeExecutable()));
-			this.eslintConfig = localCopyFiles(requireNonNull(eslintConfig));
+							npmPathResolver::resolveNpmExecutable,
+							npmPathResolver::resolveNodeExecutable));
+			this.origEslintConfig = requireNonNull(eslintConfig.verify());
+			this.eslintConfigInUse = eslintConfig;
 		}
 
-		private EslintConfig localCopyFiles(EslintConfig orig) {
-			if (orig.getEslintConfigPath() == null) {
-				return orig.verify();
+		@Override
+		protected void prepareNodeServerLayout() throws IOException {
+			super.prepareNodeServerLayout();
+			if (origEslintConfig.getEslintConfigPath() != null) {
+				// If any config files are provided, we need to make sure they are at the same location as the node modules
+				// as eslint will try to resolve plugin/config names relatively to the config file location and some
+				// eslint configs contain relative paths to additional config files (such as tsconfig.json e.g.)
+				FormattedPrinter.SYSOUT.print("Copying config file <%s> to <%s> and using the copy", origEslintConfig.getEslintConfigPath(), nodeServerLayout.nodeModulesDir());
+				File configFileCopy = NpmResourceHelper.copyFileToDir(origEslintConfig.getEslintConfigPath(), nodeServerLayout.nodeModulesDir());
+				this.eslintConfigInUse = this.origEslintConfig.withEslintConfigPath(configFileCopy).verify();
 			}
-			// If any config files are provided, we need to make sure they are at the same location as the node modules
-			// as eslint will try to resolve plugin/config names relatively to the config file location and some
-			// eslint configs contain relative paths to additional config files (such as tsconfig.json e.g.)
-			FormattedPrinter.SYSOUT.print("Copying config file <%s> to <%s> and using the copy", orig.getEslintConfigPath(), nodeModulesDir);
-			File configFileCopy = NpmResourceHelper.copyFileToDir(orig.getEslintConfigPath(), nodeModulesDir);
-			return orig.withEslintConfigPath(configFileCopy).verify();
 		}
 
 		@Override
@@ -121,7 +125,7 @@ public class EslintFormatterStep {
 				FormattedPrinter.SYSOUT.print("creating formatter function (starting server)");
 				ServerProcessInfo eslintRestServer = npmRunServer();
 				EslintRestService restService = new EslintRestService(eslintRestServer.getBaseUrl());
-				return Closeable.ofDangerous(() -> endServer(restService, eslintRestServer), new EslintFilePathPassingFormatterFunc(locations.projectDir(), nodeModulesDir, eslintConfig, restService));
+				return Closeable.ofDangerous(() -> endServer(restService, eslintRestServer), new EslintFilePathPassingFormatterFunc(locations.projectDir(), nodeServerLayout.nodeModulesDir(), eslintConfigInUse, restService));
 			} catch (IOException e) {
 				throw ThrowingEx.asRuntime(e);
 			}

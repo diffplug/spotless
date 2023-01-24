@@ -17,7 +17,6 @@ package com.diffplug.gradle.spotless;
 
 import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.BuildResult;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.Predicates;
@@ -74,8 +73,6 @@ class NpmTestsWithoutNpmInstallationTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	@Disabled("This test is disabled because we currently don't support using npm/node installed by the" +
-			"node-gradle-plugin as the installation takes place in the *execution* phase, but spotless needs it in the *configuration* phase.")
 	void useNodeAndNpmFromNodeGradlePluginInOneSweep() throws Exception {
 		try {
 			setFile("build.gradle").toLines(
