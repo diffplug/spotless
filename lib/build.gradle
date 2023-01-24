@@ -15,7 +15,8 @@ def NEEDS_GLUE = [
 	'flexmark',
 	'diktat',
 	'scalafmt',
-	'jackson'
+	'jackson',
+	'gson'
 ]
 for (glue in NEEDS_GLUE) {
 	sourceSets.register(glue) {
@@ -108,6 +109,8 @@ dependencies {
 
 	// used for markdown formatting
 	flexmarkCompileOnly 'com.vladsch.flexmark:flexmark-all:0.62.2'
+
+	gsonCompileOnly 'com.google.code.gson:gson:2.10.1'
 }
 
 // we'll hold the core lib to a high standard

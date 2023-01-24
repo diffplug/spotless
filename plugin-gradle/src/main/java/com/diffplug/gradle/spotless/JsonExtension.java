@@ -27,7 +27,7 @@ import com.diffplug.spotless.json.gson.GsonStep;
 
 public class JsonExtension extends FormatExtension {
 	private static final int DEFAULT_INDENTATION = 4;
-	private static final String DEFAULT_GSON_VERSION = "2.8.9";
+	private static final String DEFAULT_GSON_VERSION = "2.10.1";
 	static final String NAME = "json";
 
 	@Inject
@@ -112,7 +112,7 @@ public class JsonExtension extends FormatExtension {
 		}
 
 		private FormatterStep createStep() {
-			return GsonStep.create(indentSpaces, sortByKeys, escapeHtml, version, provisioner());
+			return GsonStep.create(new com.diffplug.spotless.json.gson.GsonConfig(sortByKeys, escapeHtml, indentSpaces, version), provisioner());
 		}
 	}
 
