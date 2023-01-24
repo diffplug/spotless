@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,12 +34,13 @@ public class KtLintCompat0Dot48Dot0AdapterTest {
 	public void testDefaults(@TempDir Path path) throws IOException {
 		KtLintCompat0Dot48Dot0Adapter ktLintCompat0Dot48Dot0Adapter = new KtLintCompat0Dot48Dot0Adapter();
 		String text = loadAndWriteText(path, "empty_class_body.kt");
+		final Path filePath = Paths.get(path.toString(), "empty_class_body.kt");
 
 		Map<String, String> userData = new HashMap<>();
 
 		Map<String, Object> editorConfigOverrideMap = new HashMap<>();
 
-		String formatted = ktLintCompat0Dot48Dot0Adapter.format(text, path, false, false, null, userData, editorConfigOverrideMap);
+		String formatted = ktLintCompat0Dot48Dot0Adapter.format(text, filePath, false, false, null, userData, editorConfigOverrideMap);
 		assertEquals("class empty_class_body\n", formatted);
 	}
 
@@ -46,6 +48,7 @@ public class KtLintCompat0Dot48Dot0AdapterTest {
 	public void testEditorConfigCanDisable(@TempDir Path path) throws IOException {
 		KtLintCompat0Dot48Dot0Adapter ktLintCompat0Dot48Dot0Adapter = new KtLintCompat0Dot48Dot0Adapter();
 		String text = loadAndWriteText(path, "fails_no_semicolons.kt");
+		final Path filePath = Paths.get(path.toString(), "fails_no_semicolons.kt");
 
 		Map<String, String> userData = new HashMap<>();
 
@@ -53,7 +56,7 @@ public class KtLintCompat0Dot48Dot0AdapterTest {
 		editorConfigOverrideMap.put("indent_style", "tab");
 		editorConfigOverrideMap.put("ktlint_standard_no-semi", "disabled");
 
-		String formatted = ktLintCompat0Dot48Dot0Adapter.format(text, path, false, false, null, userData, editorConfigOverrideMap);
+		String formatted = ktLintCompat0Dot48Dot0Adapter.format(text, filePath, false, false, null, userData, editorConfigOverrideMap);
 		assertEquals("class fails_no_semicolons {\n\tval i = 0;\n}\n", formatted);
 	}
 

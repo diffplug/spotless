@@ -119,6 +119,23 @@ dependencies {
 spotbugs { reportLevel = 'low' } // low|medium|high (low = sensitive to even minor mistakes)
 
 apply from: rootProject.file('gradle/special-tests.gradle')
+tasks.withType(Test).configureEach {
+	def jdkVersion = JavaVersion.current().majorVersion.toInteger()
+	def args = []
+	if (jdkVersion >= 16) {
+		// https://docs.gradle.org/7.5/userguide/upgrading_version_7.html#removes_implicit_add_opens_for_test_workers
+		args += [
+			"--add-opens=java.base/java.lang=ALL-UNNAMED",
+			"--add-opens=java.base/java.util=ALL-UNNAMED",
+		]
+	}
+	if (jdkVersion >= 18) {
+		// https://openjdk.org/jeps/411
+		args += "-Djava.security.manager=allow"
+	}
+	jvmArgs(args)
+}
+
 jar {
 	for (glue in NEEDS_GLUE) {
 		from sourceSets.getByName(glue).output.classesDirs
