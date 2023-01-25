@@ -81,14 +81,22 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 	}
 
 	protected void assertNodeServerDirReady() throws IOException {
-		if (!this.nodeServerLayout.nodeModulesDir().exists() || !this.nodeServerLayout.packageJsonFile().isFile()) {
+		if (needsPrepareNodeServerLayout()) {
 			// reinstall if missing
 			prepareNodeServerLayout();
 		}
-		if (!new File(this.nodeServerLayout.nodeModulesDir(), "node_modules").isDirectory()) {
+		if (needsPrepareNodeServer()) {
 			// run npm install if node_modules is missing
 			prepareNodeServer();
 		}
+	}
+
+	protected boolean needsPrepareNodeServer() {
+		return this.nodeServerLayout.isNodeModulesPrepared();
+	}
+
+	protected boolean needsPrepareNodeServerLayout() {
+		return !this.nodeServerLayout.isLayoutPrepared();
 	}
 
 	protected ServerProcessInfo npmRunServer() throws ServerStartException, IOException {
