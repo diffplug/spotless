@@ -39,6 +39,8 @@ import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.npm.EslintRestService.FormatOption;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 public class EslintFormatterStep {
 
 	private static final Logger logger = LoggerFactory.getLogger(EslintFormatterStep.class);
@@ -83,6 +85,7 @@ public class EslintFormatterStep {
 		private static final long serialVersionUID = -539537027004745812L;
 		private final EslintConfig origEslintConfig;
 
+		@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 		private transient EslintConfig eslintConfigInUse;
 
 		State(String stepName, Map<String, String> devDependencies, File projectDir, File buildDir, NpmPathResolver npmPathResolver, EslintConfig eslintConfig) throws IOException {
