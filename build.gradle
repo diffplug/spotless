@@ -1,6 +1,26 @@
+plugins {
+	// https://github.com/equodev/equo-ide/blob/main/plugin-gradle/CHANGELOG.md
+	id 'dev.equo.ide'                          version '0.12.1'
+}
+equoIde {
+	branding.title('Spotless').icon(file('_images/spotless_logo.png'))
+
+	// waiting on https://github.com/equodev/equo-ide/pull/65
+	//welcome().openUrlOnStartup('https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md')
+
+	// everything below becomes the default after https://github.com/equodev/equo-ide/pull/66
+	p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
+	install 'org.eclipse.releng.java.languages.categoryIU'
+	install 'org.eclipse.platform.ide.categoryIU'
+
+	p2repo 'https://download.eclipse.org/buildship/updates/e423/releases/3.x/3.1.6.v20220511-1359/'
+	install 'org.eclipse.buildship.feature.group'
+}
+
 repositories {
 	mavenCentral()
 }
+
 apply from: rootProject.file('gradle/java-publish.gradle')
 apply from: rootProject.file('gradle/changelog.gradle')
 allprojects {

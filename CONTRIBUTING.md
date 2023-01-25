@@ -1,6 +1,6 @@
 # Contributing to Spotless
 
-Pull requests are welcome, preferably against `main`.  Feel free to develop spotless any way you like.
+Pull requests are welcome, preferably against `main`.  Feel free to develop spotless any way you like, but if you like Eclipse and Gradle Buildship then [`gradlew equoIde` will install an IDE and set it up for you](https://github.com/equodev/equo-ide).
 
 ## How Spotless works
 
