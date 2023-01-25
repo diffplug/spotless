@@ -864,6 +864,7 @@ For details, see the [npm detection](#npm-detection) and [`.npmrc` detection](#n
 
     <simple />    <!-- has its own section below -->
     <gson />      <!-- has its own section below -->
+    <jackson />   <!-- has its own section below -->
   </json>
 </configuration>
 ```
@@ -898,6 +899,26 @@ all HTML characters are written escaped or none. Set `escapeHtml` if you prefer 
 [javadoc of String](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html#compareTo(java.lang.String))
 for details.
 
+### Jackson
+
+Uses Jackson for formatting.
+
+```xml
+<jackson>
+  <version>2.14.1</version>    <!-- optional: The version of 'com.fasterxml.jackson.core:jackson-databind' to be used -->
+  <features>                   <!-- optional: Customize the set of features (based on com.fasterxml.jackson.databind.SerializationFeature) -->
+    <INDENT_OUTPUT>true</INDENT_OUTPUT>                            <!-- optional: true by default -->
+    <ORDER_MAP_ENTRIES_BY_KEYS>false</ORDER_MAP_ENTRIES_BY_KEYS>   <!-- optional: false by default -->
+    <ANY_OTHER_FEATURE>true|false</ANY_OTHER_FEATURE>              <!-- any SerializationFeature can be toggled on or off -->
+  </features>
+  <jsonFeatures>
+    <QUOTE_FIELD_NAMES>false</QUOTE_FIELD_NAMES>                   <!-- false by default -->
+    <ANY_OTHER_FEATURE>true|false</ANY_OTHER_FEATURE>              <!-- any JsonGenerator.Feature can be toggled on or off -->
+  </jsonFeatures>
+  <spaceBeforeSeparator>false</spaceBeforeSeparator>               <!-- optional: false by default -->
+</jackson>
+```
+
 <a name="applying-prettier-to-javascript--flow--typescript--css--scss--less--jsx--graphql--yaml--etc"></a>
 
 
@@ -924,12 +945,17 @@ Uses Jackson and YAMLFactory to pretty print objects:
 ```xml
 <jackson>
   <version>2.14.1</version>    <!-- optional: The version of 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml' to be used -->
-  <enabledFeatures>            <!-- optional: Customize the set of enabled features -->
-    <enabledFeature>INDENT_OUTPUT<enabledFeature/>
-  </enabledFeatures>
-  <disabledFeatures>           <!-- optional: Customize the set of disabled features -->
-    <disabledFeature>DEFAULT_HAS_NO_DISABLED_FEATURE<disabledFeature/>
-  </disabledFeatures>
+  <features>                   <!-- optional: Customize the set of features (based on com.fasterxml.jackson.databind.SerializationFeature) -->
+    <INDENT_OUTPUT>true</INDENT_OUTPUT>                            <!-- true by default -->
+    <ORDER_MAP_ENTRIES_BY_KEYS>false</ORDER_MAP_ENTRIES_BY_KEYS>   <!-- false by default -->
+    <ANY_OTHER_FEATURE>true|false</ANY_OTHER_FEATURE>              <!-- any SerializationFeature can be toggled on or off -->
+  </features>
+  <yamlFeatures>
+    <WRITE_DOC_START_MARKER>true</WRITE_DOC_START_MARKER>          <!-- false by default -->
+    <MINIMIZE_QUOTES>false</MINIMIZE_QUOTES>                       <!-- false by default -->
+    <ANY_OTHER_FEATURE>true|false</ANY_OTHER_FEATURE>              <!-- any YAMLGenerator.Feature can be toggled on or off -->
+  </yamlFeatures>
+  <spaceBeforeSeparator>false</spaceBeforeSeparator>   <!-- optional: false by default -->
 </jackson>
 ```
 
@@ -1050,17 +1076,23 @@ Since spotless uses the actual npm prettier package behind the scenes, it is pos
 ### npm detection
 
 Prettier is based on NodeJS, so to use it, a working NodeJS installation (especially npm) is required on the host running spotless.
-Spotless will try to auto-discover an npm installation. If that is not working for you, it is possible to directly configure the npm binary to use.
+Spotless will try to auto-discover an npm installation. If that is not working for you, it is possible to directly configure the npm
+and/or node binary to use.
 
 ```xml
 <prettier>
   <npmExecutable>/usr/bin/npm</npmExecutable>
+  <nodeExecutable>/usr/bin/node</nodeExecutable>
 ```
+
+If you provide both `npmExecutable` and `nodeExecutable`, spotless will use these paths. If you specify only one of the
+two, spotless will assume the other one is in the same directory.
 
 ### `.npmrc` detection
 
 Spotless picks up npm configuration stored in a `.npmrc` file either in the project directory or in your user home.
-Alternatively you can supply spotless with a location of the `.npmrc` file to use. (This can be combined with `npmExecutable`, of course.)
+Alternatively you can supply spotless with a location of the `.npmrc` file to use. (This can be combined with
+`npmExecutable` and `nodeExecutable`, of course.)
 
 ```xml
 <prettier>

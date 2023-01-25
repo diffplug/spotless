@@ -18,6 +18,7 @@ package com.diffplug.spotless.maven.npm;
 import java.io.File;
 import java.util.AbstractMap;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
@@ -35,11 +36,19 @@ public abstract class AbstractNpmFormatterStepFactory implements FormatterStepFa
 	private String npmExecutable;
 
 	@Parameter
+	private String nodeExecutable;
+
+	@Parameter
 	private String npmrc;
 
 	protected File npm(FormatterStepConfig stepConfig) {
 		File npm = npmExecutable != null ? stepConfig.getFileLocator().locateFile(npmExecutable) : null;
 		return npm;
+	}
+
+	protected File node(FormatterStepConfig stepConfig) {
+		File node = nodeExecutable != null ? stepConfig.getFileLocator().locateFile(nodeExecutable) : null;
+		return node;
 	}
 
 	protected File npmrc(FormatterStepConfig stepConfig) {
@@ -56,7 +65,7 @@ public abstract class AbstractNpmFormatterStepFactory implements FormatterStepFa
 	}
 
 	protected NpmPathResolver npmPathResolver(FormatterStepConfig stepConfig) {
-		return new NpmPathResolver(npm(stepConfig), npmrc(stepConfig), baseDir(stepConfig));
+		return new NpmPathResolver(npm(stepConfig), node(stepConfig), npmrc(stepConfig), Collections.singletonList(baseDir(stepConfig)));
 	}
 
 	protected boolean moreThanOneNonNull(Object... objects) {

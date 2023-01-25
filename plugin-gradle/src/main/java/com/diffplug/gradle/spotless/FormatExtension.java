@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -525,6 +526,9 @@ public class FormatExtension {
 		protected Object npmFile;
 
 		@Nullable
+		protected Object nodeFile;
+
+		@Nullable
 		protected Object npmrcFile;
 
 		protected Project project;
@@ -543,6 +547,13 @@ public class FormatExtension {
 			return (T) this;
 		}
 
+		@SuppressWarnings("unchecked")
+		public T nodeExecutable(final Object nodeFile) {
+			this.nodeFile = nodeFile;
+			replaceStep();
+			return (T) this;
+		}
+
 		public T npmrc(final Object npmrcFile) {
 			this.npmrcFile = npmrcFile;
 			replaceStep();
@@ -551,6 +562,10 @@ public class FormatExtension {
 
 		File npmFileOrNull() {
 			return fileOrNull(npmFile);
+		}
+
+		File nodeFileOrNull() {
+			return fileOrNull(nodeFile);
 		}
 
 		File npmrcFileOrNull() {
@@ -604,7 +619,7 @@ public class FormatExtension {
 					provisioner(),
 					project.getProjectDir(),
 					project.getBuildDir(),
-					new NpmPathResolver(npmFileOrNull(), npmrcFileOrNull(), project.getProjectDir(), project.getRootDir()),
+					new NpmPathResolver(npmFileOrNull(), nodeFileOrNull(), npmrcFileOrNull(), Arrays.asList(project.getProjectDir(), project.getRootDir())),
 					new com.diffplug.spotless.npm.PrettierConfig(
 							this.prettierConfigFile != null ? project.file(this.prettierConfigFile) : null,
 							this.prettierConfig));

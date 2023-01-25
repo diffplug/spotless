@@ -4,11 +4,14 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
+* Support `jackson()` for YAML files ([#1492](https://github.com/diffplug/spotless/pull/1492))
+* Support `jackson()` for JSON files ([#1492](https://github.com/diffplug/spotless/pull/1492))
+* Allow to specify node executable for node-based formatters using `nodeExecutable` parameter ([#1500](https://github.com/diffplug/spotless/pull/1500))
+* Prettier will now suggest to install plugins if a parser cannot be inferred from the file extension ([#1511](https://github.com/diffplug/spotless/pull/1511))
 ### Fixed
 * The default list of type annotations used by `formatAnnotations` has had 8 more annotations from the Checker Framework added [#1494](https://github.com/diffplug/spotless/pull/1494)
 ### Changes
-#### Removed
-* Removed support for KtLint 0.3x and 0.45.2 ([#1475](https://github.com/diffplug/spotless/pull/1475))
+* **POTENTIALLY BREAKING** Removed support for KtLint 0.3x and 0.45.2 ([#1475](https://github.com/diffplug/spotless/pull/1475))
   * `KtLint` does not maintain a stable API - before this PR, we supported every breaking change in the API since 2019.
   * From now on, we will support no more than 2 breaking changes at a time.
 

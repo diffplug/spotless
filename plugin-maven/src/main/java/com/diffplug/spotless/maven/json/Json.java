@@ -44,4 +44,8 @@ public class Json extends FormatterFactory {
 		addStepFactory(gson);
 	}
 
+	public void addJackson(JacksonJson jackson) {
+		addStepFactory(jackson);
+	}
+
 }

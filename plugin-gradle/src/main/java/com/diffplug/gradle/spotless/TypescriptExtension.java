@@ -17,6 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
@@ -116,7 +117,7 @@ public class TypescriptExtension extends FormatExtension {
 					provisioner(),
 					project.getProjectDir(),
 					project.getBuildDir(),
-					new NpmPathResolver(npmFileOrNull(), npmrcFileOrNull(), project.getProjectDir(), project.getRootDir()),
+					new NpmPathResolver(npmFileOrNull(), nodeFileOrNull(), npmrcFileOrNull(), Arrays.asList(project.getProjectDir(), project.getRootDir())),
 					typedConfigFile(),
 					config);
 		}
@@ -212,7 +213,7 @@ public class TypescriptExtension extends FormatExtension {
 					provisioner(),
 					project.getProjectDir(),
 					project.getBuildDir(),
-					new NpmPathResolver(npmFileOrNull(), npmrcFileOrNull(), project.getProjectDir(), project.getRootDir()),
+					new NpmPathResolver(npmFileOrNull(), nodeFileOrNull(), npmrcFileOrNull(), Arrays.asList(project.getProjectDir(), project.getRootDir())),
 					eslintConfig());
 		}
 

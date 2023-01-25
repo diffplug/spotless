@@ -62,6 +62,7 @@ class SpotlessCheckMojoTest extends MavenIntegrationHarness {
 						"    <file>${basedir}/license.txt</file>",
 						"  </licenseHeader>",
 						"</java>"},
+				null,
 				null);
 
 		testSpotlessCheck(UNFORMATTED_FILE, "verify", true);

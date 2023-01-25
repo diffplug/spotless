@@ -15,7 +15,8 @@ def NEEDS_GLUE = [
 	'flexmark',
 	'diktat',
 	'scalafmt',
-	'jackson'
+	'jackson',
+	'gson'
 ]
 for (glue in NEEDS_GLUE) {
 	sourceSets.register(glue) {
@@ -41,6 +42,11 @@ versionCompatibility {
 	}
 }
 
+tasks.named("check").configure {
+	dependsOn(tasks.named("testCompatibilityAdapters"))
+	dependsOn(tasks.named("testCompatibility"))
+}
+
 dependencies {
 	compileOnly 'org.slf4j:slf4j-api:2.0.0'
 	// zero runtime reqs is a hard requirements for spotless-lib
@@ -56,6 +62,7 @@ dependencies {
 	palantirJavaFormatCompileOnly 'com.palantir.javaformat:palantir-java-format:1.1.0' 	// this version needs to stay compilable against Java 8 for CI Job testNpm
 
 	// used jackson-based formatters
+	jacksonCompileOnly 'com.fasterxml.jackson.core:jackson-databind:2.14.1'
 	jacksonCompileOnly 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.14.1'
 
 	String VER_KTFMT = '0.42'
@@ -91,12 +98,31 @@ dependencies {
 
 	// used for markdown formatting
 	flexmarkCompileOnly 'com.vladsch.flexmark:flexmark-all:0.62.2'
+
+	gsonCompileOnly 'com.google.code.gson:gson:2.10.1'
 }
 
 // we'll hold the core lib to a high standard
 spotbugs { reportLevel = 'low' } // low|medium|high (low = sensitive to even minor mistakes)
 
 apply from: rootProject.file('gradle/special-tests.gradle')
+tasks.withType(Test).configureEach {
+	def jdkVersion = JavaVersion.current().majorVersion.toInteger()
+	def args = []
+	if (jdkVersion >= 16) {
+		// https://docs.gradle.org/7.5/userguide/upgrading_version_7.html#removes_implicit_add_opens_for_test_workers
+		args += [
+			"--add-opens=java.base/java.lang=ALL-UNNAMED",
+			"--add-opens=java.base/java.util=ALL-UNNAMED",
+		]
+	}
+	if (jdkVersion >= 18) {
+		// https://openjdk.org/jeps/411
+		args += "-Djava.security.manager=allow"
+	}
+	jvmArgs(args)
+}
+
 jar {
 	for (glue in NEEDS_GLUE) {
 		from sourceSets.getByName(glue).output.classesDirs
