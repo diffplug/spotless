@@ -1,5 +1,6 @@
 plugins {
 	id 'java-library'
+	id 'dev.equo.p2deps' version '0.12.1'
 }
 ext.artifactId = project.artifactIdLibExtra
 version = rootProject.spotlessChangelog.versionNext
@@ -14,12 +15,32 @@ dependencies {
 	// needed by GitAttributesLineEndings
 	implementation "org.eclipse.jgit:org.eclipse.jgit:${VER_JGIT}"
 	implementation "com.googlecode.concurrent-trees:concurrent-trees:2.6.1"
+	// for eclipse
+	implementation "dev.equo.ide:solstice:0.11.0"
 
 	// testing
 	testImplementation project(':testlib')
 	testImplementation "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"
 	testImplementation "org.assertj:assertj-core:${VER_ASSERTJ}"
 	testImplementation "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
+}
+
+def NEEDS_P2_DEPS = []
+for (needsP2 in NEEDS_P2_DEPS) {
+	sourceSets.register(needsP2) {
+		compileClasspath += sourceSets.main.output
+		runtimeClasspath += sourceSets.main.output
+		java {}
+	}
+}
+jar {
+	for (needsP2 in NEEDS_P2_DEPS) {
+		from sourceSets.getByName(needsP2).output.classesDirs
+	}
+}
+
+apply plugin: 'dev.equo.p2deps'
+p2deps {
 }
 
 // we'll hold the core lib to a high standard
