@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.eclipse.java;
+package com.diffplug.spotless.extra.jdt;
 
 import java.io.File;
 import java.util.Properties;
 
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.ToolFactory;
 import org.eclipse.jdt.core.formatter.CodeFormatter;
 import org.eclipse.jdt.internal.compiler.env.IModule;
@@ -26,33 +25,15 @@ import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.text.edits.TextEdit;
 
-import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseConfig;
-import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework;
-import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipsePluginConfig;
-import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseServiceConfig;
-
 /** Formatter step which calls out to the Eclipse JDT formatter. */
 public class EclipseJdtFormatterStepImpl {
+	/** Spotless demands for internal formatter chains Unix (LF) line endings. */
+	public static final String LINE_DELIMITER = "\n";
 
 	private final CodeFormatter codeFormatter;
 
-	public EclipseJdtFormatterStepImpl(Properties settings) throws Exception {
-		SpotlessEclipseFramework.setup(new FrameworkConfig());
+	public EclipseJdtFormatterStepImpl(Properties settings) {
 		this.codeFormatter = ToolFactory.createCodeFormatter(settings, ToolFactory.M_FORMAT_EXISTING);
-	}
-
-	private static class FrameworkConfig implements SpotlessEclipseConfig {
-		@Override
-		public void registerServices(SpotlessEclipseServiceConfig config) {
-			config.applyDefault();
-			config.useSlf4J(EclipseJdtFormatterStepImpl.class.getPackage().getName());
-		}
-
-		@Override
-		public void activatePlugins(SpotlessEclipsePluginConfig config) {
-			config.applyDefault();
-			config.add(new JavaCore());
-		}
 	}
 
 	/** @deprecated  Use {@link #format(String, File)} instead. */
@@ -66,7 +47,7 @@ public class EclipseJdtFormatterStepImpl {
 		int kind = (file.getName().equals(IModule.MODULE_INFO_JAVA) ? CodeFormatter.K_MODULE_INFO
 				: CodeFormatter.K_COMPILATION_UNIT) | CodeFormatter.F_INCLUDE_COMMENTS;
 
-		TextEdit edit = codeFormatter.format(kind, raw, 0, raw.length(), 0, SpotlessEclipseFramework.LINE_DELIMITER);
+		TextEdit edit = codeFormatter.format(kind, raw, 0, raw.length(), 0, LINE_DELIMITER);
 		if (edit == null) {
 			throw new IllegalArgumentException("Invalid java syntax for formatting.");
 		} else {
