@@ -1,7 +1,6 @@
 //////////
 // JAVA //
 //////////
-repositories { mavenCentral() }
 
 // setup java
 apply plugin: 'java'

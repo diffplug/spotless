@@ -17,6 +17,7 @@ pluginManagement {
 		id 'io.github.davidburstrom.version-compatibility' version '0.4.0'
 	}
 }
+
 plugins {
 	id 'com.diffplug.spotless'                 apply false
 	id 'com.gradle.plugin-publish'             apply false
@@ -28,6 +29,13 @@ plugins {
 	id 'io.github.davidburstrom.version-compatibility' apply false
 	id "com.gradle.enterprise" version "3.12.2"
 }
+
+dependencyResolutionManagement {
+	repositories {
+		mavenCentral()
+	}
+}
+
 if (System.env['CI'] != null) {
 	// use the remote buildcache on all CI builds
 	buildCache {
