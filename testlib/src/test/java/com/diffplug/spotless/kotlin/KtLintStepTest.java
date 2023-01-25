@@ -15,13 +15,11 @@
  */
 package com.diffplug.spotless.kotlin;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
-import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.StepHarnessWithFile;
 import com.diffplug.spotless.TestProvisioner;
 
