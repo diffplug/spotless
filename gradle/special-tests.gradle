@@ -1,4 +1,3 @@
-apply plugin: 'org.gradle.test-retry'
 apply plugin: 'com.adarshr.test-logger'
 def special = [
 	'Npm',
