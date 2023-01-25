@@ -94,7 +94,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 	}
 
 	protected boolean needsPrepareNodeServer() {
-		return this.nodeServerLayout.isNodeModulesPrepared();
+		return !this.nodeServerLayout.isNodeModulesPrepared();
 	}
 
 	protected boolean needsPrepareNodeServerLayout() {
