@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -237,8 +237,14 @@ public final class Formatter implements Serializable, AutoCloseable {
 					unix = LineEnding.toUnix(formatted);
 				}
 			} catch (Throwable e) {
-				String relativePath = rootDir.relativize(file.toPath()).toString();
-				exceptionPolicy.handleError(e, step, relativePath);
+				if (file.getPath().isEmpty()) {
+					// Path.relativize would fail if rootDir is an absolute path
+					exceptionPolicy.handleError(e, step, "");
+				} else {
+					// Path may be forged from a different FileSystem than Filesystem.default
+					String relativePath = rootDir.relativize(rootDir.getFileSystem().getPath(file.getPath())).toString();
+					exceptionPolicy.handleError(e, step, relativePath);
+				}
 			}
 		}
 		return unix;
