@@ -7,7 +7,7 @@ def special = [
 ]
 
 boolean isCiServer = System.getenv().containsKey("CI")
-tasks.named('test') {
+tasks.withType(Test).configureEach {
 	// See com.diffplug.spotless.tag package for available JUnit 5 @Tag annotations
 	useJUnitPlatform {
 		excludeTags special as String[]

@@ -28,7 +28,7 @@ dependencies {
 }
 
 apply from: rootProject.file('gradle/special-tests.gradle')
-tasks.named('test') {
+tasks.withType(Test).configureEach {
 	testLogging.showStandardStreams = true
 }
 
