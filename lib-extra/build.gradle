@@ -25,7 +25,9 @@ dependencies {
 	testImplementation "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
 }
 
-def NEEDS_P2_DEPS = []
+def NEEDS_P2_DEPS = [
+	'jdt'
+]
 for (needsP2 in NEEDS_P2_DEPS) {
 	sourceSets.register(needsP2) {
 		compileClasspath += sourceSets.main.output
@@ -41,6 +43,15 @@ jar {
 
 apply plugin: 'dev.equo.p2deps'
 p2deps {
+	into 'jdtCompileOnly', {
+		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
+		install 'org.eclipse.jdt.core'
+		addFilter 'minimize', { filter ->
+			filter.exclude 'org.eclipse.ant.core'
+			filter.exclude 'org.eclipse.core.expressions'
+			filter.exclude 'org.eclipse.core.filesystem'
+		}
+	}
 }
 
 // we'll hold the core lib to a high standard
