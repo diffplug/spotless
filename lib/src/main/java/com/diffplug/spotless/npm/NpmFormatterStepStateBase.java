@@ -32,6 +32,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.ProcessRunner.LongRunningProcess;
+import com.diffplug.spotless.ThrowingEx;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -101,13 +103,14 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 
 	protected ServerProcessInfo npmRunServer() throws ServerStartException, IOException {
 		assertNodeServerDirReady();
+		LongRunningProcess server = null;
 		try {
 			// The npm process will output the randomly selected port of the http server process to 'server.port' file
 			// so in order to be safe, remove such a file if it exists before starting.
 			final File serverPortFile = new File(this.nodeServerLayout.nodeModulesDir(), "server.port");
 			NpmResourceHelper.deleteFileIfExists(serverPortFile);
 			// start the http server in node
-			Process server = new NpmProcess(this.nodeServerLayout.nodeModulesDir(), this.locations.npmExecutable(), this.locations.nodeExecutable()).start();
+			server = new NpmProcess(this.nodeServerLayout.nodeModulesDir(), this.locations.npmExecutable(), this.locations.nodeExecutable()).start();
 
 			// await the readiness of the http server - wait for at most 60 seconds
 			try {
@@ -128,7 +131,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 			String serverPort = NpmResourceHelper.readUtf8StringFromFile(serverPortFile).trim();
 			return new ServerProcessInfo(server, serverPort, serverPortFile);
 		} catch (IOException | TimeoutException e) {
-			throw new ServerStartException(e);
+			throw new ServerStartException("Starting server failed." + (server != null ? "\n\nProcess result:\n" + ThrowingEx.get(server::result) : ""), e);
 		}
 	}
 
@@ -197,7 +200,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 	protected static class ServerStartException extends RuntimeException {
 		private static final long serialVersionUID = -8803977379866483002L;
 
-		public ServerStartException(Throwable cause) {
+		public ServerStartException(String message, Throwable cause) {
 			super(cause);
 		}
 	}
