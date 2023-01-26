@@ -106,6 +106,58 @@ class PrettierFormatStepTest extends MavenIntegrationHarness {
 		assertThat(result.stdOutUtf8()).contains(Prettier.ERROR_MESSAGE_ONLY_ONE_CONFIG);
 	}
 
+	/**
+	 * This test is to ensure that we can have multiple prettier instances in one spotless config.
+	 *
+	 * @see <a href="https://github.com/diffplug/spotless/issues/1162">Issue #1162 on github</a>
+	 */
+	@Test
+	void multiple_prettier_configs() throws Exception {
+		writePom(
+				formats(
+						groupWithSteps("format", including("php-example.php"),
+								"<prettier>",
+								"  <devDependencyProperties>",
+								"    <property>",
+								"      <name>prettier</name>",
+								"      <value>2.0.5</value>",
+								"    </property>",
+								"    <property>",
+								"      <name>@prettier/plugin-php</name>",
+								"      <value>0.14.2</value>",
+								"    </property>",
+								"  </devDependencyProperties>",
+								"  <config>",
+								"    <tabWidth>3</tabWidth>",
+								"    <parser>php</parser>",
+								"  </config>",
+								"</prettier>"),
+						groupWithSteps("java", including("JavaTest.java"),
+								"<prettier>",
+								"  <devDependencyProperties>",
+								"    <property>",
+								"      <name>prettier</name>",
+								"      <value>2.0.5</value>",
+								"    </property>",
+								"    <property>",
+								"      <name>prettier-plugin-java</name>",
+								"      <value>0.8.0</value>",
+								"    </property>",
+								"  </devDependencyProperties>",
+								"  <config>",
+								"    <tabWidth>4</tabWidth>",
+								"    <parser>java</parser>",
+								"  </config>",
+								"</prettier>")));
+
+		setFile("php-example.php").toResource("npm/prettier/plugins/php.dirty");
+		setFile("JavaTest.java").toResource("npm/prettier/plugins/java-test.dirty");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("php-example.php").sameAsResource("npm/prettier/plugins/php.clean");
+		assertFile("JavaTest.java").sameAsResource("npm/prettier/plugins/java-test.clean");
+
+	}
+
 	@Test
 	void custom_plugin() throws Exception {
 		writePomWithFormatSteps(

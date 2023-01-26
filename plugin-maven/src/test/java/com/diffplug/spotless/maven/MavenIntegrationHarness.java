@@ -285,7 +285,7 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		return value;
 	}
 
-	private static String[] groupWithSteps(String group, String[] includes, String... steps) {
+	protected static String[] groupWithSteps(String group, String[] includes, String... steps) {
 		String[] result = new String[steps.length + includes.length + 2];
 		result[0] = "<" + group + ">";
 		System.arraycopy(includes, 0, result, 1, includes.length);
@@ -294,15 +294,22 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		return result;
 	}
 
-	private static String[] groupWithSteps(String group, String... steps) {
+	protected static String[] groupWithSteps(String group, String... steps) {
 		return groupWithSteps(group, new String[]{}, steps);
 	}
 
-	private static String[] including(String... includes) {
+	protected static String[] including(String... includes) {
 		return groupWithSteps("includes", groupWithSteps("include", includes));
 	}
 
-	private static String[] formats(String... formats) {
+	protected static String[] formats(String... formats) {
 		return groupWithSteps("formats", formats);
+	}
+
+	protected static String[] formats(String[]... formats) {
+		String[] formatsArray = Arrays.stream(formats)
+				.flatMap(Arrays::stream)
+				.toArray(String[]::new);
+		return formats(formatsArray);
 	}
 }
