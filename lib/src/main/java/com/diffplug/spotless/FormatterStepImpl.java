@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,18 +109,15 @@ abstract class FormatterStepImpl<State extends Serializable> extends Strict<Stat
 			if (formatter == null) {
 				formatter = formatterSupplier.get();
 				if (formatter instanceof FormatterFunc.Closeable) {
-					throw new AssertionError("NeverUpToDate does not support FormatterFunc.Closeable.  See https://github.com/diffplug/spotless/pull/284");
+					throw new AssertionError("NeverUpToDate does not support FormatterFunc.Closeable. See https://github.com/diffplug/spotless/pull/284");
 				}
 			}
 			return formatter.apply(rawUnix, file);
 		}
 	}
 
-	/** A dummy SENTINEL file. */
-	static final File SENTINEL = new File("");
-
 	static void checkNotSentinel(File file) {
-		if (file == SENTINEL) {
+		if (file == Formatter.SENTINEL_NO_FILE_ON_DISK) {
 			throw new IllegalArgumentException("This step requires the underlying file. If this is a test, use StepHarnessWithFile");
 		}
 	}

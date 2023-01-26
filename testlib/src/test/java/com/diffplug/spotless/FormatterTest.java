@@ -18,6 +18,7 @@ package com.diffplug.spotless;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -94,7 +95,7 @@ class FormatterTest {
 		}.testEquals();
 	}
 
-	// new File("") can be used if there is no File representing this content. It should not conflict with rootDir.relativize(...)
+	// new File("") as filePath is known to fail
 	@Test
 	public void testExceptionWithEmptyPath() throws Exception {
 		LineEnding.Policy lineEndingsPolicy = LineEnding.UNIX.createPolicy();
@@ -116,7 +117,32 @@ class FormatterTest {
 				.exceptionPolicy(exceptionPolicy)
 				.build();
 
-		formatter.compute("someFileContent", new File(""));
+		Assertions.assertThrows(IllegalArgumentException.class, () -> formatter.compute("someFileContent", new File("")));
+	}
+
+	// If there is no File actually holding the content, one may rely on Formatter.NO_FILE_ON_DISK
+	@Test
+	public void testExceptionWithSentinelNoFileOnDisk() throws Exception {
+		LineEnding.Policy lineEndingsPolicy = LineEnding.UNIX.createPolicy();
+		Charset encoding = StandardCharsets.UTF_8;
+		FormatExceptionPolicy exceptionPolicy = FormatExceptionPolicy.failOnlyOnError();
+
+		Path rootDir = Paths.get(StandardSystemProperty.USER_DIR.value());
+
+		FormatterStep step = Mockito.mock(FormatterStep.class);
+		Mockito.when(step.getName()).thenReturn("someFailingStep");
+		Mockito.when(step.format(Mockito.anyString(), Mockito.any(File.class))).thenThrow(new IllegalArgumentException("someReason"));
+		List<FormatterStep> steps = Collections.singletonList(step);
+
+		Formatter formatter = Formatter.builder()
+				.lineEndingsPolicy(lineEndingsPolicy)
+				.encoding(encoding)
+				.rootDir(rootDir)
+				.steps(steps)
+				.exceptionPolicy(exceptionPolicy)
+				.build();
+
+		formatter.compute("someFileContent", Formatter.SENTINEL_NO_FILE_ON_DISK);
 	}
 
 	// rootDir may be a path not from the default FileSystem
@@ -127,6 +153,12 @@ class FormatterTest {
 		FormatExceptionPolicy exceptionPolicy = FormatExceptionPolicy.failOnlyOnError();
 
 		Path rootDir = Mockito.mock(Path.class);
+		FileSystem customFileSystem = Mockito.mock(FileSystem.class);
+		Mockito.when(rootDir.getFileSystem()).thenReturn(customFileSystem);
+
+		Path pathFromFile = Mockito.mock(Path.class);
+		Mockito.when(customFileSystem.getPath(Mockito.anyString())).thenReturn(pathFromFile);
+
 		Path relativized = Mockito.mock(Path.class);
 		Mockito.when(rootDir.relativize(Mockito.any(Path.class))).then(invok -> {
 			Path filePath = invok.getArgument(0);
@@ -150,7 +182,7 @@ class FormatterTest {
 				.exceptionPolicy(exceptionPolicy)
 				.build();
 
-		formatter.compute("someFileContent", new File(""));
+		formatter.compute("someFileContent", new File("/some/folder/some.file"));
 	}
 
 }
