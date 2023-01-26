@@ -26,6 +26,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   * From now on, we will support no more than 2 breaking changes at a time.
 * NpmFormatterStepStateBase delays `npm install` call until the formatter is first used. This enables better integration
   with `gradle-node-plugin`. ([#1522](https://github.com/diffplug/spotless/pull/1522))
+* Bump default `ktlint` version to latest `0.48.1` -> `0.48.2` ([#1529](https://github.com/diffplug/spotless/pull/1529))
+* Bump default `scalafmt` version to latest `3.6.1` -> `3.7.1` ([#1529](https://github.com/diffplug/spotless/pull/1529))
 
 ## [2.32.0] - 2023-01-13
 ### Added

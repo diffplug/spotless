@@ -20,6 +20,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * `npm`-based formatters `ESLint`, `prettier` and `tsfmt` delay their `npm install` call until the formatters are first
   used. For gradle this effectively moves the `npm install` call out of the configuration phase and as such enables
   better integration with `gradle-node-plugin`. ([#1522](https://github.com/diffplug/spotless/pull/1522))
+* Bump default `ktlint` version to latest `0.48.1` -> `0.48.2` ([#1529](https://github.com/diffplug/spotless/pull/1529))
+* Bump default `scalafmt` version to latest `3.6.1` -> `3.7.1` ([#1529](https://github.com/diffplug/spotless/pull/1529))
 
 ## [6.13.0] - 2023-01-14
 ### Added
