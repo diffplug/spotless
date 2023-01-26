@@ -15,7 +15,8 @@ def NEEDS_GLUE = [
 	'flexmark',
 	'diktat',
 	'scalafmt',
-	'jackson'
+	'jackson',
+	'gson'
 ]
 for (glue in NEEDS_GLUE) {
 	sourceSets.register(glue) {
@@ -28,11 +29,10 @@ for (glue in NEEDS_GLUE) {
 versionCompatibility {
 	adapters {
 		namespaces.register('KtLint') {
+			// as discussed at https://github.com/diffplug/spotless/pull/1475
+			// we will support no more than 2 breaking changes at a time = 3 incompatible versions
+			// we will try to drop down to only one version if a stable API can be maintained for a full year
 			versions = [
-				'0.31.0',
-				'0.32.0',
-				'0.34.2',
-				'0.45.2',
 				'0.46.0',
 				'0.47.0',
 				'0.48.0',
@@ -40,6 +40,11 @@ versionCompatibility {
 			targetSourceSetName = 'ktlint'
 		}
 	}
+}
+
+tasks.named("check").configure {
+	dependsOn(tasks.named("testCompatibilityAdapters"))
+	dependsOn(tasks.named("testCompatibility"))
 }
 
 dependencies {
@@ -75,21 +80,6 @@ dependencies {
 	ktlintCompileOnly "com.pinterest.ktlint:ktlint-ruleset-experimental:$VER_KTLINT"
 	ktlintCompileOnly "com.pinterest.ktlint:ktlint-ruleset-standard:$VER_KTLINT"
 
-	compatKtLint0Dot31Dot0CompileOnly 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.20'
-	compatKtLint0Dot31Dot0CompileOnly 'com.github.shyiko.ktlint:ktlint-core:0.31.0'
-	compatKtLint0Dot31Dot0CompileOnly 'com.github.shyiko.ktlint:ktlint-ruleset-experimental:0.31.0'
-	compatKtLint0Dot31Dot0CompileOnly 'com.github.shyiko.ktlint:ktlint-ruleset-standard:0.31.0'
-	compatKtLint0Dot32Dot0CompileOnly 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.20'
-	compatKtLint0Dot32Dot0CompileOnly 'com.pinterest.ktlint:ktlint-core:0.32.0'
-	compatKtLint0Dot32Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.32.0'
-	compatKtLint0Dot32Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.32.0'
-	compatKtLint0Dot34Dot2CompileOnly 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.20'
-	compatKtLint0Dot34Dot2CompileOnly 'com.pinterest.ktlint:ktlint-core:0.34.2'
-	compatKtLint0Dot34Dot2CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.34.2'
-	compatKtLint0Dot34Dot2CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.34.2'
-	compatKtLint0Dot45Dot2CompileOnly 'com.pinterest.ktlint:ktlint-core:0.45.2'
-	compatKtLint0Dot45Dot2CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.45.2'
-	compatKtLint0Dot45Dot2CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.45.2'
 	compatKtLint0Dot46Dot0CompileOnly 'com.pinterest.ktlint:ktlint-core:0.46.0'
 	compatKtLint0Dot46Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.46.0'
 	compatKtLint0Dot46Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.46.0'
@@ -108,12 +98,30 @@ dependencies {
 
 	// used for markdown formatting
 	flexmarkCompileOnly 'com.vladsch.flexmark:flexmark-all:0.62.2'
+
+	gsonCompileOnly 'com.google.code.gson:gson:2.10.1'
 }
 
 // we'll hold the core lib to a high standard
 spotbugs { reportLevel = 'low' } // low|medium|high (low = sensitive to even minor mistakes)
 
 apply from: rootProject.file('gradle/special-tests.gradle')
+tasks.withType(Test).configureEach {
+	def args = []
+	if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_16)) {
+		// https://docs.gradle.org/7.5/userguide/upgrading_version_7.html#removes_implicit_add_opens_for_test_workers
+		args += [
+			"--add-opens=java.base/java.lang=ALL-UNNAMED",
+			"--add-opens=java.base/java.util=ALL-UNNAMED",
+		]
+	}
+	if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_18)) {
+		// https://openjdk.org/jeps/411
+		args += "-Djava.security.manager=allow"
+	}
+	jvmArgs(args)
+}
+
 jar {
 	for (glue in NEEDS_GLUE) {
 		from sourceSets.getByName(glue).output.classesDirs

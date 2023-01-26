@@ -1,14 +1,13 @@
 //////////
 // JAVA //
 //////////
-repositories { mavenCentral() }
 
 // setup java
 apply plugin: 'java'
 
 sourceCompatibility = VER_JAVA
 targetCompatibility = VER_JAVA
-tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
 
 //////////////
 // SPOTBUGS //

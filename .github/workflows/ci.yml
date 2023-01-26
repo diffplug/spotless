@@ -26,7 +26,10 @@ jobs:
         with:
           distribution: "temurin"
           java-version: 11
-          cache: gradle
+      - name: gradle caching
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-home-cache-cleanup: true
       - name: spotlessCheck
         run: ./gradlew spotlessCheck --build-cache
       - name: assemble testClasses
@@ -60,7 +63,10 @@ jobs:
         with:
           distribution: "temurin"
           java-version: ${{ matrix.jre }}
-          cache: gradle
+      - name: gradle caching
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-home-cache-cleanup: true
       - name: build (maven-only)
         if: matrix.kind == 'maven'
         run: ./gradlew :plugin-maven:build -x spotlessCheck --build-cache

@@ -3,7 +3,6 @@ plugins {
 	id 'de.benediktritter.maven-plugin-development' version '0.4.1'
 }
 
-repositories { mavenCentral() }
 apply from: rootProject.file('gradle/changelog.gradle')
 ext.artifactId = project.artifactIdMaven
 version = spotlessChangelog.versionNext
