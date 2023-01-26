@@ -127,7 +127,7 @@ public interface FormatterFunc {
 
 				@Override
 				public String apply(String unix) throws Exception {
-					return apply(unix, FormatterStepImpl.SENTINEL);
+					return apply(unix, Formatter.SENTINEL_NO_FILE_ON_DISK);
 				}
 			};
 		}
@@ -156,7 +156,7 @@ public interface FormatterFunc {
 
 		@Override
 		default String apply(String unix) throws Exception {
-			return apply(unix, FormatterStepImpl.SENTINEL);
+			return apply(unix, Formatter.SENTINEL_NO_FILE_ON_DISK);
 		}
 	}
 }
