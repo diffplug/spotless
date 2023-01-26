@@ -237,7 +237,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 					unix = LineEnding.toUnix(formatted);
 				}
 			} catch (Throwable e) {
-				if (file == FormatterStepImpl.SENTINEL) {
+				if (file == NO_FILE_SENTINEL) {
 					exceptionPolicy.handleError(e, step, "");
 				} else {
 					// Path may be forged from a different FileSystem than Filesystem.default
@@ -289,4 +289,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 			}
 		}
 	}
+
+	/** This Sentinel reference may be used to  Formatter requires a File, while there is no actual File to format */
+	public static final File NO_FILE_SENTINEL = new File("NO_FILE_SENTINEL");
 }

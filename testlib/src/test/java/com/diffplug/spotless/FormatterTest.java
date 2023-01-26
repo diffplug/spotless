@@ -142,7 +142,7 @@ class FormatterTest {
 				.exceptionPolicy(exceptionPolicy)
 				.build();
 
-		formatter.compute("someFileContent", FormatterStepImpl.SENTINEL);
+		formatter.compute("someFileContent", Formatter.NO_FILE_SENTINEL);
 	}
 
 	// rootDir may be a path not from the default FileSystem

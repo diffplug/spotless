@@ -116,11 +116,8 @@ abstract class FormatterStepImpl<State extends Serializable> extends Strict<Stat
 		}
 	}
 
-	/**This Sentinel reference may be used where Formatter requires a File, while there is no actual File to format */
-	public static final File SENTINEL = new File("");
-
 	static void checkNotSentinel(File file) {
-		if (file == SENTINEL) {
+		if (file == Formatter.NO_FILE_SENTINEL) {
 			throw new IllegalArgumentException("This step requires the underlying file. If this is a test, use StepHarnessWithFile");
 		}
 	}
