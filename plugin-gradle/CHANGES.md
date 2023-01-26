@@ -4,14 +4,16 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
-* Support `jackson()` for YAML files ([#1492](https://github.com/diffplug/spotless/pull/1492))
-* Support `jackson()` for JSON files ([#1492](https://github.com/diffplug/spotless/pull/1492))
-* Allow to specify node executable for node-based formatters using `nodeExecutable` parameter ([#1500](https://github.com/diffplug/spotless/pull/1500))
+* Support `jackson()` for YAML and JSON files ([#1492](https://github.com/diffplug/spotless/pull/1492))
 * Prettier will now suggest to install plugins if a parser cannot be inferred from the file extension ([#1511](https://github.com/diffplug/spotless/pull/1511))
+* Allow to specify node executable for node-based formatters using `nodeExecutable` parameter ([#1500](https://github.com/diffplug/spotless/pull/1500))
 ### Fixed
-* The default list of type annotations used by `formatAnnotations` has had 8 more annotations from the Checker Framework added [#1494](https://github.com/diffplug/spotless/pull/1494)
 * **POTENTIALLY BREAKING** Generate the correct qualifiedRuleId for Ktlint 0.48.x [#1495](https://github.com/diffplug/spotless/pull/1495)
+* The default list of type annotations used by `formatAnnotations` has had 8 more annotations from the Checker Framework added [#1494](https://github.com/diffplug/spotless/pull/1494)
 ### Changes
+* **POTENTIALLY BREAKING** Bump minimum JRE from 8 to 11 ([#1514](https://github.com/diffplug/spotless/pull/1514) part 1 of [#1337](https://github.com/diffplug/spotless/issues/1337))
+  * You can bump your build JRE without bumping your requirements ([docs](https://docs.gradle.org/current/userguide/building_java_projects.html#sec:java_cross_compilation)).
+* Prettier will now suggest to install plugins if a parser cannot be inferred from the file extension ([#1511](https://github.com/diffplug/spotless/pull/1511))
 * **POTENTIALLY BREAKING** Removed support for KtLint 0.3x and 0.45.2 ([#1475](https://github.com/diffplug/spotless/pull/1475))
   * `KtLint` does not maintain a stable API - before this PR, we supported every breaking change in the API since 2019.
   * From now on, we will support no more than 2 breaking changes at a time.
