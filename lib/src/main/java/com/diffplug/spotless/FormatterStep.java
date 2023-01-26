@@ -38,7 +38,7 @@ public interface FormatterStep extends Serializable {
 	 *            the content to format, guaranteed to have unix-style newlines ('\n'); never null
 	 * @param file
 	 *            the file which {@code rawUnix} was obtained from; never null. Pass the reference
-	 *            {@code FormatterStepImpl#SENTINEL} if and only if no file is actually associated with {@code rawUnix}
+	 *            {@link Formatter#NO_FILE_SENTINEL} if and only if no file is actually associated with {@code rawUnix}
 	 * @return the formatted content, guaranteed to only have unix-style newlines; may return null
 	 *         if the formatter step doesn't have any changes to make
 	 * @throws Exception if the formatter step experiences a problem

@@ -290,6 +290,6 @@ public final class Formatter implements Serializable, AutoCloseable {
 		}
 	}
 
-	/** This Sentinel reference may be used to  Formatter requires a File, while there is no actual File to format */
+	/** This Sentinel reference may be used to pass string content to a Formatter or FormatterStep when there is no actual File to format */
 	public static final File NO_FILE_SENTINEL = new File("NO_FILE_SENTINEL");
 }
