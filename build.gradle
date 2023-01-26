@@ -4,9 +4,7 @@ plugins {
 }
 equoIde {
 	branding.title('Spotless').icon(file('_images/spotless_logo.png'))
-
-	// waiting on https://github.com/equodev/equo-ide/pull/65
-	//welcome().openUrlOnStartup('https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md')
+	welcome().openUrlOnStartup('https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md')
 
 	// everything below becomes the default after https://github.com/equodev/equo-ide/pull/66
 	p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
