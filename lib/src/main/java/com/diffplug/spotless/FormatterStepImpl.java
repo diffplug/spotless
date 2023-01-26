@@ -109,15 +109,18 @@ abstract class FormatterStepImpl<State extends Serializable> extends Strict<Stat
 			if (formatter == null) {
 				formatter = formatterSupplier.get();
 				if (formatter instanceof FormatterFunc.Closeable) {
-					throw new AssertionError("NeverUpToDate does not support FormatterFunc.Closeable. See https://github.com/diffplug/spotless/pull/284");
+					throw new AssertionError("NeverUpToDate does not support FormatterFunc.Closeable.  See https://github.com/diffplug/spotless/pull/284");
 				}
 			}
 			return formatter.apply(rawUnix, file);
 		}
 	}
 
+	/**This Sentinel reference may be used where Formatter requires a File, while there is no actual File to format */
+	public static final File SENTINEL = new File("");
+
 	static void checkNotSentinel(File file) {
-		if (file == Formatter.SENTINEL_NO_FILE_ON_DISK) {
+		if (file == SENTINEL) {
 			throw new IllegalArgumentException("This step requires the underlying file. If this is a test, use StepHarnessWithFile");
 		}
 	}

@@ -39,9 +39,6 @@ import javax.annotation.Nullable;
 public final class Formatter implements Serializable, AutoCloseable {
 	private static final long serialVersionUID = 1L;
 
-	// This Sentinel reference may be used where Formatter requires a File, while there is no actual File to format
-	public static final File SENTINEL_NO_FILE_ON_DISK = new File("NO_FILE_ON_DISK.sentinel");
-
 	private LineEnding.Policy lineEndingsPolicy;
 	private Charset encoding;
 	private Path rootDir;
@@ -240,7 +237,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 					unix = LineEnding.toUnix(formatted);
 				}
 			} catch (Throwable e) {
-				if (file == SENTINEL_NO_FILE_ON_DISK) {
+				if (file == FormatterStepImpl.SENTINEL) {
 					exceptionPolicy.handleError(e, step, "");
 				} else {
 					// Path may be forged from a different FileSystem than Filesystem.default
