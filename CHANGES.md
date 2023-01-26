@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.34.0] - 2023-01-26
 ### Added
 * `Formatter` now has a field `public static final File NO_FILE_SENTINEL` which can be used to pass string content to a Formatter or FormatterStep when there is no actual File to format. ([#1525](https://github.com/diffplug/spotless/pull/1525))
 
