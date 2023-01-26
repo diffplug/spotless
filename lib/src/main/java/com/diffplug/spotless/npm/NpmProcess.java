@@ -19,8 +19,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+
+import com.diffplug.spotless.ProcessRunner;
+import com.diffplug.spotless.ProcessRunner.LongRunningProcess;
 
 class NpmProcess {
 
@@ -28,9 +34,15 @@ class NpmProcess {
 
 	private final File npmExecutable;
 
-	NpmProcess(File workingDir, File npmExecutable) {
+	private final File nodeExecutable;
+
+	private final ProcessRunner processRunner;
+
+	NpmProcess(File workingDir, File npmExecutable, File nodeExecutable) {
 		this.workingDir = workingDir;
 		this.npmExecutable = npmExecutable;
+		this.nodeExecutable = nodeExecutable;
+		processRunner = ProcessRunner.usingRingBuffersOfCapacity(100 * 1024); // 100kB
 	}
 
 	void install() {
@@ -41,31 +53,27 @@ class NpmProcess {
 				"--prefer-offline");
 	}
 
-	Process start() {
+	LongRunningProcess start() {
 		// adding --scripts-prepend-node-path=true due to https://github.com/diffplug/spotless/issues/619#issuecomment-648018679
 		return npm("start", "--scripts-prepend-node-path=true");
 	}
 
 	private void npmAwait(String... args) {
-		final Process npmProcess = npm(args);
-
-		try {
+		try (LongRunningProcess npmProcess = npm(args)) {
 			if (npmProcess.waitFor() != 0) {
-				throw new NpmProcessException("Running npm command '" + commandLine(args) + "' failed with exit code: " + npmProcess.exitValue());
+				throw new NpmProcessException("Running npm command '" + commandLine(args) + "' failed with exit code: " + npmProcess.exitValue() + "\n\n" + npmProcess.result());
 			}
 		} catch (InterruptedException e) {
 			throw new NpmProcessException("Running npm command '" + commandLine(args) + "' was interrupted.", e);
+		} catch (ExecutionException e) {
+			throw new NpmProcessException("Running npm command '" + commandLine(args) + "' failed.", e);
 		}
 	}
 
-	private Process npm(String... args) {
+	private LongRunningProcess npm(String... args) {
 		List<String> processCommand = processCommand(args);
 		try {
-			return new ProcessBuilder()
-					.inheritIO()
-					.directory(this.workingDir)
-					.command(processCommand)
-					.start();
+			return processRunner.start(this.workingDir, environmentVariables(), null, true, processCommand);
 		} catch (IOException e) {
 			throw new NpmProcessException("Failed to launch npm command '" + commandLine(args) + "'.", e);
 		}
@@ -76,6 +84,12 @@ class NpmProcess {
 		command.add(this.npmExecutable.getAbsolutePath());
 		command.addAll(Arrays.asList(args));
 		return command;
+	}
+
+	private Map<String, String> environmentVariables() {
+		Map<String, String> environmentVariables = new HashMap<>();
+		environmentVariables.put("PATH", this.nodeExecutable.getParentFile().getAbsolutePath() + File.pathSeparator + System.getenv("PATH"));
+		return environmentVariables;
 	}
 
 	private String commandLine(String... args) {

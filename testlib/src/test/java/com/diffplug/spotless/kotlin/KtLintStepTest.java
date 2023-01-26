@@ -15,13 +15,11 @@
  */
 package com.diffplug.spotless.kotlin;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
-import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.StepHarnessWithFile;
 import com.diffplug.spotless.TestProvisioner;
 
@@ -35,68 +33,6 @@ class KtLintStepTest extends ResourceHarness {
 						"Error on line: 1, column: 1\n" +
 								"rule: no-wildcard-imports\n" +
 								"Wildcard import");
-	}
-
-	@Test
-	void worksShyiko() {
-		FormatterStep step = KtLintStep.create("0.31.0", TestProvisioner.mavenCentral());
-		StepHarnessWithFile.forStep(this, step)
-				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
-				.testResourceExceptionMsg("kotlin/ktlint/unsolvable.dirty").isEqualTo(
-						"Error on line: 1, column: 1\n" +
-								"rule: no-wildcard-imports\n" +
-								"Wildcard import");
-	}
-
-	// Regression test to ensure it works on the version it switched to Pinterest (version 0.32.0)
-	// but before 0.34.
-	// https://github.com/diffplug/spotless/issues/419
-	@Test
-	void worksPinterestAndPre034() {
-		FormatterStep step = KtLintStep.create("0.32.0", TestProvisioner.mavenCentral());
-		StepHarnessWithFile.forStep(this, step)
-				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
-				.testResourceExceptionMsg("kotlin/ktlint/unsolvable.dirty").isEqualTo("Error on line: 1, column: 1\n" +
-						"rule: no-wildcard-imports\n" +
-						"Wildcard import");
-	}
-
-	// Regression test to handle alpha and 1.x version numbers
-	// https://github.com/diffplug/spotless/issues/668
-	@Test
-	void worksAlpha1() {
-		FormatterStep step = KtLintStep.create("0.38.0-alpha01", TestProvisioner.mavenCentral());
-		StepHarness.forStep(step)
-				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean");
-	}
-
-	@Test
-	void works0_44_0() {
-		FormatterStep step = KtLintStep.create("0.44.0", TestProvisioner.mavenCentral());
-		StepHarness.forStep(step)
-				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean");
-	}
-
-	@Disabled("https://github.com/pinterest/ktlint/issues/1421")
-	@Test
-	void works0_45_0() {
-		FormatterStep step = KtLintStep.create("0.45.0", TestProvisioner.mavenCentral());
-		StepHarness.forStep(step)
-				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean");
-	}
-
-	@Test
-	void works0_45_1() {
-		FormatterStep step = KtLintStep.create("0.45.1", TestProvisioner.mavenCentral());
-		StepHarness.forStep(step)
-				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean");
-	}
-
-	@Test
-	void works0_45_2() {
-		FormatterStep step = KtLintStep.create("0.45.2", TestProvisioner.mavenCentral());
-		StepHarness.forStep(step)
-				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean");
 	}
 
 	@Test
@@ -152,14 +88,14 @@ class KtLintStepTest extends ResourceHarness {
 	@Test
 	void equality() {
 		new SerializableEqualityTester() {
-			String version = "0.32.0";
+			String version = "0.48.0";
 
 			@Override
 			protected void setupTest(API api) {
 				// same version == same
 				api.areDifferentThan();
 				// change the version, and it's different
-				version = "0.38.0-alpha01";
+				version = "0.48.1";
 				api.areDifferentThan();
 			}
 

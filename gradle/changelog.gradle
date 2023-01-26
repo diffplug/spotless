@@ -17,6 +17,7 @@ spotlessChangelog {
 	// need -Prelease=true in order to do a publish
 	appendDashSnapshotUnless_dashPrelease=true
 
+	branch        'release'
 	tagPrefix     "${kind}/"
 	commitMessage "Published ${kind}/{{version}}" // {{version}} will be replaced
 }

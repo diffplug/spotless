@@ -136,6 +136,29 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 	}
 
 	@Test
+	void suggestsMissingJavaCommunityPlugin() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"def prettierConfig = [:]",
+				"prettierConfig['tabWidth'] = 4",
+				"def prettierPackages = [:]",
+				"prettierPackages['prettier'] = '2.0.5'",
+				"spotless {",
+				"    format 'java', {",
+				"        target 'JavaTest.java'",
+				"        prettier(prettierPackages).config(prettierConfig)",
+				"    }",
+				"}");
+		setFile("JavaTest.java").toResource("npm/prettier/plugins/java-test.dirty");
+		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").buildAndFail();
+		Assertions.assertThat(spotlessApply.getOutput()).contains("could not infer a parser");
+		Assertions.assertThat(spotlessApply.getOutput()).contains("prettier-plugin-java");
+	}
+
+	@Test
 	void usePhpCommunityPlugin() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",

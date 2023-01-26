@@ -1,9 +1,8 @@
 plugins {
 	// https://www.benediktritter.de/maven-plugin-development/#release-history
-	id 'de.benediktritter.maven-plugin-development' version '0.4.0'
+	id 'de.benediktritter.maven-plugin-development' version '0.4.1'
 }
 
-repositories { mavenCentral() }
 apply from: rootProject.file('gradle/changelog.gradle')
 ext.artifactId = project.artifactIdMaven
 version = spotlessChangelog.versionNext

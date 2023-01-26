@@ -26,7 +26,10 @@ jobs:
         with:
           distribution: "temurin"
           java-version: 11
-          cache: gradle
+      - name: gradle caching
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-home-cache-cleanup: true
       - name: spotlessCheck
         run: ./gradlew spotlessCheck --build-cache
       - name: assemble testClasses
@@ -37,19 +40,19 @@ jobs:
       fail-fast: false
       matrix:
         kind: [maven, gradle]
-        jre: [8, 11, 17]
+        jre: [11, 17]
         os: [ubuntu-latest]
         include:
           # test windows at the diagonals of the above matrix
           - kind: maven
-            jre: 8
+            jre: 11
             os: windows-latest
           - kind: gradle
             jre: 17
             os: windows-latest
           # npm on linux only (crazy slow on windows)
           - kind: npm
-            jre: 8
+            jre: 11
             os: ubuntu-latest
     runs-on: ${{ matrix.os }}
     steps:
@@ -60,7 +63,10 @@ jobs:
         with:
           distribution: "temurin"
           java-version: ${{ matrix.jre }}
-          cache: gradle
+      - name: gradle caching
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-home-cache-cleanup: true
       - name: build (maven-only)
         if: matrix.kind == 'maven'
         run: ./gradlew :plugin-maven:build -x spotlessCheck --build-cache
