@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [6.14.0] - 2023-01-26
 ### Added
 * Support `jackson()` for YAML and JSON files ([#1492](https://github.com/diffplug/spotless/pull/1492))
 * Prettier will now suggest to install plugins if a parser cannot be inferred from the file extension ([#1511](https://github.com/diffplug/spotless/pull/1511))
