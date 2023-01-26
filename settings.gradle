@@ -11,8 +11,6 @@ pluginManagement {
 		id 'com.diffplug.spotless-changelog'       version '2.4.1'
 		// https://github.com/diffplug/goomph/blob/main/CHANGES.md
 		id 'com.diffplug.p2.asmaven'               version '3.27.0' // DO NOT UPDATE, see https://github.com/diffplug/spotless/pull/874
-		// https://github.com/gradle/test-retry-gradle-plugin/releases
-		id 'org.gradle.test-retry'                 version '1.5.1'
 		// https://github.com/radarsh/gradle-test-logger-plugin/blob/develop/CHANGELOG.md
 		id 'com.adarshr.test-logger'               version '3.2.0'
 		// https://github.com/davidburstrom/version-compatibility-gradle-plugin/tags
@@ -26,9 +24,9 @@ plugins {
 	id 'com.github.spotbugs'                   apply false
 	id 'com.diffplug.spotless-changelog'       apply false
 	id 'com.diffplug.p2.asmaven'               apply false
-	id 'org.gradle.test-retry'                 apply false
 	id 'com.adarshr.test-logger'               apply false
 	id 'io.github.davidburstrom.version-compatibility' apply false
+	id "com.gradle.enterprise" version "3.12.2"
 }
 if (System.env['CI'] != null) {
 	// use the remote buildcache on all CI builds
@@ -55,6 +53,14 @@ if (System.env['CI'] != null) {
 				credentials { username = 'anonymous' }
 			}
 		}
+	}
+}
+
+gradleEnterprise {
+	buildScan {
+		termsOfServiceUrl = "https://gradle.com/terms-of-service"
+		termsOfServiceAgree = "yes"
+		publishAlways()
 	}
 }
 
