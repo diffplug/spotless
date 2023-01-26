@@ -19,6 +19,7 @@ import java.nio.file.Path;
 
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
+import org.sonatype.plexus.build.incremental.BuildContext;
 
 import com.diffplug.spotless.Formatter;
 
@@ -37,4 +38,28 @@ public interface UpToDateChecker extends AutoCloseable {
 	static UpToDateChecker forProject(MavenProject project, Path indexFile, Iterable<Formatter> formatters, Log log) {
 		return IndexBasedChecker.create(project, indexFile, formatters, log);
 	}
+
+	static UpToDateChecker wrapWithBuildContext(UpToDateChecker delegate, BuildContext buildContext) {
+		return new UpToDateChecker() {
+
+			@Override
+			public void setUpToDate(Path file) {
+				delegate.setUpToDate(file);
+			}
+
+			@Override
+			public boolean isUpToDate(Path file) {
+				if (buildContext.hasDelta(file.toFile())) {
+					return delegate.isUpToDate(file);
+				}
+				return true;
+			}
+
+			@Override
+			public void close() {
+				delegate.close();
+			}
+		};
+	}
+
 }

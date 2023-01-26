@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,10 @@ import org.codehaus.plexus.util.MatchPatterns;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.repository.RemoteRepository;
+import org.sonatype.plexus.build.incremental.BuildContext;
 
 import com.diffplug.spotless.Formatter;
+import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
@@ -63,6 +65,8 @@ import com.diffplug.spotless.maven.groovy.Groovy;
 import com.diffplug.spotless.maven.incremental.UpToDateChecker;
 import com.diffplug.spotless.maven.incremental.UpToDateChecking;
 import com.diffplug.spotless.maven.java.Java;
+import com.diffplug.spotless.maven.javascript.Javascript;
+import com.diffplug.spotless.maven.json.Json;
 import com.diffplug.spotless.maven.kotlin.Kotlin;
 import com.diffplug.spotless.maven.markdown.Markdown;
 import com.diffplug.spotless.maven.pom.Pom;
@@ -70,6 +74,7 @@ import com.diffplug.spotless.maven.python.Python;
 import com.diffplug.spotless.maven.scala.Scala;
 import com.diffplug.spotless.maven.sql.Sql;
 import com.diffplug.spotless.maven.typescript.Typescript;
+import com.diffplug.spotless.maven.yaml.Yaml;
 
 public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	private static final String DEFAULT_INDEX_FILE_NAME = "spotless-index";
@@ -88,8 +93,14 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Component
 	private ResourceManager resourceManager;
 
+	@Component
+	protected BuildContext buildContext;
+
 	@Parameter(defaultValue = "${mojoExecution.goal}", required = true, readonly = true)
 	private String goal;
+
+	@Parameter(defaultValue = "false")
+	private boolean skip;
 
 	@Parameter(property = "spotless.apply.skip", defaultValue = "false")
 	private boolean applySkip;
@@ -146,6 +157,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	private Typescript typescript;
 
 	@Parameter
+	private Javascript javascript;
+
+	@Parameter
 	private Antlr4 antlr4;
 
 	@Parameter
@@ -160,6 +174,12 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Parameter
 	private Markdown markdown;
 
+	@Parameter
+	private Json json;
+
+	@Parameter
+	private Yaml yaml;
+
 	@Parameter(property = "spotlessFiles")
 	private String filePatterns;
 
@@ -170,6 +190,16 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	private UpToDateChecking upToDateChecking;
 
 	protected abstract void process(Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException;
+
+	private static final int MINIMUM_JRE = 11;
+
+	protected AbstractSpotlessMojo() {
+		if (Jvm.version() < MINIMUM_JRE) {
+			throw new RuntimeException("Spotless requires JRE " + MINIMUM_JRE + " or newer, this was " + Jvm.version() + ".\n"
+					+ "You can upgrade your build JRE and still compile for older targets, see below\n"
+					+ "https://docs.gradle.org/current/userguide/building_java_projects.html#sec:java_cross_compilation");
+		}
+	}
 
 	@Override
 	public final void execute() throws MojoExecutionException {
@@ -200,6 +230,10 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private boolean shouldSkip() {
+		if (skip) {
+			return true;
+		}
+
 		switch (goal) {
 		case GOAL_CHECK:
 			return checkSkip;
@@ -208,6 +242,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		default:
 			break;
 		}
+
 		return false;
 	}
 
@@ -319,7 +354,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private List<FormatterFactory> getFormatterFactories() {
-		return Stream.concat(formats.stream(), Stream.of(groovy, java, scala, kotlin, cpp, typescript, antlr4, pom, sql, python, markdown))
+		return Stream.concat(formats.stream(), Stream.of(groovy, java, scala, kotlin, cpp, typescript, javascript, antlr4, pom, sql, python, markdown, json, yaml))
 				.filter(Objects::nonNull)
 				.collect(toList());
 	}
@@ -336,10 +371,13 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 			Path targetDir = project.getBasedir().toPath().resolve(project.getBuild().getDirectory());
 			indexFile = targetDir.resolve(DEFAULT_INDEX_FILE_NAME);
 		}
+		final UpToDateChecker checker;
 		if (upToDateChecking != null && upToDateChecking.isEnabled()) {
 			getLog().info("Up-to-date checking enabled");
-			return UpToDateChecker.forProject(project, indexFile, formatters, getLog());
+			checker = UpToDateChecker.forProject(project, indexFile, formatters, getLog());
+		} else {
+			checker = UpToDateChecker.noop(project, indexFile, getLog());
 		}
-		return UpToDateChecker.noop(project, indexFile, getLog());
+		return UpToDateChecker.wrapWithBuildContext(checker, buildContext);
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,47 +20,82 @@ import org.junit.jupiter.api.Test;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
-import com.diffplug.spotless.StepHarness;
+import com.diffplug.spotless.StepHarnessWithFile;
 import com.diffplug.spotless.TestProvisioner;
 
 class KtLintStepTest extends ResourceHarness {
 	@Test
-	void behavior() throws Exception {
+	void behavior() {
 		FormatterStep step = KtLintStep.create(TestProvisioner.mavenCentral());
-		StepHarness.forStep(step)
+		StepHarnessWithFile.forStep(this, step)
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
-				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
-					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("Error on line: 1, column: 1\n" +
-							"rule: no-wildcard-imports\n" +
-							"Wildcard import");
-				});
+				.testResourceExceptionMsg("kotlin/ktlint/unsolvable.dirty").isEqualTo(
+						"Error on line: 1, column: 1\n" +
+								"rule: no-wildcard-imports\n" +
+								"Wildcard import");
 	}
 
 	@Test
-	void worksPre0_46_1() throws Exception {
+	void works0_46_0() {
 		FormatterStep step = KtLintStep.create("0.46.0", TestProvisioner.mavenCentral());
-		StepHarness.forStep(step)
+		StepHarnessWithFile.forStep(this, step)
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
-				.testResourceException("kotlin/ktlint/unsolvable.dirty", assertion -> {
-					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("Error on line: 1, column: 1\n" +
-							"rule: no-wildcard-imports\n" +
-							"Wildcard import");
-				});
+				.testResourceExceptionMsg("kotlin/ktlint/unsolvable.dirty").isEqualTo("Error on line: 1, column: 1\n" +
+						"rule: no-wildcard-imports\n" +
+						"Wildcard import");
 	}
 
 	@Test
-	void equality() throws Exception {
+	void works0_47_0() {
+		FormatterStep step = KtLintStep.create("0.47.0", TestProvisioner.mavenCentral());
+		StepHarnessWithFile.forStep(this, step)
+				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
+				.testResourceExceptionMsg("kotlin/ktlint/unsolvable.dirty").isEqualTo("Error on line: 1, column: 1\n" +
+						"rule: no-wildcard-imports\n" +
+						"Wildcard import");
+	}
+
+	@Test
+	void works0_47_1() {
+		FormatterStep step = KtLintStep.create("0.47.1", TestProvisioner.mavenCentral());
+		StepHarnessWithFile.forStep(this, step)
+				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
+				.testResourceExceptionMsg("kotlin/ktlint/unsolvable.dirty").isEqualTo("Error on line: 1, column: 1\n" +
+						"rule: no-wildcard-imports\n" +
+						"Wildcard import");
+	}
+
+	@Test
+	void works0_48_0() {
+		FormatterStep step = KtLintStep.create("0.48.0", TestProvisioner.mavenCentral());
+		StepHarnessWithFile.forStep(this, step)
+				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
+				.testResourceExceptionMsg("kotlin/ktlint/unsolvable.dirty").isEqualTo("Error on line: 1, column: 1\n" +
+						"rule: no-wildcard-imports\n" +
+						"Wildcard import");
+	}
+
+	@Test
+	void works0_48_1() {
+		FormatterStep step = KtLintStep.create("0.48.1", TestProvisioner.mavenCentral());
+		StepHarnessWithFile.forStep(this, step)
+				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
+				.testResourceExceptionMsg("kotlin/ktlint/unsolvable.dirty").isEqualTo("Error on line: 1, column: 1\n" +
+						"rule: no-wildcard-imports\n" +
+						"Wildcard import");
+	}
+
+	@Test
+	void equality() {
 		new SerializableEqualityTester() {
-			String version = "0.46.0";
+			String version = "0.48.0";
 
 			@Override
 			protected void setupTest(API api) {
 				// same version == same
 				api.areDifferentThan();
 				// change the version, and it's different
-				version = "0.46.1";
+				version = "0.48.1";
 				api.areDifferentThan();
 			}
 

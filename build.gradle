@@ -5,9 +5,6 @@ allprojects {
 }
 apply from: rootProject.file('gradle/spotless-freshmark.gradle')
 
-repositories {
-	mavenCentral()
-}
 spotless {
 	groovyGradle {
 		target '*.gradle', 'gradle/*.gradle'

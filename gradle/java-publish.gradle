@@ -1,6 +1,20 @@
+import java.nio.charset.StandardCharsets
+
+def decode64(String varName) {
+	String envValue = System.env[varName]
+	if (envValue == null) {
+		return ""
+	} else {
+		return new String(envValue.decodeBase64(), "UTF-8")
+	}
+}
 
 if (project.parent == null) {
 	group = 'com.diffplug.spotless'
+	def pass = System.env['ORG_GRADLE_PROJECT_nexus_pass64']
+	if (pass != null) {
+		pass = pass.decodeBase64()
+	}
 	// it's the root project
 	apply plugin: 'io.github.gradle-nexus.publish-plugin'
 	nexusPublishing {
@@ -9,7 +23,7 @@ if (project.parent == null) {
 				nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
 				snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
 				username = System.env['ORG_GRADLE_PROJECT_nexus_user']
-				password = System.env['ORG_GRADLE_PROJECT_nexus_pass']
+				password = decode64('ORG_GRADLE_PROJECT_nexus_pass64')
 			}
 		}
 	}
@@ -158,7 +172,7 @@ model {
 
 if (!version.endsWith('-SNAPSHOT')) {
 	signing {
-		String gpg_key = new String(System.env['ORG_GRADLE_PROJECT_gpg_key64'].decodeBase64())
+		String gpg_key = decode64('ORG_GRADLE_PROJECT_gpg_key64')
 		useInMemoryPgpKeys(gpg_key, System.env['ORG_GRADLE_PROJECT_gpg_passphrase'])
 		sign(publishing.publications)
 	}
@@ -172,14 +186,12 @@ if (!version.endsWith('-SNAPSHOT')) {
 	}
 	// ensures that changelog bump and push only happens if the publish was successful
 	def thisProj = project
-	afterEvaluate {
-		changelogTasks.named('changelogBump').configure {
-			dependsOn thisProj.tasks.named('publishPluginMavenPublicationToSonatypeRepository')
-			dependsOn rootProject.tasks.named('closeAndReleaseSonatypeStagingRepository')
-			// if we have a gradle plugin, we need to push it up to the plugin portal too
-			if (thisProj.tasks.names.contains('publishPlugins')) {
-				dependsOn thisProj.tasks.named('publishPlugins')
-			}
+	changelogTasks.named('changelogBump').configure {
+		dependsOn ":${thisProj.path}:publishPluginMavenPublicationToSonatypeRepository"
+		dependsOn ":closeAndReleaseSonatypeStagingRepository"
+		// if we have a gradle plugin, we need to push it up to the plugin portal too
+		if (thisProj.tasks.names.contains('publishPlugins')) {
+			dependsOn thisProj.tasks.named('publishPlugins')
 		}
 	}
 }

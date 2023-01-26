@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 DiffPlug
+ * Copyright 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,11 @@
 package com.diffplug.spotless.npm;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.stream.Stream;
+
+import com.diffplug.spotless.ThrowingEx;
 
 class NodeServerLayout {
 
@@ -49,5 +54,32 @@ class NodeServerLayout {
 
 	static File getBuildDirFromNodeModulesDir(File nodeModulesDir) {
 		return nodeModulesDir.getParentFile();
+	}
+
+	public boolean isLayoutPrepared() {
+		if (!nodeModulesDir().isDirectory()) {
+			return false;
+		}
+		if (!packageJsonFile().isFile()) {
+			return false;
+		}
+		if (!serveJsFile().isFile()) {
+			return false;
+		}
+		// npmrc is optional, so must not be checked here
+		return true;
+	}
+
+	public boolean isNodeModulesPrepared() {
+		Path nodeModulesInstallDirPath = new File(nodeModulesDir(), "node_modules").toPath();
+		if (!Files.isDirectory(nodeModulesInstallDirPath)) {
+			return false;
+		}
+		// check if it is NOT empty
+		return ThrowingEx.get(() -> {
+			try (Stream<Path> entries = Files.list(nodeModulesInstallDirPath)) {
+				return entries.findFirst().isPresent();
+			}
+		});
 	}
 }

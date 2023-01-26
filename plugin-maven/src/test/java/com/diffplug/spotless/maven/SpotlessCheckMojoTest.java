@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
+
+import com.diffplug.spotless.ProcessRunner;
 
 class SpotlessCheckMojoTest extends MavenIntegrationHarness {
 
@@ -60,6 +62,7 @@ class SpotlessCheckMojoTest extends MavenIntegrationHarness {
 						"    <file>${basedir}/license.txt</file>",
 						"  </licenseHeader>",
 						"</java>"},
+				null,
 				null);
 
 		testSpotlessCheck(UNFORMATTED_FILE, "verify", true);
@@ -72,8 +75,8 @@ class SpotlessCheckMojoTest extends MavenIntegrationHarness {
 		MavenRunner mavenRunner = mavenRunner().withArguments(command);
 
 		if (expectError) {
-			MavenRunner.Result result = mavenRunner.runHasError();
-			assertThat(result.output()).contains("The following files had format violations");
+			ProcessRunner.Result result = mavenRunner.runHasError();
+			assertThat(result.stdOutUtf8()).contains("The following files had format violations");
 		} else {
 			mavenRunner.runNoError();
 		}

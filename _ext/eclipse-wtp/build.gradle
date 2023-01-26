@@ -60,24 +60,24 @@ apply from: rootProject.file('_ext/gradle/p2-fat-jar-setup.gradle')
 apply from: rootProject.file('gradle/java-publish.gradle')
 
 dependencies {
-	implementation "com.diffplug.spotless:spotless-eclipse-base:${VER_SPOTLESS_ECLISPE_BASE}"
+	implementation "com.diffplug.spotless:spotless-eclipse-base:${VER_SPOTLESS_ECLIPSE_BASE}"
 	// Required by most WPT formatters
 	implementation "com.ibm.icu:icu4j:${VER_IBM_ICU}"
 	// The XSD/DTD and other models are defined with EMF.
-	implementation "org.eclipse.emf:org.eclipse.emf.common:${VER_ECLISPE_EMF}"
-	implementation "org.eclipse.emf:org.eclipse.emf.ecore:${VER_ECLISPE_EMF}"
+	implementation "org.eclipse.emf:org.eclipse.emf.common:${VER_ECLIPSE_EMF}"
+	implementation "org.eclipse.emf:org.eclipse.emf.ecore:${VER_ECLIPSE_EMF}"
 	// Some WPT plugins requires OSGI bundle interfaces (but not effectively used)
 	implementation "org.eclipse.platform:org.eclipse.osgi.services:${VER_ECLIPSE_OSGI_SERVICES}"
 	// Provides document data structure and file buffers for formatters
 	implementation "org.eclipse.platform:org.eclipse.core.filebuffers:${VER_ECLIPSE_FILE_BUFFERS}"
 	// Provides text partitioners for formatters
-	implementation ("org.eclipse.platform:org.eclipse.jface.text:${VER_ECLISPE_JFACE}") {
+	implementation ("org.eclipse.platform:org.eclipse.jface.text:${VER_ECLIPSE_JFACE}") {
 		exclude group: 'org.eclipse.platform', module: 'org.eclipse.swt'
 	}
 	// Some WPT plugins use the EFS for storing temporary worspace data
-	implementation "org.eclipse.platform:org.eclipse.core.filesystem:${VER_ECLISPE_EFS}"
+	implementation "org.eclipse.platform:org.eclipse.core.filesystem:${VER_ECLIPSE_EFS}"
 	// Required by org.eclipse.wst.xsd.core
-	implementation "org.eclipse.emf:org.eclipse.xsd:${VER_ECLISPE_XSD}"
+	implementation "org.eclipse.emf:org.eclipse.xsd:${VER_ECLIPSE_XSD}"
 
 	testImplementation("org.slf4j:slf4j-simple:${VER_SLF4J}")
 }
@@ -100,7 +100,7 @@ sourceSets {
  * All test classes need to run separately since they all instatiate different setups of the
  * Eclipse framework.
  */
-test {
+tasks.withType(Test).configureEach {
 	//Skip default tests, which would run every test case.
 	exclude '**'
 }

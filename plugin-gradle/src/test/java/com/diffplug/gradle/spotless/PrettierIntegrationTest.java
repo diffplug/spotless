@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -136,6 +136,29 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 	}
 
 	@Test
+	void suggestsMissingJavaCommunityPlugin() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"def prettierConfig = [:]",
+				"prettierConfig['tabWidth'] = 4",
+				"def prettierPackages = [:]",
+				"prettierPackages['prettier'] = '2.0.5'",
+				"spotless {",
+				"    format 'java', {",
+				"        target 'JavaTest.java'",
+				"        prettier(prettierPackages).config(prettierConfig)",
+				"    }",
+				"}");
+		setFile("JavaTest.java").toResource("npm/prettier/plugins/java-test.dirty");
+		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").buildAndFail();
+		Assertions.assertThat(spotlessApply.getOutput()).contains("could not infer a parser");
+		Assertions.assertThat(spotlessApply.getOutput()).contains("prettier-plugin-java");
+	}
+
+	@Test
 	void usePhpCommunityPlugin() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
@@ -163,7 +186,10 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 	@Test
 	void autodetectNpmrcFileConfig() throws IOException {
 		setFile(".npmrc").toLines(
-				"registry=https://i.do.no.exist.com");
+				"registry=https://i.do.not.exist.com",
+				"fetch-timeout=250",
+				"fetch-retry-mintimeout=250",
+				"fetch-retry-maxtimeout=250");
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
@@ -186,7 +212,10 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 	@Test
 	void pickupNpmrcFileConfig() throws IOException {
 		setFile(".custom_npmrc").toLines(
-				"registry=https://i.do.no.exist.com");
+				"registry=https://i.do.not.exist.com",
+				"fetch-timeout=250",
+				"fetch-retry-mintimeout=250",
+				"fetch-retry-maxtimeout=250");
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.spotless'",

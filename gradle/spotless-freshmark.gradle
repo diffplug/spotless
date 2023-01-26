@@ -75,7 +75,7 @@ if (tasks.names.contains('changelogCheck')) {
 	changelogBumpFreshmark.dependsOn tasks.named('changelogBump')
 
 	def changelogBumpFreshmarkGitAdd = tasks.register('changelogBumpFreshmarkGitAdd') {
-		// this git add add should run after the freshmark
+		// this git add should run after the freshmark
 		dependsOn(changelogBumpFreshmark)
 		// do the git add
 		doLast {

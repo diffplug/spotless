@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 
+import javax.annotation.Nullable;
+
+import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
@@ -33,7 +36,7 @@ public class KtLintStep {
 	// prevent direct instantiation
 	private KtLintStep() {}
 
-	private static final String DEFAULT_VERSION = "0.46.1";
+	private static final String DEFAULT_VERSION = "0.48.2";
 	static final String NAME = "ktlint";
 	static final String PACKAGE = "com.pinterest";
 	static final String MAVEN_COORDINATE = PACKAGE + ":ktlint:";
@@ -48,24 +51,39 @@ public class KtLintStep {
 
 	public static FormatterStep create(String version, Provisioner provisioner, boolean useExperimental,
 			Map<String, String> userData, Map<String, Object> editorConfigOverride) {
-		return create(version, provisioner, false, useExperimental, userData, editorConfigOverride);
+		return create(version, provisioner, false, useExperimental, null, userData, editorConfigOverride);
 	}
 
 	public static FormatterStep createForScript(String version, Provisioner provisioner) {
-		return create(version, provisioner, true, false, Collections.emptyMap(), Collections.emptyMap());
+		return create(version, provisioner, true, false, null, Collections.emptyMap(), Collections.emptyMap());
 	}
 
-	public static FormatterStep createForScript(String version, Provisioner provisioner, boolean useExperimental,
-			Map<String, String> userData, Map<String, Object> editorConfigOverride) {
-		return create(version, provisioner, true, useExperimental, userData, editorConfigOverride);
+	public static FormatterStep createForScript(String version,
+			Provisioner provisioner,
+			boolean useExperimental,
+			@Nullable FileSignature editorConfigPath,
+			Map<String, String> userData,
+			Map<String, Object> editorConfigOverride) {
+		return create(version,
+				provisioner,
+				true,
+				useExperimental,
+				editorConfigPath,
+				userData,
+				editorConfigOverride);
 	}
 
-	private static FormatterStep create(String version, Provisioner provisioner, boolean isScript, boolean useExperimental,
-			Map<String, String> userData, Map<String, Object> editorConfigOverride) {
+	public static FormatterStep create(String version,
+			Provisioner provisioner,
+			boolean isScript,
+			boolean useExperimental,
+			@Nullable FileSignature editorConfig,
+			Map<String, String> userData,
+			Map<String, Object> editorConfigOverride) {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(provisioner, "provisioner");
 		return FormatterStep.createLazy(NAME,
-				() -> new State(version, provisioner, isScript, useExperimental, userData, editorConfigOverride),
+				() -> new State(version, provisioner, isScript, useExperimental, editorConfig, userData, editorConfigOverride),
 				State::createFormat);
 	}
 
@@ -83,25 +101,35 @@ public class KtLintStep {
 		private final boolean useExperimental;
 		private final TreeMap<String, String> userData;
 		private final TreeMap<String, Object> editorConfigOverride;
+		private final String version;
+		@Nullable
+		private final FileSignature editorConfigPath;
 
-		State(String version, Provisioner provisioner, boolean isScript, boolean useExperimental,
-				Map<String, String> userData, Map<String, Object> editorConfigOverride) throws IOException {
-
+		State(String version,
+				Provisioner provisioner,
+				boolean isScript,
+				boolean useExperimental,
+				@Nullable FileSignature editorConfigPath,
+				Map<String, String> userData,
+				Map<String, Object> editorConfigOverride) throws IOException {
 			if (BadSemver.version(version) < BadSemver.version(0, 46, 0)) {
 				throw new IllegalStateException("KtLint versions < 0.46.0 not supported!");
 			}
-
+			this.version = version;
 			this.useExperimental = useExperimental;
 			this.userData = new TreeMap<>(userData);
 			this.editorConfigOverride = new TreeMap<>(editorConfigOverride);
 			this.jarState = JarState.from(MAVEN_COORDINATE + version, provisioner);
+			this.editorConfigPath = editorConfigPath;
 			this.isScript = isScript;
 		}
 
 		FormatterFunc createFormat() throws Exception {
-			Class<?> formatterFunc = jarState.getClassLoader().loadClass("com.diffplug.spotless.glue.ktlint.KtlintFormatterFunc");
-			Constructor<?> constructor = formatterFunc.getConstructor(boolean.class, boolean.class, Map.class, Map.class);
-			return (FormatterFunc.NeedsFile) constructor.newInstance(isScript, useExperimental, userData, editorConfigOverride);
+			final ClassLoader classLoader = jarState.getClassLoader();
+			Class<?> formatterFunc = classLoader.loadClass("com.diffplug.spotless.glue.ktlint.KtlintFormatterFunc");
+			Constructor<?> constructor = formatterFunc.getConstructor(
+					String.class, boolean.class, boolean.class, FileSignature.class, Map.class, Map.class);
+			return (FormatterFunc.NeedsFile) constructor.newInstance(version, isScript, useExperimental, editorConfigPath, userData, editorConfigOverride);
 		}
 	}
 }
