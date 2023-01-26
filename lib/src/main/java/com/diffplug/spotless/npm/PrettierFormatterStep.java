@@ -77,8 +77,8 @@ public class PrettierFormatterStep {
 					new NpmFormatterStepLocations(
 							projectDir,
 							buildDir,
-							npmPathResolver.resolveNpmExecutable(),
-							npmPathResolver.resolveNodeExecutable()));
+							npmPathResolver::resolveNpmExecutable,
+							npmPathResolver::resolveNodeExecutable));
 			this.prettierConfig = requireNonNull(prettierConfig);
 		}
 

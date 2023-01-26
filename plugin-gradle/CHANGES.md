@@ -15,6 +15,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * **POTENTIALLY BREAKING** Removed support for KtLint 0.3x and 0.45.2 ([#1475](https://github.com/diffplug/spotless/pull/1475))
   * `KtLint` does not maintain a stable API - before this PR, we supported every breaking change in the API since 2019.
   * From now on, we will support no more than 2 breaking changes at a time.
+* `npm`-based formatters `ESLint`, `prettier` and `tsfmt` delay their `npm install` call until the formatters are first
+  used. For gradle this effectively moves the `npm install` call out of the configuration phase and as such enables
+  better integration with `gradle-node-plugin`. ([#1522](https://github.com/diffplug/spotless/pull/1522))
 
 ## [6.13.0] - 2023-01-14
 ### Added

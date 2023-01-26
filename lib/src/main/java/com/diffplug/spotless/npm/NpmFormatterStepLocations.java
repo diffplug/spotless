@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.function.Supplier;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -32,12 +33,12 @@ class NpmFormatterStepLocations implements Serializable {
 	private final transient File buildDir;
 
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-	private final transient File npmExecutable;
+	private final transient Supplier<File> npmExecutable;
 
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-	private final transient File nodeExecutable;
+	private final transient Supplier<File> nodeExecutable;
 
-	public NpmFormatterStepLocations(File projectDir, File buildDir, File npmExecutable, File nodeExecutable) {
+	public NpmFormatterStepLocations(File projectDir, File buildDir, Supplier<File> npmExecutable, Supplier<File> nodeExecutable) {
 		this.projectDir = requireNonNull(projectDir);
 		this.buildDir = requireNonNull(buildDir);
 		this.npmExecutable = requireNonNull(npmExecutable);
@@ -53,10 +54,10 @@ class NpmFormatterStepLocations implements Serializable {
 	}
 
 	public File npmExecutable() {
-		return npmExecutable;
+		return npmExecutable.get();
 	}
 
 	public File nodeExecutable() {
-		return nodeExecutable;
+		return nodeExecutable.get();
 	}
 }
