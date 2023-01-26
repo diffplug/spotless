@@ -101,11 +101,8 @@ class FeatureClassLoader extends URLClassLoader {
 
 	private static ByteBuffer urlToByteBuffer(URL url) throws IOException {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-		int nRead;
-		byte[] data = new byte[1024];
-		InputStream inputStream = url.openStream();
-		while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
-			buffer.write(data, 0, nRead);
+		try (InputStream inputStream = url.openStream()) {
+			inputStream.transferTo(buffer);
 		}
 		buffer.flush();
 		return ByteBuffer.wrap(buffer.toByteArray());
