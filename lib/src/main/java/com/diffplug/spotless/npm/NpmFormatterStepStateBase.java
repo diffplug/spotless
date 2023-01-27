@@ -56,7 +56,14 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 		this.stepName = requireNonNull(stepName);
 		this.npmConfig = requireNonNull(npmConfig);
 		this.locations = locations;
-		this.nodeServerLayout = new NodeServerLayout(locations.buildDir(), stepName);
+		String stateSuffix = stateSuffix();
+		logger.info("Creating {} with name {} and state suffix {}", this.getClass().getSimpleName(), stepName, stateSuffix);
+		this.nodeServerLayout = new NodeServerLayout(locations.buildDir(), stepName, stateSuffix);
+	}
+
+	protected String stateSuffix() {
+		String packageJsonContent = npmConfig.getPackageJsonContent();
+		return NpmResourceHelper.md5(packageJsonContent);
 	}
 
 	protected void prepareNodeServerLayout() throws IOException {

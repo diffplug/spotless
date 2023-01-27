@@ -29,8 +29,8 @@ class NodeServerLayout {
 	private final File serveJsFile;
 	private final File npmrcFile;
 
-	NodeServerLayout(File buildDir, String stepName) {
-		this.nodeModulesDir = new File(buildDir, "spotless-node-modules-" + stepName);
+	NodeServerLayout(File buildDir, String stepName, String stepSuffix) {
+		this.nodeModulesDir = new File(buildDir, String.format("spotless-node-modules-%s-%s", stepName, stepSuffix));
 		this.packageJsonFile = new File(nodeModulesDir, "package.json");
 		this.serveJsFile = new File(nodeModulesDir, "serve.js");
 		this.npmrcFile = new File(nodeModulesDir, ".npmrc");
