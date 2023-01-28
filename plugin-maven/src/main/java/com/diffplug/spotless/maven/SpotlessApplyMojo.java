@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 
 		for (File file : files) {
 			if (upToDateChecker.isUpToDate(file.toPath())) {
+				impactedFilesTracker.skippedAsCleanCache();
 				if (getLog().isDebugEnabled()) {
 					getLog().debug("Spotless will not format an up-to-date file: " + file);
 				}
@@ -60,6 +61,11 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 		}
 
 		// We print the number of considered files which is useful when ratchetFrom is setup
-		getLog().info(String.format("A formatter with %s steps cleaned: %s files (for %s considered)", formatter.getSteps().size(), impactedFilesTracker.getCleaned(), impactedFilesTracker.getChecked()));
+		int nbSkipped = impactedFilesTracker.getSkipped();
+		int nbChecked = impactedFilesTracker.getChecked();
+		int nbCleaned = impactedFilesTracker.getCleaned();
+		int totalProcessed = nbSkipped + nbChecked + nbCleaned;
+		getLog().info(String.format("Spotless.%s is keeping %s files clean - %s were changed to be clean, %s were already clean, %s were skipped because caching determined they were already clean",
+				formatter.getName(), totalProcessed, nbCleaned, nbChecked, nbSkipped));
 	}
 }

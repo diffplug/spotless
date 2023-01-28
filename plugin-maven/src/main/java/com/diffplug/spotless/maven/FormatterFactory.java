@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,7 +101,9 @@ public abstract class FormatterFactory {
 			formatterSteps.add(pair.out());
 		}
 
+		String formatterName = this.getClass().getSimpleName();
 		return Formatter.builder()
+				.name(formatterName)
 				.encoding(formatterEncoding)
 				.lineEndingsPolicy(formatterLineEndingPolicy)
 				.exceptionPolicy(new FormatExceptionPolicyStrict())
