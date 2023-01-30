@@ -45,13 +45,14 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 			}
 
 			try {
-				impactedFilesTracker.checked();
 				PaddedCell.DirtyState dirtyState = PaddedCell.calculateDirtyState(formatter, file);
 				if (!dirtyState.isClean() && !dirtyState.didNotConverge()) {
 					getLog().info(String.format("Writing clean file: %s", file));
 					dirtyState.writeCanonicalTo(file);
 					buildContext.refresh(file);
 					impactedFilesTracker.cleaned();
+				} else {
+					impactedFilesTracker.checkedButAlreadyClean();
 				}
 			} catch (IOException e) {
 				throw new MojoExecutionException("Unable to format file " + file, e);
@@ -61,11 +62,11 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 		}
 
 		// We print the number of considered files which is useful when ratchetFrom is setup
-		int nbSkipped = impactedFilesTracker.getSkipped();
-		int nbChecked = impactedFilesTracker.getChecked();
-		int nbCleaned = impactedFilesTracker.getCleaned();
-		int totalProcessed = nbSkipped + nbChecked + nbCleaned;
+		int skippedAsCleanCache = impactedFilesTracker.getSkippedAsCleanCache();
+		int checkedButAlreadyClean = impactedFilesTracker.getCheckedButAlreadyClean();
+		int cleaned = impactedFilesTracker.getCleaned();
+		int totalProcessed = skippedAsCleanCache + checkedButAlreadyClean + cleaned;
 		getLog().info(String.format("Spotless.%s is keeping %s files clean - %s were changed to be clean, %s were already clean, %s were skipped because caching determined they were already clean",
-				formatter.getName(), totalProcessed, nbCleaned, nbChecked, nbSkipped));
+				formatter.getName(), totalProcessed, cleaned, checkedButAlreadyClean, skippedAsCleanCache));
 	}
 }

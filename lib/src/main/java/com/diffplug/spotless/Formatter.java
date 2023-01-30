@@ -113,7 +113,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 
 	public static class Builder {
 		// optional parameters
-		private String name = "misc";
+		private String name = "unnamed";
 		// required parameters
 		private LineEnding.Policy lineEndingsPolicy;
 		private Charset encoding;

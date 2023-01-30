@@ -15,41 +15,39 @@
  */
 package com.diffplug.spotless.maven;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 /**
  * Tracks the number of processed files, typically by a single Formatter for a whole repository
  */
-public class ImpactedFilesTracker {
-	protected final AtomicInteger nbSkipped = new AtomicInteger();
-	protected final AtomicInteger nbChecked = new AtomicInteger();
-	protected final AtomicInteger nbCleaned = new AtomicInteger();
+class ImpactedFilesTracker {
+	protected int nbskippedAsCleanCache = 0;
+	protected int nbCheckedButAlreadyClean = 0;
+	protected int nbCleaned = 0;
 
 	/**
 	 * Some cache mechanism may indicate some content is clean, without having to execute the cleaning process
 	 */
 	public void skippedAsCleanCache() {
-		nbSkipped.incrementAndGet();
+		nbskippedAsCleanCache++;
 	}
 
-	public int getSkipped() {
-		return nbSkipped.get();
+	public int getSkippedAsCleanCache() {
+		return nbskippedAsCleanCache;
 	}
 
-	public void checked() {
-		nbChecked.incrementAndGet();
+	public void checkedButAlreadyClean() {
+		nbCheckedButAlreadyClean++;
 	}
 
-	public int getChecked() {
-		return nbChecked.get();
+	public int getCheckedButAlreadyClean() {
+		return nbCheckedButAlreadyClean;
 	}
 
 	public void cleaned() {
-		nbCleaned.incrementAndGet();
+		nbCleaned++;
 	}
 
 	public int getCleaned() {
-		return nbCleaned.get();
+		return nbCleaned;
 	}
 
 }
