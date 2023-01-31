@@ -91,7 +91,7 @@ def getStartProperty(java.lang.String name) {
 
 }
 
-if (System.getenv('SPOTLESS_EXCLUDE_MAVEN') != 'true' && getStartProperty('SPOTLESS_EXCLUDE_MAVEN') != 'true' && System.getenv('JITPACK') != 'true') {
+if (System.getenv('SPOTLESS_EXCLUDE_MAVEN') != 'true' && getStartProperty('SPOTLESS_EXCLUDE_MAVEN') != 'true') {
 	include 'plugin-maven'	// maven-specific glue code
 }
 
