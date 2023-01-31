@@ -69,6 +69,9 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 		if (totalProcessed > 0) {
 			getLog().info(String.format("Spotless.%s is keeping %s files clean - %s were changed to be clean, %s were already clean, %s were skipped because caching determined they were already clean",
 					formatter.getName(), totalProcessed, cleaned, checkedButAlreadyClean, skippedAsCleanCache));
+		} else {
+			getLog().debug(String.format("Spotless.%s is not considering a single file",
+					formatter.getName()));
 		}
 	}
 }
