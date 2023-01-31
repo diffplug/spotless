@@ -12,6 +12,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Changes
 * **POTENTIALLY BREAKING** Bump bytecode from Java 8 to 11 ([#1530](https://github.com/diffplug/spotless/pull/1530) part 2 of [#1337](https://github.com/diffplug/spotless/issues/1337))
+* **POTENTIALLY BREAKING** `sortByKeys` for JSON formatting now takes into account objects inside arrays ([#1546](https://github.com/diffplug/spotless/pull/1546))
 
 ## [2.34.0] - 2023-01-26
 ### Added
