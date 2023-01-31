@@ -50,4 +50,7 @@ class ImpactedFilesTracker {
 		return nbCleaned;
 	}
 
+	public int getTotal() {
+		return nbskippedAsCleanCache + nbCheckedButAlreadyClean + nbCleaned;
+	}
 }

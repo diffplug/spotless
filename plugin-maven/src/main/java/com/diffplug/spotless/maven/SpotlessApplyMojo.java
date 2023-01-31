@@ -33,11 +33,11 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 
 	@Override
 	protected void process(Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException {
-		ImpactedFilesTracker impactedFilesTracker = new ImpactedFilesTracker();
+		ImpactedFilesTracker counter = new ImpactedFilesTracker();
 
 		for (File file : files) {
 			if (upToDateChecker.isUpToDate(file.toPath())) {
-				impactedFilesTracker.skippedAsCleanCache();
+				counter.skippedAsCleanCache();
 				if (getLog().isDebugEnabled()) {
 					getLog().debug("Spotless will not format an up-to-date file: " + file);
 				}
@@ -50,9 +50,9 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 					getLog().info(String.format("Writing clean file: %s", file));
 					dirtyState.writeCanonicalTo(file);
 					buildContext.refresh(file);
-					impactedFilesTracker.cleaned();
+					counter.cleaned();
 				} else {
-					impactedFilesTracker.checkedButAlreadyClean();
+					counter.checkedButAlreadyClean();
 				}
 			} catch (IOException e) {
 				throw new MojoExecutionException("Unable to format file " + file, e);
@@ -62,13 +62,9 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 		}
 
 		// We print the number of considered files which is useful when ratchetFrom is setup
-		int skippedAsCleanCache = impactedFilesTracker.getSkippedAsCleanCache();
-		int checkedButAlreadyClean = impactedFilesTracker.getCheckedButAlreadyClean();
-		int cleaned = impactedFilesTracker.getCleaned();
-		int totalProcessed = skippedAsCleanCache + checkedButAlreadyClean + cleaned;
-		if (totalProcessed > 0) {
+		if (counter.getTotal() > 0) {
 			getLog().info(String.format("Spotless.%s is keeping %s files clean - %s were changed to be clean, %s were already clean, %s were skipped because caching determined they were already clean",
-					formatter.getName(), totalProcessed, cleaned, checkedButAlreadyClean, skippedAsCleanCache));
+					formatter.getName(), counter.getTotal(), counter.getCleaned(), counter.getCheckedButAlreadyClean(), counter.getSkippedAsCleanCache()));
 		} else {
 			getLog().warn(String.format("Spotless.%s has no target files. Examine your `<includes>`: https://github.com/diffplug/spotless/tree/main/plugin-maven#quickstart", formatter.getName()));
 		}
