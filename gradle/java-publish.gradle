@@ -170,7 +170,7 @@ model {
 	}
 }
 
-if (System.getenv('JITPACK') == 'true') {
+if (System.env['JITPACK'] == 'true') {
 	signing {
 		setRequired(false)
 	}
