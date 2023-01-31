@@ -66,7 +66,9 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 		int checkedButAlreadyClean = impactedFilesTracker.getCheckedButAlreadyClean();
 		int cleaned = impactedFilesTracker.getCleaned();
 		int totalProcessed = skippedAsCleanCache + checkedButAlreadyClean + cleaned;
-		getLog().info(String.format("Spotless.%s is keeping %s files clean - %s were changed to be clean, %s were already clean, %s were skipped because caching determined they were already clean",
-				formatter.getName(), totalProcessed, cleaned, checkedButAlreadyClean, skippedAsCleanCache));
+		if (totalProcessed > 0) {
+			getLog().info(String.format("Spotless.%s is keeping %s files clean - %s were changed to be clean, %s were already clean, %s were skipped because caching determined they were already clean",
+					formatter.getName(), totalProcessed, cleaned, checkedButAlreadyClean, skippedAsCleanCache));
+		}
 	}
 }
