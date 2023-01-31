@@ -12,6 +12,7 @@ dependencies {
 	api "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
 	api "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"
 	api "org.assertj:assertj-core:${VER_ASSERTJ}"
+	api "org.mockito:mockito-core:$VER_MOCKITO"
 
 	implementation "com.diffplug.durian:durian-io:${VER_DURIAN}"
 	implementation "com.diffplug.durian:durian-collect:${VER_DURIAN}"
@@ -22,7 +23,7 @@ dependencies {
 spotbugs { reportLevel = 'high' } // low|medium|high (low = sensitive to even minor mistakes)
 
 apply from: rootProject.file('gradle/special-tests.gradle')
-tasks.named('test') {
+tasks.withType(Test).configureEach {
 	if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_16)) {
 		// for Antlr4FormatterStepTest and KtLintStepTest
 		def args = [

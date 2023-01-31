@@ -98,7 +98,8 @@ class UpToDateCheckingTest extends MavenIntegrationHarness {
 						"    <artifactId>javax.inject</artifactId>",
 						"    <version>1</version>",
 						"  </dependency>",
-						"</dependencies>"}));
+						"</dependencies>"},
+				null));
 	}
 
 	@Test

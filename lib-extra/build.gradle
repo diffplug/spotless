@@ -26,7 +26,7 @@ dependencies {
 spotbugs { reportLevel = 'low' } // low|medium|high (low = sensitive to even minor mistakes)
 
 apply from: rootProject.file('gradle/special-tests.gradle')
-tasks.named('test') {
+tasks.withType(Test).configureEach {
 	if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_16)) {
 		// needed for EclipseCdtFormatterStepTest
 		jvmArgs '--add-opens=java.base/java.lang=ALL-UNNAMED'

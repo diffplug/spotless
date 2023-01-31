@@ -140,7 +140,7 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 						String[] parts = entry.getKey().substring(7).split("_", 2);
 						if (parts.length == 1) {
 							// convert ktlint_{ruleset} to {ruleset}
-							String qualifiedRuleId = parts[0];
+							String qualifiedRuleId = parts[0] + ":";
 							property = RuleExecutionEditorConfigPropertyKt.createRuleSetExecutionEditorConfigProperty(qualifiedRuleId);
 						} else {
 							// convert ktlint_{ruleset}_{rulename} to {ruleset}:{rulename}

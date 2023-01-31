@@ -18,12 +18,13 @@ package com.diffplug.spotless.maven.json;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.json.gson.GsonConfig;
 import com.diffplug.spotless.json.gson.GsonStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 
 public class Gson implements FormatterStepFactory {
-	private static final String DEFAULT_GSON_VERSION = "2.8.9";
+	private static final String DEFAULT_GSON_VERSION = "2.10.1";
 
 	@Parameter
 	int indentSpaces = Json.DEFAULT_INDENTATION;
@@ -40,6 +41,6 @@ public class Gson implements FormatterStepFactory {
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
 		int indentSpaces = this.indentSpaces;
-		return GsonStep.create(indentSpaces, sortByKeys, escapeHtml, version, stepConfig.getProvisioner());
+		return GsonStep.create(new GsonConfig(sortByKeys, escapeHtml, indentSpaces, version), stepConfig.getProvisioner());
 	}
 }

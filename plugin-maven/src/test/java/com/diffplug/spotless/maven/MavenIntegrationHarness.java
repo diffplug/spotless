@@ -59,6 +59,7 @@ public class MavenIntegrationHarness extends ResourceHarness {
 	private static final String EXECUTIONS = "executions";
 	private static final String MODULES = "modules";
 	private static final String DEPENDENCIES = "dependencies";
+	private static final String PLUGINS = "plugins";
 	private static final String MODULE_NAME = "name";
 	private static final int REMOTE_DEBUG_PORT = 5005;
 
@@ -151,6 +152,10 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		writePom(formats(groupWithSteps("format", including(includes), steps)));
 	}
 
+	protected void writePomWithPrettierSteps(String[] plugins, String includes, String... steps) throws IOException {
+		writePom(null, formats(groupWithSteps("format", including(includes), steps)), null, plugins);
+	}
+
 	protected void writePomWithPomSteps(String... steps) throws IOException {
 		writePom(groupWithSteps("pom", including("pom_test.xml"), steps));
 	}
@@ -168,11 +173,11 @@ public class MavenIntegrationHarness extends ResourceHarness {
 	}
 
 	protected void writePom(String... configuration) throws IOException {
-		writePom(null, configuration, null);
+		writePom(null, configuration, null, null);
 	}
 
-	protected void writePom(String[] executions, String[] configuration, String[] dependencies) throws IOException {
-		String pomXmlContent = createPomXmlContent(null, executions, configuration, dependencies);
+	protected void writePom(String[] executions, String[] configuration, String[] dependencies, String[] plugins) throws IOException {
+		String pomXmlContent = createPomXmlContent(null, executions, configuration, dependencies, plugins);
 		setFile("pom.xml").toContent(pomXmlContent);
 	}
 
@@ -203,17 +208,17 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		return mavenRunner().withRemoteDebug(REMOTE_DEBUG_PORT);
 	}
 
-	protected String createPomXmlContent(String pluginVersion, String[] executions, String[] configuration, String[] dependencies) throws IOException {
-		return createPomXmlContent("/pom-test.xml.mustache", pluginVersion, executions, configuration, dependencies);
+	protected String createPomXmlContent(String pluginVersion, String[] executions, String[] configuration, String[] dependencies, String[] plugins) throws IOException {
+		return createPomXmlContent("/pom-test.xml.mustache", pluginVersion, executions, configuration, dependencies, plugins);
 	}
 
-	protected String createPomXmlContent(String pomTemplate, String pluginVersion, String[] executions, String[] configuration, String[] dependencies) throws IOException {
-		Map<String, Object> params = buildPomXmlParams(pluginVersion, executions, configuration, null, dependencies);
+	protected String createPomXmlContent(String pomTemplate, String pluginVersion, String[] executions, String[] configuration, String[] dependencies, String[] plugins) throws IOException {
+		Map<String, Object> params = buildPomXmlParams(pluginVersion, executions, configuration, null, dependencies, plugins);
 		return createPomXmlContent(pomTemplate, params);
 	}
 
 	protected String createPomXmlContent(String pluginVersion, String[] executions, String[] configuration) throws IOException {
-		return createPomXmlContent(pluginVersion, executions, configuration, null);
+		return createPomXmlContent(pluginVersion, executions, configuration, null, null);
 	}
 
 	protected String createPomXmlContent(String pomTemplate, Map<String, Object> params) throws IOException {
@@ -226,7 +231,7 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		}
 	}
 
-	protected static Map<String, Object> buildPomXmlParams(String pluginVersion, String[] executions, String[] configuration, String[] modules, String[] dependencies) {
+	protected static Map<String, Object> buildPomXmlParams(String pluginVersion, String[] executions, String[] configuration, String[] modules, String[] dependencies, String[] plugins) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(SPOTLESS_MAVEN_PLUGIN_VERSION, pluginVersion == null ? getSystemProperty(SPOTLESS_MAVEN_PLUGIN_VERSION) : pluginVersion);
 
@@ -245,6 +250,10 @@ public class MavenIntegrationHarness extends ResourceHarness {
 
 		if (dependencies != null) {
 			params.put(DEPENDENCIES, String.join("\n", dependencies));
+		}
+
+		if (plugins != null) {
+			params.put(PLUGINS, String.join("\n", plugins));
 		}
 
 		return params;

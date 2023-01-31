@@ -80,9 +80,11 @@ public class TsFmtFormatterStep {
 									"/com/diffplug/spotless/npm/common-serve.js",
 									"/com/diffplug/spotless/npm/tsfmt-serve.js"),
 							npmPathResolver.resolveNpmrcContent()),
-					projectDir,
-					buildDir,
-					npmPathResolver.resolveNpmExecutable());
+					new NpmFormatterStepLocations(
+							projectDir,
+							buildDir,
+							npmPathResolver::resolveNpmExecutable,
+							npmPathResolver::resolveNodeExecutable));
 			this.buildDir = requireNonNull(buildDir);
 			this.configFile = configFile;
 			this.inlineTsFmtSettings = inlineTsFmtSettings == null ? new TreeMap<>() : new TreeMap<>(inlineTsFmtSettings);

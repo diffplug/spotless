@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,10 @@
  */
 package com.diffplug.spotless.maven.kotlin;
 
-import static org.junit.jupiter.api.condition.JRE.JAVA_11;
-
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
 
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
-@EnabledForJreRange(min = JAVA_11) // ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
 class KtfmtTest extends MavenIntegrationHarness {
 	@Test
 	void testKtfmt() throws Exception {
