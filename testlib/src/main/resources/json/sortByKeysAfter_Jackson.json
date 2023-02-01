@@ -2,6 +2,10 @@
   "A": 1,
   "X": 2,
   "_arraysNotSorted": [ 3, 2, 1 ],
+  "_objectsInArraysAreSorted": [ {
+    "a": 1,
+    "b": 2
+  } ],
   "a": 3,
   "c": 4,
   "x": 5,
