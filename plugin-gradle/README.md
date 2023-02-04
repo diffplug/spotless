@@ -4,26 +4,20 @@
 <!---freshmark shields
 output = [
   link(shield('Gradle plugin', 'plugins.gradle.org', 'com.diffplug.spotless', 'blue'), 'https://plugins.gradle.org/plugin/com.diffplug.spotless'),
-  link(shield('Maven central', 'mavencentral', 'yes', 'blue'), 'https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-gradle%22'),
-  link(shield('Javadoc', 'javadoc', 'yes', 'blue'), 'https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/{{versionLast}}/index.html'),
-  link(shield('License Apache', 'license', 'apache', 'blue'), 'https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)'),
   link(shield('Changelog', 'changelog', '{{versionLast}}', 'blue'), 'CHANGES.md'),
+  link(shield('Maven central', 'mavencentral', 'here', 'blue'), 'https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-gradle%22'),
+  link(shield('Javadoc', 'javadoc', 'here', 'blue'), 'https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/{{versionLast}}/index.html'),
   '',
-  link(image('Circle CI', 'https://circleci.com/gh/diffplug/spotless/tree/main.svg?style=shield'), 'https://circleci.com/gh/diffplug/spotless/tree/main'),
-  link(shield('Live chat', 'gitter', 'chat', 'brightgreen'), 'https://gitter.im/{{org}}/{{name}}'),
   link(shield('VS Code plugin', 'IDE', 'VS Code', 'blueviolet'), 'https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle'),
   link(shield('IntelliJ plugin', 'IDE', 'IntelliJ', 'blueviolet'), 'https://plugins.jetbrains.com/plugin/18321-spotless-gradle'),
   link(shield('Add other IDE', 'IDE', 'add yours', 'blueviolet'), 'IDE_HOOK.md')
   ].join('\n');
 -->
 [![Gradle plugin](https://img.shields.io/badge/plugins.gradle.org-com.diffplug.spotless-blue.svg)](https://plugins.gradle.org/plugin/com.diffplug.spotless)
-[![Maven central](https://img.shields.io/badge/mavencentral-yes-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-gradle%22)
-[![Javadoc](https://img.shields.io/badge/javadoc-yes-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.14.0/index.html)
-[![License Apache](https://img.shields.io/badge/license-apache-blue.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
 [![Changelog](https://img.shields.io/badge/changelog-6.14.0-blue.svg)](CHANGES.md)
+[![Maven central](https://img.shields.io/badge/mavencentral-here-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-gradle%22)
+[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.14.0/index.html)
 
-[![Circle CI](https://circleci.com/gh/diffplug/spotless/tree/main.svg?style=shield)](https://circleci.com/gh/diffplug/spotless/tree/main)
-[![Live chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
 [![VS Code plugin](https://img.shields.io/badge/IDE-VS_Code-blueviolet.svg)](https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle)
 [![IntelliJ plugin](https://img.shields.io/badge/IDE-IntelliJ-blueviolet.svg)](https://plugins.jetbrains.com/plugin/18321-spotless-gradle)
 [![Add other IDE](https://img.shields.io/badge/IDE-add_yours-blueviolet.svg)](IDE_HOOK.md)
@@ -33,7 +27,7 @@ output = [
 output = prefixDelimiterReplace(input, 'https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/', '/', versionLast)
 -->
 
-Spotless is a general-purpose formatting plugin used by [4,000 projects on GitHub (August 2020)](https://github.com/search?l=gradle&q=spotless&type=Code).  It is completely à la carte, but also includes powerful "batteries-included" if you opt-in.
+Spotless is a general-purpose formatting plugin used by [15,000 projects on GitHub (Jan 2023)](https://github.com/search?l=gradle&q=spotless&type=Code).  It is completely à la carte, but also includes powerful "batteries-included" if you opt-in.
 
 To people who use your build, it looks like this ([IDE support also available](IDE_HOOK.md)):
 
