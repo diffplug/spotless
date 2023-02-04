@@ -54,7 +54,9 @@ public class MavenIntegrationHarness extends ResourceHarness {
 	 */
 	private static final String SPOTLESS_MAVEN_VERSION_IDE = null;
 
+	private static final String POM_TEMPLATE = "/pom-test.xml.mustache";
 	private static final String SPOTLESS_MAVEN_PLUGIN_VERSION = "spotlessMavenPluginVersion";
+	private static final String BUILD = "build";
 	private static final String CONFIGURATION = "configuration";
 	private static final String EXECUTIONS = "executions";
 	private static final String MODULES = "modules";
@@ -209,16 +211,21 @@ public class MavenIntegrationHarness extends ResourceHarness {
 	}
 
 	protected String createPomXmlContent(String pluginVersion, String[] executions, String[] configuration, String[] dependencies, String[] plugins) throws IOException {
-		return createPomXmlContent("/pom-test.xml.mustache", pluginVersion, executions, configuration, dependencies, plugins);
+		return createPomXmlContent(POM_TEMPLATE, pluginVersion, executions, configuration, dependencies, plugins);
 	}
 
 	protected String createPomXmlContent(String pomTemplate, String pluginVersion, String[] executions, String[] configuration, String[] dependencies, String[] plugins) throws IOException {
-		Map<String, Object> params = buildPomXmlParams(pluginVersion, executions, configuration, null, dependencies, plugins);
+		Map<String, Object> params = buildPomXmlParams(pluginVersion, null, executions, configuration, null, dependencies, plugins);
 		return createPomXmlContent(pomTemplate, params);
 	}
 
 	protected String createPomXmlContent(String pluginVersion, String[] executions, String[] configuration) throws IOException {
 		return createPomXmlContent(pluginVersion, executions, configuration, null, null);
+	}
+
+	protected String createPomXmlContent(String[] build, String[] configuration) throws IOException {
+		Map<String, Object> params = buildPomXmlParams(null, build, null, configuration, null, null, null);
+		return createPomXmlContent(POM_TEMPLATE, params);
 	}
 
 	protected String createPomXmlContent(String pomTemplate, Map<String, Object> params) throws IOException {
@@ -231,9 +238,13 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		}
 	}
 
-	protected static Map<String, Object> buildPomXmlParams(String pluginVersion, String[] executions, String[] configuration, String[] modules, String[] dependencies, String[] plugins) {
+	protected static Map<String, Object> buildPomXmlParams(String pluginVersion, String[] build, String[] executions, String[] configuration, String[] modules, String[] dependencies, String[] plugins) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(SPOTLESS_MAVEN_PLUGIN_VERSION, pluginVersion == null ? getSystemProperty(SPOTLESS_MAVEN_PLUGIN_VERSION) : pluginVersion);
+
+		if (build != null) {
+			params.put(BUILD, String.join("\n", build));
+		}
 
 		if (configuration != null) {
 			params.put(CONFIGURATION, String.join("\n", configuration));

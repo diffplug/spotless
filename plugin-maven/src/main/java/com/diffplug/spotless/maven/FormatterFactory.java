@@ -29,6 +29,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.MavenProject;
 
 import com.diffplug.common.collect.Sets;
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
@@ -71,7 +72,7 @@ public abstract class FormatterFactory {
 
 	private ToggleOffOn toggle;
 
-	public abstract Set<String> defaultIncludes();
+	public abstract Set<String> defaultIncludes(MavenProject project);
 
 	public abstract String licenseHeaderDelimiter();
 

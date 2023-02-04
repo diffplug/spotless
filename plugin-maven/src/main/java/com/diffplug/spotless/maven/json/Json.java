@@ -18,6 +18,8 @@ package com.diffplug.spotless.maven.json;
 import java.util.Collections;
 import java.util.Set;
 
+import org.apache.maven.project.MavenProject;
+
 import com.diffplug.spotless.maven.FormatterFactory;
 
 /**
@@ -27,7 +29,7 @@ public class Json extends FormatterFactory {
 	public static final int DEFAULT_INDENTATION = 4;
 
 	@Override
-	public Set<String> defaultIncludes() {
+	public Set<String> defaultIncludes(MavenProject project) {
 		return Collections.emptySet();
 	}
 
