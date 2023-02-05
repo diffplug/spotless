@@ -66,6 +66,7 @@ public class FreshMarkStep {
 		List<String> mavenCoordinates = new ArrayList<>();
 		mavenCoordinates.add(MAVEN_COORDINATE + version);
 		if (Jvm.version() >= 15) {
+			mavenCoordinates.add("com.diffplug.jscriptbox:jscriptbox:3.0.1");
 			mavenCoordinates.add(NASHORN_MAVEN_COORDINATE + NASHORN_VERSION);
 		}
 
