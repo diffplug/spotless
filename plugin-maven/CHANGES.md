@@ -7,7 +7,6 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * A synthesis log with the number of considered files is added after each formatter execution ([#1507](https://github.com/diffplug/spotless/pull/1507))
 ### Fixed
 * Respect `sourceDirectory` and `testSourceDirectory` POM configurations for Java formatters ([#1553](https://github.com/diffplug/spotless/pull/1553))
-### Changes
 * **POTENTIALLY BREAKING** `sortByKeys` for JSON formatting now takes into account objects inside arrays ([#1546](https://github.com/diffplug/spotless/pull/1546))
 * Any commit of the Spotless maven plugin now available via JitPack ([#1547](https://github.com/diffplug/spotless/pull/1547))
 
