@@ -53,6 +53,7 @@ import org.eclipse.aether.repository.RemoteRepository;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
 import com.diffplug.spotless.Formatter;
+import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
@@ -190,6 +191,16 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	protected abstract void process(Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException;
 
+	private static final int MINIMUM_JRE = 11;
+
+	protected AbstractSpotlessMojo() {
+		if (Jvm.version() < MINIMUM_JRE) {
+			throw new RuntimeException("Spotless requires JRE " + MINIMUM_JRE + " or newer, this was " + Jvm.version() + ".\n"
+					+ "You can upgrade your build JRE and still compile for older targets, see below\n"
+					+ "https://docs.gradle.org/current/userguide/building_java_projects.html#sec:java_cross_compilation");
+		}
+	}
+
 	@Override
 	public final void execute() throws MojoExecutionException {
 		if (shouldSkip()) {
@@ -309,7 +320,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	private Set<String> getIncludes(FormatterFactory formatterFactory) {
 		Set<String> configuredIncludes = formatterFactory.includes();
-		Set<String> includes = configuredIncludes.isEmpty() ? formatterFactory.defaultIncludes() : configuredIncludes;
+		Set<String> includes = configuredIncludes.isEmpty() ? formatterFactory.defaultIncludes(project) : configuredIncludes;
 		if (includes.isEmpty()) {
 			throw new PluginException("You must specify some files to include, such as '<includes><include>src/**/*.blah</include></includes>'");
 		}

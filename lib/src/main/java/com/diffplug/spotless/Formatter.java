@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,13 +39,16 @@ import javax.annotation.Nullable;
 public final class Formatter implements Serializable, AutoCloseable {
 	private static final long serialVersionUID = 1L;
 
+	// The name is used for logging purpose. It does not convey any applicative purpose
+	private String name;
 	private LineEnding.Policy lineEndingsPolicy;
 	private Charset encoding;
 	private Path rootDir;
 	private List<FormatterStep> steps;
 	private FormatExceptionPolicy exceptionPolicy;
 
-	private Formatter(LineEnding.Policy lineEndingsPolicy, Charset encoding, Path rootDirectory, List<FormatterStep> steps, FormatExceptionPolicy exceptionPolicy) {
+	private Formatter(String name, LineEnding.Policy lineEndingsPolicy, Charset encoding, Path rootDirectory, List<FormatterStep> steps, FormatExceptionPolicy exceptionPolicy) {
+		this.name = name;
 		this.lineEndingsPolicy = Objects.requireNonNull(lineEndingsPolicy, "lineEndingsPolicy");
 		this.encoding = Objects.requireNonNull(encoding, "encoding");
 		this.rootDir = Objects.requireNonNull(rootDirectory, "rootDir");
@@ -55,6 +58,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 
 	// override serialize output
 	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.writeObject(name);
 		out.writeObject(lineEndingsPolicy);
 		out.writeObject(encoding.name());
 		out.writeObject(rootDir.toString());
@@ -65,6 +69,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 	// override serialize input
 	@SuppressWarnings("unchecked")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		name = (String) in.readObject();
 		lineEndingsPolicy = (LineEnding.Policy) in.readObject();
 		encoding = Charset.forName((String) in.readObject());
 		rootDir = Paths.get((String) in.readObject());
@@ -76,6 +81,10 @@ public final class Formatter implements Serializable, AutoCloseable {
 	@SuppressWarnings("unused")
 	private void readObjectNoData() throws ObjectStreamException {
 		throw new UnsupportedOperationException();
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public LineEnding.Policy getLineEndingsPolicy() {
@@ -103,6 +112,8 @@ public final class Formatter implements Serializable, AutoCloseable {
 	}
 
 	public static class Builder {
+		// optional parameters
+		private String name = "unnamed";
 		// required parameters
 		private LineEnding.Policy lineEndingsPolicy;
 		private Charset encoding;
@@ -111,6 +122,11 @@ public final class Formatter implements Serializable, AutoCloseable {
 		private FormatExceptionPolicy exceptionPolicy;
 
 		private Builder() {}
+
+		public Builder name(String name) {
+			this.name = name;
+			return this;
+		}
 
 		public Builder lineEndingsPolicy(LineEnding.Policy lineEndingsPolicy) {
 			this.lineEndingsPolicy = lineEndingsPolicy;
@@ -138,7 +154,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 		}
 
 		public Formatter build() {
-			return new Formatter(lineEndingsPolicy, encoding, rootDir, steps,
+			return new Formatter(name, lineEndingsPolicy, encoding, rootDir, steps,
 					exceptionPolicy == null ? FormatExceptionPolicy.failOnlyOnError() : exceptionPolicy);
 		}
 	}
@@ -237,8 +253,13 @@ public final class Formatter implements Serializable, AutoCloseable {
 					unix = LineEnding.toUnix(formatted);
 				}
 			} catch (Throwable e) {
-				String relativePath = rootDir.relativize(file.toPath()).toString();
-				exceptionPolicy.handleError(e, step, relativePath);
+				if (file == NO_FILE_SENTINEL) {
+					exceptionPolicy.handleError(e, step, "");
+				} else {
+					// Path may be forged from a different FileSystem than Filesystem.default
+					String relativePath = rootDir.relativize(rootDir.getFileSystem().getPath(file.getPath())).toString();
+					exceptionPolicy.handleError(e, step, relativePath);
+				}
 			}
 		}
 		return unix;
@@ -248,6 +269,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + name.hashCode();
 		result = prime * result + encoding.hashCode();
 		result = prime * result + lineEndingsPolicy.hashCode();
 		result = prime * result + rootDir.hashCode();
@@ -268,7 +290,8 @@ public final class Formatter implements Serializable, AutoCloseable {
 			return false;
 		}
 		Formatter other = (Formatter) obj;
-		return encoding.equals(other.encoding) &&
+		return name.equals(other.name) &&
+				encoding.equals(other.encoding) &&
 				lineEndingsPolicy.equals(other.lineEndingsPolicy) &&
 				rootDir.equals(other.rootDir) &&
 				steps.equals(other.steps) &&
@@ -284,4 +307,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 			}
 		}
 	}
+
+	/** This Sentinel reference may be used to pass string content to a Formatter or FormatterStep when there is no actual File to format */
+	public static final File NO_FILE_SENTINEL = new File("NO_FILE_SENTINEL");
 }

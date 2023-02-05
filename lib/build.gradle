@@ -90,7 +90,7 @@ dependencies {
 	compatKtLint0Dot48Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.48.0'
 	compatKtLint0Dot48Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.48.0'
 
-	String VER_SCALAFMT="3.6.1"
+	String VER_SCALAFMT="3.7.1"
 	scalafmtCompileOnly "org.scalameta:scalafmt-core_2.13:$VER_SCALAFMT"
 
 	String VER_DIKTAT = "1.2.4.2"
@@ -107,16 +107,15 @@ spotbugs { reportLevel = 'low' } // low|medium|high (low = sensitive to even min
 
 apply from: rootProject.file('gradle/special-tests.gradle')
 tasks.withType(Test).configureEach {
-	def jdkVersion = JavaVersion.current().majorVersion.toInteger()
 	def args = []
-	if (jdkVersion >= 16) {
+	if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_16)) {
 		// https://docs.gradle.org/7.5/userguide/upgrading_version_7.html#removes_implicit_add_opens_for_test_workers
 		args += [
 			"--add-opens=java.base/java.lang=ALL-UNNAMED",
 			"--add-opens=java.base/java.util=ALL-UNNAMED",
 		]
 	}
-	if (jdkVersion >= 18) {
+	if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_18)) {
 		// https://openjdk.org/jeps/411
 		args += "-Djava.security.manager=allow"
 	}

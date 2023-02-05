@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -116,11 +116,8 @@ abstract class FormatterStepImpl<State extends Serializable> extends Strict<Stat
 		}
 	}
 
-	/** A dummy SENTINEL file. */
-	static final File SENTINEL = new File("");
-
 	static void checkNotSentinel(File file) {
-		if (file == SENTINEL) {
+		if (file == Formatter.NO_FILE_SENTINEL) {
 			throw new IllegalArgumentException("This step requires the underlying file. If this is a test, use StepHarnessWithFile");
 		}
 	}

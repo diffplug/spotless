@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package com.diffplug.spotless;
 
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
@@ -116,8 +115,8 @@ class EncodingErrorMsg {
 	}
 
 	private void appendExample(Charset charset, boolean must) {
-		java8fix(byteBuf).clear();
-		java8fix(charBuf).clear();
+		byteBuf.clear();
+		charBuf.clear();
 
 		CharsetDecoder decoder = charset.newDecoder();
 		if (!must) {
@@ -135,7 +134,7 @@ class EncodingErrorMsg {
 					.onUnmappableCharacter(CodingErrorAction.REPLACE)
 					.decode(byteBuf, charBuf, true);
 		}
-		java8fix(charBuf).flip();
+		charBuf.flip();
 
 		int start = Math.max(unrepresentable - CONTEXT, 0);
 		int end = Math.min(charBuf.limit(), unrepresentable + CONTEXT + 1);
@@ -146,10 +145,5 @@ class EncodingErrorMsg {
 				.replace('\t', '⇥'));
 		message.append(" <- ");
 		message.append(charset.name());
-	}
-
-	/** Fixes https://jira.mongodb.org/browse/JAVA-2559, as reported in https://github.com/diffplug/spotless/issues/1081 */
-	private static Buffer java8fix(Buffer b) {
-		return b;
 	}
 }

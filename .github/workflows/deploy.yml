@@ -46,6 +46,8 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           gradle-home-cache-cleanup: true
+      - name: git fetch origin main
+        run: git fetch origin main
       - name: publish all
         if: "${{ github.event.inputs.to_publish == 'all' }}"
         run: |
