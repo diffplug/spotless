@@ -75,7 +75,7 @@ final class ModuleHelper {
 				}
 			}
 		} catch (Throwable e) {
-			LOGGER.error("WARNING: Failed to check for unavailable JDK packages.", e);
+			LOGGER.error("WARNING: Failed to check for available JDK packages.", e);
 		}
 	}
 
