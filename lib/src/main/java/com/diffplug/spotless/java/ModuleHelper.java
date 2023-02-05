@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +28,17 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.diffplug.spotless.Jvm;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import sun.misc.Unsafe;
 
 final class ModuleHelper {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ModuleHelper.class);
+
 	// prevent direct instantiation
 	private ModuleHelper() {}
 
@@ -66,11 +71,11 @@ final class ModuleHelper {
 					for (String name : failedToOpen) {
 						message.append(String.format("--add-opens jdk.compiler/%s=ALL-UNNAMED", name));
 					}
-					System.err.println(message);
+					LOGGER.warn("{}", message);
 				}
 			}
 		} catch (Throwable e) {
-			System.err.println("WARNING: Failed to check for unavailable JDK packages. Reason: " + e.getMessage());
+			LOGGER.error("WARNING: Failed to check for available JDK packages.", e);
 		}
 	}
 
