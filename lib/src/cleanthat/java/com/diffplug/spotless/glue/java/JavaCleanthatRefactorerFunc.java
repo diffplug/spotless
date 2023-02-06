@@ -15,16 +15,17 @@
  */
 package com.diffplug.spotless.glue.java;
 
-import com.diffplug.spotless.FormatterFunc;
-import eu.solven.cleanthat.config.pojo.CleanthatEngineProperties;
-import eu.solven.cleanthat.engine.java.refactorer.JavaRefactorer;
-import eu.solven.cleanthat.engine.java.refactorer.JavaRefactorerProperties;
-import eu.solven.cleanthat.formatter.LineEnding;
-import eu.solven.cleanthat.formatter.PathAndContent;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import com.diffplug.spotless.FormatterFunc;
+
+import eu.solven.cleanthat.config.pojo.CleanthatEngineProperties;
+import eu.solven.cleanthat.engine.java.IJdkVersionConstants;
+import eu.solven.cleanthat.engine.java.refactorer.JavaRefactorer;
+import eu.solven.cleanthat.engine.java.refactorer.JavaRefactorerProperties;
+import eu.solven.cleanthat.formatter.LineEnding;
 
 public class JavaCleanthatRefactorerFunc implements FormatterFunc {
 	private String jdkVersion;
@@ -32,13 +33,13 @@ public class JavaCleanthatRefactorerFunc implements FormatterFunc {
 	private List<String> excluded;
 
 	public JavaCleanthatRefactorerFunc(String jdkVersion, List<String> included, List<String> excluded) {
-		this.jdkVersion=jdkVersion == null ? IJdkVersionsConstant.JDK8 : jdkVersion;
+		this.jdkVersion = jdkVersion == null ? IJdkVersionConstants.JDK_8 : jdkVersion;
 		this.included = included == null ? Collections.emptyList() : included;
 		this.excluded = excluded == null ? Collections.emptyList() : excluded;
 	}
 
 	public JavaCleanthatRefactorerFunc() {
-		this(Arrays.asList(JavaRefactorerProperties.WILDCARD), Arrays.asList());
+		this(IJdkVersionConstants.JDK_8, Arrays.asList(JavaRefactorerProperties.WILDCARD), Arrays.asList());
 	}
 
 	@Override
@@ -50,8 +51,7 @@ public class JavaCleanthatRefactorerFunc implements FormatterFunc {
 		refactorerProperties.setIncluded(included);
 		refactorerProperties.setExcluded(excluded);
 
-		JavaRefactorer refactorer =
-				new JavaRefactorer(engineProperties, refactorerProperties);
+		JavaRefactorer refactorer = new JavaRefactorer(engineProperties, refactorerProperties);
 
 		// Spotless calls steps always with LF eol.
 		return refactorer.doFormat(input, LineEnding.LF);

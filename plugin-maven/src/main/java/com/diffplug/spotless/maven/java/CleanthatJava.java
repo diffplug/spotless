@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,14 @@
  */
 package com.diffplug.spotless.maven.java;
 
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.java.CleanthatStepFactory;
-import com.diffplug.spotless.java.GoogleJavaFormatStep;
-import com.diffplug.spotless.maven.FormatterStepConfig;
-import com.diffplug.spotless.maven.FormatterStepFactory;
+import java.util.List;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
-import java.util.List;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.java.CleanthatStepFactory;
+import com.diffplug.spotless.maven.FormatterStepConfig;
+import com.diffplug.spotless.maven.FormatterStepFactory;
 
 public class CleanthatJava implements FormatterStepFactory {
 	@Parameter
@@ -32,22 +31,21 @@ public class CleanthatJava implements FormatterStepFactory {
 	@Parameter
 	private String version;
 
-	@Parameter
-	private List<String> mutators;
+	// https://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html#source
+	@Parameter(property = "maven.compiler.source")
+	private String sourceJdk = CleanthatStepFactory.defaultJdkVersion();
 
 	@Parameter
-	private List<String> excludedMutators;
+	private List<String> mutators = CleanthatStepFactory.defaultMutators();
+
+	@Parameter
+	private List<String> excludedMutators = CleanthatStepFactory.defaultExcludedMutators();
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
 		String groupArtifact = this.groupArtifact != null ? this.groupArtifact : CleanthatStepFactory.defaultGroupArtifact();
 		String version = this.version != null ? this.version : CleanthatStepFactory.defaultVersion();
 
-		JavaRe
-		boolean reflowLongStrings = this.reflowLongStrings != null ? this.reflowLongStrings : GoogleJavaFormatStep.defaultReflowLongStrings();
-		return CleanthatStepFactory.create(groupArtifact, version, style, config.getProvisioner(), reflowLongStrings);
-	}
-
-	private static String defaultVersion() {
+		return CleanthatStepFactory.create(groupArtifact, version, sourceJdk, mutators, excludedMutators, config.getProvisioner());
 	}
 }

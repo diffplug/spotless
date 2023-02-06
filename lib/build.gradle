@@ -102,7 +102,7 @@ dependencies {
 
 	gsonCompileOnly 'com.google.code.gson:gson:2.10.1'
 
-	cleanthatCompileOnly 'io.github.solven-eu.cleanthat:java:2.0-SNAPSHOT'
+	cleanthatCompileOnly 'io.github.solven-eu.cleanthat:java:2.0'
 }
 
 // we'll hold the core lib to a high standard
