@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 Solven
+ * Copyright 2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,10 +27,12 @@ import java.util.Collections;
 import java.util.List;
 
 public class JavaCleanthatRefactorerFunc implements FormatterFunc {
+	private String jdkVersion;
 	private List<String> included;
 	private List<String> excluded;
 
-	public JavaCleanthatRefactorerFunc(List<String> included, List<String> excluded) {
+	public JavaCleanthatRefactorerFunc(String jdkVersion, List<String> included, List<String> excluded) {
+		this.jdkVersion=jdkVersion == null ? IJdkVersionsConstant.JDK8 : jdkVersion;
 		this.included = included == null ? Collections.emptyList() : included;
 		this.excluded = excluded == null ? Collections.emptyList() : excluded;
 	}
@@ -41,16 +43,18 @@ public class JavaCleanthatRefactorerFunc implements FormatterFunc {
 
 	@Override
 	public String apply(String input) throws Exception {
+		CleanthatEngineProperties engineProperties = CleanthatEngineProperties.builder().engineVersion(jdkVersion).build();
+
 		JavaRefactorerProperties refactorerProperties = new JavaRefactorerProperties();
 
 		refactorerProperties.setIncluded(included);
 		refactorerProperties.setExcluded(excluded);
 
 		JavaRefactorer refactorer =
-				new JavaRefactorer(CleanthatEngineProperties.builder().build(), refactorerProperties);
+				new JavaRefactorer(engineProperties, refactorerProperties);
 
 		// Spotless calls steps always with LF eol.
-		return refactorer.doFormat(new PathAndContent(Paths.get("fake"), input), LineEnding.LF);
+		return refactorer.doFormat(input, LineEnding.LF);
 	}
 
 }

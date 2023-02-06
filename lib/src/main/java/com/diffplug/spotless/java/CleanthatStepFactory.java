@@ -85,6 +85,10 @@ public final class CleanthatStepFactory {
 		return JVM_SUPPORT.getRecommendedFormatterVersion();
 	}
 
+	public static String defaultGroupArtifact() {
+		return MAVEN_COORDINATE;
+	}
+
 	static final class JavaRulesState implements Serializable {
 		private static final long serialVersionUID = 1L;
 
