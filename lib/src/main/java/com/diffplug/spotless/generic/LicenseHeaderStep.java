@@ -31,6 +31,9 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
@@ -42,6 +45,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /** Prefixes a license header before the package statement. */
 public final class LicenseHeaderStep {
+	private static final Logger LOGGER = LoggerFactory.getLogger(LicenseHeaderStep.class);
+
 	public enum YearMode {
 		PRESERVE, UPDATE_TO_TODAY, SET_FROM_GIT
 	}
@@ -381,7 +386,7 @@ public final class LicenseHeaderStep {
 					}
 				}
 			} else {
-				System.err.println("Can't parse copyright year '" + content + "', defaulting to " + yearToday);
+				LOGGER.warn("Can't parse copyright year '{}', defaulting to {}", content, yearToday);
 				// couldn't recognize the year format
 				return yearToday;
 			}

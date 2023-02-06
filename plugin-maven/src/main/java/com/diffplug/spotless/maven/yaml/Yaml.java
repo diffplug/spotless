@@ -18,6 +18,8 @@ package com.diffplug.spotless.maven.yaml;
 import java.util.Collections;
 import java.util.Set;
 
+import org.apache.maven.project.MavenProject;
+
 import com.diffplug.spotless.maven.FormatterFactory;
 
 /**
@@ -25,7 +27,7 @@ import com.diffplug.spotless.maven.FormatterFactory;
  */
 public class Yaml extends FormatterFactory {
 	@Override
-	public Set<String> defaultIncludes() {
+	public Set<String> defaultIncludes(MavenProject project) {
 		return Collections.emptySet();
 	}
 

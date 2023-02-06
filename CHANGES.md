@@ -10,8 +10,13 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.34.1] - 2023-02-05
 ### Changes
 * **POTENTIALLY BREAKING** Bump bytecode from Java 8 to 11 ([#1530](https://github.com/diffplug/spotless/pull/1530) part 2 of [#1337](https://github.com/diffplug/spotless/issues/1337))
+### Fixed
+* **POTENTIALLY BREAKING** `sortByKeys` for JSON formatting now takes into account objects inside arrays ([#1546](https://github.com/diffplug/spotless/pull/1546))
+* `freshmark` fixed on java 15+ ([#1304](https://github.com/diffplug/spotless/pull/1304) fixes [#803](https://github.com/diffplug/spotless/issues/803))
 
 ## [2.34.0] - 2023-01-26
 ### Added
