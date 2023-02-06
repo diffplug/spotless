@@ -79,6 +79,10 @@ public class Java extends FormatterFactory {
 		addStepFactory(formatAnnotations);
 	}
 
+	public void addCleanthat(CleanthatJava cleanthat) {
+		addStepFactory(cleanthat);
+	}
+
 	private static String fileMask(Path path) {
 		String dir = path.toString();
 		if (!dir.endsWith(File.separator)) {

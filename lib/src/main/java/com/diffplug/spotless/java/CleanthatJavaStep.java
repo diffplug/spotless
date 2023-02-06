@@ -34,15 +34,15 @@ import com.diffplug.spotless.Provisioner;
  * @author Benoit Lacelle
  */
 // https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md#how-to-add-a-new-formatterstep
-public final class CleanthatStepFactory {
+public final class CleanthatJavaStep {
 
 	private static final String NAME = "cleanthat";
-	private static final String MAVEN_COORDINATE = "io.github.solven-eu.cleanthat:java:";
+	private static final String MAVEN_COORDINATE = "io.github.solven-eu.cleanthat:java";
 
 	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "2.0");
 
 	// prevent direct instantiation
-	private CleanthatStepFactory() {}
+	private CleanthatJavaStep() {}
 
 	/** Creates a step which apply default CleanThat mutators. */
 	public static FormatterStep create(Provisioner provisioner) {
@@ -83,7 +83,7 @@ public final class CleanthatStepFactory {
 			Provisioner provisioner) {
 		Objects.requireNonNull(groupArtifact, "groupArtifact");
 		if (groupArtifact.chars().filter(ch -> ch == ':').count() != 1) {
-			throw new IllegalArgumentException("groupArtifact must be in the form 'groupId:artifactId'");
+			throw new IllegalArgumentException("groupArtifact must be in the form 'groupId:artifactId'. it was: " + groupArtifact);
 		}
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(provisioner, "provisioner");

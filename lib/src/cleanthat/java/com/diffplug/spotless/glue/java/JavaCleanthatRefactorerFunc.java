@@ -19,6 +19,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.diffplug.spotless.FormatterFunc;
 
 import eu.solven.cleanthat.config.pojo.CleanthatEngineProperties;
@@ -28,6 +31,8 @@ import eu.solven.cleanthat.engine.java.refactorer.JavaRefactorerProperties;
 import eu.solven.cleanthat.formatter.LineEnding;
 
 public class JavaCleanthatRefactorerFunc implements FormatterFunc {
+	private static final Logger LOGGER = LoggerFactory.getLogger(JavaCleanthatRefactorerFunc.class);
+
 	private String jdkVersion;
 	private List<String> included;
 	private List<String> excluded;
@@ -52,6 +57,9 @@ public class JavaCleanthatRefactorerFunc implements FormatterFunc {
 		refactorerProperties.setExcluded(excluded);
 
 		JavaRefactorer refactorer = new JavaRefactorer(engineProperties, refactorerProperties);
+
+		LOGGER.debug("Processing sourceJdk={} included={} excluded={}", jdkVersion, included, excluded);
+		LOGGER.debug("Available mutators: {}", JavaRefactorer.getAllIncluded());
 
 		// Spotless calls steps always with LF eol.
 		return refactorer.doFormat(input, LineEnding.LF);

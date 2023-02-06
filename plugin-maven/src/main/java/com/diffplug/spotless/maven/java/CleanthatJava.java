@@ -20,7 +20,7 @@ import java.util.List;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.java.CleanthatStepFactory;
+import com.diffplug.spotless.java.CleanthatJavaStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 
@@ -33,19 +33,19 @@ public class CleanthatJava implements FormatterStepFactory {
 
 	// https://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html#source
 	@Parameter(property = "maven.compiler.source")
-	private String sourceJdk = CleanthatStepFactory.defaultJdkVersion();
+	private String sourceJdk = CleanthatJavaStep.defaultJdkVersion();
 
 	@Parameter
-	private List<String> mutators = CleanthatStepFactory.defaultMutators();
+	private List<String> mutators = CleanthatJavaStep.defaultMutators();
 
 	@Parameter
-	private List<String> excludedMutators = CleanthatStepFactory.defaultExcludedMutators();
+	private List<String> excludedMutators = CleanthatJavaStep.defaultExcludedMutators();
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
-		String groupArtifact = this.groupArtifact != null ? this.groupArtifact : CleanthatStepFactory.defaultGroupArtifact();
-		String version = this.version != null ? this.version : CleanthatStepFactory.defaultVersion();
+		String groupArtifact = this.groupArtifact != null ? this.groupArtifact : CleanthatJavaStep.defaultGroupArtifact();
+		String version = this.version != null ? this.version : CleanthatJavaStep.defaultVersion();
 
-		return CleanthatStepFactory.create(groupArtifact, version, sourceJdk, mutators, excludedMutators, config.getProvisioner());
+		return CleanthatJavaStep.create(groupArtifact, version, sourceJdk, mutators, excludedMutators, config.getProvisioner());
 	}
 }
