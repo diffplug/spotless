@@ -5,7 +5,7 @@ import java.util.Optional;
 public class LiteralsFirstInComparisonsCases {
 
 	public boolean isHardcoded(String input) {
-		return input.equals("hardcoded");
+		return "hardcoded".equals(input);
 	}
 
 	public boolean isPresent(Optional<?> optional) {

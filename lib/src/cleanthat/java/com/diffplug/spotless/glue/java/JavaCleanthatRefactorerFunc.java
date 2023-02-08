@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.glue.java;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -25,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.diffplug.spotless.FormatterFunc;
 
 import eu.solven.cleanthat.config.pojo.CleanthatEngineProperties;
+import eu.solven.cleanthat.config.pojo.SourceCodeProperties;
 import eu.solven.cleanthat.engine.java.IJdkVersionConstants;
 import eu.solven.cleanthat.engine.java.refactorer.JavaRefactorer;
 import eu.solven.cleanthat.engine.java.refactorer.JavaRefactorerProperties;
@@ -53,7 +55,24 @@ public class JavaCleanthatRefactorerFunc implements FormatterFunc {
 
 	@Override
 	public String apply(String input) throws Exception {
+		// https://stackoverflow.com/questions/1771679/difference-between-threads-context-class-loader-and-normal-classloader
+		ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
+		try {
+			// Ensure CleanThat main Thread has its custom classLoader while executing its refactoring
+			Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+			return doApply(input);
+		} finally {
+			// Restore the originalClassLoader
+			Thread.currentThread().setContextClassLoader(originalClassLoader);
+		}
+	}
+
+	private String doApply(String input) throws InterruptedException, IOException {
+		// call some API that uses reflection without taking ClassLoader param
 		CleanthatEngineProperties engineProperties = CleanthatEngineProperties.builder().engineVersion(jdkVersion).build();
+
+		// Spotless will push us LF content
+		engineProperties.setSourceCode(SourceCodeProperties.builder().lineEnding(LineEnding.LF).build());
 
 		JavaRefactorerProperties refactorerProperties = new JavaRefactorerProperties();
 

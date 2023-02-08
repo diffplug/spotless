@@ -35,9 +35,19 @@ class CleanthatJavaRefactorerTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	void testMultipleMutators() throws Exception {
+	void testMultipleMutators_defaultIsJdk7() throws Exception {
 		writePomWithJavaSteps(
 				"<cleanthat>",
+				"</cleanthat>");
+
+		runTest("MultipleMutators.dirty.java", "MultipleMutators.clean.onlyLiteralsFirst.java");
+	}
+
+	@Test
+	void testMultipleMutators_Jdk11IntroducedOptionalisPresent() throws Exception {
+		writePomWithJavaSteps(
+				"<cleanthat>",
+				"<sourceJdk>11</sourceJdk>",
 				"</cleanthat>");
 
 		runTest("MultipleMutators.dirty.java", "MultipleMutators.clean.java");
@@ -70,7 +80,8 @@ class CleanthatJavaRefactorerTest extends MavenIntegrationHarness {
 	private void runTest(String dirtyPath, String cleanPath) throws Exception {
 		String path = "src/main/java/test.java";
 		setFile(path).toResource("java/cleanthat/" + dirtyPath);
-		Assertions.assertThat(mavenRunner().withArguments("spotless:apply").withRemoteDebug(21654).runNoError().stdOutUtf8()).doesNotContain("[ERROR]");
+		// .withRemoteDebug(21654)
+		Assertions.assertThat(mavenRunner().withArguments("spotless:apply").runNoError().stdOutUtf8()).doesNotContain("[ERROR]");
 		assertFile(path).sameAsResource("java/cleanthat/" + cleanPath);
 	}
 }
