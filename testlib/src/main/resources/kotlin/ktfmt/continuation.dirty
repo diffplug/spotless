@@ -1,0 +1,4 @@
+fun myFunction() {
+    val location = restTemplate.postForLocation("/v1/my-api", mapOf("name" to "some-name", "url" to "https://www.google.com"))
+    return location
+}

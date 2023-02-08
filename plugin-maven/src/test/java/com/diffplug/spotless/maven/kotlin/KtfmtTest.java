@@ -19,6 +19,8 @@ import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
+import java.io.IOException;
+
 class KtfmtTest extends MavenIntegrationHarness {
 	@Test
 	void testKtfmt() throws Exception {
@@ -34,6 +36,15 @@ class KtfmtTest extends MavenIntegrationHarness {
 
 		assertFile(path1).sameAsResource("kotlin/ktfmt/basic.clean");
 		assertFile(path2).sameAsResource("kotlin/ktfmt/basic.clean");
+	}
+
+	@Test
+	void testContinuation() throws Exception {
+		writePomWithKotlinSteps("<ktfmt/>");
+
+		setFile("src/main/kotlin/main.kt").toResource("kotlin/ktfmt/continuation.dirty");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("src/main/kotlin/main.kt").sameAsResource("kotlin/ktfmt/continuation.clean");
 	}
 
 	@Test
