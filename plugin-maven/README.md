@@ -278,7 +278,7 @@ These mechanisms already exist for the Gradle plugin.
 
 ### Cleanthat
 
-[homepage](https://github.com/solven-eu/cleanthat). CleanThat enables automatic refactoring of Java code
+[homepage](https://github.com/solven-eu/cleanthat). CleanThat enables automatic refactoring of Java code. [ChangeLog](https://github.com/solven-eu/cleanthat/blob/master/CHANGES.MD)
 
 ```xml
 <cleanthat>

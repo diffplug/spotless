@@ -30,6 +30,10 @@ import eu.solven.cleanthat.engine.java.refactorer.JavaRefactorer;
 import eu.solven.cleanthat.engine.java.refactorer.JavaRefactorerProperties;
 import eu.solven.cleanthat.formatter.LineEnding;
 
+/**
+ * The glue for CleanThat: it is build over the version in build.gradle, but at runtime it will be executed over
+ * the version loaded in JarState, which is by default defined in com.diffplug.spotless.java.CleanthatJavaStep#JVM_SUPPORT
+ */
 public class JavaCleanthatRefactorerFunc implements FormatterFunc {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JavaCleanthatRefactorerFunc.class);
 
