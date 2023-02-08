@@ -18,25 +18,44 @@ package com.diffplug.spotless.npm;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import com.diffplug.spotless.ThrowingEx;
 
 class NodeServerLayout {
 
+	private static final Pattern PACKAGE_JSON_NAME_PATTERN = Pattern.compile("\"name\"\\s*:\\s*\"([^\"]+)\"");
+
 	private final File nodeModulesDir;
 	private final File packageJsonFile;
+
+	private final File packageLockJsonFile;
+
 	private final File serveJsFile;
 	private final File npmrcFile;
 
-	NodeServerLayout(File buildDir, String stepName, String stepSuffix) {
-		this.nodeModulesDir = new File(buildDir, String.format("spotless-node-modules-%s-%s", stepName, stepSuffix));
+	NodeServerLayout(File buildDir, String packageJsonContent) {
+		this.nodeModulesDir = new File(buildDir, nodeModulesDirName(packageJsonContent));
 		this.packageJsonFile = new File(nodeModulesDir, "package.json");
+		this.packageLockJsonFile = new File(nodeModulesDir, "package-lock.json");
 		this.serveJsFile = new File(nodeModulesDir, "serve.js");
 		this.npmrcFile = new File(nodeModulesDir, ".npmrc");
 	}
 
+	private static String nodeModulesDirName(String packageJsonContent) {
+		String md5Hash = NpmResourceHelper.md5(packageJsonContent);
+		Matcher matcher = PACKAGE_JSON_NAME_PATTERN.matcher(packageJsonContent);
+		if (!matcher.find()) {
+			throw new IllegalArgumentException("package.json must contain a name property");
+		}
+		String packageName = matcher.group(1);
+		return String.format("%s-node-modules-%s", packageName, md5Hash);
+	}
+
 	File nodeModulesDir() {
+
 		return nodeModulesDir;
 	}
 
@@ -52,15 +71,14 @@ class NodeServerLayout {
 		return npmrcFile;
 	}
 
-	static File getBuildDirFromNodeModulesDir(File nodeModulesDir) {
-		return nodeModulesDir.getParentFile();
-	}
-
 	public boolean isLayoutPrepared() {
 		if (!nodeModulesDir().isDirectory()) {
 			return false;
 		}
 		if (!packageJsonFile().isFile()) {
+			return false;
+		}
+		if (!packageLockJsonFile.isFile()) {
 			return false;
 		}
 		if (!serveJsFile().isFile()) {
@@ -81,5 +99,15 @@ class NodeServerLayout {
 				return entries.findFirst().isPresent();
 			}
 		});
+	}
+
+	@Override
+	public String toString() {
+		return String.format(
+				"NodeServerLayout[nodeModulesDir=%s, packageJsonFile=%s, serveJsFile=%s, npmrcFile=%s]",
+				this.nodeModulesDir,
+				this.packageJsonFile,
+				this.serveJsFile,
+				this.npmrcFile);
 	}
 }
