@@ -182,6 +182,7 @@ any other maven phase (i.e. compile) then it can be configured as below;
       <include>src/test/java/**/*.java</include>
     </includes>
 
+    <!-- Cleanthat will refactor your code, but it may break your style: apply it before your formatter -->
     <cleanthat />        <!-- has its own section below -->
 
     <googleJavaFormat /> <!-- has its own section below -->
@@ -285,7 +286,7 @@ These mechanisms already exist for the Gradle plugin.
   <version>2.0</version>                          <!-- optional version of Cleanthat -->
   <sourceJdk>${maven.compiler.source}</sourceJdk> <!-- optional. Default to ${maven.compiler.source} else '1.7' -->
   <mutators>
-    <mutator>*</mutator> <!-- optional. Default to '*' to include all mutators -->
+    <mutator>*</mutator>                          <!-- optional. Default to '*' to include all mutators -->
   </mutators>
   <mutators> <!-- List of mutators: https://github.com/solven-eu/cleanthat/tree/master/java/src/main/java/eu/solven/cleanthat/engine/java/refactorer/mutators -->
     <mutator>LiteralsFirstInComparisons</mutator> <!-- You may alternatively list the requested mutators -->
