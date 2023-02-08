@@ -132,7 +132,7 @@ lib('yaml.JacksonYamlStep')                      +'{{yes}}       | {{yes}}      
 | [`java.RemoveUnusedImportsStep`](lib/src/main/java/com/diffplug/spotless/java/RemoveUnusedImportsStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |
 | [`java.EclipseJdtFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/java/EclipseJdtFormatterStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |
 | [`java.FormatAnnotationsStep`](lib/src/main/java/com/diffplug/spotless/java/FormatAnnotationsStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
-| [`java.CleanthatJavaStep`](lib/src/main/java/com/diffplug/spotless/java/CleanthatJavaStep.java) | :white_large_square:       | :+1:      | :white_large_square:       | :white_large_square:  |
+| [`java.CleanthatJavaStep`](lib/src/main/java/com/diffplug/spotless/java/CleanthatJavaStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`json.gson.GsonStep`](lib/src/main/java/com/diffplug/spotless/json/gson/GsonStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`json.JacksonJsonStep`](lib/src/main/java/com/diffplug/spotless/json/JacksonJsonStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`json.JsonSimpleStep`](lib/src/main/java/com/diffplug/spotless/json/JsonSimpleStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
