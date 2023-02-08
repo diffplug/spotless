@@ -31,7 +31,7 @@ class CleanthatJavaIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    java {",
 				"        target file('test.java')",
-				"        cleanthat().sourceJdk('11')",
+				"        cleanthat().sourceCompatibility('11')",
 				"    }",
 				"}");
 

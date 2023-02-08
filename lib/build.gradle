@@ -40,6 +40,12 @@ versionCompatibility {
 			]
 			targetSourceSetName = 'ktlint'
 		}
+		namespaces.register('Cleanthat') {
+			versions = [
+				'2.1',
+			]
+			targetSourceSetName = 'cleanthat'
+		}
 	}
 }
 
@@ -103,9 +109,8 @@ dependencies {
 
 	gsonCompileOnly 'com.google.code.gson:gson:2.10.1'
 
-	// TODO How can one add a test module like 'compatKtLint0Dot48Dot0'?
-	// cleanthatCompileAndTestOnly 'io.github.solven-eu.cleanthat:java:2.1'
 	cleanthatCompileOnly 'io.github.solven-eu.cleanthat:java:2.1'
+	compatCleanthat2Dot1CompileAndTestOnly 'io.github.solven-eu.cleanthat:java:2.1'
 }
 
 // we'll hold the core lib to a high standard

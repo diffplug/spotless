@@ -84,7 +84,7 @@ lib('java.PalantirJavaFormatStep')               +'{{yes}}       | {{yes}}      
 lib('java.RemoveUnusedImportsStep')              +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
 extra('java.EclipseJdtFormatterStep')            +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
 lib('java.FormatAnnotationsStep')                +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
-lib('java.CleanthatJavaStep')                    +'{{no}}       | {{yes}}      | {{no}}       | {{no}}  |',
+lib('java.CleanthatJavaStep')                    +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('json.gson.GsonStep')                        +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('json.JacksonJsonStep')                      +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('json.JsonSimpleStep')                       +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
