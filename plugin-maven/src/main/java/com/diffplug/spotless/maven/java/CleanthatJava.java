@@ -33,7 +33,7 @@ public class CleanthatJava implements FormatterStepFactory {
 
 	// https://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html#source
 	@Parameter(property = "maven.compiler.source")
-	private String sourceJdk = CleanthatJavaStep.defaultJdkVersion();
+	private String sourceJdk = CleanthatJavaStep.defaultSourceJdk();
 
 	@Parameter
 	private List<String> mutators = CleanthatJavaStep.defaultMutators();

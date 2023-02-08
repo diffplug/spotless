@@ -281,7 +281,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 
 		private String version = CleanthatJavaStep.defaultVersion();
 
-		private String sourceJdk = CleanthatJavaStep.defaultJdkVersion();
+		private String sourceJdk = CleanthatJavaStep.defaultSourceJdk();
 
 		private List<String> mutators = CleanthatJavaStep.defaultMutators();
 
@@ -305,9 +305,9 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 			return this;
 		}
 
-		public CleanthatJavaConfig sourceJdk(String sourceJdk) {
-			Objects.requireNonNull(sourceJdk);
-			this.sourceJdk = sourceJdk;
+		public CleanthatJavaConfig sourceCompatibility(String jdkVersion) {
+			Objects.requireNonNull(jdkVersion);
+			this.sourceJdk = jdkVersion;
 			replaceStep(createStep());
 			return this;
 		}

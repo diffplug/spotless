@@ -52,10 +52,10 @@ public final class CleanthatJavaStep {
 
 	/** Creates a step which apply default CleanThat mutators. */
 	public static FormatterStep create(String version, Provisioner provisioner) {
-		return create(MAVEN_COORDINATE, version, defaultJdkVersion(), defaultExcludedMutators(), defaultMutators(), provisioner);
+		return create(MAVEN_COORDINATE, version, defaultSourceJdk(), defaultExcludedMutators(), defaultMutators(), provisioner);
 	}
 
-	public static String defaultJdkVersion() {
+	public static String defaultSourceJdk() {
 		// see IJdkVersionConstants.JDK_7
 		// https://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html#source
 		// 1.7 is the default for 'maven-compiler-plugin' since 3.9.0
@@ -114,7 +114,7 @@ public final class CleanthatJavaStep {
 		final List<String> excluded;
 
 		JavaRefactorerState(String stepName, String version, Provisioner provisioner) throws IOException {
-			this(stepName, MAVEN_COORDINATE, version, defaultJdkVersion(), defaultExcludedMutators(), defaultMutators(), provisioner);
+			this(stepName, MAVEN_COORDINATE, version, defaultSourceJdk(), defaultExcludedMutators(), defaultMutators(), provisioner);
 		}
 
 		JavaRefactorerState(String stepName,

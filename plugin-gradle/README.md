@@ -54,7 +54,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
 - [**Quickstart**](#quickstart)
   - [Requirements](#requirements)
 - **Languages**
-  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [clang-format](#clang-format), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations))
+  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [clang-format](#clang-format), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
   - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
@@ -153,6 +153,9 @@ spotless {
     importOrderFile('eclipse-import-order.txt') // import order file as exported from eclipse
 
     removeUnusedImports()
+
+    // Cleanthat will refactor your code, but it may break your style: apply it before your formatter
+    cleanthat()          // has its own section below
 
     // Choose one of these formatters.
     googleJavaFormat()   // has its own section below
@@ -256,6 +259,23 @@ You can use `addTypeAnnotation()` and `removeTypeAnnotation()` to override its d
 ```
 
 You can make a pull request to add new annotations to Spotless's default list.
+
+### cleanthat
+
+[homepage](https://github.com/solven-eu/cleanthat). CleanThat enables automatic refactoring of Java code. [ChangeLog](https://github.com/solven-eu/cleanthat/blob/master/CHANGES.MD)
+
+```gradle
+spotless {
+  java {
+    cleanthat()
+    // optional: you can specify a specific version and/or config file
+    cleanthat()
+      .groupArtifact('1.7')                 // default is 'io.github.solven-eu.cleanthat:java'
+      .version('2.1')                             // You may force a past of -SNAPSHOT
+      .sourceCompatibility('1.7')                 // default is '1.7'
+      .addMutator('your.custom.MagicMutator')
+      .excludeMutator('UseCollectionIsEmpty')
+```
 
 
 <a name="applying-to-groovy-source"></a>
