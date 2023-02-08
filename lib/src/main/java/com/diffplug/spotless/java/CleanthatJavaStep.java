@@ -39,7 +39,7 @@ public final class CleanthatJavaStep {
 	private static final String NAME = "cleanthat";
 	private static final String MAVEN_COORDINATE = "io.github.solven-eu.cleanthat:java";
 
-	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "2.0");
+	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "2.1");
 
 	// prevent direct instantiation
 	private CleanthatJavaStep() {}

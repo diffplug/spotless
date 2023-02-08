@@ -55,6 +55,7 @@ dependencies {
 	testCommonImplementation "org.junit.jupiter:junit-jupiter:$VER_JUNIT"
 	testCommonImplementation "org.assertj:assertj-core:$VER_ASSERTJ"
 	testCommonImplementation "com.diffplug.durian:durian-testlib:$VER_DURIAN"
+	testCommonImplementation 'io.github.solven-eu.cleanthat:java:2.1'
 
 	// used for pom sorting
 	sortPomCompileOnly 'com.github.ekryd.sortpom:sortpom-sorter:3.0.0'
@@ -102,7 +103,9 @@ dependencies {
 
 	gsonCompileOnly 'com.google.code.gson:gson:2.10.1'
 
-	cleanthatCompileOnly 'io.github.solven-eu.cleanthat:java:2.0'
+	// TODO How can one add a test module like 'compatKtLint0Dot48Dot0'?
+	// cleanthatCompileAndTestOnly 'io.github.solven-eu.cleanthat:java:2.1'
+	cleanthatCompileOnly 'io.github.solven-eu.cleanthat:java:2.1'
 }
 
 // we'll hold the core lib to a high standard

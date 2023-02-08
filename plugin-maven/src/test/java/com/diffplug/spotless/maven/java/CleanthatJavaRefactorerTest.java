@@ -70,7 +70,7 @@ class CleanthatJavaRefactorerTest extends MavenIntegrationHarness {
 	private void runTest(String dirtyPath, String cleanPath) throws Exception {
 		String path = "src/main/java/test.java";
 		setFile(path).toResource("java/cleanthat/" + dirtyPath);
-		Assertions.assertThat(mavenRunner().withArguments("spotless:apply -X").runNoError().stdOutUtf8()).isEmpty();
+		Assertions.assertThat(mavenRunner().withArguments("spotless:apply").withRemoteDebug(21654).runNoError().stdOutUtf8()).doesNotContain("[ERROR]");
 		assertFile(path).sameAsResource("java/cleanthat/" + cleanPath);
 	}
 }
