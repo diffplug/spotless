@@ -219,8 +219,10 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"}");
 		setFile("php-example.php").toResource("npm/prettier/plugins/php.dirty");
 		setFile("JavaTest.java").toResource("npm/prettier/plugins/java-test.dirty");
-		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		final BuildResult spotlessApply = gradleRunner().forwardOutput().withArguments("--stacktrace", "--info", "spotlessApply").build();
 		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		final BuildResult spotlessApply2 = gradleRunner().forwardOutput().withArguments("--stacktrace", "--info", "spotlessApply").build();
+		Assertions.assertThat(spotlessApply2.getOutput()).contains("BUILD SUCCESSFUL");
 		assertFile("php-example.php").sameAsResource("npm/prettier/plugins/php.clean");
 		assertFile("JavaTest.java").sameAsResource("npm/prettier/plugins/java-test.clean");
 	}
