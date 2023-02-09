@@ -3,6 +3,9 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+* Allow multiple instances of the same npm-based formatter to be used simultaneously. E.g. use prettier for typescript
+  *and* Java (using the community prettier-plugin-java) without messing up their respective `node_module` dependencies. ([#1565](https://github.com/diffplug/spotless/pull/1565))
 
 ## [2.32.0] - 2023-02-05
 ### Added
