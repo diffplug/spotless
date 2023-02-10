@@ -10,8 +10,19 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* CleanThat Java Refactorer. ([#1560](https://github.com/diffplug/spotless/pull/1560))
+* Introduce `LazyArgLogger` to allow for lazy evaluation of log messages in slf4j logging. ([#1565](https://github.com/diffplug/spotless/pull/1565))
+### Fixed
+* Allow multiple instances of the same npm-based formatter to be used by separating their `node_modules` directories. ([#1565](https://github.com/diffplug/spotless/pull/1565))
+* `ktfmt` default style uses correct continuation indent. ([#1562](https://github.com/diffplug/spotless/pull/1562))
+
+## [2.34.1] - 2023-02-05
 ### Changes
 * **POTENTIALLY BREAKING** Bump bytecode from Java 8 to 11 ([#1530](https://github.com/diffplug/spotless/pull/1530) part 2 of [#1337](https://github.com/diffplug/spotless/issues/1337))
+### Fixed
+* **POTENTIALLY BREAKING** `sortByKeys` for JSON formatting now takes into account objects inside arrays ([#1546](https://github.com/diffplug/spotless/pull/1546))
+* `freshmark` fixed on java 15+ ([#1304](https://github.com/diffplug/spotless/pull/1304) fixes [#803](https://github.com/diffplug/spotless/issues/803))
 
 ## [2.34.0] - 2023-01-26
 ### Added

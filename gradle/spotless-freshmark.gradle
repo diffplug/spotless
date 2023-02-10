@@ -1,30 +1,4 @@
 
-import java.util.regex.Matcher
-import java.util.regex.Pattern
-
-
-def thisVm() {
-	String jre = System.getProperty("java.version")
-	if (jre.startsWith("1.8")) {
-		return 8
-	} else {
-		Matcher matcher = Pattern.compile("(\\d+)").matcher(jre)
-		if (!matcher.find()) {
-			throw new IllegalArgumentException("Expected " + jre + " to start with an integer")
-		}
-		int version = Integer.parseInt(matcher.group(1))
-		if (version <= 8) {
-			throw new IllegalArgumentException("Expected " + jre + " to start with an integer greater than 8")
-		}
-		return version
-	}
-}
-
-if (thisVm() >= 15) {
-	// freshmark doesn't run on JRE 15+
-	return
-}
-
 apply plugin: 'com.diffplug.spotless'
 
 import com.diffplug.gradle.spotless.FreshMarkExtension

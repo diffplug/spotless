@@ -3,6 +3,17 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+* CleanThat Java Refactorer. ([#1560](https://github.com/diffplug/spotless/pull/1560))
+### Fixed
+* Allow multiple instances of the same npm-based formatter to be used simultaneously. E.g. use prettier for typescript
+  *and* Java (using the community prettier-plugin-java) without messing up their respective `node_module` dependencies. ([#1565](https://github.com/diffplug/spotless/pull/1565))
+* `ktfmt` default style uses correct continuation indent. ([#1562](https://github.com/diffplug/spotless/pull/1562))
+
+## [6.14.1] - 2023-02-05
+### Fixed
+* `freshmark` fixed on java 15+ ([#1304](https://github.com/diffplug/spotless/pull/1304) fixes [#803](https://github.com/diffplug/spotless/issues/803))
+* **POTENTIALLY BREAKING** `sortByKeys` for JSON formatting now takes into account objects inside arrays ([#1546](https://github.com/diffplug/spotless/pull/1546))
 
 ## [6.14.0] - 2023-01-26
 ### Added

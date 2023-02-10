@@ -145,7 +145,7 @@ class MultiModuleProjectTest extends MavenIntegrationHarness {
 			modulesList.addAll(subProjects.keySet());
 			String[] modules = modulesList.toArray(new String[0]);
 
-			Map<String, Object> rootPomParams = buildPomXmlParams(null, null, configuration, modules, null, null);
+			Map<String, Object> rootPomParams = buildPomXmlParams(null, null, null, configuration, modules, null, null);
 			setFile("pom.xml").toContent(createPomXmlContent("/multi-module/pom-parent.xml.mustache", rootPomParams));
 		}
 

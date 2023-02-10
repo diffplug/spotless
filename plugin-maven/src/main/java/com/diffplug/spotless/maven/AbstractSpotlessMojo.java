@@ -320,7 +320,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	private Set<String> getIncludes(FormatterFactory formatterFactory) {
 		Set<String> configuredIncludes = formatterFactory.includes();
-		Set<String> includes = configuredIncludes.isEmpty() ? formatterFactory.defaultIncludes() : configuredIncludes;
+		Set<String> includes = configuredIncludes.isEmpty() ? formatterFactory.defaultIncludes(project) : configuredIncludes;
 		if (includes.isEmpty()) {
 			throw new PluginException("You must specify some files to include, such as '<includes><include>src/**/*.blah</include></includes>'");
 		}

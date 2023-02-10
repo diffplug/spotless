@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 package com.diffplug.spotless.maven.scala;
 
 import java.util.Set;
+
+import org.apache.maven.project.MavenProject;
 
 import com.diffplug.common.collect.ImmutableSet;
 import com.diffplug.spotless.maven.FormatterFactory;
@@ -34,7 +36,7 @@ public class Scala extends FormatterFactory {
 	private static final String LICENSE_HEADER_DELIMITER = "package ";
 
 	@Override
-	public Set<String> defaultIncludes() {
+	public Set<String> defaultIncludes(MavenProject project) {
 		return DEFAULT_INCLUDES;
 	}
 

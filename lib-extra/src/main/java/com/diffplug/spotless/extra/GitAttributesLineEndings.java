@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,8 @@ import org.eclipse.jgit.lib.CoreConfig.EOL;
 import org.eclipse.jgit.storage.file.FileBasedConfig;
 import org.eclipse.jgit.util.FS;
 import org.eclipse.jgit.util.SystemReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.googlecode.concurrenttrees.radix.ConcurrentRadixTree;
 import com.googlecode.concurrenttrees.radix.node.concrete.DefaultCharSequenceNodeFactory;
@@ -61,6 +63,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * back to the platform native.
  */
 public final class GitAttributesLineEndings {
+	private static final Logger LOGGER = LoggerFactory.getLogger(GitAttributesLineEndings.class);
+
 	// prevent direct instantiation
 	private GitAttributesLineEndings() {}
 
@@ -261,7 +265,7 @@ public final class GitAttributesLineEndings {
 			case "crlf":
 				return LineEnding.WINDOWS.str();
 			default:
-				System.err.println(".gitattributes file has unspecified eol value: " + eol + " for " + file + ", defaulting to platform native");
+				LOGGER.warn(".gitattributes file has unspecified eol value: {} for {}, defaulting to platform native", eol, file);
 				return LineEnding.PLATFORM_NATIVE.str();
 			}
 		}
@@ -341,8 +345,7 @@ public final class GitAttributesLineEndings {
 				return parsed.getRules();
 			} catch (IOException e) {
 				// no need to crash the whole plugin
-				System.err.println("Problem parsing " + file.getAbsolutePath());
-				e.printStackTrace();
+				LOGGER.warn("Problem parsing {}", file.getAbsolutePath(), e);
 			}
 		}
 		return Collections.emptyList();

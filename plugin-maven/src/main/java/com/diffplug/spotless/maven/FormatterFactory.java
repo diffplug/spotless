@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.MavenProject;
 
 import com.diffplug.common.collect.Sets;
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
@@ -71,7 +72,7 @@ public abstract class FormatterFactory {
 
 	private ToggleOffOn toggle;
 
-	public abstract Set<String> defaultIncludes();
+	public abstract Set<String> defaultIncludes(MavenProject project);
 
 	public abstract String licenseHeaderDelimiter();
 
@@ -101,7 +102,9 @@ public abstract class FormatterFactory {
 			formatterSteps.add(pair.out());
 		}
 
+		String formatterName = this.getClass().getSimpleName();
 		return Formatter.builder()
+				.name(formatterName)
 				.encoding(formatterEncoding)
 				.lineEndingsPolicy(formatterLineEndingPolicy)
 				.exceptionPolicy(new FormatExceptionPolicyStrict())

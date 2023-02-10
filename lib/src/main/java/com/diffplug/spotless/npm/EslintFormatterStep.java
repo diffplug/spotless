@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.npm;
 
+import static com.diffplug.spotless.LazyArgLogger.lazy;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
@@ -115,7 +116,7 @@ public class EslintFormatterStep {
 				// If any config files are provided, we need to make sure they are at the same location as the node modules
 				// as eslint will try to resolve plugin/config names relatively to the config file location and some
 				// eslint configs contain relative paths to additional config files (such as tsconfig.json e.g.)
-				FormattedPrinter.SYSOUT.print("Copying config file <%s> to <%s> and using the copy", origEslintConfig.getEslintConfigPath(), nodeServerLayout.nodeModulesDir());
+				logger.info("Copying config file <{}> to <{}> and using the copy", origEslintConfig.getEslintConfigPath(), nodeServerLayout.nodeModulesDir());
 				File configFileCopy = NpmResourceHelper.copyFileToDir(origEslintConfig.getEslintConfigPath(), nodeServerLayout.nodeModulesDir());
 				this.eslintConfigInUse = this.origEslintConfig.withEslintConfigPath(configFileCopy).verify();
 			}
@@ -125,7 +126,7 @@ public class EslintFormatterStep {
 		@Nonnull
 		public FormatterFunc createFormatterFunc() {
 			try {
-				FormattedPrinter.SYSOUT.print("creating formatter function (starting server)");
+				logger.info("Creating formatter function (starting server)");
 				ServerProcessInfo eslintRestServer = npmRunServer();
 				EslintRestService restService = new EslintRestService(eslintRestServer.getBaseUrl());
 				return Closeable.ofDangerous(() -> endServer(restService, eslintRestServer), new EslintFilePathPassingFormatterFunc(locations.projectDir(), nodeServerLayout.nodeModulesDir(), eslintConfigInUse, restService));
@@ -135,7 +136,7 @@ public class EslintFormatterStep {
 		}
 
 		private void endServer(BaseNpmRestService restService, ServerProcessInfo restServer) throws Exception {
-			FormattedPrinter.SYSOUT.print("Closing formatting function (ending server).");
+			logger.info("Closing formatting function (ending server).");
 			try {
 				restService.shutdown();
 			} catch (Throwable t) {
@@ -161,7 +162,7 @@ public class EslintFormatterStep {
 
 		@Override
 		public String applyWithFile(String unix, File file) throws Exception {
-			FormattedPrinter.SYSOUT.print("formatting String '" + unix.substring(0, Math.min(50, unix.length())) + "[...]' in file '" + file + "'");
+			logger.info("formatting String '{}[...]' in file '{}'", lazy(() -> unix.substring(0, Math.min(50, unix.length()))), file);
 
 			Map<FormatOption, Object> eslintCallOptions = new HashMap<>();
 			setConfigToCallOptions(eslintCallOptions);
