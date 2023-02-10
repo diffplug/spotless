@@ -12,7 +12,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * CleanThat Java Refactorer. ([#1560](https://github.com/diffplug/spotless/pull/1560))
+* Introduce `LazyArgLogger` to allow for lazy evaluation of log messages in slf4j logging. ([#1565](https://github.com/diffplug/spotless/pull/1565))
 ### Fixed
+* Allow multiple instances of the same npm-based formatter to be used by separating their `node_modules` directories. ([#1565](https://github.com/diffplug/spotless/pull/1565))
 * `ktfmt` default style uses correct continuation indent. ([#1562](https://github.com/diffplug/spotless/pull/1562))
 
 ## [2.34.1] - 2023-02-05

@@ -56,10 +56,13 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 		this.stepName = requireNonNull(stepName);
 		this.npmConfig = requireNonNull(npmConfig);
 		this.locations = locations;
-		this.nodeServerLayout = new NodeServerLayout(locations.buildDir(), stepName);
+		this.nodeServerLayout = new NodeServerLayout(locations.buildDir(), npmConfig.getPackageJsonContent());
 	}
 
 	protected void prepareNodeServerLayout() throws IOException {
+		final long started = System.currentTimeMillis();
+		// maybe introduce trace logger?
+		logger.info("Preparing {} for npm step {}.", this.nodeServerLayout, getClass().getName());
 		NpmResourceHelper.assertDirectoryExists(nodeServerLayout.nodeModulesDir());
 		NpmResourceHelper.writeUtf8StringToFile(nodeServerLayout.packageJsonFile(),
 				this.npmConfig.getPackageJsonContent());
@@ -70,12 +73,14 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 		} else {
 			NpmResourceHelper.deleteFileIfExists(nodeServerLayout.npmrcFile());
 		}
+		logger.info("Prepared {} for npm step {} in {} ms.", this.nodeServerLayout, getClass().getName(), System.currentTimeMillis() - started);
 	}
 
 	protected void prepareNodeServer() throws IOException {
-		FormattedPrinter.SYSOUT.print("running npm install");
+		final long started = System.currentTimeMillis();
+		logger.info("running npm install in {} for npm step {}", this.nodeServerLayout.nodeModulesDir(), getClass().getName());
 		runNpmInstall(nodeServerLayout.nodeModulesDir());
-		FormattedPrinter.SYSOUT.print("npm install finished");
+		logger.info("npm install finished in {} ms in {} for npm step {}", System.currentTimeMillis() - started, this.nodeServerLayout.nodeModulesDir(), getClass().getName());
 	}
 
 	private void runNpmInstall(File npmProjectDir) throws IOException {
