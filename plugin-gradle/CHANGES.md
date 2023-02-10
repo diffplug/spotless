@@ -4,7 +4,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
-* CleanThat Java Refactorer ([#1560](https://github.com/diffplug/spotless/pull/1560))
+* CleanThat Java Refactorer. ([#1560](https://github.com/diffplug/spotless/pull/1560))
+### Fixed
+* `ktfmt` default style uses correct continuation indent. ([#1562](https://github.com/diffplug/spotless/pull/1562))
 
 ## [6.14.1] - 2023-02-05
 ### Fixed
