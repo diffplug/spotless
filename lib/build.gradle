@@ -63,7 +63,7 @@ dependencies {
 
 	// used jackson-based formatters
 	jacksonCompileOnly 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
-	jacksonCompileOnly 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.14.1'
+	jacksonCompileOnly 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.14.2'
 
 	String VER_KTFMT = '0.42'
 	ktfmtCompileOnly "com.facebook:ktfmt:$VER_KTFMT"
