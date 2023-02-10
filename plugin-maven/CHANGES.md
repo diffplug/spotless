@@ -11,6 +11,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * `ktfmt` default style uses correct continuation indent. ([#1562](https://github.com/diffplug/spotless/pull/1562))
 ### Changes
 * Bump default `ktfmt` version to latest `0.42` -> `0.43` ([#1561](https://github.com/diffplug/spotless/pull/1561))
+* Bump default `jackson` version to latest `2.14.1` -> `2.14.2` ([#1536](https://github.com/diffplug/spotless/pull/1536))
 
 ## [2.32.0] - 2023-02-05
 ### Added

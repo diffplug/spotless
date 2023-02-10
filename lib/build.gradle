@@ -69,8 +69,8 @@ dependencies {
 	palantirJavaFormatCompileOnly 'com.palantir.javaformat:palantir-java-format:1.1.0' 	// this version needs to stay compilable against Java 8 for CI Job testNpm
 
 	// used jackson-based formatters
-	jacksonCompileOnly 'com.fasterxml.jackson.core:jackson-databind:2.14.1'
-	jacksonCompileOnly 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.14.1'
+	jacksonCompileOnly 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
+	jacksonCompileOnly 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.14.2'
 
 	String VER_KTFMT = '0.43'
 	ktfmtCompileOnly "com.facebook:ktfmt:$VER_KTFMT"
