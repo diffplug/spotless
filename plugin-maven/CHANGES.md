@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.33.0] - 2023-02-10
 ### Added
 * CleanThat Java Refactorer. ([#1560](https://github.com/diffplug/spotless/pull/1560))
 ### Fixed
