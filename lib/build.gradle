@@ -16,7 +16,8 @@ def NEEDS_GLUE = [
 	'diktat',
 	'scalafmt',
 	'jackson',
-	'gson'
+	'gson',
+	'cleanthat'
 ]
 for (glue in NEEDS_GLUE) {
 	sourceSets.register(glue) {
@@ -38,6 +39,12 @@ versionCompatibility {
 				'0.48.0',
 			]
 			targetSourceSetName = 'ktlint'
+		}
+		namespaces.register('Cleanthat') {
+			versions = [
+				'2.1',
+			]
+			targetSourceSetName = 'cleanthat'
 		}
 	}
 }
@@ -100,6 +107,9 @@ dependencies {
 	flexmarkCompileOnly 'com.vladsch.flexmark:flexmark-all:0.62.2'
 
 	gsonCompileOnly 'com.google.code.gson:gson:2.10.1'
+
+	cleanthatCompileOnly 'io.github.solven-eu.cleanthat:java:2.1'
+	compatCleanthat2Dot1CompileAndTestOnly 'io.github.solven-eu.cleanthat:java:2.1'
 }
 
 // we'll hold the core lib to a high standard

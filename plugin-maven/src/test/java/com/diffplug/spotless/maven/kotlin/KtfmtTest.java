@@ -37,6 +37,15 @@ class KtfmtTest extends MavenIntegrationHarness {
 	}
 
 	@Test
+	void testContinuation() throws Exception {
+		writePomWithKotlinSteps("<ktfmt/>");
+
+		setFile("src/main/kotlin/main.kt").toResource("kotlin/ktfmt/continuation.dirty");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("src/main/kotlin/main.kt").sameAsResource("kotlin/ktfmt/continuation.clean");
+	}
+
+	@Test
 	void testKtfmtStyle() throws Exception {
 		writePomWithKotlinSteps("<ktfmt><style>DROPBOX</style></ktfmt>");
 

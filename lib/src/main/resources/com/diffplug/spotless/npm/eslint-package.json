@@ -1,5 +1,5 @@
 {
-	"name": "spotless-eslint-formatter-step",
+	"name": "spotless-eslint",
 	"version": "2.0.0",
 	"description": "Spotless formatter step for running eslint as a rest service.",
 	"repository": "https://github.com/diffplug/spotless",
