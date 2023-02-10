@@ -19,8 +19,6 @@ import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
-import java.io.IOException;
-
 class KtfmtTest extends MavenIntegrationHarness {
 	@Test
 	void testKtfmt() throws Exception {
