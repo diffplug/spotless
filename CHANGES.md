@@ -10,8 +10,10 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* CleanThat Java Refactorer. ([#1560](https://github.com/diffplug/spotless/pull/1560))
 ### Fixed
-* Maven plugin with `ktfmt` default style uses correct continuation indent ([#1562](https://github.com/diffplug/spotless/pull/1562))
+* `ktfmt` default style uses correct continuation indent. ([#1562](https://github.com/diffplug/spotless/pull/1562))
 
 ## [2.34.1] - 2023-02-05
 ### Changes
