@@ -31,7 +31,7 @@ class CleanthatJavaIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    java {",
 				"        target file('test.java')",
-				"        cleanthat()" +
+				"        cleanthat()",
 				"          .sourceCompatibility('11')",
 				"          .addMutators(['LiteralsFirstInComparisons', 'OptionalNotEmpty'])",
 				"    }",
