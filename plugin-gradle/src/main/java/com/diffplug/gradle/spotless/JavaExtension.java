@@ -19,6 +19,7 @@ import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElem
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -283,9 +284,9 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 
 		private String sourceJdk = CleanthatJavaStep.defaultSourceJdk();
 
-		private List<String> mutators = CleanthatJavaStep.defaultMutators();
+		private List<String> mutators = new ArrayList<>(CleanthatJavaStep.defaultMutators());
 
-		private List<String> excludedMutators = CleanthatJavaStep.defaultExcludedMutators();
+		private List<String> excludedMutators = new ArrayList<>(CleanthatJavaStep.defaultExcludedMutators());
 
 		CleanthatJavaConfig() {
 			addStep(createStep());
@@ -319,10 +320,16 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 			return this;
 		}
 
-		// The fully qualified name of a class implementing eu.solven.cleanthat.engine.java.refactorer.meta.IMutator
-		// or '*' to include all default mutators
+		// An id of a mutator (see IMutator.getIds()) or
+		// tThe fully qualified name of a class implementing eu.solven.cleanthat.engine.java.refactorer.meta.IMutator
 		public CleanthatJavaConfig addMutator(String mutator) {
 			this.mutators.add(mutator);
+			replaceStep(createStep());
+			return this;
+		}
+
+		public CleanthatJavaConfig addMutators(Collection<String> mutators) {
+			this.mutators.addAll(mutators);
 			replaceStep(createStep());
 			return this;
 		}
