@@ -29,6 +29,9 @@ class CleanthatJavaRefactorerTest extends MavenIntegrationHarness {
 	void testLiteralsFirstInComparisons() throws Exception {
 		writePomWithJavaSteps(
 				"<cleanthat>",
+				"  <mutators>",
+				"    <mutator>LiteralsFirstInComparisons</mutator>",
+				"  </mutators>",
 				"</cleanthat>");
 
 		runTest("LiteralsFirstInComparisons.dirty.java", "LiteralsFirstInComparisons.clean.java");
@@ -36,8 +39,13 @@ class CleanthatJavaRefactorerTest extends MavenIntegrationHarness {
 
 	@Test
 	void testMultipleMutators_defaultIsJdk7() throws Exception {
+		// OptionalNotEmpty will be excluded as it is not compatible with JDK7
 		writePomWithJavaSteps(
 				"<cleanthat>",
+				"  <mutators>",
+				"    <mutator>LiteralsFirstInComparisons</mutator>",
+				"    <mutator>OptionalNotEmpty</mutator>",
+				"  </mutators>",
 				"</cleanthat>");
 
 		runTest("MultipleMutators.dirty.java", "MultipleMutators.clean.onlyLiteralsFirst.java");
@@ -47,7 +55,11 @@ class CleanthatJavaRefactorerTest extends MavenIntegrationHarness {
 	void testMultipleMutators_Jdk11IntroducedOptionalisPresent() throws Exception {
 		writePomWithJavaSteps(
 				"<cleanthat>",
-				"<sourceJdk>11</sourceJdk>",
+				"  <sourceJdk>11</sourceJdk>",
+				"  <mutators>",
+				"    <mutator>LiteralsFirstInComparisons</mutator>",
+				"    <mutator>OptionalNotEmpty</mutator>",
+				"  </mutators>",
 				"</cleanthat>");
 
 		runTest("MultipleMutators.dirty.java", "MultipleMutators.clean.java");
@@ -57,6 +69,10 @@ class CleanthatJavaRefactorerTest extends MavenIntegrationHarness {
 	void testExcludeOptionalNotEmpty() throws Exception {
 		writePomWithJavaSteps(
 				"<cleanthat>",
+				"  <mutators>",
+				"    <mutator>LiteralsFirstInComparisons</mutator>",
+				"    <mutator>OptionalNotEmpty</mutator>",
+				"  </mutators>",
 				"  <excludedMutators>",
 				"    <excludedMutator>OptionalNotEmpty</excludedMutator>",
 				"  </excludedMutators>",
