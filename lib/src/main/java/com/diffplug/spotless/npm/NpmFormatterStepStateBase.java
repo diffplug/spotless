@@ -34,12 +34,15 @@ import org.slf4j.LoggerFactory;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.ProcessRunner.LongRunningProcess;
 import com.diffplug.spotless.ThrowingEx;
+import com.diffplug.spotless.TimedLogger;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 abstract class NpmFormatterStepStateBase implements Serializable {
 
 	private static final Logger logger = LoggerFactory.getLogger(NpmFormatterStepStateBase.class);
+
+	private static final TimedLogger timedLogger = TimedLogger.forLogger(logger);
 
 	private static final long serialVersionUID = 1460749955865959948L;
 
@@ -61,26 +64,24 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 
 	protected void prepareNodeServerLayout() throws IOException {
 		final long started = System.currentTimeMillis();
-		// maybe introduce trace logger?
-		logger.info("Preparing {} for npm step {}.", this.nodeServerLayout, getClass().getName());
-		NpmResourceHelper.assertDirectoryExists(nodeServerLayout.nodeModulesDir());
-		NpmResourceHelper.writeUtf8StringToFile(nodeServerLayout.packageJsonFile(),
-				this.npmConfig.getPackageJsonContent());
-		NpmResourceHelper
-				.writeUtf8StringToFile(nodeServerLayout.serveJsFile(), this.npmConfig.getServeScriptContent());
-		if (this.npmConfig.getNpmrcContent() != null) {
-			NpmResourceHelper.writeUtf8StringToFile(nodeServerLayout.npmrcFile(), this.npmConfig.getNpmrcContent());
-		} else {
-			NpmResourceHelper.deleteFileIfExists(nodeServerLayout.npmrcFile());
-		}
-		logger.info("Prepared {} for npm step {} in {} ms.", this.nodeServerLayout, getClass().getName(), System.currentTimeMillis() - started);
+
+		timedLogger.withInfo("Preparing {} for npm step {}.", this.nodeServerLayout, getClass().getName()).run(() -> {
+			NpmResourceHelper.assertDirectoryExists(nodeServerLayout.nodeModulesDir());
+			NpmResourceHelper.writeUtf8StringToFile(nodeServerLayout.packageJsonFile(),
+					this.npmConfig.getPackageJsonContent());
+			NpmResourceHelper
+					.writeUtf8StringToFile(nodeServerLayout.serveJsFile(), this.npmConfig.getServeScriptContent());
+			if (this.npmConfig.getNpmrcContent() != null) {
+				NpmResourceHelper.writeUtf8StringToFile(nodeServerLayout.npmrcFile(), this.npmConfig.getNpmrcContent());
+			} else {
+				NpmResourceHelper.deleteFileIfExists(nodeServerLayout.npmrcFile());
+			}
+		});
 	}
 
 	protected void prepareNodeServer() throws IOException {
-		final long started = System.currentTimeMillis();
-		logger.info("running npm install in {} for npm step {}", this.nodeServerLayout.nodeModulesDir(), getClass().getName());
-		runNpmInstall(nodeServerLayout.nodeModulesDir());
-		logger.info("npm install finished in {} ms in {} for npm step {}", System.currentTimeMillis() - started, this.nodeServerLayout.nodeModulesDir(), getClass().getName());
+		timedLogger.withInfo("Running npm install in {} for npm step {}.", this.nodeServerLayout.nodeModulesDir(), getClass().getName())
+				.run(() -> runNpmInstall(nodeServerLayout.nodeModulesDir()));
 	}
 
 	private void runNpmInstall(File npmProjectDir) throws IOException {
