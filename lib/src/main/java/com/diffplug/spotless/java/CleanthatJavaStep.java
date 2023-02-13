@@ -40,7 +40,7 @@ public final class CleanthatJavaStep {
 	private static final String MAVEN_COORDINATE = "io.github.solven-eu.cleanthat:java";
 
 	// CleanThat changelog is available at https://github.com/solven-eu/cleanthat/blob/master/CHANGES.MD
-	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "2.1");
+	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "2.2");
 
 	// prevent direct instantiation
 	private CleanthatJavaStep() {}
@@ -71,8 +71,7 @@ public final class CleanthatJavaStep {
 	 * @return
 	 */
 	public static List<String> defaultMutators() {
-		// see JavaRefactorerProperties.WILDCARD
-		return List.of("*");
+		return List.of("eu.solven.cleanthat.engine.java.refactorer.mutators.composite.SafeAndConsensualMutators");
 	}
 
 	/** Creates a step which apply selected CleanThat mutators. */
