@@ -85,7 +85,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 	}
 
 	private void runNpmInstall(File npmProjectDir) throws IOException {
-		new NpmProcess(npmProjectDir, this.locations.npmExecutable(), this.locations.nodeExecutable()).install();
+		new StandardNpmProcess(npmProjectDir, this.locations.npmExecutable(), this.locations.nodeExecutable()).install();
 	}
 
 	protected void assertNodeServerDirReady() throws IOException {
@@ -116,7 +116,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 			final File serverPortFile = new File(this.nodeServerLayout.nodeModulesDir(), "server.port");
 			NpmResourceHelper.deleteFileIfExists(serverPortFile);
 			// start the http server in node
-			server = new NpmProcess(this.nodeServerLayout.nodeModulesDir(), this.locations.npmExecutable(), this.locations.nodeExecutable()).start();
+			server = new StandardNpmProcess(this.nodeServerLayout.nodeModulesDir(), this.locations.npmExecutable(), this.locations.nodeExecutable()).start();
 
 			// await the readiness of the http server - wait for at most 60 seconds
 			try {
