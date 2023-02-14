@@ -134,6 +134,20 @@ class TimedLoggerTest {
 		testLogger.assertHasEventWithMessageAndArguments(MESSAGE_PREFIX_END, "2ms");
 	}
 
+	@Test
+	void itReturnsValueOfCallableWhileStillLogging() {
+		String result = timedLogger.withInfo("This should be logged").call(() -> {
+			testTicker.tickMillis(2);
+			return "This is the result";
+		});
+
+		Assertions.assertThat(result).isEqualTo("This is the result");
+
+		testLogger.assertEvents(2);
+		testLogger.assertHasEventWithMessageAndArguments(MESSAGE_PREFIX_BEGIN);
+		testLogger.assertHasEventWithMessageAndArguments(MESSAGE_PREFIX_END, "2ms");
+	}
+
 	private static class TestLogger extends LegacyAbstractLogger {
 
 		private final List<TestLoggingEvent> events = new LinkedList<>();

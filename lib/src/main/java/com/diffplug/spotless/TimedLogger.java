@@ -192,6 +192,12 @@ public class TimedLogger {
 			}
 		}
 
+		public <T> T call(ThrowingEx.Supplier<T> s) {
+			try (Timed ignore = timed()) {
+				return ThrowingEx.get(s);
+			}
+		}
+
 		public void runChecked(ThrowingEx.Runnable r) throws Exception {
 			try (Timed ignore = timed()) {
 				r.run();

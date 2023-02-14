@@ -70,7 +70,6 @@ public class PrettierFormatterStep {
 							replaceDevDependencies(
 									NpmResourceHelper.readUtf8StringFromClasspath(PrettierFormatterStep.class, "/com/diffplug/spotless/npm/prettier-package.json"),
 									new TreeMap<>(devDependencies)),
-							"prettier",
 							NpmResourceHelper.readUtf8StringFromClasspath(PrettierFormatterStep.class,
 									"/com/diffplug/spotless/npm/common-serve.js",
 									"/com/diffplug/spotless/npm/prettier-serve.js"),

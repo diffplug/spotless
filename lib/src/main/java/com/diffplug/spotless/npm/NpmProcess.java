@@ -15,10 +15,39 @@
  */
 package com.diffplug.spotless.npm;
 
-import com.diffplug.spotless.ProcessRunner;
+import java.util.concurrent.ExecutionException;
+
+import com.diffplug.spotless.ProcessRunner.LongRunningProcess;
+import com.diffplug.spotless.ProcessRunner.Result;
 
 interface NpmProcess {
-	void install();
 
-	ProcessRunner.LongRunningProcess start();
+	String describe();
+
+	LongRunningProcess start();
+
+	default Result waitFor() {
+		try (LongRunningProcess npmProcess = start()) {
+			if (npmProcess.waitFor() != 0) {
+				throw new NpmProcessException("Running npm command '" + describe() + "' failed with exit code: " + npmProcess.exitValue() + "\n\n" + npmProcess.result());
+			}
+			return npmProcess.result();
+		} catch (InterruptedException e) {
+			throw new NpmProcessException("Running npm command '" + describe() + "' was interrupted.", e);
+		} catch (ExecutionException e) {
+			throw new NpmProcessException("Running npm command '" + describe() + "' failed.", e);
+		}
+	}
+
+	class NpmProcessException extends RuntimeException {
+		private static final long serialVersionUID = 6424331316676759525L;
+
+		public NpmProcessException(String message) {
+			super(message);
+		}
+
+		public NpmProcessException(String message, Throwable cause) {
+			super(message, cause);
+		}
+	}
 }

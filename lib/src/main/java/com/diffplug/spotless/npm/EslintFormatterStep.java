@@ -95,7 +95,6 @@ public class EslintFormatterStep {
 							replaceDevDependencies(
 									NpmResourceHelper.readUtf8StringFromClasspath(EslintFormatterStep.class, "/com/diffplug/spotless/npm/eslint-package.json"),
 									new TreeMap<>(devDependencies)),
-							"eslint",
 							NpmResourceHelper.readUtf8StringFromClasspath(EslintFormatterStep.class,
 									"/com/diffplug/spotless/npm/common-serve.js",
 									"/com/diffplug/spotless/npm/eslint-serve.js"),
