@@ -363,6 +363,8 @@ spotless { // if you are using build.gradle.kts, instead of 'spotless {' use:
 spotless {
   kotlin {
     ktfmt('0.30').dropboxStyle() // version and dropbox style are optional
+  }
+}
 ```
 
 <a name="applying-ktlint-to-kotlin-files"></a>
