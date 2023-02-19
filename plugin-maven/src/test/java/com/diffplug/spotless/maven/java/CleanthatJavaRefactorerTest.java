@@ -28,10 +28,10 @@ class CleanthatJavaRefactorerTest extends MavenIntegrationHarness {
 	@Test
 	void testEnableDraft() throws Exception {
 		writePomWithJavaSteps(
-			"<cleanthat>",
-			"  <sourceJdk>11</sourceJdk>",
-			"  <includeDraft>true</includeDraft>",
-			"</cleanthat>");
+				"<cleanthat>",
+				"  <sourceJdk>11</sourceJdk>",
+				"  <includeDraft>true</includeDraft>",
+				"</cleanthat>");
 
 		runTest("MultipleMutators.dirty.java", "MultipleMutators.clean.onlyOptionalIsPresent.java");
 	}
