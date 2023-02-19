@@ -288,6 +288,8 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 
 		private List<String> excludedMutators = new ArrayList<>(CleanthatJavaStep.defaultExcludedMutators());
 
+		private boolean includeDraft = CleanthatJavaStep.defaultIncludeDraft();
+
 		CleanthatJavaConfig() {
 			addStep(createStep());
 		}
@@ -341,11 +343,17 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 			return this;
 		}
 
+		public CleanthatJavaConfig includeDraft(boolean includeDraft) {
+			this.includeDraft = includeDraft;
+			replaceStep(createStep());
+			return this;
+		}
+
 		private FormatterStep createStep() {
 			return CleanthatJavaStep.create(
 					groupArtifact,
 					version,
-					sourceJdk, mutators, excludedMutators, provisioner());
+					sourceJdk, mutators, excludedMutators, includeDraft, provisioner());
 		}
 	}
 

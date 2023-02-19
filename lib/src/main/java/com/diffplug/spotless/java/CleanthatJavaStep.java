@@ -40,7 +40,7 @@ public final class CleanthatJavaStep {
 	private static final String MAVEN_COORDINATE = "io.github.solven-eu.cleanthat:java";
 
 	// CleanThat changelog is available at https://github.com/solven-eu/cleanthat/blob/master/CHANGES.MD
-	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "2.2");
+	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "2.3");
 
 	// prevent direct instantiation
 	private CleanthatJavaStep() {}
@@ -52,7 +52,7 @@ public final class CleanthatJavaStep {
 
 	/** Creates a step which apply default CleanThat mutators. */
 	public static FormatterStep create(String version, Provisioner provisioner) {
-		return create(MAVEN_COORDINATE, version, defaultSourceJdk(), defaultExcludedMutators(), defaultMutators(), provisioner);
+		return create(MAVEN_COORDINATE, version, defaultSourceJdk(), defaultMutators(), defaultExcludedMutators(), defaultIncludeDraft(), provisioner);
 	}
 
 	public static String defaultSourceJdk() {
@@ -62,16 +62,20 @@ public final class CleanthatJavaStep {
 		return "1.7";
 	}
 
+	/**
+	 * By default, we include only safe and consensual mutators
+	 * @return
+	 */
+	public static List<String> defaultMutators() {
+		return List.of("SafeAndConsensualMutators");
+	}
+
 	public static List<String> defaultExcludedMutators() {
 		return List.of();
 	}
 
-	/**
-	 * By default, we include all available rules
-	 * @return
-	 */
-	public static List<String> defaultMutators() {
-		return List.of("eu.solven.cleanthat.engine.java.refactorer.mutators.composite.SafeAndConsensualMutators");
+	public static boolean defaultIncludeDraft() {
+		return false;
 	}
 
 	/** Creates a step which apply selected CleanThat mutators. */
@@ -80,6 +84,7 @@ public final class CleanthatJavaStep {
 			String sourceJdkVersion,
 			List<String> excluded,
 			List<String> included,
+			boolean includeDraft,
 			Provisioner provisioner) {
 		Objects.requireNonNull(groupArtifact, "groupArtifact");
 		if (groupArtifact.chars().filter(ch -> ch == ':').count() != 1) {
@@ -88,7 +93,7 @@ public final class CleanthatJavaStep {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(provisioner, "provisioner");
 		return FormatterStep.createLazy(NAME,
-				() -> new JavaRefactorerState(NAME, groupArtifact, version, sourceJdkVersion, excluded, included, provisioner),
+				() -> new JavaRefactorerState(NAME, groupArtifact, version, sourceJdkVersion, excluded, included, includeDraft, provisioner),
 				JavaRefactorerState::createFormat);
 	}
 
@@ -113,7 +118,7 @@ public final class CleanthatJavaStep {
 		final List<String> excluded;
 
 		JavaRefactorerState(String stepName, String version, Provisioner provisioner) throws IOException {
-			this(stepName, MAVEN_COORDINATE, version, defaultSourceJdk(), defaultExcludedMutators(), defaultMutators(), provisioner);
+			this(stepName, MAVEN_COORDINATE, version, defaultSourceJdk(), defaultExcludedMutators(), defaultMutators(), defaultIncludeDraft(), provisioner);
 		}
 
 		JavaRefactorerState(String stepName,
@@ -122,6 +127,7 @@ public final class CleanthatJavaStep {
 				String sourceJdkVersion,
 				List<String> included,
 				List<String> excluded,
+				boolean includeDraft,
 				Provisioner provisioner) throws IOException {
 			JVM_SUPPORT.assertFormatterSupported(version);
 			ModuleHelper.doOpenInternalPackagesIfRequired();
