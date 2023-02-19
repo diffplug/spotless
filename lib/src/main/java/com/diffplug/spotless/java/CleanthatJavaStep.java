@@ -67,7 +67,8 @@ public final class CleanthatJavaStep {
 	 * @return
 	 */
 	public static List<String> defaultMutators() {
-		return List.of("SafeAndConsensualMutators");
+		// To be replaced by 'SafeAndConsensual'
+		return List.of("eu.solven.cleanthat.engine.java.refactorer.mutators.composite.SafeAndConsensualMutators");
 	}
 
 	public static List<String> defaultExcludedMutators() {

@@ -26,6 +26,17 @@ class CleanthatJavaRefactorerTest extends MavenIntegrationHarness {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CleanthatJavaRefactorerTest.class);
 
 	@Test
+	void testEnableDraft() throws Exception {
+		writePomWithJavaSteps(
+			"<cleanthat>",
+			"  <sourceJdk>11</sourceJdk>",
+			"  <includeDraft>true</includeDraft>",
+			"</cleanthat>");
+
+		runTest("MultipleMutators.dirty.java", "MultipleMutators.clean.onlyOptionalIsPresent.java");
+	}
+
+	@Test
 	void testLiteralsFirstInComparisons() throws Exception {
 		writePomWithJavaSteps(
 				"<cleanthat>",
