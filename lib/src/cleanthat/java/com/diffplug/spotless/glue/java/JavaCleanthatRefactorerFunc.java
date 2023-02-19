@@ -52,7 +52,7 @@ public class JavaCleanthatRefactorerFunc implements FormatterFunc {
 	}
 
 	public JavaCleanthatRefactorerFunc() {
-		this(IJdkVersionConstants.JDK_8, Arrays.asList(JavaRefactorerProperties.WILDCARD), Arrays.asList(), false);
+		this(IJdkVersionConstants.JDK_8, Arrays.asList("SafeAndConsensual"), Arrays.asList(), false);
 	}
 
 	@Override

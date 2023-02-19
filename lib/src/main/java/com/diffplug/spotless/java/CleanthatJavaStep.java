@@ -116,6 +116,7 @@ public final class CleanthatJavaStep {
 		final String sourceJdkVersion;
 		final List<String> included;
 		final List<String> excluded;
+		final boolean includeDraft;
 
 		JavaRefactorerState(String stepName, String version, Provisioner provisioner) throws IOException {
 			this(stepName, MAVEN_COORDINATE, version, defaultSourceJdk(), defaultExcludedMutators(), defaultMutators(), defaultIncludeDraft(), provisioner);
@@ -138,6 +139,7 @@ public final class CleanthatJavaStep {
 			this.sourceJdkVersion = sourceJdkVersion;
 			this.included = included;
 			this.excluded = excluded;
+			this.includeDraft = includeDraft;
 		}
 
 		@SuppressWarnings("PMD.UseProperClassLoader")
@@ -148,9 +150,9 @@ public final class CleanthatJavaStep {
 			Method formatterMethod;
 			try {
 				Class<?> formatterClazz = classLoader.loadClass("com.diffplug.spotless.glue.java.JavaCleanthatRefactorerFunc");
-				Constructor<?> formatterConstructor = formatterClazz.getConstructor(String.class, List.class, List.class);
+				Constructor<?> formatterConstructor = formatterClazz.getConstructor(String.class, List.class, List.class, boolean.class);
 
-				formatter = formatterConstructor.newInstance(sourceJdkVersion, included, excluded);
+				formatter = formatterConstructor.newInstance(sourceJdkVersion, included, excluded, includeDraft);
 				formatterMethod = formatterClazz.getMethod("apply", String.class);
 			} catch (ReflectiveOperationException e) {
 				throw new IllegalStateException("Issue executing the formatter", e);
