@@ -385,7 +385,7 @@ spotless {
     ktlint("0.45.2")
       .setUseExperimental(true)
       .userData(mapOf("android" to "true"))
-      .editorConfigPath("$projectDir/config/.editorconfig")  // sample unusual placement
+      .setEditorConfigPath("$projectDir/config/.editorconfig")  // sample unusual placement
       .editorConfigOverride(mapOf("indent_size" to 2))
   }
 }
