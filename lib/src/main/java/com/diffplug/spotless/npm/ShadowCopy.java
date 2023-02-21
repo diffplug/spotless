@@ -116,6 +116,10 @@ class ShadowCopy {
 		return target;
 	}
 
+	public boolean entryExists(String key, String origName) {
+		return entry(key, origName).exists();
+	}
+
 	private static class CopyDirectoryRecursively extends SimpleFileVisitor<Path> {
 		private final File target;
 		private final File orig;

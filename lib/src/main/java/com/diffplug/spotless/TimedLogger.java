@@ -126,7 +126,9 @@ public class TimedLogger {
 			if (duration < 1000) {
 				return duration + "ms";
 			} else if (duration < 1000 * 60) {
-				return (duration / 1000) + "s";
+				long seconds = duration / 1000;
+				long millis = duration - seconds * 1000;
+				return seconds + "." + millis + "s";
 			} else {
 				// output in the format 3m 4.321s
 				long minutes = duration / (1000 * 60);

@@ -135,6 +135,19 @@ class ShadowCopyTest extends ResourceHarness {
 		assertAllFilesAreEqualButNotSameAbsolutePath(copiedEntry, shadowCopyFile);
 	}
 
+	@Test
+	void anAddedEntryExistsAfterAdding() throws IOException {
+		File folderWithRandomFile = newFolderWithRandomFile();
+		shadowCopy.addEntry("someEntry", folderWithRandomFile);
+		Assertions.assertThat(shadowCopy.entryExists("someEntry", folderWithRandomFile.getName())).isTrue();
+	}
+
+	@Test
+	void aEntryThatHasNotBeenAddedDoesNotExist() throws IOException {
+		File folderWithRandomFile = newFolderWithRandomFile();
+		Assertions.assertThat(shadowCopy.entryExists("someEntry", folderWithRandomFile.getName())).isFalse();
+	}
+
 	private void assertAllFilesAreEqualButNotSameAbsolutePath(File expected, File actual) {
 		if (expected.isFile()) {
 			assertFileIsEqualButNotSameAbsolutePath(expected, actual);

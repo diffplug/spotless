@@ -19,21 +19,29 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import com.diffplug.spotless.ProcessRunner;
 
 public class StandardNpmProcessFactory implements NpmProcessFactory {
+
+	public static final StandardNpmProcessFactory INSTANCE = new StandardNpmProcessFactory();
+
+	private StandardNpmProcessFactory() {
+		// only one instance neeeded
+	}
+
 	@Override
 	public NpmProcess createNpmInstallProcess(NodeServerLayout nodeServerLayout, NpmFormatterStepLocations formatterStepLocations) {
 		return new NpmInstall(nodeServerLayout.nodeModulesDir(), formatterStepLocations);
 	}
 
 	@Override
-	public NpmProcess createNpmServeProcess(NodeServerLayout nodeServerLayout, NpmFormatterStepLocations formatterStepLocations) {
+	public NpmLongRunningProcess createNpmServeProcess(NodeServerLayout nodeServerLayout, NpmFormatterStepLocations formatterStepLocations) {
 		return new NpmServe(nodeServerLayout.nodeModulesDir(), formatterStepLocations);
 	}
 
-	private static abstract class AbstractStandardNpmProcess implements NpmProcess {
+	private static abstract class AbstractStandardNpmProcess {
 		protected final ProcessRunner processRunner = ProcessRunner.usingRingBuffersOfCapacity(100 * 1024); // 100kB
 
 		protected final File workingDir;
@@ -55,8 +63,7 @@ public class StandardNpmProcessFactory implements NpmProcessFactory {
 					"PATH", formatterStepLocations.nodeExecutable().getParentFile().getAbsolutePath() + File.pathSeparator + System.getenv("PATH"));
 		}
 
-		@Override
-		public ProcessRunner.LongRunningProcess start() {
+		protected ProcessRunner.LongRunningProcess doStart() {
 			try {
 				return processRunner.start(workingDir, environmentVariables(), null, true, commandLine());
 			} catch (IOException e) {
@@ -64,13 +71,14 @@ public class StandardNpmProcessFactory implements NpmProcessFactory {
 			}
 		}
 
-		@Override
-		public String describe() {
+		protected abstract String describe();
+
+		public String doDescribe() {
 			return String.format("%s in %s [%s]", getClass().getSimpleName(), workingDir, String.join(" ", commandLine()));
 		}
 	}
 
-	private static class NpmInstall extends AbstractStandardNpmProcess {
+	private static class NpmInstall extends AbstractStandardNpmProcess implements NpmProcess {
 
 		public NpmInstall(File workingDir, NpmFormatterStepLocations formatterStepLocations) {
 			super(workingDir, formatterStepLocations);
@@ -85,9 +93,28 @@ public class StandardNpmProcessFactory implements NpmProcessFactory {
 					"--no-fund",
 					"--prefer-offline");
 		}
+
+		@Override
+		public String describe() {
+			return doDescribe();
+		}
+
+		@Override
+		public ProcessRunner.Result waitFor() {
+			try (ProcessRunner.LongRunningProcess npmProcess = doStart()) {
+				if (npmProcess.waitFor() != 0) {
+					throw new NpmProcessException("Running npm command '" + describe() + "' failed with exit code: " + npmProcess.exitValue() + "\n\n" + npmProcess.result());
+				}
+				return npmProcess.result();
+			} catch (InterruptedException e) {
+				throw new NpmProcessException("Running npm command '" + describe() + "' was interrupted.", e);
+			} catch (ExecutionException e) {
+				throw new NpmProcessException("Running npm command '" + describe() + "' failed.", e);
+			}
+		}
 	}
 
-	private static class NpmServe extends AbstractStandardNpmProcess {
+	private static class NpmServe extends AbstractStandardNpmProcess implements NpmLongRunningProcess {
 
 		public NpmServe(File workingDir, NpmFormatterStepLocations formatterStepLocations) {
 			super(workingDir, formatterStepLocations);
@@ -99,6 +126,16 @@ public class StandardNpmProcessFactory implements NpmProcessFactory {
 					npmExecutable(),
 					"start",
 					"--scripts-prepend-node-path=true");
+		}
+
+		@Override
+		public String describe() {
+			return doDescribe();
+		}
+
+		@Override
+		public ProcessRunner.LongRunningProcess start() {
+			return doStart();
 		}
 	}
 }

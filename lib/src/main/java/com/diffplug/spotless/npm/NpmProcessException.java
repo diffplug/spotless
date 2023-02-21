@@ -15,13 +15,14 @@
  */
 package com.diffplug.spotless.npm;
 
-public interface NpmProcessFactory {
-	NpmProcess createNpmInstallProcess(NodeServerLayout nodeServerLayout, NpmFormatterStepLocations formatterStepLocations);
+public class NpmProcessException extends RuntimeException {
+	private static final long serialVersionUID = 6424331316676759525L;
 
-	NpmLongRunningProcess createNpmServeProcess(NodeServerLayout nodeServerLayout, NpmFormatterStepLocations formatterStepLocations);
-
-	default String describe() {
-		return getClass().getSimpleName();
+	public NpmProcessException(String message) {
+		super(message);
 	}
 
+	public NpmProcessException(String message, Throwable cause) {
+		super(message, cause);
+	}
 }

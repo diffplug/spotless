@@ -15,13 +15,12 @@
  */
 package com.diffplug.spotless.npm;
 
-public interface NpmProcessFactory {
-	NpmProcess createNpmInstallProcess(NodeServerLayout nodeServerLayout, NpmFormatterStepLocations formatterStepLocations);
+import com.diffplug.spotless.ProcessRunner.LongRunningProcess;
 
-	NpmLongRunningProcess createNpmServeProcess(NodeServerLayout nodeServerLayout, NpmFormatterStepLocations formatterStepLocations);
+interface NpmLongRunningProcess {
 
-	default String describe() {
-		return getClass().getSimpleName();
-	}
+	String describe();
+
+	LongRunningProcess start();
 
 }
