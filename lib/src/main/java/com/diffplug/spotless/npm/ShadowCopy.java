@@ -146,10 +146,10 @@ class ShadowCopy {
 					Files.createLink(target.toPath().resolve(orig.toPath().relativize(file)), file);
 					return super.visitFile(file, attrs);
 				} catch (UnsupportedOperationException | SecurityException | FileSystemException e) {
-					logger.debug("Shadow copy entry does not support hard links: {}", file, e);
+					logger.info("Shadow copy entry does not support hard links: {}. Switching to copy.", file, e);
 					tryHardLink = false; // remember that hard links are not supported
 				} catch (IOException e) {
-					logger.debug("Shadow copy entry failed to create hard link: {}", file, e);
+					logger.info("Shadow copy entry failed to create hard link: {}. Switching to copy.", file, e);
 					tryHardLink = false; // remember that hard links are not supported
 				}
 			}

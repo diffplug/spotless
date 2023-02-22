@@ -84,7 +84,8 @@ public class NodeModulesCachingNpmProcessFactory implements NpmProcessFactory {
 						.run(() -> shadowCopy.copyEntryInto(entryName(), NodeServerLayout.NODE_MODULES, nodeServerLayout.nodeModulesDir()));
 				return new CachedResult();
 			} else {
-				Result result = actualNpmInstallProcess.waitFor();
+				Result result = timedLogger.withInfo("calling actual npm install {}", actualNpmInstallProcess.describe())
+						.call(actualNpmInstallProcess::waitFor);
 				assert result.exitCode() == 0;
 				// TODO: maybe spawn a thread to do this in the background?
 				timedLogger.withInfo("Caching node_modules for {} in {}", entryName, cacheDir)
