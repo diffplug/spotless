@@ -40,7 +40,7 @@ public final class CleanthatJavaStep {
 	private static final String MAVEN_COORDINATE = "io.github.solven-eu.cleanthat:java";
 
 	// CleanThat changelog is available at https://github.com/solven-eu/cleanthat/blob/master/CHANGES.MD
-	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "2.2");
+	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "2.6");
 
 	// prevent direct instantiation
 	private CleanthatJavaStep() {}
@@ -52,7 +52,7 @@ public final class CleanthatJavaStep {
 
 	/** Creates a step which apply default CleanThat mutators. */
 	public static FormatterStep create(String version, Provisioner provisioner) {
-		return create(MAVEN_COORDINATE, version, defaultSourceJdk(), defaultExcludedMutators(), defaultMutators(), provisioner);
+		return create(MAVEN_COORDINATE, version, defaultSourceJdk(), defaultMutators(), defaultExcludedMutators(), defaultIncludeDraft(), provisioner);
 	}
 
 	public static String defaultSourceJdk() {
@@ -62,16 +62,21 @@ public final class CleanthatJavaStep {
 		return "1.7";
 	}
 
+	/**
+	 * By default, we include only safe and consensual mutators
+	 * @return
+	 */
+	public static List<String> defaultMutators() {
+		// see ICleanthatStepParametersProperties.SAFE_AND_CONSENSUAL
+		return List.of("SafeAndConsensual");
+	}
+
 	public static List<String> defaultExcludedMutators() {
 		return List.of();
 	}
 
-	/**
-	 * By default, we include all available rules
-	 * @return
-	 */
-	public static List<String> defaultMutators() {
-		return List.of("eu.solven.cleanthat.engine.java.refactorer.mutators.composite.SafeAndConsensualMutators");
+	public static boolean defaultIncludeDraft() {
+		return false;
 	}
 
 	/** Creates a step which apply selected CleanThat mutators. */
@@ -80,6 +85,7 @@ public final class CleanthatJavaStep {
 			String sourceJdkVersion,
 			List<String> excluded,
 			List<String> included,
+			boolean includeDraft,
 			Provisioner provisioner) {
 		Objects.requireNonNull(groupArtifact, "groupArtifact");
 		if (groupArtifact.chars().filter(ch -> ch == ':').count() != 1) {
@@ -88,7 +94,7 @@ public final class CleanthatJavaStep {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(provisioner, "provisioner");
 		return FormatterStep.createLazy(NAME,
-				() -> new JavaRefactorerState(NAME, groupArtifact, version, sourceJdkVersion, excluded, included, provisioner),
+				() -> new JavaRefactorerState(NAME, groupArtifact, version, sourceJdkVersion, excluded, included, includeDraft, provisioner),
 				JavaRefactorerState::createFormat);
 	}
 
@@ -111,9 +117,10 @@ public final class CleanthatJavaStep {
 		final String sourceJdkVersion;
 		final List<String> included;
 		final List<String> excluded;
+		final boolean includeDraft;
 
 		JavaRefactorerState(String stepName, String version, Provisioner provisioner) throws IOException {
-			this(stepName, MAVEN_COORDINATE, version, defaultSourceJdk(), defaultExcludedMutators(), defaultMutators(), provisioner);
+			this(stepName, MAVEN_COORDINATE, version, defaultSourceJdk(), defaultExcludedMutators(), defaultMutators(), defaultIncludeDraft(), provisioner);
 		}
 
 		JavaRefactorerState(String stepName,
@@ -122,8 +129,12 @@ public final class CleanthatJavaStep {
 				String sourceJdkVersion,
 				List<String> included,
 				List<String> excluded,
+				boolean includeDraft,
 				Provisioner provisioner) throws IOException {
-			JVM_SUPPORT.assertFormatterSupported(version);
+			// https://github.com/diffplug/spotless/issues/1583
+			if (!version.endsWith("-SNAPSHOT")) {
+				JVM_SUPPORT.assertFormatterSupported(version);
+			}
 			ModuleHelper.doOpenInternalPackagesIfRequired();
 			this.jarState = JarState.from(groupArtifact + ":" + version, provisioner);
 			this.stepName = stepName;
@@ -132,6 +143,7 @@ public final class CleanthatJavaStep {
 			this.sourceJdkVersion = sourceJdkVersion;
 			this.included = included;
 			this.excluded = excluded;
+			this.includeDraft = includeDraft;
 		}
 
 		@SuppressWarnings("PMD.UseProperClassLoader")
@@ -142,16 +154,24 @@ public final class CleanthatJavaStep {
 			Method formatterMethod;
 			try {
 				Class<?> formatterClazz = classLoader.loadClass("com.diffplug.spotless.glue.java.JavaCleanthatRefactorerFunc");
-				Constructor<?> formatterConstructor = formatterClazz.getConstructor(String.class, List.class, List.class);
+				Constructor<?> formatterConstructor = formatterClazz.getConstructor(String.class, List.class, List.class, boolean.class);
 
-				formatter = formatterConstructor.newInstance(sourceJdkVersion, included, excluded);
+				formatter = formatterConstructor.newInstance(sourceJdkVersion, included, excluded, includeDraft);
 				formatterMethod = formatterClazz.getMethod("apply", String.class);
 			} catch (ReflectiveOperationException e) {
 				throw new IllegalStateException("Issue executing the formatter", e);
 			}
-			return JVM_SUPPORT.suggestLaterVersionOnError(version, input -> {
-				return (String) formatterMethod.invoke(formatter, input);
-			});
+
+			// https://github.com/diffplug/spotless/issues/1583
+			if (!version.endsWith("-SNAPSHOT")) {
+				return JVM_SUPPORT.suggestLaterVersionOnError(version, input -> {
+					return (String) formatterMethod.invoke(formatter, input);
+				});
+			} else {
+				return input -> {
+					return (String) formatterMethod.invoke(formatter, input);
+				};
+			}
 		}
 
 	}
