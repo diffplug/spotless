@@ -131,7 +131,10 @@ public final class CleanthatJavaStep {
 				List<String> excluded,
 				boolean includeDraft,
 				Provisioner provisioner) throws IOException {
-			JVM_SUPPORT.assertFormatterSupported(version);
+			// https://github.com/diffplug/spotless/issues/1583
+			if (!version.endsWith("-SNAPSHOT")) {
+				JVM_SUPPORT.assertFormatterSupported(version);
+			}
 			ModuleHelper.doOpenInternalPackagesIfRequired();
 			this.jarState = JarState.from(groupArtifact + ":" + version, provisioner);
 			this.stepName = stepName;
@@ -158,9 +161,17 @@ public final class CleanthatJavaStep {
 			} catch (ReflectiveOperationException e) {
 				throw new IllegalStateException("Issue executing the formatter", e);
 			}
-			return JVM_SUPPORT.suggestLaterVersionOnError(version, input -> {
-				return (String) formatterMethod.invoke(formatter, input);
-			});
+
+			// https://github.com/diffplug/spotless/issues/1583
+			if (!version.endsWith("-SNAPSHOT")) {
+				return JVM_SUPPORT.suggestLaterVersionOnError(version, input -> {
+					return (String) formatterMethod.invoke(formatter, input);
+				});
+			} else {
+				return input -> {
+					return (String) formatterMethod.invoke(formatter, input);
+				};
+			}
 		}
 
 	}
