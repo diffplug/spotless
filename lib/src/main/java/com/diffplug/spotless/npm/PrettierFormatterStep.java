@@ -50,12 +50,12 @@ public class PrettierFormatterStep {
 		return Collections.singletonMap("prettier", version);
 	}
 
-	public static FormatterStep create(Map<String, String> devDependencies, Provisioner provisioner, File projectDir, File buildDir, NpmPathResolver npmPathResolver, PrettierConfig prettierConfig) {
+	public static FormatterStep create(Map<String, String> devDependencies, Provisioner provisioner, File projectDir, File buildDir, File cacheDir, NpmPathResolver npmPathResolver, PrettierConfig prettierConfig) {
 		requireNonNull(devDependencies);
 		requireNonNull(provisioner);
 		requireNonNull(buildDir);
 		return FormatterStep.createLazy(NAME,
-				() -> new State(NAME, devDependencies, projectDir, buildDir, npmPathResolver, prettierConfig),
+				() -> new State(NAME, devDependencies, projectDir, buildDir, cacheDir, npmPathResolver, prettierConfig),
 				State::createFormatterFunc);
 	}
 
@@ -64,7 +64,7 @@ public class PrettierFormatterStep {
 		private static final long serialVersionUID = -539537027004745812L;
 		private final PrettierConfig prettierConfig;
 
-		State(String stepName, Map<String, String> devDependencies, File projectDir, File buildDir, NpmPathResolver npmPathResolver, PrettierConfig prettierConfig) throws IOException {
+		State(String stepName, Map<String, String> devDependencies, File projectDir, File buildDir, File cacheDir, NpmPathResolver npmPathResolver, PrettierConfig prettierConfig) throws IOException {
 			super(stepName,
 					new NpmConfig(
 							replaceDevDependencies(
@@ -77,6 +77,7 @@ public class PrettierFormatterStep {
 					new NpmFormatterStepLocations(
 							projectDir,
 							buildDir,
+							cacheDir,
 							npmPathResolver::resolveNpmExecutable,
 							npmPathResolver::resolveNodeExecutable));
 			this.prettierConfig = requireNonNull(prettierConfig);

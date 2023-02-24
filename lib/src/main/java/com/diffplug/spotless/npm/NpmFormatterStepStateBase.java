@@ -62,7 +62,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 		this.npmConfig = requireNonNull(npmConfig);
 		this.locations = locations;
 		this.nodeServerLayout = new NodeServerLayout(locations.buildDir(), npmConfig.getPackageJsonContent());
-		this.nodeServeApp = new NodeServeApp(nodeServerLayout, npmConfig, NodeModulesCachingNpmProcessFactory.forCacheDir(new File(locations.buildDir(), "spotless-npm-cache"))/*StandardNpmProcessFactory.INSTANCE*/, locations);
+		this.nodeServeApp = new NodeServeApp(nodeServerLayout, npmConfig, locations);
 	}
 
 	protected void prepareNodeServerLayout() throws IOException {

@@ -29,8 +29,8 @@ public class NodeServeApp extends NodeApp {
 
 	private static final TimedLogger timedLogger = TimedLogger.forLogger(logger);
 
-	public NodeServeApp(@Nonnull NodeServerLayout nodeServerLayout, @Nonnull NpmConfig npmConfig, @Nonnull NpmProcessFactory npmProcessFactory, @Nonnull NpmFormatterStepLocations formatterStepLocations) {
-		super(nodeServerLayout, npmConfig, npmProcessFactory, formatterStepLocations);
+	public NodeServeApp(@Nonnull NodeServerLayout nodeServerLayout, @Nonnull NpmConfig npmConfig, @Nonnull NpmFormatterStepLocations formatterStepLocations) {
+		super(nodeServerLayout, npmConfig, formatterStepLocations);
 	}
 
 	ProcessRunner.LongRunningProcess startNpmServeProcess() {

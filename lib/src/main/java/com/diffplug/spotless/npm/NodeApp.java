@@ -42,11 +42,20 @@ public class NodeApp {
 	@Nonnull
 	protected final NpmFormatterStepLocations formatterStepLocations;
 
-	public NodeApp(@Nonnull NodeServerLayout nodeServerLayout, @Nonnull NpmConfig npmConfig, @Nonnull NpmProcessFactory npmProcessFactory, @Nonnull NpmFormatterStepLocations formatterStepLocations) {
+	public NodeApp(@Nonnull NodeServerLayout nodeServerLayout, @Nonnull NpmConfig npmConfig, @Nonnull NpmFormatterStepLocations formatterStepLocations) {
 		this.nodeServerLayout = Objects.requireNonNull(nodeServerLayout);
 		this.npmConfig = Objects.requireNonNull(npmConfig);
-		this.npmProcessFactory = Objects.requireNonNull(npmProcessFactory);
+		this.npmProcessFactory = processFactory(formatterStepLocations);
 		this.formatterStepLocations = Objects.requireNonNull(formatterStepLocations);
+	}
+
+	private static NpmProcessFactory processFactory(NpmFormatterStepLocations formatterStepLocations) {
+		if (formatterStepLocations.cacheDir() != null) {
+			logger.info("Caching npm install results in {}.", formatterStepLocations.cacheDir());
+			return NodeModulesCachingNpmProcessFactory.create(formatterStepLocations.cacheDir());
+		}
+		logger.debug("Not caching npm install results.");
+		return StandardNpmProcessFactory.INSTANCE;
 	}
 
 	boolean needsNpmInstall() {

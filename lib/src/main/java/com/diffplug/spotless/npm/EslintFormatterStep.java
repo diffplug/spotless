@@ -71,13 +71,13 @@ public class EslintFormatterStep {
 		return Collections.singletonMap("eslint", version);
 	}
 
-	public static FormatterStep create(Map<String, String> devDependencies, Provisioner provisioner, File projectDir, File buildDir, NpmPathResolver npmPathResolver, EslintConfig eslintConfig) {
+	public static FormatterStep create(Map<String, String> devDependencies, Provisioner provisioner, File projectDir, File buildDir, File cacheDir, NpmPathResolver npmPathResolver, EslintConfig eslintConfig) {
 		requireNonNull(devDependencies);
 		requireNonNull(provisioner);
 		requireNonNull(projectDir);
 		requireNonNull(buildDir);
 		return FormatterStep.createLazy(NAME,
-				() -> new State(NAME, devDependencies, projectDir, buildDir, npmPathResolver, eslintConfig),
+				() -> new State(NAME, devDependencies, projectDir, buildDir, cacheDir, npmPathResolver, eslintConfig),
 				State::createFormatterFunc);
 	}
 
@@ -89,7 +89,7 @@ public class EslintFormatterStep {
 		@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 		private transient EslintConfig eslintConfigInUse;
 
-		State(String stepName, Map<String, String> devDependencies, File projectDir, File buildDir, NpmPathResolver npmPathResolver, EslintConfig eslintConfig) throws IOException {
+		State(String stepName, Map<String, String> devDependencies, File projectDir, File buildDir, File cacheDir, NpmPathResolver npmPathResolver, EslintConfig eslintConfig) throws IOException {
 			super(stepName,
 					new NpmConfig(
 							replaceDevDependencies(
@@ -102,6 +102,7 @@ public class EslintFormatterStep {
 					new NpmFormatterStepLocations(
 							projectDir,
 							buildDir,
+							cacheDir,
 							npmPathResolver::resolveNpmExecutable,
 							npmPathResolver::resolveNodeExecutable));
 			this.origEslintConfig = requireNonNull(eslintConfig.verify());

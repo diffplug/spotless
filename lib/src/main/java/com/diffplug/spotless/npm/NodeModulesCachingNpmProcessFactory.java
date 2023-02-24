@@ -17,6 +17,9 @@ package com.diffplug.spotless.npm;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
+
+import javax.annotation.Nonnull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +37,8 @@ public class NodeModulesCachingNpmProcessFactory implements NpmProcessFactory {
 
 	private final ShadowCopy shadowCopy;
 
-	private NodeModulesCachingNpmProcessFactory(File cacheDir) {
-		this.cacheDir = cacheDir;
+	private NodeModulesCachingNpmProcessFactory(@Nonnull File cacheDir) {
+		this.cacheDir = Objects.requireNonNull(cacheDir);
 		assertDir(cacheDir);
 		this.shadowCopy = new ShadowCopy(cacheDir);
 	}
@@ -51,7 +54,7 @@ public class NodeModulesCachingNpmProcessFactory implements NpmProcessFactory {
 		}
 	}
 
-	public static NodeModulesCachingNpmProcessFactory forCacheDir(File cacheDir) {
+	public static NodeModulesCachingNpmProcessFactory create(@Nonnull File cacheDir) {
 		return new NodeModulesCachingNpmProcessFactory(cacheDir);
 	}
 
@@ -87,11 +90,14 @@ public class NodeModulesCachingNpmProcessFactory implements NpmProcessFactory {
 				Result result = timedLogger.withInfo("calling actual npm install {}", actualNpmInstallProcess.describe())
 						.call(actualNpmInstallProcess::waitFor);
 				assert result.exitCode() == 0;
-				// TODO: maybe spawn a thread to do this in the background?
-				timedLogger.withInfo("Caching node_modules for {} in {}", entryName, cacheDir)
-						.run(() -> shadowCopy.addEntry(entryName(), new File(nodeServerLayout.nodeModulesDir(), NodeServerLayout.NODE_MODULES)));
+				storeShadowCopy(entryName);
 				return result;
 			}
+		}
+
+		private void storeShadowCopy(String entryName) {
+			timedLogger.withInfo("Caching node_modules for {} in {}", entryName, cacheDir)
+					.run(() -> shadowCopy.addEntry(entryName(), new File(nodeServerLayout.nodeModulesDir(), NodeServerLayout.NODE_MODULES)));
 		}
 
 		private String entryName() {

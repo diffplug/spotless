@@ -56,4 +56,13 @@ public abstract class NpmFormatterStepCommonTests extends ResourceHarness {
 		}
 		return this.projectDir;
 	}
+
+	private File cacheDir = null;
+
+	protected File cacheDir() throws IOException {
+		if (this.cacheDir == null) {
+			this.cacheDir = newFolder("cache-dir");
+		}
+		return this.cacheDir;
+	}
 }
