@@ -47,7 +47,7 @@ class NpmInstallCacheIntegrationTests extends GradleIntegrationHarness {
 	}
 
 	@Test
-	void prettierWithDefaultInstallCacheTest() throws IOException {
+	void prettierCachesNodeModulesToADefaultFolderWhenCachingEnabled() throws IOException {
 		File dir1 = newFolder("npm-prettier-1");
 		File cacheDir = DEFAULT_DIR_FOR_NPM_INSTALL_CACHE_DO_NEVER_WRITE_TO_THIS;
 		BuildResult result = runPhpPrettierOnDir(dir1, cacheDir);
@@ -59,7 +59,7 @@ class NpmInstallCacheIntegrationTests extends GradleIntegrationHarness {
 	}
 
 	@Test
-	void prettierWithSpecificInstallCacheTest() throws IOException {
+	void prettierCachesAndReusesNodeModulesInSpecificInstallCacheFolder() throws IOException {
 		File dir1 = newFolder("npm-prettier-1");
 		File cacheDir = newFolder("npm-prettier-cache");
 		BuildResult result = runPhpPrettierOnDir(dir1, cacheDir);
@@ -70,10 +70,9 @@ class NpmInstallCacheIntegrationTests extends GradleIntegrationHarness {
 	}
 
 	@Test
-	void prettierWithNoCacheTest() throws IOException {
+	void prettierDoesNotCacheNodeModulesIfNotExplicitlyEnabled() throws IOException {
 		File dir2 = newFolder("npm-prettier-1");
-		File cacheDir = null;
-		BuildResult result = runPhpPrettierOnDir(dir2, cacheDir);
+		BuildResult result = runPhpPrettierOnDir(dir2, null);
 		Assertions.assertThat(result.getOutput())
 				.doesNotContainPattern("Using cached node_modules for .*")
 				.doesNotContainPattern("Caching node_modules for .*");
@@ -81,7 +80,7 @@ class NpmInstallCacheIntegrationTests extends GradleIntegrationHarness {
 
 	@Test
 	@Order(1)
-	void prettierWithSpecificGlobalInstallCacheTest() throws IOException {
+	void prettierCachesNodeModuleInGlobalInstallCacheDir() throws IOException {
 		File dir1 = newFolder("npm-prettier-global-1");
 		File cacheDir = pertainingCacheDir;
 		BuildResult result = runPhpPrettierOnDir(dir1, cacheDir);
@@ -92,7 +91,7 @@ class NpmInstallCacheIntegrationTests extends GradleIntegrationHarness {
 
 	@Test
 	@Order(2)
-	void prettierWithSpecificGlobalInstallCacheTest2() throws IOException {
+	void prettierUsesCachedNodeModulesFromGlobalInstallCacheDir() throws IOException {
 		File dir2 = newFolder("npm-prettier-global-2");
 		File cacheDir = pertainingCacheDir;
 		BuildResult result = runPhpPrettierOnDir(dir2, cacheDir);
@@ -130,7 +129,7 @@ class NpmInstallCacheIntegrationTests extends GradleIntegrationHarness {
 
 	@Test
 	@Order(3)
-	void tsfmtWithSpecificGlobalInstallCacheTest() throws IOException {
+	void tsfmtCachesNodeModuleInGlobalInstallCacheDir() throws IOException {
 		File dir1 = newFolder("npm-tsfmt-global-1");
 		File cacheDir = pertainingCacheDir;
 		BuildResult result = runTsfmtOnDir(dir1, cacheDir);
@@ -141,7 +140,7 @@ class NpmInstallCacheIntegrationTests extends GradleIntegrationHarness {
 
 	@Test
 	@Order(4)
-	void tsfmtWithSpecificGlobalInstallCacheTest2() throws IOException {
+	void tsfmtUsesCachedNodeModulesFromGlobalInstallCacheDir() throws IOException {
 		File dir2 = newFolder("npm-tsfmt-global-2");
 		File cacheDir = pertainingCacheDir;
 		BuildResult result = runTsfmtOnDir(dir2, cacheDir);
@@ -151,10 +150,9 @@ class NpmInstallCacheIntegrationTests extends GradleIntegrationHarness {
 	}
 
 	@Test
-	void tsfmtWithNoCacheTest() throws IOException {
+	void tsfmtDoesNotCacheNodeModulesIfNotExplicitlyEnabled() throws IOException {
 		File dir2 = newFolder("npm-tsfmt-1");
-		File cacheDir = null;
-		BuildResult result = runTsfmtOnDir(dir2, cacheDir);
+		BuildResult result = runTsfmtOnDir(dir2, null);
 		Assertions.assertThat(result.getOutput())
 				.doesNotContainPattern("Using cached node_modules for .*")
 				.doesNotContainPattern("Caching node_modules for .*");
@@ -185,7 +183,7 @@ class NpmInstallCacheIntegrationTests extends GradleIntegrationHarness {
 
 	@Test
 	@Order(5)
-	void eslintWithSpecificGlobalInstallCacheTest() throws IOException {
+	void eslintCachesNodeModuleInGlobalInstallCacheDir() throws IOException {
 		File dir1 = newFolder("npm-eslint-global-1");
 		File cacheDir = pertainingCacheDir;
 		BuildResult result = runEslintOnDir(dir1, cacheDir);
@@ -196,7 +194,7 @@ class NpmInstallCacheIntegrationTests extends GradleIntegrationHarness {
 
 	@Test
 	@Order(6)
-	void eslintWithSpecificGlobalInstallCacheTest2() throws IOException {
+	void eslintUsesCachedNodeModulesFromGlobalInstallCacheDir() throws IOException {
 		File dir2 = newFolder("npm-eslint-global-2");
 		File cacheDir = pertainingCacheDir;
 		BuildResult result = runEslintOnDir(dir2, cacheDir);
@@ -206,7 +204,7 @@ class NpmInstallCacheIntegrationTests extends GradleIntegrationHarness {
 	}
 
 	@Test
-	void eslintWithNoCacheTest() throws IOException {
+	void eslintDoesNotCacheNodeModulesIfNotExplicitlyEnabled() throws IOException {
 		File dir2 = newFolder("npm-eslint-1");
 		File cacheDir = null;
 		BuildResult result = runEslintOnDir(dir2, cacheDir);

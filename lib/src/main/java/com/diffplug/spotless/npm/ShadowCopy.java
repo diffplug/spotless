@@ -49,10 +49,10 @@ class ShadowCopy {
 	}
 
 	public void addEntry(String key, File orig) {
+		// prevent concurrent adding of entry with same key
 		if (!reserveSubFolder(key)) {
-			logger.debug("Shadow copy entry already on the way: {}. Awaiting finalization.", key);
+			logger.debug("Shadow copy entry already in progress: {}. Awaiting finalization.", key);
 			try {
-				// maybe make the duration configurable?
 				NpmResourceHelper.awaitFileDeleted(markerFilePath(key).toFile(), Duration.ofSeconds(120));
 			} catch (TimeoutException e) {
 				throw new RuntimeException(e);
