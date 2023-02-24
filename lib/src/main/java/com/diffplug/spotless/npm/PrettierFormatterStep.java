@@ -15,7 +15,6 @@
  */
 package com.diffplug.spotless.npm;
 
-import static com.diffplug.spotless.LazyArgLogger.lazy;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
@@ -120,8 +119,6 @@ public class PrettierFormatterStep {
 
 		@Override
 		public String applyWithFile(String unix, File file) throws Exception {
-			logger.info("formatting String '{}[...]' in file '{}'", lazy(() -> unix.substring(0, Math.min(50, unix.length()))), file);
-
 			final String prettierConfigOptionsWithFilepath = assertFilepathInConfigOptions(file);
 			try {
 				return restService.format(unix, prettierConfigOptionsWithFilepath);
