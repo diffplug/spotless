@@ -82,31 +82,33 @@ public class TypescriptExtension extends FormatExtension {
 			this.devDependencies = Objects.requireNonNull(devDependencies);
 		}
 
-		public void config(final Map<String, Object> config) {
+		public TypescriptFormatExtension config(final Map<String, Object> config) {
 			this.config = new TreeMap<>(requireNonNull(config));
 			replaceStep();
+			return this;
 		}
 
-		public void tsconfigFile(final Object path) {
-			configFile(TsConfigFileType.TSCONFIG, path);
+		public TypescriptFormatExtension tsconfigFile(final Object path) {
+			return configFile(TsConfigFileType.TSCONFIG, path);
 		}
 
-		public void tslintFile(final Object path) {
-			configFile(TsConfigFileType.TSLINT, path);
+		public TypescriptFormatExtension tslintFile(final Object path) {
+			return configFile(TsConfigFileType.TSLINT, path);
 		}
 
-		public void vscodeFile(final Object path) {
-			configFile(TsConfigFileType.VSCODE, path);
+		public TypescriptFormatExtension vscodeFile(final Object path) {
+			return configFile(TsConfigFileType.VSCODE, path);
 		}
 
-		public void tsfmtFile(final Object path) {
-			configFile(TsConfigFileType.TSFMT, path);
+		public TypescriptFormatExtension tsfmtFile(final Object path) {
+			return configFile(TsConfigFileType.TSFMT, path);
 		}
 
-		private void configFile(TsConfigFileType filetype, Object path) {
+		private TypescriptFormatExtension configFile(TsConfigFileType filetype, Object path) {
 			this.configFileType = requireNonNull(filetype);
 			this.configFilePath = requireNonNull(path);
 			replaceStep();
+			return this;
 		}
 
 		public FormatterStep createStep() {

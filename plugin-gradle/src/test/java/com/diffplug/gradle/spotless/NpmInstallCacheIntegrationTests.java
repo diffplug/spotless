@@ -24,13 +24,16 @@ import java.nio.file.Paths;
 import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.BuildResult;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.io.TempDir;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.spotless.tag.NpmTest;
 
+@TestMethodOrder(OrderAnnotation.class)
 @NpmTest
 class NpmInstallCacheIntegrationTests extends GradleIntegrationHarness {
 
@@ -112,6 +115,51 @@ class NpmInstallCacheIntegrationTests extends GradleIntegrationHarness {
 		final BuildResult spotlessApply = gradleRunner().withProjectDir(projDir).withArguments("--stacktrace", "--info", "spotlessApply").build();
 		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
 		assertFile(baseDir + "/php-example.php").sameAsResource("npm/prettier/plugins/php.clean");
+		return spotlessApply;
+	}
+
+	@Test
+	@Order(3)
+	void tsfmtWithSpecificGlobalInstallCacheTest() throws IOException {
+		File dir1 = newFolder("npm-tsfmt-global-1");
+		File cacheDir = pertainingCacheDir;
+		BuildResult result = runTsfmtOnDir(dir1, cacheDir);
+		Assertions.assertThat(result.getOutput())
+				.doesNotContainPattern("Using cached node_modules for .*\\Q" + cacheDir.getAbsolutePath() + "\\E")
+				.containsPattern("Caching node_modules for .*\\Q" + cacheDir.getAbsolutePath() + "\\E");
+	}
+
+	@Test
+	@Order(4)
+	void tsfmtWithSpecificGlobalInstallCacheTest2() throws IOException {
+		File dir2 = newFolder("npm-tsfmt-global-2");
+		File cacheDir = pertainingCacheDir;
+		BuildResult result = runTsfmtOnDir(dir2, cacheDir);
+		Assertions.assertThat(result.getOutput())
+				.containsPattern("Using cached node_modules for .*\\Q" + cacheDir.getAbsolutePath() + "\\E")
+				.doesNotContainPattern("Caching node_modules for .*\\Q" + cacheDir.getAbsolutePath() + "\\E");
+	}
+
+	private BuildResult runTsfmtOnDir(File projDir, File cacheDir) throws IOException {
+		String baseDir = projDir.getName();
+		String cacheDirEnabled = cacheDirEnabledStringForCacheDir(cacheDir);
+		setFile(baseDir + "/build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"def tsfmtconfig = [:]",
+				"tsfmtconfig['indentSize'] = 1",
+				"tsfmtconfig['convertTabsToSpaces'] = true",
+				"spotless {",
+				"    typescript {",
+				"        target 'test.ts'",
+				"        tsfmt().config(tsfmtconfig)" + cacheDirEnabled,
+				"    }",
+				"}");
+		setFile(baseDir + "/test.ts").toResource("npm/tsfmt/tsfmt/tsfmt.dirty");
+		final BuildResult spotlessApply = gradleRunner().withProjectDir(projDir).withArguments("--stacktrace", "--info", "spotlessApply").build();
+		assertFile(baseDir + "/test.ts").sameAsResource("npm/tsfmt/tsfmt/tsfmt.clean");
 		return spotlessApply;
 	}
 
