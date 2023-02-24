@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+* `JacksonJsonFormatterFunc` handles json files with an Array as root. ([#1585](https://github.com/diffplug/spotless/pull/1585))
 
 ## [2.35.0] - 2023-02-10
 ### Added
