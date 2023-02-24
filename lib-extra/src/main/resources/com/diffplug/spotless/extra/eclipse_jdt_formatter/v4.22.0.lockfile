@@ -18,3 +18,4 @@ org.eclipse.platform:org.eclipse.equinox.preferences:3.10.100
 org.eclipse.platform:org.eclipse.equinox.registry:3.11.200
 org.eclipse.platform:org.eclipse.osgi:3.18.200
 org.eclipse.platform:org.eclipse.text:3.12.300
+org.osgi:org.osgi.service.prefs:1.1.2
