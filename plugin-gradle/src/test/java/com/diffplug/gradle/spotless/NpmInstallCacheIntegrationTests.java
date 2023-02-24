@@ -70,6 +70,16 @@ class NpmInstallCacheIntegrationTests extends GradleIntegrationHarness {
 	}
 
 	@Test
+	void prettierWithNoCacheTest() throws IOException {
+		File dir2 = newFolder("npm-prettier-1");
+		File cacheDir = null;
+		BuildResult result = runPhpPrettierOnDir(dir2, cacheDir);
+		Assertions.assertThat(result.getOutput())
+				.doesNotContainPattern("Using cached node_modules for .*")
+				.doesNotContainPattern("Caching node_modules for .*");
+	}
+
+	@Test
 	@Order(1)
 	void prettierWithSpecificGlobalInstallCacheTest() throws IOException {
 		File dir1 = newFolder("npm-prettier-global-1");
@@ -140,6 +150,16 @@ class NpmInstallCacheIntegrationTests extends GradleIntegrationHarness {
 				.doesNotContainPattern("Caching node_modules for .*\\Q" + cacheDir.getAbsolutePath() + "\\E");
 	}
 
+	@Test
+	void tsfmtWithNoCacheTest() throws IOException {
+		File dir2 = newFolder("npm-tsfmt-1");
+		File cacheDir = null;
+		BuildResult result = runTsfmtOnDir(dir2, cacheDir);
+		Assertions.assertThat(result.getOutput())
+				.doesNotContainPattern("Using cached node_modules for .*")
+				.doesNotContainPattern("Caching node_modules for .*");
+	}
+
 	private BuildResult runTsfmtOnDir(File projDir, File cacheDir) throws IOException {
 		String baseDir = projDir.getName();
 		String cacheDirEnabled = cacheDirEnabledStringForCacheDir(cacheDir);
@@ -160,6 +180,60 @@ class NpmInstallCacheIntegrationTests extends GradleIntegrationHarness {
 		setFile(baseDir + "/test.ts").toResource("npm/tsfmt/tsfmt/tsfmt.dirty");
 		final BuildResult spotlessApply = gradleRunner().withProjectDir(projDir).withArguments("--stacktrace", "--info", "spotlessApply").build();
 		assertFile(baseDir + "/test.ts").sameAsResource("npm/tsfmt/tsfmt/tsfmt.clean");
+		return spotlessApply;
+	}
+
+	@Test
+	@Order(5)
+	void eslintWithSpecificGlobalInstallCacheTest() throws IOException {
+		File dir1 = newFolder("npm-eslint-global-1");
+		File cacheDir = pertainingCacheDir;
+		BuildResult result = runEslintOnDir(dir1, cacheDir);
+		Assertions.assertThat(result.getOutput())
+				.doesNotContainPattern("Using cached node_modules for .*\\Q" + cacheDir.getAbsolutePath() + "\\E")
+				.containsPattern("Caching node_modules for .*\\Q" + cacheDir.getAbsolutePath() + "\\E");
+	}
+
+	@Test
+	@Order(6)
+	void eslintWithSpecificGlobalInstallCacheTest2() throws IOException {
+		File dir2 = newFolder("npm-eslint-global-2");
+		File cacheDir = pertainingCacheDir;
+		BuildResult result = runEslintOnDir(dir2, cacheDir);
+		Assertions.assertThat(result.getOutput())
+				.containsPattern("Using cached node_modules for .*\\Q" + cacheDir.getAbsolutePath() + "\\E")
+				.doesNotContainPattern("Caching node_modules for .*\\Q" + cacheDir.getAbsolutePath() + "\\E");
+	}
+
+	@Test
+	void eslintWithNoCacheTest() throws IOException {
+		File dir2 = newFolder("npm-eslint-1");
+		File cacheDir = null;
+		BuildResult result = runEslintOnDir(dir2, cacheDir);
+		Assertions.assertThat(result.getOutput())
+				.doesNotContainPattern("Using cached node_modules for .*")
+				.doesNotContainPattern("Caching node_modules for .*");
+	}
+
+	private BuildResult runEslintOnDir(File projDir, File cacheDir) throws IOException {
+		String baseDir = projDir.getName();
+		String cacheDirEnabled = cacheDirEnabledStringForCacheDir(cacheDir);
+
+		setFile(baseDir + "/.eslintrc.js").toResource("npm/eslint/typescript/custom_rules/.eslintrc.js");
+		setFile(baseDir + "/build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    typescript {",
+				"        target 'test.ts'",
+				"        eslint().configFile('.eslintrc.js')" + cacheDirEnabled,
+				"    }",
+				"}");
+		setFile(baseDir + "/test.ts").toResource("npm/eslint/typescript/custom_rules/typescript.dirty");
+		BuildResult spotlessApply = gradleRunner().withProjectDir(projDir).withArguments("--stacktrace", "--info", "spotlessApply").build();
+		assertFile(baseDir + "/test.ts").sameAsResource("npm/eslint/typescript/custom_rules/typescript.clean");
 		return spotlessApply;
 	}
 
