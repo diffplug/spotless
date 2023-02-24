@@ -19,6 +19,7 @@ import java.io.File;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
@@ -41,6 +42,9 @@ public abstract class AbstractNpmFormatterStepFactory implements FormatterStepFa
 	@Parameter
 	private String npmrc;
 
+	@Parameter
+	private String npmInstallCache;
+
 	protected File npm(FormatterStepConfig stepConfig) {
 		File npm = npmExecutable != null ? stepConfig.getFileLocator().locateFile(npmExecutable) : null;
 		return npm;
@@ -58,6 +62,16 @@ public abstract class AbstractNpmFormatterStepFactory implements FormatterStepFa
 
 	protected File buildDir(FormatterStepConfig stepConfig) {
 		return stepConfig.getFileLocator().getBuildDir();
+	}
+
+	protected File cacheDir(FormatterStepConfig stepConfig) {
+		if (this.npmInstallCache == null) {
+			return null;
+		}
+		if ("true".equals(this.npmInstallCache.toLowerCase(Locale.ROOT))) {
+			return new File(buildDir(stepConfig), "spotless-npm-install-cache");
+		}
+		return stepConfig.getFileLocator().locateFile(this.npmInstallCache);
 	}
 
 	protected File baseDir(FormatterStepConfig stepConfig) {

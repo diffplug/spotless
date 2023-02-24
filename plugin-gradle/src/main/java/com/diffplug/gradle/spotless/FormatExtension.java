@@ -529,6 +529,9 @@ public class FormatExtension {
 		protected Object nodeFile;
 
 		@Nullable
+		protected Object npmInstallCache;
+
+		@Nullable
 		protected Object npmrcFile;
 
 		protected Project project;
@@ -560,6 +563,18 @@ public class FormatExtension {
 			return (T) this;
 		}
 
+		public T npmInstallCache(final Object npmInstallCache) {
+			this.npmInstallCache = npmInstallCache;
+			replaceStep();
+			return (T) this;
+		}
+
+		public T npmInstallCache() {
+			this.npmInstallCache = new File(project.getBuildDir(), "spotless-npm-install-cache");
+			replaceStep();
+			return (T) this;
+		}
+
 		File npmFileOrNull() {
 			return fileOrNull(npmFile);
 		}
@@ -570,6 +585,10 @@ public class FormatExtension {
 
 		File npmrcFileOrNull() {
 			return fileOrNull(npmrcFile);
+		}
+
+		File npmModulesCacheOrNull() {
+			return fileOrNull(npmInstallCache);
 		}
 
 		private File fileOrNull(Object npmFile) {
@@ -619,6 +638,7 @@ public class FormatExtension {
 					provisioner(),
 					project.getProjectDir(),
 					project.getBuildDir(),
+					npmModulesCacheOrNull(),
 					new NpmPathResolver(npmFileOrNull(), nodeFileOrNull(), npmrcFileOrNull(), Arrays.asList(project.getProjectDir(), project.getRootDir())),
 					new com.diffplug.spotless.npm.PrettierConfig(
 							this.prettierConfigFile != null ? project.file(this.prettierConfigFile) : null,
