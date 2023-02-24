@@ -522,6 +522,9 @@ public class FormatExtension {
 	}
 
 	public abstract static class NpmStepConfig<T extends NpmStepConfig<?>> {
+
+		public static final String SPOTLESS_NPM_INSTALL_CACHE_DEFAULT_NAME = "spotless-npm-install-cache";
+
 		@Nullable
 		protected Object npmFile;
 
@@ -570,7 +573,7 @@ public class FormatExtension {
 		}
 
 		public T npmInstallCache() {
-			this.npmInstallCache = new File(project.getBuildDir(), "spotless-npm-install-cache");
+			this.npmInstallCache = new File(project.getBuildDir(), SPOTLESS_NPM_INSTALL_CACHE_DEFAULT_NAME);
 			replaceStep();
 			return (T) this;
 		}
