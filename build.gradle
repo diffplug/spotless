@@ -1,31 +1,18 @@
-buildscript {
-	repositories { maven { url 'https://plugins.gradle.org/m2/' } }
-	dependencies {
-		classpath "com.diffplug.gradle:goomph:${VER_GOOMPH}"
-		classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:${VER_BINTRAY}"
-		classpath "com.gradle.publish:plugin-publish-plugin:${VER_PLUGIN_PUBLISH}"
-		classpath "org.ajoberstar:gradle-git:${VER_GRADLE_GIT}"
-		classpath "ch.raffael.pegdown-doclet:pegdown-doclet:${VER_PEGDOWN_DOCLET}"
-		classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:${VER_SPOTBUGS_PLUGIN}"
-		classpath "com.gradle:build-scan-plugin:${VER_BUILDSCAN_PLUGIN}"
+apply from: rootProject.file('gradle/java-publish.gradle')
+apply from: rootProject.file('gradle/changelog.gradle')
+allprojects {
+	apply from: rootProject.file('gradle/spotless.gradle')
+}
+apply from: rootProject.file('gradle/spotless-freshmark.gradle')
+
+spotless {
+	groovyGradle {
+		target '*.gradle', 'gradle/*.gradle'
 	}
-}
-
-apply plugin: 'com.gradle.build-scan'
-buildScan {
-	termsOfServiceUrl = 'https://gradle.com/terms-of-service'
-	apply from: 'gradle/build-scans.gradle'
-}
-
-// root eclipse project
-apply plugin: 'com.diffplug.gradle.eclipse.resourcefilters'
-eclipseResourceFilters {
-	exclude().folders().name('.git')
-	exclude().folders().name('build').recursive()
-
-	exclude().folders().name('lib')
-	exclude().folders().name('lib-extra')
-	exclude().folders().name('plugin-gradle')
-	exclude().folders().name('plugin-maven')
-	exclude().folders().name('testlib')
+	format 'dotfiles', {
+		target '.gitignore', '.gitattributes', '.editorconfig'
+		indentWithSpaces(2)
+		trimTrailingWhitespace()
+		endWithNewline()
+	}
 }

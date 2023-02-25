@@ -1,3 +1,5 @@
+-- multiline
+-- comment
 CREATE
     TABLE
         films(
@@ -19,7 +21,7 @@ CREATE
         );
 
 -- Create a table with a 2-dimensional array:
- CREATE
+CREATE
     TABLE
         array_int(
             vector INT [][]

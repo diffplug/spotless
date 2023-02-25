@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import static java.util.stream.Collectors.toSet;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -55,12 +54,6 @@ public class ArtifactResolver {
 		this.session = Objects.requireNonNull(session);
 		this.repositories = Objects.requireNonNull(repositories);
 		this.log = Objects.requireNonNull(log);
-	}
-
-	/** Use {@link ArtifactResolver#resolve(boolean, Collection)) instead.} */
-	@Deprecated
-	public Set<File> resolve(String mavenCoordinate) {
-		return resolve(true, Arrays.asList(mavenCoordinate));
 	}
 
 	/**

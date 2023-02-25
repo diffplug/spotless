@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ abstract class FormatterStepImpl<State extends Serializable> extends Strict<Stat
 	final transient String name;
 
 	/** Transient because only the state matters. */
-	final transient ThrowingEx.Supplier<State> stateSupplier;
+	transient ThrowingEx.Supplier<State> stateSupplier;
 
 	FormatterStepImpl(String name, ThrowingEx.Supplier<State> stateSupplier) {
 		this.name = Objects.requireNonNull(name);
@@ -53,7 +53,11 @@ abstract class FormatterStepImpl<State extends Serializable> extends Strict<Stat
 
 	@Override
 	protected State calculateState() throws Exception {
-		return stateSupplier.get();
+		// LazyForwardingEquality guarantees that this will only be called once, and keeping toFormat
+		// causes a memory leak, see https://github.com/diffplug/spotless/issues/1194
+		State state = stateSupplier.get();
+		stateSupplier = null;
+		return state;
 	}
 
 	static final class Standard<State extends Serializable> extends FormatterStepImpl<State> {
@@ -81,6 +85,7 @@ abstract class FormatterStepImpl<State extends Serializable> extends Strict<Stat
 		void cleanupFormatterFunc() {
 			if (formatter instanceof FormatterFunc.Closeable) {
 				((FormatterFunc.Closeable) formatter).close();
+				formatter = null;
 			}
 		}
 	}
@@ -108,6 +113,12 @@ abstract class FormatterStepImpl<State extends Serializable> extends Strict<Stat
 				}
 			}
 			return formatter.apply(rawUnix, file);
+		}
+	}
+
+	static void checkNotSentinel(File file) {
+		if (file == Formatter.NO_FILE_SENTINEL) {
+			throw new IllegalArgumentException("This step requires the underlying file. If this is a test, use StepHarnessWithFile");
 		}
 	}
 }

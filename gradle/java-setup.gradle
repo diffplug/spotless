@@ -1,36 +1,12 @@
-buildscript {
-	repositories { maven { url 'https://plugins.gradle.org/m2/' } }
-	dependencies { classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:${VER_SPOTBUGS_PLUGIN}" }
-}
-
 //////////
 // JAVA //
 //////////
-repositories { jcenter() }
 
 // setup java
 apply plugin: 'java'
-
-sourceCompatibility = VER_JAVA
-targetCompatibility = VER_JAVA
-tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
-
-/////////////
-// ECLIPSE //
-/////////////
-apply plugin: 'eclipse'
-eclipse {
-	classpath {
-		downloadSources true
-		downloadJavadoc true
-	}
-}
-// always create fresh projects
-tasks.eclipse.dependsOn(cleanEclipse)
-
-apply plugin: 'com.diffplug.gradle.eclipse.resourcefilters'
-eclipseResourceFilters {
-	exclude().folders().name('build')
+tasks.withType(JavaCompile).configureEach {
+	options.encoding = 'UTF-8'
+	options.release = Integer.parseInt(VER_JAVA)
 }
 
 //////////////
@@ -39,25 +15,30 @@ eclipseResourceFilters {
 apply plugin: 'com.github.spotbugs'
 spotbugs {
 	toolVersion = VER_SPOTBUGS
-	sourceSets = [
-		// don't check the test code
-		sourceSets.main
-	]
 	ignoreFailures = false 	// bug free or it doesn't ship!
-	reportsDir = file('build/spotbugs')
-	effort = 'max'			// min|default|max
 	reportLevel = 'medium'	// low|medium|high (low = sensitive to even minor mistakes)
-	omitVisitors = []		// bugs that we want to ignore
+	omitVisitors = [
+		'FindReturnRef'] // https://spotbugs.readthedocs.io/en/latest/detectors.html#findreturnref
 }
-// HTML instead of XML
-tasks.withType(com.github.spotbugs.SpotBugsTask) {
+tasks.named('spotbugsTest') {
+	enabled = false
+}
+
+tasks.withType(com.github.spotbugs.snom.SpotBugsTask).configureEach {
+	outputs.file(project.layout.buildDirectory.file("reports/spotbugs/${it.name}.html"))
+	outputs.file(project.layout.buildDirectory.file("spotbugs/auxclasspath/${it.name}"))
 	reports {
-		xml.enabled = false
+		html.enabled = true
+	}
+}
+
+tasks.named('spotbugsMain') {
+	reports {
 		html.enabled = true
 	}
 }
 dependencies {
 	compileOnly 'net.jcip:jcip-annotations:1.0'
-	compileOnly 'com.github.spotbugs:spotbugs-annotations:3.1.6'
-	compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+	compileOnly "com.github.spotbugs:spotbugs-annotations:${VER_SPOTBUGS}"
+	compileOnly "com.google.code.findbugs:jsr305:${VER_JSR_305}"
 }

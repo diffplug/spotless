@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,33 +23,36 @@ import java.util.List;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.Formatter;
+import com.diffplug.spotless.PaddedCell;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
+import com.diffplug.spotless.maven.incremental.UpToDateChecker;
 
 /**
  * Performs code formatting analysis and prints all violations to the console.
  * Fails the build if violations are discovered.
  */
-@Mojo(name = "check", defaultPhase = LifecyclePhase.VERIFY, threadSafe = true)
+@Mojo(name = AbstractSpotlessMojo.GOAL_CHECK, defaultPhase = LifecyclePhase.VERIFY, threadSafe = true)
 public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 
-	@Parameter(property = "spotless.check.skip", defaultValue = "false")
-	private boolean skip;
-
 	@Override
-	protected void process(List<File> files, Formatter formatter) throws MojoExecutionException {
-		if (skip) {
-			getLog().info("Spotless check skipped");
-			return;
-		}
-
+	protected void process(Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException {
 		List<File> problemFiles = new ArrayList<>();
 		for (File file : files) {
+			if (upToDateChecker.isUpToDate(file.toPath())) {
+				if (getLog().isDebugEnabled()) {
+					getLog().debug("Spotless will not check an up-to-date file: " + file);
+				}
+				continue;
+			}
+
 			try {
-				if (!formatter.isClean(file)) {
+				PaddedCell.DirtyState dirtyState = PaddedCell.calculateDirtyState(formatter, file);
+				if (!dirtyState.isClean() && !dirtyState.didNotConverge()) {
 					problemFiles.add(file);
+				} else {
+					upToDateChecker.setUpToDate(file.toPath());
 				}
 			} catch (IOException e) {
 				throw new MojoExecutionException("Unable to format file " + file, e);
@@ -59,7 +62,6 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 		if (!problemFiles.isEmpty()) {
 			throw new MojoExecutionException(DiffMessageFormatter.builder()
 					.runToFix("Run 'mvn spotless:apply' to fix these violations.")
-					.isPaddedCell(false)
 					.formatter(formatter)
 					.problemFiles(problemFiles)
 					.getMessage());

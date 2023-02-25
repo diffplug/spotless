@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.Enumeration;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
+import org.eclipse.osgi.internal.debug.Debug;
 import org.eclipse.osgi.storage.bundlefile.BundleEntry;
 import org.eclipse.osgi.storage.bundlefile.BundleFile;
 import org.eclipse.osgi.storage.bundlefile.DirBundleFile;
@@ -31,6 +32,8 @@ import org.eclipse.osgi.storage.bundlefile.ZipBundleFile;
 import org.eclipse.osgi.util.ManifestElement;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
+
+import com.diffplug.spotless.extra.eclipse.base.service.NoDebugging;
 
 /**
  * Helper to access resources.
@@ -48,8 +51,7 @@ import org.osgi.framework.Constants;
  * </p>
  */
 class ResourceAccessor {
-	/**
-	 */
+	private static final Debug NO_DEBUGGING = new Debug(new NoDebugging());
 	private final String fatJarResourcePath;
 	private final BundleFile bundleFile;
 
@@ -66,7 +68,7 @@ class ResourceAccessor {
 		try {
 			bundleFile = getBundlFile(clazz);
 		} catch (BundleException e) {
-			throw new BundleException(String.format("Failed to locate resources for bunlde '%s'.", clazz.getName()), e);
+			throw new BundleException(String.format("Failed to locate resources for bundle '%s'.", clazz.getName()), e);
 		}
 	}
 
@@ -77,18 +79,23 @@ class ResourceAccessor {
 			throw new BundleException(String.format("Path '%s' for '%s' is not accessible exist on local file system.", objUri, clazz.getName()), BundleException.READ_ERROR);
 		}
 		try {
-			return jarOrDirectory.isDirectory() ? new DirBundleFile(jarOrDirectory, false) : new ZipBundleFile(jarOrDirectory, null, null, null);
+			return jarOrDirectory.isDirectory() ? new DirBundleFile(jarOrDirectory, false) : new ZipBundleFile(jarOrDirectory, null, null, NO_DEBUGGING, false);
 		} catch (IOException e) {
 			throw new BundleException(String.format("Cannot access bundle at '%s'.", jarOrDirectory), BundleException.READ_ERROR, e);
 		}
 	}
 
 	private static URI getBundleUri(Class<?> clazz) throws BundleException {
-		URL objUrl = clazz.getProtectionDomain().getCodeSource().getLocation();
 		try {
+			URL objUrl = clazz.getProtectionDomain().getCodeSource().getLocation();
 			return objUrl.toURI();
+		} catch (NullPointerException e) {
+			//No bunlde should be used for RT classes lookup. See also org.eclipse.core.runtime.PerformanceStats.
+			throw new BundleException(String.format("No code source can be located for class '%s'. Class is probably not within a bundle, but part of the RT.", clazz.getName()), BundleException.READ_ERROR, e);
+		} catch (SecurityException e) {
+			throw new BundleException(String.format("Access to class '%s' is denied.", clazz.getName()), BundleException.READ_ERROR, e);
 		} catch (URISyntaxException e) {
-			throw new BundleException(String.format("Path '%s' for '%s' is invalid.", objUrl, clazz.getName()), BundleException.READ_ERROR, e);
+			throw new BundleException(String.format("Path for '%s' is invalid.", clazz.getName()), BundleException.READ_ERROR, e);
 		}
 	}
 

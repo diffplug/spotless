@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -22,18 +24,19 @@ import java.util.Locale;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.assertj.core.api.AbstractStringAssert;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StringPrinter;
 
-public class GradleIncrementalResolutionTest extends GradleIntegrationTest {
+class GradleIncrementalResolutionTest extends GradleIntegrationHarness {
 	@Test
-	public void failureDoesntTriggerAll() throws IOException {
+	void failureDoesntTriggerAll() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
 				"spotless {",
 				"    format 'misc', {",
@@ -51,13 +54,22 @@ public class GradleIncrementalResolutionTest extends GradleIntegrationTest {
 		assertState("ABC");
 		writeState("aBc");
 		assertState("aBc");
-		// check will run against all three the first time (and second and third)
+		// check will run against all three the first time.
 		checkRanAgainst("abc");
-		checkRanAgainst("abc");
-		checkRanAgainst("abc");
-		// apply will run against all three the first time
-		applyRanAgainst("abc");
-		// the second time, it will only run on the file that was changes
+		// Subsequent runs will use the cached error message
+		checkRanAgainstNoneButError().contains("> The following files had format violations:\n" +
+				"      b.md\n" +
+				"          @@ -1 +1 @@\n" +
+				"          -B\n" +
+				"          +b");
+		checkRanAgainstNoneButError().contains("> The following files had format violations:\n" +
+				"      b.md\n" +
+				"          @@ -1 +1 @@\n" +
+				"          -B\n" +
+				"          +b");
+		// apply will simply copy outputs the first time: no formatters executed
+		applyRanAgainst("");
+		// the second time, it will only run on the file that was changed by apply
 		applyRanAgainst("b");
 		// and nobody the last time
 		applyRanAgainst("");
@@ -65,12 +77,15 @@ public class GradleIncrementalResolutionTest extends GradleIntegrationTest {
 		// if we change just one file
 		writeState("Abc");
 		// then check runs against just the changed file
-		// and also (because #144) the last files to be changed
-		checkRanAgainst("a", "b");
-		// even after failing, still just the one
-		checkRanAgainst("a", "b");
+		checkRanAgainst("a");
+		// even after failing once the error is still there
+		checkRanAgainstNoneButError().contains("> The following files had format violations:\n" +
+				"      a.md\n" +
+				"          @@ -1 +1 @@\n" +
+				"          -A\n" +
+				"          +a");
 		// and so does apply
-		applyRanAgainst("a", "b");
+		applyRanAgainst();
 		applyRanAgainst("a");
 		// until the issue has been fixed
 		applyRanAgainst("");
@@ -95,9 +110,9 @@ public class GradleIncrementalResolutionTest extends GradleIntegrationTest {
 		for (char c : state.toCharArray()) {
 			String letter = new String(new char[]{c});
 			if (Character.isLowerCase(c)) {
-				Assert.assertEquals(letter.toLowerCase(Locale.ROOT), read(filename(letter)).trim());
+				assertEquals(letter.toLowerCase(Locale.ROOT), read(filename(letter)).trim());
 			} else {
-				Assert.assertEquals(letter.toUpperCase(Locale.ROOT), read(filename(letter)).trim());
+				assertEquals(letter.toUpperCase(Locale.ROOT), read(filename(letter)).trim());
 			}
 		}
 	}
@@ -110,12 +125,17 @@ public class GradleIncrementalResolutionTest extends GradleIntegrationTest {
 		taskRanAgainst("spotlessCheck", ranAgainst);
 	}
 
-	private void taskRanAgainst(String task, String... ranAgainst) throws IOException {
+	private AbstractStringAssert<?> checkRanAgainstNoneButError() throws IOException {
+		String console = taskRanAgainst("spotlessCheck");
+		return Assertions.assertThat(console);
+	}
+
+	private String taskRanAgainst(String task, String... ranAgainst) throws IOException {
 		pauseForFilesystem();
 		String console = StringPrinter.buildString(Errors.rethrow().wrap(printer -> {
 			boolean expectFailure = task.equals("spotlessCheck") && !isClean();
 			if (expectFailure) {
-				gradleRunner().withArguments(task).forwardStdOutput(printer.toWriter()).buildAndFail();
+				gradleRunner().withArguments(task).forwardStdOutput(printer.toWriter()).forwardStdError(printer.toWriter()).buildAndFail();
 			} else {
 				gradleRunner().withArguments(task).forwardStdOutput(printer.toWriter()).build();
 			}
@@ -127,7 +147,8 @@ public class GradleIncrementalResolutionTest extends GradleIntegrationTest {
 				added.add(trimmed.substring(1, trimmed.length() - 1));
 			}
 		}
-		Assert.assertEquals(concat(Arrays.asList(ranAgainst)), concat(added));
+		assertEquals(concat(Arrays.asList(ranAgainst)), concat(added));
+		return console;
 	}
 
 	private String concat(Iterable<String> iterable) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,49 +15,46 @@
  */
 package com.diffplug.spotless.generic;
 
-import java.io.File;
-
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
+import com.diffplug.spotless.StepHarness;
 
-public class IndentStepTest extends ResourceHarness {
+class IndentStepTest {
 	@Test
-	public void tabToTab() throws Throwable {
+	void tabToTab() {
 		FormatterStep indent = IndentStep.Type.TAB.create(4);
-		assertOnResources(indent, "indent/IndentedWithTab.test", "indent/IndentedWithTab.test");
+		StepHarness.forStep(indent).testResource("indent/IndentedWithTab.test", "indent/IndentedWithTab.test");
 	}
 
 	@Test
-	public void spaceToSpace() throws Throwable {
+	void spaceToSpace() {
 		FormatterStep indent = IndentStep.Type.SPACE.create(4);
-		assertOnResources(indent, "indent/IndentedWithSpace.test", "indent/IndentedWithSpace.test");
+		StepHarness.forStep(indent).testResource("indent/IndentedWithSpace.test", "indent/IndentedWithSpace.test");
 	}
 
 	@Test
-	public void spaceToTab() throws Throwable {
+	void spaceToTab() {
 		FormatterStep indent = IndentStep.Type.TAB.create(4);
-		assertOnResources(indent, "indent/IndentedWithSpace.test", "indent/IndentedWithTab.test");
+		StepHarness.forStep(indent).testResource("indent/IndentedWithSpace.test", "indent/IndentedWithTab.test");
 	}
 
 	@Test
-	public void tabToSpace() throws Throwable {
+	void tabToSpace() {
 		FormatterStep indent = IndentStep.Type.SPACE.create(4);
-		assertOnResources(indent, "indent/IndentedWithTab.test", "indent/IndentedWithSpace.test");
+		StepHarness.forStep(indent).testResource("indent/IndentedWithTab.test", "indent/IndentedWithSpace.test");
 	}
 
 	@Test
-	public void doesntClipNewlines() throws Throwable {
+	void doesntClipNewlines() {
 		FormatterStep indent = IndentStep.Type.SPACE.create(4);
 		String blankNewlines = "\n\n\n\n";
-		Assert.assertEquals(blankNewlines, indent.format(blankNewlines, new File("")));
+		StepHarness.forStep(indent).testUnaffected(blankNewlines);
 	}
 
 	@Test
-	public void equality() {
+	void equality() {
 		new SerializableEqualityTester() {
 			IndentStep.Type type = IndentStep.Type.SPACE;
 			int numSpacesPerTab = 2;
@@ -81,5 +78,14 @@ public class IndentStepTest extends ResourceHarness {
 				return type.create(numSpacesPerTab);
 			}
 		}.testEquals();
+	}
+
+	@Test
+	void allowLeadingSpaceIfMultiLineComment() throws Exception {
+		StepHarness.forStep(IndentStep.Type.TAB.create(4))
+				.testUnaffected("* test")
+				.testUnaffected(" * test")
+				.testUnaffected("\t* test")
+				.test("    * test", "\t* test");
 	}
 }

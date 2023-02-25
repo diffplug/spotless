@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,33 +23,40 @@ import java.util.stream.Stream;
 
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.formatter.CodeFormatter;
-import org.eclipse.core.internal.filebuffers.FileBuffersPlugin;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.text.edits.TextEdit;
 
+import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseConfig;
 import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework;
+import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipsePluginConfig;
+import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseServiceConfig;
 
 /** Formatter step which calls out to the Eclipse CDT formatter. */
 public class EclipseCdtFormatterStepImpl {
 	private final CodeFormatter codeFormatter;
 
 	public EclipseCdtFormatterStepImpl(Properties settings) throws Exception {
-		SpotlessEclipseFramework.setup(
-				config -> {
-					config.applyDefault();
-					config.useSlf4J(EclipseCdtFormatterStepImpl.class.getPackage().getName());
-				},
-				plugins -> {
-					plugins.applyDefault();
-					plugins.add(new FileBuffersPlugin());
-					plugins.add(new CCorePlugin());
-				});
+		SpotlessEclipseFramework.setup(new FrameworkConfig());
 		Stream<Entry<Object, Object>> stream = settings.entrySet().stream();
 		Map<String, String> settingsMap = stream.collect(Collectors.toMap(
 				e -> String.valueOf(e.getKey()),
 				e -> String.valueOf(e.getValue())));
 		codeFormatter = org.eclipse.cdt.core.ToolFactory.createDefaultCodeFormatter(settingsMap);
+	}
+
+	private static class FrameworkConfig implements SpotlessEclipseConfig {
+		@Override
+		public void registerServices(SpotlessEclipseServiceConfig config) {
+			config.applyDefault();
+			config.useSlf4J(EclipseCdtFormatterStepImpl.class.getPackage().getName());
+		}
+
+		@Override
+		public void activatePlugins(SpotlessEclipsePluginConfig config) {
+			config.applyDefault();
+			config.add(new CCorePlugin());
+		}
 	}
 
 	/** Formatting C/C++ string */

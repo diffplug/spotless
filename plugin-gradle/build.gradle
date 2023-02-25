@@ -1,82 +1,81 @@
+apply from: rootProject.file('gradle/changelog.gradle')
 ext.artifactId = project.artifactIdGradle
-ext.version = project.versionGradle
-apply from: rootProject.file('gradle/java-setup.gradle')
-apply from: rootProject.file('gradle/java-publish.gradle')
-
+version = spotlessChangelog.versionNext
+apply plugin: 'java-library'
 apply plugin: 'com.gradle.plugin-publish'
 apply plugin: 'java-gradle-plugin'
+apply from: rootProject.file('gradle/java-setup.gradle')
+apply from: rootProject.file('gradle/spotless-freshmark.gradle')
+
 
 dependencies {
-	if (!project.versionGradle.endsWith('-SNAPSHOT') && project.versionLib.endsWith('-SNAPSHOT')) {
-		// gradle = release, lib = snapshot, therefore gradle should depend on the last stable lib
-		compile "com.diffplug.spotless:spotless-lib:${project.stableLib}"
-		compile "com.diffplug.spotless:spotless-lib-extra:${project.stableLib}"
+	if (version.endsWith('-SNAPSHOT') || (rootProject.spotlessChangelog.versionNext == rootProject.spotlessChangelog.versionLast)) {
+		api project(':lib')
+		api project(':lib-extra')
 	} else {
-		compile project(':lib')
-		compile project(':lib-extra')
+		api "com.diffplug.spotless:spotless-lib:${rootProject.spotlessChangelog.versionLast}"
+		api "com.diffplug.spotless:spotless-lib-extra:${rootProject.spotlessChangelog.versionLast}"
 	}
-	compile "com.diffplug.durian:durian-core:${VER_DURIAN}"
-	compile "com.diffplug.durian:durian-io:${VER_DURIAN}"
+	implementation "com.diffplug.durian:durian-core:${VER_DURIAN}"
+	implementation "com.diffplug.durian:durian-io:${VER_DURIAN}"
+	implementation "com.diffplug.durian:durian-collect:${VER_DURIAN}"
+	implementation "org.eclipse.jgit:org.eclipse.jgit:${VER_JGIT}"
 
-	testCompile project(':testlib')
-	testCompile "junit:junit:${VER_JUNIT}"
-	testCompile "org.assertj:assertj-core:${VER_ASSERTJ}"
-	testCompile "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
+	testImplementation project(':testlib')
+	testImplementation "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"
+	testImplementation "org.assertj:assertj-core:${VER_ASSERTJ}"
+	testImplementation "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
 }
 
-tasks.eclipse.dependsOn(pluginUnderTestMetadata)
-
-/////////////////////
-// SPOTLESS (fake) //
-/////////////////////
-task spotlessCheck(type: JavaExec) {
-	classpath sourceSets.test.runtimeClasspath
-	main = 'com.diffplug.gradle.spotless.SelfTestCheck'
+apply from: rootProject.file('gradle/special-tests.gradle')
+tasks.withType(Test).configureEach {
+	testLogging.showStandardStreams = true
 }
-check.dependsOn(spotlessCheck)
-
-task spotlessApply(type: JavaExec) {
-	classpath sourceSets.test.runtimeClasspath
-	main = 'com.diffplug.gradle.spotless.SelfTestApply'
-}
-test { testLogging.showStandardStreams = true }
-
-test { useJUnit { excludeCategories 'com.diffplug.spotless.category.NpmTest' } }
-
-task npmTest(type: Test) { useJUnit { includeCategories 'com.diffplug.spotless.category.NpmTest' } }
 
 //////////////////////////
 // GRADLE PLUGIN PORTAL //
 //////////////////////////
-version = project.ext.version
-pluginBundle {
-	// These settings are set for the whole plugin bundle
+gradlePlugin {
 	website = "https://github.com/diffplug/spotless"
 	vcsUrl = "https://github.com/diffplug/spotless"
-	description = project.description
-
 	plugins {
 		spotlessPlugin {
-			id = 'com.diffplug.gradle.spotless'
+			id = 'com.diffplug.spotless'
+			implementationClass = 'com.diffplug.gradle.spotless.SpotlessPlugin'
 			displayName = 'Spotless formatting plugin'
-			tags = [
+			description = project.description
+			tags.set([
 				'format',
 				'style',
 				'license',
-				'header'
-			]
+				'header',
+				'google-java-format',
+				'eclipse',
+				'ktlint',
+				'ktfmt',
+				'diktat',
+				'tsfmt',
+				'prettier',
+				'scalafmt',
+				'scalafix',
+				'black',
+				'clang-format'
+			])
+		}
+		spotlessPluginLegacy {
+			id = 'com.diffplug.gradle.spotless'
+			implementationClass = 'com.diffplug.gradle.spotless.SpotlessPluginRedirect'
+			displayName = 'Spotless formatting plugin (legacy)'
+			description = project.description
+			tags.set([
+				'format'
+			])
 		}
 	}
-
-	mavenCoordinates {
-		groupId = project.group
-		artifactId = project.artifactIdGradle
-		version = project.ext.version
-	}
 }
-
-// the gradle plugin portal isn't really compatible with SNAPSHOT versions
-// https://discuss.gradle.org/t/uploading-snapshot-versions-to-the-plugin-portal/11347
-if (ext.isSnapshot) {
+if (version.endsWith('-SNAPSHOT')) {
 	publishPlugins.enabled = false
 }
+
+// have to apply java-publish after setting up the pluginBundle
+apply from: rootProject.file('gradle/java-publish.gradle')

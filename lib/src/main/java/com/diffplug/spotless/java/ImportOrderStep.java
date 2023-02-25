@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,11 @@ import java.util.stream.Stream;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 public final class ImportOrderStep {
+	private static final boolean WILDCARDS_LAST_DEFAULT = false;
+
 	private final String lineFormat;
 
 	public static ImportOrderStep forGroovy() {
@@ -51,45 +55,31 @@ public final class ImportOrderStep {
 	}
 
 	public FormatterStep createFrom(String... importOrder) {
+		return createFrom(WILDCARDS_LAST_DEFAULT, importOrder);
+	}
+
+	public FormatterStep createFrom(boolean wildcardsLast, String... importOrder) {
 		// defensive copying and null checking
 		List<String> importOrderList = requireElementsNonNull(Arrays.asList(importOrder));
-		return createFrom(() -> importOrderList);
+		return createFrom(wildcardsLast, () -> importOrderList);
 	}
 
 	public FormatterStep createFrom(File importsFile) {
-		Objects.requireNonNull(importsFile);
-		return createFrom(() -> getImportOrder(importsFile));
+		return createFrom(WILDCARDS_LAST_DEFAULT, importsFile);
 	}
 
-	private FormatterStep createFrom(Supplier<List<String>> importOrder) {
+	public FormatterStep createFrom(boolean wildcardsLast, File importsFile) {
+		Objects.requireNonNull(importsFile);
+		return createFrom(wildcardsLast, () -> getImportOrder(importsFile));
+	}
+
+	private FormatterStep createFrom(boolean wildcardsLast, Supplier<List<String>> importOrder) {
 		return FormatterStep.createLazy("importOrder",
-				() -> new State(importOrder.get(), lineFormat),
+				() -> new State(importOrder.get(), lineFormat, wildcardsLast),
 				State::toFormatter);
 	}
 
-	/** Method interface has been changed to
-	 * {@link ImportOrderStep#createFromOrder(String...)}.*/
-	@Deprecated
-	public static FormatterStep createFromOrder(List<String> importOrder) {
-		// defensive copying and null checking
-		List<String> importOrderCopy = requireElementsNonNull(new ArrayList<>(importOrder));
-		return forJava().createFrom(() -> importOrderCopy);
-	}
-
-	/** Static method has been replaced by instance method
-	 * {@link ImportOrderStep#createFrom(String...)}.*/
-	@Deprecated
-	public static FormatterStep createFromOrder(String... importOrder) {
-		return forJava().createFrom(importOrder);
-	}
-
-	/** Static method has been replaced by instance method
-	 * {@link ImportOrderStep#createFrom(File)}.*/
-	@Deprecated
-	public static FormatterStep createFromFile(File importsFile) {
-		return forJava().createFrom(importsFile);
-	}
-
+	@SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE") // workaround https://github.com/spotbugs/spotbugs/issues/756
 	private static List<String> getImportOrder(File importsFile) {
 		try (Stream<String> lines = Files.lines(importsFile.toPath())) {
 			return lines.filter(line -> !line.startsWith("#"))
@@ -115,14 +105,16 @@ public final class ImportOrderStep {
 
 		private final List<String> importOrder;
 		private final String lineFormat;
+		private final boolean wildcardsLast;
 
-		State(List<String> importOrder, String lineFormat) {
+		State(List<String> importOrder, String lineFormat, boolean wildcardsLast) {
 			this.importOrder = importOrder;
 			this.lineFormat = lineFormat;
+			this.wildcardsLast = wildcardsLast;
 		}
 
 		FormatterFunc toFormatter() {
-			return raw -> new ImportSorter(importOrder).format(raw, lineFormat);
+			return raw -> new ImportSorter(importOrder, wildcardsLast).format(raw, lineFormat);
 		}
 	}
 }

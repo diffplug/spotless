@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.NoSuchElementException;
@@ -28,8 +27,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Grabs a jar and its dependencies from maven,
@@ -43,27 +40,11 @@ public final class JarState implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private final Set<String> mavenCoordinates;
-	@SuppressWarnings("unused")
 	private final FileSignature fileSignature;
 
-	/*
-	 * Transient because not needed to uniquely identify a JarState instance, and also because
-	 * Gradle only needs this class to be Serializable so it can compare JarState instances for
-	 * incremental builds.
-	 */
-	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-	private final transient Set<File> jars;
-
-	@Deprecated // internal
-	public JarState(String mavenCoordinate, FileSignature fileSignature, Set<File> jars) {
-		this(Arrays.asList(mavenCoordinate), fileSignature, jars);
-	}
-
-	@Deprecated // internal
-	public JarState(Collection<String> mavenCoordinates, FileSignature fileSignature, Set<File> jars) {
+	private JarState(Collection<String> mavenCoordinates, FileSignature fileSignature) {
 		this.mavenCoordinates = new TreeSet<String>(mavenCoordinates);
 		this.fileSignature = fileSignature;
-		this.jars = jars;
 	}
 
 	/** Provisions the given maven coordinate and its transitive dependencies. */
@@ -89,16 +70,16 @@ public final class JarState implements Serializable {
 			throw new NoSuchElementException("Resolved to an empty result: " + mavenCoordinates.stream().collect(Collectors.joining(", ")));
 		}
 		FileSignature fileSignature = FileSignature.signAsSet(jars);
-		return new JarState(mavenCoordinates, fileSignature, jars);
+		return new JarState(mavenCoordinates, fileSignature);
 	}
 
 	URL[] jarUrls() {
-		return jars.stream().map(File::toURI).map(ThrowingEx.wrap(URI::toURL)).toArray(URL[]::new);
+		return fileSignature.files().stream().map(File::toURI).map(ThrowingEx.wrap(URI::toURL)).toArray(URL[]::new);
 	}
 
 	/**
 	 * Returns a classloader containing the only jars in this JarState.
-	 * Look-up of classes in the `org.slf4j` package
+	 * Look-up of classes in the {@code org.slf4j} package
 	 * are not taken from the JarState, but instead redirected to the class loader of this class to enable
 	 * passthrough logging.
 	 * <br/>
@@ -110,7 +91,7 @@ public final class JarState implements Serializable {
 
 	/**
 	 * Returns a classloader containing the only jars in this JarState.
-	 * Look-up of classes in the `org.slf4j` package
+	 * Look-up of classes in the {@code org.slf4j} package
 	 * are not taken from the JarState, but instead redirected to the class loader of this class to enable
 	 * passthrough logging.
 	 * <br/>

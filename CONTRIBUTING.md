@@ -1,6 +1,6 @@
 # Contributing to Spotless
 
-Pull requests are welcome, preferably against `master`.  Feel free to develop spotless any way you like, but the easiest way to look at the code is to clone the repo and run `gradlew ide`, which will download, setup, and start an Eclipse IDE for you.
+Pull requests are welcome, preferably against `main`.  Feel free to develop spotless any way you like.
 
 ## How Spotless works
 
@@ -36,16 +36,14 @@ For the folders below in monospace text, they are published on maven central at 
 | `lib-extra` | Contains the optional parts of Spotless which require external dependencies.  `LineEnding.GIT_ATTRIBUTES` won't work unless `lib-extra` is available. |
 | `plugin-gradle` | Integrates spotless and all of its formatters into Gradle. |
 | `plugin-maven` | Integrates spotless and all of its formatters into Maven. |
-| javadoc-publish | Logic for publishing javadoc to github-pages. |
-| ide | Generates and launches an IDE for developing spotless. |
-| _ext | Folder for generating glue jars (specifically packaging Eclipse jars from p2 for consumption using maven).
+| `_ext` | Folder for generating glue jars (specifically packaging Eclipse jars from p2 for consumption using maven).
 
 ## How to add a new FormatterStep
 
 The easiest way to create a FormatterStep is `FormatterStep createNeverUpToDate(String name, FormatterFunc function)`, which you can use like this:
 
 ```java
-FormatterStep identityStep = FormatterStep.createNeverUpToDate("identity", unix -> unix)
+FormatterStep identityStep = FormatterStep.createNeverUpToDate("identity", unixStr -> unixStr)
 ```
 
 This creates a step which will fail up-to-date checks (it is equal only to itself), and will use the function you passed in to do the formatting pass.
@@ -74,7 +72,7 @@ public final class ReplaceStep {
     }
 
     FormatterFunc toFormatter() {
-      return raw -> raw.replace(target, replacement);
+      return unixStr -> unixStr.replace(target, replacement);
     }
   }
 }
@@ -101,6 +99,44 @@ Here's a checklist for creating a new step for Spotless:
 - [ ] Test class has test methods to verify behavior.
 - [ ] Test class has a test method `equality()` which tests equality using `StepEqualityTester` (see existing methods for examples).
 
+### Third-party dependencies via reflection or compile-only source sets
+
+Most formatters are going to use some kind of third-party jar. Spotless integrates with many formatters, some of which have incompatible transitive dependencies. To address this, we resolve third-party dependencies using [`JarState`](https://github.com/diffplug/spotless/blob/b26f0972b185995d7c6a7aefa726c146d24d9a82/lib/src/main/java/com/diffplug/spotless/kotlin/KtfmtStep.java#L118). To call methods on the classes in that `JarState`, you can either use reflection or a compile-only source set. See [#524](https://github.com/diffplug/spotless/issues/524) for examples of both approaches.
+
+- Adding a compile-only sourceset is easier to read and probably a better approach for most cases.
+- Reflection is more flexible, and might be a better approach for a very simple API.
+
+### Accessing the underlying File
+
+In order for Spotless' model to work, each step needs to look only at the `String` input, otherwise they cannot compose.  However, there are some cases where the source `File` is useful, such as to look at the file extension.  In this case, you can pass a `FormatterFunc.NeedsFile` instead of a `FormatterFunc`.  This should only be used in [rare circumstances](https://github.com/diffplug/spotless/pull/637), be careful that you don't accidentally depend on the bytes inside of the `File`!
+
+### Integrating outside the JVM
+
+There are many great formatters (prettier, clang-format, black, etc.) which live entirely outside the JVM.  We have two main strategies for these:
+
+- [shell out to an external command](https://github.com/diffplug/spotless/pull/672) for every file (used by clang-format and black)
+- open a headless server and make http calls to it from Spotless (used by our [npm-based](https://github.com/diffplug/spotless/blob/main/lib/src/main/java/com/diffplug/spotless/npm/NpmFormatterStepStateBase.java) formatters such as prettier)
+
+Because of Spotless' up-to-date checking and [git ratcheting](https://github.com/diffplug/spotless/tree/main/plugin-gradle#ratchet), Spotless actually doesn't have to call formatters very often, so even an expensive shell call for every single invocation isn't that bad.  Anything that works is better than nothing, and we can always speed things up later if it feels too slow (but it probably won't).
+
+## How to enable the `_ext` projects
+
+The `_ext` projects are disabled per default, since:
+
+* some of the projects perform vast downloads at configuration time
+* the downloaded content may change on server side and break CI builds
+
+
+The `_ext` can be activated via the root project property `com.diffplug.spotless.include.ext`.
+
+Activate the property via command line, like for example:
+
+```
+gradlew -Pcom.diffplug.spotless.include.ext=true build
+```
+
+Or set the property in your user `gradle.properties` file, which is especially recommended if you like to work with the `_ext` projects using IDEs.
+
 ## How to add a new plugin for a build system
 
 The gist of it is that you will have to:
@@ -115,14 +151,72 @@ The gist of it is that you will have to:
 
 If you get something running, we'd love to host your plugin within this repo as a peer to `plugin-gradle` and `plugin-maven`.
 
+## Integration testing
+
+### Gradle - locally
+
+First, run `./gradlew publishToMavenLocal` in your local checkout of Spotless.  Now, in any other project on your machine, you can use the following snippet in your `settings.gradle` (for Gradle 6.0+).
+
+```
+pluginManagement {
+  repositories {
+    mavenLocal {
+      content {
+        includeGroup 'com.diffplug.spotless'
+      }
+    }
+    gradlePluginPortal()
+  }
+  resolutionStrategy {
+    eachPlugin {
+      if (requested.id.id == 'com.diffplug.spotless') {
+        useModule('com.diffplug.spotless:spotless-plugin-gradle:{latest-SNAPSHOT}')
+      }
+    }
+  }
+}
+```
+
+### Gradle - any commit in a public GitHub repo (this one, or any fork)
+
+In Gradle 6.0+, you can use the following snippet in your `settings.gradle`.
+
+
+```gradle
+pluginManagement {
+  repositories {
+    maven {
+      url 'https://jitpack.io'
+      content {
+        includeGroup 'com.github.{{user-or-org}}.spotless'
+      }
+    }
+    gradlePluginPortal()
+  }
+  resolutionStrategy {
+    eachPlugin {
+      if (requested.id.id == 'com.diffplug.spotless') {
+        useModule('com.github.{{USER_OR_ORG}}.spotless:spotless-plugin-gradle:{{SHA_OF_COMMIT_YOU_WANT}}')
+      }
+    }
+  }
+}
+```
+
+If it doesn't work, you can check the JitPack log at `https://jitpack.io/com/github/{{USER_OR_ORG}}/spotless/{{SHA_OF_COMMIT_YOU_WANT}}/build.log`.
+
+### Maven
+
+Run `./gradlew publishToMavenLocal` to publish this to your local repository. You can also use the JitPack artifacts, using the same principles as Gradle above.
+
 ## License
 
-By contributing your code, you agree to license your contribution under the terms of the APLv2: https://github.com/diffplug/spotless/blob/master/LICENSE.txt
+By contributing your code, you agree to license your contribution under the terms of the APLv2: https://github.com/diffplug/spotless/blob/main/LICENSE.txt
 
 All files are released with the Apache 2.0 license as such:
 
 ```
-Copyright 2016 DiffPlug
+Copyright 2020 DiffPlug
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

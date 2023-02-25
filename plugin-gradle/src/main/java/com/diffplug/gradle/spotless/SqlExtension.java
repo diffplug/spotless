@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@ package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
 
+import javax.inject.Inject;
+
 import org.gradle.api.Project;
 
 import com.diffplug.spotless.FormatterStep;
@@ -25,8 +27,9 @@ import com.diffplug.spotless.sql.DBeaverSQLFormatterStep;
 public class SqlExtension extends FormatExtension {
 	static final String NAME = "sql";
 
-	public SqlExtension(SpotlessExtension rootExtension) {
-		super(rootExtension);
+	@Inject
+	public SqlExtension(SpotlessExtension spotless) {
+		super(spotless);
 	}
 
 	public DBeaverSQLFormatterConfig dbeaver() {
@@ -56,7 +59,7 @@ public class SqlExtension extends FormatExtension {
 	@Override
 	protected void setupTask(SpotlessTask task) {
 		if (target == null) {
-			target("**/*.sql");
+			throw noDefaultTargetException();
 		}
 		super.setupTask(task);
 	}

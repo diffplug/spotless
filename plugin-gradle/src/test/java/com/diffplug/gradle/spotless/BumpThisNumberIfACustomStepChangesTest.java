@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,19 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class BumpThisNumberIfACustomStepChangesTest extends GradleIntegrationTest {
+class BumpThisNumberIfACustomStepChangesTest extends GradleIntegrationHarness {
 
 	private void writeBuildFile(String toInsert) throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
 				"spotless {",
 				"    format 'misc', {",
 				"        target file('README.md')",
-				"        customLazyGroovy('lowercase') {",
-				"             return { str -> str.toLowerCase(Locale.ROOT) }",
-				"        }",
+				"        custom 'lowercase', { str -> str.toLowerCase(Locale.ROOT) }",
 				toInsert,
 				"    }",
 				"}");
@@ -48,7 +46,7 @@ public class BumpThisNumberIfACustomStepChangesTest extends GradleIntegrationTes
 	}
 
 	@Test
-	public void customRuleNeverUpToDate() throws IOException {
+	void customRuleNeverUpToDate() throws IOException {
 		writeBuildFile("");
 		writeContentWithBadFormatting();
 		applyIsUpToDate(false);
@@ -57,7 +55,7 @@ public class BumpThisNumberIfACustomStepChangesTest extends GradleIntegrationTes
 	}
 
 	@Test
-	public void unlessBumpThisNumberIfACustomStepChanges() throws IOException {
+	void unlessBumpThisNumberIfACustomStepChanges() throws IOException {
 		writeBuildFile("bumpThisNumberIfACustomStepChanges(1)");
 		writeContentWithBadFormatting();
 		applyIsUpToDate(false);
@@ -72,7 +70,7 @@ public class BumpThisNumberIfACustomStepChangesTest extends GradleIntegrationTes
 	}
 
 	@Test
-	public void andRunsAgainIfNumberChanges() throws IOException {
+	void andRunsAgainIfNumberChanges() throws IOException {
 		writeBuildFile("bumpThisNumberIfACustomStepChanges(1)");
 		writeContentWithBadFormatting();
 		applyIsUpToDate(false);

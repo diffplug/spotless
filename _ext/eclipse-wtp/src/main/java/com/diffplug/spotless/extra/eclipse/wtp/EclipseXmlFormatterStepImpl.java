@@ -18,12 +18,8 @@ package com.diffplug.spotless.extra.eclipse.wtp;
 import static com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework.LINE_DELIMITER;
 import static org.eclipse.wst.xml.core.internal.preferences.XMLCorePreferenceNames.*;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Properties;
-import java.util.Set;
 
-import org.eclipse.core.runtime.Plugin;
 import org.eclipse.jface.text.IDocumentPartitioner;
 import org.eclipse.text.edits.TextEdit;
 import org.eclipse.wst.common.uriresolver.internal.provisional.URIResolverPlugin;
@@ -32,6 +28,7 @@ import org.eclipse.wst.sse.core.internal.provisional.INodeAdapterFactory;
 import org.eclipse.wst.sse.core.internal.provisional.text.IStructuredDocument;
 import org.eclipse.wst.sse.core.internal.text.BasicStructuredDocument;
 import org.eclipse.wst.xml.core.internal.XMLCorePlugin;
+import org.eclipse.wst.xml.core.internal.catalog.Catalog;
 import org.eclipse.wst.xml.core.internal.contentmodel.modelquery.CMDocumentManager;
 import org.eclipse.wst.xml.core.internal.contentmodel.modelquery.ModelQuery;
 import org.eclipse.wst.xml.core.internal.document.DOMModelImpl;
@@ -44,54 +41,82 @@ import org.eclipse.wst.xml.core.internal.preferences.XMLCorePreferenceInitialize
 import org.eclipse.wst.xml.core.internal.text.rules.StructuredTextPartitionerForXML;
 import org.eclipse.wst.xsd.core.internal.XSDCorePlugin;
 import org.eclipse.xsd.util.XSDSchemaBuildingTools;
-import org.osgi.framework.BundleException;
 
+import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseConfig;
 import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework;
+import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipsePluginConfig;
+import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseServiceConfig;
+import com.diffplug.spotless.extra.eclipse.wtp.sse.PluginPreferences;
 import com.diffplug.spotless.extra.eclipse.wtp.sse.PreventExternalURIResolverExtension;
-import com.diffplug.spotless.extra.eclipse.wtp.sse.SpotlessPreferences;
 
 /** Formatter step which calls out to the Eclipse XML formatter. */
 public class EclipseXmlFormatterStepImpl {
-	private static XmlFormattingPreferencesFactory PREFERENCE_FACTORY = null;
-
 	private final DefaultXMLPartitionFormatter formatter;
 	private final XMLFormattingPreferences preferences;
 	private final INodeAdapterFactory xmlAdapterFactory;
 
 	public EclipseXmlFormatterStepImpl(Properties properties) throws Exception {
-		boolean resolveExternalURI = Boolean.parseBoolean(properties.getProperty(SpotlessPreferences.RESOLVE_EXTERNAL_URI, "false"));
-		setupFramework(resolveExternalURI);
-		preferences = PREFERENCE_FACTORY.create(properties);
+		SpotlessEclipseFramework.setup(new FrameworkConfig(properties));
+		PluginPreferences.assertNoChanges(XMLCorePlugin.getDefault(), properties);
+		preferences = new XMLFormattingPreferences();
 		formatter = new DefaultXMLPartitionFormatter();
 		//The adapter factory maintains the common CMDocumentCache
 		xmlAdapterFactory = new ModelQueryAdapterFactoryForXML();
 	}
 
-	private static void setupFramework(boolean resolveExternalURI) throws BundleException {
-		if (SpotlessEclipseFramework.setup(
-				config -> {
-					config.applyDefault();
-					config.useSlf4J(EclipseXmlFormatterStepImpl.class.getPackage().getName());
-				},
-				plugins -> {
-					plugins.applyDefault();
-					//The WST XML formatter
-					plugins.add(new XMLCorePlugin());
-					//XSDs/DTDs must be resolved by URI
-					plugins.add(new URIResolverPlugin());
-					//Support formatting based on DTD restrictions
-					plugins.add(new DTDCorePlugin());
-					//Support formatting based on XSD restrictions
-					plugins.add(new XSDCorePlugin());
-					if (!resolveExternalURI) {
-						plugins.add(new PreventExternalURIResolverExtension());
-					}
-				})) {
-			PREFERENCE_FACTORY = new XmlFormattingPreferencesFactory();
+	static class FrameworkConfig implements SpotlessEclipseConfig {
+		private final Properties properties;
+
+		FrameworkConfig(Properties properties) {
+			/*
+			 * The cache is only used for system catalogs, but not for user catalogs.
+			 * It requires the SSECorePLugin, which has either a big performance overhead,
+			 * or needs a dirty mocking (we don't really require its functions but it needs to be there).
+			 * So we disable the cache for now.
+			 * This might cause a performance drop in case for example XSDs are formatted.
+			 * But these standard/system restriction files contain anyway no formatting rules.
+			 * So in case of performance inconveniences, we could add a Spotless property to disable the
+			 * XSD/DTD parsing entirely (for example by adding an own URI resolver).
+			 */
+			properties.setProperty(CMDOCUMENT_GLOBAL_CACHE_ENABLED, Boolean.toString(false));
+			this.properties = properties;
+		}
+
+		@Override
+		public void registerServices(SpotlessEclipseServiceConfig config) {
+			config.applyDefault();
+			config.useSlf4J(EclipseXmlFormatterStepImpl.class.getPackage().getName());
+		}
+
+		@Override
+		public void activatePlugins(SpotlessEclipsePluginConfig config) {
+			config.applyDefault();
+			activateXmlPlugins(config, PluginPreferences.isExternalUriAllowed(properties));
+		}
+
+		static void activateXmlPlugins(SpotlessEclipsePluginConfig config, boolean allowExternalURI) {
+			//The WST XML formatter
+			config.add(new XMLCorePlugin());
+			//XSDs/DTDs must be resolved by URI
+			config.add(new URIResolverPlugin());
+			//Support formatting based on DTD restrictions
+			config.add(new DTDCorePlugin());
+			//Support formatting based on XSD restrictions
+			config.add(new XSDCorePlugin());
+			if (!allowExternalURI) {
+				config.add(new PreventExternalURIResolverExtension());
+			}
+		}
+
+		@Override
+		public void customize() {
 			//Register required EMF factories
 			XSDSchemaBuildingTools.getXSDFactory();
+			PluginPreferences.configure(XMLCorePlugin.getDefault(), new XMLCorePreferenceInitializer(), properties);
+			PluginPreferences.configureCatalog(properties, (Catalog) XMLCorePlugin.getDefault().getDefaultXMLCatalog());
 		}
-	}
+
+	};
 
 	/** Formatting XML string resolving URIs according its base location  */
 	public String format(String raw, String baseLocation) throws Exception {
@@ -110,60 +135,6 @@ public class EclipseXmlFormatterStepImpl {
 		TextEdit formatterChanges = formatter.format(xmlDOM, 0, document.getLength(), preferences);
 		formatterChanges.apply(document);
 		return document.get();
-	}
-
-	private static class XmlFormattingPreferencesFactory {
-		private final static Set<String> SUPPORTED_XML_FORMAT_PREFS = new HashSet<String>(Arrays.asList(
-				FORMAT_COMMENT_TEXT,
-				FORMAT_COMMENT_JOIN_LINES,
-				LINE_WIDTH,
-				SPLIT_MULTI_ATTRS,
-				ALIGN_END_BRACKET,
-				SPACE_BEFORE_EMPTY_CLOSE_TAG,
-				PRESERVE_CDATACONTENT,
-				INDENTATION_CHAR,
-				INDENTATION_SIZE,
-				CLEAR_ALL_BLANK_LINES));
-
-		XmlFormattingPreferencesFactory() {
-			XMLCorePreferenceInitializer initializer = new XMLCorePreferenceInitializer();
-			initializer.initializeDefaultPreferences();
-			/*
-			 * The cache is only used for system catalogs, but not for user catalogs.
-			 * It requires the SSECorePLugin, which has either a big performance overhead,
-			 * or needs a dirty mocking (we don't really require its functions but it needs to be there).
-			 * So we disable the cache for now.
-			 * This might cause a performance drop in case for example XSDs are formatted.
-			 * But these standard/system restriction files contain anyway no formatting rules.
-			 * So in case of performance inconveniences, we could add a Spotless property to disable the
-			 * XSD/DTD parsing entirely (for example by adding an own URI resolver).
-			 */
-			Properties properties = new Properties();
-			properties.setProperty(CMDOCUMENT_GLOBAL_CACHE_ENABLED, Boolean.toString(false));
-			Plugin plugin = XMLCorePlugin.getDefault();
-			SpotlessPreferences.configurePluginPreferences(plugin, properties);
-		}
-
-		XMLFormattingPreferences create(final Properties properties) {
-			SpotlessPreferences.configureCatalog(properties);
-			return createFormattingPreference(properties);
-		}
-
-		private XMLFormattingPreferences createFormattingPreference(final Properties properties) {
-			Properties newXmlProperties = getXMLFormattingProperties(properties);
-			Plugin plugin = XMLCorePlugin.getDefault();
-			Properties defaultXmlProperties = SpotlessPreferences.configurePluginPreferences(plugin, newXmlProperties);
-			XMLFormattingPreferences xmlPreferences = new XMLFormattingPreferences();
-			SpotlessPreferences.configurePluginPreferences(plugin, defaultXmlProperties);
-			return xmlPreferences;
-		}
-
-		private Properties getXMLFormattingProperties(final Properties properties) {
-			Properties filteredProperties = new Properties();
-			properties.entrySet().stream().filter(
-					entry -> SUPPORTED_XML_FORMAT_PREFS.contains(entry.getKey())).forEach(entry -> filteredProperties.put(entry.getKey(), entry.getValue()));
-			return filteredProperties;
-		}
 	}
 
 }

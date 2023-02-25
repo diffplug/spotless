@@ -1,13 +1,55 @@
+import java.nio.charset.StandardCharsets
+
+def decode64(String varName) {
+	String envValue = System.env[varName]
+	if (envValue == null) {
+		return ""
+	} else {
+		return new String(envValue.decodeBase64(), "UTF-8")
+	}
+}
+
+if (project.parent == null) {
+	group = 'com.diffplug.spotless'
+	def pass = System.env['ORG_GRADLE_PROJECT_nexus_pass64']
+	if (pass != null) {
+		pass = pass.decodeBase64()
+	}
+	// it's the root project
+	apply plugin: 'io.github.gradle-nexus.publish-plugin'
+	nexusPublishing {
+		repositories {
+			sonatype {
+				nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+				snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+				username = System.env['ORG_GRADLE_PROJECT_nexus_user']
+				password = decode64('ORG_GRADLE_PROJECT_nexus_pass64')
+			}
+		}
+	}
+	def initTask = tasks.named('initializeSonatypeStagingRepository')
+	allprojects {
+		initTask.configure {
+			shouldRunAfter(tasks.withType(Sign))
+		}
+	}
+	return
+}
+
 ///////////
 // MAVEN //
 ///////////
-apply plugin: 'maven-publish'
-apply plugin: 'com.jfrog.bintray'
-
-task sourcesJar(type: Jar) {
-	classifier = 'sources'
-	from sourceSets.main.allJava
+java {
+	withJavadocJar()
+	withSourcesJar()
 }
+
+tasks.named('sourcesJar') {
+	dependsOn 'jar'
+}
+
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
 
 // Where it's possible to name parameters and methods clearly enough
 // that javadoc is not necessary, why make the code bigger?
@@ -15,56 +57,44 @@ task sourcesJar(type: Jar) {
 // Thus, no javadoc warnings.
 javadoc {
 	options.addStringOption('Xdoclint:none', '-quiet')
+	options.addStringOption('Xwerror', '-quiet')
+}
+// make sure bad javadoc breaks the build
+tasks.named('check') {
+	dependsOn tasks.named('javadoc')
 }
 
 // use markdown in javadoc
 def makeLink = { url, text -> "<a href=\"${url}\" style=\"text-transform: none;\">${text}</a>" }
-def javadocInfo = '<h2>' + makeLink("https://github.com/${org}/${name}", "${group}:${project.ext.artifactId}:${ext.version}") +
+def javadocInfo = '<h2>' + makeLink("https://github.com/${org}/${name}", "${group}:${project.ext.artifactId}:${version}") +
 		' by ' + makeLink('https://www.diffplug.com', 'DiffPlug') + '</h2>'
 
-String version_str = ext.version.endsWith('-SNAPSHOT') ? 'snapshot' : ext.version
-apply plugin: 'ch.raffael.pegdown-doclet'
+String dotdotGradle = project.name.startsWith('eclipse-') ? '../../gradle' : '../gradle'
 javadoc {
+	options.encoding = 'UTF-8'
 	// Where it's possible to name parameters and methods clearly enough
 	// that javadoc is not necessary, why make the code bigger?
 	//
 	// Thus, no javadoc warnings.
 	options.addStringOption('Xdoclint:none', '-quiet')
+	options.addStringOption('source', '8')
 	// setup the header
 	options.header javadocInfo
-	options.footer javadocInfo
 	// setup links
-	options.linksOffline('https://docs.oracle.com/javase/8/docs/api/', '../gradle/javadoc/java8')
-	options.linksOffline('https://docs.gradle.org/2.14/javadoc/', '../gradle/javadoc/gradle')
+	options.linksOffline('https://docs.oracle.com/javase/8/docs/api/', "${dotdotGradle}/javadoc/java8")
+	options.linksOffline('https://docs.gradle.org/2.14/javadoc/', "${dotdotGradle}/javadoc/gradle")
 
-	// put the javadoc into a central location
-	destinationDir rootProject.file("javadoc-publish/build/javadoc/${project.ext.artifactId}/${version_str}")
 	// links to javadoc from the other versions
-	options.linksOffline("https://diffplug.github.io/spotles/javadoc/${project.artifactIdLib}/${version_str}/", "../gradle/javadoc/${project.artifactIdLib}")
-	options.linksOffline("https://diffplug.github.io/spotles/javadoc/${project.artifactIdLibExtra}/${version_str}/", "../gradle/javadoc/${project.artifactIdLibExtra}")
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-	classifier = 'javadoc'
-	from javadoc.destinationDir
+	options.linksOffline("https://javadoc.io/static/com.diffplug.spotless/spotless-lib/${rootProject.spotlessChangelog.versionLast}", "${dotdotGradle}/javadoc/spotless-lib")
+	options.linksOffline("https://javadoc.io/static/com.diffplug.spotless/spotless-lib-extra/${rootProject.spotlessChangelog.versionLast}", "${dotdotGradle}/javadoc/spotless-lib-extra")
 }
 
 ////////////////
 // PUBLISHING //
 ////////////////
-ext.isSnapshot = ext.version.endsWith('-SNAPSHOT')
-// pulls the credentials from either the environment variable or gradle.properties
-def cred = {
-	if (System.env[it] != null) {
-		return System.env[it]
-	} else if (project.hasProperty(it)) {
-		return project[it]
-	} else {
-		return 'unknown_' + it
-	}
-}
-
 final MAVEN_PLUGIN_ARTIFACT_NAME = 'spotless-maven-plugin'
+boolean isExt = project.name.startsWith('eclipse-')
+boolean isPluginMaven = project.ext.artifactId == 'spotless-maven-plugin'
 
 model {
 	publishing {
@@ -73,12 +103,10 @@ model {
 				if (project.ext.artifactId != 'spotless-plugin-gradle') {
 					from components.java
 				}
-				artifact sourcesJar
-				artifact javadocJar
 
 				groupId project.group
 				artifactId project.ext.artifactId
-				version project.ext.version
+				version project.version
 
 				pom.withXml {
 					// add MavenCentral requirements to the POM
@@ -86,49 +114,55 @@ model {
 						resolveStrategy = Closure.DELEGATE_FIRST
 						name project.ext.artifactId
 						description project.description
-						url "https://github.com/${project.org}/${project.name}"
+						url "https://github.com/${project.org}/${rootProject.name}"
 						scm {
-							url "https://github.com/${project.org}/${project.name}"
-							connection "scm:git:git://github.com/${project.org}/${project.name}"
-							developerConnection "scm:git:ssh:git@github.com/${project.org}/${project.name}"
+							url "https://github.com/${project.org}/${rootProject.name}"
+							connection "scm:git:https://github.com/${project.org}/${rootProject.name}.git"
+							developerConnection "scm:git:ssh:git@github.com/${project.org}/${rootProject.name}.git"
 						}
 						licenses {
-							license {
-								name 'The Apache Software License, Version 2.0'
-								url 'https://www.apache.org/licenses/LICENSE-2.0.txt'
-								distribution 'repo'
+							if (isExt) {
+								license {
+									name 'Eclipse Public License - v 1.0'
+									url 'https://www.eclipse.org/legal/epl-v10.html'
+									distribution 'repo'
+								}
+							} else {
+								license {
+									name 'The Apache Software License, Version 2.0'
+									url 'https://www.apache.org/licenses/LICENSE-2.0.txt'
+									distribution 'repo'
+								}
 							}
 						}
-						if (project.ext.artifactId == MAVEN_PLUGIN_ARTIFACT_NAME) {
+						if (isPluginMaven) {
 							// Maven plugin required Maven 3.1.0+ to run
 							prerequisites { maven '3.1.0' }
 						}
 						developers {
-							if (project.ext.artifactId == MAVEN_PLUGIN_ARTIFACT_NAME) {
+							if (isExt) {
+								project.ext.developers.each { extId, extValues ->
+									developer {
+										id extId
+										name extValues['name']
+										email extValues['email']
+									}
+								}
+							} else {
+								if (isPluginMaven) {
+									developer {
+										id 'lutovich'
+										name 'Konstantin Lutovich'
+										email 'konstantin.lutovich@neotechnology.com'
+									}
+								}
 								developer {
-									id 'lutovich'
-									name 'Konstantin Lutovich'
-									email 'konstantin.lutovich@neotechnology.com'
+									id 'nedtwigg'
+									name 'Ned Twigg'
+									email 'ned.twigg@diffplug.com'
 								}
 							}
-							developer {
-								id 'nedtwigg'
-								name 'Ned Twigg'
-								email 'ned.twigg@diffplug.com'
-							}
 						}
-					}
-				}
-			}
-		}
-		if (project.ext.isSnapshot) {
-			// upload snapshots to oss.sonatype.org
-			repositories {
-				maven {
-					url = 'https://oss.sonatype.org/content/repositories/snapshots'
-					credentials {
-						username = cred('nexus_user')
-						password = cred('nexus_pass')
 					}
 				}
 			}
@@ -136,34 +170,37 @@ model {
 	}
 }
 
-if (!ext.isSnapshot) {
-	// upload releases to bintray and then mavenCentral
-	bintray {
-		user = cred('bintray_user')
-		key = cred('bintray_pass')
-		publications = [
-			'pluginMaven'
-		]
-		publish = true
-		pkg {
-			repo = 'opensource'
-			name = project.ext.artifactId
-			userOrg = project.org
-			version {
-				name = project.ext.version
-				mavenCentralSync {
-					user = cred('nexus_user')
-					password = cred('nexus_pass')
-				}
-			}
-		}
+if (System.env['JITPACK'] == 'true' || version.endsWith('-SNAPSHOT')) {
+	signing {
+		setRequired(false)
+	}
+} else {
+	signing {
+		String gpg_key = decode64('ORG_GRADLE_PROJECT_gpg_key64')
+		useInMemoryPgpKeys(gpg_key, System.env['ORG_GRADLE_PROJECT_gpg_passphrase'])
+		sign(publishing.publications)
 	}
 
-	publish.dependsOn(bintrayUpload)
-	bintrayUpload.dependsOn([
-		'generatePomFileForPluginMavenPublication',
-		jar,
-		sourcesJar,
-		javadocJar
-	])
+	// find the project with the changelog (this project for plugins, root project for libs)
+	def changelogTasks = (tasks.names.contains('changelogBump') ? project : rootProject).tasks
+
+	// ensures that nothing will be built if changelogPush will end up failing
+	tasks.named('jar').configure {
+		dependsOn changelogTasks.named('changelogCheck')
+	}
+	// ensures that changelog bump and push only happens if the publish was successful
+	def thisProj = project
+	changelogTasks.named('changelogBump').configure {
+		dependsOn ":${thisProj.path}:publishPluginMavenPublicationToSonatypeRepository"
+		dependsOn ":closeAndReleaseSonatypeStagingRepository"
+		// if we have a gradle plugin, we need to push it up to the plugin portal too
+		if (thisProj.tasks.names.contains('publishPlugins')) {
+			dependsOn thisProj.tasks.named('publishPlugins')
+		}
+	}
+}
+
+tasks.withType(AbstractArchiveTask).configureEach {
+	preserveFileTimestamps = false
+	reproducibleFileOrder = true
 }

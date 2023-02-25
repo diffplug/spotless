@@ -1,16 +1,6 @@
-apply from: rootProject.file('../gradle/java-setup.gradle')
+apply from: rootProject.file('_ext/gradle/java-setup.gradle')
 
-buildscript {
-    repositories {
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-    dependencies {
-        classpath "com.diffplug.gradle:goomph:3.17.4"
-    }
-}
-apply plugin: com.diffplug.gradle.p2.AsMavenPlugin
+apply plugin: 'com.diffplug.p2.asmaven'
 
 ext {
 	// P2 Repository URL
@@ -27,7 +17,7 @@ ext {
 		internalJars = []
 	}
 
-    // Include form the JARs, which goes into a fat-jar with the spottless formatter interface.
+	// Include form the JARs, which goes into a fat-jar with the spottless formatter interface.
 	if (!project.hasProperty('jarInclude')) {
 		jarInclude = [
 			'**/*.class', // Take all classes
@@ -38,15 +28,7 @@ ext {
 		]
 	}
 
-    // Exclude form the JARs, which goes into a fat-jar with the spottless formatter interface.
-	if (!project.hasProperty('jarExclude')) {
-		jarExclude = [
-			'META-INF/*.RSA', // The eclipse jars are signed, and our fat-jar breaks the signatures
-			'META-INF/*.SF', // ... so all signatures are filtered
-		]
-	}
-	
-    // Exclude form the JARs, which goes into a fat-jar with the spottless formatter interface.
+	// Exclude form the JARs, which goes into a fat-jar with the spottless formatter interface.
 	if (!project.hasProperty('jarExclude')) {
 		jarExclude = [
 			'META-INF/*.RSA', // The eclipse jars are signed, and our fat-jar breaks the signatures
@@ -65,20 +47,22 @@ ext {
 	embeddedClassesDir = project.file(embeddedClassesDirName)
 }
 
-// build a maven repo in our build folder containing these artifacts
-p2AsMaven {
-	group 'p2', {
-		repo project.p2Repository
-		p2Dependencies.keySet.each { p2.addIU(it) }
-		p2ant {
-			/*
-			Define p2ant proxy settings as a closure. Refer to the API documents for instructions:
-			https://diffplug.github.io/goomph/javadoc/3.17.4/com/diffplug/gradle/p2/AsMavenPlugin.html
-			*/
-			if (project.hasProperty('setP2AntProxy')) {
-				setP2AntProxy(it)
-			}
- 		}
+if (gradle.startParameter.projectProperties.get('com.diffplug.spotless.include.ext.nop2') != 'true') {
+	// build a maven repo in our build folder containing these artifacts
+	p2AsMaven {
+		group 'p2', {
+			repo project.p2Repository
+			p2Dependencies.keySet.each { p2.addIU(it) }
+			p2ant {
+				/*
+				Define p2ant proxy settings as a closure. Refer to the API documents for instructions:
+				https://diffplug.github.io/goomph/javadoc/3.17.4/com/diffplug/gradle/p2/AsMavenPlugin.html
+				*/
+				if (project.hasProperty('setP2AntProxy')) {
+					setP2AntProxy(it)
+				}
+ 			}
+		}
 	}
 }
 
@@ -91,7 +75,7 @@ dependencies {
 		embeddedJars "p2:${groupArtifact}:${version}"
 	}
 	// Includes the classes from P2 JARs during compilation
-	compile files(embeddedClassesDir)
+	implementation files(embeddedClassesDir)
 }
 
 jar {
@@ -103,7 +87,6 @@ jar {
 // Unpack External Deps //
 //////////////////////////
 import java.io.File
-import org.apache.commons.io.filefilter.DirectoryFileFilter
 
 task unjarEmbeddedClasses {
 	description = "Copies filtered set of embedded classes from the Eclise/GrEclipse dependencies to '${project.relativePath(embeddedClassesDir)}'."
@@ -112,7 +95,7 @@ task unjarEmbeddedClasses {
 	inputs.property('jarInclude', jarInclude)
 	inputs.property('jarExclude', jarExclude)
 	inputs.property('fatJarResourcesMap', fatJarResourcesMap)
-	outputs.file(embeddedClassesDir)
+	outputs.dir(embeddedClassesDir)
 
 	doLast {
 		embeddedClassesDir.deleteDir()

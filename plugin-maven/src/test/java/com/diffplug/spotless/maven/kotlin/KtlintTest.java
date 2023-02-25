@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,40 +15,28 @@
  */
 package com.diffplug.spotless.maven.kotlin;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import com.diffplug.spotless.maven.MavenIntegrationTest;
+import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
-public class KtlintTest extends MavenIntegrationTest {
+class KtlintTest extends MavenIntegrationHarness {
 	@Test
-	public void testKtlint() throws Exception {
+	void testKtlint() throws Exception {
 		writePomWithKotlinSteps("<ktlint/>");
 
-		String path1 = "src/main/kotlin/main1.kt";
-		String path2 = "src/main/kotlin/main2.kt";
-
-		setFile(path1).toResource("kotlin/ktlint/basic.dirty");
-		setFile(path2).toResource("kotlin/ktlint/basic.dirty");
-
+		String path = "src/main/kotlin/Main.kt";
+		setFile(path).toResource("kotlin/ktlint/basic.dirty");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-
-		assertFile(path1).sameAsResource("kotlin/ktlint/basic.clean");
-		assertFile(path2).sameAsResource("kotlin/ktlint/basic.clean");
+		assertFile(path).sameAsResource("kotlin/ktlint/basic.clean");
 	}
 
 	@Test
-	public void testKtlintShyiko() throws Exception {
-		writePomWithKotlinSteps("<ktlint><version>0.21.0</version></ktlint>");
+	void testKtlintEditorConfigOverride() throws Exception {
+		writePomWithKotlinSteps("<ktlint><editorConfigOverride><ij_kotlin_allow_trailing_comma>true</ij_kotlin_allow_trailing_comma><ij_kotlin_allow_trailing_comma_on_call_site>true</ij_kotlin_allow_trailing_comma_on_call_site></editorConfigOverride></ktlint>");
 
-		String path1 = "src/main/kotlin/main1.kt";
-		String path2 = "src/main/kotlin/main2.kt";
-
-		setFile(path1).toResource("kotlin/ktlint/basic.dirty");
-		setFile(path2).toResource("kotlin/ktlint/basic.dirty");
-
+		String path = "src/main/kotlin/Main.kt";
+		setFile(path).toResource("kotlin/ktlint/experimentalEditorConfigOverride.dirty");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-
-		assertFile(path1).sameAsResource("kotlin/ktlint/basic.clean");
-		assertFile(path2).sameAsResource("kotlin/ktlint/basic.clean");
+		assertFile(path).sameAsResource("kotlin/ktlint/experimentalEditorConfigOverride.clean");
 	}
 }

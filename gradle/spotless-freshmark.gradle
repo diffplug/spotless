@@ -1,0 +1,62 @@
+
+apply plugin: 'com.diffplug.spotless'
+
+import com.diffplug.gradle.spotless.FreshMarkExtension
+
+Action<FreshMarkExtension> freshmarkSetup = {
+	it.target '*.md'
+	it.propertiesFile(rootProject.file('gradle.properties'))
+	it.properties {
+		it.put('yes', ':+1:')
+		it.put('no', ':white_large_square:')
+	}
+	it.indentWithSpaces(2)
+	it.trimTrailingWhitespace()
+	it.endWithNewline()
+}
+
+spotless {
+	freshmark {
+		freshmarkSetup.execute(it)
+		// disable ratchetFrom for freshmark, because we always want to update the readme links
+		ratchetFrom null
+	}
+}
+
+def versionLast = spotlessChangelog.versionLast
+def versionNext = spotlessChangelog.versionNext
+
+// if this freshmark has a changelog file, then it has version-sensitive content
+if (tasks.names.contains('changelogCheck')) {
+	// normally we use versionLast for our freshmark
+	spotless {
+		freshmark {
+			properties {
+				it.put('versionLast', versionLast)
+			}
+		}
+	}
+
+	// create a freshmark apply task manually
+	FreshMarkExtension freshmark = new FreshMarkExtension(spotless)
+	freshmarkSetup.execute(freshmark)
+	freshmark.properties {
+		// that uses versionNext as versionLast
+		it.put('versionLast', versionNext)
+	}
+	def changelogBumpFreshmark = freshmark.createIndependentApplyTask('changelogBumpFreshmark')
+	// freshmark should run after the changelog bump
+	changelogBumpFreshmark.dependsOn tasks.named('changelogBump')
+
+	def changelogBumpFreshmarkGitAdd = tasks.register('changelogBumpFreshmarkGitAdd') {
+		// this git add should run after the freshmark
+		dependsOn(changelogBumpFreshmark)
+		// do the git add
+		doLast {
+			exec { commandLine 'git', 'add' , '*.md' }
+		}
+	}
+	tasks.named('changelogPush').configure {
+		dependsOn changelogBumpFreshmarkGitAdd
+	}
+}

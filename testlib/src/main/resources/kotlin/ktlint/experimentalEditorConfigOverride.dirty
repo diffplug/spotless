@@ -1,0 +1,5 @@
+fun main() {
+    val list = listOf(
+        "hello"
+    )
+}

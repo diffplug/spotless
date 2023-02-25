@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,28 +17,29 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.assertj.core.api.Assertions;
+import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.TaskOutcome;
+import org.junit.jupiter.api.Test;
 
-public class UpToDateTest extends GradleIntegrationTest {
+class UpToDateTest extends GradleIntegrationHarness {
 	/** Requires that README be lowercase. */
 	private void writeBuildFile() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
 				"spotless {",
 				"    format 'misc', {",
 				"        target file('README.md')",
-				"        customLazyGroovy('lowercase') {",
-				"             return { str -> str.toLowerCase(Locale.ROOT) }",
-				"        }",
+				"        custom 'lowercase', { str -> str.toLowerCase(Locale.ROOT) }",
 				"        bumpThisNumberIfACustomStepChanges(1)",
 				"    }",
 				"}");
 	}
 
 	@Test
-	public void testNormalCase() throws IOException {
+	void testNormalCase() throws IOException {
 		writeBuildFile();
 		setFile("README.md").toContent("ABC");
 		// first time, the task runs as expected
@@ -56,7 +57,7 @@ public class UpToDateTest extends GradleIntegrationTest {
 	}
 
 	@Test
-	public void testNearPathologicalCase() throws IOException {
+	void testNearPathologicalCase() throws IOException {
 		writeBuildFile();
 		setFile("README.md").toContent("ABC");
 		// first time, up-to-date is false
@@ -74,21 +75,32 @@ public class UpToDateTest extends GradleIntegrationTest {
 	}
 
 	@Test
-	public void testPathologicalCase() throws IOException {
+	void testPathologicalCase() throws IOException {
 		writeBuildFile();
 		setFile("README.md").toContent("ABC");
-		// first time, up-to-date is false
+		// first time running apply, no tasks are UP-TO-DATE
 		applyIsUpToDate(false);
 		assertFile("README.md").hasContent("abc");
 
 		// now we'll change the file back to EXACTLY its original content
 		setFile("README.md").toContent("ABC");
-		// the task should run again, but instead the next line will
-		// fail an assertion, because the task is actually reported as up-to-date
-		applyIsUpToDate(false);
+
+		// the format task is UP-TO-DATE (same inputs), but the apply tasks will run again
+		pauseForFilesystem();
+		BuildResult buildResult = gradleRunner().withArguments("spotlessApply").build();
+		Assertions.assertThat(buildResult.taskPaths(TaskOutcome.UP_TO_DATE)).containsExactly(":spotlessInternalRegisterDependencies", ":spotlessMisc");
+		Assertions.assertThat(buildResult.taskPaths(TaskOutcome.SUCCESS)).containsExactly(":spotlessMiscApply", ":spotlessApply");
 		assertFile("README.md").hasContent("abc");
-		// and it'll take two more runs to get to up-to-date
+
+		// and it'll take two more runs to get to fully UP-TO-DATE
 		applyIsUpToDate(false);
 		applyIsUpToDate(true);
+	}
+
+	@Test
+	void checkAndApply() throws IOException {
+		writeBuildFile();
+		setFile("README.md").toContent("ABC");
+		gradleRunner().withArguments("spotlessCheck", "spotlessApply").build();
 	}
 }

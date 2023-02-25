@@ -1,0 +1,3 @@
+parser: typescript
+files: "scr/**/*.tsx"
+excludeFiles: "target/**"

@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+  <head>
+    <meta charset="viewport" content="with=device-width" />
+    <title>Test</title>
+    <script type="module" src="module.js"></script>
+    <script type="module2" src="module2.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="style.css" />
+  </head>
+
+  <body></body>
+</html>

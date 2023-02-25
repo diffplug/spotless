@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,17 @@
  */
 package com.diffplug.spotless.maven.java;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import com.diffplug.spotless.maven.MavenIntegrationTest;
+import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
-public class EclipseFormatStepTest extends MavenIntegrationTest {
+class EclipseFormatStepTest extends MavenIntegrationHarness {
 
 	@Test
-	public void testEclipse() throws Exception {
+	void testEclipse() throws Exception {
 		writePomWithJavaSteps(
 				"<eclipse>",
 				"  <file>${basedir}/formatter.xml</file>",
-				"  <version>4.7.1</version>",
 				"</eclipse>");
 		setFile("formatter.xml").toResource("java/eclipse/formatter.xml");
 

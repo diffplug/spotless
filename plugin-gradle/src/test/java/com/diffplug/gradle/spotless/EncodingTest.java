@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,14 @@ package com.diffplug.gradle.spotless;
 
 import java.nio.charset.Charset;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class EncodingTest extends GradleIntegrationTest {
+class EncodingTest extends GradleIntegrationHarness {
 	@Test
-	public void defaultIsUtf8() throws Exception {
+	void defaultIsUtf8() throws Exception {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
 				"spotless {",
 				"    java {",
@@ -38,10 +38,10 @@ public class EncodingTest extends GradleIntegrationTest {
 	}
 
 	@Test
-	public void globalIsRespected() throws Exception {
+	void globalIsRespected() throws Exception {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
 				"spotless {",
 				"    java {",
@@ -51,15 +51,15 @@ public class EncodingTest extends GradleIntegrationTest {
 				"    encoding 'US-ASCII'",
 				"}");
 		setFile("test.java").toContent("µ");
-		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("test.java").hasContent("??");
+		gradleRunner().withArguments("spotlessApply").buildAndFail().getOutput().contains("Encoding error!");
+		assertFile("test.java").hasContent("µ");
 	}
 
 	@Test
-	public void globalIsRespectedButCanBeOverridden() throws Exception {
+	void globalIsRespectedButCanBeOverridden() throws Exception {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
 				"spotless {",
 				"    java {",
@@ -75,8 +75,8 @@ public class EncodingTest extends GradleIntegrationTest {
 				"}");
 		setFile("test.java").toContent("µ");
 		setFile("utf32.encoded").toContent("µ", Charset.forName("UTF-32"));
-		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("test.java").hasContent("??");
-		assertFile("utf32.encoded").hasContent("A", Charset.forName("UTF-32"));
+		gradleRunner().withArguments("spotlessApply").buildAndFail().getOutput().contains("Encoding error!");
+		assertFile("test.java").hasContent("µ");
+		assertFile("utf32.encoded").hasContent("µ", Charset.forName("UTF-32"));
 	}
 }

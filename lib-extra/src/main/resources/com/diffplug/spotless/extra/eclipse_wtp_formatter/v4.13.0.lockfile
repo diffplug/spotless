@@ -1,0 +1,25 @@
+# Spotless formatter based on Eclipse-WTP version 3.15 (see https://www.eclipse.org/webtools/)
+com.diffplug.spotless:spotless-eclipse-wtp:3.15.3
+com.diffplug.spotless:spotless-eclipse-base:3.3.0
+com.google.code.findbugs:annotations:3.0.0
+com.google.code.findbugs:jsr305:3.0.0
+com.ibm.icu:icu4j:61.2
+org.eclipse.emf:org.eclipse.emf.common:2.16.0
+org.eclipse.emf:org.eclipse.emf.ecore:2.19.0
+org.eclipse.platform:org.eclipse.core.commands:3.9.500
+org.eclipse.platform:org.eclipse.core.contenttype:3.7.400
+org.eclipse.platform:org.eclipse.core.filebuffers:3.6.700
+org.eclipse.platform:org.eclipse.core.filesystem:1.7.600
+org.eclipse.platform:org.eclipse.core.jobs:3.10.500
+org.eclipse.platform:org.eclipse.core.resources:3.13.500
+org.eclipse.platform:org.eclipse.core.runtime:3.16.0
+org.eclipse.platform:org.eclipse.equinox.app:1.4.300
+org.eclipse.platform:org.eclipse.equinox.common:3.10.500
+org.eclipse.platform:org.eclipse.equinox.preferences:3.7.500
+org.eclipse.platform:org.eclipse.equinox.registry:3.8.500
+org.eclipse.platform:org.eclipse.jface.text:3.15.300
+org.eclipse.platform:org.eclipse.jface:3.17.0
+org.eclipse.platform:org.eclipse.osgi.services:3.8.0
+org.eclipse.platform:org.eclipse.osgi:3.15.0
+org.eclipse.platform:org.eclipse.text:3.9.0
+org.eclipse.xsd:org.eclipse.xsd:2.12.0

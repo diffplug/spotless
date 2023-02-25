@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/** Eclipse WTP SEE formatter helper */
+/** Eclipse WTP Structured Source Editing (SEE) formatter helper */
 @ParametersAreNonnullByDefault
 package com.diffplug.spotless.extra.eclipse.wtp.sse;
 

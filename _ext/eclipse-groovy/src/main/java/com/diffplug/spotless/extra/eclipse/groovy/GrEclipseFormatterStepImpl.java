@@ -39,7 +39,10 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.text.edits.TextEdit;
 
+import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseConfig;
 import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework;
+import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipsePluginConfig;
+import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseServiceConfig;
 
 /** Spotless-Formatter step which calls out to the Groovy-Eclipse formatter. */
 public class GrEclipseFormatterStepImpl {
@@ -55,17 +58,23 @@ public class GrEclipseFormatterStepImpl {
 	private final boolean ignoreFormatterProblems;
 
 	public GrEclipseFormatterStepImpl(final Properties properties) throws Exception {
-		if (SpotlessEclipseFramework.setup(
-				config -> {
-					config.applyDefault();
-					config.useSlf4J(GrEclipseFormatterStepImpl.class.getPackage().getName());
-				},
-				plugins -> {
-					plugins.add(new GroovyCoreActivator());
-				})) {}
+		SpotlessEclipseFramework.setup(new FrameworkConfig());
 		PreferenceStore preferences = createPreferences(properties);
 		preferencesStore = new FormatterPreferencesOnStore(preferences);
 		ignoreFormatterProblems = Boolean.parseBoolean(properties.getProperty(IGNORE_FORMATTER_PROBLEMS, "false"));
+	}
+
+	private static class FrameworkConfig implements SpotlessEclipseConfig {
+		@Override
+		public void registerServices(SpotlessEclipseServiceConfig config) {
+			config.applyDefault();
+			config.useSlf4J(GrEclipseFormatterStepImpl.class.getPackage().getName());
+		}
+
+		@Override
+		public void activatePlugins(SpotlessEclipsePluginConfig config) {
+			config.add(new GroovyCoreActivator());
+		}
 	}
 
 	/** Formatting Groovy string  */
@@ -97,7 +106,9 @@ public class GrEclipseFormatterStepImpl {
 			errors = Collections.synchronizedList(new ArrayList<String>());
 			ILog groovyLogger = GroovyCoreActivator.getDefault().getLog();
 			groovyLogger.addLogListener(this);
-			GroovyLogManager.manager.addLogger(this);
+			synchronized(GroovyLogManager.manager) {
+				GroovyLogManager.manager.addLogger(this);
+			}
 		}
 
 		@Override
@@ -108,7 +119,9 @@ public class GrEclipseFormatterStepImpl {
 		public boolean errorsDetected() {
 			ILog groovyLogger = GroovyCoreActivator.getDefault().getLog();
 			groovyLogger.removeLogListener(this);
-			GroovyLogManager.manager.removeLogger(this);
+			synchronized(GroovyLogManager.manager) {
+				GroovyLogManager.manager.removeLogger(this);
+			}
 			return 0 != errors.size();
 		}
 

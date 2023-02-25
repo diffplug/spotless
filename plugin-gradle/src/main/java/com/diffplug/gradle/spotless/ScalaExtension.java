@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import java.io.File;
 import java.util.Objects;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCollection;
@@ -31,8 +32,9 @@ import com.diffplug.spotless.scala.ScalaFmtStep;
 public class ScalaExtension extends FormatExtension {
 	static final String NAME = "scala";
 
-	public ScalaExtension(SpotlessExtension rootExtension) {
-		super(rootExtension);
+	@Inject
+	public ScalaExtension(SpotlessExtension spotless) {
+		super(spotless);
 	}
 
 	public ScalaFmtConfig scalafmt() {
@@ -46,6 +48,8 @@ public class ScalaExtension extends FormatExtension {
 	public class ScalaFmtConfig {
 		final String version;
 		@Nullable
+		String scalaMajorVersion;
+		@Nullable
 		Object configFile;
 
 		ScalaFmtConfig(String version) {
@@ -53,18 +57,25 @@ public class ScalaExtension extends FormatExtension {
 			addStep(createStep());
 		}
 
-		public void configFile(Object configFile) {
+		public ScalaFmtConfig configFile(Object configFile) {
 			this.configFile = Objects.requireNonNull(configFile);
 			replaceStep(createStep());
+			return this;
+		}
+
+		public ScalaFmtConfig scalaMajorVersion(String scalaMajorVersion) {
+			this.scalaMajorVersion = Objects.requireNonNull(scalaMajorVersion);
+			replaceStep(createStep());
+			return this;
 		}
 
 		private FormatterStep createStep() {
 			File resolvedConfigFile = configFile == null ? null : getProject().file(configFile);
-			return ScalaFmtStep.create(version, GradleProvisioner.fromProject(getProject()), resolvedConfigFile);
+			return ScalaFmtStep.create(version, scalaMajorVersion, provisioner(), resolvedConfigFile);
 		}
 	}
 
-	/** If the user hasn't specified the files yet, we'll assume he/she means all of the kotlin files. */
+	/** If the user hasn't specified the files yet, we'll assume he/she means all of the scala files. */
 	@Override
 	protected void setupTask(SpotlessTask task) {
 		if (target == null) {

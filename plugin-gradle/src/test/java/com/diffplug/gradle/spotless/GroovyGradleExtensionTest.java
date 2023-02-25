@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,20 +17,20 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.StringPrinter;
 
-public class GroovyGradleExtensionTest extends GradleIntegrationTest {
+class GroovyGradleExtensionTest extends GradleIntegrationHarness {
 	private static final String HEADER = "//My tests header";
 
 	@Test
-	public void defaultTarget() throws IOException {
+	void defaultTarget() throws IOException {
 		testTarget(true);
 	}
 
 	@Test
-	public void customTarget() throws IOException {
+	void customTarget() throws IOException {
 		testTarget(false);
 	}
 
@@ -38,7 +38,7 @@ public class GroovyGradleExtensionTest extends GradleIntegrationTest {
 		String target = useDefaultTarget ? "" : "target 'other.gradle'";
 		String buildContent = StringPrinter.buildStringFromLines(
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
 				"spotless {",
 				"    groovyGradle {",

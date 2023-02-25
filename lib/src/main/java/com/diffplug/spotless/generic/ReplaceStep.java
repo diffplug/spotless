@@ -37,12 +37,12 @@ public final class ReplaceStep {
 	private static final class State implements Serializable {
 		private static final long serialVersionUID = 1L;
 
-		private final CharSequence target;
-		private final CharSequence replacement;
+		private final String target;
+		private final String replacement;
 
 		State(CharSequence target, CharSequence replacement) {
-			this.target = target;
-			this.replacement = replacement;
+			this.target = target.toString();
+			this.replacement = replacement.toString();
 		}
 
 		FormatterFunc toFormatter() {

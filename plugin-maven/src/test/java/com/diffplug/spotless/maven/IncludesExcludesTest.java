@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,17 @@ package com.diffplug.spotless.maven;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class IncludesExcludesTest extends MavenIntegrationTest {
+class IncludesExcludesTest extends MavenIntegrationHarness {
 
 	private static final String JAVA_FORMATTED = "java/eclipse/JavaCodeFormatted.test";
 	private static final String JAVA_UNFORMATTED = "java/eclipse/JavaCodeUnformatted.test";
 	private static final String SCALA_UNFORMATTED = "scala/scalafmt/basic.dirty";
-	private static final String SCALA_FORMATTED = "scala/scalafmt/basic.clean";
+	private static final String SCALA_FORMATTED = "scala/scalafmt/basic.clean_3.0.0";
 
 	@Test
-	public void testDefaultIncludesJava() throws Exception {
+	void testDefaultIncludesJava() throws Exception {
 		String unformattedCorrectLocation1 = "src/main/java/test1.java";
 		String unformattedCorrectLocation2 = "src/main/java/test2.java";
 		String unformattedCorrectLocation3 = "src/test/java/test3.java";
@@ -63,7 +63,7 @@ public class IncludesExcludesTest extends MavenIntegrationTest {
 	}
 
 	@Test
-	public void testDefaultIncludesScala() throws Exception {
+	void testDefaultIncludesScala() throws Exception {
 		String unformattedCorrectLocation1 = "src/main/scala/test1.scala";
 		String unformattedCorrectLocation2 = "src/main/scala/test2.sc";
 		String unformattedCorrectLocation3 = "src/test/scala/test3.sc";
@@ -94,7 +94,7 @@ public class IncludesExcludesTest extends MavenIntegrationTest {
 	}
 
 	@Test
-	public void testInclude() throws Exception {
+	void testInclude() throws Exception {
 		String unformattedDefaultLocation1 = "src/main/scala/test1.scala";
 		String unformattedDefaultLocation2 = "src/test/scala/test2.scala";
 		String unformattedCustomLocation1 = "src/main/my-scala/test3.scala";
@@ -123,7 +123,7 @@ public class IncludesExcludesTest extends MavenIntegrationTest {
 	}
 
 	@Test
-	public void testExclude() throws Exception {
+	void testExclude() throws Exception {
 		String unformatted1 = "src/main/scala/test1.scala";
 		String unformatted2 = "src/main/scala/test2.sc";
 		String unformatted3 = "src/test/scala/test3.scala";

@@ -1,78 +1,27 @@
 //////////
 // JAVA //
 //////////
-repositories {
-	mavenCentral()
-	jcenter()
-	/* Allow access of local SNAPSHOT builds. Sanity of dependencies
-	   is guranteed by the lib-extra build. */
-	mavenLocal()
-}
+apply from: rootProject.file('gradle/changelog.gradle')
+version = spotlessChangelog.versionNext
+apply from: rootProject.file('gradle/java-setup.gradle')
 
-// setup java
-apply plugin: 'java'
+// Allow declaration of api/compile dependencies
+apply plugin: 'java-library'
 
-sourceCompatibility = ext_VER_JAVA
-targetCompatibility = ext_VER_JAVA
-tasks.withType(JavaCompile) { 
-	options.encoding = 'UTF-8'
+// Show warning locations, fail on warnings
+tasks.withType(JavaCompile).configureEach {
 	options.compilerArgs << "-Xlint:unchecked"
-	options.compilerArgs << "-Xlint:deprecation" 
+	options.compilerArgs << "-Xlint:deprecation"
+	options.compilerArgs << "-Werror"
 }
 
-// Use file locking
-configurations {
-    compileClasspath {
-        def gradleVersion = GradleVersion.current()
-        def requiredVersion = GradleVersion.version('4.8')
-        if (gradleVersion >= requiredVersion) {
-            resolutionStrategy.activateDependencyLocking()
-        }
-    }
-}
-
-
-/////////////
-// ECLIPSE //
-/////////////
-apply plugin: 'eclipse'
-eclipse {
-	classpath {
-		downloadSources true
-		downloadJavadoc true
-	}
-}
-// always create fresh projects
-tasks.eclipse.dependsOn(cleanEclipse)
-
-//////////////
-// FINDBUGS //
-//////////////
-apply plugin: 'findbugs'
-findbugs {
-	toolVersion = '3.0.1'
-	sourceSets = [
-		// don't check the test code
-		sourceSets.main
-	]
-	ignoreFailures = false 	// bug free or it doesn't ship!
-	reportsDir = file('build/findbugs')
-	effort = 'max'			// min|default|max
-	reportLevel = 'medium'	// low|medium|high (low = sensitive to even minor mistakes)
-	omitVisitors = []		// bugs that we want to ignore
-}
-// HTML instead of XML
-tasks.withType(FindBugs) {
-	reports {
-		xml.enabled = false
-		html.enabled = true
-	}
-}
-// we'll want the findbugs annotations (they don't have a 3.0.1 version)
+//Currently testlib is not used by _ext. Hence the external dependencies are added here.
 dependencies {
-	compileOnly 'com.google.code.findbugs:annotations:3.0.0'
-	compileOnly 'com.google.code.findbugs:jsr305:3.0.0'
+	testImplementation "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"
+	testImplementation "org.assertj:assertj-core:${VER_ASSERTJ}"
+	testImplementation project(':testlib')
+}
 
-	testCompile 'junit:junit:4.12'
-	testCompile 'org.assertj:assertj-core:3.5.2'
+tasks.withType(Test).configureEach {
+	useJUnitPlatform()
 }

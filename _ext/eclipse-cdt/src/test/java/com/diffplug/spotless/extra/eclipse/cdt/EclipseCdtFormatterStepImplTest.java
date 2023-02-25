@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,17 @@
 package com.diffplug.spotless.extra.eclipse.cdt;
 
 import static com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework.LINE_DELIMITER;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Properties;
 import java.util.function.Consumer;
 
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.formatter.DefaultCodeFormatterConstants;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** Eclipse CDT wrapper integration tests */
-public class EclipseCdtFormatterStepImplTest {
+class EclipseCdtFormatterStepImplTest {
 
 	private final static String CPP_UNFORMATTED = "#include <iostream>\n" +
 			"using namespace std;\n" +
@@ -46,48 +46,48 @@ public class EclipseCdtFormatterStepImplTest {
 	private final static String ILLEGAL_CHAR = Character.toString((char) 254);
 
 	private final static String FUNCT_PTR_UNFORMATTED = "void  (*getFunc(void))  (int);";
-	private final static String FUNCT_PTR_FORMATTED = "void (*getFunc(void)) (int);";
+	private final static String FUNCT_PTR_FORMATTED = "void (* getFunc(void)) (int);";
 
 	@Test
-	public void defaultFormat() throws Throwable {
+	void defaultFormat() throws Throwable {
 		String output = format(CPP_UNFORMATTED, config -> {});
-		assertEquals("Unexpected formatting with default preferences.",
-				CPP_FORMATTED, output);
+		assertEquals(CPP_FORMATTED,
+				output, "Unexpected formatting with default preferences.");
 	}
 
 	@Test
-	public void invalidFormat() throws Throwable {
+	void invalidFormat() throws Throwable {
 		String output = format(CPP_FORMATTED.replace("int main() {", "int main()  "), config -> {});
-		assertTrue("Incomplete CPP not formatted on best effort basis.", output.contains("int main()" + LINE_DELIMITER));
+		assertTrue(output.contains("int main()" + LINE_DELIMITER), "Incomplete CPP not formatted on best effort basis.");
 	}
 
 	@Test
-	public void invalidCharater() throws Throwable {
+	void invalidCharater() throws Throwable {
 		String output = format(CPP_FORMATTED.replace("int main() {", "int main()" + ILLEGAL_CHAR + " {"), config -> {});
-		assertTrue("Invalid charater not formatted on best effort basis.", output.contains("int main()" + LINE_DELIMITER));
+		assertTrue(output.contains("int main()" + LINE_DELIMITER), "Invalid charater not formatted on best effort basis.");
 	}
 
 	@Test
-	public void invalidConfiguration() throws Throwable {
+	void invalidConfiguration() throws Throwable {
 		String output = format(CPP_FORMATTED, config -> {
 			config.setProperty(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR, CCorePlugin.SPACE);
 			config.setProperty(DefaultCodeFormatterConstants.FORMATTER_TAB_SIZE, "noInteger");
 		});
-		assertEquals("Invalid indentation configuration not replaced by default value (4 spaces)",
-				CPP_FORMATTED.replace("\t", "    "), output);
+		assertEquals(CPP_FORMATTED.replace("\t", "    "),
+				output, "Invalid indentation configuration not replaced by default value (4 spaces)");
 	}
 
 	@Test
-	public void htmlCommentFormat() throws Throwable {
+	void htmlCommentFormat() throws Throwable {
 		String output = format(DOXYGEN_HTML + CPP_FORMATTED, config -> {});
-		assertEquals("HTML comments not ignored by formatter.",
-				DOXYGEN_HTML + CPP_FORMATTED, output);
+		assertEquals(DOXYGEN_HTML + CPP_FORMATTED,
+				output, "HTML comments not ignored by formatter.");
 	}
 
 	@Test
-	public void regionWarning() throws Throwable {
+	void regionWarning() throws Throwable {
 		String output = format(FUNCT_PTR_UNFORMATTED, config -> {});
-		assertEquals("Code not formatted at all due to regional error.", FUNCT_PTR_FORMATTED, output);
+		assertEquals(FUNCT_PTR_FORMATTED, output, "Code not formatted at all due to regional error.");
 	}
 
 	private static String format(final String input, final Consumer<Properties> config) throws Exception {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,9 @@ package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
 
-import java.util.List;
 import java.util.Objects;
+
+import javax.inject.Inject;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
@@ -29,7 +30,6 @@ import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.GroovySourceSet;
 import org.gradle.api.tasks.SourceSet;
 
-import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.groovy.GrEclipseFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
@@ -38,8 +38,9 @@ import com.diffplug.spotless.java.ImportOrderStep;
 public class GroovyExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "groovy";
 
-	public GroovyExtension(SpotlessExtension rootExtension) {
-		super(rootExtension);
+	@Inject
+	public GroovyExtension(SpotlessExtension spotless) {
+		super(spotless);
 	}
 
 	boolean excludeJava = false;
@@ -62,18 +63,6 @@ public class GroovyExtension extends FormatExtension implements HasBuiltinDelimi
 	@Override
 	public LicenseHeaderConfig licenseHeaderFile(Object licenseHeaderFile) {
 		return licenseHeaderFile(licenseHeaderFile, JavaExtension.LICENSE_HEADER_DELIMITER);
-	}
-
-	/** Method interface has been changed to
-	 * {@link GroovyExtension#importOrder(String...)}.*/
-	@Deprecated
-	public void importOrder(List<String> importOrder) {
-		getProject().getLogger().warn(
-				StringPrinter.buildStringFromLines(
-						"'importOrder([x, y, z])' is deprecated.",
-						"Use 'importOrder x, y, z' instead.",
-						"For details see https://github.com/diffplug/spotless/tree/master/plugin-gradle#applying-to-java-source"));
-		importOrder(importOrder.toArray(new String[0]));
 	}
 
 	public void importOrder(String... importOrder) {
@@ -99,7 +88,7 @@ public class GroovyExtension extends FormatExtension implements HasBuiltinDelimi
 
 		GrEclipseConfig(String version, FormatExtension extension) {
 			this.extension = extension;
-			builder = GrEclipseFormatterStep.createBuilder(GradleProvisioner.fromProject(extension.getProject()));
+			builder = GrEclipseFormatterStep.createBuilder(extension.provisioner());
 			builder.setVersion(version);
 			extension.addStep(builder.build());
 		}
@@ -138,7 +127,7 @@ public class GroovyExtension extends FormatExtension implements HasBuiltinDelimi
 		// LicenseHeaderStep completely blows apart package-info.java/groovy - this common-sense check
 		// ensures that it skips both. See https://github.com/diffplug/spotless/issues/1
 		steps.replaceAll(step -> {
-			if (LicenseHeaderStep.name().equals(step.getName())) {
+			if (isLicenseHeaderStep(step)) {
 				return step.filterByFile(LicenseHeaderStep.unsupportedJvmFilesFilter());
 			} else {
 				return step;

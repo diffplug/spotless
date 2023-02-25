@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -138,6 +138,13 @@ public class SQLTokenizedFormatter {
 				argList.remove(index + 1);
 				argList.remove(index + 1);
 			}
+
+			// JDBI bind list
+			if (tokenString.equals("<") && t1.getType() == TokenType.NAME && token2String.equals(">")) {
+				t0.setString(t0.getString() + t1.getString() + t2.getString());
+				argList.remove(index + 1);
+				argList.remove(index + 1);
+			}
 		}
 
 		int indent = 0;
@@ -263,6 +270,8 @@ public class SQLTokenizedFormatter {
 					index += insertReturnAndIndent(argList, index, 0);
 				}
 				index += insertReturnAndIndent(argList, index + 1, 0);
+			} else if (token.getType() == TokenType.NAME && index > 0 && argList.get(index - 1).getType() == TokenType.COMMENT) {
+				index += insertReturnAndIndent(argList, index, indent);
 			} else {
 				if (statementDelimiters.contains(tokenString)) {
 					indent = 0;
@@ -320,6 +329,10 @@ public class SQLTokenizedFormatter {
 				}
 				if (token.getType() == TokenType.SYMBOL && prev.getType() == TokenType.SYMBOL) {
 					// Do not add space between symbols
+					continue;
+				}
+				if (prev.getType() == TokenType.COMMENT) {
+					// Do not add spaces to comments
 					continue;
 				}
 				argList.add(index, new FormatterToken(TokenType.SPACE, " "));
@@ -383,16 +396,24 @@ public class SQLTokenizedFormatter {
 		if (functionBracket.contains(Boolean.TRUE))
 			return 0;
 		try {
-			StringBuilder s = new StringBuilder(getDefaultLineSeparator());
-			if (argIndex > 0) {
-				final FormatterToken prevToken = argList.get(argIndex - 1);
-				if (prevToken.getType() == TokenType.COMMENT &&
-						isCommentLine(sqlDialect, prevToken.getString())) {
-					s = new StringBuilder();
-				}
-			}
+			final String defaultLineSeparator = getDefaultLineSeparator();
+			StringBuilder s = new StringBuilder(defaultLineSeparator);
 			for (int index = 0; index < argIndent; index++) {
 				s.append(formatterCfg.getIndentString());
+			}
+			if (argIndex > 0) {
+				final FormatterToken token = argList.get(argIndex);
+				final FormatterToken prevToken = argList.get(argIndex - 1);
+				if (token.getType() == TokenType.COMMENT &&
+						isCommentLine(sqlDialect, token.getString()) &&
+						prevToken.getType() != TokenType.END) {
+					s.setCharAt(0, ' ');
+					s.setLength(1);
+
+					final String comment = token.getString();
+					final String withoutTrailingWhitespace = comment.replaceFirst("\\s*$", "");
+					token.setString(withoutTrailingWhitespace);
+				}
 			}
 
 			FormatterToken token = argList.get(argIndex);

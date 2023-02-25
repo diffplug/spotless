@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,14 @@
  */
 package com.diffplug.spotless.maven.generic;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
+import com.diffplug.spotless.generic.LicenseHeaderStep.YearMode;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 
@@ -35,30 +37,39 @@ public class LicenseHeader implements FormatterStepFactory {
 	@Parameter
 	private String delimiter;
 
+	@Parameter
+	private String skipLinesMatching;
+
 	@Override
 	public final FormatterStep newFormatterStep(FormatterStepConfig config) {
 		String delimiterString = delimiter != null ? delimiter : config.getLicenseHeaderDelimiter();
 		if (delimiterString == null) {
 			throw new IllegalArgumentException("You need to specify 'delimiter'.");
 		}
-
 		if (file != null ^ content != null) {
-			FormatterStep step = file != null
-					? createStepFromFile(config, delimiterString)
-					: createStepFromContent(delimiterString);
-
-			return step.filterByFile(LicenseHeaderStep.unsupportedJvmFilesFilter());
+			YearMode yearMode;
+			if ("true".equals(config.spotlessSetLicenseHeaderYearsFromGitHistory().orElse(""))) {
+				yearMode = YearMode.SET_FROM_GIT;
+			} else {
+				boolean updateYear = config.getRatchetFrom().isPresent();
+				yearMode = updateYear ? YearMode.UPDATE_TO_TODAY : YearMode.PRESERVE;
+			}
+			return LicenseHeaderStep.headerDelimiter(() -> readFileOrContent(config), delimiterString)
+					.withYearMode(yearMode)
+					.withSkipLinesMatching(skipLinesMatching)
+					.build()
+					.filterByFile(LicenseHeaderStep.unsupportedJvmFilesFilter());
 		} else {
 			throw new IllegalArgumentException("Must specify exactly one of 'file' or 'content'.");
 		}
 	}
 
-	private FormatterStep createStepFromFile(FormatterStepConfig config, String delimiterString) {
-		File licenseHeaderFile = config.getFileLocator().locateFile(file);
-		return LicenseHeaderStep.createFromFile(licenseHeaderFile, config.getEncoding(), delimiterString);
-	}
-
-	private FormatterStep createStepFromContent(String delimiterString) {
-		return LicenseHeaderStep.createFromHeader(content, delimiterString);
+	private String readFileOrContent(FormatterStepConfig config) throws IOException {
+		if (content != null) {
+			return content;
+		} else {
+			byte[] raw = Files.readAllBytes(config.getFileLocator().locateFile(file).toPath());
+			return new String(raw, config.getEncoding());
+		}
 	}
 }

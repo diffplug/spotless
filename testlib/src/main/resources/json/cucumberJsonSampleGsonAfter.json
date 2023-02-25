@@ -1,0 +1,660 @@
+[
+    {
+        "id": "account-holder-withdraws-cash",
+        "tags": [
+            {
+                "name": "@featureTag",
+                "line": 1
+            }
+        ],
+        "description": "This is description of the feature",
+        "name": "1st feature",
+        "keyword": "Feature",
+        "line": 2,
+        "elements": [
+            {
+                "description": "Perfect background",
+                "name": "Activate Credit Card",
+                "keyword": "Background",
+                "line": 7,
+                "steps": [
+                    {
+                        "result": {
+                            "duration": 99107447000,
+                            "status": "passed"
+                        },
+                        "name": "I have a new credit card",
+                        "keyword": "Given ",
+                        "line": 8,
+                        "match": {
+                            "location": "ATMScenario.I_have_a_new_credit_card()"
+                        },
+                        "embeddings": [
+                            {
+                                "mime_type": "image/url",
+                                "data": ""
+                            },
+                            {
+                                "data": "",
+                                "media": {
+                                    "type": "text/plain"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "result": {
+                            "duration": 9520000,
+                            "status": "passed"
+                        },
+                        "name": "My credit card is described as follow:",
+                        "keyword": "And ",
+                        "line": 9,
+                        "match": {
+                            "location": "ATMScenario.My_credit_card_is_described_as_follow"
+                        },
+                        "doc_string": {
+                            "content_type": "",
+                            "line": 10,
+                            "value": "{\n\"issuer\": {\n\"name\": \"Real Bank Inc.\",\n\"isn:\": \"RB55800093842N\"\n},\n\"card_number\": \"4896 0215 8478 6325\",\n\"holder\": \"A guy\"\n}"
+                        }
+                    },
+                    {
+                        "result": {
+                            "duration": 7040000,
+                            "status": "passed"
+                        },
+                        "name": "I confirm my pin number",
+                        "keyword": "When ",
+                        "line": 18,
+                        "match": {
+                            "location": "ATMScenario.I_confirm_my_pin_number()"
+                        },
+                        "rows": [
+                            {
+                                "cells": [
+                                    "Müller",
+                                    "Deutschland"
+                                ],
+                                "line": 2
+                            },
+                            {
+                                "cells": [
+                                    "Nováková",
+                                    "Česko"
+                                ],
+                                "line": 3
+                            },
+                            {
+                                "cells": [
+                                    "Kovačević",
+                                    "Hrvatska"
+                                ],
+                                "line": 4
+                            },
+                            {
+                                "cells": [
+                                    "Παπαδόπουλος",
+                                    "Παπαδόπουλος"
+                                ],
+                                "line": 5
+                            },
+                            {
+                                "cells": [
+                                    "罗/羅",
+                                    "中國"
+                                ],
+                                "line": 6
+                            }
+                        ]
+                    },
+                    {
+                        "result": {
+                            "duration": 111111,
+                            "status": "passed"
+                        },
+                        "name": "the card should be activated",
+                        "keyword": "Then ",
+                        "line": 19,
+                        "match": {
+                            "location": "ATMScenario.the_card_should_be_activated()"
+                        }
+                    }
+                ],
+                "type": "background"
+            },
+            {
+                "id": "account-holder-withdraws-cash;account-has-'sufficient-funds';;2",
+                "tags": [
+                    {
+                        "name": "@fast",
+                        "line": 21
+                    },
+                    {
+                        "name": "@featureTag",
+                        "line": 1
+                    },
+                    {
+                        "name": "@checkout",
+                        "line": 21
+                    }
+                ],
+                "description": "Account holder withdraws cash",
+                "name": "Account has <sufficient funds>",
+                "keyword": "Scenario Outline",
+                "line": 33,
+                "steps": [
+                    {
+                        "result": {
+                            "duration": 17007000,
+                            "status": "passed"
+                        },
+                        "name": "the account balance is 100",
+                        "keyword": "Given ",
+                        "line": 23,
+                        "match": {
+                            "arguments": [
+                                {
+                                    "val": "100",
+                                    "offset": 23
+                                }
+                            ],
+                            "location": "ATMScenario.createAccount(int)"
+                        }
+                    },
+                    {
+                        "result": {
+                            "duration": 33444444,
+                            "status": "passed"
+                        },
+                        "name": "the card is valid",
+                        "keyword": "And ",
+                        "line": 24,
+                        "match": {
+                            "arguments": [
+                                {
+                                    "val": "",
+                                    "offset": 0
+                                }
+                            ],
+                            "location": "ATMScenario.createCreditCard()"
+                        }
+                    },
+                    {
+                        "result": {
+                            "duration": 44333333,
+                            "status": "passed"
+                        },
+                        "name": "100 is contained in the machine",
+                        "keyword": "And ",
+                        "line": 25,
+                        "match": {
+                            "arguments": [
+                                {
+                                    "val": "100",
+                                    "offset": 0
+                                }
+                            ],
+                            "location": "ATMScenario.createATM(int)"
+                        },
+                        "matchedColumns": [
+                            1
+                        ]
+                    },
+                    {
+                        "result": {
+                            "duration": 11000001,
+                            "status": "passed"
+                        },
+                        "name": "the Account Holder requests 10, entering PIN 1234",
+                        "keyword": "When ",
+                        "line": 26,
+                        "match": {
+                            "arguments": [
+                                {
+                                    "val": "10",
+                                    "offset": 28
+                                },
+                                {
+                                    "val": "1234",
+                                    "offset": 45
+                                }
+                            ],
+                            "location": "ATMScenario.requestMoney(int)"
+                        },
+                        "matchedColumns": [
+                            2
+                        ]
+                    },
+                    {
+                        "result": {
+                            "duration": 3220000,
+                            "status": "passed"
+                        },
+                        "name": "the ATM should dispense 10 monetary units",
+                        "keyword": "Then ",
+                        "line": 27,
+                        "match": {
+                            "arguments": [
+                                {
+                                    "val": "10",
+                                    "offset": 24
+                                },
+                                {
+                                    "val": "",
+                                    "offset": 0
+                                }
+                            ],
+                            "location": "ATMScenario.checkMoney(int)"
+                        },
+                        "matchedColumns": [
+                            3
+                        ]
+                    },
+                    {
+                        "result": {
+                            "duration": 30000000,
+                            "status": "passed"
+                        },
+                        "name": "the account balance should be 90",
+                        "keyword": "And ",
+                        "line": 28,
+                        "arguments": [
+                            {
+                                "rows": [
+                                    {
+                                        "cells": [
+                                            "max",
+                                            "min"
+                                        ]
+                                    },
+                                    {
+                                        "cells": [
+                                            "20",
+                                            "3"
+                                        ]
+                                    }
+                                ]
+                            }
+                        ],
+                        "match": {
+                            "location": "ATMScenario.checkBalance(int)"
+                        },
+                        "matchedColumns": [
+                            2
+                        ]
+                    }
+                ],
+                "type": "scenario",
+                "after": [
+                    {
+                        "result": {
+                            "duration": 60744700,
+                            "status": "passed",
+                            "error_message": "Completed"
+                        },
+                        "match": {
+                            "location": "MachineFactory.timeout()"
+                        }
+                    }
+                ]
+            }
+        ],
+        "uri": "net/masterthought/example(s)/ATM:東京.feature"
+    },
+    {
+        "id": "account-holder-withdraws-more-cash",
+        "description": "As an Account Holder\nI want to withdraw cash from an ATM,<br/>so that I can get money when the bank is closed",
+        "name": "Second feature",
+        "keyword": "Feature",
+        "line": 1,
+        "elements": [
+            {
+                "id": "account-holder-withdraws-more-cash;account-has-sufficient-funds;;2",
+                "tags": [
+                    {
+                        "name": "@checkout",
+                        "line": 101
+                    }
+                ],
+                "before": [
+                    {
+                        "output": [
+                            "System version: beta3"
+                        ],
+                        "result": {
+                            "duration": 10744700,
+                            "status": "passed"
+                        },
+                        "match": {
+                            "location": "MachineFactory.findCashMachine()"
+                        }
+                    },
+                    {
+                        "result": {
+                            "duration": 1000001,
+                            "status": "failed",
+                            "error_message": "   \n"
+                        },
+                        "match": {
+                            "location": "MachineFactory.wait()"
+                        }
+                    }
+                ],
+                "description": "Account holder withdraws more cash",
+                "name": "Account may not have sufficient funds",
+                "keyword": "Scenario Outline",
+                "line": 19,
+                "steps": [
+                    {
+                        "result": {
+                            "status": "undefined"
+                        },
+                        "name": "the account balance is 100",
+                        "keyword": "Given ",
+                        "line": 7,
+                        "match": {
+                            "arguments": [
+                                {
+                                    "val": "100",
+                                    "offset": 23
+                                },
+                                {}
+                            ]
+                        },
+                        "matchedColumns": [
+                            0
+                        ],
+                        "before": [
+                            {
+                                "embeddings": [
+                                    {
+                                        "mime_type": "text/plain",
+                                        "data": ""
+                                    }
+                                ],
+                                "result": {
+                                    "duration": 410802047,
+                                    "status": "failed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "result": {
+                            "duration": 13000,
+                            "status": "passed"
+                        },
+                        "name": "the card is valid",
+                        "keyword": "And ",
+                        "line": 8,
+                        "match": {
+                            "arguments": [
+                                {
+                                    "val": "",
+                                    "offset": 17
+                                }
+                            ],
+                            "location": "ATMScenario.createCreditCard()"
+                        },
+                        "after": [
+                            {
+                                "result": {
+                                    "duration": 410802048,
+                                    "status": "passed"
+                                },
+                                "match": {
+                                    "location": "StepHook.afterStep()"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "result": {
+                            "duration": 36000,
+                            "status": "passed"
+                        },
+                        "name": "the machine contains 100",
+                        "keyword": "And ",
+                        "line": 9,
+                        "match": {
+                            "arguments": [
+                                {
+                                    "val": "100",
+                                    "offset": 21
+                                }
+                            ],
+                            "location": "ATMScenario.createATM(int)"
+                        },
+                        "matchedColumns": [
+                            1
+                        ]
+                    },
+                    {
+                        "result": {
+                            "duration": 32000,
+                            "status": "passed"
+                        },
+                        "name": "the Account Holder requests 20",
+                        "keyword": "When ",
+                        "line": 10,
+                        "match": {
+                            "arguments": [
+                                {
+                                    "val": "20",
+                                    "offset": 28
+                                }
+                            ],
+                            "location": "ATMScenario.requestMoney(int)"
+                        },
+                        "matchedColumns": [
+                            2
+                        ]
+                    },
+                    {
+                        "result": {
+                            "duration": 36000,
+                            "status": "passed"
+                        },
+                        "name": "the ATM should dispense 20",
+                        "keyword": "Then ",
+                        "line": 11,
+                        "match": {
+                            "arguments": [
+                                {
+                                    "val": "20",
+                                    "offset": 24
+                                }
+                            ],
+                            "location": "ATMScenario.checkMoney(int)"
+                        },
+                        "matchedColumns": [
+                            3
+                        ]
+                    },
+                    {
+                        "result": {
+                            "duration": 1933000,
+                            "status": "skipped",
+                            "error_message": "java.lang.AssertionError: \nExpected: is <80>\n     got: <90>\n\n\tat org.junit.Assert.assertThat(Assert.java:780)\n\tat org.junit.Assert.assertThat(Assert.java:738)\n\tat net.masterthought.example.ATMScenario.checkBalance(ATMScenario.java:69)\n\tat ✽.And the account balance should be 90(net/masterthought/example/ATMK.feature:12)\n"
+                        },
+                        "name": "the account balance should be 90",
+                        "keyword": "And ",
+                        "line": 12,
+                        "match": {
+                            "arguments": [
+                                {
+                                    "val": "90",
+                                    "offset": 30
+                                }
+                            ],
+                            "location": "ATMScenario.checkBalance(int)"
+                        },
+                        "matchedColumns": [
+                            4
+                        ],
+                        "embeddings": [
+                            {
+                                "mime_type": "image/png",
+                                "data": "",
+                                "name": "Some PNG image"
+                            },
+                            {
+                                "mime_type": "image/jpeg",
+                                "data": ""
+                            },
+                            {
+                                "mime_type": "text/plain",
+                                "data": ""
+                            },
+                            {
+                                "mime_type": "text/html",
+                                "data": "",
+                                "name": "Some HTML embedding"
+                            },
+                            {
+                                "mime_type": "text/xml",
+                                "data": ""
+                            },
+                            {
+                                "mime_type": "image/svg+xml",
+                                "data": ""
+                            },
+                            {
+                                "mime_type": "js",
+                                "data": ""
+                            },
+                            {
+                                "mime_type": "text/plain",
+                                "data": ""
+                            },
+                            {
+                                "mime_type": "text/csv",
+                                "data": ""
+                            },
+                            {
+                                "mime_type": "video/mp4",
+                                "data": ""
+                            }
+                        ]
+                    },
+                    {
+                        "result": {
+                            "status": "pending"
+                        },
+                        "name": "the card should be returned",
+                        "keyword": "And ",
+                        "line": 13,
+                        "match": {
+                            "location": "ATMScenario.cardShouldBeReturned()"
+                        },
+                        "embeddings": [
+                            {
+                                "mime_type": "application/json",
+                                "data": ""
+                            }
+                        ]
+                    },
+                    {
+                        "result": {
+                            "status": "skipped"
+                        },
+                        "name": "its not implemented",
+                        "keyword": "And ",
+                        "line": 14,
+                        "match": {
+                            "location": "ATMScenario.its_not_implemented()"
+                        },
+                        "output": [
+                            [
+                                "Could not connect to the server @Rocky@"
+                            ],
+                            [
+                                "Could not connect to the server @Mike@"
+                            ]
+                        ]
+                    },
+                    {
+                        "result": {
+                            "status": "failed"
+                        },
+                        "name": "the card is valid",
+                        "keyword": "And ",
+                        "line": 15,
+                        "match": {
+                            "location": "ATMScenario.createCreditCard()"
+                        },
+                        "output": [
+                            "Checkpoints",
+                            232
+                        ]
+                    },
+                    {
+                        "result": {
+                            "duration": 90000000,
+                            "status": "ambiguous"
+                        },
+                        "name": "the card should be returned",
+                        "keyword": "And ",
+                        "line": 29,
+                        "match": {
+                            "location": "ATMScenario.cardShouldBeReturned()"
+                        }
+                    }
+                ],
+                "type": "scenario",
+                "after": [
+                    {
+                        "result": {
+                            "duration": 64700000,
+                            "status": "undefined",
+                            "error_message": "Undefined step"
+                        },
+                        "match": {
+                            "location": "any.error()"
+                        },
+                        "embeddings": [
+                            {
+                                "mime_type": "image/png",
+                                "data": ""
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "account-holder-withdraws-more-cash;clean-up",
+                "name": "Clean-up",
+                "keyword": "Scenario",
+                "line": 31,
+                "steps": [
+                    {
+                        "result": {
+                            "duration": 560000,
+                            "status": "passed"
+                        },
+                        "name": "Stream closing",
+                        "keyword": "Given ",
+                        "line": 32
+                    }
+                ],
+                "type": "scenario"
+            },
+            {
+                "id": "undefined-result",
+                "name": "This step has no result...",
+                "keyword": "Scenario",
+                "line": 35,
+                "steps": [
+                    {
+                        "name": " - even it should",
+                        "keyword": "Given ",
+                        "line": 36
+                    }
+                ],
+                "type": "scenario"
+            }
+        ],
+        "uri": "net/masterthought/example/ATMK.feature"
+    }
+]

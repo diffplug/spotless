@@ -1,5 +1,5 @@
-apply from: rootProject.file('../gradle/java-setup.gradle')
-apply from: rootProject.file('../gradle/java-publish.gradle')
+apply from: rootProject.file('_ext/gradle/java-setup.gradle')
+apply from: rootProject.file('gradle/java-publish.gradle')
 
 ext {
 	developers = [
@@ -8,14 +8,13 @@ ext {
 }
 
 dependencies {
-	compile("org.eclipse.platform:org.eclipse.core.resources:${VER_ECLIPSE_CORE_RESOURCES}") {
+	api("org.eclipse.platform:org.eclipse.core.resources:${VER_ECLIPSE_CORE_RESOURCES}") {
 		exclude group: 'org.eclipse.platform', module: 'org.eclipse.ant.core'
 		exclude group: 'org.eclipse.platform', module: 'org.eclipse.core.expressions'
-		exclude group: 'org.eclipse.platform', module: 'org.eclipse.core.filesystem'
 	}
-	compile("org.slf4j:slf4j-api:${VER_SLF4J}")
+	api("org.slf4j:slf4j-api:${VER_SLF4J}")
 
-	testCompile("org.slf4j:slf4j-simple:${VER_SLF4J}")
+	testImplementation("org.slf4j:slf4j-simple:${VER_SLF4J}")
 }
 
 jar {

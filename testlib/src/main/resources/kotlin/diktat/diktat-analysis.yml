@@ -1,0 +1,291 @@
+- name: DIKTAT_COMMON
+  configuration:
+    # put your package name here - it will be autofixed and checked
+    domainName: org.cqfn.diktat.example.gradle.multiproject
+    testDirs: test
+- name: CLASS_NAME_INCORRECT
+  enabled: true
+- name: CONSTANT_UPPERCASE
+  enabled: true
+- name: ENUM_VALUE
+  enabled: true
+- name: EXCEPTION_SUFFIX
+  enabled: true
+- name: FILE_NAME_INCORRECT
+  enabled: true
+- name: FILE_NAME_MATCH_CLASS
+  enabled: true
+- name: FUNCTION_BOOLEAN_PREFIX
+  enabled: true
+- name: FUNCTION_NAME_INCORRECT_CASE
+  enabled: true
+- name: GENERIC_NAME
+  enabled: true
+- name: IDENTIFIER_LENGTH
+  enabled: true
+- name: OBJECT_NAME_INCORRECT
+  enabled: true
+- name: PACKAGE_NAME_INCORRECT_CASE
+  enabled: true # configuration domainName is taken from DIKTAT_COMMON
+- name: PACKAGE_NAME_INCORRECT_PREFIX
+  enabled: false
+- name: PACKAGE_NAME_INCORRECT_SYMBOLS
+  enabled: true
+- name: PACKAGE_NAME_INCORRECT_PATH
+  enabled: true # configuration domainName is taken from DIKTAT_COMMON
+- name: PACKAGE_NAME_MISSING
+  enabled: true
+- name: VARIABLE_HAS_PREFIX
+  enabled: true
+- name: VARIABLE_NAME_INCORRECT
+  enabled: true
+- name: VARIABLE_NAME_INCORRECT_FORMAT
+  enabled: true
+- name: MISSING_KDOC_ON_FUNCTION
+  enabled: true
+- name: MISSING_KDOC_TOP_LEVEL
+  enabled: true
+- name: MISSING_KDOC_CLASS_ELEMENTS
+  enabled: true
+- name: KDOC_WITHOUT_PARAM_TAG
+  enabled: true
+- name: KDOC_WITHOUT_RETURN_TAG
+  enabled: true
+- name: KDOC_WITHOUT_THROWS_TAG
+  enabled: true
+- name: KDOC_EMPTY_KDOC
+  enabled: true
+- name: INCORRECT_PACKAGE_SEPARATOR
+  enabled: true
+- name: KDOC_NO_DEPRECATED_TAG
+  enabled: true
+- name: KDOC_NO_EMPTY_TAGS
+  enabled: true
+- name: KDOC_WRONG_SPACES_AFTER_TAG
+  enabled: true
+- name: KDOC_WRONG_TAGS_ORDER
+  enabled: true
+- name: KDOC_NO_NEWLINES_BETWEEN_BASIC_TAGS
+  enabled: true
+- name: KDOC_NEWLINES_BEFORE_BASIC_TAGS
+  enabled: true
+- name: KDOC_NO_NEWLINE_AFTER_SPECIAL_TAGS
+  enabled: true
+- name: KDOC_TRIVIAL_KDOC_ON_FUNCTION
+  enabled: 'true'
+- name: HEADER_WRONG_FORMAT
+  enabled: true
+- name: HEADER_NOT_BEFORE_PACKAGE
+  enabled: true
+- name: FILE_IS_TOO_LONG
+  enabled: true
+  configuration:
+    maxSize: '2000'
+    ignoreFolders: ''
+- name: COMMENTED_OUT_CODE
+  enabled: true
+- name: FILE_CONTAINS_ONLY_COMMENTS
+  enabled: true
+  # order imports alphabetically
+- name: FILE_UNORDERED_IMPORTS
+  enabled: true
+  configuration:
+    # use logical imports grouping with sorting inside of a group
+    useRecommendedImportsOrder: true
+- name: FILE_INCORRECT_BLOCKS_ORDER
+  enabled: true
+- name: FILE_NO_BLANK_LINE_BETWEEN_BLOCKS
+  enabled: true
+# Check: warns if wildcard imports are used except allows. (e.g. import org.cqfn.diktat.*)
+- name: FILE_WILDCARD_IMPORTS
+  enabled: true
+  configuration:
+    allowedWildcards: "" # Allowed wildcards for imports (e.g. "import org.cqfn.diktat.*, import org.jetbrains.kotlin.*")
+    useRecommendedImportsOrder: true
+- name: NO_BRACES_IN_CONDITIONALS_AND_LOOPS
+  enabled: true
+- name: WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES
+  enabled: true
+- name: BLANK_LINE_BETWEEN_PROPERTIES
+  enabled: true
+- name: BRACES_BLOCK_STRUCTURE_ERROR
+  enabled: true
+  configuration:
+    openBraceNewline: 'True'
+    closeBraceNewline: 'True'
+- name: WRONG_INDENTATION
+  enabled: true
+  configuration:
+    newlineAtEnd: true
+    extendedIndentOfParameters: true
+    alignedParameters: true
+    extendedIndentAfterOperators: true
+    indentationSize: 4
+- name: EMPTY_BLOCK_STRUCTURE_ERROR
+  enabled: true
+  configuration:
+    styleEmptyBlockWithNewline: 'True'
+    allowEmptyBlocks: 'False'
+- name: MORE_THAN_ONE_STATEMENT_PER_LINE
+  enabled: true
+- name: LONG_LINE
+  enabled: true
+  configuration:
+    lineLength: '120'
+- name: REDUNDANT_SEMICOLON
+  enabled: true
+- name: WRONG_NEWLINES
+  enabled: true
+  configuration:
+    maxParametersInOneLine: 2
+- name: TOO_MANY_CONSECUTIVE_SPACES
+  enabled: true
+  configuration:
+    max_spaces: '1'
+    saveInitialFormattingForEnums: false
+- name: TOO_MANY_BLANK_LINES
+  enabled: true
+- name: WRONG_WHITESPACE
+  enabled: true
+- name: BACKTICKS_PROHIBITED
+  enabled: true
+- name: STRING_CONCATENATION
+  enabled: true
+- name: WHEN_WITHOUT_ELSE
+  enabled: true
+- name: ANNOTATION_NEW_LINE
+  enabled: true
+- name: ENUMS_SEPARATED
+  enabled: true
+- name: LONG_NUMERICAL_VALUES_SEPARATED
+  enabled: true
+  configuration:
+    maxNumberLength: '5'
+    maxBlockLength: '3'
+- name: WRONG_DECLARATIONS_ORDER
+  enabled: true
+  configuration:
+    sortEnum: true
+    sortProperty: true
+- name: WRONG_MULTIPLE_MODIFIERS_ORDER
+  enabled: true
+- name: CONFUSING_IDENTIFIER_NAMING
+  enabled: true
+# Inspection that checks if there is a blank line before kDoc and none after
+- name: WRONG_NEWLINES_AROUND_KDOC
+  enabled: true
+# Inspection that checks if there is no blank lines before first comment
+- name: FIRST_COMMENT_NO_BLANK_LINE
+  enabled: true
+# Inspection that checks if there are blank lines between code and comment and between code start token and comment's text
+- name: COMMENT_WHITE_SPACE
+  enabled: true
+  configuration:
+    maxSpacesBeforeComment: 2
+    maxSpacesInComment: 1
+# Inspection that checks if all comment's are inside if-else code blocks. Exception is general if comment
+- name: IF_ELSE_COMMENTS
+  enabled: true
+- name: WRONG_COPYRIGHT_YEAR
+  enabled: true
+# Inspection that checks if local variables are declared close to the first usage site
+- name: LOCAL_VARIABLE_EARLY_DECLARATION
+  enabled: true
+# Try to avoid initialize val by null (e.g. val a: Int? = null -> val a: Int = 0)
+- name: NULLABLE_PROPERTY_TYPE
+  enabled: true
+# Type aliases provide alternative names for existing types when type's reference text is longer 25 chars
+- name: TYPE_ALIAS
+  enabled: true
+  configuration:
+    typeReferenceLength: '25' # max length of type reference
+- name: SMART_CAST_NEEDED
+  enabled: true
+- name: GENERIC_VARIABLE_WRONG_DECLARATION
+  enabled: true
+# Inspection that checks if string template has redundant curly braces
+- name: STRING_TEMPLATE_CURLY_BRACES
+  enabled: true
+# Variables with `val` modifier - are immutable (read-only). Usage of such variables instead of `var` variables increases
+# robustness and readability of code, because `var` variables can be reassigned several times in the business logic.
+# This rule prohibits usage of `var`s as local variables - the only exception is accumulators and counters
+- name: SAY_NO_TO_VAR
+  enabled: true
+# Inspection that checks if string template has redundant quotes
+- name: STRING_TEMPLATE_QUOTES
+  enabled: true
+# Checks that floating-point values are not used in arithmetic expressions
+- name: FLOAT_IN_ACCURATE_CALCULATIONS
+  enabled: true
+# Checks that function length isn't too long
+- name: TOO_LONG_FUNCTION
+  enabled: true
+  configuration:
+    maxFunctionLength: '30' # max length of function
+    isIncludeHeader: 'false' # count function's header
+# Warns if there are nested functions
+- name: AVOID_NESTED_FUNCTIONS
+  enabled: true
+# Checks that lambda inside function parameters is in the end
+- name: LAMBDA_IS_NOT_LAST_PARAMETER
+  enabled: true
+# Checks that function doesn't contains too many parameters
+- name: TOO_MANY_PARAMETERS
+  enabled: true
+  configuration:
+    maxParameterListSize: '5' # max parameters size
+# Checks that function doesn't have too many nested blocks
+- name: NESTED_BLOCK
+  enabled: true
+  configuration:
+    maxNestedBlockQuantity: '4'
+# Checks that function use default values, instead overloading
+- name: WRONG_OVERLOADING_FUNCTION_ARGUMENTS
+  enabled: true
+# Checks that KDoc in constructor has property tag
+- name: KDOC_NO_CONSTRUCTOR_PROPERTY
+  enabled: true
+# Checks that KDoc in constructor has property tag but with comment inside constructor
+- name: KDOC_NO_CONSTRUCTOR_PROPERTY_WITH_COMMENT
+  enabled: true
+# if a class has single constructor, it should be converted to a primary constructor
+- name: SINGLE_CONSTRUCTOR_SHOULD_BE_PRIMARY
+  enabled: true
+# Checks if class can be made as data class
+- name: USE_DATA_CLASS
+  enabled: true
+# Checks that never use the name of a variable in the custom getter or setter
+- name: WRONG_NAME_OF_VARIABLE_INSIDE_ACCESSOR
+  enabled: true
+# Checks that classes have only one init block
+- name: MULTIPLE_INIT_BLOCKS
+  enabled: true
+# Checks that there are abstract functions in abstract class
+- name: CLASS_SHOULD_NOT_BE_ABSTRACT
+  enabled: true
+# Checks if there are any trivial getters or setters
+- name: TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED
+  enabled: true
+# Checks that no custom getters and setters are used for properties. It is a more wide rule than TRIVIAL_ACCESSORS_ARE_NOT_RECOMMENDED
+# Kotlin compiler automatically generates `get` and `set` methods for properties and also lets the possibility to override it.
+# But in all cases it is very confusing when `get` and `set` are overridden for a developer who uses this particular class.
+# Developer expects to get the value of the property, but receives some unknown value and some extra side effect hidden by the custom getter/setter.
+# Use extra functions for it instead.
+- name: CUSTOM_GETTERS_SETTERS
+  enabled: true
+# Checks if null-check was used explicitly (for example: if (a == null))
+# Try to avoid explicit null checks (explicit comparison with `null`)
+# Kotlin is declared as [Null-safe](https://kotlinlang.org/docs/reference/null-safety.html) language.
+# But Kotlin architects wanted Kotlin to be fully compatible with Java, that's why `null` keyword was also introduced in Kotlin.
+# There are several code-structures that can be used in Kotlin to avoid null-checks. For example: `?:`,  `.let {}`, `.also {}`, e.t.c
+- name: AVOID_NULL_CHECKS
+  enabled: true
+# Checks if class instantiation can be wrapped in `apply` for better readability
+- name: COMPACT_OBJECT_INITIALIZATION
+  enabled: true
+# Checks explicit supertype qualification
+- name: USELESS_SUPERTYPE
+  enabled: true
+# Checks if extension function with the same signature don't have related classes
+- name: EXTENSION_FUNCTION_SAME_SIGNATURE
+  enabled: true

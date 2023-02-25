@@ -23,19 +23,21 @@ import org.eclipse.wst.json.core.JSONCorePlugin;
 import org.eclipse.wst.json.core.cleanup.CleanupProcessorJSON;
 import org.eclipse.wst.json.core.format.FormatProcessorJSON;
 import org.eclipse.wst.json.core.internal.preferences.JSONCorePreferenceInitializer;
-import org.eclipse.wst.sse.core.internal.format.IStructuredFormatProcessor;
+import org.eclipse.wst.sse.core.internal.cleanup.AbstractStructuredCleanupProcessor;
 
+import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipsePluginConfig;
 import com.diffplug.spotless.extra.eclipse.wtp.sse.CleanupStep;
+import com.diffplug.spotless.extra.eclipse.wtp.sse.PluginPreferences;
 
 /**
  * Formatter step which calls out to the Eclipse JSON cleanup processor and formatter.
  * Note that the cleanup is escaped, since it has known bugs and is currently not used by Eclipse.
  */
-public class EclipseJsonFormatterStepImpl extends CleanupStep<EclipseJsonFormatterStepImpl.SpotlessJsonCleanup> {
+public class EclipseJsonFormatterStepImpl extends CleanupStep {
 
 	public EclipseJsonFormatterStepImpl(Properties properties) throws Exception {
-		super(new SpotlessJsonCleanup(), plugin -> plugin.add(new JSONCorePlugin()));
-		configure(properties, true, JSONCorePlugin.getDefault(), new JSONCorePreferenceInitializer());
+		super(new CleanupProcessor(), new FrameworkConfig(properties));
+		PluginPreferences.assertNoChanges(JSONCorePlugin.getDefault(), properties);
 	}
 
 	/**
@@ -53,25 +55,25 @@ public class EclipseJsonFormatterStepImpl extends CleanupStep<EclipseJsonFormatt
 	 *  </p>
 	 *  See {@code org.eclipse.wst.json.core.internal.format.AbstractJSONSourceFormatter} for details.
 	 */
-	public static class SpotlessJsonCleanup extends CleanupProcessorJSON implements CleanupStep.ProcessorAccessor {
+	private static class CleanupProcessor extends CleanupProcessorJSON implements CleanupStep.ProcessorAccessor {
 		private final FormatProcessorJSON formatter;
 
-		public SpotlessJsonCleanup() {
+		CleanupProcessor() {
 			formatter = new FormatProcessorJSON();
 		}
 
 		@Override
-		public String getThisContentType() {
+		public String getTypeId() {
 			return getContentType();
 		}
 
 		@Override
-		public IStructuredFormatProcessor getThisFormatProcessor() {
-			return getFormatProcessor();
+		public AbstractStructuredCleanupProcessor get() {
+			return this;
 		}
 
 		@Override
-		public void refreshThisCleanupPreferences() {
+		public void refreshPreferences() {
 			refreshCleanupPreferences();
 		}
 
@@ -87,7 +89,25 @@ public class EclipseJsonFormatterStepImpl extends CleanupStep<EclipseJsonFormatt
 			 */
 			return formatter.formatContent(input);
 		}
+	}
 
+	private static class FrameworkConfig extends CleanupStep.FrameworkConfig {
+		private final Properties properties;
+
+		FrameworkConfig(Properties properties) {
+			this.properties = properties;
+		}
+
+		@Override
+		public void activatePlugins(SpotlessEclipsePluginConfig config) {
+			super.activatePlugins(config);
+			config.add(new JSONCorePlugin());
+		}
+
+		@Override
+		public void customize() {
+			PluginPreferences.configure(JSONCorePlugin.getDefault(), new JSONCorePreferenceInitializer(), properties);
+		}
 	}
 
 }

@@ -1,0 +1,26 @@
+apply plugin: 'com.adarshr.test-logger'
+def special = [
+	'Npm',
+	'Black',
+	'Clang'
+]
+
+boolean isCiServer = System.getenv().containsKey("CI")
+tasks.withType(Test).configureEach {
+	// See com.diffplug.spotless.tag package for available JUnit 5 @Tag annotations
+	useJUnitPlatform {
+		excludeTags special as String[]
+	}
+	if (isCiServer) {
+		retry {
+			maxRetries = 2
+			maxFailures = 10
+		}
+	}
+}
+
+special.forEach { tag ->
+	tasks.register("test${tag}", Test) {
+		useJUnitPlatform { includeTags tag }
+	}
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,20 +17,26 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Test;
 
-import com.diffplug.spotless.category.NpmTest;
+import com.diffplug.spotless.npm.EslintFormatterStep;
+import com.diffplug.spotless.npm.EslintStyleGuide;
+import com.diffplug.spotless.tag.NpmTest;
 
-@Category(NpmTest.class)
-public class TypescriptExtensionTest extends GradleIntegrationTest {
+@NpmTest
+class TypescriptExtensionTest extends GradleIntegrationHarness {
+
+	private static String styleGuideMapString(String styleGuideName) {
+		return EslintStyleGuide.fromNameOrNull(styleGuideName).asGradleMapStringMergedWith(EslintFormatterStep.defaultDevDependencies());
+	}
+
 	@Test
-	public void allowToSpecifyFormatterVersion() throws IOException {
+	void allowToSpecifyFormatterVersion() throws IOException {
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"def tsfmtconfig = [:]",
 				"tsfmtconfig['indentSize'] = 1",
 				"tsfmtconfig['convertTabsToSpaces'] = true",
@@ -46,12 +52,12 @@ public class TypescriptExtensionTest extends GradleIntegrationTest {
 	}
 
 	@Test
-	public void allowToSpecifyMultipleVersionStrings() throws IOException {
+	void allowToSpecifyMultipleVersionStrings() throws IOException {
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"def tsfmtconfig = [:]",
 				"tsfmtconfig['indentSize'] = 1",
 				"tsfmtconfig['convertTabsToSpaces'] = true",
@@ -67,12 +73,12 @@ public class TypescriptExtensionTest extends GradleIntegrationTest {
 	}
 
 	@Test
-	public void useTsfmtInlineConfig() throws IOException {
+	void useTsfmtInlineConfig() throws IOException {
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"def tsfmtconfig = [:]",
 				"tsfmtconfig['indentSize'] = 1",
 				"tsfmtconfig['convertTabsToSpaces'] = true",
@@ -88,17 +94,13 @@ public class TypescriptExtensionTest extends GradleIntegrationTest {
 	}
 
 	@Test
-	public void useTsfmtFileConfig() throws IOException {
-		setFile("tsfmt.json").toLines(
-				"{",
-				"    \"indentSize\": 1,",
-				"    \"convertTabsToSpaces\": true",
-				"}");
+	void useTsfmtFileConfig() throws IOException {
+		setFile("tsfmt.json").toResource("npm/tsfmt/tsfmt/tsfmt.json");
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"spotless {",
 				"    typescript {",
 				"        target 'test.ts'",
@@ -111,12 +113,31 @@ public class TypescriptExtensionTest extends GradleIntegrationTest {
 	}
 
 	@Test
-	public void usePrettier() throws IOException {
+	void useTsConfigFileConfig() throws IOException {
+		setFile("tsconfig.json").toResource("npm/tsfmt/tsconfig/tsconfig.json");
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
-				"    id 'com.diffplug.gradle.spotless'",
+				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    typescript {",
+				"        target 'src/**/*.ts'",
+				"        tsfmt().tsconfigFile('tsconfig.json')",
+				"    }",
+				"}");
+		setFile("src/main/typescript/test.ts").toResource("npm/tsfmt/tsconfig/tsconfig.dirty");
+		gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		assertFile("src/main/typescript/test.ts").sameAsResource("npm/tsfmt/tsconfig/tsconfig.clean");
+	}
+
+	@Test
+	void usePrettier() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
 				"spotless {",
 				"    typescript {",
 				"        target 'test.ts'",
@@ -126,5 +147,64 @@ public class TypescriptExtensionTest extends GradleIntegrationTest {
 		setFile("test.ts").toResource("npm/prettier/filetypes/typescript/typescript.dirty");
 		gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 		assertFile("test.ts").sameAsResource("npm/prettier/filetypes/typescript/typescript.clean");
+	}
+
+	@Test
+	void useEslint() throws IOException {
+		setFile(".eslintrc.js").toResource("npm/eslint/typescript/custom_rules/.eslintrc.js");
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    typescript {",
+				"        target 'test.ts'",
+				"        eslint().configFile('.eslintrc.js')",
+				"    }",
+				"}");
+		setFile("test.ts").toResource("npm/eslint/typescript/custom_rules/typescript.dirty");
+		gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		assertFile("test.ts").sameAsResource("npm/eslint/typescript/custom_rules/typescript.clean");
+	}
+
+	@Test
+	void useEslintXoStandardRules() throws IOException {
+		setFile(".eslintrc.js").toResource("npm/eslint/typescript/styleguide/xo/.eslintrc.js");
+		setFile("tsconfig.json").toResource("npm/eslint/typescript/styleguide/xo/tsconfig.json");
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    typescript {",
+				"        target 'test.ts'",
+				"        eslint(" + styleGuideMapString("xo-typescript") + ").configFile('.eslintrc.js')",
+				"    }",
+				"}");
+		setFile("test.ts").toResource("npm/eslint/typescript/styleguide/xo/typescript.dirty");
+		gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		assertFile("test.ts").sameAsResource("npm/eslint/typescript/styleguide/xo/typescript.clean");
+	}
+
+	@Test
+	void useEslintStandardWithTypescriptRules() throws IOException {
+		setFile(".eslintrc.js").toResource("npm/eslint/typescript/styleguide/standard_with_typescript/.eslintrc.js");
+		setFile("tsconfig.json").toResource("npm/eslint/typescript/styleguide/standard_with_typescript/tsconfig.json");
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    typescript {",
+				"        target 'test.ts'",
+				"        eslint(" + styleGuideMapString("standard-with-typescript") + ").configFile('.eslintrc.js')",
+				"    }",
+				"}");
+		setFile("test.ts").toResource("npm/eslint/typescript/styleguide/standard_with_typescript/typescript.dirty");
+		gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		assertFile("test.ts").sameAsResource("npm/eslint/typescript/styleguide/standard_with_typescript/typescript.clean");
 	}
 }

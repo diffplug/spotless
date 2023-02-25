@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,79 +17,81 @@ package com.diffplug.spotless.extra.eclipse.groovy;
 
 import static com.diffplug.spotless.extra.eclipse.groovy.GrEclipseFormatterStepImpl.IGNORE_FORMATTER_PROBLEMS;
 import static org.codehaus.groovy.eclipse.refactoring.PreferenceConstants.*;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Properties;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.core.JavaCore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** Smoke test checking that transitive dependencies are complete. */
-public class GrEclipseFormatterStepImplTest {
+class GrEclipseFormatterStepImplTest {
 
 	private final static TestData TEST_DATA = TestData.getTestDataOnFileSystem();
 	private final static String PARSER_EXCEPTION = "class Test { void method() {} ";
 	private final static String SCANNER_EXCEPTION = "{";
-	private final static String BOUNDED_WILDCARDS = "foo(Map<String, ? extends  Object> e)\n{\ne.clear();\n}";
+	private final static String BOUNDED_WILDCARDS_UNFORMATTED = "foo(Map<String, ? extends  Object> e)\n{\ne.clear();\n}";
+	private final static String BOUNDED_WILDCARDS_FORMATTED = "foo(Map<String, ? extends  Object> e) {\n\te.clear();\n}";
 
 	@Test
-	public void defaultFormat() throws Throwable {
+	void defaultFormat() throws Throwable {
 		String output = format(TEST_DATA.input("nominal.test"), config -> {});
-		assertEquals("Unexpected default formatting.",
-				TEST_DATA.expected("nominal.test"), output);
+		assertEquals(TEST_DATA.expected("nominal.test"),
+				output, "Unexpected default formatting.");
 	}
 
 	@Test
-	public void validConfiguration() throws Throwable {
+	void validConfiguration() throws Throwable {
 		String output = format(TEST_DATA.input("nominal.test"), config -> {
 			config.put(GROOVY_FORMATTER_REMOVE_UNNECESSARY_SEMICOLONS, "true");
 		});
-		assertEquals("Unexpected formatting fro custom configuration.",
-				TEST_DATA.expected("nominal.test").replace(";", ""), output);
+		assertEquals(TEST_DATA.expected("nominal.test").replace(";", ""),
+				output, "Unexpected formatting for custom configuration.");
 	}
 
 	@Test
-	public void invalidConfiguration() throws Throwable {
+	void invalidConfiguration() throws Throwable {
 		String output = format(TEST_DATA.input("nominal.test"), config -> {
 			config.put(GROOVY_FORMATTER_INDENTATION, JavaCore.SPACE);
 			config.put(GROOVY_FORMATTER_INDENTATION_SIZE, "noInteger");
 		});
-		assertEquals("Groovy formatter does not replace invalid preferences by their defaults.",
-				TEST_DATA.expected("nominal.test").replace("\t", "    "), output);
+		assertEquals(TEST_DATA.expected("nominal.test").replace("\t", "    "),
+				output, "Groovy formatter does not replace invalid preferences by their defaults.");
 	}
 
 	/** Test the handling AntlrParserPlugin exceptions by GroovyLogManager.manager logging */
-	@Test(expected = IllegalArgumentException.class)
-	public void parserException() throws Throwable {
-		format(PARSER_EXCEPTION, config -> {});
+	@Test
+	void parserException() throws Throwable {
+		assertThrows(IllegalArgumentException.class, () -> format(PARSER_EXCEPTION, config -> {}));
 	}
 
 	/** Test the handling GroovyDocumentScanner exceptions by GroovyCore logging */
-	@Test(expected = IllegalArgumentException.class)
-	public void scannerException() throws Throwable {
-		format(SCANNER_EXCEPTION, config -> {});
+	@Test
+	void scannerException() throws Throwable {
+		assertThrows(IllegalArgumentException.class, () -> format(SCANNER_EXCEPTION, config -> {}));
 	}
 
 	/**
 	 * Test the handling bounded wildcards templates
 	 * No exception since Groovy-Eclipse 3.0.0.
+	 * Formatting fixed with Groovy-Eclipse 3.14 (org.codehaus.groovy:groovy[3.+]).
 	 */
 	@Test
-	public void boundedWildCards() throws Throwable {
-		String output = format(BOUNDED_WILDCARDS, config -> {});
-		assertEquals("Groovy formatter does  notformat after bounded wildcards correctly.",
-				BOUNDED_WILDCARDS.replace("\n", " "), output);
+	void boundedWildCards() throws Throwable {
+		String output = format(BOUNDED_WILDCARDS_UNFORMATTED, config -> {});
+		assertEquals(BOUNDED_WILDCARDS_FORMATTED,
+				output, "Unexpected formatting after bounded wildcards.");
 	}
 
 	@Test
-	public void ignoreCompilerProblems() throws Throwable {
+	void ignoreCompilerProblems() throws Throwable {
 		Consumer<Properties> ignoreCompilerProblems = config -> {
 			config.setProperty(IGNORE_FORMATTER_PROBLEMS, "true");
 		};
 		format(PARSER_EXCEPTION, ignoreCompilerProblems);
 		format(SCANNER_EXCEPTION, ignoreCompilerProblems);
-		format(BOUNDED_WILDCARDS, ignoreCompilerProblems);
 		//Test is passed if it does not throw an exception. See issue 237.
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,16 @@
  */
 package com.diffplug.spotless.maven.generic;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import com.diffplug.spotless.maven.MavenIntegrationTest;
+import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
-public class LicenseHeaderTest extends MavenIntegrationTest {
+class LicenseHeaderTest extends MavenIntegrationHarness {
 	private static final String KEY_LICENSE = "license/TestLicense";
 	private static final String KOTLIN_LICENSE_HEADER = "// Hello, I'm Kotlin license header";
 
 	@Test
-	public void fromFileJava() throws Exception {
+	void fromFileJava() throws Exception {
 		setFile("license.txt").toResource(KEY_LICENSE);
 		writePomWithJavaSteps(
 				"<licenseHeader>",
@@ -34,9 +34,10 @@ public class LicenseHeaderTest extends MavenIntegrationTest {
 	}
 
 	@Test
-	public void fromContentCpp() throws Exception {
+	void fromContentCpp() throws Exception {
 		String cppLicense = "//my license";
 		writePomWithCppSteps(
+				"<includes><include>src/**</include></includes>",
 				"<licenseHeader>",
 				"  <content>",
 				cppLicense,
@@ -50,27 +51,24 @@ public class LicenseHeaderTest extends MavenIntegrationTest {
 		assertFile(path).hasContent(cppLicense + '\n' + cppContent);
 	}
 
-	/** The CSS extension is discontinued. */
 	@Test
-	@Deprecated
-	public void fromContentCss() throws Exception {
-		String license = "/* my license */";
-		writePomWithCssSteps(
+	void fromContentGroovy() throws Exception {
+		writePomWithGroovySteps(
 				"<licenseHeader>",
 				"  <content>",
-				license,
+				"// If you can't trust a man's word",
+				"// Does it help to have it in writing?",
 				"  </content>",
 				"</licenseHeader>");
 
-		String path = "src/file.css";
-		String content = "p {}";
-		setFile(path).toContent(content);
+		String path = "src/main/groovy/test.groovy";
+		setFile(path).toResource("license/MissingLicense.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).hasContent(license + '\n' + content);
+		assertFile(path).sameAsResource("license/HasLicense.test");
 	}
 
 	@Test
-	public void fromContentJava() throws Exception {
+	void fromContentJava() throws Exception {
 		writePomWithJavaSteps(
 				"<licenseHeader>",
 				"  <content>",
@@ -82,7 +80,7 @@ public class LicenseHeaderTest extends MavenIntegrationTest {
 	}
 
 	@Test
-	public void fromFileGlobal() throws Exception {
+	void fromFileGlobal() throws Exception {
 		setFile("license.txt").toResource(KEY_LICENSE);
 		writePom("<licenseHeader>",
 				"  <file>${basedir}/license.txt</file>",
@@ -93,7 +91,7 @@ public class LicenseHeaderTest extends MavenIntegrationTest {
 	}
 
 	@Test
-	public void fromFileFormat() throws Exception {
+	void fromFileFormat() throws Exception {
 		setFile("license.txt").toResource(KEY_LICENSE);
 		writePomWithFormatSteps(
 				"<licenseHeader>",
@@ -104,7 +102,7 @@ public class LicenseHeaderTest extends MavenIntegrationTest {
 	}
 
 	@Test
-	public void fromContentFormat() throws Exception {
+	void fromContentFormat() throws Exception {
 		writePomWithFormatSteps(
 				"<licenseHeader>",
 				"  <content>",
@@ -117,7 +115,7 @@ public class LicenseHeaderTest extends MavenIntegrationTest {
 	}
 
 	@Test
-	public void fromContentKotlin() throws Exception {
+	void fromContentKotlin() throws Exception {
 		writePomWithKotlinSteps(
 				"<licenseHeader>",
 				"  <content>",
@@ -133,30 +131,13 @@ public class LicenseHeaderTest extends MavenIntegrationTest {
 		assertFile(path).hasContent(KOTLIN_LICENSE_HEADER + '\n' + noLicenseHeader);
 	}
 
-	/** XML extension is discontinued. */
 	@Test
-	@Deprecated
-	public void fromContentXml() throws Exception {
-		String license = " Licensed under Apache-2.0 ";
-		writePomWithXmlSteps(
-				"<licenseHeader>",
-				"  <content>",
-				"&lt;!--" + license + "--&gt;",
-				"  </content>",
-				"</licenseHeader>");
-		String path = "src/test.xml";
-		setFile(path).toContent("<a/>");
-		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).hasContent("<!--" + license + "-->\n<a/>");
-	}
-
-	@Test
-	public void unsupportedPackageInfo() throws Exception {
+	void unsupportedPackageInfo() throws Exception {
 		testUnsupportedFile("package-info.java");
 	}
 
 	@Test
-	public void unsupportedModuleInfo() throws Exception {
+	void unsupportedModuleInfo() throws Exception {
 		testUnsupportedFile("module-info.java");
 	}
 
@@ -176,11 +157,11 @@ public class LicenseHeaderTest extends MavenIntegrationTest {
 				"</licenseHeader>");
 
 		String path = "src/main/java/com/diffplug/spotless/" + file;
-		setFile(path).toResource("license/" + file);
+		setFile(path).toResource("license/" + file + ".test");
 
 		mavenRunner().withArguments("spotless:apply").runNoError();
 
 		// file should remain the same
-		assertFile(path).sameAsResource("license/" + file);
+		assertFile(path).sameAsResource("license/" + file + ".test");
 	}
 }

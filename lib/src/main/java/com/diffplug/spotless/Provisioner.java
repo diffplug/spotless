@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,19 +25,6 @@ import java.util.Set;
  * Spotless' dependencies minimal.
  */
 public interface Provisioner {
-
-	/** Method interface has been extended to {@link Provisioner#provisionWithTransitives(boolean, Collection)}. */
-	@Deprecated
-	public default Set<File> provisionWithDependencies(Collection<String> mavenCoordinates) {
-		return provisionWithTransitives(true, mavenCoordinates);
-	}
-
-	/** Method interface has been extended to {@link Provisioner#provisionWithTransitives(boolean, String...)}. */
-	@Deprecated
-	public default Set<File> provisionWithDependencies(String... mavenCoordinates) {
-		return provisionWithDependencies(Arrays.asList(mavenCoordinates));
-	}
-
 	/**
 	 * Given a set of Maven coordinates, returns a set of jars which include all
 	 * of the specified coordinates and optionally their transitive dependencies.

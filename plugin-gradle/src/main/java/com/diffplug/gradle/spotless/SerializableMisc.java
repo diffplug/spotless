@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ class SerializableMisc {
 		}
 	}
 
-	static <T extends Serializable> T fromFile(Class<T> clazz, File file) {
+	static <T> T fromFile(Class<T> clazz, File file) {
 		try (InputStream input = Files.asByteSource(file).openBufferedStream()) {
 			return fromStream(clazz, input);
 		} catch (IOException e) {

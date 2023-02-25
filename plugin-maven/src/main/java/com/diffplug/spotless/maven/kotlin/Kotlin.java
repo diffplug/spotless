@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ import static com.diffplug.spotless.kotlin.KotlinConstants.LICENSE_HEADER_DELIMI
 
 import java.util.Set;
 
+import org.apache.maven.project.MavenProject;
+
 import com.diffplug.common.collect.ImmutableSet;
 import com.diffplug.spotless.maven.FormatterFactory;
 
@@ -27,7 +29,7 @@ public class Kotlin extends FormatterFactory {
 	private static final Set<String> DEFAULT_INCLUDES = ImmutableSet.of("src/main/kotlin/**/*.kt", "src/test/kotlin/**/*.kt");
 
 	@Override
-	public Set<String> defaultIncludes() {
+	public Set<String> defaultIncludes(MavenProject project) {
 		return DEFAULT_INCLUDES;
 	}
 
@@ -38,5 +40,13 @@ public class Kotlin extends FormatterFactory {
 
 	public void addKtlint(Ktlint ktlint) {
 		addStepFactory(ktlint);
+	}
+
+	public void addKtfmt(Ktfmt ktfmt) {
+		addStepFactory(ktfmt);
+	}
+
+	public void addDiktat(Diktat diktat) {
+		addStepFactory(diktat);
 	}
 }

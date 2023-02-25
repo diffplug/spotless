@@ -1,20 +1,40 @@
+plugins {
+	id 'java-library'
+}
 ext.artifactId = project.artifactIdTestLib
-ext.version = project.versionLib
+version = rootProject.spotlessChangelog.versionNext
 apply from: rootProject.file('gradle/java-setup.gradle')
 
 dependencies {
-	compile project(':lib')
-	compile "com.diffplug.durian:durian-core:${VER_DURIAN}"
-	compile "com.diffplug.durian:durian-io:${VER_DURIAN}"
-	compile "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
-	compile "junit:junit:${VER_JUNIT}"
-	compile "org.assertj:assertj-core:${VER_ASSERTJ}"
-	compile gradleTestKit()
+	api project(':lib')
+	api files(project(':lib').sourceSets.sortPom.output.classesDirs)
+	api "com.diffplug.durian:durian-core:${VER_DURIAN}"
+	api "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
+	api "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"
+	api "org.assertj:assertj-core:${VER_ASSERTJ}"
+	api "org.mockito:mockito-core:$VER_MOCKITO"
+
+	implementation "com.diffplug.durian:durian-io:${VER_DURIAN}"
+	implementation "com.diffplug.durian:durian-collect:${VER_DURIAN}"
+	implementation gradleTestKit()
 }
 
 // we'll hold the testlib to a low standard (prize brevity)
 spotbugs { reportLevel = 'high' } // low|medium|high (low = sensitive to even minor mistakes)
 
-test { useJUnit { excludeCategories 'com.diffplug.spotless.category.NpmTest' } }
+apply from: rootProject.file('gradle/special-tests.gradle')
+tasks.withType(Test).configureEach {
+	if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_16)) {
+		// for Antlr4FormatterStepTest and KtLintStepTest
+		def args = [
+			'--add-opens=java.base/java.lang=ALL-UNNAMED'
+		]
+		jvmArgs args
+	}
+}
 
-task npmTest(type: Test) { useJUnit { includeCategories 'com.diffplug.spotless.category.NpmTest' } }
+javadoc {
+	options.addStringOption('Xdoclint:none', '-quiet')
+	options.addStringOption('Xwerror', '-quiet')
+}
+

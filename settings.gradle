@@ -1,3 +1,37 @@
+pluginManagement {
+	repositories {
+		mavenCentral()
+		gradlePluginPortal()
+	}
+}
+
+plugins {
+	id 'com.diffplug.spotless' version '6.15.0' apply false
+	// https://plugins.gradle.org/plugin/com.gradle.plugin-publish
+	id 'com.gradle.plugin-publish' version '1.1.0' apply false
+	// https://github.com/gradle-nexus/publish-plugin/releases
+	id 'io.github.gradle-nexus.publish-plugin' version '1.1.0' apply false
+	// https://github.com/spotbugs/spotbugs-gradle-plugin/releases
+	id 'com.github.spotbugs' version '5.0.13' apply false
+	// https://github.com/diffplug/spotless-changelog/blob/main/CHANGELOG.md
+	id 'com.diffplug.spotless-changelog' version '3.0.1' apply false
+	// https://github.com/diffplug/goomph/blob/main/CHANGES.md
+	// DO NOT UPDATE, see https://github.com/diffplug/spotless/pull/874
+	id 'com.diffplug.p2.asmaven' version '3.27.0' apply false
+	// https://github.com/radarsh/gradle-test-logger-plugin/blob/develop/CHANGELOG.md
+	id 'com.adarshr.test-logger' version '3.2.0' apply false
+	// https://github.com/davidburstrom/version-compatibility-gradle-plugin/tags
+	id 'io.github.davidburstrom.version-compatibility' version '0.4.0' apply false
+	// https://plugins.gradle.org/plugin/com.gradle.enterprise
+	id 'com.gradle.enterprise' version '3.12.3'
+}
+
+dependencyResolutionManagement {
+	repositories {
+		mavenCentral()
+	}
+}
+
 if (System.env['CI'] != null) {
 	// use the remote buildcache on all CI builds
 	buildCache {
@@ -26,12 +60,65 @@ if (System.env['CI'] != null) {
 	}
 }
 
-include 'ide'				// easy dev setup
-include 'javadoc-publish'	// publish javadoc for the various libs
+gradleEnterprise {
+	buildScan {
+		termsOfServiceUrl = "https://gradle.com/terms-of-service"
+		termsOfServiceAgree = "yes"
+		publishAlways()
+	}
+}
+
+rootProject.name = 'spotless'
 
 include 'lib'		// reusable library with no dependencies
 include 'testlib'	// library for sharing test infrastructure between the projects below
 
 include 'lib-extra'	// reusable library with lots of dependencies
 include 'plugin-gradle'	// gradle-specific glue code
-include 'plugin-maven'	// maven-specific glue code
+
+def getStartProperty(java.lang.String name) {
+	def value = startParameter.getProjectProperties().get(name)
+	if(null != value) {
+		return value
+	}
+	// user properties are not available in the startParameter
+	def userPropertiesFile = new java.io.File(startParameter.getGradleUserHomeDir(), 'gradle.properties')
+	def userProperties = new java.util.Properties()
+	if (userPropertiesFile.exists()) {
+		userProperties.load(userPropertiesFile.newReader())
+	}
+	return userProperties.get(name)
+
+}
+
+if (System.getenv('SPOTLESS_EXCLUDE_MAVEN') != 'true' && getStartProperty('SPOTLESS_EXCLUDE_MAVEN') != 'true') {
+	include 'plugin-maven'	// maven-specific glue code
+}
+
+// include external (_ext) projects from development builds
+if (getStartProperty('com.diffplug.spotless.include.ext') == 'true') {
+	file('_ext').eachDirMatch(~/^(?!(\.|gradle)).*/) { dir ->
+		include dir.name
+		project(":${dir.name}").projectDir = dir
+	}
+}
+
+// include external (_ext) projects from development builds, but disable the p2 parts
+if (getStartProperty('com.diffplug.spotless.include.ext.nop2') == 'true') {
+	file('_ext').eachDirMatch(~/^(?!(\.|gradle)).*/) { dir ->
+		include dir.name
+		project(":${dir.name}").projectDir = dir
+	}
+}
+
+// the p2-based projects are too expensive for routine CI builds, so they have to be invoked explicitly
+for (kind in [
+			'cdt',
+			'groovy',
+			'wtp'
+		]) {
+	if (getStartProperty("com.diffplug.spotless.include.ext.${kind}") == 'true') {
+		include "eclipse-${kind}"
+		project(":eclipse-${kind}").projectDir = file("_ext/eclipse-${kind}")
+	}
+}

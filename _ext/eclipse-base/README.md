@@ -32,8 +32,7 @@ public EclipseFormatterStepImpl(Properties settings) throws Exception {
 ```
 
 The framework also supports fat JARs, providing multiple plugins.
-In this cases the resources required by plugins, especially the `META-INF` and plugin information, must be located in locations unique
-to the plugin.
+In this cases the resources required by plugins, especially the `META-INF` and plugin information, must be located in locations unique to the plugin.
 For this purpose the framework expects that these resources are stored in a sub-directory
 which has the name of the package containing the plugin. For example in case the JDT plugin
 is included in your formatter fat JAR, the directory structure should be:
@@ -53,13 +52,10 @@ is included in your formatter fat JAR, the directory structure should be:
 
 ```
 
-
 ## Build
 
-```
-gradlew -b _ext/eclipse-base/build.gradle publish
-```
-
+To publish a new version, update the `_ext/eclipse-base/gradle.properties` appropriately and see [CONTRIBUTING.md](../../CONTRIBUTING.md) how to enable
+`_ext` projects.
 
 ## License
 

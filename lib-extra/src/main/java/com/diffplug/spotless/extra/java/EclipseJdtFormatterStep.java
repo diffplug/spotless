@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,12 @@
  */
 package com.diffplug.spotless.extra.java;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.Properties;
 
 import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder.State;
@@ -32,11 +34,11 @@ public final class EclipseJdtFormatterStep {
 	private static final String FORMATTER_CLASS_OLD = "com.diffplug.gradle.spotless.java.eclipse.EclipseFormatterStepImpl";
 	private static final String FORMATTER_CLASS = "com.diffplug.spotless.extra.eclipse.java.EclipseJdtFormatterStepImpl";
 	private static final String MAVEN_GROUP_ARTIFACT = "com.diffplug.spotless:spotless-eclipse-jdt";
-	private static final String DEFAULT_VERSION = "4.11.0";
 	private static final String FORMATTER_METHOD = "format";
+	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(8, "4.19.0").add(11, "4.21.0");
 
 	public static String defaultVersion() {
-		return DEFAULT_VERSION;
+		return JVM_SUPPORT.getRecommendedFormatterVersion();
 	}
 
 	/** Provides default configuration */
@@ -45,10 +47,11 @@ public final class EclipseJdtFormatterStep {
 	}
 
 	private static FormatterFunc apply(State state) throws Exception {
+		JVM_SUPPORT.assertFormatterSupported(state.getSemanticVersion());
 		Class<?> formatterClazz = getClass(state);
 		Object formatter = formatterClazz.getConstructor(Properties.class).newInstance(state.getPreferences());
-		Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
-		return input -> (String) method.invoke(formatter, input);
+		FormatterFunc formatterFunc = getFormatterFunc(formatter, formatterClazz);
+		return JVM_SUPPORT.suggestLaterVersionOnError(state.getSemanticVersion(), formatterFunc);
 	}
 
 	private static Class<?> getClass(State state) {
@@ -56,5 +59,15 @@ public final class EclipseJdtFormatterStep {
 			return state.loadClass(FORMATTER_CLASS);
 		}
 		return state.loadClass(FORMATTER_CLASS_OLD);
+	}
+
+	private static FormatterFunc getFormatterFunc(Object formatter, Class<?> formatterClazz) throws NoSuchMethodException, SecurityException {
+		try {
+			Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class, File.class);
+			return (FormatterFunc.NeedsFile) (input, file) -> (String) method.invoke(formatter, input, file);
+		} catch (NoSuchMethodException e) {
+			Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
+			return input -> (String) method.invoke(formatter, input);
+		}
 	}
 }

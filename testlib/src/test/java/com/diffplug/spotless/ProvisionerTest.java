@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,23 +20,11 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class ProvisionerTest {
+class ProvisionerTest {
 	@Test
-	@Deprecated
-	public void testManipulationDeprecated() {
-		Provisioner provisioner = (withTransitives, deps) -> deps.stream().map(File::new).collect(Collectors.toSet());
-		Assertions.assertThat(provisioner.provisionWithDependencies("a"))
-				.containsExactlyInAnyOrder(new File("a"));
-		Assertions.assertThat(provisioner.provisionWithDependencies("a", "a"))
-				.containsExactlyInAnyOrder(new File("a"));
-		Assertions.assertThat(provisioner.provisionWithDependencies(Arrays.asList("a", "a")))
-				.containsExactlyInAnyOrder(new File("a"));
-	}
-
-	@Test
-	public void testManipulation() {
+	void testManipulation() {
 		Provisioner provisioner = (withTransitives, deps) -> deps.stream().map(File::new).collect(Collectors.toSet());
 		Assertions.assertThat(provisioner.provisionWithTransitives(true, "a"))
 				.containsExactlyInAnyOrder(new File("a"));

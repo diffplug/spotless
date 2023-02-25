@@ -1,0 +1,19 @@
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20
+]
+
+const p = {
+  first: 'Peter',
+  last: 'Pan',
+  get fullName () { return this.first + ' ' + this.last }
+}
+
+const str = 'Hello, world!'
+
+const str2 = str.charAt(3) + str[0]
+
+const multilinestr = 'Hello \
+World'
+
+function test (a, b = 'world') { const combined = a + b; return combined };
+
+test('Hello')

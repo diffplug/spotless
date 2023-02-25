@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,33 +15,31 @@
  */
 package com.diffplug.spotless.extra.cpp;
 
-import com.diffplug.spotless.FormatterStep;
+import java.util.stream.Stream;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.TestProvisioner;
-import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
-import com.diffplug.spotless.extra.eclipse.EclipseCommonTests;
+import com.diffplug.spotless.extra.eclipse.EclipseResourceHarness;
 
-public class EclipseCdtFormatterStepTest extends EclipseCommonTests {
+class EclipseCdtFormatterStepTest extends EclipseResourceHarness {
+	private final static Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support("Oldest Version").add(8, "4.11.0");
+	private final static String INPUT = "#include <a.h>;\nint main(int argc,   \nchar *argv[]) {}";
+	private final static String EXPECTED = "#include <a.h>;\nint main(int argc, char *argv[]) {\n}\n";
 
-	@Override
-	protected String[] getSupportedVersions() {
-		return new String[]{"4.7.3a", "4.11.0"};
+	public EclipseCdtFormatterStepTest() {
+		super(EclipseCdtFormatterStep.createBuilder(TestProvisioner.mavenCentral()), INPUT, EXPECTED);
 	}
 
-	@Override
-	protected String getTestInput(String version) {
-		return "#include <a.h>;\nint main(int argc,   \nchar *argv[]) {}";
+	@ParameterizedTest
+	@MethodSource
+	void formatWithVersion(String version) throws Exception {
+		assertFormatted(version);
 	}
 
-	@Override
-	protected String getTestExpectation(String version) {
-		return "#include <a.h>;\nint main(int argc, char *argv[]) {\n}\n";
+	private static Stream<String> formatWithVersion() {
+		return Stream.of(JVM_SUPPORT.getRecommendedFormatterVersion(), EclipseCdtFormatterStep.defaultVersion());
 	}
-
-	@Override
-	protected FormatterStep createStep(String version) {
-		EclipseBasedStepBuilder builder = EclipseCdtFormatterStep.createBuilder(TestProvisioner.mavenCentral());
-		builder.setVersion(version);
-		return builder.build();
-	}
-
 }

@@ -1,19 +1,4 @@
-# You have a misbehaving rule that needs a `paddedCell()`
-
-`spotlessCheck` has detected that one of your rules is misbehaving.  This will cause `spotlessCheck` to fail even after you have called `spotlessApply`.  To bandaid over this problem, add `paddedCell()` to your `build.gradle`, as such:
-
-```gradle
-spotless {
-  java {
-    ...
-    paddedCell()
-  }
-}
-```
-
-This is not a bug in Spotless itself, but in one of the third-party formatters, such as the [eclipse formatter](https://bugs.eclipse.org/bugs/show_bug.cgi?id=310642), [google-java-format](https://github.com/google/google-java-format/issues), or some custom rule.
-
-`paddedCell()` will ensure that your code continues to be formatted, although it will be a little slower.  Now when you run `spotlessCheck`, it will generate helpful bug report files in the `build/spotless-diagnose-<FORMAT_NAME>` folder which will contain the states that your rules are fighting over.  These files are very helpful to the developers of the code formatter you are using.
+# PaddedCell
 
 ## How spotless works
 
@@ -46,26 +31,7 @@ The rule we wrote above is obviously a bad idea.  But complex code formatters ca
 
 Formally, a correct formatter `F` must satisfy `F(F(input)) == F(input)` for all values of input.  Any formatter which doesn't meet this rule is misbehaving.
 
-## How does `paddedCell()` work?
-
-Spotless now has a special `paddedCell()` mode.  If you add it to your format as such:
-
-```gradle
-spotless {
-  format 'cpp', {
-    ...
-    paddedCell()
-  }
-}
-```
-
-then it will run in the following way:
-
-- When you call `spotlessApply`, it will automatically check for a ping-pong condition.
-- If there is a ping-pong condition, it will resolve the ambiguity arbitrarily, but consistently
-- It will also warn that `filename such-and-such cycles between 2 steps`.
-
-## How is the ambiguity resolved?
+## How spotless fixes this automatically
 
 This is easiest to show in an example:
 
@@ -82,7 +48,7 @@ This is easiest to show in an example:
 * Convergence: `'ATT' 'AT' 'A' 'A'`
   + `F(F('ATT'))` did not equal `F('ATT')`, but there is no cycle.
   + Eventually, the sequence converged on `A`.
-  + As a result, we will use `A` as the canoncial format.
+  + As a result, we will use `A` as the canonical format.
 
 * Divergence: `'1' '12' '123' '1234' '12345' ...`
   + This format does not cycle or converge

@@ -6,7 +6,7 @@ import mylib.UsedA;
 
 public class Java {
 public static void main(String[] args) {
-System.out.println("hello");
+System.out.println("A very very very very very very very very very very very very very very very very very very very very very long string that goes beyond the 100-character line length.");
 UsedB.someMethod();
 UsedA.someMethod();
 }

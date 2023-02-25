@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,27 +15,35 @@
  */
 package com.diffplug.spotless.extra.eclipse.base.osgi;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.eclipse.osgi.internal.framework.DTOBuilder;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Filter;
 import org.osgi.framework.ServiceException;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.dto.ServiceReferenceDTO;
 
 import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseServiceConfig;
 
 /**
  * Collection of services.
+ * Eclipse service are not expected to hold any resources. Spotless services
+ * can implement AutoCloseable in case a resource release is required on shutdown.
+ *
  * Note that the collection access is not thread save, since it is expected
  * that the collection is completed before starting any bundles.
  */
 public class ServiceCollection implements SpotlessEclipseServiceConfig {
 	private final Map<String, ServiceReference<?>> className2Service;
+	private final List<AutoCloseable> servicesWithResources;
 	private final Bundle systemBundle;
 	private final Map<String, String> properties;
 
@@ -46,8 +54,19 @@ public class ServiceCollection implements SpotlessEclipseServiceConfig {
 	 */
 	ServiceCollection(Bundle systemBundle, Map<String, String> properties) {
 		className2Service = new HashMap<String, ServiceReference<?>>();
+		servicesWithResources = new ArrayList<>();
 		this.systemBundle = systemBundle;
 		this.properties = properties;
+	}
+
+	void stop() {
+		servicesWithResources.stream().forEach(s -> {
+			try {
+				s.close();
+			} catch (Exception e) {
+				//Stop on best effort basis
+			}
+		});
 	}
 
 	@Override
@@ -56,11 +75,14 @@ public class ServiceCollection implements SpotlessEclipseServiceConfig {
 	}
 
 	@Override
-	public <S> void add(Class<S> interfaceClass, S service) {
+	public <S> void add(Class<S> interfaceClass, S service) throws ServiceException {
 		String className = interfaceClass.getName();
 		if (null != className2Service.put(interfaceClass.getName(), new FrameworkServiceReference<S>(className, service))) {
 			throw new ServiceException(
 					String.format("Service '%s' is already registered.", interfaceClass.getName()), ServiceException.FACTORY_ERROR);
+		}
+		if (service instanceof AutoCloseable) {
+			servicesWithResources.add((AutoCloseable) service);
 		}
 	}
 
@@ -146,6 +168,15 @@ public class ServiceCollection implements SpotlessEclipseServiceConfig {
 		@Override
 		public Dictionary<String, Object> getProperties() {
 			return new Hashtable<String, Object>(properties);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <A> A adapt(Class<A> type) {
+			if (ServiceReferenceDTO.class.equals(type)) {
+				return (A) DTOBuilder.newServiceReferenceDTO(this);
+			}
+			return null;
 		}
 
 	}

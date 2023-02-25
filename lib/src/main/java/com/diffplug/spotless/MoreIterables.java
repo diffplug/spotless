@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import static com.diffplug.spotless.LibPreconditions.requireElementsNonNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -37,18 +38,23 @@ final class MoreIterables {
 		return shallowCopy;
 	}
 
-	/** Sorts "raw" and removes duplicates, throwing on null elements. */
+	/** Sorts "raw" using {@link Comparator#naturalOrder()} and removes duplicates, throwing on null elements. */
 	static <T extends Comparable<T>> List<T> toSortedSet(Iterable<T> raw) {
+		return toSortedSet(raw, Comparator.naturalOrder());
+	}
+
+	/** Sorts "raw" and removes duplicates, throwing on null elements. */
+	static <T> List<T> toSortedSet(Iterable<T> raw, Comparator<T> comparator) {
 		List<T> toBeSorted = toNullHostileList(raw);
 		// sort it
-		Collections.sort(toBeSorted);
+		Collections.sort(toBeSorted, comparator);
 		// remove any duplicates (normally there won't be any)
 		if (toBeSorted.size() > 1) {
 			Iterator<T> iter = toBeSorted.iterator();
 			T last = iter.next();
 			while (iter.hasNext()) {
 				T next = iter.next();
-				if (next.compareTo(last) == 0) {
+				if (comparator.compare(next, last) == 0) {
 					iter.remove();
 				} else {
 					last = next;

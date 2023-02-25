@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,27 @@
 package com.diffplug.spotless;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.condition.OS.WINDOWS;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
-import org.junit.Test;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnOs;
 
-public class FileSignatureTest extends ResourceHarness {
+class FileSignatureTest extends ResourceHarness {
 	private final static String[] inputPaths = {"A", "C", "C", "A", "B"};
 	private final static String[] expectedPathList = inputPaths;
 	private final static String[] expectedPathSet = {"A", "B", "C"};
 
 	@Test
-	public void testFromList() throws IOException {
+	void testFromList() throws IOException {
 		Collection<File> inputFiles = getTestFiles(inputPaths);
 		FileSignature signature = FileSignature.signAsList(inputFiles);
 		Collection<File> expectedFiles = getTestFiles(expectedPathList);
@@ -40,12 +45,29 @@ public class FileSignatureTest extends ResourceHarness {
 	}
 
 	@Test
-	public void testFromSet() throws IOException {
+	void testFromSet() throws IOException {
 		Collection<File> inputFiles = getTestFiles(inputPaths);
 		FileSignature signature = FileSignature.signAsSet(inputFiles);
 		Collection<File> expectedFiles = getTestFiles(expectedPathSet);
 		Collection<File> outputFiles = signature.files();
 		assertThat(outputFiles).containsExactlyElementsOf(expectedFiles);
+	}
+
+	@Test
+	void testFromDirectory() {
+		File dir = new File(rootFolder(), "dir");
+		assertThatThrownBy(() -> FileSignature.signAsList(dir))
+				.isInstanceOf(IllegalArgumentException.class);
+	}
+
+	@Test
+	void testFromFilesAndDirectory() throws IOException {
+		File dir = new File(rootFolder(), "dir");
+		List<File> files = getTestFiles(inputPaths);
+		files.add(dir);
+		Collections.shuffle(files);
+		assertThatThrownBy(() -> FileSignature.signAsList(files))
+				.isInstanceOf(IllegalArgumentException.class);
 	}
 
 	private List<File> getTestFiles(final String[] paths) throws IOException {
@@ -56,4 +78,15 @@ public class FileSignatureTest extends ResourceHarness {
 		return result;
 	}
 
+	@Test
+	void testSubpath() {
+		assertThat(FileSignature.subpath("root/", "root/child")).isEqualTo("child");
+	}
+
+	@Test
+	@EnabledOnOs(WINDOWS)
+	void windowsRoot() {
+		String subpath = FileSignature.subpath("S://", "S:/build.gradle");
+		Assertions.assertThat(subpath).isEqualTo("build.gradle");
+	}
 }

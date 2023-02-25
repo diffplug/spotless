@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,20 +15,20 @@
  */
 package com.diffplug.spotless.maven.scala;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import com.diffplug.spotless.maven.MavenIntegrationTest;
+import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
-public class ScalafmtTest extends MavenIntegrationTest {
+class ScalafmtTest extends MavenIntegrationHarness {
 	@Test
-	public void testScalafmtWithDefaultConfig() throws Exception {
+	void testScalafmtWithDefaultConfig() throws Exception {
 		writePomWithScalaSteps("<scalafmt/>");
 
-		runTest("scala/scalafmt/basic.clean");
+		runTest("scala/scalafmt/basic.clean_3.0.0");
 	}
 
 	@Test
-	public void testScalafmtWithCustomConfig() throws Exception {
+	void testScalafmtWithCustomConfig() throws Exception {
 		setFile("scalafmt.conf").toResource("scala/scalafmt/scalafmt.conf");
 
 		writePomWithScalaSteps(
@@ -36,7 +36,7 @@ public class ScalafmtTest extends MavenIntegrationTest {
 				"  <file>${project.basedir}/scalafmt.conf</file>",
 				"</scalafmt>");
 
-		runTest("scala/scalafmt/basic.cleanWithCustomConf");
+		runTest("scala/scalafmt/basic.cleanWithCustomConf_3.0.0");
 	}
 
 	private void runTest(String s) throws Exception {

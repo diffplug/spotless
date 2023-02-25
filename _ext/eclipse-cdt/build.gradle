@@ -4,29 +4,30 @@ ext {
 	]
 
 	p2Repository = "https://download.eclipse.org/tools/cdt/releases/${VER_ECLIPSE_CDT}"
-	
+
 	p2Dependencies = [
 		'org.eclipse.cdt.core':'+', // CodeFormatter and related
-		]
+	]
 
 }
 
-apply from: rootProject.file('../gradle/p2-fat-jar-setup.gradle')
-apply from: rootProject.file('../gradle/java-publish.gradle')
+apply from: rootProject.file('_ext/gradle/update-lockfile.gradle')
+apply from: rootProject.file('_ext/gradle/p2-fat-jar-setup.gradle')
+apply from: rootProject.file('gradle/java-publish.gradle')
 
 
 dependencies {
-	compile "com.diffplug.spotless:spotless-eclipse-base:${VER_SPOTLESS_ECLISPE_BASE}"
+	implementation "com.diffplug.spotless:spotless-eclipse-base:${VER_SPOTLESS_ECLIPSE_BASE}"
 	// Provides text partitioners for formatters
-	compile ("org.eclipse.platform:org.eclipse.jface.text:${VER_ECLISPE_JFACE}") {
+	implementation ("org.eclipse.platform:org.eclipse.jface.text:${VER_ECLIPSE_JFACE}") {
 		exclude group: 'org.eclipse.platform', module: 'org.eclipse.swt'
 	}
 	// Required to by CCorePlugin calling CDTLogWriter
-	compile "com.ibm.icu:icu4j:${VER_IBM_ICU}"
+	implementation "com.ibm.icu:icu4j:${VER_IBM_ICU}"
 	// Required to by CCorePlugin calling PositionTrackerManager
-	compile "org.eclipse.platform:org.eclipse.core.filebuffers:${VER_ECLISPE_PLATFORM}"
-	
-	testCompile("org.slf4j:slf4j-simple:${VER_SLF4J}")
+	implementation "org.eclipse.platform:org.eclipse.core.filebuffers:${VER_ECLIPSE_EFS}"
+
+	testImplementation("org.slf4j:slf4j-simple:${VER_SLF4J}")
 }
 
 

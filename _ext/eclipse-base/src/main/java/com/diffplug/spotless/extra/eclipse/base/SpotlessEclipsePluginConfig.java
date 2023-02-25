@@ -15,6 +15,11 @@
  */
 package com.diffplug.spotless.extra.eclipse.base;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 
@@ -30,9 +35,42 @@ import com.diffplug.spotless.extra.eclipse.base.osgi.BundleConfig;
  * Note that a plugin does not necessarily derive from the
  * Eclipse {@link org.eclipse.core.runtime.Plugin} class.
  * </p>
+ * <p>
+ * Some plugins are pure extensions without any activator.
+ * For resource and plugin information lookup, a class can be
+ * specified which is in the JAR containing the resources and
+ * plugin information. This lookup procedure also supports
+ * fat JAR lookups as described in the ReadMe.md.
+ * </p>
  * @see org.eclipse.core.runtime.RegistryFactory
  */
 public class SpotlessEclipsePluginConfig extends BundleConfig<SpotlessEclipseFramework.DefaultPlugins> {
+	private final List<Class<?>> extensions;
+
+	/**
+	 * Don't instantiate and call {@link SpotlessEclipseConfig} directly.
+	 * Registered plugins and extensions should only be instantiated once, since
+	 * some still abusing singletons for access.
+	 */
+	SpotlessEclipsePluginConfig() {
+		extensions = new ArrayList<>();
+	}
+
+	/** Add an extension plugin, identified by a class of the plugin. */
+	public void add(Class<?> extensionClass) {
+		Objects.requireNonNull(extensionClass, "Plugin extension class must nor be null");
+		extensions.add(extensionClass);
+	}
+
+	/** Add a set of default bundles with their default states */
+	public void add(Class<?>... extensionClasses) {
+		Arrays.asList(extensionClasses).forEach(extensionClass -> add(extensionClass));
+	}
+
+	/** Returns the current configuration */
+	public List<Class<?>> getExtensions() {
+		return extensions;
+	}
 
 	@Override
 	public void applyDefault() {

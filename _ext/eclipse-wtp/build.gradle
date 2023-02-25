@@ -2,19 +2,19 @@ ext {
 	developers = [
 		fvgh: [ name: 'Frank Vennemeyer', email: 'frankgh@zoho.com' ],
 	]
-	
+
 	p2Repository = "https://download.eclipse.org/webtools/repository/${VER_ECLIPSE_WTP}"
-	
+
 	p2Dependencies = [
 		// XML/HTML Formatter  - Dependencies
 		'org.eclipse.wst.xml.core':'+', // DefaultXMLPartitionFormatter and XMLAssociationProvider
 		'org.eclipse.wst.sse.core':'+', // Structure models
 		'org.eclipse.wst.common.uriresolver':'+', // URI resolver for model queries
 		'org.eclipse.wst.dtd.core':'+', // Support DTD extensions
-		
+
 		// XML Formatter - Dependencies
 		'org.eclipse.wst.xsd.core':'+', // Support XSD extensions
-		
+
 		// JS Formatter - Dependencies
 		'org.eclipse.wst.jsdt.core':'+', // DefaultCodeFormatter and related
 		'org.eclipse.wst.jsdt.ui':'+', // Functionality to format comments
@@ -22,23 +22,28 @@ ext {
 		// JSON Formatter - Dependencies
 		'org.eclipse.wst.json.core':'+', // FormatProcessorJSON and related
 		'org.eclipse.json':'+', // Provides JSON node interfaces
-		
+
 		// CSS Formatter - Dependencies
 		'org.eclipse.wst.css.core':'+', // FormatProcessorCSS and related
-		
+
 		// HTML Formatter - Dependencies
 		'org.eclipse.wst.html.core':'+', // HTMLFormatProcessorImpl and related
 	]
-	
+
 	jarInclude = [
-		'**/*.class', // Take all classes
-		'**/*.properties', // Text resources (for messages, etc)
-		'**/*.rsc', // JSDT requires gramar files
-		'**/*.xml', // Plugin XML and other resources
-		'*.html', // License information about the included JARs,
+		'**/*.class',
+		// Take all classes
+		'**/*.properties',
+		// Text resources (for messages, etc)
+		'**/*.rsc',
+		// JSDT requires gramar files
+		'**/*.xml',
+		// Plugin XML and other resources
+		'*.html',
+		// License information about the included JARs,
 		'META-INF/**' // Plugin manifest and addtional information
 	]
-			
+
 	fatJarResourcesMap = [
 		'org.eclipse.wst.common.uriresolver': 'org.eclipse.wst.common.uriresolver.internal.provisional',
 		'org.eclipse.wst.css.core': 'org.eclipse.wst.css.core.internal',
@@ -50,30 +55,31 @@ ext {
 	]
 }
 
-apply from: rootProject.file('../gradle/p2-fat-jar-setup.gradle')
-apply from: rootProject.file('../gradle/java-publish.gradle')
+apply from: rootProject.file('_ext/gradle/update-lockfile.gradle')
+apply from: rootProject.file('_ext/gradle/p2-fat-jar-setup.gradle')
+apply from: rootProject.file('gradle/java-publish.gradle')
 
 dependencies {
-	compile "com.diffplug.spotless:spotless-eclipse-base:${VER_SPOTLESS_ECLISPE_BASE}"
+	implementation "com.diffplug.spotless:spotless-eclipse-base:${VER_SPOTLESS_ECLIPSE_BASE}"
 	// Required by most WPT formatters
-	compile "com.ibm.icu:icu4j:${VER_IBM_ICU}"
-	// The XSD/DTD and other models are defined with EMF. 
-	compile "org.eclipse.emf:org.eclipse.emf.common:${VER_ECLISPE_EMF}"
-	compile "org.eclipse.emf:org.eclipse.emf.ecore:${VER_ECLISPE_EMF}"
+	implementation "com.ibm.icu:icu4j:${VER_IBM_ICU}"
+	// The XSD/DTD and other models are defined with EMF.
+	implementation "org.eclipse.emf:org.eclipse.emf.common:${VER_ECLIPSE_EMF}"
+	implementation "org.eclipse.emf:org.eclipse.emf.ecore:${VER_ECLIPSE_EMF}"
 	// Some WPT plugins requires OSGI bundle interfaces (but not effectively used)
-	compile "org.eclipse.platform:org.eclipse.osgi.services:${VER_ECLISPE_PLATFORM}"
+	implementation "org.eclipse.platform:org.eclipse.osgi.services:${VER_ECLIPSE_OSGI_SERVICES}"
 	// Provides document data structure and file buffers for formatters
-	compile "org.eclipse.platform:org.eclipse.core.filebuffers:${VER_ECLISPE_PLATFORM}"
+	implementation "org.eclipse.platform:org.eclipse.core.filebuffers:${VER_ECLIPSE_FILE_BUFFERS}"
 	// Provides text partitioners for formatters
-	compile ("org.eclipse.platform:org.eclipse.jface.text:${VER_ECLISPE_JFACE}") {
+	implementation ("org.eclipse.platform:org.eclipse.jface.text:${VER_ECLIPSE_JFACE}") {
 		exclude group: 'org.eclipse.platform', module: 'org.eclipse.swt'
 	}
-	// Some WPT plugins use the EFS for storing temporary worspace data 
-	compile "org.eclipse.platform:org.eclipse.core.filesystem:${VER_ECLISPE_EFS}"
+	// Some WPT plugins use the EFS for storing temporary worspace data
+	implementation "org.eclipse.platform:org.eclipse.core.filesystem:${VER_ECLIPSE_EFS}"
 	// Required by org.eclipse.wst.xsd.core
-	compile "org.eclipse.xsd:org.eclipse.xsd:${VER_ECLISPE_XSD}"
+	implementation "org.eclipse.emf:org.eclipse.xsd:${VER_ECLIPSE_XSD}"
 
-	testCompile("org.slf4j:slf4j-simple:${VER_SLF4J}")
+	testImplementation("org.slf4j:slf4j-simple:${VER_SLF4J}")
 }
 
 jar {
@@ -94,26 +100,26 @@ sourceSets {
  * All test classes need to run separately since they all instatiate different setups of the
  * Eclipse framework.
  */
-test {
-    //Skip default tests, which would run every test case.
-    exclude '**'
+tasks.withType(Test).configureEach {
+	//Skip default tests, which would run every test case.
+	exclude '**'
 }
 
 //Instead make a separate test task per case
 def testLocation = 'src/test/java'
 fileTree(dir: testLocation).include('**/*Test.java').each { file ->
 	def testFile = file.getName().replace(".java", "")
-	def filePath = file.getAbsolutePath().replace(".java", "**") //Don't ask me why the task is not happy when it gets no asterisk 
+	def filePath = file.getAbsolutePath().replace(".java", "**") //Don't ask me why the task is not happy when it gets no asterisk
 	filePath = filePath.substring(filePath.lastIndexOf(testLocation) + testLocation.length() + 1)
 	task "${testFile}"(type: Test) {
 		group = LifecycleBasePlugin.VERIFICATION_GROUP
 		description = "Runs ${testFile} integration test."
 		include "${filePath}"
-	    reports { 
-	        html.destination = new File("$buildDir/reports/${testFile}")
-	        junitXml.destination = new File("$buildDir/${testFile}")
-	    }
-	    //classpath = jar.outputs.files + sourceSets.test.output + sourceSets.test.compileClasspath
+		reports {
+			html.destination = new File("$buildDir/reports/${testFile}")
+			junitXml.destination = new File("$buildDir/${testFile}")
+		}
+		//classpath = jar.outputs.files + sourceSets.test.output + sourceSets.test.compileClasspath
 		mustRunAfter tasks.jar
 	}
 	test.dependsOn "${testFile}"

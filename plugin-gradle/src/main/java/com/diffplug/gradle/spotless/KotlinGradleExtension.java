@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,53 +15,207 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
+
+import javax.annotation.Nullable;
+import javax.inject.Inject;
 
 import com.diffplug.common.collect.ImmutableSortedMap;
+import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.kotlin.DiktatStep;
 import com.diffplug.spotless.kotlin.KtLintStep;
+import com.diffplug.spotless.kotlin.KtfmtStep;
+import com.diffplug.spotless.kotlin.KtfmtStep.KtfmtFormattingOptions;
+import com.diffplug.spotless.kotlin.KtfmtStep.Style;
 
 public class KotlinGradleExtension extends FormatExtension {
 	private static final String GRADLE_KOTLIN_DSL_FILE_EXTENSION = "*.gradle.kts";
 
 	static final String NAME = "kotlinGradle";
 
-	public KotlinGradleExtension(SpotlessExtension rootExtension) {
-		super(rootExtension);
+	@Inject
+	public KotlinGradleExtension(SpotlessExtension spotless) {
+		super(spotless);
 	}
 
-	/** Adds the specified version of [ktlint](https://github.com/shyiko/ktlint). */
-	public KotlinFormatExtension ktlint(String version) {
+	/** Adds the specified version of <a href="https://github.com/pinterest/ktlint">ktlint</a>. */
+	public KotlinFormatExtension ktlint(String version) throws IOException {
 		Objects.requireNonNull(version, "version");
-		return new KotlinFormatExtension(version, Collections.emptyMap());
+		File defaultEditorConfig = getProject().getRootProject().file(".editorconfig");
+		FileSignature editorConfigPath = defaultEditorConfig.exists() ? FileSignature.signAsList(defaultEditorConfig) : null;
+		return new KotlinFormatExtension(version, false, editorConfigPath, Collections.emptyMap(), Collections.emptyMap());
 	}
 
-	public KotlinFormatExtension ktlint() {
+	public KotlinFormatExtension ktlint() throws IOException {
 		return ktlint(KtLintStep.defaultVersion());
 	}
 
 	public class KotlinFormatExtension {
 
 		private final String version;
+		private boolean useExperimental;
+		@Nullable
+		private FileSignature editorConfigPath;
 		private Map<String, String> userData;
+		private Map<String, Object> editorConfigOverride;
 
-		KotlinFormatExtension(String version, Map<String, String> config) {
+		KotlinFormatExtension(String version, boolean useExperimental, FileSignature editorConfigPath, Map<String, String> config,
+				Map<String, Object> editorConfigOverride) {
 			this.version = version;
+			this.useExperimental = useExperimental;
+			this.editorConfigPath = editorConfigPath;
 			this.userData = config;
+			this.editorConfigOverride = editorConfigOverride;
 			addStep(createStep());
 		}
 
-		public void userData(Map<String, String> userData) {
+		public KotlinFormatExtension setEditorConfigPath(Object editorConfigPath) throws IOException {
+
+			if (editorConfigPath == null) {
+				this.editorConfigPath = null;
+			} else {
+				this.editorConfigPath = FileSignature.signAsList(getProject().file(editorConfigPath));
+			}
+			replaceStep(createStep());
+			return this;
+		}
+
+		public KotlinFormatExtension setUseExperimental(boolean useExperimental) {
+			this.useExperimental = useExperimental;
+			replaceStep(createStep());
+			return this;
+		}
+
+		public KotlinFormatExtension userData(Map<String, String> userData) {
 			// Copy the map to a sorted map because up-to-date checking is based on binary-equals of the serialized
 			// representation.
 			this.userData = ImmutableSortedMap.copyOf(userData);
 			replaceStep(createStep());
+			return this;
+		}
+
+		public KotlinFormatExtension editorConfigOverride(Map<String, Object> editorConfigOverride) {
+			// Copy the map to a sorted map because up-to-date checking is based on binary-equals of the serialized
+			// representation.
+			this.editorConfigOverride = ImmutableSortedMap.copyOf(editorConfigOverride);
+			replaceStep(createStep());
+			return this;
 		}
 
 		private FormatterStep createStep() {
-			return KtLintStep.createForScript(version, GradleProvisioner.fromProject(getProject()), userData);
+			return KtLintStep.createForScript(
+					version,
+					provisioner(),
+					useExperimental,
+					editorConfigPath,
+					userData,
+					editorConfigOverride);
+		}
+	}
+
+	/** Uses the <a href="https://github.com/facebookincubator/ktfmt">ktfmt</a> jar to format source code. */
+	public KtfmtConfig ktfmt() {
+		return ktfmt(KtfmtStep.defaultVersion());
+	}
+
+	/**
+	 * Uses the given version of <a href="https://github.com/facebookincubator/ktfmt">ktfmt</a> to format source
+	 * code.
+	 */
+	public KtfmtConfig ktfmt(String version) {
+		Objects.requireNonNull(version);
+		return new KtfmtConfig(version);
+	}
+
+	public class KtfmtConfig {
+		final String version;
+		Style style;
+		KtfmtFormattingOptions options;
+
+		private final ConfigurableStyle configurableStyle = new ConfigurableStyle();
+
+		KtfmtConfig(String version) {
+			this.version = Objects.requireNonNull(version);
+			this.style = Style.DEFAULT;
+			addStep(createStep());
+		}
+
+		private ConfigurableStyle style(Style style) {
+			this.style = style;
+			replaceStep(createStep());
+			return configurableStyle;
+		}
+
+		public ConfigurableStyle dropboxStyle() {
+			return style(Style.DROPBOX);
+		}
+
+		public ConfigurableStyle googleStyle() {
+			return style(Style.GOOGLE);
+		}
+
+		public ConfigurableStyle kotlinlangStyle() {
+			return style(Style.KOTLINLANG);
+		}
+
+		public void configure(Consumer<KtfmtFormattingOptions> optionsConfiguration) {
+			this.configurableStyle.configure(optionsConfiguration);
+		}
+
+		private FormatterStep createStep() {
+			return KtfmtStep.create(version, provisioner(), style, options);
+		}
+
+		public class ConfigurableStyle {
+
+			public void configure(Consumer<KtfmtFormattingOptions> optionsConfiguration) {
+				KtfmtFormattingOptions ktfmtFormattingOptions = new KtfmtFormattingOptions();
+				optionsConfiguration.accept(ktfmtFormattingOptions);
+				options = ktfmtFormattingOptions;
+				replaceStep(createStep());
+			}
+		}
+	}
+
+	/** Adds the specified version of <a href="https://github.com/cqfn/diKTat">diktat</a>. */
+	public DiktatFormatExtension diktat(String version) {
+		Objects.requireNonNull(version, "version");
+		return new DiktatFormatExtension(version);
+	}
+
+	public DiktatFormatExtension diktat() {
+		return diktat(DiktatStep.defaultVersionDiktat());
+	}
+
+	public class DiktatFormatExtension {
+
+		private final String version;
+		private FileSignature config;
+
+		DiktatFormatExtension(String version) {
+			this.version = version;
+			addStep(createStep());
+		}
+
+		public DiktatFormatExtension configFile(Object file) throws IOException {
+			// Specify the path to the configuration file
+			if (file == null) {
+				this.config = null;
+			} else {
+				this.config = FileSignature.signAsList(getProject().file(file));
+			}
+			replaceStep(createStep());
+			return this;
+		}
+
+		private FormatterStep createStep() {
+			return DiktatStep.createForScript(version, provisioner(), config);
 		}
 	}
 

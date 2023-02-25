@@ -5,10 +5,9 @@ To fix this, we publish Groovy-Eclipse's formatter and all its dependencies, alo
 
 ## Build
 
-To publish a new version, update the `_ext/eclipse-groovy/gradle.properties` appropriately and run this from the root directory:
+To publish a new version, update the `_ext/eclipse-groovy/gradle.properties` appropriately and see [CONTRIBUTING.md](../../CONTRIBUTING.md) how to enable
+`_ext` projects.
 
-```
-gradlew -b _ext/eclipse-groovy/build.gradle publish
-```
+## License
 
 Spotless at large is under the Apache 2.0 license, but this jar is under the EPL v1.

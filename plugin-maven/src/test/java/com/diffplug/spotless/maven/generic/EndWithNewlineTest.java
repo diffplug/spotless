@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,14 @@
  */
 package com.diffplug.spotless.maven.generic;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import com.diffplug.spotless.maven.MavenIntegrationTest;
+import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
-public class EndWithNewlineTest extends MavenIntegrationTest {
+class EndWithNewlineTest extends MavenIntegrationHarness {
 
 	@Test
-	public void fromContent() throws Exception {
+	void fromContent() throws Exception {
 		writePomWithFormatSteps(
 				"<endWithNewline>",
 				"</endWithNewline>");
@@ -30,7 +30,7 @@ public class EndWithNewlineTest extends MavenIntegrationTest {
 	}
 
 	@Test
-	public void fromContentWithSelfclosingTag() throws Exception {
+	void fromContentWithSelfclosingTag() throws Exception {
 		writePomWithFormatSteps(
 				"<endWithNewline />");
 		runTest();

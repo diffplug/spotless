@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@ package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
 
+import javax.inject.Inject;
+
 import org.gradle.api.Project;
 
 import com.diffplug.spotless.cpp.CppDefaults;
@@ -26,15 +28,16 @@ import com.diffplug.spotless.extra.cpp.EclipseCdtFormatterStep;
 public class CppExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "cpp";
 
-	public CppExtension(SpotlessExtension rootExtension) {
-		super(rootExtension);
+	@Inject
+	public CppExtension(SpotlessExtension spotless) {
+		super(spotless);
 	}
 
-	public EclipseConfig eclipse() {
-		return new EclipseConfig(EclipseCdtFormatterStep.defaultVersion());
+	public EclipseConfig eclipseCdt() {
+		return eclipseCdt(EclipseCdtFormatterStep.defaultVersion());
 	}
 
-	public EclipseConfig eclipse(String version) {
+	public EclipseConfig eclipseCdt(String version) {
 		return new EclipseConfig(version);
 	}
 
@@ -42,7 +45,7 @@ public class CppExtension extends FormatExtension implements HasBuiltinDelimiter
 		private final EclipseBasedStepBuilder builder;
 
 		EclipseConfig(String version) {
-			builder = EclipseCdtFormatterStep.createBuilder(GradleProvisioner.fromProject(getProject()));
+			builder = EclipseCdtFormatterStep.createBuilder(provisioner());
 			builder.setVersion(version);
 			addStep(builder.build());
 		}
@@ -53,19 +56,12 @@ public class CppExtension extends FormatExtension implements HasBuiltinDelimiter
 			builder.setPreferences(project.files(configFiles).getFiles());
 			replaceStep(builder.build());
 		}
-
 	}
 
 	@Override
 	protected void setupTask(SpotlessTask task) {
 		if (target == null) {
-			/*
-			 * The org.gradle.language.c and org.gradle.language.cpp source sets are seldom used.
-			 * Most Gradle C/C++ use external CMake builds (so the source location is unknown to Gradle).
-			 * Hence file extension based filtering is used in line with the org.eclipse.core.contenttype.contentTypes<
-			 * defined by the CDT plugin.
-			 */
-			target(CppDefaults.FILE_FILTER.toArray());
+			throw noDefaultTargetException();
 		}
 		super.setupTask(task);
 	}

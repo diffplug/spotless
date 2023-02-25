@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,13 @@
 package com.diffplug.spotless.maven;
 
 import static com.diffplug.common.base.Strings.isNullOrEmpty;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.File;
-import java.util.UUID;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
+import java.util.Objects;
 
 import org.codehaus.plexus.resource.ResourceManager;
 import org.codehaus.plexus.resource.loader.FileResourceCreationException;
@@ -30,14 +34,26 @@ public class FileLocator {
 	static final String TMP_RESOURCE_FILE_PREFIX = "spotless-resource-";
 
 	private final ResourceManager resourceManager;
+	private final File baseDir, buildDir;
 
-	public FileLocator(ResourceManager resourceManager) {
-		this.resourceManager = resourceManager;
+	public FileLocator(ResourceManager resourceManager, File baseDir, File buildDir) {
+		this.resourceManager = Objects.requireNonNull(resourceManager);
+		this.baseDir = Objects.requireNonNull(baseDir);
+		this.buildDir = Objects.requireNonNull(buildDir);
 	}
 
+	/**
+	 * If the given path is a local file returns it as such unchanged,
+	 * otherwise extracts the given resource to a randomly-named file in the build folder.
+	 */
 	public File locateFile(String path) {
 		if (isNullOrEmpty(path)) {
 			return null;
+		}
+
+		File localFile = new File(path);
+		if (localFile.exists() && localFile.isFile()) {
+			return localFile;
 		}
 
 		String outputFile = tmpOutputFileName(path);
@@ -50,8 +66,29 @@ public class FileLocator {
 		}
 	}
 
+	public File getBaseDir() {
+		return baseDir;
+	}
+
+	public File getBuildDir() {
+		return buildDir;
+	}
+
 	private static String tmpOutputFileName(String path) {
 		String extension = FileUtils.extension(path);
-		return TMP_RESOURCE_FILE_PREFIX + UUID.randomUUID() + '.' + extension;
+		byte[] pathHash = hash(path);
+		String pathBase64 = Base64.getEncoder().encodeToString(pathHash);
+		return TMP_RESOURCE_FILE_PREFIX + pathBase64 + '.' + extension;
+	}
+
+	private static byte[] hash(String value) {
+		MessageDigest messageDigest;
+		try {
+			messageDigest = MessageDigest.getInstance("SHA-256");
+		} catch (NoSuchAlgorithmException e) {
+			throw new IllegalStateException("SHA-256 digest algorithm not available", e);
+		}
+		messageDigest.update(value.getBytes(UTF_8));
+		return messageDigest.digest();
 	}
 }

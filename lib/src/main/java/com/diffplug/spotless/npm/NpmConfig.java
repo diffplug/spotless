@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,25 @@ package com.diffplug.spotless.npm;
 
 import java.io.Serializable;
 
+import javax.annotation.Nonnull;
+
 class NpmConfig implements Serializable {
 
-	private static final long serialVersionUID = -1866722789779160491L;
+	private static final long serialVersionUID = 684264546497914877L;
 
 	private final String packageJsonContent;
 
 	private final String npmModule;
 
-	public NpmConfig(String packageJsonContent, String npmModule) {
+	private final String serveScriptContent;
+
+	private final String npmrcContent;
+
+	public NpmConfig(String packageJsonContent, String npmModule, String serveScriptContent, String npmrcContent) {
 		this.packageJsonContent = packageJsonContent;
 		this.npmModule = npmModule;
+		this.serveScriptContent = serveScriptContent;
+		this.npmrcContent = npmrcContent;
 	}
 
 	public String getPackageJsonContent() {
@@ -36,5 +44,14 @@ class NpmConfig implements Serializable {
 
 	public String getNpmModule() {
 		return npmModule;
+	}
+
+	@Nonnull
+	public String getServeScriptContent() {
+		return serveScriptContent;
+	}
+
+	public String getNpmrcContent() {
+		return npmrcContent;
 	}
 }

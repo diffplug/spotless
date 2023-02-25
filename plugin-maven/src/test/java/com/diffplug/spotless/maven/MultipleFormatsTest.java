@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,12 @@
  */
 package com.diffplug.spotless.maven;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class MultipleFormatsTest extends MavenIntegrationTest {
+class MultipleFormatsTest extends MavenIntegrationHarness {
 
 	@Test
-	public void testMultipleFormatsWithDifferentIncludes() throws Exception {
+	void testMultipleFormatsWithDifferentIncludes() throws Exception {
 		writePom(
 				"<formats>",
 				"  <format>",

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.annotation.Nullable;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -32,6 +37,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * when Spotless is no longer in use to release any resources it has grabbed.
  */
 public final class SpotlessCache {
+	private static final Logger LOGGER = LoggerFactory.getLogger(SpotlessCache.class);
+
 	/** Allows comparing keys based on their serialization. */
 	static final class SerializedKey {
 		final byte[] serialized;
@@ -66,15 +73,20 @@ public final class SpotlessCache {
 	synchronized ClassLoader classloader(Serializable key, JarState state) {
 		SerializedKey serializedKey = new SerializedKey(key);
 		return cache
-				.computeIfAbsent(serializedKey, k -> new FeatureClassLoader(state.jarUrls(), this.getClass().getClassLoader()));
+				.computeIfAbsent(serializedKey, k -> {
+					LOGGER.debug("Allocating an additional FeatureClassLoader for key={} Cache.size was {}", key, cache.size());
+					return new FeatureClassLoader(state.jarUrls(), this.getClass().getClassLoader());
+				});
 	}
 
 	static SpotlessCache instance() {
 		return instance;
 	}
 
-	/** Closes all cached classloaders. */
-	public static void clear() {
+	/**
+	 * Closes all cached classloaders.
+	 */
+	private static void clear() {
 		List<URLClassLoader> toDelete;
 		synchronized (instance) {
 			toDelete = new ArrayList<>(instance.cache.values());
@@ -87,6 +99,26 @@ public final class SpotlessCache {
 				throw ThrowingEx.asRuntime(e);
 			}
 		}
+	}
+
+	private static volatile Object lastClear;
+
+	/**
+	 * Closes all cached classloaders iff {@code key} is not {@code .equals()} to the last call to {@code clearOnce()}.
+	 * If {@code key} is null, the clear will always happen (as though null != null).
+	 */
+	public static boolean clearOnce(@Nullable Object key) {
+		synchronized (instance) {
+			if (key == null) {
+				lastClear = null;
+			} else if (key.equals(lastClear)) {
+				// only clear once
+				return false;
+			}
+			lastClear = key;
+		}
+		clear();
+		return true;
 	}
 
 	private static final SpotlessCache instance = new SpotlessCache();

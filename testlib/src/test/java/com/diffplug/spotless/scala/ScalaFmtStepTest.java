@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,43 +16,56 @@
 package com.diffplug.spotless.scala;
 
 import java.io.File;
-import java.io.IOException;
 
-import org.junit.Test;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
-public class ScalaFmtStepTest extends ResourceHarness {
+class ScalaFmtStepTest extends ResourceHarness {
 	@Test
-	public void behaviorDefaultConfig() throws Exception {
-		FormatterStep step = ScalaFmtStep.create(TestProvisioner.mavenCentral());
-		StepHarness.forStep(step)
-				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basic.clean");
+	void behaviorDefaultConfig() {
+		StepHarness.forStep(ScalaFmtStep.create(TestProvisioner.mavenCentral()))
+				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basic.clean_3.0.0");
 	}
 
 	@Test
-	public void behaviorCustomConfig() throws Exception {
-		FormatterStep step = ScalaFmtStep.create(ScalaFmtStep.defaultVersion(), TestProvisioner.mavenCentral(), createTestFile("scala/scalafmt/scalafmt.conf"));
-		StepHarness.forStep(step)
-				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basic.cleanWithCustomConf");
+	void behaviorCustomConfig() {
+		StepHarness.forStep(ScalaFmtStep.create(ScalaFmtStep.DEFAULT_VERSION, TestProvisioner.mavenCentral(), createTestFile("scala/scalafmt/scalafmt.conf")))
+				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basic.cleanWithCustomConf_3.0.0");
 	}
 
 	@Test
-	public void equality() throws Exception {
+	void behaviorDefaultConfigVersion_3_0_0() {
+		FormatterStep step = ScalaFmtStep.create("3.0.0", TestProvisioner.mavenCentral(), null);
+		StepHarness.forStep(step)
+				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basicPost3.0.0.clean");
+	}
+
+	@Test
+	void behaviorCustomConfigVersion_3_0_0() {
+		FormatterStep step = ScalaFmtStep.create("3.0.0", TestProvisioner.mavenCentral(), createTestFile("scala/scalafmt/scalafmt.conf"));
+		StepHarness.forStep(step)
+				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basicPost3.0.0.cleanWithCustomConf");
+	}
+
+	@Test
+	void equality() {
 		new SerializableEqualityTester() {
-			String version = "0.5.1";
+			String version = "3.6.1";
 			File configFile = null;
 
 			@Override
-			protected void setupTest(API api) throws IOException {
+			protected void setupTest(API api) {
 				// same version == same
 				api.areDifferentThan();
 				// change the version, and it's different
-				version = "0.5.0";
+				version = "3.0.0";
 				api.areDifferentThan();
 				// add a config file, and its different
 				configFile = createTestFile("scala/scalafmt/scalafmt.conf");
@@ -67,5 +80,14 @@ public class ScalaFmtStepTest extends ResourceHarness {
 				return ScalaFmtStep.create(version, TestProvisioner.mavenCentral(), configFile);
 			}
 		}.testEquals();
+	}
+
+	@Test
+	void invalidConfiguration() {
+		File invalidConfFile = createTestFile("scala/scalafmt/scalafmt.invalid.conf");
+		Provisioner provisioner = TestProvisioner.mavenCentral();
+		Assertions.assertThatThrownBy(() -> {
+			ScalaFmtStep.create("3.0.0", provisioner, invalidConfFile).format("", new File(""));
+		}).cause().message().contains("found option 'invalidScalaFmtConfigField' which wasn't expected");
 	}
 }

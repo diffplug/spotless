@@ -1,0 +1,25 @@
+class FormatAnnotationsInComments {
+
+  // Here is a comment
+  @Interned String m1() {}
+
+  // Here is another comment
+  String m2() {}
+
+  /**
+   * Here is a misformatted type annotation within a Javadoc comment.
+   *
+   * @Nullable
+   * String s;
+   */
+
+  @Nullable @Interned String m3(/* Don't get confused by other comments on the line with the type */) {}
+
+  @Nullable @Interned String m3() {} // Still not confused
+
+  /*
+    code snippets in regular comments do get re-formatted
+
+    @Nullable String s;
+   */
+}

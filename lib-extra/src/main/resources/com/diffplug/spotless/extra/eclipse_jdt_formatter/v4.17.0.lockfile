@@ -1,0 +1,19 @@
+# Spotless formatter based on JDT version 4.17.0 (see https://projects.eclipse.org/projects/eclipse.jdt)
+# Compare tag in M2 pom with https://git.eclipse.org/c/jdt/eclipse.jdt.core.git/log/?h=R4_17 to determine core version.
+com.diffplug.spotless:spotless-eclipse-jdt:4.8.0
+com.diffplug.spotless:spotless-eclipse-base:3.4.1
+com.github.spotbugs:spotbugs-annotations:4.0.2
+com.google.code.findbugs:jsr305:3.0.2
+net.jcip:jcip-annotations:1.0
+org.eclipse.jdt:org.eclipse.jdt.core:3.23.0
+org.eclipse.platform:org.eclipse.core.commands:3.9.700
+org.eclipse.platform:org.eclipse.core.contenttype:3.7.800
+org.eclipse.platform:org.eclipse.core.jobs:3.10.800
+org.eclipse.platform:org.eclipse.core.resources:3.13.800
+org.eclipse.platform:org.eclipse.core.runtime:3.19.0
+org.eclipse.platform:org.eclipse.equinox.app:1.5.0
+org.eclipse.platform:org.eclipse.equinox.common:3.13.0
+org.eclipse.platform:org.eclipse.equinox.preferences:3.8.0
+org.eclipse.platform:org.eclipse.equinox.registry:3.9.0
+org.eclipse.platform:org.eclipse.osgi:3.16.0
+org.eclipse.platform:org.eclipse.text:3.10.300

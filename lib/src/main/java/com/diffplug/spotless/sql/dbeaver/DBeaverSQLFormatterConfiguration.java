@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ public class DBeaverSQLFormatterConfiguration {
 	 */
 	private static final String SQL_FORMATTER_STATEMENT_DELIMITER = "sql.formatter.statement.delimiter";
 	/**
-	 * space or tag
+	 * space or tab
 	 */
 	private static final String SQL_FORMATTER_INDENT_TYPE = "sql.formatter.indent.type";
 	/**

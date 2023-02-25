@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,24 +17,24 @@ package com.diffplug.spotless.extra.eclipse.wtp;
 
 import static com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework.LINE_DELIMITER;
 import static org.eclipse.wst.json.core.preferences.JSONCorePreferenceNames.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Properties;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class EclipseJsonFormatterStepImplTest {
+class EclipseJsonFormatterStepImplTest {
 	private final static String ILLEGAL_CHAR = Character.toString((char) 254);
 	private final static String UNFORMATTED_OBJECT = "{\n \"x\": { \"a\" : \"v\",\"properties\" : \"v\" }}".replaceAll("\n", LINE_DELIMITER);
 	private final static String FORMATTED_OBJECT = "{\n   \"x\": {\n      \"a\": \"v\",\n      \"properties\": \"v\"\n   }\n}".replaceAll("\n", LINE_DELIMITER);
 	private final static String UNFORMATTED_ARRAY = "[\n { \"a\" : \"v\",\"properties\" : \"v\" }]".replaceAll("\n", LINE_DELIMITER);
 	private final static String FORMATTED_ARRAY = "[\n   {\n      \"a\": \"v\",\n      \"properties\": \"v\"\n   }\n]".replaceAll("\n", LINE_DELIMITER);
 
-	private static EclipseJsonFormatterStepImpl formatter;
+	private EclipseJsonFormatterStepImpl formatter;
 
-	@Before
-	public void initialize() throws Exception {
+	@BeforeEach
+	void initialize() throws Exception {
 		/*
 		 * The instantiation can be repeated for each step, but only with the same configuration
 		 * All formatter configuration is stored in
@@ -49,30 +49,35 @@ public class EclipseJsonFormatterStepImplTest {
 	}
 
 	@Test
-	public void formatObject() throws Exception {
+	void formatObject() throws Exception {
 		String output = formatter.format(UNFORMATTED_OBJECT);
-		assertEquals("Unexpected formatting with default preferences.",
-				FORMATTED_OBJECT, output);
+		assertEquals(FORMATTED_OBJECT,
+				output, "Unexpected formatting with default preferences.");
 	}
 
 	@Test
-	public void formatArray() throws Exception {
+	void formatArray() throws Exception {
 		String output = formatter.format(UNFORMATTED_ARRAY);
-		assertEquals("Unexpected formatting with default preferences.",
-				FORMATTED_ARRAY, output);
+		assertEquals(FORMATTED_ARRAY,
+				output, "Unexpected formatting with default preferences.");
 	}
 
 	@Test
-	public void illegalCharacter() throws Exception {
+	void illegalCharacter() throws Exception {
 		String output = formatter.format(ILLEGAL_CHAR + UNFORMATTED_OBJECT);
-		assertEquals("Illeagl characteds are not ignored.",
-				ILLEGAL_CHAR + FORMATTED_OBJECT, output);
+		assertEquals(ILLEGAL_CHAR + FORMATTED_OBJECT,
+				output, "Illeagl characteds are not ignored.");
 	}
 
 	@Test
-	public void illegalSyntax() throws Exception {
+	void illegalSyntax() throws Exception {
 		String output = formatter.format("{" + UNFORMATTED_OBJECT);
-		assertEquals("Illeagl syntax is not handled on best effort basis.",
-				FORMATTED_OBJECT, output);
+		assertEquals(FORMATTED_OBJECT,
+				output, "Illeagl syntax is not handled on best effort basis.");
+	}
+
+	@Test
+	void configurationChange() throws Exception {
+		assertThrows(IllegalArgumentException.class, () -> new EclipseJsonFormatterStepImpl(new Properties()));
 	}
 }

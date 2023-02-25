@@ -1,0 +1,14 @@
+import mylib.UsedA;
+import mylib.UsedB;
+
+public class Java {
+  public static void main(String[] args) {
+    var a = """
+      Howdy
+      Partner!
+      """;
+    System.out.println(a);
+    UsedB.someMethod();
+    UsedA.someMethod();
+  }
+}

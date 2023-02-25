@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,33 +19,35 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class SpotlessCheckMojoTest extends MavenIntegrationTest {
+import com.diffplug.spotless.ProcessRunner;
+
+class SpotlessCheckMojoTest extends MavenIntegrationHarness {
 
 	private static final String UNFORMATTED_FILE = "license/MissingLicense.test";
 	private static final String FORMATTED_FILE = "license/HasLicense.test";
 
 	@Test
-	public void testSpotlessCheckWithFormattingViolations() throws Exception {
+	void testSpotlessCheckWithFormattingViolations() throws Exception {
 		writePomWithJavaLicenseHeaderStep();
 		testSpotlessCheck(UNFORMATTED_FILE, "spotless:check", true);
 	}
 
 	@Test
-	public void testSpotlessCheckWithoutFormattingViolations() throws Exception {
+	void testSpotlessCheckWithoutFormattingViolations() throws Exception {
 		writePomWithJavaLicenseHeaderStep();
 		testSpotlessCheck(FORMATTED_FILE, "spotless:check", false);
 	}
 
 	@Test
-	public void testSkipSpotlessCheckWithFormattingViolations() throws Exception {
+	void testSkipSpotlessCheckWithFormattingViolations() throws Exception {
 		writePomWithJavaLicenseHeaderStep();
 		testSpotlessCheck(UNFORMATTED_FILE, "spotless:check -Dspotless.check.skip", false);
 	}
 
 	@Test
-	public void testSpotlessCheckBindingToVerifyPhase() throws Exception {
+	void testSpotlessCheckBindingToVerifyPhase() throws Exception {
 		writePom(
 				new String[]{
 						"<execution>",
@@ -59,7 +61,9 @@ public class SpotlessCheckMojoTest extends MavenIntegrationTest {
 						"  <licenseHeader>",
 						"    <file>${basedir}/license.txt</file>",
 						"  </licenseHeader>",
-						"</java>"});
+						"</java>"},
+				null,
+				null);
 
 		testSpotlessCheck(UNFORMATTED_FILE, "verify", true);
 	}
@@ -71,8 +75,8 @@ public class SpotlessCheckMojoTest extends MavenIntegrationTest {
 		MavenRunner mavenRunner = mavenRunner().withArguments(command);
 
 		if (expectError) {
-			MavenRunner.Result result = mavenRunner.runHasError();
-			assertThat(result.output()).contains("The following files had format violations");
+			ProcessRunner.Result result = mavenRunner.runHasError();
+			assertThat(result.stdOutUtf8()).contains("The following files had format violations");
 		} else {
 			mavenRunner.runNoError();
 		}

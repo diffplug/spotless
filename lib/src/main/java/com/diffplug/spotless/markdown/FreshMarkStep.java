@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,20 +19,25 @@ import static com.diffplug.spotless.markdown.LibMarkdownPreconditions.requireKey
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.Objects;
 import java.util.TreeMap;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
+import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx.Supplier;
 
-/** A step for [FreshMark](https://github.com/diffplug/freshmark). */
+/** A step for <a href="https://github.com/diffplug/freshmark">FreshMark</a>. */
 public class FreshMarkStep {
 	// prevent direct instantiation
 	private FreshMarkStep() {}
@@ -40,6 +45,10 @@ public class FreshMarkStep {
 	private static final String DEFAULT_VERSION = "1.3.1";
 	private static final String NAME = "freshmark";
 	private static final String MAVEN_COORDINATE = "com.diffplug.freshmark:freshmark:";
+
+	private static final String NASHORN_MAVEN_COORDINATE = "org.openjdk.nashorn:nashorn-core:";
+
+	private static final String NASHORN_VERSION = "15.4";
 	private static final String FORMATTER_CLASS = "com.diffplug.freshmark.FreshMark";
 	private static final String FORMATTER_METHOD = "compile";
 
@@ -53,8 +62,16 @@ public class FreshMarkStep {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(properties, "properties");
 		Objects.requireNonNull(provisioner, "provisioner");
+
+		List<String> mavenCoordinates = new ArrayList<>();
+		mavenCoordinates.add(MAVEN_COORDINATE + version);
+		if (Jvm.version() >= 15) {
+			mavenCoordinates.add("com.diffplug.jscriptbox:jscriptbox:3.0.1");
+			mavenCoordinates.add(NASHORN_MAVEN_COORDINATE + NASHORN_VERSION);
+		}
+
 		return FormatterStep.createLazy(NAME,
-				() -> new State(JarState.from(MAVEN_COORDINATE + version, provisioner), properties.get()),
+				() -> new State(JarState.from(mavenCoordinates, provisioner), properties.get()),
 				State::createFormat);
 	}
 
@@ -65,7 +82,7 @@ public class FreshMarkStep {
 	private static class State implements Serializable {
 		private static final long serialVersionUID = 1L;
 
-		/** The jar that contains the eclipse formatter. */
+		/** The jar that contains the formatter. */
 		final JarState jarState;
 		final NavigableMap<String, ?> properties;
 
@@ -78,8 +95,8 @@ public class FreshMarkStep {
 		}
 
 		FormatterFunc createFormat() throws Exception {
-			Logger logger = Logger.getLogger(FreshMarkStep.class.getName());
-			Consumer<String> loggingStream = logger::warning;
+			Logger logger = LoggerFactory.getLogger(FreshMarkStep.class);
+			Consumer<String> loggingStream = logger::warn;
 
 			ClassLoader classLoader = jarState.getClassLoader();
 

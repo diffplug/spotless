@@ -1,0 +1,11 @@
+{
+  "hello": "world",
+  "hello int": 123,
+  "hello array": ["1", "2", "3", "4"],
+  "hello object": {
+    "property1": "111111",
+    "property2": "2222222",
+    "property3": "333333333",
+    "property4": "44444444"
+  }
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,17 @@
  */
 package com.diffplug.spotless.maven.java;
 
-import java.util.Set;
+import static java.util.stream.Collectors.toSet;
 
-import com.diffplug.common.collect.ImmutableSet;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Set;
+import java.util.stream.Stream;
+
+import org.apache.maven.model.Build;
+import org.apache.maven.project.MavenProject;
+
 import com.diffplug.spotless.maven.FormatterFactory;
 import com.diffplug.spotless.maven.generic.LicenseHeader;
 
@@ -29,12 +37,17 @@ import com.diffplug.spotless.maven.generic.LicenseHeader;
  */
 public class Java extends FormatterFactory {
 
-	private static final Set<String> DEFAULT_INCLUDES = ImmutableSet.of("src/main/java/**/*.java", "src/test/java/**/*.java");
 	private static final String LICENSE_HEADER_DELIMITER = "package ";
 
 	@Override
-	public Set<String> defaultIncludes() {
-		return DEFAULT_INCLUDES;
+	public Set<String> defaultIncludes(MavenProject project) {
+		Path projectDir = project.getBasedir().toPath();
+		Build build = project.getBuild();
+		return Stream.of(build.getSourceDirectory(), build.getTestSourceDirectory())
+				.map(Paths::get)
+				.map(projectDir::relativize)
+				.map(Java::fileMask)
+				.collect(toSet());
 	}
 
 	@Override
@@ -54,7 +67,27 @@ public class Java extends FormatterFactory {
 		addStepFactory(importOrder);
 	}
 
+	public void addPalantirJavaFormat(PalantirJavaFormat palantirJavaFormat) {
+		addStepFactory(palantirJavaFormat);
+	}
+
 	public void addRemoveUnusedImports(RemoveUnusedImports removeUnusedImports) {
 		addStepFactory(removeUnusedImports);
+	}
+
+	public void addFormatAnnotations(FormatAnnotations formatAnnotations) {
+		addStepFactory(formatAnnotations);
+	}
+
+	public void addCleanthat(CleanthatJava cleanthat) {
+		addStepFactory(cleanthat);
+	}
+
+	private static String fileMask(Path path) {
+		String dir = path.toString();
+		if (!dir.endsWith(File.separator)) {
+			dir += File.separator;
+		}
+		return dir + "**" + File.separator + "*.java";
 	}
 }

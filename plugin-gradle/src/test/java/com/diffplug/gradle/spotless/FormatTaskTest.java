@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,96 +15,55 @@
  */
 package com.diffplug.gradle.spotless;
 
-import static com.diffplug.gradle.spotless.Tasks.execute;
-
 import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
 
-import org.assertj.core.api.Assertions;
-import org.gradle.api.GradleException;
 import org.gradle.api.Project;
-import org.gradle.testfixtures.ProjectBuilder;
-import org.junit.Before;
-import org.junit.Test;
+import org.gradle.api.services.BuildServiceParameters;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ResourceHarness;
+import com.diffplug.spotless.TestProvisioner;
 
-public class FormatTaskTest extends ResourceHarness {
-	private SpotlessTask checkTask;
-	private SpotlessTask applyTask;
+class FormatTaskTest extends ResourceHarness {
+	private SpotlessTaskImpl spotlessTask;
 
-	@Before
-	public void createTask() {
-		Project project = ProjectBuilder.builder().build();
-		checkTask = project.getTasks().create("checkTaskUnderTest", SpotlessTask.class);
-		checkTask.setCheck();
-		applyTask = project.getTasks().create("applyTaskUnderTest", SpotlessTask.class);
-		applyTask.setApply();
-	}
-
-	@Test(expected = GradleException.class)
-	public void testLineEndingsCheckFail() throws Exception {
-		checkTask.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
-		checkTask.setTarget(Collections.singleton(setFile("testFile").toContent("\r\n")));
-		execute(checkTask);
+	@BeforeEach
+	void createTask() {
+		Project project = TestProvisioner.gradleProject(rootFolder());
+		spotlessTask = project.getTasks().create("spotlessTaskUnderTest", SpotlessTaskImpl.class);
+		spotlessTask.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
+		spotlessTask.init(GradleIntegrationHarness.providerOf(new SpotlessTaskService() {
+			@Override
+			public BuildServiceParameters.None getParameters() {
+				return null;
+			}
+		}));
 	}
 
 	@Test
-	public void testLineEndingsCheckPass() throws Exception {
-		checkTask.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
-		checkTask.setTarget(Collections.singleton(setFile("testFile").toContent("\n")));
-		execute(checkTask);
-	}
-
-	@Test
-	public void testLineEndingsApply() throws Exception {
+	void testLineEndings() throws Exception {
 		File testFile = setFile("testFile").toContent("\r\n");
+		File outputFile = new File(spotlessTask.getOutputDirectory(), "testFile");
 
-		applyTask.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
-		applyTask.setTarget(Collections.singleton(testFile));
-		execute(applyTask);
+		spotlessTask.setTarget(Collections.singleton(testFile));
+		Tasks.execute(spotlessTask);
 
-		assertFile(testFile).hasContent("\n");
+		assertFile(outputFile).hasContent("\n");
 	}
 
 	@Test
-	public void testStepCheckFail() throws IOException {
+	void testStep() throws Exception {
 		File testFile = setFile("testFile").toContent("apple");
-		checkTask.setTarget(Collections.singleton(testFile));
+		File outputFile = new File(spotlessTask.getOutputDirectory(), "testFile");
+		spotlessTask.setTarget(Collections.singleton(testFile));
 
-		checkTask.addStep(FormatterStep.createNeverUpToDate("double-p", content -> content.replace("pp", "p")));
+		spotlessTask.addStep(FormatterStep.createNeverUpToDate("double-p", content -> content.replace("pp", "p")));
+		Tasks.execute(spotlessTask);
 
-		String diff = String.join("\n",
-				"        @@ -1 +1 @@",
-				"        -apple",
-				"        +aple");
-		Assertions.assertThatThrownBy(() -> execute(checkTask)).hasStackTraceContaining(diff);
-
-		assertFile(testFile).hasContent("apple");
-	}
-
-	@Test
-	public void testStepCheckPass() throws Exception {
-		File testFile = setFile("testFile").toContent("aple");
-		checkTask.setTarget(Collections.singleton(testFile));
-
-		checkTask.addStep(FormatterStep.createNeverUpToDate("double-p", content -> content.replace("pp", "p")));
-		execute(checkTask);
-
-		assertFile(testFile).hasContent("aple");
-	}
-
-	@Test
-	public void testStepApply() throws Exception {
-		File testFile = setFile("testFile").toContent("apple");
-		applyTask.setTarget(Collections.singleton(testFile));
-
-		applyTask.addStep(FormatterStep.createNeverUpToDate("double-p", content -> content.replace("pp", "p")));
-		execute(applyTask);
-
-		assertFile(testFile).hasContent("aple");
+		assertFile(outputFile).hasContent("aple");
 	}
 }

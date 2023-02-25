@@ -1,25 +1,34 @@
+plugins {
+	id 'java-library'
+}
 ext.artifactId = project.artifactIdLibExtra
-ext.version = project.versionLib
+version = rootProject.spotlessChangelog.versionNext
 apply from: rootProject.file('gradle/java-setup.gradle')
 apply from: rootProject.file('gradle/java-publish.gradle')
 
 dependencies {
-	compile project(':lib')
+	api project(':lib')
 	// misc useful utilities
-	compile "com.diffplug.durian:durian-core:${VER_DURIAN}"
-	compile "com.diffplug.durian:durian-collect:${VER_DURIAN}"
+	implementation "com.diffplug.durian:durian-core:${VER_DURIAN}"
+	implementation "com.diffplug.durian:durian-collect:${VER_DURIAN}"
 	// needed by GitAttributesLineEndings
-	compile "org.eclipse.jgit:org.eclipse.jgit:4.9.0.201710071750-r"
-	compile "com.googlecode.concurrent-trees:concurrent-trees:2.6.1"
-	// used for xml parsing in EclipseFormatter
-	compile "org.codehaus.groovy:groovy-xml:2.4.7"
+	implementation "org.eclipse.jgit:org.eclipse.jgit:${VER_JGIT}"
+	implementation "com.googlecode.concurrent-trees:concurrent-trees:2.6.1"
 
 	// testing
-	testCompile project(':testlib')
-	testCompile "junit:junit:${VER_JUNIT}"
-	testCompile "org.assertj:assertj-core:${VER_ASSERTJ}"
-	testCompile "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
+	testImplementation project(':testlib')
+	testImplementation "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"
+	testImplementation "org.assertj:assertj-core:${VER_ASSERTJ}"
+	testImplementation "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
 }
 
 // we'll hold the core lib to a high standard
 spotbugs { reportLevel = 'low' } // low|medium|high (low = sensitive to even minor mistakes)
+
+apply from: rootProject.file('gradle/special-tests.gradle')
+tasks.withType(Test).configureEach {
+	if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_16)) {
+		// needed for EclipseCdtFormatterStepTest
+		jvmArgs '--add-opens=java.base/java.lang=ALL-UNNAMED'
+	}
+}

@@ -1,0 +1,14 @@
+package org.cqfn.diktat.example.gradle.multiproject
+/**
+ * @return something
+ */
+class Main {
+	/**
+	 * foo a [member] to this group.
+	 *
+	 */
+	fun foo() {
+		bar(";")
+		bar();
+	}
+}

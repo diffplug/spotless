@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,14 +24,10 @@ import java.util.LinkedList;
 import java.util.Properties;
 
 import org.assertj.core.api.AbstractAssert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class FormatterPropertiesTest extends ResourceHarness {
-
-	@Rule
-	public ExpectedException expectedEx = ExpectedException.none();
+class FormatterPropertiesTest extends ResourceHarness {
 
 	private static final String RESOURCES_ROOT_DIR = "formatter/properties/";
 
@@ -57,7 +53,7 @@ public class FormatterPropertiesTest extends ResourceHarness {
 	};
 
 	@Test
-	public void differntPropertyFileTypes() throws IOException {
+	void differentPropertyFileTypes() throws IOException {
 		for (String settingsResource : VALID_SETTINGS_RESOURCES) {
 			File settingsFile = createTestFile(settingsResource);
 			FormatterProperties preferences = FormatterProperties.from(settingsFile);
@@ -68,7 +64,7 @@ public class FormatterPropertiesTest extends ResourceHarness {
 	}
 
 	@Test
-	public void multiplePropertyFiles() throws IOException {
+	void multiplePropertyFiles() throws IOException {
 		LinkedList<File> settingsFiles = new LinkedList<>();
 		for (String settingsResource : VALID_SETTINGS_RESOURCES) {
 			File settingsFile = createTestFile(settingsResource);
@@ -82,7 +78,7 @@ public class FormatterPropertiesTest extends ResourceHarness {
 	}
 
 	@Test
-	public void invalidPropertyFiles() throws IOException {
+	void invalidPropertyFiles() throws IOException {
 		for (String settingsResource : INVALID_SETTINGS_RESOURCES) {
 			File settingsFile = createTestFile(settingsResource);
 			boolean exceptionCaught = false;
@@ -101,22 +97,15 @@ public class FormatterPropertiesTest extends ResourceHarness {
 	}
 
 	@Test
-	public void nonExistingFile() throws IOException {
-		boolean exceptionCaught = false;
-		String filePath = "does/not/exist.properties";
-		boolean isWin = LineEnding.PLATFORM_NATIVE.str().equals(LineEnding.WINDOWS.str());
-		if (isWin) {
-			filePath = filePath.replace('/', '\\');
-		}
+	void nonExistingFile() throws IOException {
+		String filePath = FileSignature.pathUnixToNative("does/not/exist.properties");
 		try {
 			FormatterProperties.from(new File(filePath));
+			Assertions.fail("Should have thrown");
 		} catch (IllegalArgumentException ex) {
-			exceptionCaught = true;
 			assertThat(ex.getMessage())
 					.as("IllegalArgumentException does not contain path of non-existing file.").contains(filePath);
 		}
-		assertThat(exceptionCaught)
-				.as("No IllegalArgumentException thrown for non-existing file.").isTrue();
 	}
 
 	private static class FormatterSettingsAssert extends AbstractAssert<FormatterSettingsAssert, FormatterProperties> {
@@ -168,11 +157,9 @@ public class FormatterPropertiesTest extends ResourceHarness {
 
 			return this;
 		}
-
 	}
 
 	private static FormatterSettingsAssert assertFor(FormatterProperties actual) {
 		return new FormatterSettingsAssert(actual);
 	}
-
 }

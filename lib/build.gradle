@@ -1,15 +1,139 @@
+plugins {
+	id 'java-library'
+	id 'io.github.davidburstrom.version-compatibility'
+}
 ext.artifactId = project.artifactIdLib
-ext.version = project.versionLib
+version = rootProject.spotlessChangelog.versionNext
 apply from: rootProject.file('gradle/java-setup.gradle')
 apply from: rootProject.file('gradle/java-publish.gradle')
 
+def NEEDS_GLUE = [
+	'sortPom',
+	'palantirJavaFormat',
+	'ktfmt',
+	'ktlint',
+	'flexmark',
+	'diktat',
+	'scalafmt',
+	'jackson',
+	'gson',
+	'cleanthat'
+]
+for (glue in NEEDS_GLUE) {
+	sourceSets.register(glue) {
+		compileClasspath += sourceSets.main.output
+		runtimeClasspath += sourceSets.main.output
+		java {}
+	}
+}
+
+versionCompatibility {
+	adapters {
+		namespaces.register('KtLint') {
+			// as discussed at https://github.com/diffplug/spotless/pull/1475
+			// we will support no more than 2 breaking changes at a time = 3 incompatible versions
+			// we will try to drop down to only one version if a stable API can be maintained for a full year
+			versions = [
+				'0.46.0',
+				'0.47.0',
+				'0.48.0',
+			]
+			targetSourceSetName = 'ktlint'
+		}
+		namespaces.register('Cleanthat') {
+			versions = [
+				'2.1',
+			]
+			targetSourceSetName = 'cleanthat'
+		}
+	}
+}
+
+tasks.named("check").configure {
+	dependsOn(tasks.named("testCompatibilityAdapters"))
+	dependsOn(tasks.named("testCompatibility"))
+}
+
 dependencies {
+	compileOnly 'org.slf4j:slf4j-api:2.0.0'
 	// zero runtime reqs is a hard requirements for spotless-lib
 	// if you need a dep, put it in lib-extra
-	testCompile "junit:junit:${VER_JUNIT}"
-	testCompile "org.assertj:assertj-core:${VER_ASSERTJ}"
-	testCompile "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
+	testCommonImplementation "org.junit.jupiter:junit-jupiter:$VER_JUNIT"
+	testCommonImplementation "org.assertj:assertj-core:$VER_ASSERTJ"
+	testCommonImplementation "com.diffplug.durian:durian-testlib:$VER_DURIAN"
+
+	// used for pom sorting
+	sortPomCompileOnly 'com.github.ekryd.sortpom:sortpom-sorter:3.0.0'
+	sortPomCompileOnly 'org.slf4j:slf4j-api:2.0.0'
+
+	palantirJavaFormatCompileOnly 'com.palantir.javaformat:palantir-java-format:1.1.0' 	// this version needs to stay compilable against Java 8 for CI Job testNpm
+
+	// used jackson-based formatters
+	jacksonCompileOnly 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
+	jacksonCompileOnly 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.14.2'
+
+	String VER_KTFMT = '0.43'
+	ktfmtCompileOnly "com.facebook:ktfmt:$VER_KTFMT"
+	String VER_KTLINT_GOOGLE_JAVA_FORMAT = '1.7' // for JDK 8 compatibility
+	ktfmtCompileOnly("com.google.googlejavaformat:google-java-format") {
+		version {
+			strictly VER_KTLINT_GOOGLE_JAVA_FORMAT
+		}
+	}
+
+	String VER_KTLINT='0.46.1'
+	ktlintCompileOnly "com.pinterest:ktlint:$VER_KTLINT"
+	ktlintCompileOnly "com.pinterest.ktlint:ktlint-core:$VER_KTLINT"
+	ktlintCompileOnly "com.pinterest.ktlint:ktlint-ruleset-experimental:$VER_KTLINT"
+	ktlintCompileOnly "com.pinterest.ktlint:ktlint-ruleset-standard:$VER_KTLINT"
+
+	compatKtLint0Dot46Dot0CompileOnly 'com.pinterest.ktlint:ktlint-core:0.46.0'
+	compatKtLint0Dot46Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.46.0'
+	compatKtLint0Dot46Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.46.0'
+	compatKtLint0Dot47Dot0CompileOnly 'com.pinterest.ktlint:ktlint-core:0.47.0'
+	compatKtLint0Dot47Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.47.0'
+	compatKtLint0Dot47Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.47.0'
+	compatKtLint0Dot48Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-core:0.48.0'
+	compatKtLint0Dot48Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.48.0'
+	compatKtLint0Dot48Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.48.0'
+
+	String VER_SCALAFMT="3.7.1"
+	scalafmtCompileOnly "org.scalameta:scalafmt-core_2.13:$VER_SCALAFMT"
+
+	String VER_DIKTAT = "1.2.4.2"
+	diktatCompileOnly "org.cqfn.diktat:diktat-rules:$VER_DIKTAT"
+
+	// used for markdown formatting
+	flexmarkCompileOnly 'com.vladsch.flexmark:flexmark-all:0.62.2'
+
+	gsonCompileOnly 'com.google.code.gson:gson:2.10.1'
+
+	cleanthatCompileOnly 'io.github.solven-eu.cleanthat:java:2.2'
+	compatCleanthat2Dot1CompileAndTestOnly 'io.github.solven-eu.cleanthat:java:2.2'
 }
 
 // we'll hold the core lib to a high standard
 spotbugs { reportLevel = 'low' } // low|medium|high (low = sensitive to even minor mistakes)
+
+apply from: rootProject.file('gradle/special-tests.gradle')
+tasks.withType(Test).configureEach {
+	def args = []
+	if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_16)) {
+		// https://docs.gradle.org/7.5/userguide/upgrading_version_7.html#removes_implicit_add_opens_for_test_workers
+		args += [
+			"--add-opens=java.base/java.lang=ALL-UNNAMED",
+			"--add-opens=java.base/java.util=ALL-UNNAMED",
+		]
+	}
+	if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_18)) {
+		// https://openjdk.org/jeps/411
+		args += "-Djava.security.manager=allow"
+	}
+	jvmArgs(args)
+}
+
+jar {
+	for (glue in NEEDS_GLUE) {
+		from sourceSets.getByName(glue).output.classesDirs
+	}
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2020 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.inject.Inject;
+
 import org.gradle.api.Action;
 
 import com.diffplug.spotless.FormatterProperties;
@@ -33,15 +35,16 @@ public class FreshMarkExtension extends FormatExtension {
 
 	public final List<Action<Map<String, Object>>> propertyActions = new ArrayList<>();
 
-	public FreshMarkExtension(SpotlessExtension root) {
-		super(root);
+	@Inject
+	public FreshMarkExtension(SpotlessExtension spotless) {
+		super(spotless);
 		addStep(FreshMarkStep.create(() -> {
 			Map<String, Object> map = new HashMap<>();
 			for (Action<Map<String, Object>> action : propertyActions) {
 				action.execute(map);
 			}
 			return map;
-		}, GradleProvisioner.fromProject(getProject())));
+		}, provisioner()));
 	}
 
 	public void properties(Action<Map<String, Object>> action) {
@@ -62,7 +65,7 @@ public class FreshMarkExtension extends FormatExtension {
 	protected void setupTask(SpotlessTask task) {
 		// defaults to all markdown files
 		if (target == null) {
-			target = parseTarget("**/*.md");
+			throw noDefaultTargetException();
 		}
 		super.setupTask(task);
 	}

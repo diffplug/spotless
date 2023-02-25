@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,18 +20,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.util.Arrays;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 
-public class CppDefaultsTest extends ResourceHarness {
+class CppDefaultsTest extends ResourceHarness {
 
 	@Test
-	public void testDelimiterExpr() throws Exception {
+	void testDelimiterExpr() throws Exception {
 		final String header = "/*My tests header*/";
-		FormatterStep step = LicenseHeaderStep.createFromHeader(header, CppDefaults.DELIMITER_EXPR);
+		FormatterStep step = LicenseHeaderStep.headerDelimiter(header, CppDefaults.DELIMITER_EXPR).build();
 		final File dummyFile = setFile("src/main/cpp/file1.dummy").toContent("");
 		for (String testSource : Arrays.asList(
 				"//Accpet multiple spaces between composed term.@using  namespace std;",
