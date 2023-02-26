@@ -16,6 +16,7 @@
 package com.diffplug.spotless.maven.npm;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,6 +33,8 @@ import com.diffplug.spotless.maven.FormatterStepFactory;
 import com.diffplug.spotless.npm.NpmPathResolver;
 
 public abstract class AbstractNpmFormatterStepFactory implements FormatterStepFactory {
+
+	public static final String SPOTLESS_NPM_INSTALL_CACHE_DEFAULT_NAME = "spotless-npm-install-cache";
 
 	@Parameter
 	private String npmExecutable;
@@ -69,9 +72,9 @@ public abstract class AbstractNpmFormatterStepFactory implements FormatterStepFa
 			return null;
 		}
 		if ("true".equals(this.npmInstallCache.toLowerCase(Locale.ROOT))) {
-			return new File(buildDir(stepConfig), "spotless-npm-install-cache");
+			return new File(buildDir(stepConfig), SPOTLESS_NPM_INSTALL_CACHE_DEFAULT_NAME);
 		}
-		return stepConfig.getFileLocator().locateFile(this.npmInstallCache);
+		return Paths.get(this.npmInstallCache).toFile();
 	}
 
 	protected File baseDir(FormatterStepConfig stepConfig) {

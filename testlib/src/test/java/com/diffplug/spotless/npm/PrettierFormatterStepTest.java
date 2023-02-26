@@ -52,7 +52,7 @@ class PrettierFormatterStepTest extends ResourceHarness {
 					TestProvisioner.mavenCentral(),
 					projectDir(),
 					buildDir(),
-					cacheDir(),
+					null,
 					npmPathResolver(),
 					new PrettierConfig(prettierRc, null));
 
@@ -78,7 +78,7 @@ class PrettierFormatterStepTest extends ResourceHarness {
 					TestProvisioner.mavenCentral(),
 					projectDir(),
 					buildDir(),
-					cacheDir(),
+					null,
 					npmPathResolver(),
 					new PrettierConfig(null, ImmutableMap.of("filepath", "anyname.json"))); // should select parser based on this name
 
@@ -99,7 +99,7 @@ class PrettierFormatterStepTest extends ResourceHarness {
 					TestProvisioner.mavenCentral(),
 					projectDir(),
 					buildDir(),
-					cacheDir(),
+					null,
 					npmPathResolver(),
 					new PrettierConfig(null, Collections.emptyMap()));
 
@@ -115,7 +115,7 @@ class PrettierFormatterStepTest extends ResourceHarness {
 					TestProvisioner.mavenCentral(),
 					projectDir(),
 					buildDir(),
-					cacheDir(),
+					null,
 					npmPathResolver(),
 					new PrettierConfig(null, ImmutableMap.of("parser", "postcss")));
 			try (StepHarnessWithFile stepHarness = StepHarnessWithFile.forStep(this, formatterStep)) {
@@ -141,7 +141,7 @@ class PrettierFormatterStepTest extends ResourceHarness {
 					TestProvisioner.mavenCentral(),
 					projectDir(),
 					buildDir(),
-					cacheDir(),
+					null,
 					npmPathResolver(),
 					config); // should select parser based on this name
 
