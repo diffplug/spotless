@@ -8,8 +8,8 @@ output = [
   ].join('\n');
 -->
 [![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
-[![Changelog](https://img.shields.io/badge/changelog-2.32.0-blue.svg)](CHANGES.md)
-[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.32.0/index.html)
+[![Changelog](https://img.shields.io/badge/changelog-2.33.0-blue.svg)](CHANGES.md)
+[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.33.0/index.html)
 <!---freshmark /shields -->
 
 <!---freshmark javadoc
@@ -39,7 +39,7 @@ user@machine repo % mvn spotless:check
   - [Requirements](#requirements)
   - [Binding to maven phase](#binding-to-maven-phase)
 - **Languages**
-  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations))
+  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
   - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
@@ -182,6 +182,9 @@ any other maven phase (i.e. compile) then it can be configured as below;
       <include>src/test/java/**/*.java</include>
     </includes>
 
+    <!-- Cleanthat will refactor your code, but it may break your style: apply it before your formatter -->
+    <cleanthat />        <!-- has its own section below -->
+
     <googleJavaFormat /> <!-- has its own section below -->
     <eclipse />          <!-- has its own section below -->
     <prettier />         <!-- has its own section below -->
@@ -274,6 +277,25 @@ list of well-known type annotations.  You can make a pull request to add new one
 In the future there will be mechanisms to add/remove annotations from the list.
 These mechanisms already exist for the Gradle plugin.
 
+### Cleanthat
+
+[homepage](https://github.com/solven-eu/cleanthat). CleanThat enables automatic refactoring of Java code. [ChangeLog](https://github.com/solven-eu/cleanthat/blob/master/CHANGES.MD)
+
+```xml
+<cleanthat>
+  <version>2.0</version>                          <!-- optional version of Cleanthat -->
+  <sourceJdk>${maven.compiler.source}</sourceJdk> <!-- optional. Default to ${maven.compiler.source} else '1.7' -->
+  <mutators>
+    <mutator>*</mutator>                          <!-- optional. Default to '*' to include all mutators -->
+  </mutators>
+  <mutators> <!-- List of mutators: https://github.com/solven-eu/cleanthat/tree/master/java/src/main/java/eu/solven/cleanthat/engine/java/refactorer/mutators -->
+    <mutator>LiteralsFirstInComparisons</mutator> <!-- You may alternatively list the requested mutators -->
+  </mutators>
+  <excludedMutators>
+    <excludedMutator>OptionalNotEmpty</excludedMutator> <!-- You can discard specific rules -->
+  </excludedMutators>
+</cleanthat>
+```
 
 ## Groovy
 

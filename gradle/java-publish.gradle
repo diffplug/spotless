@@ -170,11 +170,11 @@ model {
 	}
 }
 
-if (System.env['JITPACK'] == 'true') {
+if (System.env['JITPACK'] == 'true' || version.endsWith('-SNAPSHOT')) {
 	signing {
 		setRequired(false)
 	}
-} else if (!version.endsWith('-SNAPSHOT')) {
+} else {
 	signing {
 		String gpg_key = decode64('ORG_GRADLE_PROJECT_gpg_key64')
 		useInMemoryPgpKeys(gpg_key, System.env['ORG_GRADLE_PROJECT_gpg_passphrase'])

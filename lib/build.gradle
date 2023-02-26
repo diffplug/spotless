@@ -16,7 +16,8 @@ def NEEDS_GLUE = [
 	'diktat',
 	'scalafmt',
 	'jackson',
-	'gson'
+	'gson',
+	'cleanthat'
 ]
 for (glue in NEEDS_GLUE) {
 	sourceSets.register(glue) {
@@ -38,6 +39,12 @@ versionCompatibility {
 				'0.48.0',
 			]
 			targetSourceSetName = 'ktlint'
+		}
+		namespaces.register('Cleanthat') {
+			versions = [
+				'2.1',
+			]
+			targetSourceSetName = 'cleanthat'
 		}
 	}
 }
@@ -62,10 +69,10 @@ dependencies {
 	palantirJavaFormatCompileOnly 'com.palantir.javaformat:palantir-java-format:1.1.0' 	// this version needs to stay compilable against Java 8 for CI Job testNpm
 
 	// used jackson-based formatters
-	jacksonCompileOnly 'com.fasterxml.jackson.core:jackson-databind:2.14.1'
-	jacksonCompileOnly 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.14.1'
+	jacksonCompileOnly 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
+	jacksonCompileOnly 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.14.2'
 
-	String VER_KTFMT = '0.42'
+	String VER_KTFMT = '0.43'
 	ktfmtCompileOnly "com.facebook:ktfmt:$VER_KTFMT"
 	String VER_KTLINT_GOOGLE_JAVA_FORMAT = '1.7' // for JDK 8 compatibility
 	ktfmtCompileOnly("com.google.googlejavaformat:google-java-format") {
@@ -100,6 +107,9 @@ dependencies {
 	flexmarkCompileOnly 'com.vladsch.flexmark:flexmark-all:0.62.2'
 
 	gsonCompileOnly 'com.google.code.gson:gson:2.10.1'
+
+	cleanthatCompileOnly 'io.github.solven-eu.cleanthat:java:2.6'
+	compatCleanthat2Dot1CompileAndTestOnly 'io.github.solven-eu.cleanthat:java:2.6'
 }
 
 // we'll hold the core lib to a high standard
