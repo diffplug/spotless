@@ -86,7 +86,7 @@ class TimedLoggerTest {
 		timedLogger.withInfo("This should be logged").run(() -> testTicker.tickMillis(2_000));
 
 		testLogger.assertEvents(2);
-		testLogger.assertHasEventWithMessageAndArguments(MESSAGE_SUFFIX_TOOK, "2s");
+		testLogger.assertHasEventWithMessageAndArguments(MESSAGE_SUFFIX_TOOK, "2.0s");
 	}
 
 	@Test
