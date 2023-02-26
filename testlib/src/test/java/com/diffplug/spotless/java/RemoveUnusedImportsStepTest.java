@@ -30,7 +30,8 @@ class RemoveUnusedImportsStepTest {
 				.testResource("java/removeunusedimports/JavaCodeUnformatted.test", "java/removeunusedimports/JavaCodeFormatted.test")
 				.testResource("java/removeunusedimports/JavaCodeWithLicenseUnformatted.test", "java/removeunusedimports/JavaCodeWithLicenseFormatted.test")
 				.testResource("java/removeunusedimports/JavaCodeWithLicensePackageUnformatted.test", "java/removeunusedimports/JavaCodeWithLicensePackageFormatted.test")
-				.testResource("java/removeunusedimports/JavaCodeWithPackageUnformatted.test", "java/removeunusedimports/JavaCodeWithPackageFormatted.test");
+				.testResource("java/removeunusedimports/JavaCodeWithPackageUnformatted.test", "java/removeunusedimports/JavaCodeWithPackageFormatted.test")
+				.testResource("java/removeunusedimports/Jdk17MultineStringBlockUnformatted.test", "java/removeunusedimports/Jdk17MultineStringBlockFormatted.test");
 	}
 
 	@Test
