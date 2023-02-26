@@ -5,6 +5,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * Add `includeDraft` option, to include draft mutators from composite mutators ([#1574](https://github.com/diffplug/spotless/pull/1574))
+* `npm`-based formatters (`prettier`, `tsfmt` and `eslint`) now support caching of `node_modules` directory.
+  To enable it, provide `npmInstallCache()` option. ([#1590](https://github.com/diffplug/spotless/pull/1590))
 ### Changes
 * Bump default `cleanthat` version to latest `2.2` -> `2.6` ([#1574](https://github.com/diffplug/spotless/pull/1574))
 * Bump default `cleanthat` version to latest `2.1` -> `2.2` ([#1569](https://github.com/diffplug/spotless/pull/1569))
