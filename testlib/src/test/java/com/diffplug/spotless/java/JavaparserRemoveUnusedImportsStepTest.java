@@ -22,18 +22,19 @@ import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
-class RemoveUnusedImportsStepTest {
+class JavaparserRemoveUnusedImportsStepTest {
 	@Test
 	void behavior() throws Exception {
-		FormatterStep step = RemoveUnusedImportsStep.create(TestProvisioner.mavenCentral());
+		FormatterStep step = JavaparserRemoveUnusedImportsStep.create(TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("java/removeunusedimports/JavaCodeUnformatted.test", "java/removeunusedimports/JavaCodeFormatted.test")
 				.testResource("java/removeunusedimports/JavaCodeWithLicenseUnformatted.test", "java/removeunusedimports/JavaCodeWithLicenseFormatted.test")
 				.testResource("java/removeunusedimports/JavaCodeWithLicensePackageUnformatted.test", "java/removeunusedimports/JavaCodeWithLicensePackageFormatted.test")
 				.testResource("java/removeunusedimports/JavaCodeWithPackageUnformatted.test", "java/removeunusedimports/JavaCodeWithPackageFormatted.test")
-				// GoogleFormat requires running over a JDK17 to handle JDK17 features
-				// .testResource("java/removeunusedimports/Jdk17MultineStringBlockUnformatted.test", "java/removeunusedimports/Jdk17MultineStringBlockFormatted.test")
-				.testResource("java/removeunusedimports/RevelcUnformatted.test", "java/removeunusedimports/RevelcFormatted.test");
+				.testResource("java/removeunusedimports/Jdk17MultineStringBlockUnformatted.test", "java/removeunusedimports/Jdk17MultineStringBlockFormatted.test")
+		// JavaParser is failing over an annotated package: https://github.com/javaparser/javaparser/issues/3924
+		// .testResource("java/removeunusedimports/RevelcUnformatted.test", "java/removeunusedimports/RevelcFormatted.test")
+		;
 	}
 
 	@Test
@@ -46,7 +47,7 @@ class RemoveUnusedImportsStepTest {
 
 			@Override
 			protected FormatterStep create() {
-				return RemoveUnusedImportsStep.create(TestProvisioner.mavenCentral());
+				return JavaparserRemoveUnusedImportsStep.create(TestProvisioner.mavenCentral());
 			}
 		}.testEquals();
 	}

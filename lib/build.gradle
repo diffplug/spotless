@@ -17,7 +17,8 @@ def NEEDS_GLUE = [
 	'scalafmt',
 	'jackson',
 	'gson',
-	'cleanthat'
+	'cleanthat',
+	'javaparser'
 ]
 for (glue in NEEDS_GLUE) {
 	sourceSets.register(glue) {
@@ -110,6 +111,9 @@ dependencies {
 
 	cleanthatCompileOnly 'io.github.solven-eu.cleanthat:java:2.2'
 	compatCleanthat2Dot1CompileAndTestOnly 'io.github.solven-eu.cleanthat:java:2.2'
+
+	javaparserCompileOnly 'com.github.javaparser:javaparser-core:3.25.0'
+	javaparserCompileOnly 'org.slf4j:slf4j-api:2.0.6'
 }
 
 // we'll hold the core lib to a high standard
