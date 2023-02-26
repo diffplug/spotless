@@ -5,8 +5,10 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Fixed
 * `<json><jackson>` can now handle `Array` as a root element. ([#1585](https://github.com/diffplug/spotless/pull/1585))
+### Added
+* `cleanthat` added `includeDraft` option, to include draft mutators from composite mutators ([#XXX](https://github.com/diffplug/spotless/pull/XXX))
 ### Changes
-* Bump default `cleanthat` version to latest `2.1` -> `2.2` ([#1569](https://github.com/diffplug/spotless/pull/1569))
+* Bump default `cleanthat` version to latest `2.1` -> `2.6` ([#1569](https://github.com/diffplug/spotless/pull/1569) and [#1574](https://github.com/diffplug/spotless/pull/1574))
 
 ## [2.33.0] - 2023-02-10
 ### Added
