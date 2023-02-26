@@ -109,8 +109,8 @@ dependencies {
 
 	gsonCompileOnly 'com.google.code.gson:gson:2.10.1'
 
-	cleanthatCompileOnly 'io.github.solven-eu.cleanthat:java:2.2'
-	compatCleanthat2Dot1CompileAndTestOnly 'io.github.solven-eu.cleanthat:java:2.2'
+	cleanthatCompileOnly 'io.github.solven-eu.cleanthat:java:2.6'
+	compatCleanthat2Dot1CompileAndTestOnly 'io.github.solven-eu.cleanthat:java:2.6'
 
 	javaparserCompileOnly 'com.github.javaparser:javaparser-core:3.25.0'
 	javaparserCompileOnly 'org.slf4j:slf4j-api:2.0.6'
