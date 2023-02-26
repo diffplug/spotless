@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+* `<json><jackson>` can now handle `Array` as a root element. ([#1585](https://github.com/diffplug/spotless/pull/1585))
 ### Changes
 * Bump default `cleanthat` version to latest `2.1` -> `2.2` ([#1569](https://github.com/diffplug/spotless/pull/1569))
 
