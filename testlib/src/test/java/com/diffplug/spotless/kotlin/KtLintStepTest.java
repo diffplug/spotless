@@ -88,14 +88,14 @@ class KtLintStepTest extends ResourceHarness {
 	@Test
 	void equality() {
 		new SerializableEqualityTester() {
-			String version = "0.32.0";
+			String version = "0.48.0";
 
 			@Override
 			protected void setupTest(API api) {
 				// same version == same
 				api.areDifferentThan();
 				// change the version, and it's different
-				version = "0.38.0-alpha01";
+				version = "0.48.1";
 				api.areDifferentThan();
 			}
 

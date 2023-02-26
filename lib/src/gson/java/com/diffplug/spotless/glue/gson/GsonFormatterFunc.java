@@ -21,6 +21,7 @@ import java.util.Collections;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonWriter;
@@ -57,8 +58,8 @@ public class GsonFormatterFunc implements FormatterFunc {
 			if (jsonElement == null) {
 				throw new AssertionError(FAILED_TO_PARSE_ERROR_MESSAGE);
 			}
-			if (gsonConfig.isSortByKeys() && jsonElement.isJsonObject()) {
-				jsonElement = sortByKeys(jsonElement.getAsJsonObject());
+			if (gsonConfig.isSortByKeys()) {
+				jsonElement = sortByKeys(jsonElement);
 			}
 			try (StringWriter stringWriter = new StringWriter()) {
 				JsonWriter jsonWriter = new JsonWriter(stringWriter);
@@ -72,16 +73,33 @@ public class GsonFormatterFunc implements FormatterFunc {
 		return result;
 	}
 
+	private JsonElement sortByKeys(JsonElement jsonElement) {
+		if (jsonElement.isJsonArray()) {
+			return sortByKeys(jsonElement.getAsJsonArray());
+		} else if (jsonElement.isJsonObject()) {
+			return sortByKeys(jsonElement.getAsJsonObject());
+		} else {
+			return jsonElement;
+		}
+	}
+
 	private JsonElement sortByKeys(JsonObject jsonObject) {
 		JsonObject result = new JsonObject();
 		jsonObject.keySet().stream().sorted()
 				.forEach(key -> {
-					JsonElement element = jsonObject.get(key);
-					if (element.isJsonObject()) {
-						element = sortByKeys(element.getAsJsonObject());
-					}
-					result.add(key, element);
+					JsonElement sorted = sortByKeys(jsonObject.get(key));
+					result.add(key, sorted);
 				});
+		return result;
+	}
+
+	private JsonElement sortByKeys(JsonArray jsonArray) {
+		var result = new JsonArray();
+		for (JsonElement element : jsonArray) {
+			JsonElement sorted = sortByKeys(element);
+			result.add(sorted);
+		}
+
 		return result;
 	}
 

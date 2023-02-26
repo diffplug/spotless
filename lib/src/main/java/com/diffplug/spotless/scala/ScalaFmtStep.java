@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ public class ScalaFmtStep {
 	// prevent direct instantiation
 	private ScalaFmtStep() {}
 
-	private static final String DEFAULT_VERSION = "3.6.1";
+	static final String DEFAULT_VERSION = "3.7.1";
 
 	private static final String DEFAULT_SCALA_MAJOR_VERSION = "2.13";
 	static final String NAME = "scalafmt";

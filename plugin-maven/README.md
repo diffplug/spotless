@@ -3,28 +3,20 @@
 <!---freshmark shields
 output = [
   link(shield('Maven central', 'mavencentral', '{{group}}:{{artifactIdMaven}}', 'blue'), 'https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22{{group}}%22%20AND%20a%3A%22{{artifactIdMaven}}%22'),
-  link(shield('Javadoc', 'javadoc', 'yes', 'blue'), 'https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/{{versionLast}}/index.html'),
-  link(shield('Changelog', 'changelog', '{{versionLast}}', 'brightgreen'), 'CHANGES.md'),
-  '',
-  link(image('Circle CI', 'https://circleci.com/gh/diffplug/spotless/tree/main.svg?style=shield'), 'https://circleci.com/gh/diffplug/spotless/tree/main'),
-  link(shield('Live chat', 'gitter', 'chat', 'brightgreen'), 'https://gitter.im/{{org}}/{{name}}'),
-  link(shield('License Apache', 'license', 'apache', 'brightgreen'), 'https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)')
+  link(shield('Changelog', 'changelog', '{{versionLast}}', 'blue'), 'CHANGES.md'),
+  link(shield('Javadoc', 'javadoc', 'here', 'blue'), 'https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/{{versionLast}}/index.html')
   ].join('\n');
 -->
 [![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
-[![Javadoc](https://img.shields.io/badge/javadoc-yes-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.30.0/index.html)
-[![Changelog](https://img.shields.io/badge/changelog-2.30.0-brightgreen.svg)](CHANGES.md)
-
-[![Circle CI](https://circleci.com/gh/diffplug/spotless/tree/main.svg?style=shield)](https://circleci.com/gh/diffplug/spotless/tree/main)
-[![Live chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/diffplug/spotless)
-[![License Apache](https://img.shields.io/badge/license-apache-brightgreen.svg)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
+[![Changelog](https://img.shields.io/badge/changelog-2.33.0-blue.svg)](CHANGES.md)
+[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.33.0/index.html)
 <!---freshmark /shields -->
 
 <!---freshmark javadoc
 output = prefixDelimiterReplace(input, 'https://{{org}}.github.io/{{name}}/javadoc/spotless-plugin-maven/', '/', versionLast)
 -->
 
-Spotless is a general-purpose formatting plugin used by [4,000 projects on GitHub (August 2020)](https://github.com/search?l=gradle&q=spotless&type=Code).  It is completely à la carte, but also includes powerful "batteries-included" if you opt-in. Plugin requires a version of Maven higher or equal to 3.1.0.
+Spotless is a general-purpose formatting plugin used by [6,000 projects on GitHub (Jan 2023)](https://github.com/search?l=Maven+POM&q=spotless&type=Code).  It is completely à la carte, but also includes powerful "batteries-included" if you opt-in. Plugin requires a version of Maven higher or equal to 3.1.0.
 
 To people who use your build, it looks like this:
 
@@ -47,7 +39,7 @@ user@machine repo % mvn spotless:check
   - [Requirements](#requirements)
   - [Binding to maven phase](#binding-to-maven-phase)
 - **Languages**
-  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations))
+  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
   - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
@@ -190,6 +182,9 @@ any other maven phase (i.e. compile) then it can be configured as below;
       <include>src/test/java/**/*.java</include>
     </includes>
 
+    <!-- Cleanthat will refactor your code, but it may break your style: apply it before your formatter -->
+    <cleanthat />        <!-- has its own section below -->
+
     <googleJavaFormat /> <!-- has its own section below -->
     <eclipse />          <!-- has its own section below -->
     <prettier />         <!-- has its own section below -->
@@ -282,6 +277,25 @@ list of well-known type annotations.  You can make a pull request to add new one
 In the future there will be mechanisms to add/remove annotations from the list.
 These mechanisms already exist for the Gradle plugin.
 
+### Cleanthat
+
+[homepage](https://github.com/solven-eu/cleanthat). CleanThat enables automatic refactoring of Java code. [ChangeLog](https://github.com/solven-eu/cleanthat/blob/master/CHANGES.MD)
+
+```xml
+<cleanthat>
+  <version>2.0</version>                          <!-- optional version of Cleanthat -->
+  <sourceJdk>${maven.compiler.source}</sourceJdk> <!-- optional. Default to ${maven.compiler.source} else '1.7' -->
+  <mutators>
+    <mutator>*</mutator>                          <!-- optional. Default to '*' to include all mutators -->
+  </mutators>
+  <mutators> <!-- List of mutators: https://github.com/solven-eu/cleanthat/tree/master/java/src/main/java/eu/solven/cleanthat/engine/java/refactorer/mutators -->
+    <mutator>LiteralsFirstInComparisons</mutator> <!-- You may alternatively list the requested mutators -->
+  </mutators>
+  <excludedMutators>
+    <excludedMutator>OptionalNotEmpty</excludedMutator> <!-- You can discard specific rules -->
+  </excludedMutators>
+</cleanthat>
+```
 
 ## Groovy
 

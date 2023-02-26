@@ -207,7 +207,7 @@ If it doesn't work, you can check the JitPack log at `https://jitpack.io/com/git
 
 ### Maven
 
-Run `./gradlew publishToMavenLocal` to publish this to your local repository. The maven plugin is not published to JitPack due to [jitpack/jitpack.io#4112](https://github.com/jitpack/jitpack.io/issues/4112).
+Run `./gradlew publishToMavenLocal` to publish this to your local repository. You can also use the JitPack artifacts, using the same principles as Gradle above.
 
 ## License
 

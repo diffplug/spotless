@@ -10,6 +10,32 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+* `JacksonJsonFormatterFunc` handles json files with an Array as root. ([#1585](https://github.com/diffplug/spotless/pull/1585))
+
+## [2.35.0] - 2023-02-10
+### Added
+* CleanThat Java Refactorer. ([#1560](https://github.com/diffplug/spotless/pull/1560))
+* Introduce `LazyArgLogger` to allow for lazy evaluation of log messages in slf4j logging. ([#1565](https://github.com/diffplug/spotless/pull/1565))
+### Fixed
+* Allow multiple instances of the same npm-based formatter to be used by separating their `node_modules` directories. ([#1565](https://github.com/diffplug/spotless/pull/1565))
+* `ktfmt` default style uses correct continuation indent. ([#1562](https://github.com/diffplug/spotless/pull/1562))
+### Changes
+* Bump default `ktfmt` version to latest `0.42` -> `0.43` ([#1561](https://github.com/diffplug/spotless/pull/1561))
+* Bump default `jackson` version to latest `2.14.1` -> `2.14.2` ([#1536](https://github.com/diffplug/spotless/pull/1536))
+
+## [2.34.1] - 2023-02-05
+### Changes
+* **POTENTIALLY BREAKING** Bump bytecode from Java 8 to 11 ([#1530](https://github.com/diffplug/spotless/pull/1530) part 2 of [#1337](https://github.com/diffplug/spotless/issues/1337))
+### Fixed
+* **POTENTIALLY BREAKING** `sortByKeys` for JSON formatting now takes into account objects inside arrays ([#1546](https://github.com/diffplug/spotless/pull/1546))
+* `freshmark` fixed on java 15+ ([#1304](https://github.com/diffplug/spotless/pull/1304) fixes [#803](https://github.com/diffplug/spotless/issues/803))
+
+## [2.34.0] - 2023-01-26
+### Added
+* `Formatter` now has a field `public static final File NO_FILE_SENTINEL` which can be used to pass string content to a Formatter or FormatterStep when there is no actual File to format. ([#1525](https://github.com/diffplug/spotless/pull/1525))
+
+## [2.33.0] - 2023-01-26
 ### Added
 * `ProcessRunner` has added some convenience methods so it can be used for maven testing. ([#1496](https://github.com/diffplug/spotless/pull/1496))
 * `ProcessRunner` allows to limit captured output to a certain number of bytes. ([#1511](https://github.com/diffplug/spotless/pull/1511))
@@ -18,11 +44,16 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Fixed
 * The default list of type annotations used by `formatAnnotations` has had 8 more annotations from the Checker Framework added [#1494](https://github.com/diffplug/spotless/pull/1494)
 ### Changes
+* **POTENTIALLY BREAKING** Bump minimum JRE from 8 to 11, next release likely to bump bytecode to Java 11 ([#1514](https://github.com/diffplug/spotless/pull/1514) part 1 of [#1337](https://github.com/diffplug/spotless/issues/1337))
 * Rename `YamlJacksonStep` into `JacksonYamlStep` while normalizing Jackson usage ([#1492](https://github.com/diffplug/spotless/pull/1492))
 * Convert `gson` integration to use a compile-only source set ([#1510](https://github.com/diffplug/spotless/pull/1510)).
 * ** POTENTIALLY BREAKING** Removed support for KtLint 0.3x and 0.45.2 ([#1475](https://github.com/diffplug/spotless/pull/1475))
   * `KtLint` does not maintain a stable API - before this PR, we supported every breaking change in the API since 2019.
   * From now on, we will support no more than 2 breaking changes at a time.
+* NpmFormatterStepStateBase delays `npm install` call until the formatter is first used. This enables better integration
+  with `gradle-node-plugin`. ([#1522](https://github.com/diffplug/spotless/pull/1522))
+* Bump default `ktlint` version to latest `0.48.1` -> `0.48.2` ([#1529](https://github.com/diffplug/spotless/pull/1529))
+* Bump default `scalafmt` version to latest `3.6.1` -> `3.7.1` ([#1529](https://github.com/diffplug/spotless/pull/1529))
 
 ## [2.32.0] - 2023-01-13
 ### Added

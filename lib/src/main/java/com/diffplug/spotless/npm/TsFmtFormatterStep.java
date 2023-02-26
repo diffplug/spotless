@@ -83,8 +83,8 @@ public class TsFmtFormatterStep {
 					new NpmFormatterStepLocations(
 							projectDir,
 							buildDir,
-							npmPathResolver.resolveNpmExecutable(),
-							npmPathResolver.resolveNodeExecutable()));
+							npmPathResolver::resolveNpmExecutable,
+							npmPathResolver::resolveNodeExecutable));
 			this.buildDir = requireNonNull(buildDir);
 			this.configFile = configFile;
 			this.inlineTsFmtSettings = inlineTsFmtSettings == null ? new TreeMap<>() : new TreeMap<>(inlineTsFmtSettings);

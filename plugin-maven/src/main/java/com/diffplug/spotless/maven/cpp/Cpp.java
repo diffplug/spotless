@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package com.diffplug.spotless.maven.cpp;
 import java.util.Collections;
 import java.util.Set;
 
+import org.apache.maven.project.MavenProject;
+
 import com.diffplug.spotless.cpp.CppDefaults;
 import com.diffplug.spotless.maven.FormatterFactory;
 import com.diffplug.spotless.maven.generic.LicenseHeader;
@@ -30,7 +32,7 @@ import com.diffplug.spotless.maven.generic.LicenseHeader;
  */
 public class Cpp extends FormatterFactory {
 	@Override
-	public Set<String> defaultIncludes() {
+	public Set<String> defaultIncludes(MavenProject project) {
 		return Collections.emptySet();
 	}
 

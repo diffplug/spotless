@@ -31,8 +31,9 @@ import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.ProcessRunner.LongRunningProcess;
+import com.diffplug.spotless.ThrowingEx;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -42,11 +43,8 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 
 	private static final long serialVersionUID = 1460749955865959948L;
 
-	@SuppressWarnings("unused")
-	private final FileSignature packageJsonSignature;
-
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-	public final transient File nodeModulesDir;
+	protected final transient NodeServerLayout nodeServerLayout;
 
 	public final NpmFormatterStepLocations locations;
 
@@ -58,45 +56,66 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 		this.stepName = requireNonNull(stepName);
 		this.npmConfig = requireNonNull(npmConfig);
 		this.locations = locations;
-		NodeServerLayout layout = prepareNodeServer(locations.buildDir());
-		this.nodeModulesDir = layout.nodeModulesDir();
-		this.packageJsonSignature = FileSignature.signAsList(layout.packageJsonFile());
+		this.nodeServerLayout = new NodeServerLayout(locations.buildDir(), npmConfig.getPackageJsonContent());
 	}
 
-	private NodeServerLayout prepareNodeServer(File buildDir) throws IOException {
-		NodeServerLayout layout = new NodeServerLayout(buildDir, stepName);
-		NpmResourceHelper.assertDirectoryExists(layout.nodeModulesDir());
-		NpmResourceHelper.writeUtf8StringToFile(layout.packageJsonFile(),
+	protected void prepareNodeServerLayout() throws IOException {
+		final long started = System.currentTimeMillis();
+		// maybe introduce trace logger?
+		logger.info("Preparing {} for npm step {}.", this.nodeServerLayout, getClass().getName());
+		NpmResourceHelper.assertDirectoryExists(nodeServerLayout.nodeModulesDir());
+		NpmResourceHelper.writeUtf8StringToFile(nodeServerLayout.packageJsonFile(),
 				this.npmConfig.getPackageJsonContent());
 		NpmResourceHelper
-				.writeUtf8StringToFile(layout.serveJsFile(), this.npmConfig.getServeScriptContent());
+				.writeUtf8StringToFile(nodeServerLayout.serveJsFile(), this.npmConfig.getServeScriptContent());
 		if (this.npmConfig.getNpmrcContent() != null) {
-			NpmResourceHelper.writeUtf8StringToFile(layout.npmrcFile(), this.npmConfig.getNpmrcContent());
+			NpmResourceHelper.writeUtf8StringToFile(nodeServerLayout.npmrcFile(), this.npmConfig.getNpmrcContent());
 		} else {
-			NpmResourceHelper.deleteFileIfExists(layout.npmrcFile());
+			NpmResourceHelper.deleteFileIfExists(nodeServerLayout.npmrcFile());
 		}
-		FormattedPrinter.SYSOUT.print("running npm install");
-		runNpmInstall(layout.nodeModulesDir());
-		FormattedPrinter.SYSOUT.print("npm install finished");
-		return layout;
+		logger.info("Prepared {} for npm step {} in {} ms.", this.nodeServerLayout, getClass().getName(), System.currentTimeMillis() - started);
+	}
+
+	protected void prepareNodeServer() throws IOException {
+		final long started = System.currentTimeMillis();
+		logger.info("running npm install in {} for npm step {}", this.nodeServerLayout.nodeModulesDir(), getClass().getName());
+		runNpmInstall(nodeServerLayout.nodeModulesDir());
+		logger.info("npm install finished in {} ms in {} for npm step {}", System.currentTimeMillis() - started, this.nodeServerLayout.nodeModulesDir(), getClass().getName());
 	}
 
 	private void runNpmInstall(File npmProjectDir) throws IOException {
 		new NpmProcess(npmProjectDir, this.locations.npmExecutable(), this.locations.nodeExecutable()).install();
 	}
 
-	protected ServerProcessInfo npmRunServer() throws ServerStartException, IOException {
-		if (!this.nodeModulesDir.exists()) {
-			prepareNodeServer(NodeServerLayout.getBuildDirFromNodeModulesDir(this.nodeModulesDir));
+	protected void assertNodeServerDirReady() throws IOException {
+		if (needsPrepareNodeServerLayout()) {
+			// reinstall if missing
+			prepareNodeServerLayout();
 		}
+		if (needsPrepareNodeServer()) {
+			// run npm install if node_modules is missing
+			prepareNodeServer();
+		}
+	}
 
+	protected boolean needsPrepareNodeServer() {
+		return !this.nodeServerLayout.isNodeModulesPrepared();
+	}
+
+	protected boolean needsPrepareNodeServerLayout() {
+		return !this.nodeServerLayout.isLayoutPrepared();
+	}
+
+	protected ServerProcessInfo npmRunServer() throws ServerStartException, IOException {
+		assertNodeServerDirReady();
+		LongRunningProcess server = null;
 		try {
 			// The npm process will output the randomly selected port of the http server process to 'server.port' file
 			// so in order to be safe, remove such a file if it exists before starting.
-			final File serverPortFile = new File(this.nodeModulesDir, "server.port");
+			final File serverPortFile = new File(this.nodeServerLayout.nodeModulesDir(), "server.port");
 			NpmResourceHelper.deleteFileIfExists(serverPortFile);
 			// start the http server in node
-			Process server = new NpmProcess(this.nodeModulesDir, this.locations.npmExecutable(), this.locations.nodeExecutable()).start();
+			server = new NpmProcess(this.nodeServerLayout.nodeModulesDir(), this.locations.npmExecutable(), this.locations.nodeExecutable()).start();
 
 			// await the readiness of the http server - wait for at most 60 seconds
 			try {
@@ -117,7 +136,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 			String serverPort = NpmResourceHelper.readUtf8StringFromFile(serverPortFile).trim();
 			return new ServerProcessInfo(server, serverPort, serverPortFile);
 		} catch (IOException | TimeoutException e) {
-			throw new ServerStartException(e);
+			throw new ServerStartException("Starting server failed." + (server != null ? "\n\nProcess result:\n" + ThrowingEx.get(server::result) : ""), e);
 		}
 	}
 
@@ -186,7 +205,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 	protected static class ServerStartException extends RuntimeException {
 		private static final long serialVersionUID = -8803977379866483002L;
 
-		public ServerStartException(Throwable cause) {
+		public ServerStartException(String message, Throwable cause) {
 			super(cause);
 		}
 	}

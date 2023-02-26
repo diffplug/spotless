@@ -170,7 +170,11 @@ model {
 	}
 }
 
-if (!version.endsWith('-SNAPSHOT')) {
+if (System.env['JITPACK'] == 'true' || version.endsWith('-SNAPSHOT')) {
+	signing {
+		setRequired(false)
+	}
+} else {
 	signing {
 		String gpg_key = decode64('ORG_GRADLE_PROJECT_gpg_key64')
 		useInMemoryPgpKeys(gpg_key, System.env['ORG_GRADLE_PROJECT_gpg_passphrase'])
@@ -186,14 +190,12 @@ if (!version.endsWith('-SNAPSHOT')) {
 	}
 	// ensures that changelog bump and push only happens if the publish was successful
 	def thisProj = project
-	afterEvaluate {
-		changelogTasks.named('changelogBump').configure {
-			dependsOn thisProj.tasks.named('publishPluginMavenPublicationToSonatypeRepository')
-			dependsOn rootProject.tasks.named('closeAndReleaseSonatypeStagingRepository')
-			// if we have a gradle plugin, we need to push it up to the plugin portal too
-			if (thisProj.tasks.names.contains('publishPlugins')) {
-				dependsOn thisProj.tasks.named('publishPlugins')
-			}
+	changelogTasks.named('changelogBump').configure {
+		dependsOn ":${thisProj.path}:publishPluginMavenPublicationToSonatypeRepository"
+		dependsOn ":closeAndReleaseSonatypeStagingRepository"
+		// if we have a gradle plugin, we need to push it up to the plugin portal too
+		if (thisProj.tasks.names.contains('publishPlugins')) {
+			dependsOn thisProj.tasks.named('publishPlugins')
 		}
 	}
 }

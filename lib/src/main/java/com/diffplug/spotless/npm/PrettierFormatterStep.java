@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.npm;
 
+import static com.diffplug.spotless.LazyArgLogger.lazy;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
@@ -77,8 +78,8 @@ public class PrettierFormatterStep {
 					new NpmFormatterStepLocations(
 							projectDir,
 							buildDir,
-							npmPathResolver.resolveNpmExecutable(),
-							npmPathResolver.resolveNodeExecutable()));
+							npmPathResolver::resolveNpmExecutable,
+							npmPathResolver::resolveNodeExecutable));
 			this.prettierConfig = requireNonNull(prettierConfig);
 		}
 
@@ -86,7 +87,7 @@ public class PrettierFormatterStep {
 		@Nonnull
 		public FormatterFunc createFormatterFunc() {
 			try {
-				FormattedPrinter.SYSOUT.print("creating formatter function (starting server)");
+				logger.info("creating formatter function (starting server)");
 				ServerProcessInfo prettierRestServer = npmRunServer();
 				PrettierRestService restService = new PrettierRestService(prettierRestServer.getBaseUrl());
 				String prettierConfigOptions = restService.resolveConfig(this.prettierConfig.getPrettierConfigPath(), this.prettierConfig.getOptions());
@@ -97,7 +98,7 @@ public class PrettierFormatterStep {
 		}
 
 		private void endServer(PrettierRestService restService, ServerProcessInfo restServer) throws Exception {
-			FormattedPrinter.SYSOUT.print("Closing formatting function (ending server).");
+			logger.info("Closing formatting function (ending server).");
 			try {
 				restService.shutdown();
 			} catch (Throwable t) {
@@ -119,7 +120,7 @@ public class PrettierFormatterStep {
 
 		@Override
 		public String applyWithFile(String unix, File file) throws Exception {
-			FormattedPrinter.SYSOUT.print("formatting String '" + unix.substring(0, Math.min(50, unix.length())) + "[...]' in file '" + file + "'");
+			logger.info("formatting String '{}[...]' in file '{}'", lazy(() -> unix.substring(0, Math.min(50, unix.length()))), file);
 
 			final String prettierConfigOptionsWithFilepath = assertFilepathInConfigOptions(file);
 			try {

@@ -17,7 +17,6 @@ package com.diffplug.gradle.spotless;
 
 import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.BuildResult;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.Predicates;
@@ -74,40 +73,23 @@ class NpmTestsWithoutNpmInstallationTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	@Disabled("This test is disabled because we currently don't support using npm/node installed by the" +
-			"node-gradle-plugin as the installation takes place in the *execution* phase, but spotless needs it in the *configuration* phase.")
-	void useNodeAndNpmFromNodeGradlePluginInOneSweep() throws Exception {
+	void useNodeAndNpmFromNodeGradlePlugin_example1() throws Exception {
 		try {
-			setFile("build.gradle").toLines(
-					"plugins {",
-					"    id 'com.diffplug.spotless'",
-					"    id 'com.github.node-gradle.node' version '3.5.1'",
-					"}",
-					"repositories { mavenCentral() }",
-					"node {",
-					"    download = true",
-					"    version = '18.13.0'",
-					"    npmVersion = '8.19.2'",
-					"    workDir = file(\"${buildDir}/nodejs\")",
-					"    npmWorkDir = file(\"${buildDir}/npm\")",
-					"}",
-					"def prettierConfig = [:]",
-					"prettierConfig['printWidth'] = 50",
-					"prettierConfig['parser'] = 'typescript'",
-					"def npmExec = System.getProperty('os.name').toLowerCase().contains('windows') ? '/npm.cmd' : '/bin/npm'",
-					"def nodeExec = System.getProperty('os.name').toLowerCase().contains('windows') ? '/node.exe' : '/bin/node'",
-					"spotless {",
-					"    format 'mytypescript', {",
-					"        target 'test.ts'",
-					"        prettier()",
-					"            .npmExecutable(\"${tasks.named('npmSetup').get().npmDir.get()}${npmExec}\")",
-					"            .nodeExecutable(\"${tasks.named('nodeSetup').get().nodeDir.get()}${nodeExec}\")",
-					"            .config(prettierConfig)",
-					"    }",
-					"}",
-					"tasks.named('spotlessMytypescript').configure {",
-					"    it.dependsOn('nodeSetup', 'npmSetup')",
-					"}");
+			setFile("build.gradle").toResource("com/diffplug/gradle/spotless/NpmTestsWithoutNpmInstallationTest_gradle_node_plugin_example_1.gradle");
+			setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
+			final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+			Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+			assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile.clean");
+		} catch (Exception e) {
+			printContents();
+			throw e;
+		}
+	}
+
+	@Test
+	void useNpmFromNodeGradlePlugin_example2() throws Exception {
+		try {
+			setFile("build.gradle").toResource("com/diffplug/gradle/spotless/NpmTestsWithoutNpmInstallationTest_gradle_node_plugin_example_2.gradle");
 			setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
 			final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 			Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");

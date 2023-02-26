@@ -88,7 +88,7 @@ public class StepHarness implements AutoCloseable {
 
 	public AbstractStringAssert<?> testExceptionMsg(String before) {
 		try {
-			formatter.compute(LineEnding.toUnix(before), FormatterStepImpl.SENTINEL);
+			formatter.compute(LineEnding.toUnix(before), Formatter.NO_FILE_SENTINEL);
 			throw new SecurityException("Expected exception");
 		} catch (Throwable e) {
 			if (e instanceof SecurityException) {

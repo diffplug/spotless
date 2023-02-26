@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.npm;
 
+import static com.diffplug.spotless.LazyArgLogger.lazy;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
@@ -38,6 +39,8 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.npm.EslintRestService.FormatOption;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public class EslintFormatterStep {
 
@@ -81,7 +84,10 @@ public class EslintFormatterStep {
 	private static class State extends NpmFormatterStepStateBase implements Serializable {
 
 		private static final long serialVersionUID = -539537027004745812L;
-		private final EslintConfig eslintConfig;
+		private final EslintConfig origEslintConfig;
+
+		@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
+		private transient EslintConfig eslintConfigInUse;
 
 		State(String stepName, Map<String, String> devDependencies, File projectDir, File buildDir, NpmPathResolver npmPathResolver, EslintConfig eslintConfig) throws IOException {
 			super(stepName,
@@ -97,38 +103,40 @@ public class EslintFormatterStep {
 					new NpmFormatterStepLocations(
 							projectDir,
 							buildDir,
-							npmPathResolver.resolveNpmExecutable(),
-							npmPathResolver.resolveNodeExecutable()));
-			this.eslintConfig = localCopyFiles(requireNonNull(eslintConfig));
+							npmPathResolver::resolveNpmExecutable,
+							npmPathResolver::resolveNodeExecutable));
+			this.origEslintConfig = requireNonNull(eslintConfig.verify());
+			this.eslintConfigInUse = eslintConfig;
 		}
 
-		private EslintConfig localCopyFiles(EslintConfig orig) {
-			if (orig.getEslintConfigPath() == null) {
-				return orig.verify();
+		@Override
+		protected void prepareNodeServerLayout() throws IOException {
+			super.prepareNodeServerLayout();
+			if (origEslintConfig.getEslintConfigPath() != null) {
+				// If any config files are provided, we need to make sure they are at the same location as the node modules
+				// as eslint will try to resolve plugin/config names relatively to the config file location and some
+				// eslint configs contain relative paths to additional config files (such as tsconfig.json e.g.)
+				logger.info("Copying config file <{}> to <{}> and using the copy", origEslintConfig.getEslintConfigPath(), nodeServerLayout.nodeModulesDir());
+				File configFileCopy = NpmResourceHelper.copyFileToDir(origEslintConfig.getEslintConfigPath(), nodeServerLayout.nodeModulesDir());
+				this.eslintConfigInUse = this.origEslintConfig.withEslintConfigPath(configFileCopy).verify();
 			}
-			// If any config files are provided, we need to make sure they are at the same location as the node modules
-			// as eslint will try to resolve plugin/config names relatively to the config file location and some
-			// eslint configs contain relative paths to additional config files (such as tsconfig.json e.g.)
-			FormattedPrinter.SYSOUT.print("Copying config file <%s> to <%s> and using the copy", orig.getEslintConfigPath(), nodeModulesDir);
-			File configFileCopy = NpmResourceHelper.copyFileToDir(orig.getEslintConfigPath(), nodeModulesDir);
-			return orig.withEslintConfigPath(configFileCopy).verify();
 		}
 
 		@Override
 		@Nonnull
 		public FormatterFunc createFormatterFunc() {
 			try {
-				FormattedPrinter.SYSOUT.print("creating formatter function (starting server)");
+				logger.info("Creating formatter function (starting server)");
 				ServerProcessInfo eslintRestServer = npmRunServer();
 				EslintRestService restService = new EslintRestService(eslintRestServer.getBaseUrl());
-				return Closeable.ofDangerous(() -> endServer(restService, eslintRestServer), new EslintFilePathPassingFormatterFunc(locations.projectDir(), nodeModulesDir, eslintConfig, restService));
+				return Closeable.ofDangerous(() -> endServer(restService, eslintRestServer), new EslintFilePathPassingFormatterFunc(locations.projectDir(), nodeServerLayout.nodeModulesDir(), eslintConfigInUse, restService));
 			} catch (IOException e) {
 				throw ThrowingEx.asRuntime(e);
 			}
 		}
 
 		private void endServer(BaseNpmRestService restService, ServerProcessInfo restServer) throws Exception {
-			FormattedPrinter.SYSOUT.print("Closing formatting function (ending server).");
+			logger.info("Closing formatting function (ending server).");
 			try {
 				restService.shutdown();
 			} catch (Throwable t) {
@@ -154,7 +162,7 @@ public class EslintFormatterStep {
 
 		@Override
 		public String applyWithFile(String unix, File file) throws Exception {
-			FormattedPrinter.SYSOUT.print("formatting String '" + unix.substring(0, Math.min(50, unix.length())) + "[...]' in file '" + file + "'");
+			logger.info("formatting String '{}[...]' in file '{}'", lazy(() -> unix.substring(0, Math.min(50, unix.length()))), file);
 
 			Map<FormatOption, Object> eslintCallOptions = new HashMap<>();
 			setConfigToCallOptions(eslintCallOptions);

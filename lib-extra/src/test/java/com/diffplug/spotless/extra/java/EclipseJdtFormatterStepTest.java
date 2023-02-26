@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,11 @@
  */
 package com.diffplug.spotless.extra.java;
 
-import static org.junit.jupiter.api.condition.JRE.JAVA_11;
-
 import java.io.File;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -57,7 +54,7 @@ class EclipseJdtFormatterStepTest extends EclipseResourceHarness {
 
 	/** New format interface requires source file information to distinguish module-info from compilation unit */
 	@Nested
-	@EnabledForJreRange(min = JAVA_11)
+
 	class NewFormatInterface extends EclipseResourceHarness {
 		public NewFormatInterface() throws Exception {
 			super(createBuilder(), "module-info.java", getTestResource("java/eclipse/ModuleInfoUnformatted.test"), getTestResource("java/eclipse/ModuleInfoFormatted.test"));

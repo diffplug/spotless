@@ -1,14 +1,13 @@
 //////////
 // JAVA //
 //////////
-repositories { mavenCentral() }
 
 // setup java
 apply plugin: 'java'
-
-sourceCompatibility = VER_JAVA
-targetCompatibility = VER_JAVA
-tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
+tasks.withType(JavaCompile).configureEach {
+	options.encoding = 'UTF-8'
+	options.release = Integer.parseInt(VER_JAVA)
+}
 
 //////////////
 // SPOTBUGS //
@@ -34,8 +33,6 @@ tasks.withType(com.github.spotbugs.snom.SpotBugsTask).configureEach {
 }
 
 tasks.named('spotbugsMain') {
-	// only run on Java 8 (no benefit to running twice)
-	enabled = org.gradle.api.JavaVersion.current() == org.gradle.api.JavaVersion.VERSION_11
 	reports {
 		html.enabled = true
 	}
