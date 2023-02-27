@@ -33,7 +33,7 @@ class CleanthatJavaRefactorerTest extends MavenIntegrationHarness {
 				"  <includeDraft>true</includeDraft>",
 				"</cleanthat>");
 
-		runTest("MultipleMutators.dirty.java", "MultipleMutators.clean.onlyOptionalIsPresent.java");
+		runTest("MultipleMutators_dirty.java", "MultipleMutators_clean_onlyOptionalIsPresent.java");
 	}
 
 	@Test
@@ -45,7 +45,7 @@ class CleanthatJavaRefactorerTest extends MavenIntegrationHarness {
 				"  </mutators>",
 				"</cleanthat>");
 
-		runTest("LiteralsFirstInComparisons.dirty.java", "LiteralsFirstInComparisons.clean.java");
+		runTest("LiteralsFirstInComparisons_dirty.java", "LiteralsFirstInComparisons_clean.java");
 	}
 
 	@Test
@@ -59,7 +59,7 @@ class CleanthatJavaRefactorerTest extends MavenIntegrationHarness {
 				"  </mutators>",
 				"</cleanthat>");
 
-		runTest("MultipleMutators.dirty.java", "MultipleMutators.clean.onlyLiteralsFirst.java");
+		runTest("MultipleMutators_dirty.java", "MultipleMutators_clean_onlyLiteralsFirst.java");
 	}
 
 	@Test
@@ -73,7 +73,7 @@ class CleanthatJavaRefactorerTest extends MavenIntegrationHarness {
 				"  </mutators>",
 				"</cleanthat>");
 
-		runTest("MultipleMutators.dirty.java", "MultipleMutators.clean.java");
+		runTest("MultipleMutators_dirty.java", "MultipleMutators_clean.java");
 	}
 
 	@Test
@@ -89,7 +89,7 @@ class CleanthatJavaRefactorerTest extends MavenIntegrationHarness {
 				"  </excludedMutators>",
 				"</cleanthat>");
 
-		runTest("MultipleMutators.dirty.java", "MultipleMutators.clean.onlyLiteralsFirst.java");
+		runTest("MultipleMutators_dirty.java", "MultipleMutators_clean_onlyLiteralsFirst.java");
 	}
 
 	@Test
@@ -101,7 +101,7 @@ class CleanthatJavaRefactorerTest extends MavenIntegrationHarness {
 				"  </mutators>",
 				"</cleanthat>");
 
-		runTest("MultipleMutators.dirty.java", "MultipleMutators.clean.onlyLiteralsFirst.java");
+		runTest("MultipleMutators_dirty.java", "MultipleMutators_clean_onlyLiteralsFirst.java");
 	}
 
 	private void runTest(String dirtyPath, String cleanPath) throws Exception {

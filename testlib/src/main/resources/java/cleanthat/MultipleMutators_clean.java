@@ -1,8 +1,8 @@
-package eu.solven.cleanthat.engine.java.refactorer.cases.do_not_format_me;
+package java.cleanthat;
 
 import java.util.Optional;
 
-public class LiteralsFirstInComparisonsCases {
+public class MultipleMutators_clean {
 
 	public boolean isHardcoded(String input) {
 		return "hardcoded".equals(input);
