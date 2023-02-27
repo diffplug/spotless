@@ -67,7 +67,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Javascript](#javascript) ([prettier](#prettier), [ESLint](#eslint-javascript))
   - [JSON](#json)
   - Multiple languages
-    - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection))
+    - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching `npm install` results](#caching-results-of-npm-install))
       - javascript, jsx, angular, vue, flow, typescript, css, less, scss, html, json, graphql, markdown, ymaml
     - [clang-format](#clang-format)
       - c, c++, c#, objective-c, protobuf, javascript, java
@@ -630,7 +630,8 @@ spotless {
 
 **Prerequisite: tsfmt requires a working NodeJS version**
 
-For details, see the [npm detection](#npm-detection) and [`.npmrc` detection](#npmrc-detection) sections of prettier, which apply also to tsfmt.
+For details, see the [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection) and [caching results of `npm install`](#caching-results-of-npm-install) sections of prettier, which apply also to tsfmt.
+
 
 ### ESLint (Typescript)
 
@@ -678,7 +679,7 @@ spotless {
 
 **Prerequisite: ESLint requires a working NodeJS version**
 
-For details, see the [npm detection](#npm-detection) and [`.npmrc` detection](#npmrc-detection) sections of prettier, which apply also to ESLint.
+For details, see the [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection) and [caching results of `npm install`](#caching-results-of-npm-install) sections of prettier, which apply also to ESLint.
 
 ## Javascript
 
@@ -742,7 +743,7 @@ spotless {
 
 **Prerequisite: ESLint requires a working NodeJS version**
 
-For details, see the [npm detection](#npm-detection) and [`.npmrc` detection](#npmrc-detection) sections of prettier, which apply also to ESLint.
+For details, see the [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection) and [caching results of `npm install`](#caching-results-of-npm-install) sections of prettier, which apply also to ESLint.
 
 ## JSON
 
@@ -926,8 +927,6 @@ node- and npm-binaries dynamically installed by this plugin. See
 [this](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/test/resources/com/diffplug/gradle/spotless/NpmTestsWithoutNpmInstallationTest_gradle_node_plugin_example_1.gradle)
 or [this](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/test/resources/com/diffplug/gradle/spotless/NpmTestsWithoutNpmInstallationTest_gradle_node_plugin_example_2.gradle) example.
 
-```gradle
-
 ### `.npmrc` detection
 
 Spotless picks up npm configuration stored in a `.npmrc` file either in the project directory or in your user home.
@@ -939,6 +938,22 @@ spotless {
   typescript {
     prettier().npmrc("$projectDir/config/.npmrc").config(...)
 ```
+
+### Caching results of `npm install`
+
+Spotless uses `npm` behind the scenes to install `prettier`. This can be a slow process, especially if you are using a slow internet connection or
+if you need large plugins. You can instruct spotless to cache the results of the `npm install` calls, so that for the next installation,
+it will not need to download the packages again, but instead reuse the cached version.
+
+```gradle
+spotless {
+  typescript {
+    prettier().npmInstallCache() // will use the default cache directory (the build-directory of the respective module)
+    prettier().npmInstallCache("${rootProject.rootDir}/.gradle/spotless-npm-cache") // will use the specified directory (creating it if not existing)
+```
+
+Depending on your filesystem and the location of the cache directory, spotless will use hardlinks when caching the npm packages. If that is not
+possible, it will fall back to copying the files.
 
 ## clang-format
 

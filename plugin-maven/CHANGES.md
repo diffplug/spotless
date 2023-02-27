@@ -5,8 +5,11 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * `cleanthat` added `includeDraft` option, to include draft mutators from composite mutators. ([#1574](https://github.com/diffplug/spotless/pull/1574))
+* `npm`-based formatters (`prettier`, `tsfmt` and `eslint`) now support caching of `node_modules` directory.
+  To enable it, provide the `<npmInstallCache>` option. ([#1590](https://github.com/diffplug/spotless/pull/1590))
 ### Fixed
 * `<json><jackson>` can now handle `Array` as a root element. ([#1585](https://github.com/diffplug/spotless/pull/1585))
+* Reduce logging-noise created by `npm`-based formatters ([#1590](https://github.com/diffplug/spotless/pull/1590) fixes [#1582](https://github.com/diffplug/spotless/issues/1582))
 ### Changes
 * Bump default `cleanthat` version to latest `2.1` -> `2.6` ([#1569](https://github.com/diffplug/spotless/pull/1569) and [#1574](https://github.com/diffplug/spotless/pull/1574))
 

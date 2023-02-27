@@ -67,8 +67,9 @@ public abstract class AbstractEslint extends AbstractNpmFormatterStepFactory {
 
 		File buildDir = buildDir(stepConfig);
 		File baseDir = baseDir(stepConfig);
+		File cacheDir = cacheDir(stepConfig);
 		NpmPathResolver npmPathResolver = npmPathResolver(stepConfig);
-		return EslintFormatterStep.create(devDependencies, stepConfig.getProvisioner(), baseDir, buildDir, npmPathResolver, eslintConfig(stepConfig));
+		return EslintFormatterStep.create(devDependencies, stepConfig.getProvisioner(), baseDir, buildDir, cacheDir, npmPathResolver, eslintConfig(stepConfig));
 	}
 
 	private static IllegalArgumentException onlyOneConfig() {

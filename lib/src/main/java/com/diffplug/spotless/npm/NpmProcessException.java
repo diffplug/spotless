@@ -15,12 +15,14 @@
  */
 package com.diffplug.spotless.npm;
 
-import com.diffplug.spotless.ProcessRunner.Result;
+public class NpmProcessException extends RuntimeException {
+	private static final long serialVersionUID = 6424331316676759525L;
 
-interface NpmProcess {
+	public NpmProcessException(String message) {
+		super(message);
+	}
 
-	String describe();
-
-	Result waitFor();
-
+	public NpmProcessException(String message, Throwable cause) {
+		super(message, cause);
+	}
 }
