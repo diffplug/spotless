@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.36.0] - 2023-02-27
 ### Added
 * `gradlew equoIde` opens a repeatable clean Spotless dev environment. ([#1523](https://github.com/diffplug/spotless/pull/1523))
 * `cleanthat` added `includeDraft` option, to include draft mutators from composite mutators. ([#1574](https://github.com/diffplug/spotless/pull/1574))
