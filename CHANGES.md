@@ -11,7 +11,6 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
-* Introduce `TimedLogger` to allow for logging of time taken by a task using slf4j ([#1590](https://github.com/diffplug/spotless/pull/1590))
 * `npm`-based formatters now support caching of `node_modules` directory ([#1590](https://github.com/diffplug/spotless/pull/1590))
 ### Fixed
 * Reduce logging-noise created by `npm`-based formatters ([#1590](https://github.com/diffplug/spotless/pull/1590) fixes [#1582](https://github.com/diffplug/spotless/issues/1582))

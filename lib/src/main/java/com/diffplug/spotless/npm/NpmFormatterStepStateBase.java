@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.ProcessRunner.LongRunningProcess;
 import com.diffplug.spotless.ThrowingEx;
-import com.diffplug.spotless.TimedLogger;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 

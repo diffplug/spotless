@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless;
+package com.diffplug.spotless.npm;
 
-import static com.diffplug.spotless.TimedLogger.MESSAGE_PREFIX_BEGIN;
-import static com.diffplug.spotless.TimedLogger.MESSAGE_PREFIX_END;
-import static com.diffplug.spotless.TimedLogger.MESSAGE_SUFFIX_TOOK;
+import static com.diffplug.spotless.npm.TimedLogger.MESSAGE_PREFIX_BEGIN;
+import static com.diffplug.spotless.npm.TimedLogger.MESSAGE_PREFIX_END;
+import static com.diffplug.spotless.npm.TimedLogger.MESSAGE_SUFFIX_TOOK;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -31,7 +31,7 @@ import org.slf4j.Marker;
 import org.slf4j.event.Level;
 import org.slf4j.helpers.LegacyAbstractLogger;
 
-import com.diffplug.spotless.TimedLogger.TestTicker;
+import com.diffplug.spotless.npm.TimedLogger.TestTicker;
 
 class TimedLoggerTest {
 
@@ -49,7 +49,7 @@ class TimedLoggerTest {
 	}
 
 	@Test
-	void itDoesNotLogWhenLevelDisabled() throws InterruptedException {
+	void itDoesNotLogWhenLevelDisabled() {
 
 		TestLogger logger = new TestLogger() {
 			@Override

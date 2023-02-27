@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless;
+package com.diffplug.spotless.npm;
 
 import static com.diffplug.spotless.LazyArgLogger.lazy;
 
@@ -25,10 +25,12 @@ import javax.annotation.Nonnull;
 
 import org.slf4j.Logger;
 
+import com.diffplug.spotless.ThrowingEx;
+
 /**
  * A logger that logs the time it took to execute a block of code.
  */
-public class TimedLogger {
+class TimedLogger {
 
 	public static final String MESSAGE_PREFIX_BEGIN = "[BEGIN] ";
 
