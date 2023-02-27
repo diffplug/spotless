@@ -1,3 +1,6 @@
+import de.benediktritter.maven.plugin.development.task.GenerateHelpMojoSourcesTask
+import de.benediktritter.maven.plugin.development.task.GenerateMavenPluginDescriptorTask
+
 plugins {
 	// https://www.benediktritter.de/maven-plugin-development/#release-history
 	id 'de.benediktritter.maven-plugin-development' version '0.4.1'
@@ -10,11 +13,17 @@ version = spotlessChangelog.versionNext
 apply from: rootProject.file("gradle/java-setup.gradle")
 apply from: rootProject.file('gradle/spotless-freshmark.gradle')
 
-apply plugin: 'de.benediktritter.maven-plugin-development'
 mavenPlugin {
 	name = 'Spotless Maven Plugin'
 	artifactId = project.artifactIdMaven
 	description = project.description
+}
+
+tasks.withType(GenerateMavenPluginDescriptorTask).configureEach {
+	notCompatibleWithConfigurationCache('https://github.com/britter/maven-plugin-development/issues/8')
+}
+tasks.withType(GenerateHelpMojoSourcesTask).configureEach {
+	notCompatibleWithConfigurationCache('https://github.com/britter/maven-plugin-development/issues/8')
 }
 
 String VER_MAVEN_API = '3.0'

@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Changes
+* We are now opting in to Gradle's new stable configuration cache. ([#1591](https://github.com/diffplug/spotless/pull/1591))
 
 ## [2.36.0] - 2023-02-27
 ### Added
