@@ -41,6 +41,8 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 
 	private static final Logger logger = LoggerFactory.getLogger(NpmFormatterStepStateBase.class);
 
+	private static final TimedLogger timedLogger = TimedLogger.forLogger(logger);
+
 	private static final long serialVersionUID = 1460749955865959948L;
 
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
@@ -52,39 +54,22 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 
 	private final String stepName;
 
+	private final transient NodeServeApp nodeServeApp;
+
 	protected NpmFormatterStepStateBase(String stepName, NpmConfig npmConfig, NpmFormatterStepLocations locations) throws IOException {
 		this.stepName = requireNonNull(stepName);
 		this.npmConfig = requireNonNull(npmConfig);
 		this.locations = locations;
 		this.nodeServerLayout = new NodeServerLayout(locations.buildDir(), npmConfig.getPackageJsonContent());
+		this.nodeServeApp = new NodeServeApp(nodeServerLayout, npmConfig, locations);
 	}
 
 	protected void prepareNodeServerLayout() throws IOException {
-		final long started = System.currentTimeMillis();
-		// maybe introduce trace logger?
-		logger.info("Preparing {} for npm step {}.", this.nodeServerLayout, getClass().getName());
-		NpmResourceHelper.assertDirectoryExists(nodeServerLayout.nodeModulesDir());
-		NpmResourceHelper.writeUtf8StringToFile(nodeServerLayout.packageJsonFile(),
-				this.npmConfig.getPackageJsonContent());
-		NpmResourceHelper
-				.writeUtf8StringToFile(nodeServerLayout.serveJsFile(), this.npmConfig.getServeScriptContent());
-		if (this.npmConfig.getNpmrcContent() != null) {
-			NpmResourceHelper.writeUtf8StringToFile(nodeServerLayout.npmrcFile(), this.npmConfig.getNpmrcContent());
-		} else {
-			NpmResourceHelper.deleteFileIfExists(nodeServerLayout.npmrcFile());
-		}
-		logger.info("Prepared {} for npm step {} in {} ms.", this.nodeServerLayout, getClass().getName(), System.currentTimeMillis() - started);
+		nodeServeApp.prepareNodeAppLayout();
 	}
 
 	protected void prepareNodeServer() throws IOException {
-		final long started = System.currentTimeMillis();
-		logger.info("running npm install in {} for npm step {}", this.nodeServerLayout.nodeModulesDir(), getClass().getName());
-		runNpmInstall(nodeServerLayout.nodeModulesDir());
-		logger.info("npm install finished in {} ms in {} for npm step {}", System.currentTimeMillis() - started, this.nodeServerLayout.nodeModulesDir(), getClass().getName());
-	}
-
-	private void runNpmInstall(File npmProjectDir) throws IOException {
-		new NpmProcess(npmProjectDir, this.locations.npmExecutable(), this.locations.nodeExecutable()).install();
+		nodeServeApp.npmInstall();
 	}
 
 	protected void assertNodeServerDirReady() throws IOException {
@@ -99,11 +84,11 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 	}
 
 	protected boolean needsPrepareNodeServer() {
-		return !this.nodeServerLayout.isNodeModulesPrepared();
+		return nodeServeApp.needsNpmInstall();
 	}
 
 	protected boolean needsPrepareNodeServerLayout() {
-		return !this.nodeServerLayout.isLayoutPrepared();
+		return nodeServeApp.needsPrepareNodeAppLayout();
 	}
 
 	protected ServerProcessInfo npmRunServer() throws ServerStartException, IOException {
@@ -115,7 +100,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 			final File serverPortFile = new File(this.nodeServerLayout.nodeModulesDir(), "server.port");
 			NpmResourceHelper.deleteFileIfExists(serverPortFile);
 			// start the http server in node
-			server = new NpmProcess(this.nodeServerLayout.nodeModulesDir(), this.locations.npmExecutable(), this.locations.nodeExecutable()).start();
+			server = nodeServeApp.startNpmServeProcess();
 
 			// await the readiness of the http server - wait for at most 60 seconds
 			try {
@@ -206,7 +191,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 		private static final long serialVersionUID = -8803977379866483002L;
 
 		public ServerStartException(String message, Throwable cause) {
-			super(cause);
+			super(message, cause);
 		}
 	}
 }
