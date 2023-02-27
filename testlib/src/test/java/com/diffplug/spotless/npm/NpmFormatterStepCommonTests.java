@@ -56,4 +56,5 @@ public abstract class NpmFormatterStepCommonTests extends ResourceHarness {
 		}
 		return this.projectDir;
 	}
+
 }

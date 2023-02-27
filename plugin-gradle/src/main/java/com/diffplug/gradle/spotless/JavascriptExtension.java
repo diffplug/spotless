@@ -108,6 +108,7 @@ public class JavascriptExtension extends FormatExtension {
 					provisioner(),
 					project.getProjectDir(),
 					project.getBuildDir(),
+					npmModulesCacheOrNull(),
 					new NpmPathResolver(npmFileOrNull(), nodeFileOrNull(), npmrcFileOrNull(), Arrays.asList(project.getProjectDir(), project.getRootDir())),
 					eslintConfig());
 		}

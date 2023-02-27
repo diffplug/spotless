@@ -40,11 +40,11 @@ public class TsFmtFormatterStep {
 
 	public static final String NAME = "tsfmt-format";
 
-	public static FormatterStep create(Map<String, String> versions, Provisioner provisioner, File projectDir, File buildDir, NpmPathResolver npmPathResolver, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) {
+	public static FormatterStep create(Map<String, String> versions, Provisioner provisioner, File projectDir, File buildDir, File cacheDir, NpmPathResolver npmPathResolver, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) {
 		requireNonNull(provisioner);
 		requireNonNull(buildDir);
 		return FormatterStep.createLazy(NAME,
-				() -> new State(NAME, versions, projectDir, buildDir, npmPathResolver, configFile, inlineTsFmtSettings),
+				() -> new State(NAME, versions, projectDir, buildDir, cacheDir, npmPathResolver, configFile, inlineTsFmtSettings),
 				State::createFormatterFunc);
 	}
 
@@ -71,11 +71,10 @@ public class TsFmtFormatterStep {
 		@Nullable
 		private final TypedTsFmtConfigFile configFile;
 
-		public State(String stepName, Map<String, String> versions, File projectDir, File buildDir, NpmPathResolver npmPathResolver, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) throws IOException {
+		public State(String stepName, Map<String, String> versions, File projectDir, File buildDir, File cacheDir, NpmPathResolver npmPathResolver, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) throws IOException {
 			super(stepName,
 					new NpmConfig(
 							replaceDevDependencies(NpmResourceHelper.readUtf8StringFromClasspath(TsFmtFormatterStep.class, "/com/diffplug/spotless/npm/tsfmt-package.json"), new TreeMap<>(versions)),
-							"typescript-formatter",
 							NpmResourceHelper.readUtf8StringFromClasspath(PrettierFormatterStep.class,
 									"/com/diffplug/spotless/npm/common-serve.js",
 									"/com/diffplug/spotless/npm/tsfmt-serve.js"),
@@ -83,6 +82,7 @@ public class TsFmtFormatterStep {
 					new NpmFormatterStepLocations(
 							projectDir,
 							buildDir,
+							cacheDir,
 							npmPathResolver::resolveNpmExecutable,
 							npmPathResolver::resolveNodeExecutable));
 			this.buildDir = requireNonNull(buildDir);

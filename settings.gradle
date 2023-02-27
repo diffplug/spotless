@@ -68,6 +68,8 @@ gradleEnterprise {
 	}
 }
 
+enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
+
 rootProject.name = 'spotless'
 
 include 'lib'		// reusable library with no dependencies
