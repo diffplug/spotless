@@ -15,6 +15,9 @@
  */
 package com.diffplug.spotless.glue.json;
 
+import java.util.Collection;
+import java.util.Map;
+
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonFactoryBuilder;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -35,6 +38,15 @@ public class JacksonJsonFormatterFunc extends AJacksonFormatterFunc {
 	public JacksonJsonFormatterFunc(JacksonJsonConfig jacksonConfig) {
 		super(jacksonConfig);
 		this.jacksonConfig = jacksonConfig;
+	}
+
+	@Override
+	protected Class<?> inferType(String input) {
+		if (input.trim().startsWith("[")) {
+			return Collection.class;
+		} else {
+			return Map.class;
+		}
 	}
 
 	/**

@@ -1,3 +1,17 @@
+plugins {
+	// https://github.com/equodev/equo-ide/blob/main/plugin-gradle/CHANGELOG.md
+	id 'dev.equo.ide'                          version '0.16.0'
+}
+equoIde {
+	branding().title('Spotless').icon(file('_images/spotless_logo.png'))
+	welcome().openUrl('https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md')
+	gradleBuildship()
+}
+
+repositories {
+	mavenCentral()
+}
+
 apply from: rootProject.file('gradle/java-publish.gradle')
 apply from: rootProject.file('gradle/changelog.gradle')
 allprojects {
