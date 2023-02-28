@@ -17,7 +17,7 @@ plugins {
 	id 'com.diffplug.spotless-changelog' version '3.0.1' apply false
 	// https://github.com/diffplug/goomph/blob/main/CHANGES.md
 	// DO NOT UPDATE, see https://github.com/diffplug/spotless/pull/874
-	id 'com.diffplug.p2.asmaven' version '3.27.0' apply false
+	id 'com.diffplug.p2.asmaven' version '3.41.1' apply false
 	// https://github.com/radarsh/gradle-test-logger-plugin/blob/develop/CHANGELOG.md
 	id 'com.adarshr.test-logger' version '3.2.0' apply false
 	// https://github.com/davidburstrom/version-compatibility-gradle-plugin/tags
