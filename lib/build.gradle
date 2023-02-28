@@ -91,13 +91,13 @@ dependencies {
 
 	compatKtLint0Dot46Dot0CompileOnly 'com.pinterest.ktlint:ktlint-core:0.46.0'
 	compatKtLint0Dot46Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.46.0'
-	compatKtLint0Dot46Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.46.0'
+	compatKtLint0Dot46Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.48.2'
 	compatKtLint0Dot47Dot0CompileOnly 'com.pinterest.ktlint:ktlint-core:0.47.0'
 	compatKtLint0Dot47Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.47.0'
-	compatKtLint0Dot47Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.47.0'
+	compatKtLint0Dot47Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.48.2'
 	compatKtLint0Dot48Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-core:0.48.0'
 	compatKtLint0Dot48Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.48.0'
-	compatKtLint0Dot48Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.48.0'
+	compatKtLint0Dot48Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.48.2'
 
 	String VER_SCALAFMT="3.7.1"
 	scalafmtCompileOnly "org.scalameta:scalafmt-core_2.13:$VER_SCALAFMT"
