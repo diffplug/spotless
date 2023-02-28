@@ -18,11 +18,9 @@ package com.diffplug.spotless.java;
 import static org.junit.jupiter.api.condition.JRE.JAVA_13;
 import static org.junit.jupiter.api.condition.JRE.JAVA_15;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 
-import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.ResourceHarness;
@@ -147,42 +145,4 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 		}.testEquals();
 	}
 
-	@Test
-	void fixWindowsBugForGfj1Point1() {
-		fixWindowsBugTestcase("");
-		fixWindowsBugTestcase(
-				"",
-				"import somepackage;",
-				"");
-		fixWindowsBugTestcase(
-				"import somepackage;",
-				"",
-				"public class SomeClass {}");
-		fixWindowsBugTestcase(
-				"/** Some license */",
-				"import somepackage;",
-				"",
-				"public class SomeClass {}");
-		fixWindowsBugTestcase(
-				"package thispackage;",
-				"",
-				"import somepackage;",
-				"",
-				"public class SomeClass {}");
-		fixWindowsBugTestcase(
-				"/*",
-				" * A License.",
-				" */",
-				"",
-				"package thispackage;",
-				"",
-				"import somepackage;",
-				"",
-				"public class SomeClass {}");
-	}
-
-	private void fixWindowsBugTestcase(String... lines) {
-		String input = StringPrinter.buildStringFromLines(lines);
-		Assertions.assertEquals(input, GoogleJavaFormatStep.fixWindowsBug(input, "1.1"));
-	}
 }
