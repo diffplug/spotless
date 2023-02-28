@@ -1,6 +1,6 @@
 plugins {
 	id 'java-library'
-	id 'dev.equo.p2deps' version '0.12.1'
+	id 'dev.equo.p2deps'
 }
 ext.artifactId = project.artifactIdLibExtra
 version = rootProject.spotlessChangelog.versionNext
@@ -16,7 +16,7 @@ dependencies {
 	implementation "org.eclipse.jgit:org.eclipse.jgit:${VER_JGIT}"
 	implementation "com.googlecode.concurrent-trees:concurrent-trees:2.6.1"
 	// for eclipse
-	implementation "dev.equo.ide:solstice:0.11.0"
+	implementation "dev.equo.ide:solstice:0.17.0"
 
 	// testing
 	testImplementation project(':testlib')
