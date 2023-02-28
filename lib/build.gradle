@@ -83,7 +83,7 @@ dependencies {
 		}
 	}
 
-	String VER_KTLINT='0.46.1'
+	String VER_KTLINT='0.48.2'
 	ktlintCompileOnly "com.pinterest:ktlint:$VER_KTLINT"
 	ktlintCompileOnly "com.pinterest.ktlint:ktlint-core:$VER_KTLINT"
 	ktlintCompileOnly "com.pinterest.ktlint:ktlint-ruleset-experimental:$VER_KTLINT"
