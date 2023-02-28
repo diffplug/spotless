@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.maven.java;
+package com.diffplug.spotless.maven.test;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ class CleanthatJavaRefactorerTest extends MavenIntegrationHarness {
 				"  <includeDraft>true</includeDraft>",
 				"</cleanthat>");
 
-		runTest("MultipleMutators.dirty.java", "MultipleMutators.clean.onlyOptionalIsPresent.java");
+		runTest("MultipleMutators.dirty.test", "MultipleMutators.clean.onlyOptionalIsPresent.test");
 	}
 
 	@Test
@@ -45,7 +45,7 @@ class CleanthatJavaRefactorerTest extends MavenIntegrationHarness {
 				"  </mutators>",
 				"</cleanthat>");
 
-		runTest("LiteralsFirstInComparisons.dirty.java", "LiteralsFirstInComparisons.clean.java");
+		runTest("LiteralsFirstInComparisons.dirty.test", "LiteralsFirstInComparisons.clean.test");
 	}
 
 	@Test
@@ -59,7 +59,7 @@ class CleanthatJavaRefactorerTest extends MavenIntegrationHarness {
 				"  </mutators>",
 				"</cleanthat>");
 
-		runTest("MultipleMutators.dirty.java", "MultipleMutators.clean.onlyLiteralsFirst.java");
+		runTest("MultipleMutators.dirty.test", "MultipleMutators.clean.onlyLiteralsFirst.test");
 	}
 
 	@Test
@@ -73,7 +73,7 @@ class CleanthatJavaRefactorerTest extends MavenIntegrationHarness {
 				"  </mutators>",
 				"</cleanthat>");
 
-		runTest("MultipleMutators.dirty.java", "MultipleMutators.clean.java");
+		runTest("MultipleMutators.dirty.test", "MultipleMutators.clean.test");
 	}
 
 	@Test
@@ -89,7 +89,7 @@ class CleanthatJavaRefactorerTest extends MavenIntegrationHarness {
 				"  </excludedMutators>",
 				"</cleanthat>");
 
-		runTest("MultipleMutators.dirty.java", "MultipleMutators.clean.onlyLiteralsFirst.java");
+		runTest("MultipleMutators.dirty.test", "MultipleMutators.clean.onlyLiteralsFirst.test");
 	}
 
 	@Test
@@ -101,7 +101,7 @@ class CleanthatJavaRefactorerTest extends MavenIntegrationHarness {
 				"  </mutators>",
 				"</cleanthat>");
 
-		runTest("MultipleMutators.dirty.java", "MultipleMutators.clean.onlyLiteralsFirst.java");
+		runTest("MultipleMutators.dirty.test", "MultipleMutators.clean.onlyLiteralsFirst.test");
 	}
 
 	private void runTest(String dirtyPath, String cleanPath) throws Exception {
