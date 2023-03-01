@@ -16,7 +16,6 @@
 package com.diffplug.spotless.glue.json;
 
 import java.io.IOException;
-import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -49,7 +48,7 @@ public abstract class AJacksonFormatterFunc implements FormatterFunc {
 	protected String format(ObjectMapper objectMapper, String input) throws IllegalArgumentException, IOException {
 		try {
 			// ObjectNode is not compatible with SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS
-			Map objectNode = objectMapper.readValue(input, Map.class);
+			Object objectNode = objectMapper.readValue(input, inferType(input));
 			String output = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(objectNode);
 
 			return output;
@@ -57,6 +56,13 @@ public abstract class AJacksonFormatterFunc implements FormatterFunc {
 			throw new IllegalArgumentException("Unable to format. input='" + input + "'", e);
 		}
 	}
+
+	/**
+	 *
+	 * @param input
+	 * @return the {@link Class} into which the String has to be deserialized
+	 */
+	protected abstract Class<?> inferType(String input);
 
 	/**
 	 * @return a {@link JsonFactory}. May be overridden to handle alternative formats.
