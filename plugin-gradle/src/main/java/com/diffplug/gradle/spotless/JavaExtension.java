@@ -32,7 +32,7 @@ import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
+import com.diffplug.spotless.extra.EquoBasedStepBuilder;
 import com.diffplug.spotless.extra.java.EclipseJdtFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.java.CleanthatJavaStep;
@@ -219,7 +219,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 	}
 
 	public class EclipseConfig {
-		private final EclipseBasedStepBuilder builder;
+		private final EquoBasedStepBuilder builder;
 
 		EclipseConfig(String version) {
 			builder = EclipseJdtFormatterStep.createBuilder(provisioner());

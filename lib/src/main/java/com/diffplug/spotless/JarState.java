@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,11 +39,12 @@ import java.util.stream.Collectors;
 public final class JarState implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	@Deprecated
 	private final Set<String> mavenCoordinates;
 	private final FileSignature fileSignature;
 
 	private JarState(Collection<String> mavenCoordinates, FileSignature fileSignature) {
-		this.mavenCoordinates = new TreeSet<String>(mavenCoordinates);
+		this.mavenCoordinates = new TreeSet<>(mavenCoordinates);
 		this.fileSignature = fileSignature;
 	}
 
@@ -71,6 +72,12 @@ public final class JarState implements Serializable {
 		}
 		FileSignature fileSignature = FileSignature.signAsSet(jars);
 		return new JarState(mavenCoordinates, fileSignature);
+	}
+
+	/** Wraps the given collection of a files as a JarState. */
+	public static JarState forFiles(Collection<File> jars) throws IOException {
+		FileSignature fileSignature = FileSignature.signAsSet(jars);
+		return new JarState(Collections.emptySet(), fileSignature);
 	}
 
 	URL[] jarUrls() {
@@ -102,6 +109,7 @@ public final class JarState implements Serializable {
 	}
 
 	/** Returns unmodifiable view on sorted Maven coordinates */
+	@Deprecated
 	public Set<String> getMavenCoordinates() {
 		return Collections.unmodifiableSet(mavenCoordinates);
 	}
