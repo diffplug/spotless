@@ -103,6 +103,18 @@ final class NpmResourceHelper {
 			if ((System.currentTimeMillis() - startedAt) > maxWaitTime.toMillis()) {
 				throw new TimeoutException("The file did not appear within " + maxWaitTime);
 			}
+			ThrowingEx.run(() -> Thread.sleep(100));
+		}
+	}
+
+	static void awaitFileDeleted(File file, Duration maxWaitTime) throws TimeoutException {
+		final long startedAt = System.currentTimeMillis();
+		while (file.exists()) {
+			// wait for at most maxWaitTime
+			if ((System.currentTimeMillis() - startedAt) > maxWaitTime.toMillis()) {
+				throw new TimeoutException("The file did not disappear within " + maxWaitTime);
+			}
+			ThrowingEx.run(() -> Thread.sleep(100));
 		}
 	}
 

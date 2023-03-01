@@ -15,12 +15,12 @@
  */
 package com.diffplug.spotless.npm;
 
-import com.diffplug.spotless.ProcessRunner.Result;
+import com.diffplug.spotless.ProcessRunner.LongRunningProcess;
 
-interface NpmProcess {
+interface NpmLongRunningProcess {
 
 	String describe();
 
-	Result waitFor();
+	LongRunningProcess start();
 
 }

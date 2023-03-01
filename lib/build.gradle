@@ -56,6 +56,8 @@ tasks.named("check").configure {
 
 dependencies {
 	compileOnly 'org.slf4j:slf4j-api:2.0.0'
+	testCommonImplementation 'org.slf4j:slf4j-api:2.0.0'
+
 	// zero runtime reqs is a hard requirements for spotless-lib
 	// if you need a dep, put it in lib-extra
 	testCommonImplementation "org.junit.jupiter:junit-jupiter:$VER_JUNIT"

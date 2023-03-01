@@ -12,7 +12,7 @@ ext {
 		p2Dependencies = "p2Dependencies not defined in project"
 	}
 
-	// Some JARs may include JARs themselfs, which shall be unpacked and added to the embedded class folder. 
+	// Some JARs may include JARs themselfs, which shall be unpacked and added to the embedded class folder.
 	if (!project.hasProperty('internalJars')) {
 		internalJars = []
 	}
@@ -35,13 +35,13 @@ ext {
 			'META-INF/*.SF', // ... so all signatures are filtered
 		]
 	}
-	
+
 	// Map fat-JAR resources path if JAR file name does not correspond to plugin package name (e.g. required for internal plugins)
 	if (!project.hasProperty('fatJarResourcesMap')) {
 		fatJarResourcesMap = [:]
 	}
-	  
-	
+
+
 	// The directory contains all external classes for the fat-jar
 	embeddedClassesDirName = 'build/embeddedClasses'
 	embeddedClassesDir = project.file(embeddedClassesDirName)
@@ -162,4 +162,8 @@ apply plugin: 'idea'
 
 // Encure that the dependent classes are preovided for compilation if project is build via Eclipse instead of command line
 tasks.idea.dependsOn(unjarEmbeddedClasses)
+
+tasks.named('ideaModule') {
+	notCompatibleWithConfigurationCache("https://github.com/gradle/gradle/issues/13480")
+}
 
