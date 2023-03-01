@@ -32,7 +32,7 @@ class RemoveUnusedImportsStep_withGoogleJavaFormatTest {
 				.testResource("java/removeunusedimports/JavaCodeWithLicensePackageUnformatted.test", "java/removeunusedimports/JavaCodeWithLicensePackageFormatted.test")
 				.testResource("java/removeunusedimports/JavaCodeWithPackageUnformatted.test", "java/removeunusedimports/JavaCodeWithPackageFormatted.test")
 				// GoogleFormat requires running over a JDK17 to handle JDK17 features
-				// .testResource("java/removeunusedimports/Jdk17MultineStringBlockUnformatted.test", "java/removeunusedimports/Jdk17MultineStringBlockFormatted.test")
+				// .testResource("java/removeunusedimports/Jdk17TextBlockUnformatted.test", "java/removeunusedimports/Jdk17TextBlockFormatted.test")
 				.testResource("java/removeunusedimports/RevelcUnformatted.test", "java/removeunusedimports/RevelcFormatted.test");
 	}
 

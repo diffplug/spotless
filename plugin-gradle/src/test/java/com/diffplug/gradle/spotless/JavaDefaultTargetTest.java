@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,5 +61,23 @@ class JavaDefaultTargetTest extends GradleIntegrationHarness {
 				"}");
 		gradleRunner().withArguments("spotlessApply").build();
 		gradleRunner().withArguments("spotlessApply").build();
+	}
+
+	@Test
+	void removeUnusedImportsWithCleanthat() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"  id 'com.diffplug.spotless'",
+				"  id 'java'",
+				"}",
+				"repositories { mavenCentral() }",
+				"",
+				"spotless {",
+				"  java {  removeUnusedImports('cleanthat-javaparser-unnecessaryimport')  }",
+				"}");
+
+		setFile("src/main/java/test.java").toResource("java/removeunusedimports/Jdk17TextBlockUnformatted.test");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/java/test.java").sameAsResource("java/removeunusedimports/Jdk17TextBlockFormatted.test");
 	}
 }

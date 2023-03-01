@@ -34,6 +34,10 @@ public class RemoveUnusedImportsStep {
 	// prevent direct instantiation
 	private RemoveUnusedImportsStep() {}
 
+	public static final String defaultFormatter() {
+		return GJF;
+	}
+
 	public static FormatterStep create(Provisioner provisioner) {
 		// The default importRemover is GJF
 		return create(GJF, provisioner);
