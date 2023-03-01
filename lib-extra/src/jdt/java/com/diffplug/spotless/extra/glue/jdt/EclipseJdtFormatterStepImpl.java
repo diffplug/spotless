@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.jdt;
+package com.diffplug.spotless.extra.glue.jdt;
 
 import java.io.File;
 import java.util.Properties;
@@ -36,17 +36,10 @@ public class EclipseJdtFormatterStepImpl {
 		this.codeFormatter = ToolFactory.createCodeFormatter(settings, ToolFactory.M_FORMAT_EXISTING);
 	}
 
-	/** @deprecated  Use {@link #format(String, File)} instead. */
-	@Deprecated
-	public String format(String raw) throws Exception {
-		return format(raw, new File(""));
-	}
-
 	/** Formatting Java string, distinguishing module-info and compilation unit by file name */
 	public String format(String raw, File file) throws Exception {
 		int kind = (file.getName().equals(IModule.MODULE_INFO_JAVA) ? CodeFormatter.K_MODULE_INFO
 				: CodeFormatter.K_COMPILATION_UNIT) | CodeFormatter.F_INCLUDE_COMMENTS;
-
 		TextEdit edit = codeFormatter.format(kind, raw, 0, raw.length(), 0, LINE_DELIMITER);
 		if (edit == null) {
 			throw new IllegalArgumentException("Invalid java syntax for formatting.");
@@ -56,5 +49,4 @@ public class EclipseJdtFormatterStepImpl {
 			return doc.get();
 		}
 	}
-
 }
