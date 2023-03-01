@@ -22,10 +22,10 @@ import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
-class JavaparserRemoveUnusedImportsStepTest {
+class RemoveUnusedImportsStep_withCleanthatJavaparserTest {
 	@Test
 	void behavior() throws Exception {
-		FormatterStep step = JavaparserRemoveUnusedImportsStep.create(TestProvisioner.mavenCentral());
+		FormatterStep step = RemoveUnusedImportsStep.create(RemoveUnusedImportsStep.CLEANTHAT, TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("java/removeunusedimports/JavaCodeUnformatted.test", "java/removeunusedimports/JavaCodeFormatted.test")
 				.testResource("java/removeunusedimports/JavaCodeWithLicenseUnformatted.test", "java/removeunusedimports/JavaCodeWithLicenseFormatted.test")
@@ -47,7 +47,7 @@ class JavaparserRemoveUnusedImportsStepTest {
 
 			@Override
 			protected FormatterStep create() {
-				return JavaparserRemoveUnusedImportsStep.create(TestProvisioner.mavenCentral());
+				return RemoveUnusedImportsStep.create(RemoveUnusedImportsStep.CLEANTHAT, TestProvisioner.mavenCentral());
 			}
 		}.testEquals();
 	}

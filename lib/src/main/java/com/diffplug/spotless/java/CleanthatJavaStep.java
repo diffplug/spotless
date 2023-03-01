@@ -40,7 +40,7 @@ public final class CleanthatJavaStep {
 	private static final String MAVEN_COORDINATE = "io.github.solven-eu.cleanthat:java";
 
 	// CleanThat changelog is available at https://github.com/solven-eu/cleanthat/blob/master/CHANGES.MD
-	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "2.6");
+	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "2.7");
 
 	// prevent direct instantiation
 	private CleanthatJavaStep() {}
@@ -131,10 +131,7 @@ public final class CleanthatJavaStep {
 				List<String> excluded,
 				boolean includeDraft,
 				Provisioner provisioner) throws IOException {
-			// https://github.com/diffplug/spotless/issues/1583
-			if (!version.endsWith("-SNAPSHOT")) {
-				JVM_SUPPORT.assertFormatterSupported(version);
-			}
+			JVM_SUPPORT.assertFormatterSupported(version);
 			ModuleHelper.doOpenInternalPackagesIfRequired();
 			this.jarState = JarState.from(groupArtifact + ":" + version, provisioner);
 			this.stepName = stepName;
@@ -162,17 +159,9 @@ public final class CleanthatJavaStep {
 				throw new IllegalStateException("Issue executing the formatter", e);
 			}
 
-			// https://github.com/diffplug/spotless/issues/1583
-			if (!version.endsWith("-SNAPSHOT")) {
-				return JVM_SUPPORT.suggestLaterVersionOnError(version, input -> {
-					return (String) formatterMethod.invoke(formatter, input);
-				});
-			} else {
-				return input -> {
-					return (String) formatterMethod.invoke(formatter, input);
-				};
-			}
+			return JVM_SUPPORT.suggestLaterVersionOnError(version, input -> {
+				return (String) formatterMethod.invoke(formatter, input);
+			});
 		}
-
 	}
 }
