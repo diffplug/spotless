@@ -25,6 +25,14 @@ dependencies {
 	testImplementation "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
 }
 
+apply from: rootProject.file('gradle/special-tests.gradle')
+tasks.withType(Test).configureEach {
+	if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_16)) {
+		// needed for EclipseCdtFormatterStepTest
+		jvmArgs '--add-opens=java.base/java.lang=ALL-UNNAMED'
+	}
+}
+
 def NEEDS_P2_DEPS = [
 	'jdt'
 ]
@@ -38,6 +46,12 @@ for (needsP2 in NEEDS_P2_DEPS) {
 jar {
 	for (needsP2 in NEEDS_P2_DEPS) {
 		from sourceSets.getByName(needsP2).output.classesDirs
+	}
+}
+tasks.withType(Test).configureEach {
+	dependsOn jar
+	doFirst {
+		classpath += jar.outputs.files
 	}
 }
 
@@ -57,10 +71,3 @@ p2deps {
 // we'll hold the core lib to a high standard
 spotbugs { reportLevel = 'low' } // low|medium|high (low = sensitive to even minor mistakes)
 
-apply from: rootProject.file('gradle/special-tests.gradle')
-tasks.withType(Test).configureEach {
-	if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_16)) {
-		// needed for EclipseCdtFormatterStepTest
-		jvmArgs '--add-opens=java.base/java.lang=ALL-UNNAMED'
-	}
-}
