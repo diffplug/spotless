@@ -70,7 +70,7 @@ class MultiModuleProjectTest extends MavenIntegrationHarness {
 						"<java>",
 						"  <eclipse>",
 						"    <file>configs/eclipse-formatter.xml</file>",
-						"    <version>4.7.1</version>",
+						"    <version>4.8</version>",
 						"  </eclipse>",
 						"</java>",
 						"<scala>",
