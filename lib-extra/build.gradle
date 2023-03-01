@@ -60,11 +60,6 @@ p2deps {
 	into 'jdtCompileOnly', {
 		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
 		install 'org.eclipse.jdt.core'
-		addFilter 'minimize', { filter ->
-			filter.exclude 'org.eclipse.ant.core'
-			filter.exclude 'org.eclipse.core.expressions'
-			filter.exclude 'org.eclipse.core.filesystem'
-		}
 	}
 }
 
