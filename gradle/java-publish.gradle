@@ -77,12 +77,11 @@ javadoc {
 	//
 	// Thus, no javadoc warnings.
 	options.addStringOption('Xdoclint:none', '-quiet')
-	options.addStringOption('source', '8')
+	options.addStringOption('source', '11')
 	// setup the header
 	options.header javadocInfo
 	// setup links
-	options.linksOffline('https://docs.oracle.com/javase/8/docs/api/', "${dotdotGradle}/javadoc/java8")
-	options.linksOffline('https://docs.gradle.org/2.14/javadoc/', "${dotdotGradle}/javadoc/gradle")
+	options.linksOffline('https://docs.gradle.org/6.1.1/javadoc/', "${dotdotGradle}/javadoc/gradle")
 
 	// links to javadoc from the other versions
 	options.linksOffline("https://javadoc.io/static/com.diffplug.spotless/spotless-lib/${rootProject.spotlessChangelog.versionLast}", "${dotdotGradle}/javadoc/spotless-lib")
