@@ -81,6 +81,7 @@ public abstract class EquoBasedStepBuilder {
 	 * based on the state.
 	 */
 	public static class State implements Serializable {
+		private static final long serialVersionUID = 584400372246020995L;
 		final String semanticVersion;
 		final JarState jarState;
 		final FileSignature settingsFiles;
