@@ -23,7 +23,7 @@ plugins {
 	// https://github.com/davidburstrom/version-compatibility-gradle-plugin/tags
 	id 'io.github.davidburstrom.version-compatibility' version '0.4.0' apply false
 	// https://plugins.gradle.org/plugin/com.gradle.enterprise
-	id 'com.gradle.enterprise' version '3.12.3'
+	id 'com.gradle.enterprise' version '3.12.4'
 }
 
 dependencyResolutionManagement {
