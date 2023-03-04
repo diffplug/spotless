@@ -32,9 +32,7 @@ class RemoveUnusedImportsStep_withCleanthatJavaparserTest {
 				.testResource("java/removeunusedimports/JavaCodeWithLicensePackageUnformatted.test", "java/removeunusedimports/JavaCodeWithLicensePackageFormatted.test")
 				.testResource("java/removeunusedimports/JavaCodeWithPackageUnformatted.test", "java/removeunusedimports/JavaCodeWithPackageFormatted.test")
 				.testResource("java/removeunusedimports/Jdk17TextBlockUnformatted.test", "java/removeunusedimports/Jdk17TextBlockFormatted.test")
-		// JavaParser is failing over an annotated package: https://github.com/javaparser/javaparser/issues/3924
-		// .testResource("java/removeunusedimports/RevelcUnformatted.test", "java/removeunusedimports/RevelcFormatted.test")
-		;
+				.testResource("java/removeunusedimports/RevelcUnformatted.test", "java/removeunusedimports/RevelcFormatted.test");
 	}
 
 	@Test

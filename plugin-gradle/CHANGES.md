@@ -5,6 +5,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * `removeUnusedImport` can be configured to rely on `cleanthat-javaparser-unnecessaryimport`. Default remains `google-java-format`. ([#1589](https://github.com/diffplug/spotless/pull/1589))
+### Changes
+* Bump default `cleanthat` version to latest `2.6` -> `2.8`. ([#1589](https://github.com/diffplug/spotless/pull/1589)
 
 ## [6.16.0] - 2023-02-27
 ### Added
