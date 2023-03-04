@@ -12,7 +12,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Changes
 * We are now opting in to Gradle's new stable configuration cache. ([#1591](https://github.com/diffplug/spotless/pull/1591))
-* Bump default `eclipse-jdt` version from `4.21` -> `4.22` ([#1579](https://github.com/diffplug/spotless/pull/1579))
+* Bump default `eclipse-jdt` version from `4.21` -> `4.22` ([#1603](https://github.com/diffplug/spotless/pull/1603))
 
 ## [2.36.0] - 2023-02-27
 ### Added
