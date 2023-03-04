@@ -152,7 +152,7 @@ public final class Jvm {
 			// check if the formatter version is too low for the jvm version
 			V minimumFormatterVersion = getMinimumRequiredFormatterVersion();
 			if ((null != minimumFormatterVersion) && (fmtVersionComparator.compare(fmtVersion, minimumFormatterVersion) < 0)) {
-				return String.format("You are running Spotless on JVM %d, which requires %s of at least %s (you are using %s).%n", Jvm.version(), fmtName, minimumFormatterVersion, fmtVersion);
+				return String.format("You are running Spotless on JVM %d. This requires %s of at least %s (you are using %s).%n", Jvm.version(), fmtName, minimumFormatterVersion, fmtVersion);
 			}
 			// otherwise all is well
 			return "";
@@ -228,7 +228,7 @@ public final class Jvm {
 			V minimumFormatterVersion = getMinimumRequiredFormatterVersion();
 			V recommendedFmtVersionOrNull = getRecommendedFormatterVersion();
 			if ((null != minimumFormatterVersion) && (fmtVersionComparator.compare(fmtVersion, minimumFormatterVersion) < 0)) {
-				builder.append(String.format("You are running Spotless on JVM %d, which requires %s of at least %s.%n", Jvm.version(), fmtName, minimumFormatterVersion));
+				builder.append(String.format("You are running Spotless on JVM %d. This requires %s of at least %s.%n", Jvm.version(), fmtName, minimumFormatterVersion));
 				builder.append(String.format("You are using %s %s.%n", fmtName, fmtVersion));
 				if (null != recommendedFmtVersionOrNull) {
 					builder.append(String.format("%s %s is the recommended version, which may have fixed this problem.%n", fmtName, recommendedFmtVersionOrNull));

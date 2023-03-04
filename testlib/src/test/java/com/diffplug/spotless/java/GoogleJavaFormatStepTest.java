@@ -51,7 +51,7 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 
 	@Test
 	void behavior() throws Exception {
-		FormatterStep step = GoogleJavaFormatStep.create("1.2", TestProvisioner.mavenCentral());
+		FormatterStep step = GoogleJavaFormatStep.create("1.8", TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("java/googlejavaformat/JavaCodeUnformatted.test", "java/googlejavaformat/JavaCodeFormatted.test")
 				.testResource("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test", "java/googlejavaformat/JavaCodeWithLicenseFormatted.test")
@@ -60,8 +60,16 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 	}
 
 	@Test
-	void behaviorWithAospStyle() throws Exception {
+	void versionBelowMinimumRequiredVersionIsNotAllowed() throws Exception {
 		FormatterStep step = GoogleJavaFormatStep.create("1.2", "AOSP", TestProvisioner.mavenCentral());
+		StepHarness.forStep(step)
+				.testResourceExceptionMsg("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test")
+				.contains("you are using 1.2");
+	}
+
+	@Test
+	void behaviorWithAospStyle() throws Exception {
+		FormatterStep step = GoogleJavaFormatStep.create("1.8", "AOSP", TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("java/googlejavaformat/JavaCodeUnformatted.test", "java/googlejavaformat/JavaCodeFormattedAOSP.test")
 				.testResource("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test", "java/googlejavaformat/JavaCodeWithLicenseFormattedAOSP.test")
@@ -83,7 +91,7 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 
 	@Test
 	void behaviorWithCustomGroupArtifact() throws Exception {
-		FormatterStep step = GoogleJavaFormatStep.create(GoogleJavaFormatStep.defaultGroupArtifact(), "1.2", GoogleJavaFormatStep.defaultStyle(), TestProvisioner.mavenCentral(), false);
+		FormatterStep step = GoogleJavaFormatStep.create(GoogleJavaFormatStep.defaultGroupArtifact(), "1.8", GoogleJavaFormatStep.defaultStyle(), TestProvisioner.mavenCentral(), false);
 		StepHarness.forStep(step)
 				.testResource("java/googlejavaformat/JavaCodeUnformatted.test", "java/googlejavaformat/JavaCodeFormatted.test")
 				.testResource("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test", "java/googlejavaformat/JavaCodeWithLicenseFormatted.test")
@@ -94,7 +102,7 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 	@Test
 	void equality() throws Exception {
 		new SerializableEqualityTester() {
-			String version = "1.2";
+			String version = "1.8";
 			String style = "";
 			boolean reflowLongStrings = false;
 
@@ -103,7 +111,7 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 				// same version == same
 				api.areDifferentThan();
 				// change the version, and it's different
-				version = "1.1";
+				version = "1.9";
 				api.areDifferentThan();
 				// change the style, and it's different
 				style = "AOSP";

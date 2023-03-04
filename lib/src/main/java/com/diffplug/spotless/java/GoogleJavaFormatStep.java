@@ -70,7 +70,7 @@ public class GoogleJavaFormatStep {
 	}
 
 	static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME)
-			.addMin(11, "1.8") // spotless requires java 11, so the min version of google java format we can support is 1.8
+			.addMin(11, "1.8") // we only support google-java-format >= 1.8 due to api changes
 			.add(11, "1.15.0"); // default version
 
 	public static String defaultGroupArtifact() {
