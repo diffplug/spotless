@@ -69,7 +69,9 @@ public class GoogleJavaFormatStep {
 				State::createFormat);
 	}
 
-	static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "1.15.0");
+	static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME)
+			.addMin(11, "1.8") // spotless requires java 11, so the min version of google java format we can support is 1.8
+			.add(11, "1.15.0"); // default version
 
 	public static String defaultGroupArtifact() {
 		return MAVEN_COORDINATE;
