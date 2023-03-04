@@ -57,14 +57,22 @@ public class StepHarness implements AutoCloseable {
 
 	/** Asserts that the given element is transformed as expected, and that the result is idempotent. */
 	public StepHarness test(String before, String after) {
-		String actual = formatter.compute(LineEnding.toUnix(before), new File(""));
+		return test(before, after, "");
+	}
+
+	public StepHarness test(String before, String after, String fileName) {
+		String actual = formatter.compute(LineEnding.toUnix(before), new File(fileName));
 		assertEquals(after, actual, "Step application failed");
-		return testUnaffected(after);
+		return testUnaffected(after, fileName);
 	}
 
 	/** Asserts that the given element is idempotent w.r.t the step under test. */
 	public StepHarness testUnaffected(String idempotentElement) {
-		String actual = formatter.compute(LineEnding.toUnix(idempotentElement), new File(""));
+		return testUnaffected(idempotentElement, "");
+	}
+
+	public StepHarness testUnaffected(String idempotentElement, String fileName) {
+		String actual = formatter.compute(LineEnding.toUnix(idempotentElement), new File(fileName));
 		assertEquals(idempotentElement, actual, "Step is not idempotent");
 		return this;
 	}

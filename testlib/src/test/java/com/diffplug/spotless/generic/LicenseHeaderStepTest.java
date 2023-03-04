@@ -35,6 +35,8 @@ class LicenseHeaderStepTest extends ResourceHarness {
 	private static final String package_ = "package ";
 	private static final String HEADER_WITH_$YEAR = "This is a fake license, $YEAR. ACME corp.";
 	private static final String HEADER_WITH_RANGE_TO_$YEAR = "This is a fake license with range, 2009-$YEAR. ACME corp.";
+	private static final String HEADER_WITH_$FILE = "This is a fake license, $FILE. ACME corp.";
+	private static final String HEADER_WITH_$YEAR_$FILE = "This is a fake license, $FILE, $YEAR. ACME corp.";
 
 	@Test
 	void parseExistingYear() throws Exception {
@@ -163,6 +165,16 @@ class LicenseHeaderStepTest extends ResourceHarness {
 		return hasHeaderYear(HEADER_WITH_RANGE_TO_$YEAR, toYear);
 	}
 
+	private String hasHeaderFileName(String license, String fileName) throws IOException {
+		return header(license).replace("$FILE", fileName) + getTestResource(FILE_NO_LICENSE);
+	}
+
+	private String hasHeaderYearFileName(String license, String year, String fileName) throws IOException {
+		return header(license)
+			.replace("$YEAR", year)
+			.replace("$FILE", fileName) + getTestResource(FILE_NO_LICENSE);
+	}
+
 	private static String currentYear() {
 		return String.valueOf(YearMonth.now().getYear());
 	}
@@ -249,5 +261,23 @@ class LicenseHeaderStepTest extends ResourceHarness {
 		StepHarness.forStep(step).test(
 				hasHeader(licenceWithAddress().replace("$YEAR", "2015").replace("FooBar Inc. All", "FooBar Inc.  All")),
 				hasHeader(licenceWithAddress().replace("$YEAR", "2015")));
+	}
+
+	@Test
+	void should_apply_license_containing_filename_token() throws Exception {
+		FormatterStep step = LicenseHeaderStep.headerDelimiter(header(HEADER_WITH_$FILE), package_).build();
+		StepHarness.forStep(step)
+			.test(getTestResource(FILE_NO_LICENSE), hasHeaderFileName(HEADER_WITH_$FILE, "Test.java"), "Test.java");
+	}
+
+	@Test
+	void should_apply_license_containing_YEAR_filename_token() throws Exception {
+		FormatterStep step = LicenseHeaderStep.headerDelimiter(header(HEADER_WITH_$YEAR_$FILE), package_).build();
+		StepHarness.forStep(step)
+			.test(
+				getTestResource(FILE_NO_LICENSE),
+				hasHeaderYearFileName(HEADER_WITH_$YEAR_$FILE, currentYear(), "Test.java"),
+				"Test.java"
+			);
 	}
 }

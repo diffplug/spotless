@@ -142,7 +142,7 @@ public final class LicenseHeaderStep {
 					throw new IllegalStateException(yearMode.toString());
 				}
 				return new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear, skipLinesMatching);
-			}, step -> step::format);
+			}, step -> FormatterFunc.needsFile(step::format));
 		}
 
 		if (contentPattern == null) {
@@ -214,6 +214,8 @@ public final class LicenseHeaderStep {
 		private final boolean updateYearWithLatest;
 		private final boolean licenseHeaderWithRange;
 
+		private static final Pattern FILENAME_PATTERN = Pattern.compile("\\$FILE");
+
 		/** The license that we'd like enforced. */
 		private Runtime(String licenseHeader, String delimiter, String yearSeparator, boolean updateYearWithLatest, @Nullable String skipLinesMatching) {
 			if (delimiter.contains("\n")) {
@@ -266,9 +268,9 @@ public final class LicenseHeaderStep {
 		}
 
 		/** Formats the given string. */
-		private String format(String raw) {
+		private String format(String raw, File file) {
 			if (skipLinesMatching == null) {
-				return addOrUpdateLicenseHeader(raw);
+				return addOrUpdateLicenseHeader(raw, file);
 			} else {
 				String[] lines = raw.split("\n");
 				StringBuilder skippedLinesBuilder = new StringBuilder();
@@ -287,11 +289,11 @@ public final class LicenseHeaderStep {
 						remainingLinesBuilder.append(line).append('\n');
 					}
 				}
-				return skippedLinesBuilder + addOrUpdateLicenseHeader(remainingLinesBuilder.toString());
+				return skippedLinesBuilder + addOrUpdateLicenseHeader(remainingLinesBuilder.toString(), file);
 			}
 		}
 
-		private String addOrUpdateLicenseHeader(String raw) {
+		private String addOrUpdateLicenseHeader(String raw, File file) {
 			Matcher contentMatcher = delimiterPattern.matcher(raw);
 			if (!contentMatcher.find()) {
 				throw new IllegalArgumentException("Unable to find delimiter regex " + delimiterPattern);
@@ -305,13 +307,14 @@ public final class LicenseHeaderStep {
 						return raw;
 					} else {
 						// otherwise we'll have to add the header
-						return yearSepOrFull + content;
+						return replaceFileName(yearSepOrFull, file) + content;
 					}
 				} else {
 					// the yes year case is a bit harder
 					int beforeYearIdx = raw.indexOf(beforeYear);
 					int afterYearIdx = raw.indexOf(afterYear, beforeYearIdx + beforeYear.length() + 1);
 
+					String header;
 					if (beforeYearIdx >= 0 && afterYearIdx >= 0 && afterYearIdx + afterYear.length() <= contentMatcher.start()) {
 						// and also ends with exactly the right header, so it's easy to parse the existing year
 						String existingYear = raw.substring(beforeYearIdx + beforeYear.length(), afterYearIdx);
@@ -323,12 +326,13 @@ public final class LicenseHeaderStep {
 								return raw;
 							}
 						}
-						return beforeYear + newYear + afterYear + content;
+						header = beforeYear + newYear + afterYear;
 					} else {
 						String newYear = calculateYearBySearching(raw.substring(0, contentMatcher.start()));
 						// at worst, we just say that it was made today
-						return beforeYear + newYear + afterYear + content;
+						header = beforeYear + newYear + afterYear;
 					}
+					return replaceFileName(header, file) + content;
 				}
 			}
 		}
@@ -419,6 +423,10 @@ public final class LicenseHeaderStep {
 				yearRange = oldYear + yearSepOrFull + newYear;
 			}
 			return beforeYear + yearRange + afterYear + raw.substring(contentMatcher.start());
+		}
+
+		private String replaceFileName(String header, File file) {
+			return FILENAME_PATTERN.matcher(header).replaceAll(file.getName());
 		}
 
 		private static String parseYear(String cmd, File file) throws IOException {
