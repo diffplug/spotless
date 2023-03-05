@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ class GoogleJavaFormatIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    java {",
 				"        target file('test.java')",
-				"        googleJavaFormat('1.2')",
+				"        googleJavaFormat('1.8')",
 				"    }",
 				"}");
 
@@ -41,8 +41,8 @@ class GoogleJavaFormatIntegrationTest extends GradleIntegrationHarness {
 
 		checkRunsThenUpToDate();
 		replace("build.gradle",
-				"googleJavaFormat('1.2')",
-				"googleJavaFormat('1.3')");
+				"googleJavaFormat('1.8')",
+				"googleJavaFormat('1.9')");
 		checkRunsThenUpToDate();
 	}
 }
