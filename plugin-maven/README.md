@@ -207,6 +207,14 @@ any other maven phase (i.e. compile) then it can be configured as below;
 </configuration>
 ```
 
+### removeUnusedImports
+
+```xml
+<removeUnusedImports>
+  <engine>google-java-format</engine>    <!-- optional. Defaults to `google-java-format`. Can be switched to `cleanthat-javaparser-unnecessaryimport` (e.g. to process JDK17 source files with a JDK8+ Runtime) -->
+</removeUnusedImports>
+```
+
 ### google-java-format
 
 [homepage](https://github.com/google/google-java-format). [changelog](https://github.com/google/google-java-format/releases). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/java/GoogleJavaFormat.java).

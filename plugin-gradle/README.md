@@ -180,6 +180,17 @@ spotless {
     target 'src/*/java/**/*.java'
 ```
 
+### removeUnusedImports
+
+```
+spotless {
+  java {
+  removeUnusedImports()
+  // optional: you may switch for `google-java-format` as underlying engine to `cleanthat-javaparser-unnecessaryimport`
+  // which enables processing any language level source file with a JDK8+ Runtime
+  removeUnusedImports().engine('cleanthat-javaparser-unnecessaryimport')
+```
+
 ### google-java-format
 
 [homepage](https://github.com/google/google-java-format). [changelog](https://github.com/google/google-java-format/releases).
