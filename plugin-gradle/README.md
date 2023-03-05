@@ -270,11 +270,13 @@ spotless {
     cleanthat()
     // optional: you can specify a specific version and/or config file
     cleanthat()
-      .groupArtifact('1.7')                 // default is 'io.github.solven-eu.cleanthat:java'
-      .version('2.1')                             // You may force a past of -SNAPSHOT
-      .sourceCompatibility('1.7')                 // default is '1.7'
-      .addMutator('your.custom.MagicMutator')
-      .excludeMutator('UseCollectionIsEmpty')
+      .groupArtifact('io.github.solven-eu.cleanthat:java') // Optional. Default is 'io.github.solven-eu.cleanthat:java'
+      .version('2.8')                                      // You may force a custom version of Cleanthat
+      .sourceCompatibility('1.7')                          // default is '1.7'
+      .addMutator('SafeAndConsensual')                     // Default includes the SafeAndConsensual composite mutator
+      .addMutator('your.custom.MagicMutator')              // List of mutators: https://github.com/solven-eu/cleanthat/blob/master/MUTATORS.generated.MD
+      .excludeMutator('UseCollectionIsEmpty')              // You may exclude some mutators (from Composite ones)
+      .includeDraft(false)                                 // You may exclude draft mutators (from Composite ones)
 ```
 
 

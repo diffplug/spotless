@@ -283,17 +283,18 @@ These mechanisms already exist for the Gradle plugin.
 
 ```xml
 <cleanthat>
-  <version>2.0</version>                          <!-- optional version of Cleanthat -->
+  <version>2.8</version>                          <!-- optional version of Cleanthat -->
   <sourceJdk>${maven.compiler.source}</sourceJdk> <!-- optional. Default to ${maven.compiler.source} else '1.7' -->
   <mutators>
-    <mutator>*</mutator>                          <!-- optional. Default to '*' to include all mutators -->
+    <mutator>SafeAndConsensual</mutator>          <!-- optional. Default to 'SafeAndConsensual' to include all mutators -->
   </mutators>
-  <mutators> <!-- List of mutators: https://github.com/solven-eu/cleanthat/tree/master/java/src/main/java/eu/solven/cleanthat/engine/java/refactorer/mutators -->
+  <mutators>            <!-- List of mutators: https://github.com/solven-eu/cleanthat/blob/master/MUTATORS.generated.MD -->
     <mutator>LiteralsFirstInComparisons</mutator> <!-- You may alternatively list the requested mutators -->
   </mutators>
   <excludedMutators>
     <excludedMutator>OptionalNotEmpty</excludedMutator> <!-- You can discard specific rules -->
   </excludedMutators>
+  <includeDraft>false</includeDraft>              <!-- optional. Default to false, not to include draft mutators from Composite mutators -->
 </cleanthat>
 ```
 
