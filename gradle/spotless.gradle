@@ -17,7 +17,10 @@ spotless {
 		java {
 			ratchetFrom 'origin/main'
 			bumpThisNumberIfACustomStepChanges(1)
-			cleanthat().version("2.4").sourceCompatibility("11").clearMutators().addMutators(['RSPEC-6212'])
+			// `setMutators` will discard default mutators
+			// https://sonarsource.atlassian.net/browse/RSPEC-6212
+			cleanthat().version("2.9").sourceCompatibility(project.sourceCompatibility.toString()).clearMutators()
+					.addMutator('RSPEC-6212')
 			licenseHeaderFile rootProject.file('gradle/spotless.license')
 			importOrderFile   rootProject.file('gradle/spotless.importorder')
 			eclipse().configFile rootProject.file('gradle/spotless.eclipseformat.xml')
