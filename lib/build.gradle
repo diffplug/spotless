@@ -56,6 +56,8 @@ tasks.named("check").configure {
 
 dependencies {
 	compileOnly 'org.slf4j:slf4j-api:2.0.0'
+	testCommonImplementation 'org.slf4j:slf4j-api:2.0.0'
+
 	// zero runtime reqs is a hard requirements for spotless-lib
 	// if you need a dep, put it in lib-extra
 	testCommonImplementation "org.junit.jupiter:junit-jupiter:$VER_JUNIT"
@@ -108,8 +110,8 @@ dependencies {
 
 	gsonCompileOnly 'com.google.code.gson:gson:2.10.1'
 
-	cleanthatCompileOnly 'io.github.solven-eu.cleanthat:java:2.2'
-	compatCleanthat2Dot1CompileAndTestOnly 'io.github.solven-eu.cleanthat:java:2.2'
+	cleanthatCompileOnly 'io.github.solven-eu.cleanthat:java:2.6'
+	compatCleanthat2Dot1CompileAndTestOnly 'io.github.solven-eu.cleanthat:java:2.6'
 }
 
 // we'll hold the core lib to a high standard

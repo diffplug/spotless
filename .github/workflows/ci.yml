@@ -6,6 +6,8 @@ on:
   pull_request:
   push:
     branches: [main]
+  workflow_dispatch:
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -31,9 +33,9 @@ jobs:
         with:
           gradle-home-cache-cleanup: true
       - name: spotlessCheck
-        run: ./gradlew spotlessCheck --build-cache
+        run: ./gradlew spotlessCheck
       - name: assemble testClasses
-        run: ./gradlew assemble testClasses --build-cache
+        run: ./gradlew assemble testClasses
   build:
     needs: sanityCheck
     strategy:
@@ -69,13 +71,13 @@ jobs:
           gradle-home-cache-cleanup: true
       - name: build (maven-only)
         if: matrix.kind == 'maven'
-        run: ./gradlew :plugin-maven:build -x spotlessCheck --build-cache
+        run: ./gradlew :plugin-maven:build -x spotlessCheck
       - name: build (everything-but-maven)
         if: matrix.kind == 'gradle'
-        run: ./gradlew build -x spotlessCheck --build-cache -PSPOTLESS_EXCLUDE_MAVEN=true
+        run: ./gradlew build -x spotlessCheck -PSPOTLESS_EXCLUDE_MAVEN=true
       - name: test npm
         if: matrix.kind == 'npm'
-        run: ./gradlew testNpm --build-cache
+        run: ./gradlew testNpm
       - name: junit result
         uses: mikepenz/action-junit-report@v3
         if: always() # always run even if the previous step fails

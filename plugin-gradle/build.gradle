@@ -73,8 +73,10 @@ gradlePlugin {
 		}
 	}
 }
-if (version.endsWith('-SNAPSHOT')) {
-	publishPlugins.enabled = false
+
+tasks.named("publishPlugins") {
+	enabled = !version.endsWith('-SNAPSHOT')
+	notCompatibleWithConfigurationCache("https://github.com/gradle/gradle/issues/21283")
 }
 
 // have to apply java-publish after setting up the pluginBundle

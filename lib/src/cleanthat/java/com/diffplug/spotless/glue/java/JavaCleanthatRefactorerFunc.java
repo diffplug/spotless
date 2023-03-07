@@ -42,15 +42,17 @@ public class JavaCleanthatRefactorerFunc implements FormatterFunc {
 	private String jdkVersion;
 	private List<String> included;
 	private List<String> excluded;
+	private boolean includeDraft;
 
-	public JavaCleanthatRefactorerFunc(String jdkVersion, List<String> included, List<String> excluded) {
+	public JavaCleanthatRefactorerFunc(String jdkVersion, List<String> included, List<String> excluded, boolean includeDraft) {
 		this.jdkVersion = jdkVersion == null ? IJdkVersionConstants.JDK_8 : jdkVersion;
 		this.included = included == null ? Collections.emptyList() : included;
 		this.excluded = excluded == null ? Collections.emptyList() : excluded;
+		this.includeDraft = includeDraft;
 	}
 
 	public JavaCleanthatRefactorerFunc() {
-		this(IJdkVersionConstants.JDK_8, Arrays.asList(JavaRefactorerProperties.WILDCARD), Arrays.asList());
+		this(IJdkVersionConstants.JDK_8, Arrays.asList("SafeAndConsensual"), Arrays.asList(), false);
 	}
 
 	@Override
@@ -79,9 +81,11 @@ public class JavaCleanthatRefactorerFunc implements FormatterFunc {
 		refactorerProperties.setIncluded(included);
 		refactorerProperties.setExcluded(excluded);
 
+		refactorerProperties.setIncludeDraft(includeDraft);
+
 		JavaRefactorer refactorer = new JavaRefactorer(engineProperties, refactorerProperties);
 
-		LOGGER.debug("Processing sourceJdk={} included={} excluded={}", jdkVersion, included, excluded);
+		LOGGER.debug("Processing sourceJdk={} included={} excluded={}", jdkVersion, included, excluded, includeDraft);
 		LOGGER.debug("Available mutators: {}", JavaRefactorer.getAllIncluded());
 
 		// Spotless calls steps always with LF eol.

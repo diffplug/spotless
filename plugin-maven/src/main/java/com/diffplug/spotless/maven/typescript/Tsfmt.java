@@ -111,8 +111,9 @@ public class Tsfmt extends AbstractNpmFormatterStepFactory {
 
 		File buildDir = buildDir(stepConfig);
 		File baseDir = baseDir(stepConfig);
+		File cacheDir = cacheDir(stepConfig);
 		NpmPathResolver npmPathResolver = npmPathResolver(stepConfig);
-		return TsFmtFormatterStep.create(devDependencies, stepConfig.getProvisioner(), baseDir, buildDir, npmPathResolver, configFile, configInline);
+		return TsFmtFormatterStep.create(devDependencies, stepConfig.getProvisioner(), baseDir, buildDir, cacheDir, npmPathResolver, configFile, configInline);
 	}
 
 	private static IllegalArgumentException onlyOneConfig() {

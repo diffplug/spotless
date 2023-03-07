@@ -522,11 +522,17 @@ public class FormatExtension {
 	}
 
 	public abstract static class NpmStepConfig<T extends NpmStepConfig<?>> {
+
+		public static final String SPOTLESS_NPM_INSTALL_CACHE_DEFAULT_NAME = "spotless-npm-install-cache";
+
 		@Nullable
 		protected Object npmFile;
 
 		@Nullable
 		protected Object nodeFile;
+
+		@Nullable
+		protected Object npmInstallCache;
 
 		@Nullable
 		protected Object npmrcFile;
@@ -560,6 +566,18 @@ public class FormatExtension {
 			return (T) this;
 		}
 
+		public T npmInstallCache(final Object npmInstallCache) {
+			this.npmInstallCache = npmInstallCache;
+			replaceStep();
+			return (T) this;
+		}
+
+		public T npmInstallCache() {
+			this.npmInstallCache = new File(project.getBuildDir(), SPOTLESS_NPM_INSTALL_CACHE_DEFAULT_NAME);
+			replaceStep();
+			return (T) this;
+		}
+
 		File npmFileOrNull() {
 			return fileOrNull(npmFile);
 		}
@@ -570,6 +588,10 @@ public class FormatExtension {
 
 		File npmrcFileOrNull() {
 			return fileOrNull(npmrcFile);
+		}
+
+		File npmModulesCacheOrNull() {
+			return fileOrNull(npmInstallCache);
 		}
 
 		private File fileOrNull(Object npmFile) {
@@ -619,6 +641,7 @@ public class FormatExtension {
 					provisioner(),
 					project.getProjectDir(),
 					project.getBuildDir(),
+					npmModulesCacheOrNull(),
 					new NpmPathResolver(npmFileOrNull(), nodeFileOrNull(), npmrcFileOrNull(), Arrays.asList(project.getProjectDir(), project.getRootDir())),
 					new com.diffplug.spotless.npm.PrettierConfig(
 							this.prettierConfigFile != null ? project.file(this.prettierConfigFile) : null,

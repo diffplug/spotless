@@ -37,8 +37,8 @@ class CleanthatJavaIntegrationTest extends GradleIntegrationHarness {
 				"    }",
 				"}");
 
-		setFile("test.java").toResource("java/cleanthat/MultipleMutators.dirty.java");
+		setFile("test.java").toResource("java/cleanthat/MultipleMutators.dirty.test");
 		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("test.java").sameAsResource("java/cleanthat/MultipleMutators.clean.java");
+		assertFile("test.java").sameAsResource("java/cleanthat/MultipleMutators.clean.test");
 	}
 }

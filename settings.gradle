@@ -6,11 +6,11 @@ pluginManagement {
 }
 
 plugins {
-	id 'com.diffplug.spotless' version '6.15.0' apply false
+	id 'com.diffplug.spotless' version '6.16.0' apply false
 	// https://plugins.gradle.org/plugin/com.gradle.plugin-publish
 	id 'com.gradle.plugin-publish' version '1.1.0' apply false
 	// https://github.com/gradle-nexus/publish-plugin/releases
-	id 'io.github.gradle-nexus.publish-plugin' version '1.1.0' apply false
+	id 'io.github.gradle-nexus.publish-plugin' version '1.2.0' apply false
 	// https://github.com/spotbugs/spotbugs-gradle-plugin/releases
 	id 'com.github.spotbugs' version '5.0.13' apply false
 	// https://github.com/diffplug/spotless-changelog/blob/main/CHANGELOG.md
@@ -67,6 +67,8 @@ gradleEnterprise {
 		publishAlways()
 	}
 }
+
+enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
 
 rootProject.name = 'spotless'
 

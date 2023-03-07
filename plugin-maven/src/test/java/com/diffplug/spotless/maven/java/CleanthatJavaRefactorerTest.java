@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.maven.java;
+package com.diffplug.spotless.maven.test;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -26,6 +26,17 @@ class CleanthatJavaRefactorerTest extends MavenIntegrationHarness {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CleanthatJavaRefactorerTest.class);
 
 	@Test
+	void testEnableDraft() throws Exception {
+		writePomWithJavaSteps(
+				"<cleanthat>",
+				"  <sourceJdk>11</sourceJdk>",
+				"  <includeDraft>true</includeDraft>",
+				"</cleanthat>");
+
+		runTest("MultipleMutators.dirty.test", "MultipleMutators.clean.onlyOptionalIsPresent.test");
+	}
+
+	@Test
 	void testLiteralsFirstInComparisons() throws Exception {
 		writePomWithJavaSteps(
 				"<cleanthat>",
@@ -34,7 +45,7 @@ class CleanthatJavaRefactorerTest extends MavenIntegrationHarness {
 				"  </mutators>",
 				"</cleanthat>");
 
-		runTest("LiteralsFirstInComparisons.dirty.java", "LiteralsFirstInComparisons.clean.java");
+		runTest("LiteralsFirstInComparisons.dirty.test", "LiteralsFirstInComparisons.clean.test");
 	}
 
 	@Test
@@ -48,7 +59,7 @@ class CleanthatJavaRefactorerTest extends MavenIntegrationHarness {
 				"  </mutators>",
 				"</cleanthat>");
 
-		runTest("MultipleMutators.dirty.java", "MultipleMutators.clean.onlyLiteralsFirst.java");
+		runTest("MultipleMutators.dirty.test", "MultipleMutators.clean.onlyLiteralsFirst.test");
 	}
 
 	@Test
@@ -62,7 +73,7 @@ class CleanthatJavaRefactorerTest extends MavenIntegrationHarness {
 				"  </mutators>",
 				"</cleanthat>");
 
-		runTest("MultipleMutators.dirty.java", "MultipleMutators.clean.java");
+		runTest("MultipleMutators.dirty.test", "MultipleMutators.clean.test");
 	}
 
 	@Test
@@ -78,7 +89,7 @@ class CleanthatJavaRefactorerTest extends MavenIntegrationHarness {
 				"  </excludedMutators>",
 				"</cleanthat>");
 
-		runTest("MultipleMutators.dirty.java", "MultipleMutators.clean.onlyLiteralsFirst.java");
+		runTest("MultipleMutators.dirty.test", "MultipleMutators.clean.onlyLiteralsFirst.test");
 	}
 
 	@Test
@@ -90,7 +101,7 @@ class CleanthatJavaRefactorerTest extends MavenIntegrationHarness {
 				"  </mutators>",
 				"</cleanthat>");
 
-		runTest("MultipleMutators.dirty.java", "MultipleMutators.clean.onlyLiteralsFirst.java");
+		runTest("MultipleMutators.dirty.test", "MultipleMutators.clean.onlyLiteralsFirst.test");
 	}
 
 	private void runTest(String dirtyPath, String cleanPath) throws Exception {

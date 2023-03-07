@@ -64,6 +64,7 @@ class EslintFormatterStepTest {
 					TestProvisioner.mavenCentral(),
 					projectDir(),
 					buildDir(),
+					null,
 					npmPathResolver(),
 					new EslintConfig(eslintRc, null));
 
@@ -107,6 +108,7 @@ class EslintFormatterStepTest {
 					TestProvisioner.mavenCentral(),
 					projectDir(),
 					buildDir(),
+					null,
 					npmPathResolver(),
 					new EslintTypescriptConfig(eslintRc, null, tsconfigFile));
 
@@ -164,6 +166,7 @@ class EslintFormatterStepTest {
 					TestProvisioner.mavenCentral(),
 					projectDir(),
 					buildDir(),
+					null,
 					npmPathResolver(),
 					new EslintTypescriptConfig(null, esLintConfig, tsconfigFile));
 

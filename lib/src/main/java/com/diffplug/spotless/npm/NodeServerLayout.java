@@ -27,6 +27,7 @@ import com.diffplug.spotless.ThrowingEx;
 class NodeServerLayout {
 
 	private static final Pattern PACKAGE_JSON_NAME_PATTERN = Pattern.compile("\"name\"\\s*:\\s*\"([^\"]+)\"");
+	static final String NODE_MODULES = "node_modules";
 
 	private final File nodeModulesDir;
 	private final File packageJsonFile;
@@ -55,7 +56,6 @@ class NodeServerLayout {
 	}
 
 	File nodeModulesDir() {
-
 		return nodeModulesDir;
 	}
 
@@ -89,7 +89,7 @@ class NodeServerLayout {
 	}
 
 	public boolean isNodeModulesPrepared() {
-		Path nodeModulesInstallDirPath = new File(nodeModulesDir(), "node_modules").toPath();
+		Path nodeModulesInstallDirPath = new File(nodeModulesDir(), NODE_MODULES).toPath();
 		if (!Files.isDirectory(nodeModulesInstallDirPath)) {
 			return false;
 		}
