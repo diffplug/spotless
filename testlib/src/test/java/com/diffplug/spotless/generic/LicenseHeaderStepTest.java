@@ -21,8 +21,6 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.ZoneOffset;
 
-import com.diffplug.spotless.StepHarnessWithFile;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -30,6 +28,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
+import com.diffplug.spotless.StepHarnessWithFile;
 import com.diffplug.spotless.generic.LicenseHeaderStep.YearMode;
 
 class LicenseHeaderStepTest extends ResourceHarness {
@@ -173,8 +172,8 @@ class LicenseHeaderStepTest extends ResourceHarness {
 
 	private String hasHeaderYearFileName(String license, String year, String fileName) throws IOException {
 		return header(license)
-			.replace("$YEAR", year)
-			.replace("$FILE", fileName) + getTestResource(FILE_NO_LICENSE);
+				.replace("$YEAR", year)
+				.replace("$FILE", fileName) + getTestResource(FILE_NO_LICENSE);
 	}
 
 	private static String currentYear() {
@@ -269,17 +268,16 @@ class LicenseHeaderStepTest extends ResourceHarness {
 	void should_apply_license_containing_filename_token() throws Exception {
 		FormatterStep step = LicenseHeaderStep.headerDelimiter(header(HEADER_WITH_$FILE), package_).build();
 		StepHarnessWithFile.forStep(this, step)
-			.test(new File("Test.java"), getTestResource(FILE_NO_LICENSE), hasHeaderFileName(HEADER_WITH_$FILE, "Test.java"));
+				.test(new File("Test.java"), getTestResource(FILE_NO_LICENSE), hasHeaderFileName(HEADER_WITH_$FILE, "Test.java"));
 	}
 
 	@Test
 	void should_apply_license_containing_YEAR_filename_token() throws Exception {
 		FormatterStep step = LicenseHeaderStep.headerDelimiter(header(HEADER_WITH_$YEAR_$FILE), package_).build();
 		StepHarnessWithFile.forStep(this, step)
-			.test(
-				new File("Test.java"),
-				getTestResource(FILE_NO_LICENSE),
-				hasHeaderYearFileName(HEADER_WITH_$YEAR_$FILE, currentYear(), "Test.java")
-			);
+				.test(
+						new File("Test.java"),
+						getTestResource(FILE_NO_LICENSE),
+						hasHeaderYearFileName(HEADER_WITH_$YEAR_$FILE, currentYear(), "Test.java"));
 	}
 }
