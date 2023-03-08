@@ -21,6 +21,8 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.ZoneOffset;
 
+import com.diffplug.spotless.StepHarnessWithFile;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -266,18 +268,18 @@ class LicenseHeaderStepTest extends ResourceHarness {
 	@Test
 	void should_apply_license_containing_filename_token() throws Exception {
 		FormatterStep step = LicenseHeaderStep.headerDelimiter(header(HEADER_WITH_$FILE), package_).build();
-		StepHarness.forStep(step)
-			.test(getTestResource(FILE_NO_LICENSE), hasHeaderFileName(HEADER_WITH_$FILE, "Test.java"), "Test.java");
+		StepHarnessWithFile.forStep(this, step)
+			.test(new File("Test.java"), getTestResource(FILE_NO_LICENSE), hasHeaderFileName(HEADER_WITH_$FILE, "Test.java"));
 	}
 
 	@Test
 	void should_apply_license_containing_YEAR_filename_token() throws Exception {
 		FormatterStep step = LicenseHeaderStep.headerDelimiter(header(HEADER_WITH_$YEAR_$FILE), package_).build();
-		StepHarness.forStep(step)
+		StepHarnessWithFile.forStep(this, step)
 			.test(
+				new File("Test.java"),
 				getTestResource(FILE_NO_LICENSE),
-				hasHeaderYearFileName(HEADER_WITH_$YEAR_$FILE, currentYear(), "Test.java"),
-				"Test.java"
+				hasHeaderYearFileName(HEADER_WITH_$YEAR_$FILE, currentYear(), "Test.java")
 			);
 	}
 }
