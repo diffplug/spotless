@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.eclipse.groovy;
+package com.diffplug.spotless.extra.glue.groovy;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -106,7 +106,7 @@ public class GrEclipseFormatterStepImpl {
 			errors = Collections.synchronizedList(new ArrayList<String>());
 			ILog groovyLogger = GroovyCoreActivator.getDefault().getLog();
 			groovyLogger.addLogListener(this);
-			synchronized(GroovyLogManager.manager) {
+			synchronized (GroovyLogManager.manager) {
 				GroovyLogManager.manager.addLogger(this);
 			}
 		}
@@ -119,7 +119,7 @@ public class GrEclipseFormatterStepImpl {
 		public boolean errorsDetected() {
 			ILog groovyLogger = GroovyCoreActivator.getDefault().getLog();
 			groovyLogger.removeLogListener(this);
-			synchronized(GroovyLogManager.manager) {
+			synchronized (GroovyLogManager.manager) {
 				GroovyLogManager.manager.removeLogger(this);
 			}
 			return 0 != errors.size();
