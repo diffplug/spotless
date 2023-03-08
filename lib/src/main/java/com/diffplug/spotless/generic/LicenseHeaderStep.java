@@ -45,6 +45,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /** Prefixes a license header before the package statement. */
 public final class LicenseHeaderStep {
+	public static final String DEFAULT_JAVA_HEADER_DELIMITER = "(package|import|public|class|module) ";
 	private static final Logger LOGGER = LoggerFactory.getLogger(LicenseHeaderStep.class);
 
 	public enum YearMode {
