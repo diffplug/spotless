@@ -10,9 +10,10 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* You can now put the filename into a license header template with `$FILE`. ([#1605](https://github.com/diffplug/spotless/pull/1605) fixes [#1147](https://github.com/diffplug/spotless/issues/1147))
 ### Changes
 * We are now opting in to Gradle's new stable configuration cache. ([#1591](https://github.com/diffplug/spotless/pull/1591))
-* Support a file name field in license headers. ([#1605](https://github.com/diffplug/spotless/pull/1605))
 
 ## [2.36.0] - 2023-02-27
 ### Added
