@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,26 +94,34 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 
 	private void processInputFile(@Nullable GitRatchet ratchet, Formatter formatter, File input) throws IOException {
 		File output = getOutputFile(input);
-		getLogger().debug("Applying format to " + input + " and writing to " + output);
+		getLogger().debug("Applying format to {} and writing to {}", input, output);
 		PaddedCell.DirtyState dirtyState;
 		if (ratchet != null && ratchet.isClean(getProjectDir().get().getAsFile(), getRootTreeSha(), input)) {
 			dirtyState = PaddedCell.isClean();
 		} else {
-			dirtyState = PaddedCell.calculateDirtyState(formatter, input);
+			try {
+				dirtyState = PaddedCell.calculateDirtyState(formatter, input);
+			} catch (IOException e) {
+				throw new IOException("Issue processing file: " + input, e);
+			} catch (RuntimeException e) {
+				throw new IllegalArgumentException("Issue processing file: " + input, e);
+			}
 		}
 		if (dirtyState.isClean()) {
 			// Remove previous output if it exists
 			Files.deleteIfExists(output.toPath());
 		} else if (dirtyState.didNotConverge()) {
-			getLogger().warn("Skipping '" + input + "' because it does not converge.  Run {@code spotlessDiagnose} to understand why");
+			getLogger().warn("Skipping '{}}' because it does not converge.  Run {@code spotlessDiagnose} to understand why", input);
 		} else {
 			Path parentDir = output.toPath().getParent();
 			if (parentDir == null) {
-				throw new IllegalStateException("Every file has a parent folder.");
+				throw new IllegalStateException("Every file has a parent folder. But not: " + output);
 			}
 			Files.createDirectories(parentDir);
 			// Need to copy the original file to the tmp location just to remember the file attributes
 			Files.copy(input.toPath(), output.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
+
+			getLogger().info(String.format("Writing clean file: %s", output));
 			dirtyState.writeCanonicalTo(output);
 		}
 	}
