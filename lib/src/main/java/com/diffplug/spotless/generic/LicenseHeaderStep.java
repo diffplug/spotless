@@ -323,7 +323,7 @@ public final class LicenseHeaderStep {
 							// fastpath where we don't need to make any changes at all
 							boolean noPadding = beforeYearIdx == 0 && afterYearIdx + afterYear.length() == contentMatcher.start(); // allows fastpath return raw
 							if (noPadding) {
-								return raw;
+								return replaceFileName(raw.substring(0, contentMatcher.start()), file) + content;
 							}
 						}
 						header = beforeYear + newYear + afterYear;
