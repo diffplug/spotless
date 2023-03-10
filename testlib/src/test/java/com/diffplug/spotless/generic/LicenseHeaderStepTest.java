@@ -32,7 +32,7 @@ import com.diffplug.spotless.generic.LicenseHeaderStep.YearMode;
 
 class LicenseHeaderStepTest extends ResourceHarness {
 	private static final String FILE_NO_LICENSE = "license/FileWithoutLicenseHeader.test";
-	private static final String package_ = "package ";
+	private static final String package_ = LicenseHeaderStep.DEFAULT_JAVA_HEADER_DELIMITER;
 	private static final String HEADER_WITH_$YEAR = "This is a fake license, $YEAR. ACME corp.";
 	private static final String HEADER_WITH_RANGE_TO_$YEAR = "This is a fake license with range, 2009-$YEAR. ACME corp.";
 
@@ -249,5 +249,23 @@ class LicenseHeaderStepTest extends ResourceHarness {
 		StepHarness.forStep(step).test(
 				hasHeader(licenceWithAddress().replace("$YEAR", "2015").replace("FooBar Inc. All", "FooBar Inc.  All")),
 				hasHeader(licenceWithAddress().replace("$YEAR", "2015")));
+	}
+
+	@Test
+	void noPackage() throws Throwable {
+		String header = header(getTestResource("license/TestLicense"));
+		FormatterStep step = LicenseHeaderStep.headerDelimiter(header, package_).build();
+		StepHarness.forStep(step)
+				.test(ResourceHarness.getTestResource("license/HelloWorld_java.test"), header + ResourceHarness.getTestResource("license/HelloWorld_java.test"))
+				.test(ResourceHarness.getTestResource("license/HelloWorld_withImport_java.test"), header + ResourceHarness.getTestResource("license/HelloWorld_withImport_java.test"));
+	}
+
+	// The following demonstrate the use of 'module' keyword
+	@Test
+	void moduleInfo() throws Throwable {
+		String header = header(getTestResource("license/TestLicense"));
+		FormatterStep step = LicenseHeaderStep.headerDelimiter(header, package_).build();
+		StepHarness.forStep(step)
+				.test(ResourceHarness.getTestResource("license/module-info.test"), header + ResourceHarness.getTestResource("license/module-info.test"));
 	}
 }

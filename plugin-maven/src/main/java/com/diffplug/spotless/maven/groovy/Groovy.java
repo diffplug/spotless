@@ -20,6 +20,7 @@ import java.util.Set;
 import org.apache.maven.project.MavenProject;
 
 import com.diffplug.common.collect.ImmutableSet;
+import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.maven.FormatterFactory;
 import com.diffplug.spotless.maven.generic.LicenseHeader;
 
@@ -32,7 +33,7 @@ import com.diffplug.spotless.maven.generic.LicenseHeader;
 public class Groovy extends FormatterFactory {
 
 	private static final Set<String> DEFAULT_INCLUDES = ImmutableSet.of("src/main/groovy/**/*.groovy", "src/test/groovy/**/*.groovy");
-	private static final String LICENSE_HEADER_DELIMITER = "package ";
+	private static final String LICENSE_HEADER_DELIMITER = LicenseHeaderStep.DEFAULT_JAVA_HEADER_DELIMITER;
 
 	@Override
 	public Set<String> defaultIncludes(MavenProject project) {
