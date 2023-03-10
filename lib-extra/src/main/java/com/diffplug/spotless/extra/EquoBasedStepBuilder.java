@@ -28,9 +28,9 @@ import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx;
 
-import dev.equo.solstice.p2.P2Client;
+import dev.equo.solstice.p2.P2ClientCache;
 import dev.equo.solstice.p2.P2Model;
-import dev.equo.solstice.p2.QueryCache;
+import dev.equo.solstice.p2.P2QueryCache;
 
 /**
  * Generic Eclipse based formatter step {@link State} builder.
@@ -66,11 +66,12 @@ public abstract class EquoBasedStepBuilder {
 
 	/** Creates the state of the configuration. */
 	EquoBasedStepBuilder.State get() throws Exception {
-		var query = model(formatterVersion).query(P2Client.Caching.PREFER_OFFLINE, QueryCache.ALLOW);
+		var query = model(formatterVersion).query(P2ClientCache.PREFER_OFFLINE, P2QueryCache.ALLOW);
 		var classpath = new ArrayList<File>();
-		if (!query.getJarsOnMavenCentral().isEmpty()) {
-			classpath.addAll(mavenProvisioner.provisionWithTransitives(false, query.getJarsOnMavenCentral()));
-		}
+		var mavenDeps = new ArrayList<String>();
+		mavenDeps.add("dev.equo.ide:solstice:0.18.0");
+		mavenDeps.addAll(query.getJarsOnMavenCentral());
+		classpath.addAll(mavenProvisioner.provisionWithTransitives(false, mavenDeps));
 		classpath.addAll(query.getJarsNotOnMavenCentral());
 		var jarState = JarState.forFiles(classpath);
 		return new State(formatterVersion, jarState, FileSignature.signAsList(settingsFiles));
