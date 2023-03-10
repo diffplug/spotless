@@ -35,6 +35,7 @@ import org.gradle.work.ChangeType;
 import org.gradle.work.FileChange;
 import org.gradle.work.InputChanges;
 
+import com.diffplug.common.annotations.VisibleForTesting;
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.PaddedCell;
@@ -92,7 +93,8 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 		}
 	}
 
-	private void processInputFile(@Nullable GitRatchet ratchet, Formatter formatter, File input) throws IOException {
+	@VisibleForTesting
+	void processInputFile(@Nullable GitRatchet ratchet, Formatter formatter, File input) throws IOException {
 		File output = getOutputFile(input);
 		getLogger().debug("Applying format to {} and writing to {}", input, output);
 		PaddedCell.DirtyState dirtyState;
@@ -111,7 +113,7 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 			// Remove previous output if it exists
 			Files.deleteIfExists(output.toPath());
 		} else if (dirtyState.didNotConverge()) {
-			getLogger().warn("Skipping '{}}' because it does not converge.  Run {@code spotlessDiagnose} to understand why", input);
+			getLogger().warn("Skipping '{}' because it does not converge.  Run {@code spotlessDiagnose} to understand why", input);
 		} else {
 			Path parentDir = output.toPath().getParent();
 			if (parentDir == null) {
