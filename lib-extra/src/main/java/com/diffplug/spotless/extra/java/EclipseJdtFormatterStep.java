@@ -22,7 +22,6 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.extra.EquoBasedStepBuilder;
-import com.diffplug.spotless.extra.EquoBasedStepBuilder.State;
 
 import dev.equo.solstice.p2.P2Model;
 
@@ -38,7 +37,6 @@ public final class EclipseJdtFormatterStep {
 		return JVM_SUPPORT.getRecommendedFormatterVersion();
 	}
 
-	/** Provides default configuration */
 	public static EquoBasedStepBuilder createBuilder(Provisioner provisioner) {
 		return new EquoBasedStepBuilder(NAME, provisioner, EclipseJdtFormatterStep::apply) {
 			@Override
@@ -61,7 +59,7 @@ public final class EclipseJdtFormatterStep {
 		};
 	}
 
-	private static FormatterFunc apply(State state) throws Exception {
+	private static FormatterFunc apply(EquoBasedStepBuilder.State state) throws Exception {
 		JVM_SUPPORT.assertFormatterSupported(state.getSemanticVersion());
 		Class<?> formatterClazz = state.getJarState().getClassLoader().loadClass("com.diffplug.spotless.extra.glue.jdt.EclipseJdtFormatterStepImpl");
 		var formatter = formatterClazz.getConstructor(Properties.class).newInstance(state.getPreferences());
