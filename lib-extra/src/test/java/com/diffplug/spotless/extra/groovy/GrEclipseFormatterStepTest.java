@@ -20,12 +20,10 @@ import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.extra.eclipse.EquoResourceHarness;
 
 class GrEclipseFormatterStepTest extends EquoResourceHarness {
-	private final static Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support("Oldest Version").add(8, "4.8").add(11, "4.18");
 	private final static String INPUT = "class F{ def m(){} }";
 	private final static String EXPECTED = "class F{\n\tdef m(){}\n}";
 
@@ -40,6 +38,6 @@ class GrEclipseFormatterStepTest extends EquoResourceHarness {
 	}
 
 	private static Stream<String> formatWithVersion() {
-		return Stream.of(JVM_SUPPORT.getRecommendedFormatterVersion(), GrEclipseFormatterStep.defaultVersion());
+		return Stream.of("4.25", GrEclipseFormatterStep.defaultVersion());
 	}
 }

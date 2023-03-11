@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.codehaus.groovy.eclipse.core.GroovyCoreActivator;
@@ -36,6 +37,8 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.text.edits.TextEdit;
 
+import dev.equo.solstice.Solstice;
+
 /** Spotless-Formatter step which calls out to the Groovy-Eclipse formatter. */
 public class GrEclipseFormatterStepImpl {
 	/**
@@ -50,6 +53,11 @@ public class GrEclipseFormatterStepImpl {
 	private final boolean ignoreFormatterProblems;
 
 	public GrEclipseFormatterStepImpl(final Properties properties) throws Exception {
+		var solstice = Solstice.findBundlesOnClasspath();
+		solstice.warnAndModifyManifestsToFix();
+		solstice.openShim(Map.of());
+		solstice.startAllWithLazy(false);
+		solstice.startWithoutTransitives("org.codehaus.groovy.eclipse.core");
 		PreferenceStore preferences = createPreferences(properties);
 		preferencesStore = new FormatterPreferencesOnStore(preferences);
 		ignoreFormatterProblems = Boolean.parseBoolean(properties.getProperty(IGNORE_FORMATTER_PROBLEMS, "false"));
