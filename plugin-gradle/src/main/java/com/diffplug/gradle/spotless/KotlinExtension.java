@@ -27,12 +27,7 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-import org.gradle.api.GradleException;
-import org.gradle.api.file.FileCollection;
-import org.gradle.api.plugins.JavaPluginConvention;
-import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.SourceSet;
-import org.gradle.util.GradleVersion;
 
 import com.diffplug.common.collect.ImmutableSortedMap;
 import com.diffplug.spotless.FileSignature;
@@ -43,7 +38,7 @@ import com.diffplug.spotless.kotlin.KtfmtStep;
 import com.diffplug.spotless.kotlin.KtfmtStep.KtfmtFormattingOptions;
 import com.diffplug.spotless.kotlin.KtfmtStep.Style;
 
-public class KotlinExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
+public class KotlinExtension extends FormatExtension implements HasBuiltinDelimiterForLicense, JvmLang {
 	static final String NAME = "kotlin";
 
 	@Inject
@@ -232,33 +227,13 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 	@Override
 	protected void setupTask(SpotlessTask task) {
 		if (target == null) {
-			if (GradleVersion.current().compareTo(GradleVersion.version("7.1")) >= 0) {
-				JavaPluginExtension javaPluginExtension = getProject().getExtensions().findByType(JavaPluginExtension.class);
-				if (javaPluginExtension == null) {
-					throw new GradleException("You must either specify 'target' manually or apply a kotlin plugin.");
-				}
-				FileCollection union = getProject().files();
-				for (SourceSet sourceSet : javaPluginExtension.getSourceSets()) {
-					union = union.plus(sourceSet.getAllSource().filter(file -> {
-						String name = file.getName();
+			target = getSources(getProject(),
+					"You must either specify 'target' manually or apply a kotlin plugin.",
+					SourceSet::getAllSource,
+					file -> {
+						final String name = file.getName();
 						return name.endsWith(".kt") || name.endsWith(".kts");
-					}));
-				}
-				target = union;
-			} else {
-				JavaPluginConvention javaPlugin = getProject().getConvention().findPlugin(JavaPluginConvention.class);
-				if (javaPlugin == null) {
-					throw new GradleException("You must either specify 'target' manually or apply a kotlin plugin.");
-				}
-				FileCollection union = getProject().files();
-				for (SourceSet sourceSet : javaPlugin.getSourceSets()) {
-					union = union.plus(sourceSet.getAllSource().filter(file -> {
-						String name = file.getName();
-						return name.endsWith(".kt") || name.endsWith(".kts");
-					}));
-				}
-				target = union;
-			}
+					});
 		}
 		super.setupTask(task);
 	}

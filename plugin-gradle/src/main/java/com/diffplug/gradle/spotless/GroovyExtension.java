@@ -24,14 +24,10 @@ import javax.inject.Inject;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
-import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.plugins.DslObject;
 import org.gradle.api.plugins.GroovyBasePlugin;
-import org.gradle.api.plugins.JavaPluginConvention;
-import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.GroovySourceDirectorySet;
 import org.gradle.api.tasks.GroovySourceSet;
-import org.gradle.api.tasks.SourceSet;
 import org.gradle.util.GradleVersion;
 
 import com.diffplug.spotless.extra.EquoBasedStepBuilder;
@@ -39,7 +35,7 @@ import com.diffplug.spotless.extra.groovy.GrEclipseFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.java.ImportOrderStep;
 
-public class GroovyExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
+public class GroovyExtension extends FormatExtension implements HasBuiltinDelimiterForLicense, JvmLang {
 	static final String NAME = "groovy";
 
 	@Inject
@@ -115,43 +111,28 @@ public class GroovyExtension extends FormatExtension implements HasBuiltinDelimi
 	@Override
 	protected void setupTask(SpotlessTask task) {
 		if (target == null) {
-			if (GradleVersion.current().compareTo(GradleVersion.version("7.1")) >= 0) {
-				JavaPluginExtension javaPluginExtension = getProject().getExtensions().findByType(JavaPluginExtension.class);
-				if (javaPluginExtension == null || !getProject().getPlugins().hasPlugin(GroovyBasePlugin.class)) {
-					throw new GradleException("You must apply the groovy plugin before the spotless plugin if you are using the groovy extension.");
-				}
-				//Add all Groovy files (may contain Java files as well)
-
-				FileCollection union = getProject().files();
-				for (SourceSet sourceSet : javaPluginExtension.getSourceSets()) {
-					union = union.plus(sourceSet.getExtensions().getByType(GroovySourceDirectorySet.class).filter(file -> {
-						String name = file.getName();
+			final String message = "You must apply the groovy plugin before the spotless plugin if you are using the groovy extension.";
+			if (!getProject().getPlugins().hasPlugin(GroovyBasePlugin.class)) {
+				throw new GradleException(message);
+			}
+			target = getSources(getProject(),
+					message,
+					sourceSet -> {
+						if (GradleVersion.current().compareTo(GradleVersion.version("7.1")) >= 0) {
+							return sourceSet.getExtensions().getByType(GroovySourceDirectorySet.class);
+						} else {
+							final GroovySourceSet groovySourceSet = new DslObject(sourceSet).getConvention().getPlugin(GroovySourceSet.class);
+							return groovySourceSet.getGroovy();
+						}
+					},
+					file -> {
+						final String name = file.getName();
 						if (excludeJava) {
 							return name.endsWith(".groovy");
 						} else {
 							return name.endsWith(".groovy") || name.endsWith(".java");
 						}
-					}));
-				}
-				target = union;
-			} else {
-				JavaPluginConvention convention = getProject().getConvention().getPlugin(JavaPluginConvention.class);
-				if (convention == null || !getProject().getPlugins().hasPlugin(GroovyBasePlugin.class)) {
-					throw new GradleException("You must apply the groovy plugin before the spotless plugin if you are using the groovy extension.");
-				}
-				//Add all Groovy files (may contain Java files as well)
-
-				FileCollection union = getProject().files();
-				for (SourceSet sourceSet : convention.getSourceSets()) {
-					GroovySourceSet groovySourceSet = new DslObject(sourceSet).getConvention().getPlugin(GroovySourceSet.class);
-					if (excludeJava) {
-						union = union.plus(groovySourceSet.getAllGroovy());
-					} else {
-						union = union.plus(groovySourceSet.getGroovy());
-					}
-				}
-				target = union;
-			}
+					});
 		} else if (excludeJava) {
 			throw new IllegalArgumentException("'excludeJava' is not supported in combination with a custom 'target'.");
 		}
