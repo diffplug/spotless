@@ -31,7 +31,7 @@ public final class EclipseJdtFormatterStep {
 	private EclipseJdtFormatterStep() {}
 
 	private static final String NAME = "eclipse jdt formatter";
-	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(8, "4.16").add(11, "4.26");
+	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "4.26");
 
 	public static String defaultVersion() {
 		return JVM_SUPPORT.getRecommendedFormatterVersion();

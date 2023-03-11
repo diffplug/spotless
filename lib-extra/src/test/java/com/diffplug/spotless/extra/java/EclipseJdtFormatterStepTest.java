@@ -23,13 +23,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.extra.EquoBasedStepBuilder;
 import com.diffplug.spotless.extra.eclipse.EquoResourceHarness;
 
 class EclipseJdtFormatterStepTest extends EquoResourceHarness {
-	private final static Jvm.Support<String> OLDEST_FOR_JVM = Jvm.<String> support("Oldest Version").add(8, "4.8").add(11, "4.17");
 	private final static String INPUT = "package p; class C{}";
 	private final static String EXPECTED = "package p;\nclass C {\n}";
 
@@ -48,7 +46,7 @@ class EclipseJdtFormatterStepTest extends EquoResourceHarness {
 	}
 
 	private static Stream<String> formatWithVersion() {
-		return Stream.of(OLDEST_FOR_JVM.getRecommendedFormatterVersion(), EclipseJdtFormatterStep.defaultVersion());
+		return Stream.of("4.9", EclipseJdtFormatterStep.defaultVersion());
 	}
 
 	/** New format interface requires source file information to distinguish module-info from compilation unit */
@@ -61,7 +59,7 @@ class EclipseJdtFormatterStepTest extends EquoResourceHarness {
 		@Test
 		void formatModuleInfo() throws Exception {
 			File settingsFile = createTestFile("java/eclipse/ModuleInfo.prefs");
-			assertFormatted(OLDEST_FOR_JVM.getRecommendedFormatterVersion(), settingsFile);
+			assertFormatted("4.11", settingsFile);
 		}
 	}
 }
