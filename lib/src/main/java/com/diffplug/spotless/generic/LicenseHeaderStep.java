@@ -213,6 +213,7 @@ public final class LicenseHeaderStep {
 		private final @Nullable String afterYear;
 		private final boolean updateYearWithLatest;
 		private final boolean licenseHeaderWithRange;
+		private final boolean hasFileToken;
 
 		private static final Pattern FILENAME_PATTERN = Pattern.compile("\\$FILE");
 
@@ -228,6 +229,7 @@ public final class LicenseHeaderStep {
 			}
 			this.delimiterPattern = Pattern.compile('^' + delimiter, Pattern.UNIX_LINES | Pattern.MULTILINE);
 			this.skipLinesMatching = skipLinesMatching == null ? null : Pattern.compile(skipLinesMatching);
+			this.hasFileToken = FILENAME_PATTERN.matcher(licenseHeader).find();
 
 			Optional<String> yearToken = getYearToken(licenseHeader);
 			if (yearToken.isPresent()) {
@@ -294,6 +296,12 @@ public final class LicenseHeaderStep {
 		}
 
 		private String addOrUpdateLicenseHeader(String raw, File file) {
+			raw = replaceYear(raw);
+			raw = replaceFileName(raw, file);
+			return raw;
+		}
+
+		private String replaceYear(String raw) {
 			Matcher contentMatcher = delimiterPattern.matcher(raw);
 			if (!contentMatcher.find()) {
 				throw new IllegalArgumentException("Unable to find delimiter regex " + delimiterPattern);
@@ -307,14 +315,13 @@ public final class LicenseHeaderStep {
 						return raw;
 					} else {
 						// otherwise we'll have to add the header
-						return replaceFileName(yearSepOrFull, file) + content;
+						return yearSepOrFull + content;
 					}
 				} else {
 					// the yes year case is a bit harder
 					int beforeYearIdx = raw.indexOf(beforeYear);
 					int afterYearIdx = raw.indexOf(afterYear, beforeYearIdx + beforeYear.length() + 1);
 
-					String header;
 					if (beforeYearIdx >= 0 && afterYearIdx >= 0 && afterYearIdx + afterYear.length() <= contentMatcher.start()) {
 						// and also ends with exactly the right header, so it's easy to parse the existing year
 						String existingYear = raw.substring(beforeYearIdx + beforeYear.length(), afterYearIdx);
@@ -323,16 +330,15 @@ public final class LicenseHeaderStep {
 							// fastpath where we don't need to make any changes at all
 							boolean noPadding = beforeYearIdx == 0 && afterYearIdx + afterYear.length() == contentMatcher.start(); // allows fastpath return raw
 							if (noPadding) {
-								return replaceFileName(raw.substring(0, contentMatcher.start()), file) + content;
+								return raw;
 							}
 						}
-						header = beforeYear + newYear + afterYear;
+						return beforeYear + newYear + afterYear + content;
 					} else {
 						String newYear = calculateYearBySearching(raw.substring(0, contentMatcher.start()));
 						// at worst, we just say that it was made today
-						header = beforeYear + newYear + afterYear;
+						return beforeYear + newYear + afterYear + content;
 					}
-					return replaceFileName(header, file) + content;
 				}
 			}
 		}
@@ -425,8 +431,17 @@ public final class LicenseHeaderStep {
 			return beforeYear + yearRange + afterYear + raw.substring(contentMatcher.start());
 		}
 
-		private String replaceFileName(String header, File file) {
-			return FILENAME_PATTERN.matcher(header).replaceAll(file.getName());
+		private String replaceFileName(String raw, File file) {
+			if (!hasFileToken) {
+				return raw;
+			}
+			Matcher contentMatcher = delimiterPattern.matcher(raw);
+			if (!contentMatcher.find()) {
+				throw new IllegalArgumentException("Unable to find delimiter regex " + delimiterPattern);
+			}
+			String header = raw.substring(0, contentMatcher.start());
+			String content = raw.substring(contentMatcher.start());
+			return FILENAME_PATTERN.matcher(header).replaceAll(file.getName()) + content;
 		}
 
 		private static String parseYear(String cmd, File file) throws IOException {
