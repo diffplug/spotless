@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,9 @@ import javax.inject.Inject;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.SourceSet;
+import org.gradle.util.GradleVersion;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.scala.ScalaFmtStep;
@@ -79,18 +81,33 @@ public class ScalaExtension extends FormatExtension {
 	@Override
 	protected void setupTask(SpotlessTask task) {
 		if (target == null) {
-			JavaPluginConvention javaPlugin = getProject().getConvention().findPlugin(JavaPluginConvention.class);
-			if (javaPlugin == null) {
-				throw new GradleException("You must either specify 'target' manually or apply the 'scala' plugin.");
+			if (GradleVersion.current().compareTo(GradleVersion.version("7.1")) >= 0) {
+				JavaPluginExtension javaPluginExtension = getProject().getExtensions().findByType(JavaPluginExtension.class);
+				if (javaPluginExtension == null) {
+					throw new GradleException("You must either specify 'target' manually or apply the 'scala' plugin.");
+				}
+				FileCollection union = getProject().files();
+				for (SourceSet sourceSet : javaPluginExtension.getSourceSets()) {
+					union = union.plus(sourceSet.getAllSource().filter(file -> {
+						String name = file.getName();
+						return name.endsWith(".scala") || name.endsWith(".sc");
+					}));
+				}
+				target = union;
+			} else {
+				JavaPluginConvention javaPlugin = getProject().getConvention().findPlugin(JavaPluginConvention.class);
+				if (javaPlugin == null) {
+					throw new GradleException("You must either specify 'target' manually or apply the 'scala' plugin.");
+				}
+				FileCollection union = getProject().files();
+				for (SourceSet sourceSet : javaPlugin.getSourceSets()) {
+					union = union.plus(sourceSet.getAllSource().filter(file -> {
+						String name = file.getName();
+						return name.endsWith(".scala") || name.endsWith(".sc");
+					}));
+				}
+				target = union;
 			}
-			FileCollection union = getProject().files();
-			for (SourceSet sourceSet : javaPlugin.getSourceSets()) {
-				union = union.plus(sourceSet.getAllSource().filter(file -> {
-					String name = file.getName();
-					return name.endsWith(".scala") || name.endsWith(".sc");
-				}));
-			}
-			target = union;
 		}
 		super.setupTask(task);
 	}

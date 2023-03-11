@@ -28,8 +28,11 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.plugins.DslObject;
 import org.gradle.api.plugins.GroovyBasePlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.plugins.JavaPluginExtension;
+import org.gradle.api.tasks.GroovySourceDirectorySet;
 import org.gradle.api.tasks.GroovySourceSet;
 import org.gradle.api.tasks.SourceSet;
+import org.gradle.util.GradleVersion;
 
 import com.diffplug.spotless.extra.EquoBasedStepBuilder;
 import com.diffplug.spotless.extra.groovy.GrEclipseFormatterStep;
@@ -112,22 +115,43 @@ public class GroovyExtension extends FormatExtension implements HasBuiltinDelimi
 	@Override
 	protected void setupTask(SpotlessTask task) {
 		if (target == null) {
-			JavaPluginConvention convention = getProject().getConvention().getPlugin(JavaPluginConvention.class);
-			if (convention == null || !getProject().getPlugins().hasPlugin(GroovyBasePlugin.class)) {
-				throw new GradleException("You must apply the groovy plugin before the spotless plugin if you are using the groovy extension.");
-			}
-			//Add all Groovy files (may contain Java files as well)
-
-			FileCollection union = getProject().files();
-			for (SourceSet sourceSet : convention.getSourceSets()) {
-				GroovySourceSet groovySourceSet = new DslObject(sourceSet).getConvention().getPlugin(GroovySourceSet.class);
-				if (excludeJava) {
-					union = union.plus(groovySourceSet.getAllGroovy());
-				} else {
-					union = union.plus(groovySourceSet.getGroovy());
+			if (GradleVersion.current().compareTo(GradleVersion.version("7.1")) >= 0) {
+				JavaPluginExtension javaPluginExtension = getProject().getExtensions().findByType(JavaPluginExtension.class);
+				if (javaPluginExtension == null || !getProject().getPlugins().hasPlugin(GroovyBasePlugin.class)) {
+					throw new GradleException("You must apply the groovy plugin before the spotless plugin if you are using the groovy extension.");
 				}
+				//Add all Groovy files (may contain Java files as well)
+
+				FileCollection union = getProject().files();
+				for (SourceSet sourceSet : javaPluginExtension.getSourceSets()) {
+					union = union.plus(sourceSet.getExtensions().getByType(GroovySourceDirectorySet.class).filter(file -> {
+						String name = file.getName();
+						if (excludeJava) {
+							return name.endsWith(".groovy");
+						} else {
+							return name.endsWith(".groovy") || name.endsWith(".java");
+						}
+					}));
+				}
+				target = union;
+			} else {
+				JavaPluginConvention convention = getProject().getConvention().getPlugin(JavaPluginConvention.class);
+				if (convention == null || !getProject().getPlugins().hasPlugin(GroovyBasePlugin.class)) {
+					throw new GradleException("You must apply the groovy plugin before the spotless plugin if you are using the groovy extension.");
+				}
+				//Add all Groovy files (may contain Java files as well)
+
+				FileCollection union = getProject().files();
+				for (SourceSet sourceSet : convention.getSourceSets()) {
+					GroovySourceSet groovySourceSet = new DslObject(sourceSet).getConvention().getPlugin(GroovySourceSet.class);
+					if (excludeJava) {
+						union = union.plus(groovySourceSet.getAllGroovy());
+					} else {
+						union = union.plus(groovySourceSet.getGroovy());
+					}
+				}
+				target = union;
 			}
-			target = union;
 		} else if (excludeJava) {
 			throw new IllegalArgumentException("'excludeJava' is not supported in combination with a custom 'target'.");
 		}

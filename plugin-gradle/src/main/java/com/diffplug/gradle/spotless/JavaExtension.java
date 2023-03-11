@@ -30,7 +30,9 @@ import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.SourceSet;
+import org.gradle.util.GradleVersion;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.extra.EquoBasedStepBuilder;
@@ -366,15 +368,27 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 	@Override
 	protected void setupTask(SpotlessTask task) {
 		if (target == null) {
-			JavaPluginConvention javaPlugin = getProject().getConvention().findPlugin(JavaPluginConvention.class);
-			if (javaPlugin == null) {
-				throw new GradleException("You must either specify 'target' manually or apply the 'java' plugin.");
+			if (GradleVersion.current().compareTo(GradleVersion.version("7.1")) >= 0) {
+				JavaPluginExtension javaPluginExtension = getProject().getExtensions().findByType(JavaPluginExtension.class);
+				if (javaPluginExtension == null) {
+					throw new GradleException("You must either specify 'target' manually or apply the 'java' plugin.");
+				}
+				FileCollection union = getProject().files();
+				for (SourceSet sourceSet : javaPluginExtension.getSourceSets()) {
+					union = union.plus(sourceSet.getAllJava());
+				}
+				target = union;
+			} else {
+				JavaPluginConvention javaPlugin = getProject().getConvention().findPlugin(JavaPluginConvention.class);
+				if (javaPlugin == null) {
+					throw new GradleException("You must either specify 'target' manually or apply the 'java' plugin.");
+				}
+				FileCollection union = getProject().files();
+				for (SourceSet sourceSet : javaPlugin.getSourceSets()) {
+					union = union.plus(sourceSet.getAllJava());
+				}
+				target = union;
 			}
-			FileCollection union = getProject().files();
-			for (SourceSet sourceSet : javaPlugin.getSourceSets()) {
-				union = union.plus(sourceSet.getAllJava());
-			}
-			target = union;
 		}
 
 		steps.replaceAll(step -> {
