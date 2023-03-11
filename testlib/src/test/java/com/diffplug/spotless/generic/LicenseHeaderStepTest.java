@@ -268,7 +268,18 @@ class LicenseHeaderStepTest extends ResourceHarness {
 	void should_apply_license_containing_filename_token() throws Exception {
 		FormatterStep step = LicenseHeaderStep.headerDelimiter(header(HEADER_WITH_$FILE), package_).build();
 		StepHarnessWithFile.forStep(this, step)
-				.test(new File("Test.java"), getTestResource(FILE_NO_LICENSE), hasHeaderFileName(HEADER_WITH_$FILE, "Test.java"));
+				.test(new File("Test.java"), getTestResource(FILE_NO_LICENSE), hasHeaderFileName(HEADER_WITH_$FILE, "Test.java"))
+				.testUnaffected(new File("Test.java"), hasHeaderFileName(HEADER_WITH_$FILE, "Test.java"));
+	}
+
+	@Test
+	void should_update_license_containing_filename_token() throws Exception {
+		FormatterStep step = LicenseHeaderStep.headerDelimiter(header(HEADER_WITH_$FILE), package_).build();
+		StepHarnessWithFile.forStep(this, step)
+				.test(
+						new File("After.java"),
+						hasHeaderFileName(HEADER_WITH_$FILE, "Before.java"),
+						hasHeaderFileName(HEADER_WITH_$FILE, "After.java"));
 	}
 
 	@Test
@@ -278,6 +289,9 @@ class LicenseHeaderStepTest extends ResourceHarness {
 				.test(
 						new File("Test.java"),
 						getTestResource(FILE_NO_LICENSE),
+						hasHeaderYearFileName(HEADER_WITH_$YEAR_$FILE, currentYear(), "Test.java"))
+				.testUnaffected(
+						new File("Test.java"),
 						hasHeaderYearFileName(HEADER_WITH_$YEAR_$FILE, currentYear(), "Test.java"));
 	}
 }
