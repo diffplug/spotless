@@ -15,8 +15,12 @@
  */
 package com.diffplug.spotless.extra;
 
+import dev.equo.solstice.NestedJars;
+
 import java.io.File;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Properties;
 
@@ -73,6 +77,10 @@ public abstract class EquoBasedStepBuilder {
 		mavenDeps.addAll(query.getJarsOnMavenCentral());
 		classpath.addAll(mavenProvisioner.provisionWithTransitives(false, mavenDeps));
 		classpath.addAll(query.getJarsNotOnMavenCentral());
+		File nestedDir = new File("/Users/ntwigg/.equo/p2-blah");
+		for (var nested : NestedJars.inFiles(query.getJarsNotOnMavenCentral()).extractAllNestedJars(nestedDir)) {
+			classpath.add(nested.getValue());
+		}
 		var jarState = JarState.forFiles(classpath);
 		return new State(formatterVersion, jarState, FileSignature.signAsList(settingsFiles));
 	}
