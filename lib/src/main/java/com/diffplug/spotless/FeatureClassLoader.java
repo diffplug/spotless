@@ -83,11 +83,8 @@ class FeatureClassLoader extends URLClassLoader {
 	private static boolean useBuildToolClassLoader(String name) {
 		if (name.startsWith("org.slf4j.")) {
 			return true;
-		} else if (!name.startsWith("com.diffplug.spotless.extra") && name.startsWith("com.diffplug.spotless.")) {
-			return true;
-		} else {
-			return false;
-		}
+		} else
+			return !name.startsWith("com.diffplug.spotless.extra") && name.startsWith("com.diffplug.spotless.");
 	}
 
 	@Override

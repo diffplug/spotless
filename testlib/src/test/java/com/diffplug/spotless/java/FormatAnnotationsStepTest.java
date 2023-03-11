@@ -16,6 +16,7 @@
 package com.diffplug.spotless.java;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -38,7 +39,7 @@ class FormatAnnotationsStepTest {
 
 	@Test
 	void formatAnnotationsAddRemove() {
-		FormatterStep step = FormatAnnotationsStep.create(Arrays.asList("Empty", "NonEmpty"), Arrays.asList("Localized"));
+		FormatterStep step = FormatAnnotationsStep.create(Arrays.asList("Empty", "NonEmpty"), List.of("Localized"));
 		StepHarness.forStep(step).testResource("java/formatannotations/FormatAnnotationsAddRemoveInput.test", "java/formatannotations/FormatAnnotationsAddRemoveOutput.test");
 	}
 

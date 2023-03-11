@@ -33,7 +33,7 @@ import com.diffplug.spotless.json.JacksonJsonConfig;
  */
 // https://github.com/FasterXML/jackson-dataformats-text/issues/372
 public class JacksonJsonFormatterFunc extends AJacksonFormatterFunc {
-	private JacksonJsonConfig jacksonConfig;
+	private final JacksonJsonConfig jacksonConfig;
 
 	public JacksonJsonFormatterFunc(JacksonJsonConfig jacksonConfig) {
 		super(jacksonConfig);

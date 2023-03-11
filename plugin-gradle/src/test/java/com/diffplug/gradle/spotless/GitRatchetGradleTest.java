@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -248,7 +248,7 @@ class GitRatchetGradleTest extends GradleIntegrationHarness {
 	}
 
 	public static class BuildResultAssertion {
-		BuildResult result;
+		final BuildResult result;
 
 		BuildResultAssertion(BuildResult result) {
 			this.result = Objects.requireNonNull(result);
@@ -266,10 +266,9 @@ class GitRatchetGradleTest extends GradleIntegrationHarness {
 	private RevCommit addAndCommit(Git git) throws NoFilepatternException, GitAPIException {
 		PersonIdent emptyPerson = new PersonIdent("jane doe", "jane@doe.com", new Date(0), TimeZone.getTimeZone("UTC"));
 		git.add().addFilepattern(".").call();
-		RevCommit commit = git.commit().setMessage("baseline")
+		return git.commit().setMessage("baseline")
 				.setCommitter(emptyPerson)
 				.setAuthor(emptyPerson)
 				.call();
-		return commit;
 	}
 }

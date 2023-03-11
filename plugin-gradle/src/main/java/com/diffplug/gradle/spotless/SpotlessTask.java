@@ -89,7 +89,7 @@ public abstract class SpotlessTask extends DefaultTask {
 	public void setupRatchet(String ratchetFrom) {
 		this.ratchetFrom = ratchetFrom;
 		if (!ratchetFrom.isEmpty()) {
-			GitRatchet ratchet = getTaskService().get().getRatchet();
+			GitRatchet<File> ratchet = getTaskService().get().getRatchet();
 			File projectDir = getProjectDir().get().getAsFile();
 			rootTreeSha = ratchet.rootTreeShaOf(projectDir, ratchetFrom);
 			subtreeSha = ratchet.subtreeShaOf(projectDir, rootTreeSha);
@@ -147,7 +147,7 @@ public abstract class SpotlessTask extends DefaultTask {
 		}
 	}
 
-	protected File outputDirectory = new File(getProject().getBuildDir(), "spotless/" + getName());
+	protected final File outputDirectory = new File(getProject().getBuildDir(), "spotless/" + getName());
 
 	@OutputDirectory
 	public File getOutputDirectory() {
@@ -156,7 +156,7 @@ public abstract class SpotlessTask extends DefaultTask {
 
 	protected final LiveCache<List<FormatterStep>> steps = createLive("steps");
 	{
-		steps.set(new ArrayList<FormatterStep>());
+		steps.set(new ArrayList<>());
 	}
 
 	@Input

@@ -67,14 +67,14 @@ public final class Jvm {
 		private final NavigableMap<V, Integer> fmt2jvmVersion;
 
 		private Support(String fromatterName) {
-			this(fromatterName, new SemanticVersionComparator<V>());
+			this(fromatterName, new SemanticVersionComparator<>());
 		}
 
 		private Support(String formatterName, Comparator<? super V> formatterVersionComparator) {
 			fmtName = formatterName;
 			fmtVersionComparator = formatterVersionComparator;
-			jvm2fmtVersion = new TreeMap<Integer, V>();
-			fmt2jvmVersion = new TreeMap<V, Integer>(formatterVersionComparator);
+			jvm2fmtVersion = new TreeMap<>();
+			fmt2jvmVersion = new TreeMap<>(formatterVersionComparator);
 		}
 
 		/**
@@ -125,7 +125,7 @@ public final class Jvm {
 		private String buildUnsupportedFormatterMessage(V fmtVersion) {
 			int requiredJvmVersion = getRequiredJvmVersion(fmtVersion);
 			if (Jvm.version() < requiredJvmVersion) {
-				return buildUpgradeJvmMessage(fmtVersion) + "Upgrade your JVM or try " + toString();
+				return buildUpgradeJvmMessage(fmtVersion) + "Upgrade your JVM or try " + this;
 			}
 			return "";
 		}
@@ -228,7 +228,7 @@ public final class Jvm {
 				Objects.requireNonNull(version1);
 				int[] version0Items = convert(version0);
 				int[] version1Items = convert(version1);
-				int numberOfElements = version0Items.length > version1Items.length ? version0Items.length : version1Items.length;
+				int numberOfElements = Math.max(version0Items.length, version1Items.length);
 				version0Items = Arrays.copyOf(version0Items, numberOfElements);
 				version1Items = Arrays.copyOf(version1Items, numberOfElements);
 				for (int i = 0; i < numberOfElements; i++) {
@@ -243,12 +243,12 @@ public final class Jvm {
 
 			private static <V> int[] convert(V versionObject) {
 				try {
-					return Arrays.asList(versionObject.toString().split("\\.")).stream().mapToInt(Integer::parseInt).toArray();
+					return Arrays.stream(versionObject.toString().split("\\.")).mapToInt(Integer::parseInt).toArray();
 				} catch (Exception e) {
 					throw new IllegalArgumentException(String.format("Not a semantic version: %s", versionObject), e);
 				}
 			}
-		};
+		}
 	}
 
 	/**
@@ -259,6 +259,6 @@ public final class Jvm {
 	 */
 	public static <V> Support<V> support(String formatterName) {
 		Objects.requireNonNull(formatterName);
-		return new Support<V>(formatterName);
+		return new Support<>(formatterName);
 	}
 }

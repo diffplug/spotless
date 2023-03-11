@@ -82,7 +82,7 @@ final class NpmResourceHelper {
 			while ((numRead = input.read(buffer)) != -1) {
 				output.write(buffer, 0, numRead);
 			}
-			return output.toString(StandardCharsets.UTF_8.name());
+			return output.toString(StandardCharsets.UTF_8);
 		} catch (IOException e) {
 			throw ThrowingEx.asRuntime(e);
 		}

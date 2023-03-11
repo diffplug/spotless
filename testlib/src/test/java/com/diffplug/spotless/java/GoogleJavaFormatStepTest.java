@@ -127,9 +127,9 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 	void equalityGroupArtifact() throws Exception {
 		new SerializableEqualityTester() {
 			String groupArtifact = GoogleJavaFormatStep.defaultGroupArtifact();
-			String version = "1.11.0";
-			String style = "";
-			boolean reflowLongStrings = false;
+			final String version = "1.11.0";
+			final String style = "";
+			final boolean reflowLongStrings = false;
 
 			@Override
 			protected void setupTest(API api) {

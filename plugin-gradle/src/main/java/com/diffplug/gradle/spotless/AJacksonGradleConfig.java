@@ -24,7 +24,7 @@ import com.diffplug.spotless.json.JacksonJsonStep;
 public abstract class AJacksonGradleConfig {
 	protected final FormatExtension formatExtension;
 
-	protected JacksonConfig jacksonConfig;
+	protected final JacksonConfig jacksonConfig;
 
 	protected String version = JacksonJsonStep.defaultVersion();
 

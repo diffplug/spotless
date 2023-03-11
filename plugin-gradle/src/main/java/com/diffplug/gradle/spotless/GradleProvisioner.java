@@ -120,9 +120,7 @@ class GradleProvisioner {
 				config.setTransitive(withTransitives);
 				config.setCanBeConsumed(false);
 				config.setVisible(false);
-				config.attributes(attr -> {
-					attr.attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.EXTERNAL));
-				});
+				config.attributes(attr -> attr.attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.EXTERNAL)));
 				return config.resolve();
 			} catch (Exception e) {
 				String projName = project.getPath().substring(1).replace(':', '/');

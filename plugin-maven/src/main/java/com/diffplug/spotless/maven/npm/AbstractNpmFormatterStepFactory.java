@@ -49,18 +49,15 @@ public abstract class AbstractNpmFormatterStepFactory implements FormatterStepFa
 	private String npmInstallCache;
 
 	protected File npm(FormatterStepConfig stepConfig) {
-		File npm = npmExecutable != null ? stepConfig.getFileLocator().locateFile(npmExecutable) : null;
-		return npm;
+		return npmExecutable != null ? stepConfig.getFileLocator().locateFile(npmExecutable) : null;
 	}
 
 	protected File node(FormatterStepConfig stepConfig) {
-		File node = nodeExecutable != null ? stepConfig.getFileLocator().locateFile(nodeExecutable) : null;
-		return node;
+		return nodeExecutable != null ? stepConfig.getFileLocator().locateFile(nodeExecutable) : null;
 	}
 
 	protected File npmrc(FormatterStepConfig stepConfig) {
-		File npmrc = this.npmrc != null ? stepConfig.getFileLocator().locateFile(this.npmrc) : null;
-		return npmrc;
+		return this.npmrc != null ? stepConfig.getFileLocator().locateFile(this.npmrc) : null;
 	}
 
 	protected File buildDir(FormatterStepConfig stepConfig) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import com.diffplug.common.base.StringPrinter;
 
 class MultiProjectTest extends GradleIntegrationHarness {
-	private static int N = 100;
+	private static final int N = 100;
 
 	private void createNSubprojects() throws IOException {
 		for (int i = 0; i < N; ++i) {

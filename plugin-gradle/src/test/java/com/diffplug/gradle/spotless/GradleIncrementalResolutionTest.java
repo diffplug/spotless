@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,7 +97,7 @@ class GradleIncrementalResolutionTest extends GradleIntegrationHarness {
 
 	private void writeState(String state) throws IOException {
 		for (char c : state.toCharArray()) {
-			String letter = new String(new char[]{c});
+			String letter = String.valueOf(c);
 			boolean exists = new File(rootFolder(), filename(letter)).exists();
 			boolean needsChanging = exists && !read(filename(letter)).trim().equals(letter);
 			if (!exists || needsChanging) {
@@ -108,7 +108,7 @@ class GradleIncrementalResolutionTest extends GradleIntegrationHarness {
 
 	private void assertState(String state) throws IOException {
 		for (char c : state.toCharArray()) {
-			String letter = new String(new char[]{c});
+			String letter = String.valueOf(c);
 			if (Character.isLowerCase(c)) {
 				assertEquals(letter.toLowerCase(Locale.ROOT), read(filename(letter)).trim());
 			} else {

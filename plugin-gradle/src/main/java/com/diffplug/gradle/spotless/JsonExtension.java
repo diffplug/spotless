@@ -117,7 +117,7 @@ public class JsonExtension extends FormatExtension {
 	}
 
 	public static class JacksonJsonGradleConfig extends AJacksonGradleConfig {
-		protected JacksonJsonConfig jacksonConfig;
+		protected final JacksonJsonConfig jacksonConfig;
 
 		public JacksonJsonGradleConfig(JacksonJsonConfig jacksonConfig, FormatExtension formatExtension) {
 			super(jacksonConfig, formatExtension);

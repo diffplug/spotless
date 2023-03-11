@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,9 +69,7 @@ public class TestProvisioner {
 			Configuration config = project.getConfigurations().detachedConfiguration(deps);
 			config.setTransitive(withTransitives);
 			config.setDescription(mavenCoords.toString());
-			config.attributes(attr -> {
-				attr.attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.EXTERNAL));
-			});
+			config.attributes(attr -> attr.attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.EXTERNAL)));
 			try {
 				return config.resolve();
 			} catch (ResolveException e) {
@@ -138,25 +136,19 @@ public class TestProvisioner {
 		return mavenCentral.get();
 	}
 
-	private static final Supplier<Provisioner> mavenCentral = Suppliers.memoize(() -> {
-		return caching("mavenCentral", () -> createWithRepositories(repo -> repo.mavenCentral()));
-	});
+	private static final Supplier<Provisioner> mavenCentral = Suppliers.memoize(() -> caching("mavenCentral", () -> createWithRepositories(RepositoryHandler::mavenCentral)));
 
 	/** Creates a Provisioner for the local maven repo for development purpose. */
 	public static Provisioner mavenLocal() {
 		return mavenLocal.get();
 	}
 
-	private static final Supplier<Provisioner> mavenLocal = () -> createWithRepositories(repo -> repo.mavenLocal());
+	private static final Supplier<Provisioner> mavenLocal = () -> createWithRepositories(RepositoryHandler::mavenLocal);
 
 	/** Creates a Provisioner for the Sonatype snapshots maven repo for development purpose. */
 	public static Provisioner snapshots() {
 		return snapshots.get();
 	}
 
-	private static final Supplier<Provisioner> snapshots = () -> createWithRepositories(repo -> {
-		repo.maven(setup -> {
-			setup.setUrl("https://oss.sonatype.org/content/repositories/snapshots");
-		});
-	});
+	private static final Supplier<Provisioner> snapshots = () -> createWithRepositories(repo -> repo.maven(setup -> setup.setUrl("https://oss.sonatype.org/content/repositories/snapshots")));
 }

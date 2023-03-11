@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,19 +38,19 @@ import com.diffplug.spotless.TestProvisioner;
 
 class PaddedCellTaskTest extends ResourceHarness {
 	private class Bundle {
-		String name;
-		Project project = TestProvisioner.gradleProject(rootFolder());
-		Provider<SpotlessTaskService> taskService = GradleIntegrationHarness.providerOf(new SpotlessTaskService() {
+		final String name;
+		final Project project = TestProvisioner.gradleProject(rootFolder());
+		final Provider<SpotlessTaskService> taskService = GradleIntegrationHarness.providerOf(new SpotlessTaskService() {
 			@Override
 			public BuildServiceParameters.None getParameters() {
 				return null;
 			}
 		});
-		File file;
-		File outputFile;
-		SpotlessTaskImpl source;
-		SpotlessCheck check;
-		SpotlessApply apply;
+		final File file;
+		final File outputFile;
+		final SpotlessTaskImpl source;
+		final SpotlessCheck check;
+		final SpotlessApply apply;
 
 		Bundle(String name, FormatterFunc function) throws IOException {
 			this.name = name;

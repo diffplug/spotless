@@ -282,9 +282,9 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 
 		private String sourceJdk = CleanthatJavaStep.defaultSourceJdk();
 
-		private List<String> mutators = new ArrayList<>(CleanthatJavaStep.defaultMutators());
+		private final List<String> mutators = new ArrayList<>(CleanthatJavaStep.defaultMutators());
 
-		private List<String> excludedMutators = new ArrayList<>(CleanthatJavaStep.defaultExcludedMutators());
+		private final List<String> excludedMutators = new ArrayList<>(CleanthatJavaStep.defaultExcludedMutators());
 
 		private boolean includeDraft = CleanthatJavaStep.defaultIncludeDraft();
 

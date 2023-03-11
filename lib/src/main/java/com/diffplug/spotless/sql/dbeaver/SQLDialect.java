@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,12 +39,12 @@ class SQLDialect {
 	private static final String[][] DEFAULT_QUOTE_STRINGS = {{"\"", "\""}};
 
 	// Keywords
-	private TreeMap<String, DBPKeywordType> allKeywords = new TreeMap<>();
+	private final TreeMap<String, DBPKeywordType> allKeywords = new TreeMap<>();
 
 	private final TreeSet<String> functions = new TreeSet<>();
 	private final TreeSet<String> types = new TreeSet<>();
 	// Comments
-	private Pair<String, String> multiLineComments = new Pair<>(SQLConstants.ML_COMMENT_START, SQLConstants.ML_COMMENT_END);
+	private final Pair<String, String> multiLineComments = new Pair<>(SQLConstants.ML_COMMENT_START, SQLConstants.ML_COMMENT_END);
 
 	static final SQLDialect INSTANCE = new SQLDialect();
 

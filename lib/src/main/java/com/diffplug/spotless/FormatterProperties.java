@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -205,9 +205,8 @@ public final class FormatterProperties {
 			protected Properties execute(File file, Node rootNode) throws IOException, IllegalArgumentException {
 				final Properties properties = new Properties();
 				Node firstProfile = getSingleProfile(rootNode);
-				for (Object settingObj : getChildren(firstProfile, "setting")) {
-					Node setting = (Node) settingObj;
-					NamedNodeMap attributes = setting.getAttributes();
+				for (Node settingObj : getChildren(firstProfile, "setting")) {
+					NamedNodeMap attributes = settingObj.getAttributes();
 					Node id = attributes.getNamedItem("id");
 					Node value = attributes.getNamedItem("value");
 					if (null == id) {

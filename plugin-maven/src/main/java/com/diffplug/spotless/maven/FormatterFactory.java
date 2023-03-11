@@ -95,7 +95,7 @@ public abstract class FormatterFactory {
 		List<FormatterStep> formatterSteps = factories.stream()
 				.filter(Objects::nonNull) // all unrecognized steps from XML config appear as nulls in the list
 				.map(factory -> factory.newFormatterStep(stepConfig))
-				.collect(Collectors.toCollection(() -> new ArrayList<FormatterStep>()));
+				.collect(Collectors.toCollection(ArrayList::new));
 		if (toggle != null) {
 			PipeStepPair pair = toggle.createPair();
 			formatterSteps.add(0, pair.in());

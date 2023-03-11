@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 DiffPlug
+ * Copyright 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -129,7 +129,7 @@ public class ForeignExe {
 			errorMsg.append(msgFix);
 			errorMsg.append('\n');
 		}
-		errorMsg.append(cmd.toString());
+		errorMsg.append(cmd);
 		return new RuntimeException(errorMsg.toString());
 	}
 }

@@ -62,7 +62,7 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 		return isClean(project, treeSha, relativePath);
 	}
 
-	private Map<Repository, DirCache> dirCaches = new HashMap<>();
+	private final Map<Repository, DirCache> dirCaches = new HashMap<>();
 
 	/**
 	 * This is the highest-level method, which all the others serve.  Given the sha
@@ -136,9 +136,9 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 	private final static int INDEX = 1;
 	private final static int WORKDIR = 2;
 
-	Map<File, Repository> gitRoots = new HashMap<>();
-	Table<Repository, String, ObjectId> rootTreeShaCache = HashBasedTable.create();
-	Map<Project, ObjectId> subtreeShaCache = new HashMap<>();
+	final Map<File, Repository> gitRoots = new HashMap<>();
+	final Table<Repository, String, ObjectId> rootTreeShaCache = HashBasedTable.create();
+	final Map<Project, ObjectId> subtreeShaCache = new HashMap<>();
 
 	/**
 	 * The first part of making this fast is finding the appropriate git repository quickly.  Because of composite

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ public interface Provisioner {
 	 * Given a set of Maven coordinates, returns a set of jars which include all
 	 * of the specified coordinates and optionally their transitive dependencies.
 	 */
-	public default Set<File> provisionWithTransitives(boolean withTransitives, String... mavenCoordinates) {
+	default Set<File> provisionWithTransitives(boolean withTransitives, String... mavenCoordinates) {
 		return provisionWithTransitives(withTransitives, Arrays.asList(mavenCoordinates));
 	}
 
@@ -37,5 +37,5 @@ public interface Provisioner {
 	 * Given a set of Maven coordinates, returns a set of jars which include all
 	 * of the specified coordinates and optionally their transitive dependencies.
 	 */
-	public Set<File> provisionWithTransitives(boolean withTransitives, Collection<String> mavenCoordinates);
+	Set<File> provisionWithTransitives(boolean withTransitives, Collection<String> mavenCoordinates);
 }

@@ -16,7 +16,7 @@
 package com.diffplug.spotless.generic;
 
 import java.nio.file.Paths;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
@@ -98,7 +98,7 @@ class PipeStepPairTest {
 	void andApply() {
 		FormatterStep lowercase = FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT));
 		FormatterStep lowercaseSometimes = PipeStepPair.named("lowercaseSometimes").openClose("<lower>", "</lower>")
-				.buildStepWhichAppliesSubSteps(Paths.get(""), Arrays.asList(lowercase));
+				.buildStepWhichAppliesSubSteps(Paths.get(""), List.of(lowercase));
 		StepHarness.forSteps(lowercaseSometimes).test(
 				StringPrinter.buildStringFromLines(
 						"A B C",

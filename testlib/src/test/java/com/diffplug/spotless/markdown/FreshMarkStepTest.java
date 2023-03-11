@@ -39,7 +39,7 @@ class FreshMarkStepTest {
 	void equality() throws Exception {
 		new SerializableEqualityTester() {
 			String version = "1.3.1";
-			Map<String, Object> props = new HashMap<>();
+			final Map<String, Object> props = new HashMap<>();
 
 			@Override
 			protected void setupTest(API api) {

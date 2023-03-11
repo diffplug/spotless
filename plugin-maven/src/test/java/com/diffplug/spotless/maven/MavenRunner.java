@@ -40,7 +40,7 @@ public class MavenRunner {
 
 	private File projectDir;
 	private String[] args;
-	private Map<String, String> environment = new HashMap<>();
+	private final Map<String, String> environment = new HashMap<>();
 	private ProcessRunner runner;
 
 	public MavenRunner withProjectDir(File projectDir) {

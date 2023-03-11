@@ -164,13 +164,9 @@ public final class CleanthatJavaStep {
 
 			// https://github.com/diffplug/spotless/issues/1583
 			if (!version.endsWith("-SNAPSHOT")) {
-				return JVM_SUPPORT.suggestLaterVersionOnError(version, input -> {
-					return (String) formatterMethod.invoke(formatter, input);
-				});
+				return JVM_SUPPORT.suggestLaterVersionOnError(version, input -> (String) formatterMethod.invoke(formatter, input));
 			} else {
-				return input -> {
-					return (String) formatterMethod.invoke(formatter, input);
-				};
+				return input -> (String) formatterMethod.invoke(formatter, input);
 			}
 		}
 

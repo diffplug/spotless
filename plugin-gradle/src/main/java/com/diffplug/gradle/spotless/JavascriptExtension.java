@@ -59,7 +59,7 @@ public class JavascriptExtension extends FormatExtension {
 	}
 
 	public static abstract class EslintBaseConfig<T extends EslintBaseConfig<?>> extends NpmStepConfig<EslintBaseConfig<T>> {
-		Map<String, String> devDependencies = new LinkedHashMap<>();
+		final Map<String, String> devDependencies = new LinkedHashMap<>();
 
 		@Nullable
 		Object configFilePath = null;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ class LazyForwardingEqualityTest {
 	}
 
 	static class Str extends LazyForwardingEquality<String> {
-		private String state;
+		private final String state;
 
 		Str(String state) {
 			this.state = state;

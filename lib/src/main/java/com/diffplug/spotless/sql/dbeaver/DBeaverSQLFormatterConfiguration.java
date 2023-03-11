@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,9 +51,9 @@ public class DBeaverSQLFormatterConfiguration {
 	 */
 	private static final String SQL_FORMATTER_INDENT_SIZE = "sql.formatter.indent.size";
 
-	private String statementDelimiters;
-	private KeywordCase keywordCase;
-	private String indentString;
+	private final String statementDelimiters;
+	private final KeywordCase keywordCase;
+	private final String indentString;
 
 	public DBeaverSQLFormatterConfiguration(Properties properties) {
 		this.keywordCase = KeywordCase.valueOf(properties.getProperty(SQL_FORMATTER_KEYWORD_CASE, "UPPER"));

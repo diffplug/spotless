@@ -16,7 +16,6 @@
 package com.diffplug.spotless.glue.java;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -39,10 +38,10 @@ import eu.solven.cleanthat.formatter.LineEnding;
 public class JavaCleanthatRefactorerFunc implements FormatterFunc {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JavaCleanthatRefactorerFunc.class);
 
-	private String jdkVersion;
-	private List<String> included;
-	private List<String> excluded;
-	private boolean includeDraft;
+	private final String jdkVersion;
+	private final List<String> included;
+	private final List<String> excluded;
+	private final boolean includeDraft;
 
 	public JavaCleanthatRefactorerFunc(String jdkVersion, List<String> included, List<String> excluded, boolean includeDraft) {
 		this.jdkVersion = jdkVersion == null ? IJdkVersionConstants.JDK_8 : jdkVersion;
@@ -52,7 +51,7 @@ public class JavaCleanthatRefactorerFunc implements FormatterFunc {
 	}
 
 	public JavaCleanthatRefactorerFunc() {
-		this(IJdkVersionConstants.JDK_8, Arrays.asList("SafeAndConsensual"), Arrays.asList(), false);
+		this(IJdkVersionConstants.JDK_8, List.of("SafeAndConsensual"), List.of(), false);
 	}
 
 	@Override

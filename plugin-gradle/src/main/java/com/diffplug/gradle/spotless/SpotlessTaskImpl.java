@@ -94,7 +94,7 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 	}
 
 	@VisibleForTesting
-	void processInputFile(@Nullable GitRatchet ratchet, Formatter formatter, File input) throws IOException {
+	void processInputFile(@Nullable GitRatchet<File> ratchet, Formatter formatter, File input) throws IOException {
 		File output = getOutputFile(input);
 		getLogger().debug("Applying format to {} and writing to {}", input, output);
 		PaddedCell.DirtyState dirtyState;

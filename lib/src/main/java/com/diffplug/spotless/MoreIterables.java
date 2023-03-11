@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ import static com.diffplug.spotless.LibPreconditions.requireElementsNonNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -47,7 +46,7 @@ final class MoreIterables {
 	static <T> List<T> toSortedSet(Iterable<T> raw, Comparator<T> comparator) {
 		List<T> toBeSorted = toNullHostileList(raw);
 		// sort it
-		Collections.sort(toBeSorted, comparator);
+		toBeSorted.sort(comparator);
 		// remove any duplicates (normally there won't be any)
 		if (toBeSorted.size() > 1) {
 			Iterator<T> iter = toBeSorted.iterator();

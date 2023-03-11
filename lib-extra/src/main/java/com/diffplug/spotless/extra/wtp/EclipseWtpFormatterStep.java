@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package com.diffplug.spotless.extra.wtp;
 
-import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Properties;
@@ -50,7 +49,7 @@ public enum EclipseWtpFormatterStep {
 	}
 
 	public EclipseBasedStepBuilder createBuilder(Provisioner provisioner) {
-		return new EclipseBasedStepBuilder(NAME, " - " + toString(), provisioner, state -> formatterCall.apply(implementationClassName, state));
+		return new EclipseBasedStepBuilder(NAME, " - " + this, provisioner, state -> formatterCall.apply(implementationClassName, state));
 	}
 
 	public static String defaultVersion() {
@@ -78,16 +77,13 @@ public enum EclipseWtpFormatterStep {
 		Class<?> formatterClazz = state.loadClass(FORMATTER_PACKAGE + className);
 		Object formatter = formatterClazz.getConstructor(Properties.class).newInstance(state.getPreferences());
 		Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class, String.class);
-		return JVM_SUPPORT.suggestLaterVersionOnError(state.getSemanticVersion(), new FormatterFunc.NeedsFile() {
-			@Override
-			public String applyWithFile(String unix, File file) throws Exception {
-				try {
-					return (String) method.invoke(formatter, unix, file.getAbsolutePath());
-				} catch (InvocationTargetException exceptionWrapper) {
-					Throwable throwable = exceptionWrapper.getTargetException();
-					Exception exception = (throwable instanceof Exception) ? (Exception) throwable : null;
-					throw (null == exception) ? exceptionWrapper : exception;
-				}
+		return JVM_SUPPORT.suggestLaterVersionOnError(state.getSemanticVersion(), (FormatterFunc.NeedsFile) (unix, file) -> {
+			try {
+				return (String) method.invoke(formatter, unix, file.getAbsolutePath());
+			} catch (InvocationTargetException exceptionWrapper) {
+				Throwable throwable = exceptionWrapper.getTargetException();
+				Exception exception = (throwable instanceof Exception) ? (Exception) throwable : null;
+				throw (null == exception) ? exceptionWrapper : exception;
 			}
 		});
 	}

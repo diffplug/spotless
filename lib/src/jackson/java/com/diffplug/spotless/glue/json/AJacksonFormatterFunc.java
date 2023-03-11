@@ -32,7 +32,7 @@ import com.diffplug.spotless.json.JacksonConfig;
  */
 // https://github.com/FasterXML/jackson-dataformats-text/issues/372
 public abstract class AJacksonFormatterFunc implements FormatterFunc {
-	private JacksonConfig jacksonConfig;
+	private final JacksonConfig jacksonConfig;
 
 	public AJacksonFormatterFunc(JacksonConfig jacksonConfig) {
 		this.jacksonConfig = jacksonConfig;
@@ -49,9 +49,8 @@ public abstract class AJacksonFormatterFunc implements FormatterFunc {
 		try {
 			// ObjectNode is not compatible with SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS
 			Object objectNode = objectMapper.readValue(input, inferType(input));
-			String output = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(objectNode);
 
-			return output;
+			return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(objectNode);
 		} catch (JsonProcessingException e) {
 			throw new IllegalArgumentException("Unable to format. input='" + input + "'", e);
 		}

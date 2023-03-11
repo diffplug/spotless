@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,11 +37,11 @@ class SQLTokensParser {
 	private final String[][] quoteStrings;
 	private String fBefore = null;
 	private int fPos;
-	private char structSeparator;
-	private String catalogSeparator;
-	private Set<String> commands = new HashSet<>();
-	private String[] singleLineComments;
-	private char[] singleLineCommentStart;
+	private final char structSeparator;
+	private final String catalogSeparator;
+	private final Set<String> commands = new HashSet<>();
+	private final String[] singleLineComments;
+	private final char[] singleLineCommentStart;
 
 	SQLTokensParser() {
 		this.structSeparator = sqlDialect.getStructSeparator();
@@ -185,7 +185,7 @@ class SQLTokensParser {
 						s.append(fChar);
 					}
 				}
-				return new FormatterToken(TokenType.COMMAND, word + s.toString(), start_pos);
+				return new FormatterToken(TokenType.COMMAND, word + s, start_pos);
 			}
 			if (sqlDialect.getKeywordType(word) != null) {
 				return new FormatterToken(TokenType.KEYWORD, word, start_pos);

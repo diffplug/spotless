@@ -86,8 +86,7 @@ class ScalaFmtStepTest extends ResourceHarness {
 	void invalidConfiguration() {
 		File invalidConfFile = createTestFile("scala/scalafmt/scalafmt.invalid.conf");
 		Provisioner provisioner = TestProvisioner.mavenCentral();
-		Assertions.assertThatThrownBy(() -> {
-			ScalaFmtStep.create("3.0.0", provisioner, invalidConfFile).format("", new File(""));
-		}).cause().message().contains("found option 'invalidScalaFmtConfigField' which wasn't expected");
+		Assertions.assertThatThrownBy(() -> ScalaFmtStep.create("3.0.0", provisioner, invalidConfFile).format("", new File("")))
+				.cause().message().contains("found option 'invalidScalaFmtConfigField' which wasn't expected");
 	}
 }

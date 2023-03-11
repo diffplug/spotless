@@ -44,7 +44,7 @@ public class YamlExtension extends FormatExtension {
 	}
 
 	public class JacksonYamlGradleConfig extends AJacksonGradleConfig {
-		protected JacksonYamlConfig jacksonConfig;
+		protected final JacksonYamlConfig jacksonConfig;
 
 		public JacksonYamlGradleConfig(JacksonYamlConfig jacksonConfig, FormatExtension formatExtension) {
 			super(jacksonConfig, formatExtension);

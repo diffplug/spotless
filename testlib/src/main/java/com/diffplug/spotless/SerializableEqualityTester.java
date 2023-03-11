@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,23 +37,18 @@ public abstract class SerializableEqualityTester {
 	public void testEquals() {
 		List<List<Object>> allGroups = new ArrayList<>();
 		Box<List<Object>> currentGroup = Box.of(new ArrayList<>());
-		API api = new API() {
-			@Override
-			public void areDifferentThan() {
-				currentGroup.modify(current -> {
-					// create two instances, and add them to the group
-					current.add(create());
-					current.add(create());
-					// create two instances using a serialization roundtrip, and add them to the group
-					current.add(reserialize(create()));
-					current.add(reserialize(create()));
-					// add this group to the list of all groups
-					allGroups.add(current);
-					// and return a new blank group for the next call
-					return new ArrayList<>();
-				});
-			}
-		};
+		API api = () -> currentGroup.modify(current -> {
+			// create two instances, and add them to the group
+			current.add(create());
+			current.add(create());
+			// create two instances using a serialization roundtrip, and add them to the group
+			current.add(reserialize(create()));
+			current.add(reserialize(create()));
+			// add this group to the list of all groups
+			allGroups.add(current);
+			// and return a new blank group for the next call
+			return new ArrayList<>();
+		});
 		try {
 			setupTest(api);
 		} catch (Exception e) {

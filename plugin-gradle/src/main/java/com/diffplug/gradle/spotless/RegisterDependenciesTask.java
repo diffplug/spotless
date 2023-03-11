@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ public abstract class RegisterDependenciesTask extends DefaultTask {
 		unitOutput = new File(getProject().getBuildDir(), "tmp/spotless-register-dependencies");
 	}
 
-	List<FormatterStep> steps = new ArrayList<>();
+	final List<FormatterStep> steps = new ArrayList<>();
 
 	@Input
 	public List<FormatterStep> getSteps() {

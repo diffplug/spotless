@@ -120,7 +120,7 @@ public class FormatExtension {
 
 	/** @see #setRatchetFrom(String) */
 	public String getRatchetFrom() {
-		return ratchetFrom == RATCHETFROM_NOT_SET_AT_FORMAT_LEVEL ? spotless.getRatchetFrom() : ratchetFrom;
+		return RATCHETFROM_NOT_SET_AT_FORMAT_LEVEL.equals(ratchetFrom) ? spotless.getRatchetFrom() : ratchetFrom;
 	}
 
 	/**
@@ -164,11 +164,7 @@ public class FormatExtension {
 	protected boolean isLicenseHeaderStep(FormatterStep formatterStep) {
 		String formatterStepName = formatterStep.getName();
 
-		if (formatterStepName.startsWith(LicenseHeaderStep.class.getName())) {
-			return true;
-		}
-
-		return false;
+		return formatterStepName.startsWith(LicenseHeaderStep.class.getName());
 	}
 
 	/**
@@ -227,9 +223,9 @@ public class FormatExtension {
 		return parseTargetIsExclude(target, false);
 	}
 
-	private final FileCollection parseTargetIsExclude(Object target, boolean isExclude) {
+	private FileCollection parseTargetIsExclude(Object target, boolean isExclude) {
 		if (target instanceof Collection) {
-			return parseTargetsIsExclude(((Collection) target).toArray(), isExclude);
+			return parseTargetsIsExclude(((Collection<?>) target).toArray(), isExclude);
 		} else if (target instanceof FileCollection) {
 			return (FileCollection) target;
 		} else if (target instanceof String) {
@@ -537,9 +533,9 @@ public class FormatExtension {
 		@Nullable
 		protected Object npmrcFile;
 
-		protected Project project;
+		protected final Project project;
 
-		private Consumer<FormatterStep> replaceStep;
+		private final Consumer<FormatterStep> replaceStep;
 
 		public NpmStepConfig(Project project, Consumer<FormatterStep> replaceStep) {
 			this.project = requireNonNull(project);
@@ -859,11 +855,10 @@ public class FormatExtension {
 			task.mustRunAfter(BasePlugin.CLEAN_TASK_NAME);
 		});
 		// create the apply task
-		TaskProvider<SpotlessApply> applyTask = spotless.project.getTasks().register(taskName, SpotlessApply.class, task -> {
+		return spotless.project.getTasks().register(taskName, SpotlessApply.class, task -> {
 			task.dependsOn(spotlessTask);
 			task.init(spotlessTask.get());
 		});
-		return applyTask;
 	}
 
 	protected GradleException noDefaultTargetException() {

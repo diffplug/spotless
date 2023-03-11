@@ -428,11 +428,11 @@ public final class FormatAnnotationsStep {
 		 */
 		State(List<String> addedTypeAnnotations, List<String> removedTypeAnnotations) {
 			typeAnnotations.addAll(addedTypeAnnotations);
-			typeAnnotations.removeAll(removedTypeAnnotations);
+			removedTypeAnnotations.forEach(typeAnnotations::remove);
 		}
 
 		FormatterFunc toFormatter() {
-			return unixStr -> fixupTypeAnnotations(unixStr);
+			return this::fixupTypeAnnotations;
 		}
 
 		/**

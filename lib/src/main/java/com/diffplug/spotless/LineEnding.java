@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -133,7 +133,7 @@ public enum LineEnding {
 		String getEndingFor(File file);
 
 		/** Returns true iff this file has unix line endings. */
-		public default boolean isUnix(File file) {
+		default boolean isUnix(File file) {
 			Objects.requireNonNull(file);
 			String ending = getEndingFor(file);
 			return ending.equals(UNIX.str());

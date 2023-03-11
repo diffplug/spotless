@@ -174,7 +174,7 @@ public class ResourceHarness {
 	}
 
 	public static class WriteAsserter {
-		private File file;
+		private final File file;
 
 		private WriteAsserter(File file) {
 			file.getParentFile().mkdirs();
@@ -190,16 +190,12 @@ public class ResourceHarness {
 		}
 
 		public File toContent(String content, Charset charset) {
-			ThrowingEx.run(() -> {
-				Files.write(file.toPath(), content.getBytes(charset));
-			});
+			ThrowingEx.run(() -> Files.write(file.toPath(), content.getBytes(charset)));
 			return file;
 		}
 
 		public File toResource(String path) {
-			ThrowingEx.run(() -> {
-				Files.write(file.toPath(), getTestResource(path).getBytes(StandardCharsets.UTF_8));
-			});
+			ThrowingEx.run(() -> Files.write(file.toPath(), getTestResource(path).getBytes(StandardCharsets.UTF_8)));
 			return file;
 		}
 

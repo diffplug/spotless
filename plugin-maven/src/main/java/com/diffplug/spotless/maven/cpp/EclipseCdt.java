@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 package com.diffplug.spotless.maven.cpp;
 
 import java.io.File;
-import java.util.Arrays;
+import java.util.Collections;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
@@ -40,7 +40,7 @@ public class EclipseCdt implements FormatterStepFactory {
 		eclipseConfig.setVersion(version == null ? EclipseCdtFormatterStep.defaultVersion() : version);
 		if (null != file) {
 			File settingsFile = stepConfig.getFileLocator().locateFile(file);
-			eclipseConfig.setPreferences(Arrays.asList(settingsFile));
+			eclipseConfig.setPreferences(Collections.singletonList(settingsFile));
 		}
 		return eclipseConfig.build();
 	}

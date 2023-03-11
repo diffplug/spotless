@@ -49,8 +49,7 @@ class NpmInstallCacheIntegrationTests extends GradleIntegrationHarness {
 	@Test
 	void prettierCachesNodeModulesToADefaultFolderWhenCachingEnabled() throws IOException {
 		File dir1 = newFolder("npm-prettier-1");
-		File cacheDir = DEFAULT_DIR_FOR_NPM_INSTALL_CACHE_DO_NEVER_WRITE_TO_THIS;
-		BuildResult result = runPhpPrettierOnDir(dir1, cacheDir);
+		BuildResult result = runPhpPrettierOnDir(dir1, DEFAULT_DIR_FOR_NPM_INSTALL_CACHE_DO_NEVER_WRITE_TO_THIS);
 		Assertions.assertThat(result.getOutput())
 				.doesNotContain("Using cached node_modules for")
 				.contains("Caching node_modules for ")

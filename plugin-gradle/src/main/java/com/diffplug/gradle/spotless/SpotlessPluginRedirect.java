@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public class SpotlessPluginRedirect implements Plugin<Project> {
 		if (gradleIsTooOld == null) {
 			gradleIsTooOld = badSemver(project.getGradle().getGradleVersion()) < badSemver(SpotlessPlugin.MINIMUM_GRADLE);
 		}
-		return gradleIsTooOld.booleanValue();
+		return gradleIsTooOld;
 	}
 
 	@Override

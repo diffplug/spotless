@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 /**
  * Grabs a jar and its dependencies from maven,
@@ -43,7 +42,7 @@ public final class JarState implements Serializable {
 	private final FileSignature fileSignature;
 
 	private JarState(Collection<String> mavenCoordinates, FileSignature fileSignature) {
-		this.mavenCoordinates = new TreeSet<String>(mavenCoordinates);
+		this.mavenCoordinates = new TreeSet<>(mavenCoordinates);
 		this.fileSignature = fileSignature;
 	}
 
@@ -67,7 +66,7 @@ public final class JarState implements Serializable {
 		Objects.requireNonNull(provisioner, "provisioner");
 		Set<File> jars = provisioner.provisionWithTransitives(withTransitives, mavenCoordinates);
 		if (jars.isEmpty()) {
-			throw new NoSuchElementException("Resolved to an empty result: " + mavenCoordinates.stream().collect(Collectors.joining(", ")));
+			throw new NoSuchElementException("Resolved to an empty result: " + String.join(", ", mavenCoordinates));
 		}
 		FileSignature fileSignature = FileSignature.signAsSet(jars);
 		return new JarState(mavenCoordinates, fileSignature);

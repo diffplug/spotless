@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,10 +40,10 @@ public interface NoLambda extends Serializable {
 	 * {@code SerializableFileFilterImpl.SkipFilesNamed} for an example of how to make a serializable
 	 * subclass.)
 	 */
-	public byte[] toBytes();
+	byte[] toBytes();
 
 	/** An implementation of NoLambda in which equality is based on the serialized representation of itself. */
-	public static abstract class EqualityBasedOnSerialization implements NoLambda {
+	abstract class EqualityBasedOnSerialization implements NoLambda {
 		private static final long serialVersionUID = 1733798699224768949L;
 
 		@Override

@@ -48,7 +48,7 @@ class FormatterTest {
 			private LineEnding.Policy lineEndingsPolicy = LineEnding.UNIX.createPolicy();
 			private Charset encoding = StandardCharsets.UTF_8;
 			private Path rootDir = Paths.get(StandardSystemProperty.USER_DIR.value());
-			private List<FormatterStep> steps = new ArrayList<>();
+			private final List<FormatterStep> steps = new ArrayList<>();
 			private FormatExceptionPolicy exceptionPolicy = FormatExceptionPolicy.failOnlyOnError();
 
 			@Override

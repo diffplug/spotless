@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,7 +90,7 @@ class EncodingErrorMsgTest {
 
 	@Test
 	void canUseUnrepresentableOnPurpose() throws UnsupportedEncodingException {
-		String pathologic = new String(new char[]{EncodingErrorMsg.UNREPRESENTABLE});
+		String pathologic = String.valueOf(EncodingErrorMsg.UNREPRESENTABLE);
 		byte[] pathologicBytes = pathologic.getBytes(StandardCharsets.UTF_8);
 		String pathologicMsg = EncodingErrorMsg.msg(pathologic, pathologicBytes, StandardCharsets.UTF_8);
 		Assertions.assertThat(pathologicMsg).isNull();

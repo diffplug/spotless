@@ -81,11 +81,8 @@ class NodeServerLayout {
 		if (!packageLockJsonFile.isFile()) {
 			return false;
 		}
-		if (!serveJsFile().isFile()) {
-			return false;
-		}
 		// npmrc is optional, so must not be checked here
-		return true;
+		return serveJsFile().isFile();
 	}
 
 	public boolean isNodeModulesPrepared() {

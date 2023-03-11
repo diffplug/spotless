@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,7 +89,7 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 	}
 	// </GitRatchet>
 
-	static String INDEPENDENT_HELPER = "Helper";
+	static final String INDEPENDENT_HELPER = "Helper";
 
 	static abstract class ClientTask extends DefaultTask {
 		@Internal

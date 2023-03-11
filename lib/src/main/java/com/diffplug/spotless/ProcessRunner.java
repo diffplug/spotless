@@ -254,18 +254,18 @@ public class ProcessRunner implements AutoCloseable {
 		@Override
 		public String toString() {
 			StringBuilder builder = new StringBuilder();
-			builder.append("> arguments: " + args + "\n");
-			builder.append("> exit code: " + exitCode + "\n");
+			builder.append("> arguments: ").append(args).append("\n");
+			builder.append("> exit code: ").append(exitCode).append("\n");
 			BiConsumer<String, byte[]> perStream = (name, content) -> {
 				String string = new String(content, Charset.defaultCharset()).trim();
 				if (string.isEmpty()) {
-					builder.append("> " + name + ": (empty)\n");
+					builder.append("> ").append(name).append(": (empty)\n");
 				} else {
 					String[] lines = string.replace("\r", "").split("\n");
 					if (lines.length == 1) {
-						builder.append("> " + name + ": " + lines[0] + "\n");
+						builder.append("> ").append(name).append(": ").append(lines[0]).append("\n");
 					} else {
-						builder.append("> " + name + ": (below)\n");
+						builder.append("> ").append(name).append(": (below)\n");
 						for (String line : lines) {
 							builder.append("> ");
 							builder.append(line);

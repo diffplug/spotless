@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ public final class FileSignature implements Serializable {
 			StringBuilder builder = new StringBuilder();
 			builder.append("For these files:\n");
 			for (File file : files) {
-				builder.append("  " + file.getAbsolutePath() + "\n");
+				builder.append("  ").append(file.getAbsolutePath()).append("\n");
 			}
 			builder.append("a caching signature is being generated, which will be based only on their\n");
 			builder.append("names, not their full path (foo.txt, not C:\folder\foo.txt). Unexpectedly,\n");
@@ -107,7 +107,7 @@ public final class FileSignature implements Serializable {
 		}
 	}
 
-	private static boolean machineIsWin = System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win");
+	private static final boolean machineIsWin = System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win");
 
 	/** Returns true if this JVM is running on a windows machine. */
 	public static boolean machineIsWin() {
@@ -143,11 +143,11 @@ public final class FileSignature implements Serializable {
 	static final Cache cache = new Cache();
 
 	private static final class Cache {
-		Map<String, Sig> cache = new HashMap<>();
+		final Map<String, Sig> cache = new HashMap<>();
 
 		synchronized Sig sign(File fileInput) throws IOException {
 			String canonicalPath = fileInput.getCanonicalPath();
-			Sig sig = cache.computeIfAbsent(canonicalPath, ThrowingEx.<String, Sig> wrap(p -> {
+			Sig sig = cache.computeIfAbsent(canonicalPath, ThrowingEx.wrap(p -> {
 				MessageDigest digest = MessageDigest.getInstance("SHA-256");
 				File file = new File(p);
 				// calculate the size and content hash of the file

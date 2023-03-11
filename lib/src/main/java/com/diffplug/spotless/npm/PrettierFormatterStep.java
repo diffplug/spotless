@@ -41,11 +41,11 @@ public class PrettierFormatterStep {
 
 	public static final String NAME = "prettier-format";
 
-	public static final Map<String, String> defaultDevDependencies() {
+	public static Map<String, String> defaultDevDependencies() {
 		return defaultDevDependenciesWithPrettier("2.8.1");
 	}
 
-	public static final Map<String, String> defaultDevDependenciesWithPrettier(String version) {
+	public static Map<String, String> defaultDevDependenciesWithPrettier(String version) {
 		return Collections.singletonMap("prettier", version);
 	}
 

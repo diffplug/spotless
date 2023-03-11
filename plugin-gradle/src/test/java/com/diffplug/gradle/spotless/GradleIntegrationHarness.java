@@ -135,9 +135,7 @@ public class GradleIntegrationHarness extends ResourceHarness {
 
 	/** Dumps the filtered file listing of the folder to the console. */
 	protected String listFiles(Predicate<String> subpathsToInclude) {
-		return StringPrinter.buildString(printer -> iterateFiles(subpathsToInclude, (subPath, file) -> {
-			printer.println(subPath + " [" + getFileAttributes(file) + "]");
-		}));
+		return StringPrinter.buildString(printer -> iterateFiles(subpathsToInclude, (subPath, file) -> printer.println(subPath + " [" + getFileAttributes(file) + "]")));
 	}
 
 	/** Dumps the file listing of the folder to the console. */

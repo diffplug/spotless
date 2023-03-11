@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,9 +38,9 @@ public class SQLTokenizedFormatter {
 
 	private static final String[] JOIN_BEGIN = {"LEFT", "RIGHT", "INNER", "OUTER", "JOIN"};
 	private static final SQLDialect sqlDialect = SQLDialect.INSTANCE;
-	private DBeaverSQLFormatterConfiguration formatterCfg;
-	private List<Boolean> functionBracket = new ArrayList<>();
-	private List<String> statementDelimiters = new ArrayList<>(2);
+	private final DBeaverSQLFormatterConfiguration formatterCfg;
+	private final List<Boolean> functionBracket = new ArrayList<>();
+	private final List<String> statementDelimiters = new ArrayList<>(2);
 
 	public SQLTokenizedFormatter(DBeaverSQLFormatterConfiguration formatterCfg) {
 		this.formatterCfg = formatterCfg;
@@ -53,10 +53,7 @@ public class SQLTokenizedFormatter {
 
 		functionBracket.clear();
 
-		boolean isSqlEndsWithNewLine = false;
-		if (argSql.endsWith("\n")) {
-			isSqlEndsWithNewLine = true;
-		}
+		boolean isSqlEndsWithNewLine = argSql.endsWith("\n");
 
 		List<FormatterToken> list = fParser.parse(argSql);
 		list = format(list);

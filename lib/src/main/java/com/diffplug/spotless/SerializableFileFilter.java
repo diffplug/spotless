@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import java.io.Serializable;
 /** A file filter with full support for serialization. */
 public interface SerializableFileFilter extends FileFilter, Serializable, NoLambda {
 	/** Creates a FileFilter which will accept all files except files with the given name(s). */
-	public static SerializableFileFilter skipFilesNamed(String... names) {
+	static SerializableFileFilter skipFilesNamed(String... names) {
 		return new SerializableFileFilterImpl.SkipFilesNamed(names);
 	}
 }

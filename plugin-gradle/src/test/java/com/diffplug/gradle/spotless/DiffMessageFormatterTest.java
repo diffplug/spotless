@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,17 +40,17 @@ import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 class DiffMessageFormatterTest extends ResourceHarness {
 
 	private class Bundle {
-		Project project = TestProvisioner.gradleProject(rootFolder());
-		Provider<SpotlessTaskService> taskService = GradleIntegrationHarness.providerOf(new SpotlessTaskService() {
+		final Project project = TestProvisioner.gradleProject(rootFolder());
+		final Provider<SpotlessTaskService> taskService = GradleIntegrationHarness.providerOf(new SpotlessTaskService() {
 			@Override
 			public BuildServiceParameters.None getParameters() {
 				return null;
 			}
 		});
 
-		File file;
-		SpotlessTaskImpl task;
-		SpotlessCheck check;
+		final File file;
+		final SpotlessTaskImpl task;
+		final SpotlessCheck check;
 
 		Bundle(String name) throws IOException {
 			file = setFile("src/test." + name).toContent("CCC");

@@ -51,13 +51,13 @@ public final class SpotlessCache {
 		}
 
 		@Override
-		public final boolean equals(Object other) {
+		public boolean equals(Object other) {
 			return other instanceof SerializedKey
 					&& Arrays.equals(serialized, ((SerializedKey) other).serialized);
 		}
 
 		@Override
-		public final int hashCode() {
+		public int hashCode() {
 			return hashCode;
 		}
 	}

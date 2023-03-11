@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,16 +60,14 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 			// clean removes the SpotlessCache, so we have to run after clean
 			task.mustRunAfter(BasePlugin.CLEAN_TASK_NAME);
 		});
-		project.afterEvaluate(unused -> {
-			spotlessTask.configure(task -> {
-				// now that the task is being configured, we execute our actions
-				for (Action<FormatExtension> lazyAction : formatExtension.lazyActions) {
-					lazyAction.execute(formatExtension);
-				}
-				// and now we'll setup the task
-				formatExtension.setupTask(task);
-			});
-		});
+		project.afterEvaluate(unused -> spotlessTask.configure(task -> {
+			// now that the task is being configured, we execute our actions
+			for (Action<FormatExtension> lazyAction : formatExtension.lazyActions) {
+				lazyAction.execute(formatExtension);
+			}
+			// and now we'll setup the task
+			formatExtension.setupTask(task);
+		}));
 
 		// create the check and apply control tasks
 		TaskProvider<SpotlessApply> applyTask = tasks.register(taskName + APPLY, SpotlessApply.class, task -> {

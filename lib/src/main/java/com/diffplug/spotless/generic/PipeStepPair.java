@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 DiffPlug
+ * Copyright 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ public class PipeStepPair {
 	}
 
 	public static class Builder {
-		String name;
+		final String name;
 		Pattern regex;
 
 		private Builder(String name) {

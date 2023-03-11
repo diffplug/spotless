@@ -199,7 +199,7 @@ public final class LicenseHeaderStep {
 
 	public static final String spotlessSetLicenseHeaderYearsFromGitHistory = "spotlessSetLicenseHeaderYearsFromGitHistory";
 
-	public static final String FLAG_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY() {
+	public static String FLAG_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY() {
 		return spotlessSetLicenseHeaderYearsFromGitHistory;
 	}
 
@@ -477,7 +477,7 @@ public final class LicenseHeaderStep {
 			while ((numRead = stream.read(buf)) != -1) {
 				output.write(buf, 0, numRead);
 			}
-			return new String(output.toByteArray());
+			return output.toString();
 		}
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,11 +42,11 @@ class JvmLocalCache {
 	}
 
 	static <T> LiveCache<T> createLive(Task task, String propertyName) {
-		return new LiveCacheKeyImpl<T>(new InternalCacheKey(task.getProject().getProjectDir(), task.getPath(), propertyName));
+		return new LiveCacheKeyImpl<>(new InternalCacheKey(task.getProject().getProjectDir(), task.getPath(), propertyName));
 	}
 
 	static class LiveCacheKeyImpl<T> implements LiveCache<T>, Serializable {
-		InternalCacheKey internalKey;
+		final InternalCacheKey internalKey;
 
 		LiveCacheKeyImpl(InternalCacheKey internalKey) {
 			this.internalKey = internalKey;
@@ -73,12 +73,12 @@ class JvmLocalCache {
 		}
 	}
 
-	private static Map<InternalCacheKey, Object> daemonState = Collections.synchronizedMap(new HashMap<>());
+	private static final Map<InternalCacheKey, Object> daemonState = Collections.synchronizedMap(new HashMap<>());
 
 	private static class InternalCacheKey implements Serializable {
-		private File projectDir;
-		private String taskPath;
-		private String propertyName;
+		private final File projectDir;
+		private final String taskPath;
+		private final String propertyName;
 
 		InternalCacheKey(File projectDir, String taskPath, String keyName) {
 			this.projectDir = projectDir;

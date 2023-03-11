@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import java.io.Serializable;
 /** A policy for handling exceptions in the format. */
 public interface FormatExceptionPolicy extends Serializable, NoLambda {
 	/** Called for every error in the formatter. */
-	public void handleError(Throwable e, FormatterStep step, String relativePath);
+	void handleError(Throwable e, FormatterStep step, String relativePath);
 
 	/**
 	 * Returns a byte array representation of everything inside this {@code FormatExceptionPolicy}.
@@ -28,12 +28,12 @@ public interface FormatExceptionPolicy extends Serializable, NoLambda {
 	 * The main purpose of this method is to ensure one can't instantiate this class with lambda
 	 * expressions, which are notoriously difficult to serialize and deserialize properly.
 	 */
-	public byte[] toBytes();
+	byte[] toBytes();
 
 	/**
 	 * A policy which rethrows subclasses of {@code Error} and logs other kinds of Exception.
 	 */
-	public static FormatExceptionPolicy failOnlyOnError() {
+	static FormatExceptionPolicy failOnlyOnError() {
 		return new FormatExceptionPolicyLegacy();
 	}
 }

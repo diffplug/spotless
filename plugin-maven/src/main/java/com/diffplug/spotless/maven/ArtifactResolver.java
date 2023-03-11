@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,12 +61,12 @@ public class ArtifactResolver {
 	 * of the specified coordinates and optionally their transitive dependencies.
 	 */
 	public Set<File> resolve(boolean withTransitives, Collection<String> mavenCoordinates) {
-		Collection<Exclusion> excludeTransitive = new ArrayList<Exclusion>(1);
+		Collection<Exclusion> excludeTransitive = new ArrayList<>(1);
 		if (!withTransitives) {
 			excludeTransitive.add(EXCLUDE_ALL_TRANSITIVES);
 		}
 		List<Dependency> dependencies = mavenCoordinates.stream()
-				.map(coordinateString -> new DefaultArtifact(coordinateString))
+				.map(DefaultArtifact::new)
 				.map(artifact -> new Dependency(artifact, null, null, excludeTransitive))
 				.collect(toList());
 		CollectRequest collectRequest = new CollectRequest(dependencies, null, repositories);
