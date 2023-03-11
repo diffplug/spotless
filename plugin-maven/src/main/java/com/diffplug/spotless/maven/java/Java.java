@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 import org.apache.maven.model.Build;
 import org.apache.maven.project.MavenProject;
 
+import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.maven.FormatterFactory;
 import com.diffplug.spotless.maven.generic.LicenseHeader;
 
@@ -37,7 +38,7 @@ import com.diffplug.spotless.maven.generic.LicenseHeader;
  */
 public class Java extends FormatterFactory {
 
-	private static final String LICENSE_HEADER_DELIMITER = "package ";
+	private static final String LICENSE_HEADER_DELIMITER = LicenseHeaderStep.DEFAULT_JAVA_HEADER_DELIMITER;
 
 	@Override
 	public Set<String> defaultIncludes(MavenProject project) {
