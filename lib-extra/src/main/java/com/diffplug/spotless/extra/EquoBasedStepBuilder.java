@@ -15,8 +15,6 @@
  */
 package com.diffplug.spotless.extra;
 
-import dev.equo.solstice.NestedJars;
-
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -30,6 +28,7 @@ import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx;
 
+import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.P2ClientCache;
 import dev.equo.solstice.p2.P2Model;
 import dev.equo.solstice.p2.P2QueryCache;
