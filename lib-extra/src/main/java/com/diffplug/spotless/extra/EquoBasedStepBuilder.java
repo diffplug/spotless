@@ -19,8 +19,6 @@ import dev.equo.solstice.NestedJars;
 
 import java.io.File;
 import java.io.Serializable;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Properties;
 
@@ -81,7 +79,7 @@ public abstract class EquoBasedStepBuilder {
 		for (var nested : NestedJars.inFiles(query.getJarsNotOnMavenCentral()).extractAllNestedJars(nestedDir)) {
 			classpath.add(nested.getValue());
 		}
-		var jarState = JarState.forFiles(classpath);
+		var jarState = JarState.preserveOrder(classpath);
 		return new State(formatterVersion, jarState, FileSignature.signAsList(settingsFiles));
 	}
 

@@ -74,9 +74,9 @@ public final class JarState implements Serializable {
 		return new JarState(mavenCoordinates, fileSignature);
 	}
 
-	/** Wraps the given collection of a files as a JarState. */
-	public static JarState forFiles(Collection<File> jars) throws IOException {
-		FileSignature fileSignature = FileSignature.signAsSet(jars);
+	/** Wraps the given collection of a files as a JarState, maintaining the order in the Collection. */
+	public static JarState preserveOrder(Collection<File> jars) throws IOException {
+		FileSignature fileSignature = FileSignature.signAsList(jars);
 		return new JarState(Collections.emptySet(), fileSignature);
 	}
 
