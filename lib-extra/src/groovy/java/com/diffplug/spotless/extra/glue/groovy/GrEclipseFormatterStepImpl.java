@@ -24,6 +24,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.codehaus.groovy.eclipse.GroovyLogManager;
+import org.codehaus.groovy.eclipse.IGroovyLogger;
+import org.codehaus.groovy.eclipse.TraceCategory;
 import org.codehaus.groovy.eclipse.core.GroovyCoreActivator;
 import org.codehaus.groovy.eclipse.refactoring.formatter.DefaultGroovyFormatter;
 import org.codehaus.groovy.eclipse.refactoring.formatter.FormatterPreferencesOnStore;
@@ -37,7 +40,10 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.text.edits.TextEdit;
 
+import dev.equo.solstice.NestedJars;
+import dev.equo.solstice.ShimIdeBootstrapServices;
 import dev.equo.solstice.Solstice;
+import dev.equo.solstice.p2.CacheLocations;
 
 /** Spotless-Formatter step which calls out to the Groovy-Eclipse formatter. */
 public class GrEclipseFormatterStepImpl {
@@ -54,10 +60,15 @@ public class GrEclipseFormatterStepImpl {
 
 	public GrEclipseFormatterStepImpl(final Properties properties) throws Exception {
 		var solstice = Solstice.findBundlesOnClasspath();
+		NestedJars.setToWarnOnly();
+		NestedJars.onClassPath().confirmAllNestedJarsArePresentOnClasspath(CacheLocations.nestedJars());
 		solstice.warnAndModifyManifestsToFix();
-		solstice.openShim(Map.of());
+		var props = Map.<String, String> of();
+		solstice.openShim(props);
+		ShimIdeBootstrapServices.apply(props, solstice.getContext());
 		solstice.startAllWithLazy(false);
 		solstice.startWithoutTransitives("org.codehaus.groovy.eclipse.core");
+
 		PreferenceStore preferences = createPreferences(properties);
 		preferencesStore = new FormatterPreferencesOnStore(preferences);
 		ignoreFormatterProblems = Boolean.parseBoolean(properties.getProperty(IGNORE_FORMATTER_PROBLEMS, "false"));
@@ -80,8 +91,7 @@ public class GrEclipseFormatterStepImpl {
 	/**
 	 * Eclipse Groovy formatter does not signal problems by its return value, but by logging errors.
 	 */
-	private static class GroovyErrorListener implements ILogListener {
-
+	private static class GroovyErrorListener implements ILogListener, IGroovyLogger {
 		private final List<String> errors;
 
 		public GroovyErrorListener() {
@@ -92,6 +102,9 @@ public class GrEclipseFormatterStepImpl {
 			errors = Collections.synchronizedList(new ArrayList<String>());
 			ILog groovyLogger = GroovyCoreActivator.getDefault().getLog();
 			groovyLogger.addLogListener(this);
+			synchronized (GroovyLogManager.manager) {
+				GroovyLogManager.manager.addLogger(this);
+			}
 		}
 
 		@Override
@@ -102,6 +115,9 @@ public class GrEclipseFormatterStepImpl {
 		public boolean errorsDetected() {
 			ILog groovyLogger = GroovyCoreActivator.getDefault().getLog();
 			groovyLogger.removeLogListener(this);
+			synchronized (GroovyLogManager.manager) {
+				GroovyLogManager.manager.removeLogger(this);
+			}
 			return 0 != errors.size();
 		}
 
@@ -120,6 +136,22 @@ public class GrEclipseFormatterStepImpl {
 
 			return string.toString();
 		}
+
+		@Override
+		public boolean isCategoryEnabled(TraceCategory cat) {
+			/*
+			 * Note that the compiler errors are just additionally caught here.
+			 * They are also printed directly to System.err.
+			 * See org.codehaus.jdt.groovy.internal.compiler.ast.GroovyCompilationUnitDeclaration.recordProblems
+			 * for details.
+			 */
+			return TraceCategory.COMPILER.equals(cat);
+		}
+
+		@Override
+		public void log(TraceCategory arg0, String arg1) {
+			errors.add(arg1);
+		}
 	}
 
 	private static PreferenceStore createPreferences(final Properties properties) throws IOException {
@@ -130,5 +162,4 @@ public class GrEclipseFormatterStepImpl {
 		preferences.load(input);
 		return preferences;
 	}
-
 }

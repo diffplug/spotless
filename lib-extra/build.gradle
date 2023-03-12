@@ -7,7 +7,7 @@ version = rootProject.spotlessChangelog.versionNext
 apply from: rootProject.file('gradle/java-setup.gradle')
 apply from: rootProject.file('gradle/java-publish.gradle')
 
-String VER_SOLSTICE = '0.18.0'
+String VER_SOLSTICE = '0.19.1'
 dependencies {
 	api project(':lib')
 	// misc useful utilities
@@ -72,8 +72,8 @@ p2deps {
 		install 'org.eclipse.jdt.core'
 	}
 	into 'groovyCompileOnly', {
-		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
-		p2repo 'https://groovy.jfrog.io/artifactory/plugins-release/org/codehaus/groovy/groovy-eclipse-integration/4.8.0/e4.26/'
+		p2repo 'https://download.eclipse.org/eclipse/updates/4.23/'
+		p2repo 'https://groovy.jfrog.io/artifactory/plugins-release/org/codehaus/groovy/groovy-eclipse-integration/4.8.0/e4.23/'
 		install 'org.codehaus.groovy.eclipse.refactoring'
 		install 'org.codehaus.groovy.eclipse.core'
 		install 'org.eclipse.jdt.groovy.core'

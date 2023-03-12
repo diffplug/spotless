@@ -70,12 +70,11 @@ public abstract class EquoBasedStepBuilder {
 		var query = model(formatterVersion).query(P2ClientCache.PREFER_OFFLINE, P2QueryCache.ALLOW);
 		var classpath = new ArrayList<File>();
 		var mavenDeps = new ArrayList<String>();
-		mavenDeps.add("dev.equo.ide:solstice:0.18.0");
+		mavenDeps.add("dev.equo.ide:solstice:0.19.1");
 		mavenDeps.addAll(query.getJarsOnMavenCentral());
 		classpath.addAll(mavenProvisioner.provisionWithTransitives(false, mavenDeps));
 		classpath.addAll(query.getJarsNotOnMavenCentral());
-		File nestedDir = new File("/Users/ntwigg/.equo/p2-blah");
-		for (var nested : NestedJars.inFiles(query.getJarsNotOnMavenCentral()).extractAllNestedJars(nestedDir)) {
+		for (var nested : NestedJars.inFiles(query.getJarsNotOnMavenCentral()).extractAllNestedJars()) {
 			classpath.add(nested.getValue());
 		}
 		var jarState = JarState.preserveOrder(classpath);
