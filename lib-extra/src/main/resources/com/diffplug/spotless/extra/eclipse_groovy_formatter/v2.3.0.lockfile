@@ -1,5 +1,0 @@
-# Spotless formatter based on Groovy-Eclipse version 2.3.0 (see https://github.com/groovy/groovy-eclipse/wiki)
-#
-# This version is deprecated since the new version system is based on the Eclipse versioning.
-# Use the corresponding Eclipse version 4.6.3 instead.
-com.diffplug.spotless:spotless-ext-greclipse:2.3.0
