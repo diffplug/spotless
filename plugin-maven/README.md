@@ -1262,7 +1262,7 @@ To define what lines to skip at the beginning of such files, fill the `skipLines
 
 ## Incremental up-to-date checking and formatting
 
-**This feature is turned off by default.**
+**This feature is enabled by default starting from version 2.35.0.**
 
 Execution of `spotless:check` and `spotless:apply` for large projects can take time.
 By default, Spotless Maven plugin needs to read and format each source file.

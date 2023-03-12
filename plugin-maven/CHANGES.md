@@ -7,6 +7,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * You can now put the filename into a license header template with `$FILE`. ([#1605](https://github.com/diffplug/spotless/pull/1605) fixes [#1147](https://github.com/diffplug/spotless/issues/1147))
 ### Fixed
 * `licenseHeader` default pattern for Java files is updated to `(package|import|public|class|module) `. ([#1614](https://github.com/diffplug/spotless/pull/1614))
+### Changes
+* Enable incremental up-to-date checking by default. ([#1621](https://github.com/diffplug/spotless/pull/1621))
 
 ## [2.34.0] - 2023-02-27
 ### Added
