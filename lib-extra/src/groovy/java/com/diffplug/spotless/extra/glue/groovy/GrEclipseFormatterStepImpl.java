@@ -103,7 +103,7 @@ public class GrEclipseFormatterStepImpl {
 	/**
 	 * Eclipse Groovy formatter does not signal problems by its return value, but by logging errors.
 	 */
-	private static class GroovyErrorListener implements ILogListener, IGroovyLogger {
+	private static final class GroovyErrorListener implements ILogListener, IGroovyLogger {
 		private final List<String> errors;
 
 		public GroovyErrorListener() {
