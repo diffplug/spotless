@@ -92,7 +92,6 @@ def getStartProperty(java.lang.String name) {
 		userProperties.load(userPropertiesFile.newReader())
 	}
 	return userProperties.get(name)
-
 }
 
 if (System.getenv('SPOTLESS_EXCLUDE_MAVEN') != 'true' && getStartProperty('SPOTLESS_EXCLUDE_MAVEN') != 'true') {
