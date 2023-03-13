@@ -50,9 +50,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 		super(spotless);
 	}
 
-	// If this constant changes, don't forget to change the similarly-named one in
-	// testlib/src/test/java/com/diffplug/spotless/generic/LicenseHeaderStepTest.java as well
-	static final String LICENSE_HEADER_DELIMITER = "package ";
+	static final String LICENSE_HEADER_DELIMITER = LicenseHeaderStep.DEFAULT_JAVA_HEADER_DELIMITER;
 
 	@Override
 	public LicenseHeaderConfig licenseHeader(String licenseHeader) {

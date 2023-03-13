@@ -54,7 +54,7 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 				} else {
 					counter.checkedButAlreadyClean();
 				}
-			} catch (IOException e) {
+			} catch (IOException | RuntimeException e) {
 				throw new MojoExecutionException("Unable to format file " + file, e);
 			}
 

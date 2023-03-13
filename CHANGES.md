@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* You can now put the filename into a license header template with `$FILE`. ([#1605](https://github.com/diffplug/spotless/pull/1605) fixes [#1147](https://github.com/diffplug/spotless/issues/1147))
 ### Changes
 * We are now opting in to Gradle's new stable configuration cache. ([#1591](https://github.com/diffplug/spotless/pull/1591))
 * Adopt [Equo Solstice OSGi and p2 shim](https://github.com/equodev/equo-ide/tree/main/solstice) to update all Eclipse-based plugins. ([#1524](https://github.com/diffplug/spotless/pull/1524))
