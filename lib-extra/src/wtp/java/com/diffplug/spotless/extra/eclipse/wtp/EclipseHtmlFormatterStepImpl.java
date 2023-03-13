@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,12 @@
  */
 package com.diffplug.spotless.extra.eclipse.wtp;
 
-import static com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework.LINE_DELIMITER;
-
-import java.util.Arrays;
-import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.wst.html.core.internal.HTMLCorePlugin;
 import org.eclipse.wst.html.core.internal.cleanup.HTMLCleanupProcessorImpl;
 import org.eclipse.wst.html.core.internal.encoding.HTMLDocumentLoader;
 import org.eclipse.wst.html.core.internal.format.HTMLFormatProcessorImpl;
-import org.eclipse.wst.html.core.internal.preferences.HTMLCorePreferenceInitializer;
 import org.eclipse.wst.html.core.text.IHTMLPartitions;
 import org.eclipse.wst.jsdt.core.JavaScriptCore;
 import org.eclipse.wst.jsdt.core.ToolFactory;
@@ -34,9 +29,6 @@ import org.eclipse.wst.sse.core.internal.cleanup.AbstractStructuredCleanupProces
 import org.eclipse.wst.sse.core.internal.format.IStructuredFormatProcessor;
 import org.eclipse.wst.sse.core.internal.provisional.text.IStructuredDocument;
 
-import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseConfig;
-import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseCoreConfig;
-import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipsePluginConfig;
 import com.diffplug.spotless.extra.eclipse.wtp.html.JsRegionProcessor;
 import com.diffplug.spotless.extra.eclipse.wtp.html.StructuredDocumentProcessor;
 import com.diffplug.spotless.extra.eclipse.wtp.sse.CleanupStep;
@@ -44,12 +36,15 @@ import com.diffplug.spotless.extra.eclipse.wtp.sse.PluginPreferences;
 
 /** Formatter step which calls out to the Eclipse HTML cleanup and formatter. */
 public class EclipseHtmlFormatterStepImpl extends CleanupStep {
+	static {
+		SolsticeSetup.init();
+	}
 
 	private final String htmlFormatterIndent;
 	private final CodeFormatter jsFormatter;
 
 	public EclipseHtmlFormatterStepImpl(Properties properties) throws Exception {
-		super(new CleanupProcessor(), new FrameworkConfig(properties));
+		super(new CleanupProcessor());
 		PluginPreferences.assertNoChanges(HTMLCorePlugin.getDefault(), properties);
 		htmlFormatterIndent = ((CleanupProcessor) processorAccessor).getIndent();
 		jsFormatter = ToolFactory.createCodeFormatter(JavaScriptCore.getOptions(), ToolFactory.M_FORMAT_EXISTING);
@@ -61,7 +56,7 @@ public class EclipseHtmlFormatterStepImpl extends CleanupStep {
 
 		// Not sure how Eclipse binds the JS formatter to HTML. The formatting is accomplished manually instead.
 		IStructuredDocument document = (IStructuredDocument) new HTMLDocumentLoader().createNewStructuredDocument();
-		document.setPreferredLineDelimiter(LINE_DELIMITER);
+		document.setPreferredLineDelimiter("\n");
 		document.set(raw);
 		StructuredDocumentProcessor<CodeFormatter> jsProcessor = new StructuredDocumentProcessor<CodeFormatter>(
 				document, IHTMLPartitions.SCRIPT, JsRegionProcessor.createFactory(htmlFormatterIndent));
@@ -112,48 +107,5 @@ public class EclipseHtmlFormatterStepImpl extends CleanupStep {
 		String getIndent() {
 			return processor.getFormatPreferences().getIndent();
 		}
-
 	}
-
-	private static class FrameworkConfig extends CleanupStep.FrameworkConfig {
-		private final List<SpotlessEclipseConfig> dependentConfigs;
-		private final Properties properties;
-
-		public FrameworkConfig(Properties properties) {
-			dependentConfigs = Arrays.asList(
-					new EclipseCssFormatterStepImpl.FrameworkConfig(properties),
-					new EclipseJsFormatterStepImpl.FrameworkConfig(properties),
-					new EclipseXmlFormatterStepImpl.FrameworkConfig(properties));
-			this.properties = properties;
-		}
-
-		@Override
-		public void registerBundles(SpotlessEclipseCoreConfig config) {
-			EclipseJsFormatterStepImpl.FrameworkConfig.registerNonHeadlessBundles(config);
-		}
-
-		@Override
-		public void activatePlugins(SpotlessEclipsePluginConfig config) {
-			super.activatePlugins(config);
-			EclipseCssFormatterStepImpl.FrameworkConfig.activateCssPlugins(config);
-			EclipseJsFormatterStepImpl.FrameworkConfig.activateJsPlugins(config);
-			/*
-			 * The HTML formatter only uses the DOCTYPE/SCHEMA for content model selection.
-			 * Hence no external URIs are required.
-			 */
-			boolean allowExternalURI = false;
-			EclipseXmlFormatterStepImpl.FrameworkConfig.activateXmlPlugins(config, allowExternalURI);
-			config.add(new HTMLCorePlugin());
-		}
-
-		@Override
-		public void customize() {
-			dependentConfigs.stream().forEach(c -> {
-				c.customize();
-			});
-			PluginPreferences.configure(HTMLCorePlugin.getDefault(), new HTMLCorePreferenceInitializer(), properties);
-		}
-
-	}
-
 }

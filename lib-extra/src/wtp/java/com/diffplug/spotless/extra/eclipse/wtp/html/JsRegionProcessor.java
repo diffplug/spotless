@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 package com.diffplug.spotless.extra.eclipse.wtp.html;
-
-import static com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework.LINE_DELIMITER;
 
 import java.util.function.BiFunction;
 
@@ -51,7 +49,7 @@ public class JsRegionProcessor extends RegionProcessor<CodeFormatter> {
 	protected void applyFirst(CodeFormatter formatter) throws MalformedTreeException, BadLocationException {
 		MultiTextEdit modifications = new MultiTextEdit();
 		String jsSource = document.get(region.getOffset(), region.getLength());
-		TextEdit jsEdit = formatter.format(CodeFormatter.K_JAVASCRIPT_UNIT, jsSource, 0, jsSource.length(), indentationLevel + 1, LINE_DELIMITER);
+		TextEdit jsEdit = formatter.format(CodeFormatter.K_JAVASCRIPT_UNIT, jsSource, 0, jsSource.length(), indentationLevel + 1, "\n");
 		if (null != jsEdit) {
 			jsEdit.moveTree(region.getOffset());
 			modifications.addChild(jsEdit);

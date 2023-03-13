@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,15 +22,18 @@ import org.eclipse.wst.css.core.internal.cleanup.CleanupProcessorCSS;
 import org.eclipse.wst.css.core.internal.preferences.CSSCorePreferenceInitializer;
 import org.eclipse.wst.sse.core.internal.cleanup.AbstractStructuredCleanupProcessor;
 
-import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipsePluginConfig;
 import com.diffplug.spotless.extra.eclipse.wtp.sse.CleanupStep;
 import com.diffplug.spotless.extra.eclipse.wtp.sse.PluginPreferences;
 
 /** Formatter step which calls out to the Eclipse CSS cleanup and formatter. */
 public class EclipseCssFormatterStepImpl extends CleanupStep {
+	static {
+		SolsticeSetup.init();
+	}
 
 	public EclipseCssFormatterStepImpl(Properties properties) throws Exception {
-		super(new CleanupProcessor(), new FrameworkConfig(properties));
+		super(new CleanupProcessor());
+		PluginPreferences.configure(CSSCorePlugin.getDefault(), new CSSCorePreferenceInitializer(), properties);
 		PluginPreferences.assertNoChanges(CSSCorePlugin.getDefault(), properties);
 	}
 
@@ -52,29 +55,6 @@ public class EclipseCssFormatterStepImpl extends CleanupStep {
 		@Override
 		public AbstractStructuredCleanupProcessor get() {
 			return this;
-		}
-	}
-
-	static class FrameworkConfig extends CleanupStep.FrameworkConfig {
-		private final Properties properties;
-
-		FrameworkConfig(Properties properties) {
-			this.properties = properties;
-		}
-
-		@Override
-		public void activatePlugins(SpotlessEclipsePluginConfig config) {
-			super.activatePlugins(config);
-			activateCssPlugins(config);
-		}
-
-		static void activateCssPlugins(SpotlessEclipsePluginConfig config) {
-			config.add(new CSSCorePlugin());
-		}
-
-		@Override
-		public void customize() {
-			PluginPreferences.configure(CSSCorePlugin.getDefault(), new CSSCorePreferenceInitializer(), properties);
 		}
 	}
 }

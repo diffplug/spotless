@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,12 +32,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.TestProvisioner;
-import com.diffplug.spotless.extra.eclipse.EclipseResourceHarness;
+import com.diffplug.spotless.extra.eclipse.EquoResourceHarness;
 
 public class EclipseWtpFormatterStepTest {
 	private final static Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support("Oldest Version").add(8, "4.8.0");
 
-	private static class NestedTests extends EclipseResourceHarness {
+	private static class NestedTests extends EquoResourceHarness {
 		public NestedTests(String unformatted, String formatted, EclipseWtpFormatterStep kind) {
 			super(kind.createBuilder(TestProvisioner.mavenCentral()), unformatted, formatted);
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.json.core.JSONCorePlugin;
 import org.eclipse.wst.json.core.cleanup.CleanupProcessorJSON;
 import org.eclipse.wst.json.core.format.FormatProcessorJSON;
-import org.eclipse.wst.json.core.internal.preferences.JSONCorePreferenceInitializer;
 import org.eclipse.wst.sse.core.internal.cleanup.AbstractStructuredCleanupProcessor;
 
-import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipsePluginConfig;
 import com.diffplug.spotless.extra.eclipse.wtp.sse.CleanupStep;
 import com.diffplug.spotless.extra.eclipse.wtp.sse.PluginPreferences;
 
@@ -34,9 +32,12 @@ import com.diffplug.spotless.extra.eclipse.wtp.sse.PluginPreferences;
  * Note that the cleanup is escaped, since it has known bugs and is currently not used by Eclipse.
  */
 public class EclipseJsonFormatterStepImpl extends CleanupStep {
+	static {
+		SolsticeSetup.init();
+	}
 
 	public EclipseJsonFormatterStepImpl(Properties properties) throws Exception {
-		super(new CleanupProcessor(), new FrameworkConfig(properties));
+		super(new CleanupProcessor());
 		PluginPreferences.assertNoChanges(JSONCorePlugin.getDefault(), properties);
 	}
 
@@ -90,24 +91,4 @@ public class EclipseJsonFormatterStepImpl extends CleanupStep {
 			return formatter.formatContent(input);
 		}
 	}
-
-	private static class FrameworkConfig extends CleanupStep.FrameworkConfig {
-		private final Properties properties;
-
-		FrameworkConfig(Properties properties) {
-			this.properties = properties;
-		}
-
-		@Override
-		public void activatePlugins(SpotlessEclipsePluginConfig config) {
-			super.activatePlugins(config);
-			config.add(new JSONCorePlugin());
-		}
-
-		@Override
-		public void customize() {
-			PluginPreferences.configure(JSONCorePlugin.getDefault(), new JSONCorePreferenceInitializer(), properties);
-		}
-	}
-
 }

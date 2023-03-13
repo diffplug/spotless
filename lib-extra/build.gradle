@@ -42,7 +42,8 @@ tasks.withType(Test).configureEach {
 def NEEDS_P2_DEPS = [
 	'jdt',
 	'groovy',
-	'cdt'
+	'cdt',
+	'wtp'
 ]
 for (needsP2 in NEEDS_P2_DEPS) {
 	sourceSets.register(needsP2) {
@@ -84,6 +85,27 @@ p2deps {
 		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
 		p2repo 'https://download.eclipse.org/tools/cdt/releases/10.7/'
 		install 'org.eclipse.cdt.core'
+	}
+	into 'wtpCompileOnly', {
+		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
+		p2repo 'https://download.eclipse.org/webtools/repository/2022-12/'
+		// XML/HTML Formatter  - Dependencies
+		install 'org.eclipse.wst.xml.core' // DefaultXMLPartitionFormatter and XMLAssociationProvider
+		install 'org.eclipse.wst.sse.core' // Structure models
+		install 'org.eclipse.wst.common.uriresolver' // URI resolver for model queries
+		install 'org.eclipse.wst.dtd.core' // Support DTD extensions
+		// XML Formatter - Dependencies
+		install 'org.eclipse.wst.xsd.core' // Support XSD extensions
+		// JS Formatter - Dependencies
+		install 'org.eclipse.wst.jsdt.core' // DefaultCodeFormatter and related
+		install 'org.eclipse.wst.jsdt.ui' // Functionality to format comments
+		// JSON Formatter - Dependencies
+		install 'org.eclipse.wst.json.core' // FormatProcessorJSON and related
+		install 'org.eclipse.json' // Provides JSON node interfaces
+		// CSS Formatter - Dependencies
+		install 'org.eclipse.wst.css.core' // FormatProcessorCSS and related
+		// HTML Formatter - Dependencies
+		install 'org.eclipse.wst.html.core' // HTMLFormatProcessorImpl and related
 	}
 }
 

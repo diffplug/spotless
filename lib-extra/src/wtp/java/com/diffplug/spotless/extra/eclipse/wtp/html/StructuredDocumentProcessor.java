@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 package com.diffplug.spotless.extra.eclipse.wtp.html;
-
-import static com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework.LINE_DELIMITER;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -158,14 +156,14 @@ public class StructuredDocumentProcessor<T> {
 
 		/** Add delimiter at or after given offset, if there is none at the offset position. Returns the number of characters inserted. */
 		protected int fixDelimiter(MultiTextEdit modifications, int offset, boolean addAfter) throws BadLocationException {
-			int delimiterLength = LINE_DELIMITER.length();
+			int delimiterLength = "\n".length();
 			String delimiter = document.get(offset, delimiterLength);
-			if (!LINE_DELIMITER.equals(delimiter)) {
+			if (!"\n".equals(delimiter)) {
 				if (addAfter) {
 					offset += 1;
 				}
-				modifications.addChild(new InsertEdit(offset, LINE_DELIMITER));
-				return LINE_DELIMITER.length();
+				modifications.addChild(new InsertEdit(offset, "\n"));
+				return "\n".length();
 			}
 			return 0;
 		}

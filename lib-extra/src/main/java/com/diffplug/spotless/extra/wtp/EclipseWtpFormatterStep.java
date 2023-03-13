@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,9 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx;
-import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
+import com.diffplug.spotless.extra.EquoBasedStepBuilder;
+
+import dev.equo.solstice.p2.P2Model;
 
 /** Formatter step which calls out to the Groovy-Eclipse formatter. */
 public enum EclipseWtpFormatterStep {
@@ -42,24 +44,49 @@ public enum EclipseWtpFormatterStep {
 	private static final String FORMATTER_METHOD = "format";
 
 	private final String implementationClassName;
-	private final ThrowingEx.BiFunction<String, EclipseBasedStepBuilder.State, FormatterFunc> formatterCall;
+	private final ThrowingEx.BiFunction<String, EquoBasedStepBuilder.State, FormatterFunc> formatterCall;
 
-	EclipseWtpFormatterStep(String implementationClassName, ThrowingEx.BiFunction<String, EclipseBasedStepBuilder.State, FormatterFunc> formatterCall) {
+	EclipseWtpFormatterStep(String implementationClassName, ThrowingEx.BiFunction<String, EquoBasedStepBuilder.State, FormatterFunc> formatterCall) {
 		this.implementationClassName = implementationClassName;
 		this.formatterCall = formatterCall;
 	}
 
-	public EclipseBasedStepBuilder createBuilder(Provisioner provisioner) {
-		return new EclipseBasedStepBuilder(NAME, " - " + toString(), provisioner, state -> formatterCall.apply(implementationClassName, state));
+	public EquoBasedStepBuilder createBuilder(Provisioner provisioner) {
+		return new EquoBasedStepBuilder(NAME + " - " + name(), provisioner, state -> formatterCall.apply(implementationClassName, state)) {
+			@Override
+			protected P2Model model(String version) {
+				var model = new P2Model();
+				addPlatformRepo(model, "4.26");
+				model.addP2Repo("https://download.eclipse.org/webtools/repository/2022-12/");
+				// XML/HTML Formatter  - Dependencies
+				model.getInstall().add("org.eclipse.wst.xml.core"); // DefaultXMLPartitionFormatter and XMLAssociationProvider
+				model.getInstall().add("org.eclipse.wst.sse.core"); // Structure models
+				model.getInstall().add("org.eclipse.wst.common.uriresolver"); // URI resolver for model queries
+				model.getInstall().add("org.eclipse.wst.dtd.core"); // Support DTD extensions
+				// XML Formatter - Dependencies
+				model.getInstall().add("org.eclipse.wst.xsd.core"); // Support XSD extensions
+				// JS Formatter - Dependencies
+				model.getInstall().add("org.eclipse.wst.jsdt.core"); // DefaultCodeFormatter and related
+				model.getInstall().add("org.eclipse.wst.jsdt.ui"); // Functionality to format comments
+				// JSON Formatter - Dependencies
+				model.getInstall().add("org.eclipse.wst.json.core"); // FormatProcessorJSON and related
+				model.getInstall().add("org.eclipse.json"); // Provides JSON node interfaces
+				// CSS Formatter - Dependencies
+				model.getInstall().add("org.eclipse.wst.css.core"); // FormatProcessorCSS and related
+				// HTML Formatter - Dependencies
+				model.getInstall().add("org.eclipse.wst.html.core"); // HTMLFormatProcessorImpl and related
+				return model;
+			}
+		};
 	}
 
 	public static String defaultVersion() {
 		return JVM_SUPPORT.getRecommendedFormatterVersion();
 	}
 
-	private static FormatterFunc applyWithoutFile(String className, EclipseBasedStepBuilder.State state) throws Exception {
+	private static FormatterFunc applyWithoutFile(String className, EquoBasedStepBuilder.State state) throws Exception {
 		JVM_SUPPORT.assertFormatterSupported(state.getSemanticVersion());
-		Class<?> formatterClazz = state.loadClass(FORMATTER_PACKAGE + className);
+		Class<?> formatterClazz = state.getJarState().getClassLoader().loadClass(FORMATTER_PACKAGE + className);
 		Object formatter = formatterClazz.getConstructor(Properties.class).newInstance(state.getPreferences());
 		Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
 		return input -> {
@@ -73,9 +100,9 @@ public enum EclipseWtpFormatterStep {
 		};
 	}
 
-	private static FormatterFunc applyWithFile(String className, EclipseBasedStepBuilder.State state) throws Exception {
+	private static FormatterFunc applyWithFile(String className, EquoBasedStepBuilder.State state) throws Exception {
 		JVM_SUPPORT.assertFormatterSupported(state.getSemanticVersion());
-		Class<?> formatterClazz = state.loadClass(FORMATTER_PACKAGE + className);
+		Class<?> formatterClazz = state.getJarState().getClassLoader().loadClass(FORMATTER_PACKAGE + className);
 		Object formatter = formatterClazz.getConstructor(Properties.class).newInstance(state.getPreferences());
 		Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class, String.class);
 		return JVM_SUPPORT.suggestLaterVersionOnError(state.getSemanticVersion(), new FormatterFunc.NeedsFile() {
