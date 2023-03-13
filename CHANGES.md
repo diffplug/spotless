@@ -18,6 +18,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   * Eclipse JDT now supports `4.9` through `4.26`. Also we now recommend dropping the last `.0`, e.g. `4.26` instead of `4.26.0`, you'll get warnings to help you switch.
   * Eclipse Groovy now supports `4.18` through `4.26`. Also we now recommend dropping the last `.0`, e.g. `4.26` instead of `4.26.0`, you'll get warnings to help you switch.
   * Eclipse CDT now supports `10.6` through `11.0`.
+  * Eclipse WTP is still WIP at [#1622](https://github.com/diffplug/spotless/pull/1622).
 
 ## [2.36.0] - 2023-02-27
 ### Added
