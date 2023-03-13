@@ -82,7 +82,7 @@ p2deps {
 	}
 	into 'cdtCompileOnly', {
 		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
-		p2repo 'https://download.eclipse.org/tools/cdt/releases/11.0/'
+		p2repo 'https://download.eclipse.org/tools/cdt/releases/10.7/'
 		install 'org.eclipse.cdt.core'
 	}
 }
