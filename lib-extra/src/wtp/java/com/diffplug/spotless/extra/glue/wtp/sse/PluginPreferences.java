@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.eclipse.wtp.sse;
+package com.diffplug.spotless.extra.glue.wtp.sse;
 
 import java.io.File;
 import java.io.FileInputStream;

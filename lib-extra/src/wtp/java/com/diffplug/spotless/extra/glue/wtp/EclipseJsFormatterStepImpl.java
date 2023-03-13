@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.eclipse.wtp;
+package com.diffplug.spotless.extra.glue.wtp;
+
+import com.diffplug.spotless.extra.glue.wtp.sse.PluginPreferences;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Arrays;
@@ -45,8 +47,6 @@ import org.eclipse.wst.jsdt.internal.ui.text.FastJavaPartitionScanner;
 import org.eclipse.wst.jsdt.internal.ui.text.comment.CommentFormattingContext;
 import org.eclipse.wst.jsdt.internal.ui.text.comment.CommentFormattingStrategy;
 import org.eclipse.wst.jsdt.ui.text.IJavaScriptPartitions;
-
-import com.diffplug.spotless.extra.eclipse.wtp.sse.PluginPreferences;
 
 /** Formatter step which calls out to the Eclipse JS formatter. */
 public class EclipseJsFormatterStepImpl {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.eclipse.wtp;
+package com.diffplug.spotless.extra.glue.wtp;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -24,8 +24,8 @@ import org.eclipse.wst.json.core.cleanup.CleanupProcessorJSON;
 import org.eclipse.wst.json.core.format.FormatProcessorJSON;
 import org.eclipse.wst.sse.core.internal.cleanup.AbstractStructuredCleanupProcessor;
 
-import com.diffplug.spotless.extra.eclipse.wtp.sse.CleanupStep;
-import com.diffplug.spotless.extra.eclipse.wtp.sse.PluginPreferences;
+import com.diffplug.spotless.extra.glue.wtp.sse.CleanupStep;
+import com.diffplug.spotless.extra.glue.wtp.sse.PluginPreferences;
 
 /**
  * Formatter step which calls out to the Eclipse JSON cleanup processor and formatter.

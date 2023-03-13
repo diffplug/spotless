@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.eclipse.wtp;
-
-import static org.eclipse.wst.xml.core.internal.preferences.XMLCorePreferenceNames.*;
+package com.diffplug.spotless.extra.glue.wtp;
 
 import java.util.Properties;
 
@@ -37,7 +35,7 @@ import org.eclipse.wst.xml.core.internal.parser.XMLSourceParser;
 import org.eclipse.wst.xml.core.internal.preferences.XMLCorePreferenceInitializer;
 import org.eclipse.wst.xml.core.internal.text.rules.StructuredTextPartitionerForXML;
 
-import com.diffplug.spotless.extra.eclipse.wtp.sse.PluginPreferences;
+import com.diffplug.spotless.extra.glue.wtp.sse.PluginPreferences;
 
 /** Formatter step which calls out to the Eclipse XML formatter. */
 public class EclipseXmlFormatterStepImpl {

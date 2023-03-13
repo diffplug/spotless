@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.eclipse.wtp.html;
+package com.diffplug.spotless.extra.glue.wtp.html;
 
 import java.util.function.BiFunction;
 
@@ -24,8 +24,6 @@ import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.TextEdit;
 import org.eclipse.wst.jsdt.core.formatter.CodeFormatter;
 import org.eclipse.wst.sse.core.internal.provisional.text.IStructuredDocument;
-
-import com.diffplug.spotless.extra.eclipse.wtp.html.StructuredDocumentProcessor.RegionProcessor;
 
 /**
  * Provides additional formating to the plain JS {@link CodeFormatter}:
@@ -40,7 +38,7 @@ import com.diffplug.spotless.extra.eclipse.wtp.html.StructuredDocumentProcessor.
  * to the one of Eclipse.
  * </p>
  */
-public class JsRegionProcessor extends RegionProcessor<CodeFormatter> {
+public class JsRegionProcessor extends StructuredDocumentProcessor.RegionProcessor<CodeFormatter> {
 	public JsRegionProcessor(IStructuredDocument document, ITypedRegion scriptRegion, String htmlIndent) {
 		super(document, scriptRegion, htmlIndent);
 	}

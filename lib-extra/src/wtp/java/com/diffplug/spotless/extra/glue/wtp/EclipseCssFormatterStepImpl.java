@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.eclipse.wtp;
+package com.diffplug.spotless.extra.glue.wtp;
+
+import com.diffplug.spotless.extra.glue.wtp.sse.CleanupStep;
+import com.diffplug.spotless.extra.glue.wtp.sse.PluginPreferences;
 
 import java.util.Properties;
 
@@ -21,9 +24,6 @@ import org.eclipse.wst.css.core.internal.CSSCorePlugin;
 import org.eclipse.wst.css.core.internal.cleanup.CleanupProcessorCSS;
 import org.eclipse.wst.css.core.internal.preferences.CSSCorePreferenceInitializer;
 import org.eclipse.wst.sse.core.internal.cleanup.AbstractStructuredCleanupProcessor;
-
-import com.diffplug.spotless.extra.eclipse.wtp.sse.CleanupStep;
-import com.diffplug.spotless.extra.eclipse.wtp.sse.PluginPreferences;
 
 /** Formatter step which calls out to the Eclipse CSS cleanup and formatter. */
 public class EclipseCssFormatterStepImpl extends CleanupStep {

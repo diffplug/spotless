@@ -13,7 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.eclipse.wtp;
+package com.diffplug.spotless.extra.glue.wtp;
+
+import com.diffplug.spotless.extra.glue.wtp.html.JsRegionProcessor;
+import com.diffplug.spotless.extra.glue.wtp.html.StructuredDocumentProcessor;
+import com.diffplug.spotless.extra.glue.wtp.sse.CleanupStep;
+import com.diffplug.spotless.extra.glue.wtp.sse.PluginPreferences;
 
 import java.util.Properties;
 
@@ -28,11 +33,6 @@ import org.eclipse.wst.jsdt.core.formatter.CodeFormatter;
 import org.eclipse.wst.sse.core.internal.cleanup.AbstractStructuredCleanupProcessor;
 import org.eclipse.wst.sse.core.internal.format.IStructuredFormatProcessor;
 import org.eclipse.wst.sse.core.internal.provisional.text.IStructuredDocument;
-
-import com.diffplug.spotless.extra.eclipse.wtp.html.JsRegionProcessor;
-import com.diffplug.spotless.extra.eclipse.wtp.html.StructuredDocumentProcessor;
-import com.diffplug.spotless.extra.eclipse.wtp.sse.CleanupStep;
-import com.diffplug.spotless.extra.eclipse.wtp.sse.PluginPreferences;
 
 /** Formatter step which calls out to the Eclipse HTML cleanup and formatter. */
 public class EclipseHtmlFormatterStepImpl extends CleanupStep {

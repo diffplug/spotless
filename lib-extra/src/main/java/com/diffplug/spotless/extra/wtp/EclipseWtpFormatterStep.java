@@ -39,7 +39,7 @@ public enum EclipseWtpFormatterStep {
 	// @formatter:on
 
 	private static final String NAME = "eclipse wtp formatter";
-	private static final String FORMATTER_PACKAGE = "com.diffplug.spotless.extra.eclipse.wtp.";
+	private static final String FORMATTER_PACKAGE = "com.diffplug.spotless.extra.glue.wtp.";
 	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(8, "4.18.0").add(11, "4.21.0");
 	private static final String FORMATTER_METHOD = "format";
 
@@ -58,6 +58,7 @@ public enum EclipseWtpFormatterStep {
 				var model = new P2Model();
 				addPlatformRepo(model, "4.26");
 				model.addP2Repo("https://download.eclipse.org/webtools/repository/2022-12/");
+				model.addP2Repo("https://download.eclipse.org/tools/orbit/downloads/drops/R20230302014618/repository/");
 				// XML/HTML Formatter  - Dependencies
 				model.getInstall().add("org.eclipse.wst.xml.core"); // DefaultXMLPartitionFormatter and XMLAssociationProvider
 				model.getInstall().add("org.eclipse.wst.sse.core"); // Structure models
