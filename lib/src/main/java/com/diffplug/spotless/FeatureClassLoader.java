@@ -62,7 +62,7 @@ class FeatureClassLoader extends URLClassLoader {
 
 	@Override
 	protected Class<?> findClass(String name) throws ClassNotFoundException {
-		if (name.startsWith("com.diffplug.spotless.glue.")) {
+		if (name.startsWith("com.diffplug.spotless.glue.") || name.startsWith("com.diffplug.spotless.extra.glue.")) {
 			String path = name.replace('.', '/') + ".class";
 			URL url = findResource(path);
 			if (url == null) {

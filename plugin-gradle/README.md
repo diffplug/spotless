@@ -213,7 +213,7 @@ spotless {
   java {
     eclipse()
     // optional: you can specify a specific version and/or config file
-    eclipse('4.17').configFile('eclipse-prefs.xml')
+    eclipse('4.26').configFile('eclipse-prefs.xml')
 ```
 
 
@@ -325,9 +325,8 @@ spotless {
   groovy {
     // Use the default version and Groovy-Eclipse default configuration
     greclipse()
-    // optional: you can specify a specific version or config file(s)
-    // compatible versions: https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/groovy_eclipse_formatter
-    greclipse('2.3.0').configFile('spotless.eclipseformat.xml', 'org.codehaus.groovy.eclipse.ui.prefs')
+    // optional: you can specify a specific version or config file(s), version matches the Eclipse Platform
+    greclipse('4.26').configFile('spotless.eclipseformat.xml', 'org.codehaus.groovy.eclipse.ui.prefs')
 ```
 
 Groovy-Eclipse formatting errors/warnings lead per default to a build failure. This behavior can be changed by adding the property/key value `ignoreFormatterProblems=true` to a configuration file. In this scenario, files causing problems, will not be modified by this formatter step.
@@ -993,7 +992,7 @@ spotless {
   format 'xml', {
     target 'src/**/*.xml' // must specify target
     eclipseWtp('xml')     // must specify a type (table below)
-    eclipseWtp('xml', '4.13.0') // optional version
+    eclipseWtp('xml', '11.0') // optional version, others at https://download.eclipse.org/tools/cdt/releases/
     // you can also specify an arbitrary number of config files
     eclipseWtp('xml').configFile('spotless.xml.prefs', 'spotless.common.properties'
   }

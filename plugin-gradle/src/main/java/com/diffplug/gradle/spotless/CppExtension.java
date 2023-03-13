@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import javax.inject.Inject;
 import org.gradle.api.Project;
 
 import com.diffplug.spotless.cpp.CppDefaults;
-import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
+import com.diffplug.spotless.extra.EquoBasedStepBuilder;
 import com.diffplug.spotless.extra.cpp.EclipseCdtFormatterStep;
 
 public class CppExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
@@ -42,7 +42,7 @@ public class CppExtension extends FormatExtension implements HasBuiltinDelimiter
 	}
 
 	public class EclipseConfig {
-		private final EclipseBasedStepBuilder builder;
+		private final EquoBasedStepBuilder builder;
 
 		EclipseConfig(String version) {
 			builder = EclipseCdtFormatterStep.createBuilder(provisioner());
