@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,5 +37,11 @@ public class UpToDateChecking {
 	@Nullable
 	public Path getIndexFile() {
 		return indexFile == null ? null : new File(indexFile).toPath();
+	}
+
+	public static UpToDateChecking enabled() {
+		UpToDateChecking upToDateChecking = new UpToDateChecking();
+		upToDateChecking.enabled = true;
+		return upToDateChecking;
 	}
 }

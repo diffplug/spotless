@@ -41,11 +41,14 @@ public class CleanthatJava implements FormatterStepFactory {
 	@Parameter
 	private List<String> excludedMutators = CleanthatJavaStep.defaultExcludedMutators();
 
+	@Parameter
+	private boolean includeDraft = CleanthatJavaStep.defaultIncludeDraft();
+
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
 		String groupArtifact = this.groupArtifact != null ? this.groupArtifact : CleanthatJavaStep.defaultGroupArtifact();
 		String version = this.version != null ? this.version : CleanthatJavaStep.defaultVersion();
 
-		return CleanthatJavaStep.create(groupArtifact, version, sourceJdk, mutators, excludedMutators, config.getProvisioner());
+		return CleanthatJavaStep.create(groupArtifact, version, sourceJdk, mutators, excludedMutators, includeDraft, config.getProvisioner());
 	}
 }

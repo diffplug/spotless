@@ -30,6 +30,7 @@ tasks.withType(com.github.spotbugs.snom.SpotBugsTask).configureEach {
 	reports {
 		html.enabled = true
 	}
+	notCompatibleWithConfigurationCache("https://github.com/spotbugs/spotbugs-gradle-plugin/issues/670")
 }
 
 tasks.named('spotbugsMain') {

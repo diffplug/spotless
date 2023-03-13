@@ -59,6 +59,7 @@ class TsFmtFormatterStepTest {
 					TestProvisioner.mavenCentral(),
 					projectDir(),
 					buildDir(),
+					null,
 					npmPathResolver(),
 					TypedTsFmtConfigFile.named(configFileNameWithoutExtension, configFile),
 					Collections.emptyMap());
@@ -82,6 +83,7 @@ class TsFmtFormatterStepTest {
 					TestProvisioner.mavenCentral(),
 					projectDir(),
 					buildDir(),
+					null,
 					npmPathResolver(),
 					null,
 					inlineConfig);

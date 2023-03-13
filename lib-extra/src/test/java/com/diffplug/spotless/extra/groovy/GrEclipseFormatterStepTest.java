@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,10 @@ import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.TestProvisioner;
-import com.diffplug.spotless.extra.eclipse.EclipseResourceHarness;
+import com.diffplug.spotless.extra.eclipse.EquoResourceHarness;
 
-class GrEclipseFormatterStepTest extends EclipseResourceHarness {
-	private final static Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support("Oldest Version").add(8, "2.3.0").add(11, "4.17.0");
+public class GrEclipseFormatterStepTest extends EquoResourceHarness {
 	private final static String INPUT = "class F{ def m(){} }";
 	private final static String EXPECTED = "class F{\n\tdef m(){}\n}";
 
@@ -40,6 +38,6 @@ class GrEclipseFormatterStepTest extends EclipseResourceHarness {
 	}
 
 	private static Stream<String> formatWithVersion() {
-		return Stream.of(JVM_SUPPORT.getRecommendedFormatterVersion(), GrEclipseFormatterStep.defaultVersion());
+		return Stream.of("4.18", GrEclipseFormatterStep.defaultVersion());
 	}
 }

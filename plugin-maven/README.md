@@ -8,8 +8,8 @@ output = [
   ].join('\n');
 -->
 [![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
-[![Changelog](https://img.shields.io/badge/changelog-2.33.0-blue.svg)](CHANGES.md)
-[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.33.0/index.html)
+[![Changelog](https://img.shields.io/badge/changelog-2.35.0-blue.svg)](CHANGES.md)
+[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.35.0/index.html)
 <!---freshmark /shields -->
 
 <!---freshmark javadoc
@@ -54,7 +54,7 @@ user@machine repo % mvn spotless:check
   - [JSON](#json)
   - [YAML](#yaml)
   - Multiple languages
-    - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection))
+    - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching `npm install` results](#caching-results-of-npm-install))
     - [eclipse web tools platform](#eclipse-web-tools-platform)
 - **Language independent**
   - [Generic steps](#generic-steps)
@@ -237,7 +237,7 @@ any other maven phase (i.e. compile) then it can be configured as below;
 
 ```xml
 <eclipse>
-  <version>4.21.0</version>                     <!-- optional version of Eclipse Formatter -->
+  <version>4.26</version>                     <!-- optional version of Eclipse Formatter -->
   <file>${project.basedir}/eclipse-formatter.xml</file> <!-- optional -->
 </eclipse>
 ```
@@ -331,7 +331,7 @@ These mechanisms already exist for the Gradle plugin.
 
 ```xml
 <greclipse>
-  <version>4.21.0</version>                     <!-- optional version of Eclipse Formatter -->
+  <version>4.26</version>  <!-- optional version of Eclipse Formatter -->
   <file>${project.basedir}/greclipse.properties</file> <!-- optional -->
 </greclipse>
 ```
@@ -481,7 +481,7 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
 
 ```xml
 <eclipseCdt>
-  <version>4.21.0</version>               <!-- optional version of Eclipse Formatter -->
+  <version>11.0</version> <!-- optional version of Eclipse Formatter, others at https://download.eclipse.org/tools/cdt/releases/ -->
   <file>${project.basedir}/eclipse-cdt.xml</file> <!-- optional -->
 </eclipseCdt>
 ```
@@ -731,7 +731,7 @@ The auto-discovery of config files (up the file tree) will not work when using t
 
 **Prerequisite: tsfmt requires a working NodeJS version**
 
-For details, see the [npm detection](#npm-detection) and [`.npmrc` detection](#npmrc-detection) sections of prettier, which apply also to tsfmt.
+For details, see the [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection) and [caching results of `npm install`](#caching-results-of-npm-install) sections of prettier, which apply also to tsfmt.
 
 ### ESLint (typescript)
 
@@ -787,7 +787,7 @@ reference to a `tsconfig.json` is required.
 
 **Prerequisite: ESLint requires a working NodeJS version**
 
-For details, see the [npm detection](#npm-detection) and [`.npmrc` detection](#npmrc-detection) sections of prettier, which apply also to ESLint.
+For details, see the [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection) and [caching results of `npm install`](#caching-results-of-npm-install) sections of prettier, which apply also to ESLint.
 
 
 ## Javascript
@@ -863,7 +863,7 @@ The configuration is very similar to the [ESLint (Typescript)](#eslint-typescrip
 
 **Prerequisite: ESLint requires a working NodeJS version**
 
-For details, see the [npm detection](#npm-detection) and [`.npmrc` detection](#npmrc-detection) sections of prettier, which apply also to ESLint.
+For details, see the [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection) and [caching results of `npm install`](#caching-results-of-npm-install) sections of prettier, which apply also to ESLint.
 
 ## JSON
 
@@ -1113,6 +1113,21 @@ Alternatively you can supply spotless with a location of the `.npmrc` file to us
   <npmrc>/usr/local/shared/.npmrc</npmrc>
 ```
 
+### Caching results of `npm install`
+
+Spotless uses `npm` behind the scenes to install `prettier`. This can be a slow process, especially if you are using a slow internet connection or
+if you need large plugins. You can instruct spotless to cache the results of the `npm install` calls, so that for the next installation,
+it will not need to download the packages again, but instead reuse the cached version.
+
+```xml
+<prettier>
+  <npmInstallCache>true</npmInstallCache> <!-- will use the default cache directory (the `target`-directory) -->
+  <npmInstallCache>/usr/local/shared/.spotless-npm-install-cache</npmInstallCache> <!-- will use the specified directory (creating it if not existing) -->
+```
+
+Depending on your filesystem and the location of the cache directory, spotless will use hardlinks when caching the npm packages. If that is not
+possible, it will fall back to copying the files.
+
 <a name="applying-eclipse-wtp-to-css--html--etc"></a>
 
 ## Eclipse web tools platform
@@ -1247,7 +1262,7 @@ To define what lines to skip at the beginning of such files, fill the `skipLines
 
 ## Incremental up-to-date checking and formatting
 
-**This feature is turned off by default.**
+**This feature is enabled by default starting from version 2.35.0.**
 
 Execution of `spotless:check` and `spotless:apply` for large projects can take time.
 By default, Spotless Maven plugin needs to read and format each source file.

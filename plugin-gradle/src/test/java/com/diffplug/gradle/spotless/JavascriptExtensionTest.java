@@ -178,7 +178,7 @@ class JavascriptExtensionTest extends GradleIntegrationHarness {
 					"    }",
 					"}");
 			setFile("test.js").toResource(styleguidePath + "javascript-es6.dirty");
-			gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+			gradleRunner().forwardOutput().withArguments("--info", "--stacktrace", "spotlessApply").build();
 			assertFile("test.js").sameAsResource(styleguidePath + "javascript-es6.clean");
 		}
 	}

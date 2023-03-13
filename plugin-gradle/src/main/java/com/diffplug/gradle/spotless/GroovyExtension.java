@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.GroovySourceSet;
 import org.gradle.api.tasks.SourceSet;
 
-import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
+import com.diffplug.spotless.extra.EquoBasedStepBuilder;
 import com.diffplug.spotless.extra.groovy.GrEclipseFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.java.ImportOrderStep;
@@ -83,7 +83,7 @@ public class GroovyExtension extends FormatExtension implements HasBuiltinDelimi
 	}
 
 	public static class GrEclipseConfig {
-		private final EclipseBasedStepBuilder builder;
+		private final EquoBasedStepBuilder builder;
 		private final FormatExtension extension;
 
 		GrEclipseConfig(String version, FormatExtension extension) {
