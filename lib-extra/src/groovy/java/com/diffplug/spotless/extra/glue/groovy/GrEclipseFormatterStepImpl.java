@@ -42,7 +42,6 @@ import org.eclipse.jface.text.TextSelection;
 import org.eclipse.osgi.internal.location.EquinoxLocations;
 import org.eclipse.text.edits.TextEdit;
 import org.osgi.framework.Constants;
-import org.slf4j.LoggerFactory;
 
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.ShimIdeBootstrapServices;

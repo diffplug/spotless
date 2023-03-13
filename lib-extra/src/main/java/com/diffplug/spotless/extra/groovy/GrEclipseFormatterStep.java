@@ -33,7 +33,6 @@ public final class GrEclipseFormatterStep {
 
 	private static final String NAME = "eclipse groovy formatter";
 	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "4.26");
-	private static final String FORMATTER_METHOD = "format";
 
 	public static String defaultVersion() {
 		return JVM_SUPPORT.getRecommendedFormatterVersion();
@@ -86,7 +85,7 @@ public final class GrEclipseFormatterStep {
 		JVM_SUPPORT.assertFormatterSupported(state.getSemanticVersion());
 		Class<?> formatterClazz = state.getJarState().getClassLoader().loadClass("com.diffplug.spotless.extra.glue.groovy.GrEclipseFormatterStepImpl");
 		var formatter = formatterClazz.getConstructor(Properties.class).newInstance(state.getPreferences());
-		var method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
+		var method = formatterClazz.getMethod("format", String.class);
 		return JVM_SUPPORT.suggestLaterVersionOnError(state.getSemanticVersion(),
 				input -> {
 					try {

@@ -29,7 +29,6 @@ public class GrEclipseFormatterStepTest extends EquoResourceHarness {
 
 	public GrEclipseFormatterStepTest() {
 		super(GrEclipseFormatterStep.createBuilder(TestProvisioner.mavenCentral()), INPUT, EXPECTED);
-		System.setProperty("org.gradle.logging.level", "info");
 	}
 
 	@ParameterizedTest
