@@ -88,7 +88,7 @@ public abstract class EquoBasedStepBuilder {
 		var query = model(formatterVersion).query(P2ClientCache.PREFER_OFFLINE, P2QueryCache.ALLOW);
 		var classpath = new ArrayList<File>();
 		var mavenDeps = new ArrayList<String>();
-		mavenDeps.add("dev.equo.ide:solstice:0.19.1");
+		mavenDeps.add("dev.equo.ide:solstice:0.19.2");
 		mavenDeps.add("com.diffplug.durian:durian-swt.os:4.1.1");
 		mavenDeps.add("org.slf4j:slf4j-simple:1.7.36");
 		mavenDeps.addAll(query.getJarsOnMavenCentral());

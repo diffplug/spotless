@@ -18,6 +18,7 @@ package com.diffplug.spotless.extra.glue.groovy;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,8 +39,10 @@ import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.TextSelection;
+import org.eclipse.osgi.internal.location.EquinoxLocations;
 import org.eclipse.text.edits.TextEdit;
 import org.osgi.framework.Constants;
+import org.slf4j.LoggerFactory;
 
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.ShimIdeBootstrapServices;
@@ -49,20 +52,22 @@ import dev.equo.solstice.p2.CacheLocations;
 /** Spotless-Formatter step which calls out to the Groovy-Eclipse formatter. */
 public class GrEclipseFormatterStepImpl {
 	static {
-		System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "info");
 		NestedJars.setToWarnOnly();
 		NestedJars.onClassPath().confirmAllNestedJarsArePresentOnClasspath(CacheLocations.nestedJars());
-
-		var solstice = Solstice.findBundlesOnClasspath();
-		solstice.warnAndModifyManifestsToFix();
-		var props = Map.of("osgi.nl", "en_US",
-				Constants.FRAMEWORK_STORAGE_CLEAN, Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT);
-		solstice.openShim(props);
-		ShimIdeBootstrapServices.apply(props, solstice.getContext());
-		solstice.start("org.apache.felix.scr");
-		solstice.startAllWithLazy(false);
-		//		solstice.start("org.eclipse.core.resources");
-		solstice.start("org.codehaus.groovy.eclipse.core");
+		try {
+			var solstice = Solstice.findBundlesOnClasspath();
+			solstice.warnAndModifyManifestsToFix();
+			var props = Map.of("osgi.nl", "en_US",
+					Constants.FRAMEWORK_STORAGE_CLEAN, Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT,
+					EquinoxLocations.PROP_INSTANCE_AREA, Files.createTempDirectory("spotless-groovy").toAbsolutePath().toString());
+			solstice.openShim(props);
+			ShimIdeBootstrapServices.apply(props, solstice.getContext());
+			solstice.start("org.apache.felix.scr");
+			solstice.startAllWithLazy(false);
+			solstice.start("org.codehaus.groovy.eclipse.core");
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**

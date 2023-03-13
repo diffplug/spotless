@@ -23,12 +23,13 @@ import org.junit.jupiter.params.provider.MethodSource;
 import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.extra.eclipse.EquoResourceHarness;
 
-class GrEclipseFormatterStepTest extends EquoResourceHarness {
+public class GrEclipseFormatterStepTest extends EquoResourceHarness {
 	private final static String INPUT = "class F{ def m(){} }";
 	private final static String EXPECTED = "class F{\n\tdef m(){}\n}";
 
 	public GrEclipseFormatterStepTest() {
 		super(GrEclipseFormatterStep.createBuilder(TestProvisioner.mavenCentral()), INPUT, EXPECTED);
+		System.setProperty("org.gradle.logging.level", "info");
 	}
 
 	@ParameterizedTest
@@ -38,6 +39,6 @@ class GrEclipseFormatterStepTest extends EquoResourceHarness {
 	}
 
 	private static Stream<String> formatWithVersion() {
-		return Stream.of("4.21", GrEclipseFormatterStep.defaultVersion());
+		return Stream.of("4.18", GrEclipseFormatterStep.defaultVersion());
 	}
 }
