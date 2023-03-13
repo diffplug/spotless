@@ -13,28 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.eclipse.java;
-
-import static org.junit.Assert.*;
+package com.diffplug.spotless.extra.java;
 
 import java.util.Properties;
 import java.util.function.Consumer;
 
+import com.diffplug.spotless.TestProvisioner;
+import com.diffplug.spotless.extra.EquoBasedStepBuilder;
+import com.diffplug.spotless.extra.eclipse.EquoResourceHarness;
+
 import org.assertj.core.util.Arrays;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.manipulation.CodeStyleConfiguration;
-import org.junit.BeforeClass;
-import org.junit.ComparisonFailure;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 
 /** Eclipse JDT wrapper integration tests */
-public class EclipseJdtCleanUpStepImplTest {
+public class EclipseJdtCleanUpStepImplTest  extends EquoResourceHarness {
+	private final static String INPUT = "package p; class C{}";
+	private final static String EXPECTED = "package p;\nclass C {\n}";
 	private static String SOURCE_FILE_PATH = "some .. / \\ ill&formatted/$path";
 	private static TestData TEST_DATA = null;
 
-	@BeforeClass
+	@BeforeAll
 	public static void initializeStatic() throws Exception {
 		TEST_DATA = TestData.getTestDataOnFileSystem();
+	}
+
+	private static EquoBasedStepBuilder createBuilder() {
+		return EclipseJdtCleanUpStep.createBuilder(TestProvisioner.mavenCentral());
+	}
+
+	public EclipseJdtCleanUpStepImplTest() {
+		super(createBuilder(), INPUT, EXPECTED);
 	}
 
 	@Test
@@ -47,8 +60,8 @@ public class EclipseJdtCleanUpStepImplTest {
 		for (String testFile : Arrays.array("Simple", "Statics", "Wildcards")) {
 			try {
 				cleanUpTest(testFile, config -> {});
-			} catch (ComparisonFailure e) {
-				throw new ComparisonFailure(testFile + " - " + e.getMessage(), e.getExpected(), e.getActual());
+			} catch (AssertionFailedError e) {
+				throw new AssertionFailedError(testFile + " - " + e.getMessage(), e.getExpected(), e.getActual());
 			}
 		}
 	}
@@ -87,7 +100,7 @@ public class EclipseJdtCleanUpStepImplTest {
 		config.accept(properties);
 		EclipseJdtCleanUpStepImpl formatter = new EclipseJdtCleanUpStepImpl(properties);
 		String output = formatter.format(input, SOURCE_FILE_PATH);
-		assertEquals("Unexpected clean-up result " + TestData.toString(properties),
+		Assertions.assertEquals("Unexpected clean-up result " + TestData.toString(properties),
 				expected, output);
 	}
 }

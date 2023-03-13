@@ -13,27 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.eclipse.java;
-
-import static org.junit.Assert.*;
+package com.diffplug.spotless.extra.java;
 
 import java.util.Properties;
 import java.util.function.Consumer;
 
+import com.diffplug.spotless.TestProvisioner;
+import com.diffplug.spotless.extra.EquoBasedStepBuilder;
+import com.diffplug.spotless.extra.eclipse.EquoResourceHarness;
+
 import org.assertj.core.util.Arrays;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.manipulation.CodeStyleConfiguration;
-import org.junit.BeforeClass;
-import org.junit.ComparisonFailure;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 
 /** Eclipse JDT wrapper integration tests */
-public class EclipseJdtOrganizeImportStepImplTest {
+public class EclipseJdtOrganizeImportStepImplTest extends EquoResourceHarness {
+	private final static String INPUT = "package p; class C{}";
+	private final static String EXPECTED = "package p;\nclass C {\n}";
+
 	private static TestData TEST_DATA = null;
 
-	@BeforeClass
+	@BeforeAll
 	public static void initializeStatic() throws Exception {
 		TEST_DATA = TestData.getTestDataOnFileSystem();
+	}
+
+	private static EquoBasedStepBuilder createBuilder() {
+		return EclipseJdtOrganizeImportStep.createBuilder(TestProvisioner.mavenCentral());
+	}
+
+	public EclipseJdtOrganizeImportStepImplTest() {
+		super(createBuilder(), INPUT, EXPECTED);
 	}
 
 	@Test
@@ -46,8 +60,8 @@ public class EclipseJdtOrganizeImportStepImplTest {
 		for (String testFile : Arrays.array("Simple", "Statics", "Wildcards")) {
 			try {
 				organizeImportTest(testFile, config -> {});
-			} catch (ComparisonFailure e) {
-				throw new ComparisonFailure(testFile + " - " + e.getMessage(), e.getExpected(), e.getActual());
+			} catch (AssertionFailedError e) {
+				throw new AssertionFailedError(testFile + " - " + e.getMessage(), e.getExpected(), e.getActual());
 			}
 		}
 	}
@@ -93,7 +107,7 @@ public class EclipseJdtOrganizeImportStepImplTest {
 		config.accept(properties);
 		EclipseJdtOrganizeImportStepImpl formatter = new EclipseJdtOrganizeImportStepImpl(properties);
 		String output = formatter.format(input);
-		assertEquals("Unexpected import organization " + TestData.toString(properties),
+		Assertions.assertEquals("Unexpected import organization " + TestData.toString(properties),
 				expected, output);
 	}
 }

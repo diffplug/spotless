@@ -85,6 +85,26 @@ p2deps {
 		p2repo 'https://download.eclipse.org/tools/cdt/releases/10.7/'
 		install 'org.eclipse.cdt.core'
 	}
+
+	/*
+	 * JDT core manipulation required for clean-up base interfaces and import sorting
+	 * It depends on JDT core, which is required for formatting.
+	 */
+	/**compile("org.eclipse.jdt:org.eclipse.jdt.core.manipulation:${VER_ECLIPSE_JDT_CORE_MANIPULATION}") {
+		exclude group: 'org.eclipse.jdt', module: 'org.eclipse.jdt.launching'
+		exclude group: 'org.eclipse.platform', module: 'org.eclipse.ant.core'
+		exclude group: 'org.eclipse.platform', module: 'org.eclipse.core.expressions'
+	}*/
+
+	/*
+	 * JDT UI required for clean-up.
+	 * Only the org.eclipse.jdt.internal.corext.fix package is required.
+	 * All dependencies (like SWT) are excluded.
+	 */
+	/**compile("org.eclipse.jdt:org.eclipse.jdt.ui:${VER_ECLIPSE_JDT_UI}") {
+		exclude group: 'org.eclipse.platform'
+		exclude group: 'org.eclipse.jdt'
+	}*/
 }
 
 // we'll hold the core lib to a high standard
