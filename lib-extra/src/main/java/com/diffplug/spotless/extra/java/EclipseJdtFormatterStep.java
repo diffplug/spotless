@@ -42,7 +42,7 @@ public final class EclipseJdtFormatterStep {
 			@Override
 			protected P2Model model(String version) {
 				var model = new P2Model();
-				model.addP2Repo("https://download.eclipse.org/eclipse/updates/" + version + "/");
+				addPlatformRepo(model, version);
 				model.getInstall().add("org.eclipse.jdt.core");
 				return model;
 			}
@@ -51,7 +51,7 @@ public final class EclipseJdtFormatterStep {
 			public void setVersion(String version) {
 				if (version.endsWith(".0")) {
 					String newVersion = version.substring(0, version.length() - 2);
-					System.err.println("Recommend replacing '" + version + "' with '" + newVersion + "' for eclipse JDT");
+					System.err.println("Recommend replacing '" + version + "' with '" + newVersion + "' for Eclipse JDT");
 					version = newVersion;
 				}
 				super.setVersion(version);

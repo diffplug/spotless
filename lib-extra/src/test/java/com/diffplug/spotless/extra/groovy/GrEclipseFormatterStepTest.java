@@ -38,6 +38,6 @@ class GrEclipseFormatterStepTest extends EquoResourceHarness {
 	}
 
 	private static Stream<String> formatWithVersion() {
-		return Stream.of("4.25", GrEclipseFormatterStep.defaultVersion());
+		return Stream.of("4.21", GrEclipseFormatterStep.defaultVersion());
 	}
 }

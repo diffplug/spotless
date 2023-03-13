@@ -18,6 +18,7 @@ package com.diffplug.spotless.extra;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import com.diffplug.spotless.FileSignature;
@@ -65,12 +66,31 @@ public abstract class EquoBasedStepBuilder {
 
 	protected abstract P2Model model(String version);
 
+	protected void addPlatformRepo(P2Model model, String version) {
+		if (!version.startsWith("4.")) {
+			throw new IllegalArgumentException("Expected 4.x");
+		}
+		int minorVersion = Integer.parseInt(version.substring("4.".length()));
+
+		model.addP2Repo("https://download.eclipse.org/eclipse/updates/" + version + "/");
+		model.getInstall().addAll(List.of(
+				"org.apache.felix.scr",
+				"org.eclipse.equinox.event"));
+		if (minorVersion >= 25) {
+			model.getInstall().addAll(List.of(
+					"org.osgi.service.cm",
+					"org.osgi.service.metatype"));
+		}
+	}
+
 	/** Creates the state of the configuration. */
 	EquoBasedStepBuilder.State get() throws Exception {
 		var query = model(formatterVersion).query(P2ClientCache.PREFER_OFFLINE, P2QueryCache.ALLOW);
 		var classpath = new ArrayList<File>();
 		var mavenDeps = new ArrayList<String>();
 		mavenDeps.add("dev.equo.ide:solstice:0.19.1");
+		mavenDeps.add("com.diffplug.durian:durian-swt.os:4.1.1");
+		mavenDeps.add("org.slf4j:slf4j-simple:1.7.36");
 		mavenDeps.addAll(query.getJarsOnMavenCentral());
 		classpath.addAll(mavenProvisioner.provisionWithTransitives(false, mavenDeps));
 		classpath.addAll(query.getJarsNotOnMavenCentral());

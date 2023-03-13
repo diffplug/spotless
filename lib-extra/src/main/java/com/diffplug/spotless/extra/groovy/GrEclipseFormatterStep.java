@@ -57,13 +57,16 @@ public final class GrEclipseFormatterStep {
 					greclipseVersion = "3." + (eVersion - 8) + ".0";
 				}
 				var model = new P2Model();
-				model.addP2Repo("https://download.eclipse.org/eclipse/updates/" + version + "/");
+				addPlatformRepo(model, version);
 				model.addP2Repo("https://groovy.jfrog.io/artifactory/plugins-release/org/codehaus/groovy/groovy-eclipse-integration/" + greclipseVersion + "/e" + version + "/");
 				model.getInstall().addAll(List.of(
 						"org.codehaus.groovy.eclipse.refactoring",
 						"org.codehaus.groovy.eclipse.core",
 						"org.eclipse.jdt.groovy.core",
 						"org.codehaus.groovy"));
+				model.addFilterAndValidate("no-debug", filter -> {
+					filter.exclude("org.eclipse.jdt.debug");
+				});
 				return model;
 			}
 

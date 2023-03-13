@@ -39,6 +39,7 @@ import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.text.edits.TextEdit;
+import org.osgi.framework.Constants;
 
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.ShimIdeBootstrapServices;
@@ -47,6 +48,23 @@ import dev.equo.solstice.p2.CacheLocations;
 
 /** Spotless-Formatter step which calls out to the Groovy-Eclipse formatter. */
 public class GrEclipseFormatterStepImpl {
+	static {
+		System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "info");
+		NestedJars.setToWarnOnly();
+		NestedJars.onClassPath().confirmAllNestedJarsArePresentOnClasspath(CacheLocations.nestedJars());
+
+		var solstice = Solstice.findBundlesOnClasspath();
+		solstice.warnAndModifyManifestsToFix();
+		var props = Map.of("osgi.nl", "en_US",
+				Constants.FRAMEWORK_STORAGE_CLEAN, Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT);
+		solstice.openShim(props);
+		ShimIdeBootstrapServices.apply(props, solstice.getContext());
+		solstice.start("org.apache.felix.scr");
+		solstice.startAllWithLazy(false);
+		//		solstice.start("org.eclipse.core.resources");
+		solstice.start("org.codehaus.groovy.eclipse.core");
+	}
+
 	/**
 	 * Groovy compiler problems can be ignored.
 	 * <p>
@@ -59,16 +77,6 @@ public class GrEclipseFormatterStepImpl {
 	private final boolean ignoreFormatterProblems;
 
 	public GrEclipseFormatterStepImpl(final Properties properties) throws Exception {
-		var solstice = Solstice.findBundlesOnClasspath();
-		NestedJars.setToWarnOnly();
-		NestedJars.onClassPath().confirmAllNestedJarsArePresentOnClasspath(CacheLocations.nestedJars());
-		solstice.warnAndModifyManifestsToFix();
-		var props = Map.<String, String> of();
-		solstice.openShim(props);
-		ShimIdeBootstrapServices.apply(props, solstice.getContext());
-		solstice.startAllWithLazy(false);
-		solstice.startWithoutTransitives("org.codehaus.groovy.eclipse.core");
-
 		PreferenceStore preferences = createPreferences(properties);
 		preferencesStore = new FormatterPreferencesOnStore(preferences);
 		ignoreFormatterProblems = Boolean.parseBoolean(properties.getProperty(IGNORE_FORMATTER_PROBLEMS, "false"));
