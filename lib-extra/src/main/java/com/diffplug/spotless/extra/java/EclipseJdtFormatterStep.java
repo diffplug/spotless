@@ -22,7 +22,6 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.extra.EquoBasedStepBuilder;
-import com.diffplug.spotless.extra.EquoBasedStepBuilder.State;
 
 import dev.equo.solstice.p2.P2Model;
 
@@ -32,19 +31,18 @@ public final class EclipseJdtFormatterStep {
 	private EclipseJdtFormatterStep() {}
 
 	private static final String NAME = "eclipse jdt formatter";
-	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(8, "4.16").add(11, "4.26");
+	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "4.26");
 
 	public static String defaultVersion() {
 		return JVM_SUPPORT.getRecommendedFormatterVersion();
 	}
 
-	/** Provides default configuration */
 	public static EquoBasedStepBuilder createBuilder(Provisioner provisioner) {
 		return new EquoBasedStepBuilder(NAME, provisioner, EclipseJdtFormatterStep::apply) {
 			@Override
 			protected P2Model model(String version) {
 				var model = new P2Model();
-				model.addP2Repo("https://download.eclipse.org/eclipse/updates/" + version + "/");
+				addPlatformRepo(model, version);
 				model.getInstall().add("org.eclipse.jdt.core");
 				return model;
 			}
@@ -53,7 +51,7 @@ public final class EclipseJdtFormatterStep {
 			public void setVersion(String version) {
 				if (version.endsWith(".0")) {
 					String newVersion = version.substring(0, version.length() - 2);
-					System.err.println("Recommend replacing '" + version + "' with '" + newVersion + "' for eclipse JDT");
+					System.err.println("Recommend replacing '" + version + "' with '" + newVersion + "' for Eclipse JDT");
 					version = newVersion;
 				}
 				super.setVersion(version);
@@ -61,7 +59,7 @@ public final class EclipseJdtFormatterStep {
 		};
 	}
 
-	private static FormatterFunc apply(State state) throws Exception {
+	private static FormatterFunc apply(EquoBasedStepBuilder.State state) throws Exception {
 		JVM_SUPPORT.assertFormatterSupported(state.getSemanticVersion());
 		Class<?> formatterClazz = state.getJarState().getClassLoader().loadClass("com.diffplug.spotless.extra.glue.jdt.EclipseJdtFormatterStepImpl");
 		var formatter = formatterClazz.getConstructor(Properties.class).newInstance(state.getPreferences());

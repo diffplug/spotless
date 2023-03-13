@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.eclipse.groovy;
+package com.diffplug.spotless.extra.glue.groovy;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.codehaus.groovy.eclipse.GroovyLogManager;
@@ -37,15 +39,36 @@ import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.TextSelection;
+import org.eclipse.osgi.internal.location.EquinoxLocations;
 import org.eclipse.text.edits.TextEdit;
+import org.osgi.framework.Constants;
 
-import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseConfig;
-import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework;
-import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipsePluginConfig;
-import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseServiceConfig;
+import dev.equo.solstice.NestedJars;
+import dev.equo.solstice.ShimIdeBootstrapServices;
+import dev.equo.solstice.Solstice;
+import dev.equo.solstice.p2.CacheLocations;
 
 /** Spotless-Formatter step which calls out to the Groovy-Eclipse formatter. */
 public class GrEclipseFormatterStepImpl {
+	static {
+		NestedJars.setToWarnOnly();
+		NestedJars.onClassPath().confirmAllNestedJarsArePresentOnClasspath(CacheLocations.nestedJars());
+		try {
+			var solstice = Solstice.findBundlesOnClasspath();
+			solstice.warnAndModifyManifestsToFix();
+			var props = Map.of("osgi.nl", "en_US",
+					Constants.FRAMEWORK_STORAGE_CLEAN, Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT,
+					EquinoxLocations.PROP_INSTANCE_AREA, Files.createTempDirectory("spotless-groovy").toAbsolutePath().toString());
+			solstice.openShim(props);
+			ShimIdeBootstrapServices.apply(props, solstice.getContext());
+			solstice.start("org.apache.felix.scr");
+			solstice.startAllWithLazy(false);
+			solstice.start("org.codehaus.groovy.eclipse.core");
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	/**
 	 * Groovy compiler problems can be ignored.
 	 * <p>
@@ -58,23 +81,9 @@ public class GrEclipseFormatterStepImpl {
 	private final boolean ignoreFormatterProblems;
 
 	public GrEclipseFormatterStepImpl(final Properties properties) throws Exception {
-		SpotlessEclipseFramework.setup(new FrameworkConfig());
 		PreferenceStore preferences = createPreferences(properties);
 		preferencesStore = new FormatterPreferencesOnStore(preferences);
 		ignoreFormatterProblems = Boolean.parseBoolean(properties.getProperty(IGNORE_FORMATTER_PROBLEMS, "false"));
-	}
-
-	private static class FrameworkConfig implements SpotlessEclipseConfig {
-		@Override
-		public void registerServices(SpotlessEclipseServiceConfig config) {
-			config.applyDefault();
-			config.useSlf4J(GrEclipseFormatterStepImpl.class.getPackage().getName());
-		}
-
-		@Override
-		public void activatePlugins(SpotlessEclipsePluginConfig config) {
-			config.add(new GroovyCoreActivator());
-		}
 	}
 
 	/** Formatting Groovy string  */
@@ -95,7 +104,6 @@ public class GrEclipseFormatterStepImpl {
 	 * Eclipse Groovy formatter does not signal problems by its return value, but by logging errors.
 	 */
 	private static class GroovyErrorListener implements ILogListener, IGroovyLogger {
-
 		private final List<String> errors;
 
 		public GroovyErrorListener() {
@@ -106,7 +114,7 @@ public class GrEclipseFormatterStepImpl {
 			errors = Collections.synchronizedList(new ArrayList<String>());
 			ILog groovyLogger = GroovyCoreActivator.getDefault().getLog();
 			groovyLogger.addLogListener(this);
-			synchronized(GroovyLogManager.manager) {
+			synchronized (GroovyLogManager.manager) {
 				GroovyLogManager.manager.addLogger(this);
 			}
 		}
@@ -119,7 +127,7 @@ public class GrEclipseFormatterStepImpl {
 		public boolean errorsDetected() {
 			ILog groovyLogger = GroovyCoreActivator.getDefault().getLog();
 			groovyLogger.removeLogListener(this);
-			synchronized(GroovyLogManager.manager) {
+			synchronized (GroovyLogManager.manager) {
 				GroovyLogManager.manager.removeLogger(this);
 			}
 			return 0 != errors.size();
@@ -156,7 +164,6 @@ public class GrEclipseFormatterStepImpl {
 		public void log(TraceCategory arg0, String arg1) {
 			errors.add(arg1);
 		}
-
 	}
 
 	private static PreferenceStore createPreferences(final Properties properties) throws IOException {
@@ -167,5 +174,4 @@ public class GrEclipseFormatterStepImpl {
 		preferences.load(input);
 		return preferences;
 	}
-
 }

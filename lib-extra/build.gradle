@@ -7,6 +7,7 @@ version = rootProject.spotlessChangelog.versionNext
 apply from: rootProject.file('gradle/java-setup.gradle')
 apply from: rootProject.file('gradle/java-publish.gradle')
 
+String VER_SOLSTICE = '0.19.2'
 dependencies {
 	api project(':lib')
 	// misc useful utilities
@@ -16,13 +17,18 @@ dependencies {
 	implementation "org.eclipse.jgit:org.eclipse.jgit:${VER_JGIT}"
 	implementation "com.googlecode.concurrent-trees:concurrent-trees:2.6.1"
 	// for eclipse
-	implementation "dev.equo.ide:solstice:0.17.0"
+	implementation "dev.equo.ide:solstice:${VER_SOLSTICE}"
 
 	// testing
 	testImplementation project(':testlib')
 	testImplementation "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"
 	testImplementation "org.assertj:assertj-core:${VER_ASSERTJ}"
 	testImplementation "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
+}
+spotless {
+	java {
+		replaceRegex 'enforceSolsticeVersion', '"dev.equo.ide:solstice:(.*)"', '"dev.equo.ide:solstice:' + VER_SOLSTICE + '"'
+	}
 }
 
 apply from: rootProject.file('gradle/special-tests.gradle')
@@ -34,13 +40,17 @@ tasks.withType(Test).configureEach {
 }
 
 def NEEDS_P2_DEPS = [
-	'jdt'
+	'jdt',
+	'groovy'
 ]
 for (needsP2 in NEEDS_P2_DEPS) {
 	sourceSets.register(needsP2) {
 		compileClasspath += sourceSets.main.output
 		runtimeClasspath += sourceSets.main.output
 		java {}
+	}
+	dependencies {
+		add("${needsP2}CompileOnly", "dev.equo.ide:solstice:${VER_SOLSTICE}")
 	}
 }
 jar {
@@ -60,6 +70,14 @@ p2deps {
 	into 'jdtCompileOnly', {
 		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
 		install 'org.eclipse.jdt.core'
+	}
+	into 'groovyCompileOnly', {
+		p2repo 'https://download.eclipse.org/eclipse/updates/4.23/'
+		p2repo 'https://groovy.jfrog.io/artifactory/plugins-release/org/codehaus/groovy/groovy-eclipse-integration/4.8.0/e4.23/'
+		install 'org.codehaus.groovy.eclipse.refactoring'
+		install 'org.codehaus.groovy.eclipse.core'
+		install 'org.eclipse.jdt.groovy.core'
+		install 'org.codehaus.groovy'
 	}
 }
 

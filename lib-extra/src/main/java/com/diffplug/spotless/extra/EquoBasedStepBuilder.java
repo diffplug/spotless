@@ -18,6 +18,7 @@ package com.diffplug.spotless.extra;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import com.diffplug.spotless.FileSignature;
@@ -28,9 +29,10 @@ import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx;
 
-import dev.equo.solstice.p2.P2Client;
+import dev.equo.solstice.NestedJars;
+import dev.equo.solstice.p2.P2ClientCache;
 import dev.equo.solstice.p2.P2Model;
-import dev.equo.solstice.p2.QueryCache;
+import dev.equo.solstice.p2.P2QueryCache;
 
 /**
  * Generic Eclipse based formatter step {@link State} builder.
@@ -64,15 +66,37 @@ public abstract class EquoBasedStepBuilder {
 
 	protected abstract P2Model model(String version);
 
+	protected void addPlatformRepo(P2Model model, String version) {
+		if (!version.startsWith("4.")) {
+			throw new IllegalArgumentException("Expected 4.x");
+		}
+		int minorVersion = Integer.parseInt(version.substring("4.".length()));
+
+		model.addP2Repo("https://download.eclipse.org/eclipse/updates/" + version + "/");
+		model.getInstall().addAll(List.of(
+				"org.apache.felix.scr",
+				"org.eclipse.equinox.event"));
+		if (minorVersion >= 25) {
+			model.getInstall().addAll(List.of(
+					"org.osgi.service.cm",
+					"org.osgi.service.metatype"));
+		}
+	}
+
 	/** Creates the state of the configuration. */
 	EquoBasedStepBuilder.State get() throws Exception {
-		var query = model(formatterVersion).query(P2Client.Caching.PREFER_OFFLINE, QueryCache.ALLOW);
+		var query = model(formatterVersion).query(P2ClientCache.PREFER_OFFLINE, P2QueryCache.ALLOW);
 		var classpath = new ArrayList<File>();
-		if (!query.getJarsOnMavenCentral().isEmpty()) {
-			classpath.addAll(mavenProvisioner.provisionWithTransitives(false, query.getJarsOnMavenCentral()));
-		}
+		var mavenDeps = new ArrayList<String>();
+		mavenDeps.add("dev.equo.ide:solstice:0.19.2");
+		mavenDeps.add("com.diffplug.durian:durian-swt.os:4.1.1");
+		mavenDeps.addAll(query.getJarsOnMavenCentral());
+		classpath.addAll(mavenProvisioner.provisionWithTransitives(false, mavenDeps));
 		classpath.addAll(query.getJarsNotOnMavenCentral());
-		var jarState = JarState.forFiles(classpath);
+		for (var nested : NestedJars.inFiles(query.getJarsNotOnMavenCentral()).extractAllNestedJars()) {
+			classpath.add(nested.getValue());
+		}
+		var jarState = JarState.preserveOrder(classpath);
 		return new State(formatterVersion, jarState, FileSignature.signAsList(settingsFiles));
 	}
 
