@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.extra.eclipse.wtp.html;
 
+import static com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework.LINE_DELIMITER;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -156,14 +158,14 @@ public class StructuredDocumentProcessor<T> {
 
 		/** Add delimiter at or after given offset, if there is none at the offset position. Returns the number of characters inserted. */
 		protected int fixDelimiter(MultiTextEdit modifications, int offset, boolean addAfter) throws BadLocationException {
-			int delimiterLength = "\n".length();
+			int delimiterLength = LINE_DELIMITER.length();
 			String delimiter = document.get(offset, delimiterLength);
-			if (!"\n".equals(delimiter)) {
+			if (!LINE_DELIMITER.equals(delimiter)) {
 				if (addAfter) {
 					offset += 1;
 				}
-				modifications.addChild(new InsertEdit(offset, "\n"));
-				return "\n".length();
+				modifications.addChild(new InsertEdit(offset, LINE_DELIMITER));
+				return LINE_DELIMITER.length();
 			}
 			return 0;
 		}

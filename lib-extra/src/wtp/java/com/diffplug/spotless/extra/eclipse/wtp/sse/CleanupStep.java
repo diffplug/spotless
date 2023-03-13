@@ -15,7 +15,15 @@
  */
 package com.diffplug.spotless.extra.eclipse.wtp.sse;
 
+import org.eclipse.core.internal.preferences.PreferencesService;
+import org.eclipse.core.runtime.content.IContentTypeManager;
+import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.eclipse.wst.sse.core.internal.cleanup.AbstractStructuredCleanupProcessor;
+
+import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseConfig;
+import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework;
+import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipsePluginConfig;
+import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseServiceConfig;
 
 /**
  * Common base class for step implementations based on an SSE cleanup processor.
@@ -52,9 +60,52 @@ public class CleanupStep {
 		String getTypeId();
 	}
 
+	/** Framework configuration public to all formatters using the Cleanup step */
+	public static abstract class FrameworkConfig implements SpotlessEclipseConfig {
+
+		private String processorContentTypeID;
+
+		protected FrameworkConfig() {
+			processorContentTypeID = "none";
+		}
+
+		void setProcessorTypeID(String contentTypeID) {
+			processorContentTypeID = contentTypeID;
+		}
+
+		@Override
+		public void registerServices(SpotlessEclipseServiceConfig config) {
+			config.disableDebugging();
+			config.hideEnvironment();
+			config.useTemporaryLocations();
+			config.changeSystemLineSeparator();
+			config.useSlf4J(this.getClass().getPackage().getName() + "-" + processorContentTypeID);
+
+			//Assure that all file content processed by this formatter step are associated to this cleanup-step
+			config.add(IContentTypeManager.class, new ContentTypeManager(processorContentTypeID));
+
+			//The preference lookup via the ContentTypeManager, requires a preference service
+			config.add(IPreferencesService.class, PreferencesService.getDefault());
+		}
+
+		@Override
+		public void activatePlugins(SpotlessEclipsePluginConfig config) {
+			config.applyDefault();
+			/*
+			 * The core preferences require do lookup the resources "config/override.properties"
+			 * from the plugin ID.
+			 * The values are never used, nor do we require the complete SSE core plugin to be started.
+			 * Hence we just provide the internal plugin.
+			 */
+			config.add(new org.eclipse.wst.sse.core.internal.encoding.util.CodedResourcePlugin());
+		}
+	}
+
 	protected final ProcessorAccessor processorAccessor;
 
-	protected CleanupStep(ProcessorAccessor processorAccessor) throws Exception {
+	protected CleanupStep(ProcessorAccessor processorAccessor, FrameworkConfig config) throws Exception {
+		config.setProcessorTypeID(processorAccessor.getTypeId());
+		SpotlessEclipseFramework.setup(config);
 		this.processorAccessor = processorAccessor;
 		this.processorAccessor.refreshPreferences();
 		/*
@@ -73,4 +124,5 @@ public class CleanupStep {
 	public String format(String raw) throws Exception {
 		return processorAccessor.get().cleanupContent(raw);
 	}
+
 }

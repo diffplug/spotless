@@ -15,9 +15,13 @@
  */
 package com.diffplug.spotless.extra.eclipse.wtp;
 
+import static com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework.DefaultBundles.*;
+import static com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework.LINE_DELIMITER;
+
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
@@ -45,14 +49,17 @@ import org.eclipse.wst.jsdt.internal.ui.text.FastJavaPartitionScanner;
 import org.eclipse.wst.jsdt.internal.ui.text.comment.CommentFormattingContext;
 import org.eclipse.wst.jsdt.internal.ui.text.comment.CommentFormattingStrategy;
 import org.eclipse.wst.jsdt.ui.text.IJavaScriptPartitions;
+import org.osgi.framework.Bundle;
 
+import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseConfig;
+import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseCoreConfig;
+import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework;
+import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipsePluginConfig;
+import com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseServiceConfig;
 import com.diffplug.spotless.extra.eclipse.wtp.sse.PluginPreferences;
 
 /** Formatter step which calls out to the Eclipse JS formatter. */
 public class EclipseJsFormatterStepImpl {
-	static {
-		SolsticeSetup.init();
-	}
 
 	private final static String[] COMMENT_TYPES = {
 			IJavaScriptPartitions.JAVA_DOC,
@@ -72,8 +79,9 @@ public class EclipseJsFormatterStepImpl {
 	private final Set<String> commentTypesToBeFormatted;
 
 	public EclipseJsFormatterStepImpl(Properties properties) throws Exception {
-		PluginPreferences.store(JavaScriptCore.getPlugin(), properties);
-		options = JavaScriptCore.getDefaultOptions();
+		SpotlessEclipseFramework.setup(new FrameworkConfig(properties));
+		PluginPreferences.assertNoChanges(JavaScriptCore.getPlugin(), properties);
+		options = JavaScriptCore.getOptions();
 		commentTypesToBeFormatted = OPTION_2_COMMENT_TYPE.entrySet().stream().filter(x -> DefaultCodeFormatterConstants.TRUE.equals(options.get(x.getKey()))).map(x -> x.getValue()).collect(Collectors.toSet());
 		formatter = ToolFactory.createCodeFormatter(options, ToolFactory.M_FORMAT_EXISTING);
 	}
@@ -83,7 +91,7 @@ public class EclipseJsFormatterStepImpl {
 		raw = formatComments(raw);
 		// The comment formatter messed up the code a little bit (adding some line breaks). Now we format the code.
 		IDocument doc = new Document(raw);
-		TextEdit edit = formatter.format(CodeFormatter.K_JAVASCRIPT_UNIT, raw, 0, raw.length(), 0, "\n");
+		TextEdit edit = formatter.format(CodeFormatter.K_JAVASCRIPT_UNIT, raw, 0, raw.length(), 0, LINE_DELIMITER);
 		if (edit == null) {
 			throw new IllegalArgumentException("Invalid JavaScript syntax for formatting.");
 		} else {
@@ -126,4 +134,54 @@ public class EclipseJsFormatterStepImpl {
 			return raw;
 		}
 	}
+
+	static class FrameworkConfig implements SpotlessEclipseConfig {
+		private final Properties properties;
+
+		FrameworkConfig(Properties properties) {
+			this.properties = properties;
+		}
+
+		@Override
+		public void registerServices(SpotlessEclipseServiceConfig config) {
+			config.applyDefault();
+			config.useSlf4J(this.getClass().getPackage().getName());
+		}
+
+		@Override
+		public void registerBundles(SpotlessEclipseCoreConfig config) {
+			registerNonHeadlessBundles(config);
+		}
+
+		static void registerNonHeadlessBundles(SpotlessEclipseCoreConfig config) {
+			//The JS model requires the JDT indexer, hence a headless Eclipse cannot be used.
+			config.add(PLATFORM, Bundle.ACTIVE);
+			config.add(REGISTRY, PREFERENCES, COMMON);
+		}
+
+		@Override
+		public void activatePlugins(SpotlessEclipsePluginConfig config) {
+			config.applyDefault();
+			activateJsPlugins(config);
+		}
+
+		static void activateJsPlugins(SpotlessEclipsePluginConfig config) {
+			// The JS core uses EFS for determination of temporary storage location
+			config.add(org.eclipse.core.filesystem.EFS.class);
+			// The JS core provides the JSDT formatter
+			config.add(new org.eclipse.wst.jsdt.core.JavaScriptCore());
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public void customize() {
+			PluginPreferences.store(JavaScriptCore.getPlugin(), properties);
+			Hashtable<Object, Object> options = JavaScriptCore.getDefaultOptions();
+			options.putAll(DefaultCodeFormatterConstants.getJSLintConventionsSettings());
+			options.putAll(new HashMap<Object, Object>(properties));
+			JavaScriptCore.setOptions(options);
+		}
+
+	}
+
 }
