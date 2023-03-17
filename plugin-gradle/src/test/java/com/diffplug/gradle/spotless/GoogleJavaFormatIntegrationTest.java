@@ -31,7 +31,7 @@ class GoogleJavaFormatIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    java {",
 				"        target file('test.java')",
-				"        googleJavaFormat('1.8')",
+				"        googleJavaFormat('1.10.0')",
 				"    }",
 				"}");
 
@@ -41,8 +41,8 @@ class GoogleJavaFormatIntegrationTest extends GradleIntegrationHarness {
 
 		checkRunsThenUpToDate();
 		replace("build.gradle",
-				"googleJavaFormat('1.8')",
-				"googleJavaFormat('1.9')");
+				"googleJavaFormat('1.10.0')",
+				"googleJavaFormat()");
 		checkRunsThenUpToDate();
 	}
 }
