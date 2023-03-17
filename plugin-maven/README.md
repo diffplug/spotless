@@ -213,9 +213,9 @@ any other maven phase (i.e. compile) then it can be configured as below;
 
 ```xml
 <googleJavaFormat>
-  <version>1.8</version>                      <!-- optional -->
+  <version>1.8</version>                      <!-- optional, 1.8 is minimum supported version -->
   <style>GOOGLE</style>                       <!-- or AOSP (optional) -->
-  <reflowLongStrings>true</reflowLongStrings> <!-- optional (requires at least 1.8) -->
+  <reflowLongStrings>true</reflowLongStrings> <!-- optional -->
   <!-- optional: custom group artifact (you probably don't need this) -->
   <groupArtifact>com.google.googlejavaformat:google-java-format</groupArtifact>
 </googleJavaFormat>
