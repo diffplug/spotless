@@ -17,6 +17,7 @@ package com.diffplug.spotless.java;
 
 import static org.junit.jupiter.api.condition.JRE.JAVA_13;
 import static org.junit.jupiter.api.condition.JRE.JAVA_15;
+import static org.junit.jupiter.api.condition.JRE.JAVA_16;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
@@ -51,7 +52,7 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 
 	@Test
 	void behavior() throws Exception {
-		FormatterStep step = GoogleJavaFormatStep.create("1.8", TestProvisioner.mavenCentral());
+		FormatterStep step = GoogleJavaFormatStep.create("1.10.0", TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("java/googlejavaformat/JavaCodeUnformatted.test", "java/googlejavaformat/JavaCodeFormatted.test")
 				.testResource("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test", "java/googlejavaformat/JavaCodeWithLicenseFormatted.test")
@@ -68,8 +69,17 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 	}
 
 	@Test
+	@EnabledForJreRange(min = JAVA_16)
+	void versionBelowOneDotTenIsNotAllowed() throws Exception {
+		FormatterStep step = GoogleJavaFormatStep.create("1.9", "AOSP", TestProvisioner.mavenCentral());
+		StepHarness.forStep(step)
+				.testResourceExceptionMsg("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test")
+				.contains("you are using 1.9");
+	}
+
+	@Test
 	void behaviorWithAospStyle() throws Exception {
-		FormatterStep step = GoogleJavaFormatStep.create("1.8", "AOSP", TestProvisioner.mavenCentral());
+		FormatterStep step = GoogleJavaFormatStep.create("1.10.0", "AOSP", TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("java/googlejavaformat/JavaCodeUnformatted.test", "java/googlejavaformat/JavaCodeFormattedAOSP.test")
 				.testResource("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test", "java/googlejavaformat/JavaCodeWithLicenseFormattedAOSP.test")
@@ -91,7 +101,7 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 
 	@Test
 	void behaviorWithCustomGroupArtifact() throws Exception {
-		FormatterStep step = GoogleJavaFormatStep.create(GoogleJavaFormatStep.defaultGroupArtifact(), "1.8", GoogleJavaFormatStep.defaultStyle(), TestProvisioner.mavenCentral(), false);
+		FormatterStep step = GoogleJavaFormatStep.create(GoogleJavaFormatStep.defaultGroupArtifact(), "1.10.0", GoogleJavaFormatStep.defaultStyle(), TestProvisioner.mavenCentral(), false);
 		StepHarness.forStep(step)
 				.testResource("java/googlejavaformat/JavaCodeUnformatted.test", "java/googlejavaformat/JavaCodeFormatted.test")
 				.testResource("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test", "java/googlejavaformat/JavaCodeWithLicenseFormatted.test")
@@ -102,7 +112,7 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 	@Test
 	void equality() throws Exception {
 		new SerializableEqualityTester() {
-			String version = "1.8";
+			String version = "1.10.0";
 			String style = "";
 			boolean reflowLongStrings = false;
 
@@ -111,7 +121,7 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 				// same version == same
 				api.areDifferentThan();
 				// change the version, and it's different
-				version = "1.9";
+				version = "1.11.0";
 				api.areDifferentThan();
 				// change the style, and it's different
 				style = "AOSP";
