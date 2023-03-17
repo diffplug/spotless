@@ -55,8 +55,8 @@ tasks.named("check").configure {
 }
 
 dependencies {
-	compileOnly 'org.slf4j:slf4j-api:2.0.0'
-	testCommonImplementation 'org.slf4j:slf4j-api:2.0.0'
+	compileOnly 'org.slf4j:slf4j-api:2.0.7'
+	testCommonImplementation 'org.slf4j:slf4j-api:2.0.7'
 
 	// zero runtime reqs is a hard requirements for spotless-lib
 	// if you need a dep, put it in lib-extra
@@ -66,7 +66,7 @@ dependencies {
 
 	// used for pom sorting
 	sortPomCompileOnly 'com.github.ekryd.sortpom:sortpom-sorter:3.0.0'
-	sortPomCompileOnly 'org.slf4j:slf4j-api:2.0.0'
+	sortPomCompileOnly 'org.slf4j:slf4j-api:2.0.7'
 
 	palantirJavaFormatCompileOnly 'com.palantir.javaformat:palantir-java-format:1.1.0' 	// this version needs to stay compilable against Java 8 for CI Job testNpm
 
