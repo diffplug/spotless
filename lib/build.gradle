@@ -21,20 +21,10 @@ def NEEDS_GLUE = [
 	'cleanthat'
 ]
 for (glue in NEEDS_GLUE) {
-	// main glue
-	def mainGlue = sourceSets.register(glue) {
+	sourceSets.register(glue) {
 		compileClasspath += sourceSets.main.output
 		runtimeClasspath += sourceSets.main.output
 		java {}
-	}
-	// test glue
-	sourceSets.register("test${glue.capitalize()}") {
-		compileClasspath += mainGlue.get().compileClasspath + mainGlue.get().output + sourceSets.test.output
-		runtimeClasspath += mainGlue.get().compileClasspath + mainGlue.get().output + sourceSets.test.output
-		java {}
-	}
-	configurations.named("test${glue.capitalize()}Implementation").configure {
-		extendsFrom(configurations.named("testImplementation").get())
 	}
 }
 
@@ -82,7 +72,6 @@ dependencies {
 	palantirJavaFormatCompileOnly 'com.palantir.javaformat:palantir-java-format:1.1.0' 	// this version needs to stay compilable against Java 8 for CI Job testNpm
 
 	googleJavaFormatCompileOnly 'com.google.googlejavaformat:google-java-format:1.8' // minimum required version due to api changes before then
-	testGoogleJavaFormatImplementation "com.diffplug.durian:durian-core:$VER_DURIAN"
 
 	// used jackson-based formatters
 	jacksonCompileOnly 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
