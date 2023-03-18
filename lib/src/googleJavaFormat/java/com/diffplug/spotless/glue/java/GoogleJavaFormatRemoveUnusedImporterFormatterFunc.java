@@ -15,8 +15,6 @@
  */
 package com.diffplug.spotless.glue.java;
 
-import static com.diffplug.spotless.glue.java.GoogleJavaFormatUtils.fixWindowsBug;
-
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
@@ -37,7 +35,6 @@ public class GoogleJavaFormatRemoveUnusedImporterFormatterFunc implements Format
 	@Override
 	@Nonnull
 	public String apply(@Nonnull String input) throws Exception {
-		String removedUnused = RemoveUnusedImports.removeUnusedImports(input);
-		return fixWindowsBug(removedUnused, version);
+		return RemoveUnusedImports.removeUnusedImports(input);
 	}
 }

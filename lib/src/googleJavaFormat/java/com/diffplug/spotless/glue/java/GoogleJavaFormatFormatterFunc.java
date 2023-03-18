@@ -15,8 +15,6 @@
  */
 package com.diffplug.spotless.glue.java;
 
-import static com.diffplug.spotless.glue.java.GoogleJavaFormatUtils.fixWindowsBug;
-
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
@@ -57,8 +55,7 @@ public class GoogleJavaFormatFormatterFunc implements FormatterFunc {
 		String formatted = formatter.formatSource(input);
 		String removedUnused = RemoveUnusedImports.removeUnusedImports(formatted);
 		String sortedImports = ImportOrderer.reorderImports(removedUnused, formatterStyle);
-		String reflowedLongStrings = reflowLongStrings(sortedImports);
-		return fixWindowsBug(reflowedLongStrings, version);
+		return reflowLongStrings(sortedImports);
 	}
 
 	private String reflowLongStrings(String input) throws FormatterException {
