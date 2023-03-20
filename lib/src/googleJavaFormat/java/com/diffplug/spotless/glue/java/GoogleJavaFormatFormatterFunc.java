@@ -35,8 +35,10 @@ public class GoogleJavaFormatFormatterFunc implements FormatterFunc {
 
 	@Nonnull
 	private final String version;
+
 	@Nonnull
 	private final JavaFormatterOptions.Style formatterStyle;
+
 	private final boolean reflowStrings;
 
 	public GoogleJavaFormatFormatterFunc(@Nonnull String version, @Nonnull String style, boolean reflowStrings) {
