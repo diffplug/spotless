@@ -3,6 +3,16 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+* Support configuration of mirrors for P2 repositories:
+  ```
+  spotless {
+    java {
+      eclipse().withP2Mirrors(['https://download.eclipse.org/', 'https://some.internal.mirror/eclipse'])
+    }
+  }
+  ```
+  The same configuration exists for `greclipse` and `eclipseCdt`.
 
 ## [6.17.0] - 2023-03-13
 ### Added

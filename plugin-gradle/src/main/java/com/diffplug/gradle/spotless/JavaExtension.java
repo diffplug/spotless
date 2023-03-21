@@ -21,6 +21,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -230,6 +231,12 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 			Project project = getProject();
 			builder.setPreferences(project.files(configFiles).getFiles());
 			replaceStep(builder.build());
+		}
+
+		public EclipseConfig withP2Mirrors(Map<String, String> mirrors) {
+			builder.setP2Mirrors(mirrors);
+			replaceStep(builder.build());
+			return this;
 		}
 
 	}

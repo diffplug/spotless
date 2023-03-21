@@ -17,6 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
 
+import java.util.Map;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -98,6 +99,12 @@ public class GroovyExtension extends FormatExtension implements HasBuiltinDelimi
 			Project project = extension.getProject();
 			builder.setPreferences(project.files(configFiles).getFiles());
 			extension.replaceStep(builder.build());
+		}
+
+		public GrEclipseConfig withP2Mirrors(Map<String, String> mirrors) {
+			builder.setP2Mirrors(mirrors);
+			extension.replaceStep(builder.build());
+			return this;
 		}
 	}
 

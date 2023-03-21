@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import com.diffplug.spotless.FileSignature;
@@ -43,6 +44,7 @@ public abstract class EquoBasedStepBuilder {
 	private final ThrowingEx.Function<State, FormatterFunc> stateToFormatter;
 	private String formatterVersion;
 	private Iterable<File> settingsFiles = new ArrayList<>();
+	private Map<String, String> p2Mirrors = Map.of();
 
 	/** Initialize valid default configuration, taking latest version */
 	public EquoBasedStepBuilder(String formatterName, Provisioner mavenProvisioner, ThrowingEx.Function<State, FormatterFunc> stateToFormatter) {
@@ -57,6 +59,10 @@ public abstract class EquoBasedStepBuilder {
 
 	public void setPreferences(Iterable<File> settingsFiles) {
 		this.settingsFiles = settingsFiles;
+	}
+
+	public void setP2Mirrors(Map<String, String> p2Mirrors) {
+		this.p2Mirrors = Map.copyOf(p2Mirrors);
 	}
 
 	/** Returns the FormatterStep (whose state will be calculated lazily). */
@@ -85,7 +91,7 @@ public abstract class EquoBasedStepBuilder {
 
 	/** Creates the state of the configuration. */
 	EquoBasedStepBuilder.State get() throws Exception {
-		var query = model(formatterVersion).query(P2ClientCache.PREFER_OFFLINE, P2QueryCache.ALLOW);
+		var query = createModelWithMirrors().query(P2ClientCache.PREFER_OFFLINE, P2QueryCache.ALLOW);
 		var classpath = new ArrayList<File>();
 		var mavenDeps = new ArrayList<String>();
 		mavenDeps.add("dev.equo.ide:solstice:1.0.0");
@@ -98,6 +104,29 @@ public abstract class EquoBasedStepBuilder {
 		}
 		var jarState = JarState.preserveOrder(classpath);
 		return new State(formatterVersion, jarState, FileSignature.signAsList(settingsFiles));
+	}
+
+	private P2Model createModelWithMirrors() {
+		P2Model model = model(formatterVersion);
+		if (p2Mirrors.isEmpty()) {
+			return model;
+		}
+
+		ArrayList<String> p2Repos = new ArrayList<>(model.getP2repo());
+		p2Repos.replaceAll(url -> {
+			for (Map.Entry<String, String> mirror : p2Mirrors.entrySet()) {
+				String prefix = mirror.getKey();
+				if (url.startsWith(prefix)) {
+					return mirror.getValue() + url.substring(prefix.length());
+				}
+			}
+
+			throw new IllegalStateException("no mirror configured for P2 repository: " + url);
+		});
+
+		model.getP2repo().clear();
+		model.getP2repo().addAll(p2Repos);
+		return model;
 	}
 
 	/**
