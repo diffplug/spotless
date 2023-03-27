@@ -10,6 +10,7 @@ apply from: rootProject.file('gradle/java-publish.gradle')
 def NEEDS_GLUE = [
 	'sortPom',
 	'palantirJavaFormat',
+	'googleJavaFormat',
 	'ktfmt',
 	'ktlint',
 	'flexmark',
@@ -69,6 +70,8 @@ dependencies {
 	sortPomCompileOnly 'org.slf4j:slf4j-api:2.0.0'
 
 	palantirJavaFormatCompileOnly 'com.palantir.javaformat:palantir-java-format:1.1.0' 	// this version needs to stay compilable against Java 8 for CI Job testNpm
+
+	googleJavaFormatCompileOnly 'com.google.googlejavaformat:google-java-format:1.8' // minimum required version due to api changes before then
 
 	// used jackson-based formatters
 	jacksonCompileOnly 'com.fasterxml.jackson.core:jackson-databind:2.14.2'

@@ -3,6 +3,9 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Changes
+* **POTENTIALLY BREAKING** Drop support for `googleJavaFormat` versions &lt; `1.8`. ([#1630](https://github.com/diffplug/spotless/pull/1630))
+* Bump default `googleJavaFormat` version `1.15.0` -> `1.16.0`. ([#1630](https://github.com/diffplug/spotless/pull/1630))
 
 ## [6.17.0] - 2023-03-13
 ### Added
