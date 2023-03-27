@@ -187,8 +187,8 @@ spotless {
 spotless {
   java {
     googleJavaFormat()
-    // optional: you can specify a specific version and/or switch to AOSP style
-    //   and/or reflow long strings (requires at least 1.8)
+    // optional: you can specify a specific version (>= 1.8) and/or switch to AOSP style
+    //   and/or reflow long strings
     //   and/or use custom group artifact (you probably don't need this)
     googleJavaFormat('1.8').aosp().reflowLongStrings().groupArtifact('com.google.googlejavaformat:google-java-format')
 ```
