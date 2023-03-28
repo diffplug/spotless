@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -211,7 +212,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		List<FormatterFactory> formatterFactories = getFormatterFactories();
 		FormatterConfig config = getFormatterConfig();
 
-		Map<FormatterFactory, Supplier<Iterable<File>>> formatterFactoryToFiles = new HashMap<>();
+		Map<FormatterFactory, Supplier<Iterable<File>>> formatterFactoryToFiles = new LinkedHashMap<>();
 		for (FormatterFactory formatterFactory : formatterFactories) {
 			Supplier<Iterable<File>> filesToFormat = () -> collectFiles(formatterFactory, config);
 			formatterFactoryToFiles.put(formatterFactory, filesToFormat);

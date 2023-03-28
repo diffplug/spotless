@@ -17,6 +17,7 @@ package com.diffplug.spotless.maven;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -33,7 +34,7 @@ class FormattersHolder implements AutoCloseable {
 	}
 
 	static FormattersHolder create(Map<FormatterFactory, Supplier<Iterable<File>>> formatterFactoryToFiles, FormatterConfig config) {
-		Map<Formatter, Supplier<Iterable<File>>> formatterToFiles = new HashMap<>();
+		Map<Formatter, Supplier<Iterable<File>>> formatterToFiles = new LinkedHashMap<>();
 		try {
 			for (Entry<FormatterFactory, Supplier<Iterable<File>>> entry : formatterFactoryToFiles.entrySet()) {
 				FormatterFactory formatterFactory = entry.getKey();
