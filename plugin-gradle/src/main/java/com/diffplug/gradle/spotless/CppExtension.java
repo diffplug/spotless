@@ -17,6 +17,8 @@ package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
 
+import java.util.Map;
+
 import javax.inject.Inject;
 
 import org.gradle.api.Project;
@@ -55,6 +57,12 @@ public class CppExtension extends FormatExtension implements HasBuiltinDelimiter
 			Project project = getProject();
 			builder.setPreferences(project.files(configFiles).getFiles());
 			replaceStep(builder.build());
+		}
+
+		public EclipseConfig withP2Mirrors(Map<String, String> mirrors) {
+			builder.setP2Mirrors(mirrors);
+			replaceStep(builder.build());
+			return this;
 		}
 	}
 
