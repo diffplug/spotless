@@ -34,7 +34,7 @@ interface JvmLang {
 	default FileCollection getSources(Project project, String message, Function<SourceSet, SourceDirectorySet> sourceSetSourceDirectory, Spec<? super File> filterSpec) {
 		final SourceSetContainer sourceSets;
 		FileCollection union = project.files();
-		if (GradleVersion.current().compareTo(GradleVersion.version("7.1")) >= 0) {
+		if (GradleVersion.current().compareTo(GradleVersion.version(SpotlessPlugin.VER_GRADLE_javaPluginExtension)) >= 0) {
 			final JavaPluginExtension javaPluginExtension = project.getExtensions().findByType(JavaPluginExtension.class);
 			if (javaPluginExtension == null) {
 				throw new GradleException(message);
