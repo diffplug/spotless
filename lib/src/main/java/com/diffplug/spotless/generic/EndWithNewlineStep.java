@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ public final class EndWithNewlineStep {
 		}
 
 		// find the last character which has real content
-		int lastContentCharacter = rawUnix.length() - 1;
+		var lastContentCharacter = rawUnix.length() - 1;
 		char c;
 		while (lastContentCharacter >= 0) {
 			c = rawUnix.charAt(lastContentCharacter);
@@ -52,7 +52,7 @@ public final class EndWithNewlineStep {
 		} else if (lastContentCharacter == rawUnix.length() - 2 && rawUnix.charAt(rawUnix.length() - 1) == '\n') {
 			return rawUnix;
 		} else {
-			StringBuilder builder = new StringBuilder(lastContentCharacter + 2);
+			var builder = new StringBuilder(lastContentCharacter + 2);
 			builder.append(rawUnix, 0, lastContentCharacter + 1);
 			builder.append('\n');
 			return builder.toString();

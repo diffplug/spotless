@@ -82,7 +82,7 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 			final boolean useExperimental,
 			Path editorConfigPath, final Map<String, String> userData,
 			final Map<String, Object> editorConfigOverrideMap) {
-		final FormatterCallback formatterCallback = new FormatterCallback();
+		final var formatterCallback = new FormatterCallback();
 
 		Set<RuleProvider> allRuleProviders = new LinkedHashSet<>(
 				new StandardRuleSetProvider().getRuleProviders());
@@ -111,7 +111,7 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 				editorConfig,
 				editorConfigOverride,
 				false)
-						.format(path, formatterCallback);
+				.format(path, formatterCallback);
 	}
 
 	/**
@@ -137,14 +137,14 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 					if (property != null) {
 						return new Pair<>(property, entry.getValue());
 					} else if (entry.getKey().startsWith("ktlint_")) {
-						String[] parts = entry.getKey().substring(7).split("_", 2);
+						var parts = entry.getKey().substring(7).split("_", 2);
 						if (parts.length == 1) {
 							// convert ktlint_{ruleset} to {ruleset}
-							String qualifiedRuleId = parts[0] + ":";
+							var qualifiedRuleId = parts[0] + ":";
 							property = RuleExecutionEditorConfigPropertyKt.createRuleSetExecutionEditorConfigProperty(qualifiedRuleId);
 						} else {
 							// convert ktlint_{ruleset}_{rulename} to {ruleset}:{rulename}
-							String qualifiedRuleId = parts[0] + ":" + parts[1];
+							var qualifiedRuleId = parts[0] + ":" + parts[1];
 							property = RuleExecutionEditorConfigPropertyKt.createRuleExecutionEditorConfigProperty(qualifiedRuleId);
 						}
 						return new Pair<>(property, entry.getValue());

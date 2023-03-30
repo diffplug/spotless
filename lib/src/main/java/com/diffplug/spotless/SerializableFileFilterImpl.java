@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ class SerializableFileFilterImpl {
 
 		@Override
 		public boolean accept(File pathname) {
-			String name = pathname.getName();
+			var name = pathname.getName();
 			return Arrays.stream(namesToSkip).noneMatch(name::equals);
 		}
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ import com.diffplug.common.io.Files;
 
 public class TestProvisioner {
 	public static Project gradleProject(File dir) {
-		File userHome = new File(StandardSystemProperty.USER_HOME.value());
+		var userHome = new File(StandardSystemProperty.USER_HOME.value());
 		return ProjectBuilder.builder()
 				.withGradleUserHomeDir(new File(userHome, ".gradle"))
 				.withProjectDir(dir)
@@ -94,13 +94,13 @@ public class TestProvisioner {
 	/** Creates a Provisioner which will cache the result of previous calls. */
 	@SuppressWarnings("unchecked")
 	private static Provisioner caching(String name, Supplier<Provisioner> input) {
-		File spotlessDir = new File(StandardSystemProperty.USER_DIR.value()).getParentFile();
-		File testlib = new File(spotlessDir, "testlib");
-		File cacheFile = new File(testlib, "build/tmp/testprovisioner." + name + ".cache");
+		var spotlessDir = new File(StandardSystemProperty.USER_DIR.value()).getParentFile();
+		var testlib = new File(spotlessDir, "testlib");
+		var cacheFile = new File(testlib, "build/tmp/testprovisioner." + name + ".cache");
 
 		Map<ImmutableSet<String>, ImmutableSet<File>> cached;
 		if (cacheFile.exists()) {
-			try (ObjectInputStream inputStream = new ObjectInputStream(Files.asByteSource(cacheFile).openBufferedStream())) {
+			try (var inputStream = new ObjectInputStream(Files.asByteSource(cacheFile).openBufferedStream())) {
 				cached = (Map<ImmutableSet<String>, ImmutableSet<File>>) inputStream.readObject();
 			} catch (IOException | ClassNotFoundException e) {
 				throw Errors.asRuntime(e);
@@ -118,11 +118,11 @@ public class TestProvisioner {
 			synchronized (TestProvisioner.class) {
 				ImmutableSet<File> result = cached.get(mavenCoords);
 				// double-check that depcache pruning hasn't removed them since our cache cached them
-				boolean needsToBeSet = result == null || !result.stream().allMatch(file -> file.exists() && file.isFile() && file.length() > 0);
+				var needsToBeSet = result == null || !result.stream().allMatch(file -> file.exists() && file.isFile() && file.length() > 0);
 				if (needsToBeSet) {
 					result = ImmutableSet.copyOf(input.get().provisionWithTransitives(withTransitives, mavenCoords));
 					cached.put(mavenCoords, result);
-					try (ObjectOutputStream outputStream = new ObjectOutputStream(Files.asByteSink(cacheFile).openBufferedStream())) {
+					try (var outputStream = new ObjectOutputStream(Files.asByteSink(cacheFile).openBufferedStream())) {
 						outputStream.writeObject(cached);
 					} catch (IOException e) {
 						throw Errors.asRuntime(e);

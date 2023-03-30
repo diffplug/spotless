@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ class FileTreeTest extends ResourceHarness {
 	@Test
 	void absolutePathDoesntWork() throws IOException {
 		File someFile = setFile("someFolder/someFile").toContent("");
-		File someFolder = someFile.getParentFile();
+		var someFolder = someFile.getParentFile();
 		fileTree.exclude(someFolder.getAbsolutePath());
 		Assertions.assertThat(fileTree).containsExactlyInAnyOrder(someFile);
 	}
@@ -50,7 +50,7 @@ class FileTreeTest extends ResourceHarness {
 	@Test
 	void relativePathDoes() throws IOException {
 		File someFile = setFile("someFolder/someFile").toContent("");
-		File someFolder = someFile.getParentFile();
+		var someFolder = someFile.getParentFile();
 		fileTree.exclude(relativize(rootFolder(), someFolder));
 		Assertions.assertThat(fileTree).containsExactlyInAnyOrder();
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ class SerializableMisc {
 	}
 
 	static void toStream(Serializable obj, OutputStream stream) {
-		try (ObjectOutputStream objectOutput = new ObjectOutputStream(stream)) {
+		try (var objectOutput = new ObjectOutputStream(stream)) {
 			objectOutput.writeObject(obj);
 		} catch (IOException e) {
 			throw Errors.asRuntime(e);
@@ -57,8 +57,8 @@ class SerializableMisc {
 
 	@SuppressWarnings("unchecked")
 	static <T> T fromStream(Class<T> clazz, InputStream stream) {
-		try (ObjectInputStream objectInput = new ObjectInputStream(stream)) {
-			T object = (T) objectInput.readObject();
+		try (var objectInput = new ObjectInputStream(stream)) {
+			var object = (T) objectInput.readObject();
 			Preconditions.checkArgument(clazz.isInstance(object), "Requires class %s, was %s", clazz, object);
 			return object;
 		} catch (ClassNotFoundException | IOException e) {

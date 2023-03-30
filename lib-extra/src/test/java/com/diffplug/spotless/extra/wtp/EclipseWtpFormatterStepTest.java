@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,11 +59,11 @@ public class EclipseWtpFormatterStepTest {
 		 */
 		@Test
 		void multipleConfigurations() throws Exception {
-			File tabPropertyFile = createPropertyFile(config -> {
+			var tabPropertyFile = createPropertyFile(config -> {
 				config.setProperty("indentationChar", "tab");
 				config.setProperty("indentationSize", "1");
 			});
-			File spacePropertyFile = createPropertyFile(config -> {
+			var spacePropertyFile = createPropertyFile(config -> {
 				config.setProperty("indentationChar", "space");
 				config.setProperty("indentationSize", "5");
 			});
@@ -72,9 +72,9 @@ public class EclipseWtpFormatterStepTest {
 		}
 
 		private File createPropertyFile(Consumer<Properties> config) throws IOException {
-			Properties configProps = new Properties();
+			var configProps = new Properties();
 			config.accept(configProps);
-			File tempFile = File.createTempFile("EclipseWtpFormatterStepTest-", ".properties");
+			var tempFile = File.createTempFile("EclipseWtpFormatterStepTest-", ".properties");
 			OutputStream tempOut = new FileOutputStream(tempFile);
 			configProps.store(tempOut, "test properties");
 			tempOut.flush();

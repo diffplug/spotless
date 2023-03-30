@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ class FormatterToken {
 	}
 
 	public String toString() {
-		final StringBuilder buf = new StringBuilder();
+		final var buf = new StringBuilder();
 		buf.append(getClass().getName());
 		buf.append("type=").append(fType);
 		buf.append(",string=").append(fString);

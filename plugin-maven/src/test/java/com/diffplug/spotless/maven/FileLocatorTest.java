@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,14 +66,14 @@ class FileLocatorTest extends ResourceHarness {
 
 	@Test
 	void locateConfFileWithIncorrectSeparators() throws Exception {
-		String oppositeSeparator = "/".equals(File.separator) ? "\\" : "/";
-		String path = "tmp" + oppositeSeparator + "configs" + oppositeSeparator + "hello.conf";
+		var oppositeSeparator = "/".equals(File.separator) ? "\\" : "/";
+		var path = "tmp" + oppositeSeparator + "configs" + oppositeSeparator + "hello.conf";
 
 		testFileLocator(path, "conf");
 	}
 
 	private void testFileLocator(String path, String extension) throws Exception {
-		File tmpOutputFile = new File("tmp-file");
+		var tmpOutputFile = new File("tmp-file");
 		when(resourceManager.getResourceAsFile(any(), any())).thenReturn(tmpOutputFile);
 
 		File locatedFile = fileLocator.locateFile(path);

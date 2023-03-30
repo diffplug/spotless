@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 DiffPlug
+ * Copyright 2022-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ public class ScalafmtFormatterFunc implements FormatterFunc {
 			config = (ScalafmtConfig) method.invoke(ScalafmtConfig$.MODULE$);
 		} else {
 			File file = configSignature.getOnlyFile();
-			String configStr = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+			var configStr = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
 			config = Scalafmt.parseHoconConfig(configStr).get();
 		}
 	}

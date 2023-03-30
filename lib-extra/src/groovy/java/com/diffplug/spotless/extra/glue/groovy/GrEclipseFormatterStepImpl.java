@@ -89,7 +89,7 @@ public class GrEclipseFormatterStepImpl {
 	/** Formatting Groovy string  */
 	public String format(String raw) throws Exception {
 		IDocument doc = new Document(raw);
-		GroovyErrorListener errorListener = new GroovyErrorListener();
+		var errorListener = new GroovyErrorListener();
 		TextSelection selectAll = new TextSelection(doc, 0, doc.getLength());
 		GroovyFormatter codeFormatter = new DefaultGroovyFormatter(selectAll, doc, preferencesStore, false);
 		TextEdit edit = codeFormatter.format();
@@ -135,7 +135,7 @@ public class GrEclipseFormatterStepImpl {
 
 		@Override
 		public String toString() {
-			StringBuilder string = new StringBuilder();
+			var string = new StringBuilder();
 			if (1 < errors.size()) {
 				string.append("Multiple problems detected during step execution:");
 			} else if (0 == errors.size()) {
@@ -168,9 +168,9 @@ public class GrEclipseFormatterStepImpl {
 
 	private static PreferenceStore createPreferences(final Properties properties) throws IOException {
 		final PreferenceStore preferences = new PreferenceStore();
-		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		var output = new ByteArrayOutputStream();
 		properties.store(output, null);
-		ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
+		var input = new ByteArrayInputStream(output.toByteArray());
 		preferences.load(input);
 		return preferences;
 	}

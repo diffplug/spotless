@@ -90,10 +90,10 @@ public final class GitAttributesLineEndings {
 
 		@Override
 		protected CachedEndings calculateState() throws Exception {
-			Runtime runtime = new RuntimeInit(projectDir).atRuntime();
+			var runtime = new RuntimeInit(projectDir).atRuntime();
 			// LazyForwardingEquality guarantees that this will only be called once, and keeping toFormat
 			// causes a memory leak, see https://github.com/diffplug/spotless/issues/1194
-			CachedEndings state = new CachedEndings(projectDir, runtime, toFormat.get());
+			var state = new CachedEndings(projectDir, runtime, toFormat.get());
 			projectDir = null;
 			toFormat = null;
 			return state;
@@ -121,7 +121,7 @@ public final class GitAttributesLineEndings {
 			rootDir = rootPath.equals("/") ? rootPath : rootPath + "/";
 			defaultEnding = runtime.defaultEnding;
 			for (File file : toFormat) {
-				String ending = runtime.getEndingFor(file);
+				var ending = runtime.getEndingFor(file);
 				if (!ending.equals(defaultEnding)) {
 					String absPath = FileSignature.pathNativeToUnix(file.getAbsolutePath());
 					String subPath = FileSignature.subpath(rootDir, absPath);
@@ -231,10 +231,10 @@ public final class GitAttributesLineEndings {
 		public String getEndingFor(File file) {
 			// handle the info rules first, since they trump everything
 			if (workTree != null && !infoRules.isEmpty()) {
-				String rootPath = workTree.getAbsolutePath();
-				String path = file.getAbsolutePath();
+				var rootPath = workTree.getAbsolutePath();
+				var path = file.getAbsolutePath();
 				if (path.startsWith(rootPath)) {
-					String subpath = path.substring(rootPath.length() + 1);
+					var subpath = path.substring(rootPath.length() + 1);
 					String infoResult = findAttributeInRules(subpath, IS_FOLDER, KEY_EOL, infoRules);
 					if (infoResult != null) {
 						return convertEolToLineEnding(infoResult, file);
@@ -243,7 +243,7 @@ public final class GitAttributesLineEndings {
 			}
 
 			// handle the local .gitattributes (if any)
-			String localResult = cache.valueFor(file, KEY_EOL);
+			var localResult = cache.valueFor(file, KEY_EOL);
 			if (localResult != null) {
 				return convertEolToLineEnding(localResult, file);
 			}
@@ -311,13 +311,13 @@ public final class GitAttributesLineEndings {
 
 		/** Returns a value if there is one, or unspecified if there isn't. */
 		public @Nullable String valueFor(File file, String key) {
-			StringBuilder pathBuilder = new StringBuilder(file.getAbsolutePath().length());
-			boolean isDirectory = file.isDirectory();
-			File parent = file.getParentFile();
+			var pathBuilder = new StringBuilder(file.getAbsolutePath().length());
+			var isDirectory = file.isDirectory();
+			var parent = file.getParentFile();
 
 			pathBuilder.append(file.getName());
 			while (parent != null) {
-				String path = pathBuilder.toString();
+				var path = pathBuilder.toString();
 
 				String value = findAttributeInRules(path, isDirectory, key, getRulesForFolder(parent));
 				if (value != null) {

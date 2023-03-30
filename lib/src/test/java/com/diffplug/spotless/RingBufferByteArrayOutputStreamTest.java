@@ -84,7 +84,7 @@ class RingBufferByteArrayOutputStreamTest {
 	void writeToBehavesNormallyWithinLimit(String name, ByteWriteStrategy writeStrategy) throws IOException {
 		RingBufferByteArrayOutputStream stream = new RingBufferByteArrayOutputStream(12, 1);
 		writeStrategy.write(stream, bytes);
-		ByteArrayOutputStream target = new ByteArrayOutputStream();
+		var target = new ByteArrayOutputStream();
 		stream.writeTo(target);
 		Assertions.assertThat(target.toByteArray()).isEqualTo(bytes);
 	}
@@ -94,7 +94,7 @@ class RingBufferByteArrayOutputStreamTest {
 	void writeToBehavesOverwritingOverLimit(String name, ByteWriteStrategy writeStrategy) throws IOException {
 		RingBufferByteArrayOutputStream stream = new RingBufferByteArrayOutputStream(4, 1);
 		writeStrategy.write(stream, bytes);
-		ByteArrayOutputStream target = new ByteArrayOutputStream();
+		var target = new ByteArrayOutputStream();
 		stream.writeTo(target);
 		Assertions.assertThat(target.toByteArray()).hasSize(4);
 		Assertions.assertThat(target.toByteArray()).isEqualTo(new byte[]{'6', '7', '8', '9'});
@@ -105,7 +105,7 @@ class RingBufferByteArrayOutputStreamTest {
 	void writeToBehavesNormallyAtExactlyLimit(String name, ByteWriteStrategy writeStrategy) throws IOException {
 		RingBufferByteArrayOutputStream stream = new RingBufferByteArrayOutputStream(bytes.length, 1);
 		writeStrategy.write(stream, bytes);
-		ByteArrayOutputStream target = new ByteArrayOutputStream();
+		var target = new ByteArrayOutputStream();
 		stream.writeTo(target);
 		Assertions.assertThat(target.toByteArray()).isEqualTo(bytes);
 	}
@@ -143,7 +143,7 @@ class RingBufferByteArrayOutputStreamTest {
 
 	private static ByteWriteStrategy twoBytesAtATime() {
 		return (stream, bytes) -> {
-			for (int i = 0; i < bytes.length; i += 2) {
+			for (var i = 0; i < bytes.length; i += 2) {
 				stream.write(bytes, i, 2);
 			}
 		};
@@ -151,8 +151,8 @@ class RingBufferByteArrayOutputStreamTest {
 
 	private static ByteWriteStrategy oneAndThenTwoBytesAtATime() {
 		return (stream, bytes) -> {
-			int written = 0;
-			for (int i = 0; i + 3 < bytes.length; i += 3) {
+			var written = 0;
+			for (var i = 0; i + 3 < bytes.length; i += 3) {
 				stream.write(bytes, i, 1);
 				stream.write(bytes, i + 1, 2);
 				written += 3;

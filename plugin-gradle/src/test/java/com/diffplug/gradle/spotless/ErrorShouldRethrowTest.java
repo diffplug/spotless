@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -130,13 +130,13 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 
 	private void assertResultAndMessages(BuildResult result, TaskOutcome outcome, String expectedToStartWith) {
 		String output = result.getOutput();
-		int register = output.indexOf(":spotlessInternalRegisterDependencies");
-		int firstNewlineAfterThat = output.indexOf('\n', register + 1);
-		String useThisToMatch = output.substring(firstNewlineAfterThat);
+		var register = output.indexOf(":spotlessInternalRegisterDependencies");
+		var firstNewlineAfterThat = output.indexOf('\n', register + 1);
+		var useThisToMatch = output.substring(firstNewlineAfterThat);
 
 		int numNewlines = CharMatcher.is('\n').countIn(expectedToStartWith);
 		List<String> actualLines = Splitter.on('\n').splitToList(LineEnding.toUnix(useThisToMatch.trim()));
-		String actualStart = String.join("\n", actualLines.subList(0, numNewlines + 1));
+		var actualStart = String.join("\n", actualLines.subList(0, numNewlines + 1));
 		Assertions.assertThat(actualStart).isEqualTo(expectedToStartWith);
 		Assertions.assertThat(outcomes(result, outcome).size() + outcomes(result, TaskOutcome.UP_TO_DATE).size() + outcomes(result, TaskOutcome.NO_SOURCE).size())
 				.isEqualTo(outcomes(result).size());

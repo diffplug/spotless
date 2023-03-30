@@ -33,8 +33,8 @@ class JacksonJsonStepTest {
 		FormatterStep step = JacksonJsonStep.create(TestProvisioner.mavenCentral());
 		StepHarness stepHarness = StepHarness.forStep(step);
 
-		String before = "json/singletonArrayBefore.json";
-		String after = "json/singletonArrayAfter_Jackson.json";
+		var before = "json/singletonArrayBefore.json";
+		var after = "json/singletonArrayAfter_Jackson.json";
 		stepHarness.testResource(before, after);
 	}
 }

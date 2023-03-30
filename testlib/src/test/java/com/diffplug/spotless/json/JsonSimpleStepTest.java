@@ -88,8 +88,8 @@ class JsonSimpleStepTest {
 		FormatterStep step = JsonSimpleStep.create(6, TestProvisioner.mavenCentral());
 		StepHarness stepHarness = StepHarness.forStep(step);
 
-		String before = "json/singletonArrayBefore.json";
-		String after = "json/singletonArrayAfter6Spaces.json";
+		var before = "json/singletonArrayBefore.json";
+		var after = "json/singletonArrayAfter6Spaces.json";
 		stepHarness.testResource(before, after);
 	}
 
@@ -98,8 +98,8 @@ class JsonSimpleStepTest {
 		FormatterStep step = JsonSimpleStep.create(0, TestProvisioner.mavenCentral());
 		StepHarness stepHarness = StepHarness.forStep(step);
 
-		String before = "json/singletonArrayBefore.json";
-		String after = "json/singletonArrayAfter0Spaces.json";
+		var before = "json/singletonArrayBefore.json";
+		var after = "json/singletonArrayAfter0Spaces.json";
 		stepHarness.testResource(before, after);
 	}
 
@@ -126,8 +126,8 @@ class JsonSimpleStepTest {
 	}
 
 	private static void doWithResource(StepHarness stepHarness, String name) {
-		String before = String.format("json/%sBefore.json", name);
-		String after = String.format("json/%sAfter.json", name);
+		var before = String.format("json/%sBefore.json", name);
+		var after = String.format("json/%sAfter.json", name);
 		stepHarness.testResource(before, after);
 	}
 }

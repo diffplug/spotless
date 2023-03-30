@@ -154,7 +154,7 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 	}
 
 	private static Model readPom(String xml) throws Exception {
-		byte[] bytes = xml.getBytes(UTF_8);
+		var bytes = xml.getBytes(UTF_8);
 		try (XmlStreamReader xmlReader = ReaderFactory.newXmlReader(new ByteArrayInputStream(bytes))) {
 			MavenXpp3Reader pomReader = new MavenXpp3Reader();
 			return pomReader.read(xmlReader);

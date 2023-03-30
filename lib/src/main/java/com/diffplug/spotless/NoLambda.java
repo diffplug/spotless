@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ public interface NoLambda extends Serializable {
 			if (otherObj == null) {
 				return false;
 			} else if (otherObj.getClass().equals(this.getClass())) {
-				EqualityBasedOnSerialization other = (EqualityBasedOnSerialization) otherObj;
+				var other = (EqualityBasedOnSerialization) otherObj;
 				return Arrays.equals(toBytes(), other.toBytes());
 			} else {
 				return false;

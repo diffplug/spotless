@@ -78,7 +78,7 @@ class JavascriptExtensionTest extends GradleIntegrationHarness {
 
 		@Test
 		void esllintAllowsToSpecifyInlineConfig() throws IOException {
-			final String eslintConfigJs = String.join("\n",
+			final var eslintConfigJs = String.join("\n",
 					"{",
 					"	env: {",
 					"		browser: true,",
@@ -163,7 +163,7 @@ class JavascriptExtensionTest extends GradleIntegrationHarness {
 		@ValueSource(strings = {"airbnb", "google", "standard", "xo"})
 		void formattingUsingStyleguide(String styleguide) throws Exception {
 
-			final String styleguidePath = "npm/eslint/javascript/styleguide/" + styleguide + "/";
+			final var styleguidePath = "npm/eslint/javascript/styleguide/" + styleguide + "/";
 
 			setFile(".eslintrc.js").toResource(styleguidePath + ".eslintrc.js");
 			setFile("build.gradle").toLines(

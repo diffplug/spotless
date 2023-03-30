@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,20 +99,20 @@ class DiffMessageFormatterTest extends ResourceHarness {
 	}
 
 	private Bundle create(List<File> files) throws IOException {
-		Bundle bundle = new Bundle("underTest");
+		var bundle = new Bundle("underTest");
 		bundle.task.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
 		bundle.task.setTarget(files);
 		return bundle;
 	}
 
 	private void assertCheckFailure(Bundle spotless, String... expectedLines) throws Exception {
-		String msg = spotless.checkFailureMsg();
+		var msg = spotless.checkFailureMsg();
 
-		String firstLine = "The following files had format violations:\n";
-		String lastLine = "\n" + EXPECTED_RUN_SPOTLESS_APPLY_SUGGESTION;
+		var firstLine = "The following files had format violations:\n";
+		var lastLine = "\n" + EXPECTED_RUN_SPOTLESS_APPLY_SUGGESTION;
 		Assertions.assertThat(msg).startsWith(firstLine).endsWith(lastLine);
 
-		String middle = msg.substring(firstLine.length(), msg.length() - lastLine.length());
+		var middle = msg.substring(firstLine.length(), msg.length() - lastLine.length());
 		String expectedMessage = StringPrinter.buildStringFromLines(expectedLines);
 		Assertions.assertThat(middle).isEqualTo(expectedMessage.substring(0, expectedMessage.length() - 1));
 	}
@@ -138,13 +138,13 @@ class DiffMessageFormatterTest extends ResourceHarness {
 	@Test
 	void customRunToFixMessage() throws Exception {
 		Bundle task = create(setFile("testFile").toContent("A\r\nB\r\nC\r\n"));
-		String customMessage = "Formatting issues detected, please read automatic-code-formatting.txt and correct.";
+		var customMessage = "Formatting issues detected, please read automatic-code-formatting.txt and correct.";
 		task.check.getRunToFixMessage().set(customMessage);
 
-		String msg = task.checkFailureMsg();
+		var msg = task.checkFailureMsg();
 
-		String firstLine = "The following files had format violations:\n";
-		String lastLine = "\n" + customMessage;
+		var firstLine = "The following files had format violations:\n";
+		var lastLine = "\n" + customMessage;
 		Assertions.assertThat(msg).startsWith(firstLine).endsWith(lastLine);
 	}
 
@@ -152,7 +152,7 @@ class DiffMessageFormatterTest extends ResourceHarness {
 	void whitespaceProblem() throws Exception {
 		Bundle spotless = create(setFile("testFile").toContent("A \nB\t\nC  \n"));
 		spotless.task.addStep(FormatterStep.createNeverUpToDate("trimTrailing", input -> {
-			Pattern pattern = Pattern.compile("[ \t]+$", Pattern.UNIX_LINES | Pattern.MULTILINE);
+			var pattern = Pattern.compile("[ \t]+$", Pattern.UNIX_LINES | Pattern.MULTILINE);
 			return pattern.matcher(input).replaceAll("");
 		}));
 		assertCheckFailure(spotless,
@@ -188,11 +188,11 @@ class DiffMessageFormatterTest extends ResourceHarness {
 	@Test
 	void manyFiles() throws Exception {
 		List<File> testFiles = new ArrayList<>();
-		for (int i = 0; i < 9 + DiffMessageFormatter.MAX_FILES_TO_LIST - 1; ++i) {
-			String fileName = String.format("%02d", i) + ".txt";
+		for (var i = 0; i < 9 + DiffMessageFormatter.MAX_FILES_TO_LIST - 1; ++i) {
+			var fileName = String.format("%02d", i) + ".txt";
 			testFiles.add(setFile(fileName).toContent("1\r\n2\r\n"));
 		}
-		Bundle spotless = create(testFiles);
+		var spotless = create(testFiles);
 		assertCheckFailure(spotless,
 				"    00.txt",
 				"        @@ -1,2 +1,2 @@",
@@ -262,11 +262,11 @@ class DiffMessageFormatterTest extends ResourceHarness {
 	@Test
 	void manyManyFiles() throws Exception {
 		List<File> testFiles = new ArrayList<>();
-		for (int i = 0; i < 9 + DiffMessageFormatter.MAX_FILES_TO_LIST; ++i) {
-			String fileName = String.format("%02d", i) + ".txt";
+		for (var i = 0; i < 9 + DiffMessageFormatter.MAX_FILES_TO_LIST; ++i) {
+			var fileName = String.format("%02d", i) + ".txt";
 			testFiles.add(setFile(fileName).toContent("1\r\n2\r\n"));
 		}
-		Bundle spotless = create(testFiles);
+		var spotless = create(testFiles);
 		assertCheckFailure(spotless,
 				"    00.txt",
 				"        @@ -1,2 +1,2 @@",
@@ -326,8 +326,8 @@ class DiffMessageFormatterTest extends ResourceHarness {
 
 	@Test
 	void longFile() throws Exception {
-		StringBuilder builder = new StringBuilder();
-		for (int i = 0; i < 1000; ++i) {
+		var builder = new StringBuilder();
+		for (var i = 0; i < 1000; ++i) {
 			builder.append(i);
 			builder.append("\r\n");
 		}

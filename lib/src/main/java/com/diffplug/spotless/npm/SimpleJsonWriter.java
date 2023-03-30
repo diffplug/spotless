@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ public class SimpleJsonWriter {
 	private final LinkedHashMap<String, Object> valueMap = new LinkedHashMap<>();
 
 	public static SimpleJsonWriter of(Map<String, ?> values) {
-		SimpleJsonWriter writer = new SimpleJsonWriter();
+		var writer = new SimpleJsonWriter();
 		writer.putAll(values);
 		return writer;
 	}

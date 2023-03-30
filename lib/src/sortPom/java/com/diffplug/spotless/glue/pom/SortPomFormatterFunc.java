@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public class SortPomFormatterFunc implements FormatterFunc {
 	@Override
 	public String apply(String input) throws Exception {
 		// SortPom expects a file to sort, so we write the inpout into a temporary file
-		File pom = File.createTempFile("pom", ".xml");
+		var pom = File.createTempFile("pom", ".xml");
 		pom.deleteOnExit();
 		IOUtils.write(input, new FileOutputStream(pom), cfg.encoding);
 		SortPomImpl sortPom = new SortPomImpl();

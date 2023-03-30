@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ class FormatterPropertiesTest extends ResourceHarness {
 	void invalidPropertyFiles() throws IOException {
 		for (String settingsResource : INVALID_SETTINGS_RESOURCES) {
 			File settingsFile = createTestFile(settingsResource);
-			boolean exceptionCaught = false;
+			var exceptionCaught = false;
 			try {
 				FormatterProperties.from(settingsFile);
 			} catch (IllegalArgumentException ex) {
@@ -124,16 +124,16 @@ class FormatterPropertiesTest extends ResourceHarness {
 		public FormatterSettingsAssert containsSpecificValuesOf(File file) {
 			isNotNull();
 
-			String fileName = file.getName();
+			var fileName = file.getName();
 			Properties settingsProps = actual.getProperties();
 			for (String expectedValue : VALID_VALUES) {
 				// A parsable (valid) file contains keys of the following format
-				String validValueName = (null == expectedValue) ? "null" : expectedValue;
-				String key = String.format("%s.%s", fileName, validValueName);
+				var validValueName = (null == expectedValue) ? "null" : expectedValue;
+				var key = String.format("%s.%s", fileName, validValueName);
 				if (!settingsProps.containsKey(key)) {
 					failWithMessage("Key <%s> not part of formatter settings.", key);
 				}
-				String value = settingsProps.getProperty(key);
+				var value = settingsProps.getProperty(key);
 				if ((null != expectedValue) && (!expectedValue.equals(value))) {
 					failWithMessage("Value of key <%s> is '%s' and not '%s' as expected.", key, value, expectedValue);
 				}
@@ -144,13 +144,13 @@ class FormatterPropertiesTest extends ResourceHarness {
 		public FormatterSettingsAssert containsCommonValueOf(final File file) {
 			isNotNull();
 
-			String fileName = file.getName();
+			var fileName = file.getName();
 			Properties settingsProps = actual.getProperties();
-			String key = "common";
+			var key = "common";
 			if (!settingsProps.containsKey(key)) {
 				failWithMessage("Key <%s> not part of formatter settings. Value '%s' had been expected.", key, fileName);
 			}
-			String value = settingsProps.getProperty(key);
+			var value = settingsProps.getProperty(key);
 			if (!fileName.equals(value)) {
 				failWithMessage("Value of key <%s> is '%s' and not '%s' as expected.", key, value, fileName);
 			}

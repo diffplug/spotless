@@ -258,7 +258,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 			if (filePatterns == null || filePatterns.isEmpty()) {
 				return files;
 			}
-			final String[] includePatterns = this.filePatterns.split(",");
+			final var includePatterns = this.filePatterns.split(",");
 			final List<Pattern> compiledIncludePatterns = Arrays.stream(includePatterns)
 					.map(Pattern::compile)
 					.collect(Collectors.toList());

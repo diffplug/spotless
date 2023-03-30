@@ -143,8 +143,8 @@ class FileIndexTest extends FileIndexHarness {
 		createSourceFilesAndWriteIndexFile(FINGERPRINT, "source1.txt", "source2.txt");
 		Path sourceFile3 = createSourceFile("source3.txt");
 		Path sourceFile4 = createSourceFile("source4.txt");
-		Instant modifiedTime3 = Instant.now();
-		Instant modifiedTime4 = Instant.now().plusSeconds(42);
+		var modifiedTime3 = Instant.now();
+		var modifiedTime4 = Instant.now().plusSeconds(42);
 
 		FileIndex index1 = FileIndex.read(config, log);
 		index1.setLastModifiedTime(sourceFile3, modifiedTime3);
@@ -161,7 +161,7 @@ class FileIndexTest extends FileIndexHarness {
 		assertThat(config.getIndexFile().getParent()).doesNotExist();
 		FileIndex index1 = FileIndex.read(config, log);
 		Path sourceFile = createSourceFile("source.txt");
-		Instant modifiedTime = Instant.now();
+		var modifiedTime = Instant.now();
 		index1.setLastModifiedTime(sourceFile, modifiedTime);
 
 		index1.write();
@@ -194,7 +194,7 @@ class FileIndexTest extends FileIndexHarness {
 		createSourceFilesAndWriteIndexFile(FINGERPRINT, "source.txt");
 		Path nonProjectDir = tempDir.resolve("some-other-project");
 		Files.createDirectory(nonProjectDir);
-		Path nonProjectFile = Files.createFile(nonProjectDir.resolve("some-other-source.txt"));
+		var nonProjectFile = Files.createFile(nonProjectDir.resolve("some-other-source.txt"));
 
 		FileIndex index = FileIndex.read(config, log);
 
@@ -214,7 +214,7 @@ class FileIndexTest extends FileIndexHarness {
 	@Test
 	void setLastModifiedTimeThrowsForNonProjectFile() {
 		FileIndex index = FileIndex.read(config, log);
-		Path nonProjectFile = Paths.get("non-project-file");
+		var nonProjectFile = Paths.get("non-project-file");
 
 		assertThatThrownBy(() -> index.setLastModifiedTime(nonProjectFile, Instant.now())).isInstanceOf(IllegalArgumentException.class);
 	}
@@ -227,7 +227,7 @@ class FileIndexTest extends FileIndexHarness {
 		Instant oldTime = index.getLastModifiedTime(sourceFile);
 		assertThat(oldTime).isNotNull();
 
-		Instant newTime = Instant.now().plusSeconds(42);
+		var newTime = Instant.now().plusSeconds(42);
 		assertThat(oldTime).isNotEqualTo(newTime);
 
 		index.setLastModifiedTime(sourceFile, newTime);

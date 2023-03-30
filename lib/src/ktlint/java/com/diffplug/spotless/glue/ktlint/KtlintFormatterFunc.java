@@ -37,7 +37,7 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 
 	public KtlintFormatterFunc(String version, boolean isScript, boolean useExperimental, FileSignature editorConfigPath, Map<String, String> userData,
 			Map<String, Object> editorConfigOverrideMap) {
-		int minorVersion = Integer.parseInt(version.split("\\.")[1]);
+		var minorVersion = Integer.parseInt(version.split("\\.")[1]);
 		if (minorVersion >= 48) {
 			// ExperimentalParams lost two constructor arguments, EditorConfigProperty moved to its own class
 			this.adapter = new KtLintCompat0Dot48Dot0Adapter();

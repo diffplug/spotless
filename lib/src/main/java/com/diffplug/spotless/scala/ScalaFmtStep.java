@@ -49,7 +49,7 @@ public class ScalaFmtStep {
 	}
 
 	public static FormatterStep create(String version, @Nullable String scalaMajorVersion, Provisioner provisioner, @Nullable File configFile) {
-		String finalScalaMajorVersion = scalaMajorVersion == null ? DEFAULT_SCALA_MAJOR_VERSION : scalaMajorVersion;
+		var finalScalaMajorVersion = scalaMajorVersion == null ? DEFAULT_SCALA_MAJOR_VERSION : scalaMajorVersion;
 
 		return FormatterStep.createLazy(NAME,
 				() -> new State(JarState.from(MAVEN_COORDINATE + finalScalaMajorVersion + ":" + version, provisioner), configFile),

@@ -63,7 +63,7 @@ public class StructuredDocumentProcessor<T> {
 
 	/** Applies processor on document, using a given formatter */
 	public void apply(T formatter) {
-		for (int currentRegionId = 0; currentRegionId < numberOfRegions; currentRegionId++) {
+		for (var currentRegionId = 0; currentRegionId < numberOfRegions; currentRegionId++) {
 			applyOnRegion(currentRegionId, formatter);
 		}
 	}
@@ -132,7 +132,7 @@ public class StructuredDocumentProcessor<T> {
 		}
 
 		private static int computeIndent(IStructuredDocument document, ITypedRegion region, String htmlIndent) {
-			int indent = 0;
+			var indent = 0;
 			try {
 				int lineNumber = document.getLineOfOffset(region.getOffset());
 				document.getNumberOfLines();
@@ -180,7 +180,7 @@ public class StructuredDocumentProcessor<T> {
 			int lineStart = document.getLineOffset(lineNumber);
 			int lineEnd = document.getLineOffset(lineNumber + 1);
 			String lineContent = document.get(lineStart, lineEnd - lineStart);
-			StringBuilder currentIndent = new StringBuilder();
+			var currentIndent = new StringBuilder();
 			lineContent.chars().filter(c -> {
 				if (c == ' ' || c == '\t') {
 					currentIndent.append(c);

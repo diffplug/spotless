@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ class FormatTaskTest extends ResourceHarness {
 	@Test
 	void testLineEndings() throws Exception {
 		File testFile = setFile("testFile").toContent("\r\n");
-		File outputFile = new File(spotlessTask.getOutputDirectory(), "testFile");
+		var outputFile = new File(spotlessTask.getOutputDirectory(), "testFile");
 
 		spotlessTask.setTarget(Collections.singleton(testFile));
 		Tasks.execute(spotlessTask);
@@ -58,7 +58,7 @@ class FormatTaskTest extends ResourceHarness {
 	@Test
 	void testStep() throws Exception {
 		File testFile = setFile("testFile").toContent("apple");
-		File outputFile = new File(spotlessTask.getOutputDirectory(), "testFile");
+		var outputFile = new File(spotlessTask.getOutputDirectory(), "testFile");
 		spotlessTask.setTarget(Collections.singleton(testFile));
 
 		spotlessTask.addStep(FormatterStep.createNeverUpToDate("double-p", content -> content.replace("pp", "p")));

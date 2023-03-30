@@ -75,7 +75,7 @@ class JvmTest {
 
 		testSupport.assertFormatterSupported("0.1");
 
-		Exception expected = new Exception("Some test exception");
+		var expected = new Exception("Some test exception");
 		Exception actual = assertThrows(Exception.class, () -> {
 			testSupport.suggestLaterVersionOnError("0.0", unused -> {
 				throw expected;
@@ -87,7 +87,7 @@ class JvmTest {
 	@Test
 	void supportListsMinimumJvmIfOnlyHigherJvmSupported() {
 		int higherJvmVersion = Jvm.version() + 1;
-		Exception testException = new Exception("Some test exception");
+		var testException = new Exception("Some test exception");
 		testSupport.add(higherJvmVersion, "1.2.3");
 		testSupport.add(higherJvmVersion + 1, "2.2.3");
 
@@ -171,7 +171,7 @@ class JvmTest {
 		for (String fmtVersion : Arrays.asList("1", "2.0")) {
 			testSupport.assertFormatterSupported(fmtVersion);
 
-			Exception testException = new Exception("Some test exception");
+			var testException = new Exception("Some test exception");
 			Exception exception = assertThrows(Exception.class, () -> {
 				testSupport.suggestLaterVersionOnError(fmtVersion, unused -> {
 					throw testException;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ class CppDefaultsTest extends ResourceHarness {
 
 	@Test
 	void testDelimiterExpr() throws Exception {
-		final String header = "/*My tests header*/";
+		final var header = "/*My tests header*/";
 		FormatterStep step = LicenseHeaderStep.headerDelimiter(header, CppDefaults.DELIMITER_EXPR).build();
 		final File dummyFile = setFile("src/main/cpp/file1.dummy").toContent("");
 		for (String testSource : Arrays.asList(
@@ -48,7 +48,7 @@ class CppDefaultsTest extends ResourceHarness {
 			} catch (IllegalArgumentException e) {
 				throw new AssertionError(String.format("No delimiter found in '%s'", testSource), e);
 			}
-			String expected = testSource.replaceAll("(.*?)\\@", header + '\n');
+			var expected = testSource.replaceAll("(.*?)\\@", header + '\n');
 			assertThat(output).isEqualTo(expected).as("Unexpected header insertion for '$s'.", testSource);
 		}
 	}

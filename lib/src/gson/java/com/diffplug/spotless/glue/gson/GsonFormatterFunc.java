@@ -61,7 +61,7 @@ public class GsonFormatterFunc implements FormatterFunc {
 			if (gsonConfig.isSortByKeys()) {
 				jsonElement = sortByKeys(jsonElement);
 			}
-			try (StringWriter stringWriter = new StringWriter()) {
+			try (var stringWriter = new StringWriter()) {
 				JsonWriter jsonWriter = new JsonWriter(stringWriter);
 				jsonWriter.setIndent(this.generatedIndent);
 				gson.toJson(jsonElement, jsonWriter);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,7 +86,7 @@ class LicenseHeaderTest extends GradleIntegrationHarness {
 		setFile(TEST_JAVA).toContent(CONTENT);
 		gradleRunner().withArguments("spotlessApply", "--stacktrace").forwardOutput().build();
 		assertFile(TEST_JAVA).hasContent("/** New License Header */\n" + CONTENT);
-		String multipleLicenseHeaderConfiguration = "licenseHeader('/** Base License Header */').named('PrimaryHeaderLicense').onlyIfContentMatches('Best')\n" +
+		var multipleLicenseHeaderConfiguration = "licenseHeader('/** Base License Header */').named('PrimaryHeaderLicense').onlyIfContentMatches('Best')\n" +
 				"licenseHeader('/** Alternate License Header */').named('SecondaryHeaderLicense').onlyIfContentMatches('.*Test.+')";
 		setLicenseStep(multipleLicenseHeaderConfiguration);
 		setFile(TEST_JAVA).toContent("/** 2003 */\n" + CONTENT);

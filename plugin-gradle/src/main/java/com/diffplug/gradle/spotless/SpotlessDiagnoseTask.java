@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,9 +53,9 @@ public class SpotlessDiagnoseTask extends DefaultTask {
 					getLogger().debug("    well-behaved.");
 				} else {
 					// the file is misbehaved, so we'll write all its steps to DIAGNOSE_DIR
-					Path relative = srcRoot.relativize(file.toPath());
-					Path diagnoseFile = diagnoseRoot.resolve(relative);
-					for (int i = 0; i < padded.steps().size(); ++i) {
+					var relative = srcRoot.relativize(file.toPath());
+					var diagnoseFile = diagnoseRoot.resolve(relative);
+					for (var i = 0; i < padded.steps().size(); ++i) {
 						Path path = Paths.get(diagnoseFile + "." + padded.type().name().toLowerCase(Locale.ROOT) + i);
 						Files.createDirectories(path.getParent());
 						String version = padded.steps().get(i);

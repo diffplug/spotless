@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,15 +59,15 @@ public class DBeaverSQLFormatterConfiguration {
 		this.keywordCase = KeywordCase.valueOf(properties.getProperty(SQL_FORMATTER_KEYWORD_CASE, "UPPER"));
 		this.statementDelimiters = properties.getProperty(SQL_FORMATTER_STATEMENT_DELIMITER, SQLDialect.INSTANCE
 				.getScriptDelimiter());
-		String indentType = properties.getProperty(SQL_FORMATTER_INDENT_TYPE, "space");
-		int indentSize = Integer.parseInt(properties.getProperty(SQL_FORMATTER_INDENT_SIZE, "4"));
+		var indentType = properties.getProperty(SQL_FORMATTER_INDENT_TYPE, "space");
+		var indentSize = Integer.parseInt(properties.getProperty(SQL_FORMATTER_INDENT_SIZE, "4"));
 		indentString = getIndentString(indentType, indentSize);
 	}
 
 	private String getIndentString(String indentType, int indentSize) {
-		char indentChar = indentType.equals("space") ? ' ' : '\t';
-		StringBuilder stringBuilder = new StringBuilder();
-		for (int i = 0; i < indentSize; i++) {
+		var indentChar = indentType.equals("space") ? ' ' : '\t';
+		var stringBuilder = new StringBuilder();
+		for (var i = 0; i < indentSize; i++) {
 			stringBuilder.append(indentChar);
 		}
 		return stringBuilder.toString();

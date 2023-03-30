@@ -42,7 +42,7 @@ class DiktatStepTest extends ResourceHarness {
 
 	@Test
 	void behaviorConf() throws Exception {
-		String configPath = "src/main/kotlin/diktat-analysis.yml";
+		var configPath = "src/main/kotlin/diktat-analysis.yml";
 		File conf = setFile(configPath).toResource("kotlin/diktat/diktat-analysis.yml");
 		FileSignature config = signAsList(conf);
 

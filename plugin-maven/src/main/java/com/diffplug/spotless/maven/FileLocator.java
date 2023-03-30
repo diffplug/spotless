@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,12 +51,12 @@ public class FileLocator {
 			return null;
 		}
 
-		File localFile = new File(path);
+		var localFile = new File(path);
 		if (localFile.exists() && localFile.isFile()) {
 			return localFile;
 		}
 
-		String outputFile = tmpOutputFileName(path);
+		var outputFile = tmpOutputFileName(path);
 		try {
 			return resourceManager.getResourceAsFile(path, outputFile);
 		} catch (ResourceNotFoundException e) {
@@ -76,8 +76,8 @@ public class FileLocator {
 
 	private static String tmpOutputFileName(String path) {
 		String extension = FileUtils.extension(path);
-		byte[] pathHash = hash(path);
-		String pathBase64 = Base64.getEncoder().encodeToString(pathHash);
+		var pathHash = hash(path);
+		var pathBase64 = Base64.getEncoder().encodeToString(pathHash);
 		return TMP_RESOURCE_FILE_PREFIX + pathBase64 + '.' + extension;
 	}
 

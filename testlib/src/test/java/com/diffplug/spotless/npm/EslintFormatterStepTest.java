@@ -47,17 +47,17 @@ class EslintFormatterStepTest {
 		@ParameterizedTest(name = "{index}: eslint can be applied using ruleset {0}")
 		@ValueSource(strings = {"custom_rules", "styleguide/airbnb", "styleguide/google", "styleguide/standard", "styleguide/xo"})
 		void formattingUsingRulesetsFile(String ruleSetName) throws Exception {
-			String filedir = "npm/eslint/javascript/" + ruleSetName + "/";
+			var filedir = "npm/eslint/javascript/" + ruleSetName + "/";
 
-			String testDir = "formatting_ruleset_" + ruleSetName.replace('/', '_') + "/";
+			var testDir = "formatting_ruleset_" + ruleSetName.replace('/', '_') + "/";
 			//			File testDirFile = newFolder(testDir);
 
 			final File eslintRc = createTestFile(filedir + ".eslintrc.js");
 			//			final File eslintRc = setFile(buildDir().getPath() + "/.eslintrc.js").toResource(filedir + ".eslintrc.js");
 
-			final String dirtyFile = filedir + "javascript-es6.dirty";
+			final var dirtyFile = filedir + "javascript-es6.dirty";
 			File dirtyFileFile = setFile(testDir + "test.js").toResource(dirtyFile);
-			final String cleanFile = filedir + "javascript-es6.clean";
+			final var cleanFile = filedir + "javascript-es6.clean";
 
 			final FormatterStep formatterStep = EslintFormatterStep.create(
 					devDependenciesForRuleset.get(ruleSetName),
@@ -86,9 +86,9 @@ class EslintFormatterStepTest {
 		@ParameterizedTest(name = "{index}: eslint can be applied using ruleset {0}")
 		@ValueSource(strings = {"custom_rules", "styleguide/standard_with_typescript", "styleguide/xo"})
 		void formattingUsingRulesetsFile(String ruleSetName) throws Exception {
-			String filedir = "npm/eslint/typescript/" + ruleSetName + "/";
+			var filedir = "npm/eslint/typescript/" + ruleSetName + "/";
 
-			String testDir = "formatting_ruleset_" + ruleSetName.replace('/', '_') + "/";
+			var testDir = "formatting_ruleset_" + ruleSetName.replace('/', '_') + "/";
 			//			File testDirFile = newFolder(testDir);
 
 			final File eslintRc = createTestFile(filedir + ".eslintrc.js");
@@ -99,9 +99,9 @@ class EslintFormatterStepTest {
 			if (existsTestResource(filedir + "tsconfig.json")) {
 				tsconfigFile = setFile(testDir + "tsconfig.json").toResource(filedir + "tsconfig.json");
 			}
-			final String dirtyFile = filedir + "typescript.dirty";
+			final var dirtyFile = filedir + "typescript.dirty";
 			File dirtyFileFile = setFile(testDir + "test.ts").toResource(dirtyFile);
-			final String cleanFile = filedir + "typescript.clean";
+			final var cleanFile = filedir + "typescript.clean";
 
 			final FormatterStep formatterStep = EslintFormatterStep.create(
 					devDependenciesForRuleset.get(ruleSetName),
@@ -124,11 +124,11 @@ class EslintFormatterStepTest {
 
 		@Test
 		void formattingUsingInlineXoConfig() throws Exception {
-			String filedir = "npm/eslint/typescript/styleguide/xo/";
+			var filedir = "npm/eslint/typescript/styleguide/xo/";
 
-			String testDir = "formatting_ruleset_xo_inline_config/";
+			var testDir = "formatting_ruleset_xo_inline_config/";
 
-			final String esLintConfig = String.join("\n",
+			final var esLintConfig = String.join("\n",
 					"{",
 					"	env: {",
 					"		browser: true,",
@@ -157,9 +157,9 @@ class EslintFormatterStepTest {
 					"}");
 
 			File tsconfigFile = setFile(testDir + "tsconfig.json").toResource(filedir + "tsconfig.json");
-			final String dirtyFile = filedir + "typescript.dirty";
+			final var dirtyFile = filedir + "typescript.dirty";
 			File dirtyFileFile = setFile(testDir + "test.ts").toResource(dirtyFile);
-			final String cleanFile = filedir + "typescript.clean";
+			final var cleanFile = filedir + "typescript.clean";
 
 			final FormatterStep formatterStep = EslintFormatterStep.create(
 					EslintStyleGuide.TS_XO_TYPESCRIPT.mergedWith(EslintFormatterStep.defaultDevDependenciesForTypescript()),

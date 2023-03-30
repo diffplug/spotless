@@ -48,7 +48,7 @@ class ShadowCopyTest extends ResourceHarness {
 
 	@Test
 	void anAddedEntryCanBeRetrieved() throws IOException {
-		File folderWithRandomFile = newFolderWithRandomFile();
+		var folderWithRandomFile = newFolderWithRandomFile();
 		shadowCopy.addEntry("someEntry", folderWithRandomFile);
 		File shadowCopyFile = shadowCopy.getEntry("someEntry", folderWithRandomFile.getName());
 		Assertions.assertThat(shadowCopyFile.listFiles()).hasSize(folderWithRandomFile.listFiles().length);
@@ -57,8 +57,8 @@ class ShadowCopyTest extends ResourceHarness {
 
 	@Test
 	void twoAddedEntriesCanBeRetrieved() throws IOException {
-		File folderWithRandomFile = newFolderWithRandomFile();
-		File folderWithRandomFile2 = newFolderWithRandomFile();
+		var folderWithRandomFile = newFolderWithRandomFile();
+		var folderWithRandomFile2 = newFolderWithRandomFile();
 		shadowCopy.addEntry("someEntry", folderWithRandomFile);
 		shadowCopy.addEntry("someOtherEntry", folderWithRandomFile2);
 		File shadowCopyFile = shadowCopy.getEntry("someEntry", folderWithRandomFile.getName());
@@ -71,7 +71,7 @@ class ShadowCopyTest extends ResourceHarness {
 
 	@Test
 	void addingTheSameEntryTwiceWorks() throws IOException {
-		File folderWithRandomFile = newFolderWithRandomFile();
+		var folderWithRandomFile = newFolderWithRandomFile();
 		shadowCopy.addEntry("someEntry", folderWithRandomFile);
 		shadowCopy.addEntry("someEntry", folderWithRandomFile);
 		File shadowCopyFile = shadowCopy.getEntry("someEntry", folderWithRandomFile.getName());
@@ -81,12 +81,12 @@ class ShadowCopyTest extends ResourceHarness {
 
 	@Test
 	void changingAFolderAfterAddingItDoesNotChangeTheShadowCopy() throws IOException {
-		File folderWithRandomFile = newFolderWithRandomFile();
+		var folderWithRandomFile = newFolderWithRandomFile();
 		shadowCopy.addEntry("someEntry", folderWithRandomFile);
 
 		// now change the orig
 		Files.delete(folderWithRandomFile.listFiles()[0].toPath());
-		File newRandomFile = new File(folderWithRandomFile, "replacedFile.txt");
+		var newRandomFile = new File(folderWithRandomFile, "replacedFile.txt");
 		writeRandomStringOfLengthToFile(newRandomFile, 100);
 
 		// now check that they are different
@@ -97,12 +97,12 @@ class ShadowCopyTest extends ResourceHarness {
 
 	@Test
 	void addingTheSameEntryTwiceResultsInSecondEntryBeingRetained() throws IOException {
-		File folderWithRandomFile = newFolderWithRandomFile();
+		var folderWithRandomFile = newFolderWithRandomFile();
 		shadowCopy.addEntry("someEntry", folderWithRandomFile);
 
 		// now change the orig
 		Files.delete(folderWithRandomFile.listFiles()[0].toPath());
-		File newRandomFile = new File(folderWithRandomFile, "replacedFile.txt");
+		var newRandomFile = new File(folderWithRandomFile, "replacedFile.txt");
 		writeRandomStringOfLengthToFile(newRandomFile, 100);
 
 		// and then add the same entry with new content again and check that they now are the same again
@@ -114,7 +114,7 @@ class ShadowCopyTest extends ResourceHarness {
 
 	@Test
 	void aFolderCanBeCopiedUsingShadowCopy() throws IOException {
-		File folderWithRandomFile = newFolderWithRandomFile();
+		var folderWithRandomFile = newFolderWithRandomFile();
 		shadowCopy.addEntry("someEntry", folderWithRandomFile);
 		File copiedFolder = newFolder("copyDest");
 		File copiedEntry = shadowCopy.copyEntryInto("someEntry", folderWithRandomFile.getName(), copiedFolder);
@@ -125,7 +125,7 @@ class ShadowCopyTest extends ResourceHarness {
 
 	@Test
 	void aCopiedFolderIsDifferentFromShadowCopyEntry() throws IOException {
-		File folderWithRandomFile = newFolderWithRandomFile();
+		var folderWithRandomFile = newFolderWithRandomFile();
 		shadowCopy.addEntry("someEntry", folderWithRandomFile);
 		File copiedFolder = newFolder("copyDest");
 		File copiedEntry = shadowCopy.copyEntryInto("someEntry", folderWithRandomFile.getName(), copiedFolder);
@@ -137,14 +137,14 @@ class ShadowCopyTest extends ResourceHarness {
 
 	@Test
 	void anAddedEntryExistsAfterAdding() throws IOException {
-		File folderWithRandomFile = newFolderWithRandomFile();
+		var folderWithRandomFile = newFolderWithRandomFile();
 		shadowCopy.addEntry("someEntry", folderWithRandomFile);
 		Assertions.assertThat(shadowCopy.entryExists("someEntry", folderWithRandomFile.getName())).isTrue();
 	}
 
 	@Test
 	void aEntryThatHasNotBeenAddedDoesNotExist() throws IOException {
-		File folderWithRandomFile = newFolderWithRandomFile();
+		var folderWithRandomFile = newFolderWithRandomFile();
 		Assertions.assertThat(shadowCopy.entryExists("someEntry", folderWithRandomFile.getName())).isFalse();
 	}
 
@@ -162,7 +162,7 @@ class ShadowCopyTest extends ResourceHarness {
 		List<File> actualContent = filesInAlphabeticalOrder(actual);
 		List<File> expectedContent = filesInAlphabeticalOrder(expected);
 
-		for (int i = 0; i < expectedContent.size(); i++) {
+		for (var i = 0; i < expectedContent.size(); i++) {
 			assertAllFilesAreEqualButNotSameAbsolutePath(expectedContent.get(i), actualContent.get(i));
 		}
 	}
@@ -184,7 +184,7 @@ class ShadowCopyTest extends ResourceHarness {
 
 	private File newFolderWithRandomFile() throws IOException {
 		File folder = newFolder(randomStringOfLength(10));
-		File file = new File(folder, randomStringOfLength(10) + ".txt");
+		var file = new File(folder, randomStringOfLength(10) + ".txt");
 		writeRandomStringOfLengthToFile(file, 10);
 		return folder;
 	}
@@ -196,8 +196,8 @@ class ShadowCopyTest extends ResourceHarness {
 	private String randomStringOfLength(int length) {
 		// returns a string of length containing characters a-z, A-Z, 0-9
 
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < length; i++) {
+		var sb = new StringBuilder();
+		for (var i = 0; i < length; i++) {
 			sb.append(CHARS[random.nextInt(CHARS.length)]);
 		}
 		return sb.toString();

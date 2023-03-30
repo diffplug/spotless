@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2022 DiffPlug
+ * Copyright 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ public class ClangFormatStep {
 	}
 
 	private State createState() throws IOException, InterruptedException {
-		String howToInstall = "" +
+		var howToInstall = "" +
 				"You can download clang-format from https://releases.llvm.org and " +
 				"then point Spotless to it with {@code pathToExe('/path/to/clang-format')} " +
 				"or you can use your platform's package manager:" +
@@ -110,7 +110,7 @@ public class ClangFormatStep {
 				}
 				args = tmpArgs;
 			}
-			final String[] processArgs = args.toArray(new String[args.size() + 1]);
+			final var processArgs = args.toArray(new String[args.size() + 1]);
 			processArgs[processArgs.length - 1] = "--assume-filename=" + file.getName();
 			return runner.exec(input.getBytes(StandardCharsets.UTF_8), processArgs).assertExitZero(StandardCharsets.UTF_8);
 		}

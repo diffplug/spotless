@@ -181,7 +181,7 @@ public class EslintFormatterStep {
 			if (eslintConfig instanceof EslintTypescriptConfig) {
 				// if we are a ts config, see if we need to use specific paths or use default projectDir
 				File tsConfigFilePath = ((EslintTypescriptConfig) eslintConfig).getTypescriptConfigPath();
-				File tsConfigRootDir = tsConfigFilePath != null ? tsConfigFilePath.getParentFile() : projectDir;
+				var tsConfigRootDir = tsConfigFilePath != null ? tsConfigFilePath.getParentFile() : projectDir;
 				eslintCallOptions.put(FormatOption.TS_CONFIG_ROOT_DIR, nodeModulesDir.getAbsoluteFile().toPath().relativize(tsConfigRootDir.getAbsoluteFile().toPath()).toString());
 			}
 		}

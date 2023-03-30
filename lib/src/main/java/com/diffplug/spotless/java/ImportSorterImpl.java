@@ -63,7 +63,7 @@ final class ImportSorterImpl {
 	}
 
 	static List<String> sort(List<String> imports, List<String> importsOrder, boolean wildcardsLast, String lineFormat) {
-		ImportSorterImpl importsSorter = new ImportSorterImpl(importsOrder, wildcardsLast);
+		var importsSorter = new ImportSorterImpl(importsOrder, wildcardsLast);
 		return importsSorter.sort(imports, lineFormat);
 	}
 
@@ -88,14 +88,14 @@ final class ImportSorterImpl {
 	}
 
 	private void putStaticItemIfNotExists(List<ImportsGroup> importsGroups) {
-		boolean catchAllSubGroupExist = importsGroups.stream().anyMatch(group -> group.getSubGroups().contains(STATIC_KEYWORD));
+		var catchAllSubGroupExist = importsGroups.stream().anyMatch(group -> group.getSubGroups().contains(STATIC_KEYWORD));
 		if (catchAllSubGroupExist) {
 			return;
 		}
 
-		int indexOfFirstStatic = 0;
-		for (int i = 0; i < importsGroups.size(); i++) {
-			boolean subgroupMatch = importsGroups.get(i).getSubGroups().stream().anyMatch(subgroup -> subgroup.startsWith(STATIC_KEYWORD));
+		var indexOfFirstStatic = 0;
+		for (var i = 0; i < importsGroups.size(); i++) {
+			var subgroupMatch = importsGroups.get(i).getSubGroups().stream().anyMatch(subgroup -> subgroup.startsWith(STATIC_KEYWORD));
 			if (subgroupMatch) {
 				indexOfFirstStatic = i;
 			}
@@ -104,7 +104,7 @@ final class ImportSorterImpl {
 	}
 
 	private void putCatchAllGroupIfNotExists(List<ImportsGroup> importsGroups) {
-		boolean catchAllSubGroupExist = importsGroups.stream().anyMatch(group -> group.getSubGroups().contains(CATCH_ALL_SUBGROUP));
+		var catchAllSubGroupExist = importsGroups.stream().anyMatch(group -> group.getSubGroups().contains(CATCH_ALL_SUBGROUP));
 		if (!catchAllSubGroupExist) {
 			importsGroups.add(new ImportsGroup(CATCH_ALL_SUBGROUP));
 		}
@@ -115,7 +115,7 @@ final class ImportSorterImpl {
 	 */
 	private void filterMatchingImports(List<String> imports) {
 		for (String anImport : imports) {
-			String orderItem = getBestMatchingImportOrderItem(anImport);
+			var orderItem = getBestMatchingImportOrderItem(anImport);
 			if (orderItem != null) {
 				matchingImports.computeIfAbsent(orderItem, key -> new ArrayList<>());
 				matchingImports.get(orderItem).add(anImport);
@@ -148,7 +148,7 @@ final class ImportSorterImpl {
 			if (!matchesStatic(staticItems, notMatchingItem)) {
 				continue;
 			}
-			boolean isOrderItem = isOrderItem(notMatchingItem, staticItems);
+			var isOrderItem = isOrderItem(notMatchingItem, staticItems);
 			if (!isOrderItem) {
 				matchingImports.computeIfAbsent(CATCH_ALL_SUBGROUP, key -> new ArrayList<>());
 				matchingImports.get(CATCH_ALL_SUBGROUP).add(notMatchingItem);
@@ -157,19 +157,19 @@ final class ImportSorterImpl {
 	}
 
 	private boolean isOrderItem(String notMatchingItem, boolean staticItems) {
-		boolean contains = allImportOrderItems.contains(notMatchingItem);
+		var contains = allImportOrderItems.contains(notMatchingItem);
 		return contains && matchesStatic(staticItems, notMatchingItem);
 	}
 
 	private static boolean matchesStatic(boolean staticItems, String notMatchingItem) {
-		boolean isStatic = notMatchingItem.startsWith(STATIC_KEYWORD);
+		var isStatic = notMatchingItem.startsWith(STATIC_KEYWORD);
 		return (isStatic && staticItems) || (!isStatic && !staticItems);
 	}
 
 	private List<String> mergeMatchingItems() {
 		List<String> template = new ArrayList<>();
 		for (ImportsGroup group : importsGroups) {
-			boolean groupIsNotEmpty = false;
+			var groupIsNotEmpty = false;
 			for (String subgroup : group.getSubGroups()) {
 				List<String> strings = matchingImports.get(subgroup);
 				if (strings == null || strings.isEmpty()) {
@@ -212,16 +212,16 @@ final class ImportSorterImpl {
 		if (order1.equals(order2)) {
 			throw new IllegalArgumentException("orders are same");
 		}
-		for (int i = 0; i < anImport.length() - 1; i++) {
+		for (var i = 0; i < anImport.length() - 1; i++) {
 			if (order1.length() - 1 == i && order2.length() - 1 != i) {
 				return order2;
 			}
 			if (order2.length() - 1 == i && order1.length() - 1 != i) {
 				return order1;
 			}
-			char orderChar1 = order1.length() != 0 ? order1.charAt(i) : ' ';
-			char orderChar2 = order2.length() != 0 ? order2.charAt(i) : ' ';
-			char importChar = anImport.charAt(i);
+			var orderChar1 = order1.length() != 0 ? order1.charAt(i) : ' ';
+			var orderChar2 = order2.length() != 0 ? order2.charAt(i) : ' ';
+			var importChar = anImport.charAt(i);
 
 			if (importChar == orderChar1 && importChar != orderChar2) {
 				return order1;
@@ -244,15 +244,15 @@ final class ImportSorterImpl {
 
 		@Override
 		public int compare(String string1, String string2) {
-			int string1WildcardIndex = string1.indexOf('*');
-			int string2WildcardIndex = string2.indexOf('*');
-			boolean string1IsWildcard = string1WildcardIndex >= 0;
-			boolean string2IsWildcard = string2WildcardIndex >= 0;
+			var string1WildcardIndex = string1.indexOf('*');
+			var string2WildcardIndex = string2.indexOf('*');
+			var string1IsWildcard = string1WildcardIndex >= 0;
+			var string2IsWildcard = string2WildcardIndex >= 0;
 			if (string1IsWildcard == string2IsWildcard) {
 				return string1.compareTo(string2);
 			}
-			int prefixLength = string1IsWildcard ? string1WildcardIndex : string2WildcardIndex;
-			boolean samePrefix = string1.regionMatches(0, string2, 0, prefixLength);
+			var prefixLength = string1IsWildcard ? string1WildcardIndex : string2WildcardIndex;
+			var samePrefix = string1.regionMatches(0, string2, 0, prefixLength);
 			if (!samePrefix) {
 				return string1.compareTo(string2);
 			}

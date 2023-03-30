@@ -68,7 +68,7 @@ class LicenseHeaderStepTest extends ResourceHarness {
 				.test(hasHeaderYear(HEADER_WITH_$YEAR + "\n **/\n/* Something after license.", "2003"), hasHeaderYear("2003"))
 				.test(hasHeaderYear("not a year"), hasHeaderYear(currentYear()));
 		// Check with variant
-		String otherFakeLicense = "This is a fake license. Copyright $YEAR ACME corp.";
+		var otherFakeLicense = "This is a fake license. Copyright $YEAR ACME corp.";
 		StepHarness.forStep(LicenseHeaderStep.headerDelimiter(header(otherFakeLicense), package_).build())
 				.test(getTestResource(FILE_NO_LICENSE), hasHeaderYear(otherFakeLicense, currentYear()))
 				.testUnaffected(hasHeaderYear(otherFakeLicense, currentYear()))
@@ -78,7 +78,7 @@ class LicenseHeaderStepTest extends ResourceHarness {
 				.test(hasHeader("This is a fake license. CopyrightACME corp."), hasHeaderYear(otherFakeLicense, currentYear()));
 
 		//Check when token is of the format $today.year
-		String HEADER_WITH_YEAR_INTELLIJ = "This is a fake license, $today.year. ACME corp.";
+		var HEADER_WITH_YEAR_INTELLIJ = "This is a fake license, $today.year. ACME corp.";
 		StepHarness.forStep(LicenseHeaderStep.headerDelimiter(header(HEADER_WITH_YEAR_INTELLIJ), package_).build())
 				.test(hasHeader(HEADER_WITH_YEAR_INTELLIJ), hasHeader(HEADER_WITH_YEAR_INTELLIJ.replace("$today.year", currentYear())));
 	}
@@ -183,7 +183,7 @@ class LicenseHeaderStepTest extends ResourceHarness {
 	@Test
 	void efficient() throws Throwable {
 		FormatterStep step = LicenseHeaderStep.headerDelimiter("LicenseHeader\n", "contentstart").build();
-		String alreadyCorrect = "LicenseHeader\ncontentstart";
+		var alreadyCorrect = "LicenseHeader\ncontentstart";
 		Assertions.assertEquals(alreadyCorrect, step.format(alreadyCorrect, new File("")));
 		// If no change is required, it should return the exact same string for efficiency reasons
 		Assertions.assertSame(alreadyCorrect, step.format(alreadyCorrect, new File("")));
@@ -193,7 +193,7 @@ class LicenseHeaderStepTest extends ResourceHarness {
 	void sanitized() throws Throwable {
 		// The sanitizer should add a \n
 		FormatterStep step = LicenseHeaderStep.headerDelimiter("LicenseHeader", "contentstart").build();
-		String alreadyCorrect = "LicenseHeader\ncontentstart";
+		var alreadyCorrect = "LicenseHeader\ncontentstart";
 		Assertions.assertEquals(alreadyCorrect, step.format(alreadyCorrect, new File("")));
 		Assertions.assertSame(alreadyCorrect, step.format(alreadyCorrect, new File("")));
 	}
@@ -202,7 +202,7 @@ class LicenseHeaderStepTest extends ResourceHarness {
 	void sanitizerDoesntGoTooFar() throws Throwable {
 		// if the user wants extra lines after the header, we shouldn't clobber them
 		FormatterStep step = LicenseHeaderStep.headerDelimiter("LicenseHeader\n\n", "contentstart").build();
-		String alreadyCorrect = "LicenseHeader\n\ncontentstart";
+		var alreadyCorrect = "LicenseHeader\n\ncontentstart";
 		Assertions.assertEquals(alreadyCorrect, step.format(alreadyCorrect, new File("")));
 		Assertions.assertSame(alreadyCorrect, step.format(alreadyCorrect, new File("")));
 	}
@@ -249,7 +249,7 @@ class LicenseHeaderStepTest extends ResourceHarness {
 
 	@Test
 	void should_update_year_for_license_with_address() throws Throwable {
-		int currentYear = LocalDate.now(ZoneOffset.UTC).getYear();
+		var currentYear = LocalDate.now(ZoneOffset.UTC).getYear();
 		FormatterStep step = LicenseHeaderStep.headerDelimiter(header(licenceWithAddress()), package_).withYearMode(YearMode.UPDATE_TO_TODAY).build();
 		StepHarness.forStep(step).test(
 				hasHeader(licenceWithAddress().replace("$YEAR", "2015")),

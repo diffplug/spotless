@@ -18,7 +18,6 @@ package com.diffplug.spotless.glue.ktlint.compat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,8 +32,8 @@ public class KtLintCompat0Dot48Dot0AdapterTest {
 	@Test
 	public void testDefaults(@TempDir Path path) throws IOException {
 		KtLintCompat0Dot48Dot0Adapter ktLintCompat0Dot48Dot0Adapter = new KtLintCompat0Dot48Dot0Adapter();
-		String text = loadAndWriteText(path, "empty_class_body.kt");
-		final Path filePath = Paths.get(path.toString(), "empty_class_body.kt");
+		var text = loadAndWriteText(path, "empty_class_body.kt");
+		final var filePath = Paths.get(path.toString(), "empty_class_body.kt");
 
 		Map<String, String> userData = new HashMap<>();
 
@@ -47,8 +46,8 @@ public class KtLintCompat0Dot48Dot0AdapterTest {
 	@Test
 	public void testEditorConfigCanDisable(@TempDir Path path) throws IOException {
 		KtLintCompat0Dot48Dot0Adapter ktLintCompat0Dot48Dot0Adapter = new KtLintCompat0Dot48Dot0Adapter();
-		String text = loadAndWriteText(path, "fails_no_semicolons.kt");
-		final Path filePath = Paths.get(path.toString(), "fails_no_semicolons.kt");
+		var text = loadAndWriteText(path, "fails_no_semicolons.kt");
+		final var filePath = Paths.get(path.toString(), "fails_no_semicolons.kt");
 
 		Map<String, String> userData = new HashMap<>();
 
@@ -63,7 +62,7 @@ public class KtLintCompat0Dot48Dot0AdapterTest {
 	}
 
 	private static String loadAndWriteText(Path path, String name) throws IOException {
-		try (InputStream is = KtLintCompat0Dot48Dot0AdapterTest.class.getResourceAsStream("/" + name)) {
+		try (var is = KtLintCompat0Dot48Dot0AdapterTest.class.getResourceAsStream("/" + name)) {
 			Files.copy(is, path.resolve(name));
 		}
 		return new String(Files.readAllBytes(path.resolve(name)), StandardCharsets.UTF_8);

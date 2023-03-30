@@ -41,7 +41,7 @@ class EclipseXmlFormatterStepImplAllowExternalURIsTest {
 		 * org.eclipse.core.runtime/.settings/org.eclipse.wst.xml.core.prefs.
 		 * So a simple test of one configuration item change is considered sufficient.
 		 */
-		Properties properties = new Properties();
+		var properties = new Properties();
 		properties.put(PluginPreferences.RESOLVE_EXTERNAL_URI, "TRUE");
 		properties.put(INDENTATION_SIZE, "2");
 		properties.put(INDENTATION_CHAR, SPACE); //Default is TAB

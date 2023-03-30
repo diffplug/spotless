@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,15 +38,15 @@ final class ImportSorter {
 
 	String format(String raw, String lineFormat) {
 		// parse file
-		Scanner scanner = new Scanner(raw);
-		int firstImportLine = 0;
-		int lastImportLine = 0;
-		int line = 0;
-		boolean isMultiLineComment = false;
+		var scanner = new Scanner(raw);
+		var firstImportLine = 0;
+		var lastImportLine = 0;
+		var line = 0;
+		var isMultiLineComment = false;
 		List<String> imports = new ArrayList<>();
 		while (scanner.hasNext()) {
 			line++;
-			String next = scanner.nextLine();
+			var next = scanner.nextLine();
 			if (next == null) {
 				break;
 			}
@@ -60,7 +60,7 @@ final class ImportSorter {
 			}
 
 			if (next.startsWith("import ")) {
-				int i = next.indexOf(".");
+				var i = next.indexOf(".");
 				if (isNotValidImport(i)) {
 					continue;
 				}
@@ -68,9 +68,9 @@ final class ImportSorter {
 					firstImportLine = line;
 				}
 				lastImportLine = line;
-				int endIndex = next.indexOf(";");
+				var endIndex = next.indexOf(";");
 
-				String imprt = next.substring(START_INDEX_OF_IMPORTS_PACKAGE_DECLARATION, endIndex != -1 ? endIndex : next.length());
+				var imprt = next.substring(START_INDEX_OF_IMPORTS_PACKAGE_DECLARATION, endIndex != -1 ? endIndex : next.length());
 				if (!isMultiLineComment && !imports.contains(imprt)) {
 					imports.add(imprt);
 				}
@@ -86,7 +86,7 @@ final class ImportSorter {
 	}
 
 	private static boolean isBeginningOfScope(String line) {
-		int scope = line.indexOf("{");
+		var scope = line.indexOf("{");
 		if (0 <= scope) {
 			return !line.substring(0, scope).contains("//");
 		}
@@ -97,13 +97,13 @@ final class ImportSorter {
 		if (document.isEmpty()) {
 			return document;
 		}
-		boolean importsAlreadyAppended = false;
-		Scanner scanner = new Scanner(document);
-		int curentLine = 0;
-		final StringBuilder sb = new StringBuilder();
+		var importsAlreadyAppended = false;
+		var scanner = new Scanner(document);
+		var curentLine = 0;
+		final var sb = new StringBuilder();
 		while (scanner.hasNext()) {
 			curentLine++;
-			String next = scanner.nextLine();
+			var next = scanner.nextLine();
 			if (next == null) {
 				break;
 			}

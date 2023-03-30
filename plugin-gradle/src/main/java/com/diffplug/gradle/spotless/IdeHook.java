@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +34,8 @@ class IdeHook {
 	}
 
 	static void performHook(SpotlessTaskImpl spotlessTask) {
-		String path = (String) spotlessTask.getProject().property(PROPERTY);
-		File file = new File(path);
+		var path = (String) spotlessTask.getProject().property(PROPERTY);
+		var file = new File(path);
 		if (!file.isAbsolute()) {
 			System.err.println("Argument passed to " + PROPERTY + " must be an absolute path");
 			return;

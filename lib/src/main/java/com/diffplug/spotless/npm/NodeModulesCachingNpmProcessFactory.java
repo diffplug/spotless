@@ -80,7 +80,7 @@ public class NodeModulesCachingNpmProcessFactory implements NpmProcessFactory {
 
 		@Override
 		public Result waitFor() {
-			String entryName = entryName();
+			var entryName = entryName();
 			if (shadowCopy.entryExists(entryName, NodeServerLayout.NODE_MODULES)) {
 				timedLogger.withInfo("Using cached node_modules for {} from {}", entryName, cacheDir)
 						.run(() -> shadowCopy.copyEntryInto(entryName(), NodeServerLayout.NODE_MODULES, nodeServerLayout.nodeModulesDir()));

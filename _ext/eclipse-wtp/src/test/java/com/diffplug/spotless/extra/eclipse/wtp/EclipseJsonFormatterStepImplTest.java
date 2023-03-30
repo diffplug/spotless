@@ -41,7 +41,7 @@ class EclipseJsonFormatterStepImplTest {
 		 * org.eclipse.core.runtime/.settings/org.eclipse.wst.json.core.prefs.
 		 * So a simple test of one configuration item change is considered sufficient.
 		 */
-		Properties properties = new Properties();
+		var properties = new Properties();
 		properties.put(INDENTATION_SIZE, "3"); //Default is 1
 		properties.put(INDENTATION_CHAR, SPACE); //Default is TAB
 		properties.put(CASE_PROPERTY_NAME, Integer.toString(UPPER)); //Dead code, ignored

@@ -61,7 +61,7 @@ public class ResourceHarness {
 
 	/** Creates and returns a new child-folder of the root folder. */
 	protected File newFolder(String subpath) throws IOException {
-		File targetDir = newFile(subpath);
+		var targetDir = newFile(subpath);
 		if (!targetDir.mkdir()) {
 			throw new IOException("Failed to create " + targetDir);
 		}
@@ -77,8 +77,8 @@ public class ResourceHarness {
 	}
 
 	protected void replace(String path, String toReplace, String replaceWith) throws IOException {
-		String before = read(path);
-		String after = before.replace(toReplace, replaceWith);
+		var before = read(path);
+		var after = before.replace(toReplace, replaceWith);
 		if (before.equals(after)) {
 			throw new IllegalArgumentException("Replace was ineffective! '" + toReplace + "' was not found in " + path);
 		}
@@ -99,7 +99,7 @@ public class ResourceHarness {
 	}
 
 	private static Optional<URL> getTestResourceUrl(String filename) {
-		URL url = ResourceHarness.class.getResource("/" + filename);
+		var url = ResourceHarness.class.getResource("/" + filename);
 		return Optional.ofNullable(url);
 	}
 
@@ -122,9 +122,9 @@ public class ResourceHarness {
 	 * src/test/resources directory.
 	 */
 	protected File createTestFile(String filename, UnaryOperator<String> fileContentsProcessor) {
-		int lastSlash = filename.lastIndexOf('/');
-		String name = lastSlash >= 0 ? filename.substring(lastSlash) : filename;
-		File file = newFile(name);
+		var lastSlash = filename.lastIndexOf('/');
+		var name = lastSlash >= 0 ? filename.substring(lastSlash) : filename;
+		var file = newFile(name);
 		file.getParentFile().mkdirs();
 		ThrowingEx.run(() -> Files.write(file.toPath(), fileContentsProcessor.apply(getTestResource(filename)).getBytes(StandardCharsets.UTF_8)));
 		return file;
@@ -164,7 +164,7 @@ public class ResourceHarness {
 		}
 
 		public void matches(Consumer<AbstractCharSequenceAssert<?, String>> conditions) throws IOException {
-			String content = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+			var content = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
 			conditions.accept(assertThat(content));
 		}
 	}

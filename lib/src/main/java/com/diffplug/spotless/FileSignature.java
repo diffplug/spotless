@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ public final class FileSignature implements Serializable {
 		List<File> natural = toSortedSet(files);
 		List<File> onNameOnly = toSortedSet(files, comparing(File::getName));
 		if (natural.size() != onNameOnly.size()) {
-			StringBuilder builder = new StringBuilder();
+			var builder = new StringBuilder();
 			builder.append("For these files:\n");
 			for (File file : files) {
 				builder.append("  " + file.getAbsolutePath() + "\n");
@@ -86,7 +86,7 @@ public final class FileSignature implements Serializable {
 		this.files = validateInputFiles(files);
 		this.signatures = new Sig[this.files.size()];
 
-		int i = 0;
+		var i = 0;
 		for (File file : this.files) {
 			signatures[i] = cache.sign(file);
 			++i;
@@ -146,13 +146,13 @@ public final class FileSignature implements Serializable {
 		Map<String, Sig> cache = new HashMap<>();
 
 		synchronized Sig sign(File fileInput) throws IOException {
-			String canonicalPath = fileInput.getCanonicalPath();
+			var canonicalPath = fileInput.getCanonicalPath();
 			Sig sig = cache.computeIfAbsent(canonicalPath, ThrowingEx.<String, Sig> wrap(p -> {
-				MessageDigest digest = MessageDigest.getInstance("SHA-256");
-				File file = new File(p);
+				var digest = MessageDigest.getInstance("SHA-256");
+				var file = new File(p);
 				// calculate the size and content hash of the file
 				long size = 0;
-				byte[] buf = new byte[1024];
+				var buf = new byte[1024];
 				long lastModified;
 				try (InputStream input = new FileInputStream(file)) {
 					lastModified = file.lastModified();
@@ -164,7 +164,7 @@ public final class FileSignature implements Serializable {
 				}
 				return new Sig(file.getName(), size, digest.digest(), lastModified);
 			}));
-			long lastModified = fileInput.lastModified();
+			var lastModified = fileInput.lastModified();
 			if (sig.lastModified != lastModified) {
 				cache.remove(canonicalPath);
 				return sign(fileInput);

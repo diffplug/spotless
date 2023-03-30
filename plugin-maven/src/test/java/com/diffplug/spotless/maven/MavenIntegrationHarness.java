@@ -25,7 +25,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -179,7 +178,7 @@ public class MavenIntegrationHarness extends ResourceHarness {
 	}
 
 	protected void writePom(String[] executions, String[] configuration, String[] dependencies, String[] plugins) throws IOException {
-		String pomXmlContent = createPomXmlContent(null, executions, configuration, dependencies, plugins);
+		var pomXmlContent = createPomXmlContent(null, executions, configuration, dependencies, plugins);
 		setFile("pom.xml").toContent(pomXmlContent);
 	}
 
@@ -229,10 +228,10 @@ public class MavenIntegrationHarness extends ResourceHarness {
 	}
 
 	protected String createPomXmlContent(String pomTemplate, Map<String, Object> params) throws IOException {
-		URL url = MavenIntegrationHarness.class.getResource(pomTemplate);
+		var url = MavenIntegrationHarness.class.getResource(pomTemplate);
 		try (BufferedReader reader = Resources.asCharSource(url, StandardCharsets.UTF_8).openBufferedStream()) {
 			Mustache mustache = mustacheFactory.compile(reader, "pom");
-			StringWriter writer = new StringWriter();
+			var writer = new StringWriter();
 			mustache.execute(writer, params);
 			return writer.toString();
 		}
@@ -278,7 +277,7 @@ public class MavenIntegrationHarness extends ResourceHarness {
 				throw Unhandled.stringException(name);
 			}
 		}
-		String value = System.getProperty(name);
+		var value = System.getProperty(name);
 		if (isNullOrEmpty(value)) {
 			fail("System property '" + name + "' is not defined");
 		}
@@ -286,7 +285,7 @@ public class MavenIntegrationHarness extends ResourceHarness {
 	}
 
 	protected static String[] groupWithSteps(String group, String[] includes, String... steps) {
-		String[] result = new String[steps.length + includes.length + 2];
+		var result = new String[steps.length + includes.length + 2];
 		result[0] = "<" + group + ">";
 		System.arraycopy(includes, 0, result, 1, includes.length);
 		System.arraycopy(steps, 0, result, includes.length + 1, steps.length);

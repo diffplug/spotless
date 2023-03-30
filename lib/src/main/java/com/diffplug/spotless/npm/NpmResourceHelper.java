@@ -18,7 +18,6 @@ package com.diffplug.spotless.npm;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
@@ -40,7 +39,7 @@ final class NpmResourceHelper {
 	}
 
 	static void writeUtf8StringToOutputStream(String stringToWrite, OutputStream outputStream) throws IOException {
-		final byte[] bytes = stringToWrite.getBytes(StandardCharsets.UTF_8);
+		final var bytes = stringToWrite.getBytes(StandardCharsets.UTF_8);
 		outputStream.write(bytes);
 	}
 
@@ -59,7 +58,7 @@ final class NpmResourceHelper {
 	}
 
 	static String readUtf8StringFromClasspath(Class<?> clazz, String resourceName) {
-		try (InputStream input = clazz.getResourceAsStream(resourceName)) {
+		try (var input = clazz.getResourceAsStream(resourceName)) {
 			return readUtf8StringFromInputStream(input);
 		} catch (IOException e) {
 			throw ThrowingEx.asRuntime(e);
@@ -76,8 +75,8 @@ final class NpmResourceHelper {
 
 	static String readUtf8StringFromInputStream(InputStream input) {
 		try {
-			ByteArrayOutputStream output = new ByteArrayOutputStream();
-			byte[] buffer = new byte[1024];
+			var output = new ByteArrayOutputStream();
+			var buffer = new byte[1024];
 			int numRead;
 			while ((numRead = input.read(buffer)) != -1) {
 				output.write(buffer, 0, numRead);
@@ -97,7 +96,7 @@ final class NpmResourceHelper {
 	}
 
 	static void awaitReadableFile(File file, Duration maxWaitTime) throws TimeoutException {
-		final long startedAt = System.currentTimeMillis();
+		final var startedAt = System.currentTimeMillis();
 		while (!file.exists() || !file.canRead()) {
 			// wait for at most maxWaitTime
 			if ((System.currentTimeMillis() - startedAt) > maxWaitTime.toMillis()) {
@@ -108,7 +107,7 @@ final class NpmResourceHelper {
 	}
 
 	static void awaitFileDeleted(File file, Duration maxWaitTime) throws TimeoutException {
-		final long startedAt = System.currentTimeMillis();
+		final var startedAt = System.currentTimeMillis();
 		while (file.exists()) {
 			// wait for at most maxWaitTime
 			if ((System.currentTimeMillis() - startedAt) > maxWaitTime.toMillis()) {
@@ -126,7 +125,7 @@ final class NpmResourceHelper {
 		Objects.requireNonNull(relativePath);
 		try {
 			// create file pointing to relativePath in targetDir
-			final Path relativeTargetFile = Paths.get(targetDir.getAbsolutePath(), relativePath);
+			final var relativeTargetFile = Paths.get(targetDir.getAbsolutePath(), relativePath);
 			assertDirectoryExists(relativeTargetFile.getParent().toFile());
 
 			Files.copy(file.toPath(), relativeTargetFile, StandardCopyOption.REPLACE_EXISTING);
@@ -143,9 +142,9 @@ final class NpmResourceHelper {
 	static String md5(String fileContent) {
 		MessageDigest md = ThrowingEx.get(() -> MessageDigest.getInstance("MD5"));
 		md.update(fileContent.getBytes(StandardCharsets.UTF_8));
-		byte[] digest = md.digest();
+		var digest = md.digest();
 		// convert byte array digest to hex string
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		for (byte b : digest) {
 			sb.append(String.format("%02x", b & 0xff));
 		}

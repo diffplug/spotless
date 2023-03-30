@@ -60,7 +60,7 @@ public class TypescriptExtension extends FormatExtension {
 
 	/** Creates a {@code TypescriptFormatExtension} using exactly the specified npm packages. */
 	public TypescriptFormatExtension tsfmt(Map<String, String> devDependencies) {
-		TypescriptFormatExtension tsfmt = new TypescriptFormatExtension(devDependencies);
+		var tsfmt = new TypescriptFormatExtension(devDependencies);
 		addStep(tsfmt.createStep());
 		return tsfmt;
 	}
@@ -188,7 +188,7 @@ public class TypescriptExtension extends FormatExtension {
 	}
 
 	public TypescriptEslintConfig eslint(Map<String, String> devDependencies) {
-		TypescriptEslintConfig eslint = new TypescriptEslintConfig(devDependencies);
+		var eslint = new TypescriptEslintConfig(devDependencies);
 		addStep(eslint.createStep());
 		return eslint;
 	}

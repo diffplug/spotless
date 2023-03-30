@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -131,10 +131,10 @@ class PaddedCellTaskTest extends ResourceHarness {
 
 	@Test
 	void paddedCellFormat() throws Exception {
-		Bundle wellbehaved = wellbehaved();
-		Bundle cycle = cycle();
-		Bundle converge = converge();
-		Bundle diverge = diverge();
+		var wellbehaved = wellbehaved();
+		var cycle = cycle();
+		var converge = converge();
+		var diverge = diverge();
 
 		wellbehaved.format();
 		cycle.format();
@@ -149,10 +149,10 @@ class PaddedCellTaskTest extends ResourceHarness {
 
 	@Test
 	void paddedCellApplyCheck() throws Exception {
-		Bundle wellbehaved = wellbehaved();
-		Bundle cycle = cycle();
-		Bundle converge = converge();
-		Bundle diverge = diverge();
+		var wellbehaved = wellbehaved();
+		var cycle = cycle();
+		var converge = converge();
+		var diverge = diverge();
 
 		wellbehaved.apply();
 		cycle.apply();
@@ -203,9 +203,9 @@ class PaddedCellTaskTest extends ResourceHarness {
 	}
 
 	private void assertFolderContents(String subfolderName, String... files) throws IOException {
-		File subfolder = new File(rootFolder(), subfolderName);
+		var subfolder = new File(rootFolder(), subfolderName);
 		Assertions.assertTrue(subfolder.isDirectory());
-		String asList = String.join("\n", Arrays.asList(files));
+		var asList = String.join("\n", Arrays.asList(files));
 		Assertions.assertEquals(StringPrinter.buildStringFromLines(files).trim(), asList);
 	}
 
@@ -231,7 +231,7 @@ class PaddedCellTaskTest extends ResourceHarness {
 	}
 
 	private void assertFailureMessage(Bundle bundle, String... expectedOutput) {
-		String msg = bundle.checkFailureMsg();
+		var msg = bundle.checkFailureMsg();
 		String expected = StringPrinter.buildStringFromLines(expectedOutput).trim();
 		Assertions.assertEquals(expected, msg);
 	}

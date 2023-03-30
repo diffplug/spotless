@@ -49,7 +49,7 @@ class IndentStepTest {
 	@Test
 	void doesntClipNewlines() {
 		FormatterStep indent = IndentStep.Type.SPACE.create(4);
-		String blankNewlines = "\n\n\n\n";
+		var blankNewlines = "\n\n\n\n";
 		StepHarness.forStep(indent).testUnaffected(blankNewlines);
 	}
 

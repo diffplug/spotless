@@ -50,7 +50,7 @@ class EclipseJsFormatterStepImplTest {
 		 * All formatter configuration is stored in
 		 * org.eclipse.core.runtime/.settings/org.eclipse.jst.jsdt.core.prefs.
 		 */
-		Properties properties = new Properties();
+		var properties = new Properties();
 		properties.setProperty(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR, JavaScriptCore.TAB);
 		formatter = new EclipseJsFormatterStepImpl(properties);
 	}

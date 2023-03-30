@@ -30,27 +30,27 @@ import com.diffplug.spotless.tag.NpmTest;
 class PrettierFormatStepTest extends MavenIntegrationHarness {
 
 	private void run(String kind, String suffix) throws IOException, InterruptedException {
-		String path = prepareRun(kind, suffix);
+		var path = prepareRun(kind, suffix);
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).sameAsResource("npm/prettier/filetypes/" + kind + "/" + kind + ".clean");
 	}
 
 	private String prepareRun(String kind, String suffix) throws IOException {
-		String configPath = ".prettierrc.yml";
+		var configPath = ".prettierrc.yml";
 		setFile(configPath).toResource("npm/prettier/filetypes/" + kind + "/" + ".prettierrc.yml");
-		String path = "src/main/" + kind + "/test." + suffix;
+		var path = "src/main/" + kind + "/test." + suffix;
 		setFile(path).toResource("npm/prettier/filetypes/" + kind + "/" + kind + ".dirty");
 		return path;
 	}
 
 	private ProcessRunner.Result runExpectingError(String kind, String suffix) throws IOException, InterruptedException {
-		String path = prepareRun(kind, suffix);
+		var path = prepareRun(kind, suffix);
 		return mavenRunner().withArguments("spotless:apply").runHasError();
 	}
 
 	@Test
 	void prettier_typescript() throws Exception {
-		String suffix = "ts";
+		var suffix = "ts";
 		writePomWithPrettierSteps("**/*." + suffix,
 				"<prettier>",
 				"  <prettierVersion>1.16.4</prettierVersion>",
@@ -61,7 +61,7 @@ class PrettierFormatStepTest extends MavenIntegrationHarness {
 
 	@Test
 	void prettier_html() throws Exception {
-		String suffix = "html";
+		var suffix = "html";
 		writePomWithPrettierSteps("**/*." + suffix,
 				"<prettier>",
 				"  <prettierVersion>1.16.4</prettierVersion>",
@@ -72,7 +72,7 @@ class PrettierFormatStepTest extends MavenIntegrationHarness {
 
 	@Test
 	void prettier_tsx() throws Exception {
-		String suffix = "tsx";
+		var suffix = "tsx";
 		writePomWithPrettierSteps("src/main/**/*." + suffix,
 				"<includes><include>src/**/*.tsx</include></includes>",
 				"<prettier>",
@@ -84,7 +84,7 @@ class PrettierFormatStepTest extends MavenIntegrationHarness {
 
 	@Test
 	void prettier_tsx_inline_config() throws Exception {
-		String suffix = "tsx";
+		var suffix = "tsx";
 		writePomWithPrettierSteps("src/main/**/*." + suffix,
 				"<prettier>",
 				"  <prettierVersion>1.16.4</prettierVersion>",
@@ -202,7 +202,7 @@ class PrettierFormatStepTest extends MavenIntegrationHarness {
 				"fetch-timeout=250",
 				"fetch-retry-mintimeout=250",
 				"fetch-retry-maxtimeout=250");
-		String suffix = "ts";
+		var suffix = "ts";
 		writePomWithPrettierSteps("**/*." + suffix,
 				"<prettier>",
 				"  <prettierVersion>1.16.4</prettierVersion>",
@@ -219,7 +219,7 @@ class PrettierFormatStepTest extends MavenIntegrationHarness {
 				"fetch-timeout=250",
 				"fetch-retry-mintimeout=250",
 				"fetch-retry-maxtimeout=250");
-		String suffix = "ts";
+		var suffix = "ts";
 		writePomWithPrettierSteps("**/*." + suffix,
 				"<prettier>",
 				"  <prettierVersion>1.16.4</prettierVersion>",

@@ -40,7 +40,7 @@ public class Gson implements FormatterStepFactory {
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
-		int indentSpaces = this.indentSpaces;
+		var indentSpaces = this.indentSpaces;
 		return GsonStep.create(new GsonConfig(sortByKeys, escapeHtml, indentSpaces, version), stepConfig.getProvisioner());
 	}
 }

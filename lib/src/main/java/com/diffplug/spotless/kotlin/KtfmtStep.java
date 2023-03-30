@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Objects;
 
 import javax.annotation.Nullable;
@@ -232,13 +231,13 @@ public class KtfmtStep {
 			return input -> {
 				try {
 					if (style == DEFAULT) {
-						Method formatterMethod = getFormatterClazz(classLoader).getMethod(FORMATTER_METHOD, String.class);
+						var formatterMethod = getFormatterClazz(classLoader).getMethod(FORMATTER_METHOD, String.class);
 						return (String) formatterMethod.invoke(getFormatterClazz(classLoader), input);
 					} else {
-						Method formatterMethod = getFormatterClazz(classLoader).getMethod(FORMATTER_METHOD,
+						var formatterMethod = getFormatterClazz(classLoader).getMethod(FORMATTER_METHOD,
 								getFormattingOptionsClazz(classLoader),
 								String.class);
-						Object formattingOptions = getCustomFormattingOptions(classLoader, style);
+						var formattingOptions = getCustomFormattingOptions(classLoader, style);
 						return (String) formatterMethod.invoke(getFormatterClazz(classLoader), formattingOptions, input);
 					}
 				} catch (InvocationTargetException e) {
@@ -261,7 +260,7 @@ public class KtfmtStep {
 			if (style == Style.DEFAULT || style == Style.DROPBOX) {
 				Class<?> formattingOptionsCompanionClazz = classLoader.loadClass(pkg + ".ktfmt.FormattingOptions$Companion");
 				Object companion = formattingOptionsCompanionClazz.getConstructors()[0].newInstance((Object) null);
-				Method formattingOptionsMethod = formattingOptionsCompanionClazz.getDeclaredMethod("dropboxStyle");
+				var formattingOptionsMethod = formattingOptionsCompanionClazz.getDeclaredMethod("dropboxStyle");
 				return formattingOptionsMethod.invoke(companion);
 			} else {
 				throw new IllegalStateException("Versions pre-0.19 can only use Default and Dropbox styles");

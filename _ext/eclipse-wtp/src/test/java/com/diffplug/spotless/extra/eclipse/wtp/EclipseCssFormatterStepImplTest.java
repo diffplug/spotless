@@ -41,7 +41,7 @@ class EclipseCssFormatterStepImplTest {
 		 * All formatter configuration is stored in
 		 * org.eclipse.core.runtime/.settings/org.eclipse.wst.css.core.prefs.
 		 */
-		Properties properties = new Properties();
+		var properties = new Properties();
 		properties.put(INDENTATION_SIZE, "3");
 		properties.put(INDENTATION_CHAR, SPACE); //Default is TAB
 		properties.put(CLEANUP_CASE_SELECTOR, Integer.toString(UPPER)); //Done by cleanup

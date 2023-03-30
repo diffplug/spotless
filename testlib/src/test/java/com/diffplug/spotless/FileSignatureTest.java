@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,14 +55,14 @@ class FileSignatureTest extends ResourceHarness {
 
 	@Test
 	void testFromDirectory() {
-		File dir = new File(rootFolder(), "dir");
+		var dir = new File(rootFolder(), "dir");
 		assertThatThrownBy(() -> FileSignature.signAsList(dir))
 				.isInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Test
 	void testFromFilesAndDirectory() throws IOException {
-		File dir = new File(rootFolder(), "dir");
+		var dir = new File(rootFolder(), "dir");
 		List<File> files = getTestFiles(inputPaths);
 		files.add(dir);
 		Collections.shuffle(files);

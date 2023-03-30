@@ -85,7 +85,7 @@ public class Java extends FormatterFactory {
 	}
 
 	private static String fileMask(Path path) {
-		String dir = path.toString();
+		var dir = path.toString();
 		if (!dir.endsWith(File.separator)) {
 			dir += File.separator;
 		}

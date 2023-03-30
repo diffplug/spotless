@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ class JvmLocalCache {
 
 		@Override
 		public T get() {
-			Object value = daemonState.get(internalKey);
+			var value = daemonState.get(internalKey);
 			if (value == null) {
 				// TODO: throw TriggerConfigurationException(); (see https://github.com/diffplug/spotless/issues/987)
 				throw cacheIsStale();
@@ -92,7 +92,7 @@ class JvmLocalCache {
 				return true;
 			if (o == null || getClass() != o.getClass())
 				return false;
-			InternalCacheKey that = (InternalCacheKey) o;
+			var that = (InternalCacheKey) o;
 			return projectDir.equals(that.projectDir) && taskPath.equals(that.taskPath) && propertyName.equals(that.propertyName);
 		}
 

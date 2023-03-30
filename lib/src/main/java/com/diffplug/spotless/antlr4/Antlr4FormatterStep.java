@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package com.diffplug.spotless.antlr4;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 import com.diffplug.spotless.*;
 
@@ -60,7 +59,7 @@ public class Antlr4FormatterStep {
 
 			// String Antlr4Formatter::format(String input)
 			Class<?> formatter = classLoader.loadClass("com.khubla.antlr4formatter.Antlr4Formatter");
-			Method formatterMethod = formatter.getMethod("format", String.class);
+			var formatterMethod = formatter.getMethod("format", String.class);
 
 			return input -> {
 				try {

@@ -53,7 +53,7 @@ public class NpmPathResolver {
 			return this.explicitNpmExecutable;
 		}
 		if (this.explicitNodeExecutable != null) {
-			File nodeExecutableCandidate = new File(this.explicitNodeExecutable.getParentFile(), NpmExecutableResolver.npmExecutableName());
+			var nodeExecutableCandidate = new File(this.explicitNodeExecutable.getParentFile(), NpmExecutableResolver.npmExecutableName());
 			if (nodeExecutableCandidate.canExecute()) {
 				return nodeExecutableCandidate;
 			}
@@ -74,13 +74,13 @@ public class NpmPathResolver {
 		if (this.explicitNodeExecutable != null) {
 			return this.explicitNodeExecutable;
 		}
-		File npmExecutable = resolveNpmExecutable();
+		var npmExecutable = resolveNpmExecutable();
 		return NodeExecutableResolver.tryFindNextTo(npmExecutable)
 				.orElseThrow(() -> new IllegalStateException("Can't automatically determine node executable and none was specifically supplied!\n\n" + NodeExecutableResolver.explainMessage()));
 	}
 
 	public String resolveNpmrcContent() {
-		File npmrcFile = Optional.ofNullable(this.explicitNpmrcFile)
+		var npmrcFile = Optional.ofNullable(this.explicitNpmrcFile)
 				.orElseGet(() -> new NpmrcResolver(additionalNpmrcLocations).tryFind()
 						.orElse(null));
 		if (npmrcFile != null) {

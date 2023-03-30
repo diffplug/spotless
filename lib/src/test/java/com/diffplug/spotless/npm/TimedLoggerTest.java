@@ -208,7 +208,7 @@ class TimedLoggerTest {
 				if (event.arguments().length != arguments.length) {
 					return false;
 				}
-				for (int i = 0; i < arguments.length; i++) {
+				for (var i = 0; i < arguments.length; i++) {
 					if (!String.valueOf(event.arguments()[i]).equals(arguments[i])) {
 						return false;
 					}

@@ -102,7 +102,7 @@ public final class DiffMessageFormatter {
 
 		@Override
 		public String getFormatted(File file, String rawUnix) {
-			Path clean = cleanDir.resolve(rootDir.relativize(file.toPath()));
+			var clean = cleanDir.resolve(rootDir.relativize(file.toPath()));
 			byte[] content = Errors.rethrow().get(() -> Files.readAllBytes(clean));
 			return new String(content, encoding);
 		}
@@ -143,7 +143,7 @@ public final class DiffMessageFormatter {
 				Objects.requireNonNull(runToFix, "runToFix");
 				Objects.requireNonNull(formatter, "formatter");
 				Objects.requireNonNull(problemFiles, "problemFiles");
-				DiffMessageFormatter diffFormater = new DiffMessageFormatter(formatter, problemFiles);
+				var diffFormater = new DiffMessageFormatter(formatter, problemFiles);
 				return "The following files had format violations:\n"
 						+ diffFormater.buffer
 						+ runToFix;
@@ -165,11 +165,11 @@ public final class DiffMessageFormatter {
 		this.formatter = Objects.requireNonNull(formatter, "formatter");
 		ListIterator<File> problemIter = problemFiles.listIterator();
 		while (problemIter.hasNext() && numLines < MAX_CHECK_MESSAGE_LINES) {
-			File file = problemIter.next();
+			var file = problemIter.next();
 			addFile(relativePath(file) + "\n" + diff(file));
 		}
 		if (problemIter.hasNext()) {
-			int remainingFiles = problemFiles.size() - problemIter.nextIndex();
+			var remainingFiles = problemFiles.size() - problemIter.nextIndex();
 			if (remainingFiles >= MAX_FILES_TO_LIST) {
 				buffer.append("Violations also present in ").append(remainingFiles).append(" other files.\n");
 			} else {
@@ -199,7 +199,7 @@ public final class DiffMessageFormatter {
 		if (!lines.isEmpty()) {
 			addIntendedLine(NORMAL_INDENT, lines.get(0));
 		}
-		for (int i = 1; i < Math.min(MIN_LINES_PER_FILE, lines.size()); ++i) {
+		for (var i = 1; i < Math.min(MIN_LINES_PER_FILE, lines.size()); ++i) {
 			addIntendedLine(DIFF_INDENT, lines.get(i));
 		}
 
@@ -212,7 +212,7 @@ public final class DiffMessageFormatter {
 		if (numLines >= MAX_CHECK_MESSAGE_LINES) {
 			// we're out of space
 			if (iter.hasNext()) {
-				int linesLeft = lines.size() - iter.nextIndex();
+				var linesLeft = lines.size() - iter.nextIndex();
 				addIntendedLine(NORMAL_INDENT, "... (" + linesLeft + " more lines that didn't fit)");
 			}
 		}
@@ -234,9 +234,9 @@ public final class DiffMessageFormatter {
 	 * sequence (\n, \r, \r\n).
 	 */
 	private String diff(File file) throws IOException {
-		String raw = new String(Files.readAllBytes(file.toPath()), formatter.getEncoding());
+		var raw = new String(Files.readAllBytes(file.toPath()), formatter.getEncoding());
 		String rawUnix = LineEnding.toUnix(raw);
-		String formatted = formatter.getFormatted(file, rawUnix);
+		var formatted = formatter.getFormatted(file, rawUnix);
 		String formattedUnix = LineEnding.toUnix(formatted);
 
 		if (rawUnix.equals(formattedUnix)) {
@@ -263,11 +263,11 @@ public final class DiffMessageFormatter {
 		EditList edits = new EditList();
 		edits.addAll(MyersDiff.INSTANCE.diff(RawTextComparator.DEFAULT, a, b));
 
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		var out = new ByteArrayOutputStream();
 		try (DiffFormatter formatter = new DiffFormatter(out)) {
 			formatter.format(edits, a, b);
 		}
-		String formatted = out.toString(StandardCharsets.UTF_8.name());
+		var formatted = out.toString(StandardCharsets.UTF_8.name());
 
 		// we don't need the diff to show this, since we display newlines ourselves
 		formatted = formatted.replace("\\ No newline at end of file\n", "");

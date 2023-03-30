@@ -41,16 +41,16 @@ class TsFmtFormatterStepTest {
 		@ParameterizedTest(name = "{index}: formatting using {0} is working")
 		@ValueSource(strings = {"vscode/vscode.json", "tslint/tslint.json", "tsfmt/tsfmt.json", "tsconfig/tsconfig.json"})
 		void formattingUsingConfigFile(String formattingConfigFile) throws Exception {
-			String configFileName = formattingConfigFile.substring(formattingConfigFile.lastIndexOf('/') >= 0 ? formattingConfigFile.lastIndexOf('/') + 1 : 0);
-			String configFileNameWithoutExtension = configFileName.substring(0, configFileName.lastIndexOf('.'));
-			String filedir = "npm/tsfmt/" + configFileNameWithoutExtension + "/";
+			var configFileName = formattingConfigFile.substring(formattingConfigFile.lastIndexOf('/') >= 0 ? formattingConfigFile.lastIndexOf('/') + 1 : 0);
+			var configFileNameWithoutExtension = configFileName.substring(0, configFileName.lastIndexOf('.'));
+			var filedir = "npm/tsfmt/" + configFileNameWithoutExtension + "/";
 
 			final File configFile = createTestFile(filedir + configFileName);
-			final String dirtyFile = filedir + configFileNameWithoutExtension + ".dirty";
-			final String cleanFile = filedir + configFileNameWithoutExtension + ".clean";
+			final var dirtyFile = filedir + configFileNameWithoutExtension + ".dirty";
+			final var cleanFile = filedir + configFileNameWithoutExtension + ".clean";
 
 			// some config options expect to see at least one file in the baseDir, so let's write one there
-			File srcDir = new File(rootFolder(), "src/main/typescript");
+			var srcDir = new File(rootFolder(), "src/main/typescript");
 			Files.createDirectories(srcDir.toPath());
 			Files.write(new File(srcDir, configFileNameWithoutExtension + ".ts").toPath(), getTestResource(dirtyFile).getBytes(StandardCharsets.UTF_8));
 

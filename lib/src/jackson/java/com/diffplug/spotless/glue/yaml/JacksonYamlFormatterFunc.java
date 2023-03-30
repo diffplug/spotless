@@ -73,7 +73,7 @@ public class JacksonYamlFormatterFunc extends AJacksonFormatterFunc {
 
 			// https://github.com/FasterXML/jackson-dataformats-text/issues/66#issuecomment-554265055
 			// https://github.com/FasterXML/jackson-dataformats-text/issues/66#issuecomment-554265055
-			StringWriter stringWriter = new StringWriter();
+			var stringWriter = new StringWriter();
 			objectMapper.writer().writeValues(stringWriter).writeAll(documents).close();
 			return stringWriter.toString();
 		} catch (JsonProcessingException e) {

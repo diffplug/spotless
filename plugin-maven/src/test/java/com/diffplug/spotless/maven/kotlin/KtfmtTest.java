@@ -24,8 +24,8 @@ class KtfmtTest extends MavenIntegrationHarness {
 	void testKtfmt() throws Exception {
 		writePomWithKotlinSteps("<ktfmt/>");
 
-		String path1 = "src/main/kotlin/main1.kt";
-		String path2 = "src/main/kotlin/main2.kt";
+		var path1 = "src/main/kotlin/main1.kt";
+		var path2 = "src/main/kotlin/main2.kt";
 
 		setFile(path1).toResource("kotlin/ktfmt/basic.dirty");
 		setFile(path2).toResource("kotlin/ktfmt/basic.dirty");

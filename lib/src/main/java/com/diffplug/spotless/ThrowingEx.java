@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,7 +105,7 @@ public final class ThrowingEx {
 	 * }</pre>
 	 */
 	public static RuntimeException unwrapCause(Throwable e) {
-		Throwable cause = e.getCause();
+		var cause = e.getCause();
 		if (cause == null) {
 			return asRuntimeRethrowError(e);
 		} else {

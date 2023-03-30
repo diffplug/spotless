@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.diffplug.spotless.FormatterFunc;
@@ -443,11 +442,11 @@ public final class FormatAnnotationsStep {
 		 */
 		String fixupTypeAnnotations(String unixStr) {
 			// Each element of `lines` ends with a newline.
-			String[] lines = unixStr.split("((?<=\n))");
-			for (int i = 0; i < lines.length - 1; i++) {
-				String line = lines[i];
+			var lines = unixStr.split("((?<=\n))");
+			for (var i = 0; i < lines.length - 1; i++) {
+				var line = lines[i];
 				if (endsWithTypeAnnotation(line)) {
-					String nextLine = lines[i + 1];
+					var nextLine = lines[i + 1];
 					if (startsWithCommentPattern.matcher(nextLine).find()) {
 						continue;
 					}
@@ -464,13 +463,13 @@ public final class FormatAnnotationsStep {
 		 */
 		boolean endsWithTypeAnnotation(String unixLine) {
 			// Remove trailing newline.
-			String line = unixLine.replaceAll("\\s+$", "");
-			Matcher m = trailingAnnoPattern.matcher(line);
+			var line = unixLine.replaceAll("\\s+$", "");
+			var m = trailingAnnoPattern.matcher(line);
 			if (!m.find()) {
 				return false;
 			}
-			String preceding = line.substring(0, m.start());
-			String basename = m.group(1);
+			var preceding = line.substring(0, m.start());
+			var basename = m.group(1);
 
 			if (withinCommentPattern.matcher(preceding).find()) {
 				return false;

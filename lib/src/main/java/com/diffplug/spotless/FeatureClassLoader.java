@@ -17,7 +17,6 @@ package com.diffplug.spotless;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.ByteBuffer;
@@ -63,8 +62,8 @@ class FeatureClassLoader extends URLClassLoader {
 	@Override
 	protected Class<?> findClass(String name) throws ClassNotFoundException {
 		if (name.startsWith("com.diffplug.spotless.glue.") || name.startsWith("com.diffplug.spotless.extra.glue.")) {
-			String path = name.replace('.', '/') + ".class";
-			URL url = findResource(path);
+			var path = name.replace('.', '/') + ".class";
+			var url = findResource(path);
 			if (url == null) {
 				throw new ClassNotFoundException(name);
 			}
@@ -92,7 +91,7 @@ class FeatureClassLoader extends URLClassLoader {
 
 	@Override
 	public URL findResource(String name) {
-		URL resource = super.findResource(name);
+		var resource = super.findResource(name);
 		if (resource != null) {
 			return resource;
 		}
@@ -100,8 +99,8 @@ class FeatureClassLoader extends URLClassLoader {
 	}
 
 	private static ByteBuffer urlToByteBuffer(URL url) throws IOException {
-		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-		try (InputStream inputStream = url.openStream()) {
+		var buffer = new ByteArrayOutputStream();
+		try (var inputStream = url.openStream()) {
 			inputStream.transferTo(buffer);
 		}
 		buffer.flush();

@@ -63,7 +63,7 @@ class ResourceAccessor {
 	/** Resources are located in the JAR of the given class
 	 * @throws BundleException */
 	ResourceAccessor(Class<?> clazz) throws BundleException {
-		String bundleObjPath = clazz.getName();
+		var bundleObjPath = clazz.getName();
 		fatJarResourcePath = bundleObjPath.substring(0, bundleObjPath.lastIndexOf('.'));
 		try {
 			bundleFile = getBundlFile(clazz);
@@ -74,7 +74,7 @@ class ResourceAccessor {
 
 	private static BundleFile getBundlFile(Class<?> clazz) throws BundleException {
 		URI objUri = getBundleUri(clazz);
-		File jarOrDirectory = new File(objUri.getPath());
+		var jarOrDirectory = new File(objUri.getPath());
 		if (!(jarOrDirectory.exists() && jarOrDirectory.canRead())) {
 			throw new BundleException(String.format("Path '%s' for '%s' is not accessible exist on local file system.", objUri, clazz.getName()), BundleException.READ_ERROR);
 		}
@@ -87,7 +87,7 @@ class ResourceAccessor {
 
 	private static URI getBundleUri(Class<?> clazz) throws BundleException {
 		try {
-			URL objUrl = clazz.getProtectionDomain().getCodeSource().getLocation();
+			var objUrl = clazz.getProtectionDomain().getCodeSource().getLocation();
 			return objUrl.toURI();
 		} catch (NullPointerException e) {
 			//No bunlde should be used for RT classes lookup. See also org.eclipse.core.runtime.PerformanceStats.
@@ -101,10 +101,10 @@ class ResourceAccessor {
 
 	/** Get the manifest name from the resources. */
 	String getManifestName() throws BundleException {
-		URL manifestUrl = getEntry(JarFile.MANIFEST_NAME);
+		var manifestUrl = getEntry(JarFile.MANIFEST_NAME);
 		if (null != manifestUrl) {
 			try {
-				Manifest manifest = new Manifest(manifestUrl.openStream());
+				var manifest = new Manifest(manifestUrl.openStream());
 				String headerValue = manifest.getMainAttributes().getValue(Constants.BUNDLE_SYMBOLICNAME);
 				if (null == headerValue) {
 					throw new BundleException(String.format("Symbolic values not found in '%s'.", manifestUrl), BundleException.MANIFEST_ERROR);

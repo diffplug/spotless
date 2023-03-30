@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,11 +56,11 @@ final class JsonEscaper {
 		 * additionally we handle xhtml '</bla>' string
 		 * and non-ascii chars
 		 */
-		StringBuilder escaped = new StringBuilder();
+		var escaped = new StringBuilder();
 		escaped.append('"');
 		char b;
 		char c = 0;
-		for (int i = 0; i < unescaped.length(); i++) {
+		for (var i = 0; i < unescaped.length(); i++) {
 			b = c;
 			c = unescaped.charAt(i);
 			switch (c) {
@@ -95,7 +95,7 @@ final class JsonEscaper {
 				if (c < ' ' || (c >= '\u0080' && c < '\u00a0')
 						|| (c >= '\u2000' && c < '\u2100')) {
 					escaped.append('\\').append('u');
-					String hexString = Integer.toHexString(c);
+					var hexString = Integer.toHexString(c);
 					escaped.append("0000", 0, 4 - hexString.length());
 					escaped.append(hexString);
 				} else {

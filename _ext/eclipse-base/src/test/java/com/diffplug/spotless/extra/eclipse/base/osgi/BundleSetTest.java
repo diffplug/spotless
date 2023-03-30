@@ -49,7 +49,7 @@ class BundleSetTest {
 
 	@Test
 	void testSameSymbolicName() throws BundleException {
-		final String symbolicName = "sym.a";
+		final var symbolicName = "sym.a";
 		final long id1 = 12345;
 		final long id2 = 23456;
 		Bundle testBundle1 = new TestBundle(id1, symbolicName);
@@ -63,8 +63,8 @@ class BundleSetTest {
 
 	@Test
 	void testSameID() throws BundleException {
-		final String symbolicName1 = "sym.a";
-		final String symbolicName2 = "sym.b";
+		final var symbolicName1 = "sym.a";
+		final var symbolicName2 = "sym.b";
 		final long id = 12345;
 		Bundle testBundle1 = new TestBundle(id, symbolicName1);
 		Bundle testBundle2 = new TestBundle(id, symbolicName2);

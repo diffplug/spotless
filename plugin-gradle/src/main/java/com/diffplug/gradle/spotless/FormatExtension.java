@@ -235,7 +235,7 @@ public class FormatExtension {
 		} else if (target instanceof String) {
 			File dir = getProject().getProjectDir();
 			ConfigurableFileTree matchedFiles = getProject().fileTree(dir);
-			String targetString = (String) target;
+			var targetString = (String) target;
 			matchedFiles.include(targetString);
 
 			// since people are likely to do '**/*.md', we want to make sure to exclude folders
@@ -267,7 +267,7 @@ public class FormatExtension {
 	}
 
 	private static void relativizeIfSubdir(List<String> relativePaths, File root, File dest) {
-		String relativized = relativize(root, dest);
+		var relativized = relativize(root, dest);
 		if (relativized != null) {
 			relativePaths.add(relativized);
 		}
@@ -278,8 +278,8 @@ public class FormatExtension {
 	 * or null if dest is not a child of root.
 	 */
 	static @Nullable String relativize(File root, File dest) {
-		String rootPath = root.getAbsolutePath();
-		String destPath = dest.getAbsolutePath();
+		var rootPath = root.getAbsolutePath();
+		var destPath = dest.getAbsolutePath();
 		if (!destPath.startsWith(rootPath)) {
 			return null;
 		} else {
@@ -302,7 +302,7 @@ public class FormatExtension {
 
 	/** Returns the index of the existing step with the given name, or -1 if no such step exists. */
 	protected int getExistingStepIdx(String stepName) {
-		for (int i = 0; i < steps.size(); ++i) {
+		for (var i = 0; i < steps.size(); ++i) {
 			if (steps.get(i).getName().equals(stepName)) {
 				return i;
 			}
@@ -425,7 +425,7 @@ public class FormatExtension {
 		public LicenseHeaderConfig named(String name) {
 			String existingStepName = builder.getName();
 			builder = builder.withName(name);
-			int existingStepIdx = getExistingStepIdx(existingStepName);
+			var existingStepIdx = getExistingStepIdx(existingStepName);
 			if (existingStepIdx != -1) {
 				steps.set(existingStepIdx, createStep());
 			} else {
@@ -486,7 +486,7 @@ public class FormatExtension {
 				if ("true".equals(spotless.project.findProperty(LicenseHeaderStep.FLAG_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY()))) {
 					return YearMode.SET_FROM_GIT;
 				} else {
-					boolean updateYear = updateYearWithLatest == null ? getRatchetFrom() != null : updateYearWithLatest;
+					var updateYear = updateYearWithLatest == null ? getRatchetFrom() != null : updateYearWithLatest;
 					return updateYear ? YearMode.UPDATE_TO_TODAY : YearMode.PRESERVE;
 				}
 			}).build();
@@ -500,7 +500,7 @@ public class FormatExtension {
 	 *            Spotless will look for a line that starts with this regular expression pattern to know what the "top" is.
 	 */
 	public LicenseHeaderConfig licenseHeader(String licenseHeader, String delimiter) {
-		LicenseHeaderConfig config = new LicenseHeaderConfig(LicenseHeaderStep.headerDelimiter(licenseHeader, delimiter));
+		var config = new LicenseHeaderConfig(LicenseHeaderStep.headerDelimiter(licenseHeader, delimiter));
 		addStep(config.createStep());
 		return config;
 	}
@@ -512,9 +512,9 @@ public class FormatExtension {
 	 *            Spotless will look for a line that starts with this regular expression pattern to know what the "top" is.
 	 */
 	public LicenseHeaderConfig licenseHeaderFile(Object licenseHeaderFile, String delimiter) {
-		LicenseHeaderConfig config = new LicenseHeaderConfig(LicenseHeaderStep.headerDelimiter(() -> {
+		var config = new LicenseHeaderConfig(LicenseHeaderStep.headerDelimiter(() -> {
 			File file = getProject().file(licenseHeaderFile);
-			byte[] data = Files.readAllBytes(file.toPath());
+			var data = Files.readAllBytes(file.toPath());
 			return new String(data, getEncoding());
 		}, delimiter));
 		addStep(config.createStep());
@@ -661,7 +661,7 @@ public class FormatExtension {
 
 	/** Uses exactly the npm packages specified in the map. */
 	public PrettierConfig prettier(Map<String, String> devDependencies) {
-		PrettierConfig prettierConfig = new PrettierConfig(devDependencies);
+		var prettierConfig = new PrettierConfig(devDependencies);
 		addStep(prettierConfig.createStep());
 		return prettierConfig;
 	}

@@ -15,7 +15,6 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.io.File;
 import java.nio.file.Paths;
 
 import org.assertj.core.api.Assertions;
@@ -32,13 +31,13 @@ public class SpotlessTaskImplTest {
 		SpotlessTaskImpl task = Mockito.mock(SpotlessTaskImpl.class, Mockito.CALLS_REAL_METHODS);
 		Mockito.when(task.getLogger()).thenReturn(Mockito.mock(Logger.class));
 
-		File projectDir = Paths.get("unitTests", "projectDir").toFile();
+		var projectDir = Paths.get("unitTests", "projectDir").toFile();
 		DirectoryProperty projectDirProperty = Mockito.mock(DirectoryProperty.class, Mockito.RETURNS_DEEP_STUBS);
 		Mockito.when(projectDirProperty.get().getAsFile()).thenReturn(projectDir);
 
 		Mockito.when(task.getProjectDir()).thenReturn(projectDirProperty);
 
-		File input = Paths.get("unitTests", "projectDir", "someInput").toFile();
+		var input = Paths.get("unitTests", "projectDir", "someInput").toFile();
 		Formatter formatter = Mockito.mock(Formatter.class);
 
 		Assertions.assertThatThrownBy(() -> task.processInputFile(null, formatter, input)).hasMessageContaining(input.toString());

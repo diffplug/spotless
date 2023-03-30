@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2022 DiffPlug
+ * Copyright 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ public class BlackStep {
 	}
 
 	private State createState() throws IOException, InterruptedException {
-		String trackingIssue = "\n  github issue to handle this better: https://github.com/diffplug/spotless/issues/674";
+		var trackingIssue = "\n  github issue to handle this better: https://github.com/diffplug/spotless/issues/674";
 		ForeignExe exeAbsPath = ForeignExe.nameAndVersion("black", version)
 				.pathToExe(pathToExe)
 				.versionRegex(Pattern.compile("(?:black, version|black,|version) (\\S*)"))

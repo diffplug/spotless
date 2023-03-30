@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 DiffPlug
+ * Copyright 2022-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ class FormatAnnotationsStepTest extends MavenIntegrationHarness {
 	void testFormatAnnotations() throws Exception {
 		writePomWithJavaSteps("<formatAnnotations/>");
 
-		String path = "src/main/java/test.java";
+		var path = "src/main/java/test.java";
 		setFile(path).toResource("java/formatannotations/FormatAnnotationsTestInput.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).sameAsResource("java/formatannotations/FormatAnnotationsTestOutput.test");
@@ -35,7 +35,7 @@ class FormatAnnotationsStepTest extends MavenIntegrationHarness {
 	void testFormatAnnotationsAccessModifiers() throws Exception {
 		writePomWithJavaSteps("<formatAnnotations/>");
 
-		String path = "src/main/java/test.java";
+		var path = "src/main/java/test.java";
 		setFile(path).toResource("java/formatannotations/FormatAnnotationsAccessModifiersInput.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).sameAsResource("java/formatannotations/FormatAnnotationsAccessModifiersOutput.test");

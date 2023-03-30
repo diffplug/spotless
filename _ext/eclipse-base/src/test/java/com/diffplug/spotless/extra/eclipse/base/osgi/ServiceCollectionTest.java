@@ -39,8 +39,8 @@ class ServiceCollectionTest {
 
 	@Test
 	void testAddGet() {
-		Service1 service1 = new Service1();
-		Service2 service2 = new Service2();
+		var service1 = new Service1();
+		var service2 = new Service2();
 		instance.add(Interf1.class, service1);
 		instance.add(Interf2a.class, service2);
 		instance.add(Interf2b.class, service2);
@@ -51,8 +51,8 @@ class ServiceCollectionTest {
 
 	@Test
 	void testMultipleServicesPerInterface() {
-		Service1 serviceX = new Service1();
-		Service1 serviceY = new Service1();
+		var serviceX = new Service1();
+		var serviceY = new Service1();
 		instance.add(Interf1.class, serviceX);
 		ServiceException e = assertThrows(ServiceException.class, () -> instance.add(Interf1.class, serviceY));
 		assertThat(e.getMessage()).as("ServiceException does not contain interface class name.").contains(Interf1.class.getName());

@@ -39,7 +39,7 @@ public class PluginRegistrar {
 	private static final String PLUGIN_PROPERTIES = "plugin.properties";
 
 	public static BundleException register(Bundle bundle) {
-		PluginRegistrar registrar = new PluginRegistrar(bundle);
+		var registrar = new PluginRegistrar(bundle);
 		try {
 			registrar.register();
 		} catch (BundleException e) {

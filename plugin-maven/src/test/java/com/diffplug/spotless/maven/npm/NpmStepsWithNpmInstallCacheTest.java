@@ -41,7 +41,7 @@ public class NpmStepsWithNpmInstallCacheTest extends MavenIntegrationHarness {
 
 	@Test
 	void prettierTypescriptWithoutCache() throws Exception {
-		String suffix = "ts";
+		var suffix = "ts";
 		writePomWithPrettierSteps("**/*." + suffix,
 				"<prettier>",
 				"  <prettierVersion>1.16.4</prettierVersion>",
@@ -53,7 +53,7 @@ public class NpmStepsWithNpmInstallCacheTest extends MavenIntegrationHarness {
 
 	@Test
 	void prettierTypescriptWithDefaultCache() throws Exception {
-		String suffix = "ts";
+		var suffix = "ts";
 		writePomWithPrettierSteps("**/*." + suffix,
 				"<prettier>",
 				"  <prettierVersion>1.16.4</prettierVersion>",
@@ -69,7 +69,7 @@ public class NpmStepsWithNpmInstallCacheTest extends MavenIntegrationHarness {
 
 	@Test
 	void prettierTypescriptWithDefaultCacheIsReusedOnSecondRun() throws Exception {
-		String suffix = "ts";
+		var suffix = "ts";
 		writePomWithPrettierSteps("**/*." + suffix,
 				"<prettier>",
 				"  <prettierVersion>1.16.4</prettierVersion>",
@@ -94,7 +94,7 @@ public class NpmStepsWithNpmInstallCacheTest extends MavenIntegrationHarness {
 
 	@Test
 	void prettierTypescriptWithSpecificCache() throws Exception {
-		String suffix = "ts";
+		var suffix = "ts";
 		File cacheDir = newFolder("cache-prettier-1");
 		writePomWithPrettierSteps("**/*." + suffix,
 				"<prettier>",
@@ -111,7 +111,7 @@ public class NpmStepsWithNpmInstallCacheTest extends MavenIntegrationHarness {
 
 	@Test
 	void prettierTypescriptWithSpecificCacheIsUsedOnSecondRun() throws Exception {
-		String suffix = "ts";
+		var suffix = "ts";
 		File cacheDir = newFolder("cache-prettier-1");
 		writePomWithPrettierSteps("**/*." + suffix,
 				"<prettier>",
@@ -140,16 +140,16 @@ public class NpmStepsWithNpmInstallCacheTest extends MavenIntegrationHarness {
 	}
 
 	private Result run(String kind, String suffix) throws IOException, InterruptedException {
-		String path = prepareRun(kind, suffix);
+		var path = prepareRun(kind, suffix);
 		Result result = mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).sameAsResource("npm/prettier/filetypes/" + kind + "/" + kind + ".clean");
 		return result;
 	}
 
 	private String prepareRun(String kind, String suffix) throws IOException {
-		String configPath = ".prettierrc.yml";
+		var configPath = ".prettierrc.yml";
 		setFile(configPath).toResource("npm/prettier/filetypes/" + kind + "/" + ".prettierrc.yml");
-		String path = "src/main/" + kind + "/test." + suffix;
+		var path = "src/main/" + kind + "/test." + suffix;
 		setFile(path).toResource("npm/prettier/filetypes/" + kind + "/" + kind + ".dirty");
 		return path;
 	}

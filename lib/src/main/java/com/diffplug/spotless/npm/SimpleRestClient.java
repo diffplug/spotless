@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
@@ -52,27 +51,27 @@ class SimpleRestClient {
 
 	String postJson(String endpoint, @Nullable String rawJson) throws SimpleRestException {
 		try {
-			URL url = new URL(this.baseUrl + endpoint);
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+			var url = new URL(this.baseUrl + endpoint);
+			var con = (HttpURLConnection) url.openConnection();
 			con.setConnectTimeout(60 * 1000); // one minute
 			con.setReadTimeout(2 * 60 * 1000); // two minutes - who knows how large those files can actually get
 			con.setRequestMethod("POST");
 			con.setRequestProperty("Content-Type", "application/json");
 			con.setDoOutput(true);
 			if (rawJson != null) {
-				try (OutputStream out = con.getOutputStream()) {
+				try (var out = con.getOutputStream()) {
 					NpmResourceHelper.writeUtf8StringToOutputStream(rawJson, out);
 					out.flush();
 				}
 			}
 
-			int status = con.getResponseCode();
+			var status = con.getResponseCode();
 
 			if (status != 200) {
 				throw new SimpleRestResponseException(status, readError(con), "Unexpected response status code at " + endpoint);
 			}
 
-			String response = readResponse(con);
+			var response = readResponse(con);
 			return response;
 		} catch (IOException e) {
 			throw new SimpleRestIOException(e);
@@ -88,7 +87,7 @@ class SimpleRestClient {
 	}
 
 	private String readInputStream(InputStream inputStream) throws IOException {
-		try (BufferedInputStream input = new BufferedInputStream(inputStream)) {
+		try (var input = new BufferedInputStream(inputStream)) {
 			return NpmResourceHelper.readUtf8StringFromInputStream(input);
 		}
 	}

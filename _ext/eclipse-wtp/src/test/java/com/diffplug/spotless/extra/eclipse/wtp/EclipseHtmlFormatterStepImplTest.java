@@ -40,7 +40,7 @@ class EclipseHtmlFormatterStepImplTest {
 		 * org.eclipse.core.runtime/.settings/org.eclipse.wst.xml.core.prefs.
 		 * So a simple test of one configuration item change is considered sufficient.
 		 */
-		Properties properties = new Properties();
+		var properties = new Properties();
 		properties.put(CLEANUP_TAG_NAME_CASE, Integer.toString(HTMLCorePreferenceNames.UPPER)); //HTML config
 		properties.put(FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON, JavaScriptCore.INSERT); //JS config
 		properties.put(QUOTE_ATTR_VALUES, "TRUE"); //CSS config
@@ -89,7 +89,7 @@ class EclipseHtmlFormatterStepImplTest {
 
 	@Test
 	void checkCleanupForNonUtf8() throws Exception {
-		String osEncoding = System.getProperty("file.encoding");
+		var osEncoding = System.getProperty("file.encoding");
 		System.setProperty("file.encoding", "ISO-8859-1"); //Simulate a non UTF-8 OS
 		String[] input = testData.input("utf-8.html");
 		String output = formatter.format(input[0]);
