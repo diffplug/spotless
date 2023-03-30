@@ -32,31 +32,31 @@ class MultiModuleProjectTest extends MavenIntegrationHarness {
 	@Test
 	void testConfigurationDependency() throws Exception {
 		/*
-		create a multi-module project with the following stucture:
+		create a multi-module project with the following structure:
 
 		    /junit-tmp-dir
 		    ├── config
-		    │   ├── pom.xml
-		    │   └── src/main/resources/configs
-		    │       ├── eclipse-formatter.xml
-		    │       └── scalafmt.conf
+		    │   ├── pom.xml
+		    │   └── src/main/resources/configs
+		    │       ├── eclipse-formatter.xml
+		    │       └── scalafmt.conf
 		    ├── mvnw
 		    ├── mvnw.cmd
 		    ├── one
-		    │   ├── pom.xml
-		    │   └── src
-		    │       ├── main/java/test1.java
-		    │       └── test/java/test2.java
+		    │   ├── pom.xml
+		    │   └── src
+		    │       ├── main/java/test1.java
+		    │       └── test/java/test2.java
 		    ├── two
-		    │   ├── pom.xml
-		    │   └── src
-		    │       ├── main/java/test1.java
-		    │       └── test/java/test2.java
+		    │   ├── pom.xml
+		    │   └── src
+		    │       ├── main/java/test1.java
+		    │       └── test/java/test2.java
 		    ├── three
-		    │   ├── pom.xml
-		    │   └── src
-		    │       ├── main/scala/test1.scala
-		    │       └── test/scala/test2.scala
+		    │   ├── pom.xml
+		    │   └── src
+		    │       ├── main/scala/test1.scala
+		    │       └── test/scala/test2.scala
 		    ├── pom.xml
 		    ├── .mvn
 		    ├── mvnw
@@ -70,7 +70,7 @@ class MultiModuleProjectTest extends MavenIntegrationHarness {
 						"<java>",
 						"  <eclipse>",
 						"    <file>configs/eclipse-formatter.xml</file>",
-						"    <version>4.7.1</version>",
+						"    <version>4.9</version>",
 						"  </eclipse>",
 						"</java>",
 						"<scala>",

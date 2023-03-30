@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ class MavenProvisionerTest extends MavenIntegrationHarness {
 	void testMultipleDependenciesExcludingTransitives() throws Exception {
 		writePomWithJavaSteps(
 				"<eclipse>",
-				"  <version>4.8.0</version>",
+				"  <version>4.9</version>",
 				"</eclipse>");
 		setFile("formatter.xml").toResource("java/eclipse/formatter.xml");
 		assertResolveDependenciesWorks();
@@ -33,7 +33,7 @@ class MavenProvisionerTest extends MavenIntegrationHarness {
 	void testSingleDependencyIncludingTransitives() throws Exception {
 		writePomWithJavaSteps(
 				"<googleJavaFormat>",
-				"  <version>1.2</version>",
+				"  <version>1.10.0</version>",
 				"</googleJavaFormat>");
 		assertResolveDependenciesWorks();
 	}

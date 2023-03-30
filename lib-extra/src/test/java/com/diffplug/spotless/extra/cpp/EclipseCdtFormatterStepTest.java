@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,10 @@ import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.TestProvisioner;
-import com.diffplug.spotless.extra.eclipse.EclipseResourceHarness;
+import com.diffplug.spotless.extra.eclipse.EquoResourceHarness;
 
-class EclipseCdtFormatterStepTest extends EclipseResourceHarness {
-	private final static Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support("Oldest Version").add(8, "4.11.0");
+class EclipseCdtFormatterStepTest extends EquoResourceHarness {
 	private final static String INPUT = "#include <a.h>;\nint main(int argc,   \nchar *argv[]) {}";
 	private final static String EXPECTED = "#include <a.h>;\nint main(int argc, char *argv[]) {\n}\n";
 
@@ -40,6 +38,6 @@ class EclipseCdtFormatterStepTest extends EclipseResourceHarness {
 	}
 
 	private static Stream<String> formatWithVersion() {
-		return Stream.of(JVM_SUPPORT.getRecommendedFormatterVersion(), EclipseCdtFormatterStep.defaultVersion());
+		return Stream.of("10.6", "10.7", EclipseCdtFormatterStep.defaultVersion());
 	}
 }

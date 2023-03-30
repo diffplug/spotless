@@ -1,2 +1,0 @@
-# Spotless formatter based on Groovy-Eclipse version 2.3.0 (see https://github.com/groovy/groovy-eclipse/wiki)
-com.diffplug.spotless:spotless-ext-greclipse:2.3.0

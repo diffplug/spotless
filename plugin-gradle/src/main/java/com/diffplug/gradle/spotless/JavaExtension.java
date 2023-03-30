@@ -21,6 +21,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -32,7 +33,7 @@ import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
+import com.diffplug.spotless.extra.EquoBasedStepBuilder;
 import com.diffplug.spotless.extra.java.EclipseJdtFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.java.CleanthatJavaStep;
@@ -50,9 +51,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 		super(spotless);
 	}
 
-	// If this constant changes, don't forget to change the similarly-named one in
-	// testlib/src/test/java/com/diffplug/spotless/generic/LicenseHeaderStepTest.java as well
-	static final String LICENSE_HEADER_DELIMITER = "package ";
+	static final String LICENSE_HEADER_DELIMITER = LicenseHeaderStep.DEFAULT_JAVA_HEADER_DELIMITER;
 
 	@Override
 	public LicenseHeaderConfig licenseHeader(String licenseHeader) {
@@ -219,7 +218,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 	}
 
 	public class EclipseConfig {
-		private final EclipseBasedStepBuilder builder;
+		private final EquoBasedStepBuilder builder;
 
 		EclipseConfig(String version) {
 			builder = EclipseJdtFormatterStep.createBuilder(provisioner());
@@ -232,6 +231,12 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 			Project project = getProject();
 			builder.setPreferences(project.files(configFiles).getFiles());
 			replaceStep(builder.build());
+		}
+
+		public EclipseConfig withP2Mirrors(Map<String, String> mirrors) {
+			builder.setP2Mirrors(mirrors);
+			replaceStep(builder.build());
+			return this;
 		}
 
 	}

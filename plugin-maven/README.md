@@ -8,8 +8,8 @@ output = [
   ].join('\n');
 -->
 [![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
-[![Changelog](https://img.shields.io/badge/changelog-2.34.0-blue.svg)](CHANGES.md)
-[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.34.0/index.html)
+[![Changelog](https://img.shields.io/badge/changelog-2.35.0-blue.svg)](CHANGES.md)
+[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.35.0/index.html)
 <!---freshmark /shields -->
 
 <!---freshmark javadoc
@@ -213,9 +213,9 @@ any other maven phase (i.e. compile) then it can be configured as below;
 
 ```xml
 <googleJavaFormat>
-  <version>1.8</version>                      <!-- optional -->
+  <version>1.8</version>                      <!-- optional, 1.8 is minimum supported version -->
   <style>GOOGLE</style>                       <!-- or AOSP (optional) -->
-  <reflowLongStrings>true</reflowLongStrings> <!-- optional (requires at least 1.8) -->
+  <reflowLongStrings>true</reflowLongStrings> <!-- optional -->
   <!-- optional: custom group artifact (you probably don't need this) -->
   <groupArtifact>com.google.googlejavaformat:google-java-format</groupArtifact>
 </googleJavaFormat>
@@ -237,7 +237,7 @@ any other maven phase (i.e. compile) then it can be configured as below;
 
 ```xml
 <eclipse>
-  <version>4.21.0</version>                     <!-- optional version of Eclipse Formatter -->
+  <version>4.26</version>                     <!-- optional version of Eclipse Formatter -->
   <file>${project.basedir}/eclipse-formatter.xml</file> <!-- optional -->
 </eclipse>
 ```
@@ -331,7 +331,7 @@ These mechanisms already exist for the Gradle plugin.
 
 ```xml
 <greclipse>
-  <version>4.21.0</version>                     <!-- optional version of Eclipse Formatter -->
+  <version>4.26</version>  <!-- optional version of Eclipse Formatter -->
   <file>${project.basedir}/greclipse.properties</file> <!-- optional -->
 </greclipse>
 ```
@@ -481,7 +481,7 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
 
 ```xml
 <eclipseCdt>
-  <version>4.21.0</version>               <!-- optional version of Eclipse Formatter -->
+  <version>11.0</version> <!-- optional version of Eclipse Formatter, others at https://download.eclipse.org/tools/cdt/releases/ -->
   <file>${project.basedir}/eclipse-cdt.xml</file> <!-- optional -->
 </eclipseCdt>
 ```
@@ -1262,7 +1262,7 @@ To define what lines to skip at the beginning of such files, fill the `skipLines
 
 ## Incremental up-to-date checking and formatting
 
-**This feature is turned off by default.**
+**This feature is enabled by default starting from version 2.35.0.**
 
 Execution of `spotless:check` and `spotless:apply` for large projects can take time.
 By default, Spotless Maven plugin needs to read and format each source file.

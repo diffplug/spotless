@@ -187,7 +187,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	private String setLicenseHeaderYearsFromGitHistory;
 
 	@Parameter
-	private UpToDateChecking upToDateChecking;
+	private UpToDateChecking upToDateChecking = UpToDateChecking.enabled();
 
 	protected abstract void process(Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException;
 
@@ -373,9 +373,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		}
 		final UpToDateChecker checker;
 		if (upToDateChecking != null && upToDateChecking.isEnabled()) {
-			getLog().info("Up-to-date checking enabled");
 			checker = UpToDateChecker.forProject(project, indexFile, formatters, getLog());
 		} else {
+			getLog().info("Up-to-date checking disabled");
 			checker = UpToDateChecker.noop(project, indexFile, getLog());
 		}
 		return UpToDateChecker.wrapWithBuildContext(checker, buildContext);
