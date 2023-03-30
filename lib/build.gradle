@@ -10,6 +10,7 @@ apply from: rootProject.file('gradle/java-publish.gradle')
 def NEEDS_GLUE = [
 	'sortPom',
 	'palantirJavaFormat',
+	'googleJavaFormat',
 	'ktfmt',
 	'ktlint',
 	'flexmark',
@@ -70,6 +71,8 @@ dependencies {
 
 	palantirJavaFormatCompileOnly 'com.palantir.javaformat:palantir-java-format:1.1.0' 	// this version needs to stay compilable against Java 8 for CI Job testNpm
 
+	googleJavaFormatCompileOnly 'com.google.googlejavaformat:google-java-format:1.8' // minimum required version due to api changes before then
+
 	// used jackson-based formatters
 	jacksonCompileOnly 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
 	jacksonCompileOnly 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.14.2'
@@ -120,19 +123,10 @@ spotbugs { reportLevel = 'low' } // low|medium|high (low = sensitive to even min
 
 apply from: rootProject.file('gradle/special-tests.gradle')
 tasks.withType(Test).configureEach {
-	def args = []
 	if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_16)) {
 		// https://docs.gradle.org/7.5/userguide/upgrading_version_7.html#removes_implicit_add_opens_for_test_workers
-		args += [
-			"--add-opens=java.base/java.lang=ALL-UNNAMED",
-			"--add-opens=java.base/java.util=ALL-UNNAMED",
-		]
+		jvmArgs "--add-opens=java.base/java.lang=ALL-UNNAMED"
 	}
-	if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_18)) {
-		// https://openjdk.org/jeps/411
-		args += "-Djava.security.manager=allow"
-	}
-	jvmArgs(args)
 }
 
 jar {

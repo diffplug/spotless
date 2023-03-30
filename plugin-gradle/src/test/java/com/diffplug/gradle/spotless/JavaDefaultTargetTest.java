@@ -32,7 +32,7 @@ class JavaDefaultTargetTest extends GradleIntegrationHarness {
 				"",
 				"spotless {",
 				"    java {",
-				"        googleJavaFormat('1.2')",
+				"        googleJavaFormat()",
 				"    }",
 				"}");
 		setFile("src/main/java/test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
