@@ -12,6 +12,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * Support configuration of mirrors for P2 repositories in `EquoBasedStepBuilder` ([#1629](https://github.com/diffplug/spotless/issues/1629)).
+* Added formatter for Gherkin feature files ([1649](https://github.com/diffplug/spotless/issues/1649)).
 ### Changes
 * **POTENTIALLY BREAKING** Converted `googleJavaFormat` to a compile-only dependency and drop support for versions &lt; `1.8`. ([#1630](https://github.com/diffplug/spotless/pull/1630))
 * Bump default `googleJavaFormat` version `1.15.0` -> `1.16.0`. ([#1630](https://github.com/diffplug/spotless/pull/1630))
@@ -320,10 +321,6 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   * `eclipse-groovy` from `4.19` to `4.20`
   * `eclipse-jdt` from `4.19` to `4.20`
   * `eclipse-wtp` from `4.18` to `4.20`
-
-### Added
-* Added formatter for [Gherkin feature files](https://github.com/diffplug/spotless/issues/928)
-* Added Gradle configuration for Gherkin feature files
 
 ## [2.16.0] - 2021-09-04
 ### Added
