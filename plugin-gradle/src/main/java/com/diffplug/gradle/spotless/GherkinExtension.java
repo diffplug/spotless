@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,10 @@ package com.diffplug.gradle.spotless;
 import javax.inject.Inject;
 
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.gherkin.GherkinSimpleConfig;
 import com.diffplug.spotless.gherkin.GherkinSimpleStep;
 
 public class GherkinExtension extends FormatExtension {
-	private static final int DEFAULT_INDENTATION = 4;
 	static final String NAME = "gherkin";
 
 	@Inject
@@ -38,11 +38,18 @@ public class GherkinExtension extends FormatExtension {
 	}
 
 	public SimpleConfig simple() {
-		return new SimpleConfig(DEFAULT_INDENTATION);
+		return new SimpleConfig(GherkinSimpleConfig.defaultIndentSpaces());
 	}
 
 	public class SimpleConfig {
+		private String version;
 		private int indent;
+
+		public SimpleConfig() {
+			this.version = GherkinSimpleStep.defaultVersion();
+			this.indent = GherkinSimpleConfig.defaultIndentSpaces();
+			addStep(createStep());
+		}
 
 		public SimpleConfig(int indent) {
 			this.indent = indent;
@@ -55,7 +62,7 @@ public class GherkinExtension extends FormatExtension {
 		}
 
 		private FormatterStep createStep() {
-			return GherkinSimpleStep.create(indent, provisioner());
+			return GherkinSimpleStep.create(new GherkinSimpleConfig(indent), version, provisioner());
 		}
 	}
 

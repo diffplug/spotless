@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,8 @@ package com.diffplug.spotless.gherkin;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.SerializableEqualityTester;
@@ -26,14 +27,15 @@ import com.diffplug.spotless.TestProvisioner;
 
 public class GherkinSimpleStepTest {
 
-	private static final int INDENT = 2;
+	private static final String VERSION = GherkinSimpleStep.defaultVersion();
+	private static final int INDENT = GherkinSimpleConfig.defaultIndentSpaces();
 
-	private final FormatterStep step = GherkinSimpleStep.create(INDENT, TestProvisioner.mavenCentral());
+	private final FormatterStep step = GherkinSimpleStep.create(new GherkinSimpleConfig(INDENT), VERSION, TestProvisioner.mavenCentral());
 	private final StepHarness stepHarness = StepHarness.forStep(step);
 
 	@Test
 	public void cannotProvidedNullProvisioner() {
-		assertThatThrownBy(() -> GherkinSimpleStep.create(INDENT, null)).isInstanceOf(NullPointerException.class).hasMessage("provisioner cannot be null");
+		assertThatThrownBy(() -> GherkinSimpleStep.create(new GherkinSimpleConfig(INDENT), VERSION, null)).isInstanceOf(NullPointerException.class).hasMessage("provisioner cannot be null");
 	}
 
 	@Test
@@ -59,20 +61,21 @@ public class GherkinSimpleStepTest {
 	@Test
 	public void handlesInvalidGherkin() {
 		assertThatThrownBy(() -> doWithResource(stepHarness, "invalidGherkin"))
-				.isInstanceOf(AssertionError.class)
-				.hasMessage("Unable to format Gherkin");
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessage("No gherkin document");
 	}
 
 	@Test
 	public void handlesNotGherkin() {
 		assertThatThrownBy(() -> doWithResource(stepHarness, "notGherkin"))
-				.isInstanceOf(AssertionError.class)
-				.hasMessage("Unable to format Gherkin");
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessage("No gherkin document");
 	}
 
+	@Disabled("gherkin-utils does not allow custom indentation")
 	@Test
 	public void canSetCustomIndentationLevel() throws Exception {
-		FormatterStep step = GherkinSimpleStep.create(6, TestProvisioner.mavenCentral());
+		FormatterStep step = GherkinSimpleStep.create(new GherkinSimpleConfig(6), VERSION, TestProvisioner.mavenCentral());
 		StepHarness stepHarness = StepHarness.forStep(step);
 
 		String before = "gherkin/minimalBefore.feature";
@@ -80,9 +83,10 @@ public class GherkinSimpleStepTest {
 		stepHarness.testResource(before, after);
 	}
 
+	@Disabled("gherkin-utils does not allow custom indentation")
 	@Test
 	public void canSetIndentationLevelTo0() throws Exception {
-		FormatterStep step = GherkinSimpleStep.create(0, TestProvisioner.mavenCentral());
+		FormatterStep step = GherkinSimpleStep.create(new GherkinSimpleConfig(0), VERSION, TestProvisioner.mavenCentral());
 		StepHarness stepHarness = StepHarness.forStep(step);
 
 		String before = "gherkin/minimalBefore.feature";
@@ -107,12 +111,12 @@ public class GherkinSimpleStepTest {
 
 			@Override
 			protected FormatterStep create() {
-				return GherkinSimpleStep.create(spaces, TestProvisioner.mavenCentral());
+				return GherkinSimpleStep.create(new GherkinSimpleConfig(spaces), VERSION, TestProvisioner.mavenCentral());
 			}
 		}.testEquals();
 	}
 
-	private static void doWithResource(StepHarness stepHarness, String name) throws Exception {
+	private static void doWithResource(StepHarness stepHarness, String name) {
 		String before = String.format("gherkin/%sBefore.feature", name);
 		String after = String.format("gherkin/%sAfter.feature", name);
 		stepHarness.testResource(before, after);

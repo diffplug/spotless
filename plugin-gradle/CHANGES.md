@@ -14,6 +14,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   ```
   Mirrors are selected by prefix match, for example `https://download.eclipse.org/eclipse/updates/4.26/` will be redirected to `https://some.internal.mirror/eclipse/eclipse/updates/4.26/`.
   The same configuration exists for `greclipse` and `eclipseCdt`.
+* Added support for Gherkin feature files (#???(???))
 ### Changes
 * **POTENTIALLY BREAKING** Drop support for `googleJavaFormat` versions &lt; `1.8`. ([#1630](https://github.com/diffplug/spotless/pull/1630))
 * Bump default `googleJavaFormat` version `1.15.0` -> `1.16.0`. ([#1630](https://github.com/diffplug/spotless/pull/1630))
@@ -368,9 +369,6 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   * `Cannot add a configuration with name 'spotless-1911100560'`
 * Spotless does not [yet](https://github.com/diffplug/spotless/pull/721) support configuration-cache, but now it can never interfere with configuration-cache for other tasks. ([#720](https://github.com/diffplug/spotless/pull/720))
 * Bump minimum required Gradle from `5.4` to `6.1`.
-
-### Added
-* Added Gradle configuration for Gherkin feature files
 
 ## [5.15.0] - 2021-09-04
 ### Added

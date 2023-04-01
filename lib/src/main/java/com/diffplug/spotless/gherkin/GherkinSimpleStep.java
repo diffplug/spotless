@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Objects;
 
 import com.diffplug.spotless.FormatterFunc;
@@ -28,46 +27,35 @@ import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
 public class GherkinSimpleStep {
-	private static final String MAVEN_COORDINATE = "me.jvt.cucumber:gherkin-formatter:";
-	private static final String DEFAULT_VERSION = "1.1.0";
+	private static final String MAVEN_COORDINATE = "io.cucumber:gherkin-utils:";
+	private static final String DEFAULT_VERSION = "8.0.2";
 
-	public static FormatterStep create(int indent, Provisioner provisioner) {
+	public static String defaultVersion() {
+		return DEFAULT_VERSION;
+	}
+
+	public static FormatterStep create(GherkinSimpleConfig gherkinSimpleConfig,
+			String formatterVersion, Provisioner provisioner) {
 		Objects.requireNonNull(provisioner, "provisioner cannot be null");
-		return FormatterStep.createLazy("gherkin", () -> new GherkinSimpleStep.State(indent, provisioner), GherkinSimpleStep.State::toFormatter);
+		return FormatterStep.createLazy("gherkin", () -> new GherkinSimpleStep.State(gherkinSimpleConfig, formatterVersion, provisioner), GherkinSimpleStep.State::toFormatter);
 	}
 
 	private static final class State implements Serializable {
 		private static final long serialVersionUID = 1L;
 
-		private final int indentSpaces;
+		private final GherkinSimpleConfig gherkinSimpleConfig;
 		private final JarState jarState;
 
-		private State(int indent, Provisioner provisioner) throws IOException {
-			this.indentSpaces = indent;
-			this.jarState = JarState.from(MAVEN_COORDINATE + DEFAULT_VERSION, provisioner);
+		private State(GherkinSimpleConfig gherkinSimpleConfig, String formatterVersion, Provisioner provisioner) throws IOException {
+			this.gherkinSimpleConfig = gherkinSimpleConfig;
+			this.jarState = JarState.from(MAVEN_COORDINATE + formatterVersion, provisioner);
 		}
 
-		FormatterFunc toFormatter() {
-			Method format;
-			Object formatter;
-			try {
-				ClassLoader classLoader = jarState.getClassLoader();
-				Class<?> prettyFormatter = classLoader.loadClass("me.jvt.cucumber.gherkinformatter.PrettyFormatter");
-				Class<?>[] constructorArguments = new Class[]{int.class};
-				Constructor<?> constructor = prettyFormatter.getConstructor(constructorArguments);
-				format = prettyFormatter.getMethod("format", String.class);
-				formatter = constructor.newInstance(indentSpaces);
-			} catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
-				throw new IllegalStateException(String.format("There was a problem preparing %s dependencies", MAVEN_COORDINATE), e);
-			}
-
-			return s -> {
-				try {
-					return (String) format.invoke(formatter, s);
-				} catch (InvocationTargetException ex) {
-					throw new AssertionError("Unable to format Gherkin", ex.getCause());
-				}
-			};
+		FormatterFunc toFormatter() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
+				InstantiationException, IllegalAccessException {
+			Class<?> formatterFunc = jarState.getClassLoader().loadClass("com.diffplug.spotless.glue.gherkin.GherkinFormatterFunc");
+			Constructor<?> constructor = formatterFunc.getConstructor(GherkinSimpleConfig.class);
+			return (FormatterFunc) constructor.newInstance(gherkinSimpleConfig);
 		}
 	}
 

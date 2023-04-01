@@ -1,4 +1,4 @@
 Feature: Minimal
 
-    Scenario: minimalistic
-        Given the minimalism
+  Scenario: minimalistic
+    Given the minimalism

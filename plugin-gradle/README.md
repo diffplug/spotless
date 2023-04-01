@@ -66,6 +66,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier), [ESLint](#eslint-typescript))
   - [Javascript](#javascript) ([prettier](#prettier), [ESLint](#eslint-javascript))
   - [JSON](#json)
+  - [YAML](#yaml)
   - [Gherkin](#gherkin)
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching `npm install` results](#caching-results-of-npm-install))
@@ -853,7 +854,7 @@ spotless {
 
 ## Gherkin
 
-- `com.diffplug.gradle.spotless.GherkinExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/5.15.0/com/diffplug/gradle/spotless/GherkinExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/GherkinExtension.java)
+- `com.diffplug.gradle.spotless.GherkinExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.17.0/com/diffplug/gradle/spotless/GherkinExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/GherkinExtension.java)
 
 ```gradle
 spotless {
@@ -871,15 +872,12 @@ Uses a Gherkin pretty-printer that optionally allows configuring the number of s
 ```gradle
 spotless {
   gherkin {
-    target 'src/**/*.feature'
+    target 'src/**/*.feature'     // required to be set explicitly
     simple()
-    // optional: specify the number of spaces to use
-    simple().indentWithSpaces(6)
+      .version('8.0.2')           // optional: custom version of 'io.cucumber:gherkin-utils'
   }
 }
 ```
-
-<a name="applying-prettier-to-javascript--flow--typescript--css--scss--less--jsx--graphql--yaml--etc"></a>
 
 ## Prettier
 
