@@ -1,0 +1,35 @@
+/**
+ * This example shows how to use the gradle-node-plugin to install node and npm together and
+ * use these binaries with the prettier formatter.
+ */
+plugins {
+    id 'com.diffplug.spotless'
+    id 'com.github.node-gradle.node' version '3.5.1'
+}
+repositories { mavenCentral() }
+node {
+    download = true
+    version = '18.13.0'
+	// when not setting an explicit `npmWorkDir`, the npm binary will be installed next to the node binary
+    workDir = file("${buildDir}/nodejs")
+}
+def prettierConfig = [:]
+prettierConfig['printWidth'] = 50
+prettierConfig['parser'] = 'typescript'
+
+// the executable name
+def npmExec = System.getProperty('os.name').toLowerCase().contains('windows') ? '/npm.cmd' : '/bin/npm'
+
+spotless {
+    typescript {
+        target 'test.ts'
+        prettier()
+            .npmExecutable("${tasks.named('npmSetup').get().npmDir.get()}${npmExec}") // get the npm executable path from gradle-node-plugin
+		    // setting the nodeExecutable is not necessary, since it will be found in the same directory as the npm executable (see above)
+            .config(prettierConfig)
+    }
+}
+
+tasks.named('spotlessTypescript').configure {
+    it.dependsOn('nodeSetup', 'npmSetup')
+}

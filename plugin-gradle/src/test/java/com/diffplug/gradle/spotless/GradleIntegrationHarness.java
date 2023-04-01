@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,45 +15,80 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.gradle.api.provider.Provider;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.BuildTask;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
-import org.junit.Assert;
-import org.junit.Before;
+import org.gradle.util.GradleVersion;
+import org.junit.jupiter.api.BeforeEach;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.common.tree.TreeDef;
 import com.diffplug.common.tree.TreeStream;
 import com.diffplug.spotless.FileSignature;
-import com.diffplug.spotless.JreVersion;
+import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.ResourceHarness;
 
 public class GradleIntegrationHarness extends ResourceHarness {
 	public enum GradleVersionSupport {
-		JRE_11("5.0"), MINIMUM(SpotlessPlugin.MINIMUM_GRADLE), SETTINGS_PLUGINS("6.0");
+		JRE_11("5.0"), MINIMUM(SpotlessPlugin.MINIMUM_GRADLE),
+		// technically, this API exists in 6.5, but the flags for it change in 6.6, so we build to that
+		CONFIGURATION_CACHE("6.6"),
+		// https://docs.gradle.org/7.5/userguide/configuration_cache.html#config_cache:stable
+		STABLE_CONFIGURATION_CACHE("7.5");
 
 		final String version;
 
 		GradleVersionSupport(String version) {
-			if (JreVersion.thisVm() >= 15) {
-				// the first version with support for Java 15+
-				this.version = "6.7";
-			} else if (JreVersion.thisVm() >= 14) {
-				// the first version with support for Java 14+
-				this.version = "6.3";
+			String minVersionForRunningJRE;
+			switch (Jvm.version()) {
+			case 21:
+			case 20:
+				// TODO: https://docs.gradle.org/current/userguide/compatibility.html
+			case 19:
+				minVersionForRunningJRE = "7.6";
+				break;
+			case 18:
+				minVersionForRunningJRE = "7.5";
+				break;
+			case 17:
+				minVersionForRunningJRE = "7.3";
+				break;
+			case 16:
+				minVersionForRunningJRE = "7.0";
+				break;
+			case 15:
+				minVersionForRunningJRE = "6.7";
+				break;
+			case 14:
+				minVersionForRunningJRE = "6.3";
+				break;
+			default:
+				minVersionForRunningJRE = null;
+				break;
+			}
+			if (minVersionForRunningJRE != null && GradleVersion.version(minVersionForRunningJRE).compareTo(GradleVersion.version(version)) > 0) {
+				this.version = minVersionForRunningJRE;
 			} else {
 				this.version = version;
 			}
 		}
+	}
+
+	public static <T> Provider<T> providerOf(T value) {
+		return org.gradle.api.internal.provider.Providers.of(value);
 	}
 
 	/**
@@ -70,12 +105,12 @@ public class GradleIntegrationHarness extends ResourceHarness {
 	 * GIT_ATTRIBUTES will use \n, so that tests match the test
 	 * resources on win and linux.
 	 */
-	@Before
-	public void gitAttributes() throws IOException {
+	@BeforeEach
+	void gitAttributes() throws IOException {
 		setFile(".gitattributes").toContent("* text eol=lf");
 	}
 
-	protected final GradleRunner gradleRunner() throws IOException {
+	protected GradleRunner gradleRunner() throws IOException {
 		return GradleRunner.create()
 				.withGradleVersion(GradleVersionSupport.MINIMUM.version)
 				.withProjectDir(rootFolder())
@@ -83,11 +118,34 @@ public class GradleIntegrationHarness extends ResourceHarness {
 	}
 
 	/** Dumps the complete file contents of the folder to the console. */
-	protected String getContents() throws IOException {
+	protected String getContents() {
 		return getContents(subPath -> !subPath.startsWith(".gradle"));
 	}
 
-	protected String getContents(Predicate<String> subpathsToInclude) throws IOException {
+	protected String getContents(Predicate<String> subpathsToInclude) {
+		return StringPrinter.buildString(printer -> Errors.rethrow().run(() -> iterateFiles(subpathsToInclude, (subpath, file) -> {
+			printer.println("### " + subpath + " ###");
+			try {
+				printer.println(read(subpath));
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		})));
+	}
+
+	/** Dumps the filtered file listing of the folder to the console. */
+	protected String listFiles(Predicate<String> subpathsToInclude) {
+		return StringPrinter.buildString(printer -> iterateFiles(subpathsToInclude, (subPath, file) -> {
+			printer.println(subPath + " [" + getFileAttributes(file) + "]");
+		}));
+	}
+
+	/** Dumps the file listing of the folder to the console. */
+	protected String listFiles() {
+		return listFiles(subPath -> !subPath.startsWith(".gradle"));
+	}
+
+	protected void iterateFiles(Predicate<String> subpathsToInclude, BiConsumer<String, File> consumer) {
 		TreeDef<File> treeDef = TreeDef.forFile(Errors.rethrow());
 		List<File> files = TreeStream.depthFirst(treeDef, rootFolder())
 				.filter(File::isFile)
@@ -95,16 +153,17 @@ public class GradleIntegrationHarness extends ResourceHarness {
 
 		ListIterator<File> iterator = files.listIterator(files.size());
 		int rootLength = rootFolder().getAbsolutePath().length() + 1;
-		return StringPrinter.buildString(printer -> Errors.rethrow().run(() -> {
-			while (iterator.hasPrevious()) {
-				File file = iterator.previous();
-				String subPath = file.getAbsolutePath().substring(rootLength);
-				if (subpathsToInclude.test(subPath)) {
-					printer.println("### " + subPath + " ###");
-					printer.println(read(subPath));
-				}
+		while (iterator.hasPrevious()) {
+			File file = iterator.previous();
+			String subPath = file.getAbsolutePath().substring(rootLength);
+			if (subpathsToInclude.test(subPath)) {
+				consumer.accept(subPath, file);
 			}
-		}));
+		}
+	}
+
+	protected String getFileAttributes(File file) {
+		return (file.canRead() ? "r" : "-") + (file.canWrite() ? "w" : "-") + (file.canExecute() ? "x" : "-");
 	}
 
 	protected void checkRunsThenUpToDate() throws IOException {
@@ -130,15 +189,24 @@ public class GradleIntegrationHarness extends ResourceHarness {
 		pauseForFilesystem();
 		BuildResult buildResult = gradleRunner().withArguments(task).build();
 
-		TaskOutcome expected = upToDate ? TaskOutcome.UP_TO_DATE : TaskOutcome.SUCCESS;
-		TaskOutcome notExpected = upToDate ? TaskOutcome.SUCCESS : TaskOutcome.UP_TO_DATE;
-
-		boolean everythingAsExpected = !buildResult.tasks(expected).isEmpty() &&
-				buildResult.tasks(notExpected).isEmpty() &&
-				buildResult.getTasks().size() == buildResult.tasks(expected).size();
+		List<String> expected = outcomes(buildResult, upToDate ? TaskOutcome.UP_TO_DATE : TaskOutcome.SUCCESS);
+		List<String> notExpected = outcomes(buildResult, upToDate ? TaskOutcome.SUCCESS : TaskOutcome.UP_TO_DATE);
+		boolean everythingAsExpected = !expected.isEmpty() && notExpected.isEmpty() && buildResult.getTasks().size() - 1 == expected.size();
 		if (!everythingAsExpected) {
-			Assert.fail("Expected all tasks to be " + expected + ", but instead was\n" + buildResultToString(buildResult));
+			fail("Expected all tasks to be " + (upToDate ? TaskOutcome.UP_TO_DATE : TaskOutcome.SUCCESS) + ", but instead was\n" + buildResultToString(buildResult));
 		}
+	}
+
+	protected static List<String> outcomes(BuildResult build, TaskOutcome outcome) {
+		return build.taskPaths(outcome).stream()
+				.filter(s -> !s.equals(":spotlessInternalRegisterDependencies"))
+				.collect(Collectors.toList());
+	}
+
+	protected static List<BuildTask> outcomes(BuildResult build) {
+		return build.getTasks().stream()
+				.filter(t -> !t.getPath().equals(":spotlessInternalRegisterDependencies"))
+				.collect(Collectors.toList());
 	}
 
 	static String buildResultToString(BuildResult result) {

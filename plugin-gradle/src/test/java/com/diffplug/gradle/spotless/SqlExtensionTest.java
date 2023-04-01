@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,12 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class SqlExtensionTest extends GradleIntegrationHarness {
+class SqlExtensionTest extends GradleIntegrationHarness {
 
 	@Test
-	public void should_format_sql_with_default_configuration() throws IOException {
+	void should_format_sql_with_default_configuration() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
@@ -40,7 +40,7 @@ public class SqlExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void should_format_sql_with_alternative_configuration() throws IOException {
+	void should_format_sql_with_alternative_configuration() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.spotless'",

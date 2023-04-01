@@ -33,7 +33,7 @@ import org.eclipse.wst.xml.core.internal.catalog.CatalogReader;
 import org.eclipse.wst.xml.core.internal.catalog.provisional.ICatalog;
 
 /**
- * The plugin preference configuration of most WTP formatters is accomplished via the the
+ * The plugin preference configuration of most WTP formatters is accomplished via the
  * globabl Eclipse preference lookup.
  * Spotless allows different formatter configurations per sub-projects.
  * Fortunately most formatters only perform a lookup on instantiation and not afterwards.

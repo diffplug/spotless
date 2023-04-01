@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,13 @@
  */
 package com.diffplug.spotless.extra.wtp;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Properties;
 
 import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
@@ -34,9 +36,9 @@ public enum EclipseWtpFormatterStep {
 	XML ("EclipseXmlFormatterStepImpl",  EclipseWtpFormatterStep::applyWithFile);
 	// @formatter:on
 
-	private static final String NAME = "eclipse wtp formatters";
+	private static final String NAME = "eclipse wtp formatter";
 	private static final String FORMATTER_PACKAGE = "com.diffplug.spotless.extra.eclipse.wtp.";
-	private static final String DEFAULT_VERSION = "4.18.0";
+	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(8, "4.18.0").add(11, "4.21.0");
 	private static final String FORMATTER_METHOD = "format";
 
 	private final String implementationClassName;
@@ -52,10 +54,11 @@ public enum EclipseWtpFormatterStep {
 	}
 
 	public static String defaultVersion() {
-		return DEFAULT_VERSION;
+		return JVM_SUPPORT.getRecommendedFormatterVersion();
 	}
 
 	private static FormatterFunc applyWithoutFile(String className, EclipseBasedStepBuilder.State state) throws Exception {
+		JVM_SUPPORT.assertFormatterSupported(state.getSemanticVersion());
 		Class<?> formatterClazz = state.loadClass(FORMATTER_PACKAGE + className);
 		Object formatter = formatterClazz.getConstructor(Properties.class).newInstance(state.getPreferences());
 		Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
@@ -70,18 +73,22 @@ public enum EclipseWtpFormatterStep {
 		};
 	}
 
-	private static FormatterFunc.NeedsFile applyWithFile(String className, EclipseBasedStepBuilder.State state) throws Exception {
+	private static FormatterFunc applyWithFile(String className, EclipseBasedStepBuilder.State state) throws Exception {
+		JVM_SUPPORT.assertFormatterSupported(state.getSemanticVersion());
 		Class<?> formatterClazz = state.loadClass(FORMATTER_PACKAGE + className);
 		Object formatter = formatterClazz.getConstructor(Properties.class).newInstance(state.getPreferences());
 		Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class, String.class);
-		return (unixString, file) -> {
-			try {
-				return (String) method.invoke(formatter, unixString, file.getAbsolutePath());
-			} catch (InvocationTargetException exceptionWrapper) {
-				Throwable throwable = exceptionWrapper.getTargetException();
-				Exception exception = (throwable instanceof Exception) ? (Exception) throwable : null;
-				throw (null == exception) ? exceptionWrapper : exception;
+		return JVM_SUPPORT.suggestLaterVersionOnError(state.getSemanticVersion(), new FormatterFunc.NeedsFile() {
+			@Override
+			public String applyWithFile(String unix, File file) throws Exception {
+				try {
+					return (String) method.invoke(formatter, unix, file.getAbsolutePath());
+				} catch (InvocationTargetException exceptionWrapper) {
+					Throwable throwable = exceptionWrapper.getTargetException();
+					Exception exception = (throwable instanceof Exception) ? (Exception) throwable : null;
+					throw (null == exception) ? exceptionWrapper : exception;
+				}
 			}
-		};
+		});
 	}
 }

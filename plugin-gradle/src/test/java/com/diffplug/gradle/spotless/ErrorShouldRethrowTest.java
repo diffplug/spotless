@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,15 +23,14 @@ import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.CharMatcher;
 import com.diffplug.common.base.Splitter;
-import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.LineEnding;
 
 /** Tests the desired behavior from https://github.com/diffplug/spotless/issues/46. */
-public class ErrorShouldRethrowTest extends GradleIntegrationHarness {
+class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 	private void writeBuild(String... toInsert) throws IOException {
 		List<String> lines = new ArrayList<>();
 		lines.add("plugins {");
@@ -52,7 +51,7 @@ public class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void passesIfNoException() throws Exception {
+	void passesIfNoException() throws Exception {
 		writeBuild(
 				"    } // format",
 				"}     // spotless");
@@ -61,7 +60,7 @@ public class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void anyExceptionShouldFail() throws Exception {
+	void anyExceptionShouldFail() throws Exception {
 		writeBuild(
 				"    } // format",
 				"}     // spotless");
@@ -70,21 +69,21 @@ public class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 				"> Task :spotlessMisc FAILED\n" +
 						"Step 'no swearing' found problem in 'README.md':\n" +
 						"No swearing!\n" +
-						"java.lang.RuntimeException: No swearing!\n");
+						"java.lang.RuntimeException: No swearing!");
 	}
 
 	@Test
-	public void unlessEnforceCheckIsFalse() throws Exception {
+	void unlessEnforceCheckIsFalse() throws Exception {
 		writeBuild(
 				"    } // format",
 				"    enforceCheck false",
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
-		runWithSuccess("> Task :compileJava NO-SOURCE");
+		runWithSuccess("> Task :processResources NO-SOURCE");
 	}
 
 	@Test
-	public void unlessExemptedByStep() throws Exception {
+	void unlessExemptedByStep() throws Exception {
 		writeBuild(
 				"        ignoreErrorForStep 'no swearing'",
 				"    } // format",
@@ -95,18 +94,18 @@ public class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void unlessExemptedByPath() throws Exception {
+	void unlessExemptedByPath() throws Exception {
 		writeBuild(
 				"        ignoreErrorForPath 'README.md'",
 				"    } // format",
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
-		runWithSuccess("> Task :spotlessMisc",
+		runWithSuccess("> Task :spotlessMisc\n" +
 				"Unable to apply step 'no swearing' to 'README.md'");
 	}
 
 	@Test
-	public void failsIfNeitherStepNorFileExempted() throws Exception {
+	void failsIfNeitherStepNorFileExempted() throws Exception {
 		writeBuild(
 				"        ignoreErrorForStep 'nope'",
 				"        ignoreErrorForPath 'nope'",
@@ -116,26 +115,30 @@ public class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 		runWithFailure("> Task :spotlessMisc FAILED\n" +
 				"Step 'no swearing' found problem in 'README.md':\n" +
 				"No swearing!\n" +
-				"java.lang.RuntimeException: No swearing!\n");
+				"java.lang.RuntimeException: No swearing!");
 	}
 
-	private void runWithSuccess(String... messages) throws Exception {
+	private void runWithSuccess(String expectedToStartWith) throws Exception {
 		BuildResult result = gradleRunner().withArguments("check").build();
-		assertResultAndMessages(result, TaskOutcome.SUCCESS, messages);
+		assertResultAndMessages(result, TaskOutcome.SUCCESS, expectedToStartWith);
 	}
 
-	private void runWithFailure(String... messages) throws Exception {
+	private void runWithFailure(String expectedToStartWith) throws Exception {
 		BuildResult result = gradleRunner().withArguments("check").buildAndFail();
-		assertResultAndMessages(result, TaskOutcome.FAILED, messages);
+		assertResultAndMessages(result, TaskOutcome.FAILED, expectedToStartWith);
 	}
 
-	private void assertResultAndMessages(BuildResult result, TaskOutcome outcome, String... messages) {
-		String expectedToStartWith = StringPrinter.buildStringFromLines(messages).trim();
+	private void assertResultAndMessages(BuildResult result, TaskOutcome outcome, String expectedToStartWith) {
+		String output = result.getOutput();
+		int register = output.indexOf(":spotlessInternalRegisterDependencies");
+		int firstNewlineAfterThat = output.indexOf('\n', register + 1);
+		String useThisToMatch = output.substring(firstNewlineAfterThat);
+
 		int numNewlines = CharMatcher.is('\n').countIn(expectedToStartWith);
-		List<String> actualLines = Splitter.on('\n').splitToList(LineEnding.toUnix(result.getOutput().trim()));
+		List<String> actualLines = Splitter.on('\n').splitToList(LineEnding.toUnix(useThisToMatch.trim()));
 		String actualStart = String.join("\n", actualLines.subList(0, numNewlines + 1));
 		Assertions.assertThat(actualStart).isEqualTo(expectedToStartWith);
-		Assertions.assertThat(result.tasks(outcome).size() + result.tasks(TaskOutcome.UP_TO_DATE).size() + result.tasks(TaskOutcome.NO_SOURCE).size())
-				.isEqualTo(result.getTasks().size());
+		Assertions.assertThat(outcomes(result, outcome).size() + outcomes(result, TaskOutcome.UP_TO_DATE).size() + outcomes(result, TaskOutcome.NO_SOURCE).size())
+				.isEqualTo(outcomes(result).size());
 	}
 }

@@ -1,0 +1,4 @@
+public interface Java {
+	/**<pre>void f(){}</pre>*/
+    void f();
+}

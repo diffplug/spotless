@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,36 +18,29 @@ package com.diffplug.spotless.npm;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.Arrays;
 import java.util.Collections;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import com.diffplug.common.collect.ImmutableMap;
-import com.diffplug.spotless.*;
-import com.diffplug.spotless.category.NpmTest;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.StepHarness;
+import com.diffplug.spotless.TestProvisioner;
+import com.diffplug.spotless.tag.NpmTest;
 
-@Category(NpmTest.class)
-@RunWith(Enclosed.class)
-public class TsFmtFormatterStepTest {
+@NpmTest
+class TsFmtFormatterStepTest {
 
-	@Category(NpmTest.class)
-	@RunWith(Parameterized.class)
-	public static class TsFmtUsingVariousFormattingFilesTest extends NpmFormatterStepCommonTests {
-		@Parameterized.Parameter
-		public String formattingConfigFile;
+	@NpmTest
+	@Nested
+	class TsFmtUsingVariousFormattingFilesTest extends NpmFormatterStepCommonTests {
 
-		@Parameterized.Parameters(name = "{index}: formatting using {0} is working")
-		public static Iterable<String> formattingConfigFiles() {
-			return Arrays.asList("vscode/vscode.json", "tslint/tslint.json", "tsfmt/tsfmt.json", "tsconfig/tsconfig.json");
-		}
-
-		@Test
-		public void formattingUsingConfigFile() throws Exception {
+		@ParameterizedTest(name = "{index}: formatting using {0} is working")
+		@ValueSource(strings = {"vscode/vscode.json", "tslint/tslint.json", "tsfmt/tsfmt.json", "tsconfig/tsconfig.json"})
+		void formattingUsingConfigFile(String formattingConfigFile) throws Exception {
 			String configFileName = formattingConfigFile.substring(formattingConfigFile.lastIndexOf('/') >= 0 ? formattingConfigFile.lastIndexOf('/') + 1 : 0);
 			String configFileNameWithoutExtension = configFileName.substring(0, configFileName.lastIndexOf('.'));
 			String filedir = "npm/tsfmt/" + configFileNameWithoutExtension + "/";
@@ -64,7 +57,9 @@ public class TsFmtFormatterStepTest {
 			final FormatterStep formatterStep = TsFmtFormatterStep.create(
 					TsFmtFormatterStep.defaultDevDependencies(),
 					TestProvisioner.mavenCentral(),
+					projectDir(),
 					buildDir(),
+					null,
 					npmPathResolver(),
 					TypedTsFmtConfigFile.named(configFileNameWithoutExtension, configFile),
 					Collections.emptyMap());
@@ -75,17 +70,20 @@ public class TsFmtFormatterStepTest {
 		}
 	}
 
-	@Category(NpmTest.class)
-	public static class TsFmtUsingInlineConfigTest extends NpmFormatterStepCommonTests {
+	@NpmTest
+	@Nested
+	class TsFmtUsingInlineConfigTest extends NpmFormatterStepCommonTests {
 		@Test
-		public void formattingUsingInlineConfigWorks() throws Exception {
+		void formattingUsingInlineConfigWorks() throws Exception {
 
 			final ImmutableMap<String, Object> inlineConfig = ImmutableMap.of("indentSize", 1, "convertTabsToSpaces", true);
 
 			final FormatterStep formatterStep = TsFmtFormatterStep.create(
 					TsFmtFormatterStep.defaultDevDependencies(),
 					TestProvisioner.mavenCentral(),
+					projectDir(),
 					buildDir(),
+					null,
 					npmPathResolver(),
 					null,
 					inlineConfig);

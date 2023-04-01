@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,16 @@
  */
 package com.diffplug.spotless.antlr4;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.ResourceHarness;
+import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
-public class Antlr4FormatterStepTest extends ResourceHarness {
-
+class Antlr4FormatterStepTest {
 	@Test
-	public void formatGrammar() throws Throwable {
+	void formatGrammar() throws Throwable {
 		FormatterStep step = Antlr4FormatterStep.create(TestProvisioner.mavenCentral());
-		assertOnResources(step, "antlr4/Hello.unformatted.g4", "antlr4/Hello.formatted.g4");
+		StepHarness.forStep(step).testResource("antlr4/Hello.unformatted.g4", "antlr4/Hello.formatted.g4");
 	}
-
 }

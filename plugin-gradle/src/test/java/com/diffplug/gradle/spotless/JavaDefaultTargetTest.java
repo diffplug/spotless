@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,22 +17,22 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class JavaDefaultTargetTest extends GradleIntegrationHarness {
+class JavaDefaultTargetTest extends GradleIntegrationHarness {
 	@Test
-	public void integration() throws IOException {
+	void integration() throws IOException {
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"",
 				"apply plugin: 'groovy'",
 				"",
 				"spotless {",
 				"    java {",
-				"        googleJavaFormat('1.2')",
+				"        googleJavaFormat()",
 				"    }",
 				"}");
 		setFile("src/main/java/test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
@@ -47,13 +47,13 @@ public class JavaDefaultTargetTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void multipleBlocksShouldWork() throws IOException {
+	void multipleBlocksShouldWork() throws IOException {
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"  id 'com.diffplug.spotless'",
 				"  id 'java'",
 				"}",
+				"repositories { mavenCentral() }",
 				"",
 				"spotless {",
 				"  java {  googleJavaFormat()  }",

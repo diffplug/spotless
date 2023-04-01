@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,11 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.annotation.Nonnull;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterFunc.Closeable;
@@ -36,24 +37,24 @@ import com.diffplug.spotless.ThrowingEx;
 
 public class PrettierFormatterStep {
 
-	private static final Logger logger = Logger.getLogger(PrettierFormatterStep.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(PrettierFormatterStep.class);
 
 	public static final String NAME = "prettier-format";
 
 	public static final Map<String, String> defaultDevDependencies() {
-		return defaultDevDependenciesWithPrettier("2.0.5");
+		return defaultDevDependenciesWithPrettier("2.8.1");
 	}
 
 	public static final Map<String, String> defaultDevDependenciesWithPrettier(String version) {
 		return Collections.singletonMap("prettier", version);
 	}
 
-	public static FormatterStep create(Map<String, String> devDependencies, Provisioner provisioner, File buildDir, NpmPathResolver npmPathResolver, PrettierConfig prettierConfig) {
+	public static FormatterStep create(Map<String, String> devDependencies, Provisioner provisioner, File projectDir, File buildDir, File cacheDir, NpmPathResolver npmPathResolver, PrettierConfig prettierConfig) {
 		requireNonNull(devDependencies);
 		requireNonNull(provisioner);
 		requireNonNull(buildDir);
 		return FormatterStep.createLazy(NAME,
-				() -> new State(NAME, devDependencies, buildDir, npmPathResolver, prettierConfig),
+				() -> new State(NAME, devDependencies, projectDir, buildDir, cacheDir, npmPathResolver, prettierConfig),
 				State::createFormatterFunc);
 	}
 
@@ -62,17 +63,22 @@ public class PrettierFormatterStep {
 		private static final long serialVersionUID = -539537027004745812L;
 		private final PrettierConfig prettierConfig;
 
-		State(String stepName, Map<String, String> devDependencies, File buildDir, NpmPathResolver npmPathResolver, PrettierConfig prettierConfig) throws IOException {
+		State(String stepName, Map<String, String> devDependencies, File projectDir, File buildDir, File cacheDir, NpmPathResolver npmPathResolver, PrettierConfig prettierConfig) throws IOException {
 			super(stepName,
 					new NpmConfig(
 							replaceDevDependencies(
 									NpmResourceHelper.readUtf8StringFromClasspath(PrettierFormatterStep.class, "/com/diffplug/spotless/npm/prettier-package.json"),
 									new TreeMap<>(devDependencies)),
-							"prettier",
-							NpmResourceHelper.readUtf8StringFromClasspath(PrettierFormatterStep.class, "/com/diffplug/spotless/npm/prettier-serve.js"),
+							NpmResourceHelper.readUtf8StringFromClasspath(PrettierFormatterStep.class,
+									"/com/diffplug/spotless/npm/common-serve.js",
+									"/com/diffplug/spotless/npm/prettier-serve.js"),
 							npmPathResolver.resolveNpmrcContent()),
-					buildDir,
-					npmPathResolver.resolveNpmExecutable());
+					new NpmFormatterStepLocations(
+							projectDir,
+							buildDir,
+							cacheDir,
+							npmPathResolver::resolveNpmExecutable,
+							npmPathResolver::resolveNodeExecutable));
 			this.prettierConfig = requireNonNull(prettierConfig);
 		}
 
@@ -80,22 +86,22 @@ public class PrettierFormatterStep {
 		@Nonnull
 		public FormatterFunc createFormatterFunc() {
 			try {
-				FormattedPrinter.SYSOUT.print("creating formatter function (starting server)");
+				logger.info("creating formatter function (starting server)");
 				ServerProcessInfo prettierRestServer = npmRunServer();
 				PrettierRestService restService = new PrettierRestService(prettierRestServer.getBaseUrl());
 				String prettierConfigOptions = restService.resolveConfig(this.prettierConfig.getPrettierConfigPath(), this.prettierConfig.getOptions());
 				return Closeable.ofDangerous(() -> endServer(restService, prettierRestServer), new PrettierFilePathPassingFormatterFunc(prettierConfigOptions, restService));
-			} catch (Exception e) {
+			} catch (IOException e) {
 				throw ThrowingEx.asRuntime(e);
 			}
 		}
 
 		private void endServer(PrettierRestService restService, ServerProcessInfo restServer) throws Exception {
-			FormattedPrinter.SYSOUT.print("Closing formatting function (ending server).");
+			logger.info("Closing formatting function (ending server).");
 			try {
 				restService.shutdown();
 			} catch (Throwable t) {
-				logger.log(Level.INFO, "Failed to request shutdown of rest service via api. Trying via process.", t);
+				logger.info("Failed to request shutdown of rest service via api. Trying via process.", t);
 			}
 			restServer.close();
 		}
@@ -113,10 +119,15 @@ public class PrettierFormatterStep {
 
 		@Override
 		public String applyWithFile(String unix, File file) throws Exception {
-			FormattedPrinter.SYSOUT.print("formatting String '" + unix.substring(0, Math.min(50, unix.length())) + "[...]' in file '" + file + "'");
-
 			final String prettierConfigOptionsWithFilepath = assertFilepathInConfigOptions(file);
-			return restService.format(unix, prettierConfigOptionsWithFilepath);
+			try {
+				return restService.format(unix, prettierConfigOptionsWithFilepath);
+			} catch (SimpleRestClient.SimpleRestResponseException e) {
+				if (e.getStatusCode() != 200 && e.getResponseMessage().contains("No parser could be inferred")) {
+					throw new PrettierMissingParserException(file, e);
+				}
+				throw e;
+			}
 		}
 
 		private String assertFilepathInConfigOptions(File file) {
@@ -135,4 +146,5 @@ public class PrettierFormatterStep {
 			return "{" + filePathOption + (hasAnyConfigOption ? "," : "") + prettierConfigOptions.substring(startOfConfigOption + 1);
 		}
 	}
+
 }

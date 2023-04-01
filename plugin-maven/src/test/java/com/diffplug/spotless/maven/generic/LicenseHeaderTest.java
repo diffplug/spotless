@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,16 @@
  */
 package com.diffplug.spotless.maven.generic;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
-public class LicenseHeaderTest extends MavenIntegrationHarness {
+class LicenseHeaderTest extends MavenIntegrationHarness {
 	private static final String KEY_LICENSE = "license/TestLicense";
 	private static final String KOTLIN_LICENSE_HEADER = "// Hello, I'm Kotlin license header";
 
 	@Test
-	public void fromFileJava() throws Exception {
+	void fromFileJava() throws Exception {
 		setFile("license.txt").toResource(KEY_LICENSE);
 		writePomWithJavaSteps(
 				"<licenseHeader>",
@@ -34,7 +34,7 @@ public class LicenseHeaderTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void fromContentCpp() throws Exception {
+	void fromContentCpp() throws Exception {
 		String cppLicense = "//my license";
 		writePomWithCppSteps(
 				"<includes><include>src/**</include></includes>",
@@ -52,7 +52,7 @@ public class LicenseHeaderTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void fromContentGroovy() throws Exception {
+	void fromContentGroovy() throws Exception {
 		writePomWithGroovySteps(
 				"<licenseHeader>",
 				"  <content>",
@@ -60,11 +60,15 @@ public class LicenseHeaderTest extends MavenIntegrationHarness {
 				"// Does it help to have it in writing?",
 				"  </content>",
 				"</licenseHeader>");
-		runTest();
+
+		String path = "src/main/groovy/test.groovy";
+		setFile(path).toResource("license/MissingLicense.test");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile(path).sameAsResource("license/HasLicense.test");
 	}
 
 	@Test
-	public void fromContentJava() throws Exception {
+	void fromContentJava() throws Exception {
 		writePomWithJavaSteps(
 				"<licenseHeader>",
 				"  <content>",
@@ -76,7 +80,7 @@ public class LicenseHeaderTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void fromFileGlobal() throws Exception {
+	void fromFileGlobal() throws Exception {
 		setFile("license.txt").toResource(KEY_LICENSE);
 		writePom("<licenseHeader>",
 				"  <file>${basedir}/license.txt</file>",
@@ -87,7 +91,7 @@ public class LicenseHeaderTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void fromFileFormat() throws Exception {
+	void fromFileFormat() throws Exception {
 		setFile("license.txt").toResource(KEY_LICENSE);
 		writePomWithFormatSteps(
 				"<licenseHeader>",
@@ -98,7 +102,7 @@ public class LicenseHeaderTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void fromContentFormat() throws Exception {
+	void fromContentFormat() throws Exception {
 		writePomWithFormatSteps(
 				"<licenseHeader>",
 				"  <content>",
@@ -111,7 +115,7 @@ public class LicenseHeaderTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void fromContentKotlin() throws Exception {
+	void fromContentKotlin() throws Exception {
 		writePomWithKotlinSteps(
 				"<licenseHeader>",
 				"  <content>",
@@ -128,12 +132,12 @@ public class LicenseHeaderTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void unsupportedPackageInfo() throws Exception {
+	void unsupportedPackageInfo() throws Exception {
 		testUnsupportedFile("package-info.java");
 	}
 
 	@Test
-	public void unsupportedModuleInfo() throws Exception {
+	void unsupportedModuleInfo() throws Exception {
 		testUnsupportedFile("module-info.java");
 	}
 

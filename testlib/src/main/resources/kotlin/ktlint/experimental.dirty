@@ -1,0 +1,6 @@
+fun main() {
+    if (false)
+        println("false")
+    else
+        println("true")
+}

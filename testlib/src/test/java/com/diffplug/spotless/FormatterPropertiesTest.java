@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,9 @@ import java.util.Properties;
 
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class FormatterPropertiesTest extends ResourceHarness {
+class FormatterPropertiesTest extends ResourceHarness {
 
 	private static final String RESOURCES_ROOT_DIR = "formatter/properties/";
 
@@ -53,7 +53,7 @@ public class FormatterPropertiesTest extends ResourceHarness {
 	};
 
 	@Test
-	public void differntPropertyFileTypes() throws IOException {
+	void differentPropertyFileTypes() throws IOException {
 		for (String settingsResource : VALID_SETTINGS_RESOURCES) {
 			File settingsFile = createTestFile(settingsResource);
 			FormatterProperties preferences = FormatterProperties.from(settingsFile);
@@ -64,7 +64,7 @@ public class FormatterPropertiesTest extends ResourceHarness {
 	}
 
 	@Test
-	public void multiplePropertyFiles() throws IOException {
+	void multiplePropertyFiles() throws IOException {
 		LinkedList<File> settingsFiles = new LinkedList<>();
 		for (String settingsResource : VALID_SETTINGS_RESOURCES) {
 			File settingsFile = createTestFile(settingsResource);
@@ -78,7 +78,7 @@ public class FormatterPropertiesTest extends ResourceHarness {
 	}
 
 	@Test
-	public void invalidPropertyFiles() throws IOException {
+	void invalidPropertyFiles() throws IOException {
 		for (String settingsResource : INVALID_SETTINGS_RESOURCES) {
 			File settingsFile = createTestFile(settingsResource);
 			boolean exceptionCaught = false;
@@ -97,7 +97,7 @@ public class FormatterPropertiesTest extends ResourceHarness {
 	}
 
 	@Test
-	public void nonExistingFile() throws IOException {
+	void nonExistingFile() throws IOException {
 		String filePath = FileSignature.pathUnixToNative("does/not/exist.properties");
 		try {
 			FormatterProperties.from(new File(filePath));

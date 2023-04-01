@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ public final class SpotlessEclipseFramework {
 		REGISTRY(org.eclipse.core.internal.registry.osgi.Activator.class),
 		/** Eclipse preferences always check whether this bundle has been activated before preference are set.*/
 		PREFERENCES(org.eclipse.core.internal.preferences.Activator.class),
-		/** The common runtime provides provides common services, like log and service adapters registry. */
+		/** The common runtime provides common services, like log and service adapters registry. */
 		COMMON(org.eclipse.core.internal.runtime.Activator.class);
 
 		private final Class<? extends BundleActivator> activatorClass;
@@ -146,6 +146,7 @@ public final class SpotlessEclipseFramework {
 	 * @throws BundleException Throws exception in case the setup failed.
 	 * @deprecated  Use {@link #setup(SpotlessEclipseConfig)} instead.
 	 */
+	@Deprecated
 	public synchronized static boolean setup() throws BundleException {
 		return setup(plugins -> plugins.applyDefault());
 	}
@@ -159,6 +160,7 @@ public final class SpotlessEclipseFramework {
 	 * @throws BundleException Throws exception in case the setup failed.
 	 * @deprecated  Use {@link #setup(SpotlessEclipseConfig)} instead.
 	 */
+	@Deprecated
 	public synchronized static boolean setup(Consumer<SpotlessEclipsePluginConfig> plugins) throws BundleException {
 		return setup(config -> config.applyDefault(), plugins);
 	}
@@ -172,6 +174,7 @@ public final class SpotlessEclipseFramework {
 	 * @throws BundleException Throws exception in case the setup failed.
 	 * @deprecated  Use {@link #setup(SpotlessEclipseConfig)} instead.
 	 */
+	@Deprecated
 	public synchronized static boolean setup(Consumer<SpotlessEclipseServiceConfig> config, Consumer<SpotlessEclipsePluginConfig> plugins) throws BundleException {
 		return setup(core -> core.applyDefault(), config, plugins);
 	}
@@ -186,6 +189,7 @@ public final class SpotlessEclipseFramework {
 	 * @throws BundleException Throws exception in case the setup failed.
 	 * @deprecated  Use {@link #setup(SpotlessEclipseConfig)} instead.
 	 */
+	@Deprecated
 	public synchronized static boolean setup(Consumer<SpotlessEclipseCoreConfig> core, Consumer<SpotlessEclipseServiceConfig> services, Consumer<SpotlessEclipsePluginConfig> plugins) throws BundleException {
 		if (null != INSTANCE) {
 			return false;
@@ -218,6 +222,14 @@ public final class SpotlessEclipseFramework {
 	public synchronized static void setup(SpotlessEclipseConfig config) throws BundleException {
 		if (null == INSTANCE) {
 			INSTANCE = new SpotlessEclipseFramework();
+			Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+				try {
+					INSTANCE.shutdown();
+				} catch (Exception e) {
+					//At shutdown everything is just done on best-efforts basis
+				}
+			}));
+
 			config.registerServices(INSTANCE.getServiceConfig());
 
 			SpotlessEclipseCoreConfig coreConfig = new SpotlessEclipseCoreConfig();
@@ -246,6 +258,10 @@ public final class SpotlessEclipseFramework {
 		registry = (pluginBundle) -> {
 			return PluginRegistrar.register(pluginBundle);
 		};
+	}
+
+	void shutdown() {
+		controller.shutdown();
 	}
 
 	private SpotlessEclipseServiceConfig getServiceConfig() {

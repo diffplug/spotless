@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,14 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Test;
 
-import com.diffplug.spotless.category.ClangTest;
+import com.diffplug.spotless.tag.ClangTest;
 
-@Category(ClangTest.class)
-public class ClangFormatIntegrationTest extends GradleIntegrationHarness {
+@ClangTest
+class ClangFormatIntegrationTest extends GradleIntegrationHarness {
 	@Test
-	public void csharp() throws IOException {
+	void csharp() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"  id 'com.diffplug.spotless'",

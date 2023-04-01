@@ -1,29 +1,39 @@
 pluginManagement {
-	plugins {
-		// We are stuck dogfooding at 5.5.0 for a very strange reason:
-		//   5.8.0+ Cannot get property 'versionLast' on null object @ spotless-freshmark.gradle:58
-		//   5.6.0+ Tried to add format named 'freshmark' of type class @ spotless-freshmark.gradle:55
-		id 'com.diffplug.spotless'                 version '5.5.0'
-		// https://github.com/diffplug/goomph/blob/main/CHANGES.md
-		id 'com.diffplug.eclipse.resourcefilters'  version '3.27.0'
-		// https://plugins.gradle.org/plugin/com.gradle.plugin-publish
-		id 'com.gradle.plugin-publish'             version '0.14.0'
-		// https://github.com/gradle-nexus/publish-plugin/releases
-		id 'io.github.gradle-nexus.publish-plugin' version '1.0.0'
-		// https://github.com/spotbugs/spotbugs-gradle-plugin/releases
-		id 'com.github.spotbugs'                   version '4.7.0'
-		// https://github.com/diffplug/spotless-changelog
-		id 'com.diffplug.spotless-changelog'       version '2.1.2'
+	repositories {
+		mavenCentral()
+		gradlePluginPortal()
 	}
 }
+
 plugins {
-	id 'com.diffplug.spotless'                 apply false
-	id 'com.diffplug.eclipse.resourcefilters'  apply false
-	id 'com.gradle.plugin-publish'             apply false
-	id 'io.github.gradle-nexus.publish-plugin' apply false
-	id 'com.github.spotbugs'                   apply false
-	id 'com.diffplug.spotless-changelog'       apply false
+	id 'com.diffplug.spotless' version '6.17.0' apply false
+	// https://plugins.gradle.org/plugin/com.gradle.plugin-publish
+	id 'com.gradle.plugin-publish' version '1.1.0' apply false
+	// https://github.com/gradle-nexus/publish-plugin/releases
+	id 'io.github.gradle-nexus.publish-plugin' version '1.3.0' apply false
+	// https://github.com/spotbugs/spotbugs-gradle-plugin/releases
+	id 'com.github.spotbugs' version '5.0.14' apply false
+	// https://github.com/diffplug/spotless-changelog/blob/main/CHANGELOG.md
+	id 'com.diffplug.spotless-changelog' version '3.0.1' apply false
+	// https://github.com/diffplug/goomph/blob/main/CHANGES.md
+	// DO NOT UPDATE, see https://github.com/diffplug/spotless/pull/874
+	id 'com.diffplug.p2.asmaven' version '3.27.0' apply false
+	// https://github.com/radarsh/gradle-test-logger-plugin/blob/develop/CHANGELOG.md
+	id 'com.adarshr.test-logger' version '3.2.0' apply false
+	// https://github.com/davidburstrom/version-compatibility-gradle-plugin/tags
+	id 'io.github.davidburstrom.version-compatibility' version '0.4.0' apply false
+	// https://plugins.gradle.org/plugin/com.gradle.enterprise
+	id 'com.gradle.enterprise' version '3.12.6'
+	// https://github.com/equodev/equo-ide/blob/main/plugin-gradle/CHANGELOG.md
+	id 'dev.equo.ide' version '1.0.1' apply false
 }
+
+dependencyResolutionManagement {
+	repositories {
+		mavenCentral()
+	}
+}
+
 if (System.env['CI'] != null) {
 	// use the remote buildcache on all CI builds
 	buildCache {
@@ -52,10 +62,15 @@ if (System.env['CI'] != null) {
 	}
 }
 
-if (startParameter.getProjectProperties().get('release') != 'true') {
-	// the ide project screws up the release tasks
-	include 'ide'
+gradleEnterprise {
+	buildScan {
+		termsOfServiceUrl = "https://gradle.com/terms-of-service"
+		termsOfServiceAgree = "yes"
+		publishAlways()
+	}
 }
+
+enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
 
 rootProject.name = 'spotless'
 
@@ -77,10 +92,9 @@ def getStartProperty(java.lang.String name) {
 		userProperties.load(userPropertiesFile.newReader())
 	}
 	return userProperties.get(name)
-
 }
 
-if (System.getenv('SPOTLESS_EXCLUDE_MAVEN') != 'true' && getStartProperty('SPOTLESS_EXCLUDE_MAVEN') != 'true' && System.getenv('JITPACK') != 'true') {
+if (System.getenv('SPOTLESS_EXCLUDE_MAVEN') != 'true' && getStartProperty('SPOTLESS_EXCLUDE_MAVEN') != 'true') {
 	include 'plugin-maven'	// maven-specific glue code
 }
 
@@ -102,10 +116,10 @@ if (getStartProperty('com.diffplug.spotless.include.ext.nop2') == 'true') {
 
 // the p2-based projects are too expensive for routine CI builds, so they have to be invoked explicitly
 for (kind in [
-	'cdt',
-	'groovy',
-	'wtp'
-]) {
+			'cdt',
+			'groovy',
+			'wtp'
+		]) {
 	if (getStartProperty("com.diffplug.spotless.include.ext.${kind}") == 'true') {
 		include "eclipse-${kind}"
 		project(":eclipse-${kind}").projectDir = file("_ext/eclipse-${kind}")

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,26 +27,34 @@ import javax.annotation.Nullable;
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
+import org.gradle.api.tasks.TaskContainer;
+import org.gradle.api.tasks.TaskProvider;
+import org.gradle.language.base.plugins.LifecycleBasePlugin;
 
 import com.diffplug.spotless.LineEnding;
 
 public abstract class SpotlessExtension {
 	final Project project;
+	private final RegisterDependenciesTask registerDependenciesTask;
 
-	protected static final String TASK_GROUP = "Verification";
+	protected static final String TASK_GROUP = LifecycleBasePlugin.VERIFICATION_GROUP;
 	protected static final String CHECK_DESCRIPTION = "Checks that sourcecode satisfies formatting steps.";
 	protected static final String APPLY_DESCRIPTION = "Applies code formatting steps to sourcecode in-place.";
 
 	static final String EXTENSION = "spotless";
+	static final String EXTENSION_PREDECLARE = "spotlessPredeclare";
 	static final String CHECK = "Check";
 	static final String APPLY = "Apply";
 	static final String DIAGNOSE = "Diagnose";
 
 	protected SpotlessExtension(Project project) {
 		this.project = requireNonNull(project);
+		this.registerDependenciesTask = findRegisterDepsTask().get();
 	}
 
-	abstract RegisterDependenciesTask getRegisterDependenciesTask();
+	RegisterDependenciesTask getRegisterDependenciesTask() {
+		return registerDependenciesTask;
+	}
 
 	/** Line endings (if any). */
 	LineEnding lineEndings = LineEnding.GIT_ATTRIBUTES;
@@ -67,14 +75,19 @@ public abstract class SpotlessExtension {
 	}
 
 	/** Sets encoding to use (defaults to UTF_8). */
+	public void setEncoding(Charset charset) {
+		encoding = requireNonNull(charset);
+	}
+
+	/** Sets encoding to use (defaults to UTF_8). */
 	public void setEncoding(String name) {
 		requireNonNull(name);
 		setEncoding(Charset.forName(name));
 	}
 
 	/** Sets encoding to use (defaults to UTF_8). */
-	public void setEncoding(Charset charset) {
-		encoding = requireNonNull(charset);
+	public void encoding(Charset charset) {
+		setEncoding(charset);
 	}
 
 	/** Sets encoding to use (defaults to UTF_8). */
@@ -154,6 +167,11 @@ public abstract class SpotlessExtension {
 		format(CppExtension.NAME, CppExtension.class, closure);
 	}
 
+	/** Configures the special javascript-specific extension for javascript files. */
+	public void javascript(Action<JavascriptExtension> closure) {
+		format(JavascriptExtension.NAME, JavascriptExtension.class, closure);
+	}
+
 	/** Configures the special typescript-specific extension for typescript files. */
 	public void typescript(Action<TypescriptExtension> closure) {
 		format(TypescriptExtension.NAME, TypescriptExtension.class, closure);
@@ -175,6 +193,12 @@ public abstract class SpotlessExtension {
 		format(JsonExtension.NAME, JsonExtension.class, closure);
 	}
 
+	/** Configures the special YAML-specific extension. */
+	public void yaml(Action<YamlExtension> closure) {
+		requireNonNull(closure);
+		format(YamlExtension.NAME, YamlExtension.class, closure);
+	}
+
 	/** Configures the special Gherkin-specific extension. */
 	public void gherkin(Action<GherkinExtension> closure) {
 		requireNonNull(closure);
@@ -186,15 +210,6 @@ public abstract class SpotlessExtension {
 		requireNonNull(name, "name");
 		requireNonNull(closure, "closure");
 		format(name, FormatExtension.class, closure);
-	}
-
-	/** Makes it possible to remove a format which was created earlier. */
-	public void removeFormat(String name) {
-		requireNonNull(name);
-		FormatExtension toRemove = formats.remove(name);
-		if (toRemove == null) {
-			project.getLogger().warn("Called removeFormat('" + name + "') but there was no such format.");
-		}
 	}
 
 	boolean enforceCheck = true;
@@ -246,4 +261,43 @@ public abstract class SpotlessExtension {
 	}
 
 	protected abstract void createFormatTasks(String name, FormatExtension formatExtension);
+
+	TaskProvider<RegisterDependenciesTask> findRegisterDepsTask() {
+		try {
+			return findRegisterDepsTask(RegisterDependenciesTask.TASK_NAME);
+		} catch (Exception e) {
+			// in a composite build there can be multiple Spotless plugins on the classpath, and they will each try to register
+			// a task on the root project with the same name. That will generate casting errors, which we can catch and try again
+			// with an identity-specific identifier.
+			// https://github.com/diffplug/spotless/pull/1001 for details
+			return findRegisterDepsTask(RegisterDependenciesTask.TASK_NAME + System.identityHashCode(RegisterDependenciesTask.class));
+		}
+	}
+
+	private TaskProvider<RegisterDependenciesTask> findRegisterDepsTask(String taskName) {
+		TaskContainer rootProjectTasks = project.getRootProject().getTasks();
+		if (!rootProjectTasks.getNames().contains(taskName)) {
+			return rootProjectTasks.register(taskName, RegisterDependenciesTask.class, RegisterDependenciesTask::setup);
+		} else {
+			return rootProjectTasks.named(taskName, RegisterDependenciesTask.class);
+		}
+	}
+
+	public void predeclareDepsFromBuildscript() {
+		if (project.getRootProject() != project) {
+			throw new GradleException("predeclareDepsFromBuildscript can only be called from the root project");
+		}
+		predeclare(GradleProvisioner.Policy.ROOT_BUILDSCRIPT);
+	}
+
+	public void predeclareDeps() {
+		if (project.getRootProject() != project) {
+			throw new GradleException("predeclareDeps can only be called from the root project");
+		}
+		predeclare(GradleProvisioner.Policy.ROOT_PROJECT);
+	}
+
+	protected void predeclare(GradleProvisioner.Policy policy) {
+		project.getExtensions().create(SpotlessExtensionPredeclare.class, EXTENSION_PREDECLARE, SpotlessExtensionPredeclare.class, project, policy);
+	}
 }

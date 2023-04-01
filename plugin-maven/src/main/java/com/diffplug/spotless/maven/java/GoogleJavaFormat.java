@@ -24,6 +24,9 @@ import com.diffplug.spotless.maven.FormatterStepFactory;
 
 public class GoogleJavaFormat implements FormatterStepFactory {
 	@Parameter
+	private String groupArtifact;
+
+	@Parameter
 	private String version;
 
 	@Parameter
@@ -34,9 +37,10 @@ public class GoogleJavaFormat implements FormatterStepFactory {
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
+		String groupArtifact = this.groupArtifact != null ? this.groupArtifact : GoogleJavaFormatStep.defaultGroupArtifact();
 		String version = this.version != null ? this.version : GoogleJavaFormatStep.defaultVersion();
 		String style = this.style != null ? this.style : GoogleJavaFormatStep.defaultStyle();
 		boolean reflowLongStrings = this.reflowLongStrings != null ? this.reflowLongStrings : GoogleJavaFormatStep.defaultReflowLongStrings();
-		return GoogleJavaFormatStep.create(version, style, config.getProvisioner(), reflowLongStrings);
+		return GoogleJavaFormatStep.create(groupArtifact, version, style, config.getProvisioner(), reflowLongStrings);
 	}
 }

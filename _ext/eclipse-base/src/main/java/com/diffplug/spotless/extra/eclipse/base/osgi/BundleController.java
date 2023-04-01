@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.eclipse.core.internal.jobs.JobManager;
 import org.eclipse.osgi.internal.location.LocationHelper;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
@@ -75,9 +76,29 @@ public final class BundleController implements StaticBundleContext {
 		services.add(org.osgi.service.packageadmin.PackageAdmin.class, bundleLookup);
 		services.add(FrameworkWiring.class, bundleLookup);
 
-		//Redirect framework activator requests to the the org.eclipse.osgi bundle to this instance.
+		//Redirect framework activator requests to the org.eclipse.osgi bundle to this instance.
 		bundles.add(new SimpleBundle(systemBundle, ECLIPSE_LAUNCHER_SYMBOLIC_NAME, Bundle.ACTIVE));
 		FrameworkBundleRegistry.initialize(this);
+	}
+
+	/**
+	 * Stop {@link org.eclipse.core.internal.jobs.JobManager} worker pool
+	 * and clean up resources of Spotless bundles and services.
+	 *
+	 * @implNote The {@link org.osgi.framework.BundleActivator}s
+	 * are not stopped, since they are not completely started.
+	 * For example services are suppressed by {@link StaticBundleContext}.
+	 */
+	public void shutdown() {
+		JobManager.shutdown();
+		bundles.getAll().forEach(b -> {
+			try {
+				b.stop();
+			} catch (IllegalStateException | BundleException e) {
+				//Stop on best effort basis
+			}
+		});
+		services.stop();
 	}
 
 	public ServiceCollection getServices() {
@@ -98,7 +119,7 @@ public final class BundleController implements StaticBundleContext {
 		}
 	}
 
-	/** Adds new bundel whithout activator (e.g. used for ony for extensions) */
+	/** Adds new bundel whithout activator (e.g. used for only for extensions) */
 	public void addBundle(Class<?> clazzInBundleJar, Function<Bundle, BundleException> register) throws BundleException {
 		BundleContext contextFacade = new BundleControllerContextFacade(this, clazzInBundleJar);
 		bundles.add(contextFacade.getBundle());

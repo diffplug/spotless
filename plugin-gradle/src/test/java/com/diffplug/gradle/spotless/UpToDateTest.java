@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,9 @@ import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class UpToDateTest extends GradleIntegrationHarness {
+class UpToDateTest extends GradleIntegrationHarness {
 	/** Requires that README be lowercase. */
 	private void writeBuildFile() throws IOException {
 		setFile("build.gradle").toLines(
@@ -39,7 +39,7 @@ public class UpToDateTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void testNormalCase() throws IOException {
+	void testNormalCase() throws IOException {
 		writeBuildFile();
 		setFile("README.md").toContent("ABC");
 		// first time, the task runs as expected
@@ -57,7 +57,7 @@ public class UpToDateTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void testNearPathologicalCase() throws IOException {
+	void testNearPathologicalCase() throws IOException {
 		writeBuildFile();
 		setFile("README.md").toContent("ABC");
 		// first time, up-to-date is false
@@ -75,7 +75,7 @@ public class UpToDateTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void testPathologicalCase() throws IOException {
+	void testPathologicalCase() throws IOException {
 		writeBuildFile();
 		setFile("README.md").toContent("ABC");
 		// first time running apply, no tasks are UP-TO-DATE
@@ -88,7 +88,7 @@ public class UpToDateTest extends GradleIntegrationHarness {
 		// the format task is UP-TO-DATE (same inputs), but the apply tasks will run again
 		pauseForFilesystem();
 		BuildResult buildResult = gradleRunner().withArguments("spotlessApply").build();
-		Assertions.assertThat(buildResult.taskPaths(TaskOutcome.UP_TO_DATE)).containsExactly(":spotlessMisc");
+		Assertions.assertThat(buildResult.taskPaths(TaskOutcome.UP_TO_DATE)).containsExactly(":spotlessInternalRegisterDependencies", ":spotlessMisc");
 		Assertions.assertThat(buildResult.taskPaths(TaskOutcome.SUCCESS)).containsExactly(":spotlessMiscApply", ":spotlessApply");
 		assertFile("README.md").hasContent("abc");
 
@@ -98,7 +98,7 @@ public class UpToDateTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void checkAndApply() throws IOException {
+	void checkAndApply() throws IOException {
 		writeBuildFile();
 		setFile("README.md").toContent("ABC");
 		gradleRunner().withArguments("spotlessCheck", "spotlessApply").build();

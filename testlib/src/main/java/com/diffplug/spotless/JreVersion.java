@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,44 +15,14 @@
  */
 package com.diffplug.spotless;
 
-import java.util.function.IntPredicate;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class JreVersion {
 	private JreVersion() {}
 
-	/** Returns the major version of this VM, e.g. 8, 9, 10, 11, 13, etc. */
+	/**
+	 * @return the major version of this VM, e.g. 8, 9, 10, 11, 13, etc.
+	 * @deprecated Use {@link com.diffplug.spotless.Jvm#version()} instead.
+	 */
 	public static int thisVm() {
-		String jre = System.getProperty("java.version");
-		if (jre.startsWith("1.8")) {
-			return 8;
-		} else {
-			Matcher matcher = Pattern.compile("(\\d+)").matcher(jre);
-			if (!matcher.find()) {
-				throw new IllegalArgumentException("Expected " + jre + " to start with an integer");
-			}
-			int version = Integer.parseInt(matcher.group(1));
-			if (version <= 8) {
-				throw new IllegalArgumentException("Expected " + jre + " to start with an integer greater than 8");
-			}
-			return version;
-		}
-	}
-
-	private static void assume(IntPredicate versionTest) {
-		org.junit.Assume.assumeTrue(versionTest.test(thisVm()));
-	}
-
-	public static void assume11OrGreater() {
-		assume(v -> v >= 11);
-	}
-
-	public static void assume11OrLess() {
-		assume(v -> v <= 11);
-	}
-
-	public static void assumeLessThan15() {
-		assume(v -> v < 15);
+		return Jvm.version();
 	}
 }

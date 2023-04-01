@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,35 +18,38 @@ package com.diffplug.gradle.spotless;
 import java.io.IOException;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class RegisterDependenciesTaskTest extends GradleIntegrationHarness {
+class RegisterDependenciesTaskTest extends GradleIntegrationHarness {
 	@Test
-	public void registerDependencies() throws IOException {
+	void duplicateConfigs() throws IOException {
 		setFile("settings.gradle")
 				.toLines("include 'sub'");
-		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
-				"plugins { id 'com.diffplug.spotless' }");
 		setFile("sub/build.gradle").toLines(
-				"apply plugin: 'com.diffplug.spotless'",
+				"plugins { id 'com.diffplug.spotless' }",
 				"",
+				"repositories { mavenCentral() }",
 				"spotless {",
 				"  java {",
 				"    target 'src/main/java/**/*.java'",
-				"    googleJavaFormat('1.2')",
+				"    googleJavaFormat()",
+				"  }",
+				"  format 'javaDupe', com.diffplug.gradle.spotless.JavaExtension, {",
+				"    target 'src/boop/java/**/*.java'",
+				"    googleJavaFormat()",
 				"  }",
 				"}");
 
 		setFile("gradle.properties").toLines();
 		String newestSupported = gradleRunner().withArguments("spotlessCheck").build().getOutput();
 		Assertions.assertThat(newestSupported.replace("\r", ""))
-				.startsWith("> Task :spotlessCheck UP-TO-DATE\n" +
+				.startsWith(
 						"> Task :spotlessInternalRegisterDependencies\n")
-				.contains("> Task :sub:spotlessJava\n" +
-						"> Task :sub:spotlessJavaCheck\n" +
-						"> Task :sub:spotlessCheck\n" +
-						"\n" +
-						"BUILD SUCCESSFUL");
+				.contains(
+						"> Task :sub:spotlessJava\n",
+						"> Task :sub:spotlessJavaCheck\n",
+						"> Task :sub:spotlessJavaDupe\n",
+						"> Task :sub:spotlessJavaDupeCheck\n",
+						"> Task :sub:spotlessCheck\n");
 	}
 }

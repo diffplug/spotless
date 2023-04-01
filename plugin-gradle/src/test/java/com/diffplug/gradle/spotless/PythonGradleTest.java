@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,14 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Test;
 
-import com.diffplug.spotless.category.BlackTest;
+import com.diffplug.spotless.tag.BlackTest;
 
-@Category(BlackTest.class)
-public class PythonGradleTest extends GradleIntegrationHarness {
+@BlackTest
+class PythonGradleTest extends GradleIntegrationHarness {
 	@Test
-	public void black() throws IOException {
+	void black() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"  id 'com.diffplug.spotless'",

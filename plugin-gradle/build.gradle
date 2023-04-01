@@ -1,12 +1,12 @@
 apply from: rootProject.file('gradle/changelog.gradle')
 ext.artifactId = project.artifactIdGradle
 version = spotlessChangelog.versionNext
-apply from: rootProject.file('gradle/java-setup.gradle')
-apply from: rootProject.file('gradle/spotless-freshmark.gradle')
-
 apply plugin: 'java-library'
 apply plugin: 'com.gradle.plugin-publish'
 apply plugin: 'java-gradle-plugin'
+apply from: rootProject.file('gradle/java-setup.gradle')
+apply from: rootProject.file('gradle/spotless-freshmark.gradle')
+
 
 dependencies {
 	if (version.endsWith('-SNAPSHOT') || (rootProject.spotlessChangelog.versionNext == rootProject.spotlessChangelog.versionLast)) {
@@ -22,75 +22,61 @@ dependencies {
 	implementation "org.eclipse.jgit:org.eclipse.jgit:${VER_JGIT}"
 
 	testImplementation project(':testlib')
-	testImplementation "junit:junit:${VER_JUNIT}"
+	testImplementation "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"
 	testImplementation "org.assertj:assertj-core:${VER_ASSERTJ}"
 	testImplementation "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
 }
 
-test { testLogging.showStandardStreams = true }
-
 apply from: rootProject.file('gradle/special-tests.gradle')
-
-// make it easy for eclipse to run against latest build
-tasks.eclipse.dependsOn(pluginUnderTestMetadata)
+tasks.withType(Test).configureEach {
+	testLogging.showStandardStreams = true
+}
 
 //////////////////////////
 // GRADLE PLUGIN PORTAL //
 //////////////////////////
 gradlePlugin {
+	website = "https://github.com/diffplug/spotless"
+	vcsUrl = "https://github.com/diffplug/spotless"
 	plugins {
 		spotlessPlugin {
 			id = 'com.diffplug.spotless'
 			implementationClass = 'com.diffplug.gradle.spotless.SpotlessPlugin'
 			displayName = 'Spotless formatting plugin'
 			description = project.description
+			tags.set([
+				'format',
+				'style',
+				'license',
+				'header',
+				'google-java-format',
+				'eclipse',
+				'ktlint',
+				'ktfmt',
+				'diktat',
+				'tsfmt',
+				'prettier',
+				'scalafmt',
+				'scalafix',
+				'black',
+				'clang-format'
+			])
 		}
 		spotlessPluginLegacy {
 			id = 'com.diffplug.gradle.spotless'
 			implementationClass = 'com.diffplug.gradle.spotless.SpotlessPluginRedirect'
 			displayName = 'Spotless formatting plugin (legacy)'
 			description = project.description
+			tags.set([
+				'format'
+			])
 		}
 	}
 }
-if (version.endsWith('-SNAPSHOT')) {
-	publishPlugins.enabled = false
-} else {
-	pluginBundle {
-		// These settings are set for the whole plugin bundle
-		website = "https://github.com/diffplug/spotless"
-		vcsUrl = "https://github.com/diffplug/spotless"
-		tags = [
-			'format',
-			'style',
-			'license',
-			'header',
-			'google-java-format',
-			'eclipse',
-			'ktlint',
-			'ktfmt',
-			'diktat',
-			'tsfmt',
-			'prettier',
-			'scalafmt',
-			'scalafix',
-			'black',
-			'clang-format'
-		]
-		plugins {
-			spotlessPlugin {
-				id = 'com.diffplug.spotless'
-			}
-			spotlessPluginLegacy {
-				id = 'com.diffplug.gradle.spotless'
-			}
-		}
-		mavenCoordinates {
-			groupId = project.group
-			artifactId = project.artifactIdGradle
-			version = project.version
-		}
-	}
+
+tasks.named("publishPlugins") {
+	enabled = !version.endsWith('-SNAPSHOT')
+	notCompatibleWithConfigurationCache("https://github.com/gradle/gradle/issues/21283")
 }
 
 // have to apply java-publish after setting up the pluginBundle

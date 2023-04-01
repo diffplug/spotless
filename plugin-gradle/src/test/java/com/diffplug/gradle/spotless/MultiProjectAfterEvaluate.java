@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,20 +18,20 @@ package com.diffplug.gradle.spotless;
 import java.io.IOException;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** Reproduces https://github.com/diffplug/spotless/issues/506 */
-public class MultiProjectAfterEvaluate extends GradleIntegrationHarness {
+class MultiProjectAfterEvaluate extends GradleIntegrationHarness {
 	@Test
-	public void failureDoesntTriggerAll() throws IOException {
+	void failureDoesntTriggerAll() throws IOException {
 		setFile("settings.gradle").toLines("include 'sub'");
-		setFile("build.gradle").toLines("buildscript { repositories { mavenCentral() }}");
 		setFile("sub/build.gradle")
 				.toLines(
 						"plugins {",
 						"  id 'com.diffplug.spotless'",
 						"  id 'java'",
 						"}",
+						"repositories { mavenCentral() }",
 						"spotless { java { googleJavaFormat() } }");
 		String output = gradleRunner().withArguments("spotlessApply", "--warning-mode", "all").build().getOutput().replace("\r\n", "\n");
 		Assertions.assertThat(output).doesNotContain("Using method Project#afterEvaluate(Action) when the project is already evaluated has been deprecated.");

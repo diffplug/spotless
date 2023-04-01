@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,22 +20,21 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Stream;
+
+import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
-import org.gradle.api.execution.TaskExecutionGraph;
+import org.gradle.api.provider.Provider;
+import org.gradle.api.services.BuildServiceRegistry;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.build.event.BuildEventsListenerRegistry;
 
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.io.Files;
 import com.diffplug.spotless.FormatterStep;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import groovy.lang.Closure;
 
 /**
  * NOT AN END-USER TASK, DO NOT USE FOR ANYTHING!
@@ -47,30 +46,34 @@ import groovy.lang.Closure;
  * - When this "registerDependencies" task does its up-to-date check, it queries the task execution graph to see which
  *   SpotlessTasks are at risk of being executed, and causes them all to be evaluated safely in the root buildscript.
  */
-public class RegisterDependenciesTask extends DefaultTask {
+public abstract class RegisterDependenciesTask extends DefaultTask {
 	static final String TASK_NAME = "spotlessInternalRegisterDependencies";
+
+	void hookSubprojectTask(SpotlessTask task) {
+		// this ensures that if a user is using predeclared dependencies,
+		// those predeclared deps will be resolved before they are needed
+		// by the child tasks
+		//
+		// it's also needed to make sure that jvmLocalCache gets set
+		// in the SpotlessTaskService before any spotless tasks run
+		task.dependsOn(this);
+	}
+
+	void setup() {
+		Preconditions.checkArgument(getProject().getRootProject() == getProject(), "Can only be used on the root project");
+		String compositeBuildSuffix = getName().substring(TASK_NAME.length()); // see https://github.com/diffplug/spotless/pull/1001
+		BuildServiceRegistry buildServices = getProject().getGradle().getSharedServices();
+		taskService = buildServices.registerIfAbsent("SpotlessTaskService" + compositeBuildSuffix, SpotlessTaskService.class, spec -> {});
+		usesService(taskService);
+		getBuildEventsListenerRegistry().onTaskCompletion(taskService);
+		unitOutput = new File(getProject().getBuildDir(), "tmp/spotless-register-dependencies");
+	}
+
+	List<FormatterStep> steps = new ArrayList<>();
 
 	@Input
 	public List<FormatterStep> getSteps() {
-		List<FormatterStep> allSteps = new ArrayList<>();
-		TaskExecutionGraph taskGraph = getProject().getGradle().getTaskGraph();
-		tasks.stream()
-				.filter(taskGraph::hasTask)
-				.sorted()
-				.forEach(task -> allSteps.addAll(task.getSteps()));
-		return allSteps;
-	}
-
-	private List<SpotlessTask> tasks = new ArrayList<>();
-
-	@Internal
-	public List<SpotlessTask> getTasks() {
-		return tasks;
-	}
-
-	void hookSubprojectTask(SpotlessTask task) {
-		tasks.add(task);
-		task.dependsOn(this);
+		return steps;
 	}
 
 	File unitOutput;
@@ -80,37 +83,20 @@ public class RegisterDependenciesTask extends DefaultTask {
 		return unitOutput;
 	}
 
-	GradleProvisioner.RootProvisioner rootProvisioner;
-
-	@Internal
-	public GradleProvisioner.RootProvisioner getRootProvisioner() {
-		return rootProvisioner;
-	}
-
-	@SuppressWarnings({"rawtypes", "serial"})
-	void setup() {
-		Preconditions.checkArgument(getProject().getRootProject() == getProject(), "Can only be used on the root project");
-		unitOutput = new File(getProject().getBuildDir(), "tmp/spotless-register-dependencies");
-		rootProvisioner = new GradleProvisioner.RootProvisioner(getProject());
-		getProject().getGradle().buildFinished(new Closure(null) {
-			@SuppressFBWarnings("UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS")
-			public Object doCall() {
-				gitRatchet.close();
-				return null;
-			}
-		});
-	}
-
 	@TaskAction
 	public void trivialFunction() throws IOException {
 		Files.createParentDirs(unitOutput);
-		Files.write(Integer.toString(getSteps().size()), unitOutput, StandardCharsets.UTF_8);
+		Files.write(Integer.toString(1), unitOutput, StandardCharsets.UTF_8);
 	}
 
-	GitRatchetGradle gitRatchet = new GitRatchetGradle();
+	// this field is stupid, but we need it, see https://github.com/diffplug/spotless/issues/1260
+	private Provider<SpotlessTaskService> taskService;
 
 	@Internal
-	GitRatchetGradle getGitRatchet() {
-		return gitRatchet;
+	public Provider<SpotlessTaskService> getTaskService() {
+		return taskService;
 	}
+
+	@Inject
+	protected abstract BuildEventsListenerRegistry getBuildEventsListenerRegistry();
 }

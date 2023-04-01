@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,15 @@ package com.diffplug.spotless.npm;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.security.MessageDigest;
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import com.diffplug.spotless.ThrowingEx;
 
@@ -43,6 +50,12 @@ final class NpmResourceHelper {
 				throw new IOException("Failed to delete " + file);
 			}
 		}
+	}
+
+	static String readUtf8StringFromClasspath(Class<?> clazz, String... resourceNames) {
+		return Arrays.stream(resourceNames)
+				.map(resourceName -> readUtf8StringFromClasspath(clazz, resourceName))
+				.collect(Collectors.joining("\n"));
 	}
 
 	static String readUtf8StringFromClasspath(Class<?> clazz, String resourceName) {
@@ -90,6 +103,52 @@ final class NpmResourceHelper {
 			if ((System.currentTimeMillis() - startedAt) > maxWaitTime.toMillis()) {
 				throw new TimeoutException("The file did not appear within " + maxWaitTime);
 			}
+			ThrowingEx.run(() -> Thread.sleep(100));
 		}
+	}
+
+	static void awaitFileDeleted(File file, Duration maxWaitTime) throws TimeoutException {
+		final long startedAt = System.currentTimeMillis();
+		while (file.exists()) {
+			// wait for at most maxWaitTime
+			if ((System.currentTimeMillis() - startedAt) > maxWaitTime.toMillis()) {
+				throw new TimeoutException("The file did not disappear within " + maxWaitTime);
+			}
+			ThrowingEx.run(() -> Thread.sleep(100));
+		}
+	}
+
+	static File copyFileToDir(File file, File targetDir) {
+		return copyFileToDirAtSubpath(file, targetDir, file.getName());
+	}
+
+	static File copyFileToDirAtSubpath(File file, File targetDir, String relativePath) {
+		Objects.requireNonNull(relativePath);
+		try {
+			// create file pointing to relativePath in targetDir
+			final Path relativeTargetFile = Paths.get(targetDir.getAbsolutePath(), relativePath);
+			assertDirectoryExists(relativeTargetFile.getParent().toFile());
+
+			Files.copy(file.toPath(), relativeTargetFile, StandardCopyOption.REPLACE_EXISTING);
+			return relativeTargetFile.toFile();
+		} catch (IOException e) {
+			throw ThrowingEx.asRuntime(e);
+		}
+	}
+
+	static String md5(File file) {
+		return md5(readUtf8StringFromFile(file));
+	}
+
+	static String md5(String fileContent) {
+		MessageDigest md = ThrowingEx.get(() -> MessageDigest.getInstance("MD5"));
+		md.update(fileContent.getBytes(StandardCharsets.UTF_8));
+		byte[] digest = md.digest();
+		// convert byte array digest to hex string
+		StringBuilder sb = new StringBuilder();
+		for (byte b : digest) {
+			sb.append(String.format("%02x", b & 0xff));
+		}
+		return sb.toString();
 	}
 }

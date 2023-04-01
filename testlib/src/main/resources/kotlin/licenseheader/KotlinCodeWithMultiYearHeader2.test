@@ -1,5 +1,6 @@
 // License Header 2012-2014
 @file:JvmName("SomeFileName")
+
 package my.test
 
-object AnObject
+object AnObject2

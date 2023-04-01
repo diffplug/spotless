@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,14 @@ package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
 
+import java.util.Map;
+
 import javax.inject.Inject;
 
 import org.gradle.api.Project;
 
 import com.diffplug.spotless.cpp.CppDefaults;
-import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
+import com.diffplug.spotless.extra.EquoBasedStepBuilder;
 import com.diffplug.spotless.extra.cpp.EclipseCdtFormatterStep;
 
 public class CppExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
@@ -42,7 +44,7 @@ public class CppExtension extends FormatExtension implements HasBuiltinDelimiter
 	}
 
 	public class EclipseConfig {
-		private final EclipseBasedStepBuilder builder;
+		private final EquoBasedStepBuilder builder;
 
 		EclipseConfig(String version) {
 			builder = EclipseCdtFormatterStep.createBuilder(provisioner());
@@ -55,6 +57,12 @@ public class CppExtension extends FormatExtension implements HasBuiltinDelimiter
 			Project project = getProject();
 			builder.setPreferences(project.files(configFiles).getFiles());
 			replaceStep(builder.build());
+		}
+
+		public EclipseConfig withP2Mirrors(Map<String, String> mirrors) {
+			builder.setP2Mirrors(mirrors);
+			replaceStep(builder.build());
+			return this;
 		}
 	}
 

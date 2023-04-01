@@ -23,7 +23,6 @@ gradle-app.setting
 _ext/*/gradle/dependency-locks/*.lockfile
 
 ### Eclipse ###
-*.pydevproject
 .metadata
 .gradle
 bin/
@@ -122,3 +121,6 @@ nbdist/
 nbactions.xml
 nb-configuration.xml
 .nb-gradle/
+
+# MacOS jenv
+.java-version

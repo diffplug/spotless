@@ -3,6 +3,12 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.15.1`).
 
 ## [Unreleased]
+### Fixed
+* Fix typo in gradle variable names ([#1425](https://github.com/diffplug/spotless/pull/1425))
+
+## [3.23.0] - 2021-09-22
+### Added
+* Switch to Web Tools Platform release 3.23.0 for Eclipse 4.21.
 
 ## [3.22.0] - 2021-06-27
 ### Added

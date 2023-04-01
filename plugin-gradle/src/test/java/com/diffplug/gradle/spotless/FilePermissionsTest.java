@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static org.junit.jupiter.api.condition.OS.WINDOWS;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,27 +24,23 @@ import java.nio.file.attribute.PosixFilePermissions;
 
 import org.assertj.core.api.AbstractStringAssert;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
 
-import com.diffplug.spotless.FileSignature;
-
-public class FilePermissionsTest extends GradleIntegrationHarness {
+class FilePermissionsTest extends GradleIntegrationHarness {
 	@Test
-	public void spotlessApplyShouldPreservePermissions() throws IOException {
-		if (FileSignature.machineIsWin()) {
-			// need unix filesystem
-			return;
-		}
+	@DisabledOnOs(WINDOWS)
+	void spotlessApplyShouldPreservePermissions() throws IOException {
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"",
 				"spotless {",
 				"    java {",
 				"        target file('test.java')",
-				"        googleJavaFormat('1.2')",
+				"        googleJavaFormat()",
 				"    }",
 				"}");
 		setFile("test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");

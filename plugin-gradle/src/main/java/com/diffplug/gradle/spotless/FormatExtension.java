@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,20 @@
 package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Random;
 import java.util.TreeMap;
+import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -35,11 +37,12 @@ import javax.inject.Inject;
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.BasePlugin;
+import org.gradle.api.tasks.TaskProvider;
 
+import com.diffplug.common.base.Preconditions;
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
@@ -53,6 +56,7 @@ import com.diffplug.spotless.generic.EndWithNewlineStep;
 import com.diffplug.spotless.generic.IndentStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep.YearMode;
+import com.diffplug.spotless.generic.NativeCmdStep;
 import com.diffplug.spotless.generic.PipeStepPair;
 import com.diffplug.spotless.generic.ReplaceRegexStep;
 import com.diffplug.spotless.generic.ReplaceStep;
@@ -69,11 +73,11 @@ public class FormatExtension {
 
 	@Inject
 	public FormatExtension(SpotlessExtension spotless) {
-		this.spotless = Objects.requireNonNull(spotless);
+		this.spotless = requireNonNull(spotless);
 	}
 
 	protected final Provisioner provisioner() {
-		return spotless.getRegisterDependenciesTask().rootProvisioner;
+		return spotless.getRegisterDependenciesTask().getTaskService().get().provisionerFor(spotless);
 	}
 
 	private String formatName() {
@@ -94,7 +98,7 @@ public class FormatExtension {
 
 	/** Sets the line endings to use (defaults to {@link SpotlessExtensionImpl#getLineEndings()}. */
 	public void setLineEndings(LineEnding lineEndings) {
-		this.lineEndings = Objects.requireNonNull(lineEndings);
+		this.lineEndings = requireNonNull(lineEndings);
 	}
 
 	Charset encoding;
@@ -106,7 +110,7 @@ public class FormatExtension {
 
 	/** Sets the encoding to use (defaults to {@link SpotlessExtensionImpl#getEncoding()}. */
 	public void setEncoding(String name) {
-		setEncoding(Charset.forName(Objects.requireNonNull(name)));
+		setEncoding(Charset.forName(requireNonNull(name)));
 	}
 
 	/** Sentinel to distinguish between "don't ratchet this format" and "use spotless parent format". */
@@ -134,19 +138,19 @@ public class FormatExtension {
 
 	/** Sets the encoding to use (defaults to {@link SpotlessExtensionImpl#getEncoding()}. */
 	public void setEncoding(Charset charset) {
-		encoding = Objects.requireNonNull(charset);
+		encoding = requireNonNull(charset);
 	}
 
 	final FormatExceptionPolicyStrict exceptionPolicy = new FormatExceptionPolicyStrict();
 
 	/** Ignores errors in the given step. */
 	public void ignoreErrorForStep(String stepName) {
-		exceptionPolicy.excludeStep(Objects.requireNonNull(stepName));
+		exceptionPolicy.excludeStep(requireNonNull(stepName));
 	}
 
 	/** Ignores errors for the given relative path. */
 	public void ignoreErrorForPath(String relativePath) {
-		exceptionPolicy.excludePath(Objects.requireNonNull(relativePath));
+		exceptionPolicy.excludePath(requireNonNull(relativePath));
 	}
 
 	/** Sets encoding to use (defaults to {@link SpotlessExtensionImpl#getEncoding()}). */
@@ -156,6 +160,16 @@ public class FormatExtension {
 
 	/** The files to be formatted = (target - targetExclude). */
 	protected FileCollection target, targetExclude;
+
+	protected boolean isLicenseHeaderStep(FormatterStep formatterStep) {
+		String formatterStepName = formatterStep.getName();
+
+		if (formatterStepName.startsWith(LicenseHeaderStep.class.getName())) {
+			return true;
+		}
+
+		return false;
+	}
 
 	/**
 	 * Sets which files should be formatted.  Files to be formatted = (target - targetExclude).
@@ -278,7 +292,7 @@ public class FormatExtension {
 
 	/** Adds a new step. */
 	public void addStep(FormatterStep newStep) {
-		Objects.requireNonNull(newStep);
+		requireNonNull(newStep);
 		int existingIdx = getExistingStepIdx(newStep.getName());
 		if (existingIdx != -1) {
 			throw new GradleException("Multiple steps with name '" + newStep.getName() + "' for spotless format '" + formatName() + "'");
@@ -344,13 +358,13 @@ public class FormatExtension {
 
 	/** Adds a custom step. Receives a string with unix-newlines, must return a string with unix newlines. */
 	public void custom(String name, Closure<String> formatter) {
-		Objects.requireNonNull(formatter, "formatter");
+		requireNonNull(formatter, "formatter");
 		custom(name, formatter::call);
 	}
 
 	/** Adds a custom step. Receives a string with unix-newlines, must return a string with unix newlines. */
 	public void custom(String name, FormatterFunc formatter) {
-		Objects.requireNonNull(formatter, "formatter");
+		requireNonNull(formatter, "formatter");
 		addStep(FormatterStep.createLazy(name, () -> globalState, unusedState -> formatter));
 	}
 
@@ -394,6 +408,11 @@ public class FormatExtension {
 		addStep(IndentStep.Type.TAB.create());
 	}
 
+	/** Ensures formatting of files via native binary. */
+	public void nativeCmd(String name, String pathToExe, List<String> arguments) {
+		addStep(NativeCmdStep.create(name, new File(pathToExe), arguments));
+	}
+
 	/**
 	 * Created by {@link FormatExtension#licenseHeader(String, String)} or {@link FormatExtension#licenseHeaderFile(Object, String)}.
 	 * For most language-specific formats (e.g. java, scala, etc.) you can omit the second {@code delimiter} argument, because it is supplied
@@ -402,6 +421,24 @@ public class FormatExtension {
 	public class LicenseHeaderConfig {
 		LicenseHeaderStep builder;
 		Boolean updateYearWithLatest = null;
+
+		public LicenseHeaderConfig named(String name) {
+			String existingStepName = builder.getName();
+			builder = builder.withName(name);
+			int existingStepIdx = getExistingStepIdx(existingStepName);
+			if (existingStepIdx != -1) {
+				steps.set(existingStepIdx, createStep());
+			} else {
+				addStep(createStep());
+			}
+			return this;
+		}
+
+		public LicenseHeaderConfig onlyIfContentMatches(String contentPattern) {
+			builder = builder.withContentPattern(contentPattern);
+			replaceStep(createStep());
+			return this;
+		}
 
 		public LicenseHeaderConfig(LicenseHeaderStep builder) {
 			this.builder = builder;
@@ -423,6 +460,12 @@ public class FormatExtension {
 		 */
 		public LicenseHeaderConfig yearSeparator(String yearSeparator) {
 			builder = builder.withYearSeparator(yearSeparator);
+			replaceStep(createStep());
+			return this;
+		}
+
+		public LicenseHeaderConfig skipLinesMatching(String skipLinesMatching) {
+			builder = builder.withSkipLinesMatching(skipLinesMatching);
 			replaceStep(createStep());
 			return this;
 		}
@@ -478,23 +521,60 @@ public class FormatExtension {
 		return config;
 	}
 
-	public abstract class NpmStepConfig<T extends NpmStepConfig<?>> {
+	public abstract static class NpmStepConfig<T extends NpmStepConfig<?>> {
+
+		public static final String SPOTLESS_NPM_INSTALL_CACHE_DEFAULT_NAME = "spotless-npm-install-cache";
+
 		@Nullable
 		protected Object npmFile;
 
 		@Nullable
+		protected Object nodeFile;
+
+		@Nullable
+		protected Object npmInstallCache;
+
+		@Nullable
 		protected Object npmrcFile;
+
+		protected Project project;
+
+		private Consumer<FormatterStep> replaceStep;
+
+		public NpmStepConfig(Project project, Consumer<FormatterStep> replaceStep) {
+			this.project = requireNonNull(project);
+			this.replaceStep = requireNonNull(replaceStep);
+		}
 
 		@SuppressWarnings("unchecked")
 		public T npmExecutable(final Object npmFile) {
 			this.npmFile = npmFile;
-			replaceStep(createStep());
+			replaceStep();
+			return (T) this;
+		}
+
+		@SuppressWarnings("unchecked")
+		public T nodeExecutable(final Object nodeFile) {
+			this.nodeFile = nodeFile;
+			replaceStep();
 			return (T) this;
 		}
 
 		public T npmrc(final Object npmrcFile) {
 			this.npmrcFile = npmrcFile;
-			replaceStep(createStep());
+			replaceStep();
+			return (T) this;
+		}
+
+		public T npmInstallCache(final Object npmInstallCache) {
+			this.npmInstallCache = npmInstallCache;
+			replaceStep();
+			return (T) this;
+		}
+
+		public T npmInstallCache() {
+			this.npmInstallCache = new File(project.getBuildDir(), SPOTLESS_NPM_INSTALL_CACHE_DEFAULT_NAME);
+			replaceStep();
 			return (T) this;
 		}
 
@@ -502,15 +582,27 @@ public class FormatExtension {
 			return fileOrNull(npmFile);
 		}
 
+		File nodeFileOrNull() {
+			return fileOrNull(nodeFile);
+		}
+
 		File npmrcFileOrNull() {
 			return fileOrNull(npmrcFile);
 		}
 
-		private File fileOrNull(Object npmFile) {
-			return npmFile != null ? getProject().file(npmFile) : null;
+		File npmModulesCacheOrNull() {
+			return fileOrNull(npmInstallCache);
 		}
 
-		abstract FormatterStep createStep();
+		private File fileOrNull(Object npmFile) {
+			return npmFile != null ? project.file(npmFile) : null;
+		}
+
+		protected void replaceStep() {
+			replaceStep.accept(createStep());
+		}
+
+		abstract protected FormatterStep createStep();
 
 	}
 
@@ -525,28 +617,32 @@ public class FormatExtension {
 		final Map<String, String> devDependencies;
 
 		PrettierConfig(Map<String, String> devDependencies) {
-			this.devDependencies = Objects.requireNonNull(devDependencies);
+			super(getProject(), FormatExtension.this::replaceStep);
+			this.devDependencies = requireNonNull(devDependencies);
 		}
 
 		public PrettierConfig configFile(final Object prettierConfigFile) {
 			this.prettierConfigFile = prettierConfigFile;
-			replaceStep(createStep());
+			replaceStep();
 			return this;
 		}
 
 		public PrettierConfig config(final Map<String, Object> prettierConfig) {
 			this.prettierConfig = new TreeMap<>(prettierConfig);
-			replaceStep(createStep());
+			replaceStep();
 			return this;
 		}
 
-		FormatterStep createStep() {
+		@Override
+		protected FormatterStep createStep() {
 			final Project project = getProject();
 			return PrettierFormatterStep.create(
 					devDependencies,
 					provisioner(),
+					project.getProjectDir(),
 					project.getBuildDir(),
-					new NpmPathResolver(npmFileOrNull(), npmrcFileOrNull(), project.getProjectDir(), project.getRootDir()),
+					npmModulesCacheOrNull(),
+					new NpmPathResolver(npmFileOrNull(), nodeFileOrNull(), npmrcFileOrNull(), Arrays.asList(project.getProjectDir(), project.getRootDir())),
 					new com.diffplug.spotless.npm.PrettierConfig(
 							this.prettierConfigFile != null ? project.file(this.prettierConfigFile) : null,
 							this.prettierConfig));
@@ -656,6 +752,7 @@ public class FormatExtension {
 	 *     target '*.md'
 	 *     withinBlocks 'java examples', '\n```java\n', '\n```\n', com.diffplug.gradle.spotless.JavaExtension, {
 	 *       googleJavaFormat()
+	 *       formatAnnotations()
 	 *     }
 	 *     ...
 	 * </pre>
@@ -726,17 +823,18 @@ public class FormatExtension {
 		}
 		task.setSteps(steps);
 		task.setLineEndingsPolicy(getLineEndings().createPolicy(getProject().getProjectDir(), () -> totalTarget));
-		if (spotless.project != spotless.project.getRootProject()) {
-			spotless.getRegisterDependenciesTask().hookSubprojectTask(task);
-		}
-		if (getRatchetFrom() != null) {
-			task.setupRatchet(spotless.getRegisterDependenciesTask().gitRatchet, getRatchetFrom());
-		}
+		spotless.getRegisterDependenciesTask().hookSubprojectTask(task);
+		task.setupRatchet(getRatchetFrom() != null ? getRatchetFrom() : "");
 	}
 
 	/** Returns the project that this extension is attached to. */
 	protected Project getProject() {
 		return spotless.project;
+	}
+
+	/** Eager version of {@link #createIndependentApplyTaskLazy(String)} */
+	public SpotlessApply createIndependentApplyTask(String taskName) {
+		return createIndependentApplyTaskLazy(taskName).get();
 	}
 
 	/**
@@ -748,21 +846,23 @@ public class FormatExtension {
 	 *
 	 * The returned task will not be hooked up to the global {@code spotlessApply}, and there will be no corresponding {@code check} task.
 	 *
+	 * The task name must not end with `Apply`.
+	 *
 	 * NOTE: does not respect the rarely-used <a href="https://github.com/diffplug/spotless/blob/b7f8c551a97dcb92cc4b0ee665448da5013b30a3/plugin-gradle/README.md#can-i-apply-spotless-to-specific-files">{@code spotlessFiles} property</a>.
 	 */
-	public SpotlessApply createIndependentApplyTask(String taskName) {
-		// create and setup the task
-		SpotlessTask spotlessTask = spotless.project.getTasks().create(taskName + "Helper", SpotlessTaskImpl.class);
-		setupTask(spotlessTask);
-		// enforce the clean ordering
-		Task clean = spotless.project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME);
-		spotlessTask.mustRunAfter(clean);
+	public TaskProvider<SpotlessApply> createIndependentApplyTaskLazy(String taskName) {
+		Preconditions.checkArgument(!taskName.endsWith(SpotlessExtension.APPLY), "Task name must not end with " + SpotlessExtension.APPLY);
+		TaskProvider<SpotlessTaskImpl> spotlessTask = spotless.project.getTasks().register(taskName + SpotlessTaskService.INDEPENDENT_HELPER, SpotlessTaskImpl.class, task -> {
+			task.init(spotless.getRegisterDependenciesTask().getTaskService());
+			setupTask(task);
+			// clean removes the SpotlessCache, so we have to run after clean
+			task.mustRunAfter(BasePlugin.CLEAN_TASK_NAME);
+		});
 		// create the apply task
-		SpotlessApply applyTask = spotless.project.getTasks().create(taskName, SpotlessApply.class);
-		applyTask.setSpotlessOutDirectory(spotlessTask.getOutputDirectory());
-		applyTask.linkSource(spotlessTask);
-		applyTask.dependsOn(spotlessTask);
-
+		TaskProvider<SpotlessApply> applyTask = spotless.project.getTasks().register(taskName, SpotlessApply.class, task -> {
+			task.dependsOn(spotlessTask);
+			task.init(spotlessTask.get());
+		});
 		return applyTask;
 	}
 

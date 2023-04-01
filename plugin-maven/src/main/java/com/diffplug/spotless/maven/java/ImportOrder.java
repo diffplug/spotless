@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,17 +31,20 @@ public class ImportOrder implements FormatterStepFactory {
 	@Parameter
 	private String order;
 
+	@Parameter
+	private boolean wildcardsLast = false;
+
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
 		if (file != null ^ order != null) {
 			if (file != null) {
 				File importsFile = config.getFileLocator().locateFile(file);
-				return ImportOrderStep.forJava().createFrom(importsFile);
+				return ImportOrderStep.forJava().createFrom(wildcardsLast, importsFile);
 			} else {
-				return ImportOrderStep.forJava().createFrom(order.split(",", -1));
+				return ImportOrderStep.forJava().createFrom(wildcardsLast, order.split(",", -1));
 			}
 		} else if (file == null && order == null) {
-			return ImportOrderStep.forJava().createFrom();
+			return ImportOrderStep.forJava().createFrom(wildcardsLast);
 		} else {
 			throw new IllegalArgumentException("Must specify exactly one of 'file' or 'order'.");
 		}

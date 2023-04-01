@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,22 +18,22 @@ package com.diffplug.spotless.extra.eclipse.wtp;
 import static org.eclipse.wst.xml.core.internal.preferences.XMLCorePreferenceNames.INDENTATION_CHAR;
 import static org.eclipse.wst.xml.core.internal.preferences.XMLCorePreferenceNames.INDENTATION_SIZE;
 import static org.eclipse.wst.xml.core.internal.preferences.XMLCorePreferenceNames.SPACE;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Properties;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.extra.eclipse.wtp.sse.PluginPreferences;
 
 /** Test configuration allowExternalURI=false */
-public class EclipseXmlFormatterStepImplCatalogLookupTest {
+class EclipseXmlFormatterStepImplCatalogLookupTest {
 	private TestData testData = null;
 	private EclipseXmlFormatterStepImpl formatter;
 
-	@Before
-	public void initializeStatic() throws Exception {
+	@BeforeEach
+	void initializeStatic() throws Exception {
 		testData = TestData.getTestDataOnFileSystem("xml");
 		/*
 		 * The instantiation can be repeated for each step, but only with the same configuration
@@ -49,10 +49,10 @@ public class EclipseXmlFormatterStepImplCatalogLookupTest {
 	}
 
 	@Test
-	public void catalogLookup() throws Throwable {
+	void catalogLookup() throws Throwable {
 		String[] input = testData.input("xsd_not_found.test");
 		String output = formatter.format(input[0], input[1]);
-		assertEquals("XSD not resolved by catalog. Restrictions are not applied by formatter.",
-				testData.expected("xsd_not_found.test").replace(" remove spaces ", "remove spaces"), output);
+		assertEquals(testData.expected("xsd_not_found.test").replace(" remove spaces ", "remove spaces"),
+				output, "XSD not resolved by catalog. Restrictions are not applied by formatter.");
 	}
 }

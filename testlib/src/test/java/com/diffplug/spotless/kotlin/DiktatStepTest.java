@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,45 +18,50 @@ package com.diffplug.spotless.kotlin;
 import static com.diffplug.spotless.FileSignature.signAsList;
 
 import java.io.File;
-import java.util.Collections;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-import com.diffplug.spotless.*;
+import com.diffplug.spotless.FileSignature;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.ResourceHarness;
+import com.diffplug.spotless.StepHarnessWithFile;
+import com.diffplug.spotless.TestProvisioner;
 
-public class DiktatStepTest extends ResourceHarness {
+class DiktatStepTest extends ResourceHarness {
 
 	@Test
-	public void behavior() throws Exception {
+	void behavior() {
 		FormatterStep step = DiktatStep.create(TestProvisioner.mavenCentral());
-		StepHarness.forStep(step)
-				.testResourceException("kotlin/diktat/Unsolvable.kt", assertion -> {
-					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("There are 2 unfixed errors:" +
-							System.lineSeparator() + "Error on line: 1, column: 1 cannot be fixed automatically" +
-							System.lineSeparator() + "[FILE_NAME_INCORRECT] file name is incorrect - it should end with .kt extension and be in PascalCase: testlib" +
-							System.lineSeparator() + "Error on line: 1, column: 1 cannot be fixed automatically" +
-							System.lineSeparator() + "[FILE_NAME_MATCH_CLASS] file name is incorrect - it should match with the class described in it if there is the only one class declared: testlib vs Unsolvable");
-				});
+		StepHarnessWithFile.forStep(this, step).testResourceExceptionMsg("kotlin/diktat/Unsolvable.kt").isEqualTo("There are 2 unfixed errors:" +
+				System.lineSeparator() + "Error on line: 1, column: 1 cannot be fixed automatically" +
+				System.lineSeparator() + "[DEBUG_PRINT] use a dedicated logging library: found println()" +
+				System.lineSeparator() + "Error on line: 13, column: 9 cannot be fixed automatically" +
+				System.lineSeparator() + "[DEBUG_PRINT] use a dedicated logging library: found println()");
 	}
 
 	@Test
-	public void behaviorConf() throws Exception {
-
+	void behaviorConf() throws Exception {
 		String configPath = "src/main/kotlin/diktat-analysis.yml";
 		File conf = setFile(configPath).toResource("kotlin/diktat/diktat-analysis.yml");
 		FileSignature config = signAsList(conf);
 
-		FormatterStep step = DiktatStep.create("0.3.0", TestProvisioner.mavenCentral(), Collections.emptyMap(), config);
-		StepHarness.forStep(step)
-				.testResourceException("kotlin/diktat/Unsolvable.kt", assertion -> {
-					assertion.isInstanceOf(AssertionError.class);
-					assertion.hasMessage("There are 2 unfixed errors:" +
-							System.lineSeparator() + "Error on line: 1, column: 1 cannot be fixed automatically" +
-							System.lineSeparator() + "[FILE_NAME_INCORRECT] file name is incorrect - it should end with .kt extension and be in PascalCase: testlib" +
-							System.lineSeparator() + "Error on line: 1, column: 1 cannot be fixed automatically" +
-							System.lineSeparator() + "[FILE_NAME_MATCH_CLASS] file name is incorrect - it should match with the class described in it if there is the only one class declared: testlib vs Unsolvable");
-				});
+		FormatterStep step = DiktatStep.create("1.2.1", TestProvisioner.mavenCentral(), config);
+		StepHarnessWithFile.forStep(this, step).testResourceExceptionMsg("kotlin/diktat/Unsolvable.kt").isEqualTo("There are 2 unfixed errors:" +
+				System.lineSeparator() + "Error on line: 1, column: 1 cannot be fixed automatically" +
+				System.lineSeparator() + "[DEBUG_PRINT] use a dedicated logging library: found println()" +
+				System.lineSeparator() + "Error on line: 13, column: 9 cannot be fixed automatically" +
+				System.lineSeparator() + "[DEBUG_PRINT] use a dedicated logging library: found println()");
 	}
 
+	@Test
+	void notSupportedVersion() {
+		final IllegalStateException notSupportedException = Assertions.assertThrows(IllegalStateException.class,
+				() -> DiktatStep.create("1.1.0", TestProvisioner.mavenCentral()));
+		Assertions.assertTrue(
+				notSupportedException.getMessage().contains("Minimum required Diktat version is 1.2.1, you tried 1.1.0 which is too old"));
+
+		Assertions.assertDoesNotThrow(() -> DiktatStep.create("1.2.1", TestProvisioner.mavenCentral()));
+		Assertions.assertDoesNotThrow(() -> DiktatStep.create("2.0.0", TestProvisioner.mavenCentral()));
+	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,8 @@ public class ScalaExtension extends FormatExtension {
 	public class ScalaFmtConfig {
 		final String version;
 		@Nullable
+		String scalaMajorVersion;
+		@Nullable
 		Object configFile;
 
 		ScalaFmtConfig(String version) {
@@ -55,14 +57,21 @@ public class ScalaExtension extends FormatExtension {
 			addStep(createStep());
 		}
 
-		public void configFile(Object configFile) {
+		public ScalaFmtConfig configFile(Object configFile) {
 			this.configFile = Objects.requireNonNull(configFile);
 			replaceStep(createStep());
+			return this;
+		}
+
+		public ScalaFmtConfig scalaMajorVersion(String scalaMajorVersion) {
+			this.scalaMajorVersion = Objects.requireNonNull(scalaMajorVersion);
+			replaceStep(createStep());
+			return this;
 		}
 
 		private FormatterStep createStep() {
 			File resolvedConfigFile = configFile == null ? null : getProject().file(configFile);
-			return ScalaFmtStep.create(version, provisioner(), resolvedConfigFile);
+			return ScalaFmtStep.create(version, scalaMajorVersion, provisioner(), resolvedConfigFile);
 		}
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,39 +15,33 @@
  */
 package com.diffplug.spotless.kotlin;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.*;
 
-@Ignore
-public class KtfmtStepTest extends ResourceHarness {
+@Disabled
+class KtfmtStepTest extends ResourceHarness {
 	@Test
-	public void behavior() throws Exception {
-		// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
-		JreVersion.assume11OrGreater();
+	void behavior() throws Exception {
 		FormatterStep step = KtfmtStep.create(TestProvisioner.mavenCentral());
 		StepHarness.forStep(step).testResource("kotlin/ktfmt/basic.dirty", "kotlin/ktfmt/basic.clean");
 	}
 
 	@Test
-	public void dropboxStyle_0_18() throws Exception {
-		// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
-		JreVersion.assume11OrGreater();
-		FormatterStep step = KtfmtStep.create("0.18", TestProvisioner.mavenCentral(), KtfmtStep.Style.DROPBOX);
+	void dropboxStyle_0_18() throws Exception {
+		FormatterStep step = KtfmtStep.create("0.18", TestProvisioner.mavenCentral(), KtfmtStep.Style.DROPBOX, null);
 		StepHarness.forStep(step).testResource("kotlin/ktfmt/basic.dirty", "kotlin/ktfmt/basic-dropboxstyle.clean");
 	}
 
 	@Test
-	public void dropboxStyle_0_19() throws Exception {
-		// ktfmt's dependency, google-java-format 1.8 requires a minimum of JRE 11+.
-		JreVersion.assume11OrGreater();
-		FormatterStep step = KtfmtStep.create("0.19", TestProvisioner.mavenCentral(), KtfmtStep.Style.DROPBOX);
+	void dropboxStyle_0_19() throws Exception {
+		FormatterStep step = KtfmtStep.create("0.19", TestProvisioner.mavenCentral(), KtfmtStep.Style.DROPBOX, null);
 		StepHarness.forStep(step).testResource("kotlin/ktfmt/basic.dirty", "kotlin/ktfmt/basic-dropboxstyle.clean");
 	}
 
 	@Test
-	public void equality() throws Exception {
+	void equality() throws Exception {
 		new SerializableEqualityTester() {
 			String version = "0.13";
 

@@ -1,0 +1,12 @@
+import a.*
+import a.b
+import a.b.c.*
+import kotlinx.android.synthetic.main.layout_name.*
+
+fun main() {}
+
+fun foo(param1: Any, param2: Any, param3: Any, param4: Any, param5: Any, param6: Any, param7: Any, param8: Any) {
+  a()
+  functionNameWithAlmost120SymbolsToValidateThatKtfmtNotBreakLineAtDefault100(param1, param2, param3, param4, param5)
+  return b
+}

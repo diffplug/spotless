@@ -1,30 +1,4 @@
 
-import java.util.regex.Matcher
-import java.util.regex.Pattern
-
-
-def thisVm() {
-	String jre = System.getProperty("java.version")
-	if (jre.startsWith("1.8")) {
-		return 8
-	} else {
-		Matcher matcher = Pattern.compile("(\\d+)").matcher(jre)
-		if (!matcher.find()) {
-			throw new IllegalArgumentException("Expected " + jre + " to start with an integer")
-		}
-		int version = Integer.parseInt(matcher.group(1))
-		if (version <= 8) {
-			throw new IllegalArgumentException("Expected " + jre + " to start with an integer greater than 8")
-		}
-		return version
-	}
-}
-
-if (thisVm() >= 15) {
-	// freshmark doesn't run on JRE 15+
-	return
-}
-
 apply plugin: 'com.diffplug.spotless'
 
 import com.diffplug.gradle.spotless.FreshMarkExtension
@@ -49,13 +23,16 @@ spotless {
 	}
 }
 
+def versionLast = spotlessChangelog.versionLast
+def versionNext = spotlessChangelog.versionNext
+
 // if this freshmark has a changelog file, then it has version-sensitive content
 if (tasks.names.contains('changelogCheck')) {
 	// normally we use versionLast for our freshmark
 	spotless {
 		freshmark {
 			properties {
-				it.put('versionLast', spotlessChangelog.versionLast)
+				it.put('versionLast', versionLast)
 			}
 		}
 	}
@@ -65,14 +42,14 @@ if (tasks.names.contains('changelogCheck')) {
 	freshmarkSetup.execute(freshmark)
 	freshmark.properties {
 		// that uses versionNext as versionLast
-		it.put('versionLast', spotlessChangelog.versionNext)
+		it.put('versionLast', versionNext)
 	}
 	def changelogBumpFreshmark = freshmark.createIndependentApplyTask('changelogBumpFreshmark')
 	// freshmark should run after the changelog bump
 	changelogBumpFreshmark.dependsOn tasks.named('changelogBump')
 
 	def changelogBumpFreshmarkGitAdd = tasks.register('changelogBumpFreshmarkGitAdd') {
-		// this git add add should run after the freshmark
+		// this git add should run after the freshmark
 		dependsOn(changelogBumpFreshmark)
 		// do the git add
 		doLast {

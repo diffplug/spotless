@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,21 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class GoogleJavaFormatIntegrationTest extends GradleIntegrationHarness {
+class GoogleJavaFormatIntegrationTest extends GradleIntegrationHarness {
 	@Test
-	public void integration() throws IOException {
+	void integration() throws IOException {
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"",
 				"spotless {",
 				"    java {",
 				"        target file('test.java')",
-				"        googleJavaFormat('1.2')",
+				"        googleJavaFormat('1.10.0')",
 				"    }",
 				"}");
 
@@ -41,8 +41,8 @@ public class GoogleJavaFormatIntegrationTest extends GradleIntegrationHarness {
 
 		checkRunsThenUpToDate();
 		replace("build.gradle",
-				"googleJavaFormat('1.2')",
-				"googleJavaFormat('1.3')");
+				"googleJavaFormat('1.10.0')",
+				"googleJavaFormat()");
 		checkRunsThenUpToDate();
 	}
 }

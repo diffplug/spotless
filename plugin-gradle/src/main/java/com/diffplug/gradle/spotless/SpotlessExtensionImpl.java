@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 
 public class SpotlessExtensionImpl extends SpotlessExtension {
-	private final TaskProvider<RegisterDependenciesTask> registerDependenciesTask;
+	final TaskProvider<?> rootCheckTask, rootApplyTask, rootDiagnoseTask;
 
 	public SpotlessExtensionImpl(Project project) {
 		super(project);
@@ -39,41 +39,27 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 			task.setGroup(TASK_GROUP); // no description on purpose
 		});
 
-		TaskContainer rootProjectTasks = project.getRootProject().getTasks();
-		if (!rootProjectTasks.getNames().contains(RegisterDependenciesTask.TASK_NAME)) {
-			this.registerDependenciesTask = rootProjectTasks.register(RegisterDependenciesTask.TASK_NAME, RegisterDependenciesTask.class, RegisterDependenciesTask::setup);
-		} else {
-			this.registerDependenciesTask = rootProjectTasks.named(RegisterDependenciesTask.TASK_NAME, RegisterDependenciesTask.class);
-		}
-
 		project.afterEvaluate(unused -> {
 			if (enforceCheck) {
-				project.getTasks().named(JavaBasePlugin.CHECK_TASK_NAME)
-						.configure(task -> task.dependsOn(rootCheckTask));
+				project.getTasks().named(JavaBasePlugin.CHECK_TASK_NAME).configure(task -> task.dependsOn(rootCheckTask));
 			}
 		});
-	}
-
-	final TaskProvider<?> rootCheckTask, rootApplyTask, rootDiagnoseTask;
-
-	RegisterDependenciesTask getRegisterDependenciesTask() {
-		return registerDependenciesTask.get();
 	}
 
 	@Override
 	protected void createFormatTasks(String name, FormatExtension formatExtension) {
 		boolean isIdeHook = project.hasProperty(IdeHook.PROPERTY);
 		TaskContainer tasks = project.getTasks();
-		TaskProvider<?> cleanTask = tasks.named(BasePlugin.CLEAN_TASK_NAME);
 
 		// create the SpotlessTask
 		String taskName = EXTENSION + SpotlessPlugin.capitalize(name);
 		TaskProvider<SpotlessTaskImpl> spotlessTask = tasks.register(taskName, SpotlessTaskImpl.class, task -> {
+			task.init(getRegisterDependenciesTask().getTaskService());
+			task.setGroup(TASK_GROUP);
 			task.setEnabled(!isIdeHook);
 			// clean removes the SpotlessCache, so we have to run after clean
-			task.mustRunAfter(cleanTask);
+			task.mustRunAfter(BasePlugin.CLEAN_TASK_NAME);
 		});
-
 		project.afterEvaluate(unused -> {
 			spotlessTask.configure(task -> {
 				// now that the task is being configured, we execute our actions
@@ -87,10 +73,10 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 
 		// create the check and apply control tasks
 		TaskProvider<SpotlessApply> applyTask = tasks.register(taskName + APPLY, SpotlessApply.class, task -> {
+			task.init(spotlessTask.get());
+			task.setGroup(TASK_GROUP);
 			task.setEnabled(!isIdeHook);
 			task.dependsOn(spotlessTask);
-			task.setSpotlessOutDirectory(spotlessTask.get().getOutputDirectory());
-			task.linkSource(spotlessTask.get());
 		});
 		rootApplyTask.configure(task -> {
 			task.dependsOn(applyTask);
@@ -102,10 +88,11 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 		});
 
 		TaskProvider<SpotlessCheck> checkTask = tasks.register(taskName + CHECK, SpotlessCheck.class, task -> {
+			SpotlessTaskImpl source = spotlessTask.get();
+			task.setGroup(TASK_GROUP);
+			task.init(source);
 			task.setEnabled(!isIdeHook);
-			task.dependsOn(spotlessTask);
-			task.setSpotlessOutDirectory(spotlessTask.get().getOutputDirectory());
-			task.source = spotlessTask.get();
+			task.dependsOn(source);
 
 			// if the user runs both, make sure that apply happens first,
 			task.mustRunAfter(applyTask);
@@ -115,7 +102,8 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 		// create the diagnose task
 		TaskProvider<SpotlessDiagnoseTask> diagnoseTask = tasks.register(taskName + DIAGNOSE, SpotlessDiagnoseTask.class, task -> {
 			task.source = spotlessTask.get();
-			task.mustRunAfter(cleanTask);
+			task.setGroup(TASK_GROUP);
+			task.mustRunAfter(BasePlugin.CLEAN_TASK_NAME);
 		});
 		rootDiagnoseTask.configure(task -> task.dependsOn(diagnoseTask));
 	}

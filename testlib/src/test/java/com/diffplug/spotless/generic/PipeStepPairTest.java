@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +19,15 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Locale;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.StepHarness;
 
-public class PipeStepPairTest {
+class PipeStepPairTest {
 	@Test
-	public void single() throws Exception {
+	void single() {
 		PipeStepPair pair = PipeStepPair.named("underTest").openClose("spotless:off", "spotless:on").buildPair();
 		FormatterStep lowercase = FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT));
 		StepHarness harness = StepHarness.forSteps(pair.in(), lowercase, pair.out());
@@ -47,7 +47,7 @@ public class PipeStepPairTest {
 	}
 
 	@Test
-	public void multiple() throws Exception {
+	void multiple() {
 		PipeStepPair pair = PipeStepPair.named("underTest").openClose("spotless:off", "spotless:on").buildPair();
 		FormatterStep lowercase = FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT));
 		StepHarness harness = StepHarness.forSteps(pair.in(), lowercase, pair.out());
@@ -81,23 +81,21 @@ public class PipeStepPairTest {
 	}
 
 	@Test
-	public void broken() throws Exception {
+	void broken() {
 		PipeStepPair pair = PipeStepPair.named("underTest").openClose("spotless:off", "spotless:on").buildPair();
 		FormatterStep uppercase = FormatterStep.createNeverUpToDate("uppercase", str -> str.toUpperCase(Locale.ROOT));
 		StepHarness harness = StepHarness.forSteps(pair.in(), uppercase, pair.out());
 		// this fails because uppercase turns spotless:off into SPOTLESS:OFF, etc
-		harness.testException(StringPrinter.buildStringFromLines(
+		harness.testExceptionMsg(StringPrinter.buildStringFromLines(
 				"A B C",
 				"spotless:off",
 				"D E F",
 				"spotless:on",
-				"G H I"), exception -> {
-					exception.hasMessage("An intermediate step removed a match of spotless:off spotless:on");
-				});
+				"G H I")).isEqualTo("An intermediate step removed a match of spotless:off spotless:on");
 	}
 
 	@Test
-	public void andApply() throws Exception {
+	void andApply() {
 		FormatterStep lowercase = FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT));
 		FormatterStep lowercaseSometimes = PipeStepPair.named("lowercaseSometimes").openClose("<lower>", "</lower>")
 				.buildStepWhichAppliesSubSteps(Paths.get(""), Arrays.asList(lowercase));

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,40 +15,48 @@
  */
 package com.diffplug.spotless.maven;
 
-import static com.diffplug.spotless.maven.MavenIntegrationHarness.SubProjectFile.file;
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonMap;
 
-import org.junit.Test;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
-public class MultiModuleProjectTest extends MavenIntegrationHarness {
+import org.junit.jupiter.api.Test;
+
+class MultiModuleProjectTest extends MavenIntegrationHarness {
 
 	@Test
-	public void testConfigurationDependency() throws Exception {
+	void testConfigurationDependency() throws Exception {
 		/*
-		create a multi-module project with the following stucture:
+		create a multi-module project with the following structure:
 
 		    /junit-tmp-dir
 		    ├── config
-		    │   ├── pom.xml
-		    │   └── src/main/resources/configs
-		    │       ├── eclipse-formatter.xml
-		    │       └── scalafmt.conf
+		    │   ├── pom.xml
+		    │   └── src/main/resources/configs
+		    │       ├── eclipse-formatter.xml
+		    │       └── scalafmt.conf
 		    ├── mvnw
 		    ├── mvnw.cmd
 		    ├── one
-		    │   ├── pom.xml
-		    │   └── src
-		    │       ├── main/java/test1.java
-		    │       └── test/java/test2.java
+		    │   ├── pom.xml
+		    │   └── src
+		    │       ├── main/java/test1.java
+		    │       └── test/java/test2.java
 		    ├── two
-		    │   ├── pom.xml
-		    │   └── src
-		    │       ├── main/java/test1.java
-		    │       └── test/java/test2.java
+		    │   ├── pom.xml
+		    │   └── src
+		    │       ├── main/java/test1.java
+		    │       └── test/java/test2.java
 		    ├── three
-		    │   ├── pom.xml
-		    │   └── src
-		    │       ├── main/scala/test1.scala
-		    │       └── test/scala/test2.scala
+		    │   ├── pom.xml
+		    │   └── src
+		    │       ├── main/scala/test1.scala
+		    │       └── test/scala/test2.scala
 		    ├── pom.xml
 		    ├── .mvn
 		    ├── mvnw
@@ -62,7 +70,7 @@ public class MultiModuleProjectTest extends MavenIntegrationHarness {
 						"<java>",
 						"  <eclipse>",
 						"    <file>configs/eclipse-formatter.xml</file>",
-						"    <version>4.7.1</version>",
+						"    <version>4.9</version>",
 						"  </eclipse>",
 						"</java>",
 						"<scala>",
@@ -95,5 +103,92 @@ public class MultiModuleProjectTest extends MavenIntegrationHarness {
 
 		assertFile("three/src/main/scala/test1.scala").sameAsResource("scala/scalafmt/basic.cleanWithCustomConf_3.0.0");
 		assertFile("three/src/test/scala/test2.scala").sameAsResource("scala/scalafmt/basic.cleanWithCustomConf_3.0.0");
+	}
+
+	private static final String CHILD_ID = "childId";
+
+	protected MultiModuleProjectCreator multiModuleProject() {
+		return new MultiModuleProjectCreator();
+	}
+
+	class MultiModuleProjectCreator {
+		private String configSubProject;
+		private SubProjectFile[] configSubProjectFiles;
+		private String[] configuration;
+		private final Map<String, List<SubProjectFile>> subProjects = new LinkedHashMap<>();
+
+		protected MultiModuleProjectCreator withConfigSubProject(String name, SubProjectFile... files) {
+			configSubProject = name;
+			configSubProjectFiles = files;
+			return this;
+		}
+
+		protected MultiModuleProjectCreator withConfiguration(String... lines) {
+			configuration = lines;
+			return this;
+		}
+
+		protected MultiModuleProjectCreator addSubProject(String name, SubProjectFile... files) {
+			subProjects.put(name, asList(files));
+			return this;
+		}
+
+		protected void create() throws IOException {
+			createRootPom();
+			createConfigSubProject();
+			createSubProjects();
+		}
+
+		private void createRootPom() throws IOException {
+			List<String> modulesList = new ArrayList<>();
+			modulesList.add(configSubProject);
+			modulesList.addAll(subProjects.keySet());
+			String[] modules = modulesList.toArray(new String[0]);
+
+			Map<String, Object> rootPomParams = buildPomXmlParams(null, null, null, configuration, modules, null, null);
+			setFile("pom.xml").toContent(createPomXmlContent("/multi-module/pom-parent.xml.mustache", rootPomParams));
+		}
+
+		private void createConfigSubProject() throws IOException {
+			if (configSubProject != null) {
+				String content = createPomXmlContent("/multi-module/pom-config.xml.mustache", emptyMap());
+				setFile(configSubProject + "/pom.xml").toContent(content);
+
+				createSubProjectFiles(configSubProject, asList(configSubProjectFiles));
+			}
+		}
+
+		private void createSubProjects() throws IOException {
+			for (Map.Entry<String, List<SubProjectFile>> entry : subProjects.entrySet()) {
+				String subProjectName = entry.getKey();
+				List<SubProjectFile> subProjectFiles = entry.getValue();
+
+				String content = createPomXmlContent("/multi-module/pom-child.xml.mustache", singletonMap(CHILD_ID, subProjectName));
+				setFile(subProjectName + "/pom.xml").toContent(content);
+
+				createSubProjectFiles(subProjectName, subProjectFiles);
+			}
+		}
+
+		private void createSubProjectFiles(String subProjectName, List<SubProjectFile> subProjectFiles) {
+			for (SubProjectFile file : subProjectFiles) {
+				setFile(subProjectName + '/' + file.to).toResource(file.from);
+			}
+		}
+	}
+
+	static class SubProjectFile {
+
+		private final String from;
+		private final String to;
+
+		private SubProjectFile(String from, String to) {
+			this.from = from;
+			this.to = to;
+		}
+	}
+
+	static SubProjectFile file(String from, String to) {
+		return new SubProjectFile(from, to);
 	}
 }

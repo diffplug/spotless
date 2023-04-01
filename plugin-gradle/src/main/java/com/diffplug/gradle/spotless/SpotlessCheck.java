@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,46 +24,40 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileVisitDetails;
 import org.gradle.api.file.FileVisitor;
+import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 
 import com.diffplug.spotless.FileSignature;
-import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
-public class SpotlessCheck extends DefaultTask {
-	SpotlessTask source;
-	private File spotlessOutDirectory;
-
+public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 	@Internal
-	public File getSpotlessOutDirectory() {
-		return spotlessOutDirectory;
-	}
+	public abstract Property<String> getEncoding();
 
-	public void setSpotlessOutDirectory(File spotlessOutDirectory) {
-		this.spotlessOutDirectory = spotlessOutDirectory;
-	}
+	@Input
+	public abstract Property<String> getRunToFixMessage();
 
-	public void performActionTest() throws Exception {
+	public void performActionTest() throws IOException {
 		performAction(true);
 	}
 
 	@TaskAction
-	public void performAction() throws Exception {
+	public void performAction() throws IOException {
 		performAction(false);
 	}
 
-	private void performAction(boolean isTest) {
-		ConfigurableFileTree files = getProject().fileTree(spotlessOutDirectory);
+	private void performAction(boolean isTest) throws IOException {
+		ConfigurableFileTree files = getConfigCacheWorkaround().fileTree().from(getSpotlessOutDirectory().get());
 		if (files.isEmpty()) {
-			getState().setDidWork(source.getDidWork());
-		} else if (!isTest && getProject().getGradle().getTaskGraph().hasTask(source.applyTask)) {
+			getState().setDidWork(sourceDidWork());
+		} else if (!isTest && applyHasRun()) {
 			// if our matching apply has already run, then we don't need to do anything
 			getState().setDidWork(false);
 		} else {
@@ -77,7 +71,7 @@ public class SpotlessCheck extends DefaultTask {
 				@Override
 				public void visitFile(FileVisitDetails fileVisitDetails) {
 					String path = fileVisitDetails.getPath();
-					File originalSource = new File(getProject().getProjectDir(), path);
+					File originalSource = new File(getProjectDir().get().getAsFile(), path);
 					try {
 						// read the file on disk
 						byte[] userFile = Files.readAllBytes(originalSource.toPath());
@@ -106,27 +100,34 @@ public class SpotlessCheck extends DefaultTask {
 				}
 			});
 			if (!problemFiles.isEmpty()) {
-				try (Formatter formatter = source.buildFormatter()) {
-					Collections.sort(problemFiles);
-					throw formatViolationsFor(formatter, problemFiles);
-				}
+				Collections.sort(problemFiles);
+				throw new GradleException(DiffMessageFormatter.builder()
+						.runToFix(getRunToFixMessage().get())
+						.formatterFolder(
+								getProjectDir().get().getAsFile().toPath(),
+								getSpotlessOutDirectory().get().toPath(),
+								getEncoding().get())
+						.problemFiles(problemFiles)
+						.getMessage());
 			}
 		}
 	}
 
-	/** Returns an exception which indicates problem files nicely. */
-	private GradleException formatViolationsFor(Formatter formatter, List<File> problemFiles) {
-		return new GradleException(DiffMessageFormatter.builder()
-				.runToFix("Run '" + calculateGradleCommand() + " " + getTaskPathPrefix() + "spotlessApply' to fix these violations.")
-				.formatter(formatter)
-				.problemFiles(problemFiles)
-				.getMessage());
+	@Internal
+	abstract Property<String> getProjectPath();
+
+	@Override
+	void init(SpotlessTaskImpl impl) {
+		super.init(impl);
+		getProjectPath().set(getProject().getPath());
+		getEncoding().set(impl.getEncoding());
+		getRunToFixMessage().convention(
+				"Run '" + calculateGradleCommand() + " " + getTaskPathPrefix() + "spotlessApply' to fix these violations.");
 	}
 
 	private String getTaskPathPrefix() {
-		return getProject().getPath().equals(":")
-				? ":"
-				: getProject().getPath() + ":";
+		String path = getProjectPath().get();
+		return path.equals(":") ? ":" : path + ":";
 	}
 
 	private static String calculateGradleCommand() {

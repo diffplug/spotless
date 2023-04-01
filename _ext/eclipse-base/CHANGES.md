@@ -4,6 +4,14 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+## [3.5.2] - 2021-10-23
+### Fixed
+* Racing condition when cleaning up temporary workspace on JVM runtime shutdown (see [#967](https://github.com/diffplug/spotless/issues/967)). Can lead to error logs and remaining files in workspace.
+
+## [3.5.1] - 2021-10-16
+### Fixed
+* ~~Racing condition when cleaning up temporary workspace on JVM runtime shutdown (see [#967](https://github.com/diffplug/spotless/issues/967)). Can lead to error logs and remaining files in workspace.~~
+
 ## [3.5.0] - 2021-06-20
 ### Added
 * Support of `org.eclipse.core.resources` version `3.15.0` required by Eclipse `4.20`.

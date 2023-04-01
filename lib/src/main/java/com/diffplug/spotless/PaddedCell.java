@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+
+import javax.annotation.Nullable;
 
 /**
  * Models the result of applying a {@link Formatter} on a given {@link File}
@@ -234,15 +236,16 @@ public final class PaddedCell {
 
 	/**
 	 * The clean/dirty state of a single file.  Intended use:
-	 * - {@link #isClean()} means that the file is is clean, and there's nothing else to say
+	 * - {@link #isClean()} means that the file is clean, and there's nothing else to say
 	 * - {@link #didNotConverge()} means that we were unable to determine a clean state
 	 * - once you've tested the above conditions and you know that it's a dirty file with a converged state,
 	 *   then you can call {@link #writeCanonicalTo(OutputStream)} to get the canonical form of the given file.
 	 */
 	public static class DirtyState {
+		@Nullable
 		private final byte[] canonicalBytes;
 
-		private DirtyState(byte[] canonicalBytes) {
+		private DirtyState(@Nullable byte[] canonicalBytes) {
 			this.canonicalBytes = canonicalBytes;
 		}
 

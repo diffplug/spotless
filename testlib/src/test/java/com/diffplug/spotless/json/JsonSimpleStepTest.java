@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,14 @@ package com.diffplug.spotless.json;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
-public class JsonSimpleStepTest {
+class JsonSimpleStepTest {
 
 	private static final int INDENT = 4;
 
@@ -32,63 +32,59 @@ public class JsonSimpleStepTest {
 	private final StepHarness stepHarness = StepHarness.forStep(step);
 
 	@Test
-	public void cannotProvidedNullProvisioner() {
+	void cannotProvidedNullProvisioner() {
 		assertThatThrownBy(() -> JsonSimpleStep.create(INDENT, null)).isInstanceOf(NullPointerException.class).hasMessage("provisioner cannot be null");
 	}
 
 	@Test
-	public void handlesSingletonObject() throws Exception {
+	void handlesSingletonObject() {
 		doWithResource(stepHarness, "singletonObject");
 	}
 
 	@Test
-	public void handlesSingletonObjectWithArray() throws Exception {
+	void handlesSingletonObjectWithArray() {
 		doWithResource(stepHarness, "singletonObjectWithArray");
 	}
 
 	@Test
-	public void handlesNestedObject() throws Exception {
+	void handlesNestedObject() {
 		doWithResource(stepHarness, "nestedObject");
 	}
 
 	@Test
-	public void handlesSingletonArray() throws Exception {
+	void handlesSingletonArray() {
 		doWithResource(stepHarness, "singletonArray");
 	}
 
 	@Test
-	public void handlesEmptyFile() throws Exception {
+	void handlesEmptyFile() {
 		doWithResource(stepHarness, "empty");
 	}
 
 	@Test
-	public void handlesComplexNestedObject() throws Exception {
+	void handlesComplexNestedObject() {
 		doWithResource(stepHarness, "cucumberJsonSample");
 	}
 
 	@Test
-	public void handlesObjectWithNull() throws Exception {
+	void handlesObjectWithNull() {
 		doWithResource(stepHarness, "objectWithNull");
 	}
 
 	@Test
-	public void handlesInvalidJson() {
-		assertThatThrownBy(() -> doWithResource(stepHarness, "invalidJson"))
-				.isInstanceOf(AssertionError.class)
-				.hasMessage("Unable to format JSON")
-				.hasRootCauseMessage("Expected a ',' or '}' at 9 [character 0 line 3]");
+	void handlesInvalidJson() {
+		stepHarness.testResourceExceptionMsg("json/invalidJsonBefore.json")
+				.contains("Expected a ',' or '}' at 9 [character 0 line 3]");
 	}
 
 	@Test
-	public void handlesNotJson() {
-		assertThatThrownBy(() -> doWithResource(stepHarness, "notJson"))
-				.isInstanceOf(AssertionError.class)
-				.hasMessage("Unable to determine JSON type, expected a '{' or '[' but found '#'")
-				.hasNoCause();
+	void handlesNotJson() {
+		stepHarness.testResourceExceptionMsg("json/notJsonBefore.json")
+				.contains("Unable to determine JSON type, expected a '{' or '[' but found '#'");
 	}
 
 	@Test
-	public void canSetCustomIndentationLevel() throws Exception {
+	void canSetCustomIndentationLevel() {
 		FormatterStep step = JsonSimpleStep.create(6, TestProvisioner.mavenCentral());
 		StepHarness stepHarness = StepHarness.forStep(step);
 
@@ -98,7 +94,7 @@ public class JsonSimpleStepTest {
 	}
 
 	@Test
-	public void canSetIndentationLevelTo0() throws Exception {
+	void canSetIndentationLevelTo0() {
 		FormatterStep step = JsonSimpleStep.create(0, TestProvisioner.mavenCentral());
 		StepHarness stepHarness = StepHarness.forStep(step);
 
@@ -108,7 +104,7 @@ public class JsonSimpleStepTest {
 	}
 
 	@Test
-	public void equality() {
+	void equality() {
 		new SerializableEqualityTester() {
 			int spaces = 0;
 
@@ -129,7 +125,7 @@ public class JsonSimpleStepTest {
 		}.testEquals();
 	}
 
-	private static void doWithResource(StepHarness stepHarness, String name) throws Exception {
+	private static void doWithResource(StepHarness stepHarness, String name) {
 		String before = String.format("json/%sBefore.json", name);
 		String after = String.format("json/%sAfter.json", name);
 		stepHarness.testResource(before, after);

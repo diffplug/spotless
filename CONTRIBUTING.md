@@ -1,6 +1,6 @@
 # Contributing to Spotless
 
-Pull requests are welcome, preferably against `main`.  Feel free to develop spotless any way you like, but the easiest way to look at the code is to clone the repo and run `gradlew ide`, which will download, setup, and start an Eclipse IDE for you.
+Pull requests are welcome, preferably against `main`.  Feel free to develop spotless any way you like, but if you like Eclipse and Gradle Buildship then [`gradlew equoIde` will install an IDE and set it up for you](https://github.com/equodev/equo-ide).
 
 ## How Spotless works
 
@@ -36,8 +36,7 @@ For the folders below in monospace text, they are published on maven central at 
 | `lib-extra` | Contains the optional parts of Spotless which require external dependencies.  `LineEnding.GIT_ATTRIBUTES` won't work unless `lib-extra` is available. |
 | `plugin-gradle` | Integrates spotless and all of its formatters into Gradle. |
 | `plugin-maven` | Integrates spotless and all of its formatters into Maven. |
-| ide | Generates and launches an IDE for developing spotless. |
-| _ext | Folder for generating glue jars (specifically packaging Eclipse jars from p2 for consumption using maven).
+| `_ext` | Folder for generating glue jars (specifically packaging Eclipse jars from p2 for consumption using maven).
 
 ## How to add a new FormatterStep
 
@@ -100,6 +99,13 @@ Here's a checklist for creating a new step for Spotless:
 - [ ] Test class has test methods to verify behavior.
 - [ ] Test class has a test method `equality()` which tests equality using `StepEqualityTester` (see existing methods for examples).
 
+### Third-party dependencies via reflection or compile-only source sets
+
+Most formatters are going to use some kind of third-party jar. Spotless integrates with many formatters, some of which have incompatible transitive dependencies. To address this, we resolve third-party dependencies using [`JarState`](https://github.com/diffplug/spotless/blob/b26f0972b185995d7c6a7aefa726c146d24d9a82/lib/src/main/java/com/diffplug/spotless/kotlin/KtfmtStep.java#L118). To call methods on the classes in that `JarState`, you can either use reflection or a compile-only source set. See [#524](https://github.com/diffplug/spotless/issues/524) for examples of both approaches.
+
+- Adding a compile-only sourceset is easier to read and probably a better approach for most cases.
+- Reflection is more flexible, and might be a better approach for a very simple API.
+
 ### Accessing the underlying File
 
 In order for Spotless' model to work, each step needs to look only at the `String` input, otherwise they cannot compose.  However, there are some cases where the source `File` is useful, such as to look at the file extension.  In this case, you can pass a `FormatterFunc.NeedsFile` instead of a `FormatterFunc`.  This should only be used in [rare circumstances](https://github.com/diffplug/spotless/pull/637), be careful that you don't accidentally depend on the bytes inside of the `File`!
@@ -113,7 +119,7 @@ There are many great formatters (prettier, clang-format, black, etc.) which live
 
 Because of Spotless' up-to-date checking and [git ratcheting](https://github.com/diffplug/spotless/tree/main/plugin-gradle#ratchet), Spotless actually doesn't have to call formatters very often, so even an expensive shell call for every single invocation isn't that bad.  Anything that works is better than nothing, and we can always speed things up later if it feels too slow (but it probably won't).
 
-## How to enable the _ext projects
+## How to enable the `_ext` projects
 
 The `_ext` projects are disabled per default, since:
 
@@ -123,7 +129,7 @@ The `_ext` projects are disabled per default, since:
 
 The `_ext` can be activated via the root project property `com.diffplug.spotless.include.ext`.
 
-Activate the the property via command line, like for example:
+Activate the property via command line, like for example:
 
 ```
 gradlew -Pcom.diffplug.spotless.include.ext=true build
@@ -201,7 +207,7 @@ If it doesn't work, you can check the JitPack log at `https://jitpack.io/com/git
 
 ### Maven
 
-Run `./gradlew publishToMavenLocal` to publish this to your local repository. The maven plugin is not published to JitPack due to [jitpack/jitpack.io#4112](https://github.com/jitpack/jitpack.io/issues/4112).
+Run `./gradlew publishToMavenLocal` to publish this to your local repository. You can also use the JitPack artifacts, using the same principles as Gradle above.
 
 ## License
 

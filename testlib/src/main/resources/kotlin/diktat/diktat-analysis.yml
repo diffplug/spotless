@@ -75,13 +75,6 @@
   enabled: 'true'
 - name: HEADER_WRONG_FORMAT
   enabled: true
-- name: HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE
-  enabled: true
-- name: HEADER_MISSING_OR_WRONG_COPYRIGHT
-  enabled: true
-  configuration:
-    isCopyrightMandatory: false
-    copyrightText: 'Copyright (c) Your Company Name Here. 2010-2021'
 - name: HEADER_NOT_BEFORE_PACKAGE
   enabled: true
 - name: FILE_IS_TOO_LONG
@@ -182,7 +175,7 @@
 - name: WRONG_NEWLINES_AROUND_KDOC
   enabled: true
 # Inspection that checks if there is no blank lines before first comment
-- name: FIRST_COMMENT_NO_SPACES
+- name: FIRST_COMMENT_NO_BLANK_LINE
   enabled: true
 # Inspection that checks if there are blank lines between code and comment and between code start token and comment's text
 - name: COMMENT_WHITE_SPACE

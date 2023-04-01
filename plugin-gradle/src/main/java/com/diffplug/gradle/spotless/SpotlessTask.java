@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import javax.annotation.Nullable;
-
 import org.eclipse.jgit.lib.ObjectId;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Internal;
@@ -36,19 +36,20 @@ import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.work.Incremental;
 
+import com.diffplug.gradle.spotless.JvmLocalCache.LiveCache;
 import com.diffplug.spotless.FormatExceptionPolicy;
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.extra.GitRatchet;
 
-public class SpotlessTask extends DefaultTask {
-	SpotlessApply applyTask;
-
-	/** Internal use only, allows coordination between check and apply when they are in the same build */
+public abstract class SpotlessTask extends DefaultTask {
 	@Internal
-	SpotlessApply getApplyTask() {
-		return applyTask;
+	abstract Property<SpotlessTaskService> getTaskService();
+
+	protected <T> LiveCache<T> createLive(String keyName) {
+		return JvmLocalCache.createLive(this, keyName);
 	}
 
 	// set by SpotlessExtension, but possibly overridden by FormatExtension
@@ -63,38 +64,46 @@ public class SpotlessTask extends DefaultTask {
 		this.encoding = Objects.requireNonNull(encoding);
 	}
 
-	protected LineEnding.Policy lineEndingsPolicy;
+	protected final LiveCache<LineEnding.Policy> lineEndingsPolicy = createLive("lineEndingsPolicy");
 
 	@Input
 	public LineEnding.Policy getLineEndingsPolicy() {
-		return lineEndingsPolicy;
+		return lineEndingsPolicy.get();
 	}
 
 	public void setLineEndingsPolicy(LineEnding.Policy lineEndingsPolicy) {
-		this.lineEndingsPolicy = Objects.requireNonNull(lineEndingsPolicy);
+		this.lineEndingsPolicy.set(lineEndingsPolicy);
 	}
 
-	/*** API which performs git up-to-date tasks. */
-	@Nullable
-	GitRatchetGradle ratchet;
 	/** The sha of the tree at repository root, used for determining if an individual *file* is clean according to git. */
-	ObjectId rootTreeSha;
+	private transient ObjectId rootTreeSha;
 	/**
 	 * The sha of the tree at the root of *this project*, used to determine if the git baseline has changed within this folder.
 	 * Using a more fine-grained tree (rather than the project root) allows Gradle to mark more subprojects as up-to-date
 	 * compared to using the project root.
 	 */
-	private ObjectId subtreeSha = ObjectId.zeroId();
+	private transient ObjectId subtreeSha = ObjectId.zeroId();
+	/** Stored so that the configuration cache can recreate the GitRatchetGradle state. */
+	protected String ratchetFrom;
 
-	public void setupRatchet(GitRatchetGradle gitRatchet, String ratchetFrom) {
-		ratchet = gitRatchet;
-		rootTreeSha = gitRatchet.rootTreeShaOf(getProject(), ratchetFrom);
-		subtreeSha = gitRatchet.subtreeShaOf(getProject(), rootTreeSha);
+	public void setupRatchet(String ratchetFrom) {
+		this.ratchetFrom = ratchetFrom;
+		if (!ratchetFrom.isEmpty()) {
+			GitRatchet ratchet = getTaskService().get().getRatchet();
+			File projectDir = getProjectDir().get().getAsFile();
+			rootTreeSha = ratchet.rootTreeShaOf(projectDir, ratchetFrom);
+			subtreeSha = ratchet.subtreeShaOf(projectDir, rootTreeSha);
+		} else {
+			subtreeSha = ObjectId.zeroId();
+		}
 	}
 
 	@Internal
+	abstract DirectoryProperty getProjectDir();
+
+	@Internal
 	GitRatchetGradle getRatchet() {
-		return ratchet;
+		return ObjectId.zeroId().equals(getRatchetSha()) ? null : getTaskService().get().getRatchet();
 	}
 
 	@Internal
@@ -104,6 +113,9 @@ public class SpotlessTask extends DefaultTask {
 
 	@Input
 	public ObjectId getRatchetSha() {
+		if (subtreeSha == null) {
+			setupRatchet(ratchetFrom);
+		}
 		return subtreeSha;
 	}
 
@@ -142,19 +154,22 @@ public class SpotlessTask extends DefaultTask {
 		return outputDirectory;
 	}
 
-	protected List<FormatterStep> steps = new ArrayList<>();
+	protected final LiveCache<List<FormatterStep>> steps = createLive("steps");
+	{
+		steps.set(new ArrayList<FormatterStep>());
+	}
 
 	@Input
 	public List<FormatterStep> getSteps() {
-		return Collections.unmodifiableList(steps);
+		return Collections.unmodifiableList(steps.get());
 	}
 
 	public void setSteps(List<FormatterStep> steps) {
-		this.steps = PluginGradlePreconditions.requireElementsNonNull(steps);
+		this.steps.set(PluginGradlePreconditions.requireElementsNonNull(steps));
 	}
 
 	public boolean addStep(FormatterStep step) {
-		return this.steps.add(Objects.requireNonNull(step));
+		return this.steps.get().add(Objects.requireNonNull(step));
 	}
 
 	/** Returns the name of this format. */
@@ -169,10 +184,11 @@ public class SpotlessTask extends DefaultTask {
 
 	Formatter buildFormatter() {
 		return Formatter.builder()
-				.lineEndingsPolicy(lineEndingsPolicy)
+				.name(formatName())
+				.lineEndingsPolicy(lineEndingsPolicy.get())
 				.encoding(Charset.forName(encoding))
-				.rootDir(getProject().getRootDir().toPath())
-				.steps(steps)
+				.rootDir(getProjectDir().get().getAsFile().toPath())
+				.steps(steps.get())
 				.exceptionPolicy(exceptionPolicy)
 				.build();
 	}

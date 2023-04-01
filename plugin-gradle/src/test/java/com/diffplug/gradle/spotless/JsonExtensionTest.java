@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,22 +17,22 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class JsonExtensionTest extends GradleIntegrationHarness {
+class JsonExtensionTest extends GradleIntegrationHarness {
 	@Test
-	public void defaultFormatting() throws IOException {
+	void simpleDefaultFormatting() throws IOException {
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'java'",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"spotless {",
 				"    json {",
-				"    target 'examples/**/*.json'",
-				"    simple()",
-				"}",
+				"        target 'examples/**/*.json'",
+				"        simple()",
+				"    }",
 				"}");
 		setFile("src/main/resources/example.json").toResource("json/nestedObjectBefore.json");
 		setFile("examples/main/resources/example.json").toResource("json/nestedObjectBefore.json");
@@ -42,21 +42,118 @@ public class JsonExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	public void formattingWithCustomNumberOfSpaces() throws IOException {
+	void simpleFormattingWithCustomNumberOfSpaces() throws IOException {
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'java'",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"spotless {",
 				"    json {",
-				"    target 'src/**/*.json'",
-				"    simple().indentWithSpaces(6)",
-				"}",
+				"        target 'src/**/*.json'",
+				"        simple().indentWithSpaces(6)",
+				"    }",
 				"}");
 		setFile("src/main/resources/example.json").toResource("json/singletonArrayBefore.json");
 		gradleRunner().withArguments("spotlessApply").build();
 		assertFile("src/main/resources/example.json").sameAsResource("json/singletonArrayAfter6Spaces.json");
+	}
+
+	@Test
+	void gsonDefaultFormatting() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'java'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    json {",
+				"        target 'examples/**/*.json'",
+				"        gson()",
+				"    }",
+				"}");
+		setFile("src/main/resources/example.json").toResource("json/nestedObjectBefore.json");
+		setFile("examples/main/resources/example.json").toResource("json/nestedObjectBefore.json");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/resources/example.json").sameAsResource("json/nestedObjectBefore.json");
+		assertFile("examples/main/resources/example.json").sameAsResource("json/nestedObjectAfter.json");
+	}
+
+	@Test
+	void gsonFormattingWithCustomNumberOfSpaces() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'java'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    json {",
+				"        target 'src/**/*.json'",
+				"        gson().indentWithSpaces(6)",
+				"    }",
+				"}");
+		setFile("src/main/resources/example.json").toResource("json/singletonArrayBefore.json");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/resources/example.json").sameAsResource("json/singletonArrayAfter6Spaces.json");
+	}
+
+	@Test
+	void gsonFormattingWithSortingByKeys() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'java'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    json {",
+				"        target 'src/**/*.json'",
+				"        gson().sortByKeys()",
+				"    }",
+				"}");
+		setFile("src/main/resources/example.json").toResource("json/sortByKeysBefore.json");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/resources/example.json").sameAsResource("json/sortByKeysAfter.json");
+	}
+
+	@Test
+	void gsonFormattingWithHtmlEscape() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'java'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    json {",
+				"        target 'src/**/*.json'",
+				"        gson().escapeHtml()",
+				"    }",
+				"}");
+		setFile("src/main/resources/example.json").toResource("json/escapeHtmlGsonBefore.json");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/resources/example.json").sameAsResource("json/escapeHtmlGsonAfter.json");
+	}
+
+	@Test
+	void jacksonFormattingWithSortingByKeys() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'java'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    json {",
+				"        target 'src/**/*.json'",
+				"        jackson().feature('ORDER_MAP_ENTRIES_BY_KEYS', true)",
+				"    }",
+				"}");
+		setFile("src/main/resources/example.json").toResource("json/sortByKeysBefore.json");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/resources/example.json").sameAsResource("json/sortByKeysAfter_Jackson.json");
 	}
 }

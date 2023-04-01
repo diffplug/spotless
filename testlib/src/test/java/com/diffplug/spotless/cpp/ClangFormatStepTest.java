@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,27 +15,26 @@
  */
 package com.diffplug.spotless.cpp;
 
-import java.io.File;
 import java.util.Arrays;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Test;
 
+import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.StepHarnessWithFile;
-import com.diffplug.spotless.category.ClangTest;
+import com.diffplug.spotless.tag.ClangTest;
 
-@Category(ClangTest.class)
-public class ClangFormatStepTest {
+@ClangTest
+class ClangFormatStepTest extends ResourceHarness {
 	@Test
-	public void test() throws Exception {
-		try (StepHarnessWithFile harness = StepHarnessWithFile.forStep(ClangFormatStep.withVersion(ClangFormatStep.defaultVersion()).create())) {
+	void test() {
+		try (StepHarnessWithFile harness = StepHarnessWithFile.forStep(this, ClangFormatStep.withVersion(ClangFormatStep.defaultVersion()).create())) {
 			// can't be named java or it gets compiled into .class file
-			harness.testResource(new File("example.java"), "clang/example.java.dirty", "clang/example.java.clean");
+			harness.testResource("example.java", "clang/example.java.dirty", "clang/example.java.clean");
 			// test every other language clang supports
 			for (String ext : Arrays.asList("c", "cs", "js", "m", "proto")) {
 				String filename = "example." + ext;
 				String root = "clang/" + filename;
-				harness.testResource(new File(filename), root, root + ".clean");
+				harness.testResource(filename, root, root + ".clean");
 			}
 		}
 	}

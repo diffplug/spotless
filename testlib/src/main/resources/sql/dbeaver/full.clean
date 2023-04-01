@@ -51,6 +51,7 @@ WHERE
             table3.name = 'Foo Bar'
             AND table3.type = 'unknown_type'
             AND table3.param =:aParam
+            AND table3.listParam IN(<listParam>)
     )
 GROUP BY
     table1.id,

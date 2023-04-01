@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -110,5 +110,19 @@ public abstract class LazyForwardingEquality<T extends Serializable> implements 
 			throw ThrowingEx.asRuntime(e);
 		}
 		return byteOutput.toByteArray();
+	}
+
+	/** Ensures that the lazy state has been evaluated. */
+	public static void unlazy(Object in) {
+		if (in instanceof LazyForwardingEquality) {
+			((LazyForwardingEquality<?>) in).state();
+		} else if (in instanceof DelegateFormatterStep) {
+			unlazy(((DelegateFormatterStep) in).delegateStep);
+		} else if (in instanceof Iterable) {
+			Iterable<Object> cast = (Iterable<Object>) in;
+			for (Object c : cast) {
+				unlazy(c);
+			}
+		}
 	}
 }

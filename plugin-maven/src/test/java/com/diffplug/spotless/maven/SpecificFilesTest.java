@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SpecificFilesTest extends MavenIntegrationHarness {
 	private String testFile(int number, boolean absolute) throws IOException {
@@ -58,7 +58,7 @@ public class SpecificFilesTest extends MavenIntegrationHarness {
 				"  <include>src/**/java/**/*.java</include>",
 				"</includes>",
 				"<googleJavaFormat>",
-				"  <version>1.2</version>",
+				"  <version>1.10.0</version>",
 				"</googleJavaFormat>");
 
 		setFile(testFile(1)).toResource(fixture(false));
@@ -75,17 +75,17 @@ public class SpecificFilesTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void singleFile() throws IOException, InterruptedException {
+	void singleFile() throws IOException, InterruptedException {
 		integration(testFile(2, true), false, true, false);
 	}
 
 	@Test
-	public void multiFile() throws IOException, InterruptedException {
+	void multiFile() throws IOException, InterruptedException {
 		integration(testFile(1, true) + "," + testFile(3, true), true, false, true);
 	}
 
 	@Test
-	public void regexp() throws IOException, InterruptedException {
+	void regexp() throws IOException, InterruptedException {
 		String pattern;
 		if (isOnWindows())
 			pattern = "\".*\\\\src\\\\main\\\\java\\\\test(1|3).java\"";

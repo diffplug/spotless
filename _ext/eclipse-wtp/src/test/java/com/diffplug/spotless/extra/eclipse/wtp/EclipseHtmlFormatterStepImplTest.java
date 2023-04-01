@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,24 +17,22 @@ package com.diffplug.spotless.extra.eclipse.wtp;
 
 import static org.eclipse.wst.html.core.internal.preferences.HTMLCorePreferenceNames.*;
 import static org.eclipse.wst.jsdt.core.formatter.DefaultCodeFormatterConstants.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Properties;
 
 import org.eclipse.wst.html.core.internal.preferences.HTMLCorePreferenceNames;
 import org.eclipse.wst.jsdt.core.JavaScriptCore;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-//@RunWith(QuarantiningRunner.class)
-//@Quarantine({"org.eclipse", "org.osgi", "com.diffplug"})
-public class EclipseHtmlFormatterStepImplTest {
+class EclipseHtmlFormatterStepImplTest {
 
 	private TestData testData = null;
 	private EclipseHtmlFormatterStepImpl formatter;
 
-	@Before
-	public void initialize() throws Exception {
+	@BeforeEach
+	void initialize() throws Exception {
 		testData = TestData.getTestDataOnFileSystem("html");
 		/*
 		 * The instantiation can be repeated for each step, but only with the same configuration
@@ -50,67 +48,67 @@ public class EclipseHtmlFormatterStepImplTest {
 	}
 
 	@Test
-	public void formatHtml4() throws Exception {
+	void formatHtml4() throws Exception {
 		String[] input = testData.input("html4.html");
 		String output = formatter.format(input[0]);
-		assertEquals("Unexpected HTML4 formatting.",
-				testData.expected("html4.html"), output);
+		assertEquals(testData.expected("html4.html"),
+				output, "Unexpected HTML4 formatting.");
 	}
 
 	@Test
-	public void formatHtml5() throws Exception {
+	void formatHtml5() throws Exception {
 		String[] input = testData.input("html5.html");
 		String output = formatter.format(input[0]);
-		assertEquals("Unexpected HTML5 formatting.",
-				testData.expected("html5.html"), output);
+		assertEquals(testData.expected("html5.html"),
+				output, "Unexpected HTML5 formatting.");
 	}
 
 	@Test
-	public void invalidSyntax() throws Exception {
+	void invalidSyntax() throws Exception {
 		String[] input = testData.input("invalid_syntax.html");
 		String output = formatter.format(input[0]);
-		assertEquals("Unexpected HTML formatting in case syntax is not valid.",
-				testData.expected("invalid_syntax.html"), output);
+		assertEquals(testData.expected("invalid_syntax.html"),
+				output, "Unexpected HTML formatting in case syntax is not valid.");
 	}
 
 	@Test
-	public void formatJavaScript() throws Exception {
+	void formatJavaScript() throws Exception {
 		String[] input = testData.input("javascript.html");
 		String output = formatter.format(input[0]);
-		assertEquals("Unexpected JS formatting.",
-				testData.expected("javascript.html"), output);
+		assertEquals(testData.expected("javascript.html"),
+				output, "Unexpected JS formatting.");
 	}
 
 	@Test
-	public void formatCSS() throws Exception {
+	void formatCSS() throws Exception {
 		String[] input = testData.input("css.html");
 		String output = formatter.format(input[0]);
-		assertEquals("Unexpected CSS formatting.",
-				testData.expected("css.html"), output);
+		assertEquals(testData.expected("css.html"),
+				output, "Unexpected CSS formatting.");
 	}
 
 	@Test
-	public void checkCleanupForNonUtf8() throws Exception {
+	void checkCleanupForNonUtf8() throws Exception {
 		String osEncoding = System.getProperty("file.encoding");
 		System.setProperty("file.encoding", "ISO-8859-1"); //Simulate a non UTF-8 OS
 		String[] input = testData.input("utf-8.html");
 		String output = formatter.format(input[0]);
 		System.setProperty("file.encoding", osEncoding);
-		assertEquals("Unexpected formatting of UTF-8", testData.expected("utf-8.html"), output);
+		assertEquals(testData.expected("utf-8.html"), output, "Unexpected formatting of UTF-8");
 	}
 
 	@Test
-	public void checkBOMisStripped() throws Exception {
+	void checkBOMisStripped() throws Exception {
 		String[] input = testData.input("bom.html");
 		String[] inputWithoutBom = testData.input("utf-8.html");
 		//The UTF-8 BOM is interpreted as on UTF-16 character.
-		assertEquals("BOM input invalid", input[0].length() - 1, inputWithoutBom[0].length());
+		assertEquals(input[0].length() - 1, inputWithoutBom[0].length(), "BOM input invalid");
 		String output = formatter.format(input[0]);
-		assertEquals("BOM is not stripped", testData.expected("utf-8.html"), output);
+		assertEquals(testData.expected("utf-8.html"), output, "BOM is not stripped");
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void configurationChange() throws Exception {
-		new EclipseHtmlFormatterStepImpl(new Properties());
+	@Test
+	void configurationChange() throws Exception {
+		assertThrows(IllegalArgumentException.class, () -> new EclipseHtmlFormatterStepImpl(new Properties()));
 	}
 }

@@ -1,16 +1,26 @@
+apply plugin: 'com.adarshr.test-logger'
 def special = [
 	'Npm',
 	'Black',
 	'Clang'
 ]
 
-tasks.named('test') {
-	useJUnit { excludeCategories special.collect { "com.diffplug.spotless.category.${it}Test" } as String[] }
+boolean isCiServer = System.getenv().containsKey("CI")
+tasks.withType(Test).configureEach {
+	// See com.diffplug.spotless.tag package for available JUnit 5 @Tag annotations
+	useJUnitPlatform {
+		excludeTags special as String[]
+	}
+	if (isCiServer) {
+		retry {
+			maxRetries = 2
+			maxFailures = 10
+		}
+	}
 }
 
-special.forEach {
-	def category = "com.diffplug.spotless.category.${it}Test"
-	tasks.register("${it}Test", Test) {
-		useJUnit { includeCategories category }
+special.forEach { tag ->
+	tasks.register("test${tag}", Test) {
+		useJUnitPlatform { includeTags tag }
 	}
 }

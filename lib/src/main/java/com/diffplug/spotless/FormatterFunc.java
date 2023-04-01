@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -127,7 +127,7 @@ public interface FormatterFunc {
 
 				@Override
 				public String apply(String unix) throws Exception {
-					return apply(unix, FormatterStepImpl.SENTINEL);
+					return apply(unix, Formatter.NO_FILE_SENTINEL);
 				}
 			};
 		}
@@ -156,7 +156,7 @@ public interface FormatterFunc {
 
 		@Override
 		default String apply(String unix) throws Exception {
-			return apply(unix, FormatterStepImpl.SENTINEL);
+			return apply(unix, Formatter.NO_FILE_SENTINEL);
 		}
 	}
 }

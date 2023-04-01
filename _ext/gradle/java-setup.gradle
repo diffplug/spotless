@@ -8,15 +8,20 @@ apply from: rootProject.file('gradle/java-setup.gradle')
 // Allow declaration of api/compile dependencies
 apply plugin: 'java-library'
 
-// Show warning locations
-tasks.withType(JavaCompile) {
+// Show warning locations, fail on warnings
+tasks.withType(JavaCompile).configureEach {
 	options.compilerArgs << "-Xlint:unchecked"
 	options.compilerArgs << "-Xlint:deprecation"
+	options.compilerArgs << "-Werror"
 }
 
 //Currently testlib is not used by _ext. Hence the external dependencies are added here.
 dependencies {
-	testImplementation "junit:junit:${VER_JUNIT}"
+	testImplementation "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"
 	testImplementation "org.assertj:assertj-core:${VER_ASSERTJ}"
 	testImplementation project(':testlib')
+}
+
+tasks.withType(Test).configureEach {
+	useJUnitPlatform()
 }

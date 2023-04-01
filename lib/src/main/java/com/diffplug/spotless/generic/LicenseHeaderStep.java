@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,9 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
@@ -42,6 +45,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /** Prefixes a license header before the package statement. */
 public final class LicenseHeaderStep {
+	public static final String DEFAULT_JAVA_HEADER_DELIMITER = "(package|import|public|class|module) ";
+	private static final Logger LOGGER = LoggerFactory.getLogger(LicenseHeaderStep.class);
+
 	public enum YearMode {
 		PRESERVE, UPDATE_TO_TODAY, SET_FROM_GIT
 	}
@@ -51,19 +57,37 @@ public final class LicenseHeaderStep {
 	}
 
 	public static LicenseHeaderStep headerDelimiter(ThrowingEx.Supplier<String> headerLazy, String delimiter) {
-		return new LicenseHeaderStep(headerLazy, delimiter, DEFAULT_YEAR_DELIMITER, () -> YearMode.PRESERVE);
+		return new LicenseHeaderStep(null, null, headerLazy, delimiter, DEFAULT_YEAR_DELIMITER, () -> YearMode.PRESERVE, null);
 	}
 
+	final String name;
+	final @Nullable String contentPattern;
 	final ThrowingEx.Supplier<String> headerLazy;
 	final String delimiter;
 	final String yearSeparator;
 	final Supplier<YearMode> yearMode;
+	final @Nullable String skipLinesMatching;
 
-	private LicenseHeaderStep(ThrowingEx.Supplier<String> headerLazy, String delimiter, String yearSeparator, Supplier<YearMode> yearMode) {
+	private LicenseHeaderStep(@Nullable String name, @Nullable String contentPattern, ThrowingEx.Supplier<String> headerLazy, String delimiter, String yearSeparator, Supplier<YearMode> yearMode, @Nullable String skipLinesMatching) {
+		this.name = sanitizeName(name);
+		this.contentPattern = sanitizePattern(contentPattern);
 		this.headerLazy = Objects.requireNonNull(headerLazy);
 		this.delimiter = Objects.requireNonNull(delimiter);
 		this.yearSeparator = Objects.requireNonNull(yearSeparator);
 		this.yearMode = Objects.requireNonNull(yearMode);
+		this.skipLinesMatching = sanitizePattern(skipLinesMatching);
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public LicenseHeaderStep withName(String name) {
+		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesMatching);
+	}
+
+	public LicenseHeaderStep withContentPattern(String contentPattern) {
+		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesMatching);
 	}
 
 	public LicenseHeaderStep withHeaderString(String header) {
@@ -71,15 +95,15 @@ public final class LicenseHeaderStep {
 	}
 
 	public LicenseHeaderStep withHeaderLazy(ThrowingEx.Supplier<String> headerLazy) {
-		return new LicenseHeaderStep(headerLazy, delimiter, yearSeparator, yearMode);
+		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesMatching);
 	}
 
 	public LicenseHeaderStep withDelimiter(String delimiter) {
-		return new LicenseHeaderStep(headerLazy, delimiter, yearSeparator, yearMode);
+		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesMatching);
 	}
 
 	public LicenseHeaderStep withYearSeparator(String yearSeparator) {
-		return new LicenseHeaderStep(headerLazy, delimiter, yearSeparator, yearMode);
+		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesMatching);
 	}
 
 	public LicenseHeaderStep withYearMode(YearMode yearMode) {
@@ -87,18 +111,24 @@ public final class LicenseHeaderStep {
 	}
 
 	public LicenseHeaderStep withYearModeLazy(Supplier<YearMode> yearMode) {
-		return new LicenseHeaderStep(headerLazy, delimiter, yearSeparator, yearMode);
+		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesMatching);
+	}
+
+	public LicenseHeaderStep withSkipLinesMatching(@Nullable String skipLinesMatching) {
+		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesMatching);
 	}
 
 	public FormatterStep build() {
+		FormatterStep formatterStep = null;
+
 		if (yearMode.get() == YearMode.SET_FROM_GIT) {
-			return FormatterStep.createNeverUpToDateLazy(LicenseHeaderStep.name(), () -> {
+			formatterStep = FormatterStep.createNeverUpToDateLazy(name, () -> {
 				boolean updateYear = false; // doesn't matter
-				Runtime runtime = new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear);
+				Runtime runtime = new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear, skipLinesMatching);
 				return FormatterFunc.needsFile(runtime::setLicenseHeaderYearsFromGitHistory);
 			});
 		} else {
-			return FormatterStep.createLazy(LicenseHeaderStep.name(), () -> {
+			formatterStep = FormatterStep.createLazy(name, () -> {
 				// by default, we should update the year if the user is using ratchetFrom
 				boolean updateYear;
 				switch (yearMode.get()) {
@@ -112,21 +142,52 @@ public final class LicenseHeaderStep {
 				default:
 					throw new IllegalStateException(yearMode.toString());
 				}
-				return new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear);
-			}, step -> step::format);
+				return new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear, skipLinesMatching);
+			}, step -> FormatterFunc.needsFile(step::format));
 		}
+
+		if (contentPattern == null) {
+			return formatterStep;
+		}
+
+		return formatterStep.filterByContentPattern(contentPattern);
 	}
 
-	private static final String NAME = "licenseHeader";
+	private String sanitizeName(@Nullable String name) {
+		if (name == null) {
+			return DEFAULT_NAME_PREFIX;
+		}
+
+		name = name.trim();
+
+		if (Objects.equals(DEFAULT_NAME_PREFIX, name) || name.startsWith(DEFAULT_NAME_PREFIX)) {
+			return name;
+		}
+
+		return DEFAULT_NAME_PREFIX + "-" + name;
+	}
+
+	@Nullable
+	private String sanitizePattern(@Nullable String pattern) {
+		if (pattern == null) {
+			return pattern;
+		}
+
+		pattern = pattern.trim();
+
+		if (pattern.isEmpty()) {
+			return null;
+		}
+
+		return pattern;
+	}
+
+	private static final String DEFAULT_NAME_PREFIX = LicenseHeaderStep.class.getName();
 	private static final String DEFAULT_YEAR_DELIMITER = "-";
 	private static final List<String> YEAR_TOKENS = Arrays.asList("$YEAR", "$today.year");
 
 	private static final SerializableFileFilter UNSUPPORTED_JVM_FILES_FILTER = SerializableFileFilter.skipFilesNamed(
 			"package-info.java", "package-info.groovy", "module-info.java");
-
-	public static String name() {
-		return NAME;
-	}
 
 	public static String defaultYearDelimiter() {
 		return DEFAULT_YEAR_DELIMITER;
@@ -146,15 +207,19 @@ public final class LicenseHeaderStep {
 		private static final long serialVersionUID = 1475199492829130965L;
 
 		private final Pattern delimiterPattern;
+		private final @Nullable Pattern skipLinesMatching;
 		private final String yearSepOrFull;
 		private final @Nullable String yearToday;
 		private final @Nullable String beforeYear;
 		private final @Nullable String afterYear;
 		private final boolean updateYearWithLatest;
 		private final boolean licenseHeaderWithRange;
+		private final boolean hasFileToken;
+
+		private static final Pattern FILENAME_PATTERN = Pattern.compile("\\$FILE");
 
 		/** The license that we'd like enforced. */
-		private Runtime(String licenseHeader, String delimiter, String yearSeparator, boolean updateYearWithLatest) {
+		private Runtime(String licenseHeader, String delimiter, String yearSeparator, boolean updateYearWithLatest, @Nullable String skipLinesMatching) {
 			if (delimiter.contains("\n")) {
 				throw new IllegalArgumentException("The delimiter must not contain any newlines.");
 			}
@@ -164,6 +229,8 @@ public final class LicenseHeaderStep {
 				licenseHeader = licenseHeader + "\n";
 			}
 			this.delimiterPattern = Pattern.compile('^' + delimiter, Pattern.UNIX_LINES | Pattern.MULTILINE);
+			this.skipLinesMatching = skipLinesMatching == null ? null : Pattern.compile(skipLinesMatching);
+			this.hasFileToken = FILENAME_PATTERN.matcher(licenseHeader).find();
 
 			Optional<String> yearToken = getYearToken(licenseHeader);
 			if (yearToken.isPresent()) {
@@ -204,7 +271,38 @@ public final class LicenseHeaderStep {
 		}
 
 		/** Formats the given string. */
-		private String format(String raw) {
+		private String format(String raw, File file) {
+			if (skipLinesMatching == null) {
+				return addOrUpdateLicenseHeader(raw, file);
+			} else {
+				String[] lines = raw.split("\n");
+				StringBuilder skippedLinesBuilder = new StringBuilder();
+				StringBuilder remainingLinesBuilder = new StringBuilder();
+				boolean lastMatched = true;
+				for (String line : lines) {
+					if (lastMatched) {
+						Matcher matcher = skipLinesMatching.matcher(line);
+						if (matcher.find()) {
+							skippedLinesBuilder.append(line).append('\n');
+						} else {
+							remainingLinesBuilder.append(line).append('\n');
+							lastMatched = false;
+						}
+					} else {
+						remainingLinesBuilder.append(line).append('\n');
+					}
+				}
+				return skippedLinesBuilder + addOrUpdateLicenseHeader(remainingLinesBuilder.toString(), file);
+			}
+		}
+
+		private String addOrUpdateLicenseHeader(String raw, File file) {
+			raw = replaceYear(raw);
+			raw = replaceFileName(raw, file);
+			return raw;
+		}
+
+		private String replaceYear(String raw) {
 			Matcher contentMatcher = delimiterPattern.matcher(raw);
 			if (!contentMatcher.find()) {
 				throw new IllegalArgumentException("Unable to find delimiter regex " + delimiterPattern);
@@ -299,7 +397,7 @@ public final class LicenseHeaderStep {
 					}
 				}
 			} else {
-				System.err.println("Can't parse copyright year '" + content + "', defaulting to " + yearToday);
+				LOGGER.warn("Can't parse copyright year '{}', defaulting to {}", content, yearToday);
 				// couldn't recognize the year format
 				return yearToday;
 			}
@@ -332,6 +430,19 @@ public final class LicenseHeaderStep {
 				yearRange = oldYear + yearSepOrFull + newYear;
 			}
 			return beforeYear + yearRange + afterYear + raw.substring(contentMatcher.start());
+		}
+
+		private String replaceFileName(String raw, File file) {
+			if (!hasFileToken) {
+				return raw;
+			}
+			Matcher contentMatcher = delimiterPattern.matcher(raw);
+			if (!contentMatcher.find()) {
+				throw new IllegalArgumentException("Unable to find delimiter regex " + delimiterPattern);
+			}
+			String header = raw.substring(0, contentMatcher.start());
+			String content = raw.substring(contentMatcher.start());
+			return FILENAME_PATTERN.matcher(header).replaceAll(file.getName()) + content;
 		}
 
 		private static String parseYear(String cmd, File file) throws IOException {

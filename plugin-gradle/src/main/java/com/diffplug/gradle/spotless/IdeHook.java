@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ class IdeHook {
 		System.err.println("IS CLEAN");
 	}
 
-	static void performHook(SpotlessTask spotlessTask) {
+	static void performHook(SpotlessTaskImpl spotlessTask) {
 		String path = (String) spotlessTask.getProject().property(PROPERTY);
 		File file = new File(path);
 		if (!file.isAbsolute()) {
@@ -41,9 +41,10 @@ class IdeHook {
 			return;
 		}
 		if (spotlessTask.getTarget().contains(file)) {
+			GitRatchetGradle ratchet = spotlessTask.getRatchet();
 			try (Formatter formatter = spotlessTask.buildFormatter()) {
-				if (spotlessTask.ratchet != null) {
-					if (spotlessTask.ratchet.isClean(spotlessTask.getProject(), spotlessTask.rootTreeSha, file)) {
+				if (ratchet != null) {
+					if (ratchet.isClean(spotlessTask.getProjectDir().get().getAsFile(), spotlessTask.getRootTreeSha(), file)) {
 						dumpIsClean();
 						return;
 					}

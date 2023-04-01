@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,55 +17,55 @@ package com.diffplug.spotless.maven;
 
 import static com.diffplug.spotless.maven.FileLocator.TMP_RESOURCE_FILE_PREFIX;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.nio.file.Paths;
 
 import org.codehaus.plexus.resource.ResourceManager;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import com.diffplug.spotless.ResourceHarness;
 
-public class FileLocatorTest extends ResourceHarness {
+class FileLocatorTest extends ResourceHarness {
 
 	private ResourceManager resourceManager;
 	private FileLocator fileLocator;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void beforeEach() {
 		resourceManager = mock(ResourceManager.class);
 		fileLocator = new FileLocator(resourceManager, rootFolder(), rootFolder());
 	}
 
 	@Test
-	public void locateEmptyString() {
-		assertNull(fileLocator.locateFile(""));
+	void locateEmptyString() {
+		assertThat(fileLocator.locateFile("")).isNull();
 	}
 
 	@Test
-	public void locateNull() {
-		assertNull(fileLocator.locateFile(null));
+	void locateNull() {
+		assertThat(fileLocator.locateFile(null)).isNull();
 	}
 
 	@Test
-	public void locateXmlFile() throws Exception {
+	void locateXmlFile() throws Exception {
 		testFileLocator(Paths.get("tmp", "configs", "my-config.xml").toString(), "xml");
 	}
 
 	@Test
-	public void locatePropertiesFile() throws Exception {
+	void locatePropertiesFile() throws Exception {
 		testFileLocator(Paths.get("home", "ubuntu", "my-other-config.properties").toString(), "properties");
 	}
 
 	@Test
-	public void locateConfFileWithIncorrectSeparators() throws Exception {
+	void locateConfFileWithIncorrectSeparators() throws Exception {
 		String oppositeSeparator = "/".equals(File.separator) ? "\\" : "/";
 		String path = "tmp" + oppositeSeparator + "configs" + oppositeSeparator + "hello.conf";
 
@@ -77,7 +77,7 @@ public class FileLocatorTest extends ResourceHarness {
 		when(resourceManager.getResourceAsFile(any(), any())).thenReturn(tmpOutputFile);
 
 		File locatedFile = fileLocator.locateFile(path);
-		assertEquals(tmpOutputFile, locatedFile);
+		assertThat(locatedFile).isEqualTo(tmpOutputFile);
 
 		ArgumentCaptor<String> argCaptor = ArgumentCaptor.forClass(String.class);
 		verify(resourceManager).getResourceAsFile(eq(path), argCaptor.capture());

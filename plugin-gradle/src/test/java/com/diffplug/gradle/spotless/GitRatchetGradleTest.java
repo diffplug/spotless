@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,10 +31,12 @@ import org.eclipse.jgit.lib.RefDatabase;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
-import org.junit.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
-public class GitRatchetGradleTest extends GradleIntegrationHarness {
+class GitRatchetGradleTest extends GradleIntegrationHarness {
 	private static final String TEST_PATH = "src/markdown/test.md";
 
 	private Git initRepo() throws IllegalStateException, GitAPIException, IOException {
@@ -46,11 +48,22 @@ public class GitRatchetGradleTest extends GradleIntegrationHarness {
 		return git;
 	}
 
-	@Test
-	public void singleProjectExhaustive() throws Exception {
+	@Override
+	protected GradleRunner gradleRunner() throws IOException {
+		return super.gradleRunner().withGradleVersion(GradleVersionSupport.CONFIGURATION_CACHE.version);
+	}
+
+	@ParameterizedTest
+	@ValueSource(ints = {0, 1})
+	void singleProjectExhaustive(int useConfigCache) throws Exception {
 		try (Git git = initRepo()) {
+			if (useConfigCache == 1) {
+				setFile("gradle.properties").toContent("org.gradle.unsafe.configuration-cache=true");
+			}
 			setFile("build.gradle").toLines(
-					"plugins { id 'com.diffplug.spotless' }",
+					"plugins {",
+					"  id 'com.diffplug.spotless'",
+					"}",
 					"spotless {",
 					"  ratchetFrom 'baseline'",
 					"  format 'misc', {",
@@ -128,20 +141,24 @@ public class GitRatchetGradleTest extends GradleIntegrationHarness {
 	}
 
 	private BuildResultAssertion assertPass(String... tasks) throws Exception {
-		return new BuildResultAssertion(gradleRunner().withGradleVersion(GradleVersionSupport.SETTINGS_PLUGINS.version).withArguments(tasks).build());
+		return new BuildResultAssertion(gradleRunner().withArguments(tasks).build());
 	}
 
 	private BuildResultAssertion assertFail(String... tasks) throws Exception {
-		return new BuildResultAssertion(gradleRunner().withGradleVersion(GradleVersionSupport.SETTINGS_PLUGINS.version).withArguments(tasks).buildAndFail());
+		return new BuildResultAssertion(gradleRunner().withArguments(tasks).buildAndFail());
 	}
 
-	private static final String BASELINE_ROOT = "cf049829afeba064f27cd67911dc36e585c9d869";
+	private static final String BASELINE_ROOT = "fdc3ca3c850cee44d95d32c64cda30afbb29323c";
 	private static final String BASELINE_CLEAN = "65fdd75c1ae00c0646f6487d68c44ddca51f0841";
 	private static final String BASELINE_DIRTY = "4cfc3358ccbf186738b82a60276b1e5306bc3870";
 
-	@Test
-	public void multiProject() throws Exception {
+	@ParameterizedTest
+	@ValueSource(ints = {0, 1})
+	void multiProject(int useConfigCache) throws Exception {
 		try (Git git = initRepo()) {
+			if (useConfigCache == 1) {
+				setFile("gradle.properties").toContent("org.gradle.unsafe.configuration-cache=true");
+			}
 			setFile("settings.gradle").toLines(
 					"plugins {",
 					"  id 'com.diffplug.spotless' apply false",
@@ -159,14 +176,18 @@ public class GitRatchetGradleTest extends GradleIntegrationHarness {
 					"    bumpThisNumberIfACustomStepChanges(1)",
 					"  }",
 					"}");
-			setFile(".gitignore").toContent("build/\n.gradle\n");
+			setFile(".gitignore").toContent("build/\n.gradle\n*.properties\n");
 			setFile("build.gradle").toContent("apply from: rootProject.file('spotless.gradle') // root");
 			setFile(TEST_PATH).toContent("HELLO");
 			setFile("clean/build.gradle").toContent("apply from: rootProject.file('spotless.gradle') // clean");
 			setFile("clean/" + TEST_PATH).toContent("HELLO");
 			setFile("dirty/build.gradle").toContent("apply from: rootProject.file('spotless.gradle') // dirty");
 			setFile("dirty/" + TEST_PATH).toContent("HELLO");
+			setFile("added/build.gradle").toContent("apply from: rootProject.file('spotless.gradle') // added");
 			RevCommit baseline = addAndCommit(git);
+			if (useConfigCache == 1) {
+				setFile("gradle.properties").toContent("org.gradle.unsafe.configuration-cache=true");
+			}
 
 			ObjectId cleanFolder = TreeWalk.forPath(git.getRepository(), "clean", baseline.getTree()).getObjectId(0);
 			ObjectId dirtyFolder = TreeWalk.forPath(git.getRepository(), "dirty", baseline.getTree()).getObjectId(0);
@@ -180,12 +201,7 @@ public class GitRatchetGradleTest extends GradleIntegrationHarness {
 					.outcome(":clean:spotlessCheck", TaskOutcome.SUCCESS)
 					.outcome(":dirty:spotlessCheck", TaskOutcome.SUCCESS);
 
-			setFile("added/build.gradle").toContent("apply from: rootProject.file('spotless.gradle') // added");
 			setFile("added/" + TEST_PATH).toContent("HELLO");
-
-			TreeWalk isNull = TreeWalk.forPath(git.getRepository(), "added", baseline.getTree());
-			Assertions.assertThat(isNull).isNull();
-
 			assertPass("spotlessMisc")
 					.outcome(":spotlessMisc", TaskOutcome.UP_TO_DATE)
 					.outcome(":clean:spotlessMisc", TaskOutcome.UP_TO_DATE)

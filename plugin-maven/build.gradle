@@ -1,205 +1,67 @@
-buildscript {
-	repositories { mavenCentral() }
-	dependencies { classpath "com.github.spullara.mustache.java:compiler:${VER_MUSTACHE}" }
-}
+import de.benediktritter.maven.plugin.development.task.GenerateHelpMojoSourcesTask
+import de.benediktritter.maven.plugin.development.task.GenerateMavenPluginDescriptorTask
+
 plugins {
-	id 'cz.malohlava.visteg' version '1.0.5' // https://github.com/mmalohlava/gradle-visteg
+	// https://www.benediktritter.de/maven-plugin-development/#release-history
+	id 'de.benediktritter.maven-plugin-development' version '0.4.1'
 }
+
 apply from: rootProject.file('gradle/changelog.gradle')
-apply from: rootProject.file('gradle/spotless-freshmark.gradle')
-
-// to generate taskGraph.pdf
-// - set enabled (below) to true
-// - run: ./gradlew :plugin-maven:test
-// - run: rm plugin-maven/output.pdf
-// - run: dot -Tpdf plugin-maven/build/reports/visteg.dot > plugin-maven/taskGraph.pdf
-visteg {
-	enabled = false
-	nodeShape = 'box'
-	startNodeShape = 'box'
-	endNodeShape = 'box'
-	colorscheme = 'pastel24' // https://www.graphviz.org/doc/info/colors.html
-}
-
-import com.github.mustachejava.DefaultMustacheFactory
-
-import java.nio.file.Files
-import java.nio.file.Paths
-
-import static java.nio.charset.StandardCharsets.UTF_8
-import static java.nio.file.StandardOpenOption.CREATE_NEW
-import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING
-
 ext.artifactId = project.artifactIdMaven
 version = spotlessChangelog.versionNext
+
 apply from: rootProject.file("gradle/java-setup.gradle")
-apply from: rootProject.file("gradle/java-publish.gradle")
+apply from: rootProject.file('gradle/spotless-freshmark.gradle')
 
-final PROJECT_DIR = project.projectDir.toString()
-final BUILD_DIR = project.buildDir.toString()
-final MAVEN_PROJECT_DIR = "${BUILD_DIR}/mavenProject"
-final LOCAL_MAVEN_REPO_DIR = "${BUILD_DIR}/localMavenRepository"
-
-def mvnw(String args) {
-	boolean isWin = System.getProperty('os.name').toLowerCase().contains('win')
-	if (isWin) {
-		return [
-			'cmd',
-			'/c',
-			'mvnw.cmd -e ' + args
-		]
-	} else {
-		return [
-			'/bin/sh',
-			'-c',
-			'./mvnw -e ' + args
-		]
-	}
+mavenPlugin {
+	name = 'Spotless Maven Plugin'
+	artifactId = project.artifactIdMaven
+	description = project.description
 }
 
-String libVersion = version.endsWith('-SNAPSHOT') ?
-		rootProject.spotlessChangelog.versionNext :
-		rootProject.spotlessChangelog.versionLast
-dependencies {
-	if (version.endsWith('-SNAPSHOT') || (rootProject.spotlessChangelog.versionNext == rootProject.spotlessChangelog.versionLast)) {
-		implementation project(':lib')
-		implementation project(':lib-extra')
-	} else {
-		implementation "com.diffplug.spotless:spotless-lib:${libVersion}"
-		implementation "com.diffplug.spotless:spotless-lib-extra:${libVersion}"
-	}
+tasks.withType(GenerateMavenPluginDescriptorTask).configureEach {
+	notCompatibleWithConfigurationCache('https://github.com/britter/maven-plugin-development/issues/8')
+}
+tasks.withType(GenerateHelpMojoSourcesTask).configureEach {
+	notCompatibleWithConfigurationCache('https://github.com/britter/maven-plugin-development/issues/8')
+}
 
-	implementation "org.codehaus.plexus:plexus-resources:${VER_PLEXUS_RESOURCES}"
-	constraints {
-		implementation("org.codehaus.plexus:plexus-utils:3.4.1") {
-			because("version pulled by plexus-resources has a functional-bug affecting " +
-					"directory scanning times")
-		}
-	}
+String VER_MAVEN_API = '3.0'
+String VER_ECLIPSE_AETHER = '1.1.0'
+String VER_PLEXUS_RESOURCES = '1.2.0'
+dependencies {
+	implementation project(':lib')
+	implementation project(':lib-extra')
 
 	compileOnly "org.apache.maven:maven-plugin-api:${VER_MAVEN_API}"
 	compileOnly "org.apache.maven.plugin-tools:maven-plugin-annotations:${VER_MAVEN_API}"
+	compileOnly "org.apache.maven:maven-core:${VER_MAVEN_API}"
 	compileOnly "org.eclipse.aether:aether-api:${VER_ECLIPSE_AETHER}"
-	compileOnly "org.eclipse.aether:aether-util:${VER_ECLIPSE_AETHER}"
 
 	implementation "com.diffplug.durian:durian-core:${VER_DURIAN}"
 	implementation "com.diffplug.durian:durian-collect:${VER_DURIAN}"
+	implementation("org.codehaus.plexus:plexus-resources:${VER_PLEXUS_RESOURCES}")
 	implementation "org.eclipse.jgit:org.eclipse.jgit:${VER_JGIT}"
+	implementation 'org.sonatype.plexus:plexus-build-api:0.0.7'
 
 	testImplementation project(":testlib")
-	testImplementation "junit:junit:${VER_JUNIT}"
+	testImplementation "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"
 	testImplementation "org.assertj:assertj-core:${VER_ASSERTJ}"
 	testImplementation "org.mockito:mockito-core:${VER_MOCKITO}"
 	testImplementation "com.diffplug.durian:durian-io:${VER_DURIAN}"
-	testImplementation "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
-	testImplementation "com.github.spullara.mustache.java:compiler:${VER_MUSTACHE}"
+	testImplementation 'com.github.spullara.mustache.java:compiler:0.9.10'
 	testImplementation "org.apache.maven:maven-plugin-api:${VER_MAVEN_API}"
 	testImplementation "org.eclipse.aether:aether-api:${VER_ECLIPSE_AETHER}"
 	testImplementation "org.codehaus.plexus:plexus-resources:${VER_PLEXUS_RESOURCES}"
-}
-
-task cleanMavenProjectDir(type: Delete) { delete MAVEN_PROJECT_DIR }
-
-task copySourceFiles(type: Sync, dependsOn: cleanMavenProjectDir) {
-	from "src/main/java"
-	into "${MAVEN_PROJECT_DIR}/src/main/java"
-}
-
-task copyMvnw(type: Copy, dependsOn: copySourceFiles) {
-	from 'src/test/resources'
-	include 'mvnw'
-	include 'mvnw.cmd'
-	include '.mvn/**'
-	into MAVEN_PROJECT_DIR
-}
-
-task installLocalDependencies
-def libs = [
-	'lib',
-	'lib-extra',
-	'testlib'
-]
-libs.each {
-	def groupId = 'com.diffplug.spotless'
-	def artifactId = "spotless-${it}"
-	def jarTask = tasks.getByPath(":${it}:jar")
-	def file = jarTask.archivePath
-
-	def installDependency = task "install_${artifactId}"(type: Exec) {
-		workingDir MAVEN_PROJECT_DIR
-
-		inputs.file(file)
-		outputs.dir(project.file("${LOCAL_MAVEN_REPO_DIR}/${groupId.replace('.', '/')}/${artifactId}/${version}"))
-		commandLine mvnw("org.apache.maven.plugins:maven-install-plugin:2.3.1:install-file " +
-				"-Dfile=${file} " +
-				"-DgroupId=${groupId} " +
-				"-DartifactId=${artifactId} " +
-				"-Dversion=${libVersion} " +
-				"-Dpackaging=jar " +
-				"-DlocalRepositoryPath=${LOCAL_MAVEN_REPO_DIR}")
-	}
-	installDependency.dependsOn(jarTask)
-
-	installLocalDependencies.dependsOn installDependency
-}
-
-task createPomXml(dependsOn: installLocalDependencies) {
-	doLast {
-		def additionalDependencies = project.configurations.runtimeClasspath.resolvedConfiguration.resolvedArtifacts.findAll {
-			return !libs.contains(it.moduleVersion.id.name)
-		}.collect {
-			return  "    <dependency>\n" +
-					"      <groupId>${it.moduleVersion.id.group}</groupId>\n" +
-					"      <artifactId>${it.moduleVersion.id.name}</artifactId>\n" +
-					"      <version>${it.moduleVersion.id.version}</version>\n" +
-					"    </dependency>\n"
-		}.join()
-
-		def versions = [
-			spotlessMavenPluginVersion: version,
-			mavenApiVersion           : VER_MAVEN_API,
-			eclipseAetherVersion      : VER_ECLIPSE_AETHER,
-			spotlessLibVersion        : libVersion,
-			additionalDependencies    : additionalDependencies
-		]
-
-		def pomXmlTemplate = Paths.get(PROJECT_DIR, "src/test/resources/pom-build.xml.mustache")
-		def newPomXml = Paths.get(MAVEN_PROJECT_DIR, "pom.xml")
-
-		Files.newBufferedReader(pomXmlTemplate).withCloseable { reader ->
-			Files.newBufferedWriter(newPomXml, UTF_8, CREATE_NEW, TRUNCATE_EXISTING).withCloseable { writer ->
-				def mustache = new DefaultMustacheFactory().compile(reader, "pom")
-				mustache.execute(writer, versions)
-			}
-		}
-	}
-}
-
-task runMavenBuild(type: Exec, dependsOn: [
-	cleanMavenProjectDir,
-	copySourceFiles,
-	copyMvnw,
-	createPomXml
-]) {
-	workingDir MAVEN_PROJECT_DIR
-	// -B batch mode to make dependency download logging less verbose
-	commandLine mvnw("clean install -B -Dmaven.repo.local=${LOCAL_MAVEN_REPO_DIR}")
-}
-
-jar.setActions Arrays.asList()
-jar.dependsOn(runMavenBuild)
-File jarIn = file("${MAVEN_PROJECT_DIR}/target/spotless-maven-plugin-${version}.jar")
-File jarOut = jar.archivePath
-jar.inputs.file(jarIn)
-jar.outputs.file(jarOut)
-jar.doLast {
-	Files.copy(jarIn.toPath(), jarOut.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+	testImplementation "org.apache.maven:maven-core:${VER_MAVEN_API}"
 }
 
 apply from: rootProject.file('gradle/special-tests.gradle')
-
-tasks.withType(Test) {
-	systemProperty "localMavenRepositoryDir", LOCAL_MAVEN_REPO_DIR
-	systemProperty "spotlessMavenPluginVersion", project.version
-	dependsOn(jar)
+tasks.withType(Test).configureEach {
+	systemProperty 'spotlessMavenPluginVersion', project.version
+	dependsOn 'publishToMavenLocal'
+	dependsOn ':lib:publishToMavenLocal'
+	dependsOn ':lib-extra:publishToMavenLocal'
 }
+
+apply from: rootProject.file("gradle/java-publish.gradle")

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import java.util.Arrays;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
+import com.diffplug.spotless.extra.EquoBasedStepBuilder;
 import com.diffplug.spotless.extra.groovy.GrEclipseFormatterStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
@@ -36,7 +36,7 @@ public class GrEclipse implements FormatterStepFactory {
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
-		EclipseBasedStepBuilder grEclipseConfig = GrEclipseFormatterStep.createBuilder(stepConfig.getProvisioner());
+		EquoBasedStepBuilder grEclipseConfig = GrEclipseFormatterStep.createBuilder(stepConfig.getProvisioner());
 		grEclipseConfig.setVersion(version == null ? GrEclipseFormatterStep.defaultVersion() : version);
 		if (null != file) {
 			File settingsFile = stepConfig.getFileLocator().locateFile(file);

@@ -1,0 +1,63 @@
+// Annotations in the wrong order.  The preferred order is:
+//  * declaration annotations
+//  * access modifiers such as `public`
+//  * type annotations
+//  * type
+
+class FormatAnnotationsAccessModifiers {
+
+  @Nullable public Object myMethod1() {
+    return null;
+  }
+
+  @Nullable
+  public Object myMethod2() {
+    return null;
+  }
+
+  @Nullable
+  public
+  Object myMethod3() {
+    return null;
+  }
+
+  @Nullable
+  @Deprecated
+  public Object myMethod4() {
+    return null;
+  }
+
+  @Deprecated
+  @Nullable
+  public Object myMethod4a() {
+    return null;
+  }
+
+  @Override
+  @Nullable
+  @Deprecated
+  public Object myMethod5() {
+    return null;
+  }
+
+  @Nullable @Deprecated public Object myMethod6() {
+    return null;
+  }
+}
+
+@Deprecated
+@Interned
+@MustCall("close")
+@SuppressWarnings
+public class MyClass3 {
+  // No body
+}
+
+public
+@Deprecated
+@SuppressWarnings
+@Interned
+@MustCall("close")
+class MyClass4 {
+  // No body
+}

@@ -1,0 +1,7 @@
+SELECT
+    *
+FROM
+    TABLE
+    WHERE
+        id IN(<ids>)
+        AND user_id =:user_id;

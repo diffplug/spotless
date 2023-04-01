@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,19 +19,17 @@ import java.io.File;
 
 import javax.annotation.Nullable;
 
-import org.gradle.api.Project;
-
 import com.diffplug.spotless.extra.GitRatchet;
 
 /** Gradle implementation of GitRatchet. */
-final class GitRatchetGradle extends GitRatchet<Project> {
+public class GitRatchetGradle extends GitRatchet<File> {
 	@Override
-	protected File getDir(Project project) {
-		return project.getProjectDir();
+	protected File getDir(File project) {
+		return project;
 	}
 
 	@Override
-	protected @Nullable Project getParent(Project project) {
-		return project.getParent();
+	protected @Nullable File getParent(File project) {
+		return project.getParentFile();
 	}
 }

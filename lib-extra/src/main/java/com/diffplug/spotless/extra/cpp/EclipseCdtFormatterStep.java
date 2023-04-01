@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,15 @@
  */
 package com.diffplug.spotless.extra.cpp;
 
-import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 
 import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
-import com.diffplug.spotless.extra.EclipseBasedStepBuilder.State;
+import com.diffplug.spotless.extra.EquoBasedStepBuilder;
+
+import dev.equo.solstice.p2.P2Model;
 
 /**
  * Formatter step which calls out to the Eclipse CDT formatter.
@@ -35,24 +37,40 @@ public final class EclipseCdtFormatterStep {
 	private EclipseCdtFormatterStep() {}
 
 	private static final String NAME = "eclipse cdt formatter";
-	private static final String FORMATTER_CLASS = "com.diffplug.spotless.extra.eclipse.cdt.EclipseCdtFormatterStepImpl";
-	private static final String DEFAULT_VERSION = "4.16.0";
-	private static final String FORMATTER_METHOD = "format";
+	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "10.7").add(17, "11.0");
 
 	public static String defaultVersion() {
-		return DEFAULT_VERSION;
+		return JVM_SUPPORT.getRecommendedFormatterVersion();
 	}
 
 	/** Provides default configuration */
-	public static EclipseBasedStepBuilder createBuilder(Provisioner provisioner) {
-		return new EclipseBasedStepBuilder(NAME, provisioner, EclipseCdtFormatterStep::apply);
+	public static EquoBasedStepBuilder createBuilder(Provisioner provisioner) {
+		return new EquoBasedStepBuilder(NAME, provisioner, EclipseCdtFormatterStep::apply) {
+			@Override
+			protected P2Model model(String version) {
+				var model = new P2Model();
+				addPlatformRepo(model, "4.26");
+				model.addP2Repo("https://download.eclipse.org/tools/cdt/releases/" + version + "/");
+				model.getInstall().add("org.eclipse.cdt.core");
+				return model;
+			}
+		};
 	}
 
-	private static FormatterFunc apply(State state) throws Exception {
-		Class<?> formatterClazz = state.loadClass(FORMATTER_CLASS);
-		Object formatter = formatterClazz.getConstructor(Properties.class).newInstance(state.getPreferences());
-		Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
-		return input -> (String) method.invoke(formatter, input);
+	private static FormatterFunc apply(EquoBasedStepBuilder.State state) throws Exception {
+		JVM_SUPPORT.assertFormatterSupported(state.getSemanticVersion());
+		Class<?> formatterClazz = state.getJarState().getClassLoader().loadClass("com.diffplug.spotless.extra.glue.cdt.EclipseCdtFormatterStepImpl");
+		var formatter = formatterClazz.getConstructor(Properties.class).newInstance(state.getPreferences());
+		var method = formatterClazz.getMethod("format", String.class);
+		return JVM_SUPPORT.suggestLaterVersionOnError(state.getSemanticVersion(),
+				input -> {
+					try {
+						return (String) method.invoke(formatter, input);
+					} catch (InvocationTargetException exceptionWrapper) {
+						Throwable throwable = exceptionWrapper.getTargetException();
+						Exception exception = (throwable instanceof Exception) ? (Exception) throwable : null;
+						throw (null == exception) ? exceptionWrapper : exception;
+					}
+				});
 	}
-
 }

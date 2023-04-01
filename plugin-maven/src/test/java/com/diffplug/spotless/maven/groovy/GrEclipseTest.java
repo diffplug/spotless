@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,24 +15,53 @@
  */
 package com.diffplug.spotless.maven.groovy;
 
-import org.junit.Test;
+import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
-public class GrEclipseTest extends MavenIntegrationHarness {
+class GrEclipseTest extends MavenIntegrationHarness {
 
 	@Test
-	public void testEclipse() throws Exception {
-		writePomWithGroovySteps(
-				"<greclipse>",
-				"  <file>${basedir}/greclipse.properties</file>",
-				"  <version>4.12.0</version>",
-				"</greclipse>");
-		setFile("greclipse.properties").toResource("groovy/greclipse/format/greclipse.properties");
+	void testEclipse() throws Exception {
+		writePomWithGrEclipse();
 
 		String path = "src/main/groovy/test.groovy";
 		setFile(path).toResource("groovy/greclipse/format/unformatted.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).sameAsResource("groovy/greclipse/format/formatted.test");
+	}
+
+	@Test
+	void doesNotFormatJavaFiles() throws Exception {
+		writePomWithGrEclipse();
+
+		String javaPath = "src/main/java/test.java";
+		String testJavaPath = "src/test/java/test.java";
+		setFile(javaPath).toResource("java/googlejavaformat/JavaCodeUnformatted.test");
+		setFile(testJavaPath).toResource("java/googlejavaformat/JavaCodeUnformatted.test");
+
+		String groovyPath = "src/main/groovy/test.groovy";
+		String testGroovyPath = "src/test/groovy/test.groovy";
+		setFile(groovyPath).toResource("groovy/greclipse/format/unformatted.test");
+		setFile(testGroovyPath).toResource("groovy/greclipse/format/unformatted.test");
+
+		mavenRunner().withArguments("spotless:apply").runNoError();
+
+		assertFile(javaPath).sameAsResource("java/googlejavaformat/JavaCodeUnformatted.test");
+		assertFile(testJavaPath).sameAsResource("java/googlejavaformat/JavaCodeUnformatted.test");
+
+		assertFile(groovyPath).sameAsResource("groovy/greclipse/format/formatted.test");
+		assertFile(testGroovyPath).sameAsResource("groovy/greclipse/format/formatted.test");
+	}
+
+	private void writePomWithGrEclipse() throws IOException {
+		writePomWithGroovySteps(
+				"<greclipse>",
+				"  <file>${basedir}/greclipse.properties</file>",
+				"  <version>4.25</version>",
+				"</greclipse>");
+		setFile("greclipse.properties").toResource("groovy/greclipse/format/greclipse.properties");
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,22 +17,22 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class IndependentTaskTest extends GradleIntegrationHarness {
+class IndependentTaskTest extends GradleIntegrationHarness {
 	@Test
-	public void independent() throws IOException {
+	void independent() throws IOException {
 		setFile("build.gradle").toLines(
-				"buildscript { repositories { mavenCentral() } }",
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
 				"}",
+				"repositories { mavenCentral() }",
 				"",
 				"import com.diffplug.gradle.spotless.JavaExtension",
 				"",
 				"def underTest = new JavaExtension(spotless)",
 				"underTest.target file('test.java')",
-				"underTest.googleJavaFormat('1.2')",
+				"underTest.googleJavaFormat()",
 				"",
 				"def independent = underTest.createIndependentApplyTask('independent')");
 		setFile("test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");

@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @ReturnValuesAreNonnullByDefault
-package com.diffplug.spotless.extra.json.java;
+package com.diffplug.spotless.json;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterFunc.Closeable;
@@ -35,15 +36,15 @@ import com.diffplug.spotless.ThrowingEx;
 
 public class TsFmtFormatterStep {
 
-	private static final Logger logger = Logger.getLogger(TsFmtFormatterStep.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(TsFmtFormatterStep.class);
 
 	public static final String NAME = "tsfmt-format";
 
-	public static FormatterStep create(Map<String, String> versions, Provisioner provisioner, File buildDir, NpmPathResolver npmPathResolver, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) {
+	public static FormatterStep create(Map<String, String> versions, Provisioner provisioner, File projectDir, File buildDir, File cacheDir, NpmPathResolver npmPathResolver, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) {
 		requireNonNull(provisioner);
 		requireNonNull(buildDir);
 		return FormatterStep.createLazy(NAME,
-				() -> new State(NAME, versions, buildDir, npmPathResolver, configFile, inlineTsFmtSettings),
+				() -> new State(NAME, versions, projectDir, buildDir, cacheDir, npmPathResolver, configFile, inlineTsFmtSettings),
 				State::createFormatterFunc);
 	}
 
@@ -70,15 +71,20 @@ public class TsFmtFormatterStep {
 		@Nullable
 		private final TypedTsFmtConfigFile configFile;
 
-		public State(String stepName, Map<String, String> versions, File buildDir, NpmPathResolver npmPathResolver, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) throws IOException {
+		public State(String stepName, Map<String, String> versions, File projectDir, File buildDir, File cacheDir, NpmPathResolver npmPathResolver, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) throws IOException {
 			super(stepName,
 					new NpmConfig(
 							replaceDevDependencies(NpmResourceHelper.readUtf8StringFromClasspath(TsFmtFormatterStep.class, "/com/diffplug/spotless/npm/tsfmt-package.json"), new TreeMap<>(versions)),
-							"typescript-formatter",
-							NpmResourceHelper.readUtf8StringFromClasspath(PrettierFormatterStep.class, "/com/diffplug/spotless/npm/tsfmt-serve.js"),
+							NpmResourceHelper.readUtf8StringFromClasspath(PrettierFormatterStep.class,
+									"/com/diffplug/spotless/npm/common-serve.js",
+									"/com/diffplug/spotless/npm/tsfmt-serve.js"),
 							npmPathResolver.resolveNpmrcContent()),
-					buildDir,
-					npmPathResolver.resolveNpmExecutable());
+					new NpmFormatterStepLocations(
+							projectDir,
+							buildDir,
+							cacheDir,
+							npmPathResolver::resolveNpmExecutable,
+							npmPathResolver::resolveNodeExecutable));
 			this.buildDir = requireNonNull(buildDir);
 			this.configFile = configFile;
 			this.inlineTsFmtSettings = inlineTsFmtSettings == null ? new TreeMap<>() : new TreeMap<>(inlineTsFmtSettings);
@@ -92,7 +98,7 @@ public class TsFmtFormatterStep {
 				ServerProcessInfo tsfmtRestServer = npmRunServer();
 				TsFmtRestService restService = new TsFmtRestService(tsfmtRestServer.getBaseUrl());
 				return Closeable.ofDangerous(() -> endServer(restService, tsfmtRestServer), input -> restService.format(input, tsFmtOptions));
-			} catch (Exception e) {
+			} catch (IOException e) {
 				throw ThrowingEx.asRuntime(e);
 			}
 		}
@@ -115,7 +121,7 @@ public class TsFmtFormatterStep {
 			try {
 				restService.shutdown();
 			} catch (Throwable t) {
-				logger.log(Level.INFO, "Failed to request shutdown of rest service via api. Trying via process.", t);
+				logger.info("Failed to request shutdown of rest service via api. Trying via process.", t);
 			}
 			restServer.close();
 		}

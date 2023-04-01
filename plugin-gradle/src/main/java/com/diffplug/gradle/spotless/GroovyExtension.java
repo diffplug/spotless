@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
 
+import java.util.Map;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -30,7 +31,7 @@ import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.GroovySourceSet;
 import org.gradle.api.tasks.SourceSet;
 
-import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
+import com.diffplug.spotless.extra.EquoBasedStepBuilder;
 import com.diffplug.spotless.extra.groovy.GrEclipseFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.java.ImportOrderStep;
@@ -83,7 +84,7 @@ public class GroovyExtension extends FormatExtension implements HasBuiltinDelimi
 	}
 
 	public static class GrEclipseConfig {
-		private final EclipseBasedStepBuilder builder;
+		private final EquoBasedStepBuilder builder;
 		private final FormatExtension extension;
 
 		GrEclipseConfig(String version, FormatExtension extension) {
@@ -98,6 +99,12 @@ public class GroovyExtension extends FormatExtension implements HasBuiltinDelimi
 			Project project = extension.getProject();
 			builder.setPreferences(project.files(configFiles).getFiles());
 			extension.replaceStep(builder.build());
+		}
+
+		public GrEclipseConfig withP2Mirrors(Map<String, String> mirrors) {
+			builder.setP2Mirrors(mirrors);
+			extension.replaceStep(builder.build());
+			return this;
 		}
 	}
 
@@ -127,7 +134,7 @@ public class GroovyExtension extends FormatExtension implements HasBuiltinDelimi
 		// LicenseHeaderStep completely blows apart package-info.java/groovy - this common-sense check
 		// ensures that it skips both. See https://github.com/diffplug/spotless/issues/1
 		steps.replaceAll(step -> {
-			if (LicenseHeaderStep.name().equals(step.getName())) {
+			if (isLicenseHeaderStep(step)) {
 				return step.filterByFile(LicenseHeaderStep.unsupportedJvmFilesFilter());
 			} else {
 				return step;

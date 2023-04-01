@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,34 +15,51 @@
  */
 package com.diffplug.spotless.extra.java;
 
-import com.diffplug.spotless.FormatterStep;
+import java.io.File;
+import java.util.stream.Stream;
+
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
 import com.diffplug.spotless.TestProvisioner;
-import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
-import com.diffplug.spotless.extra.eclipse.EclipseCommonTests;
+import com.diffplug.spotless.extra.EquoBasedStepBuilder;
+import com.diffplug.spotless.extra.eclipse.EquoResourceHarness;
 
-public class EclipseJdtFormatterStepTest extends EclipseCommonTests {
+class EclipseJdtFormatterStepTest extends EquoResourceHarness {
+	private final static String INPUT = "package p; class C{}";
+	private final static String EXPECTED = "package p;\nclass C {\n}";
 
-	@Override
-	protected String[] getSupportedVersions() {
-		return new String[]{"4.6.1", "4.6.2", "4.6.3", "4.7.0", "4.7.1", "4.7.2", "4.7.3a", "4.8.0", "4.9.0", "4.10.0",
-				"4.11.0", "4.12.0", "4.13.0", "4.14.0", "4.15.0", "4.16.0", "4.17.0", "4.18.0", "4.19.0"};
+	private static EquoBasedStepBuilder createBuilder() {
+		return EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral());
 	}
 
-	@Override
-	protected String getTestInput(String version) {
-		return "package p; class C{}";
+	public EclipseJdtFormatterStepTest() {
+		super(createBuilder(), INPUT, EXPECTED);
 	}
 
-	@Override
-	protected String getTestExpectation(String version) {
-		return "package p;\nclass C {\n}";
+	@ParameterizedTest
+	@MethodSource
+	void formatWithVersion(String version) throws Exception {
+		assertFormatted(version);
 	}
 
-	@Override
-	protected FormatterStep createStep(String version) {
-		EclipseBasedStepBuilder builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral());
-		builder.setVersion(version);
-		return builder.build();
+	private static Stream<String> formatWithVersion() {
+		return Stream.of("4.9", EclipseJdtFormatterStep.defaultVersion());
 	}
 
+	/** New format interface requires source file information to distinguish module-info from compilation unit */
+	@Nested
+	class NewFormatInterface extends EquoResourceHarness {
+		public NewFormatInterface() {
+			super(createBuilder(), "module-info.java", getTestResource("java/eclipse/ModuleInfoUnformatted.test"), getTestResource("java/eclipse/ModuleInfoFormatted.test"));
+		}
+
+		@Test
+		void formatModuleInfo() throws Exception {
+			File settingsFile = createTestFile("java/eclipse/ModuleInfo.prefs");
+			assertFormatted("4.11", settingsFile);
+		}
+	}
 }

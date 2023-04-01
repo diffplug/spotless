@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2021 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,15 @@ package com.diffplug.spotless.extra.eclipse.wtp;
 
 import static com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework.LINE_DELIMITER;
 import static org.eclipse.wst.xml.core.internal.preferences.XMLCorePreferenceNames.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Properties;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /** Eclipse WST wrapper integration tests */
-public class EclipseXmlFormatterStepImplTest {
+class EclipseXmlFormatterStepImplTest {
 
 	private final static String INCOMPLETE = "<c>";
 	private final static String ILLEGAL_CHAR = "\0";
@@ -33,8 +33,8 @@ public class EclipseXmlFormatterStepImplTest {
 	private TestData testData = null;
 	private EclipseXmlFormatterStepImpl formatter;
 
-	@Before
-	public void initialize() throws Exception {
+	@BeforeEach
+	void initialize() throws Exception {
 		testData = TestData.getTestDataOnFileSystem("xml");
 		/*
 		 * The instantiation can be repeated for each step, but only with the same configuration
@@ -49,74 +49,74 @@ public class EclipseXmlFormatterStepImplTest {
 	}
 
 	@Test
-	public void simpleDefaultFormat() throws Throwable {
+	void simpleDefaultFormat() throws Throwable {
 		String[] input = testData.input("xml_space.test");
 		String output = formatter.format(input[0], input[1]);
-		assertEquals("Unexpected formatting with default preferences.",
-				testData.expected("xml_space.test"), output);
+		assertEquals(testData.expected("xml_space.test"),
+				output, "Unexpected formatting with default preferences.");
 	}
 
 	@Test
-	public void invalidXmlFormat() throws Throwable {
+	void invalidXmlFormat() throws Throwable {
 		String[] input = testData.input("xml_space.test");
 		input[0] += INCOMPLETE;
 		String output = formatter.format(input[0], input[1]);
 		String expected = testData.expected("xml_space.test") + LINE_DELIMITER + INCOMPLETE;
-		assertEquals("Incomplete XML not formatted on best effort basis.",
-				expected, output);
+		assertEquals(expected,
+				output, "Incomplete XML not formatted on best effort basis.");
 	}
 
 	@Test
-	public void illegalXmlCharater() throws Throwable {
+	void illegalXmlCharater() throws Throwable {
 		String[] input = testData.input("xml_space.test");
 		input[0] = ILLEGAL_CHAR + input[0];
 		String output = formatter.format(input[0], input[1]);
 		String expected = LINE_DELIMITER + LINE_DELIMITER + testData.expected("xml_space.test");
-		assertEquals("Illegal character not replaced by line delimiter.", expected, output);
+		assertEquals(expected, output, "Illegal character not replaced by line delimiter.");
 	}
 
 	@Test
-	public void dtdRelativePath() throws Throwable {
+	void dtdRelativePath() throws Throwable {
 		String[] input = testData.input("dtd_relative.test");
 		String output = formatter.format(input[0], input[1]);
-		assertEquals("Relative DTD not resolved. Restrictions are not applied by formatter.",
-				testData.expected("dtd_relative.test"), output);
+		assertEquals(testData.expected("dtd_relative.test"),
+				output, "Relative DTD not resolved. Restrictions are not applied by formatter.");
 	}
 
 	@Test
-	public void dtdExternalPath() throws Throwable {
+	void dtdExternalPath() throws Throwable {
 		String[] input = testData.input("dtd_external.test");
 		String output = formatter.format(input[0], input[1]);
-		assertNotEquals("External DTD resolved by default. Restrictions are applied by formatter.",
-				testData.expected("dtd_external.test"), output);
+		assertNotEquals(testData.expected("dtd_external.test"),
+				output, "External DTD resolved by default. Restrictions are applied by formatter.");
 	}
 
 	@Test
-	public void xsdRelativePath() throws Throwable {
+	void xsdRelativePath() throws Throwable {
 		String[] input = testData.input("xsd_relative.test");
 		String output = formatter.format(input[0], input[1]);
-		assertEquals("Relative XSD not resolved. Restrictions are not applied by formatter.",
-				testData.expected("xsd_relative.test"), output);
+		assertEquals(testData.expected("xsd_relative.test"),
+				output, "Relative XSD not resolved. Restrictions are not applied by formatter.");
 	}
 
 	@Test
-	public void xsdExternalPath() throws Throwable {
+	void xsdExternalPath() throws Throwable {
 		String[] input = testData.input("xsd_external.test");
 		String output = formatter.format(input[0], input[1]);
-		assertNotEquals("External XSD resolved per default. Restrictions are applied by formatter.",
-				testData.expected("xsd_external.test"), output);
+		assertNotEquals(testData.expected("xsd_external.test"),
+				output, "External XSD resolved per default. Restrictions are applied by formatter.");
 	}
 
 	@Test
-	public void xsdNotFound() throws Throwable {
+	void xsdNotFound() throws Throwable {
 		String[] input = testData.input("xsd_not_found.test");
 		String output = formatter.format(input[0], input[1]);
-		assertEquals("Unresolved XSD/DTD not silently ignored.",
-				testData.expected("xsd_not_found.test"), output);
+		assertEquals(testData.expected("xsd_not_found.test"),
+				output, "Unresolved XSD/DTD not silently ignored.");
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void configurationChange() throws Exception {
-		new EclipseXmlFormatterStepImpl(new Properties());
+	@Test
+	void configurationChange() throws Exception {
+		assertThrows(IllegalArgumentException.class, () -> new EclipseXmlFormatterStepImpl(new Properties()));
 	}
 }

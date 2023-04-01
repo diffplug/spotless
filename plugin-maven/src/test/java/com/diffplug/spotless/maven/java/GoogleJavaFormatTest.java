@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,27 +15,26 @@
  */
 package com.diffplug.spotless.maven.java;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import com.diffplug.spotless.JreVersion;
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
-public class GoogleJavaFormatTest extends MavenIntegrationHarness {
+class GoogleJavaFormatTest extends MavenIntegrationHarness {
 	@Test
-	public void specificVersionDefaultStyle() throws Exception {
+	void specificVersionDefaultStyle() throws Exception {
 		writePomWithJavaSteps(
 				"<googleJavaFormat>",
-				"  <version>1.2</version>",
+				"  <version>1.10.0</version>",
 				"</googleJavaFormat>");
 
 		runTest("java/googlejavaformat/JavaCodeFormatted.test");
 	}
 
 	@Test
-	public void specificVersionSpecificStyle() throws Exception {
+	void specificVersionSpecificStyle() throws Exception {
 		writePomWithJavaSteps(
 				"<googleJavaFormat>",
-				"  <version>1.2</version>",
+				"  <version>1.10.0</version>",
 				"  <style>AOSP</style>",
 				"</googleJavaFormat>");
 
@@ -43,11 +42,10 @@ public class GoogleJavaFormatTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void specificVersionReflowLongStrings() throws Exception {
-		JreVersion.assume11OrGreater();
+	void specificVersionReflowLongStrings() throws Exception {
 		writePomWithJavaSteps(
 				"<googleJavaFormat>",
-				"  <version>1.8</version>",
+				"  <version>1.10.0</version>",
 				"  <reflowLongStrings>true</reflowLongStrings>",
 				"</googleJavaFormat>");
 

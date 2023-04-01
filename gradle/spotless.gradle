@@ -8,21 +8,22 @@ spotless {
 		 */
 		String regex = "import org\\.gradle\\.api\\.internal\\.(?!plugins\\.DslObject)(?!project\\.ProjectInternal)"
 		if ((text.contains('import org.gradle.internal.') || text.find(regex)) &&
-		!text.contains('def noInternalDepsClosure')) {
+				!text.contains('def noInternalDepsClosure')) {
 			throw new AssertionError("Accidental internal import")
 		}
 	}
-	if (project.name != 'ide' && project != rootProject) {
-		// the rootProject and ide projects don't have any java
+	if (project != rootProject) {
+		// the rootProject doesn't have any java
 		java {
 			ratchetFrom 'origin/main'
-			custom 'noInternalDeps', noInternalDepsClosure
 			bumpThisNumberIfACustomStepChanges(1)
 			licenseHeaderFile rootProject.file('gradle/spotless.license')
 			importOrderFile   rootProject.file('gradle/spotless.importorder')
 			eclipse().configFile rootProject.file('gradle/spotless.eclipseformat.xml')
 			trimTrailingWhitespace()
 			removeUnusedImports()
+			// TODO: formatAnnotations()
+			custom 'noInternalDeps', noInternalDepsClosure
 		}
 	}
 	groovyGradle {

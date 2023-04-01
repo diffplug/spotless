@@ -3,6 +3,371 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+* Support configuration of mirrors for P2 repositories ([#1629](https://github.com/diffplug/spotless/issues/1629)):
+  ```
+  spotless {
+    java {
+      eclipse().withP2Mirrors(['https://download.eclipse.org/', 'https://some.internal.mirror/eclipse'])
+    }
+  }
+  ```
+  Mirrors are selected by prefix match, for example `https://download.eclipse.org/eclipse/updates/4.26/` will be redirected to `https://some.internal.mirror/eclipse/eclipse/updates/4.26/`.
+  The same configuration exists for `greclipse` and `eclipseCdt`.
+### Changes
+* **POTENTIALLY BREAKING** Drop support for `googleJavaFormat` versions &lt; `1.8`. ([#1630](https://github.com/diffplug/spotless/pull/1630))
+* Bump default `googleJavaFormat` version `1.15.0` -> `1.16.0`. ([#1630](https://github.com/diffplug/spotless/pull/1630))
+
+## [6.17.0] - 2023-03-13
+### Added
+* You can now put the filename into a license header template with `$FILE`. ([#1605](https://github.com/diffplug/spotless/pull/1605) fixes [#1147](https://github.com/diffplug/spotless/issues/1147))
+* `licenseHeader` default pattern for Java files is updated to `(package|import|public|class|module) `. ([#1614](https://github.com/diffplug/spotless/pull/1614))
+### Changes
+* All Eclipse formatters are now based on [Equo Solstice OSGi and p2 shim](https://github.com/equodev/equo-ide/tree/main/solstice). ([#1524](https://github.com/diffplug/spotless/pull/1524))
+  * Eclipse JDT bumped default to `4.26` from `4.21`, oldest supported is `4.9`.
+    * We now recommend dropping the last `.0`, e.g. `4.26` instead of `4.26.0`, you'll get warnings to help you switch.
+  * Eclipse Groovy bumped default to `4.26` from `4.21`, oldest supported is `4.18`.
+  * Eclipse CDT bumped default to `11.0` from `4.21`, oldest supported is `10.6`.
+  * Eclipse WTP is still WIP at [#1622](https://github.com/diffplug/spotless/pull/1622).
+
+## [6.16.0] - 2023-02-27
+### Added
+* `cleanthat` now has `includeDraft` option, to include draft mutators from composite mutators. ([#1574](https://github.com/diffplug/spotless/pull/1574))
+* `npm`-based formatters (`prettier`, `tsfmt` and `eslint`) now support caching of `node_modules` directory.
+  To enable it, provide `npmInstallCache()` option. ([#1590](https://github.com/diffplug/spotless/pull/1590))
+### Fixed
+* `json { jackson()` can now handle `Array` as a root element. ([#1585](https://github.com/diffplug/spotless/pull/1585))
+* Reduce logging-noise created by `npm`-based formatters ([#1590](https://github.com/diffplug/spotless/pull/1590) fixes [#1582](https://github.com/diffplug/spotless/issues/1582))
+### Changes
+* Bump default `cleanthat` version to latest `2.1` -> `2.6`. ([#1569](https://github.com/diffplug/spotless/pull/1569) and [#1574](https://github.com/diffplug/spotless/pull/1574))
+
+## [6.15.0] - 2023-02-10
+### Added
+* CleanThat Java Refactorer. ([#1560](https://github.com/diffplug/spotless/pull/1560))
+### Fixed
+* Allow multiple instances of the same npm-based formatter to be used simultaneously. E.g. use prettier for typescript
+  *and* Java (using the community prettier-plugin-java) without messing up their respective `node_module` dependencies. ([#1565](https://github.com/diffplug/spotless/pull/1565))
+* `ktfmt` default style uses correct continuation indent. ([#1562](https://github.com/diffplug/spotless/pull/1562))
+### Changes
+* Bump default `ktfmt` version to latest `0.42` -> `0.43` ([#1561](https://github.com/diffplug/spotless/pull/1561))
+* Bump default `jackson` version to latest `2.14.1` -> `2.14.2` ([#1536](https://github.com/diffplug/spotless/pull/1536))
+
+## [6.14.1] - 2023-02-05
+### Fixed
+* `freshmark` fixed on java 15+ ([#1304](https://github.com/diffplug/spotless/pull/1304) fixes [#803](https://github.com/diffplug/spotless/issues/803))
+* **POTENTIALLY BREAKING** `sortByKeys` for JSON formatting now takes into account objects inside arrays ([#1546](https://github.com/diffplug/spotless/pull/1546))
+
+## [6.14.0] - 2023-01-26
+### Added
+* Support `jackson()` for YAML and JSON files ([#1492](https://github.com/diffplug/spotless/pull/1492))
+* Prettier will now suggest to install plugins if a parser cannot be inferred from the file extension ([#1511](https://github.com/diffplug/spotless/pull/1511))
+* Allow to specify node executable for node-based formatters using `nodeExecutable` parameter ([#1500](https://github.com/diffplug/spotless/pull/1500))
+### Fixed
+* **POTENTIALLY BREAKING** Generate the correct qualifiedRuleId for Ktlint 0.48.x [#1495](https://github.com/diffplug/spotless/pull/1495)
+* The default list of type annotations used by `formatAnnotations` has had 8 more annotations from the Checker Framework added [#1494](https://github.com/diffplug/spotless/pull/1494)
+### Changes
+* **POTENTIALLY BREAKING** Bump minimum JRE from 8 to 11 ([#1514](https://github.com/diffplug/spotless/pull/1514) part 1 of [#1337](https://github.com/diffplug/spotless/issues/1337))
+  * You can bump your build JRE without bumping your requirements ([docs](https://docs.gradle.org/current/userguide/building_java_projects.html#sec:java_cross_compilation)).
+* Prettier will now suggest to install plugins if a parser cannot be inferred from the file extension ([#1511](https://github.com/diffplug/spotless/pull/1511))
+* **POTENTIALLY BREAKING** Removed support for KtLint 0.3x and 0.45.2 ([#1475](https://github.com/diffplug/spotless/pull/1475))
+  * `KtLint` does not maintain a stable API - before this PR, we supported every breaking change in the API since 2019.
+  * From now on, we will support no more than 2 breaking changes at a time.
+* `npm`-based formatters `ESLint`, `prettier` and `tsfmt` delay their `npm install` call until the formatters are first
+  used. For gradle this effectively moves the `npm install` call out of the configuration phase and as such enables
+  better integration with `gradle-node-plugin`. ([#1522](https://github.com/diffplug/spotless/pull/1522))
+* Bump default `ktlint` version to latest `0.48.1` -> `0.48.2` ([#1529](https://github.com/diffplug/spotless/pull/1529))
+* Bump default `scalafmt` version to latest `3.6.1` -> `3.7.1` ([#1529](https://github.com/diffplug/spotless/pull/1529))
+
+## [6.13.0] - 2023-01-14
+### Added
+* **POTENTIALLY BREAKING** `ktlint` step now supports `.editorconfig` ([#1442](https://github.com/diffplug/spotless/pull/1442) implements [#142](https://github.com/diffplug/spotless/issues/142))
+  * **POTENTIALLY BREAKING** `ktlint` step now modifies license headers. Make sure to put `licenseHeader` *after* `ktlint`.
+* Added `skipLinesMatching` option to `licenseHeader` to support formats where license header cannot be immediately added to the top of the file (e.g. xml, sh). ([#1441](https://github.com/diffplug/spotless/pull/1441))
+* Added support for npm-based [ESLint](https://eslint.org/) formatter for javascript and typescript ([#1453](https://github.com/diffplug/spotless/pull/1453))
+* Better suggested messages when user's default is set by JVM limitation. ([#995](https://github.com/diffplug/spotless/pull/995))
+### Fixed
+* Prevent tool configurations from being resolved outside project ([#1447](https://github.com/diffplug/spotless/pull/1447) fixes [#1215](https://github.com/diffplug/spotless/issues/1215))
+* Support `ktlint` 0.48+ new rule disabling syntax ([#1456](https://github.com/diffplug/spotless/pull/1456)) fixes ([#1444](https://github.com/diffplug/spotless/issues/1444))
+* Fix subgroups leading catch all matcher.
+### Changes
+* Bump default `ktlint` version to latest `0.47.1` -> `0.48.1` ([#1456](https://github.com/diffplug/spotless/pull/1456))
+* Bump default version for `prettier` from `2.0.5` to `2.8.1` ([#1453](https://github.com/diffplug/spotless/pull/1453))
+
+## [6.12.1] - 2023-01-02
+### Fixed
+* Improve memory usage when using git ratchet ([#1426](https://github.com/diffplug/spotless/pull/1426))
+* Support `ktlint` 0.48+ ([#1432](https://github.com/diffplug/spotless/pull/1432)) fixes ([#1430](https://github.com/diffplug/spotless/issues/1430))
+### Changes
+* Bump default `ktlint` version to latest `0.47.1` -> `0.48.0` ([#1432](https://github.com/diffplug/spotless/pull/1432))
+* Bump default `ktfmt` version to latest `0.41` -> `0.42` ([#1421](https://github.com/diffplug/spotless/pull/1421))
+
+## [6.12.0] - 2022-11-24
+### Added
+* `importOrder` now support groups of imports without blank lines ([#1401](https://github.com/diffplug/spotless/pull/1401))
+### Fixed
+* Don't treat `@Value` as a type annotation [#1367](https://github.com/diffplug/spotless/pull/1367)
+* Support `ktlint_disabled_rules` in `ktlint` 0.47.x [#1378](https://github.com/diffplug/spotless/pull/1378)
+### Changes
+* Bump default `ktfmt` version to latest `0.40` -> `0.41` ([#1340](https://github.com/diffplug/spotless/pull/1340))
+* Bump default `scalafmt` version to latest `3.5.9` -> `3.6.1` ([#1373](https://github.com/diffplug/spotless/pull/1373))
+* Bump default `diktat` version to latest `1.2.3` -> `1.2.4.2` ([#1393](https://github.com/diffplug/spotless/pull/1393))
+* Bump default `palantir-java-format` version to latest `2.10` -> `2.28` ([#1393](https://github.com/diffplug/spotless/pull/1393))
+
+## [6.11.0] - 2022-09-14
+### Added
+* `formatAnnotations()` step to correct formatting of Java type annotations.  It puts type annotations on the same line as the type that they qualify.  Run it after a Java formatting step, such as `googleJavaFormat()`. ([#1275](https://github.com/diffplug/spotless/pull/1275))
+### Changes
+* Bump default `ktfmt` version to latest `0.39` -> `0.40` ([#1312](https://github.com/diffplug/spotless/pull/1312))
+* Bump default `ktlint` version to latest `0.46.1` -> `0.47.1` ([#1303](https://github.com/diffplug/spotless/pull/1303))
+  * Also restored support for older versions of ktlint back to `0.31.0`
+
+## [6.10.0] - 2022-08-23
+### Added
+* `scalafmt` integration now has a configuration option `majorScalaVersion` that allows you to configure the Scala version that gets resolved from the maven artifact ([#1283](https://github.com/diffplug/spotless/pull/1283))
+### Changes
+* Add the `ktlint` rule in error messages when `ktlint` fails to apply a fix ([#1279](https://github.com/diffplug/spotless/pull/1279))
+* Bump default `scalafmt` to latest `3.0.8` -> `3.5.9` (removed support for pre-`3.0.0`) ([#1283](https://github.com/diffplug/spotless/pull/1283))
+
+## [6.9.1] - 2022-08-10
+### Fixed
+* Fix Clang not knowing the filename and changing the format ([#1268](https://github.com/diffplug/spotless/pull/1268) fixes [#1267](https://github.com/diffplug/spotless/issues/1267)).
+### Changes
+* Bump default `diktat` version to latest `1.2.1` -> `1.2.3` ([#1266](https://github.com/diffplug/spotless/pull/1266))
+
+## [6.9.0] - 2022-07-28
+### Added
+* Clang and Black no longer break the build when the binary is unavailable, if they will not be run during that build ([#1257](https://github.com/diffplug/spotless/pull/1257)).
+* License header support for Kotlin files without `package` or `@file` but do at least have `import` ([#1263](https://github.com/diffplug/spotless/pull/1263)).
+### Fixed
+* Warnings about missing `Task#usesService` for Gradle 8.0 ([#1262](https://github.com/diffplug/spotless/pull/1262) fixes [#1260](https://github.com/diffplug/spotless/issues/1260))
+
+## [6.8.0] - 2022-06-30
+### Added
+* Support for `MAC_CLASSIC` (`\r`) line ending ([#1243](https://github.com/diffplug/spotless/pull/1243) fixes [#1196](https://github.com/diffplug/spotless/issues/1196))
+### Changes
+* Bump default `ktlint` version to latest `0.45.2` -> `0.46.1` ([#1239](https://github.com/diffplug/spotless/issues/1239))
+  * Minimum supported version also bumped to `0.46.0` (we have abandoned strong backward compatibility for `ktlint`, from here on out Spotless will only support the most-recent breaking change).
+* Bump default `diktat` version to latest `1.1.0` -> `1.2.1` ([#1246](https://github.com/diffplug/spotless/pull/1246))
+  * Minimum supported version also bumped to `1.2.1` (diktat is based on ktlint and has the same backward compatibility issues).
+* Bump default `ktfmt` version to latest `0.37` -> `0.39` ([#1240](https://github.com/diffplug/spotless/pull/1240))
+
+## [6.7.2] - 2022-06-11
+### Fixed
+* `PalantirJavaFormatStep` no longer needs the `--add-exports` calls in the `org.gradle.jvmargs` property in `gradle.properties`. ([#1233](https://github.com/diffplug/spotless/pull/1233))
+
+## [6.7.1] - 2022-06-10
+### Fixed
+* (Second try) `googleJavaFormat` and `removeUnusedImports` works on JDK16+ without jvm args workaround. ([#1228](https://github.com/diffplug/spotless/pull/1228))
+  * If you have a bunch of `--add-exports` calls in your `org.gradle.jvmargs` property in `gradle.properties`, you should be able to remove them. (fixes [#834](https://github.com/diffplug/spotless/issues/834#issuecomment-819118761))
+
+## [6.7.0] - 2022-06-05
+### Added
+* Support for `editorConfigOverride` in `ktlint`. ([#1218](https://github.com/diffplug/spotless/pull/1218) fixes [#1193](https://github.com/diffplug/spotless/issues/1193))
+  * If you are using properties like `indent_size`, you should pass now pass them as `editorConfigOverride` and not as `userData`.
+### Fixed
+* `googleJavaFormat` and `removeUnusedImports` works on JDK16+ without jvm args workaround. ([#1224](https://github.com/diffplug/spotless/pull/1224))
+  * If you have a bunch of `--add-exports` calls in your `org.gradle.jvmargs` property in `gradle.properties`, you should be able to remove them. (fixes [#834](https://github.com/diffplug/spotless/issues/834#issuecomment-819118761))
+
+## [6.6.1] - 2022-05-13
+### Fixed
+* More daemon memory consumption fixes ([#1206](https://github.com/diffplug/spotless/pull/1198) fixes [#1194](https://github.com/diffplug/spotless/issues/1194))
+
+## [6.6.0] - 2022-05-10
+### Added
+* `FormatExtension.createIndependentApplyTaskLazy`, with same functionality as `createIndependentApplyTaskLazy` but returning `TaskProvider` ([#1198](https://github.com/diffplug/spotless/pull/1198))
+### Fixed
+* Update the `black` version regex to fix `19.10b0` and earlier. (fixes [#1195](https://github.com/diffplug/spotless/issues/1195), regression introduced in `6.5.0`)
+* Improved daemon memory consumption ([#1198](https://github.com/diffplug/spotless/pull/1198) fixes [#1194](https://github.com/diffplug/spotless/issues/1194))
+### Changes
+* Bump default `ktfmt` version to latest `0.36` -> `0.37`. ([#1200](https://github.com/diffplug/spotless/pull/1200))
+
+## [6.5.2] - 2022-05-03
+### Changes
+* Bump default `diktat` version to latest `1.0.1` -> `1.1.0`. ([#1190](https://github.com/diffplug/spotless/pull/1190))
+  * Converted `diktat` integration to use a compile-only source set. (fixes [#524](https://github.com/diffplug/spotless/issues/524))
+  * Use the full path to a file in `diktat` integration. (fixes [#1189](https://github.com/diffplug/spotless/issues/1189))
+
+## [6.5.1] - 2022-04-27
+### Changes
+* Bump default `ktfmt` version to latest `0.35` -> `0.36`. ([#1183](https://github.com/diffplug/spotless/issues/1183))
+* Bump default `google-java-format` version to latest `1.13.0` -> `1.15.0`.
+  * ~~This means it is no longer necessary to use the `--add-exports` workaround (fixes [#834](https://github.com/diffplug/spotless/issues/834)).~~ `--add-exports` workaround is still needed.
+
+## [6.5.0] - 2022-04-22
+### Added
+* Added a `runToFixMessage` property to customize the run-to-fix message in `spotlessCheck` task. ([#1175](https://github.com/diffplug/spotless/issues/1175))
+* Added support for enabling ktlint experimental ruleset. ([#1145](https://github.com/diffplug/spotless/pull/1168))
+### Fixed
+* Fixed support for Python Black's new version reporting. ([#1170](https://github.com/diffplug/spotless/issues/1170))
+* All tasks (including helper tasks) are now part of the `verification` group. (fixes [#1050](https://github.com/diffplug/spotless/issues/1050))
+* Error messages for unexpected file encoding now works on Java 8. (fixes [#1081](https://github.com/diffplug/spotless/issues/1081))
+### Changed
+* Spotless now applies the `base` plugin to make sure that Spotless always has a `check` task to hook into. ([#1179](https://github.com/diffplug/spotless/pull/1179), fixes [#1164](https://github.com/diffplug/spotless/pull/1164), reverts [#1014](https://github.com/diffplug/spotless/pull/1014))
+  * Spotless used to work this way, we stopped applying base starting with version [`6.0.3` (released Dec 2021)](https://github.com/diffplug/spotless/blob/main/plugin-gradle/CHANGES.md#603---2021-12-06) in order to play nicely with a now-outdated Android template, but not applying `base` causes more problems than it fixes (see [#1164](https://github.com/diffplug/spotless/pull/1164) for a good example).
+  * If you have anything like `tasks.register<Delete>("clean"` or `tasks.register("clean", Delete)`, just change the `register` to `named` so that you are configuring the existing `clean` created by `base`, rather than creating a new task.
+* Bump default `black` version to latest `19.10b0` -> `22.3.0`. ([#1170](https://github.com/diffplug/spotless/issues/1170))
+* Bump default `ktfmt` version to latest `0.34` -> `0.35`. ([#1159](https://github.com/diffplug/spotless/pull/1159))
+* Bump default `ktlint` version to latest `0.43.2` -> `0.45.2`. ([#1177](https://github.com/diffplug/spotless/pull/1177))
+
+## [6.4.2] - 2022-04-06
+### Fixed
+* Git user config and system config also included for defaultEndings configuration. ([#540](https://github.com/diffplug/spotless/issues/540))
+
+## [6.4.1] - 2022-03-30
+### Fixed
+* Fixed ktfmt options configuration in Gradle plugin for Gradle Kotlin scripts (kts).
+
+## [6.4.0] - 2022-03-28
+### Added
+* Accept `java.nio.charset.Charset` type when setting the character encoding via `encoding` ([#1128](https://github.com/diffplug/spotless/issues/1128))
+* Added support for setting custom parameters for Kotlin ktfmt in Gradle plugin. ([#1145](https://github.com/diffplug/spotless/pull/1145))
+
+## [6.3.0] - 2022-02-15
+### Added
+* Added support for JSON formatting based on [Gson](https://github.com/google/gson) ([#1125](https://github.com/diffplug/spotless/pull/1125)).
+### Changed
+* Use SLF4J for logging ([#1116](https://github.com/diffplug/spotless/issues/1116))
+
+## [6.2.2] - 2022-02-09
+### Changed
+* Bump default ktfmt `0.30` -> `0.31` ([#1118](https://github.com/diffplug/spotless/pull/1118)).
+### Fixed
+* Add full support for git worktrees ([#1119](https://github.com/diffplug/spotless/pull/1119)).
+
+## [6.2.1] - 2022-02-01
+### Changed
+* Bump default versions of formatters ([#1095](https://github.com/diffplug/spotless/pull/1095)).
+  * google-java-format `1.12.0` -> `1.13.0`
+  * ktfmt `0.29` -> `0.30`
+* Added support for git property `core.autocrlf` ([#540](https://github.com/diffplug/spotless/issues/540))
+
+## [6.2.0] - 2022-01-13
+### Added
+* 🎉🎉🎉 [**IntelliJ plugin**](https://plugins.jetbrains.com/plugin/18321-spotless-gradle) thanks to [@ragurney](https://github.com/ragurney) 🎉🎉🎉
+* Added support for the [palantir-java-format](https://github.com/palantir/palantir-java-format) Java formatter ([#1083](https://github.com/diffplug/spotless/pull/1083)).
+### Fixed
+* Register `spotlessPredeclare` extension with type `SpotlessExtensionPredeclare` instead of the same `SpotlessExtension` as `spotless` so that Kotlin users can use `configure<SpotlessExtensionPredeclare>` ([#1084](https://github.com/diffplug/spotless/pull/1084)).
+
+## [6.1.2] - 2022-01-07
+### Fixed
+* Update IndentStep to allow leading space on multiline comments ([#1072](https://github.com/diffplug/spotless/pull/1072)).
+
+## [6.1.1] - 2022-01-06
+### Fixed
+* If the `base` plugin has already been applied, then there is no need for configuration of the `clean` task to trigger configuration of the Spotless tasks ([#1068](https://github.com/diffplug/spotless/pull/1068)).
+### Changed
+* Bumped default DiKTat from `0.4.0` to `1.0.1`. This is a breaking change for DiKTat users on the default version, because some rules were renamed/changed. Check [DiKTat changelog](https://github.com/analysis-dev/diktat/releases) for details.
+
+## [6.1.0] - 2021-12-23
+### Added
+* You can now predeclare formatter dependencies in the root project.
+  * specify one of:
+  * `spotless { predeclareDeps() }` to resolve all deps from the root project, which will show up in dependency reports.
+  * `spotless { predeclareDepsFromBuildscript() }` to resolve all deps from `buildscript { repositories {`, which will not show up in dependency reports ([see #1027](https://github.com/diffplug/spotless/issues/1027)).
+  * and then below that you have a block where you simply declare each formatter which you are using, e.g.
+  * ```
+    spotless {
+      ...
+      predeclareDepsFromBuildscript()
+    }
+    spotlessPredeclare {
+      java { eclipse() }
+      kotlin { ktfmt('0.28') }
+    }
+    ```
+  * By default, Spotless resolves all dependencies per-project, and the predeclaration above is unnecessary in the vast majority of cases.
+
+## [6.0.5] - 2021-12-16
+### Fixed
+* `ratchetFrom` is now faster and uses less memory ([#1038](https://github.com/diffplug/spotless/pull/1038)).
+
+## [6.0.4] - 2021-12-07
+### Fixed
+* Fix gradle composite builds ([#860](https://github.com/diffplug/spotless/issues/860)).
+
+## [6.0.3] - 2021-12-06
+### Fixed
+* Spotless no longer applies `BasePlugin` ([#1014](https://github.com/diffplug/spotless/pull/1014)).
+  * This was done to ensure that any Spotless tasks would run after the `clean` task, but we found a way to do this without applying the `BasePlugin`. This resolves a conflict with the [Android Gradle template](https://issuetracker.google.com/issues/186924459) (fixes [#858](https://github.com/diffplug/spotless/issues/858)).
+* Large parallel builds could throw `ConcurrentModificationException` (masked by "Cannot add a configuration with name"), now fixed. ([#1015](https://github.com/diffplug/spotless/issues/1015))
+
+## [6.0.2] - 2021-12-05
+### Changed
+* Bumped default ktlint from `0.43.0` to `0.43.2`.
+### Fixed
+* Fixed problem with ktlint dependency variants ([#993](https://github.com/diffplug/spotless/issues/993))
+
+## [6.0.1] - 2021-12-01
+### Changed
+* Added `named` option to `licenseHeader` to support alternate license header within same format (like java) ([872](https://github.com/diffplug/spotless/issues/872)).
+* Added `onlyIfContentMatches` option to `licenseHeader` to skip license header application  based on source file content pattern ([#650](https://github.com/diffplug/spotless/issues/650)).
+* Bump jgit version ([#992](https://github.com/diffplug/spotless/pull/992)).
+  * jgit `5.10.0.202012080955-r` -> `5.13.0.202109080827-r`
+
+## [6.0.0] - 2021-11-09
+### Added
+* Support for Gradle Configuration Cache* ([#982](https://github.com/diffplug/spotless/pull/982), [#986](https://github.com/diffplug/spotless/pull/986))
+  * *Spotless must run on the same daemon that wrote the configuration cache. If it isn't, you'll get this error message:
+  * ```
+    Spotless JVM-local cache is stale. Regenerate the cache with
+      rm -rf .gradle/configuration-cache
+    ```
+  * To make this daemon-restriction obsolete, please see and upvote [#987](https://github.com/diffplug/spotless/issues/987).
+### Changed
+* **BREAKING** Previously, many projects required `buildscript { repositories { mavenCentral() }}` at the top of their root project, because Spotless resolved its dependencies using the buildscript repositories. Spotless now resolves its dependencies from the normal project repositories of each project with a `spotless {...}` block. This means that you can remove the `buildscript {}` block, but you still need a `repositories { mavenCentral() }` (or similar) in each project which is using Spotless. ([#980](https://github.com/diffplug/spotless/pull/980), [#983](https://github.com/diffplug/spotless/pull/983))
+  * If you prefer the old behavior, it is available via [`predeclareDepsFromBuildscript()` starting in `6.1.0`](../README.md#dependency-resolution-modes).
+* **BREAKING** `createIndepentApplyTask(String taskName)` now requires that `taskName` does not end with `Apply`
+* Bump minimum required Gradle from `6.1` to `6.1.1`.
+* Bump default formatter versions ([#989](https://github.com/diffplug/spotless/pull/989))
+  * google-java-format `1.11.0` -> `1.12.0`
+  * ktlint `0.42.1` -> `0.43.0`
+  * ktfmt `0.27` -> `0.29`
+  * scalafmt `3.0.0` -> `3.0.8`
+
+### Removed
+* **BREAKING** `removeFormat` (which has been broken since `5.0`) has been removed. Use `clearSteps()` as a workaround ([#653](https://github.com/diffplug/spotless/issues/653)).
+
+## [5.17.1] - 2021-10-26
+### Changed
+* Added support and bump Eclipse formatter default versions to `4.21` for `eclipse-groovy`. Change is only applied for JVM 11+.
+* Added support for ktlint's FilenameRule ([#974](https://github.com/diffplug/spotless/pull/974)).
+
+### Fixed
+ * Temporary workspace deletion for Eclipse based formatters on JVM shutdown ([#967](https://github.com/diffplug/spotless/issues/967)). Change is only applied for Eclipse versions using JVM 11+, no back-port to older versions is planned.
+
+## [5.17.0] - 2021-10-13
+### Added
+* Added support for calling local binary formatters ([#963](https://github.com/diffplug/spotless/pull/963))
+
+### Fixed
+ * [module-info formatting](https://github.com/diffplug/spotless/pull/958) in `eclipse-jdt` versions `4.20` and `4.21`. Note that the problem also affects older versions.
+ * Added workaround to support projects using git worktrees ([#965](https://github.com/diffplug/spotless/pull/965))
+
+## [5.16.0] - 2021-10-02
+* Added `wildcardsLast()` option for Java `importOrder` ([#954](https://github.com/diffplug/spotless/pull/954))
+
+### Added
+* Added support for JBDI bind list params in sql formatter ([#955](https://github.com/diffplug/spotless/pull/955))
+
+## [5.15.2] - 2021-09-27
+### Changed
+* Added support and bump Eclipse formatter default versions to `4.21` for `eclipse-cdt`, `eclipse-jdt`, `eclipse-wtp`. Change is only applied for JVM 11+.
+* Added `groupArtifact` option for `google-java-format` ([#944](https://github.com/diffplug/spotless/pull/944))
+
+## [5.15.1] - 2021-09-20
+### Changed
+* Added support and bump Eclipse formatter default versions for JVM 11+. For older JVMs the previous defaults remain.
+  * `eclipse-cdt` from `4.16` to `4.20`
+  * `eclipse-groovy` from `4.19` to `4.20`
+  * `eclipse-jdt` from `4.19` to `4.20`
+  * `eclipse-wtp` from `4.18` to `4.20`
+
+### Fixed
+* Large parallel multiproject builds could sometimes generate hard-to-reproduce errors below (reported in [#941](https://github.com/diffplug/spotless/pull/942), attempted fix in [#942](https://github.com/diffplug/spotless/pull/942)).
+  * `:spotlessInternalRegisterDependencies task failed.`
+  * `Cannot add a configuration with name 'spotless-1911100560'`
+* Spotless does not [yet](https://github.com/diffplug/spotless/pull/721) support configuration-cache, but now it can never interfere with configuration-cache for other tasks. ([#720](https://github.com/diffplug/spotless/pull/720))
+* Bump minimum required Gradle from `5.4` to `6.1`.
 
 ### Added
 * Added Gradle configuration for Gherkin feature files
@@ -548,7 +913,7 @@ spotless {
 ## [3.4.0] - 2017-05-21
 * `ImportOrderStep` can now handle multi-line comments and misplaced imports.
 * Groovy extension now checks for the `groovy` plugin to be applied.
-* Deprecated the old syntax for the the eclipse formatter:
+* Deprecated the old syntax for the eclipse formatter:
   + New syntax better separates the version from the other configuration options, and is more consistent with the other
   + `eclipseFormatFile('format.xml')` -> `eclipse().configFile('format.xml')`
   + `eclipseFormatFile('4.4.0', 'format.xml')` -> `eclipse('4.4.0').configFile('format.xml')`

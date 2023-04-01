@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,25 +17,30 @@ package com.diffplug.spotless.generic;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.ZoneOffset;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
+import com.diffplug.spotless.StepHarnessWithFile;
 import com.diffplug.spotless.generic.LicenseHeaderStep.YearMode;
 
-public class LicenseHeaderStepTest extends ResourceHarness {
+class LicenseHeaderStepTest extends ResourceHarness {
 	private static final String FILE_NO_LICENSE = "license/FileWithoutLicenseHeader.test";
-	private static final String package_ = "package ";
+	private static final String package_ = LicenseHeaderStep.DEFAULT_JAVA_HEADER_DELIMITER;
 	private static final String HEADER_WITH_$YEAR = "This is a fake license, $YEAR. ACME corp.";
 	private static final String HEADER_WITH_RANGE_TO_$YEAR = "This is a fake license with range, 2009-$YEAR. ACME corp.";
+	private static final String HEADER_WITH_$FILE = "This is a fake license, $FILE. ACME corp.";
+	private static final String HEADER_WITH_$YEAR_$FILE = "This is a fake license, $FILE, $YEAR. ACME corp.";
 
 	@Test
-	public void parseExistingYear() throws Exception {
+	void parseExistingYear() throws Exception {
 		StepHarness.forStep(LicenseHeaderStep.headerDelimiter(header(HEADER_WITH_$YEAR), package_).build())
 				// has existing
 				.test(hasHeader("This is a fake license, 2007. ACME corp."), hasHeader("This is a fake license, 2007. ACME corp."))
@@ -46,14 +51,14 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 	}
 
 	@Test
-	public void fromHeader() throws Throwable {
+	void fromHeader() throws Throwable {
 		FormatterStep step = LicenseHeaderStep.headerDelimiter(getTestResource("license/TestLicense"), package_).build();
 		StepHarness.forStep(step)
 				.testResource("license/MissingLicense.test", "license/HasLicense.test");
 	}
 
 	@Test
-	public void should_apply_license_containing_YEAR_token() throws Throwable {
+	void should_apply_license_containing_YEAR_token() throws Throwable {
 		StepHarness.forStep(LicenseHeaderStep.headerDelimiter(header(HEADER_WITH_$YEAR), package_).build())
 				.test(getTestResource(FILE_NO_LICENSE), hasHeaderYear(currentYear()))
 				.testUnaffected(hasHeaderYear(currentYear()))
@@ -79,7 +84,7 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 	}
 
 	@Test
-	public void updateYearWithLatest() throws Throwable {
+	void updateYearWithLatest() throws Throwable {
 		FormatterStep step = LicenseHeaderStep.headerDelimiter(header(HEADER_WITH_$YEAR), package_)
 				.withYearMode(YearMode.UPDATE_TO_TODAY)
 				.build();
@@ -90,21 +95,21 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 	}
 
 	@Test
-	public void should_apply_license_containing_YEAR_token_with_non_default_year_separator() throws Throwable {
+	void should_apply_license_containing_YEAR_token_with_non_default_year_separator() throws Throwable {
 		StepHarness.forStep(LicenseHeaderStep.headerDelimiter(header(HEADER_WITH_$YEAR), package_).withYearSeparator(", ").build())
 				.testUnaffected(hasHeaderYear("1990, 2015"))
 				.test(hasHeaderYear("1990-2015"), hasHeaderYear("1990, 2015"));
 	}
 
 	@Test
-	public void should_apply_license_containing_YEAR_token_with_special_character_in_year_separator() throws Throwable {
+	void should_apply_license_containing_YEAR_token_with_special_character_in_year_separator() throws Throwable {
 		StepHarness.forStep(LicenseHeaderStep.headerDelimiter(header(HEADER_WITH_$YEAR), package_).withYearSeparator("(").build())
 				.testUnaffected(hasHeaderYear("1990(2015"))
 				.test(hasHeaderYear("1990-2015"), hasHeaderYear("1990(2015"));
 	}
 
 	@Test
-	public void should_apply_license_containing_YEAR_token_with_custom_separator() throws Throwable {
+	void should_apply_license_containing_YEAR_token_with_custom_separator() throws Throwable {
 		StepHarness.forStep(LicenseHeaderStep.headerDelimiter(header(HEADER_WITH_$YEAR), package_).build())
 				.test(getTestResource(FILE_NO_LICENSE), hasHeaderYear(currentYear()))
 				.testUnaffected(hasHeaderYear(currentYear()))
@@ -114,10 +119,17 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 	}
 
 	@Test
-	public void should_remove_header_when_empty() throws Throwable {
+	void should_remove_header_when_empty() throws Throwable {
 		StepHarness.forStep(LicenseHeaderStep.headerDelimiter("", package_).build())
 				.testUnaffected(getTestResource("license/MissingLicense.test"))
 				.test(getTestResource("license/HasLicense.test"), getTestResource("license/MissingLicense.test"));
+	}
+
+	@Test
+	void should_skip_lines_matching_predefined_pattern() throws Throwable {
+		StepHarness.forStep(LicenseHeaderStep.headerDelimiter("<!--\n  -- This is a fake license header.\n  -- All rights reserved.\n  -->", "^(?!<!--|\\s+--).*$")
+				.withSkipLinesMatching("(?i)^(<\\?xml[^>]+>|<!doctype[^>]+>)$").build())
+				.testResource("license/SkipLines.test", "license/SkipLinesHasLicense.test");
 	}
 
 	private String licenceWithAddress() {
@@ -154,39 +166,49 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 		return hasHeaderYear(HEADER_WITH_RANGE_TO_$YEAR, toYear);
 	}
 
+	private String hasHeaderFileName(String license, String fileName) throws IOException {
+		return header(license).replace("$FILE", fileName) + getTestResource(FILE_NO_LICENSE);
+	}
+
+	private String hasHeaderYearFileName(String license, String year, String fileName) throws IOException {
+		return header(license)
+				.replace("$YEAR", year)
+				.replace("$FILE", fileName) + getTestResource(FILE_NO_LICENSE);
+	}
+
 	private static String currentYear() {
 		return String.valueOf(YearMonth.now().getYear());
 	}
 
 	@Test
-	public void efficient() throws Throwable {
+	void efficient() throws Throwable {
 		FormatterStep step = LicenseHeaderStep.headerDelimiter("LicenseHeader\n", "contentstart").build();
 		String alreadyCorrect = "LicenseHeader\ncontentstart";
-		Assert.assertEquals(alreadyCorrect, step.format(alreadyCorrect, new File("")));
+		Assertions.assertEquals(alreadyCorrect, step.format(alreadyCorrect, new File("")));
 		// If no change is required, it should return the exact same string for efficiency reasons
-		Assert.assertSame(alreadyCorrect, step.format(alreadyCorrect, new File("")));
+		Assertions.assertSame(alreadyCorrect, step.format(alreadyCorrect, new File("")));
 	}
 
 	@Test
-	public void sanitized() throws Throwable {
+	void sanitized() throws Throwable {
 		// The sanitizer should add a \n
 		FormatterStep step = LicenseHeaderStep.headerDelimiter("LicenseHeader", "contentstart").build();
 		String alreadyCorrect = "LicenseHeader\ncontentstart";
-		Assert.assertEquals(alreadyCorrect, step.format(alreadyCorrect, new File("")));
-		Assert.assertSame(alreadyCorrect, step.format(alreadyCorrect, new File("")));
+		Assertions.assertEquals(alreadyCorrect, step.format(alreadyCorrect, new File("")));
+		Assertions.assertSame(alreadyCorrect, step.format(alreadyCorrect, new File("")));
 	}
 
 	@Test
-	public void sanitizerDoesntGoTooFar() throws Throwable {
+	void sanitizerDoesntGoTooFar() throws Throwable {
 		// if the user wants extra lines after the header, we shouldn't clobber them
 		FormatterStep step = LicenseHeaderStep.headerDelimiter("LicenseHeader\n\n", "contentstart").build();
 		String alreadyCorrect = "LicenseHeader\n\ncontentstart";
-		Assert.assertEquals(alreadyCorrect, step.format(alreadyCorrect, new File("")));
-		Assert.assertSame(alreadyCorrect, step.format(alreadyCorrect, new File("")));
+		Assertions.assertEquals(alreadyCorrect, step.format(alreadyCorrect, new File("")));
+		Assertions.assertSame(alreadyCorrect, step.format(alreadyCorrect, new File("")));
 	}
 
 	@Test
-	public void equality() {
+	void equality() {
 		new SerializableEqualityTester() {
 			LicenseHeaderStep builder = LicenseHeaderStep.headerDelimiter("LICENSE", "package")
 					.withYearSeparator("-")
@@ -220,24 +242,73 @@ public class LicenseHeaderStepTest extends ResourceHarness {
 	}
 
 	@Test
-	public void should_apply_license_containing_YEAR_token_in_range() throws Throwable {
+	void should_apply_license_containing_YEAR_token_in_range() throws Throwable {
 		FormatterStep step = LicenseHeaderStep.headerDelimiter(header(HEADER_WITH_RANGE_TO_$YEAR), package_).withYearMode(YearMode.UPDATE_TO_TODAY).build();
 		StepHarness.forStep(step).test(hasHeaderWithRangeAndWithYearTo("2015"), hasHeaderWithRangeAndWithYearTo(currentYear()));
 	}
 
 	@Test
-	public void should_update_year_for_license_with_address() throws Throwable {
+	void should_update_year_for_license_with_address() throws Throwable {
+		int currentYear = LocalDate.now(ZoneOffset.UTC).getYear();
 		FormatterStep step = LicenseHeaderStep.headerDelimiter(header(licenceWithAddress()), package_).withYearMode(YearMode.UPDATE_TO_TODAY).build();
 		StepHarness.forStep(step).test(
 				hasHeader(licenceWithAddress().replace("$YEAR", "2015")),
-				hasHeader(licenceWithAddress().replace("$YEAR", "2015-2021")));
+				hasHeader(licenceWithAddress().replace("$YEAR", "2015-" + currentYear)));
 	}
 
 	@Test
-	public void should_preserve_year_for_license_with_address() throws Throwable {
+	void should_preserve_year_for_license_with_address() throws Throwable {
 		FormatterStep step = LicenseHeaderStep.headerDelimiter(header(licenceWithAddress()), package_).withYearMode(YearMode.PRESERVE).build();
 		StepHarness.forStep(step).test(
 				hasHeader(licenceWithAddress().replace("$YEAR", "2015").replace("FooBar Inc. All", "FooBar Inc.  All")),
 				hasHeader(licenceWithAddress().replace("$YEAR", "2015")));
+	}
+
+	@Test
+	void should_apply_license_containing_filename_token() throws Exception {
+		FormatterStep step = LicenseHeaderStep.headerDelimiter(header(HEADER_WITH_$FILE), package_).build();
+		StepHarnessWithFile.forStep(this, step)
+				.test(new File("Test.java"), getTestResource(FILE_NO_LICENSE), hasHeaderFileName(HEADER_WITH_$FILE, "Test.java"))
+				.testUnaffected(new File("Test.java"), hasHeaderFileName(HEADER_WITH_$FILE, "Test.java"));
+	}
+
+	@Test
+	void should_update_license_containing_filename_token() throws Exception {
+		FormatterStep step = LicenseHeaderStep.headerDelimiter(header(HEADER_WITH_$FILE), package_).build();
+		StepHarnessWithFile.forStep(this, step)
+				.test(
+						new File("After.java"),
+						hasHeaderFileName(HEADER_WITH_$FILE, "Before.java"),
+						hasHeaderFileName(HEADER_WITH_$FILE, "After.java"));
+	}
+
+	@Test
+	void should_apply_license_containing_YEAR_filename_token() throws Exception {
+		FormatterStep step = LicenseHeaderStep.headerDelimiter(header(HEADER_WITH_$YEAR_$FILE), package_).build();
+		StepHarnessWithFile.forStep(this, step)
+				.test(
+						new File("Test.java"),
+						getTestResource(FILE_NO_LICENSE),
+						hasHeaderYearFileName(HEADER_WITH_$YEAR_$FILE, currentYear(), "Test.java"))
+				.testUnaffected(
+						new File("Test.java"),
+						hasHeaderYearFileName(HEADER_WITH_$YEAR_$FILE, currentYear(), "Test.java"));
+	}
+
+	void noPackage() throws Throwable {
+		String header = header(getTestResource("license/TestLicense"));
+		FormatterStep step = LicenseHeaderStep.headerDelimiter(header, package_).build();
+		StepHarness.forStep(step)
+				.test(ResourceHarness.getTestResource("license/HelloWorld_java.test"), header + ResourceHarness.getTestResource("license/HelloWorld_java.test"))
+				.test(ResourceHarness.getTestResource("license/HelloWorld_withImport_java.test"), header + ResourceHarness.getTestResource("license/HelloWorld_withImport_java.test"));
+	}
+
+	// The following demonstrate the use of 'module' keyword
+	@Test
+	void moduleInfo() throws Throwable {
+		String header = header(getTestResource("license/TestLicense"));
+		FormatterStep step = LicenseHeaderStep.headerDelimiter(header, package_).build();
+		StepHarness.forStep(step)
+				.test(ResourceHarness.getTestResource("license/module-info.test"), header + ResourceHarness.getTestResource("license/module-info.test"));
 	}
 }

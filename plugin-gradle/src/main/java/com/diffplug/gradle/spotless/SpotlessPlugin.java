@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,26 +16,34 @@
 package com.diffplug.gradle.spotless;
 
 import org.gradle.api.GradleException;
+import org.gradle.api.JavaVersion;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.BasePlugin;
 
+import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.SpotlessCache;
 
 public class SpotlessPlugin implements Plugin<Project> {
 	static final String SPOTLESS_MODERN = "spotlessModern";
-	static final String MINIMUM_GRADLE = "5.4";
+	static final String MINIMUM_GRADLE = "6.1.1";
+	private static final int MINIMUM_JRE = 11;
 
 	@Override
 	public void apply(Project project) {
 		if (SpotlessPluginRedirect.gradleIsTooOld(project)) {
 			throw new GradleException("Spotless requires Gradle " + MINIMUM_GRADLE + " or newer, this was " + project.getGradle().getGradleVersion());
 		}
+		if (Jvm.version() < MINIMUM_JRE) {
+			throw new GradleException("Spotless requires JRE " + MINIMUM_JRE + " or newer, this was " + JavaVersion.current() + ".\n"
+					+ "You can upgrade your build JRE and still compile for older targets, see below\n"
+					+ "https://docs.gradle.org/current/userguide/building_java_projects.html#sec:java_cross_compilation");
+		}
 		// if -PspotlessModern=true, then use the modern stuff instead of the legacy stuff
 		if (project.hasProperty(SPOTLESS_MODERN)) {
 			project.getLogger().warn("'spotlessModern' has no effect as of Spotless 5.0, recommend removing it.");
 		}
-		// make sure there's a {@code clean} task
+		// make sure there's a `clean` and a `check`
 		project.getPlugins().apply(BasePlugin.class);
 
 		// setup the extension
