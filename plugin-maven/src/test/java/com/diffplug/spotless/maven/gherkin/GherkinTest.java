@@ -15,11 +15,9 @@
  */
 package com.diffplug.spotless.maven.gherkin;
 
-import com.diffplug.spotless.maven.MavenIntegrationHarness;
-
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
 public class GherkinTest extends MavenIntegrationHarness {
 	@Test

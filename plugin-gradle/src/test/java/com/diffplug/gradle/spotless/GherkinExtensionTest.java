@@ -27,7 +27,7 @@ public class GherkinExtensionTest extends GradleIntegrationHarness {
 				"    id 'java'",
 				"    id 'com.diffplug.spotless'",
 				"}",
-			"repositories { mavenCentral() }",
+				"repositories { mavenCentral() }",
 				"spotless {",
 				"  gherkin {",
 				"    target 'examples/**/*.feature'",
