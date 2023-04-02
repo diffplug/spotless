@@ -41,4 +41,8 @@ public class Javascript extends FormatterFactory {
 	public void addEslint(EslintJs eslint) {
 		addStepFactory(eslint);
 	}
+
+	public void addRome(RomeJs rome) {
+		addStepFactory(rome);
+	}
 }

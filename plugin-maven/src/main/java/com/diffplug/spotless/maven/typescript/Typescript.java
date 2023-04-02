@@ -21,6 +21,7 @@ import java.util.Set;
 import org.apache.maven.project.MavenProject;
 
 import com.diffplug.spotless.maven.FormatterFactory;
+import com.diffplug.spotless.maven.javascript.RomeJs;
 
 /**
  * A {@link FormatterFactory} implementation that corresponds to {@code <typescript>...</typescript>} configuration element.
@@ -44,5 +45,9 @@ public class Typescript extends FormatterFactory {
 
 	public void addEslint(EslintTs eslint) {
 		addStepFactory(eslint);
+	}
+
+	public void addRome(RomeJs rome) {
+		addStepFactory(rome);
 	}
 }
