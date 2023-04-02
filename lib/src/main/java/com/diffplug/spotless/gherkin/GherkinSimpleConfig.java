@@ -18,6 +18,8 @@ package com.diffplug.spotless.gherkin;
 import java.io.Serializable;
 
 public class GherkinSimpleConfig implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	public static int defaultIndentSpaces() {
 		// https://cucumber.io/docs/gherkin/reference/
 		// Recommended indentation is 2 spaces

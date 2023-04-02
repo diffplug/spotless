@@ -12,7 +12,7 @@ Feature: Complex background
 
   Rule: My Rule
 
-    Background:
+    Background: 
       Given a rule background step
 
     Scenario: with examples
