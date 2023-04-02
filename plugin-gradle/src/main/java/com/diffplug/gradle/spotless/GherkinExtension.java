@@ -38,7 +38,7 @@ public class GherkinExtension extends FormatExtension {
 	}
 
 	public SimpleConfig simple() {
-		return new SimpleConfig(GherkinSimpleConfig.defaultIndentSpaces());
+		return new SimpleConfig();
 	}
 
 	public class SimpleConfig {
@@ -51,13 +51,8 @@ public class GherkinExtension extends FormatExtension {
 			addStep(createStep());
 		}
 
-		public SimpleConfig(int indent) {
-			this.indent = indent;
-			addStep(createStep());
-		}
-
-		public void indentWithSpaces(int indent) {
-			this.indent = indent;
+		public void version(String version) {
+			this.version = version;
 			replaceStep(createStep());
 		}
 

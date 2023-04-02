@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,31 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.gradle.spotless;
+package com.diffplug.spotless.maven.gherkin;
 
-import java.io.IOException;
+import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class GherkinExtensionTest extends GradleIntegrationHarness {
+public class GherkinTest extends MavenIntegrationHarness {
 	@Test
-	public void defaultFormatting() throws IOException {
-		setFile("build.gradle").toLines(
-				"plugins {",
-				"    id 'java'",
-				"    id 'com.diffplug.spotless'",
-				"}",
-			"repositories { mavenCentral() }",
-				"spotless {",
-				"  gherkin {",
-				"    target 'examples/**/*.feature'",
-				"    simple()",
-				"  }",
-				"}");
-		setFile("src/main/resources/example.feature").toResource("gherkin/minimalBefore.feature");
+	public void testFormatJson_WithSimple_defaultConfig_sortByKeys() throws Exception {
+		writePomWithGherkinSteps("<simple/>");
+
 		setFile("examples/main/resources/example.feature").toResource("gherkin/minimalBefore.feature");
-		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("src/main/resources/example.feature").sameAsResource("gherkin/minimalBefore.feature");
+		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile("examples/main/resources/example.feature").sameAsResource("gherkin/minimalAfter.feature");
 	}
 
