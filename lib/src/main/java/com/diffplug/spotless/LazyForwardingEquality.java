@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,8 +103,8 @@ public abstract class LazyForwardingEquality<T extends Serializable> implements 
 	}
 
 	static byte[] toBytes(Serializable obj) {
-		ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-		try (ObjectOutputStream objectOutput = new ObjectOutputStream(byteOutput)) {
+		var byteOutput = new ByteArrayOutputStream();
+		try (var objectOutput = new ObjectOutputStream(byteOutput)) {
 			objectOutput.writeObject(obj);
 		} catch (IOException e) {
 			throw ThrowingEx.asRuntime(e);

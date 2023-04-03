@@ -34,7 +34,7 @@ class GitAttributesTest extends ResourceHarness {
 	private List<File> testFiles(String prefix) {
 		List<File> result = new ArrayList<>();
 		for (String path : TEST_PATHS) {
-			String prefixedPath = prefix + path;
+			var prefixedPath = prefix + path;
 			setFile(prefixedPath).toContent("");
 			result.add(newFile(prefixedPath));
 		}

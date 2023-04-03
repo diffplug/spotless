@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Instant;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,7 +43,7 @@ class IndexBasedCheckerTest extends FileIndexHarness {
 	@Test
 	void isUpToDateReturnsTrueWhenOnDiskFileIsSameAsInTheIndex() throws Exception {
 		Path sourceFile = createSourceFile("source.txt");
-		Instant modifiedTime = Files.getLastModifiedTime(sourceFile).toInstant();
+		var modifiedTime = Files.getLastModifiedTime(sourceFile).toInstant();
 		index.setLastModifiedTime(sourceFile, modifiedTime);
 
 		assertThat(checker.isUpToDate(sourceFile)).isTrue();
@@ -53,7 +52,7 @@ class IndexBasedCheckerTest extends FileIndexHarness {
 	@Test
 	void isUpToDateReturnsFalseWhenOnDiskFileIsNewerThanInTheIndex() throws Exception {
 		Path sourceFile = createSourceFile("source.txt");
-		Instant modifiedTime = Files.getLastModifiedTime(sourceFile).toInstant().minusSeconds(42);
+		var modifiedTime = Files.getLastModifiedTime(sourceFile).toInstant().minusSeconds(42);
 		index.setLastModifiedTime(sourceFile, modifiedTime);
 
 		assertThat(checker.isUpToDate(sourceFile)).isFalse();
@@ -67,7 +66,7 @@ class IndexBasedCheckerTest extends FileIndexHarness {
 	@Test
 	void isUpToDateReturnsFalseWhenOnDiskFileIsOlderThanInTheIndex() throws Exception {
 		Path sourceFile = createSourceFile("source.txt");
-		Instant modifiedTime = Files.getLastModifiedTime(sourceFile).toInstant().plusSeconds(42);
+		var modifiedTime = Files.getLastModifiedTime(sourceFile).toInstant().plusSeconds(42);
 		index.setLastModifiedTime(sourceFile, modifiedTime);
 
 		assertThat(checker.isUpToDate(sourceFile)).isFalse();

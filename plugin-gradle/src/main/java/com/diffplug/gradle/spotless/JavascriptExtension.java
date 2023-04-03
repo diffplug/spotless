@@ -53,7 +53,7 @@ public class JavascriptExtension extends FormatExtension {
 	}
 
 	public JavascriptEslintConfig eslint(Map<String, String> devDependencies) {
-		JavascriptEslintConfig eslint = new JavascriptEslintConfig(devDependencies);
+		var eslint = new JavascriptEslintConfig(devDependencies);
 		addStep(eslint.createStep());
 		return eslint;
 	}

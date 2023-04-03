@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ public abstract class SerializableEqualityTester {
 	public void testEquals() {
 		List<List<Object>> allGroups = new ArrayList<>();
 		Box<List<Object>> currentGroup = Box.of(new ArrayList<>());
-		API api = new API() {
+		var api = new API() {
 			@Override
 			public void areDifferentThan() {
 				currentGroup.modify(current -> {
@@ -73,8 +73,8 @@ public abstract class SerializableEqualityTester {
 	@SuppressWarnings("unchecked")
 	private static <T extends Serializable> T reserialize(T input) {
 		byte[] asBytes = LazyForwardingEquality.toBytes(input);
-		ByteArrayInputStream byteInput = new ByteArrayInputStream(asBytes);
-		try (ObjectInputStream objectInput = new ObjectInputStream(byteInput)) {
+		var byteInput = new ByteArrayInputStream(asBytes);
+		try (var objectInput = new ObjectInputStream(byteInput)) {
 			return (T) objectInput.readObject();
 		} catch (IOException | ClassNotFoundException e) {
 			throw ThrowingEx.asRuntime(e);

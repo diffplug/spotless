@@ -58,7 +58,7 @@ public class JavaCleanthatRefactorerFunc implements FormatterFunc {
 	@Override
 	public String apply(String input) throws Exception {
 		// https://stackoverflow.com/questions/1771679/difference-between-threads-context-class-loader-and-normal-classloader
-		ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
+		var originalClassLoader = Thread.currentThread().getContextClassLoader();
 		try {
 			// Ensure CleanThat main Thread has its custom classLoader while executing its refactoring
 			Thread.currentThread().setContextClassLoader(getClass().getClassLoader());

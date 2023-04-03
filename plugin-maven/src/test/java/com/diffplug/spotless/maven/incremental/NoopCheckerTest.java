@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,8 +96,8 @@ class NoopCheckerTest extends ResourceHarness {
 
 	private MavenProject buildMavenProject() throws IOException {
 		File projectDir = newFolder("project");
-		File targetDir = new File(projectDir, "target");
-		File pomFile = new File(projectDir, "pom.xml");
+		var targetDir = new File(projectDir, "target");
+		var pomFile = new File(projectDir, "pom.xml");
 
 		assertThat(targetDir.mkdir()).isTrue();
 		assertThat(pomFile.createNewFile()).isTrue();

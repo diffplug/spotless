@@ -102,7 +102,7 @@ public abstract class FormatterFactory {
 			formatterSteps.add(pair.out());
 		}
 
-		String formatterName = this.getClass().getSimpleName();
+		var formatterName = this.getClass().getSimpleName();
 		return Formatter.builder()
 				.name(formatterName)
 				.encoding(formatterEncoding)

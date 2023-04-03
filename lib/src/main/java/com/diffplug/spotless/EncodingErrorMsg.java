@@ -18,8 +18,6 @@ package com.diffplug.spotless;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CoderResult;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
@@ -34,16 +32,16 @@ class EncodingErrorMsg {
 	private static int CONTEXT = 3;
 
 	static @Nullable String msg(String chars, byte[] bytes, Charset charset) {
-		int unrepresentable = chars.indexOf(UNREPRESENTABLE);
+		var unrepresentable = chars.indexOf(UNREPRESENTABLE);
 		if (unrepresentable == -1) {
 			return null;
 		}
 
 		// sometimes the '�' is really in a file, such as for *this* file
 		// so we have to handle that corner case
-		ByteBuffer byteBuf = ByteBuffer.wrap(bytes);
-		CharBuffer charBuf = CharBuffer.allocate(chars.length());
-		CoderResult result = charset.newDecoder()
+		var byteBuf = ByteBuffer.wrap(bytes);
+		var charBuf = CharBuffer.allocate(chars.length());
+		var result = charset.newDecoder()
 				.onMalformedInput(CodingErrorAction.REPORT)
 				.onUnmappableCharacter(CodingErrorAction.REPORT)
 				.decode(byteBuf, charBuf, true);
@@ -73,10 +71,10 @@ class EncodingErrorMsg {
 			message.append("You configured Spotless to use " + charset.name() + ".");
 		}
 
-		int line = 1;
-		int col = 1;
-		for (int i = 0; i < unrepresentable; ++i) {
-			char c = chars.charAt(i);
+		var line = 1;
+		var col = 1;
+		for (var i = 0; i < unrepresentable; ++i) {
+			var c = chars.charAt(i);
 			if (c == '\n') {
 				++line;
 				col = 1;
@@ -118,10 +116,10 @@ class EncodingErrorMsg {
 		byteBuf.clear();
 		charBuf.clear();
 
-		CharsetDecoder decoder = charset.newDecoder();
+		var decoder = charset.newDecoder();
 		if (!must) {
 			// bail early if we can
-			CoderResult r = decoder
+			var r = decoder
 					.onMalformedInput(CodingErrorAction.REPORT)
 					.onUnmappableCharacter(CodingErrorAction.REPORT)
 					.decode(byteBuf, charBuf, true);
@@ -136,8 +134,8 @@ class EncodingErrorMsg {
 		}
 		charBuf.flip();
 
-		int start = Math.max(unrepresentable - CONTEXT, 0);
-		int end = Math.min(charBuf.limit(), unrepresentable + CONTEXT + 1);
+		var start = Math.max(unrepresentable - CONTEXT, 0);
+		var end = Math.min(charBuf.limit(), unrepresentable + CONTEXT + 1);
 		message.append('\n');
 		message.append(charBuf.subSequence(start, end).toString()
 				.replace('\n', '␤')

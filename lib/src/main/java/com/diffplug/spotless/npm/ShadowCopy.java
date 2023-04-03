@@ -70,7 +70,7 @@ class ShadowCopy {
 	}
 
 	private void storeEntry(String key, File orig) {
-		File target = entry(key, orig.getName());
+		var target = entry(key, orig.getName());
 		if (target.exists()) {
 			logger.debug("Shadow copy entry already exists: {}", key);
 			// delete directory "target" recursively
@@ -106,7 +106,7 @@ class ShadowCopy {
 	}
 
 	public File copyEntryInto(String key, String origName, File targetParentFolder) {
-		File target = Paths.get(targetParentFolder.getAbsolutePath(), origName).toFile();
+		var target = Paths.get(targetParentFolder.getAbsolutePath(), origName).toFile();
 		if (target.exists()) {
 			logger.warn("Shadow copy destination already exists, deleting! {}: {}", key, target);
 			ThrowingEx.run(() -> Files.walkFileTree(target.toPath(), new DeleteDirectoryRecursively()));

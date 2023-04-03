@@ -88,7 +88,7 @@ class PrettierMissingParserException extends RuntimeException {
 	}
 
 	private static String recommendPlugin(File file) {
-		String pluginName = guessPlugin(file);
+		var pluginName = guessPlugin(file);
 		return "A good candidate for file '" + file + "' is '" + pluginName + "\n"
 				+ "See if you can find it on <https://prettier.io/docs/en/plugins.html#official-plugins>\n"
 				+ "or search on npmjs.com for a plugin matching that name: "

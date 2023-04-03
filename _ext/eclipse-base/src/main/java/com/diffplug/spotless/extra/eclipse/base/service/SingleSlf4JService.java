@@ -459,7 +459,7 @@ public class SingleSlf4JService implements ExtendedLogService, ExtendedLogReader
 
 		@Override
 		public String toString() {
-			StringWriter result = new StringWriter();
+			var result = new StringWriter();
 			result.write(message);
 			if (execption.isPresent()) {
 				result.write('\n');

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ class KtlintTest extends MavenIntegrationHarness {
 	void testKtlint() throws Exception {
 		writePomWithKotlinSteps("<ktlint/>");
 
-		String path = "src/main/kotlin/Main.kt";
+		var path = "src/main/kotlin/Main.kt";
 		setFile(path).toResource("kotlin/ktlint/basic.dirty");
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).sameAsResource("kotlin/ktlint/basic.clean");
@@ -34,7 +34,7 @@ class KtlintTest extends MavenIntegrationHarness {
 	void testKtlintEditorConfigOverride() throws Exception {
 		writePomWithKotlinSteps("<ktlint><editorConfigOverride><ij_kotlin_allow_trailing_comma>true</ij_kotlin_allow_trailing_comma><ij_kotlin_allow_trailing_comma_on_call_site>true</ij_kotlin_allow_trailing_comma_on_call_site></editorConfigOverride></ktlint>");
 
-		String path = "src/main/kotlin/Main.kt";
+		var path = "src/main/kotlin/Main.kt";
 		setFile(path).toResource("kotlin/ktlint/experimentalEditorConfigOverride.dirty");
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).sameAsResource("kotlin/ktlint/experimentalEditorConfigOverride.clean");

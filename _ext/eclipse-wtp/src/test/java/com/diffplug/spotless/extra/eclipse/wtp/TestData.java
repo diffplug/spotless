@@ -22,8 +22,8 @@ import java.nio.file.Paths;
 
 public class TestData {
 	public static TestData getTestDataOnFileSystem(String kind) {
-		final String userDir = System.getProperty("user.dir", ".");
-		Path dataPath = Paths.get(userDir, "src", "test", "resources", kind);
+		final var userDir = System.getProperty("user.dir", ".");
+		var dataPath = Paths.get(userDir, "src", "test", "resources", kind);
 		if (Files.isDirectory(dataPath)) {
 			return new TestData(dataPath);
 		}
@@ -46,12 +46,12 @@ public class TestData {
 	}
 
 	public String[] input(final String fileName) throws Exception {
-		Path xmlPath = inputPath.resolve(fileName);
+		var xmlPath = inputPath.resolve(fileName);
 		return new String[]{read(xmlPath), xmlPath.toString()};
 	}
 
 	public String expected(final String fileName) {
-		Path xmlPath = expectedPath.resolve(fileName);
+		var xmlPath = expectedPath.resolve(fileName);
 		return read(xmlPath);
 	}
 
@@ -60,7 +60,7 @@ public class TestData {
 			throw new IllegalArgumentException(String.format("'%1$s' is not a regular file.", xmlPath));
 		}
 		try {
-			String checkedOutFileContent = new String(java.nio.file.Files.readAllBytes(xmlPath), "UTF8");
+			var checkedOutFileContent = new String(java.nio.file.Files.readAllBytes(xmlPath), "UTF8");
 			return checkedOutFileContent.replace("\r", ""); //Align GIT end-of-line normalization
 		} catch (IOException e) {
 			throw new IllegalArgumentException(String.format("Failed to read '%1$s'.", xmlPath), e);
@@ -68,7 +68,7 @@ public class TestData {
 	}
 
 	public Path getRestrictionsPath(String fileName) {
-		Path filePath = restrictionsPath.resolve(fileName);
+		var filePath = restrictionsPath.resolve(fileName);
 		if (!Files.exists(filePath)) {
 			throw new IllegalArgumentException(String.format("'%1$s' is not a restrictions file.", fileName));
 		}

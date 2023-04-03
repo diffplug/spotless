@@ -32,8 +32,8 @@ class ClangFormatStepTest extends ResourceHarness {
 			harness.testResource("example.java", "clang/example.java.dirty", "clang/example.java.clean");
 			// test every other language clang supports
 			for (String ext : Arrays.asList("c", "cs", "js", "m", "proto")) {
-				String filename = "example." + ext;
-				String root = "clang/" + filename;
+				var filename = "example." + ext;
+				var root = "clang/" + filename;
 				harness.testResource(filename, root, root + ".clean");
 			}
 		}

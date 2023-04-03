@@ -39,8 +39,8 @@ class MavenProvisionerTest extends MavenIntegrationHarness {
 	}
 
 	private void assertResolveDependenciesWorks() throws Exception {
-		String path = "src/main/java/test.java";
-		String unformattedContent = "package  a;";
+		var path = "src/main/java/test.java";
+		var unformattedContent = "package  a;";
 		setFile(path).toContent(unformattedContent);
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).hasContent(unformattedContent.replace("  ", " "));

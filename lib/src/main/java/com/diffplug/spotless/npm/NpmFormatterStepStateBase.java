@@ -97,7 +97,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 		try {
 			// The npm process will output the randomly selected port of the http server process to 'server.port' file
 			// so in order to be safe, remove such a file if it exists before starting.
-			final File serverPortFile = new File(this.nodeServerLayout.nodeModulesDir(), "server.port");
+			final var serverPortFile = new File(this.nodeServerLayout.nodeModulesDir(), "server.port");
 			NpmResourceHelper.deleteFileIfExists(serverPortFile);
 			// start the http server in node
 			server = nodeServeApp.startNpmServeProcess();
@@ -126,7 +126,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 	}
 
 	protected static String replaceDevDependencies(String template, Map<String, String> devDependencies) {
-		StringBuilder builder = new StringBuilder();
+		var builder = new StringBuilder();
 		Iterator<Map.Entry<String, String>> entryIter = devDependencies.entrySet().iterator();
 		while (entryIter.hasNext()) {
 			Map.Entry<String, String> entry = entryIter.next();
@@ -143,7 +143,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 	}
 
 	private static String replacePlaceholders(String template, Map<String, String> replacements) {
-		String result = template;
+		var result = template;
 		for (Entry<String, String> entry : replacements.entrySet()) {
 			result = result.replaceAll("\\Q${" + entry.getKey() + "}\\E", entry.getValue());
 		}
@@ -174,7 +174,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 						serverPortFile.getParent(), serverPort);
 
 				if (server.isAlive()) {
-					boolean ended = server.waitFor(5, TimeUnit.SECONDS);
+					var ended = server.waitFor(5, TimeUnit.SECONDS);
 					if (!ended) {
 						logger.info("Force-Closing npm server in directory <{}> and port <{}>", serverPortFile.getParent(), serverPort);
 						server.destroyForcibly().waitFor();

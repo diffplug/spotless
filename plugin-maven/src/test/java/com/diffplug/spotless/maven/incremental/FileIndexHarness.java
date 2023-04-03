@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,11 +44,11 @@ abstract class FileIndexHarness {
 	void beforeEach(@TempDir Path tempDir) throws Exception {
 		this.tempDir = tempDir;
 
-		Path projectDir = tempDir.resolve("my-project");
+		var projectDir = tempDir.resolve("my-project");
 		Files.createDirectory(projectDir);
 		when(config.getProjectDir()).thenReturn(projectDir);
 
-		Path indexFile = projectDir.resolve("target").resolve("spotless-index");
+		var indexFile = projectDir.resolve("target").resolve("spotless-index");
 		when(config.getIndexFile()).thenReturn(indexFile);
 
 		when(config.getPluginFingerprint()).thenReturn(FINGERPRINT);
@@ -60,7 +60,7 @@ abstract class FileIndexHarness {
 
 		List<Path> sourceFiles = new ArrayList<>();
 		for (String file : files) {
-			Path path = createSourceFile(file);
+			var path = createSourceFile(file);
 			lines.add(file + " " + Files.getLastModifiedTime(path).toInstant());
 			sourceFiles.add(path);
 		}

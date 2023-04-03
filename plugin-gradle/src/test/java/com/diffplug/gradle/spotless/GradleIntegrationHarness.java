@@ -154,8 +154,8 @@ public class GradleIntegrationHarness extends ResourceHarness {
 		ListIterator<File> iterator = files.listIterator(files.size());
 		int rootLength = rootFolder().getAbsolutePath().length() + 1;
 		while (iterator.hasPrevious()) {
-			File file = iterator.previous();
-			String subPath = file.getAbsolutePath().substring(rootLength);
+			var file = iterator.previous();
+			var subPath = file.getAbsolutePath().substring(rootLength);
 			if (subpathsToInclude.test(subPath)) {
 				consumer.accept(subPath, file);
 			}
@@ -191,7 +191,7 @@ public class GradleIntegrationHarness extends ResourceHarness {
 
 		List<String> expected = outcomes(buildResult, upToDate ? TaskOutcome.UP_TO_DATE : TaskOutcome.SUCCESS);
 		List<String> notExpected = outcomes(buildResult, upToDate ? TaskOutcome.SUCCESS : TaskOutcome.UP_TO_DATE);
-		boolean everythingAsExpected = !expected.isEmpty() && notExpected.isEmpty() && buildResult.getTasks().size() - 1 == expected.size();
+		var everythingAsExpected = !expected.isEmpty() && notExpected.isEmpty() && buildResult.getTasks().size() - 1 == expected.size();
 		if (!everythingAsExpected) {
 			fail("Expected all tasks to be " + (upToDate ? TaskOutcome.UP_TO_DATE : TaskOutcome.SUCCESS) + ", but instead was\n" + buildResultToString(buildResult));
 		}

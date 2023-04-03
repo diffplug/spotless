@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,7 +78,7 @@ public class DiktatFormatterFunc implements FormatterFunc.NeedsFile {
 				false));
 
 		if (!errors.isEmpty()) {
-			StringBuilder error = new StringBuilder();
+			var error = new StringBuilder();
 			error.append("There are ").append(errors.size()).append(" unfixed errors:");
 			for (LintError er : errors) {
 				error.append(System.lineSeparator())

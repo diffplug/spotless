@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
 import com.diffplug.spotless.FormatterFunc;
@@ -60,7 +59,7 @@ public final class Jsr223Step {
 			} else {
 				scriptEngineManager = new ScriptEngineManager(jarState.getClassLoader());
 			}
-			ScriptEngine scriptEngine = scriptEngineManager.getEngineByName(engine);
+			var scriptEngine = scriptEngineManager.getEngineByName(engine);
 
 			if (scriptEngine == null) {
 				throw new IllegalArgumentException("Unknown script engine '" + engine + "'. Available engines: " +

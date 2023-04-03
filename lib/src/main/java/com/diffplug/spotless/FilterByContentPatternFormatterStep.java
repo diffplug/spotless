@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ package com.diffplug.spotless;
 
 import java.io.File;
 import java.util.Objects;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
@@ -34,7 +33,7 @@ final class FilterByContentPatternFormatterStep extends DelegateFormatterStep {
 	public @Nullable String format(String raw, File file) throws Exception {
 		Objects.requireNonNull(raw, "raw");
 		Objects.requireNonNull(file, "file");
-		Matcher matcher = contentPattern.matcher(raw);
+		var matcher = contentPattern.matcher(raw);
 		if (matcher.find()) {
 			return delegateStep.format(raw, file);
 		} else {
@@ -50,7 +49,7 @@ final class FilterByContentPatternFormatterStep extends DelegateFormatterStep {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		FilterByContentPatternFormatterStep that = (FilterByContentPatternFormatterStep) o;
+		var that = (FilterByContentPatternFormatterStep) o;
 		return Objects.equals(delegateStep, that.delegateStep) &&
 				Objects.equals(contentPattern.pattern(), that.contentPattern.pattern());
 	}

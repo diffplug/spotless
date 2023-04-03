@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ class IndexBasedChecker implements UpToDateChecker {
 
 	@Override
 	public void setUpToDate(Path file) {
-		Instant lastModified = lastModifiedTime(file);
+		var lastModified = lastModifiedTime(file);
 		if (Instant.MIN.equals(lastModified) || Instant.MAX.equals(lastModified)) {
 			// FileTime can store timestamps further in the past/future than Instant.
 			// Such timestamps are saturated to Instant.MIN/Instant.MAX.

@@ -141,7 +141,7 @@ public class EclipseHtmlFormatterStepImpl extends CleanupStep {
 			 * The HTML formatter only uses the DOCTYPE/SCHEMA for content model selection.
 			 * Hence no external URIs are required.
 			 */
-			boolean allowExternalURI = false;
+			var allowExternalURI = false;
 			EclipseXmlFormatterStepImpl.FrameworkConfig.activateXmlPlugins(config, allowExternalURI);
 			config.add(new HTMLCorePlugin());
 		}

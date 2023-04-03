@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,8 @@ class EclipseWtpTest extends MavenIntegrationHarness {
 	}
 
 	private void runTest() throws Exception {
-		String notFormatted = "<a><b>   c</b></a>";
-		String formatted = "<a>\n\t<b> c</b>\n</a>";
+		var notFormatted = "<a><b>   c</b></a>";
+		var formatted = "<a>\n\t<b> c</b>\n</a>";
 		//writePomWithFormatSteps includes java. WTP does not care about file extensions.
 		setFile("src/main/java/test.java").toContent(notFormatted);
 		mavenRunner().withArguments("spotless:apply").runNoError();

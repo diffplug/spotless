@@ -18,7 +18,6 @@ package com.diffplug.gradle.spotless;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 import javax.annotation.Nullable;
@@ -95,7 +94,7 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 
 	@VisibleForTesting
 	void processInputFile(@Nullable GitRatchet ratchet, Formatter formatter, File input) throws IOException {
-		File output = getOutputFile(input);
+		var output = getOutputFile(input);
 		getLogger().debug("Applying format to {} and writing to {}", input, output);
 		PaddedCell.DirtyState dirtyState;
 		if (ratchet != null && ratchet.isClean(getProjectDir().get().getAsFile(), getRootTreeSha(), input)) {
@@ -115,7 +114,7 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 		} else if (dirtyState.didNotConverge()) {
 			getLogger().warn("Skipping '{}' because it does not converge.  Run {@code spotlessDiagnose} to understand why", input);
 		} else {
-			Path parentDir = output.toPath().getParent();
+			var parentDir = output.toPath().getParent();
 			if (parentDir == null) {
 				throw new IllegalStateException("Every file has a parent folder. But not: " + output);
 			}
@@ -129,7 +128,7 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 	}
 
 	private void deletePreviousResult(File input) throws IOException {
-		File output = getOutputFile(input);
+		var output = getOutputFile(input);
 		if (output.isDirectory()) {
 			getFs().delete(d -> d.delete(output));
 		} else {

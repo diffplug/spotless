@@ -99,7 +99,7 @@ class FormatterTest {
 	@Test
 	public void testExceptionWithEmptyPath() throws Exception {
 		LineEnding.Policy lineEndingsPolicy = LineEnding.UNIX.createPolicy();
-		Charset encoding = StandardCharsets.UTF_8;
+		var encoding = StandardCharsets.UTF_8;
 		FormatExceptionPolicy exceptionPolicy = FormatExceptionPolicy.failOnlyOnError();
 
 		Path rootDir = Paths.get(StandardSystemProperty.USER_DIR.value());
@@ -124,7 +124,7 @@ class FormatterTest {
 	@Test
 	public void testExceptionWithSentinelNoFileOnDisk() throws Exception {
 		LineEnding.Policy lineEndingsPolicy = LineEnding.UNIX.createPolicy();
-		Charset encoding = StandardCharsets.UTF_8;
+		var encoding = StandardCharsets.UTF_8;
 		FormatExceptionPolicy exceptionPolicy = FormatExceptionPolicy.failOnlyOnError();
 
 		Path rootDir = Paths.get(StandardSystemProperty.USER_DIR.value());
@@ -149,7 +149,7 @@ class FormatterTest {
 	@Test
 	public void testExceptionWithRootDirIsNotFileSystem() throws Exception {
 		LineEnding.Policy lineEndingsPolicy = LineEnding.UNIX.createPolicy();
-		Charset encoding = StandardCharsets.UTF_8;
+		var encoding = StandardCharsets.UTF_8;
 		FormatExceptionPolicy exceptionPolicy = FormatExceptionPolicy.failOnlyOnError();
 
 		Path rootDir = Mockito.mock(Path.class);

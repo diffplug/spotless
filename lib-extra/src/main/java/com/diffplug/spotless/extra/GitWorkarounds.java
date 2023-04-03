@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2022 DiffPlug
+ * Copyright 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ public final class GitWorkarounds {
 	 * @return the builder.
 	 */
 	static RepositorySpecificResolver fileRepositoryResolverForProject(File projectDir, @Nullable Config baseConfig) {
-		RepositorySpecificResolver repositoryResolver = new RepositorySpecificResolver(baseConfig);
+		var repositoryResolver = new RepositorySpecificResolver(baseConfig);
 		repositoryResolver.findGitDir(projectDir);
 		repositoryResolver.readEnvironment();
 		if (repositoryResolver.getGitDir() != null || repositoryResolver.getWorkTree() != null) {
@@ -183,7 +183,7 @@ public final class GitWorkarounds {
 					}
 
 					String commonPath = RawParseUtils.decode(content, 0, lineEnd);
-					File common = new File(commonPath);
+					var common = new File(commonPath);
 					if (common.isAbsolute()) {
 						commonDirectory = common;
 					} else {

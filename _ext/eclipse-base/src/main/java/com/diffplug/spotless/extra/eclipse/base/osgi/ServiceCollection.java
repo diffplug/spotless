@@ -76,7 +76,7 @@ public class ServiceCollection implements SpotlessEclipseServiceConfig {
 
 	@Override
 	public <S> void add(Class<S> interfaceClass, S service) throws ServiceException {
-		String className = interfaceClass.getName();
+		var className = interfaceClass.getName();
 		if (null != className2Service.put(interfaceClass.getName(), new FrameworkServiceReference<S>(className, service))) {
 			throw new ServiceException(
 					String.format("Service '%s' is already registered.", interfaceClass.getName()), ServiceException.FACTORY_ERROR);

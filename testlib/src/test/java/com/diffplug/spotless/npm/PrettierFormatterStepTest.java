@@ -41,11 +41,11 @@ class PrettierFormatterStepTest extends ResourceHarness {
 		@ParameterizedTest(name = "{index}: prettier can be applied to {0}")
 		@ValueSource(strings = {"html", "typescript", "json", "javascript-es5", "javascript-es6", "css", "scss", "markdown", "yaml"})
 		void formattingUsingConfigFile(String fileType) throws Exception {
-			String filedir = "npm/prettier/filetypes/" + fileType + "/";
+			var filedir = "npm/prettier/filetypes/" + fileType + "/";
 
 			final File prettierRc = createTestFile(filedir + ".prettierrc.yml");
-			final String dirtyFile = filedir + fileType + ".dirty";
-			final String cleanFile = filedir + fileType + ".clean";
+			final var dirtyFile = filedir + fileType + ".dirty";
+			final var cleanFile = filedir + fileType + ".clean";
 
 			final FormatterStep formatterStep = PrettierFormatterStep.create(
 					PrettierFormatterStep.defaultDevDependencies(),
@@ -68,10 +68,10 @@ class PrettierFormatterStepTest extends ResourceHarness {
 
 		@Test
 		void parserInferenceBasedOnExplicitFilepathIsWorking() throws Exception {
-			String filedir = "npm/prettier/filetypes/json/";
+			var filedir = "npm/prettier/filetypes/json/";
 
-			final String dirtyFile = filedir + "json.dirty";
-			final String cleanFile = filedir + "json.clean";
+			final var dirtyFile = filedir + "json.dirty";
+			final var cleanFile = filedir + "json.clean";
 
 			final FormatterStep formatterStep = PrettierFormatterStep.create(
 					PrettierFormatterStep.defaultDevDependencies(),
@@ -89,10 +89,10 @@ class PrettierFormatterStepTest extends ResourceHarness {
 
 		@Test
 		void parserInferenceBasedOnFilenameIsWorking() throws Exception {
-			String filedir = "npm/prettier/filename/";
+			var filedir = "npm/prettier/filename/";
 
-			final String dirtyFile = filedir + "dirty.json";
-			final String cleanFile = filedir + "clean.json";
+			final var dirtyFile = filedir + "dirty.json";
+			final var cleanFile = filedir + "clean.json";
 
 			final FormatterStep formatterStep = PrettierFormatterStep.create(
 					PrettierFormatterStep.defaultDevDependencies(),
@@ -133,8 +133,8 @@ class PrettierFormatterStepTest extends ResourceHarness {
 
 		void runFormatTest(PrettierConfig config, String cleanFileNameSuffix) throws Exception {
 
-			final String dirtyFile = FILEDIR + "typescript.dirty";
-			final String cleanFile = FILEDIR + "typescript." + cleanFileNameSuffix + ".clean";
+			final var dirtyFile = FILEDIR + "typescript.dirty";
+			final var cleanFile = FILEDIR + "typescript." + cleanFileNameSuffix + ".clean";
 
 			final FormatterStep formatterStep = PrettierFormatterStep.create(
 					PrettierFormatterStep.defaultDevDependencies(),

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 DiffPlug
+ * Copyright 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ public class ForeignExe {
 
 	/** The name of the executable, used by "where" (win) and "which" (unix). */
 	public static ForeignExe nameAndVersion(String exeName, String version) {
-		ForeignExe foreign = new ForeignExe();
+		var foreign = new ForeignExe();
 		foreign.name = Objects.requireNonNull(exeName);
 		foreign.version = Objects.requireNonNull(version);
 		return foreign;
@@ -105,7 +105,7 @@ public class ForeignExe {
 			if (!versionMatcher.find()) {
 				throw cantFind("Unable to parse version with /" + versionRegex + "/", cmdVersion);
 			}
-			String versionFound = versionMatcher.group(1);
+			var versionFound = versionMatcher.group(1);
 			if (!versionFound.equals(version)) {
 				throw wrongVersion("You specified version " + version + ", but Spotless found " + versionFound, cmdVersion, versionFound);
 			}
@@ -122,7 +122,7 @@ public class ForeignExe {
 	}
 
 	private RuntimeException exceptionFmt(String msgPrimary, ProcessRunner.Result cmd, @Nullable String msgFix) {
-		StringBuilder errorMsg = new StringBuilder();
+		var errorMsg = new StringBuilder();
 		errorMsg.append(msgPrimary);
 		errorMsg.append('\n');
 		if (msgFix != null) {

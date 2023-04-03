@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 DiffPlug
+ * Copyright 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.diffplug.spotless.Formatter;
@@ -91,8 +90,8 @@ public class PipeStepPair {
 	final FormatterStep in, out;
 
 	private PipeStepPair(String name, Pattern pattern) {
-		StateIn stateIn = new StateIn(pattern);
-		StateOut stateOut = new StateOut(stateIn);
+		var stateIn = new StateIn(pattern);
+		var stateOut = new StateOut(stateIn);
 		in = FormatterStep.create(name + "In", stateIn, state -> state::format);
 		out = FormatterStep.create(name + "Out", stateOut, state -> state::format);
 	}
@@ -128,7 +127,7 @@ public class PipeStepPair {
 
 		private String format(Formatter formatter, String unix, File file) throws Exception {
 			groups.clear();
-			Matcher matcher = regex.matcher(unix);
+			var matcher = regex.matcher(unix);
 			while (matcher.find()) {
 				// apply the formatter to each group
 				groups.add(formatter.compute(matcher.group(1), file));
@@ -152,7 +151,7 @@ public class PipeStepPair {
 
 		private String format(String unix) throws Exception {
 			groups.clear();
-			Matcher matcher = regex.matcher(unix);
+			var matcher = regex.matcher(unix);
 			while (matcher.find()) {
 				groups.add(matcher.group(1));
 			}
@@ -182,9 +181,9 @@ public class PipeStepPair {
 			return unix;
 		}
 		builder.setLength(0);
-		Matcher matcher = in.regex.matcher(unix);
-		int lastEnd = 0;
-		int groupIdx = 0;
+		var matcher = in.regex.matcher(unix);
+		var lastEnd = 0;
+		var groupIdx = 0;
 		while (matcher.find()) {
 			builder.append(unix, lastEnd, matcher.start(1));
 			builder.append(in.groups.get(groupIdx));
@@ -196,7 +195,7 @@ public class PipeStepPair {
 			return builder.toString();
 		} else {
 			// throw an error with either the full regex, or the nicer open/close pair
-			Matcher openClose = Pattern.compile("\\\\Q([\\s\\S]*?)\\\\E" + "\\Q([\\s\\S]*?)\\E" + "\\\\Q([\\s\\S]*?)\\\\E")
+			var openClose = Pattern.compile("\\\\Q([\\s\\S]*?)\\\\E" + "\\Q([\\s\\S]*?)\\E" + "\\\\Q([\\s\\S]*?)\\\\E")
 					.matcher(in.regex.pattern());
 			String pattern;
 			if (openClose.matches()) {

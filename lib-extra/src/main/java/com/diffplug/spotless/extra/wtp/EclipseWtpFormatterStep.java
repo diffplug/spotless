@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ package com.diffplug.spotless.extra.wtp;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Properties;
 
 import com.diffplug.spotless.FormatterFunc;
@@ -61,13 +60,13 @@ public enum EclipseWtpFormatterStep {
 		JVM_SUPPORT.assertFormatterSupported(state.getSemanticVersion());
 		Class<?> formatterClazz = state.loadClass(FORMATTER_PACKAGE + className);
 		Object formatter = formatterClazz.getConstructor(Properties.class).newInstance(state.getPreferences());
-		Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
+		var method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
 		return input -> {
 			try {
 				return (String) method.invoke(formatter, input);
 			} catch (InvocationTargetException exceptionWrapper) {
-				Throwable throwable = exceptionWrapper.getTargetException();
-				Exception exception = (throwable instanceof Exception) ? (Exception) throwable : null;
+				var throwable = exceptionWrapper.getTargetException();
+				var exception = (throwable instanceof Exception) ? (Exception) throwable : null;
 				throw (null == exception) ? exceptionWrapper : exception;
 			}
 		};
@@ -77,7 +76,7 @@ public enum EclipseWtpFormatterStep {
 		JVM_SUPPORT.assertFormatterSupported(state.getSemanticVersion());
 		Class<?> formatterClazz = state.loadClass(FORMATTER_PACKAGE + className);
 		Object formatter = formatterClazz.getConstructor(Properties.class).newInstance(state.getPreferences());
-		Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class, String.class);
+		var method = formatterClazz.getMethod(FORMATTER_METHOD, String.class, String.class);
 		return JVM_SUPPORT.suggestLaterVersionOnError(state.getSemanticVersion(), new FormatterFunc.NeedsFile() {
 			@Override
 			public String applyWithFile(String unix, File file) throws Exception {

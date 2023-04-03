@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,11 @@ class PlatformInfo {
 	}
 
 	static OS normalizedOS() {
-		final String osNameProperty = System.getProperty("os.name");
+		final var osNameProperty = System.getProperty("os.name");
 		if (osNameProperty == null) {
 			throw new RuntimeException("No info about OS available, cannot decide which implementation of j2v8 to use");
 		}
-		final String normalizedOsName = osNameProperty.toLowerCase(Locale.ROOT);
+		final var normalizedOsName = osNameProperty.toLowerCase(Locale.ROOT);
 		if (normalizedOsName.contains("win")) {
 			return OS.WINDOWS;
 		}
@@ -47,11 +47,11 @@ class PlatformInfo {
 	}
 
 	static String normalizedArchName() {
-		final String osArchProperty = System.getProperty("os.arch");
+		final var osArchProperty = System.getProperty("os.arch");
 		if (osArchProperty == null) {
 			throw new RuntimeException("No info about ARCH available, cannot decide which implementation of j2v8 to use");
 		}
-		final String normalizedOsArch = osArchProperty.toLowerCase(Locale.ROOT);
+		final var normalizedOsArch = osArchProperty.toLowerCase(Locale.ROOT);
 
 		if (normalizedOsArch.contains("64")) {
 			return "x86_64";

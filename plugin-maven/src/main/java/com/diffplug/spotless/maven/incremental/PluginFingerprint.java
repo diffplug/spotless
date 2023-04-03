@@ -46,7 +46,7 @@ class PluginFingerprint {
 	static PluginFingerprint from(MavenProject project, Iterable<Formatter> formatters) {
 		Plugin spotlessPlugin = findSpotlessPlugin(project);
 		byte[] digest = digest(spotlessPlugin, formatters);
-		String value = Base64.getEncoder().encodeToString(digest);
+		var value = Base64.getEncoder().encodeToString(digest);
 		return new PluginFingerprint(value);
 	}
 
@@ -70,7 +70,7 @@ class PluginFingerprint {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		PluginFingerprint that = (PluginFingerprint) o;
+		var that = (PluginFingerprint) o;
 		return value.equals(that.value);
 	}
 

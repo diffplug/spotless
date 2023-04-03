@@ -66,8 +66,8 @@ class FileIndex {
 			return emptyIndexFallback(config);
 		}
 
-		try (BufferedReader reader = newBufferedReader(indexFile, UTF_8)) {
-			String firstLine = reader.readLine();
+		try (var reader = newBufferedReader(indexFile, UTF_8)) {
+			var firstLine = reader.readLine();
 			if (firstLine == null) {
 				log.info("Index file is empty. Fallback to an empty index");
 				return emptyIndexFallback(config);
@@ -90,7 +90,7 @@ class FileIndex {
 
 	static void delete(FileIndexConfig config, Log log) {
 		Path indexFile = config.getIndexFile();
-		boolean deleted = false;
+		var deleted = false;
 		try {
 			deleted = Files.deleteIfExists(indexFile);
 		} catch (IOException e) {
@@ -106,12 +106,12 @@ class FileIndex {
 		if (!file.startsWith(projectDir)) {
 			return null;
 		}
-		Path relativeFile = projectDir.relativize(file);
+		var relativeFile = projectDir.relativize(file);
 		return fileToLastModifiedTime.get(relativeFile);
 	}
 
 	void setLastModifiedTime(Path file, Instant time) {
-		Path relativeFile = projectDir.relativize(file);
+		var relativeFile = projectDir.relativize(file);
 		fileToLastModifiedTime.put(relativeFile, time);
 		modified = true;
 	}
@@ -127,7 +127,7 @@ class FileIndex {
 		}
 
 		ensureParentDirExists();
-		try (PrintWriter writer = new PrintWriter(newBufferedWriter(indexFile, UTF_8, CREATE, TRUNCATE_EXISTING))) {
+		try (var writer = new PrintWriter(newBufferedWriter(indexFile, UTF_8, CREATE, TRUNCATE_EXISTING))) {
 			writer.println(pluginFingerprint.value());
 
 			for (Entry<Path, Instant> entry : fileToLastModifiedTime.entrySet()) {
@@ -139,7 +139,7 @@ class FileIndex {
 	}
 
 	private void ensureParentDirExists() {
-		Path parentDir = indexFile.getParent();
+		var parentDir = indexFile.getParent();
 		if (parentDir == null) {
 			throw new IllegalStateException("Index file does not have a parent dir: " + indexFile);
 		}
@@ -152,22 +152,22 @@ class FileIndex {
 
 	private static Content readIndexContent(BufferedReader reader, Path projectDir, Log log) throws IOException {
 		Map<Path, Instant> fileToLastModifiedTime = new TreeMap<>();
-		boolean needsRewrite = false;
+		var needsRewrite = false;
 
 		String line;
 		while ((line = reader.readLine()) != null) {
-			int separatorIndex = line.lastIndexOf(SEPARATOR);
+			var separatorIndex = line.lastIndexOf(SEPARATOR);
 			if (separatorIndex == -1) {
 				throw new IOException("Incorrect index file. No separator found in '" + line + "'");
 			}
 
-			Path relativeFile = Paths.get(line.substring(0, separatorIndex));
-			Path absoluteFile = projectDir.resolve(relativeFile);
+			var relativeFile = Paths.get(line.substring(0, separatorIndex));
+			var absoluteFile = projectDir.resolve(relativeFile);
 			if (Files.notExists(absoluteFile)) {
 				log.info("File stored in the index does not exist: " + relativeFile);
 				needsRewrite = true;
 			} else {
-				Instant lastModifiedTime = parseLastModifiedTime(line, separatorIndex);
+				var lastModifiedTime = parseLastModifiedTime(line, separatorIndex);
 				fileToLastModifiedTime.put(relativeFile, lastModifiedTime);
 			}
 		}

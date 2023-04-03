@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ final class FilterByFileFormatterStep extends DelegateFormatterStep {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		FilterByFileFormatterStep that = (FilterByFileFormatterStep) o;
+		var that = (FilterByFileFormatterStep) o;
 		return Objects.equals(delegateStep, that.delegateStep) &&
 				Objects.equals(filter, that.filter);
 	}

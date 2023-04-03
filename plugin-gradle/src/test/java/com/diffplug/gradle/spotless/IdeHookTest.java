@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,8 +58,8 @@ class IdeHookTest extends GradleIntegrationHarness {
 	}
 
 	private void runWith(String... arguments) throws IOException {
-		StringBuilder output = new StringBuilder();
-		StringBuilder error = new StringBuilder();
+		var output = new StringBuilder();
+		var error = new StringBuilder();
 		try (Writer outputWriter = new StringPrinter(output::append).toWriter();
 				Writer errorWriter = new StringPrinter(error::append).toWriter();) {
 			gradleRunner()

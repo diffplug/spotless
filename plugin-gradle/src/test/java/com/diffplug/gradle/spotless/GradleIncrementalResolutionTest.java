@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,9 +97,9 @@ class GradleIncrementalResolutionTest extends GradleIntegrationHarness {
 
 	private void writeState(String state) throws IOException {
 		for (char c : state.toCharArray()) {
-			String letter = new String(new char[]{c});
-			boolean exists = new File(rootFolder(), filename(letter)).exists();
-			boolean needsChanging = exists && !read(filename(letter)).trim().equals(letter);
+			var letter = new String(new char[]{c});
+			var exists = new File(rootFolder(), filename(letter)).exists();
+			var needsChanging = exists && !read(filename(letter)).trim().equals(letter);
 			if (!exists || needsChanging) {
 				setFile(filename(letter)).toContent(letter);
 			}
@@ -108,7 +108,7 @@ class GradleIncrementalResolutionTest extends GradleIntegrationHarness {
 
 	private void assertState(String state) throws IOException {
 		for (char c : state.toCharArray()) {
-			String letter = new String(new char[]{c});
+			var letter = new String(new char[]{c});
 			if (Character.isLowerCase(c)) {
 				assertEquals(letter.toLowerCase(Locale.ROOT), read(filename(letter)).trim());
 			} else {
@@ -126,14 +126,14 @@ class GradleIncrementalResolutionTest extends GradleIntegrationHarness {
 	}
 
 	private AbstractStringAssert<?> checkRanAgainstNoneButError() throws IOException {
-		String console = taskRanAgainst("spotlessCheck");
+		var console = taskRanAgainst("spotlessCheck");
 		return Assertions.assertThat(console);
 	}
 
 	private String taskRanAgainst(String task, String... ranAgainst) throws IOException {
 		pauseForFilesystem();
 		String console = StringPrinter.buildString(Errors.rethrow().wrap(printer -> {
-			boolean expectFailure = task.equals("spotlessCheck") && !isClean();
+			var expectFailure = task.equals("spotlessCheck") && !isClean();
 			if (expectFailure) {
 				gradleRunner().withArguments(task).forwardStdOutput(printer.toWriter()).forwardStdError(printer.toWriter()).buildAndFail();
 			} else {
@@ -142,7 +142,7 @@ class GradleIncrementalResolutionTest extends GradleIntegrationHarness {
 		}));
 		SortedSet<String> added = new TreeSet<>();
 		for (String line : console.split("\n")) {
-			String trimmed = line.trim();
+			var trimmed = line.trim();
 			if (trimmed.startsWith("<") && trimmed.endsWith(">")) {
 				added.add(trimmed.substring(1, trimmed.length() - 1));
 			}
@@ -152,7 +152,7 @@ class GradleIncrementalResolutionTest extends GradleIntegrationHarness {
 	}
 
 	private String concat(Iterable<String> iterable) {
-		StringBuilder result = new StringBuilder();
+		var result = new StringBuilder();
 		for (String item : iterable) {
 			result.append(item);
 		}

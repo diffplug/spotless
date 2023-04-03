@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,13 +28,13 @@ class IncludesExcludesTest extends MavenIntegrationHarness {
 
 	@Test
 	void testDefaultIncludesJava() throws Exception {
-		String unformattedCorrectLocation1 = "src/main/java/test1.java";
-		String unformattedCorrectLocation2 = "src/main/java/test2.java";
-		String unformattedCorrectLocation3 = "src/test/java/test3.java";
-		String unformattedCorrectLocation4 = "src/test/java/test4.java";
-		String formattedCorrectLocation = "src/main/java/test5.java";
-		String unformattedIncorrectLocation1 = "src/main/my-java/test6.java";
-		String unformattedIncorrectLocation2 = "sources/main/java/test7.java";
+		var unformattedCorrectLocation1 = "src/main/java/test1.java";
+		var unformattedCorrectLocation2 = "src/main/java/test2.java";
+		var unformattedCorrectLocation3 = "src/test/java/test3.java";
+		var unformattedCorrectLocation4 = "src/test/java/test4.java";
+		var formattedCorrectLocation = "src/main/java/test5.java";
+		var unformattedIncorrectLocation1 = "src/main/my-java/test6.java";
+		var unformattedIncorrectLocation2 = "sources/main/java/test7.java";
 
 		writePomWithJavaSteps(
 				"<eclipse>",
@@ -64,13 +64,13 @@ class IncludesExcludesTest extends MavenIntegrationHarness {
 
 	@Test
 	void testDefaultIncludesScala() throws Exception {
-		String unformattedCorrectLocation1 = "src/main/scala/test1.scala";
-		String unformattedCorrectLocation2 = "src/main/scala/test2.sc";
-		String unformattedCorrectLocation3 = "src/test/scala/test3.sc";
-		String unformattedCorrectLocation4 = "src/test/scala/test4.scala";
-		String formattedCorrectLocation = "src/test/scala/test5.scala";
-		String unformattedIncorrectLocation1 = "src/main/not-scala/test6.sc";
-		String unformattedIncorrectLocation2 = "scala/scala/scala/test7.scala";
+		var unformattedCorrectLocation1 = "src/main/scala/test1.scala";
+		var unformattedCorrectLocation2 = "src/main/scala/test2.sc";
+		var unformattedCorrectLocation3 = "src/test/scala/test3.sc";
+		var unformattedCorrectLocation4 = "src/test/scala/test4.scala";
+		var formattedCorrectLocation = "src/test/scala/test5.scala";
+		var unformattedIncorrectLocation1 = "src/main/not-scala/test6.sc";
+		var unformattedIncorrectLocation2 = "scala/scala/scala/test7.scala";
 
 		writePomWithScalaSteps("<scalafmt/>");
 
@@ -95,10 +95,10 @@ class IncludesExcludesTest extends MavenIntegrationHarness {
 
 	@Test
 	void testInclude() throws Exception {
-		String unformattedDefaultLocation1 = "src/main/scala/test1.scala";
-		String unformattedDefaultLocation2 = "src/test/scala/test2.scala";
-		String unformattedCustomLocation1 = "src/main/my-scala/test3.scala";
-		String unformattedCustomLocation2 = "src/test/sc/test4.sc";
+		var unformattedDefaultLocation1 = "src/main/scala/test1.scala";
+		var unformattedDefaultLocation2 = "src/test/scala/test2.scala";
+		var unformattedCustomLocation1 = "src/main/my-scala/test3.scala";
+		var unformattedCustomLocation2 = "src/test/sc/test4.sc";
 
 		writePomWithScalaSteps(
 				"<includes>",
@@ -124,10 +124,10 @@ class IncludesExcludesTest extends MavenIntegrationHarness {
 
 	@Test
 	void testExclude() throws Exception {
-		String unformatted1 = "src/main/scala/test1.scala";
-		String unformatted2 = "src/main/scala/test2.sc";
-		String unformatted3 = "src/test/scala/test3.scala";
-		String unformatted4 = "src/test/scala/test4.sc";
+		var unformatted1 = "src/main/scala/test1.scala";
+		var unformatted2 = "src/main/scala/test2.sc";
+		var unformatted3 = "src/test/scala/test3.scala";
+		var unformatted4 = "src/test/scala/test4.sc";
 
 		writePomWithScalaSteps(
 				"<includes>",

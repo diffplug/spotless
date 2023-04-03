@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 DiffPlug
+ * Copyright 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -108,8 +108,8 @@ class GitRachetMergeBaseTest extends ResourceHarness {
 				if (!file.isFile()) {
 					continue;
 				}
-				boolean expectedClean = !dirtyFiles.contains(file.getName());
-				for (int i = 0; i < shas.length; ++i) {
+				var expectedClean = !dirtyFiles.contains(file.getName());
+				for (var i = 0; i < shas.length; ++i) {
 					assertClean(i, file.getName(), expectedClean);
 				}
 			}

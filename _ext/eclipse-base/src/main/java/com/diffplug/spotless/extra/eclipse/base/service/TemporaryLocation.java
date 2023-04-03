@@ -44,7 +44,7 @@ public class TemporaryLocation implements Location, AutoCloseable {
 
 	private static URL createTemporaryDirectory() {
 		try {
-			Path location = Files.createTempDirectory(TEMP_PREFIX);
+			var location = Files.createTempDirectory(TEMP_PREFIX);
 			return location.toUri().toURL();
 		} catch (IOException e) {
 			throw new IOError(e);
@@ -120,7 +120,7 @@ public class TemporaryLocation implements Location, AutoCloseable {
 	@Override
 	public URL getDataArea(String path) throws IOException {
 		try {
-			Path locationPath = Paths.get(location.toURI());
+			var locationPath = Paths.get(location.toURI());
 			return locationPath.resolve(path).toUri().toURL();
 		} catch (URISyntaxException e) {
 			throw new IOException("Location not correctly formatted.", e);
@@ -130,7 +130,7 @@ public class TemporaryLocation implements Location, AutoCloseable {
 	@Override
 	public void close() throws Exception {
 		try {
-			Path path = Path.of(location.toURI());
+			var path = Path.of(location.toURI());
 			Files.walk(path)
 					.sorted(Comparator.reverseOrder())
 					.map(Path::toFile)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -156,7 +156,7 @@ class FileFinder {
 
 		@Override
 		public Optional<File> get() {
-			String pathList = System.getenv(environmentVar);
+			var pathList = System.getenv(environmentVar);
 			if (pathList != null) {
 				return Arrays.stream(pathList.split(System.getProperty("path.separator", ":")))
 						.map(File::new)

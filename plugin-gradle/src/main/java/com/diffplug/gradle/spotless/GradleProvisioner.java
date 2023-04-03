@@ -65,7 +65,7 @@ class GradleProvisioner {
 
 		@Override
 		public Set<File> provisionWithTransitives(boolean withTransitives, Collection<String> mavenCoordinates) {
-			Request req = new Request(withTransitives, mavenCoordinates);
+			var req = new Request(withTransitives, mavenCoordinates);
 			Set<File> result;
 			synchronized (cache) {
 				result = cache.get(req);
@@ -86,7 +86,7 @@ class GradleProvisioner {
 
 		/** A child Provisioner which retries cached elements only. */
 		final Provisioner cachedOnly = (withTransitives, mavenCoordinates) -> {
-			Request req = new Request(withTransitives, mavenCoordinates);
+			var req = new Request(withTransitives, mavenCoordinates);
 			Set<File> result;
 			synchronized (cache) {
 				result = cache.get(req);
@@ -159,7 +159,7 @@ class GradleProvisioner {
 			if (this == obj) {
 				return true;
 			} else if (obj instanceof Request) {
-				Request o = (Request) obj;
+				var o = (Request) obj;
 				return o.withTransitives == withTransitives && o.mavenCoords.equals(mavenCoords);
 			} else {
 				return false;
@@ -169,7 +169,7 @@ class GradleProvisioner {
 		@Override
 		public String toString() {
 			String coords = mavenCoords.toString();
-			StringBuilder builder = new StringBuilder();
+			var builder = new StringBuilder();
 			builder.append(coords, 1, coords.length() - 1); // strip off []
 			if (withTransitives) {
 				builder.append(" with transitives");

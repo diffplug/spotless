@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,8 +46,8 @@ class EncodingErrorMsgTest {
 	}
 
 	private void cp1252asUtf8(String test, @Nullable String expectedMessage) throws UnsupportedEncodingException {
-		byte[] cp1252 = test.getBytes("cp1252");
-		String asUTF = new String(cp1252, StandardCharsets.UTF_8);
+		var cp1252 = test.getBytes("cp1252");
+		var asUTF = new String(cp1252, StandardCharsets.UTF_8);
 		String actualMessage = EncodingErrorMsg.msg(asUTF, cp1252, StandardCharsets.UTF_8);
 		Assertions.assertThat(actualMessage).isEqualTo(expectedMessage);
 	}
@@ -82,16 +82,16 @@ class EncodingErrorMsgTest {
 	}
 
 	private void utf8asCP1252(String test, @Nullable String expectedMessage) throws UnsupportedEncodingException {
-		byte[] utf8 = test.getBytes(StandardCharsets.UTF_8);
-		String asCp1252 = new String(utf8, "cp1252");
+		var utf8 = test.getBytes(StandardCharsets.UTF_8);
+		var asCp1252 = new String(utf8, "cp1252");
 		String actualMessage = EncodingErrorMsg.msg(asCp1252, utf8, Charset.forName("cp1252"));
 		Assertions.assertThat(actualMessage).isEqualTo(expectedMessage);
 	}
 
 	@Test
 	void canUseUnrepresentableOnPurpose() throws UnsupportedEncodingException {
-		String pathologic = new String(new char[]{EncodingErrorMsg.UNREPRESENTABLE});
-		byte[] pathologicBytes = pathologic.getBytes(StandardCharsets.UTF_8);
+		var pathologic = new String(new char[]{EncodingErrorMsg.UNREPRESENTABLE});
+		var pathologicBytes = pathologic.getBytes(StandardCharsets.UTF_8);
 		String pathologicMsg = EncodingErrorMsg.msg(pathologic, pathologicBytes, StandardCharsets.UTF_8);
 		Assertions.assertThat(pathologicMsg).isNull();
 	}

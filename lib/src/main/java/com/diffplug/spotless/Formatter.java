@@ -163,12 +163,12 @@ public final class Formatter implements Serializable, AutoCloseable {
 	public boolean isClean(File file) throws IOException {
 		Objects.requireNonNull(file);
 
-		String raw = new String(Files.readAllBytes(file.toPath()), encoding);
+		var raw = new String(Files.readAllBytes(file.toPath()), encoding);
 		String unix = LineEnding.toUnix(raw);
 
 		// check the newlines (we can find these problems without even running the steps)
-		int totalNewLines = (int) unix.codePoints().filter(val -> val == '\n').count();
-		int windowsNewLines = raw.length() - unix.length();
+		var totalNewLines = (int) unix.codePoints().filter(val -> val == '\n').count();
+		var windowsNewLines = raw.length() - unix.length();
 		if (lineEndingsPolicy.isUnix(file)) {
 			if (windowsNewLines != 0) {
 				return false;
@@ -180,7 +180,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 		}
 
 		// check the other formats
-		String formatted = compute(unix, file);
+		var formatted = compute(unix, file);
 
 		// return true iff the formatted string equals the unix one
 		return formatted.equals(unix);
@@ -200,17 +200,17 @@ public final class Formatter implements Serializable, AutoCloseable {
 	public @Nullable String applyToAndReturnResultIfDirty(File file) throws IOException {
 		Objects.requireNonNull(file);
 
-		byte[] rawBytes = Files.readAllBytes(file.toPath());
-		String raw = new String(rawBytes, encoding);
+		var rawBytes = Files.readAllBytes(file.toPath());
+		var raw = new String(rawBytes, encoding);
 		String rawUnix = LineEnding.toUnix(raw);
 
 		// enforce the format
-		String formattedUnix = compute(rawUnix, file);
+		var formattedUnix = compute(rawUnix, file);
 		// enforce the line endings
-		String formatted = computeLineEndings(formattedUnix, file);
+		var formatted = computeLineEndings(formattedUnix, file);
 
 		// write out the file iff it has changed
-		byte[] formattedBytes = formatted.getBytes(encoding);
+		var formattedBytes = formatted.getBytes(encoding);
 		if (!Arrays.equals(rawBytes, formattedBytes)) {
 			Files.write(file.toPath(), formattedBytes, StandardOpenOption.TRUNCATE_EXISTING);
 			return formattedUnix;
@@ -257,7 +257,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 					exceptionPolicy.handleError(e, step, "");
 				} else {
 					// Path may be forged from a different FileSystem than Filesystem.default
-					String relativePath = rootDir.relativize(rootDir.getFileSystem().getPath(file.getPath())).toString();
+					var relativePath = rootDir.relativize(rootDir.getFileSystem().getPath(file.getPath())).toString();
 					exceptionPolicy.handleError(e, step, relativePath);
 				}
 			}
@@ -267,8 +267,8 @@ public final class Formatter implements Serializable, AutoCloseable {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
+		final var prime = 31;
+		var result = 1;
 		result = prime * result + name.hashCode();
 		result = prime * result + encoding.hashCode();
 		result = prime * result + lineEndingsPolicy.hashCode();
@@ -289,7 +289,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		Formatter other = (Formatter) obj;
+		var other = (Formatter) obj;
 		return name.equals(other.name) &&
 				encoding.equals(other.encoding) &&
 				lineEndingsPolicy.equals(other.lineEndingsPolicy) &&

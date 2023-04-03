@@ -102,7 +102,7 @@ public class StepHarnessWithFile implements AutoCloseable {
 			if (e instanceof SecurityException) {
 				throw new AssertionError(e.getMessage());
 			} else {
-				Throwable rootCause = e;
+				var rootCause = e;
 				while (rootCause.getCause() != null) {
 					rootCause = rootCause.getCause();
 				}

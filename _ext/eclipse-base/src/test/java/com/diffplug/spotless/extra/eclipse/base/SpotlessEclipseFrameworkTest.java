@@ -251,7 +251,7 @@ class SpotlessEclipseFrameworkTest {
 		@Override
 		public void println(Object x) {
 			if (x instanceof Exception) {
-				Exception e = (Exception) x;
+				var e = (Exception) x;
 				if (TEST_EXCEPTION_MESSAGE == e.getMessage()) {
 					messages.add(TEST_EXCEPTION_MESSAGE);
 				}

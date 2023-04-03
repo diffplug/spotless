@@ -18,7 +18,6 @@ package com.diffplug.spotless.markdown;
 import static com.diffplug.spotless.markdown.LibMarkdownPreconditions.requireKeysAndValuesNonNull;
 
 import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -103,7 +102,7 @@ public class FreshMarkStep {
 			// instantiate the formatter and get its format method
 			Class<?> formatterClazz = classLoader.loadClass(FORMATTER_CLASS);
 			Object formatter = formatterClazz.getConstructor(Map.class, Consumer.class).newInstance(properties, loggingStream);
-			Method method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
+			var method = formatterClazz.getMethod(FORMATTER_METHOD, String.class);
 			return input -> (String) method.invoke(formatter, input);
 		}
 	}

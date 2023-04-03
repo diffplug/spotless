@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ class SQLTokensParser {
 		this.quoteStrings = sqlDialect.getIdentifierQuoteStrings();
 		this.singleLineComments = sqlDialect.getSingleLineComments();
 		this.singleLineCommentStart = new char[this.singleLineComments.length];
-		for (int i = 0; i < singleLineComments.length; i++) {
+		for (var i = 0; i < singleLineComments.length; i++) {
 			if (singleLineComments[i].isEmpty())
 				singleLineCommentStart[i] = 0;
 			else
@@ -102,16 +102,16 @@ class SQLTokensParser {
 	}
 
 	private FormatterToken nextToken() {
-		int start_pos = fPos;
+		var start_pos = fPos;
 		if (fPos >= fBefore.length()) {
 			fPos++;
 			return new FormatterToken(TokenType.END, "", start_pos);
 		}
 
-		char fChar = fBefore.charAt(fPos);
+		var fChar = fBefore.charAt(fPos);
 
 		if (isSpace(fChar)) {
-			StringBuilder workString = new StringBuilder();
+			var workString = new StringBuilder();
 			for (;;) {
 				workString.append(fChar);
 				fChar = fBefore.charAt(fPos);
@@ -127,7 +127,7 @@ class SQLTokensParser {
 			fPos++;
 			return new FormatterToken(TokenType.SYMBOL, ";", start_pos);
 		} else if (isDigit(fChar)) {
-			StringBuilder s = new StringBuilder();
+			var s = new StringBuilder();
 			while (isDigit(fChar) || fChar == '.' || fChar == 'e' || fChar == 'E') {
 				// if (ch == '.') type = Token.REAL;
 				s.append(fChar);
@@ -164,7 +164,7 @@ class SQLTokensParser {
 			commentString = fBefore.substring(start_pos, fPos);
 			return new FormatterToken(TokenType.COMMENT, commentString, start_pos);
 		} else if (isLetter(fChar)) {
-			StringBuilder s = new StringBuilder();
+			var s = new StringBuilder();
 			while (isLetter(fChar) || isDigit(fChar) || fChar == '*' || structSeparator == fChar || catalogSeparator.indexOf(fChar) != -1) {
 				s.append(fChar);
 				fPos++;
@@ -174,7 +174,7 @@ class SQLTokensParser {
 
 				fChar = fBefore.charAt(fPos);
 			}
-			String word = s.toString();
+			var word = s.toString();
 			if (commands.contains(word.toUpperCase(Locale.ENGLISH))) {
 				s.setLength(0);
 				for (; fPos < fBefore.length(); fPos++) {
@@ -193,12 +193,12 @@ class SQLTokensParser {
 			return new FormatterToken(TokenType.NAME, word, start_pos);
 		} else if (fChar == '/') {
 			fPos++;
-			char ch2 = fBefore.charAt(fPos);
+			var ch2 = fBefore.charAt(fPos);
 			if (ch2 != '*') {
 				return new FormatterToken(TokenType.SYMBOL, "/", start_pos);
 			}
 
-			StringBuilder s = new StringBuilder("/*");
+			var s = new StringBuilder("/*");
 			fPos++;
 			for (;;) {
 				int ch0 = fChar;
@@ -212,7 +212,7 @@ class SQLTokensParser {
 		} else {
 			if (fChar == '\'' || isQuoteChar(fChar)) {
 				fPos++;
-				char endQuoteChar = fChar;
+				var endQuoteChar = fChar;
 				// Close quote char may differ
 				if (quoteStrings != null) {
 					for (String[] quoteString : quoteStrings) {
@@ -223,13 +223,13 @@ class SQLTokensParser {
 					}
 				}
 
-				StringBuilder s = new StringBuilder();
+				var s = new StringBuilder();
 				s.append(fChar);
 				for (;;) {
 					fChar = fBefore.charAt(fPos);
 					s.append(fChar);
 					fPos++;
-					char fNextChar = fPos >= fBefore.length() - 1 ? 0 : fBefore.charAt(fPos);
+					var fNextChar = fPos >= fBefore.length() - 1 ? 0 : fBefore.charAt(fPos);
 					if (fChar == endQuoteChar && fNextChar == endQuoteChar) {
 						// Escaped quote
 						s.append(fChar);
@@ -243,12 +243,12 @@ class SQLTokensParser {
 			}
 
 			else if (isSymbol(fChar)) {
-				StringBuilder s = new StringBuilder(String.valueOf(fChar));
+				var s = new StringBuilder(String.valueOf(fChar));
 				fPos++;
 				if (fPos >= fBefore.length()) {
 					return new FormatterToken(TokenType.SYMBOL, s.toString(), start_pos);
 				}
-				char ch2 = fBefore.charAt(fPos);
+				var ch2 = fBefore.charAt(fPos);
 				for (String aTwoCharacterSymbol : twoCharacterSymbol) {
 					if (aTwoCharacterSymbol.charAt(0) == fChar && aTwoCharacterSymbol.charAt(1) == ch2) {
 						fPos++;

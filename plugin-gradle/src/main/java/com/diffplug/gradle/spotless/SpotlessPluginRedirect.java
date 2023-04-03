@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.gradle.api.GradleException;
@@ -28,12 +27,12 @@ public class SpotlessPluginRedirect implements Plugin<Project> {
 	private static final Pattern BAD_SEMVER = Pattern.compile("(\\d+)\\.(\\d+)");
 
 	private static int badSemver(String input) {
-		Matcher matcher = BAD_SEMVER.matcher(input);
+		var matcher = BAD_SEMVER.matcher(input);
 		if (!matcher.find() || matcher.start() != 0) {
 			throw new IllegalArgumentException("Version must start with " + BAD_SEMVER.pattern());
 		}
-		String major = matcher.group(1);
-		String minor = matcher.group(2);
+		var major = matcher.group(1);
+		var minor = matcher.group(2);
 		return badSemver(Integer.parseInt(major), Integer.parseInt(minor));
 	}
 

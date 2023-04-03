@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ class GroovyExtensionTest extends GradleIntegrationHarness {
 	}
 
 	private void testIncludeExcludeOption(boolean excludeJava) throws IOException {
-		String excludeStatement = excludeJava ? "excludeJava()" : "";
+		var excludeStatement = excludeJava ? "excludeJava()" : "";
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.spotless'",

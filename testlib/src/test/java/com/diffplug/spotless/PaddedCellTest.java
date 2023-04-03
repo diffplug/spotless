@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ class PaddedCellTest {
 				.rootDir(rootFolder.toPath())
 				.steps(formatterSteps).build()) {
 
-			File file = new File(rootFolder, "input");
+			var file = new File(rootFolder, "input");
 			Files.write(file.toPath(), input.getBytes(StandardCharsets.UTF_8));
 
 			PaddedCell result = PaddedCell.check(formatter, file);
@@ -117,7 +117,7 @@ class PaddedCellTest {
 	void cycleOrder() {
 		BiConsumer<String, String> testCase = (unorderedStr, canonical) -> {
 			List<String> unordered = Arrays.asList(unorderedStr.split(","));
-			for (int i = 0; i < unordered.size(); ++i) {
+			for (var i = 0; i < unordered.size(); ++i) {
 				// try every rotation of the list
 				Collections.rotate(unordered, 1);
 				PaddedCell result = CYCLE.create(rootFolder, unordered);

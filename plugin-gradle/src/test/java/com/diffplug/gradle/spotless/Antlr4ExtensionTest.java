@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,12 +56,12 @@ class Antlr4ExtensionTest extends GradleIntegrationHarness {
 	}
 
 	private void assertAppliedFormat(String... buildScript) throws IOException {
-		String testFile = "src/main/antlr4/Hello.g4";
+		var testFile = "src/main/antlr4/Hello.g4";
 
 		setFile("build.gradle").toLines(buildScript);
 
-		String unformatted = "antlr4/Hello.unformatted.g4";
-		String formatted = "antlr4/Hello.formatted.g4";
+		var unformatted = "antlr4/Hello.unformatted.g4";
+		var formatted = "antlr4/Hello.formatted.g4";
 		setFile(testFile).toResource(unformatted);
 
 		gradleRunner().withArguments("spotlessApply").build();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ package com.diffplug.spotless;
 
 import java.io.File;
 import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
@@ -57,7 +56,7 @@ public enum LineEnding {
 			if (gitAttributesPolicyCreator == null) {
 				try {
 					Class<?> clazz = Class.forName("com.diffplug.spotless.extra.GitAttributesLineEndings");
-					Method method = clazz.getMethod("create", File.class, Supplier.class);
+					var method = clazz.getMethod("create", File.class, Supplier.class);
 					gitAttributesPolicyCreator = (proj, target) -> ThrowingEx.get(() -> (Policy) method.invoke(null, proj, target));
 				} catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) {
 					throw new IllegalStateException("LineEnding.GIT_ATTRIBUTES requires the spotless-lib-extra library, but it is not on the classpath", e);
@@ -135,14 +134,14 @@ public enum LineEnding {
 		/** Returns true iff this file has unix line endings. */
 		public default boolean isUnix(File file) {
 			Objects.requireNonNull(file);
-			String ending = getEndingFor(file);
+			var ending = getEndingFor(file);
 			return ending.equals(UNIX.str());
 		}
 	}
 
 	/** Returns a string with exclusively unix line endings. */
 	public static String toUnix(String input) {
-		int lastCarriageReturn = input.lastIndexOf('\r');
+		var lastCarriageReturn = input.lastIndexOf('\r');
 		if (lastCarriageReturn == -1) {
 			return input;
 		} else {

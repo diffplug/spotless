@@ -54,7 +54,7 @@ public class KtLintCompat0Dot46Dot0Adapter implements KtLintCompatAdapter {
 			final boolean useExperimental,
 			Path editorConfigPath, final Map<String, String> userData,
 			final Map<String, Object> editorConfigOverrideMap) {
-		final FormatterCallback formatterCallback = new FormatterCallback();
+		final var formatterCallback = new FormatterCallback();
 
 		final List<RuleSet> rulesets = new ArrayList<>();
 		rulesets.add(new StandardRuleSetProvider().get());

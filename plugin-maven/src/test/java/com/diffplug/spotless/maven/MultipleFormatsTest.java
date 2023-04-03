@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,12 +53,12 @@ class MultipleFormatsTest extends MavenIntegrationHarness {
 				"  </format>",
 				"</formats>");
 
-		String path1 = "src/main/java/test1.java";
-		String path2 = "src/main/java/test2.java";
+		var path1 = "src/main/java/test1.java";
+		var path2 = "src/main/java/test2.java";
 
-		String path3 = "src/main/txt/test1.txt";
-		String path4 = "src/main/txt/test2.txt";
-		String path5 = "src/main/txt/test3.txt";
+		var path3 = "src/main/txt/test1.txt";
+		var path4 = "src/main/txt/test2.txt";
+		var path5 = "src/main/txt/test3.txt";
 
 		setFile(path1).toContent("package test;\npublic class JavaWorld1 {}");
 		setFile(path2).toContent("package test;\npublic class JavaWorld2 {}");

@@ -18,7 +18,6 @@ package com.diffplug.spotless.npm;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -47,11 +46,11 @@ class NodeServerLayout {
 
 	private static String nodeModulesDirName(String packageJsonContent) {
 		String md5Hash = NpmResourceHelper.md5(packageJsonContent);
-		Matcher matcher = PACKAGE_JSON_NAME_PATTERN.matcher(packageJsonContent);
+		var matcher = PACKAGE_JSON_NAME_PATTERN.matcher(packageJsonContent);
 		if (!matcher.find()) {
 			throw new IllegalArgumentException("package.json must contain a name property");
 		}
-		String packageName = matcher.group(1);
+		var packageName = matcher.group(1);
 		return String.format("%s-node-modules-%s", packageName, md5Hash);
 	}
 
@@ -89,7 +88,7 @@ class NodeServerLayout {
 	}
 
 	public boolean isNodeModulesPrepared() {
-		Path nodeModulesInstallDirPath = new File(nodeModulesDir(), NODE_MODULES).toPath();
+		var nodeModulesInstallDirPath = new File(nodeModulesDir(), NODE_MODULES).toPath();
 		if (!Files.isDirectory(nodeModulesInstallDirPath)) {
 			return false;
 		}

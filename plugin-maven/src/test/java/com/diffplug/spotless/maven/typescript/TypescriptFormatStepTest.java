@@ -38,7 +38,7 @@ class TypescriptFormatStepTest extends MavenIntegrationHarness {
 	}
 
 	private void runTsfmt(String kind) throws IOException, InterruptedException {
-		String path = prepareRunTsfmt(kind);
+		var path = prepareRunTsfmt(kind);
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).sameAsResource("npm/tsfmt/" + kind + "/" + kind + ".clean");
 	}
@@ -112,7 +112,7 @@ class TypescriptFormatStepTest extends MavenIntegrationHarness {
 
 	@Test
 	void testTypescript_2_Configs() throws Exception {
-		String path = "src/main/typescript/test.ts";
+		var path = "src/main/typescript/test.ts";
 
 		writePomWithTypescriptSteps(
 				path,

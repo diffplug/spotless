@@ -239,7 +239,7 @@ public abstract class SpotlessExtension {
 				return (T) existing;
 			}
 		} else {
-			T formatExtension = instantiateFormatExtension(clazz);
+			var formatExtension = instantiateFormatExtension(clazz);
 			formats.put(name, formatExtension);
 			createFormatTasks(name, formatExtension);
 			return formatExtension;

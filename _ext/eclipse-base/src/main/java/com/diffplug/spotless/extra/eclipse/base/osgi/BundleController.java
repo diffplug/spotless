@@ -168,7 +168,7 @@ public final class BundleController implements StaticBundleContext {
 	@Override
 	public ServiceReference<?>[] getAllServiceReferences(String clazz, String filter) throws InvalidSyntaxException {
 		//Filters are based on class names
-		String interfaceClassName = (null == clazz) ? filter : clazz;
+		var interfaceClassName = (null == clazz) ? filter : clazz;
 		return services.getReferences(interfaceClassName);
 	}
 

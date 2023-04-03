@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,7 +78,7 @@ public class EclipseResourceHarness extends ResourceHarness {
 	 * @return Formatted string
 	 */
 	protected String assertFormatted(String formatterVersion, File... settingsFiles) throws Exception {
-		String output = format(formatterVersion, settingsFiles);
+		var output = format(formatterVersion, settingsFiles);
 		assertThat(output).isEqualTo(expected);
 		return output;
 	}

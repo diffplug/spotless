@@ -41,7 +41,7 @@ class PalantirJavaFormatTest extends MavenIntegrationHarness {
 	}
 
 	private void runTest(String targetResource) throws Exception {
-		String path = "src/main/java/test.java";
+		var path = "src/main/java/test.java";
 		setFile(path).toResource("java/palantirjavaformat/JavaCodeUnformatted.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).sameAsResource(targetResource);

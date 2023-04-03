@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,9 +94,9 @@ public final class ImportOrderStep {
 	}
 
 	private static Map.Entry<Integer, String> splitIntoIndexAndName(String line) {
-		String[] pieces = line.split("=");
-		Integer index = Integer.valueOf(pieces[0]);
-		String name = pieces.length == 2 ? pieces[1] : "";
+		var pieces = line.split("=");
+		var index = Integer.valueOf(pieces[0]);
+		var name = pieces.length == 2 ? pieces[1] : "";
 		return new SimpleImmutableEntry<>(index, name);
 	}
 

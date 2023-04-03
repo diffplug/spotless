@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,9 +51,9 @@ final class MoreIterables {
 		// remove any duplicates (normally there won't be any)
 		if (toBeSorted.size() > 1) {
 			Iterator<T> iter = toBeSorted.iterator();
-			T last = iter.next();
+			var last = iter.next();
 			while (iter.hasNext()) {
-				T next = iter.next();
+				var next = iter.next();
 				if (comparator.compare(next, last) == 0) {
 					iter.remove();
 				} else {

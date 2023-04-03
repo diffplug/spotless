@@ -78,7 +78,7 @@ public class EquoResourceHarness extends ResourceHarness {
 	 * @return Formatted string
 	 */
 	protected String assertFormatted(String formatterVersion, File... settingsFiles) throws Exception {
-		String output = format(formatterVersion, settingsFiles);
+		var output = format(formatterVersion, settingsFiles);
 		assertThat(output).isEqualTo(expected);
 		return output;
 	}

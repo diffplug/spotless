@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,7 +89,7 @@ public final class PaddedCell {
 		Objects.requireNonNull(formatter, "formatter");
 		Objects.requireNonNull(file, "file");
 		byte[] rawBytes = ThrowingEx.get(() -> Files.readAllBytes(file.toPath()));
-		String raw = new String(rawBytes, formatter.getEncoding());
+		var raw = new String(rawBytes, formatter.getEncoding());
 		String original = LineEnding.toUnix(raw);
 		return check(formatter, file, original, MAX_CYCLE);
 	}
@@ -121,13 +121,13 @@ public final class PaddedCell {
 		List<String> appliedN = new ArrayList<>();
 		appliedN.add(appliedOnce);
 		appliedN.add(appliedTwice);
-		String input = appliedTwice;
+		var input = appliedTwice;
 		while (appliedN.size() < maxLength) {
 			String output = formatter.compute(input, file);
 			if (output.equals(input)) {
 				return Type.CONVERGE.create(file, appliedN);
 			} else {
-				int idx = appliedN.indexOf(output);
+				var idx = appliedN.indexOf(output);
 				if (idx >= 0) {
 					return Type.CYCLE.create(file, appliedN.subList(idx, appliedN.size()));
 				} else {
@@ -144,7 +144,7 @@ public final class PaddedCell {
 	 * (did not converge after a single iteration).
 	 */
 	public boolean misbehaved() {
-		boolean isWellBehaved = type == Type.CONVERGE && steps.size() <= 1;
+		var isWellBehaved = type == Type.CONVERGE && steps.size() <= 1;
 		return !isWellBehaved;
 	}
 
@@ -186,12 +186,12 @@ public final class PaddedCell {
 		Objects.requireNonNull(formatter, "formatter");
 		Objects.requireNonNull(file, "file");
 
-		byte[] rawBytes = Files.readAllBytes(file.toPath());
+		var rawBytes = Files.readAllBytes(file.toPath());
 		return calculateDirtyState(formatter, file, rawBytes);
 	}
 
 	public static DirtyState calculateDirtyState(Formatter formatter, File file, byte[] rawBytes) throws IOException {
-		String raw = new String(rawBytes, formatter.getEncoding());
+		var raw = new String(rawBytes, formatter.getEncoding());
 		// check that all characters were encodable
 		String encodingError = EncodingErrorMsg.msg(raw, rawBytes, formatter.getEncoding());
 		if (encodingError != null) {
@@ -223,7 +223,7 @@ public final class PaddedCell {
 		}
 
 		// get the canonical bytes
-		String canonicalUnix = cell.canonical();
+		var canonicalUnix = cell.canonical();
 		String canonical = formatter.computeLineEndings(canonicalUnix, file);
 		byte[] canonicalBytes = canonical.getBytes(formatter.getEncoding());
 		if (!Arrays.equals(rawBytes, canonicalBytes)) {

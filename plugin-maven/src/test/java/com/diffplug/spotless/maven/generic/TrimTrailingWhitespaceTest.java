@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,13 +26,13 @@ class TrimTrailingWhitespaceTest extends MavenIntegrationHarness {
 		writePomWithFormatSteps(
 				"<trimTrailingWhitespace />");
 
-		String target = "This line ends with whitespaces";
-		String source = target + "                    ";
+		var target = "This line ends with whitespaces";
+		var source = target + "                    ";
 		runTest(source, target);
 	}
 
 	private void runTest(String sourceContent, String targetContent) throws Exception {
-		String path = "src/main/java/test.java";
+		var path = "src/main/java/test.java";
 		setFile(path).toContent(sourceContent);
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).hasContent(targetContent);

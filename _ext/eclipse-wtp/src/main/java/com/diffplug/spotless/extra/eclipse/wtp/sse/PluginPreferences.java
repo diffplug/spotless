@@ -96,9 +96,9 @@ public class PluginPreferences {
 			throw new IllegalArgumentException("Internal error: Catalog implementation '" + defaultCatalogInterface.getClass().getCanonicalName() + "' unsupported.");
 		}
 		Catalog defaultCatalog = (Catalog) defaultCatalogInterface;
-		String catalogProperty = properties.getProperty(USER_CATALOG, "");
+		var catalogProperty = properties.getProperty(USER_CATALOG, "");
 		if (!catalogProperty.isEmpty()) {
-			final File catalogFile = new File(catalogProperty);
+			final var catalogFile = new File(catalogProperty);
 			try {
 				InputStream inputStream = new FileInputStream(catalogFile);
 				String orgBase = defaultCatalog.getBase();
@@ -118,7 +118,7 @@ public class PluginPreferences {
 	public static void assertNoChanges(Plugin plugin, Properties properties) {
 		Objects.requireNonNull(properties, "Property values are missing.");
 		final String preferenceId = plugin.getBundle().getSymbolicName();
-		Properties originalValues = CONFIG.get(preferenceId);
+		var originalValues = CONFIG.get(preferenceId);
 		if (null == originalValues) {
 			throw new IllegalArgumentException("No configuration found for " + preferenceId);
 		}

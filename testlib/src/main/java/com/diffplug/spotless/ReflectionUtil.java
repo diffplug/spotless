@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public class ReflectionUtil {
 		System.out.print(" " + method.getName() + "(");
 		Iterator<Parameter> paramIter = Arrays.asList(method.getParameters()).iterator();
 		while (paramIter.hasNext()) {
-			Parameter param = paramIter.next();
+			var param = paramIter.next();
 
 			System.out.print(param.getType().getName());
 			if (paramIter.hasNext()) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,14 +84,14 @@ public class EclipseBasedStepBuilder {
 
 	/** Set dependencies for the corresponding Eclipse version */
 	public void setVersion(String version) {
-		String url = "/" + ECLIPSE_FORMATTER_RESOURCES + "/" + formatterName.replace(' ', '_') + "/v" + version + ".lockfile";
-		InputStream depsFile = EclipseBasedStepBuilder.class.getResourceAsStream(url);
+		var url = "/" + ECLIPSE_FORMATTER_RESOURCES + "/" + formatterName.replace(' ', '_') + "/v" + version + ".lockfile";
+		var depsFile = EclipseBasedStepBuilder.class.getResourceAsStream(url);
 		if (depsFile == null) {
 			throw new IllegalArgumentException("No such version " + version + ", expected at " + url);
 		}
-		byte[] content = toByteArray(depsFile);
-		String allLines = new String(content, StandardCharsets.UTF_8);
-		String[] lines = allLines.split("\n");
+		var content = toByteArray(depsFile);
+		var allLines = new String(content, StandardCharsets.UTF_8);
+		var lines = allLines.split("\n");
 		dependencies.clear();
 		for (String line : lines) {
 			if (!line.startsWith("#")) {
@@ -102,11 +102,11 @@ public class EclipseBasedStepBuilder {
 	}
 
 	private static byte[] toByteArray(InputStream in) {
-		ByteArrayOutputStream to = new ByteArrayOutputStream();
-		byte[] buf = new byte[8192];
+		var to = new ByteArrayOutputStream();
+		var buf = new byte[8192];
 		try {
 			while (true) {
-				int r = in.read(buf);
+				var r = in.read(buf);
 				if (r == -1) {
 					break;
 				}
@@ -164,10 +164,10 @@ public class EclipseBasedStepBuilder {
 		}
 
 		private static String convertEclipseVersion(String version) {
-			String semanticVersion = version;
+			var semanticVersion = version;
 			//Old Eclipse versions used a character at the end. For example '4.7.3a'.
 			if (1 < version.length()) {
-				char lastChar = version.charAt(version.length() - 1);
+				var lastChar = version.charAt(version.length() - 1);
 				if ('.' != lastChar && 'a' <= lastChar) {
 					semanticVersion = version.substring(0, version.length() - 1);
 					semanticVersion += String.format(".%d", (int) lastChar);

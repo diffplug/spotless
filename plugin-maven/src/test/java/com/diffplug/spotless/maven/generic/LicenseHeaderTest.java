@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ class LicenseHeaderTest extends MavenIntegrationHarness {
 
 	@Test
 	void fromContentCpp() throws Exception {
-		String cppLicense = "//my license";
+		var cppLicense = "//my license";
 		writePomWithCppSteps(
 				"<includes><include>src/**</include></includes>",
 				"<licenseHeader>",
@@ -44,8 +44,8 @@ class LicenseHeaderTest extends MavenIntegrationHarness {
 				"  </content>",
 				"</licenseHeader>");
 
-		String path = "src/test/cpp/file.c++";
-		String cppContent = "#include <whatsoever.h>";
+		var path = "src/test/cpp/file.c++";
+		var cppContent = "#include <whatsoever.h>";
 		setFile(path).toContent(cppContent);
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).hasContent(cppLicense + '\n' + cppContent);
@@ -61,7 +61,7 @@ class LicenseHeaderTest extends MavenIntegrationHarness {
 				"  </content>",
 				"</licenseHeader>");
 
-		String path = "src/main/groovy/test.groovy";
+		var path = "src/main/groovy/test.groovy";
 		setFile(path).toResource("license/MissingLicense.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).sameAsResource("license/HasLicense.test");
@@ -123,7 +123,7 @@ class LicenseHeaderTest extends MavenIntegrationHarness {
 				"  </content>",
 				"</licenseHeader>");
 
-		String path = "src/main/kotlin/test.kt";
+		var path = "src/main/kotlin/test.kt";
 		String noLicenseHeader = getTestResource("kotlin/licenseheader/KotlinCodeWithoutHeader.test");
 
 		setFile(path).toContent(noLicenseHeader);
@@ -142,7 +142,7 @@ class LicenseHeaderTest extends MavenIntegrationHarness {
 	}
 
 	private void runTest() throws Exception {
-		String path = "src/main/java/test.java";
+		var path = "src/main/java/test.java";
 		setFile(path).toResource("license/MissingLicense.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).sameAsResource("license/HasLicense.test");
@@ -156,7 +156,7 @@ class LicenseHeaderTest extends MavenIntegrationHarness {
 				"  </content>",
 				"</licenseHeader>");
 
-		String path = "src/main/java/com/diffplug/spotless/" + file;
+		var path = "src/main/java/com/diffplug/spotless/" + file;
 		setFile(path).toResource("license/" + file + ".test");
 
 		mavenRunner().withArguments("spotless:apply").runNoError();

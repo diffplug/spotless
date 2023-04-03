@@ -96,16 +96,16 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 				DirCacheIterator dirCacheIterator = treeWalk.getTree(INDEX, DirCacheIterator.class);
 				WorkingTreeIterator workingTreeIterator = treeWalk.getTree(WORKDIR, WorkingTreeIterator.class);
 
-				boolean hasTree = treeIterator != null;
-				boolean hasDirCache = dirCacheIterator != null;
+				var hasTree = treeIterator != null;
+				var hasDirCache = dirCacheIterator != null;
 
 				if (!hasTree) {
 					// it's not in the tree, so it was added
 					return false;
 				} else {
 					if (hasDirCache) {
-						boolean treeEqualsIndex = treeIterator.idEqual(dirCacheIterator) && treeIterator.getEntryRawMode() == dirCacheIterator.getEntryRawMode();
-						boolean indexEqualsWC = !workingTreeIterator.isModified(dirCacheIterator.getDirCacheEntry(), true, treeWalk.getObjectReader());
+						var treeEqualsIndex = treeIterator.idEqual(dirCacheIterator) && treeIterator.getEntryRawMode() == dirCacheIterator.getEntryRawMode();
+						var indexEqualsWC = !workingTreeIterator.isModified(dirCacheIterator.getDirCacheEntry(), true, treeWalk.getObjectReader());
 						if (treeEqualsIndex != indexEqualsWC) {
 							// if one is equal and the other isn't, then it has definitely changed
 							return false;
@@ -206,7 +206,7 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 			ObjectId subtreeSha = subtreeShaCache.get(project);
 			if (subtreeSha == null) {
 				Repository repo = repositoryFor(project);
-				File directory = getDir(project);
+				var directory = getDir(project);
 				if (repo.getWorkTree().equals(directory)) {
 					subtreeSha = rootTreeSha;
 				} else {

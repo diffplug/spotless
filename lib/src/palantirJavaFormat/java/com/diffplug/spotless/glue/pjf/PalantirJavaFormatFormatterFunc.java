@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 DiffPlug
+ * Copyright 2022-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ public class PalantirJavaFormatFormatterFunc implements FormatterFunc {
 
 	@Override
 	public String apply(String input) throws Exception {
-		String source = input;
+		var source = input;
 		source = ImportOrderer.reorderImports(source, JavaFormatterOptions.Style.PALANTIR);
 		source = RemoveUnusedImports.removeUnusedImports(source);
 		return formatter.formatSource(source);

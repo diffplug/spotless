@@ -59,7 +59,7 @@ public class MavenRunner {
 	}
 
 	public MavenRunner withRemoteDebug(int port) {
-		String address = (Jvm.version() < 9 ? "" : "*:") + port;
+		var address = (Jvm.version() < 9 ? "" : "*:") + port;
 		environment.put("MAVEN_OPTS", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=" + address);
 		return this;
 	}
@@ -68,7 +68,7 @@ public class MavenRunner {
 		Objects.requireNonNull(projectDir, "Need to call withProjectDir() first");
 		Objects.requireNonNull(args, "Need to call withArguments() first");
 		// run maven with the given args in the given directory
-		String argsString = "-e " + String.join(" ", Arrays.asList(args));
+		var argsString = "-e " + String.join(" ", Arrays.asList(args));
 		return runner.shellWinUnix(projectDir, environment, "mvnw " + argsString, "./mvnw " + argsString);
 	}
 
