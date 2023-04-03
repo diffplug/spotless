@@ -198,14 +198,22 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 
 	public class PalantirJavaFormatConfig {
 		final String version;
+		String style;
 
 		PalantirJavaFormatConfig(String version) {
 			this.version = Objects.requireNonNull(version);
+			this.style = PalantirJavaFormatStep.defaultStyle();
 			addStep(createStep());
 		}
 
+		public PalantirJavaFormatConfig style(String style) {
+			this.style = Objects.requireNonNull(style);
+			replaceStep(createStep());
+			return this;
+		}
+
 		private FormatterStep createStep() {
-			return PalantirJavaFormatStep.create(version, provisioner());
+			return PalantirJavaFormatStep.create(version, style, provisioner());
 		}
 	}
 
