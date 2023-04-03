@@ -105,7 +105,7 @@ dependencies {
 	String VER_SCALAFMT="3.7.1"
 	scalafmtCompileOnly "org.scalameta:scalafmt-core_2.13:$VER_SCALAFMT"
 
-	String VER_DIKTAT = "1.2.4.2"
+	String VER_DIKTAT = "1.2.5"
 	diktatCompileOnly "org.cqfn.diktat:diktat-rules:$VER_DIKTAT"
 
 	// used for markdown formatting
