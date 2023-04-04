@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.extra.eclipse.wtp.html;
-
-import static com.diffplug.spotless.extra.eclipse.base.SpotlessEclipseFramework.LINE_DELIMITER;
+package com.diffplug.spotless.extra.glue.wtp.html;
 
 import java.util.function.BiFunction;
 
@@ -26,8 +24,6 @@ import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.TextEdit;
 import org.eclipse.wst.jsdt.core.formatter.CodeFormatter;
 import org.eclipse.wst.sse.core.internal.provisional.text.IStructuredDocument;
-
-import com.diffplug.spotless.extra.eclipse.wtp.html.StructuredDocumentProcessor.RegionProcessor;
 
 /**
  * Provides additional formating to the plain JS {@link CodeFormatter}:
@@ -42,7 +38,7 @@ import com.diffplug.spotless.extra.eclipse.wtp.html.StructuredDocumentProcessor.
  * to the one of Eclipse.
  * </p>
  */
-public class JsRegionProcessor extends RegionProcessor<CodeFormatter> {
+public class JsRegionProcessor extends StructuredDocumentProcessor.RegionProcessor<CodeFormatter> {
 	public JsRegionProcessor(IStructuredDocument document, ITypedRegion scriptRegion, String htmlIndent) {
 		super(document, scriptRegion, htmlIndent);
 	}
@@ -51,7 +47,7 @@ public class JsRegionProcessor extends RegionProcessor<CodeFormatter> {
 	protected void applyFirst(CodeFormatter formatter) throws MalformedTreeException, BadLocationException {
 		MultiTextEdit modifications = new MultiTextEdit();
 		String jsSource = document.get(region.getOffset(), region.getLength());
-		TextEdit jsEdit = formatter.format(CodeFormatter.K_JAVASCRIPT_UNIT, jsSource, 0, jsSource.length(), indentationLevel + 1, LINE_DELIMITER);
+		TextEdit jsEdit = formatter.format(CodeFormatter.K_JAVASCRIPT_UNIT, jsSource, 0, jsSource.length(), indentationLevel + 1, "\n");
 		if (null != jsEdit) {
 			jsEdit.moveTree(region.getOffset());
 			modifications.addChild(jsEdit);

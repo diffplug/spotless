@@ -50,7 +50,7 @@ import com.diffplug.spotless.LazyForwardingEquality;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.cpp.ClangFormatStep;
-import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
+import com.diffplug.spotless.extra.EquoBasedStepBuilder;
 import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
 import com.diffplug.spotless.generic.EndWithNewlineStep;
 import com.diffplug.spotless.generic.IndentStep;
@@ -703,7 +703,7 @@ public class FormatExtension {
 	}
 
 	public class EclipseWtpConfig {
-		private final EclipseBasedStepBuilder builder;
+		private final EquoBasedStepBuilder builder;
 
 		EclipseWtpConfig(EclipseWtpFormatterStep type, String version) {
 			builder = type.createBuilder(provisioner());
