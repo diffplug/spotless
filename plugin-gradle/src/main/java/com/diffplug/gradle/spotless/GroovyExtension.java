@@ -118,7 +118,7 @@ public class GroovyExtension extends FormatExtension implements HasBuiltinDelimi
 			target = getSources(getProject(),
 					message,
 					sourceSet -> {
-						if (GradleVersion.current().compareTo(GradleVersion.version("7.1")) >= 0) {
+						if (GradleVersion.current().compareTo(GradleVersion.version(SpotlessPlugin.VER_GRADLE_javaPluginExtension)) >= 0) {
 							return sourceSet.getExtensions().getByType(GroovySourceDirectorySet.class);
 						} else {
 							final GroovySourceSet groovySourceSet = new DslObject(sourceSet).getConvention().getPlugin(GroovySourceSet.class);
