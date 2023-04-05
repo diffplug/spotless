@@ -14,6 +14,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   ```
   Mirrors are selected by prefix match, for example `https://download.eclipse.org/eclipse/updates/4.26/` will be redirected to `https://some.internal.mirror/eclipse/eclipse/updates/4.26/`.
   The same configuration exists for `greclipse` and `eclipseCdt`.
+* The `style` option in Palantir Java Format ([#1654](https://github.com/diffplug/spotless/pull/1654)).
 * Added support for Gherkin feature files ([1649](https://github.com/diffplug/spotless/issues/1649)).
 ### Changes
 * **POTENTIALLY BREAKING** Drop support for `googleJavaFormat` versions &lt; `1.8`. ([#1630](https://github.com/diffplug/spotless/pull/1630))
