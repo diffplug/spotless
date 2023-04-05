@@ -66,6 +66,8 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier), [ESLint](#eslint-typescript))
   - [Javascript](#javascript) ([prettier](#prettier), [ESLint](#eslint-javascript))
   - [JSON](#json)
+  - [YAML](#yaml)
+  - [Gherkin](#gherkin)
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching `npm install` results](#caching-results-of-npm-install))
       - javascript, jsx, angular, vue, flow, typescript, css, less, scss, html, json, graphql, markdown, ymaml
@@ -211,8 +213,8 @@ spotless {
 spotless {
   java {
     palantirJavaFormat()
-    // optional: you can specify a specific version
-    palantirJavaFormat('2.9.0')
+    // optional: you can specify a specific version and/or switch to AOSP/GOOGLE style
+    palantirJavaFormat('2.9.0').style("GOOGLE")
 ```
 
 ### eclipse jdt
@@ -863,7 +865,34 @@ spotless {
 }
 ```
 
-<a name="applying-prettier-to-javascript--flow--typescript--css--scss--less--jsx--graphql--yaml--etc"></a>
+## Gherkin
+
+- `com.diffplug.gradle.spotless.GherkinExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.17.0/com/diffplug/gradle/spotless/GherkinExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/GherkinExtension.java)
+
+```gradle
+spotless {
+  gherkin {
+    target 'src/**/*.feature' // you have to set the target manually
+    gherkinUtils() // has its own section below
+  }
+}
+```
+
+### gherkinUtils
+
+[homepage](https://github.com/cucumber/gherkin-utils). [changelog](https://github.com/cucumber/gherkin-utils/blob/main/CHANGELOG.md).
+
+Uses a Gherkin pretty-printer that optionally allows configuring the number of spaces that are used to pretty print objects:
+
+```gradle
+spotless {
+  gherkin {
+    target 'src/**/*.feature'     // required to be set explicitly
+    gherkinUtils()
+      .version('8.0.2')           // optional: custom version of 'io.cucumber:gherkin-utils'
+  }
+}
+```
 
 ## Prettier
 

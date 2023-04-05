@@ -53,6 +53,7 @@ user@machine repo % mvn spotless:check
   - [Javascript](#javascript) ([prettier](#prettier), [ESLint](#eslint-javascript))
   - [JSON](#json)
   - [YAML](#yaml)
+  - [Gherkin](#gherkin)
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching `npm install` results](#caching-results-of-npm-install))
     - [eclipse web tools platform](#eclipse-web-tools-platform)
@@ -236,6 +237,7 @@ any other maven phase (i.e. compile) then it can be configured as below;
 ```xml
 <palantirJavaFormat>
   <version>2.10.0</version>                     <!-- optional -->
+  <style>PALANTIR</style>                       <!-- or AOSP/GOOGLE (optional) -->
 </palantirJavaFormat>
 ```
 
@@ -982,7 +984,33 @@ Uses Jackson and YAMLFactory to pretty print objects:
 </jackson>
 ```
 
-<a name="applying-prettier-to-javascript--flow--typescript--css--scss--less--jsx--graphql--yaml--etc"></a>
+## Gherkin
+
+- `com.diffplug.spotless.maven.FormatterFactory.addStepFactory(FormatterStepFactory)` [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/gherkin/Gherkin.java)
+
+```gradle
+<configuration>
+  <gherkin>
+    <includes>     <!-- You have to set the target manually -->
+      <include>src/**/*.feature</include>
+    </includes>
+
+    <gherkinUtils />    <!-- has its own section below -->
+  </gherkin>
+</configuration>
+```
+
+### gherkinUtils
+
+[homepage](https://github.com/cucumber/gherkin-utils). [changelog](https://github.com/cucumber/gherkin-utils/blob/main/CHANGELOG.md).
+
+Uses a Gherkin pretty-printer that optionally allows configuring the number of spaces that are used to pretty print objects:
+
+```xml
+<gherkinUtils>
+  <version>8.0.2</version>                 <!-- optional: Custom version of 'io.cucumber:gherkin-utils' -->
+</gherkinUtils>
+```
 
 ## Prettier
 

@@ -18,7 +18,8 @@ def NEEDS_GLUE = [
 	'scalafmt',
 	'jackson',
 	'gson',
-	'cleanthat'
+	'cleanthat',
+	'gherkin'
 ]
 for (glue in NEEDS_GLUE) {
 	sourceSets.register(glue) {
@@ -71,7 +72,7 @@ dependencies {
 
 	palantirJavaFormatCompileOnly 'com.palantir.javaformat:palantir-java-format:1.1.0' 	// this version needs to stay compilable against Java 8 for CI Job testNpm
 
-	googleJavaFormatCompileOnly 'com.google.googlejavaformat:google-java-format:1.8' // minimum required version due to api changes before then
+	googleJavaFormatCompileOnly 'com.google.googlejavaformat:google-java-format:1.16.0' // minimum required version due to api changes before then
 
 	// used jackson-based formatters
 	jacksonCompileOnly 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
@@ -116,6 +117,9 @@ dependencies {
 	String VER_CLEANTHAT="2.8"
 	cleanthatCompileOnly "io.github.solven-eu.cleanthat:java:$VER_CLEANTHAT"
 	compatCleanthat2Dot1CompileAndTestOnly "io.github.solven-eu.cleanthat:java:$VER_CLEANTHAT"
+
+	gherkinCompileOnly 'io.cucumber:gherkin-utils:8.0.2'
+	gherkinCompileOnly 'org.slf4j:slf4j-api:2.0.0'
 }
 
 // we'll hold the core lib to a high standard
