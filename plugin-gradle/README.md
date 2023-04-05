@@ -200,8 +200,8 @@ spotless {
 spotless {
   java {
     palantirJavaFormat()
-    // optional: you can specify a specific version
-    palantirJavaFormat('2.9.0')
+    // optional: you can specify a specific version and/or switch to AOSP/GOOGLE style
+    palantirJavaFormat('2.9.0').style("GOOGLE")
 ```
 
 ### eclipse jdt

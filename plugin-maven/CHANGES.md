@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* The `style` option in Palantir Java Format ([#1654](https://github.com/diffplug/spotless/pull/1654)).
 ### Changes
 * **POTENTIALLY BREAKING** Drop support for `googleJavaFormat` versions &lt; `1.8`. ([#1630](https://github.com/diffplug/spotless/pull/1630))
 * Bump default `googleJavaFormat` version `1.15.0` -> `1.16.0`. ([#1630](https://github.com/diffplug/spotless/pull/1630))
