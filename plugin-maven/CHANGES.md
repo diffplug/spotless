@@ -5,10 +5,12 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * The `style` option in Palantir Java Format ([#1654](https://github.com/diffplug/spotless/pull/1654)).
+* Added support for Gherkin feature files ([#1649](https://github.com/diffplug/spotless/issues/1649)).
+### Fixed
+* Fix non deterministic computation of cache fingerprint when using multiple formatters. ([#1643](https://github.com/diffplug/spotless/pull/1643) fixes [#1642](https://github.com/diffplug/spotless/pull/1642))
 ### Changes
 * **POTENTIALLY BREAKING** Drop support for `googleJavaFormat` versions &lt; `1.8`. ([#1630](https://github.com/diffplug/spotless/pull/1630))
 * Bump default `googleJavaFormat` version `1.15.0` -> `1.16.0`. ([#1630](https://github.com/diffplug/spotless/pull/1630))
-* Fix non deterministic computation of cache fingerprint when using multiple formatters. ([#1643](https://github.com/diffplug/spotless/pull/1643) fixes [#1642](https://github.com/diffplug/spotless/pull/1642))
 
 ## [2.35.0] - 2023-03-13
 ### Added
