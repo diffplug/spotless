@@ -46,10 +46,17 @@ public abstract class EquoBasedStepBuilder {
 	private Iterable<File> settingsFiles = new ArrayList<>();
 	private Map<String, String> p2Mirrors = Map.of();
 
-	/** Initialize valid default configuration, taking latest version */
+	/** @deprecated if you use this constructor you *must* call {@link #setVersion(String)} before calling {@link #build()} */
+	@Deprecated
 	public EquoBasedStepBuilder(String formatterName, Provisioner mavenProvisioner, ThrowingEx.Function<State, FormatterFunc> stateToFormatter) {
+		this(formatterName, mavenProvisioner, null, stateToFormatter);
+	}
+
+	/** Initialize valid default configuration, taking latest version */
+	public EquoBasedStepBuilder(String formatterName, Provisioner mavenProvisioner, String defaultVersion, ThrowingEx.Function<State, FormatterFunc> stateToFormatter) {
 		this.formatterName = formatterName;
 		this.mavenProvisioner = mavenProvisioner;
+		this.formatterVersion = defaultVersion;
 		this.stateToFormatter = stateToFormatter;
 	}
 
