@@ -18,8 +18,8 @@ package com.diffplug.spotless.maven.gherkin;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.gherkin.GherkinSimpleConfig;
-import com.diffplug.spotless.gherkin.GherkinSimpleStep;
+import com.diffplug.spotless.gherkin.GherkinUtilsConfig;
+import com.diffplug.spotless.gherkin.GherkinUtilsStep;
 import com.diffplug.spotless.maven.FormatterFactory;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
@@ -30,13 +30,13 @@ import com.diffplug.spotless.maven.FormatterStepFactory;
 public class GherkinUtils implements FormatterStepFactory {
 
 	@Parameter
-	private String version = GherkinSimpleStep.defaultVersion();
+	private String version = GherkinUtilsStep.defaultVersion();
 
 	@Parameter
-	private int indentWithSpaces = GherkinSimpleConfig.defaultIndentSpaces();
+	private int indentWithSpaces = GherkinUtilsConfig.defaultIndentSpaces();
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
-		return GherkinSimpleStep.create(new GherkinSimpleConfig(indentWithSpaces), version, stepConfig.getProvisioner());
+		return GherkinUtilsStep.create(new GherkinUtilsConfig(indentWithSpaces), version, stepConfig.getProvisioner());
 	}
 }

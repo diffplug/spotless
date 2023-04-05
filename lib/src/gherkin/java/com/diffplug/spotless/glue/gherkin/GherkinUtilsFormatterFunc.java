@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.diffplug.spotless.FormatterFunc;
-import com.diffplug.spotless.gherkin.GherkinSimpleConfig;
+import com.diffplug.spotless.gherkin.GherkinUtilsConfig;
 
 import io.cucumber.gherkin.GherkinParser;
 import io.cucumber.gherkin.utils.pretty.Pretty;
@@ -29,12 +29,12 @@ import io.cucumber.messages.types.GherkinDocument;
 import io.cucumber.messages.types.Source;
 import io.cucumber.messages.types.SourceMediaType;
 
-public class GherkinFormatterFunc implements FormatterFunc {
-	private static final Logger LOGGER = LoggerFactory.getLogger(GherkinFormatterFunc.class);
+public class GherkinUtilsFormatterFunc implements FormatterFunc {
+	private static final Logger LOGGER = LoggerFactory.getLogger(GherkinUtilsFormatterFunc.class);
 
-	private final GherkinSimpleConfig gherkinSimpleConfig;
+	private final GherkinUtilsConfig gherkinSimpleConfig;
 
-	public GherkinFormatterFunc(GherkinSimpleConfig gherkinSimpleConfig) {
+	public GherkinUtilsFormatterFunc(GherkinUtilsConfig gherkinSimpleConfig) {
 		this.gherkinSimpleConfig = gherkinSimpleConfig;
 	}
 

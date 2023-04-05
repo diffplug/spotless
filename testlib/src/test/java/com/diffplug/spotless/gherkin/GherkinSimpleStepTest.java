@@ -27,15 +27,15 @@ import com.diffplug.spotless.TestProvisioner;
 
 public class GherkinSimpleStepTest {
 
-	private static final String VERSION = GherkinSimpleStep.defaultVersion();
-	private static final int INDENT = GherkinSimpleConfig.defaultIndentSpaces();
+	private static final String VERSION = GherkinUtilsStep.defaultVersion();
+	private static final int INDENT = GherkinUtilsConfig.defaultIndentSpaces();
 
-	private final FormatterStep step = GherkinSimpleStep.create(new GherkinSimpleConfig(INDENT), VERSION, TestProvisioner.mavenCentral());
+	private final FormatterStep step = GherkinUtilsStep.create(new GherkinUtilsConfig(INDENT), VERSION, TestProvisioner.mavenCentral());
 	private final StepHarness stepHarness = StepHarness.forStep(step);
 
 	@Test
 	public void cannotProvidedNullProvisioner() {
-		assertThatThrownBy(() -> GherkinSimpleStep.create(new GherkinSimpleConfig(INDENT), VERSION, null)).isInstanceOf(NullPointerException.class).hasMessage("provisioner cannot be null");
+		assertThatThrownBy(() -> GherkinUtilsStep.create(new GherkinUtilsConfig(INDENT), VERSION, null)).isInstanceOf(NullPointerException.class).hasMessage("provisioner cannot be null");
 	}
 
 	@Test
@@ -75,7 +75,7 @@ public class GherkinSimpleStepTest {
 	@Disabled("gherkin-utils does not allow custom indentation")
 	@Test
 	public void canSetCustomIndentationLevel() throws Exception {
-		FormatterStep step = GherkinSimpleStep.create(new GherkinSimpleConfig(6), VERSION, TestProvisioner.mavenCentral());
+		FormatterStep step = GherkinUtilsStep.create(new GherkinUtilsConfig(6), VERSION, TestProvisioner.mavenCentral());
 		StepHarness stepHarness = StepHarness.forStep(step);
 
 		String before = "gherkin/minimalBefore.feature";
@@ -86,7 +86,7 @@ public class GherkinSimpleStepTest {
 	@Disabled("gherkin-utils does not allow custom indentation")
 	@Test
 	public void canSetIndentationLevelTo0() throws Exception {
-		FormatterStep step = GherkinSimpleStep.create(new GherkinSimpleConfig(0), VERSION, TestProvisioner.mavenCentral());
+		FormatterStep step = GherkinUtilsStep.create(new GherkinUtilsConfig(0), VERSION, TestProvisioner.mavenCentral());
 		StepHarness stepHarness = StepHarness.forStep(step);
 
 		String before = "gherkin/minimalBefore.feature";
@@ -111,7 +111,7 @@ public class GherkinSimpleStepTest {
 
 			@Override
 			protected FormatterStep create() {
-				return GherkinSimpleStep.create(new GherkinSimpleConfig(spaces), VERSION, TestProvisioner.mavenCentral());
+				return GherkinUtilsStep.create(new GherkinUtilsConfig(spaces), VERSION, TestProvisioner.mavenCentral());
 			}
 		}.testEquals();
 	}

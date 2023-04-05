@@ -26,7 +26,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
-public class GherkinSimpleStep {
+public class GherkinUtilsStep {
 	private static final String MAVEN_COORDINATE = "io.cucumber:gherkin-utils:";
 	private static final String DEFAULT_VERSION = "8.0.2";
 
@@ -34,32 +34,32 @@ public class GherkinSimpleStep {
 		return DEFAULT_VERSION;
 	}
 
-	public static FormatterStep create(GherkinSimpleConfig gherkinSimpleConfig,
+	public static FormatterStep create(GherkinUtilsConfig gherkinSimpleConfig,
 			String formatterVersion, Provisioner provisioner) {
 		Objects.requireNonNull(provisioner, "provisioner cannot be null");
-		return FormatterStep.createLazy("gherkin", () -> new GherkinSimpleStep.State(gherkinSimpleConfig, formatterVersion, provisioner), GherkinSimpleStep.State::toFormatter);
+		return FormatterStep.createLazy("gherkin", () -> new GherkinUtilsStep.State(gherkinSimpleConfig, formatterVersion, provisioner), GherkinUtilsStep.State::toFormatter);
 	}
 
 	private static final class State implements Serializable {
 		private static final long serialVersionUID = 1L;
 
-		private final GherkinSimpleConfig gherkinSimpleConfig;
+		private final GherkinUtilsConfig gherkinSimpleConfig;
 		private final JarState jarState;
 
-		private State(GherkinSimpleConfig gherkinSimpleConfig, String formatterVersion, Provisioner provisioner) throws IOException {
+		private State(GherkinUtilsConfig gherkinSimpleConfig, String formatterVersion, Provisioner provisioner) throws IOException {
 			this.gherkinSimpleConfig = gherkinSimpleConfig;
 			this.jarState = JarState.from(MAVEN_COORDINATE + formatterVersion, provisioner);
 		}
 
 		FormatterFunc toFormatter() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
 				InstantiationException, IllegalAccessException {
-			Class<?> formatterFunc = jarState.getClassLoader().loadClass("com.diffplug.spotless.glue.gherkin.GherkinFormatterFunc");
-			Constructor<?> constructor = formatterFunc.getConstructor(GherkinSimpleConfig.class);
+			Class<?> formatterFunc = jarState.getClassLoader().loadClass("com.diffplug.spotless.glue.gherkin.GherkinUtilsFormatterFunc");
+			Constructor<?> constructor = formatterFunc.getConstructor(GherkinUtilsConfig.class);
 			return (FormatterFunc) constructor.newInstance(gherkinSimpleConfig);
 		}
 	}
 
-	private GherkinSimpleStep() {
+	private GherkinUtilsStep() {
 		// cannot be directly instantiated
 	}
 }

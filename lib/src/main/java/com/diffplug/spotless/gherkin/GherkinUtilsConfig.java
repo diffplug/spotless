@@ -17,7 +17,7 @@ package com.diffplug.spotless.gherkin;
 
 import java.io.Serializable;
 
-public class GherkinSimpleConfig implements Serializable {
+public class GherkinUtilsConfig implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public static int defaultIndentSpaces() {
@@ -28,7 +28,7 @@ public class GherkinSimpleConfig implements Serializable {
 
 	final int indentSpaces;
 
-	public GherkinSimpleConfig(int indentSpaces) {
+	public GherkinUtilsConfig(int indentSpaces) {
 		this.indentSpaces = indentSpaces;
 	}
 

@@ -18,8 +18,7 @@ package com.diffplug.gradle.spotless;
 import javax.inject.Inject;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.gherkin.GherkinSimpleConfig;
-import com.diffplug.spotless.gherkin.GherkinSimpleStep;
+import com.diffplug.spotless.gherkin.GherkinUtilsStep;
 
 public class GherkinExtension extends FormatExtension {
 	static final String NAME = "gherkin";
@@ -46,8 +45,8 @@ public class GherkinExtension extends FormatExtension {
 		private int indent;
 
 		public GherkinUtilsConfig() {
-			this.version = GherkinSimpleStep.defaultVersion();
-			this.indent = GherkinSimpleConfig.defaultIndentSpaces();
+			this.version = GherkinUtilsStep.defaultVersion();
+			this.indent = com.diffplug.spotless.gherkin.GherkinUtilsConfig.defaultIndentSpaces();
 			addStep(createStep());
 		}
 
@@ -57,7 +56,7 @@ public class GherkinExtension extends FormatExtension {
 		}
 
 		private FormatterStep createStep() {
-			return GherkinSimpleStep.create(new GherkinSimpleConfig(indent), version, provisioner());
+			return GherkinUtilsStep.create(new com.diffplug.spotless.gherkin.GherkinUtilsConfig(indent), version, provisioner());
 		}
 	}
 
