@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,18 @@ import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
 class FlexmarkStepTest {
+	private static final String oldestSupported = "0.62.2";
 
 	@Test
-	void behavior() throws Exception {
+	void behaviorOldest() {
+		StepHarness.forStep(FlexmarkStep.create(oldestSupported, TestProvisioner.mavenCentral()))
+				.testResource(
+						"markdown/flexmark/FlexmarkUnformatted.md",
+						"markdown/flexmark/FlexmarkFormatted.md");
+	}
+
+	@Test
+	void behaviorLatest() {
 		StepHarness.forStep(FlexmarkStep.create(TestProvisioner.mavenCentral()))
 				.testResource(
 						"markdown/flexmark/FlexmarkUnformatted.md",
