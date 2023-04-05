@@ -986,12 +986,14 @@ Uses Jackson and YAMLFactory to pretty print objects:
       <include>src/**/*.feature</include>
     </includes>
 
-    <simple />    <!-- has its own section below -->
+    <gherkinUtils />    <!-- has its own section below -->
   </gherkin>
 </configuration>
 ```
 
 ### simple
+
+[homepage](https://github.com/cucumber/gherkin-utils). [changelog](https://github.com/cucumber/gherkin-utils/blob/main/CHANGELOG.md).
 
 Uses a Gherkin pretty-printer that optionally allows configuring the number of spaces that are used to pretty print objects:
 

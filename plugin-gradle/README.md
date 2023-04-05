@@ -860,12 +860,14 @@ spotless {
 spotless {
   gherkin {
     target 'src/**/*.feature' // you have to set the target manually
-    simple() // has its own section below
+    gherkinUtils() // has its own section below
   }
 }
 ```
 
-### simple
+### gherkinUtils
+
+[homepage](https://github.com/cucumber/gherkin-utils). [changelog](https://github.com/cucumber/gherkin-utils/blob/main/CHANGELOG.md).
 
 Uses a Gherkin pretty-printer that optionally allows configuring the number of spaces that are used to pretty print objects:
 
