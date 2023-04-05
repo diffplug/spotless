@@ -104,14 +104,14 @@ public class GrEclipseFormatterStepImpl {
 	 * Eclipse Groovy formatter does not signal problems by its return value, but by logging errors.
 	 */
 	private static final class GroovyErrorListener implements ILogListener, IGroovyLogger {
-		private final List<String> errors;
+		private final List<Throwable> errors;
 
 		public GroovyErrorListener() {
 			/*
 			 * We need a synchronized list here, in case multiple instantiations
 			 * run in parallel.
 			 */
-			errors = Collections.synchronizedList(new ArrayList<String>());
+			errors = Collections.synchronizedList(new ArrayList<>());
 			ILog groovyLogger = GroovyCoreActivator.getDefault().getLog();
 			groovyLogger.addLogListener(this);
 			synchronized (GroovyLogManager.manager) {
@@ -121,7 +121,7 @@ public class GrEclipseFormatterStepImpl {
 
 		@Override
 		public void logging(final IStatus status, final String plugin) {
-			errors.add(status.getMessage());
+			errors.add(status.getException());
 		}
 
 		public boolean errorsDetected() {
@@ -141,9 +141,10 @@ public class GrEclipseFormatterStepImpl {
 			} else if (0 == errors.size()) {
 				string.append("Step sucesfully executed.");
 			}
-			for (String error : errors) {
+			for (Throwable error : errors) {
+				error.printStackTrace();
 				string.append(System.lineSeparator());
-				string.append(error);
+				string.append(error.getMessage());
 			}
 
 			return string.toString();
@@ -162,7 +163,11 @@ public class GrEclipseFormatterStepImpl {
 
 		@Override
 		public void log(TraceCategory arg0, String arg1) {
-			errors.add(arg1);
+			try {
+				throw new RuntimeException(arg1);
+			} catch (RuntimeException e) {
+				errors.add(e);
+			}
 		}
 	}
 
