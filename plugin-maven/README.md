@@ -991,7 +991,7 @@ Uses Jackson and YAMLFactory to pretty print objects:
 </configuration>
 ```
 
-### simple
+### gherkinUtils
 
 [homepage](https://github.com/cucumber/gherkin-utils). [changelog](https://github.com/cucumber/gherkin-utils/blob/main/CHANGELOG.md).
 
