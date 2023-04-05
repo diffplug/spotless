@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ public class FlexmarkStep {
 	// prevent direct instantiation
 	private FlexmarkStep() {}
 
-	private static final String DEFAULT_VERSION = "0.62.2";
+	private static final String DEFAULT_VERSION = "0.64.0";
 	private static final String NAME = "flexmark-java";
 	private static final String MAVEN_COORDINATE = "com.vladsch.flexmark:flexmark-all:";
 
