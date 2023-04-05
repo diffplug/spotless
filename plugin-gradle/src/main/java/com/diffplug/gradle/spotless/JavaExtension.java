@@ -26,10 +26,7 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 
-import org.gradle.api.GradleException;
 import org.gradle.api.Project;
-import org.gradle.api.file.FileCollection;
-import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 
 import com.diffplug.spotless.FormatterStep;
@@ -43,7 +40,7 @@ import com.diffplug.spotless.java.ImportOrderStep;
 import com.diffplug.spotless.java.PalantirJavaFormatStep;
 import com.diffplug.spotless.java.RemoveUnusedImportsStep;
 
-public class JavaExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
+public class JavaExtension extends FormatExtension implements HasBuiltinDelimiterForLicense, JvmLang {
 	static final String NAME = "java";
 
 	@Inject
@@ -374,15 +371,10 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 	@Override
 	protected void setupTask(SpotlessTask task) {
 		if (target == null) {
-			JavaPluginConvention javaPlugin = getProject().getConvention().findPlugin(JavaPluginConvention.class);
-			if (javaPlugin == null) {
-				throw new GradleException("You must either specify 'target' manually or apply the 'java' plugin.");
-			}
-			FileCollection union = getProject().files();
-			for (SourceSet sourceSet : javaPlugin.getSourceSets()) {
-				union = union.plus(sourceSet.getAllJava());
-			}
-			target = union;
+			target = getSources(getProject(),
+					"You must either specify 'target' manually or apply the 'java' plugin.",
+					SourceSet::getAllJava,
+					file -> file.getName().endsWith(".java"));
 		}
 
 		steps.replaceAll(step -> {

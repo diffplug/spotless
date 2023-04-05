@@ -72,7 +72,7 @@ dependencies {
 
 	palantirJavaFormatCompileOnly 'com.palantir.javaformat:palantir-java-format:1.1.0' 	// this version needs to stay compilable against Java 8 for CI Job testNpm
 
-	googleJavaFormatCompileOnly 'com.google.googlejavaformat:google-java-format:1.8' // minimum required version due to api changes before then
+	googleJavaFormatCompileOnly 'com.google.googlejavaformat:google-java-format:1.16.0' // minimum required version due to api changes before then
 
 	// used jackson-based formatters
 	jacksonCompileOnly 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
