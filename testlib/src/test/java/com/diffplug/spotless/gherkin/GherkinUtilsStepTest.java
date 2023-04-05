@@ -25,7 +25,7 @@ import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
-public class GherkinSimpleStepTest {
+public class GherkinUtilsStepTest {
 
 	private static final String VERSION = GherkinUtilsStep.defaultVersion();
 	private static final int INDENT = GherkinUtilsConfig.defaultIndentSpaces();
