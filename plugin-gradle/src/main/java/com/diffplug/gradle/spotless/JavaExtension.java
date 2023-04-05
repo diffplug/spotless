@@ -109,7 +109,11 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 
 	/** Removes any unused imports. */
 	public void removeUnusedImports() {
-		addStep(RemoveUnusedImportsStep.create(provisioner()));
+		addStep(RemoveUnusedImportsStep.create(RemoveUnusedImportsStep.defaultFormatter(), provisioner()));
+	}
+
+	public void removeUnusedImports(String formatter) {
+		addStep(RemoveUnusedImportsStep.create(formatter, provisioner()));
 	}
 
 	/** Uses the <a href="https://github.com/google/google-java-format">google-java-format</a> jar to format source code. */

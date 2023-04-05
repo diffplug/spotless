@@ -62,4 +62,22 @@ class JavaDefaultTargetTest extends GradleIntegrationHarness {
 		gradleRunner().withArguments("spotlessApply").build();
 		gradleRunner().withArguments("spotlessApply").build();
 	}
+
+	@Test
+	void removeUnusedImportsWithCleanthat() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"  id 'com.diffplug.spotless'",
+				"  id 'java'",
+				"}",
+				"repositories { mavenCentral() }",
+				"",
+				"spotless {",
+				"  java {  removeUnusedImports('cleanthat-javaparser-unnecessaryimport')  }",
+				"}");
+
+		setFile("src/main/java/test.java").toResource("java/removeunusedimports/Jdk17TextBlockUnformatted.test");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/java/test.java").sameAsResource("java/removeunusedimports/Jdk17TextBlockFormatted.test");
+	}
 }

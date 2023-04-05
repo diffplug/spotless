@@ -114,8 +114,9 @@ dependencies {
 
 	gsonCompileOnly 'com.google.code.gson:gson:2.10.1'
 
-	cleanthatCompileOnly 'io.github.solven-eu.cleanthat:java:2.6'
-	compatCleanthat2Dot1CompileAndTestOnly 'io.github.solven-eu.cleanthat:java:2.6'
+	String VER_CLEANTHAT="2.8"
+	cleanthatCompileOnly "io.github.solven-eu.cleanthat:java:$VER_CLEANTHAT"
+	compatCleanthat2Dot1CompileAndTestOnly "io.github.solven-eu.cleanthat:java:$VER_CLEANTHAT"
 
 	gherkinCompileOnly 'io.cucumber:gherkin-utils:8.0.2'
 	gherkinCompileOnly 'org.slf4j:slf4j-api:2.0.0'
