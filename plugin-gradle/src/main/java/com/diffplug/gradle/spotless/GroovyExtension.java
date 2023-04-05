@@ -111,7 +111,7 @@ public class GroovyExtension extends FormatExtension implements HasBuiltinDelimi
 	@Override
 	protected void setupTask(SpotlessTask task) {
 		if (target == null) {
-			final String message = "You must apply the groovy plugin before the spotless plugin if you are using the groovy extension.";
+			final String message = "You must either specify 'target' manually or apply the 'groovy' plugin.";
 			if (!getProject().getPlugins().hasPlugin(GroovyBasePlugin.class)) {
 				throw new GradleException(message);
 			}
