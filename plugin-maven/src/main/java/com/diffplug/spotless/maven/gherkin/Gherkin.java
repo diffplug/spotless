@@ -36,8 +36,8 @@ public class Gherkin extends FormatterFactory {
 		return null;
 	}
 
-	public void addSimple(SimpleGherkin simple) {
-		addStepFactory(simple);
+	public void addGherkinUtils(GherkinUtils gherkinUtils) {
+		addStepFactory(gherkinUtils);
 	}
 
 }

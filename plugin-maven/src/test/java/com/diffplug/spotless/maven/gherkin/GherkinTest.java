@@ -22,7 +22,7 @@ import com.diffplug.spotless.maven.MavenIntegrationHarness;
 public class GherkinTest extends MavenIntegrationHarness {
 	@Test
 	public void testFormatJson_WithSimple_defaultConfig_sortByKeys() throws Exception {
-		writePomWithGherkinSteps("<simple/>");
+		writePomWithGherkinSteps("<gherkinUtils/>");
 
 		setFile("examples/main/resources/example.feature").toResource("gherkin/minimalBefore.feature");
 		mavenRunner().withArguments("spotless:apply").runNoError();

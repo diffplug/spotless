@@ -31,7 +31,7 @@ public class GherkinExtensionTest extends GradleIntegrationHarness {
 				"spotless {",
 				"  gherkin {",
 				"    target 'examples/**/*.feature'",
-				"    simple()",
+				"    gherkinUtils()",
 				"  }",
 				"}");
 		setFile("src/main/resources/example.feature").toResource("gherkin/minimalBefore.feature");

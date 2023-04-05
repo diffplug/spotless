@@ -37,15 +37,15 @@ public class GherkinExtension extends FormatExtension {
 		super.setupTask(task);
 	}
 
-	public SimpleConfig simple() {
-		return new SimpleConfig();
+	public GherkinUtilsConfig gherkinUtils() {
+		return new GherkinUtilsConfig();
 	}
 
-	public class SimpleConfig {
+	public class GherkinUtilsConfig {
 		private String version;
 		private int indent;
 
-		public SimpleConfig() {
+		public GherkinUtilsConfig() {
 			this.version = GherkinSimpleStep.defaultVersion();
 			this.indent = GherkinSimpleConfig.defaultIndentSpaces();
 			addStep(createStep());

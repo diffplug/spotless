@@ -25,9 +25,9 @@ import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 
 /**
- * A {@link FormatterFactory} implementation that corresponds to {@code <gherkin><simple>...</simple></gherkin>} configuration element.
+ * A {@link FormatterFactory} implementation that corresponds to {@code <gherkin><gherkinUtils>...</gherkinUtils></gherkin>} configuration element.
  */
-public class SimpleGherkin implements FormatterStepFactory {
+public class GherkinUtils implements FormatterStepFactory {
 
 	@Parameter
 	private String version = GherkinSimpleStep.defaultVersion();

@@ -996,9 +996,9 @@ Uses Jackson and YAMLFactory to pretty print objects:
 Uses a Gherkin pretty-printer that optionally allows configuring the number of spaces that are used to pretty print objects:
 
 ```xml
-<simple>
+<gherkinUtils>
   <version>8.0.2</version>                 <!-- optional: Custom version of 'io.cucumber:gherkin-utils' -->
-</simple>
+</gherkinUtils>
 ```
 
 ## Prettier

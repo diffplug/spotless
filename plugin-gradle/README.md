@@ -873,7 +873,7 @@ Uses a Gherkin pretty-printer that optionally allows configuring the number of s
 spotless {
   gherkin {
     target 'src/**/*.feature'     // required to be set explicitly
-    simple()
+    gherkinUtils()
       .version('8.0.2')           // optional: custom version of 'io.cucumber:gherkin-utils'
   }
 }
