@@ -103,7 +103,7 @@ class GroovyExtensionTest extends GradleIntegrationHarness {
 
 		Throwable error = assertThrows(Throwable.class,
 				() -> gradleRunner().withArguments("spotlessApply").build());
-		assertThat(error).hasMessageContaining("must apply the groovy plugin before");
+		assertThat(error).hasMessageContaining("You must either specify 'target' manually or apply the 'groovy' plugin.");
 	}
 
 }
