@@ -103,7 +103,7 @@ dependencies {
 	compatKtLint0Dot48Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.48.0'
 	compatKtLint0Dot48Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.48.0'
 
-	String VER_SCALAFMT="3.7.1"
+	String VER_SCALAFMT="3.7.3"
 	scalafmtCompileOnly "org.scalameta:scalafmt-core_2.13:$VER_SCALAFMT"
 
 	String VER_DIKTAT = "1.2.5"
