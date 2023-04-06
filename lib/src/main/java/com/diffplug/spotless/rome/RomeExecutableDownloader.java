@@ -138,7 +138,7 @@ public class RomeExecutableDownloader {
 		logger.debug("Ensuring that Rome for platform '{}' is downloaded", platform);
 		var existing = findDownloaded(version, platform);
 		if (existing.isPresent()) {
-			logger.info("Rome was already downloaded, using executable at '{}'", existing.get());
+			logger.debug("Rome was already downloaded, using executable at '{}'", existing.get());
 			return existing.get();
 		} else {
 			logger.debug("Rome was not yet downloaded, attempting to download executable");
