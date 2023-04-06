@@ -19,6 +19,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   Mirrors are selected by prefix match, for example `https://download.eclipse.org/eclipse/updates/4.26/` will be redirected to `https://some.internal.mirror/eclipse/eclipse/updates/4.26/`.
   The same configuration exists for `greclipse` and `eclipseCdt`.
 * The `style` option in Palantir Java Format ([#1654](https://github.com/diffplug/spotless/pull/1654)).
+* Added `@DisableCachingByDefault` to `RegisterDependenciesTask`.
+
 ### Fixed
 * Stop using deprecated conventions when used in Gradle >= `7.1`. ([#1618](https://github.com/diffplug/spotless/pull/1618))
 ### Changes
