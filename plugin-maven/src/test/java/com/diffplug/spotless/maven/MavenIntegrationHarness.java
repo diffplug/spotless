@@ -174,6 +174,10 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		writePom(groupWithSteps("yaml", including("**/*.yaml"), steps));
 	}
 
+	protected void writePomWithGherkinSteps(String... steps) throws IOException {
+		writePom(groupWithSteps("gherkin", including("**/*.feature"), steps));
+	}
+
 	protected void writePom(String... configuration) throws IOException {
 		writePom(null, configuration, null, null);
 	}

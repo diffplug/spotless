@@ -26,13 +26,14 @@ import com.diffplug.spotless.SpotlessCache;
 
 public class SpotlessPlugin implements Plugin<Project> {
 	static final String SPOTLESS_MODERN = "spotlessModern";
-	static final String MINIMUM_GRADLE = "6.1.1";
+	static final String VER_GRADLE_min = "6.1.1";
+	static final String VER_GRADLE_javaPluginExtension = "7.1";
 	private static final int MINIMUM_JRE = 11;
 
 	@Override
 	public void apply(Project project) {
 		if (SpotlessPluginRedirect.gradleIsTooOld(project)) {
-			throw new GradleException("Spotless requires Gradle " + MINIMUM_GRADLE + " or newer, this was " + project.getGradle().getGradleVersion());
+			throw new GradleException("Spotless requires Gradle " + VER_GRADLE_min + " or newer, this was " + project.getGradle().getGradleVersion());
 		}
 		if (Jvm.version() < MINIMUM_JRE) {
 			throw new GradleException("Spotless requires JRE " + MINIMUM_JRE + " or newer, this was " + JavaVersion.current() + ".\n"

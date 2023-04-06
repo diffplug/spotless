@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,15 +22,19 @@ import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
-class RemoveUnusedImportsStepTest {
+class RemoveUnusedImportsStep_withCleanthatJavaparserTest {
 	@Test
 	void behavior() throws Exception {
-		FormatterStep step = RemoveUnusedImportsStep.create(TestProvisioner.mavenCentral());
+		FormatterStep step = RemoveUnusedImportsStep.create(RemoveUnusedImportsStep.CLEANTHAT, TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("java/removeunusedimports/JavaCodeUnformatted.test", "java/removeunusedimports/JavaCodeFormatted.test")
 				.testResource("java/removeunusedimports/JavaCodeWithLicenseUnformatted.test", "java/removeunusedimports/JavaCodeWithLicenseFormatted.test")
 				.testResource("java/removeunusedimports/JavaCodeWithLicensePackageUnformatted.test", "java/removeunusedimports/JavaCodeWithLicensePackageFormatted.test")
-				.testResource("java/removeunusedimports/JavaCodeWithPackageUnformatted.test", "java/removeunusedimports/JavaCodeWithPackageFormatted.test");
+				.testResource("java/removeunusedimports/JavaCodeWithPackageUnformatted.test", "java/removeunusedimports/JavaCodeWithPackageFormatted.test")
+				.testResource("java/removeunusedimports/Jdk17TextBlockUnformatted.test", "java/removeunusedimports/Jdk17TextBlockFormatted.test")
+				.testResource("java/removeunusedimports/RevelcUnformatted.test", "java/removeunusedimports/RevelcFormatted.test")
+				// Sealed classes are introduced with JDK15: This syntax is not supported by javaParser: such files are not trimmed from unused imports (for now)
+				.testResource("java/removeunusedimports/SealedClassTestsUnformatted.test", "java/removeunusedimports/SealedClassTestsUnformatted.test");
 	}
 
 	@Test
@@ -43,7 +47,7 @@ class RemoveUnusedImportsStepTest {
 
 			@Override
 			protected FormatterStep create() {
-				return RemoveUnusedImportsStep.create(TestProvisioner.mavenCentral());
+				return RemoveUnusedImportsStep.create(RemoveUnusedImportsStep.CLEANTHAT, TestProvisioner.mavenCentral());
 			}
 		}.testEquals();
 	}

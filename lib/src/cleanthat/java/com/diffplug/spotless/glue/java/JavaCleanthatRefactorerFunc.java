@@ -88,8 +88,7 @@ public class JavaCleanthatRefactorerFunc implements FormatterFunc {
 		LOGGER.debug("Processing sourceJdk={} included={} excluded={}", jdkVersion, included, excluded, includeDraft);
 		LOGGER.debug("Available mutators: {}", JavaRefactorer.getAllIncluded());
 
-		// Spotless calls steps always with LF eol.
-		return refactorer.doFormat(input, LineEnding.LF);
+		return refactorer.doFormat(input);
 	}
 
 }
