@@ -38,7 +38,7 @@ public final class EclipseJdtFormatterStep {
 	}
 
 	public static EquoBasedStepBuilder createBuilder(Provisioner provisioner) {
-		return new EquoBasedStepBuilder(NAME, provisioner, EclipseJdtFormatterStep::apply) {
+		return new EquoBasedStepBuilder(NAME, provisioner, defaultVersion(), EclipseJdtFormatterStep::apply) {
 			@Override
 			protected P2Model model(String version) {
 				var model = new P2Model();

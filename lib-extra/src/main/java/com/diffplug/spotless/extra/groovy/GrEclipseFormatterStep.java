@@ -39,7 +39,7 @@ public final class GrEclipseFormatterStep {
 	}
 
 	public static EquoBasedStepBuilder createBuilder(Provisioner provisioner) {
-		return new EquoBasedStepBuilder(NAME, provisioner, GrEclipseFormatterStep::apply) {
+		return new EquoBasedStepBuilder(NAME, provisioner, defaultVersion(), GrEclipseFormatterStep::apply) {
 			@Override
 			protected P2Model model(String version) {
 				if (!version.startsWith("4.")) {

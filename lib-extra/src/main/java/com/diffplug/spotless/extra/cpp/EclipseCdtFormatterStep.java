@@ -45,7 +45,7 @@ public final class EclipseCdtFormatterStep {
 
 	/** Provides default configuration */
 	public static EquoBasedStepBuilder createBuilder(Provisioner provisioner) {
-		return new EquoBasedStepBuilder(NAME, provisioner, EclipseCdtFormatterStep::apply) {
+		return new EquoBasedStepBuilder(NAME, provisioner, defaultVersion(), EclipseCdtFormatterStep::apply) {
 			@Override
 			protected P2Model model(String version) {
 				var model = new P2Model();
