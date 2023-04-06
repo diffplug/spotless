@@ -114,7 +114,7 @@ dependencies {
 
 	gsonCompileOnly 'com.google.code.gson:gson:2.10.1'
 
-	String VER_CLEANTHAT="2.8"
+	String VER_CLEANTHAT="2.13"
 	cleanthatCompileOnly "io.github.solven-eu.cleanthat:java:$VER_CLEANTHAT"
 	compatCleanthat2Dot1CompileAndTestOnly "io.github.solven-eu.cleanthat:java:$VER_CLEANTHAT"
 
