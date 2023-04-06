@@ -103,14 +103,14 @@ dependencies {
 	compatKtLint0Dot48Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.48.0'
 	compatKtLint0Dot48Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.48.0'
 
-	String VER_SCALAFMT="3.7.1"
+	String VER_SCALAFMT="3.7.3"
 	scalafmtCompileOnly "org.scalameta:scalafmt-core_2.13:$VER_SCALAFMT"
 
-	String VER_DIKTAT = "1.2.4.2"
+	String VER_DIKTAT = "1.2.5"
 	diktatCompileOnly "org.cqfn.diktat:diktat-rules:$VER_DIKTAT"
 
 	// used for markdown formatting
-	flexmarkCompileOnly 'com.vladsch.flexmark:flexmark-all:0.62.2'
+	flexmarkCompileOnly 'com.vladsch.flexmark:flexmark-all:0.64.0'
 
 	gsonCompileOnly 'com.google.code.gson:gson:2.10.1'
 
