@@ -34,7 +34,7 @@ public class ScalaFmtStep {
 	// prevent direct instantiation
 	private ScalaFmtStep() {}
 
-	static final String DEFAULT_VERSION = "3.7.1";
+	static final String DEFAULT_VERSION = "3.7.3";
 
 	private static final String DEFAULT_SCALA_MAJOR_VERSION = "2.13";
 	static final String NAME = "scalafmt";
