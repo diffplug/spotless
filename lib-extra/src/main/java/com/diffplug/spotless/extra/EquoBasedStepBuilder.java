@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.annotation.Nullable;
+
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterProperties;
@@ -53,7 +55,7 @@ public abstract class EquoBasedStepBuilder {
 	}
 
 	/** Initialize valid default configuration, taking latest version */
-	public EquoBasedStepBuilder(String formatterName, Provisioner mavenProvisioner, String defaultVersion, ThrowingEx.Function<State, FormatterFunc> stateToFormatter) {
+	public EquoBasedStepBuilder(String formatterName, Provisioner mavenProvisioner, @Nullable String defaultVersion, ThrowingEx.Function<State, FormatterFunc> stateToFormatter) {
 		this.formatterName = formatterName;
 		this.mavenProvisioner = mavenProvisioner;
 		this.formatterVersion = defaultVersion;
