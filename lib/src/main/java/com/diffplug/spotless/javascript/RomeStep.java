@@ -8,8 +8,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermission;
+import java.util.Collections;
 import java.util.HashSet;
 
+import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.Platform;
@@ -19,7 +21,8 @@ import com.diffplug.spotless.rome.RomeExecutableDownloader;
 /**
  * formatter step that formats JavaScript and TypeScript code with Rome:
  * <a href= "https://github.com/rome/tools">https://github.com/rome/tools</a>.
- * It delegates to the Rome executable.
+ * It delegates to the Rome executable. The Rome executable is downloaded from
+ * the network when no executable path is provided explicitly.
  */
 public class RomeStep {
 	public static String name() {
@@ -38,14 +41,21 @@ public class RomeStep {
 		this.pathToExeDownloadDir = pathToExeDownloadDir;
 	}
 
+	/**
+	 * Creates a formatter step with the current configuration, which formats code
+	 * by passing it to the Rome executable.
+	 * 
+	 * @return A new formatter step for formatting with Rome.
+	 */
 	public FormatterStep create() {
 		return FormatterStep.createLazy(name(), this::createState, State::toFunc);
 	}
 
 	private State createState() throws IOException, InterruptedException {
 		var resolvedPathToExe = resolveExe();
+		var exeSignature = FileSignature.signAsList(Collections.singleton(new File(resolvedPathToExe)));
 		makeExecutable(resolvedPathToExe);
-		return new State(this, resolvedPathToExe);
+		return new State(resolvedPathToExe, exeSignature);
 	}
 
 	private String resolveExe() throws IOException, InterruptedException {
@@ -64,12 +74,25 @@ public class RomeStep {
 		}
 	}
 
-	public static RomeStep withVersionAndExe(String version, String pathToExe) {
-		return new RomeStep(version, pathToExe, null);
+	/**
+	 * Creates a Rome step that uses an executable from the given path.
+	 * 
+	 * @param pathToExe Path to the Rome executable to use.
+	 * @return A new Rome step that format with the given executable.
+	 */
+	public static RomeStep withExePath(String pathToExe) {
+		return new RomeStep(null, pathToExe, null);
 	}
 
-	public static RomeStep withVersionAndExeDownload(String version, String pathToExeDownloadDir) {
-		return new RomeStep(version, null, pathToExeDownloadDir);
+	/**
+	 * Creates a Rome step that downloads the Rome executable for the given version.
+	 * 
+	 * @param version     Version of the Rome executable to download.
+	 * @param downloadDir Directory where to place the downloaded executable.
+	 * @return A new Rome step that download the executable from the network.
+	 */
+	public static RomeStep withExeDownload(String version, String downloadDir) {
+		return new RomeStep(version, null, downloadDir);
 	}
 
 	private static String defaultVersion() {
@@ -95,16 +118,17 @@ public class RomeStep {
 	}
 
 	static class State implements Serializable {
-		private static final long serialVersionUID = -1825662356883926318L;
+		private static final long serialVersionUID = -5884229077231467806L;
 
-		// used for up-to-date checks and caching
-		final String version;
-
+		/** Path to the exe file */
 		final String pathToExe;
 
-		State(RomeStep step, String exe) {
-			this.version = step.version;
+		/** The signature of the exe file, if any, used for caching. */
+		final FileSignature exeSignature;
+
+		State(String exe, FileSignature exeSignature) throws IOException {
 			this.pathToExe = exe;
+			this.exeSignature = exeSignature;
 		}
 
 		String format(ProcessRunner runner, String input, File file) throws IOException, InterruptedException {
