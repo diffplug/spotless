@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.build.event.BuildEventsListenerRegistry;
+import org.gradle.work.DisableCachingByDefault;
 
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.io.Files;
@@ -46,6 +47,7 @@ import com.diffplug.spotless.FormatterStep;
  * - When this "registerDependencies" task does its up-to-date check, it queries the task execution graph to see which
  *   SpotlessTasks are at risk of being executed, and causes them all to be evaluated safely in the root buildscript.
  */
+@DisableCachingByDefault(because = "This task coordinates the setup and execution of other tasks, and should not be cached")
 public abstract class RegisterDependenciesTask extends DefaultTask {
 	static final String TASK_NAME = "spotlessInternalRegisterDependencies";
 

@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Fixed
+* Added `@DisableCachingByDefault` to `RegisterDependenciesTask`.
 
 ## [6.18.0] - 2023-04-06
 ### Added
