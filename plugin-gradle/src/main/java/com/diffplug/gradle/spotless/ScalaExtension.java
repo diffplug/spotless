@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,15 +21,12 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-import org.gradle.api.GradleException;
-import org.gradle.api.file.FileCollection;
-import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.scala.ScalaFmtStep;
 
-public class ScalaExtension extends FormatExtension {
+public class ScalaExtension extends FormatExtension implements JvmLang {
 	static final String NAME = "scala";
 
 	@Inject
@@ -79,18 +76,13 @@ public class ScalaExtension extends FormatExtension {
 	@Override
 	protected void setupTask(SpotlessTask task) {
 		if (target == null) {
-			JavaPluginConvention javaPlugin = getProject().getConvention().findPlugin(JavaPluginConvention.class);
-			if (javaPlugin == null) {
-				throw new GradleException("You must either specify 'target' manually or apply the 'scala' plugin.");
-			}
-			FileCollection union = getProject().files();
-			for (SourceSet sourceSet : javaPlugin.getSourceSets()) {
-				union = union.plus(sourceSet.getAllSource().filter(file -> {
-					String name = file.getName();
-					return name.endsWith(".scala") || name.endsWith(".sc");
-				}));
-			}
-			target = union;
+			target = getSources(getProject(),
+					"You must either specify 'target' manually or apply the 'scala' plugin.",
+					SourceSet::getAllSource,
+					file -> {
+						final String name = file.getName();
+						return name.endsWith(".scala") || name.endsWith(".sc");
+					});
 		}
 		super.setupTask(task);
 	}

@@ -55,9 +55,19 @@ class PalantirJavaFormatStepTest extends ResourceHarness {
 	}
 
 	@Test
+	void behaviorWithGoogleStyle() throws Exception {
+		FormatterStep step = PalantirJavaFormatStep.create("1.1.0", "GOOGLE", TestProvisioner.mavenCentral());
+		StepHarness.forStep(step)
+				.testResource("java/palantirjavaformat/JavaCodeUnformatted.test", "java/palantirjavaformat/JavaCodeFormattedGoogle.test")
+				.testResource("java/palantirjavaformat/JavaCodeWithLicenseUnformatted.test", "java/palantirjavaformat/JavaCodeWithLicenseFormattedGoogle.test")
+				.testResource("java/palantirjavaformat/JavaCodeWithPackageUnformatted.test", "java/palantirjavaformat/JavaCodeWithPackageFormattedGoogle.test");
+	}
+
+	@Test
 	void equality() {
 		new SerializableEqualityTester() {
 			String version = "1.1.0";
+			String style = "";
 
 			@Override
 			protected void setupTest(API api) {
@@ -66,12 +76,15 @@ class PalantirJavaFormatStepTest extends ResourceHarness {
 				// change the version, and it's different
 				version = "1.0.0";
 				api.areDifferentThan();
+				// change the style, and it's different
+				style = "AOSP";
+				api.areDifferentThan();
 			}
 
 			@Override
 			protected FormatterStep create() {
 				String finalVersion = this.version;
-				return PalantirJavaFormatStep.create(finalVersion, TestProvisioner.mavenCentral());
+				return PalantirJavaFormatStep.create(finalVersion, style, TestProvisioner.mavenCentral());
 			}
 		}.testEquals();
 	}
