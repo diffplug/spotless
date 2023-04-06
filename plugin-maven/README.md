@@ -8,8 +8,8 @@ output = [
   ].join('\n');
 -->
 [![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
-[![Changelog](https://img.shields.io/badge/changelog-2.35.0-blue.svg)](CHANGES.md)
-[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.35.0/index.html)
+[![Changelog](https://img.shields.io/badge/changelog-2.36.0-blue.svg)](CHANGES.md)
+[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.36.0/index.html)
 <!---freshmark /shields -->
 
 <!---freshmark javadoc
@@ -53,6 +53,7 @@ user@machine repo % mvn spotless:check
   - [Javascript](#javascript) ([prettier](#prettier), [ESLint](#eslint-javascript))
   - [JSON](#json)
   - [YAML](#yaml)
+  - [Gherkin](#gherkin)
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching `npm install` results](#caching-results-of-npm-install))
     - [eclipse web tools platform](#eclipse-web-tools-platform)
@@ -207,6 +208,14 @@ any other maven phase (i.e. compile) then it can be configured as below;
 </configuration>
 ```
 
+### removeUnusedImports
+
+```xml
+<removeUnusedImports>
+  <engine>google-java-format</engine>    <!-- optional. Defaults to `google-java-format`. Can be switched to `cleanthat-javaparser-unnecessaryimport` (e.g. to process JDK17 source files with a JDK8+ Runtime) -->
+</removeUnusedImports>
+```
+
 ### google-java-format
 
 [homepage](https://github.com/google/google-java-format). [changelog](https://github.com/google/google-java-format/releases). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/java/GoogleJavaFormat.java).
@@ -228,6 +237,7 @@ any other maven phase (i.e. compile) then it can be configured as below;
 ```xml
 <palantirJavaFormat>
   <version>2.10.0</version>                     <!-- optional -->
+  <style>PALANTIR</style>                       <!-- or AOSP/GOOGLE (optional) -->
 </palantirJavaFormat>
 ```
 
@@ -283,17 +293,18 @@ These mechanisms already exist for the Gradle plugin.
 
 ```xml
 <cleanthat>
-  <version>2.0</version>                          <!-- optional version of Cleanthat -->
+  <version>2.8</version>                          <!-- optional version of Cleanthat -->
   <sourceJdk>${maven.compiler.source}</sourceJdk> <!-- optional. Default to ${maven.compiler.source} else '1.7' -->
   <mutators>
-    <mutator>*</mutator>                          <!-- optional. Default to '*' to include all mutators -->
+    <mutator>SafeAndConsensual</mutator>          <!-- optional. Default to 'SafeAndConsensual' to include all mutators -->
   </mutators>
-  <mutators> <!-- List of mutators: https://github.com/solven-eu/cleanthat/tree/master/java/src/main/java/eu/solven/cleanthat/engine/java/refactorer/mutators -->
+  <mutators>            <!-- List of mutators: https://github.com/solven-eu/cleanthat/blob/master/MUTATORS.generated.MD -->
     <mutator>LiteralsFirstInComparisons</mutator> <!-- You may alternatively list the requested mutators -->
   </mutators>
   <excludedMutators>
     <excludedMutator>OptionalNotEmpty</excludedMutator> <!-- You can discard specific rules -->
   </excludedMutators>
+  <includeDraft>false</includeDraft>              <!-- optional. Default to false, not to include draft mutators from Composite mutators -->
 </cleanthat>
 ```
 
@@ -973,7 +984,33 @@ Uses Jackson and YAMLFactory to pretty print objects:
 </jackson>
 ```
 
-<a name="applying-prettier-to-javascript--flow--typescript--css--scss--less--jsx--graphql--yaml--etc"></a>
+## Gherkin
+
+- `com.diffplug.spotless.maven.FormatterFactory.addStepFactory(FormatterStepFactory)` [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/gherkin/Gherkin.java)
+
+```gradle
+<configuration>
+  <gherkin>
+    <includes>     <!-- You have to set the target manually -->
+      <include>src/**/*.feature</include>
+    </includes>
+
+    <gherkinUtils />    <!-- has its own section below -->
+  </gherkin>
+</configuration>
+```
+
+### gherkinUtils
+
+[homepage](https://github.com/cucumber/gherkin-utils). [changelog](https://github.com/cucumber/gherkin-utils/blob/main/CHANGELOG.md).
+
+Uses a Gherkin pretty-printer that optionally allows configuring the number of spaces that are used to pretty print objects:
+
+```xml
+<gherkinUtils>
+  <version>8.0.2</version>                 <!-- optional: Custom version of 'io.cucumber:gherkin-utils' -->
+</gherkinUtils>
+```
 
 ## Prettier
 

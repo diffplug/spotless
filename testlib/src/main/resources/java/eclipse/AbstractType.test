@@ -1,0 +1,54 @@
+package test;
+
+
+
+
+public abstract class AbstractType {
+
+
+    private String _typeName;
+
+    AbstractType(String typeName) {
+        _typeName = typeName;
+    }
+
+
+
+    private String _type() {
+        String name = getClass().getSimpleName();
+        return name.endsWith("Type")
+                ? name.substring(0, getClass().getSimpleName().length() - 4)
+                : name;
+    }
+
+    AbstractType argument() {
+        throw new UnsupportedOperationException(getClass().getSimpleName());
+    }
+
+
+    @Override
+    public boolean equals(Object another) {
+        if (this == another) {
+            return true;
+        }
+        return another instanceof AbstractType t
+                && _typeName.equals(t._typeName);
+    }
+
+
+
+    @Override
+    public int hashCode() {
+        return _typeName.hashCode();
+    }
+
+
+
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(typeName)";
+    }
+
+
+}

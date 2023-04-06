@@ -37,7 +37,7 @@ public final class EclipseCdtFormatterStep {
 	private EclipseCdtFormatterStep() {}
 
 	private static final String NAME = "eclipse cdt formatter";
-	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "10.7").add(17, "11.0");
+	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "10.7").add(17, "11.1");
 
 	public static String defaultVersion() {
 		return JVM_SUPPORT.getRecommendedFormatterVersion();
@@ -45,7 +45,7 @@ public final class EclipseCdtFormatterStep {
 
 	/** Provides default configuration */
 	public static EquoBasedStepBuilder createBuilder(Provisioner provisioner) {
-		return new EquoBasedStepBuilder(NAME, provisioner, EclipseCdtFormatterStep::apply) {
+		return new EquoBasedStepBuilder(NAME, provisioner, defaultVersion(), EclipseCdtFormatterStep::apply) {
 			@Override
 			protected P2Model model(String version) {
 				var model = new P2Model();
