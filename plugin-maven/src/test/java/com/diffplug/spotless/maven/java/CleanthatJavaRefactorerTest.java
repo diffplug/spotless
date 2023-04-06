@@ -13,18 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.maven.test;
+package com.diffplug.spotless.maven.java;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
 class CleanthatJavaRefactorerTest extends MavenIntegrationHarness {
-	private static final Logger LOGGER = LoggerFactory.getLogger(CleanthatJavaRefactorerTest.class);
-
 	@Test
 	void testEnableDraft() throws Exception {
 		writePomWithJavaSteps(
