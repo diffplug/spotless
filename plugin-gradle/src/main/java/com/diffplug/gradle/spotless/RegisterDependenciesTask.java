@@ -47,7 +47,7 @@ import com.diffplug.spotless.FormatterStep;
  * - When this "registerDependencies" task does its up-to-date check, it queries the task execution graph to see which
  *   SpotlessTasks are at risk of being executed, and causes them all to be evaluated safely in the root buildscript.
  */
-@DisableCachingByDefault(because = "I/O bound task not worth caching")
+@DisableCachingByDefault(because = "This task coordinates the setup and execution of other tasks, and should not be cached")
 public abstract class RegisterDependenciesTask extends DefaultTask {
 	static final String TASK_NAME = "spotlessInternalRegisterDependencies";
 
