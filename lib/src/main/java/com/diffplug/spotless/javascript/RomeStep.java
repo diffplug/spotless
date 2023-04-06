@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermission;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 
@@ -32,11 +33,13 @@ import com.diffplug.spotless.rome.RomeExecutableDownloader;
 public class RomeStep {
 	private static final Logger logger = LoggerFactory.getLogger(RomeStep.class);
 
-	private final String version;
+	private final String configPath;
 
 	private final String pathToExe;
 
 	private final String pathToExeDownloadDir;
+
+	private final String version;
 
 	/**
 	 * @return The name of this format step, i.e. {@code rome}.
@@ -55,7 +58,7 @@ public class RomeStep {
 	 */
 	public static RomeStep withExeDownload(String version, String downloadDir) {
 		version = version != null && !version.isBlank() ? version : defaultVersion();
-		return new RomeStep(version, null, downloadDir);
+		return new RomeStep(version, null, downloadDir, null);
 	}
 
 	/**
@@ -66,18 +69,7 @@ public class RomeStep {
 	 * @return A new Rome step that format with the given executable.
 	 */
 	public static RomeStep withExePath(String pathToExe) {
-		return new RomeStep(null, pathToExe, null);
-	}
-
-	/**
-	 * Finds the default version for Rome when no version is specified explicitly.
-	 * Over time this will become outdated -- people should always specify the
-	 * version explicitly!
-	 * 
-	 * @return The default version for Rome.
-	 */
-	private static String defaultVersion() {
-		return "12.0.0";
+		return new RomeStep(null, pathToExe, null, null);
 	}
 
 	/**
@@ -95,6 +87,17 @@ public class RomeStep {
 			Files.setPosixFilePermissions(file, newPermissions);
 		} catch (final Exception ignore) {
 		}
+	}
+
+	/**
+	 * Finds the default version for Rome when no version is specified explicitly.
+	 * Over time this will become outdated -- people should always specify the
+	 * version explicitly!
+	 * 
+	 * @return The default version for Rome.
+	 */
+	private static String defaultVersion() {
+		return "12.0.0";
 	}
 
 	/**
@@ -133,10 +136,39 @@ public class RomeStep {
 		}
 	}
 
-	private RomeStep(String version, String pathToExe, String pathToExeDownloadDir) {
+	/**
+	 * Checks the config path. When the config path does not exist or when it does
+	 * not contain a file named {@code rome.json}, an error is thrown.
+	 */
+	private static void validateRomeConfigPath(String configPath) {
+		if (configPath == null) {
+			return;
+		}
+		var path = Paths.get(configPath);
+		var config = path.resolve("rome.json");
+		if (!Files.exists(path)) {
+			throw new IllegalArgumentException("Rome config directory does not exist: " + path);
+		}
+		if (!Files.exists(config)) {
+			throw new IllegalArgumentException("Rome config does not exist: " + config);
+		}
+	}
+
+	private static void validateRomeExecutable(String resolvedPathToExe) {
+		if (!new File(resolvedPathToExe).isFile()) {
+			throw new IllegalArgumentException("Rome executable does not exist: " + resolvedPathToExe);
+		}
+	}
+
+	/**
+	 * Checks the Rome executable. When the executable path does not exist, an error
+	 * is thrown.
+	 */
+	private RomeStep(String version, String pathToExe, String pathToExeDownloadDir, String configPath) {
 		this.version = version;
 		this.pathToExe = pathToExe;
 		this.pathToExeDownloadDir = pathToExeDownloadDir;
+		this.configPath = configPath;
 	}
 
 	/**
@@ -147,6 +179,19 @@ public class RomeStep {
 	 */
 	public FormatterStep create() {
 		return FormatterStep.createLazy(name(), this::createState, State::toFunc);
+	}
+
+	/**
+	 * Derives a new Rome step from this step by replacing the config path with the
+	 * given value.
+	 * 
+	 * @param configPath Config path to use. Must point to a directory which contain
+	 *                   a file named {@code rome.json}.
+	 * @return A new Rome step with the same configuration as this step, but with
+	 *         the given config file instead.
+	 */
+	public RomeStep withConfigPath(String configPath) {
+		return new RomeStep(version, pathToExe, pathToExeDownloadDir, configPath);
 	}
 
 	/**
@@ -165,14 +210,12 @@ public class RomeStep {
 	 */
 	private State createState() throws IOException, InterruptedException {
 		var resolvedPathToExe = resolveExe();
-		var resolvedExeFile = new File(resolvedPathToExe);
-		if (!resolvedExeFile.isFile()) {
-			throw new IllegalArgumentException("Rome executable does not exist: " + resolvedExeFile);
-		}
+		validateRomeExecutable(resolvedPathToExe);
+		validateRomeConfigPath(configPath);
 		logger.debug("Using Rome executable located at  '{}'", resolvedPathToExe);
-		var exeSignature = FileSignature.signAsList(Collections.singleton(resolvedExeFile));
+		var exeSignature = FileSignature.signAsList(Collections.singleton(new File(resolvedPathToExe)));
 		makeExecutable(resolvedPathToExe);
-		return new State(resolvedPathToExe, exeSignature);
+		return new State(resolvedPathToExe, exeSignature, configPath);
 	}
 
 	/**
@@ -221,9 +264,33 @@ public class RomeStep {
 		@SuppressWarnings("unused")
 		private final FileSignature exeSignature;
 
-		private State(String exe, FileSignature exeSignature) throws IOException {
+		/** The optional configuration file for Rome. */
+		private final String configPath;
+
+		private State(String exe, FileSignature exeSignature, String configPath) throws IOException {
 			this.pathToExe = exe;
 			this.exeSignature = exeSignature;
+			this.configPath = configPath;
+		}
+
+		/**
+		 * Builds the list of arguments for the command that executes Rome to format a
+		 * piece of code passed via stdin.
+		 * 
+		 * @param file File to format.
+		 * @return The Rome command to use for formatting code.
+		 */
+		private String[] buildRomeCommand(File file) {
+			var argList = new ArrayList<String>();
+			argList.add(pathToExe);
+			argList.add("format");
+			argList.add("--stdin-file-path");
+			argList.add(file.getName());
+			if (configPath != null) {
+				argList.add("--config-path");
+				argList.add(configPath);
+			}
+			return argList.toArray(String[]::new);
 		}
 
 		/**
@@ -242,9 +309,9 @@ public class RomeStep {
 		 */
 		private String format(ProcessRunner runner, String input, File file) throws IOException, InterruptedException {
 			var stdin = input.getBytes(StandardCharsets.UTF_8);
-			var args = new String[] { pathToExe, "format", "--stdin-file-path", file.getName() };
+			var args = buildRomeCommand(file);
 			if (logger.isDebugEnabled()) {
-				logger.debug("Running Rome comand to fomrat code: '{}'", String.join(", ", args));
+				logger.debug("Running Rome comand to format code: '{}'", String.join(", ", args));
 			}
 			return runner.exec(stdin, args).assertExitZero(StandardCharsets.UTF_8);
 		}

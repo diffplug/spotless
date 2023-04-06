@@ -17,6 +17,15 @@ import com.diffplug.spotless.maven.FormatterStepFactory;
  */
 public class RomeJs implements FormatterStepFactory {
 	/**
+	 * Optional path to the directory with configuration file for Rome. The file
+	 * must be named {@code rome.json}. When none is given, the default
+	 * configuration is used. If this is a relative path, it is resolved against the
+	 * project's base directory.
+	 */
+	@Parameter
+	private String configPath;
+
+	/**
 	 * Optional directory where the downloaded Rome executable is placed. If this is
 	 * a relative path, it is resolved against the project's base directory.
 	 * Defaults to
@@ -68,7 +77,23 @@ public class RomeJs implements FormatterStepFactory {
 			var downloadDir = resolveDownloadDir(config);
 			rome = RomeStep.withExeDownload(version, downloadDir);
 		}
+		if (configPath != null) {
+			var resolvedConfigFile = resolveConfigFile(config);
+			rome = rome.withConfigPath(resolvedConfigFile);
+		}
 		return rome.create();
+	}
+
+	/**
+	 * Resolves the path to the configuration file for Rome. Relative paths are
+	 * resolved against the project's base directory.
+	 * 
+	 * @param config Configuration from the Maven Mojo execution with details about
+	 *               the currently executed project.
+	 * @return The resolved path to the configuration file.
+	 */
+	private String resolveConfigFile(FormatterStepConfig config) {
+		return config.getFileLocator().getBaseDir().toPath().resolve(configPath).toAbsolutePath().toString();
 	}
 
 	/**
