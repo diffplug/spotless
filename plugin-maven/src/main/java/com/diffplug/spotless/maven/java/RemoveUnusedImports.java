@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.maven.java;
 
+import org.apache.maven.plugins.annotations.Parameter;
+
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.java.RemoveUnusedImportsStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
@@ -22,8 +24,11 @@ import com.diffplug.spotless.maven.FormatterStepFactory;
 
 public class RemoveUnusedImports implements FormatterStepFactory {
 
+	@Parameter
+	private String engine = RemoveUnusedImportsStep.defaultFormatter();
+
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
-		return RemoveUnusedImportsStep.create(config.getProvisioner());
+		return RemoveUnusedImportsStep.create(engine, config.getProvisioner());
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 DiffPlug
+ * Copyright 2022-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,16 +26,19 @@ public class PalantirJavaFormatFormatterFunc implements FormatterFunc {
 
 	private final Formatter formatter;
 
-	public PalantirJavaFormatFormatterFunc() {
+	private final JavaFormatterOptions.Style formatterStyle;
+
+	public PalantirJavaFormatFormatterFunc(String style) {
+		this.formatterStyle = JavaFormatterOptions.Style.valueOf(style);
 		formatter = Formatter.createFormatter(JavaFormatterOptions.builder()
-				.style(JavaFormatterOptions.Style.PALANTIR)
+				.style(formatterStyle)
 				.build());
 	}
 
 	@Override
 	public String apply(String input) throws Exception {
 		String source = input;
-		source = ImportOrderer.reorderImports(source, JavaFormatterOptions.Style.PALANTIR);
+		source = ImportOrderer.reorderImports(source, formatterStyle);
 		source = RemoveUnusedImports.removeUnusedImports(source);
 		return formatter.formatSource(source);
 	}

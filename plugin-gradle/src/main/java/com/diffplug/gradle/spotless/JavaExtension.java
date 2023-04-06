@@ -26,10 +26,7 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 
-import org.gradle.api.GradleException;
 import org.gradle.api.Project;
-import org.gradle.api.file.FileCollection;
-import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 
 import com.diffplug.spotless.FormatterStep;
@@ -43,7 +40,7 @@ import com.diffplug.spotless.java.ImportOrderStep;
 import com.diffplug.spotless.java.PalantirJavaFormatStep;
 import com.diffplug.spotless.java.RemoveUnusedImportsStep;
 
-public class JavaExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
+public class JavaExtension extends FormatExtension implements HasBuiltinDelimiterForLicense, JvmLang {
 	static final String NAME = "java";
 
 	@Inject
@@ -112,7 +109,11 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 
 	/** Removes any unused imports. */
 	public void removeUnusedImports() {
-		addStep(RemoveUnusedImportsStep.create(provisioner()));
+		addStep(RemoveUnusedImportsStep.create(RemoveUnusedImportsStep.defaultFormatter(), provisioner()));
+	}
+
+	public void removeUnusedImports(String formatter) {
+		addStep(RemoveUnusedImportsStep.create(formatter, provisioner()));
 	}
 
 	/** Uses the <a href="https://github.com/google/google-java-format">google-java-format</a> jar to format source code. */
@@ -198,14 +199,22 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 
 	public class PalantirJavaFormatConfig {
 		final String version;
+		String style;
 
 		PalantirJavaFormatConfig(String version) {
 			this.version = Objects.requireNonNull(version);
+			this.style = PalantirJavaFormatStep.defaultStyle();
 			addStep(createStep());
 		}
 
+		public PalantirJavaFormatConfig style(String style) {
+			this.style = Objects.requireNonNull(style);
+			replaceStep(createStep());
+			return this;
+		}
+
 		private FormatterStep createStep() {
-			return PalantirJavaFormatStep.create(version, provisioner());
+			return PalantirJavaFormatStep.create(version, style, provisioner());
 		}
 	}
 
@@ -366,15 +375,10 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 	@Override
 	protected void setupTask(SpotlessTask task) {
 		if (target == null) {
-			JavaPluginConvention javaPlugin = getProject().getConvention().findPlugin(JavaPluginConvention.class);
-			if (javaPlugin == null) {
-				throw new GradleException("You must either specify 'target' manually or apply the 'java' plugin.");
-			}
-			FileCollection union = getProject().files();
-			for (SourceSet sourceSet : javaPlugin.getSourceSets()) {
-				union = union.plus(sourceSet.getAllJava());
-			}
-			target = union;
+			target = getSources(getProject(),
+					"You must either specify 'target' manually or apply the 'java' plugin.",
+					SourceSet::getAllJava,
+					file -> file.getName().endsWith(".java"));
 		}
 
 		steps.replaceAll(step -> {

@@ -66,6 +66,8 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier), [ESLint](#eslint-typescript))
   - [Javascript](#javascript) ([prettier](#prettier), [ESLint](#eslint-javascript))
   - [JSON](#json)
+  - [YAML](#yaml)
+  - [Gherkin](#gherkin)
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching `npm install` results](#caching-results-of-npm-install))
       - javascript, jsx, angular, vue, flow, typescript, css, less, scss, html, json, graphql, markdown, ymaml
@@ -180,6 +182,17 @@ spotless {
     target 'src/*/java/**/*.java'
 ```
 
+### removeUnusedImports
+
+```
+spotless {
+  java {
+  removeUnusedImports()
+  // optional: you may switch for `google-java-format` as underlying engine to `cleanthat-javaparser-unnecessaryimport`
+  // which enables processing any language level source file with a JDK8+ Runtime
+  removeUnusedImports().engine('cleanthat-javaparser-unnecessaryimport')
+```
+
 ### google-java-format
 
 [homepage](https://github.com/google/google-java-format). [changelog](https://github.com/google/google-java-format/releases).
@@ -200,8 +213,8 @@ spotless {
 spotless {
   java {
     palantirJavaFormat()
-    // optional: you can specify a specific version
-    palantirJavaFormat('2.9.0')
+    // optional: you can specify a specific version and/or switch to AOSP/GOOGLE style
+    palantirJavaFormat('2.9.0').style("GOOGLE")
 ```
 
 ### eclipse jdt
@@ -270,11 +283,13 @@ spotless {
     cleanthat()
     // optional: you can specify a specific version and/or config file
     cleanthat()
-      .groupArtifact('1.7')                 // default is 'io.github.solven-eu.cleanthat:java'
-      .version('2.1')                             // You may force a past of -SNAPSHOT
-      .sourceCompatibility('1.7')                 // default is '1.7'
-      .addMutator('your.custom.MagicMutator')
-      .excludeMutator('UseCollectionIsEmpty')
+      .groupArtifact('io.github.solven-eu.cleanthat:java') // Optional. Default is 'io.github.solven-eu.cleanthat:java'
+      .version('2.8')                                      // You may force a custom version of Cleanthat
+      .sourceCompatibility('1.7')                          // default is '1.7'
+      .addMutator('SafeAndConsensual')                     // Default includes the SafeAndConsensual composite mutator
+      .addMutator('your.custom.MagicMutator')              // List of mutators: https://github.com/solven-eu/cleanthat/blob/master/MUTATORS.generated.MD
+      .excludeMutator('UseCollectionIsEmpty')              // You may exclude some mutators (from Composite ones)
+      .includeDraft(false)                                 // You may exclude draft mutators (from Composite ones)
 ```
 
 
@@ -850,7 +865,34 @@ spotless {
 }
 ```
 
-<a name="applying-prettier-to-javascript--flow--typescript--css--scss--less--jsx--graphql--yaml--etc"></a>
+## Gherkin
+
+- `com.diffplug.gradle.spotless.GherkinExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.17.0/com/diffplug/gradle/spotless/GherkinExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/GherkinExtension.java)
+
+```gradle
+spotless {
+  gherkin {
+    target 'src/**/*.feature' // you have to set the target manually
+    gherkinUtils() // has its own section below
+  }
+}
+```
+
+### gherkinUtils
+
+[homepage](https://github.com/cucumber/gherkin-utils). [changelog](https://github.com/cucumber/gherkin-utils/blob/main/CHANGELOG.md).
+
+Uses a Gherkin pretty-printer that optionally allows configuring the number of spaces that are used to pretty print objects:
+
+```gradle
+spotless {
+  gherkin {
+    target 'src/**/*.feature'     // required to be set explicitly
+    gherkinUtils()
+      .version('8.0.2')           // optional: custom version of 'io.cucumber:gherkin-utils'
+  }
+}
+```
 
 ## Prettier
 

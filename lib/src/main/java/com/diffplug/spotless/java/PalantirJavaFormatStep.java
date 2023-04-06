@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ public class PalantirJavaFormatStep {
 	// prevent direct instantiation
 	private PalantirJavaFormatStep() {}
 
+	private static final String DEFAULT_STYLE = "PALANTIR";
 	private static final String NAME = "palantir-java-format";
 	private static final String MAVEN_COORDINATE = "com.palantir.javaformat:palantir-java-format:";
 	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(8, "1.1.0").add(11, "2.28.0");
@@ -38,17 +39,28 @@ public class PalantirJavaFormatStep {
 
 	/** Creates a step which formats everything - code, import order, and unused imports. */
 	public static FormatterStep create(String version, Provisioner provisioner) {
+		return create(version, defaultStyle(), provisioner);
+	}
+
+	/** Creates a step which formats everything - code, import order, and unused imports. And with the style input. */
+	public static FormatterStep create(String version, String style, Provisioner provisioner) {
 		Objects.requireNonNull(version, "version");
+		Objects.requireNonNull(style, "style");
 		Objects.requireNonNull(provisioner, "provisioner");
 
 		return FormatterStep.createLazy(NAME,
-				() -> new State(JarState.from(MAVEN_COORDINATE + version, provisioner), version),
+				() -> new State(JarState.from(MAVEN_COORDINATE + version, provisioner), version, style),
 				State::createFormat);
 	}
 
 	/** Get default formatter version */
 	public static String defaultVersion() {
 		return JVM_SUPPORT.getRecommendedFormatterVersion();
+	}
+
+	/** Get default style */
+	public static String defaultStyle() {
+		return DEFAULT_STYLE;
 	}
 
 	private static final class State implements Serializable {
@@ -58,18 +70,24 @@ public class PalantirJavaFormatStep {
 		private final JarState jarState;
 		/** Version of the formatter jar. */
 		private final String formatterVersion;
+		private final String style;
 
 		State(JarState jarState, String formatterVersion) {
+			this(jarState, formatterVersion, DEFAULT_STYLE);
+		}
+
+		State(JarState jarState, String formatterVersion, String style) {
 			ModuleHelper.doOpenInternalPackagesIfRequired();
 			this.jarState = jarState;
 			this.formatterVersion = formatterVersion;
+			this.style = style;
 		}
 
 		FormatterFunc createFormat() throws Exception {
 			final ClassLoader classLoader = jarState.getClassLoader();
 			final Class<?> formatterFunc = classLoader.loadClass("com.diffplug.spotless.glue.pjf.PalantirJavaFormatFormatterFunc");
-			final Constructor<?> constructor = formatterFunc.getConstructor();
-			return JVM_SUPPORT.suggestLaterVersionOnError(formatterVersion, (FormatterFunc) constructor.newInstance());
+			final Constructor<?> constructor = formatterFunc.getConstructor(String.class); // style
+			return JVM_SUPPORT.suggestLaterVersionOnError(formatterVersion, (FormatterFunc) constructor.newInstance(style));
 		}
 	}
 }

@@ -25,3 +25,13 @@ indent_style = space
 [*.{yml,yaml}]
 indent_style = space
 indent_size = 2
+
+# Prevent unexpected automatic indentation when crafting test-cases
+[/testlib/src/main/resources/**]
+charset = unset
+end_of_line = unset
+insert_final_newline = unset
+trim_trailing_whitespace = unset
+indent_style = unset
+indent_size = unset
+ij_formatter_enabled = false
