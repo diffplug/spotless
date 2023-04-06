@@ -40,9 +40,10 @@ tasks.withType(Test).configureEach {
 }
 
 def NEEDS_P2_DEPS = [
-	'jdt',
+	// (alphabetic order please)
+	'cdt',
 	'groovy',
-	'cdt'
+	'jdt'
 ]
 for (needsP2 in NEEDS_P2_DEPS) {
 	sourceSets.register(needsP2) {
@@ -68,9 +69,11 @@ tasks.withType(Test).configureEach {
 
 apply plugin: 'dev.equo.p2deps'
 p2deps {
-	into 'jdtCompileOnly', {
+	// (alphabetic order please)
+	into 'cdtCompileOnly', {
 		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
-		install 'org.eclipse.jdt.core'
+		p2repo 'https://download.eclipse.org/tools/cdt/releases/10.7/'
+		install 'org.eclipse.cdt.core'
 	}
 	into 'groovyCompileOnly', {
 		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
@@ -80,10 +83,9 @@ p2deps {
 		install 'org.eclipse.jdt.groovy.core'
 		install 'org.codehaus.groovy'
 	}
-	into 'cdtCompileOnly', {
+	into 'jdtCompileOnly', {
 		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
-		p2repo 'https://download.eclipse.org/tools/cdt/releases/10.7/'
-		install 'org.eclipse.cdt.core'
+		install 'org.eclipse.jdt.core'
 	}
 }
 

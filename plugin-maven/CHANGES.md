@@ -16,6 +16,10 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Bump default `flexmark` version `0.62.2` -> `0.64.0`. ([#1302](https://github.com/diffplug/spotless/pull/1302))
 * Bump default `googleJavaFormat` version `1.15.0` -> `1.16.0`. ([#1630](https://github.com/diffplug/spotless/pull/1630))
 * Bump default `scalafmt` version `3.7.1` -> `3.7.3`. ([#1584](https://github.com/diffplug/spotless/pull/1584))
+* Bump default Eclipse formatters for the 2023-03 release. ([#1662](https://github.com/diffplug/spotless/pull/1662))
+  * JDT and GrEclipse `4.26` -> `4.27`
+    * Improve GrEclipse error reporting. ([#1660](https://github.com/diffplug/spotless/pull/1660))
+  * CDT `11.0` -> `11.1`
 
 ## [2.35.0] - 2023-03-13
 ### Added

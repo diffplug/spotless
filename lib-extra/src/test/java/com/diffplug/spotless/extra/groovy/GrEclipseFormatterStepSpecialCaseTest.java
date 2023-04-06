@@ -30,7 +30,7 @@ public class GrEclipseFormatterStepSpecialCaseTest {
 	 */
 	@Test
 	public void issue_1657() {
-		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+		Assertions.assertThrows(RuntimeException.class, () -> {
 			StepHarness.forStep(GrEclipseFormatterStep.createBuilder(TestProvisioner.mavenCentral()).build())
 					.testResourceUnaffected("groovy/greclipse/format/SomeClass.test");
 		});
