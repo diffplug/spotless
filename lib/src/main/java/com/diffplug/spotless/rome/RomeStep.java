@@ -1,4 +1,4 @@
-package com.diffplug.spotless.javascript;
+package com.diffplug.spotless.rome;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,9 +20,7 @@ import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.ForeignExe;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.Platform;
 import com.diffplug.spotless.ProcessRunner;
-import com.diffplug.spotless.rome.RomeExecutableDownloader;
 
 /**
  * formatter step that formats JavaScript and TypeScript code with Rome:
@@ -33,12 +31,29 @@ import com.diffplug.spotless.rome.RomeExecutableDownloader;
 public class RomeStep {
 	private static final Logger logger = LoggerFactory.getLogger(RomeStep.class);
 
+	/**
+	 * Path to the directory with the {@code rome.json} config file, can be
+	 * <code>null</code>, in which case the defaults are used.
+	 */
 	private final String configPath;
 
+	/**
+	 * Path to the Rome executable. Can be <code>null</code>, but either a path to
+	 * the executable of a download directory and version must be given.
+	 */
 	private final String pathToExe;
 
+	/**
+	 * Path to the download directory for storing the download Rome executable. Can
+	 * be <code>null</code>, but either a path to the executable of a download
+	 * directory and version must be given.
+	 */
 	private final String pathToExeDownloadDir;
 
+	/**
+	 * Version of Rome to download. Can be <code>null</code>, but either a path to
+	 * the executable of a download directory and version must be given.
+	 */
 	private final String version;
 
 	/**
@@ -137,8 +152,8 @@ public class RomeStep {
 	}
 
 	/**
-	 * Checks the config path. When the config path does not exist or when it does
-	 * not contain a file named {@code rome.json}, an error is thrown.
+	 * Checks the Rome config path. When the config path does not exist or when it
+	 * does not contain a file named {@code rome.json}, an error is thrown.
 	 */
 	private static void validateRomeConfigPath(String configPath) {
 		if (configPath == null) {
@@ -154,6 +169,10 @@ public class RomeStep {
 		}
 	}
 
+	/**
+	 * Checks the Rome executable file. When the file does not exist, an error is
+	 * thrown.
+	 */
 	private static void validateRomeExecutable(String resolvedPathToExe) {
 		if (!new File(resolvedPathToExe).isFile()) {
 			throw new IllegalArgumentException("Rome executable does not exist: " + resolvedPathToExe);
@@ -243,19 +262,24 @@ public class RomeStep {
 			}
 		} else {
 			var downloader = new RomeExecutableDownloader(Paths.get(pathToExeDownloadDir));
-			var platform = Platform.guess();
-			if (!downloader.isSupported(platform)) {
-				throw new IllegalStateException(
-						"Unsupported platform " + platform + ", please specifiy the Rome executable directly");
-			}
-			var downloaded = downloader.ensureDownloaded(version, platform).toString();
+			var downloaded = downloader.ensureDownloaded(version).toString();
 			makeExecutable(downloaded);
 			return downloaded;
 		}
 	}
 
+	/**
+	 * The internal state used by the Rome formatter. A state instance is created
+	 * when the spotless plugin for Maven or Gradle is executed, and reused for all
+	 * formatting requests for different files. The lifetime of the instance ends
+	 * when the Maven or Gradle plugin was successfully executed.
+	 * <p>
+	 * The state encapsulated a particular executable. It is serializable for
+	 * caching purposes. Spotless keeps a cache of which files need to be formatted.
+	 * The cache is busted when the serialized form of a state instance changes.
+	 */
 	private static class State implements Serializable {
-		private static final long serialVersionUID = -5884229077231467806L;
+		private static final long serialVersionUID = 6846790911054484379L;
 
 		/** Path to the exe file */
 		private final String pathToExe;
@@ -264,10 +288,22 @@ public class RomeStep {
 		@SuppressWarnings("unused")
 		private final FileSignature exeSignature;
 
-		/** The optional configuration file for Rome. */
+		/**
+		 * The optional path to the directory with the {@code rome.json} config file.
+		 */
 		private final String configPath;
 
-		private State(String exe, FileSignature exeSignature, String configPath) throws IOException {
+		/**
+		 * Creates a new state for instance which can format code with the given Rome
+		 * executable.
+		 * 
+		 * @param exe          Path to the Rome executable.
+		 * @param exeSignature Signature (e.g. SHA-256 checksum) of the Rome executable.
+		 * @param configPath   Path to the optional directory with the {@code rome.json}
+		 *                     config file, can be <code>null</code>, in which case the
+		 *                     defaults are used.
+		 */
+		private State(String exe, FileSignature exeSignature, String configPath) {
 			this.pathToExe = exe;
 			this.exeSignature = exeSignature;
 			this.configPath = configPath;
@@ -316,6 +352,12 @@ public class RomeStep {
 			return runner.exec(stdin, args).assertExitZero(StandardCharsets.UTF_8);
 		}
 
+		/**
+		 * Creates a new formatter function for formatting a piece of code by delegating
+		 * to the Rome executable.
+		 * 
+		 * @return A formatter function for formatting code.
+		 */
 		private FormatterFunc.Closeable toFunc() {
 			var runner = new ProcessRunner();
 			return FormatterFunc.Closeable.of(runner, this::format);

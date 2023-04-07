@@ -15,21 +15,18 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.diffplug.spotless.Architecture;
-import com.diffplug.spotless.OS;
-import com.diffplug.spotless.Platform;
-
 /**
  * Downloader for the Rome executable:
  * <a href="https://github.com/rome/tools">https://github.com/rome/tools</a>.
  */
-public class RomeExecutableDownloader {
+final class RomeExecutableDownloader {
 	private static final Logger logger = LoggerFactory.getLogger(RomeExecutableDownloader.class);
 
 	/**
@@ -89,16 +86,19 @@ public class RomeExecutableDownloader {
 	 * the download directory. When the executable exists already, it is
 	 * overwritten.
 	 * 
-	 * @param version  Desired Rome version.
-	 * @param platform Desired platform.
+	 * @param version Desired Rome version.
 	 * @return The path to the Rome executable.
-	 * @throws IOException          When the executable cannot be downloaded from
-	 *                              the network or the file system could not be
-	 *                              accessed.
-	 * @throws InterruptedException When this thread was interrupted while
-	 *                              downloading the file.
+	 * @throws IOException           When the executable cannot be downloaded from
+	 *                               the network or the file system could not be
+	 *                               accessed.
+	 * @throws InterruptedException  When this thread was interrupted while
+	 *                               downloading the file.
+	 * @throws IllegalStateException When no information about the current OS and
+	 *                               architecture could be obtained, or when the OS
+	 *                               or architecture is not supported.
 	 */
-	public Path download(String version, Platform platform) throws IOException, InterruptedException {
+	public Path download(String version) throws IOException, InterruptedException {
+		var platform = Platform.guess();
 		var url = getDownloadUrl(version, platform);
 		var executablePath = getExecutablePath(version, platform);
 		var checksumPath = getChecksumPath(executablePath);
@@ -128,21 +128,25 @@ public class RomeExecutableDownloader {
 	 * 
 	 * @param version Desired Rome version.
 	 * @return The path to the Rome executable.
-	 * @throws IOException          When the executable cannot be downloaded from
-	 *                              the network or the file system could not be
-	 *                              accessed.
-	 * @throws InterruptedException When this thread was interrupted while
-	 *                              downloading the file.
+	 * @throws IOException           When the executable cannot be downloaded from
+	 *                               the network or the file system could not be
+	 *                               accessed.
+	 * @throws InterruptedException  When this thread was interrupted while
+	 *                               downloading the file.
+	 * @throws IllegalStateException When no information about the current OS and
+	 *                               architecture could be obtained, or when the OS
+	 *                               or architecture is not supported.
 	 */
-	public Path ensureDownloaded(String version, Platform platform) throws IOException, InterruptedException {
+	public Path ensureDownloaded(String version) throws IOException, InterruptedException {
+		var platform = Platform.guess();
 		logger.debug("Ensuring that Rome for platform '{}' is downloaded", platform);
-		var existing = findDownloaded(version, platform);
+		var existing = findDownloaded(version);
 		if (existing.isPresent()) {
 			logger.debug("Rome was already downloaded, using executable at '{}'", existing.get());
 			return existing.get();
 		} else {
 			logger.debug("Rome was not yet downloaded, attempting to download executable");
-			return download(version, platform);
+			return download(version);
 		}
 	}
 
@@ -150,39 +154,20 @@ public class RomeExecutableDownloader {
 	 * Attempts to find the Rome executable for the current platform in the download
 	 * directory. No attempt is made to download the executable from the network.
 	 * 
-	 * @param version  Desired Rome version.
-	 * @param platform Desired platform.
+	 * @param version Desired Rome version.
 	 * @return The path to the Rome executable.
-	 * @throws IOException When the executable does not exists in the download
-	 *                     directory, or when the file system could not be accessed.
+	 * @throws IOException           When the executable does not exists in the
+	 *                               download directory, or when the file system
+	 *                               could not be accessed.
+	 * @throws IllegalStateException When no information about the current OS and
+	 *                               architecture could be obtained, or when the OS
+	 *                               or architecture is not supported.
 	 */
-	public Optional<Path> findDownloaded(String version, Platform platform) throws IOException {
+	public Optional<Path> findDownloaded(String version) throws IOException {
+		var platform = Platform.guess();
 		var executablePath = getExecutablePath(version, platform);
 		logger.debug("Checking rome executable at {}", executablePath);
 		return checkFileWithChecksum(executablePath) ? Optional.ofNullable(executablePath) : Optional.empty();
-	}
-
-	/**
-	 * @param platform Platform to check.
-	 * @return <code>true</code> if Rome officially supports the given platform,
-	 *         <code>false</code> otherwise.
-	 */
-	public boolean isSupported(Platform platform) {
-		var architecture = platform.getArchitecture();
-		switch (platform.getOs()) {
-		case AIX:
-			return false;
-		case Linux:
-			return architecture == Architecture.x64 || architecture == Architecture.arm64;
-		case Mac:
-			return architecture == Architecture.x64 || architecture == Architecture.arm64;
-		case SunOS:
-			return false;
-		case Windows:
-			return architecture == Architecture.x64 || architecture == Architecture.arm64;
-		default:
-			return false;
-		}
 	}
 
 	/**
@@ -254,22 +239,10 @@ public class RomeExecutableDownloader {
 	 */
 	private String getArchitectureCodeName(Architecture architecture) throws IOException {
 		switch (architecture) {
-		case arm64:
+		case ARM64:
 			return "arm64";
-		case armv7l:
-			throw new IOException("Unsupported architecture: " + architecture);
-		case ppc:
-			throw new IOException("Unsupported architecture: " + architecture);
-		case ppc64:
-			throw new IOException("Unsupported architecture: " + architecture);
-		case ppc64le:
-			throw new IOException("Unsupported architecture: " + architecture);
-		case s390x:
-			throw new IOException("Unsupported architecture: " + architecture);
-		case x64:
+		case X64:
 			return "x64";
-		case x86:
-			throw new IOException("Unsupported architecture: " + architecture);
 		default:
 			throw new IOException("Unsupported architecture: " + architecture);
 		}
@@ -294,9 +267,6 @@ public class RomeExecutableDownloader {
 	 * @throws IOException When the platform is not supported by Rome.
 	 */
 	private String getDownloadUrl(String version, Platform platform) throws IOException {
-		if (!isSupported(platform)) {
-			throw new IOException("Unsupported platform: " + platform);
-		}
 		var osCodeName = getOsCodeName(platform.getOs());
 		var architectureCodeName = getArchitectureCodeName(platform.getArchitecture());
 		var extension = getDownloadUrlExtension(platform.getOs());
@@ -314,15 +284,11 @@ public class RomeExecutableDownloader {
 	 */
 	private String getDownloadUrlExtension(OS os) throws IOException {
 		switch (os) {
-		case AIX:
-			throw new IOException("Unsupported OS: " + os);
-		case Linux:
+		case LINUX:
 			return "";
-		case Mac:
+		case MAC_OS:
 			return "";
-		case SunOS:
-			throw new IOException("Unsupported OS: " + os);
-		case Windows:
+		case WINDOWS:
 			return ".exe";
 		default:
 			throw new IOException("Unsupported OS: " + os);
@@ -338,7 +304,9 @@ public class RomeExecutableDownloader {
 	 * @return The path for the Rome executable.
 	 */
 	private Path getExecutablePath(String version, Platform platform) {
-		var fileName = String.format(DOWNLOAD_FILE_PATTERN, platform.getOs(), platform.getArchitecture(), version);
+		var os = platform.getOs().name().toLowerCase(Locale.ROOT);
+		var arch = platform.getArchitecture().name().toLowerCase(Locale.ROOT);
+		var fileName = String.format(DOWNLOAD_FILE_PATTERN, os, arch, version);
 		return downloadDir.resolve(fileName);
 	}
 
@@ -352,15 +320,11 @@ public class RomeExecutableDownloader {
 	 */
 	private String getOsCodeName(OS os) throws IOException {
 		switch (os) {
-		case AIX:
-			throw new IOException("Unsupported OS: " + os);
-		case Linux:
+		case LINUX:
 			return "linux";
-		case Mac:
+		case MAC_OS:
 			return "darwin";
-		case SunOS:
-			throw new IOException("Unsupported OS: " + os);
-		case Windows:
+		case WINDOWS:
 			return "win32";
 		default:
 			throw new IOException("Unsupported OS: " + os);

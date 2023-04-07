@@ -5,9 +5,9 @@ import java.nio.file.Paths;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.javascript.RomeStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
+import com.diffplug.spotless.rome.RomeStep;
 
 /**
  * Factory for creating the Rome formatter step that formats JavaScript and

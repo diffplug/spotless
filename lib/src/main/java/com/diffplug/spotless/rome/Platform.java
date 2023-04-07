@@ -1,15 +1,17 @@
-package com.diffplug.spotless;
+package com.diffplug.spotless.rome;
 
 /**
  * Represents a platform where code is run, consisting of an operating system
  * and an architecture.
  */
-public class Platform {
+class Platform {
 	/**
 	 * Attempts to guess the platform of the hosting environment running the JVM
 	 * machine.
 	 * 
 	 * @return The best guess for the current OS and architecture.
+	 * @throws IllegalStateException When no OS information is available, or when
+	 *                               the OS or architecture is unsupported.
 	 */
 	public static Platform guess() {
 		var os = OS.guess();
@@ -23,7 +25,8 @@ public class Platform {
 
 	/**
 	 * Creates a new Platform descriptor for the given OS and architecture.
-	 * @param os Operating system of the platform.
+	 * 
+	 * @param os           Operating system of the platform.
 	 * @param architecture Architecture of the platform.
 	 */
 	public Platform(OS os, Architecture architecture) {
@@ -46,38 +49,24 @@ public class Platform {
 	}
 
 	/**
-	 * @return Whether the operating system is Aix.
-	 */
-	public boolean isAix() {
-		return os == OS.AIX;
-	}
-
-	/**
 	 * @return Whether the operating system is Linux.
 	 */
 	public boolean isLinux() {
-		return os == OS.Linux;
+		return os == OS.LINUX;
 	}
 
 	/**
 	 * @return Whether the operating system is Mac.
 	 */
 	public boolean isMac() {
-		return os == OS.Mac;
-	}
-
-	/**
-	 * @return Whether the operating system is SunOS.
-	 */
-	public boolean isSunos() {
-		return os == OS.SunOS;
+		return os == OS.MAC_OS;
 	}
 
 	/**
 	 * @return Whether the operating system is Windows.
 	 */
 	public boolean isWindows() {
-		return os == OS.Windows;
+		return os == OS.WINDOWS;
 	}
 
 	@Override

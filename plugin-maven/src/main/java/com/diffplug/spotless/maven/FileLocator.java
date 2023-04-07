@@ -121,9 +121,7 @@ public class FileLocator {
 	}
 
 	private static File findDataDir() {
-		// One of
-		// ~/.m2/repository/com/diffplug/spotless/spotless-plugin-maven/1.2.3/spotless-plugin-maven-1.2.3.jar
-		// ~/.m2/repository/com/diffplug/spotless/spotless-plugin-maven/1.2.3/spotless-plugin-gradle-1.2.3.jar
+		// E.g. ~/.m2/repository/com/diffplug/spotless/spotless-plugin-maven/1.2.3/spotless-plugin-maven-1.2.3.jar
 		final var jarPath = Paths.get(RomeJs.class.getProtectionDomain().getCodeSource().getLocation().getPath());
 		final var base = jarPath.getParent().getParent().getParent();
 		final var sub = base.resolve("spotless-data");
