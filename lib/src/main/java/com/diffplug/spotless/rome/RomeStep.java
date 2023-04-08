@@ -50,7 +50,7 @@ public class RomeStep {
 	 * Path to the directory with the {@code rome.json} config file, can be
 	 * <code>null</code>, in which case the defaults are used.
 	 */
-	private final String configPath;
+	private String configPath;
 
 	/**
 	 * The language (syntax) of the input files to format. When <code>null</code> or
@@ -68,7 +68,7 @@ public class RomeStep {
 	 * <li>json (JSON)</li>
 	 * </ul>
 	 */
-	private final String language;
+	private String language;
 
 	/**
 	 * Path to the Rome executable. Can be <code>null</code>, but either a path to
@@ -106,8 +106,8 @@ public class RomeStep {
 	 * @param downloadDir Directory where to place the downloaded executable.
 	 * @return A new Rome step that download the executable from the network.
 	 */
-	public static RomeStep.Builder withExeDownload(String version, String downloadDir) {
-		return new RomeStep.Builder(version, null, downloadDir);
+	public static RomeStep withExeDownload(String version, String downloadDir) {
+		return new RomeStep(version, null, downloadDir);
 	}
 
 	/**
@@ -117,8 +117,8 @@ public class RomeStep {
 	 * @param pathToExe Path to the Rome executable to use.
 	 * @return A new Rome step that format with the given executable.
 	 */
-	public static RomeStep.Builder withExePath(String pathToExe) {
-		return new RomeStep.Builder(null, pathToExe, null);
+	public static RomeStep withExePath(String pathToExe) {
+		return new RomeStep(null, pathToExe, null);
 	}
 
 	/**
@@ -217,12 +217,10 @@ public class RomeStep {
 	 *
 	 * @param builder Builder with the configuration to use.
 	 */
-	private RomeStep(RomeStep.Builder builder) {
-		this.version = builder.version != null && !builder.version.isBlank() ? builder.version : defaultVersion();
-		this.pathToExe = builder.pathToExe;
-		this.downloadDir = builder.downloadDir;
-		this.configPath = builder.configPath;
-		this.language = builder.language;
+	private RomeStep(String version, String pathToExe, String downloadDir) {
+		this.version = version != null && !version.isBlank() ? version : defaultVersion();
+		this.pathToExe = pathToExe;
+		this.downloadDir = downloadDir;
 	}
 
 	/**
@@ -233,6 +231,44 @@ public class RomeStep {
 	 */
 	public FormatterStep create() {
 		return FormatterStep.createLazy(name(), this::createState, State::toFunc);
+	}
+
+	/**
+	 * Sets the path to the directory with the {@code rome.json} config file. When
+	 * no config path is set, the default configuration is used.
+	 *
+	 * @param configPath Config path to use. Must point to a directory which contain
+	 *                   a file named {@code rome.json}.
+	 * @return This builder instance for chaining method calls.
+	 */
+	public RomeStep withConfigPath(String configPath) {
+		this.configPath = configPath;
+		return this;
+	}
+
+	/**
+	 * Sets the language of the files to format When no language is set, it is
+	 * determined automatically from the file name. The following languages are
+	 * currently supported by Rome.
+	 *
+	 * <ul>
+	 * <li>js (JavaScript)</li>
+	 * <li>jsx (JavaScript + JSX)</li>
+	 * <li>js? (JavaScript or JavaScript + JSX, depending on the file
+	 * extension)</li>
+	 * <li>ts (TypeScript)</li>
+	 * <li>tsx (TypeScript + JSX)</li>
+	 * <li>ts? (TypeScript or TypeScript + JSX, depending on the file
+	 * extension)</li>
+	 * <li>json (JSON)</li>
+	 * </ul>
+	 *
+	 * @param language The language of the files to format.
+	 * @return This builder instance for chaining method calls.
+	 */
+	public RomeStep withLanguage(String language) {
+		this.language = language;
+		return this;
 	}
 
 	/**
@@ -287,88 +323,6 @@ public class RomeStep {
 			var downloaded = downloader.ensureDownloaded(version).toString();
 			makeExecutable(downloaded);
 			return downloaded;
-		}
-	}
-
-	public final static class Builder {
-		/** See {@link RomeStep#configPath} */
-		private String configPath;
-
-		/** See {@link RomeStep#downloadDir} */
-		private final String downloadDir;
-
-		/** See {@link RomeStep#language} */
-		private String language;
-
-		/** See {@link RomeStep#pathToExe} */
-		private final String pathToExe;
-
-		/** See {@link RomeStep#version} */
-		private final String version;
-
-		/**
-		 * Creates a new builder for configuring a Rome step that can format code via
-		 * Rome. Either a version and and downloadDir, or a pathToExe must be given.
-		 *
-		 * @param version     The version of Rome to download, see
-		 *                    {@link RomeStep#version}.
-		 * @param pathToExe   The path to the Rome executable to use, see
-		 *                    {@link RomeStep#pathToExe}.
-		 * @param downloadDir The path to the download directory when downloading Rome
-		 *                    from the network, {@link RomeStep#downloadDir}.
-		 */
-		private Builder(String version, String pathToExe, String downloadDir) {
-			this.version = version;
-			this.pathToExe = pathToExe;
-			this.downloadDir = downloadDir;
-		}
-
-		/**
-		 * Creates a new Rome step for formatting code with Rome from the current
-		 * configuration of this builder.
-		 *
-		 * @return A new Rome step with the current configuration.
-		 */
-		public RomeStep build() {
-			return new RomeStep(this);
-		}
-
-		/**
-		 * Sets the path to the directory with the {@code rome.json} config file. When
-		 * no config path is set, the default configuration is used.
-		 *
-		 * @param configPath Config path to use. Must point to a directory which contain
-		 *                   a file named {@code rome.json}.
-		 * @return This builder instance for chaining method calls.
-		 */
-		public Builder withConfigPath(String configPath) {
-			this.configPath = configPath;
-			return this;
-		}
-
-		/**
-		 * Sets the language of the files to format When no language is set, it is
-		 * determined automatically from the file name. The following languages are
-		 * currently supported by Rome.
-		 *
-		 * <ul>
-		 * <li>js (JavaScript)</li>
-		 * <li>jsx (JavaScript + JSX)</li>
-		 * <li>js? (JavaScript or JavaScript + JSX, depending on the file
-		 * extension)</li>
-		 * <li>ts (TypeScript)</li>
-		 * <li>tsx (TypeScript + JSX)</li>
-		 * <li>ts? (TypeScript or TypeScript + JSX, depending on the file
-		 * extension)</li>
-		 * <li>json (JSON)</li>
-		 * </ul>
-		 *
-		 * @param language The language of the files to format.
-		 * @return This builder instance for chaining method calls.
-		 */
-		public Builder withLanguage(String language) {
-			this.language = language;
-			return this;
 		}
 	}
 

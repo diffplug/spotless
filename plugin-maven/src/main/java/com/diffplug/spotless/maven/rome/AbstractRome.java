@@ -23,7 +23,6 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 import com.diffplug.spotless.rome.RomeStep;
-import com.diffplug.spotless.rome.RomeStep.Builder;
 
 /**
  * Factory for creating the Rome formatter step that can format format code in
@@ -94,8 +93,7 @@ public abstract class AbstractRome implements FormatterStepFactory {
 		if (getLanguage() != null) {
 			builder.withLanguage(getLanguage());
 		}
-		var step = builder.build();
-		return step.create();
+		return builder.create();
 	}
 
 	/**
@@ -127,7 +125,7 @@ public abstract class AbstractRome implements FormatterStepFactory {
 	 *               the currently executed project.
 	 * @return A builder for a Rome step.
 	 */
-	private Builder newBuilder(FormatterStepConfig config) {
+	private RomeStep newBuilder(FormatterStepConfig config) {
 		if (pathToExe != null) {
 			var resolvedExePath = resolveExePath(config);
 			return RomeStep.withExePath(resolvedExePath);

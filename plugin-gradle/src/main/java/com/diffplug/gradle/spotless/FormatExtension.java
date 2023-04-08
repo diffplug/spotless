@@ -770,8 +770,7 @@ public class FormatExtension {
 				builder.withConfigPath(resolvedConfigPath.toString());
 			}
 			builder.withLanguage(getLanguage());
-			var rome = builder.build();
-			return rome.create();
+			return builder.create();
 		}
 
 		/**
@@ -842,7 +841,7 @@ public class FormatExtension {
 		 *
 		 * @return A builder for a Rome step.
 		 */
-		private RomeStep.Builder newBuilder() {
+		private RomeStep newBuilder() {
 			if (pathToExe != null) {
 				var resolvedPathToExe = resolvePathToExe();
 				return RomeStep.withExePath(resolvedPathToExe);
