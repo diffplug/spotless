@@ -11,12 +11,13 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+* * Support Rome as a formatter for JavaScript and TypeScript code. Adds a new `rome` step to `javascript` and `typescript` formatter configurations. https://github.com/diffplug/spotless/pull/1663
+
 ## [2.38.0] - 2023-04-06
 ### Added
 * Support configuration of mirrors for P2 repositories in `EquoBasedStepBuilder` ([#1629](https://github.com/diffplug/spotless/issues/1629)).
 * The `style` option in Palantir Java Format ([#1654](https://github.com/diffplug/spotless/pull/1654)).
 * Added formatter for Gherkin feature files ([#1649](https://github.com/diffplug/spotless/issues/1649)).
-* Support Rome as a formatter for JavaScript and TypeScript code. Adds a new `rome` step to `javascript` and `typescript` formatter configurations. https://github.com/diffplug/spotless/pull/1663
 ### Changes
 * **POTENTIALLY BREAKING** Converted `googleJavaFormat` to a compile-only dependency and drop support for versions &lt; `1.8`. ([#1630](https://github.com/diffplug/spotless/pull/1630))
 * Bump default `cleanthat` version to latest `2.6` -> `2.13`. ([#1589](https://github.com/diffplug/spotless/pull/1589) and [#1661](https://github.com/diffplug/spotless/pull/1661))

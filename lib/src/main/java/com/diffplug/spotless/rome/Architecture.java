@@ -3,7 +3,7 @@ package com.diffplug.spotless.rome;
 /**
  * Enumeration of possible computer architectures.
  */
-public enum Architecture {
+enum Architecture {
 	/** The arm64 architecture */
 	ARM64,
 	/** Either x64 or x64_32 architecture */
