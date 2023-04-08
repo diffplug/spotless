@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ public class Rome extends AbstractRome {
 	 * <li>json (JSON)</li>
 	 * </ul>
 	 * </ul>
-	 * 
+	 *
 	 * @return The language of the input files.
 	 */
 	@Parameter

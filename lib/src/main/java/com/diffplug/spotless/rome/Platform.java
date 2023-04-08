@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ class Platform {
 	/**
 	 * Attempts to guess the platform of the hosting environment running the JVM
 	 * machine.
-	 * 
+	 *
 	 * @return The best guess for the current OS and architecture.
 	 * @throws IllegalStateException When no OS information is available, or when
 	 *                               the OS or architecture is unsupported.
@@ -40,7 +40,7 @@ class Platform {
 
 	/**
 	 * Creates a new Platform descriptor for the given OS and architecture.
-	 * 
+	 *
 	 * @param os           Operating system of the platform.
 	 * @param architecture Architecture of the platform.
 	 */

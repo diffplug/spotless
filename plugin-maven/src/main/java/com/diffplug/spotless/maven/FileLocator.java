@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,7 +74,7 @@ public class FileLocator {
 	/**
 	 * Finds the base directory of the Maven or Gradle project on which spotless is
 	 * currently being executed.
-	 * 
+	 *
 	 * @return The base directory of the current Maven or Gradel project.
 	 */
 	public File getBaseDir() {
@@ -84,7 +84,7 @@ public class FileLocator {
 	/**
 	 * Finds the build directory (e.g. <code>/target</code>) of the Maven or Gradle
 	 * project on which spotless is currently being executed.
-	 * 
+	 *
 	 * @return The project build directory of the current Maven or Gradle project.
 	 */
 	public File getBuildDir() {
@@ -95,7 +95,7 @@ public class FileLocator {
 	 * Finds the data directory that can be used for storing shared data such as
 	 * downloaded files globally. This is a directory in the local repository, e.g.
 	 * <code>~/.m2/repository/com/diffplus/spotless/spotless-data<code>.
-	 * 
+	 *
 	 * @return The directory for storing shared data.
 	 */
 	public File getDataDir() {

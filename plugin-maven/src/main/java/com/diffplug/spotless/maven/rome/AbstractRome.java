@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,7 +113,7 @@ public abstract class AbstractRome implements FormatterStepFactory {
 	 * extension)</li>
 	 * <li>json (JSON)</li>
 	 * </ul>
-	 * 
+	 *
 	 * @return The language of the input files.
 	 */
 	protected abstract String getLanguage();
@@ -122,7 +122,7 @@ public abstract class AbstractRome implements FormatterStepFactory {
 	 * A new builder for configuring a Rome step that either downloads the Rome
 	 * executable with the given version from the network, or uses the executable
 	 * from the given path.
-	 * 
+	 *
 	 * @param config Configuration from the Maven Mojo execution with details about
 	 *               the currently executed project.
 	 * @return A builder for a Rome step.
@@ -140,7 +140,7 @@ public abstract class AbstractRome implements FormatterStepFactory {
 	/**
 	 * Resolves the path to the configuration file for Rome. Relative paths are
 	 * resolved against the project's base directory.
-	 * 
+	 *
 	 * @param config Configuration from the Maven Mojo execution with details about
 	 *               the currently executed project.
 	 * @return The resolved path to the configuration file.
@@ -154,7 +154,7 @@ public abstract class AbstractRome implements FormatterStepFactory {
 	 * do not perform any resolution and interpret it as a command that must be on
 	 * the user's path. Otherwise resolve the executable path against the project's
 	 * base directory.
-	 * 
+	 *
 	 * @param config Configuration from the Maven Mojo execution with details about
 	 *               the currently executed project.
 	 * @return The resolved path to the Rome executable.
@@ -173,7 +173,7 @@ public abstract class AbstractRome implements FormatterStepFactory {
 	 * {@link #downloadDir} is given, use that directory, resolved against the
 	 * current project's directory. Otherwise, use the {@code Rome} sub folder in
 	 * the shared data directory.
-	 * 
+	 *
 	 * @param config Configuration for this step.
 	 * @return The download directory for the Rome executable.
 	 */

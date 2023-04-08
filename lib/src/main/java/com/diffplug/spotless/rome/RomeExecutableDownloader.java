@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ final class RomeExecutableDownloader {
 	 * {@link OpenOption Open options} for reading an existing file without write
 	 * access.
 	 */
-	private static final OpenOption[] READ_OPTIONS = { StandardOpenOption.READ };
+	private static final OpenOption[] READ_OPTIONS = {StandardOpenOption.READ};
 
 	/**
 	 * The pattern for {@link String#format(String, Object...) String.format()} for
@@ -81,15 +81,15 @@ final class RomeExecutableDownloader {
 	 * {@link OpenOption Open options} for creating a new file, overwriting the
 	 * existing file if present.
 	 */
-	private static final OpenOption[] WRITE_OPTIONS = { StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING,
-			StandardOpenOption.WRITE };
+	private static final OpenOption[] WRITE_OPTIONS = {StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING,
+			StandardOpenOption.WRITE};
 
 	private Path downloadDir;
 
 	/**
 	 * Creates a new downloader for the Rome executable. The executable files are
 	 * stored in the given download directory.
-	 * 
+	 *
 	 * @param downloadDir Directory where
 	 */
 	public RomeExecutableDownloader(Path downloadDir) {
@@ -100,7 +100,7 @@ final class RomeExecutableDownloader {
 	 * Downloads the Rome executable for the current platform from the network to
 	 * the download directory. When the executable exists already, it is
 	 * overwritten.
-	 * 
+	 *
 	 * @param version Desired Rome version.
 	 * @return The path to the Rome executable.
 	 * @throws IOException           When the executable cannot be downloaded from
@@ -140,7 +140,7 @@ final class RomeExecutableDownloader {
 	 * directory, an attempt is made to download the Rome executable from the
 	 * network. When the executable exists already, no attempt to download it again
 	 * is made.
-	 * 
+	 *
 	 * @param version Desired Rome version.
 	 * @return The path to the Rome executable.
 	 * @throws IOException           When the executable cannot be downloaded from
@@ -168,7 +168,7 @@ final class RomeExecutableDownloader {
 	/**
 	 * Attempts to find the Rome executable for the current platform in the download
 	 * directory. No attempt is made to download the executable from the network.
-	 * 
+	 *
 	 * @param version Desired Rome version.
 	 * @return The path to the Rome executable.
 	 * @throws IOException           When the executable does not exists in the
@@ -188,7 +188,7 @@ final class RomeExecutableDownloader {
 	/**
 	 * Checks whether the given file exists and matches the checksum. The checksum
 	 * must be contained in a file next to the file to check.
-	 * 
+	 *
 	 * @param filePath File to check.
 	 * @return <code>true</code> if the file exists and matches the checksum,
 	 *         <code>false</code> otherwise.
@@ -223,7 +223,7 @@ final class RomeExecutableDownloader {
 
 	/**
 	 * Computes the checksum of the given file.
-	 * 
+	 *
 	 * @param file      File to process.
 	 * @param algorithm The checksum algorithm to use.
 	 * @return The MD5 checksum of the given file.
@@ -247,7 +247,7 @@ final class RomeExecutableDownloader {
 	/**
 	 * Finds the code name for the given operating system used by the Rome
 	 * executable download URL.
-	 * 
+	 *
 	 * @param os Desired operating system.
 	 * @return Code name for the Rome download URL.
 	 * @throws IOException When the given OS is not supported by Rome.
@@ -265,7 +265,7 @@ final class RomeExecutableDownloader {
 
 	/**
 	 * Derives a path for the file which contains the checksum of the given file.
-	 * 
+	 *
 	 * @param file A file for which to derive the checksum file path.
 	 * @return The path with the checksum for the given file.
 	 */
@@ -275,7 +275,7 @@ final class RomeExecutableDownloader {
 
 	/**
 	 * Finds the URL from which the Rome executable can be downloaded.
-	 * 
+	 *
 	 * @param version  Desired Rome version.
 	 * @param platform Desired platform.
 	 * @return The URL for the Rome executable.
@@ -292,7 +292,7 @@ final class RomeExecutableDownloader {
 	/**
 	 * Finds the file extension of the Rome download URL for the given operating
 	 * system.
-	 * 
+	 *
 	 * @param os Desired operating system.
 	 * @return Extension for the Rome download URL.
 	 * @throws IOException When the given OS is not supported by Rome.
@@ -313,7 +313,7 @@ final class RomeExecutableDownloader {
 	/**
 	 * Finds the path on the file system for the Rome executable with a given
 	 * version and platform.
-	 * 
+	 *
 	 * @param version  Desired Rome version.
 	 * @param platform Desired platform.
 	 * @return The path for the Rome executable.
@@ -328,7 +328,7 @@ final class RomeExecutableDownloader {
 	/**
 	 * Finds the code name for the given operating system used by the Rome
 	 * executable download URL.
-	 * 
+	 *
 	 * @param os Desired operating system.
 	 * @return Code name for the Rome download URL.
 	 * @throws IOException When the given OS is not supported by Rome.
@@ -348,7 +348,7 @@ final class RomeExecutableDownloader {
 
 	/**
 	 * Reads a plain text file with the given encoding into a string.
-	 * 
+	 *
 	 * @param file    File to read.
 	 * @param charset Encoding to use.
 	 * @return The contents of the file as a string.
@@ -363,7 +363,7 @@ final class RomeExecutableDownloader {
 	/**
 	 * Computes the checksum of the given file and writes it to the target checksum
 	 * file, using the {@code ISO_8859_1} encoding.
-	 * 
+	 *
 	 * @param file
 	 * @param checksumPath
 	 * @throws IOException

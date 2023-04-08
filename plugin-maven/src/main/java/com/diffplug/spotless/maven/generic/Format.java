@@ -40,7 +40,7 @@ public class Format extends FormatterFactory {
 		// do not specify a default delimiter
 		return null;
 	}
-	
+
 	public void addRome(Rome rome) {
 		addStepFactory(rome);
 	}

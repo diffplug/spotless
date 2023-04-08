@@ -651,7 +651,7 @@ public class FormatExtension {
 							this.prettierConfig));
 		}
 	}
-	
+
 	public abstract static class RomeStepConfig<Self extends RomeStepConfig<Self>> {
 		/**
 		 * Optional path to the directory with configuration file for Rome. The file
@@ -760,7 +760,7 @@ public class FormatExtension {
 		/**
 		 * Creates a new formatter step that formats code by calling the Rome
 		 * executable, using the current configuration.
-		 * 
+		 *
 		 * @return A new formatter step for the Rome formatter.
 		 */
 		protected FormatterStep createStep() {
@@ -789,7 +789,7 @@ public class FormatExtension {
 		 * extension)</li>
 		 * <li>json (JSON)</li>
 		 * </ul>
-		 * 
+		 *
 		 * @return The language of the input files.
 		 */
 		protected abstract String getLanguage();
@@ -806,12 +806,12 @@ public class FormatExtension {
 		protected void replaceStep() {
 			replaceStep.accept(createStep());
 		}
-		
+
 		/**
 		 * Finds the data directory that can be used for storing shared data such as
 		 * Rome executable globally. This is a directory in the local repository, e.g.
 		 * <code>~/.m2/repository/com/diffplus/spotless/spotless-data<code>.
-		 * 
+		 *
 		 * @return The directory for storing shared data.
 		 */
 		private File findDataDir() {
@@ -821,14 +821,13 @@ public class FormatExtension {
 					.filter(r -> "file".equals(r.getUrl().getScheme()))
 					.findAny().orElse(null);
 			// Temporarily add mavenLocal() repository to get its file URL
-			var localRepo = currentRepo != null ? (MavenArtifactRepository)currentRepo : project.getRepositories().mavenLocal();
+			var localRepo = currentRepo != null ? (MavenArtifactRepository) currentRepo : project.getRepositories().mavenLocal();
 			try {
 				// e.g. ~/.m2/repository/
 				var repoPath = Paths.get(localRepo.getUrl().getPath());
 				var dataPath = repoPath.resolve("com").resolve("diffplus").resolve("spotless").resolve("spotless-data");
 				return dataPath.toAbsolutePath().toFile();
-			}
-			finally {
+			} finally {
 				// Remove mavenLocal() repository again if it was not part of the project
 				if (currentRepo == null) {
 					project.getRepositories().remove(localRepo);
@@ -840,7 +839,7 @@ public class FormatExtension {
 		 * A new builder for configuring a Rome step that either downloads the Rome
 		 * executable with the given version from the network, or uses the executable
 		 * from the given path.
-		 * 
+		 *
 		 * @return A builder for a Rome step.
 		 */
 		private RomeStep.Builder newBuilder() {
@@ -858,7 +857,7 @@ public class FormatExtension {
 		 * do not perform any resolution and interpret it as a command that must be on
 		 * the user's path. Otherwise resolve the executable path against the project's
 		 * base directory.
-		 * 
+		 *
 		 * @param config Configuration from the Maven Mojo execution with details about
 		 *               the currently executed project.
 		 * @return The resolved path to the Rome executable.
@@ -877,7 +876,7 @@ public class FormatExtension {
 		 * {@link #downloadDir} is given, use that directory, resolved against the
 		 * current project's directory. Otherwise, use the {@code Rome} sub folder in
 		 * the shared data directory.
-		 * 
+		 *
 		 * @param config Configuration for this step.
 		 * @return The download directory for the Rome executable.
 		 */
@@ -958,7 +957,7 @@ public class FormatExtension {
 		addStep(prettierConfig.createStep());
 		return prettierConfig;
 	}
-	
+
 	/**
 	 * Defaults to downloading the default Rome version from the network. To work
 	 * offline, you can specify the path to the Rome executable via

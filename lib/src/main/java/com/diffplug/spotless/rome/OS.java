@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ enum OS {
 
 	/**
 	 * Attempts to guess the OS of the environment running the JVM.
-	 * 
+	 *
 	 * @return The best guess for the architecture.
 	 * @throws IllegalStateException When the OS is either unsupported or no
 	 *                               information about the OS could be retrieved.

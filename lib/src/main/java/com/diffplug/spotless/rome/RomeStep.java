@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,7 +101,7 @@ public class RomeStep {
 	/**
 	 * Creates a Rome step that format code by downloading to the given Rome
 	 * version. The executable is downloaded from the network.
-	 * 
+	 *
 	 * @param version     Version of the Rome executable to download.
 	 * @param downloadDir Directory where to place the downloaded executable.
 	 * @return A new Rome step that download the executable from the network.
@@ -113,7 +113,7 @@ public class RomeStep {
 	/**
 	 * Creates a Rome step that formats code by delegating to the Rome executable
 	 * located at the given path.
-	 * 
+	 *
 	 * @param pathToExe Path to the Rome executable to use.
 	 * @return A new Rome step that format with the given executable.
 	 */
@@ -125,7 +125,7 @@ public class RomeStep {
 	 * Attempts to add a POSIX permission to the given file, ignoring any errors.
 	 * All existing permissions on the file are preserved and the new permission is
 	 * added, if possible.
-	 * 
+	 *
 	 * @param file       File or directory to which to add a permission.
 	 * @param permission The POSIX permission to add.
 	 */
@@ -134,15 +134,14 @@ public class RomeStep {
 			var newPermissions = new HashSet<>(Files.getPosixFilePermissions(file));
 			newPermissions.add(permission);
 			Files.setPosixFilePermissions(file, newPermissions);
-		} catch (final Exception ignore) {
-		}
+		} catch (final Exception ignore) {}
 	}
 
 	/**
 	 * Finds the default version for Rome when no version is specified explicitly.
 	 * Over time this will become outdated -- people should always specify the
 	 * version explicitly!
-	 * 
+	 *
 	 * @return The default version for Rome.
 	 */
 	private static String defaultVersion() {
@@ -154,7 +153,7 @@ public class RomeStep {
 	 * any errors are swallowed. Depending on the OS, the file might still be
 	 * executable even if this method fails. The user will get a descriptive error
 	 * later when we attempt to execute the Rome executable.
-	 * 
+	 *
 	 * @param filePath Path to the file to make executable.
 	 */
 	private static void makeExecutable(String filePath) {
@@ -167,7 +166,7 @@ public class RomeStep {
 	/**
 	 * Finds the absolute path of a command on the user's path. Uses {@code which}
 	 * for Linux and {@code where} for Windows.
-	 * 
+	 *
 	 * @param name Name of the command to resolve.
 	 * @return The absolute path of the command's executable.
 	 * @throws IOException          When the command could not be resolved.
@@ -215,7 +214,7 @@ public class RomeStep {
 
 	/**
 	 * Creates a new Rome step with the configuration from the given builder.
-	 * 
+	 *
 	 * @param builder Builder with the configuration to use.
 	 */
 	private RomeStep(RomeStep.Builder builder) {
@@ -229,7 +228,7 @@ public class RomeStep {
 	/**
 	 * Creates a formatter step with the current configuration, which formats code
 	 * by passing it to the Rome executable.
-	 * 
+	 *
 	 * @return A new formatter step for formatting with Rome.
 	 */
 	public FormatterStep create() {
@@ -240,7 +239,7 @@ public class RomeStep {
 	 * Resolves the Rome executable, possibly downloading it from the network, and
 	 * creates a new state instance with the resolved executable that can format
 	 * code via Rome.
-	 * 
+	 *
 	 * @return The state instance for formatting code via Rome.
 	 * @throws IOException          When any file system or network operations
 	 *                              failed, such as when the Rome executable could
@@ -266,7 +265,7 @@ public class RomeStep {
 	 * used as-is. Otherwise, at attempt is made to download the Rome executable for
 	 * the configured version from the network, unless it was already downloaded and
 	 * is available in the cache.
-	 * 
+	 *
 	 * @return The path to the resolved Rome executable.
 	 * @throws IOException          When any file system or network operations
 	 *                              failed, such as when the Rome executable could
@@ -310,7 +309,7 @@ public class RomeStep {
 		/**
 		 * Creates a new builder for configuring a Rome step that can format code via
 		 * Rome. Either a version and and downloadDir, or a pathToExe must be given.
-		 * 
+		 *
 		 * @param version     The version of Rome to download, see
 		 *                    {@link RomeStep#version}.
 		 * @param pathToExe   The path to the Rome executable to use, see
@@ -327,7 +326,7 @@ public class RomeStep {
 		/**
 		 * Creates a new Rome step for formatting code with Rome from the current
 		 * configuration of this builder.
-		 * 
+		 *
 		 * @return A new Rome step with the current configuration.
 		 */
 		public RomeStep build() {
@@ -337,7 +336,7 @@ public class RomeStep {
 		/**
 		 * Sets the path to the directory with the {@code rome.json} config file. When
 		 * no config path is set, the default configuration is used.
-		 * 
+		 *
 		 * @param configPath Config path to use. Must point to a directory which contain
 		 *                   a file named {@code rome.json}.
 		 * @return This builder instance for chaining method calls.
@@ -351,7 +350,7 @@ public class RomeStep {
 		 * Sets the language of the files to format When no language is set, it is
 		 * determined automatically from the file name. The following languages are
 		 * currently supported by Rome.
-		 * 
+		 *
 		 * <ul>
 		 * <li>js (JavaScript)</li>
 		 * <li>jsx (JavaScript + JSX)</li>
@@ -363,7 +362,7 @@ public class RomeStep {
 		 * extension)</li>
 		 * <li>json (JSON)</li>
 		 * </ul>
-		 * 
+		 *
 		 * @param language The language of the files to format.
 		 * @return This builder instance for chaining method calls.
 		 */
@@ -407,7 +406,7 @@ public class RomeStep {
 		/**
 		 * Creates a new state for instance which can format code with the given Rome
 		 * executable.
-		 * 
+		 *
 		 * @param exe          Path to the Rome executable.
 		 * @param exeSignature Signature (e.g. SHA-256 checksum) of the Rome executable.
 		 * @param configPath   Path to the optional directory with the {@code rome.json}
@@ -424,7 +423,7 @@ public class RomeStep {
 		/**
 		 * Builds the list of arguments for the command that executes Rome to format a
 		 * piece of code passed via stdin.
-		 * 
+		 *
 		 * @param file File to format.
 		 * @return The Rome command to use for formatting code.
 		 */
@@ -446,7 +445,7 @@ public class RomeStep {
 		 * Formats the given piece of code by delegating to the Rome executable. The
 		 * code is passed to Rome via stdin, the file name is used by Rome only to
 		 * determine the code syntax (e.g. JavaScript or TypeScript).
-		 * 
+		 *
 		 * @param runner Process runner for invoking the Rome executable.
 		 * @param input  Code to format.
 		 * @param file   File to format.
@@ -471,7 +470,7 @@ public class RomeStep {
 		 * extension. This method returns the file name for the desired language when a
 		 * language was requested explicitly, or the file name of the input file for
 		 * auto detection.
-		 * 
+		 *
 		 * @param file File to be formatted.
 		 * @return The file name to pass to the Rome executable.
 		 */
@@ -509,7 +508,7 @@ public class RomeStep {
 		/**
 		 * Creates a new formatter function for formatting a piece of code by delegating
 		 * to the Rome executable.
-		 * 
+		 *
 		 * @return A formatter function for formatting code.
 		 */
 		private FormatterFunc.Closeable toFunc() {

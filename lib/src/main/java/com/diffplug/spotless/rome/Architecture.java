@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ enum Architecture {
 
 	/**
 	 * Attempts to guess the architecture of the environment running the JVM.
-	 * 
+	 *
 	 * @return The best guess for the architecture.
 	 */
 	public static Architecture guess() {
