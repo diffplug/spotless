@@ -232,7 +232,7 @@ public class FormatExtension {
 
 	private final FileCollection parseTargetIsExclude(Object target, boolean isExclude) {
 		if (target instanceof Collection) {
-			return parseTargetsIsExclude(((Collection) target).toArray(), isExclude);
+			return parseTargetsIsExclude(((Collection<?>) target).toArray(), isExclude);
 		} else if (target instanceof FileCollection) {
 			return (FileCollection) target;
 		} else if (target instanceof String) {
@@ -963,12 +963,12 @@ public class FormatExtension {
 	 * offline, you can specify the path to the Rome executable via
 	 * {@code rome().pathToExe(...)}.
 	 */
-	public RomeGeneric rome() {
+	public RomeStepConfig<?> rome() {
 		return rome(null);
 	}
 
 	/** Downloads the given Rome version from the network. */
-	public RomeGeneric rome(String version) {
+	public RomeStepConfig<?> rome(String version) {
 		var romeConfig = new RomeGeneric(version);
 		addStep(romeConfig.createStep());
 		return romeConfig;
