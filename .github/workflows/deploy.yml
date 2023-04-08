@@ -51,18 +51,18 @@ jobs:
       - name: publish all
         if: "${{ github.event.inputs.to_publish == 'all' }}"
         run: |
-          ./gradlew :changelogPush -Prelease=true --stacktrace --warning-mode all
-          ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${{ secrets.GRADLE_KEY }} -Pgradle.publish.secret=${{ secrets.GRADLE_SECRET }} --stacktrace --warning-mode all
-          ./gradlew :plugin-maven:changelogPush -Prelease=true --stacktrace --warning-mode all
+          ./gradlew :changelogPush -Prelease=true --stacktrace --warning-mode all --no-configuration-cache
+          ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${{ secrets.GRADLE_KEY }} -Pgradle.publish.secret=${{ secrets.GRADLE_SECRET }} --stacktrace --warning-mode all --no-configuration-cache
+          ./gradlew :plugin-maven:changelogPush -Prelease=true --stacktrace --warning-mode all --no-configuration-cache
       - name: publish just plugin-gradle
         if: "${{ github.event.inputs.to_publish == 'plugin-gradle' }}"
         run: |
-          ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${{ secrets.GRADLE_KEY }} -Pgradle.publish.secret=${{ secrets.GRADLE_SECRET }} --stacktrace --warning-mode all
+          ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${{ secrets.GRADLE_KEY }} -Pgradle.publish.secret=${{ secrets.GRADLE_SECRET }} --stacktrace --warning-mode all --no-configuration-cache
       - name: publish just plugin-maven
         if: "${{ github.event.inputs.to_publish == 'plugin-maven' }}"
         run: |
-          ./gradlew :plugin-maven:changelogPush -Prelease=true --stacktrace --warning-mode all
+          ./gradlew :plugin-maven:changelogPush -Prelease=true --stacktrace --warning-mode all --no-configuration-cache
       - name: publish just lib
         if: "${{ github.event.inputs.to_publish == 'lib' }}"
         run: |
-          ./gradlew :changelogPush -Prelease=true --stacktrace --warning-mode all
+          ./gradlew :changelogPush -Prelease=true --stacktrace --warning-mode all --no-configuration-cache

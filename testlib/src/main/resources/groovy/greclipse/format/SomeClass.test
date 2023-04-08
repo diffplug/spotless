@@ -1,0 +1,12 @@
+package com.somepackage
+
+class SomeClass {
+
+    def func(parm) {
+        """<tag>
+            ${parm == null ? "" : "<tag>$parm</tag>"}
+            ${parm == null ? "" : "<tag>$parm</tag>"}
+           </tag>
+        """
+    }
+}

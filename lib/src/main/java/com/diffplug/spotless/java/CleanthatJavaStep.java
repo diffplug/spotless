@@ -40,7 +40,7 @@ public final class CleanthatJavaStep {
 	private static final String MAVEN_COORDINATE = "io.github.solven-eu.cleanthat:java";
 
 	// CleanThat changelog is available at https://github.com/solven-eu/cleanthat/blob/master/CHANGES.MD
-	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "2.6");
+	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "2.13");
 
 	// prevent direct instantiation
 	private CleanthatJavaStep() {}
@@ -83,8 +83,8 @@ public final class CleanthatJavaStep {
 	public static FormatterStep create(String groupArtifact,
 			String version,
 			String sourceJdkVersion,
-			List<String> excluded,
 			List<String> included,
+			List<String> excluded,
 			boolean includeDraft,
 			Provisioner provisioner) {
 		Objects.requireNonNull(groupArtifact, "groupArtifact");
@@ -94,7 +94,7 @@ public final class CleanthatJavaStep {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(provisioner, "provisioner");
 		return FormatterStep.createLazy(NAME,
-				() -> new JavaRefactorerState(NAME, groupArtifact, version, sourceJdkVersion, excluded, included, includeDraft, provisioner),
+				() -> new JavaRefactorerState(NAME, groupArtifact, version, sourceJdkVersion, included, excluded, includeDraft, provisioner),
 				JavaRefactorerState::createFormat);
 	}
 
@@ -120,7 +120,7 @@ public final class CleanthatJavaStep {
 		final boolean includeDraft;
 
 		JavaRefactorerState(String stepName, String version, Provisioner provisioner) throws IOException {
-			this(stepName, MAVEN_COORDINATE, version, defaultSourceJdk(), defaultExcludedMutators(), defaultMutators(), defaultIncludeDraft(), provisioner);
+			this(stepName, MAVEN_COORDINATE, version, defaultSourceJdk(), defaultMutators(), defaultExcludedMutators(), defaultIncludeDraft(), provisioner);
 		}
 
 		JavaRefactorerState(String stepName,
@@ -131,10 +131,7 @@ public final class CleanthatJavaStep {
 				List<String> excluded,
 				boolean includeDraft,
 				Provisioner provisioner) throws IOException {
-			// https://github.com/diffplug/spotless/issues/1583
-			if (!version.endsWith("-SNAPSHOT")) {
-				JVM_SUPPORT.assertFormatterSupported(version);
-			}
+			JVM_SUPPORT.assertFormatterSupported(version);
 			ModuleHelper.doOpenInternalPackagesIfRequired();
 			this.jarState = JarState.from(groupArtifact + ":" + version, provisioner);
 			this.stepName = stepName;
@@ -162,17 +159,9 @@ public final class CleanthatJavaStep {
 				throw new IllegalStateException("Issue executing the formatter", e);
 			}
 
-			// https://github.com/diffplug/spotless/issues/1583
-			if (!version.endsWith("-SNAPSHOT")) {
-				return JVM_SUPPORT.suggestLaterVersionOnError(version, input -> {
-					return (String) formatterMethod.invoke(formatter, input);
-				});
-			} else {
-				return input -> {
-					return (String) formatterMethod.invoke(formatter, input);
-				};
-			}
+			return JVM_SUPPORT.suggestLaterVersionOnError(version, input -> {
+				return (String) formatterMethod.invoke(formatter, input);
+			});
 		}
-
 	}
 }

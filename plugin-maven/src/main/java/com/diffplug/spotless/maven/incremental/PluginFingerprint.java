@@ -21,6 +21,7 @@ import java.util.Base64;
 import java.util.Objects;
 
 import org.apache.maven.model.Plugin;
+import org.apache.maven.model.PluginManagement;
 import org.apache.maven.project.MavenProject;
 
 import com.diffplug.spotless.Formatter;
@@ -43,10 +44,7 @@ class PluginFingerprint {
 	}
 
 	static PluginFingerprint from(MavenProject project, Iterable<Formatter> formatters) {
-		Plugin spotlessPlugin = project.getPlugin(SPOTLESS_PLUGIN_KEY);
-		if (spotlessPlugin == null) {
-			throw new IllegalArgumentException("Spotless plugin absent from the project: " + project);
-		}
+		Plugin spotlessPlugin = findSpotlessPlugin(project);
 		byte[] digest = digest(spotlessPlugin, formatters);
 		String value = Base64.getEncoder().encodeToString(digest);
 		return new PluginFingerprint(value);
@@ -84,6 +82,24 @@ class PluginFingerprint {
 	@Override
 	public String toString() {
 		return "PluginFingerprint[" + value + "]";
+	}
+
+	private static Plugin findSpotlessPlugin(MavenProject project) {
+		// Try to find the plugin instance from <build><plugins><plugin> XML element
+		Plugin plugin = project.getPlugin(SPOTLESS_PLUGIN_KEY);
+		if (plugin == null) {
+			// Try to find the plugin instance from <build><pluginManagement><plugins><plugin> XML element. Useful when
+			// the current module is a parent of a multimodule project
+			PluginManagement pluginManagement = project.getPluginManagement();
+			if (pluginManagement != null) {
+				plugin = pluginManagement.getPluginsAsMap().get(SPOTLESS_PLUGIN_KEY);
+			}
+		}
+
+		if (plugin == null) {
+			throw new IllegalArgumentException("Spotless plugin absent from the project: " + project);
+		}
+		return plugin;
 	}
 
 	private static byte[] digest(Plugin plugin, Iterable<Formatter> formatters) {

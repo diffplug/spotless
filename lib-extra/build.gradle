@@ -1,11 +1,13 @@
 plugins {
 	id 'java-library'
+	id 'dev.equo.p2deps'
 }
 ext.artifactId = project.artifactIdLibExtra
 version = rootProject.spotlessChangelog.versionNext
 apply from: rootProject.file('gradle/java-setup.gradle')
 apply from: rootProject.file('gradle/java-publish.gradle')
 
+String VER_SOLSTICE = '1.0.3'
 dependencies {
 	api project(':lib')
 	// misc useful utilities
@@ -14,6 +16,8 @@ dependencies {
 	// needed by GitAttributesLineEndings
 	implementation "org.eclipse.jgit:org.eclipse.jgit:${VER_JGIT}"
 	implementation "com.googlecode.concurrent-trees:concurrent-trees:2.6.1"
+	// for eclipse
+	implementation "dev.equo.ide:solstice:${VER_SOLSTICE}"
 
 	// testing
 	testImplementation project(':testlib')
@@ -21,9 +25,11 @@ dependencies {
 	testImplementation "org.assertj:assertj-core:${VER_ASSERTJ}"
 	testImplementation "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
 }
-
-// we'll hold the core lib to a high standard
-spotbugs { reportLevel = 'low' } // low|medium|high (low = sensitive to even minor mistakes)
+spotless {
+	java {
+		replaceRegex 'enforceSolsticeVersion', '"dev.equo.ide:solstice:(.*)"', '"dev.equo.ide:solstice:' + VER_SOLSTICE + '"'
+	}
+}
 
 apply from: rootProject.file('gradle/special-tests.gradle')
 tasks.withType(Test).configureEach {
@@ -32,3 +38,57 @@ tasks.withType(Test).configureEach {
 		jvmArgs '--add-opens=java.base/java.lang=ALL-UNNAMED'
 	}
 }
+
+def NEEDS_P2_DEPS = [
+	// (alphabetic order please)
+	'cdt',
+	'groovy',
+	'jdt'
+]
+for (needsP2 in NEEDS_P2_DEPS) {
+	sourceSets.register(needsP2) {
+		compileClasspath += sourceSets.main.output
+		runtimeClasspath += sourceSets.main.output
+		java {}
+	}
+	dependencies {
+		add("${needsP2}CompileOnly", "dev.equo.ide:solstice:${VER_SOLSTICE}")
+	}
+}
+jar {
+	for (needsP2 in NEEDS_P2_DEPS) {
+		from sourceSets.getByName(needsP2).output.classesDirs
+	}
+}
+tasks.withType(Test).configureEach {
+	dependsOn jar
+	doFirst {
+		classpath += jar.outputs.files
+	}
+}
+
+apply plugin: 'dev.equo.p2deps'
+p2deps {
+	// (alphabetic order please)
+	into 'cdtCompileOnly', {
+		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
+		p2repo 'https://download.eclipse.org/tools/cdt/releases/10.7/'
+		install 'org.eclipse.cdt.core'
+	}
+	into 'groovyCompileOnly', {
+		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
+		p2repo 'https://groovy.jfrog.io/artifactory/plugins-release/org/codehaus/groovy/groovy-eclipse-integration/4.8.0/e4.26/'
+		install 'org.codehaus.groovy.eclipse.refactoring'
+		install 'org.codehaus.groovy.eclipse.core'
+		install 'org.eclipse.jdt.groovy.core'
+		install 'org.codehaus.groovy'
+	}
+	into 'jdtCompileOnly', {
+		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
+		install 'org.eclipse.jdt.core'
+	}
+}
+
+// we'll hold the core lib to a high standard
+spotbugs { reportLevel = 'low' } // low|medium|high (low = sensitive to even minor mistakes)
+

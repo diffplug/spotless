@@ -4,6 +4,39 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+## [2.36.0] - 2023-04-06
+### Added
+* `removeUnusedImport` can be configured to rely on `cleanthat-javaparser-unnecessaryimport`. Default remains `google-java-format`. ([#1589](https://github.com/diffplug/spotless/pull/1589))
+* The `style` option in Palantir Java Format ([#1654](https://github.com/diffplug/spotless/pull/1654)).
+* Added formatter for Gherkin feature files ([#1649](https://github.com/diffplug/spotless/issues/1649)).
+### Fixed
+* Fix non deterministic computation of cache fingerprint when using multiple formatters. ([#1643](https://github.com/diffplug/spotless/pull/1643) fixes [#1642](https://github.com/diffplug/spotless/pull/1642))
+### Changes
+* **POTENTIALLY BREAKING** Drop support for `googleJavaFormat` versions &lt; `1.8`. ([#1630](https://github.com/diffplug/spotless/pull/1630))
+* Bump default `cleanthat` version to latest `2.6` -> `2.13`. ([#1589](https://github.com/diffplug/spotless/pull/1589) and [#1661](https://github.com/diffplug/spotless/pull/1661))
+* Bump default `diktat` version `1.2.4.2` -> `1.2.5`. ([#1631](https://github.com/diffplug/spotless/pull/1631))
+* Bump default `flexmark` version `0.62.2` -> `0.64.0`. ([#1302](https://github.com/diffplug/spotless/pull/1302))
+* Bump default `googleJavaFormat` version `1.15.0` -> `1.16.0`. ([#1630](https://github.com/diffplug/spotless/pull/1630))
+* Bump default `scalafmt` version `3.7.1` -> `3.7.3`. ([#1584](https://github.com/diffplug/spotless/pull/1584))
+* Bump default Eclipse formatters for the 2023-03 release. ([#1662](https://github.com/diffplug/spotless/pull/1662))
+  * JDT and GrEclipse `4.26` -> `4.27`
+    * Improve GrEclipse error reporting. ([#1660](https://github.com/diffplug/spotless/pull/1660))
+  * CDT `11.0` -> `11.1`
+
+## [2.35.0] - 2023-03-13
+### Added
+* You can now put the filename into a license header template with `$FILE`. ([#1605](https://github.com/diffplug/spotless/pull/1605) fixes [#1147](https://github.com/diffplug/spotless/issues/1147))
+### Fixed
+* `licenseHeader` default pattern for Java files is updated to `(package|import|public|class|module) `. ([#1614](https://github.com/diffplug/spotless/pull/1614))
+### Changes
+* Enable incremental up-to-date checking by default. ([#1621](https://github.com/diffplug/spotless/pull/1621))
+* All Eclipse formatters are now based on [Equo Solstice OSGi and p2 shim](https://github.com/equodev/equo-ide/tree/main/solstice). ([#1524](https://github.com/diffplug/spotless/pull/1524))
+  * Eclipse JDT bumped default to `4.26` from `4.21`, oldest supported is `4.9`.
+    * We now recommend dropping the last `.0`, e.g. `4.26` instead of `4.26.0`, you'll get warnings to help you switch.
+  * Eclipse Groovy bumped default to `4.26` from `4.21`, oldest supported is `4.18`.
+  * Eclipse CDT bumped default to `11.0` from `4.21`, oldest supported is `10.6`.
+  * Eclipse WTP is still WIP at [#1622](https://github.com/diffplug/spotless/pull/1622).
+
 ## [2.34.0] - 2023-02-27
 ### Added
 * `cleanthat` added `includeDraft` option, to include draft mutators from composite mutators. ([#1574](https://github.com/diffplug/spotless/pull/1574))

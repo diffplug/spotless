@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2022 DiffPlug
+ * Copyright 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ public class ConfigurationCacheTest extends GradleIntegrationHarness {
 				"apply plugin: 'java'",
 				"spotless {",
 				"    java {",
-				"        googleJavaFormat('1.2')",
+				"        googleJavaFormat()",
 				"    }",
 				"}");
 		gradleRunner().withArguments("help").build();
@@ -55,7 +55,7 @@ public class ConfigurationCacheTest extends GradleIntegrationHarness {
 				"apply plugin: 'java'",
 				"spotless {",
 				"    java {",
-				"        googleJavaFormat('1.2')",
+				"        googleJavaFormat()",
 				"    }",
 				"}",
 				"tasks.named('spotlessJavaApply').get()");
@@ -72,7 +72,7 @@ public class ConfigurationCacheTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    java {",
 				"        target file('test.java')",
-				"        googleJavaFormat('1.2')",
+				"        googleJavaFormat()",
 				"    }",
 				"}");
 

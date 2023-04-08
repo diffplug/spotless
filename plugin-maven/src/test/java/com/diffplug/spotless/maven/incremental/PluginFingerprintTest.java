@@ -23,9 +23,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.io.ByteArrayInputStream;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.maven.model.Model;
+import org.apache.maven.model.Plugin;
+import org.apache.maven.model.PluginManagement;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.ReaderFactory;
@@ -106,12 +109,43 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	void failsWhenProjectDoesNotContainSpotlessPlugin() {
+	void failsForProjectWithoutSpotlessPlugin() {
 		MavenProject projectWithoutSpotless = new MavenProject();
 
 		assertThatThrownBy(() -> PluginFingerprint.from(projectWithoutSpotless, FORMATTERS))
 				.isInstanceOf(IllegalArgumentException.class)
 				.hasMessageContaining("Spotless plugin absent from the project");
+	}
+
+	@Test
+	void buildsFingerprintForProjectWithSpotlessPluginInBuildPlugins() {
+		MavenProject project = new MavenProject();
+		Plugin spotlessPlugin = new Plugin();
+		spotlessPlugin.setGroupId("com.diffplug.spotless");
+		spotlessPlugin.setArtifactId("spotless-maven-plugin");
+		spotlessPlugin.setVersion("1.2.3");
+		project.getBuild().addPlugin(spotlessPlugin);
+
+		PluginFingerprint fingerprint = PluginFingerprint.from(project, Collections.emptyList());
+
+		assertThat(fingerprint).isNotNull();
+	}
+
+	@Test
+	void buildsFingerprintForProjectWithSpotlessPluginInPluginManagement() {
+		MavenProject project = new MavenProject();
+		Plugin spotlessPlugin = new Plugin();
+		spotlessPlugin.setGroupId("com.diffplug.spotless");
+		spotlessPlugin.setArtifactId("spotless-maven-plugin");
+		spotlessPlugin.setVersion("1.2.3");
+		project.getBuild().addPlugin(spotlessPlugin);
+		PluginManagement pluginManagement = new PluginManagement();
+		pluginManagement.addPlugin(spotlessPlugin);
+		project.getBuild().setPluginManagement(pluginManagement);
+
+		PluginFingerprint fingerprint = PluginFingerprint.from(project, Collections.emptyList());
+
+		assertThat(fingerprint).isNotNull();
 	}
 
 	private MavenProject mavenProject(String spotlessVersion) throws Exception {

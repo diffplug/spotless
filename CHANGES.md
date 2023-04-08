@@ -10,9 +10,37 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+### Added
+* `Jvm.Support` now accepts `-SNAPSHOT` versions, treated as the non`-SNAPSHOT`. ([#1583](https://github.com/diffplug/spotless/issues/1583))
+
+## [2.38.0] - 2023-04-06
+### Added
+* Support configuration of mirrors for P2 repositories in `EquoBasedStepBuilder` ([#1629](https://github.com/diffplug/spotless/issues/1629)).
+* The `style` option in Palantir Java Format ([#1654](https://github.com/diffplug/spotless/pull/1654)).
+* Added formatter for Gherkin feature files ([#1649](https://github.com/diffplug/spotless/issues/1649)).
+### Changes
+* **POTENTIALLY BREAKING** Converted `googleJavaFormat` to a compile-only dependency and drop support for versions &lt; `1.8`. ([#1630](https://github.com/diffplug/spotless/pull/1630))
+* Bump default `cleanthat` version to latest `2.6` -> `2.13`. ([#1589](https://github.com/diffplug/spotless/pull/1589) and [#1661](https://github.com/diffplug/spotless/pull/1661))
+* Bump default `diktat` version `1.2.4.2` -> `1.2.5`. ([#1631](https://github.com/diffplug/spotless/pull/1631))
+* Bump default `flexmark` version `0.62.2` -> `0.64.0`. ([#1302](https://github.com/diffplug/spotless/pull/1302))
+* Bump default `googleJavaFormat` version `1.15.0` -> `1.16.0`. ([#1630](https://github.com/diffplug/spotless/pull/1630))
+* Bump default `scalafmt` version `3.7.1` -> `3.7.3`. ([#1584](https://github.com/diffplug/spotless/pull/1584))
+* Bump default Eclipse formatters for the 2023-03 release. ([#1662](https://github.com/diffplug/spotless/pull/1662))
+  * JDT and GrEclipse `4.26` -> `4.27`
+    * Improve GrEclipse error reporting. ([#1660](https://github.com/diffplug/spotless/pull/1660))
+  * CDT `11.0` -> `11.1`
+
+## [2.37.0] - 2023-03-13
+### Added
+* You can now put the filename into a license header template with `$FILE`. ([#1605](https://github.com/diffplug/spotless/pull/1605) fixes [#1147](https://github.com/diffplug/spotless/issues/1147))
 ### Changes
 * We are now opting in to Gradle's new stable configuration cache. ([#1591](https://github.com/diffplug/spotless/pull/1591))
-* `Jvm.Support` now accepts `-SNAPSHOT` versions, treated as the non`-SNAPSHOT`. ([#1583](https://github.com/diffplug/spotless/issues/1583))
+* Adopt [Equo Solstice OSGi and p2 shim](https://github.com/equodev/equo-ide/tree/main/solstice) to update all Eclipse-based plugins. ([#1524](https://github.com/diffplug/spotless/pull/1524))
+  * Eclipse JDT now supports `4.9` through `4.26`. Also we now recommend dropping the last `.0`, e.g. `4.26` instead of `4.26.0`, you'll get warnings to help you switch.
+  * Eclipse Groovy now supports `4.18` through `4.26`. Also we now recommend dropping the last `.0`, e.g. `4.26` instead of `4.26.0`, you'll get warnings to help you switch.
+  * Eclipse CDT now supports `10.6` through `11.0`.
+  * Eclipse WTP is still WIP at [#1622](https://github.com/diffplug/spotless/pull/1622).
 
 ## [2.36.0] - 2023-02-27
 ### Added
