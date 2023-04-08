@@ -38,17 +38,37 @@ public class RomeStep {
 	private final String configPath;
 
 	/**
+	 * The language (syntax) of the input files to format. When <code>null</code> or
+	 * the empty string, the language is detected automatically from the file name.
+	 * Currently the following languages are supported by Rome:
+	 * <ul>
+	 * <li>js (JavaScript)</li>
+	 * <li>jsx (JavaScript + JSX)</li>
+	 * <li>js? (JavaScript or JavaScript + JSX, depending on the file
+	 * extension)</li>
+	 * <li>ts (TypeScript)</li>
+	 * <li>tsx (TypeScript + JSX)</li>
+	 * <li>ts? (TypeScript or TypeScript + JSX, depending on the file
+	 * extension)</li>
+	 * <li>json (JSON)</li>
+	 * </ul>
+	 */
+	private final String language;
+
+	/**
 	 * Path to the Rome executable. Can be <code>null</code>, but either a path to
-	 * the executable of a download directory and version must be given.
+	 * the executable of a download directory and version must be given. The path
+	 * must be either an absolute path, or a file name without path separators. If
+	 * the latter, it is interpreted as a command in the user's path.
 	 */
 	private final String pathToExe;
 
 	/**
-	 * Path to the download directory for storing the download Rome executable. Can
-	 * be <code>null</code>, but either a path to the executable of a download
-	 * directory and version must be given.
+	 * Absolute path to the download directory for storing the download Rome
+	 * executable. Can be <code>null</code>, but either a path to the executable of
+	 * a download directory and version must be given.
 	 */
-	private final String pathToExeDownloadDir;
+	private final String downloadDir;
 
 	/**
 	 * Version of Rome to download. Can be <code>null</code>, but either a path to
@@ -71,9 +91,8 @@ public class RomeStep {
 	 * @param downloadDir Directory where to place the downloaded executable.
 	 * @return A new Rome step that download the executable from the network.
 	 */
-	public static RomeStep withExeDownload(String version, String downloadDir) {
-		version = version != null && !version.isBlank() ? version : defaultVersion();
-		return new RomeStep(version, null, downloadDir, null);
+	public static RomeStep.Builder withExeDownload(String version, String downloadDir) {
+		return new RomeStep.Builder(version, null, downloadDir);
 	}
 
 	/**
@@ -83,8 +102,8 @@ public class RomeStep {
 	 * @param pathToExe Path to the Rome executable to use.
 	 * @return A new Rome step that format with the given executable.
 	 */
-	public static RomeStep withExePath(String pathToExe) {
-		return new RomeStep(null, pathToExe, null, null);
+	public static RomeStep.Builder withExePath(String pathToExe) {
+		return new RomeStep.Builder(null, pathToExe, null);
 	}
 
 	/**
@@ -180,14 +199,16 @@ public class RomeStep {
 	}
 
 	/**
-	 * Checks the Rome executable. When the executable path does not exist, an error
-	 * is thrown.
+	 * Creates a new Rome step with the configuration from the given builder.
+	 * 
+	 * @param builder Builder with the configuration to use.
 	 */
-	private RomeStep(String version, String pathToExe, String pathToExeDownloadDir, String configPath) {
-		this.version = version;
-		this.pathToExe = pathToExe;
-		this.pathToExeDownloadDir = pathToExeDownloadDir;
-		this.configPath = configPath;
+	private RomeStep(RomeStep.Builder builder) {
+		this.version = builder.version != null && !builder.version.isBlank() ? builder.version : defaultVersion();
+		this.pathToExe = builder.pathToExe;
+		this.downloadDir = builder.downloadDir;
+		this.configPath = builder.configPath;
+		this.language = builder.language;
 	}
 
 	/**
@@ -198,19 +219,6 @@ public class RomeStep {
 	 */
 	public FormatterStep create() {
 		return FormatterStep.createLazy(name(), this::createState, State::toFunc);
-	}
-
-	/**
-	 * Derives a new Rome step from this step by replacing the config path with the
-	 * given value.
-	 * 
-	 * @param configPath Config path to use. Must point to a directory which contain
-	 *                   a file named {@code rome.json}.
-	 * @return A new Rome step with the same configuration as this step, but with
-	 *         the given config file instead.
-	 */
-	public RomeStep withConfigPath(String configPath) {
-		return new RomeStep(version, pathToExe, pathToExeDownloadDir, configPath);
 	}
 
 	/**
@@ -234,7 +242,7 @@ public class RomeStep {
 		logger.debug("Using Rome executable located at  '{}'", resolvedPathToExe);
 		var exeSignature = FileSignature.signAsList(Collections.singleton(new File(resolvedPathToExe)));
 		makeExecutable(resolvedPathToExe);
-		return new State(resolvedPathToExe, exeSignature, configPath);
+		return new State(resolvedPathToExe, exeSignature, configPath, language);
 	}
 
 	/**
@@ -261,10 +269,92 @@ public class RomeStep {
 				return pathToExe;
 			}
 		} else {
-			var downloader = new RomeExecutableDownloader(Paths.get(pathToExeDownloadDir));
+			var downloader = new RomeExecutableDownloader(Paths.get(downloadDir));
 			var downloaded = downloader.ensureDownloaded(version).toString();
 			makeExecutable(downloaded);
 			return downloaded;
+		}
+	}
+
+	public final static class Builder {
+		/** See {@link RomeStep#configPath} */
+		private String configPath;
+
+		/** See {@link RomeStep#downloadDir} */
+		private final String downloadDir;
+
+		/** See {@link RomeStep#language} */
+		private String language;
+
+		/** See {@link RomeStep#pathToExe} */
+		private final String pathToExe;
+
+		/** See {@link RomeStep#version} */
+		private final String version;
+
+		/**
+		 * Creates a new builder for configuring a Rome step that can format code via
+		 * Rome. Either a version and and downloadDir, or a pathToExe must be given.
+		 * 
+		 * @param version     The version of Rome to download, see
+		 *                    {@link RomeStep#version}.
+		 * @param pathToExe   The path to the Rome executable to use, see
+		 *                    {@link RomeStep#pathToExe}.
+		 * @param downloadDir The path to the download directory when downloading Rome
+		 *                    from the network, {@link RomeStep#downloadDir}.
+		 */
+		private Builder(String version, String pathToExe, String downloadDir) {
+			this.version = version;
+			this.pathToExe = pathToExe;
+			this.downloadDir = downloadDir;
+		}
+
+		/**
+		 * Creates a new Rome step for formatting code with Rome from the current
+		 * configuration of this builder.
+		 * 
+		 * @return A new Rome step with the current configuration.
+		 */
+		public RomeStep build() {
+			return new RomeStep(this);
+		}
+
+		/**
+		 * Sets the path to the directory with the {@code rome.json} config file. When
+		 * no config path is set, the default configuration is used.
+		 * 
+		 * @param configPath Config path to use. Must point to a directory which contain
+		 *                   a file named {@code rome.json}.
+		 * @return This builder instance for chaining method calls.
+		 */
+		public Builder withConfigPath(String configPath) {
+			this.configPath = configPath;
+			return this;
+		}
+
+		/**
+		 * Sets the language of the files to format When no language is set, it is
+		 * determined automatically from the file name. The following languages are
+		 * currently supported by Rome.
+		 * 
+		 * <ul>
+		 * <li>js (JavaScript)</li>
+		 * <li>jsx (JavaScript + JSX)</li>
+		 * <li>js? (JavaScript or JavaScript + JSX, depending on the file
+		 * extension)</li>
+		 * <li>ts (TypeScript)</li>
+		 * <li>tsx (TypeScript + JSX)</li>
+		 * <li>ts? (TypeScript or TypeScript + JSX, depending on the file
+		 * extension)</li>
+		 * <li>json (JSON)</li>
+		 * </ul>
+		 * 
+		 * @param language The language of the files to format.
+		 * @return This builder instance for chaining method calls.
+		 */
+		public Builder withLanguage(String language) {
+			this.language = language;
+			return this;
 		}
 	}
 
@@ -294,6 +384,12 @@ public class RomeStep {
 		private final String configPath;
 
 		/**
+		 * The language of the files to format. When <code>null</code> or the empty
+		 * string, the language is detected from the file name.
+		 */
+		private final String language;
+
+		/**
 		 * Creates a new state for instance which can format code with the given Rome
 		 * executable.
 		 * 
@@ -303,10 +399,11 @@ public class RomeStep {
 		 *                     config file, can be <code>null</code>, in which case the
 		 *                     defaults are used.
 		 */
-		private State(String exe, FileSignature exeSignature, String configPath) {
+		private State(String exe, FileSignature exeSignature, String configPath, String language) {
 			this.pathToExe = exe;
 			this.exeSignature = exeSignature;
 			this.configPath = configPath;
+			this.language = language;
 		}
 
 		/**
@@ -317,11 +414,12 @@ public class RomeStep {
 		 * @return The Rome command to use for formatting code.
 		 */
 		private String[] buildRomeCommand(File file) {
+			var fileName = resolveFileName(file);
 			var argList = new ArrayList<String>();
 			argList.add(pathToExe);
 			argList.add("format");
 			argList.add("--stdin-file-path");
-			argList.add(file.getName());
+			argList.add(fileName);
 			if (configPath != null) {
 				argList.add("--config-path");
 				argList.add(configPath);
@@ -350,6 +448,47 @@ public class RomeStep {
 				logger.debug("Running Rome comand to format code: '{}'", String.join(", ", args));
 			}
 			return runner.exec(stdin, args).assertExitZero(StandardCharsets.UTF_8);
+		}
+
+		/**
+		 * The Rome executable currently does not have a parameter to specify the
+		 * expected language / syntax. Rome always determined the language from the file
+		 * extension. This method returns the file name for the desired language when a
+		 * language was requested explicitly, or the file name of the input file for
+		 * auto detection.
+		 * 
+		 * @param file File to be formatted.
+		 * @return The file name to pass to the Rome executable.
+		 */
+		private String resolveFileName(File file) {
+			var name = file.getName();
+			if (language == null || language.isBlank()) {
+				return name;
+			}
+			var dot = name.lastIndexOf(".");
+			var ext = dot >= 0 ? name.substring(dot + 1) : name;
+			switch (language) {
+			case "js?":
+				return "jsx".equals(ext) || "js".equals(ext) || "mjs".equals(ext) || "cjs".equals(ext) ? name
+						: "file.js";
+			case "ts?":
+				return "tsx".equals(ext) || "ts".equals(ext) || "tjs".equals(ext) || "tjs".equals(ext) ? name
+						: "file.js";
+			case "js":
+				return "js".equals(ext) || "mjs".equals(ext) || "cjs".equals(ext) ? name : "file.js";
+			case "jsx":
+				return "jsx".equals(ext) ? name : "file.jsx";
+			case "ts":
+				return "ts".equals(ext) || "mts".equals(ext) || "cts".equals(ext) ? name : "file.ts";
+			case "tsx":
+				return "tsx".equals(ext) ? name : "file.tsx";
+			case "json":
+				return "json".equals(ext) ? name : "file.json";
+			// so that we can support new languages such as css or yaml when Rome adds
+			// support for them without having to change the code
+			default:
+				return "file." + language;
+			}
 		}
 
 		/**

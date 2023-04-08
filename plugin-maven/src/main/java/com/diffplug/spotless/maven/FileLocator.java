@@ -30,7 +30,7 @@ import org.codehaus.plexus.resource.loader.FileResourceCreationException;
 import org.codehaus.plexus.resource.loader.ResourceNotFoundException;
 import org.codehaus.plexus.util.FileUtils;
 
-import com.diffplug.spotless.maven.javascript.RomeJs;
+import com.diffplug.spotless.maven.rome.AbstractRome;
 
 public class FileLocator {
 
@@ -122,7 +122,7 @@ public class FileLocator {
 
 	private static File findDataDir() {
 		// E.g. ~/.m2/repository/com/diffplug/spotless/spotless-plugin-maven/1.2.3/spotless-plugin-maven-1.2.3.jar
-		final var jarPath = Paths.get(RomeJs.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+		final var jarPath = Paths.get(AbstractRome.class.getProtectionDomain().getCodeSource().getLocation().getPath());
 		final var base = jarPath.getParent().getParent().getParent();
 		final var sub = base.resolve("spotless-data");
 		return sub.toAbsolutePath().toFile();
