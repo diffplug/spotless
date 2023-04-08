@@ -824,7 +824,7 @@ public class FormatExtension {
 			try {
 				// e.g. ~/.m2/repository/
 				var repoPath = Paths.get(localRepo.getUrl().getPath());
-				var dataPath = repoPath.resolve("com").resolve("diffplus").resolve("spotless").resolve("spotless-data");
+				var dataPath = repoPath.resolve("com").resolve("diffplug").resolve("spotless").resolve("spotless-data");
 				return dataPath.toAbsolutePath().toFile();
 			} finally {
 				// Remove mavenLocal() repository again if it was not part of the project
