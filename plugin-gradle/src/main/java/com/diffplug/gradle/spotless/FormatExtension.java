@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,6 +38,7 @@ import javax.inject.Inject;
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.BasePlugin;
@@ -63,6 +65,7 @@ import com.diffplug.spotless.generic.ReplaceStep;
 import com.diffplug.spotless.generic.TrimTrailingWhitespaceStep;
 import com.diffplug.spotless.npm.NpmPathResolver;
 import com.diffplug.spotless.npm.PrettierFormatterStep;
+import com.diffplug.spotless.rome.RomeStep;
 
 import groovy.lang.Closure;
 
@@ -648,6 +651,296 @@ public class FormatExtension {
 							this.prettierConfig));
 		}
 	}
+	
+	public abstract static class RomeStepConfig<Self extends RomeStepConfig<Self>> {
+		/**
+		 * Optional path to the directory with configuration file for Rome. The file
+		 * must be named {@code rome.json}. When none is given, the default
+		 * configuration is used. If this is a relative path, it is resolved against the
+		 * project's base directory.
+		 */
+		@Nullable
+		private Object configPath;
+
+		/**
+		 * Optional directory where the downloaded Rome executable is placed. If this is
+		 * a relative path, it is resolved against the project's base directory.
+		 * Defaults to
+		 * <code>~/.m2/repository/com/diffplug/spotless/spotless-data/rome</code>.
+		 */
+		@Nullable
+		private Object downloadDir;
+
+		/**
+		 * Optional path to the Rome executable. Either a <code>version</code> or a
+		 * <code>pathToExe</code> should be specified. When not given, an attempt is
+		 * made to download the executable for the given version from the network. When
+		 * given, the executable is used and the <code>version</code> parameter is
+		 * ignored.
+		 * <p>
+		 * When an absolute path is given, that path is used as-is. When a relative path
+		 * is given, it is resolved against the project's base directory. When only a
+		 * file name (i.e. without any slashes or back slash path separators such as
+		 * {@code rome}) is given, this is interpreted as the name of a command with
+		 * executable that is in your {@code path} environment variable. Use
+		 * {@code ./executable-name} if you want to use an executable in the project's
+		 * base directory.
+		 */
+		@Nullable
+		private Object pathToExe;
+
+		/** A reference to the Gradle project for which spotless is executed. */
+		private final Project project;
+
+		/** Replaces the current Rome formatter step with the given step. */
+		private final Consumer<FormatterStep> replaceStep;
+
+		/**
+		 * Rome version to download, applies only when no <code>pathToExe</code> is
+		 * specified explicitly. Either a <code>version</code> or a
+		 * <code>pathToExe</code> should be specified. When not given, a default known
+		 * version is used. For stable builds, it is recommended that you always set the
+		 * version explicitly. This parameter is ignored when you specify a
+		 * <code>pathToExe</code> explicitly.
+		 */
+		@Nullable
+		private String version;
+
+		protected RomeStepConfig(Project project, Consumer<FormatterStep> replaceStep, String version) {
+			this.project = requireNonNull(project);
+			this.replaceStep = requireNonNull(replaceStep);
+			this.version = version;
+		}
+
+		/**
+		 * Optional path to the directory with configuration file for Rome. The file
+		 * must be named {@code rome.json}. When none is given, the default
+		 * configuration is used. If this is a relative path, it is resolved against the
+		 * project's base directory.
+		 * @return This step for further configuration.
+		 */
+		public Self configPath(Object configPath) {
+			this.configPath = configPath;
+			replaceStep();
+			return getThis();
+		}
+
+		/**
+		 * Optional directory where the downloaded Rome executable is placed. If this is
+		 * a relative path, it is resolved against the project's base directory.
+		 * Defaults to
+		 * <code>~/.m2/repository/com/diffplug/spotless/spotless-data/rome</code>.
+		 * @return This step for further configuration.
+		 */
+		public Self downloadDir(Object downloadDir) {
+			this.downloadDir = downloadDir;
+			replaceStep();
+			return getThis();
+		}
+
+		/**
+		 * Optional path to the Rome executable. Overwrites the configured version. No
+		 * attempt is made to download the Rome executable from the network.
+		 * <p>
+		 * When an absolute path is given, that path is used as-is. When a relative path
+		 * is given, it is resolved against the project's base directory. When only a
+		 * file name (i.e. without any slashes or back slash path separators such as
+		 * {@code rome}) is given, this is interpreted as the name of a command with
+		 * executable that is in your {@code path} environment variable. Use
+		 * {@code ./executable-name} if you want to use an executable in the project's
+		 * base directory.
+		 * @return This step for further configuration.
+		 */
+		public Self pathToExe(Object pathToExe) {
+			this.pathToExe = pathToExe;
+			replaceStep();
+			return getThis();
+		}
+
+		/**
+		 * Creates a new formatter step that formats code by calling the Rome
+		 * executable, using the current configuration.
+		 * 
+		 * @return A new formatter step for the Rome formatter.
+		 */
+		protected FormatterStep createStep() {
+			var builder = newBuilder();
+			if (configPath != null) {
+				var resolvedConfigPath = project.file(configPath);
+				builder.withConfigPath(resolvedConfigPath.toString());
+			}
+			builder.withLanguage(getLanguage());
+			var rome = builder.build();
+			return rome.create();
+		}
+
+		/**
+		 * Gets the language (syntax) of the input files to format. When
+		 * <code>null</code> or the empty string, the language is detected automatically
+		 * from the file name. Currently the following languages are supported by Rome:
+		 * <ul>
+		 * <li>js (JavaScript)</li>
+		 * <li>jsx (JavaScript + JSX)</li>
+		 * <li>js? (JavaScript or JavaScript + JSX, depending on the file
+		 * extension)</li>
+		 * <li>ts (TypeScript)</li>
+		 * <li>tsx (TypeScript + JSX)</li>
+		 * <li>ts? (TypeScript or TypeScript + JSX, depending on the file
+		 * extension)</li>
+		 * <li>json (JSON)</li>
+		 * </ul>
+		 * 
+		 * @return The language of the input files.
+		 */
+		protected abstract String getLanguage();
+
+		/**
+		 * @return This Rome config instance.
+		 */
+		protected abstract Self getThis();
+
+		/**
+		 * Creates a new Rome step and replaces the existing Rome step in the list of
+		 * format steps.
+		 */
+		protected void replaceStep() {
+			replaceStep.accept(createStep());
+		}
+		
+		/**
+		 * Finds the data directory that can be used for storing shared data such as
+		 * Rome executable globally. This is a directory in the local repository, e.g.
+		 * <code>~/.m2/repository/com/diffplus/spotless/spotless-data<code>.
+		 * 
+		 * @return The directory for storing shared data.
+		 */
+		private File findDataDir() {
+			var currentRepo = project.getRepositories().stream()
+					.filter(r -> r instanceof MavenArtifactRepository)
+					.map(r -> (MavenArtifactRepository) r)
+					.filter(r -> "file".equals(r.getUrl().getScheme()))
+					.findAny().orElse(null);
+			// Temporarily add mavenLocal() repository to get its file URL
+			var localRepo = currentRepo != null ? (MavenArtifactRepository)currentRepo : project.getRepositories().mavenLocal();
+			try {
+				// e.g. ~/.m2/repository/
+				var repoPath = Paths.get(localRepo.getUrl().getPath());
+				var dataPath = repoPath.resolve("com").resolve("diffplus").resolve("spotless").resolve("spotless-data");
+				return dataPath.toAbsolutePath().toFile();
+			}
+			finally {
+				// Remove mavenLocal() repository again if it was not part of the project
+				if (currentRepo == null) {
+					project.getRepositories().remove(localRepo);
+				}
+			}
+		}
+
+		/**
+		 * A new builder for configuring a Rome step that either downloads the Rome
+		 * executable with the given version from the network, or uses the executable
+		 * from the given path.
+		 * 
+		 * @return A builder for a Rome step.
+		 */
+		private RomeStep.Builder newBuilder() {
+			if (pathToExe != null) {
+				var resolvedPathToExe = resolvePathToExe();
+				return RomeStep.withExePath(resolvedPathToExe);
+			} else {
+				var downloadDir = resolveDownloadDir();
+				return RomeStep.withExeDownload(version, downloadDir);
+			}
+		}
+
+		/**
+		 * Resolves the path to the Rome executable. When the path is only a file name,
+		 * do not perform any resolution and interpret it as a command that must be on
+		 * the user's path. Otherwise resolve the executable path against the project's
+		 * base directory.
+		 * 
+		 * @param config Configuration from the Maven Mojo execution with details about
+		 *               the currently executed project.
+		 * @return The resolved path to the Rome executable.
+		 */
+		private String resolvePathToExe() {
+			var fileNameOnly = pathToExe instanceof String && Paths.get(pathToExe.toString()).getNameCount() == 1;
+			if (fileNameOnly) {
+				return pathToExe.toString();
+			} else {
+				return project.file(pathToExe).toString();
+			}
+		}
+
+		/**
+		 * Resolves the directory to use for storing downloaded Rome executable. When a
+		 * {@link #downloadDir} is given, use that directory, resolved against the
+		 * current project's directory. Otherwise, use the {@code Rome} sub folder in
+		 * the shared data directory.
+		 * 
+		 * @param config Configuration for this step.
+		 * @return The download directory for the Rome executable.
+		 */
+		private String resolveDownloadDir() {
+			if (downloadDir != null) {
+				return project.file(downloadDir).toString();
+			} else {
+				return findDataDir().toPath().resolve("rome").toString();
+			}
+		}
+	}
+
+	/**
+	 * Generic Rome formatter step that detects the language of the input file from
+	 * the file name. It should be specified as a formatter step for a generic
+	 * <code>format{ ... }</code>.
+	 */
+	public class RomeGeneric extends RomeStepConfig<RomeGeneric> {
+		@Nullable
+		String language;
+
+		/**
+		 * Creates a new Rome config that downloads the Rome executable for the given version from the network.
+		 * @param version Rome version to use. The default version is used when <code>null</code>.
+		 */
+		public RomeGeneric(String version) {
+			super(getProject(), FormatExtension.this::replaceStep, version);
+		}
+
+		/**
+		 * Sets the language (syntax) of the input files to format. When
+		 * <code>null</code> or the empty string, the language is detected automatically
+		 * from the file name. Currently the following languages are supported by Rome:
+		 * <ul>
+		 * <li>js (JavaScript)</li>
+		 * <li>jsx (JavaScript + JSX)</li>
+		 * <li>js? (JavaScript or JavaScript + JSX, depending on the file
+		 * extension)</li>
+		 * <li>ts (TypeScript)</li>
+		 * <li>tsx (TypeScript + JSX)</li>
+		 * <li>ts? (TypeScript or TypeScript + JSX, depending on the file
+		 * extension)</li>
+		 * <li>json (JSON)</li>
+		 * </ul>
+		 * @param language The language of the files to format.
+		 * @return This step for further configuration.
+		 */
+		public RomeGeneric language(String language) {
+			this.language = language;
+			replaceStep();
+			return this;
+		}
+
+		@Override
+		protected String getLanguage() {
+			return language;
+		}
+
+		@Override
+		protected RomeGeneric getThis() {
+			return this;
+		}
+	}
 
 	/** Uses the default version of prettier. */
 	public PrettierConfig prettier() {
@@ -664,6 +957,22 @@ public class FormatExtension {
 		PrettierConfig prettierConfig = new PrettierConfig(devDependencies);
 		addStep(prettierConfig.createStep());
 		return prettierConfig;
+	}
+	
+	/**
+	 * Defaults to downloading the default Rome version from the network. To work
+	 * offline, you can specify the path to the Rome executable via
+	 * {@code rome().pathToExe(...)}.
+	 */
+	public RomeGeneric rome() {
+		return rome(null);
+	}
+
+	/** Downloads the given Rome version from the network. */
+	public RomeGeneric rome(String version) {
+		var romeConfig = new RomeGeneric(version);
+		addStep(romeConfig.createStep());
+		return romeConfig;
 	}
 
 	/** Uses the default version of clang-format. */

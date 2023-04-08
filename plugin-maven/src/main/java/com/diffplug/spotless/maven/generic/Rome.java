@@ -15,11 +15,17 @@ public class Rome extends AbstractRome {
 	 * <code>null</code> or the empty string, the language is detected automatically
 	 * from the file name. Currently the following languages are supported by Rome:
 	 * <ul>
+	 * <ul>
 	 * <li>js (JavaScript)</li>
 	 * <li>jsx (JavaScript + JSX)</li>
+	 * <li>js? (JavaScript or JavaScript + JSX, depending on the file
+	 * extension)</li>
 	 * <li>ts (TypeScript)</li>
 	 * <li>tsx (TypeScript + JSX)</li>
+	 * <li>ts? (TypeScript or TypeScript + JSX, depending on the file
+	 * extension)</li>
 	 * <li>json (JSON)</li>
+	 * </ul>
 	 * </ul>
 	 * 
 	 * @return The language of the input files.
