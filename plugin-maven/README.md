@@ -1250,7 +1250,7 @@ usually you will be creating a generic format.
         <!-- (optional) Path to the directory with the rome.json conig file -->
         <configPath>${project.basedir}/path/to/config/dir</configPath>
 
-        <!-- Optional, Rome will auto detect the language based on the file extension. -->
+        <!-- (optional) Rome will auto detect the language based on the file extension. -->
         <!-- See below for possible values. -->
         <language>ts</language>
       </prettier>
@@ -1264,13 +1264,15 @@ usually you will be creating a generic format.
 - The auto-discovery of config files (up the file tree) will not work when using
   Rome within spotless.
 
-To apply Rome to more kinds of files, just add more formats
+To apply Rome to more kinds of files with a different configuration, just add
+more formats
 
 ```xml
 <configuration>
   <formats>
     <format><includes>src/**/*.ts</includes><rome/></format>
     <format><includes>src/**/*.js</includes><rome/></format>
+</configuration>
 ```
 
 ### Rome binary
@@ -1336,7 +1338,7 @@ Rome is used. To use a custom configuration:
 </rome>
 ```
 
-### Rome input Language
+### Rome input language
 
 By default, Rome detects the language / syntax of the files to format
 automatically from the file extension. This may fail if your source code files
