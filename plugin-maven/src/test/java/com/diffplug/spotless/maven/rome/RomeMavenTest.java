@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.maven.rome;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.owasp.encoder.Encode.forXml;
@@ -30,7 +31,7 @@ class RomeMavenTest extends MavenIntegrationHarness {
 	 * @throws Exception When a test failure occurs.
 	 */
 	@Test
-	public void testAsGenericStep() throws Exception {
+	void asGenericStep() throws Exception {
 		writePomWithRomeSteps("**/*.js", "<rome><version>12.0.0</version></rome>");
 		setFile("rome_test.js").toResource("rome/js/fileBefore.js");
 		mavenRunner().withArguments("spotless:apply").runNoError();
@@ -43,7 +44,7 @@ class RomeMavenTest extends MavenIntegrationHarness {
 	 * @throws Exception When a test failure occurs.
 	 */
 	@Test
-	public void testAsJavaScriptStep() throws Exception {
+	void asJavaScriptStep() throws Exception {
 		writePomWithJavascriptSteps("**/*.js", "<rome><version>12.0.0</version></rome>");
 		setFile("rome_test.js").toResource("rome/js/fileBefore.js");
 		mavenRunner().withArguments("spotless:apply").runNoError();
@@ -56,7 +57,7 @@ class RomeMavenTest extends MavenIntegrationHarness {
 	 * @throws Exception When a test failure occurs.
 	 */
 	@Test
-	public void testAsJsonStep() throws Exception {
+	void asJsonStep() throws Exception {
 		writePomWithJsonSteps("**/*.json", "<rome><version>12.0.0</version></rome>");
 		setFile("rome_test.json").toResource("rome/json/fileBefore.json");
 		mavenRunner().withArguments("spotless:apply").runNoError();
@@ -69,7 +70,7 @@ class RomeMavenTest extends MavenIntegrationHarness {
 	 * @throws Exception When a test failure occurs.
 	 */
 	@Test
-	public void testAsTypeScriptStep() throws Exception {
+	void asTypeScriptStep() throws Exception {
 		writePomWithTypescriptSteps("**/*.ts", "<rome><version>12.0.0</version></rome>");
 		setFile("rome_test.ts").toResource("rome/ts/fileBefore.ts");
 		mavenRunner().withArguments("spotless:apply").runNoError();
@@ -82,7 +83,7 @@ class RomeMavenTest extends MavenIntegrationHarness {
 	 * @throws Exception When a test failure occurs.
 	 */
 	@Test
-	public void testCanSetLanguageForGenericStep() throws Exception {
+	void canSetLanguageForGenericStep() throws Exception {
 		writePomWithRomeSteps("**/*.nosj", "<rome><version>12.0.0</version><language>json</language></rome>");
 		setFile("rome_test.nosj").toResource("rome/json/fileBefore.json");
 		mavenRunner().withArguments("spotless:apply").runNoError();
@@ -95,7 +96,7 @@ class RomeMavenTest extends MavenIntegrationHarness {
 	 * @throws Exception When a test failure occurs.
 	 */
 	@Test
-	public void testConfigPathAbsolute() throws Exception {
+	void configPathAbsolute() throws Exception {
 		var path = newFile("configs").getAbsolutePath();
 		writePomWithRomeSteps("**/*.js",
 				"<rome><version>12.0.0</version><configPath>" + forXml(path) + "</configPath></rome>");
@@ -112,7 +113,7 @@ class RomeMavenTest extends MavenIntegrationHarness {
 	 * @throws Exception When a test failure occurs.
 	 */
 	@Test
-	public void testConfigPathLineWidth120() throws Exception {
+	void configPathLineWidth120() throws Exception {
 		writePomWithRomeSteps("**/*.js", "<rome><version>12.0.0</version><configPath>configs</configPath></rome>");
 		setFile("rome_test.js").toResource("rome/js/longLineBefore.js");
 		setFile("configs/rome.json").toResource("rome/config/line-width-120.json");
@@ -127,7 +128,7 @@ class RomeMavenTest extends MavenIntegrationHarness {
 	 * @throws Exception When a test failure occurs.
 	 */
 	@Test
-	public void testConfigPathLineWidth80() throws Exception {
+	void configPathLineWidth80() throws Exception {
 		writePomWithRomeSteps("**/*.js", "<rome><version>12.0.0</version><configPath>configs</configPath></rome>");
 		setFile("rome_test.js").toResource("rome/js/longLineBefore.js");
 		setFile("configs/rome.json").toResource("rome/config/line-width-80.json");
@@ -141,7 +142,7 @@ class RomeMavenTest extends MavenIntegrationHarness {
 	 * @throws Exception When a test failure occurs.
 	 */
 	@Test
-	public void testDownloadDirAbsolute() throws Exception {
+	void downloadDirAbsolute() throws Exception {
 		var path = newFile("target/bin/rome").getAbsoluteFile().toString();
 		writePomWithRomeSteps("**/*.js",
 				"<rome><version>12.0.0</version><downloadDir>" + forXml(path) + "</downloadDir></rome>");
@@ -159,7 +160,7 @@ class RomeMavenTest extends MavenIntegrationHarness {
 	 * @throws Exception When a test failure occurs.
 	 */
 	@Test
-	public void testDownloadDirRelative() throws Exception {
+	void downloadDirRelative() throws Exception {
 		writePomWithRomeSteps("**/*.js",
 				"<rome><version>12.0.0</version><downloadDir>target/bin/rome</downloadDir></rome>");
 		setFile("rome_test.js").toResource("rome/js/fileBefore.js");
@@ -175,13 +176,27 @@ class RomeMavenTest extends MavenIntegrationHarness {
 	 * @throws Exception When a test failure occurs.
 	 */
 	@Test
-	public void testFailureWhenNotParseable() throws Exception {
+	void failureWhenExeNotFound() throws Exception {
+		writePomWithRomeSteps("**/*.js", "<rome><version>12.0.0</version><pathToExe>rome/is/missing</pathToExe></rome>");
+		setFile("rome_test.js").toResource("rome/js/fileBefore.js");
+		var result = mavenRunner().withArguments("spotless:apply").runHasError();
+		assertFile("rome_test.js").sameAsResource("rome/js/fileBefore.js");
+		assertThat(result.stdOutUtf8()).contains("Rome executable does not exist");
+	}
+
+	/**
+	 * Tests that the build fails when the input file could not be parsed.
+	 *
+	 * @throws Exception When a test failure occurs.
+	 */
+	@Test
+	void failureWhenNotParseable() throws Exception {
 		writePomWithRomeSteps("**/*.js", "<rome><version>12.0.0</version><language>json</language></rome>");
 		setFile("rome_test.js").toResource("rome/js/fileBefore.js");
 		var result = mavenRunner().withArguments("spotless:apply").runHasError();
 		assertFile("rome_test.js").sameAsResource("rome/js/fileBefore.js");
-		assertTrue(result.stdOutUtf8().contains("Format with errors is disabled."));
-		assertTrue(result.stdOutUtf8().contains("Unable to format file"));
-		assertTrue(result.stdOutUtf8().contains("Step 'rome' found problem in 'rome_test.js'"));
+		assertThat(result.stdOutUtf8()).contains("Format with errors is disabled.");
+		assertThat(result.stdOutUtf8()).contains("Unable to format file");
+		assertThat(result.stdOutUtf8()).contains("Step 'rome' found problem in 'rome_test.js'");
 	}
 }
