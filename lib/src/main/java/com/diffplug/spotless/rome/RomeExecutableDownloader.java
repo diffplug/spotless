@@ -117,7 +117,10 @@ final class RomeExecutableDownloader {
 		var url = getDownloadUrl(version, platform);
 		var executablePath = getExecutablePath(version, platform);
 		var checksumPath = getChecksumPath(executablePath);
-		Files.createDirectories(executablePath.getParent());
+		var executableDir = executablePath.getParent();
+		if (executableDir != null) {
+			Files.createDirectories(executableDir);
+		}
 		logger.info("Attempting to download Rome from '{}' to '{}'", url, executablePath);
 		var request = HttpRequest.newBuilder(URI.create(url)).GET().build();
 		var handler = BodyHandlers.ofFile(executablePath, WRITE_OPTIONS);
@@ -270,7 +273,11 @@ final class RomeExecutableDownloader {
 	 * @return The path with the checksum for the given file.
 	 */
 	private Path getChecksumPath(Path file) {
-		return file.getParent().resolve(file.getFileName().toString() + ".md5");
+		var parent = file.getParent();
+		var base = parent != null ? parent : file;
+		var fileName = file.getFileName();
+		var checksumName = fileName != null ? fileName.toString() + ".md5" : "checksum.md5";
+		return base.resolve(checksumName);
 	}
 
 	/**

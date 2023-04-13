@@ -24,6 +24,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.codehaus.plexus.resource.ResourceManager;
 import org.codehaus.plexus.resource.loader.FileResourceCreationException;
@@ -121,10 +122,22 @@ public class FileLocator {
 	}
 
 	private static File findDataDir() {
-		// E.g. ~/.m2/repository/com/diffplug/spotless/spotless-plugin-maven/1.2.3/spotless-plugin-maven-1.2.3.jar
-		final var jarPath = Paths.get(AbstractRome.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-		final var base = jarPath.getParent().getParent().getParent();
-		final var sub = base.resolve("spotless-data");
-		return sub.toAbsolutePath().toFile();
+		// JAR path is e.g.
+		// ~/.m2/repository/com/diffplug/spotless/spotless-plugin-maven/1.2.3/spotless-plugin-maven-1.2.3.jar
+		var codeSource = FileLocator.class.getProtectionDomain().getCodeSource();
+		var location = codeSource != null ? codeSource.getLocation() : null;
+		var path = location != null ? location.getPath() : null;
+		var jarPath = path != null && !path.isBlank() ? Paths.get(path) : null;
+		var parent1 = jarPath != null ? jarPath.getParent() : null;
+		var parent2 = parent1 != null ? parent1.getParent() : null;
+		var base = parent2 != null ? parent2.getParent() : null;
+		var sub = base != null ? base.resolve("spotless-data") : null;
+		if (sub != null) {
+			return sub.toAbsolutePath().toFile();
+		}
+		else {
+			var home = Paths.get(System.getenv("user.home"));
+			return home.resolve(".rome").toAbsolutePath().toFile();
+		}
 	}
 }

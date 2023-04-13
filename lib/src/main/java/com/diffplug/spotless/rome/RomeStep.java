@@ -134,7 +134,9 @@ public class RomeStep {
 			var newPermissions = new HashSet<>(Files.getPosixFilePermissions(file));
 			newPermissions.add(permission);
 			Files.setPosixFilePermissions(file, newPermissions);
-		} catch (final Exception ignore) {}
+		} catch (final Exception ignore) {
+			logger.debug("Unable to add POSIX permission '{}' to file '{}'", permission, file);
+		}
 	}
 
 	/**
@@ -440,7 +442,7 @@ public class RomeStep {
 				return "jsx".equals(ext) || "js".equals(ext) || "mjs".equals(ext) || "cjs".equals(ext) ? name
 						: "file.js";
 			case "ts?":
-				return "tsx".equals(ext) || "ts".equals(ext) || "tjs".equals(ext) || "tjs".equals(ext) ? name
+				return "tsx".equals(ext) || "ts".equals(ext) || "mts".equals(ext) || "cts".equals(ext) ? name
 						: "file.js";
 			case "js":
 				return "js".equals(ext) || "mjs".equals(ext) || "cjs".equals(ext) ? name : "file.js";
