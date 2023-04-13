@@ -93,7 +93,7 @@ class JvmTest {
 
 		assertNull(testSupport.getRecommendedFormatterVersion(), "No formatter version is supported");
 
-		for (String fmtVersion : Arrays.asList("1.2", "1.2.3")) {
+		for (String fmtVersion : Arrays.asList("1.2", "1.2.3", "1.2-SNAPSHOT", "1.2.3-SNAPSHOT")) {
 			String proposal = assertThrows(Exception.class, () -> {
 				testSupport.assertFormatterSupported(fmtVersion);
 			}).getMessage();
@@ -111,7 +111,7 @@ class JvmTest {
 			assertThat(proposal).contains(String.format("try %s alternatives", TEST_NAME));
 		}
 
-		for (String fmtVersion : Arrays.asList("1.2.4", "2")) {
+		for (String fmtVersion : Arrays.asList("1.2.4", "2", "1.2.5-SNAPSHOT")) {
 			String proposal = assertThrows(Exception.class, () -> {
 				testSupport.assertFormatterSupported(fmtVersion);
 			}).getMessage();
@@ -132,7 +132,7 @@ class JvmTest {
 		testSupport.add(Jvm.version() - 2, "1");
 		testSupport.add(requiredJvm, "2");
 		testSupport.add(Jvm.version() + 1, "3");
-		for (String fmtVersion : Arrays.asList("0", "1", "1.9")) {
+		for (String fmtVersion : Arrays.asList("0", "1", "1.9", "1.9-SNAPSHOT")) {
 			testSupport.assertFormatterSupported(fmtVersion);
 
 			String proposal = assertThrows(Exception.class, () -> {
@@ -168,7 +168,7 @@ class JvmTest {
 	@Test
 	void supportAllowsExperimentalVersions() {
 		testSupport.add(Jvm.version(), "1.0");
-		for (String fmtVersion : Arrays.asList("1", "2.0")) {
+		for (String fmtVersion : Arrays.asList("1", "2.0", "1.1-SNAPSHOT", "2.0-SNAPSHOT")) {
 			testSupport.assertFormatterSupported(fmtVersion);
 
 			Exception testException = new Exception("Some test exception");

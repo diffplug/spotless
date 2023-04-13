@@ -459,7 +459,7 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
 <scalafmt>
   <version>3.5.9</version>              <!-- optional -->
   <file>${project.basedir}/scalafmt.conf</file> <!-- optional -->
-  <majorScalaVersion>2.13</majorScalaVersion> <!-- optional -->
+  <scalaMajorVersion>2.13</scalaMajorVersion> <!-- optional -->
 </scalafmt>
 ```
 

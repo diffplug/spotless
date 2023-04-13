@@ -3,8 +3,11 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
-
+### Added
 * Support Rome as a formatter for JavaScript and TypeScript code. Adds a new `rome` step to `javascript` and `typescript` formatter configurations. https://github.com/diffplug/spotless/pull/1663
+
+### Fixed
+* Added `@DisableCachingByDefault` to `RegisterDependenciesTask`.
 
 ## [6.18.0] - 2023-04-06
 ### Added
