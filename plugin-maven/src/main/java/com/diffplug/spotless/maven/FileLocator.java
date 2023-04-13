@@ -24,14 +24,11 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Objects;
-import java.util.Optional;
 
 import org.codehaus.plexus.resource.ResourceManager;
 import org.codehaus.plexus.resource.loader.FileResourceCreationException;
 import org.codehaus.plexus.resource.loader.ResourceNotFoundException;
 import org.codehaus.plexus.util.FileUtils;
-
-import com.diffplug.spotless.maven.rome.AbstractRome;
 
 public class FileLocator {
 
@@ -134,8 +131,7 @@ public class FileLocator {
 		var sub = base != null ? base.resolve("spotless-data") : null;
 		if (sub != null) {
 			return sub.toAbsolutePath().toFile();
-		}
-		else {
+		} else {
 			var home = Paths.get(System.getenv("user.home"));
 			return home.resolve(".rome").toAbsolutePath().toFile();
 		}
