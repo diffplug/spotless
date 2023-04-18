@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,8 @@ public class SortPomCfg implements Serializable {
 	public String sortOrderFile = null;
 
 	public String sortDependencies = null;
+
+	public String sortDependencyManagement = null;
 
 	public String sortDependencyExclusions = null;
 

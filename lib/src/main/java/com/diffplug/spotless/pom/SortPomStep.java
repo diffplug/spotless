@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ public class SortPomStep {
 
 		public State(SortPomCfg cfg, Provisioner provisioner) throws IOException {
 			this.cfg = cfg;
-			this.jarState = JarState.from("com.github.ekryd.sortpom:sortpom-sorter:3.0.0", provisioner);
+			this.jarState = JarState.from("com.github.ekryd.sortpom:sortpom-sorter:3.2.1", provisioner);
 		}
 
 		FormatterFunc createFormat() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,6 +60,9 @@ public class SortPom implements FormatterStepFactory {
 	String sortDependencies = defaultValues.sortDependencies;
 
 	@Parameter
+	String sortDependencyManagement = defaultValues.sortDependencyManagement;
+
+	@Parameter
 	String sortDependencyExclusions = defaultValues.sortDependencyExclusions;
 
 	@Parameter
@@ -88,6 +91,7 @@ public class SortPom implements FormatterStepFactory {
 		cfg.predefinedSortOrder = predefinedSortOrder;
 		cfg.sortOrderFile = sortOrderFile;
 		cfg.sortDependencies = sortDependencies;
+		cfg.sortDependencyManagement = sortDependencyManagement;
 		cfg.sortDependencyExclusions = sortDependencyExclusions;
 		cfg.sortPlugins = sortPlugins;
 		cfg.sortProperties = sortProperties;
