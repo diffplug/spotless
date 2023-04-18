@@ -3,6 +3,7 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+* Update sortpom plugin to the newest version
 
 ## [2.36.0] - 2023-04-06
 ### Added

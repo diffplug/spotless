@@ -5,6 +5,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Fixed
 * Added `@DisableCachingByDefault` to `RegisterDependenciesTask`.
+* Update sortpom plugin to the newest version
 
 ## [6.18.0] - 2023-04-06
 ### Added
