@@ -27,6 +27,9 @@ public class SortPom implements FormatterStepFactory {
 	private final SortPomCfg defaultValues = new SortPomCfg();
 
 	@Parameter
+	String version = defaultValues.version;
+
+	@Parameter
 	String encoding = defaultValues.encoding;
 
 	@Parameter
@@ -80,6 +83,7 @@ public class SortPom implements FormatterStepFactory {
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
 		SortPomCfg cfg = new SortPomCfg();
+		cfg.version = version;
 		cfg.encoding = encoding;
 		cfg.lineSeparator = lineSeparator;
 		cfg.expandEmptyElements = expandEmptyElements;

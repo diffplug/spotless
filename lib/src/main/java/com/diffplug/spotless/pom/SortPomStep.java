@@ -27,6 +27,8 @@ import com.diffplug.spotless.Provisioner;
 
 public class SortPomStep {
 	public static final String NAME = "sortPom";
+	static final String PACKAGE = "com.github.ekryd.sortpom";
+	static final String MAVEN_COORDINATE = PACKAGE + ":sortpom-sorter:";
 
 	private SortPomStep() {}
 
@@ -42,7 +44,7 @@ public class SortPomStep {
 
 		public State(SortPomCfg cfg, Provisioner provisioner) throws IOException {
 			this.cfg = cfg;
-			this.jarState = JarState.from("com.github.ekryd.sortpom:sortpom-sorter:3.2.1", provisioner);
+			this.jarState = JarState.from(MAVEN_COORDINATE + cfg.version, provisioner);
 		}
 
 		FormatterFunc createFormat() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
