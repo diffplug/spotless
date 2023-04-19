@@ -23,6 +23,7 @@ import com.google.googlejavaformat.java.Formatter;
 import com.google.googlejavaformat.java.FormatterException;
 import com.google.googlejavaformat.java.ImportOrderer;
 import com.google.googlejavaformat.java.JavaFormatterOptions;
+import com.google.googlejavaformat.java.JavaFormatterOptions.Style;
 import com.google.googlejavaformat.java.RemoveUnusedImports;
 import com.google.googlejavaformat.java.StringWrapper;
 
@@ -37,13 +38,13 @@ public class GoogleJavaFormatFormatterFunc implements FormatterFunc {
 	private final String version;
 
 	@Nonnull
-	private final JavaFormatterOptions.Style formatterStyle;
+	private final Style formatterStyle;
 
 	private final boolean reflowStrings;
 
 	public GoogleJavaFormatFormatterFunc(@Nonnull String version, @Nonnull String style, boolean reflowStrings) {
 		this.version = Objects.requireNonNull(version);
-		this.formatterStyle = JavaFormatterOptions.Style.valueOf(Objects.requireNonNull(style));
+		this.formatterStyle = Style.valueOf(Objects.requireNonNull(style));
 		this.reflowStrings = reflowStrings;
 
 		this.formatter = new Formatter(JavaFormatterOptions.builder()
@@ -56,7 +57,10 @@ public class GoogleJavaFormatFormatterFunc implements FormatterFunc {
 	public String apply(@Nonnull String input) throws Exception {
 		String formatted = formatter.formatSource(input);
 		String removedUnused = RemoveUnusedImports.removeUnusedImports(formatted);
-		String sortedImports = ImportOrderer.reorderImports(removedUnused, formatterStyle);
+		// Issue #1679: we used to call ImportOrderer.reorderImports(String) here, but that is deprecated.
+		// Replacing the call with (the correct) reorderImports(String, Style) causes issues for Style.AOSP,
+		// so we force the style to GOOGLE for now (which is what the deprecated method did)
+		String sortedImports = ImportOrderer.reorderImports(removedUnused, Style.GOOGLE);
 		return reflowLongStrings(sortedImports);
 	}
 
