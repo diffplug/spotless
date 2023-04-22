@@ -47,7 +47,7 @@ final class RomeExecutableDownloader {
 	/**
 	 * The checksum algorithm to use for checking the integrity of downloaded files.
 	 */
-	private static final String CHECKSUM_ALGORITHM = "MD5";
+	private static final String CHECKSUM_ALGORITHM = "SHA256";
 
 	/**
 	 * The pattern for {@link String#format(String, Object...) String.format()} for
@@ -229,7 +229,7 @@ final class RomeExecutableDownloader {
 	 *
 	 * @param file      File to process.
 	 * @param algorithm The checksum algorithm to use.
-	 * @return The MD5 checksum of the given file.
+	 * @return The checksum of the given file.
 	 * @throws IOException When the file does not exist or could not be read.
 	 */
 	private String computeChecksum(Path file, String algorithm) throws IOException {
@@ -276,7 +276,7 @@ final class RomeExecutableDownloader {
 		var parent = file.getParent();
 		var base = parent != null ? parent : file;
 		var fileName = file.getFileName();
-		var checksumName = fileName != null ? fileName.toString() + ".md5" : "checksum.md5";
+		var checksumName = fileName != null ? fileName.toString() + ".sha256" : "checksum.sha256";
 		return base.resolve(checksumName);
 	}
 
