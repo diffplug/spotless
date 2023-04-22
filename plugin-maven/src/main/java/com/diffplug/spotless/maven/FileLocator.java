@@ -19,6 +19,9 @@ import static com.diffplug.common.base.Strings.isNullOrEmpty;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.File;
+import java.net.URISyntaxException;
+import java.nio.file.FileSystemNotFoundException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -119,21 +122,31 @@ public class FileLocator {
 	}
 
 	private static File findDataDir() {
-		// JAR path is e.g.
-		// ~/.m2/repository/com/diffplug/spotless/spotless-plugin-maven/1.2.3/spotless-plugin-maven-1.2.3.jar
-		var codeSource = FileLocator.class.getProtectionDomain().getCodeSource();
-		var location = codeSource != null ? codeSource.getLocation() : null;
-		var path = location != null ? location.getPath() : null;
-		var jarPath = path != null && !path.isBlank() ? Paths.get(path) : null;
-		var parent1 = jarPath != null ? jarPath.getParent() : null;
-		var parent2 = parent1 != null ? parent1.getParent() : null;
-		var base = parent2 != null ? parent2.getParent() : null;
-		var sub = base != null ? base.resolve("spotless-data") : null;
-		if (sub != null) {
-			return sub.toAbsolutePath().toFile();
-		} else {
-			var home = Paths.get(System.getenv("user.home"));
-			return home.resolve(".rome").toAbsolutePath().toFile();
+		try {
+			// JAR path is e.g.
+			// ~/.m2/repository/com/diffplug/spotless/spotless-plugin-maven/1.2.3/spotless-plugin-maven-1.2.3.jar
+			var codeSource = FileLocator.class.getProtectionDomain().getCodeSource();
+			var location = codeSource != null ? codeSource.getLocation() : null;
+			var locationUri = location != null ? location.toURI() : null;
+			var jarPath = locationUri != null && "file".equals(locationUri.getScheme()) ? Path.of(locationUri) : null;
+			var parent1 = jarPath != null ? jarPath.getParent() : null;
+			var parent2 = parent1 != null ? parent1.getParent() : null;
+			var base = parent2 != null ? parent2.getParent() : null;
+			var sub = base != null ? base.resolve("spotless-data") : null;
+			if (sub != null) {
+				return sub.toAbsolutePath().toFile();
+			} else {
+				return findUserHome();
+			}
+		} catch (final SecurityException e) {
+			return findUserHome();
+		} catch (final URISyntaxException | FileSystemNotFoundException | IllegalArgumentException e) {
+			throw new RuntimeException("Unable to determine data directory in local Maven repository", e);
 		}
+	}
+	
+	private static File findUserHome() {
+		var home = Paths.get(System.getenv("user.home"));
+		return home.resolve(".rome").toAbsolutePath().toFile();
 	}
 }
