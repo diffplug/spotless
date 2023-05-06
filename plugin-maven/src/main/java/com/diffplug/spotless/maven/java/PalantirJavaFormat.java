@@ -27,9 +27,13 @@ public class PalantirJavaFormat implements FormatterStepFactory {
 	@Parameter
 	private String version;
 
+	@Parameter
+	private String style;
+
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
 		String version = this.version != null ? this.version : PalantirJavaFormatStep.defaultVersion();
-		return PalantirJavaFormatStep.create(version, config.getProvisioner());
+		String style = this.style != null ? this.style : PalantirJavaFormatStep.defaultStyle();
+		return PalantirJavaFormatStep.create(version, style, config.getProvisioner());
 	}
 }
