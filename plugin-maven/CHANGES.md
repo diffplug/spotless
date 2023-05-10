@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+* `palantir` step now accepts a `style` parameter, which is documentation had already claimed to do. ([#1694](https://github.com/diffplug/spotless/pull/1694))
 
 ## [2.36.0] - 2023-04-06
 ### Added
