@@ -5,6 +5,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Changes
 * Bump default sortpom version to latest `3.0.0` -> `3.2.1`. ([#1675](https://github.com/diffplug/spotless/pull/1675))
+### Fixed
+* `palantir` step now accepts a `style` parameter, which is documentation had already claimed to do. ([#1694](https://github.com/diffplug/spotless/pull/1694))
 
 ## [2.36.0] - 2023-04-06
 ### Added

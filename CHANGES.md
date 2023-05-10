@@ -13,6 +13,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changes
 * Bump default sortpom version to latest `3.0.0` -> `3.2.1`. ([#1675](https://github.com/diffplug/spotless/pull/1675))
 
+### Added
+* `Jvm.Support` now accepts `-SNAPSHOT` versions, treated as the non`-SNAPSHOT`. ([#1583](https://github.com/diffplug/spotless/issues/1583))
+
 ## [2.38.0] - 2023-04-06
 ### Added
 * Support configuration of mirrors for P2 repositories in `EquoBasedStepBuilder` ([#1629](https://github.com/diffplug/spotless/issues/1629)).
