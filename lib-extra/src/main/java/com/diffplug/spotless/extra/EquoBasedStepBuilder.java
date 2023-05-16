@@ -16,6 +16,7 @@
 package com.diffplug.spotless.extra;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,7 @@ import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.P2ClientCache;
 import dev.equo.solstice.p2.P2Model;
 import dev.equo.solstice.p2.P2QueryCache;
+import dev.equo.solstice.p2.P2QueryResult;
 
 /**
  * Generic Eclipse based formatter step {@link State} builder.
@@ -100,7 +102,12 @@ public abstract class EquoBasedStepBuilder {
 
 	/** Creates the state of the configuration. */
 	EquoBasedStepBuilder.State get() throws Exception {
-		var query = createModelWithMirrors().query(P2ClientCache.PREFER_OFFLINE, P2QueryCache.ALLOW);
+		P2QueryResult query;
+		try {
+			query = createModelWithMirrors().query(P2ClientCache.PREFER_OFFLINE, P2QueryCache.ALLOW);
+		} catch (Exception x) {
+			throw new IOException("Failed to load " + formatterName + ": " + x, x);
+		}
 		var classpath = new ArrayList<File>();
 		var mavenDeps = new ArrayList<String>();
 		mavenDeps.add("dev.equo.ide:solstice:1.0.3");

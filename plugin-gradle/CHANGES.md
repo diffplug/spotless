@@ -5,6 +5,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Fixed
 * Added `@DisableCachingByDefault` to `RegisterDependenciesTask`.
+* When P2 download fails, indicate the responsible formatter. ([#1698](https://github.com/diffplug/spotless/issues/1698))
 
 ## [6.18.0] - 2023-04-06
 ### Added
