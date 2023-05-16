@@ -144,7 +144,7 @@ public class FileLocator {
 			throw new RuntimeException("Unable to determine data directory in local Maven repository", e);
 		}
 	}
-	
+
 	private static File findUserHome() {
 		var home = Paths.get(System.getenv("user.home"));
 		return home.resolve(".rome").toAbsolutePath().toFile();
