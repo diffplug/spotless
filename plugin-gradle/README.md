@@ -133,9 +133,10 @@ All the generic steps live in [`FormatExtension`](https://javadoc.io/doc/com.dif
 
 ### Requirements
 
-Spotless requires JRE 8+, and Gradle 6.1.1+.  Some steps require JRE 11+, `Unsupported major.minor version` means you're using a step that needs a newer JRE.
+Spotless requires JRE 11+ and Gradle 6.1.1 or newer.
 
-If you're stuck on an older version of Gradle, `id 'com.diffplug.gradle.spotless' version '4.5.1'` supports all the way back to Gradle 2.x.
+- If you're stuck on JRE 8, use [`id 'com.diffplug.spotless' version '6.13.0'` or older](https://github.com/diffplug/spotless/blob/main/plugin-gradle/CHANGES.md#6130---2023-01-14).
+- If you're stuck on an older version of Gradle, [`id 'com.diffplug.gradle.spotless' version '4.5.1'` supports all the way back to Gradle 2.x](https://github.com/diffplug/spotless/blob/main/plugin-gradle/CHANGES.md#451---2020-07-04).
 
 <a name="applying-to-java-source"></a>
 
