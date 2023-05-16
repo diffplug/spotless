@@ -47,7 +47,7 @@ final class RomeExecutableDownloader {
 	/**
 	 * The checksum algorithm to use for checking the integrity of downloaded files.
 	 */
-	private static final String CHECKSUM_ALGORITHM = "SHA256";
+	private static final String CHECKSUM_ALGORITHM = "SHA-256";
 
 	/**
 	 * The pattern for {@link String#format(String, Object...) String.format()} for
