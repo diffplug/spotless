@@ -4,10 +4,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
-* Support Rome as a formatter for JavaScript and TypeScript code. Adds a new `rome` step to `javascript` and `typescript` formatter configurations. https://github.com/diffplug/spotless/pull/1663
-
+* Support Rome as a formatter for JavaScript and TypeScript code. Adds a new `rome` step to `javascript` and `typescript` formatter configurations. ([#1663](https://github.com/diffplug/spotless/pull/1663))
 ### Fixed
-* Added `@DisableCachingByDefault` to `RegisterDependenciesTask`.
+* Added `@DisableCachingByDefault` to `RegisterDependenciesTask`. ([#1666](https://github.com/diffplug/spotless/pull/1666))
 * When P2 download fails, indicate the responsible formatter. ([#1698](https://github.com/diffplug/spotless/issues/1698))
 ### Changes
 * Bump default sortpom version to latest `3.0.0` -> `3.2.1`. ([#1675](https://github.com/diffplug/spotless/pull/1675))
@@ -27,7 +26,6 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   Mirrors are selected by prefix match, for example `https://download.eclipse.org/eclipse/updates/4.26/` will be redirected to `https://some.internal.mirror/eclipse/eclipse/updates/4.26/`.
   The same configuration exists for `greclipse` and `eclipseCdt`.
 * The `style` option in Palantir Java Format ([#1654](https://github.com/diffplug/spotless/pull/1654)).
-
 ### Fixed
 * Stop using deprecated conventions when used in Gradle >= `7.1`. ([#1618](https://github.com/diffplug/spotless/pull/1618))
 ### Changes
@@ -36,7 +34,6 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Bump default `diktat` version `1.2.4.2` -> `1.2.5`. ([#1631](https://github.com/diffplug/spotless/pull/1631))
 * Bump default `flexmark` version `0.62.2` -> `0.64.0`. ([#1302](https://github.com/diffplug/spotless/pull/1302))
 * Bump default `googleJavaFormat` version `1.15.0` -> `1.16.0`. ([#1630](https://github.com/diffplug/spotless/pull/1630))
-
 * Bump default `scalafmt` version `3.7.1` -> `3.7.3`. ([#1584](https://github.com/diffplug/spotless/pull/1584))
 * Bump default Eclipse formatters for the 2023-03 release. ([#1662](https://github.com/diffplug/spotless/pull/1662))
   * JDT and GrEclipse `4.26` -> `4.27`
