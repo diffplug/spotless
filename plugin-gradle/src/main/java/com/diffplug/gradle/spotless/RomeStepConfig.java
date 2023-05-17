@@ -18,6 +18,7 @@ package com.diffplug.gradle.spotless;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.function.Consumer;
 
@@ -26,7 +27,6 @@ import javax.annotation.Nullable;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 
-import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.rome.RomeStep;
 
@@ -208,11 +208,7 @@ public abstract class RomeStepConfig<Self extends RomeStepConfig<Self>> {
 		var localRepo = currentRepo != null ? (MavenArtifactRepository) currentRepo : project.getRepositories().mavenLocal();
 		try {
 			// e.g. ~/.m2/repository/
-			var path = localRepo.getUrl().getPath();
-			if (FileSignature.machineIsWin() && path.startsWith("/")) {
-				path = path.substring(1);
-			}
-			var repoPath = Paths.get(path);
+			var repoPath = Path.of(localRepo.getUrl());
 			var dataPath = repoPath.resolve("com").resolve("diffplug").resolve("spotless").resolve("spotless-data");
 			return dataPath.toAbsolutePath().toFile();
 		} finally {
@@ -246,8 +242,6 @@ public abstract class RomeStepConfig<Self extends RomeStepConfig<Self>> {
 	 * the user's path. Otherwise resolve the executable path against the project's
 	 * base directory.
 	 *
-	 * @param config Configuration from the Maven Mojo execution with details about
-	 *               the currently executed project.
 	 * @return The resolved path to the Rome executable.
 	 */
 	private String resolvePathToExe() {
@@ -265,7 +259,6 @@ public abstract class RomeStepConfig<Self extends RomeStepConfig<Self>> {
 	 * current project's directory. Otherwise, use the {@code Rome} sub folder in
 	 * the shared data directory.
 	 *
-	 * @param config Configuration for this step.
 	 * @return The download directory for the Rome executable.
 	 */
 	private String resolveDownloadDir() {
