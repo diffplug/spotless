@@ -16,6 +16,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * `removeUnusedImport` can be configured to rely on `cleanthat-javaparser-unnecessaryimport`. Default remains `google-java-format`. ([#1589](https://github.com/diffplug/spotless/pull/1589))
 * The `style` option in Palantir Java Format ([#1654](https://github.com/diffplug/spotless/pull/1654)).
 * Added formatter for Gherkin feature files ([#1649](https://github.com/diffplug/spotless/issues/1649)).
+### Fixed
 * Fix non deterministic computation of cache fingerprint when using multiple formatters. ([#1643](https://github.com/diffplug/spotless/pull/1643) fixes [#1642](https://github.com/diffplug/spotless/pull/1642))
 ### Changes
 * **POTENTIALLY BREAKING** Drop support for `googleJavaFormat` versions &lt; `1.8`. ([#1630](https://github.com/diffplug/spotless/pull/1630))
