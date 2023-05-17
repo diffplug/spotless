@@ -26,6 +26,7 @@ import javax.annotation.Nullable;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 
+import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.rome.RomeStep;
 
@@ -207,7 +208,11 @@ public abstract class RomeStepConfig<Self extends RomeStepConfig<Self>> {
 		var localRepo = currentRepo != null ? (MavenArtifactRepository) currentRepo : project.getRepositories().mavenLocal();
 		try {
 			// e.g. ~/.m2/repository/
-			var repoPath = Paths.get(localRepo.getUrl().getPath());
+			var path = localRepo.getUrl().getPath();
+			if (FileSignature.machineIsWin() && path.startsWith("/")) {
+				path = path.substring(1);
+			}
+			var repoPath = Paths.get(path);
 			var dataPath = repoPath.resolve("com").resolve("diffplug").resolve("spotless").resolve("spotless-data");
 			return dataPath.toAbsolutePath().toFile();
 		} finally {
