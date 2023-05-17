@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,9 @@ import com.diffplug.spotless.pom.SortPomStep;
 
 public class SortPom implements FormatterStepFactory {
 	private final SortPomCfg defaultValues = new SortPomCfg();
+
+	@Parameter
+	String version = defaultValues.version;
 
 	@Parameter
 	String encoding = defaultValues.encoding;
@@ -60,6 +63,9 @@ public class SortPom implements FormatterStepFactory {
 	String sortDependencies = defaultValues.sortDependencies;
 
 	@Parameter
+	String sortDependencyManagement = defaultValues.sortDependencyManagement;
+
+	@Parameter
 	String sortDependencyExclusions = defaultValues.sortDependencyExclusions;
 
 	@Parameter
@@ -77,6 +83,7 @@ public class SortPom implements FormatterStepFactory {
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
 		SortPomCfg cfg = new SortPomCfg();
+		cfg.version = version;
 		cfg.encoding = encoding;
 		cfg.lineSeparator = lineSeparator;
 		cfg.expandEmptyElements = expandEmptyElements;
@@ -88,6 +95,7 @@ public class SortPom implements FormatterStepFactory {
 		cfg.predefinedSortOrder = predefinedSortOrder;
 		cfg.sortOrderFile = sortOrderFile;
 		cfg.sortDependencies = sortDependencies;
+		cfg.sortDependencyManagement = sortDependencyManagement;
 		cfg.sortDependencyExclusions = sortDependencyExclusions;
 		cfg.sortPlugins = sortPlugins;
 		cfg.sortProperties = sortProperties;

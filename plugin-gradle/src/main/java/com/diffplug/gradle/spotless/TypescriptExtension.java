@@ -229,6 +229,47 @@ public class TypescriptExtension extends FormatExtension {
 		}
 	}
 
+	/**
+	 * Defaults to downloading the default Rome version from the network. To work
+	 * offline, you can specify the path to the Rome executable via
+	 * {@code rome().pathToExe(...)}.
+	 */
+	public RomeTs rome() {
+		return rome(null);
+	}
+
+	/** Downloads the given Rome version from the network. */
+	public RomeTs rome(String version) {
+		var romeConfig = new RomeTs(version);
+		addStep(romeConfig.createStep());
+		return romeConfig;
+	}
+
+	/**
+	 * Rome formatter step for TypeScript.
+	 */
+	public class RomeTs extends RomeStepConfig<RomeTs> {
+		/**
+		 * Creates a new Rome formatter step config for formatting TypeScript files. Unless
+		 * overwritten, the given Rome version is downloaded from the network.
+		 *
+		 * @param version Rome version to use.
+		 */
+		public RomeTs(String version) {
+			super(getProject(), TypescriptExtension.this::replaceStep, version);
+		}
+
+		@Override
+		protected String getLanguage() {
+			return "ts?";
+		}
+
+		@Override
+		protected RomeTs getThis() {
+			return this;
+		}
+	}
+
 	@Override
 	protected void setupTask(SpotlessTask task) {
 		if (target == null) {

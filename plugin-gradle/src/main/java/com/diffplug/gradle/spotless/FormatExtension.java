@@ -229,7 +229,7 @@ public class FormatExtension {
 
 	private final FileCollection parseTargetIsExclude(Object target, boolean isExclude) {
 		if (target instanceof Collection) {
-			return parseTargetsIsExclude(((Collection) target).toArray(), isExclude);
+			return parseTargetsIsExclude(((Collection<?>) target).toArray(), isExclude);
 		} else if (target instanceof FileCollection) {
 			return (FileCollection) target;
 		} else if (target instanceof String) {
@@ -649,6 +649,58 @@ public class FormatExtension {
 		}
 	}
 
+	/**
+	 * Generic Rome formatter step that detects the language of the input file from
+	 * the file name. It should be specified as a formatter step for a generic
+	 * <code>format{ ... }</code>.
+	 */
+	public class RomeGeneric extends RomeStepConfig<RomeGeneric> {
+		@Nullable
+		String language;
+
+		/**
+		 * Creates a new Rome config that downloads the Rome executable for the given version from the network.
+		 * @param version Rome version to use. The default version is used when <code>null</code>.
+		 */
+		public RomeGeneric(String version) {
+			super(getProject(), FormatExtension.this::replaceStep, version);
+		}
+
+		/**
+		 * Sets the language (syntax) of the input files to format. When
+		 * <code>null</code> or the empty string, the language is detected automatically
+		 * from the file name. Currently the following languages are supported by Rome:
+		 * <ul>
+		 * <li>js (JavaScript)</li>
+		 * <li>jsx (JavaScript + JSX)</li>
+		 * <li>js? (JavaScript or JavaScript + JSX, depending on the file
+		 * extension)</li>
+		 * <li>ts (TypeScript)</li>
+		 * <li>tsx (TypeScript + JSX)</li>
+		 * <li>ts? (TypeScript or TypeScript + JSX, depending on the file
+		 * extension)</li>
+		 * <li>json (JSON)</li>
+		 * </ul>
+		 * @param language The language of the files to format.
+		 * @return This step for further configuration.
+		 */
+		public RomeGeneric language(String language) {
+			this.language = language;
+			replaceStep();
+			return this;
+		}
+
+		@Override
+		protected String getLanguage() {
+			return language;
+		}
+
+		@Override
+		protected RomeGeneric getThis() {
+			return this;
+		}
+	}
+
 	/** Uses the default version of prettier. */
 	public PrettierConfig prettier() {
 		return prettier(PrettierFormatterStep.defaultDevDependencies());
@@ -664,6 +716,22 @@ public class FormatExtension {
 		PrettierConfig prettierConfig = new PrettierConfig(devDependencies);
 		addStep(prettierConfig.createStep());
 		return prettierConfig;
+	}
+
+	/**
+	 * Defaults to downloading the default Rome version from the network. To work
+	 * offline, you can specify the path to the Rome executable via
+	 * {@code rome().pathToExe(...)}.
+	 */
+	public RomeStepConfig<?> rome() {
+		return rome(null);
+	}
+
+	/** Downloads the given Rome version from the network. */
+	public RomeStepConfig<?> rome(String version) {
+		var romeConfig = new RomeGeneric(version);
+		addStep(romeConfig.createStep());
+		return romeConfig;
 	}
 
 	/** Uses the default version of clang-format. */
