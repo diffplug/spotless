@@ -10,13 +10,13 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
-### Changes
-* Bump default sortpom version to latest `3.0.0` -> `3.2.1`. ([#1675](https://github.com/diffplug/spotless/pull/1675))
-
 ### Added
 * `Jvm.Support` now accepts `-SNAPSHOT` versions, treated as the non`-SNAPSHOT`. ([#1583](https://github.com/diffplug/spotless/issues/1583))
+* Support Rome as a formatter for JavaScript and TypeScript code. Adds a new `rome` step to `javascript` and `typescript` formatter configurations. ([#1663](https://github.com/diffplug/spotless/pull/1663))
 ### Fixed
 * When P2 download fails, indicate the responsible formatter. ([#1698](https://github.com/diffplug/spotless/issues/1698))
+### Changes
+* Bump default sortpom version to latest `3.0.0` -> `3.2.1`. ([#1675](https://github.com/diffplug/spotless/pull/1675))
 
 ## [2.38.0] - 2023-04-06
 ### Added

@@ -45,4 +45,8 @@ public class Typescript extends FormatterFactory {
 	public void addEslint(EslintTs eslint) {
 		addStepFactory(eslint);
 	}
+
+	public void addRome(RomeTs rome) {
+		addStepFactory(rome);
+	}
 }

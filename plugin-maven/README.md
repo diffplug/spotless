@@ -49,14 +49,15 @@ user@machine repo % mvn spotless:check
   - [Sql](#sql) ([dbeaver](#dbeaver))
   - [Maven Pom](#maven-pom) ([sortPom](#sortpom))
   - [Markdown](#markdown) ([flexmark](#flexmark))
-  - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier), [ESLint](#eslint-typescript))
-  - [Javascript](#javascript) ([prettier](#prettier), [ESLint](#eslint-javascript))
+  - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier), [ESLint](#eslint-typescript), [Rome](#rome))
+  - [Javascript](#javascript) ([prettier](#prettier), [ESLint](#eslint-javascript), [Rome](#rome))
   - [JSON](#json)
   - [YAML](#yaml)
   - [Gherkin](#gherkin)
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching `npm install` results](#caching-results-of-npm-install))
     - [eclipse web tools platform](#eclipse-web-tools-platform)
+    - [Rome](#rome) ([binary detection](#rome-binary), [config file](#rome-configuration-file), [input language](#rome-input-language))
 - **Language independent**
   - [Generic steps](#generic-steps)
   - [License header](#license-header) ([slurp year from git](#retroactively-slurp-years-from-git-history))
@@ -704,6 +705,7 @@ Currently, none of the available options can be configured yet. It uses only the
     <tsfmt/>    <!-- has its own section below -->
     <prettier/> <!-- has its own section below -->
     <eslint/>   <!-- has its own section below -->
+    <rome/>     <!-- has its own section below -->
 
     <licenseHeader>
       <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
@@ -814,6 +816,7 @@ For details, see the [npm detection](#npm-detection), [`.npmrc` detection](#npmr
 
     <prettier/> <!-- has its own section below -->
     <eslint/>   <!-- has its own section below -->
+    <rome/>     <!-- has its own section below -->
 
     <licenseHeader>
       <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
@@ -890,6 +893,7 @@ For details, see the [npm detection](#npm-detection), [`.npmrc` detection](#npmr
     <simple />    <!-- has its own section below -->
     <gson />      <!-- has its own section below -->
     <jackson />   <!-- has its own section below -->
+    <rome />      <!-- has its own section below -->
   </json>
 </configuration>
 ```
@@ -1219,6 +1223,155 @@ to true.
 
 <a name="format"></a>
 <a name="custom rules"></a>
+
+## Rome
+
+[homepage](https://rome.tools/). [changelog](https://github.com/rome/tools/blob/main/CHANGELOG.md). Rome is a formatter that for the Frontend written in Rust, which has a native binary,
+does not require Node.js and as such, is pretty fast. It can currently format
+JavaScript, TypeScript, JSX, and JSON, and may support
+[more frontend languages](https://docs.rome.tools/internals/language_support/)
+such as CSS in the future.
+
+You can use rome in any language-specific format for supported languages, but
+usually you will be creating a generic format.
+
+```xml
+<configuration>
+  <formats>
+    <format>
+      <includes>
+        <include>src/**/typescript/**/*.ts</include>
+      </includes>
+
+      <rome>
+        <!-- Download Rome from the network if not already downloaded, see below for more info  -->
+        <version>12.0.0</version>
+
+        <!-- (optional) Path to the directory with the rome.json conig file -->
+        <configPath>${project.basedir}/path/to/config/dir</configPath>
+
+        <!-- (optional) Rome will auto detect the language based on the file extension. -->
+        <!-- See below for possible values. -->
+        <language>ts</language>
+      </prettier>
+    </rome>
+
+  </formats>
+</configuration>
+```
+
+**Limitations:**
+- The auto-discovery of config files (up the file tree) will not work when using
+  Rome within spotless.
+
+To apply Rome to more kinds of files with a different configuration, just add
+more formats
+
+```xml
+<configuration>
+  <formats>
+    <format><includes>src/**/*.ts</includes><rome/></format>
+    <format><includes>src/**/*.js</includes><rome/></format>
+</configuration>
+```
+
+### Rome binary
+
+To format with Rome, spotless needs to find the Rome binary. By default,
+spotless downloads the binary for the given version from the network. This
+should be fine in most cases, but may not work e.g. when there is not connection
+to the internet.
+
+To download the Rome binary from the network, just specify a version:
+
+```xml
+<rome>
+  <version>12.0.0</version>
+</rome>
+```
+
+Spotless uses a default version when you do not specfiy a version, but this
+may change at any time, so we recommend that you always set the Rome version
+you want to use. Optionally, you can also specify a directory for the downloaded
+Rome binaries (defaults to `~/.m2/repository/com/diffplug/spotless/spotless-data/rome`):
+
+```xml
+<rome>
+  <version>12.0.0</version>
+  <!-- Relative paths are resolved against the project's base directory -->
+  <downloadDir>${user.home}/rome</downloadDir>
+</rome>
+```
+
+To use a fixed binary, omit the `version` and specify a `pathToExe`:
+
+```xml
+<rome>
+  <pathToExe>${project.basedir}/bin/rome</pathToExe>
+</rome>
+```
+
+Absolute paths are used as-is. Relative paths are resolved against the project's
+base directory. To use a pre-installed Rome binary on the user's path, specify
+just a name without any slashes / backslashes:
+
+
+```xml
+<rome>
+  <!-- Uses the "rome" command, which must be on the user's path. -->
+  <pathToExe>rome</pathToExe>
+</rome>
+```
+
+### Rome configuration file
+
+Rome is a biased formatter and linter without many options, but there are a few
+basic options. Rome uses a file named [rome.json](https://docs.rome.tools/configuration/)
+for its configuration. When none is specified, the default configuration from
+Rome is used. To use a custom configuration:
+
+```xml
+<rome>
+  <!-- Must point to the directory with the "rome.json" config file -->
+  <!-- Relative paths are resolved against the project's base directory -->
+  <configPath>${project.basedir}</configPath>
+</rome>
+```
+
+### Rome input language
+
+By default, Rome detects the language / syntax of the files to format
+automatically from the file extension. This may fail if your source code files
+have unusual extensions for some reason. If you are using the generic format,
+you can force a certain language like this:
+
+```xml
+<configuration>
+  <formats>
+    <format>
+      <includes>
+        <include>src/**/typescript/**/*.mjson</include>
+      </includes>
+
+      <rome>
+        <version>12.0.0</version>
+        <language>json</language>
+      </prettier>
+    </rome>
+
+  </formats>
+</configuration>
+```
+
+The following languages are currently recognized:
+
+* `js` -- JavaScript
+* `jsx` -- JavaScript + JSX (React)
+* `js?` -- JavaScript, with or without JSX, depending on the file extension
+* `ts` -- TypeScript
+* `tsx` -- TypeScript + JSX (React)
+* `ts?` -- TypeScript, with or without JSX, depending on the file extension
+* `json` -- JSON
 
 ## Generic steps
 
