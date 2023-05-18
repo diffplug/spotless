@@ -18,6 +18,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Fixed a regression which changed the import sorting order in `googleJavaFormat` introduced in `2.38.0`. ([#1680](https://github.com/diffplug/spotless/pull/1680))
 ### Changes
 * Bump default sortpom version to latest `3.0.0` -> `3.2.1`. ([#1675](https://github.com/diffplug/spotless/pull/1675))
+* Bump default `ktlint` version to latest `0.48.2` -> `0.49.1`.([#1696](https://github.com/diffplug/spotless/issues/1696))
 
 ## [2.38.0] - 2023-04-06
 ### Added
