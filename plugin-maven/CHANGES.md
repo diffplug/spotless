@@ -12,6 +12,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changes
 * Bump default sortpom version to latest `3.0.0` -> `3.2.1`. ([#1675](https://github.com/diffplug/spotless/pull/1675))
 * Bump default `ktlint` version to latest `0.48.2` -> `0.49.1`.([#1696](https://github.com/diffplug/spotless/issues/1696))
+  * Dropped support for `ktlint 0.46.x` following our policy of supporting two breaking changes at a time.
 
 ## [2.36.0] - 2023-04-06
 ### Added
