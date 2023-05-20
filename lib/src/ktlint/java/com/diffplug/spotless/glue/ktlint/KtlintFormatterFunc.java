@@ -19,8 +19,6 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.Map;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.glue.ktlint.compat.*;
@@ -29,7 +27,6 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 
 	private final Map<String, String> userData;
 	private final boolean isScript;
-	@NotNull
 	private final KtLintCompatAdapter adapter;
 	private final boolean useExperimental;
 	private final FileSignature editorConfigPath;

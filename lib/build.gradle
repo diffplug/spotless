@@ -96,11 +96,6 @@ dependencies {
 		}
 	}
 	// ktlint
-	String VER_KTLINT='0.47.1'
-	ktlintCompileOnly "com.pinterest:ktlint:$VER_KTLINT"
-	ktlintCompileOnly "com.pinterest.ktlint:ktlint-core:$VER_KTLINT"
-	ktlintCompileOnly "com.pinterest.ktlint:ktlint-ruleset-experimental:$VER_KTLINT"
-	ktlintCompileOnly "com.pinterest.ktlint:ktlint-ruleset-standard:$VER_KTLINT"
 	compatKtLint0Dot47Dot0CompileOnly 'com.pinterest.ktlint:ktlint-core:0.47.0'
 	compatKtLint0Dot47Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.47.0'
 	compatKtLint0Dot47Dot0CompileOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.47.0'
