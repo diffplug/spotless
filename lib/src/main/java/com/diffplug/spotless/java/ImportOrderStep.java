@@ -42,8 +42,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 public final class ImportOrderStep {
 	private static final boolean WILDCARDS_LAST_DEFAULT = false;
 	private static final boolean SEMANTIC_SORT_DEFAULT = false;
-	private static final Set<String> TREAT_AS_PACKAGE_DEFAULT = null;
-	private static final Set<String> TREAT_AS_CLASS_DEFAULT = null;
+	private static final Set<String> TREAT_AS_PACKAGE_DEFAULT = Set.of();
+	private static final Set<String> TREAT_AS_CLASS_DEFAULT = Set.of();
 
 	private final String lineFormat;
 
