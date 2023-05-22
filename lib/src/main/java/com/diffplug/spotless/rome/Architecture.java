@@ -43,9 +43,6 @@ enum Architecture {
 		if (arch.equals("ppc64le")) {
 			throw new IllegalStateException(msg);
 		}
-		if (arch.equals("aarch64")) {
-			throw new IllegalStateException(msg);
-		}
 		if (arch.equals("s390x")) {
 			throw new IllegalStateException(msg);
 		}
@@ -54,6 +51,9 @@ enum Architecture {
 		}
 		if (arch.equals("ppc")) {
 			throw new IllegalStateException(msg);
+		}
+		if (arch.equals("aarch64")) {
+			return ARM64;
 		}
 		if (arch.equals("arm")) {
 			if (version.contains("v7")) {
