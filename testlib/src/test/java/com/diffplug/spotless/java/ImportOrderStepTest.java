@@ -21,6 +21,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
+import java.util.Set;
 
 class ImportOrderStepTest extends ResourceHarness {
 	@Test
@@ -61,7 +62,7 @@ class ImportOrderStepTest extends ResourceHarness {
 
 	@Test
 	void sortImportsWildcardsLast() {
-		FormatterStep step = ImportOrderStep.forJava().createFrom(true);
+		FormatterStep step = ImportOrderStep.forJava().createFrom(true, true, null, null);
 		StepHarness.forStep(step).testResource("java/importsorter/JavaCodeUnsortedImports.test", "java/importsorter/JavaCodeSortedImportsWildcardsLast.test");
 	}
 
@@ -87,6 +88,19 @@ class ImportOrderStepTest extends ResourceHarness {
 	void empty() {
 		FormatterStep step = ImportOrderStep.forJava().createFrom(createTestFile("java/importsorter/import.properties"));
 		StepHarness.forStep(step).testResource("java/importsorter/JavaCodeEmptyFile.test", "java/importsorter/JavaCodeEmptyFile.test");
+	}
+
+	@Test
+	void lexicographicSort() {
+		FormatterStep step = ImportOrderStep.forJava().createFrom(false, false, null, null, createTestFile("java/importsorter/import.properties"));
+		StepHarness.forStep(step).testResource("java/importsorter/JavaCodeUnsortedSemanticSort.test", "java/importsorter/JavaCodeSortedLexicographic.test");
+	}
+
+	@Test
+	void semanticSort() {
+		FormatterStep step = ImportOrderStep.forJava().createFrom(false, true, Set.of("com.sun.jna.platform.win32.COM"),
+				Set.of("com.example.b"), createTestFile("java/importsorter/import.properties"));
+		StepHarness.forStep(step).testResource("java/importsorter/JavaCodeUnsortedSemanticSort.test", "java/importsorter/JavaCodeSortedSemanticSort.test");
 	}
 
 	@Test
