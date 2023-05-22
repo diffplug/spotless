@@ -77,7 +77,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 		final File importOrderFile;
 
 		boolean wildcardsLast = false;
-		boolean semanticSort = true;
+		boolean semanticSort = false;
 		Set<String> treatAsPackage = Set.of();
 		Set<String> treatAsClass = Set.of();
 

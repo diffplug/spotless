@@ -415,7 +415,7 @@ final class ImportSorterImpl {
 		 */
 		private boolean treatAsPackage(String prefix) {
 			// This would be the place to introduce wild cards or even regex matching.
-			return treatAsPackage.contains(prefix);
+			return treatAsPackage != null && treatAsPackage.contains(prefix);
 		}
 
 		/**
@@ -424,7 +424,7 @@ final class ImportSorterImpl {
 		 */
 		private boolean treatAsClass(String prefix) {
 			// This would be the place to introduce wild cards or even regex matching.
-			return treatAsClass.contains(prefix);
+			return treatAsClass != null && treatAsClass.contains(prefix);
 		}
 
 	}

@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,7 +41,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public final class ImportOrderStep {
 	private static final boolean WILDCARDS_LAST_DEFAULT = false;
-	private static final boolean SEMANTIC_SORT_DEFAULT = true;
+	private static final boolean SEMANTIC_SORT_DEFAULT = false;
 	private static final Set<String> TREAT_AS_PACKAGE_DEFAULT = null;
 	private static final Set<String> TREAT_AS_CLASS_DEFAULT = null;
 
@@ -84,9 +85,8 @@ public final class ImportOrderStep {
 	private FormatterStep createFrom(boolean wildcardsLast, boolean semanticSort, Set<String> treatAsPackage,
 			Set<String> treatAsClass, Supplier<List<String>> importOrder) {
 		return FormatterStep.createLazy("importOrder",
-				() -> new State(importOrder.get(), lineFormat, wildcardsLast, semanticSort,
-						treatAsPackage == null ? Set.of() : treatAsPackage,
-						treatAsClass == null ? Set.of() : treatAsClass),
+				() -> new State(importOrder.get(), lineFormat, wildcardsLast, semanticSort, treatAsPackage,
+						treatAsClass),
 				State::toFormatter);
 	}
 
@@ -118,8 +118,8 @@ public final class ImportOrderStep {
 		private final String lineFormat;
 		private final boolean wildcardsLast;
 		private final boolean semanticSort;
-		private final Set<String> treatAsPackage;
-		private final Set<String> treatAsClass;
+		private final TreeSet<String> treatAsPackage;
+		private final TreeSet<String> treatAsClass;
 
 		State(List<String> importOrder, String lineFormat, boolean wildcardsLast, boolean semanticSort,
 				Set<String> treatAsPackage, Set<String> treatAsClass) {
@@ -127,8 +127,8 @@ public final class ImportOrderStep {
 			this.lineFormat = lineFormat;
 			this.wildcardsLast = wildcardsLast;
 			this.semanticSort = semanticSort;
-			this.treatAsPackage = treatAsPackage;
-			this.treatAsClass = treatAsClass;
+			this.treatAsPackage = treatAsPackage == null ? null : new TreeSet<>(treatAsPackage);
+			this.treatAsClass = treatAsClass == null ? null : new TreeSet<>(treatAsClass);
 		}
 
 		FormatterFunc toFormatter() {

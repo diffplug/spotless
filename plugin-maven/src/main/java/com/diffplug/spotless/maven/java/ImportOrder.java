@@ -44,7 +44,7 @@ public class ImportOrder implements FormatterStepFactory {
 	 * lexicographically.
 	 */
 	@Parameter
-	private boolean semanticSort = true;
+	private boolean semanticSort = false;
 
 	/**
 	 * The prefixes that should be treated as packages for
