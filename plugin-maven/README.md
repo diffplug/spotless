@@ -196,6 +196,13 @@ any other maven phase (i.e. compile) then it can be configured as below;
       <wildcardsLast>false</wildcardsLast> <!-- Optional, default false. Sort wildcard import after specific imports -->
       <order>java|javax,org,com,com.diffplug,,\#com.diffplug,\#</order>  <!-- or use <file>${project.basedir}/eclipse.importorder</file> -->
       <!-- you can use an empty string for all the imports you didn't specify explicitly, '|' to join group without blank line, and '\#` prefix for static imports. -->
+      <semanticSort>false</semanticSort> <!-- Optional, default true. Sort by package, then class, then member (for static imports). Splitting is based on common conventions (packages are lower case, classes start with upper case). Use <treatAsPackage> and <treatAsClass> for exceptions. -->
+      <treatAsPackage> <!-- Packages starting with upper case letters. -->
+        <package>com.example.MyPackage</package>
+      </treatAsPackage>
+      <treatAsClass> <!-- Classes starting with lower case letters. -->
+        <class>com.example.myClass</class>
+      </treatAsClass>
     </importOrder>
 
     <removeUnusedImports /> <!-- self-explanatory -->
