@@ -15,13 +15,14 @@
  */
 package com.diffplug.spotless.java;
 
+import java.util.Set;
+
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
-import java.util.Set;
 
 class ImportOrderStepTest extends ResourceHarness {
 	@Test

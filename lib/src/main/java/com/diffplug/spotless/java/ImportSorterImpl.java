@@ -291,10 +291,10 @@ final class ImportSorterImpl {
 			 * Ordering uses semantics of the import string by splitting it into package,
 			 * class name(s) and static member (for static imports) and then comparing by
 			 * each of those three substrings in sequence.
-			 * 
+			 *
 			 * When comparing static imports, the last segment in the dot-separated string
 			 * is considered to be the member (field, method, type) name.
-			 * 
+			 *
 			 * The first segment starting with an upper case letter is considered to be the
 			 * (first) class name. Since this comparator has no actual type information,
 			 * this auto-detection will fail for upper case package names and lower case
@@ -359,7 +359,7 @@ final class ImportSorterImpl {
 				member = null;
 			}
 
-			return new String[] { fqcn, member };
+			return new String[]{fqcn, member};
 		}
 
 		/**
@@ -406,7 +406,7 @@ final class ImportSorterImpl {
 				classNames = fqcn.substring(i + 1);
 			}
 
-			return new String[] { packageNames, classNames };
+			return new String[]{packageNames, classNames};
 		}
 
 		/**

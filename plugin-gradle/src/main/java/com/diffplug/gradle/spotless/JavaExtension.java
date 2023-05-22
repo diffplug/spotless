@@ -127,13 +127,13 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 		public ImportOrderConfig treatAsClass(String... treatAsClass) {
 			return treatAsClass(Arrays.asList(treatAsClass));
 		}
-		
+
 		public ImportOrderConfig treatAsClass(Collection<String> treatAsClass) {
 			this.treatAsClass = new HashSet<>(treatAsClass);
 			replaceStep(createStep());
 			return this;
 		}
-		
+
 		private FormatterStep createStep() {
 			ImportOrderStep importOrderStep = ImportOrderStep.forJava();
 
