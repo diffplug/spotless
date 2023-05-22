@@ -70,7 +70,7 @@ dependencies {
 
 	// GLUE CODE (alphabetic order please)
 	// cleanthat
-	String VER_CLEANTHAT='2.13'
+	String VER_CLEANTHAT='2.15'
 	cleanthatCompileOnly "io.github.solven-eu.cleanthat:java:$VER_CLEANTHAT"
 	compatCleanthat2Dot1CompileAndTestOnly "io.github.solven-eu.cleanthat:java:$VER_CLEANTHAT"
 	// diktat
