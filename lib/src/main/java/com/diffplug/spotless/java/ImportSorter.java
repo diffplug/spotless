@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.diffplug.spotless.java;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 /**
  * @author Vojtech Krasa
@@ -30,10 +31,17 @@ final class ImportSorter {
 
 	private final List<String> importsOrder;
 	private final boolean wildcardsLast;
+	private final boolean semanticSort;
+	private final Set<String> treatAsPackage;
+	private final Set<String> treatAsClass;
 
-	ImportSorter(List<String> importsOrder, boolean wildcardsLast) {
+	ImportSorter(List<String> importsOrder, boolean wildcardsLast, boolean semanticSort, Set<String> treatAsPackage,
+			Set<String> treatAsClass) {
 		this.importsOrder = new ArrayList<>(importsOrder);
 		this.wildcardsLast = wildcardsLast;
+		this.semanticSort = semanticSort;
+		this.treatAsPackage = treatAsPackage;
+		this.treatAsClass = treatAsClass;
 	}
 
 	String format(String raw, String lineFormat) {
@@ -81,7 +89,8 @@ final class ImportSorter {
 		}
 		scanner.close();
 
-		List<String> sortedImports = ImportSorterImpl.sort(imports, importsOrder, wildcardsLast, lineFormat);
+		List<String> sortedImports = ImportSorterImpl.sort(imports, importsOrder, wildcardsLast, semanticSort,
+				treatAsPackage, treatAsClass, lineFormat);
 		return applyImportsToDocument(raw, firstImportLine, lastImportLine, sortedImports);
 	}
 

@@ -62,8 +62,10 @@ final class ImportSorterImpl {
 		}
 	}
 
-	static List<String> sort(List<String> imports, List<String> importsOrder, boolean wildcardsLast, String lineFormat) {
-		ImportSorterImpl importsSorter = new ImportSorterImpl(importsOrder, wildcardsLast);
+	static List<String> sort(List<String> imports, List<String> importsOrder, boolean wildcardsLast,
+			boolean semanticSort, Set<String> treatAsPackage, Set<String> treatAsClass, String lineFormat) {
+		ImportSorterImpl importsSorter = new ImportSorterImpl(importsOrder, wildcardsLast, semanticSort, treatAsPackage,
+				treatAsClass);
 		return importsSorter.sort(imports, lineFormat);
 	}
 
@@ -76,12 +78,17 @@ final class ImportSorterImpl {
 		return getResult(sortedImported, lineFormat);
 	}
 
-	private ImportSorterImpl(List<String> importOrder, boolean wildcardsLast) {
+	private ImportSorterImpl(List<String> importOrder, boolean wildcardsLast, boolean semanticSort,
+			Set<String> treatAsPackage, Set<String> treatAsClass) {
 		importsGroups = importOrder.stream().filter(Objects::nonNull).map(ImportsGroup::new).collect(Collectors.toList());
 		putStaticItemIfNotExists(importsGroups);
 		putCatchAllGroupIfNotExists(importsGroups);
 
-		ordering = new OrderingComparator(wildcardsLast);
+		if (semanticSort) {
+			ordering = new SemanticOrderingComparator(wildcardsLast, treatAsPackage, treatAsClass);
+		} else {
+			ordering = new LexicographicalOrderingComparator(wildcardsLast);
+		}
 
 		List<String> subgroups = importsGroups.stream().map(ImportsGroup::getSubGroups).flatMap(Collection::stream).collect(Collectors.toList());
 		this.allImportOrderItems.addAll(subgroups);
@@ -233,30 +240,192 @@ final class ImportSorterImpl {
 		return null;
 	}
 
-	private static class OrderingComparator implements Comparator<String>, Serializable {
+	private static int compareWithWildcare(String string1, String string2, boolean wildcardsLast) {
+		int string1WildcardIndex = string1.indexOf('*');
+		int string2WildcardIndex = string2.indexOf('*');
+		boolean string1IsWildcard = string1WildcardIndex >= 0;
+		boolean string2IsWildcard = string2WildcardIndex >= 0;
+		if (string1IsWildcard == string2IsWildcard) {
+			return string1.compareTo(string2);
+		}
+		int prefixLength = string1IsWildcard ? string1WildcardIndex : string2WildcardIndex;
+		boolean samePrefix = string1.regionMatches(0, string2, 0, prefixLength);
+		if (!samePrefix) {
+			return string1.compareTo(string2);
+		}
+		return (string1IsWildcard == wildcardsLast) ? 1 : -1;
+	}
+
+	private static class LexicographicalOrderingComparator implements Comparator<String>, Serializable {
 		private static final long serialVersionUID = 1;
 
 		private final boolean wildcardsLast;
 
-		private OrderingComparator(boolean wildcardsLast) {
+		private LexicographicalOrderingComparator(boolean wildcardsLast) {
 			this.wildcardsLast = wildcardsLast;
 		}
 
 		@Override
 		public int compare(String string1, String string2) {
-			int string1WildcardIndex = string1.indexOf('*');
-			int string2WildcardIndex = string2.indexOf('*');
-			boolean string1IsWildcard = string1WildcardIndex >= 0;
-			boolean string2IsWildcard = string2WildcardIndex >= 0;
-			if (string1IsWildcard == string2IsWildcard) {
-				return string1.compareTo(string2);
-			}
-			int prefixLength = string1IsWildcard ? string1WildcardIndex : string2WildcardIndex;
-			boolean samePrefix = string1.regionMatches(0, string2, 0, prefixLength);
-			if (!samePrefix) {
-				return string1.compareTo(string2);
-			}
-			return (string1IsWildcard == wildcardsLast) ? 1 : -1;
+			return compareWithWildcare(string1, string2, wildcardsLast);
 		}
+	}
+
+	private static class SemanticOrderingComparator implements Comparator<String>, Serializable {
+		private static final long serialVersionUID = 1;
+
+		private final boolean wildcardsLast;
+		private final Set<String> treatAsPackage;
+		private final Set<String> treatAsClass;
+
+		private SemanticOrderingComparator(boolean wildcardsLast, Set<String> treatAsPackage,
+				Set<String> treatAsClass) {
+			this.wildcardsLast = wildcardsLast;
+			this.treatAsPackage = treatAsPackage;
+			this.treatAsClass = treatAsClass;
+		}
+
+		@Override
+		public int compare(String string1, String string2) {
+			/*
+			 * Ordering uses semantics of the import string by splitting it into package,
+			 * class name(s) and static member (for static imports) and then comparing by
+			 * each of those three substrings in sequence.
+			 *
+			 * When comparing static imports, the last segment in the dot-separated string
+			 * is considered to be the member (field, method, type) name.
+			 *
+			 * The first segment starting with an upper case letter is considered to be the
+			 * (first) class name. Since this comparator has no actual type information,
+			 * this auto-detection will fail for upper case package names and lower case
+			 * class names. treatAsPackage and treatAsClass can be used respectively to
+			 * provide hints to the auto-detection.
+			 */
+			if (string1.startsWith(STATIC_KEYWORD)) {
+				String[] split = splitFqcnAndMember(string1);
+				String fqcn1 = split[0];
+				String member1 = split[1];
+
+				split = splitFqcnAndMember(string2);
+				String fqcn2 = split[0];
+				String member2 = split[1];
+
+				int result = compareFullyQualifiedClassName(fqcn1, fqcn2);
+				if (result != 0)
+					return result;
+
+				return compareWithWildcare(member1, member2, wildcardsLast);
+			} else {
+				return compareFullyQualifiedClassName(string1, string2);
+			}
+		}
+
+		/**
+		 * Compares two fully qualified class names by splitting them into package and
+		 * (nested) class names.
+		 */
+		private int compareFullyQualifiedClassName(String fqcn1, String fqcn2) {
+			String[] split = splitPackageAndClasses(fqcn1);
+			String p1 = split[0];
+			String c1 = split[1];
+
+			split = splitPackageAndClasses(fqcn2);
+			String p2 = split[0];
+			String c2 = split[1];
+
+			int result = p1.compareTo(p2);
+			if (result != 0)
+				return result;
+
+			return compareWithWildcare(c1, c2, wildcardsLast);
+		}
+
+		/**
+		 * Splits the provided static import string into fully qualified class name and
+		 * the imported static member (field, method or type).
+		 */
+		private String[] splitFqcnAndMember(String importString) {
+			String s = importString.substring(STATIC_KEYWORD.length()).trim();
+
+			String fqcn;
+			String member;
+
+			int dot = s.lastIndexOf(".");
+			if (!Character.isUpperCase(s.charAt(dot + 1))) {
+				fqcn = s.substring(0, dot);
+				member = s.substring(dot + 1);
+			} else {
+				fqcn = s;
+				member = null;
+			}
+
+			return new String[]{fqcn, member};
+		}
+
+		/**
+		 * Splits the fully qualified class name into package and class name(s).
+		 */
+		private String[] splitPackageAndClasses(String fqcn) {
+			String packageNames = null;
+			String classNames = null;
+
+			/*
+			 * The first segment that starts with an upper case letter starts the class
+			 * name(s), unless it matches treatAsPackage (then it's explicitly declared as
+			 * package via configuration). If no segment starts with an upper case letter
+			 * then the last segment must be a class name (unless the method input is
+			 * garbage).
+			 */
+			int dot = fqcn.indexOf('.');
+			while (dot > -1) {
+				int nextDot = fqcn.indexOf('.', dot + 1);
+				if (nextDot > -1) {
+					if (Character.isUpperCase(fqcn.charAt(dot + 1))) {
+						// if upper case, check if should be treated as package nonetheless
+						if (!treatAsPackage(fqcn.substring(0, nextDot))) {
+							packageNames = fqcn.substring(0, dot);
+							classNames = fqcn.substring(dot + 1);
+							break;
+						}
+					} else {
+						// if lower case, check if should be treated as class nonetheless
+						if (treatAsClass(fqcn.substring(0, nextDot))) {
+							packageNames = fqcn.substring(0, dot);
+							classNames = fqcn.substring(dot + 1);
+							break;
+						}
+					}
+				}
+
+				dot = nextDot;
+			}
+
+			if (packageNames == null) {
+				int i = fqcn.lastIndexOf(".");
+				packageNames = fqcn.substring(0, i);
+				classNames = fqcn.substring(i + 1);
+			}
+
+			return new String[]{packageNames, classNames};
+		}
+
+		/**
+		 * Returns whether the provided prefix matches any entry of
+		 * {@code treatAsPackage}.
+		 */
+		private boolean treatAsPackage(String prefix) {
+			// This would be the place to introduce wild cards or even regex matching.
+			return treatAsPackage != null && treatAsPackage.contains(prefix);
+		}
+
+		/**
+		 * Returns whether the provided prefix name matches any entry of
+		 * {@code treatAsClass}.
+		 */
+		private boolean treatAsClass(String prefix) {
+			// This would be the place to introduce wild cards or even regex matching.
+			return treatAsClass != null && treatAsClass.contains(prefix);
+		}
+
 	}
 }
