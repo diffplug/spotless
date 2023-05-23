@@ -15,12 +15,10 @@
  */
 package com.diffplug.spotless.kotlin;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.*;
 
-@Disabled
 class KtfmtStepTest extends ResourceHarness {
 	@Test
 	void behavior() throws Exception {
