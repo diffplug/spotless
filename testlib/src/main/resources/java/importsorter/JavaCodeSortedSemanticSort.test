@@ -1,7 +1,11 @@
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import static com.example.Test.*;
 import static com.example.Test.A_CONST;
-import static com.example.Test.Nested.B_CONST;
 import static com.example.Test.Z_CONST;
+import static com.example.Test.Nested.B_CONST;
 
 import com.example.Test;
 import com.example.Test.*;

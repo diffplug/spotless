@@ -347,18 +347,13 @@ final class ImportSorterImpl {
 		private String[] splitFqcnAndMember(String importString) {
 			String s = importString.substring(STATIC_KEYWORD.length()).trim();
 
-			String fqcn;
-			String member;
-
+			/*
+			 * Static imports always contain a member or wildcard and it's always the last
+			 * segment.
+			 */
 			int dot = s.lastIndexOf(".");
-			if (!Character.isUpperCase(s.charAt(dot + 1))) {
-				fqcn = s.substring(0, dot);
-				member = s.substring(dot + 1);
-			} else {
-				fqcn = s;
-				member = null;
-			}
-
+			String fqcn = s.substring(0, dot);
+			String member = s.substring(dot + 1);
 			return new String[]{fqcn, member};
 		}
 

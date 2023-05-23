@@ -13,3 +13,7 @@ import com.sun.jna.platform.win32.Guid.CLSID;
 import com.example.a.A;
 import com.example.b;
 import com.example.c.C;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.when;
