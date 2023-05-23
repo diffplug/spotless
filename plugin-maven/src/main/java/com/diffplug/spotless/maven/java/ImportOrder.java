@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 package com.diffplug.spotless.maven.java;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
@@ -34,17 +36,43 @@ public class ImportOrder implements FormatterStepFactory {
 	@Parameter
 	private boolean wildcardsLast = false;
 
+	/**
+	 * Whether imports should be sorted based on semantics (i.e. sorted by package,
+	 * class and then static member). This considers <code>treatAsPackage</code> and
+	 * <code>treatAsClass</code>, and assumes default upper and lower case
+	 * conventions otherwise. When turned off, imports are sorted purely
+	 * lexicographically.
+	 */
+	@Parameter
+	private boolean semanticSort = false;
+
+	/**
+	 * The prefixes that should be treated as packages for
+	 * <code>semanticSort</code>. Useful for upper case package names.
+	 */
+	@Parameter
+	private Set<String> treatAsPackage = new HashSet<>();
+
+	/**
+	 * The prefixes that should be treated as classes for
+	 * <code>semanticSort</code>. Useful for lower case class names.
+	 */
+	@Parameter
+	private Set<String> treatAsClass = new HashSet<>();
+
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
 		if (file != null ^ order != null) {
 			if (file != null) {
 				File importsFile = config.getFileLocator().locateFile(file);
-				return ImportOrderStep.forJava().createFrom(wildcardsLast, importsFile);
+				return ImportOrderStep.forJava().createFrom(wildcardsLast, semanticSort, treatAsPackage, treatAsClass,
+						importsFile);
 			} else {
-				return ImportOrderStep.forJava().createFrom(wildcardsLast, order.split(",", -1));
+				return ImportOrderStep.forJava().createFrom(wildcardsLast, semanticSort, treatAsPackage, treatAsClass,
+						order.split(",", -1));
 			}
 		} else if (file == null && order == null) {
-			return ImportOrderStep.forJava().createFrom(wildcardsLast);
+			return ImportOrderStep.forJava().createFrom(wildcardsLast, semanticSort, treatAsPackage, treatAsClass);
 		} else {
 			throw new IllegalArgumentException("Must specify exactly one of 'file' or 'order'.");
 		}
