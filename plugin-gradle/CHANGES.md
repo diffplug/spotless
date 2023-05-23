@@ -3,8 +3,17 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+* Support Rome as a formatter for JavaScript and TypeScript code. Adds a new `rome` step to `javascript` and `typescript` formatter configurations. ([#1663](https://github.com/diffplug/spotless/pull/1663))
+* Add semantics-aware Java import ordering (i.e. sort by package, then class, then member). ([#522](https://github.com/diffplug/spotless/issues/522))
 ### Fixed
-* Added `@DisableCachingByDefault` to `RegisterDependenciesTask`.
+* Added `@DisableCachingByDefault` to `RegisterDependenciesTask`. ([#1666](https://github.com/diffplug/spotless/pull/1666))
+* When P2 download fails, indicate the responsible formatter. ([#1698](https://github.com/diffplug/spotless/issues/1698))
+* Fixed a regression which changed the import sorting order in `googleJavaFormat` introduced in `6.18.0`. ([#1680](https://github.com/diffplug/spotless/pull/1680))
+### Changes
+* Bump default sortpom version to latest `3.0.0` -> `3.2.1`. ([#1675](https://github.com/diffplug/spotless/pull/1675))
+* Bump default `ktlint` version to latest `0.48.2` -> `0.49.1`.([#1696](https://github.com/diffplug/spotless/issues/1696))
+  * Dropped support for `ktlint 0.46.x` following our policy of supporting two breaking changes at a time.
 
 ## [6.18.0] - 2023-04-06
 ### Added

@@ -55,6 +55,22 @@ public class JsonExtension extends FormatExtension {
 		return new JacksonJsonGradleConfig(this);
 	}
 
+	/**
+	 * Defaults to downloading the default Rome version from the network. To work
+	 * offline, you can specify the path to the Rome executable via
+	 * {@code rome().pathToExe(...)}.
+	 */
+	public RomeJson rome() {
+		return rome(null);
+	}
+
+	/** Downloads the given Rome version from the network. */
+	public RomeJson rome(String version) {
+		var romeConfig = new RomeJson(version);
+		addStep(romeConfig.createStep());
+		return romeConfig;
+	}
+
 	public class SimpleConfig {
 		private int indent;
 
@@ -143,6 +159,31 @@ public class JsonExtension extends FormatExtension {
 		@Override
 		protected final FormatterStep createStep() {
 			return JacksonJsonStep.create(jacksonConfig, version, formatExtension.provisioner());
+		}
+	}
+
+	/**
+	 * Rome formatter step for JSON.
+	 */
+	public class RomeJson extends RomeStepConfig<RomeJson> {
+		/**
+		 * Creates a new Rome formatter step config for formatting JSON files. Unless
+		 * overwritten, the given Rome version is downloaded from the network.
+		 *
+		 * @param version Rome version to use.
+		 */
+		public RomeJson(String version) {
+			super(getProject(), JsonExtension.this::replaceStep, version);
+		}
+
+		@Override
+		protected String getLanguage() {
+			return "json";
+		}
+
+		@Override
+		protected RomeJson getThis() {
+			return this;
 		}
 	}
 }

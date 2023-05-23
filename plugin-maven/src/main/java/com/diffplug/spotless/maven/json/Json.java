@@ -50,4 +50,7 @@ public class Json extends FormatterFactory {
 		addStepFactory(jackson);
 	}
 
+	public void addRome(RomeJson rome) {
+		addStepFactory(rome);
+	}
 }
