@@ -19,10 +19,13 @@ import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElem
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -74,6 +77,9 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 		final File importOrderFile;
 
 		boolean wildcardsLast = false;
+		boolean semanticSort = false;
+		Set<String> treatAsPackage = Set.of();
+		Set<String> treatAsClass = Set.of();
 
 		ImportOrderConfig(String[] importOrder) {
 			this.importOrder = importOrder;
@@ -98,12 +104,42 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 			return this;
 		}
 
+		public ImportOrderConfig semanticSort() {
+			return semanticSort(true);
+		}
+
+		public ImportOrderConfig semanticSort(boolean semanticSort) {
+			this.semanticSort = semanticSort;
+			replaceStep(createStep());
+			return this;
+		}
+
+		public ImportOrderConfig treatAsPackage(String... treatAsPackage) {
+			return treatAsPackage(Arrays.asList(treatAsPackage));
+		}
+
+		public ImportOrderConfig treatAsPackage(Collection<String> treatAsPackage) {
+			this.treatAsPackage = new HashSet<>(treatAsPackage);
+			replaceStep(createStep());
+			return this;
+		}
+
+		public ImportOrderConfig treatAsClass(String... treatAsClass) {
+			return treatAsClass(Arrays.asList(treatAsClass));
+		}
+
+		public ImportOrderConfig treatAsClass(Collection<String> treatAsClass) {
+			this.treatAsClass = new HashSet<>(treatAsClass);
+			replaceStep(createStep());
+			return this;
+		}
+
 		private FormatterStep createStep() {
 			ImportOrderStep importOrderStep = ImportOrderStep.forJava();
 
 			return importOrderFile != null
-					? importOrderStep.createFrom(wildcardsLast, getProject().file(importOrderFile))
-					: importOrderStep.createFrom(wildcardsLast, importOrder);
+					? importOrderStep.createFrom(wildcardsLast, semanticSort, treatAsPackage, treatAsClass, getProject().file(importOrderFile))
+					: importOrderStep.createFrom(wildcardsLast, semanticSort, treatAsPackage, treatAsClass, importOrder);
 		}
 	}
 
