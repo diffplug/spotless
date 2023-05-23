@@ -52,7 +52,7 @@ import dev.equo.solstice.p2.CacheLocations;
 public class GrEclipseFormatterStepImpl {
 	static {
 		NestedJars.setToWarnOnly();
-		NestedJars.onClassPath().confirmAllNestedJarsArePresentOnClasspath(CacheLocations.nestedJars());
+		NestedJars.onClassPath().confirmAllNestedJarsArePresentOnClasspath(CacheLocations.p2nestedJars());
 		try {
 			var solstice = Solstice.findBundlesOnClasspath();
 			solstice.warnAndModifyManifestsToFix();
