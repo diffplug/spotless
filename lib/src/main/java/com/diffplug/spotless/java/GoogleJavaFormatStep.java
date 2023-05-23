@@ -72,7 +72,8 @@ public class GoogleJavaFormatStep {
 	static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME)
 			.addMin(11, "1.8") // we only support google-java-format >= 1.8 due to api changes
 			.addMin(16, "1.10.0") // java 16 requires at least 1.10.0 due to jdk api changes in JavaTokenizer
-			.add(11, "1.16.0"); // default version
+			.addMin(21, "1.17.0") // java 21 requires at least 1.17.0 due to https://github.com/google/google-java-format/issues/898
+			.add(11, "1.17.0"); // default version
 
 	public static String defaultGroupArtifact() {
 		return MAVEN_COORDINATE;
