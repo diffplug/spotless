@@ -59,8 +59,8 @@ tasks.named("check").configure {
 }
 
 dependencies {
-	compileOnly 'org.slf4j:slf4j-api:2.0.0'
-	testCommonImplementation 'org.slf4j:slf4j-api:2.0.0'
+	compileOnly 'org.slf4j:slf4j-api:2.0.7'
+	testCommonImplementation 'org.slf4j:slf4j-api:2.0.7'
 
 	// zero runtime reqs is a hard requirements for spotless-lib
 	// if you need a dep, put it in lib-extra
@@ -79,7 +79,7 @@ dependencies {
 	flexmarkCompileOnly 'com.vladsch.flexmark:flexmark-all:0.64.0'
 	// gherkin
 	gherkinCompileOnly 'io.cucumber:gherkin-utils:8.0.2'
-	gherkinCompileOnly 'org.slf4j:slf4j-api:2.0.0'
+	gherkinCompileOnly 'org.slf4j:slf4j-api:2.0.7'
 	// googleJavaFormat
 	googleJavaFormatCompileOnly 'com.google.googlejavaformat:google-java-format:1.17.0'
 	// gson
@@ -104,14 +104,14 @@ dependencies {
 	compatKtLint0Dot48Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.48.0'
 	compatKtLint0Dot49Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-rule-engine:0.49.0'
 	compatKtLint0Dot49Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.49.0'
-	compatKtLint0Dot49Dot0CompileAndTestOnly 'org.slf4j:slf4j-api:2.0.0'
+	compatKtLint0Dot49Dot0CompileAndTestOnly 'org.slf4j:slf4j-api:2.0.7'
 	// palantirJavaFormat
 	palantirJavaFormatCompileOnly 'com.palantir.javaformat:palantir-java-format:1.1.0' 	// this version needs to stay compilable against Java 8 for CI Job testNpm
 	// scalafmt
 	scalafmtCompileOnly "org.scalameta:scalafmt-core_2.13:3.7.3"
 	// sortPom
 	sortPomCompileOnly 'com.github.ekryd.sortpom:sortpom-sorter:3.2.1'
-	sortPomCompileOnly 'org.slf4j:slf4j-api:2.0.0'
+	sortPomCompileOnly 'org.slf4j:slf4j-api:2.0.7'
 }
 
 // we'll hold the core lib to a high standard
