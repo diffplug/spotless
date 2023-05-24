@@ -8,12 +8,14 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Add semantics-aware Java import ordering (i.e. sort by package, then class, then member). ([#522](https://github.com/diffplug/spotless/issues/522))
 ### Fixed
 * `palantir` step now accepts a `style` parameter, which is documentation had already claimed to do. ([#1694](https://github.com/diffplug/spotless/pull/1694))
-* When P2 download fails, indicate the responsible formatter. ([#1698](https://github.com/diffplug/spotless/issues/1698))
 * Fixed a regression which changed the import sorting order in `googleJavaFormat` introduced in `2.36.0`. ([#1680](https://github.com/diffplug/spotless/pull/1680))
+* Equo-based formatters now work on platforms unsupported by Eclipse such as PowerPC (fixes [durian-swt#20](https://github.com/diffplug/durian-swt/issues/20))
+* When P2 download fails, indicate the responsible formatter. ([#1698](https://github.com/diffplug/spotless/issues/1698))
 ### Changes
+* Equo-based formatters now download metadata to `~/.m2/repository/dev/equo/p2-data` rather than `~/.equo`, and for CI machines without a home directory the p2 data goes to `$GRADLE_USER_HOME/caches/p2-data`. ([#1714](https://github.com/diffplug/spotless/pull/1714))
 * Bump default `googleJavaFormat` version to latest `1.16.0` -> `1.17.0`. ([#1710](https://github.com/diffplug/spotless/pull/1710))
-* Bump default `ktfmt` version to latest `0.43` -> `0.44`.([#1691](https://github.com/diffplug/spotless/pull/1691))
-* Bump default `ktlint` version to latest `0.48.2` -> `0.49.1`.([#1696](https://github.com/diffplug/spotless/issues/1696))
+* Bump default `ktfmt` version to latest `0.43` -> `0.44`. ([#1691](https://github.com/diffplug/spotless/pull/1691))
+* Bump default `ktlint` version to latest `0.48.2` -> `0.49.1`. ([#1696](https://github.com/diffplug/spotless/issues/1696))
   * Dropped support for `ktlint 0.46.x` following our policy of supporting two breaking changes at a time.
 * Bump default `sortpom` version to latest `3.0.0` -> `3.2.1`. ([#1675](https://github.com/diffplug/spotless/pull/1675))
 
