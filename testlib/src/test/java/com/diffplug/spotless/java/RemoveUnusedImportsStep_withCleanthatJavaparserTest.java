@@ -33,8 +33,7 @@ class RemoveUnusedImportsStep_withCleanthatJavaparserTest {
 				.testResource("java/removeunusedimports/JavaCodeWithPackageUnformatted.test", "java/removeunusedimports/JavaCodeWithPackageFormatted.test")
 				.testResource("java/removeunusedimports/Jdk17TextBlockUnformatted.test", "java/removeunusedimports/Jdk17TextBlockFormatted.test")
 				.testResource("java/removeunusedimports/RevelcUnformatted.test", "java/removeunusedimports/RevelcFormatted.test")
-				// Sealed classes are introduced with JDK15: This syntax is not supported by javaParser: such files are not trimmed from unused imports (for now)
-				.testResource("java/removeunusedimports/SealedClassTestsUnformatted.test", "java/removeunusedimports/SealedClassTestsUnformatted.test");
+				.testResource("java/removeunusedimports/SealedClassTestsUnformatted.test", "java/removeunusedimports/SealedClassTestsFormatted.test");
 	}
 
 	@Test
