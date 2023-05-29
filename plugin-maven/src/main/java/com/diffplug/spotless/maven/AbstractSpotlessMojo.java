@@ -100,7 +100,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Parameter(defaultValue = "${mojoExecution.goal}", required = true, readonly = true)
 	private String goal;
 
-	@Parameter(defaultValue = "false")
+	@Parameter(property = "spotless.skip", defaultValue = "false")
 	private boolean skip;
 
 	@Parameter(property = "spotless.apply.skip", defaultValue = "false")
