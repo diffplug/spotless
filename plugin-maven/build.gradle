@@ -3,7 +3,7 @@ import de.benediktritter.maven.plugin.development.task.GenerateMavenPluginDescri
 
 plugins {
 	// https://www.benediktritter.de/maven-plugin-development/#release-history
-	id 'de.benediktritter.maven-plugin-development' version '0.4.1'
+	id 'de.benediktritter.maven-plugin-development' version '0.4.2'
 }
 
 apply from: rootProject.file('gradle/changelog.gradle')
