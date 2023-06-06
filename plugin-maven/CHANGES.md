@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* Support pass skip (`-Dspotless.skip=true`) from command-line. ([#1729](https://github.com/diffplug/spotless/pull/1729))
 
 ## [2.37.0] - 2023-05-24
 ### Added
