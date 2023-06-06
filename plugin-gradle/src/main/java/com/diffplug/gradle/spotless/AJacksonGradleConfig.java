@@ -21,7 +21,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.json.JacksonConfig;
 import com.diffplug.spotless.json.JacksonJsonStep;
 
-public abstract class AJacksonGradleConfig {
+public abstract class AJacksonGradleConfig<T extends AJacksonGradleConfig> {
 	protected final FormatExtension formatExtension;
 
 	protected JacksonConfig jacksonConfig;
@@ -35,17 +35,19 @@ public abstract class AJacksonGradleConfig {
 		this.jacksonConfig = jacksonConfig;
 	}
 
-	public AJacksonGradleConfig feature(String feature, boolean toggle) {
+	public T feature(String feature, boolean toggle) {
 		this.jacksonConfig.appendFeatureToToggle(Collections.singletonMap(feature, toggle));
 		formatExtension.replaceStep(createStep());
-		return this;
+		return self();
 	}
 
-	public AJacksonGradleConfig version(String version) {
+	public T version(String version) {
 		this.version = version;
 		formatExtension.replaceStep(createStep());
-		return this;
+		return self();
 	}
+
+	public abstract T self();
 
 	protected abstract FormatterStep createStep();
 }
