@@ -192,7 +192,7 @@ spotless {
   removeUnusedImports()
   // optional: you may switch for `google-java-format` as underlying engine to `cleanthat-javaparser-unnecessaryimport`
   // which enables processing any language level source file with a JDK8+ Runtime
-  removeUnusedImports().engine('cleanthat-javaparser-unnecessaryimport')
+  removeUnusedImports('cleanthat-javaparser-unnecessaryimport')
 ```
 
 ### google-java-format
