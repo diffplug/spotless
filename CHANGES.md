@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Changes
+* Bump default `cleanthat` version to latest `2.13` -> `2.16`. ([#1725](https://github.com/diffplug/spotless/pull/1725))
 ### Fixed
 * Update documented default `semanticSort` to `false`. ([#1728](https://github.com/diffplug/spotless/pull/1728))
 
