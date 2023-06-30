@@ -4,6 +4,16 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+### Fixed
+* Correctly support the syntax
+  ```
+  spotless {
+    yaml {
+      jackson().yamlFeature("MINIMIZE_QUOTES", true)
+    }
+  }
+  ```
+
 ## [6.19.0] - 2023-05-24
 ### Added
 * Support Rome as a formatter for JavaScript and TypeScript code. Adds a new `rome` step to `javascript` and `typescript` formatter configurations. ([#1663](https://github.com/diffplug/spotless/pull/1663))
