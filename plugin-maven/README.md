@@ -157,6 +157,29 @@ explicitly bind the plugin execution, and the following will suffice;
 </executions>
 ```
 
+Note: automatic apply of formatting should be done during the `process-sources` phase so that the compile phase will compile the files with the already applied formatting.
+This prevents unexpected errors when you are for example using regex-replace formattings as these could theoretically match code parts you didn't intend to be affected when creating the regex replace rule.
+Another example are wildcard imports. When you are using a regex rule to automatically remove them, the code would not compile.
+
+```xml
+<configuration>
+    <java>
+        <replaceRegex>
+            <name>No wildcard imports</name>
+            <searchRegex>your-regex-here</searchRegex>
+            <replacement>your-replacement-here</replacement>
+        </replaceRegex>
+    </java>
+</configuration>
+<executions>
+  <execution>
+    <goals>
+      <goal>process-sources</goal>
+    </goals>
+  </execution>
+</executions>
+```
+
 with this `mvn verify` will run `spotless:check`. If you require the check goal to be run with
 any other maven phase (i.e. compile) then it can be configured as below;
 
