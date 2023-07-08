@@ -3,7 +3,9 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
-
+### Added
+* Bump default `ktlint` version to latest `0.49.1` -> `0.50.0`.([#1741](https://github.com/diffplug/spotless/issues/1741))
+  * Dropped support for `ktlint 0.47.x` following our policy of supporting two breaking changes at a time.
 ### Fixed
 * Correctly support the syntax
   ```

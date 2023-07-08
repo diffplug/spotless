@@ -36,7 +36,7 @@ public class KtLintStep {
 	// prevent direct instantiation
 	private KtLintStep() {}
 
-	private static final String DEFAULT_VERSION = "0.49.1";
+	private static final String DEFAULT_VERSION = "0.50.0";
 	static final String NAME = "ktlint";
 	static final String PACKAGE = "com.pinterest";
 	static final String MAVEN_COORDINATE = PACKAGE + ":ktlint:";

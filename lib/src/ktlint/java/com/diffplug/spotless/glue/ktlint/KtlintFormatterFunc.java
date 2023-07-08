@@ -35,17 +35,19 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 	public KtlintFormatterFunc(String version, boolean isScript, boolean useExperimental, FileSignature editorConfigPath, Map<String, String> userData,
 			Map<String, Object> editorConfigOverrideMap) {
 		int minorVersion = Integer.parseInt(version.split("\\.")[1]);
-		if (minorVersion >= 49) {
+		if (minorVersion >= 50) {
+			// Fixed `RuleId` and `RuleSetId` issues
+			// New argument to `EditorConfigDefaults.Companion.load(...)` for custom property type parsing
+			// New argument to `new KtLintRuleEngine(...)` to fail on usage of `treeCopyHandler` extension point
+			this.adapter = new KtLintCompat0Dot50Dot0Adapter();
+		} else if (minorVersion == 49) {
 			// Packages and modules moved around (`ktlint-core` -> `ktlint-rule-engine`)
 			// Experimental ruleset was replaced by implementing `Rule.Experimental` and checking the `ktlint_experimental` `.editorconfig` property
 			// `RuleId` and `RuleSetId` became inline classes (mangled to be unrepresentable in Java source code, so reflection is needed), tracked here: https://github.com/pinterest/ktlint/issues/2041
 			this.adapter = new KtLintCompat0Dot49Dot0Adapter();
-		} else if (minorVersion == 48) {
+		} else {
 			// ExperimentalParams lost two constructor arguments, EditorConfigProperty moved to its own class
 			this.adapter = new KtLintCompat0Dot48Dot0Adapter();
-		} else {
-			// rename RuleSet to RuleProvider
-			this.adapter = new KtLintCompat0Dot47Dot0Adapter();
 		}
 		this.editorConfigPath = editorConfigPath;
 		this.useExperimental = useExperimental;
