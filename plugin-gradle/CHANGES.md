@@ -4,6 +4,10 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+### Added
+
+* Add an overload for `FormatExtension.addStep` which provides access to the `FormatExtension`'s `Provisioner`, enabling custom steps to make use of third-party dependencies.
+
 ### Fixed
 * Correctly support the syntax
   ```
