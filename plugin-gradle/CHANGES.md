@@ -4,6 +4,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+### Added
+* Add target option `targetExcludeIfContentContains` to exclude files by text they contain.
 ### Fixed
 * Correctly support the syntax
   ```

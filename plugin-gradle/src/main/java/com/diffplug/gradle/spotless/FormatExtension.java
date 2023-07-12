@@ -161,6 +161,12 @@ public class FormatExtension {
 	/** The files to be formatted = (target - targetExclude). */
 	protected FileCollection target, targetExclude;
 
+	/**
+	 * The values from which files will be excluded if their content contain at least one of the
+	 * `targetExcludeIfContentContains`.
+	 */
+	protected List<String> targetExcludeIfContentContains = new ArrayList<>();
+
 	protected boolean isLicenseHeaderStep(FormatterStep formatterStep) {
 		String formatterStepName = formatterStep.getName();
 
@@ -200,6 +206,11 @@ public class FormatExtension {
 	 */
 	public void targetExclude(Object... targets) {
 		this.targetExclude = parseTargetsIsExclude(targets, true);
+	}
+
+	/** Excludes all files whose content contains at least one of the `values`. */
+	public void targetExcludeIfContentContains(String... values) {
+		this.targetExcludeIfContentContains.addAll(List.of(values));
 	}
 
 	private FileCollection parseTargetsIsExclude(Object[] targets, boolean isExclude) {
