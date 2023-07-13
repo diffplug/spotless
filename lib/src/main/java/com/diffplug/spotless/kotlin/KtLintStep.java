@@ -107,9 +107,6 @@ public class KtLintStep {
 				@Nullable FileSignature editorConfigPath,
 				Map<String, String> userData,
 				Map<String, Object> editorConfigOverride) throws IOException {
-			if (BadSemver.version(version) < BadSemver.version(0, 46, 0)) {
-				throw new IllegalStateException("KtLint versions < 0.46.0 not supported!");
-			}
 			this.version = version;
 			this.userData = new TreeMap<>(userData);
 			this.editorConfigOverride = new TreeMap<>(editorConfigOverride);

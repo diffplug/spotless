@@ -44,9 +44,11 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 			// Experimental ruleset was replaced by implementing `Rule.Experimental` and checking the `ktlint_experimental` `.editorconfig` property
 			// `RuleId` and `RuleSetId` became inline classes (mangled to be unrepresentable in Java source code, so reflection is needed), tracked here: https://github.com/pinterest/ktlint/issues/2041
 			this.adapter = new KtLintCompat0Dot49Dot0Adapter();
-		} else {
+		} else if (minorVersion == 48) {
 			// ExperimentalParams lost two constructor arguments, EditorConfigProperty moved to its own class
 			this.adapter = new KtLintCompat0Dot48Dot0Adapter();
+		} else {
+			throw new IllegalStateException("Ktlint versions < 0.48.0 not supported!");
 		}
 		this.editorConfigPath = editorConfigPath;
 		this.editorConfigOverrideMap = editorConfigOverrideMap;
