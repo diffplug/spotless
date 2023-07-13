@@ -77,7 +77,7 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 		private Map<String, Object> editorConfigOverride;
 
 		KotlinFormatExtension(String version, @Nullable FileSignature editorConfigPath, Map<String, String> config,
-							  Map<String, Object> editorConfigOverride) {
+				Map<String, Object> editorConfigOverride) {
 			this.version = version;
 			this.editorConfigPath = editorConfigPath;
 			this.userData = config;

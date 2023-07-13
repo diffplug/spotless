@@ -78,14 +78,14 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 
 	@Override
 	public String format(final String text, Path path, final boolean isScript,
-						 Path editorConfigPath, final Map<String, String> userData,
+			Path editorConfigPath, final Map<String, String> userData,
 			final Map<String, Object> editorConfigOverrideMap) {
 		final FormatterCallback formatterCallback = new FormatterCallback();
 
 		Set<RuleProvider> allRuleProviders = ServiceLoader.load(RuleSetProviderV2.class, RuleSetProviderV2.class.getClassLoader())
-			.stream()
-			.flatMap(loader -> loader.get().getRuleProviders().stream())
-			.collect(Collectors.toUnmodifiableSet());
+				.stream()
+				.flatMap(loader -> loader.get().getRuleProviders().stream())
+				.collect(Collectors.toUnmodifiableSet());
 
 		EditorConfigOverride editorConfigOverride;
 		if (editorConfigOverrideMap.isEmpty()) {
@@ -108,7 +108,7 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 				editorConfig,
 				editorConfigOverride,
 				false)
-						.format(path, formatterCallback);
+				.format(path, formatterCallback);
 	}
 
 	/**

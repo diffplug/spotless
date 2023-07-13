@@ -50,7 +50,7 @@ public class KtLintStep {
 	}
 
 	public static FormatterStep create(String version, Provisioner provisioner,
-									   Map<String, String> userData, Map<String, Object> editorConfigOverride) {
+			Map<String, String> userData, Map<String, Object> editorConfigOverride) {
 		return create(version, provisioner, false, null, userData, editorConfigOverride);
 	}
 
