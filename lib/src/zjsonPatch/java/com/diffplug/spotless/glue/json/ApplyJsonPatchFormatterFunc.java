@@ -18,7 +18,6 @@ package com.diffplug.spotless.glue.json;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.zjsonpatch.JsonPatch;
 
@@ -31,14 +30,12 @@ public class ApplyJsonPatchFormatterFunc implements FormatterFunc {
 
 	public ApplyJsonPatchFormatterFunc(String patchString) {
 		this.objectMapper = new ObjectMapper();
-		this.objectMapper.setDefaultPrettyPrinter(new DefaultPrettyPrinter());
 		this.patch = null;
 		this.patchString = patchString;
 	}
 
 	public ApplyJsonPatchFormatterFunc(List<Map<String, Object>> patch) {
 		this.objectMapper = new ObjectMapper();
-		this.objectMapper.setDefaultPrettyPrinter(new DefaultPrettyPrinter());
 		this.patch = patch;
 		this.patchString = null;
 	}
