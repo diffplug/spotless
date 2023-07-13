@@ -138,22 +138,24 @@ public class KtLintCompat0Dot50Dot0Adapter implements KtLintCompatAdapter {
 		Pair<EditorConfigProperty<?>, ?>[] properties = editorConfigOverrideMap.entrySet().stream()
 				.map(entry -> {
 					EditorConfigProperty<?> property = supportedProperties.get(entry.getKey());
-					if (property != null) {
-						return new Pair<>(property, entry.getValue());
-					} else if (entry.getKey().startsWith("ktlint_")) {
+
+					if (property == null && entry.getKey().startsWith("ktlint_")) {
 						String[] parts = entry.getKey().substring(7).split("_", 2);
 						if (parts.length == 1) {
 							// convert ktlint_{ruleset} to RuleSetId
 							RuleSetId id = new RuleSetId(parts[0]);
-							property = RuleExecutionEditorConfigPropertyKt.createRuleSetExecutionEditorConfigProperty(id, RuleExecution.disabled);
+							property = RuleExecutionEditorConfigPropertyKt.createRuleSetExecutionEditorConfigProperty(id, RuleExecution.enabled);
 						} else {
 							// convert ktlint_{ruleset}_{rulename} to RuleId
 							RuleId id = new RuleId(parts[0] + ":" + parts[1]);
-							property = RuleExecutionEditorConfigPropertyKt.createRuleExecutionEditorConfigProperty(id, RuleExecution.disabled);
+							property = RuleExecutionEditorConfigPropertyKt.createRuleExecutionEditorConfigProperty(id, RuleExecution.enabled);
 						}
-						return new Pair<>(property, entry.getValue());
-					} else {
+					}
+
+					if (property == null) {
 						return null;
+					} else {
+						return new Pair<>(property, entry.getValue());
 					}
 				})
 				.filter(Objects::nonNull)

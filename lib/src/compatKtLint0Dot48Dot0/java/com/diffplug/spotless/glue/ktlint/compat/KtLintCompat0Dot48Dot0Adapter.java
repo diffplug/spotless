@@ -131,9 +131,8 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 		Pair<EditorConfigProperty<?>, ?>[] properties = editorConfigOverrideMap.entrySet().stream()
 				.map(entry -> {
 					EditorConfigProperty<?> property = supportedProperties.get(entry.getKey());
-					if (property != null) {
-						return new Pair<>(property, entry.getValue());
-					} else if (entry.getKey().startsWith("ktlint_")) {
+
+					if (property == null && entry.getKey().startsWith("ktlint_")) {
 						String[] parts = entry.getKey().substring(7).split("_", 2);
 						if (parts.length == 1) {
 							// convert ktlint_{ruleset} to {ruleset}
@@ -144,9 +143,12 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 							String qualifiedRuleId = parts[0] + ":" + parts[1];
 							property = RuleExecutionEditorConfigPropertyKt.createRuleExecutionEditorConfigProperty(qualifiedRuleId);
 						}
-						return new Pair<>(property, entry.getValue());
-					} else {
+					}
+
+					if (property == null) {
 						return null;
+					} else {
+						return new Pair<>(property, entry.getValue());
 					}
 				})
 				.filter(Objects::nonNull)

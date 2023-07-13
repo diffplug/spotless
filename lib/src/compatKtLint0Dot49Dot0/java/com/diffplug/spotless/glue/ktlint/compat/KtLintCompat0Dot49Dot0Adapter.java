@@ -175,22 +175,24 @@ public class KtLintCompat0Dot49Dot0Adapter implements KtLintCompatAdapter {
 		Pair<EditorConfigProperty<?>, ?>[] properties = editorConfigOverrideMap.entrySet().stream()
 				.map(entry -> {
 					EditorConfigProperty<?> property = supportedProperties.get(entry.getKey());
-					if (property != null) {
-						return new Pair<>(property, entry.getValue());
-					} else if (entry.getKey().startsWith("ktlint_")) {
+
+					if (property == null && entry.getKey().startsWith("ktlint_")) {
 						String[] parts = entry.getKey().substring(7).split("_", 2);
 						if (parts.length == 1) {
 							// convert ktlint_{ruleset} to {ruleset}
-							String qualifiedRuleId = parts[0] + ":";
-							property = createRuleSetExecution(qualifiedRuleId, RuleExecution.disabled);
+							String id = parts[0];
+							property = createRuleSetExecution(id, RuleExecution.enabled);
 						} else {
 							// convert ktlint_{ruleset}_{rulename} to {ruleset}:{rulename}
-							String qualifiedRuleId = parts[0] + ":" + parts[1];
-							property = createRuleExecution(qualifiedRuleId, RuleExecution.disabled);
+							String id = parts[0] + ":" + parts[1];
+							property = createRuleExecution(id, RuleExecution.enabled);
 						}
-						return new Pair<>(property, entry.getValue());
-					} else {
+					}
+
+					if (property == null) {
 						return null;
+					} else {
+						return new Pair<>(property, entry.getValue());
 					}
 				})
 				.filter(Objects::nonNull)
