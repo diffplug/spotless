@@ -53,4 +53,8 @@ public class Json extends FormatterFactory {
 	public void addRome(RomeJson rome) {
 		addStepFactory(rome);
 	}
+
+	public void addApplyJsonPatch(ApplyJsonPatch applyJsonPatch) {
+		addStepFactory(applyJsonPatch);
+	}
 }

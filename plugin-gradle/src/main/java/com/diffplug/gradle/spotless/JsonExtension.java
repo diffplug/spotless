@@ -16,10 +16,13 @@
 package com.diffplug.gradle.spotless;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.json.ApplyJsonPatchStep;
 import com.diffplug.spotless.json.JacksonJsonConfig;
 import com.diffplug.spotless.json.JacksonJsonStep;
 import com.diffplug.spotless.json.JsonSimpleStep;
@@ -28,6 +31,7 @@ import com.diffplug.spotless.json.gson.GsonStep;
 public class JsonExtension extends FormatExtension {
 	private static final int DEFAULT_INDENTATION = 4;
 	private static final String DEFAULT_GSON_VERSION = "2.10.1";
+	private static final String DEFAULT_ZJSONPATCH_VERSION = "0.4.14";
 	static final String NAME = "json";
 
 	@Inject
@@ -69,6 +73,14 @@ public class JsonExtension extends FormatExtension {
 		var romeConfig = new RomeJson(version);
 		addStep(romeConfig.createStep());
 		return romeConfig;
+	}
+
+	public ApplyJsonPatchConfig applyJsonPatch(List<Map<String, Object>> patch) {
+		return new ApplyJsonPatchConfig(patch);
+	}
+
+	public ApplyJsonPatchConfig applyJsonPatch(String zjsonPatchVersion, List<Map<String, Object>> patch) {
+		return new ApplyJsonPatchConfig(zjsonPatchVersion, patch);
 	}
 
 	public class SimpleConfig {
@@ -189,6 +201,31 @@ public class JsonExtension extends FormatExtension {
 		@Override
 		protected RomeJson getThis() {
 			return this;
+		}
+	}
+
+	public class ApplyJsonPatchConfig {
+		private String zjsonPatchVersion;
+		private List<Map<String, Object>> patch;
+
+		public ApplyJsonPatchConfig(List<Map<String, Object>> patch) {
+			this(DEFAULT_ZJSONPATCH_VERSION, patch);
+		}
+
+		public ApplyJsonPatchConfig(String zjsonPatchVersion, List<Map<String, Object>> patch) {
+			this.zjsonPatchVersion = zjsonPatchVersion;
+			this.patch = patch;
+			addStep(createStep());
+		}
+
+		public ApplyJsonPatchConfig version(String zjsonPatchVersion) {
+			this.zjsonPatchVersion = zjsonPatchVersion;
+			replaceStep(createStep());
+			return this;
+		}
+
+		private FormatterStep createStep() {
+			return ApplyJsonPatchStep.create(zjsonPatchVersion, patch, provisioner());
 		}
 	}
 }

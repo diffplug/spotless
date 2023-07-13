@@ -124,3 +124,6 @@ nb-configuration.xml
 
 # MacOS jenv
 .java-version
+
+# VS Code
+.vscode/

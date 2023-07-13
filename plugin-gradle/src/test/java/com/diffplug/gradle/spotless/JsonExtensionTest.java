@@ -156,4 +156,44 @@ class JsonExtensionTest extends GradleIntegrationHarness {
 		gradleRunner().withArguments("spotlessApply").build();
 		assertFile("src/main/resources/example.json").sameAsResource("json/sortByKeysAfter_Jackson.json");
 	}
+
+	@Test
+	void applyJsonPatchReplaceString() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'java'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    json {",
+				"        target 'src/**/*.json'",
+				"        applyJsonPatch([[op: 'replace', path: '/abc', value: 'ghi']])",
+				"        gson()",
+				"    }",
+				"}");
+		setFile("src/main/resources/example.json").toResource("json/patchObjectBefore.json");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/resources/example.json").sameAsResource("json/patchObjectAfterReplaceString.json");
+	}
+
+	@Test
+	void applyJsonPatchReplaceWithObject() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'java'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    json {",
+				"        target 'src/**/*.json'",
+				"        applyJsonPatch([[op: 'replace', path: '/abc', value: [def: 'ghi']]])",
+				"        gson()",
+				"    }",
+				"}");
+		setFile("src/main/resources/example.json").toResource("json/patchObjectBefore.json");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/resources/example.json").sameAsResource("json/patchObjectAfterReplaceWithObject.json");
+	}
 }

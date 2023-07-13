@@ -90,4 +90,23 @@ public class JsonTest extends MavenIntegrationHarness {
 		assertFile("json_test.json").sameAsResource("json/sortByKeysAfter_Jackson_spaceAfterKeySeparator.json");
 	}
 
+	@Test
+	public void testFormatJson_ApplyJsonPatch_replaceString() throws Exception {
+		writePomWithJsonSteps("<applyJsonPatch><patch>[{\"op\":\"replace\",\"path\":\"/abc\",\"value\":\"ghi\"}]</patch></applyJsonPatch><gson/>");
+
+		setFile("json_test.json").toResource("json/patchObjectBefore.json");
+
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("json_test.json").sameAsResource("json/patchObjectAfterReplaceString.json");
+	}
+
+	@Test
+	public void testFormatJson_ApplyJsonPatch_replaceWithObject() throws Exception {
+		writePomWithJsonSteps("<applyJsonPatch><patch>[{\"op\":\"replace\",\"path\":\"/abc\",\"value\":{\"def\":\"ghi\"}}]</patch></applyJsonPatch><gson/>");
+
+		setFile("json_test.json").toResource("json/patchObjectBefore.json");
+
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("json_test.json").sameAsResource("json/patchObjectAfterReplaceWithObject.json");
+	}
 }
