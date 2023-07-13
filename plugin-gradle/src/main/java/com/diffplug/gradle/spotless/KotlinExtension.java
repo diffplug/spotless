@@ -61,7 +61,7 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 		Objects.requireNonNull(version);
 		File defaultEditorConfig = getProject().getRootProject().file(".editorconfig");
 		FileSignature editorConfigPath = defaultEditorConfig.exists() ? FileSignature.signAsList(defaultEditorConfig) : null;
-		return new KotlinFormatExtension(version, false, editorConfigPath, Collections.emptyMap(), Collections.emptyMap());
+		return new KotlinFormatExtension(version, editorConfigPath, Collections.emptyMap(), Collections.emptyMap());
 	}
 
 	public KotlinFormatExtension ktlint() throws IOException {
@@ -71,26 +71,18 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 	public class KotlinFormatExtension {
 
 		private final String version;
-		private boolean useExperimental;
 		@Nullable
 		private FileSignature editorConfigPath;
 		private Map<String, String> userData;
 		private Map<String, Object> editorConfigOverride;
 
-		KotlinFormatExtension(String version, boolean useExperimental, @Nullable FileSignature editorConfigPath, Map<String, String> config,
-				Map<String, Object> editorConfigOverride) {
+		KotlinFormatExtension(String version, @Nullable FileSignature editorConfigPath, Map<String, String> config,
+							  Map<String, Object> editorConfigOverride) {
 			this.version = version;
-			this.useExperimental = useExperimental;
 			this.editorConfigPath = editorConfigPath;
 			this.userData = config;
 			this.editorConfigOverride = editorConfigOverride;
 			addStep(createStep());
-		}
-
-		public KotlinFormatExtension setUseExperimental(boolean useExperimental) {
-			this.useExperimental = useExperimental;
-			replaceStep(createStep());
-			return this;
 		}
 
 		public KotlinFormatExtension setEditorConfigPath(Object editorConfigFile) throws IOException {
@@ -120,7 +112,7 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 		}
 
 		private FormatterStep createStep() {
-			return KtLintStep.create(version, provisioner(), useExperimental, false, editorConfigPath, userData, editorConfigOverride);
+			return KtLintStep.create(version, provisioner(), false, editorConfigPath, userData, editorConfigOverride);
 		}
 	}
 

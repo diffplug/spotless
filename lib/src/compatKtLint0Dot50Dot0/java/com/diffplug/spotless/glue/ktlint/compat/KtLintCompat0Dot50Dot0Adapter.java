@@ -19,10 +19,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.pinterest.ktlint.cli.ruleset.core.api.RuleSetProviderV3;
 import com.pinterest.ktlint.rule.engine.api.Code;
 import com.pinterest.ktlint.rule.engine.api.EditorConfigDefaults;
 import com.pinterest.ktlint.rule.engine.api.EditorConfigOverride;
@@ -48,7 +49,6 @@ import com.pinterest.ktlint.rule.engine.core.api.editorconfig.InsertFinalNewLine
 import com.pinterest.ktlint.rule.engine.core.api.editorconfig.MaxLineLengthEditorConfigPropertyKt;
 import com.pinterest.ktlint.rule.engine.core.api.editorconfig.RuleExecution;
 import com.pinterest.ktlint.rule.engine.core.api.editorconfig.RuleExecutionEditorConfigPropertyKt;
-import com.pinterest.ktlint.ruleset.standard.StandardRuleSetProvider;
 
 import kotlin.Pair;
 import kotlin.Unit;
@@ -85,23 +85,14 @@ public class KtLintCompat0Dot50Dot0Adapter implements KtLintCompatAdapter {
 
 	@Override
 	public String format(final String text, Path path, final boolean isScript,
-			final boolean useExperimental,
-			Path editorConfigPath, final Map<String, String> userData,
+                         Path editorConfigPath, final Map<String, String> userData,
 			final Map<String, Object> editorConfigOverrideMap) {
 		final FormatterCallback formatterCallback = new FormatterCallback();
 
-		Set<RuleProvider> allRuleProviders = new LinkedHashSet<>(
-				new StandardRuleSetProvider().getRuleProviders());
-
-		// TODO: Should we keep `useExperimental` now that ktlint uses an EditorConfig property for this purpose?
-		if (useExperimental) {
-			String experimentalRulesPropertyName = RuleExecutionEditorConfigPropertyKt.getEXPERIMENTAL_RULES_EXECUTION_PROPERTY().getName();
-			Object experimentalOverride = editorConfigOverrideMap.get(experimentalRulesPropertyName);
-			if (experimentalOverride != null) {
-				logger.warn("`useExperimental` parameter is `true` and `ktlint_experimental` property is set, `useExperimental` will take priority!");
-				editorConfigOverrideMap.put(experimentalRulesPropertyName, "enabled");
-			}
-		}
+		Set<RuleProvider> allRuleProviders = ServiceLoader.load(RuleSetProviderV3.class, RuleSetProviderV3.class.getClassLoader())
+			.stream()
+			.flatMap(loader -> loader.get().getRuleProviders().stream())
+			.collect(Collectors.toUnmodifiableSet());
 
 		EditorConfigOverride editorConfigOverride;
 		if (editorConfigOverrideMap.isEmpty()) {

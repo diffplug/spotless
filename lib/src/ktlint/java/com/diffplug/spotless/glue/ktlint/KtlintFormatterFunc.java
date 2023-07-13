@@ -28,11 +28,10 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 	private final Map<String, String> userData;
 	private final boolean isScript;
 	private final KtLintCompatAdapter adapter;
-	private final boolean useExperimental;
 	private final FileSignature editorConfigPath;
 	private final Map<String, Object> editorConfigOverrideMap;
 
-	public KtlintFormatterFunc(String version, boolean isScript, boolean useExperimental, FileSignature editorConfigPath, Map<String, String> userData,
+	public KtlintFormatterFunc(String version, boolean isScript, FileSignature editorConfigPath, Map<String, String> userData,
 			Map<String, Object> editorConfigOverrideMap) {
 		int minorVersion = Integer.parseInt(version.split("\\.")[1]);
 		if (minorVersion >= 50) {
@@ -50,7 +49,6 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 			this.adapter = new KtLintCompat0Dot48Dot0Adapter();
 		}
 		this.editorConfigPath = editorConfigPath;
-		this.useExperimental = useExperimental;
 		this.editorConfigOverrideMap = editorConfigOverrideMap;
 		this.userData = userData;
 		this.isScript = isScript;
@@ -63,6 +61,6 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 		if (editorConfigPath != null) {
 			absoluteEditorConfigPath = editorConfigPath.getOnlyFile().toPath();
 		}
-		return adapter.format(unix, file.toPath(), isScript, useExperimental, absoluteEditorConfigPath, userData, editorConfigOverrideMap);
+		return adapter.format(unix, file.toPath(), isScript, absoluteEditorConfigPath, userData, editorConfigOverrideMap);
 	}
 }

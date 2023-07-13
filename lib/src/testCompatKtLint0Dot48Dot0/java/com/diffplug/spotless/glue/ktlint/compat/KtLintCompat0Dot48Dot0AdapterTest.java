@@ -40,7 +40,7 @@ public class KtLintCompat0Dot48Dot0AdapterTest {
 
 		Map<String, Object> editorConfigOverrideMap = new HashMap<>();
 
-		String formatted = ktLintCompat0Dot48Dot0Adapter.format(text, filePath, false, false, null, userData, editorConfigOverrideMap);
+		String formatted = ktLintCompat0Dot48Dot0Adapter.format(text, filePath, false, null, userData, editorConfigOverrideMap);
 		assertEquals("class empty_class_body\n", formatted);
 	}
 
@@ -58,7 +58,7 @@ public class KtLintCompat0Dot48Dot0AdapterTest {
 		// ktlint_filename is an invalid rule in ktlint 0.48.0
 		editorConfigOverrideMap.put("ktlint_filename", "disabled");
 
-		String formatted = ktLintCompat0Dot48Dot0Adapter.format(text, filePath, false, false, null, userData, editorConfigOverrideMap);
+		String formatted = ktLintCompat0Dot48Dot0Adapter.format(text, filePath, false, null, userData, editorConfigOverrideMap);
 		assertEquals("class fails_no_semicolons {\n\tval i = 0;\n}\n", formatted);
 	}
 

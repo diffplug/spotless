@@ -19,10 +19,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -31,6 +31,7 @@ import com.pinterest.ktlint.core.KtLintRuleEngine;
 import com.pinterest.ktlint.core.LintError;
 import com.pinterest.ktlint.core.Rule;
 import com.pinterest.ktlint.core.RuleProvider;
+import com.pinterest.ktlint.core.RuleSetProviderV2;
 import com.pinterest.ktlint.core.api.EditorConfigDefaults;
 import com.pinterest.ktlint.core.api.EditorConfigOverride;
 import com.pinterest.ktlint.core.api.UsesEditorConfigProperties;
@@ -42,8 +43,6 @@ import com.pinterest.ktlint.core.api.editorconfig.IndentStyleEditorConfigPropert
 import com.pinterest.ktlint.core.api.editorconfig.InsertFinalNewLineEditorConfigPropertyKt;
 import com.pinterest.ktlint.core.api.editorconfig.MaxLineLengthEditorConfigPropertyKt;
 import com.pinterest.ktlint.core.api.editorconfig.RuleExecutionEditorConfigPropertyKt;
-import com.pinterest.ktlint.ruleset.experimental.ExperimentalRuleSetProvider;
-import com.pinterest.ktlint.ruleset.standard.StandardRuleSetProvider;
 
 import kotlin.Pair;
 import kotlin.Unit;
@@ -79,16 +78,14 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 
 	@Override
 	public String format(final String text, Path path, final boolean isScript,
-			final boolean useExperimental,
-			Path editorConfigPath, final Map<String, String> userData,
+						 Path editorConfigPath, final Map<String, String> userData,
 			final Map<String, Object> editorConfigOverrideMap) {
 		final FormatterCallback formatterCallback = new FormatterCallback();
 
-		Set<RuleProvider> allRuleProviders = new LinkedHashSet<>(
-				new StandardRuleSetProvider().getRuleProviders());
-		if (useExperimental) {
-			allRuleProviders.addAll(new ExperimentalRuleSetProvider().getRuleProviders());
-		}
+		Set<RuleProvider> allRuleProviders = ServiceLoader.load(RuleSetProviderV2.class, RuleSetProviderV2.class.getClassLoader())
+			.stream()
+			.flatMap(loader -> loader.get().getRuleProviders().stream())
+			.collect(Collectors.toUnmodifiableSet());
 
 		EditorConfigOverride editorConfigOverride;
 		if (editorConfigOverrideMap.isEmpty()) {
