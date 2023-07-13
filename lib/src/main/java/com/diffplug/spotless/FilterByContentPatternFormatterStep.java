@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,13 @@ import javax.annotation.Nullable;
 
 final class FilterByContentPatternFormatterStep extends DelegateFormatterStep {
 	final Pattern contentPattern;
+	final boolean formatIfMatches;
 
-	FilterByContentPatternFormatterStep(FormatterStep delegateStep, String contentPattern) {
+	FilterByContentPatternFormatterStep(FormatterStep delegateStep, String contentPattern,
+			boolean formatIfMatches) {
 		super(delegateStep);
 		this.contentPattern = Pattern.compile(Objects.requireNonNull(contentPattern));
+		this.formatIfMatches = formatIfMatches;
 	}
 
 	@Override
@@ -35,7 +38,8 @@ final class FilterByContentPatternFormatterStep extends DelegateFormatterStep {
 		Objects.requireNonNull(raw, "raw");
 		Objects.requireNonNull(file, "file");
 		Matcher matcher = contentPattern.matcher(raw);
-		if (matcher.find()) {
+		boolean found = matcher.find();
+		if (formatIfMatches == found) {
 			return delegateStep.format(raw, file);
 		} else {
 			return raw;

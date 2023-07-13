@@ -161,11 +161,9 @@ public class FormatExtension {
 	/** The files to be formatted = (target - targetExclude). */
 	protected FileCollection target, targetExclude;
 
-	/**
-	 * The values from which files will be excluded if their content contain at least one of the
-	 * `targetExcludeIfContentContains`.
-	 */
-	protected List<String> targetExcludeIfContentContains = new ArrayList<>();
+	/** The value from which files will be excluded if their content contain it. */
+	@Nullable
+	protected String targetExcludeIfContentContains = null;
 
 	protected boolean isLicenseHeaderStep(FormatterStep formatterStep) {
 		String formatterStepName = formatterStep.getName();
@@ -208,9 +206,9 @@ public class FormatExtension {
 		this.targetExclude = parseTargetsIsExclude(targets, true);
 	}
 
-	/** Excludes all files whose content contains at least one of the `values`. */
-	public void targetExcludeIfContentContains(String... values) {
-		this.targetExcludeIfContentContains.addAll(List.of(values));
+	/** Excludes all files whose content contains {@code value}. */
+	public void targetExcludeIfContentContains(String value) {
+		this.targetExcludeIfContentContains = value;
 	}
 
 	private FileCollection parseTargetsIsExclude(Object[] targets, boolean isExclude) {
@@ -899,6 +897,9 @@ public class FormatExtension {
 			steps.add(togglePair.out());
 		} else {
 			steps = this.steps;
+		}
+		if (targetExcludeIfContentContains != null) {
+			steps.replaceAll(formatterStep -> formatterStep.filterByContentPattern(targetExcludeIfContentContains, false));
 		}
 		task.setSteps(steps);
 		task.setLineEndingsPolicy(getLineEndings().createPolicy(getProject().getProjectDir(), () -> totalTarget));
