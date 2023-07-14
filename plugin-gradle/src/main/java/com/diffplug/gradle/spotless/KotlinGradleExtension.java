@@ -49,7 +49,7 @@ public class KotlinGradleExtension extends FormatExtension {
 		Objects.requireNonNull(version, "version");
 		File defaultEditorConfig = getProject().getRootProject().file(".editorconfig");
 		FileSignature editorConfigPath = defaultEditorConfig.exists() ? FileSignature.signAsList(defaultEditorConfig) : null;
-		return new KotlinFormatExtension(version, false, editorConfigPath, Collections.emptyMap(), Collections.emptyMap());
+		return new KotlinFormatExtension(version, editorConfigPath, Collections.emptyMap(), Collections.emptyMap());
 	}
 
 	public KotlinFormatExtension ktlint() throws IOException {
@@ -59,16 +59,14 @@ public class KotlinGradleExtension extends FormatExtension {
 	public class KotlinFormatExtension {
 
 		private final String version;
-		private boolean useExperimental;
 		@Nullable
 		private FileSignature editorConfigPath;
 		private Map<String, String> userData;
 		private Map<String, Object> editorConfigOverride;
 
-		KotlinFormatExtension(String version, boolean useExperimental, FileSignature editorConfigPath, Map<String, String> config,
+		KotlinFormatExtension(String version, FileSignature editorConfigPath, Map<String, String> config,
 				Map<String, Object> editorConfigOverride) {
 			this.version = version;
-			this.useExperimental = useExperimental;
 			this.editorConfigPath = editorConfigPath;
 			this.userData = config;
 			this.editorConfigOverride = editorConfigOverride;
@@ -82,12 +80,6 @@ public class KotlinGradleExtension extends FormatExtension {
 			} else {
 				this.editorConfigPath = FileSignature.signAsList(getProject().file(editorConfigPath));
 			}
-			replaceStep(createStep());
-			return this;
-		}
-
-		public KotlinFormatExtension setUseExperimental(boolean useExperimental) {
-			this.useExperimental = useExperimental;
 			replaceStep(createStep());
 			return this;
 		}
@@ -112,7 +104,6 @@ public class KotlinGradleExtension extends FormatExtension {
 			return KtLintStep.createForScript(
 					version,
 					provisioner(),
-					useExperimental,
 					editorConfigPath,
 					userData,
 					editorConfigOverride);

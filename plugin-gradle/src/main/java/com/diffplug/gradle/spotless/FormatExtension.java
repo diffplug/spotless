@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -48,6 +50,7 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LazyForwardingEquality;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.OnMatch;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.cpp.ClangFormatStep;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
@@ -161,6 +164,10 @@ public class FormatExtension {
 	/** The files to be formatted = (target - targetExclude). */
 	protected FileCollection target, targetExclude;
 
+	/** The value from which files will be excluded if their content contain it. */
+	@Nullable
+	protected String targetExcludeContentPattern = null;
+
 	protected boolean isLicenseHeaderStep(FormatterStep formatterStep) {
 		String formatterStepName = formatterStep.getName();
 
@@ -200,6 +207,24 @@ public class FormatExtension {
 	 */
 	public void targetExclude(Object... targets) {
 		this.targetExclude = parseTargetsIsExclude(targets, true);
+	}
+
+	/**
+	 * Excludes all files whose content contains {@code string}.
+	 *
+	 * When this method is called multiple times, only the last call has any effect.
+	 */
+	public void targetExcludeIfContentContains(String string) {
+		targetExcludeIfContentContainsRegex(Pattern.quote(string));
+	}
+
+	/**
+	 * Excludes all files whose content contains the given regex.
+	 *
+	 * When this method is called multiple times, only the last call has any effect.
+	 */
+	public void targetExcludeIfContentContainsRegex(String regex) {
+		this.targetExcludeContentPattern = regex;
 	}
 
 	private FileCollection parseTargetsIsExclude(Object[] targets, boolean isExclude) {
@@ -298,6 +323,13 @@ public class FormatExtension {
 			throw new GradleException("Multiple steps with name '" + newStep.getName() + "' for spotless format '" + formatName() + "'");
 		}
 		steps.add(newStep);
+	}
+
+	/** Adds a new step that requires a Provisioner. */
+	public void addStep(Function<Provisioner, FormatterStep> createStepFn) {
+		requireNonNull(createStepFn);
+		FormatterStep newStep = createStepFn.apply(provisioner());
+		addStep(newStep);
 	}
 
 	/** Returns the index of the existing step with the given name, or -1 if no such step exists. */
@@ -888,6 +920,9 @@ public class FormatExtension {
 			steps.add(togglePair.out());
 		} else {
 			steps = this.steps;
+		}
+		if (targetExcludeContentPattern != null) {
+			steps.replaceAll(formatterStep -> formatterStep.filterByContent(OnMatch.EXCLUDE, targetExcludeContentPattern));
 		}
 		task.setSteps(steps);
 		task.setLineEndingsPolicy(getLineEndings().createPolicy(getProject().getProjectDir(), () -> totalTarget));

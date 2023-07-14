@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 DiffPlug
+ * Copyright 2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.glue.ktlint.compat;
+package com.diffplug.spotless;
 
-import java.nio.file.Path;
-import java.util.Map;
-
-public interface KtLintCompatAdapter {
-
-	String format(String text, Path path, boolean isScript, Path editorConfigPath, Map<String, String> userData,
-			Map<String, Object> editorConfigOverrideMap);
+/** Enum to make boolean logic more readable. */
+public enum OnMatch {
+	INCLUDE, EXCLUDE
 }

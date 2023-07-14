@@ -1,5 +1,8 @@
 fun main() {
-    fun name() { a(); return b }
+    fun name() {
+        a()
+        return b
+    }
     println(";")
     println()
 }

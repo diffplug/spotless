@@ -29,41 +29,39 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-public class KtLintCompat0Dot48Dot0AdapterTest {
+public class KtLintCompat0Dot50Dot0AdapterTest {
 	@Test
 	public void testDefaults(@TempDir Path path) throws IOException {
-		KtLintCompat0Dot48Dot0Adapter ktLintCompat0Dot48Dot0Adapter = new KtLintCompat0Dot48Dot0Adapter();
-		String text = loadAndWriteText(path, "empty_class_body.kt");
-		final Path filePath = Paths.get(path.toString(), "empty_class_body.kt");
+		KtLintCompat0Dot50Dot0Adapter KtLintCompat0Dot50Dot0Adapter = new KtLintCompat0Dot50Dot0Adapter();
+		String text = loadAndWriteText(path, "EmptyClassBody.kt");
+		final Path filePath = Paths.get(path.toString(), "EmptyClassBody.kt");
 
 		Map<String, String> userData = new HashMap<>();
 
 		Map<String, Object> editorConfigOverrideMap = new HashMap<>();
 
-		String formatted = ktLintCompat0Dot48Dot0Adapter.format(text, filePath, false, null, userData, editorConfigOverrideMap);
-		assertEquals("class empty_class_body\n", formatted);
+		String formatted = KtLintCompat0Dot50Dot0Adapter.format(text, filePath, false, null, userData, editorConfigOverrideMap);
+		assertEquals("class EmptyClassBody\n", formatted);
 	}
 
 	@Test
 	public void testEditorConfigCanDisable(@TempDir Path path) throws IOException {
-		KtLintCompat0Dot48Dot0Adapter ktLintCompat0Dot48Dot0Adapter = new KtLintCompat0Dot48Dot0Adapter();
-		String text = loadAndWriteText(path, "fails_no_semicolons.kt");
-		final Path filePath = Paths.get(path.toString(), "fails_no_semicolons.kt");
+		KtLintCompat0Dot50Dot0Adapter KtLintCompat0Dot50Dot0Adapter = new KtLintCompat0Dot50Dot0Adapter();
+		String text = loadAndWriteText(path, "FailsNoSemicolons.kt");
+		final Path filePath = Paths.get(path.toString(), "FailsNoSemicolons.kt");
 
 		Map<String, String> userData = new HashMap<>();
 
 		Map<String, Object> editorConfigOverrideMap = new HashMap<>();
 		editorConfigOverrideMap.put("indent_style", "tab");
 		editorConfigOverrideMap.put("ktlint_standard_no-semi", "disabled");
-		// ktlint_filename is an invalid rule in ktlint 0.48.0
-		editorConfigOverrideMap.put("ktlint_filename", "disabled");
 
-		String formatted = ktLintCompat0Dot48Dot0Adapter.format(text, filePath, false, null, userData, editorConfigOverrideMap);
-		assertEquals("class fails_no_semicolons {\n\tval i = 0;\n}\n", formatted);
+		String formatted = KtLintCompat0Dot50Dot0Adapter.format(text, filePath, false, null, userData, editorConfigOverrideMap);
+		assertEquals("class FailsNoSemicolons {\n\tval i = 0;\n}\n", formatted);
 	}
 
 	private static String loadAndWriteText(Path path, String name) throws IOException {
-		try (InputStream is = KtLintCompat0Dot48Dot0AdapterTest.class.getResourceAsStream("/" + name)) {
+		try (InputStream is = KtLintCompat0Dot50Dot0AdapterTest.class.getResourceAsStream("/" + name)) {
 			Files.copy(is, path.resolve(name));
 		}
 		return new String(Files.readAllBytes(path.resolve(name)), StandardCharsets.UTF_8);

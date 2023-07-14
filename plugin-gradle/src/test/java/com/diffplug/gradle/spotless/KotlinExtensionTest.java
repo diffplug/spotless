@@ -69,11 +69,11 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 				"repositories { mavenCentral() }",
 				"spotless {",
 				"    kotlin {",
-				"        ktlint().setUseExperimental(true)",
-				"            .editorConfigOverride([",
-				"        	    ij_kotlin_allow_trailing_comma: true,",
-				"        	    ij_kotlin_allow_trailing_comma_on_call_site: true",
-				"            ])",
+				"        ktlint().editorConfigOverride([",
+				"            ktlint_experimental: \"enabled\",",
+				"            ij_kotlin_allow_trailing_comma: true,",
+				"            ij_kotlin_allow_trailing_comma_on_call_site: true",
+				"        ])",
 				"    }",
 				"}");
 		setFile("src/main/kotlin/Main.kt").toResource("kotlin/ktlint/experimentalEditorConfigOverride.dirty");
