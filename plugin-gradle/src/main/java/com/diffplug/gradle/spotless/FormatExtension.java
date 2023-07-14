@@ -31,6 +31,7 @@ import java.util.Random;
 import java.util.TreeMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -207,9 +208,22 @@ public class FormatExtension {
 		this.targetExclude = parseTargetsIsExclude(targets, true);
 	}
 
-	/** Excludes all files whose content contains {@code value}. */
-	public void targetExcludeIfContentContains(String value) {
-		this.targetExcludeIfContentContains = value;
+	/**
+	 * Excludes all files whose content contains {@code value}.
+	 *
+	 * When this method is called multiple times, only the last call has any effect.
+	 */
+	public void targetExcludeIfContentContains(String string) {
+		targetExcludeIfContentContainsRegex(Pattern.quote(string));
+	}
+
+	/**
+	 * Excludes all files whose content can find the given regex.
+	 *
+	 * When this method is called multiple times, only the last call has any effect.
+	 */
+	public void targetExcludeIfContentContainsRegex(String regex) {
+		this.targetExcludeIfContentContains = regex;
 	}
 
 	private FileCollection parseTargetsIsExclude(Object[] targets, boolean isExclude) {
