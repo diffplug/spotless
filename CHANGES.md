@@ -10,6 +10,10 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* Bump default `ktlint` version to latest `0.49.1` -> `0.50.0`.([#1741](https://github.com/diffplug/spotless/issues/1741))
+  * Dropped support for `ktlint 0.47.x` following our policy of supporting two breaking changes at a time.
+  * Dropped support for deprecated `useExperimental` parameter in favor of the `ktlint_experimental` property.
 ### Changes
 * Bump default `cleanthat` version to latest `2.13` -> `2.16`. ([#1725](https://github.com/diffplug/spotless/pull/1725))
 ### Fixed

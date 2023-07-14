@@ -27,50 +27,57 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.pinterest.ktlint.core.KtLintRuleEngine;
-import com.pinterest.ktlint.core.LintError;
-import com.pinterest.ktlint.core.Rule;
-import com.pinterest.ktlint.core.RuleProvider;
-import com.pinterest.ktlint.core.RuleSetProviderV2;
-import com.pinterest.ktlint.core.api.EditorConfigDefaults;
-import com.pinterest.ktlint.core.api.EditorConfigOverride;
-import com.pinterest.ktlint.core.api.UsesEditorConfigProperties;
-import com.pinterest.ktlint.core.api.editorconfig.CodeStyleEditorConfigPropertyKt;
-import com.pinterest.ktlint.core.api.editorconfig.DisabledRulesEditorConfigPropertyKt;
-import com.pinterest.ktlint.core.api.editorconfig.EditorConfigProperty;
-import com.pinterest.ktlint.core.api.editorconfig.IndentSizeEditorConfigPropertyKt;
-import com.pinterest.ktlint.core.api.editorconfig.IndentStyleEditorConfigPropertyKt;
-import com.pinterest.ktlint.core.api.editorconfig.InsertFinalNewLineEditorConfigPropertyKt;
-import com.pinterest.ktlint.core.api.editorconfig.MaxLineLengthEditorConfigPropertyKt;
-import com.pinterest.ktlint.core.api.editorconfig.RuleExecutionEditorConfigPropertyKt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.pinterest.ktlint.cli.ruleset.core.api.RuleSetProviderV3;
+import com.pinterest.ktlint.rule.engine.api.Code;
+import com.pinterest.ktlint.rule.engine.api.EditorConfigDefaults;
+import com.pinterest.ktlint.rule.engine.api.EditorConfigOverride;
+import com.pinterest.ktlint.rule.engine.api.KtLintRuleEngine;
+import com.pinterest.ktlint.rule.engine.api.LintError;
+import com.pinterest.ktlint.rule.engine.core.api.Rule;
+import com.pinterest.ktlint.rule.engine.core.api.RuleId;
+import com.pinterest.ktlint.rule.engine.core.api.RuleProvider;
+import com.pinterest.ktlint.rule.engine.core.api.RuleSetId;
+import com.pinterest.ktlint.rule.engine.core.api.editorconfig.CodeStyleEditorConfigPropertyKt;
+import com.pinterest.ktlint.rule.engine.core.api.editorconfig.EditorConfigProperty;
+import com.pinterest.ktlint.rule.engine.core.api.editorconfig.EndOfLinePropertyKt;
+import com.pinterest.ktlint.rule.engine.core.api.editorconfig.IndentSizeEditorConfigPropertyKt;
+import com.pinterest.ktlint.rule.engine.core.api.editorconfig.IndentStyleEditorConfigPropertyKt;
+import com.pinterest.ktlint.rule.engine.core.api.editorconfig.InsertFinalNewLineEditorConfigPropertyKt;
+import com.pinterest.ktlint.rule.engine.core.api.editorconfig.MaxLineLengthEditorConfigPropertyKt;
+import com.pinterest.ktlint.rule.engine.core.api.editorconfig.RuleExecution;
+import com.pinterest.ktlint.rule.engine.core.api.editorconfig.RuleExecutionEditorConfigPropertyKt;
 
 import kotlin.Pair;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function2;
 
-public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
+public class KtLintCompat0Dot50Dot0Adapter implements KtLintCompatAdapter {
+
+	private static final Logger logger = LoggerFactory.getLogger(KtLintCompat0Dot50Dot0Adapter.class);
 
 	private static final List<EditorConfigProperty<?>> DEFAULT_EDITOR_CONFIG_PROPERTIES;
 
 	static {
 		List<EditorConfigProperty<?>> list = new ArrayList<>();
 		list.add(CodeStyleEditorConfigPropertyKt.getCODE_STYLE_PROPERTY());
-		//noinspection deprecation
-		list.add(DisabledRulesEditorConfigPropertyKt.getDISABLED_RULES_PROPERTY());
-		//noinspection KotlinInternalInJava,deprecation
-		list.add(DisabledRulesEditorConfigPropertyKt.getKTLINT_DISABLED_RULES_PROPERTY());
-		list.add(IndentStyleEditorConfigPropertyKt.getINDENT_STYLE_PROPERTY());
+		list.add(EndOfLinePropertyKt.getEND_OF_LINE_PROPERTY());
 		list.add(IndentSizeEditorConfigPropertyKt.getINDENT_SIZE_PROPERTY());
+		list.add(IndentStyleEditorConfigPropertyKt.getINDENT_STYLE_PROPERTY());
 		list.add(InsertFinalNewLineEditorConfigPropertyKt.getINSERT_FINAL_NEWLINE_PROPERTY());
 		list.add(MaxLineLengthEditorConfigPropertyKt.getMAX_LINE_LENGTH_PROPERTY());
+		list.add(RuleExecutionEditorConfigPropertyKt.getEXPERIMENTAL_RULES_EXECUTION_PROPERTY());
 		DEFAULT_EDITOR_CONFIG_PROPERTIES = Collections.unmodifiableList(list);
 	}
 
 	static class FormatterCallback implements Function2<LintError, Boolean, Unit> {
+
 		@Override
 		public Unit invoke(LintError lint, Boolean corrected) {
 			if (!corrected) {
-				KtLintCompatReporting.report(lint.getLine(), lint.getCol(), lint.getRuleId(), lint.getDetail());
+				KtLintCompatReporting.report(lint.getLine(), lint.getCol(), lint.getRuleId().getValue(), lint.getDetail());
 			}
 			return Unit.INSTANCE;
 		}
@@ -82,7 +89,7 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 			final Map<String, Object> editorConfigOverrideMap) {
 		final FormatterCallback formatterCallback = new FormatterCallback();
 
-		Set<RuleProvider> allRuleProviders = ServiceLoader.load(RuleSetProviderV2.class, RuleSetProviderV2.class.getClassLoader())
+		Set<RuleProvider> allRuleProviders = ServiceLoader.load(RuleSetProviderV3.class, RuleSetProviderV3.class.getClassLoader())
 				.stream()
 				.flatMap(loader -> loader.get().getRuleProviders().stream())
 				.collect(Collectors.toUnmodifiableSet());
@@ -92,23 +99,24 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 			editorConfigOverride = EditorConfigOverride.Companion.getEMPTY_EDITOR_CONFIG_OVERRIDE();
 		} else {
 			editorConfigOverride = createEditorConfigOverride(allRuleProviders.stream().map(
-					RuleProvider::createNewRuleInstance).collect(
-							Collectors.toList()),
+					RuleProvider::createNewRuleInstance).collect(Collectors.toList()),
 					editorConfigOverrideMap);
 		}
 		EditorConfigDefaults editorConfig;
 		if (editorConfigPath == null || !Files.exists(editorConfigPath)) {
 			editorConfig = EditorConfigDefaults.Companion.getEMPTY_EDITOR_CONFIG_DEFAULTS();
 		} else {
-			editorConfig = EditorConfigDefaults.Companion.load(editorConfigPath);
+			editorConfig = EditorConfigDefaults.Companion.load(editorConfigPath, Collections.emptySet());
 		}
 
 		return new KtLintRuleEngine(
 				allRuleProviders,
 				editorConfig,
 				editorConfigOverride,
-				false)
-				.format(path, formatterCallback);
+				true,
+				false,
+				path.getFileSystem())
+				.format(Code.Companion.fromPath(path), formatterCallback);
 	}
 
 	/**
@@ -117,8 +125,7 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 	private static EditorConfigOverride createEditorConfigOverride(final List<Rule> rules, Map<String, Object> editorConfigOverrideMap) {
 		// Get properties from rules in the rule sets
 		Stream<EditorConfigProperty<?>> ruleProperties = rules.stream()
-				.filter(rule -> rule instanceof UsesEditorConfigProperties)
-				.flatMap(rule -> ((UsesEditorConfigProperties) rule).getEditorConfigProperties().stream());
+				.flatMap(rule -> rule.getUsesEditorConfigProperties().stream());
 
 		// Create a mapping of properties to their names based on rule properties and default properties
 		Map<String, EditorConfigProperty<?>> supportedProperties = Stream
@@ -135,13 +142,13 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 					if (property == null && entry.getKey().startsWith("ktlint_")) {
 						String[] parts = entry.getKey().substring(7).split("_", 2);
 						if (parts.length == 1) {
-							// convert ktlint_{ruleset} to {ruleset}
-							String qualifiedRuleId = parts[0] + ":";
-							property = RuleExecutionEditorConfigPropertyKt.createRuleSetExecutionEditorConfigProperty(qualifiedRuleId);
+							// convert ktlint_{ruleset} to RuleSetId
+							RuleSetId id = new RuleSetId(parts[0]);
+							property = RuleExecutionEditorConfigPropertyKt.createRuleSetExecutionEditorConfigProperty(id, RuleExecution.enabled);
 						} else {
-							// convert ktlint_{ruleset}_{rulename} to {ruleset}:{rulename}
-							String qualifiedRuleId = parts[0] + ":" + parts[1];
-							property = RuleExecutionEditorConfigPropertyKt.createRuleExecutionEditorConfigProperty(qualifiedRuleId);
+							// convert ktlint_{ruleset}_{rulename} to RuleId
+							RuleId id = new RuleId(parts[0] + ":" + parts[1]);
+							property = RuleExecutionEditorConfigPropertyKt.createRuleExecutionEditorConfigProperty(id, RuleExecution.enabled);
 						}
 					}
 
