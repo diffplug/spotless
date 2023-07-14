@@ -45,12 +45,12 @@ import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.tasks.TaskProvider;
 
 import com.diffplug.common.base.Preconditions;
-import com.diffplug.spotless.OnMatch;
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LazyForwardingEquality;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.OnMatch;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.cpp.ClangFormatStep;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;

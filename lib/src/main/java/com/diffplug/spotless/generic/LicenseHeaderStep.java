@@ -35,10 +35,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.diffplug.spotless.FileSignature;
-import com.diffplug.spotless.OnMatch;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.OnMatch;
 import com.diffplug.spotless.SerializableFileFilter;
 import com.diffplug.spotless.ThrowingEx;
 
