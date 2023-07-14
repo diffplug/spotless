@@ -23,14 +23,13 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 final class FilterByContentPatternFormatterStep extends DelegateFormatterStep {
-	final Pattern contentPattern;
 	final Filter includeOrExclude;
+	final Pattern contentPattern;
 
-	FilterByContentPatternFormatterStep(FormatterStep delegateStep, String contentPattern,
-			Filter includeOrExclude) {
+	FilterByContentPatternFormatterStep(FormatterStep delegateStep, Filter includeOrExclude, String contentPattern) {
 		super(delegateStep);
-		this.contentPattern = Pattern.compile(Objects.requireNonNull(contentPattern));
 		this.includeOrExclude = includeOrExclude;
+		this.contentPattern = Pattern.compile(Objects.requireNonNull(contentPattern));
 	}
 
 	@Override
@@ -55,13 +54,14 @@ final class FilterByContentPatternFormatterStep extends DelegateFormatterStep {
 		}
 		FilterByContentPatternFormatterStep that = (FilterByContentPatternFormatterStep) o;
 		return Objects.equals(delegateStep, that.delegateStep) &&
+				Objects.equals(includeOrExclude, that.includeOrExclude) &&
 				Objects.equals(contentPattern.pattern(), that.contentPattern.pattern());
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(delegateStep, contentPattern.pattern());
+		return Objects.hash(delegateStep, includeOrExclude, contentPattern.pattern());
 	}
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
 }

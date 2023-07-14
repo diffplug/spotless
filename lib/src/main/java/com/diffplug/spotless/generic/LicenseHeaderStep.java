@@ -151,7 +151,7 @@ public final class LicenseHeaderStep {
 			return formatterStep;
 		}
 
-		return formatterStep.filterByContent(contentPattern, Filter.INCLUDE);
+		return formatterStep.filterByContent(Filter.INCLUDE, contentPattern);
 	}
 
 	private String sanitizeName(@Nullable String name) {

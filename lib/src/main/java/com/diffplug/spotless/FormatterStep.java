@@ -55,7 +55,7 @@ public interface FormatterStep extends Serializable {
 	 */
 	@Deprecated
 	public default FormatterStep filterByContentPattern(String contentPattern) {
-		return filterByContent(contentPattern, Filter.INCLUDE);
+		return filterByContent(Filter.INCLUDE, contentPattern);
 	}
 
 	/**
@@ -68,8 +68,8 @@ public interface FormatterStep extends Serializable {
 	 *            determines if matches are included or excluded
 	 * @return FormatterStep
 	 */
-	public default FormatterStep filterByContent(String contentPattern, Filter includeOrExclude) {
-		return new FilterByContentPatternFormatterStep(this, contentPattern, includeOrExclude);
+	public default FormatterStep filterByContent(Filter includeOrExclude, String contentPattern) {
+		return new FilterByContentPatternFormatterStep(this, includeOrExclude, contentPattern);
 	}
 
 	/**
