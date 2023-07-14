@@ -38,6 +38,7 @@ import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.OnMatch;
 import com.diffplug.spotless.SerializableFileFilter;
 import com.diffplug.spotless.ThrowingEx;
 
@@ -150,7 +151,7 @@ public final class LicenseHeaderStep {
 			return formatterStep;
 		}
 
-		return formatterStep.filterByContentPattern(contentPattern);
+		return formatterStep.filterByContent(OnMatch.INCLUDE, contentPattern);
 	}
 
 	private String sanitizeName(@Nullable String name) {
