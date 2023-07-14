@@ -28,14 +28,18 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 	private final Map<String, String> userData;
 	private final boolean isScript;
 	private final KtLintCompatAdapter adapter;
-	private final boolean useExperimental;
 	private final FileSignature editorConfigPath;
 	private final Map<String, Object> editorConfigOverrideMap;
 
-	public KtlintFormatterFunc(String version, boolean isScript, boolean useExperimental, FileSignature editorConfigPath, Map<String, String> userData,
+	public KtlintFormatterFunc(String version, boolean isScript, FileSignature editorConfigPath, Map<String, String> userData,
 			Map<String, Object> editorConfigOverrideMap) {
 		int minorVersion = Integer.parseInt(version.split("\\.")[1]);
-		if (minorVersion >= 49) {
+		if (minorVersion >= 50) {
+			// Fixed `RuleId` and `RuleSetId` issues
+			// New argument to `EditorConfigDefaults.Companion.load(...)` for custom property type parsing
+			// New argument to `new KtLintRuleEngine(...)` to fail on usage of `treeCopyHandler` extension point
+			this.adapter = new KtLintCompat0Dot50Dot0Adapter();
+		} else if (minorVersion == 49) {
 			// Packages and modules moved around (`ktlint-core` -> `ktlint-rule-engine`)
 			// Experimental ruleset was replaced by implementing `Rule.Experimental` and checking the `ktlint_experimental` `.editorconfig` property
 			// `RuleId` and `RuleSetId` became inline classes (mangled to be unrepresentable in Java source code, so reflection is needed), tracked here: https://github.com/pinterest/ktlint/issues/2041
@@ -44,11 +48,9 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 			// ExperimentalParams lost two constructor arguments, EditorConfigProperty moved to its own class
 			this.adapter = new KtLintCompat0Dot48Dot0Adapter();
 		} else {
-			// rename RuleSet to RuleProvider
-			this.adapter = new KtLintCompat0Dot47Dot0Adapter();
+			throw new IllegalStateException("Ktlint versions < 0.48.0 not supported!");
 		}
 		this.editorConfigPath = editorConfigPath;
-		this.useExperimental = useExperimental;
 		this.editorConfigOverrideMap = editorConfigOverrideMap;
 		this.userData = userData;
 		this.isScript = isScript;
@@ -61,6 +63,6 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 		if (editorConfigPath != null) {
 			absoluteEditorConfigPath = editorConfigPath.getOnlyFile().toPath();
 		}
-		return adapter.format(unix, file.toPath(), isScript, useExperimental, absoluteEditorConfigPath, userData, editorConfigOverrideMap);
+		return adapter.format(unix, file.toPath(), isScript, absoluteEditorConfigPath, userData, editorConfigOverrideMap);
 	}
 }

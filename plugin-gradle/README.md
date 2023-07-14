@@ -397,9 +397,8 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
 ```kotlin
 spotless {
   kotlin {
-    // version, setUseExperimental, userData and editorConfigOverride are all optional
-    ktlint("0.45.2")
-      .setUseExperimental(true)
+    // version, userData and editorConfigOverride are all optional
+    ktlint("0.50.0")
       .userData(mapOf("android" to "true"))
       .setEditorConfigPath("$projectDir/config/.editorconfig")  // sample unusual placement
       .editorConfigOverride(mapOf("indent_size" to 2))

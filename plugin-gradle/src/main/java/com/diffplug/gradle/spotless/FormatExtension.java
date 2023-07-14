@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -307,6 +308,13 @@ public class FormatExtension {
 			throw new GradleException("Multiple steps with name '" + newStep.getName() + "' for spotless format '" + formatName() + "'");
 		}
 		steps.add(newStep);
+	}
+
+	/** Adds a new step that requires a Provisioner. */
+	public void addStep(Function<Provisioner, FormatterStep> createStepFn) {
+		requireNonNull(createStepFn);
+		FormatterStep newStep = createStepFn.apply(provisioner());
+		addStep(newStep);
 	}
 
 	/** Returns the index of the existing step with the given name, or -1 if no such step exists. */
