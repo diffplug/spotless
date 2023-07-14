@@ -35,7 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.diffplug.spotless.FileSignature;
-import com.diffplug.spotless.Filter;
+import com.diffplug.spotless.OnMatch;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
@@ -151,7 +151,7 @@ public final class LicenseHeaderStep {
 			return formatterStep;
 		}
 
-		return formatterStep.filterByContent(Filter.INCLUDE, contentPattern);
+		return formatterStep.filterByContent(OnMatch.INCLUDE, contentPattern);
 	}
 
 	private String sanitizeName(@Nullable String name) {

@@ -16,6 +16,6 @@
 package com.diffplug.spotless;
 
 /** Enum to make boolean logic more readable. */
-public enum Filter {
+public enum OnMatch {
 	INCLUDE, EXCLUDE
 }

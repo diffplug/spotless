@@ -23,12 +23,12 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 final class FilterByContentPatternFormatterStep extends DelegateFormatterStep {
-	final Filter includeOrExclude;
+	final OnMatch onMatch;
 	final Pattern contentPattern;
 
-	FilterByContentPatternFormatterStep(FormatterStep delegateStep, Filter includeOrExclude, String contentPattern) {
+	FilterByContentPatternFormatterStep(FormatterStep delegateStep, OnMatch onMatch, String contentPattern) {
 		super(delegateStep);
-		this.includeOrExclude = includeOrExclude;
+		this.onMatch = onMatch;
 		this.contentPattern = Pattern.compile(Objects.requireNonNull(contentPattern));
 	}
 
@@ -37,7 +37,7 @@ final class FilterByContentPatternFormatterStep extends DelegateFormatterStep {
 		Objects.requireNonNull(raw, "raw");
 		Objects.requireNonNull(file, "file");
 		Matcher matcher = contentPattern.matcher(raw);
-		if (matcher.find() == (includeOrExclude == Filter.INCLUDE)) {
+		if (matcher.find() == (onMatch == OnMatch.INCLUDE)) {
 			return delegateStep.format(raw, file);
 		} else {
 			return raw;
@@ -54,13 +54,13 @@ final class FilterByContentPatternFormatterStep extends DelegateFormatterStep {
 		}
 		FilterByContentPatternFormatterStep that = (FilterByContentPatternFormatterStep) o;
 		return Objects.equals(delegateStep, that.delegateStep) &&
-				Objects.equals(includeOrExclude, that.includeOrExclude) &&
+				Objects.equals(onMatch, that.onMatch) &&
 				Objects.equals(contentPattern.pattern(), that.contentPattern.pattern());
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(delegateStep, includeOrExclude, contentPattern.pattern());
+		return Objects.hash(delegateStep, onMatch, contentPattern.pattern());
 	}
 
 	private static final long serialVersionUID = 2L;
