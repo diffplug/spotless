@@ -53,8 +53,9 @@ public interface FormatterStep extends Serializable {
 	 *            java regular expression used to filter out files which content doesn't contain pattern
 	 * @return FormatterStep
 	 */
+	@Deprecated
 	public default FormatterStep filterByContentPattern(String contentPattern) {
-		return filterByContentPattern(contentPattern, true);
+		return filterByContent(contentPattern, Filter.INCLUDE);
 	}
 
 	/**
@@ -63,12 +64,12 @@ public interface FormatterStep extends Serializable {
 	 *
 	 * @param contentPattern
 	 *            java regular expression used to filter in or out files which content contain pattern
-	 * @param formatIfMatches
-	 *            True to format only when {@code contentPattern} is found; false to format only when {@code contentPattern} is not found
+	 * @param includeOrExclude
+	 *            determines if matches are included or excluded
 	 * @return FormatterStep
 	 */
-	public default FormatterStep filterByContentPattern(String contentPattern, boolean formatIfMatches) {
-		return new FilterByContentPatternFormatterStep(this, contentPattern, formatIfMatches);
+	public default FormatterStep filterByContent(String contentPattern, Filter includeOrExclude) {
+		return new FilterByContentPatternFormatterStep(this, contentPattern, includeOrExclude);
 	}
 
 	/**

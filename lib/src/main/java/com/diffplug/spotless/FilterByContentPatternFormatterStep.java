@@ -24,13 +24,13 @@ import javax.annotation.Nullable;
 
 final class FilterByContentPatternFormatterStep extends DelegateFormatterStep {
 	final Pattern contentPattern;
-	final boolean formatIfMatches;
+	final Filter includeOrExclude;
 
 	FilterByContentPatternFormatterStep(FormatterStep delegateStep, String contentPattern,
-			boolean formatIfMatches) {
+			Filter includeOrExclude) {
 		super(delegateStep);
 		this.contentPattern = Pattern.compile(Objects.requireNonNull(contentPattern));
-		this.formatIfMatches = formatIfMatches;
+		this.includeOrExclude = includeOrExclude;
 	}
 
 	@Override
@@ -38,8 +38,7 @@ final class FilterByContentPatternFormatterStep extends DelegateFormatterStep {
 		Objects.requireNonNull(raw, "raw");
 		Objects.requireNonNull(file, "file");
 		Matcher matcher = contentPattern.matcher(raw);
-		boolean found = matcher.find();
-		if (formatIfMatches == found) {
+		if (matcher.find() == (includeOrExclude == Filter.INCLUDE)) {
 			return delegateStep.format(raw, file);
 		} else {
 			return raw;

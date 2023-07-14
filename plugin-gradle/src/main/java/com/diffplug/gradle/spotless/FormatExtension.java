@@ -45,6 +45,7 @@ import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.tasks.TaskProvider;
 
 import com.diffplug.common.base.Preconditions;
+import com.diffplug.spotless.Filter;
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
@@ -921,7 +922,7 @@ public class FormatExtension {
 			steps = this.steps;
 		}
 		if (targetExcludeIfContentContains != null) {
-			steps.replaceAll(formatterStep -> formatterStep.filterByContentPattern(targetExcludeIfContentContains, false));
+			steps.replaceAll(formatterStep -> formatterStep.filterByContent(targetExcludeIfContentContains, Filter.EXCLUDE));
 		}
 		task.setSteps(steps);
 		task.setLineEndingsPolicy(getLineEndings().createPolicy(getProject().getProjectDir(), () -> totalTarget));
