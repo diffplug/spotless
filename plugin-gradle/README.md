@@ -475,7 +475,7 @@ spotless {
 }
 ```
 
-When used in conjunction with the [buf-gradle-plugin](https://github.com/andrewparmet/buf-gradle-plugin), the `buf` executable can be resolved from its `bufTool` configuration:
+When used in conjunction with the [buf-gradle-plugin](https://github.com/bufbuild/buf-gradle-plugin), the `buf` executable can be resolved from its `bufTool` configuration:
 
 ```gradle
 spotless {
