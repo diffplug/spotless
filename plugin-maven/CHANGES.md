@@ -5,10 +5,13 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * Support pass skip (`-Dspotless.skip=true`) from command-line. ([#1729](https://github.com/diffplug/spotless/pull/1729))
-* Bump default `ktlint` version to latest `0.49.1` -> `0.50.0`.([#1741](https://github.com/diffplug/spotless/issues/1741))
-  * Dropped support for `ktlint 0.47.x` following our policy of supporting two breaking changes at a time.
 ### Fixed
 * Update documented default `semanticSort` to `false`. ([#1728](https://github.com/diffplug/spotless/pull/1728))
+### Changes
+* Bump default `cleanthat` version to latest `2.13` -> `2.17`. ([#1734](https://github.com/diffplug/spotless/pull/1734))
+* Bump default `ktlint` version to latest `0.49.1` -> `0.50.0`. ([#1741](https://github.com/diffplug/spotless/issues/1741))
+  * Dropped support for `ktlint 0.47.x` following our policy of supporting two breaking changes at a time.
+  * Dropped support for deprecated `useExperimental` parameter in favor of the `ktlint_experimental` property.
 
 ## [2.37.0] - 2023-05-24
 ### Added

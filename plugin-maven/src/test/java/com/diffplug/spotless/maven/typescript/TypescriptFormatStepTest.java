@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.ProcessRunner;
@@ -210,6 +211,7 @@ class TypescriptFormatStepTest extends MavenIntegrationHarness {
 	}
 
 	@Test
+	@Disabled("https://github.com/diffplug/spotless/issues/1756")
 	void eslintStyleguideXo() throws Exception {
 		writePomWithTypescriptSteps(
 				TEST_FILE_PATH,
