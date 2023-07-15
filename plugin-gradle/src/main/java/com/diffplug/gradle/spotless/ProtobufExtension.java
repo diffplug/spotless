@@ -70,7 +70,7 @@ public class ProtobufExtension extends FormatExtension implements HasBuiltinDeli
 		}
 
 		/**
-		 * When used in conjunction with the <a href=https://github.com/andrewparmet/buf-gradle-plugin>{@code buf-gradle-plugin}</a>,
+		 * When used in conjunction with the <a href=https://github.com/bufbuild/buf-gradle-plugin>{@code buf-gradle-plugin}</a>,
 		 * the {@code buf} executable can be resolved from its {@code bufTool} configuration:
 		 *
 		 * <pre>
