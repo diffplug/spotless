@@ -111,7 +111,7 @@ public class ClangFormatStep {
 				args = tmpArgs;
 			}
 			final String[] processArgs = args.toArray(new String[args.size() + 1]);
-			processArgs[processArgs.length - 1] = "--assume-filename=" + file.getName();
+			processArgs[processArgs.length - 1] = "--assume-filename=" + file.getAbsolutePath();
 			return runner.exec(input.getBytes(StandardCharsets.UTF_8), processArgs).assertExitZero(StandardCharsets.UTF_8);
 		}
 
