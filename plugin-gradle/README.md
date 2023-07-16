@@ -522,7 +522,7 @@ black().pathToExe('C:/myuser/.pyenv/versions/3.8.0/scripts/black.exe')
 
 ### buf
 
-`com.diffplug.gradle.spotless.ProtobufExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.6.0/com/diffplug/gradle/spotless/ProtobufExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/ProtobufExtension.java)
+`com.diffplug.gradle.spotless.ProtobufExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.19.0/com/diffplug/gradle/spotless/ProtobufExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/ProtobufExtension.java)
 
 ```gradle
 spotless {
