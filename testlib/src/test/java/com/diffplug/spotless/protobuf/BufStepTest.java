@@ -15,19 +15,18 @@
  */
 package com.diffplug.spotless.protobuf;
 
-import java.io.File;
-
 import org.junit.jupiter.api.Test;
 
+import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.StepHarnessWithFile;
 import com.diffplug.spotless.tag.BufTest;
 
 @BufTest
-class BufStepTest {
+class BufStepTest extends ResourceHarness {
 	@Test
 	void test() throws Exception {
-		try (StepHarnessWithFile harness = StepHarnessWithFile.forStep(BufStep.withVersion(BufStep.defaultVersion()).create())) {
-			harness.testResource(new File("src/main/resources/protobuf/buf/buf.proto"), "protobuf/buf/buf.proto", "protobuf/buf/buf.proto.clean");
+		try (StepHarnessWithFile harness = StepHarnessWithFile.forStep(this, BufStep.withVersion(BufStep.defaultVersion()).create())) {
+			harness.testResource("protobuf/buf/buf.proto", "protobuf/buf/buf.proto.clean");
 		}
 	}
 }
