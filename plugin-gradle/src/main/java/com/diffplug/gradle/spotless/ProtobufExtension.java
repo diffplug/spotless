@@ -66,6 +66,9 @@ public class ProtobufExtension extends FormatExtension implements HasBuiltinDeli
 
 		BufFormatExtension(String version) {
 			this.step = BufStep.withVersion(version);
+			if (!steps.isEmpty()) {
+				throw new IllegalArgumentException("buf() must be the first step, move other steps after it. Thumbs up [this issue](https://github.com/bufbuild/buf/issues/1035) for a resolution, see [here](https://github.com/diffplug/spotless/pull/1208#discussion_r1264439669) for more details on the problem.");
+			}
 			addStep(createStep());
 		}
 
