@@ -1014,7 +1014,9 @@ spotless {
 
     // can also specify a code style
     clangFormat().style('LLVM') // or Google, Chromium, Mozilla, WebKit
-    // TODO: support arbitrary .clang-format
+    
+    // you can also indicate to use a local .clang-format file
+    clangFormat().style('file')
 
     // if clang-format is not on your path, you must specify its location manually
     clangFormat().pathToExe('/usr/local/Cellar/clang-format/10.0.1/bin/clang-format')
