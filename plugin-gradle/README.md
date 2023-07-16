@@ -59,6 +59,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
   - [C/C++](#cc) ([clang-format](#clang-format), [eclipse cdt](#eclipse-cdt))
+  - [Protobuf](#protobuf) ([buf](#buf), [clang-format](#clang-format))
   - [Python](#python) ([black](#black))
   - [FreshMark](#freshmark) aka markdown
   - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
@@ -516,6 +517,40 @@ black().pathToExe('C:/myuser/.pyenv/versions/3.8.0/scripts/black.exe')
 ```
 
 <a name="applying-freshmark-to-markdown-files"></a>
+
+## Protobuf
+
+### buf
+
+`com.diffplug.gradle.spotless.ProtobufExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.19.0/com/diffplug/gradle/spotless/ProtobufExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/ProtobufExtension.java)
+
+**WARNING** this step **must** be the first step in the chain, steps before it will be ignored. Thumbs up [this issue](https://github.com/bufbuild/buf/issues/1035) for a resolution, see [here](https://github.com/diffplug/spotless/pull/1208#discussion_r1264439669) for more details on the problem.
+
+```gradle
+spotless {
+  protobuf {
+    // by default the target is every '.proto' file in the project
+    buf()
+
+    licenseHeader '/* (C) $YEAR */' // or licenseHeaderFile
+  }
+}
+```
+
+When used in conjunction with the [buf-gradle-plugin](https://github.com/bufbuild/buf-gradle-plugin), the `buf` executable can be resolved from its `bufTool` configuration:
+
+```gradle
+spotless {
+  protobuf {
+    buf().pathToExe(configurations.getByName(BUF_BINARY_CONFIGURATION_NAME).getSingleFile().getAbsolutePath())
+  }
+}
+
+// Be sure to disable the buf-gradle-plugin's execution of `buf format`:
+buf {
+  enforceFormat = false
+}
+```
 
 ## FreshMark
 

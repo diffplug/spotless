@@ -5,6 +5,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * Add target option `targetExcludeIfContentContains` and `targetExcludeIfContentContainsRegex` to exclude files based on their text content. ([#1749](https://github.com/diffplug/spotless/pull/1749))
+* Add support for Protobuf formatting based on [Buf](https://buf.build/) ([#1208](https://github.com/diffplug/spotless/pull/1208)).
 * Add an overload for `FormatExtension.addStep` which provides access to the `FormatExtension`'s `Provisioner`, enabling custom steps to make use of third-party dependencies.
 ### Fixed
 * Correctly support the syntax

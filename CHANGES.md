@@ -11,6 +11,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
+* Added support for Protobuf formatting based on [Buf](https://buf.build/). (#1208)
 * `enum OnMatch { INCLUDE, EXCLUDE }` so that `FormatterStep.filterByContent` can not only include based on the pattern but also exclude. ([#1749](https://github.com/diffplug/spotless/pull/1749))
 ### Fixed
 * Update documented default `semanticSort` to `false`. ([#1728](https://github.com/diffplug/spotless/pull/1728))
