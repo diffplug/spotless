@@ -6,6 +6,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Added
 * Add target option `targetExcludeIfContentContains` and `targetExcludeIfContentContainsRegex` to exclude files based on their text content. ([#1749](https://github.com/diffplug/spotless/pull/1749))
 * Add an overload for `FormatExtension.addStep` which provides access to the `FormatExtension`'s `Provisioner`, enabling custom steps to make use of third-party dependencies.
+* Add option to specify `file` as `clangFormat` style to use local `.clang-format` files. ([#1759](https://github.com/diffplug/spotless/pull/1759))
+
 ### Fixed
 * Correctly support the syntax
   ```
